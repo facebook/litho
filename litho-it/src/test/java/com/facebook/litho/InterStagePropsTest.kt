@@ -16,7 +16,7 @@
 
 package com.facebook.litho
 
-import com.facebook.litho.testing.LegacyLithoViewRule
+import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.MountSpecInterStagePropsTester
 import com.facebook.litho.widget.SimpleStateUpdateEmulator
@@ -34,12 +34,11 @@ class InterStagePropsTest {
 
   private lateinit var context: ComponentContext
 
-  @JvmField @Rule val legacyLithoViewRule = LegacyLithoViewRule()
+  @JvmField @Rule val lithoViewRule = LithoViewRule()
 
   @Before
   fun setUp() {
-    context = legacyLithoViewRule.context
-    legacyLithoViewRule.useLithoView(LithoView(context))
+    context = lithoViewRule.context
   }
 
   @Test
@@ -47,15 +46,27 @@ class InterStagePropsTest {
     val lifecycleTracker = LifecycleTracker()
     val stateUpdater = SimpleStateUpdateEmulatorSpec.Caller()
     val root = createComponent(lifecycleTracker, stateUpdater)
-    legacyLithoViewRule.setRoot(root).attachToWindow().measure().layout()
+    val testLithoView = lithoViewRule.render { root }.attachToWindow().measure().layout()
     lifecycleTracker.reset()
     stateUpdater.increment()
-    legacyLithoViewRule.lithoView.onDetachedFromWindowForTest()
+    testLithoView.detachFromWindow()
     // We need to make sure layout happens because which triggers mount and bind together
-    legacyLithoViewRule.attachToWindow().measure().layout()
-    assertThat(lifecycleTracker.steps)
-        .describedAs("On Bind should be called")
-        .contains(LifecycleStep.ON_UNBIND, LifecycleStep.ON_BIND)
+    testLithoView.attachToWindow()
+    val config = testLithoView.lithoView.configuration
+    if (config != null && config.enableFixForIM) {
+      testLithoView.lithoView.notifyVisibleBoundsChanged()
+      assertThat(lifecycleTracker.steps)
+          .describedAs("On Bind should be called")
+          .containsExactly(
+              LifecycleStep.ON_UNBIND,
+              LifecycleStep.ON_UNMOUNT,
+              LifecycleStep.ON_MOUNT,
+              LifecycleStep.ON_BIND)
+    } else {
+      assertThat(lifecycleTracker.steps)
+          .describedAs("On Bind should be called")
+          .containsExactly(LifecycleStep.ON_UNBIND, LifecycleStep.ON_BIND)
+    }
   }
 
   @Test
@@ -63,9 +74,9 @@ class InterStagePropsTest {
     val lifecycleTracker = LifecycleTracker()
     val stateUpdater = SimpleStateUpdateEmulatorSpec.Caller()
     val root = createComponent(lifecycleTracker, stateUpdater)
-    legacyLithoViewRule.setRoot(root).attachToWindow().measure().layout()
+    val testLithoView = lithoViewRule.render { root }.attachToWindow().measure().layout()
     lifecycleTracker.reset()
-    legacyLithoViewRule.detachFromWindow()
+    testLithoView.detachFromWindow()
     assertThat(lifecycleTracker.steps)
         .describedAs("On Unbind should be called")
         .contains(LifecycleStep.ON_UNBIND)
@@ -76,7 +87,7 @@ class InterStagePropsTest {
     val lifecycleTracker = LifecycleTracker()
     val stateUpdater = SimpleStateUpdateEmulatorSpec.Caller()
     val root = createComponent(lifecycleTracker, stateUpdater)
-    legacyLithoViewRule.setRoot(root).attachToWindow().measure().layout()
+    lithoViewRule.render { root }.attachToWindow().measure().layout()
     assertThat(lifecycleTracker.steps)
         .describedAs("On Mount should be called")
         .contains(LifecycleStep.ON_MOUNT)
@@ -87,9 +98,9 @@ class InterStagePropsTest {
     val lifecycleTracker = LifecycleTracker()
     val stateUpdater = SimpleStateUpdateEmulatorSpec.Caller()
     val root = createComponent(lifecycleTracker, stateUpdater)
-    legacyLithoViewRule.setRoot(root).attachToWindow().measure().layout()
+    val testLithoView = lithoViewRule.render { root }.attachToWindow().measure().layout()
     lifecycleTracker.reset()
-    legacyLithoViewRule.lithoView.unmountAllItems()
+    testLithoView.lithoView.unmountAllItems()
     assertThat(lifecycleTracker.steps)
         .describedAs("On Unmount should be called")
         .contains(LifecycleStep.ON_UNMOUNT)
@@ -99,10 +110,8 @@ class InterStagePropsTest {
       lifecycleTracker: LifecycleTracker,
       stateUpdater: SimpleStateUpdateEmulatorSpec.Caller
   ): Component =
-      Column.create(legacyLithoViewRule.context)
-          .child(
-              MountSpecInterStagePropsTester.create(legacyLithoViewRule.context)
-                  .lifecycleTracker(lifecycleTracker))
-          .child(SimpleStateUpdateEmulator.create(legacyLithoViewRule.context).caller(stateUpdater))
+      Column.create(context)
+          .child(MountSpecInterStagePropsTester.create(context).lifecycleTracker(lifecycleTracker))
+          .child(SimpleStateUpdateEmulator.create(context).caller(stateUpdater))
           .build()
 }

@@ -17,16 +17,19 @@
 package com.facebook.litho.testing.testrunner
 
 import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.rendercore.RenderCoreConfig
 import org.junit.runners.model.FrameworkMethod
 
 class IncrementalMountConfiguration : LithoTestRunConfiguration {
 
   override fun beforeTest(method: FrameworkMethod) {
+    RenderCoreConfig.shouldEnableIMFix = true
     ComponentsConfiguration.defaultInstance =
         ComponentsConfiguration.defaultInstance.copy(enableFixForIM = true)
   }
 
   override fun afterTest(method: FrameworkMethod) {
+    RenderCoreConfig.shouldEnableIMFix = false
     ComponentsConfiguration.defaultInstance =
         ComponentsConfiguration.defaultInstance.copy(enableFixForIM = false)
   }

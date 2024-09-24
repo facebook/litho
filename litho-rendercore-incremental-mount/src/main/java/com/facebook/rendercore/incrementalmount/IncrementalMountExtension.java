@@ -439,11 +439,21 @@ public class IncrementalMountExtension
     // override that if the item is outside the visible bounds.
     // TODO (T64830748): extract animations logic out of this.
 
-    final boolean isMountable =
-        isMountedHostWithChildContent(content)
-            || Rect.intersects(localVisibleRect, incrementalMountOutput.getBounds())
-            || isRootItem(id)
-            || incrementalMountOutput.excludeFromIncrementalMount();
+    final boolean isMountable;
+    if (RenderCoreConfig.shouldEnableIMFix) {
+      // We should rely on the excludeFromIncrementalMount flag to determine if a host component is
+      // mountable
+      isMountable =
+          Rect.intersects(localVisibleRect, incrementalMountOutput.getBounds())
+              || incrementalMountOutput.excludeFromIncrementalMount();
+    } else {
+      isMountable =
+          isMountedHostWithChildContent(content)
+              || Rect.intersects(localVisibleRect, incrementalMountOutput.getBounds())
+              || isRootItem(id)
+              || incrementalMountOutput.excludeFromIncrementalMount();
+    }
+
     final boolean hasAcquiredMountRef = extensionState.ownsReference(id);
     if (isMountable && !hasAcquiredMountRef) {
       extensionState.acquireMountReference(incrementalMountOutput.getId(), isMounting);

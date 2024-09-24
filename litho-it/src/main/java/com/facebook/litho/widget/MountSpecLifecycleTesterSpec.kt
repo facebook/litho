@@ -48,6 +48,7 @@ import com.facebook.litho.annotations.OnPrepare
 import com.facebook.litho.annotations.OnUnbind
 import com.facebook.litho.annotations.OnUnmount
 import com.facebook.litho.annotations.Prop
+import com.facebook.litho.annotations.ShouldExcludeFromIncrementalMount
 import com.facebook.litho.annotations.State
 import com.facebook.rendercore.MountItemsPool
 
@@ -74,6 +75,14 @@ object MountSpecLifecycleTesterSpec {
       @CachedValue expensiveValue: Int,
   ) {
     lifecycleTracker.addStep(LifecycleStep.ON_PREPARE)
+  }
+
+  @JvmStatic
+  @ShouldExcludeFromIncrementalMount
+  fun shouldExcludeFromIncrementalMount(
+      @Prop(optional = true) shouldExcludeFromIncrementalMount: Boolean?
+  ): Boolean {
+    return shouldExcludeFromIncrementalMount ?: false
   }
 
   @JvmStatic

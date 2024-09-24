@@ -120,8 +120,9 @@ class MountSpecLifecycleTest {
   @Test
   fun lifecycle_onDetach_shouldCallLifecycleMethods() {
     val lifecycleTracker = LifecycleTracker()
+    // using a component that has an exactly the same size as the container to cover the edge case
     val testLithoView =
-        lithoViewRule.render {
+        lithoViewRule.render(widthPx = 800, heightPx = 600) {
           MountSpecLifecycleTester.create(lithoViewRule.context)
               .intrinsicSize(Size(800, 600))
               .lifecycleTracker(lifecycleTracker)
@@ -129,29 +130,85 @@ class MountSpecLifecycleTest {
         }
     lifecycleTracker.reset()
     testLithoView.detachFromWindow()
-    assertThat(lifecycleTracker.steps)
-        .describedAs("Should only call")
-        .containsExactly(LifecycleStep.ON_UNBIND)
+    val config = testLithoView.lithoView.configuration
+    if (config != null && config.enableFixForIM) {
+      assertThat(lifecycleTracker.steps)
+          .describedAs("Should only call")
+          .containsExactly(LifecycleStep.ON_UNBIND, LifecycleStep.ON_UNMOUNT)
+    } else {
+      assertThat(lifecycleTracker.steps)
+          .describedAs("Should only call")
+          .containsExactly(LifecycleStep.ON_UNBIND)
+    }
   }
 
   @Test
   fun lifecycle_onReAttach_shouldCallLifecycleMethods() {
-    val lifecycleTracker = LifecycleTracker()
+    val lifecycleTracker1 = LifecycleTracker()
+    val lifecycleTracker2 = LifecycleTracker()
+
     val testLithoView =
         lithoViewRule
             .render {
-              MountSpecLifecycleTester.create(lithoViewRule.context)
-                  .lifecycleTracker(lifecycleTracker)
-                  .intrinsicSize(Size(800, 600))
-                  .build()
+              Column {
+                child(
+                    MountSpecLifecycleTester.create(lithoViewRule.context)
+                        .lifecycleTracker(lifecycleTracker1)
+                        .intrinsicSize(Size(800, 600))
+                        // exclude this component from incremental mount
+                        .shouldExcludeFromIncrementalMount(true)
+                        .build())
+                child(
+                    MountSpecLifecycleTester.create(lithoViewRule.context)
+                        .lifecycleTracker(lifecycleTracker2)
+                        .intrinsicSize(Size(800, 600))
+                        .build())
+              }
             }
             .detachFromWindow()
 
-    lifecycleTracker.reset()
-    testLithoView.attachToWindow().measure().layout()
-    assertThat(lifecycleTracker.steps)
-        .describedAs("Should only call")
-        .containsExactly(LifecycleStep.ON_BIND)
+    val config = testLithoView.lithoView.configuration
+    if (config != null && config.enableFixForIM) {
+      assertThat(lifecycleTracker1.steps)
+          .describedAs("Should only call unbind because we mark it as excluded from IM")
+          .contains(LifecycleStep.ON_UNBIND)
+      assertThat(lifecycleTracker2.steps)
+          .describedAs("Should call unmount as well")
+          .contains(LifecycleStep.ON_UNBIND, LifecycleStep.ON_UNMOUNT)
+    } else {
+      assertThat(lifecycleTracker1.steps)
+          .describedAs("Should call")
+          .contains(LifecycleStep.ON_UNBIND)
+      assertThat(lifecycleTracker2.steps)
+          .describedAs("Should call")
+          .contains(LifecycleStep.ON_UNBIND)
+    }
+    lifecycleTracker1.reset()
+    lifecycleTracker2.reset()
+    testLithoView.attachToWindow().layout()
+
+    if (config != null && config.enableFixForIM) {
+      assertThat(lifecycleTracker1.steps)
+          .describedAs("Should call bind because it's mounted")
+          .containsExactly(LifecycleStep.ON_BIND)
+      assertThat(lifecycleTracker2.steps)
+          .describedAs("Should call nothing because it's still unmounted")
+          .isEmpty()
+    } else {
+      assertThat(lifecycleTracker1.steps)
+          .describedAs("Should call nothing")
+          .containsExactly(LifecycleStep.ON_BIND)
+      assertThat(lifecycleTracker2.steps)
+          .describedAs("Should call")
+          .containsExactly(LifecycleStep.ON_BIND)
+    }
+
+    if (config != null && config.enableFixForIM) {
+      testLithoView.lithoView.notifyVisibleBoundsChanged()
+      assertThat(lifecycleTracker2.steps)
+          .describedAs("Should be mounted as we notify visible bounds changed")
+          .containsExactly(LifecycleStep.ON_MOUNT, LifecycleStep.ON_BIND)
+    }
   }
 
   @Test

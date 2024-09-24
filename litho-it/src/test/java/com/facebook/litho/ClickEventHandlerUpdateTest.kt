@@ -16,6 +16,7 @@
 
 package com.facebook.litho
 
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.ClickEventTrackingImage
@@ -92,6 +93,11 @@ class ClickEventHandlerUpdateTest {
 
   @Test
   fun `click event handler on drawable mountspec should update`() {
+    if (ComponentsConfiguration.defaultInstance.enableFixForIM) {
+      // With IM fix we'll unmount all components when LV gets detached, which means Host will not
+      // be the same
+      return
+    }
     val context = mLithoTestRule.context
     val tracker = mutableListOf<String>()
 

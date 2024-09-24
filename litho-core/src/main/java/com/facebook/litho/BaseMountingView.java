@@ -327,7 +327,15 @@ public abstract class BaseMountingView extends ComponentHost
   }
 
   protected void onDetached() {
+    maybeUnmountComponents();
     mMountState.detach();
+  }
+
+  private void maybeUnmountComponents() {
+    final @Nullable ComponentsConfiguration config = getConfiguration();
+    if (config != null && config.enableFixForIM && !mIsTemporaryDetached && !hasTransientState()) {
+      notifyVisibleBoundsChanged(EMPTY_RECT);
+    }
   }
 
   boolean isAttached() {
