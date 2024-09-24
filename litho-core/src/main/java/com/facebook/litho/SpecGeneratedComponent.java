@@ -899,7 +899,47 @@ public abstract class SpecGeneratedComponent extends Component
         && !isEquivalentCommonProps((SpecGeneratedComponent) other)) {
       return false;
     }
+    if (Component.isEfficientEqualityConfigEnabled(this)) {
+      @Nullable
+      Boolean isEquivalent = isEquivalentPropsOptimized(this, other, shouldCompareCommonProps);
+      if (isEquivalent != null) {
+        return isEquivalent;
+      }
+    }
     return isEquivalentProps(other, shouldCompareCommonProps);
+  }
+
+  /**
+   * Uses the generated {@link Component#getProps()} method to compare the props of two components.
+   *
+   * @param a the first component to compare
+   * @param b the other component to compare
+   * @param shouldCompareCommonProps whether to compare common props. This applies to props that are
+   *     components themselves, and are compared recursively.
+   * @return true if the props are equivalent, false otherwise. This method may also return null if
+   *     {@link Component#getProps()} has not been implemented.
+   */
+  @Nullable
+  protected static Boolean isEquivalentPropsOptimized(
+      @Nullable Component a, @Nullable Component b, boolean shouldCompareCommonProps) {
+    if (a == b) {
+      return true;
+    }
+    if (a == null || b == null) {
+      return false;
+    }
+    if (a.getClass() != b.getClass()) {
+      return false;
+    }
+    if (a.getId() == b.getId()) {
+      return true;
+    }
+    @Nullable Object[] aProps = a.getProps();
+    @Nullable Object[] bProps = b.getProps();
+    if (aProps == null || bProps == null) {
+      return null;
+    }
+    return ComponentUtils.arePropsEquivalent(aProps, bProps, shouldCompareCommonProps);
   }
 
   @Override

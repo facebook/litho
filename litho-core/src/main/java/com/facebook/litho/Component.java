@@ -63,6 +63,7 @@ import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.annotations.EventHandlerRebindMode;
+import com.facebook.litho.config.ComponentEqualityMode;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.LithoDebugConfigurations;
 import com.facebook.litho.debug.DebugInfoReporter;
@@ -850,6 +851,18 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       component.setLayoutCreatedInWillRender(resolveContext, newLayoutCreatedInWillRender);
     }
     return willRender;
+  }
+
+  protected static boolean isEfficientEqualityConfigEnabled(Component component) {
+    ComponentEqualityMode mode = ComponentsConfiguration.defaultInstance.componentEqualityMode;
+    switch (mode) {
+      case SPECS:
+        return component instanceof SpecGeneratedComponent;
+      case LAYOUT_SPECS:
+        return component instanceof SpecGeneratedComponent && Component.isLayoutSpec(component);
+      default:
+        return false;
+    }
   }
 
   static boolean isHostSpec(@Nullable Component component) {

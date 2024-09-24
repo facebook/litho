@@ -22,6 +22,7 @@ import com.facebook.litho.annotations.EventHandlerRebindMode
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.drawable.ComparableDrawable
 import com.facebook.rendercore.Equivalence
+import com.facebook.rendercore.utils.areObjectsEquivalent
 import com.facebook.rendercore.utils.isEquivalentTo
 import java.lang.reflect.Field
 import java.lang.reflect.ParameterizedType
@@ -84,6 +85,27 @@ object ComponentUtils {
     } else {
       hasEquivalentFields(stateContainer1, stateContainer2)
     }
+  }
+
+  @JvmStatic
+  fun arePropsEquivalent(
+      props1: Array<*>,
+      props2: Array<*>,
+      shouldCompareCommonProps: Boolean =
+          ComponentsConfiguration.shouldCompareCommonPropsInIsEquivalentTo
+  ): Boolean {
+    if (props1.size != props2.size) return false
+
+    for (i in props1.indices) {
+      val prop1 = props1[i]
+      val prop2 = props2[i]
+      if (prop1 is Component && prop2 is Component) {
+        if (!isEquivalent(prop1, prop2, shouldCompareCommonProps)) return false
+      } else if (!areObjectsEquivalent(prop1, prop2)) {
+        return false
+      }
+    }
+    return true
   }
 
   /**
