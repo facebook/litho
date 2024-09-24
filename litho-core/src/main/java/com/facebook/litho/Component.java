@@ -425,6 +425,22 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
   }
 
   /**
+   * Returns the list of props declared in this component that will be used to check its equivalence
+   * with other instances of the same component type.
+   *
+   * <p>By default, this method returns <b>null</b>, which signifies that the codegen was not
+   * implemented and hence equality checks should fallback to a different execution path.
+   *
+   * <p><b>Caution:</b> This method should neither be manually invoked nor overridden unless there's
+   * a clear reason for that, as it will typically be generated at compile time, either by the
+   * spec-gen processor or via a Kotlin compiler plugin
+   */
+  @Nullable
+  protected Object[] getProps() {
+    return null;
+  }
+
+  /**
    * Determine if this component has equivalent props to a given component. This method does not
    * compare common props.
    *

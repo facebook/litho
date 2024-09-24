@@ -139,6 +139,7 @@ internal constructor(
      * ultimate source of truth.
      */
     @JvmField val useComponentTreePropContainerAsSourceOfTruth: Boolean = false,
+    @JvmField val componentEqualityMode: ComponentEqualityMode = ComponentEqualityMode.DEFAULT,
 
     /**
      * When enabled the framework will add an additional binder to Host RenderUnits to clean up view
