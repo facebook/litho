@@ -151,6 +151,9 @@ public class ComponentBodyGenerator {
     if (specModel.shouldGenerateIsEquivalentTo()) {
       builder.addMethod(generateIsEquivalentPropsMethod(specModel, runMode));
     }
+    if (specModel.shouldGenerateGetProps()) {
+      builder.addMethod(generateGetPropsMethod(specModel));
+    }
 
     if (specModel.shouldGenerateIsEquivalentTo()
         && specModel.getTreeProps() != null
@@ -561,6 +564,27 @@ public class ComponentBodyGenerator {
 
     isEquivalentBuilder.addStatement("return true");
     return isEquivalentBuilder.build();
+  }
+
+  static MethodSpec generateGetPropsMethod(SpecModel specModel) {
+    StringBuilder sb = new StringBuilder();
+    for (PropModel prop : specModel.getProps()) {
+      if (sb.length() != 0) sb.append(", ");
+      sb.append(prop.getName());
+    }
+    if (specModel.isStateful()) {
+      for (TreePropModel prop : specModel.getTreeProps()) {
+        if (sb.length() != 0) sb.append(", ");
+        sb.append(prop.getName());
+      }
+    }
+    return MethodSpec.methodBuilder("getProps")
+        .addAnnotation(Override.class)
+        .addModifiers(Modifier.PROTECTED)
+        .addModifiers(Modifier.FINAL)
+        .returns(ArrayTypeName.of(Object.class))
+        .addStatement("return new $T[] {$L}", Object.class, sb.toString())
+        .build();
   }
 
   static MethodSpec generateIsEquivalentPropsMethod(SpecModel specModel, EnumSet<RunMode> runMode) {

@@ -330,6 +330,11 @@ public class LayoutSpecModel implements SpecModel {
     return true;
   }
 
+  @Override
+  public boolean shouldGenerateGetProps() {
+    return true;
+  }
+
   public String getSimpleNameDelegate() {
     return mSimpleNameDelegate;
   }

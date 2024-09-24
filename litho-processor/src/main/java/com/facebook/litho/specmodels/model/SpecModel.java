@@ -259,7 +259,7 @@ public interface SpecModel {
   TypeSpec generate(EnumSet<RunMode> runMode);
 
   /**
-   * @return whether this spec requires deep copy and interstage copy methdods to be generated.
+   * @return whether this spec requires deep copy and interstage copy methods to be generated.
    */
   boolean shouldGenerateCopyMethod();
 
@@ -271,6 +271,17 @@ public interface SpecModel {
   boolean shouldGenerateIsEquivalentTo();
 
   default boolean hasBuildTimeValidations() {
+    return false;
+  }
+
+  /**
+   * @return whether the getProps() method should be generated or not. If generated, and the
+   *     corresponding runtime configs are enabled, the equivalence check will take advantage of the
+   *     fields in Component.getProps() which can significantly improve its performance. On the
+   *     other hand, when this method is not generated, the Component.isEquivalentProps() method
+   *     will instead be called to check for equivalence which may use reflection.
+   */
+  default boolean shouldGenerateGetProps() {
     return false;
   }
 }

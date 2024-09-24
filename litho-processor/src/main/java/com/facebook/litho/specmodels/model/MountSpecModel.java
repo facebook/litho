@@ -367,6 +367,11 @@ public class MountSpecModel implements SpecModel, HasPureRender {
     return true;
   }
 
+  @Override
+  public boolean shouldGenerateGetProps() {
+    return true;
+  }
+
   public ImmutableList<SpecMethodModel<BindDynamicValueMethod, Void>> getBindDynamicValueMethods() {
     return mSpecModel.getBindDynamicValueMethods();
   }
