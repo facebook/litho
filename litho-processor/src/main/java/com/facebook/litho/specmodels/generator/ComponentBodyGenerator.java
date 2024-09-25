@@ -186,7 +186,8 @@ public class ComponentBodyGenerator {
     return builder.build();
   }
 
-  private static TypeSpecDataHolder generateOptionalField(MethodParamModel optionalField) {
+  private static TypeSpecDataHolder generateOptionalField(
+      @Nullable MethodParamModel optionalField) {
     final TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
     if (optionalField == null) {
       return typeSpecDataHolder.build();
@@ -1115,7 +1116,7 @@ public class ComponentBodyGenerator {
       String methodName,
       SpecModel specModel,
       MethodParamModel methodParamModel,
-      String contextParamName,
+      @Nullable String contextParamName,
       boolean shallow,
       @Nullable String cachedContainerVariableName) {
 
