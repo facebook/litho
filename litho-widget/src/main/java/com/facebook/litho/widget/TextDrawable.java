@@ -493,7 +493,6 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       mOutlineWidth = outlineWidth;
       mOutlineColor = outlineColor;
       invalidateSelf();
-      invalidateSelf();
     }
   }
 
