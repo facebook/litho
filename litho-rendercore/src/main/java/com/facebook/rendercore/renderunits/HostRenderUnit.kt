@@ -20,12 +20,9 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.view.View
 import android.view.View.OnFocusChangeListener
-import android.view.View.OnLongClickListener
-import android.view.View.OnTouchListener
 import androidx.annotation.IntDef
 import com.facebook.rendercore.ContentAllocator
 import com.facebook.rendercore.HostView
-import com.facebook.rendercore.InterceptTouchHandler
 import com.facebook.rendercore.RenderUnit
 import com.facebook.rendercore.RenderUnit.DelegateBinder.Companion.createDelegateBinder
 
@@ -48,10 +45,7 @@ open class HostRenderUnit(override val id: Long) :
   var isFocusable: Boolean = false
   var isFocusableInTouchMode: Boolean = false
   var onFocusChangeListener: OnFocusChangeListener? = null
-  var onInterceptTouchEvent: InterceptTouchHandler? = null
-  var onLongClickListener: OnLongClickListener? = null
   var onClickListener: View.OnClickListener? = null
-  var onTouchListener: OnTouchListener? = null
 
   override fun createContent(context: Context): HostView {
     return HostView(context)
@@ -199,15 +193,9 @@ open class HostRenderUnit(override val id: Long) :
               hostRenderUnit: HostRenderUnit,
               layoutData: Any?
           ): Any? {
-            hostView.setOnTouchListener(hostRenderUnit.onTouchListener)
-            hostView.setInterceptTouchEventHandler(hostRenderUnit.onInterceptTouchEvent)
             val onClickListener = hostRenderUnit.onClickListener
             if (onClickListener != null) {
               hostView.setOnClickListener(onClickListener)
-            }
-            val onLongClickListener = hostRenderUnit.onLongClickListener
-            if (onLongClickListener != null) {
-              hostView.setOnLongClickListener(onLongClickListener)
             }
             val onFocusChangeListener = hostRenderUnit.onFocusChangeListener
             hostView.onFocusChangeListener = onFocusChangeListener
@@ -228,12 +216,8 @@ open class HostRenderUnit(override val id: Long) :
               layoutData: Any?,
               bindData: Any?
           ) {
-            hostView.setOnTouchListener(null)
-            hostView.setInterceptTouchEventHandler(null)
             hostView.setOnClickListener(null)
             hostView.isClickable = false
-            hostView.setOnLongClickListener(null)
-            hostView.isLongClickable = false
             hostView.onFocusChangeListener = null
             hostView.isFocusable = false
             hostView.isFocusableInTouchMode = false
