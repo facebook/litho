@@ -459,7 +459,7 @@ class MountStateTest {
   @Test
   fun onMountNestedRenderTree_MountStateShouldHostExpectedState() {
     val c: Context = RuntimeEnvironment.application
-    val root: LayoutResult? =
+    val root: LayoutResult =
         SimpleLayoutResult.create()
             .width(1000)
             .height(1000)
@@ -560,7 +560,7 @@ class MountStateTest {
     val unbindOrder: MutableList<Any?> = ArrayList()
     val bindBinder = TestBinder<Any>(bindOrder, unbindOrder)
     val mountBinder = TestBinder<Any>(bindOrder, unbindOrder)
-    val root: LayoutResult? =
+    val root: LayoutResult =
         SimpleLayoutResult.create()
             .width(200)
             .height(200)
@@ -600,7 +600,7 @@ class MountStateTest {
     val unbindOrder: MutableList<Any?> = ArrayList()
     val attachBinder = TestBinder<Any>(bindOrder, unbindOrder)
     val mountBinder = TestBinder<Any>(bindOrder, unbindOrder)
-    val root: LayoutResult? =
+    val root: LayoutResult =
         SimpleLayoutResult.create()
             .width(200)
             .height(200)
@@ -646,7 +646,7 @@ class MountStateTest {
     val unbindOrder: MutableList<Any?> = ArrayList()
     val attachBinder = TestBinder<Any>(bindOrder, unbindOrder)
     val mountBinder = TestBinder<Any>(bindOrder, unbindOrder)
-    val root: LayoutResult? =
+    val root: LayoutResult =
         SimpleLayoutResult.create()
             .width(200)
             .height(200)
@@ -690,7 +690,7 @@ class MountStateTest {
   @Test
   fun onNotifyMountUnmount_ShouldUpdateMountItemCount() {
     val c: Context = RuntimeEnvironment.application
-    val root: LayoutResult? =
+    val root: LayoutResult =
         SimpleLayoutResult.create()
             .width(1000)
             .height(1000)
@@ -761,7 +761,7 @@ class MountStateTest {
               """
             .trimIndent())
     val c = renderCoreTestRule.context
-    val root: LayoutResult? =
+    val root: LayoutResult =
         SimpleLayoutResult.create()
             .renderUnit(ViewWrapperUnit(LinearLayout(c), 1))
             .width(100)
@@ -785,7 +785,7 @@ class MountStateTest {
     val unbindOrder: MutableList<Any?> = ArrayList()
     val bindBinder = TestBinderWithBindData<Any>(bindOrder, unbindOrder, 1)
     val mountBinder = TestBinderWithBindData<Any>(bindOrder, unbindOrder, 2)
-    val root: LayoutResult? =
+    val root: LayoutResult =
         SimpleLayoutResult.create()
             .width(200)
             .height(200)

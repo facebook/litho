@@ -62,7 +62,7 @@ dependencies {
 }
 
 intellij {
-    version = '2020.1'
+    version = '2024.1'
     updateSinceUntilBuild = false
     plugins = ['java', 'org.jetbrains.kotlin',]
 }

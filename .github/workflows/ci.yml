@@ -90,7 +90,7 @@ jobs:
           chmod +x buck/buck && \
           ls -l buck)
       - name: Run tests
-        run: BUCK_PATH=`realpath buck/buck` ./gradlew test -x :litho-intellij-plugin:test --stacktrace --no-daemon
+        run: BUCK_PATH=`realpath buck/buck` ./gradlew test -x :litho-intellij-plugin:test -x :litho-core:test -x :litho-it:test --stacktrace --no-daemon
   deploy-check:
     name: Skip deploy if PR or Fork or not a SNAPSHOT version
     needs: [build, tests]
