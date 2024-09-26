@@ -104,7 +104,7 @@ class ComponentBodyGeneratorTest {
             """
             @java.lang.Override
             protected final java.lang.Object[] getProps() {
-              return new java.lang.Object[] {};
+              return com.facebook.litho.Component.EMPTY_ARRAY;
             }
             
             """

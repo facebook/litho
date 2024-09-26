@@ -116,6 +116,8 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
   private static final String NULL_KEY_SET = "Component:NullKeySet";
   private static final AtomicInteger sIdGenerator = new AtomicInteger(1);
 
+  protected static final Object[] EMPTY_ARRAY = new Object[0];
+
   /**
    * @return the globally unique ID associated with {@param type}, creating one if necessary.
    *     Allocated IDs map 1-to-1 with objects passed to this method.

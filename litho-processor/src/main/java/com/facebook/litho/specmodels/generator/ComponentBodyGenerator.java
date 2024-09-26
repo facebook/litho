@@ -579,13 +579,18 @@ public class ComponentBodyGenerator {
         sb.append(prop.getName());
       }
     }
-    return MethodSpec.methodBuilder("getProps")
-        .addAnnotation(Override.class)
-        .addModifiers(Modifier.PROTECTED)
-        .addModifiers(Modifier.FINAL)
-        .returns(ArrayTypeName.of(Object.class))
-        .addStatement("return new $T[] {$L}", Object.class, sb.toString())
-        .build();
+    MethodSpec.Builder builder =
+        MethodSpec.methodBuilder("getProps")
+            .addAnnotation(Override.class)
+            .addModifiers(Modifier.PROTECTED)
+            .addModifiers(Modifier.FINAL)
+            .returns(ArrayTypeName.of(Object.class));
+    if (sb.length() == 0) {
+      builder.addStatement("return $T.EMPTY_ARRAY", ClassNames.COMPONENT);
+    } else {
+      builder.addStatement("return new $T[] {$L}", Object.class, sb.toString());
+    }
+    return builder.build();
   }
 
   static MethodSpec generateIsEquivalentPropsMethod(SpecModel specModel, EnumSet<RunMode> runMode) {
