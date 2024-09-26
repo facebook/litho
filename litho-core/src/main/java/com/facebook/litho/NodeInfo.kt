@@ -25,9 +25,10 @@ import androidx.annotation.IntDef
 import com.facebook.infer.annotation.ThreadConfined
 import com.facebook.litho.AccessibilityRole.AccessibilityRoleType
 import com.facebook.litho.CollectionsUtils.mergeSparseArrays
-import com.facebook.litho.NodeInfoUtils.isEquivalentTo
 import com.facebook.litho.visibility.Visibility
 import com.facebook.rendercore.Equivalence
+import com.facebook.rendercore.utils.equals
+import com.facebook.rendercore.utils.isEquivalentTo
 
 /**
  * NodeInfo holds information that are set to the [LithoNode] and needs to be used while mounting.
@@ -507,7 +508,141 @@ class NodeInfo : Equivalence<NodeInfo> {
    * @param other the other NodeInfo
    * @return `true` iff this NodeInfo is equal to the {@param other}.
    */
-  override fun isEquivalentTo(other: NodeInfo): Boolean = isEquivalentTo(this, other)
+  override fun isEquivalentTo(other: NodeInfo): Boolean {
+    if (this === other) {
+      return true
+    }
+    if (this == null || other == null) {
+      return false
+    }
+    if (this.flags != other.flags) {
+      return false
+    }
+    if (!equals(this.accessibilityRole, other.accessibilityRole)) {
+      return false
+    }
+    if (this.alpha != other.alpha) {
+      return false
+    }
+    if (!isEquivalentTo(this.clickHandler, other.clickHandler)) {
+      return false
+    }
+    if (this.clipToOutline != other.clipToOutline) {
+      return false
+    }
+    if (this.clipChildren != other.clipChildren) {
+      return false
+    }
+    if (!equals(this.contentDescription, other.contentDescription)) {
+      return false
+    }
+    if (!equals(this.tooltipText, other.tooltipText)) {
+      return false
+    }
+    if (!isEquivalentTo(
+        this.dispatchPopulateAccessibilityEventHandler,
+        other.dispatchPopulateAccessibilityEventHandler)) {
+      return false
+    }
+    if (this.enabledState != other.enabledState) {
+      return false
+    }
+    if (!isEquivalentTo(this.focusChangeHandler, other.focusChangeHandler)) {
+      return false
+    }
+    if (this.focusState != other.focusState) {
+      return false
+    }
+    if (!isEquivalentTo(this.interceptTouchHandler, other.interceptTouchHandler)) {
+      return false
+    }
+    if (!isEquivalentTo(this.longClickHandler, other.longClickHandler)) {
+      return false
+    }
+    if (!isEquivalentTo(
+        this.onInitializeAccessibilityEventHandler, other.onInitializeAccessibilityEventHandler)) {
+      return false
+    }
+    if (!isEquivalentTo(
+        this.onInitializeAccessibilityNodeInfoHandler,
+        other.onInitializeAccessibilityNodeInfoHandler)) {
+      return false
+    }
+    if (!isEquivalentTo(
+        this.onPopulateAccessibilityEventHandler, other.onPopulateAccessibilityEventHandler)) {
+      return false
+    }
+    if (!isEquivalentTo(
+        this.onPopulateAccessibilityNodeHandler, other.onPopulateAccessibilityNodeHandler)) {
+      return false
+    }
+    if (!isEquivalentTo(
+        this.onRequestSendAccessibilityEventHandler,
+        other.onRequestSendAccessibilityEventHandler)) {
+      return false
+    }
+    if (!equals(this.outlineProvider, other.outlineProvider)) {
+      return false
+    }
+    if (!isEquivalentTo(
+        this.performAccessibilityActionHandler, other.performAccessibilityActionHandler)) {
+      return false
+    }
+    if (this.rotation != other.rotation) {
+      return false
+    }
+    if (this.scale != other.scale) {
+      return false
+    }
+    if (this.selectedState != other.selectedState) {
+      return false
+    }
+    if (this.keyboardNavigationClusterState != other.keyboardNavigationClusterState) {
+      return false
+    }
+    if (!isEquivalentTo(this.sendAccessibilityEventHandler, other.sendAccessibilityEventHandler)) {
+      return false
+    }
+    if (!isEquivalentTo(
+        this.sendAccessibilityEventUncheckedHandler,
+        other.sendAccessibilityEventUncheckedHandler)) {
+      return false
+    }
+    if (!isEquivalentTo(
+        this.onPerformActionForVirtualViewHandler, other.onPerformActionForVirtualViewHandler)) {
+      return false
+    }
+    if (!isEquivalentTo(
+        this.onVirtualViewKeyboardFocusChangedHandler,
+        other.onVirtualViewKeyboardFocusChangedHandler)) {
+      return false
+    }
+    if (this.shadowElevation != other.shadowElevation) {
+      return false
+    }
+    if (this.ambientShadowColor != other.ambientShadowColor) {
+      return false
+    }
+    if (this.spotShadowColor != other.spotShadowColor) {
+      return false
+    }
+    if (!isEquivalentTo(this.touchHandler, other.touchHandler)) {
+      return false
+    }
+    if (!equals(this.viewTag, other.viewTag)) {
+      return false
+    }
+
+    if (!equals(this.viewId, other.viewId)) {
+      return false
+    }
+
+    if (!equals(this.visibility, other.visibility)) {
+      return false
+    }
+
+    return equals(this.viewTags, other.viewTags)
+  }
 
   fun copyInto(target: NodeInfo) {
     if (flags and PFLAG_CLICK_HANDLER_IS_SET != 0L) {
