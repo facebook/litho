@@ -23,11 +23,15 @@ import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.annotations.ExcuseMySpec
 import com.facebook.litho.annotations.LayoutSpec
+import com.facebook.litho.annotations.MountSpec
 import com.facebook.litho.annotations.OnCreateLayout
+import com.facebook.litho.annotations.OnCreateMountContent
+import com.facebook.litho.annotations.OnMount
 import com.facebook.litho.annotations.Prop
 import com.facebook.litho.annotations.Reason
 import com.facebook.litho.specmodels.internal.RunMode
 import com.facebook.litho.specmodels.processor.LayoutSpecModelFactory
+import com.facebook.litho.specmodels.processor.MountSpecModelFactory
 import com.google.testing.compile.CompilationRule
 import org.assertj.core.api.Assertions
 import org.junit.Rule
@@ -42,6 +46,7 @@ class ComponentBodyGeneratorTest {
   @Rule @JvmField val compilationRule = CompilationRule()
 
   private val layoutSpecModelFactory = LayoutSpecModelFactory()
+  private val mountSpecModelFactory = MountSpecModelFactory()
   private val elements
     get() = compilationRule.elements
 
@@ -56,6 +61,16 @@ class ComponentBodyGeneratorTest {
     val typeSpecDataHolder = ComponentBodyGenerator.generate(specModel, null, RunMode.normal())
     val getPropsSpec = typeSpecDataHolder.methodSpecs.find { it.name == "getProps" }
     Assertions.assertThat(getPropsSpec).isNotNull()
+  }
+
+  @Test
+  fun generate_forMountSpec_doesNotGenerateGetPropsMethod() {
+    val typeElement = elements.getTypeElement(TestMountSpec::class.java.canonicalName)
+    val specModel =
+        mountSpecModelFactory.create(elements, types, typeElement, mock(), RunMode.normal(), null)
+    val typeSpecDataHolder = ComponentBodyGenerator.generate(specModel, null, RunMode.normal())
+    val getPropsSpec = typeSpecDataHolder.methodSpecs.find { it.name == "getProps" }
+    Assertions.assertThat(getPropsSpec).isNull()
   }
 
   @Test
@@ -118,4 +133,23 @@ private object EmptyTestLayoutSpec {
   fun onCreateLayout(c: ComponentContext): Component {
     return Column.create(c).build()
   }
+}
+
+@ExcuseMySpec(reason = Reason.LEGACY)
+@MountSpec
+private object TestMountSpec {
+
+  @OnCreateMountContent
+  fun onCreateMountContent(): Content {
+    return Content()
+  }
+
+  @OnMount
+  fun onMount(c: ComponentContext?, content: Content, @Prop prop: String) {
+    content.prop = prop
+  }
+}
+
+private class Content {
+  var prop: String? = null
 }
