@@ -24,6 +24,7 @@ import androidx.annotation.ColorInt
 import androidx.annotation.IntDef
 import com.facebook.infer.annotation.ThreadConfined
 import com.facebook.litho.AccessibilityRole.AccessibilityRoleType
+import com.facebook.litho.CollectionsUtils.mergeSparseArrays
 import com.facebook.litho.NodeInfoUtils.isEquivalentTo
 import com.facebook.litho.visibility.Visibility
 import com.facebook.rendercore.Equivalence
@@ -228,12 +229,9 @@ class NodeInfo : Equivalence<NodeInfo> {
   val isClipChildrenSet: Boolean
     get() = flags and PFLAG_CLIP_CHILDREN_IS_SET != 0L
 
-  var viewTags: SparseArray<Any>?
+  var viewTags: SparseArray<Any>? = null
     get() = _viewTags
-    set(viewTags) {
-      flags = flags or PFLAG_VIEW_TAGS_IS_SET
-      _viewTags = viewTags
-    }
+    private set
 
   var clickHandler: EventHandler<ClickEvent>?
     get() = _clickHandler
@@ -277,6 +275,23 @@ class NodeInfo : Equivalence<NodeInfo> {
           _longClickHandler != null ||
           _touchHandler != null ||
           _interceptTouchHandler != null
+
+  fun addViewTag(id: Int, tag: Any) {
+    if (_viewTags == null) {
+      _viewTags = SparseArray<Any>()
+    }
+    flags = flags or PFLAG_VIEW_TAGS_IS_SET
+    _viewTags?.put(id, tag)
+  }
+
+  fun addViewTags(viewTags: SparseArray<Any>?) {
+    flags = flags or PFLAG_VIEW_TAGS_IS_SET
+    if (_viewTags == null) {
+      _viewTags = viewTags
+    } else {
+      _viewTags = mergeSparseArrays(_viewTags, viewTags)
+    }
+  }
 
   @get:AccessibilityRoleType
   var accessibilityRole: String?
@@ -580,7 +595,7 @@ class NodeInfo : Equivalence<NodeInfo> {
       target.viewTag = _viewTag
     }
     if (_viewTags != null) {
-      target.viewTags = _viewTags
+      target.addViewTags(_viewTags)
     }
     if (transitionName != null) {
       target.transitionName = transitionName
@@ -671,7 +686,7 @@ class NodeInfo : Equivalence<NodeInfo> {
       target.viewTag = _viewTag
     }
     if (_viewTags != null) {
-      target.viewTags = _viewTags
+      target.addViewTags(_viewTags)
     }
     if (transitionName != null) {
       target.transitionName = transitionName

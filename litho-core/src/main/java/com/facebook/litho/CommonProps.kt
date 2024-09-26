@@ -423,7 +423,7 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
   }
 
   fun viewTags(viewTags: SparseArray<Any>?) {
-    getOrCreateNodeInfo().viewTags = viewTags
+    getOrCreateNodeInfo().addViewTags(viewTags)
   }
 
   fun transitionName(transitionName: String?) {
