@@ -24,6 +24,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.view.accessibility.AccessibilityEvent;
 import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
@@ -133,6 +134,19 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
         && mNodeInfo.getAccessibilityHeadingState() != NodeInfo.ACCESSIBILITY_HEADING_UNSET) {
       node.setHeading(
           mNodeInfo.getAccessibilityHeadingState() == NodeInfo.ACCESSIBILITY_HEADING_SET_TRUE);
+    }
+
+    if (mNodeInfo != null && mNodeInfo.getFocusOrder() != null && mountItem != null) {
+      final ComponentContext scopedContext = getComponentContext(mountItem.getRenderTreeNode());
+      final FocusOrderModel focusOrder = mNodeInfo.getFocusOrder();
+      if (focusOrder.getNext() != null) {
+        View nextView =
+            scopedContext.findViewWithTagValue(
+                R.id.component_focus_order, focusOrder.getNext().getKey());
+        if (nextView != null) {
+          node.setTraversalBefore(nextView);
+        }
+      }
     }
   }
 
@@ -424,11 +438,16 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
   }
 
   private static @Nullable MountItem getAccessibleMountItem(View view) {
-    if (!(view instanceof ComponentHost)) {
-      return null;
+    if (view instanceof ComponentHost) {
+      return ((ComponentHost) view).getAccessibleMountItem();
+    } else {
+      final @Nullable ViewParent parentView = view.getParent();
+      if (parentView == null) {
+        return null;
+      }
+      int index = ((ViewGroup) parentView).indexOfChild(view);
+      return ((ComponentHost) parentView).getMountItemAt(index);
     }
-
-    return ((ComponentHost) view).getAccessibleMountItem();
   }
 
   @Override

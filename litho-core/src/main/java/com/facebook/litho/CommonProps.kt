@@ -470,6 +470,11 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
         dispatchPopulateAccessibilityEventHandler
   }
 
+  fun focusOrder(focusOrder: FocusOrderModel) {
+    getOrCreateNodeInfo().focusOrder = focusOrder
+    getOrCreateNodeInfo().addViewTag(R.id.component_focus_order, focusOrder.key)
+  }
+
   fun onInitializeAccessibilityEventHandler(
       onInitializeAccessibilityEventHandler: EventHandler<OnInitializeAccessibilityEventEvent>?
   ) {

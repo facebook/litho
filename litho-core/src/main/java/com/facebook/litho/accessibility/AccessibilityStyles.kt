@@ -20,6 +20,7 @@ import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClas
 import com.facebook.litho.AccessibilityRole.AccessibilityRoleType
 import com.facebook.litho.CommonProps
 import com.facebook.litho.ComponentContext
+import com.facebook.litho.FocusOrderModel
 import com.facebook.litho.OnInitializeAccessibilityEventEvent
 import com.facebook.litho.OnInitializeAccessibilityNodeInfoEvent
 import com.facebook.litho.OnPopulateAccessibilityEventEvent
@@ -46,6 +47,7 @@ internal enum class AccessibilityField : StyleItemField {
   ACCESSIBILITY_ROLE,
   ACCESSIBILITY_ROLE_DESCRIPTION,
   CONTENT_DESCRIPTION,
+  FOCUS_ORDER,
   IMPORTANT_FOR_ACCESSIBILITY,
   ON_INITIALIZE_ACCESSIBILITY_EVENT,
   ON_INITIALIZE_ACCESSIBILITY_NODE_INFO,
@@ -73,6 +75,7 @@ internal data class AccessibilityStyleItem(
           commonProps.accessibilityRoleDescription(value as CharSequence)
       AccessibilityField.CONTENT_DESCRIPTION ->
           commonProps.contentDescription(value as CharSequence)
+      AccessibilityField.FOCUS_ORDER -> commonProps.focusOrder(value as FocusOrderModel)
       AccessibilityField.IMPORTANT_FOR_ACCESSIBILITY ->
           commonProps.importantForAccessibility(value as Int)
       AccessibilityField.ON_INITIALIZE_ACCESSIBILITY_EVENT ->
@@ -148,6 +151,9 @@ inline fun Style.contentDescription(contentDescription: CharSequence?): Style =
         contentDescription?.let {
           AccessibilityStyleItem(AccessibilityField.CONTENT_DESCRIPTION, it)
         }
+
+inline fun Style.focusOrder(focusOrderModel: FocusOrderModel): Style =
+    this + AccessibilityStyleItem(AccessibilityField.FOCUS_ORDER, focusOrderModel)
 
 /**
  * Sets whether this Component is "important for accessibility". If it is, it fires accessibility

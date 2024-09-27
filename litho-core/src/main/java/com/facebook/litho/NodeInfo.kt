@@ -87,6 +87,7 @@ class NodeInfo : Equivalence<NodeInfo> {
   private var _longClickHandler: EventHandler<LongClickEvent>? = null
   private var _touchHandler: EventHandler<TouchEvent>? = null
   private var _interceptTouchHandler: EventHandler<InterceptTouchEvent>? = null
+  private var _focusOrder: FocusOrderModel? = null
   @AccessibilityRoleType private var _accessibilityRole: String? = null
   private var _accessibilityRoleDescription: CharSequence? = null
   private var _dispatchPopulateAccessibilityEventHandler:
@@ -277,6 +278,13 @@ class NodeInfo : Equivalence<NodeInfo> {
           _touchHandler != null ||
           _interceptTouchHandler != null
 
+  var focusOrder: FocusOrderModel?
+    get() = _focusOrder
+    set(focusOrder) {
+      flags = flags or PFLAG_FOCUS_ORDER_IS_SET
+      _focusOrder = focusOrder
+    }
+
   fun addViewTag(id: Int, tag: Any) {
     if (_viewTags == null) {
       _viewTags = SparseArray<Any>()
@@ -401,7 +409,8 @@ class NodeInfo : Equivalence<NodeInfo> {
           _sendAccessibilityEventHandler != null ||
           _sendAccessibilityEventUncheckedHandler != null ||
           _accessibilityRole != null ||
-          _accessibilityRoleDescription != null
+          _accessibilityRoleDescription != null ||
+          _focusOrder != null
 
   fun setFocusable(isFocusable: Boolean) {
     focusState = if (isFocusable) FOCUS_SET_TRUE else FOCUS_SET_FALSE
@@ -641,6 +650,10 @@ class NodeInfo : Equivalence<NodeInfo> {
       return false
     }
 
+    if (!equals(this.focusOrder, other.focusOrder)) {
+      return false
+    }
+
     return equals(this.viewTags, other.viewTags)
   }
 
@@ -722,6 +735,9 @@ class NodeInfo : Equivalence<NodeInfo> {
     }
     if (flags and PFLAG_CLIP_CHILDREN_IS_SET != 0L) {
       target.clipChildren = _clipChildren
+    }
+    if (flags and PFLAG_FOCUS_ORDER_IS_SET != 0L) {
+      target.focusOrder = _focusOrder
     }
     if (hasViewId()) {
       target.viewId = _viewId
@@ -971,5 +987,7 @@ class NodeInfo : Equivalence<NodeInfo> {
     private const val PFLAG_TOOLTIP_TEXT_IS_SET = 1L shl 33
 
     private const val PFLAG_VISIBILITY_IS_SET = 1L shl 34
+
+    private const val PFLAG_FOCUS_ORDER_IS_SET = 1L shl 35
   }
 }
