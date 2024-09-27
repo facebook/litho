@@ -140,14 +140,30 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
       final ComponentContext scopedContext = getComponentContext(mountItem.getRenderTreeNode());
       final FocusOrderModel focusOrder = mNodeInfo.getFocusOrder();
       if (focusOrder.getNext() != null) {
-        View nextView =
-            scopedContext.findViewWithTagValue(
-                R.id.component_focus_order, focusOrder.getNext().getKey());
+        View nextView = getNextView(focusOrder, scopedContext);
         if (nextView != null) {
           node.setTraversalBefore(nextView);
         }
       }
     }
+  }
+
+  public static @Nullable View getNextView(
+      FocusOrderModel focusOrderModel, ComponentContext scopedContext) {
+    FocusOrderModel current = focusOrderModel;
+    while (current != null) {
+      View nextView = null;
+      if (current.getNext() != null) {
+        nextView =
+            scopedContext.findViewWithTagValue(
+                R.id.component_focus_order, current.getNext().getKey());
+      }
+      if (nextView != null) {
+        return nextView;
+      }
+      current = current.getNext();
+    }
+    return null;
   }
 
   private void dispatchOnPopulateAccessibilityNodeEvent(
