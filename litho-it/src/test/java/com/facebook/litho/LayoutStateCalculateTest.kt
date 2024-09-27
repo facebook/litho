@@ -30,7 +30,7 @@ import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.LifecycleStep.StepInfo
 import com.facebook.litho.SizeSpec.makeSizeSpec
 import com.facebook.litho.config.ComponentsConfiguration
-import com.facebook.litho.testing.LegacyLithoViewRule
+import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.TestDrawableComponent
 import com.facebook.litho.testing.TestLayoutComponent
 import com.facebook.litho.testing.TestSizeDependentComponent
@@ -77,16 +77,18 @@ class LayoutStateCalculateTest {
   val config =
       ComponentsConfiguration.defaultInstance.copy(shouldAddHostViewForRootComponent = true)
 
-  @JvmField @Rule val legacyLithoViewRule = LegacyLithoViewRule(config)
+  @JvmField @Rule val lithoViewRule = LithoViewRule(config)
   private lateinit var context: ComponentContext
+  private lateinit var componentTreeContext: ComponentContext
 
   @Before
   fun setup() {
-    // invdalidate the cached accessibility value before each test runs so that we don't
+    // invalidate the cached accessibility value before each test runs so that we don't
     // have a value already cached.  If we don't do this, accessibility tests will fail when run
     // after non-accessibility tests, and vice-versa.
     AccessibilityUtils.invalidateCachedIsAccessibilityEnabled()
-    context = legacyLithoViewRule.context
+    context = lithoViewRule.context
+    componentTreeContext = lithoViewRule.createTestLithoView().componentTree.context
   }
 
   @After
@@ -98,14 +100,14 @@ class LayoutStateCalculateTest {
   fun testNoUnnecessaryLayoutOutputsForLayoutSpecs() {
     val component: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .child(Column.create(c).child(TestDrawableComponent.create(c)))
                   .build()
         }
     val layoutState =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -117,12 +119,12 @@ class LayoutStateCalculateTest {
   fun testLayoutOutputsForRootInteractiveLayoutSpecs() {
     val component: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c).child(TestDrawableComponent.create(c)).wrapInView().build()
         }
     val layoutState =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -134,7 +136,7 @@ class LayoutStateCalculateTest {
   fun testLayoutOutputsForSpecsWithTouchExpansion() {
     val component: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .child(TestDrawableComponent.create(c).widthPx(100).heightPx(10))
                   .child(
@@ -154,7 +156,7 @@ class LayoutStateCalculateTest {
         }
     val layoutState =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -174,7 +176,7 @@ class LayoutStateCalculateTest {
   fun testLayoutOutputsForSpecsWithClickHandling() {
     val component: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .child(
                       Column.create(c)
@@ -185,7 +187,7 @@ class LayoutStateCalculateTest {
         }
     val layoutState =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -203,7 +205,7 @@ class LayoutStateCalculateTest {
   fun testLayoutOutputsForSpecsWithLongClickHandling() {
     val component: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .child(
                       Column.create(c)
@@ -214,7 +216,7 @@ class LayoutStateCalculateTest {
         }
     val layoutState =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -232,7 +234,7 @@ class LayoutStateCalculateTest {
   fun testLayoutOutputsForSpecsWithFocusChangeHandling() {
     val component: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .child(
                       Column.create(c)
@@ -244,7 +246,7 @@ class LayoutStateCalculateTest {
         }
     val layoutState =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -262,7 +264,7 @@ class LayoutStateCalculateTest {
   fun testLayoutOutputsForSpecsWithInterceptTouchHandling() {
     val component: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .child(
                       Column.create(c)
@@ -274,7 +276,7 @@ class LayoutStateCalculateTest {
         }
     val layoutState =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -292,7 +294,7 @@ class LayoutStateCalculateTest {
   fun testLayoutOutputsForSpecsWithTouchHandling() {
     val component: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .child(
                       Column.create(c)
@@ -303,7 +305,7 @@ class LayoutStateCalculateTest {
         }
     val layoutState =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -322,7 +324,7 @@ class LayoutStateCalculateTest {
     val paddingSize = 5
     val component: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .backgroundColor(-0x10000)
                   .child(
@@ -357,7 +359,7 @@ class LayoutStateCalculateTest {
         }
     val layoutState =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component,
             -1,
             makeSizeSpec(350, EXACTLY),
@@ -412,7 +414,7 @@ class LayoutStateCalculateTest {
   fun testLayoutOutputMountBounds() {
     val component: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .widthPx(30)
                   .heightPx(30)
@@ -428,7 +430,7 @@ class LayoutStateCalculateTest {
         }
     val layoutState =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component,
             -1,
             makeSizeSpec(350, EXACTLY),
@@ -449,7 +451,7 @@ class LayoutStateCalculateTest {
     val paddingSize = 5
     val component: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .backgroundColor(-0x10000)
                   .child(
@@ -491,7 +493,7 @@ class LayoutStateCalculateTest {
         }
     val layoutState =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component,
             -1,
             makeSizeSpec(350, EXACTLY),
@@ -530,7 +532,7 @@ class LayoutStateCalculateTest {
   fun testLayoutOutputsForMegaDeepLayoutSpecs() {
     val component: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .child(
                       Column.create(c)
@@ -566,7 +568,7 @@ class LayoutStateCalculateTest {
         }
     val layoutState =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component,
             -1,
             makeSizeSpec(350, EXACTLY),
@@ -620,7 +622,7 @@ class LayoutStateCalculateTest {
     val COMPONENT_IDENTITY = 12_345
     val component1: Component =
         object : InlineLayoutSpec(COMPONENT_IDENTITY) {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .child(
                       Column.create(c)
@@ -640,7 +642,7 @@ class LayoutStateCalculateTest {
         }
     val component2: Component =
         object : InlineLayoutSpec(COMPONENT_IDENTITY) {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .child(
                       Column.create(c)
@@ -660,14 +662,14 @@ class LayoutStateCalculateTest {
         }
     val layoutState =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component1,
             -1,
             makeSizeSpec(350, EXACTLY),
             makeSizeSpec(20, EXACTLY))
     val sameComponentLayoutState =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component2,
             -1,
             makeSizeSpec(350, EXACTLY),
@@ -687,7 +689,7 @@ class LayoutStateCalculateTest {
     val COMPONENT_IDENTITY = 12_345
     val component1: Component =
         object : InlineLayoutSpec(COMPONENT_IDENTITY) {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .child(
                       Column.create(c)
@@ -723,7 +725,7 @@ class LayoutStateCalculateTest {
         }
     val component2: Component =
         object : InlineLayoutSpec(COMPONENT_IDENTITY) {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .child(
                       Column.create(c)
@@ -759,14 +761,14 @@ class LayoutStateCalculateTest {
         }
     val layoutState =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component1,
             -1,
             makeSizeSpec(350, EXACTLY),
             makeSizeSpec(20, EXACTLY))
     val sameComponentLayoutState =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component2,
             -1,
             makeSizeSpec(350, EXACTLY),
@@ -786,7 +788,7 @@ class LayoutStateCalculateTest {
     val COMPONENT_IDENTITY = 12_345
     val component1: Component =
         object : InlineLayoutSpec(COMPONENT_IDENTITY) {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .child(TestDrawableComponent.create(c))
                   .child(TestDrawableComponent.create(c))
@@ -794,7 +796,7 @@ class LayoutStateCalculateTest {
         }
     val component2: Component =
         object : InlineLayoutSpec(COMPONENT_IDENTITY) {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .child(TestDrawableComponent.create(c))
                   .child(
@@ -805,14 +807,14 @@ class LayoutStateCalculateTest {
         }
     val layoutState1 =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component1,
             -1,
             makeSizeSpec(350, EXACTLY),
             makeSizeSpec(20, EXACTLY))
     val layoutState2 =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component2,
             -1,
             makeSizeSpec(350, EXACTLY),
@@ -832,7 +834,7 @@ class LayoutStateCalculateTest {
     val COMPONENT_IDENTITY = 12_345
     val component1: Component =
         object : InlineLayoutSpec(COMPONENT_IDENTITY) {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .child(TestDrawableComponent.create(c))
                   .child(TestDrawableComponent.create(c))
@@ -840,7 +842,7 @@ class LayoutStateCalculateTest {
         }
     val component2: Component =
         object : InlineLayoutSpec(COMPONENT_IDENTITY) {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .child(TestDrawableComponent.create(c).wrapInView())
                   .child(
@@ -852,14 +854,14 @@ class LayoutStateCalculateTest {
         }
     val layoutState1 =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component1,
             -1,
             makeSizeSpec(350, EXACTLY),
             makeSizeSpec(20, EXACTLY))
     val layoutState2 =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component2,
             -1,
             makeSizeSpec(350, EXACTLY),
@@ -872,7 +874,7 @@ class LayoutStateCalculateTest {
   fun testLayoutOutputsWithInteractiveLayoutSpecAsLeafs() {
     val component: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .child(TestDrawableComponent.create(c))
                   .child(Column.create(c).child(TestLayoutComponent.create(c)).wrapInView())
@@ -880,7 +882,7 @@ class LayoutStateCalculateTest {
         }
     val layoutState =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component,
             -1,
             makeSizeSpec(350, EXACTLY),
@@ -910,17 +912,13 @@ class LayoutStateCalculateTest {
     innerComponent.resetInteractions()
     val component: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .child(Row.create(c).child(innerComponent).widthPx(100).heightPx(100))
                   .build()
         }
     calculateLayoutState(
-        legacyLithoViewRule.componentTree.context,
-        component,
-        -1,
-        makeSizeSpec(100, EXACTLY),
-        makeSizeSpec(100, EXACTLY))
+        componentTreeContext, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY))
 
     // Currently, we create a clone of Component object and measure gets called on that cloned
     // Component.
@@ -949,17 +947,13 @@ class LayoutStateCalculateTest {
     innerComponent.resetInteractions()
     val component: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .child(Row.create(c).child(innerComponent).widthPx(100).heightPx(100))
                   .build()
         }
     calculateLayoutState(
-        legacyLithoViewRule.componentTree.context,
-        component,
-        -1,
-        makeSizeSpec(100, EXACTLY),
-        makeSizeSpec(100, EXACTLY))
+        componentTreeContext, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY))
 
     // Currently, we create a clone of Component object and measure gets called on that cloned
     // Component.
@@ -987,15 +981,11 @@ class LayoutStateCalculateTest {
     innerComponent.resetInteractions()
     val component: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c).child(innerComponent).build()
         }
     calculateLayoutState(
-        legacyLithoViewRule.componentTree.context,
-        component,
-        -1,
-        makeSizeSpec(100, AT_MOST),
-        makeSizeSpec(100, AT_MOST))
+        componentTreeContext, component, -1, makeSizeSpec(100, AT_MOST), makeSizeSpec(100, AT_MOST))
 
     // Currently, we create a clone of Component object and measure gets called on that cloned
     // Component.
@@ -1023,15 +1013,11 @@ class LayoutStateCalculateTest {
     innerComponent.resetInteractions()
     val component: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c).child(Row.create(c).child(innerComponent).flexShrink(0f)).build()
         }
     calculateLayoutState(
-        legacyLithoViewRule.componentTree.context,
-        component,
-        -1,
-        makeSizeSpec(50, AT_MOST),
-        makeSizeSpec(50, AT_MOST))
+        componentTreeContext, component, -1, makeSizeSpec(50, AT_MOST), makeSizeSpec(50, AT_MOST))
 
     // Currently, we create a clone of Component object and measure gets called on that cloned
     // Component.
@@ -1046,7 +1032,7 @@ class LayoutStateCalculateTest {
   fun testLayoutOutputsForTwiceNestedComponent() {
     val component: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .child(
                       Column.create(c)
@@ -1060,7 +1046,7 @@ class LayoutStateCalculateTest {
         }
     val layoutState =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -1084,7 +1070,7 @@ class LayoutStateCalculateTest {
   fun testLayoutOutputsForComponentWithBackgrounds() {
     val component: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .backgroundColor(-0x10000)
                   .foregroundColor(-0x10000)
@@ -1093,7 +1079,7 @@ class LayoutStateCalculateTest {
         }
     val layoutState =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -1108,7 +1094,7 @@ class LayoutStateCalculateTest {
   fun testLayoutOutputsForNonComponentClickableNode() {
     val component: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .child(Column.create(c).child(TestDrawableComponent.create(c)).wrapInView())
                   .child(
@@ -1125,7 +1111,7 @@ class LayoutStateCalculateTest {
         }
     val layoutState =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -1156,7 +1142,7 @@ class LayoutStateCalculateTest {
     enableAccessibility()
     val component: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .child(
                       Column.create(c)
@@ -1176,7 +1162,7 @@ class LayoutStateCalculateTest {
         }
     val layoutState =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -1206,12 +1192,12 @@ class LayoutStateCalculateTest {
   fun testLayoutOutputsForFocusableOnRoot() {
     val component: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c).child(TestDrawableComponent.create(c)).focusable(true).build()
         }
     val layoutState =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -1234,14 +1220,14 @@ class LayoutStateCalculateTest {
   fun testLayoutOutputsForFocusable() {
     val component: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .child(Column.create(c).child(TestDrawableComponent.create(c)).focusable(true))
                   .build()
         }
     val layoutState =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -1257,12 +1243,12 @@ class LayoutStateCalculateTest {
   fun testLayoutOutputsForSelectedOnRoot() {
     val component: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c).child(TestDrawableComponent.create(c)).selected(true).build()
         }
     val layoutState =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -1283,7 +1269,7 @@ class LayoutStateCalculateTest {
   fun testLayoutOutputsForSelected() {
     val component: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .child(
                       Column.create(c)
@@ -1294,7 +1280,7 @@ class LayoutStateCalculateTest {
         }
     val layoutState =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -1312,14 +1298,14 @@ class LayoutStateCalculateTest {
   fun testLayoutOutputsForEnabledFalseDoesntWrap() {
     val component: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .child(Column.create(c).child(TestDrawableComponent.create(c).enabled(false)))
                   .build()
         }
     val layoutState =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -1342,7 +1328,7 @@ class LayoutStateCalculateTest {
   fun testLayoutOutputsForEnabledFalseInInnerWrappedComponentDrawable() {
     val component: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .child(
                       Column.create(c)
@@ -1356,7 +1342,7 @@ class LayoutStateCalculateTest {
         }
     val layoutState =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -1379,14 +1365,14 @@ class LayoutStateCalculateTest {
   fun testLayoutOutputsForEnabledFalseInInnerComponentView() {
     val component: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .child(Column.create(c).child(TestViewComponent.create(c).enabled(false)))
                   .build()
         }
     val layoutState =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -1408,7 +1394,7 @@ class LayoutStateCalculateTest {
   fun testLayoutOutputsForEnabledFalseApplyToDescendent() {
     val component: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .child(
                       Column.create(c)
@@ -1428,7 +1414,7 @@ class LayoutStateCalculateTest {
         }
     val layoutState =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -1475,7 +1461,7 @@ class LayoutStateCalculateTest {
     enableAccessibility()
     val component: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Row.create(c)
                   .alignItems(YogaAlign.CENTER)
                   .paddingDip(YogaEdge.ALL, 10f)
@@ -1506,7 +1492,7 @@ class LayoutStateCalculateTest {
         }
     val layoutState =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -1563,7 +1549,7 @@ class LayoutStateCalculateTest {
     enableAccessibility()
     val component: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .contentDescription("This is root view")
                   .child(TestDrawableComponent.create(c).widthDip(30f).heightDip(30f))
@@ -1591,7 +1577,7 @@ class LayoutStateCalculateTest {
         }
     val layoutState =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -1653,7 +1639,7 @@ class LayoutStateCalculateTest {
   fun testLayoutOutputsForClickHandlerAndViewTagsOnRoot() {
     val component: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .child(TestDrawableComponent.create(c))
                   .clickHandler(EventHandlerTestHelper.create(c, 1) as? EventHandler<ClickEvent>)
@@ -1662,7 +1648,7 @@ class LayoutStateCalculateTest {
         }
     val layoutState =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -1683,7 +1669,7 @@ class LayoutStateCalculateTest {
   fun testLayoutOutputsForLongClickHandlerAndViewTagsOnRoot() {
     val component: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .child(TestDrawableComponent.create(c))
                   .longClickHandler(
@@ -1693,7 +1679,7 @@ class LayoutStateCalculateTest {
         }
     val layoutState =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -1714,12 +1700,12 @@ class LayoutStateCalculateTest {
   fun testLayoutOutputsForForceWrappedComponent() {
     val component: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c).child(TestDrawableComponent.create(c).wrapInView()).build()
         }
     val layoutState =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -1734,7 +1720,7 @@ class LayoutStateCalculateTest {
   fun testLayoutOutputForRootNestedTreeComponent() {
     val layoutState =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             TestSizeDependentComponent.create(
                     ComponentContext(ApplicationProvider.getApplicationContext<Context>()))
                 .setFixSizes(true)
@@ -1768,7 +1754,7 @@ class LayoutStateCalculateTest {
   fun testLayoutOutputForDelegateNestedTreeComponentDelegate() {
     val component: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .paddingPx(YogaEdge.ALL, 2)
                   .child(
@@ -1780,7 +1766,7 @@ class LayoutStateCalculateTest {
         }
     val layoutState =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component,
             -1,
             makeSizeSpec(350, EXACTLY),
@@ -1806,7 +1792,7 @@ class LayoutStateCalculateTest {
   fun testLayoutOutputForDelegateNestedTreeComponent() {
     val component: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .paddingPx(YogaEdge.ALL, 2)
                   .child(
@@ -1818,7 +1804,7 @@ class LayoutStateCalculateTest {
         }
     val layoutState =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component,
             -1,
             makeSizeSpec(350, EXACTLY),
@@ -1848,12 +1834,12 @@ class LayoutStateCalculateTest {
   fun testLayoutOutputForRootWithDelegateNestedTreeComponent() {
     val component: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               TestSizeDependentComponent.create(c).setFixSizes(true).setDelegate(false).build()
         }
     val layoutState =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component,
             -1,
             makeSizeSpec(350, EXACTLY),
@@ -1883,7 +1869,7 @@ class LayoutStateCalculateTest {
   fun testLayoutOutputRootWithPaddingOverridingDelegateNestedTreeComponent() {
     val component: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? {
+          override fun onCreateLayout(c: ComponentContext): Component {
             val nestedTreeRootComponent =
                 TestSizeDependentComponent.create(c).setFixSizes(true).setDelegate(false).build()
             return Wrapper.create(c)
@@ -1894,7 +1880,7 @@ class LayoutStateCalculateTest {
         }
     val layoutState =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component,
             -1,
             makeSizeSpec(350, EXACTLY),
@@ -1929,7 +1915,7 @@ class LayoutStateCalculateTest {
         }
     val layoutState =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             componentWithNullLayout,
             -1,
             makeSizeSpec(350, EXACTLY),
@@ -1942,7 +1928,7 @@ class LayoutStateCalculateTest {
   fun testLayoutComponentForNestedTreeChildWithNullLayout() {
     val component: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .paddingPx(YogaEdge.ALL, 2)
                   .child(TestNullLayoutComponent.create(c))
@@ -1950,7 +1936,7 @@ class LayoutStateCalculateTest {
         }
     val layoutState =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component,
             -1,
             makeSizeSpec(350, EXACTLY),
@@ -1966,16 +1952,17 @@ class LayoutStateCalculateTest {
   fun `the size of layout results should be equal to measured size of the component`() {
     val width = 50
     val height = 30
-    legacyLithoViewRule.render {
-      Row.create(context)
-          .child(
-              MountSpecLifecycleTester.create(context)
-                  .lifecycleTracker(LifecycleTracker())
-                  .intrinsicSize(Size(width, height)))
-          .build()
-    }
+    val testLithoView =
+        lithoViewRule.render {
+          Row.create(context)
+              .child(
+                  MountSpecLifecycleTester.create(context)
+                      .lifecycleTracker(LifecycleTracker())
+                      .intrinsicSize(Size(width, height)))
+              .build()
+        }
 
-    val result = legacyLithoViewRule.committedLayoutState!!.rootLayoutResult!!.getChildAt(0)
+    val result = testLithoView.committedLayoutState!!.rootLayoutResult!!.getChildAt(0)
 
     assertThat(result is LithoLayoutResult).isTrue
     assertThat((result as LithoLayoutResult).node.tailComponent)
@@ -1988,7 +1975,7 @@ class LayoutStateCalculateTest {
   fun testNestedTreeComponentWithDoubleMeasurementsDoesntThrow() {
     val component: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Row.create(c)
                   .alignItems(YogaAlign.STRETCH)
                   .paddingPx(YogaEdge.ALL, 2)
@@ -2001,7 +1988,7 @@ class LayoutStateCalculateTest {
                   .build()
         }
     calculateLayoutState(
-        legacyLithoViewRule.componentTree.context,
+        componentTreeContext,
         component,
         -1,
         makeSizeSpec(350, EXACTLY),
@@ -2014,14 +2001,14 @@ class LayoutStateCalculateTest {
   fun testLayoutOutputForRootNestedTreeComponentWithAspectRatio() {
     val component: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .child(TestSizeDependentComponent.create(c).widthPx(100).aspectRatio(1f))
                   .build()
         }
     val layoutState =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component,
             -1,
             makeSizeSpec(0, UNSPECIFIED),
@@ -2035,7 +2022,7 @@ class LayoutStateCalculateTest {
   fun testLayoutOutputForRootNestedTreeComponentWithPercentParentSizeDefined() {
     val component: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .alignItems(YogaAlign.FLEX_START)
                   .widthPx(100)
@@ -2049,7 +2036,7 @@ class LayoutStateCalculateTest {
         }
     val layoutState =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component,
             -1,
             makeSizeSpec(0, UNSPECIFIED),
@@ -2066,7 +2053,7 @@ class LayoutStateCalculateTest {
   fun testLayoutOutputForRootNestedTreeComponentWithPercent() {
     val component: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .alignItems(YogaAlign.FLEX_START)
                   .child(
@@ -2079,7 +2066,7 @@ class LayoutStateCalculateTest {
         }
     val layoutState =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component,
             -1,
             makeSizeSpec(0, UNSPECIFIED),
@@ -2096,7 +2083,7 @@ class LayoutStateCalculateTest {
   fun testLayoutOutputsForComponentWithBorderColorNoBorderWidth() {
     val component: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .child(TestDrawableComponent.create(c))
                   .border(Border.create(c).color(YogaEdge.ALL, Color.GREEN).build())
@@ -2104,7 +2091,7 @@ class LayoutStateCalculateTest {
         }
     val layoutState =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -2119,7 +2106,7 @@ class LayoutStateCalculateTest {
   fun testLayoutOutputsForComponentWithBorderWidthNoBorderColor() {
     val component: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .child(TestDrawableComponent.create(c))
                   .border(Border.create(c).widthPx(YogaEdge.ALL, 10).build())
@@ -2127,7 +2114,7 @@ class LayoutStateCalculateTest {
         }
     val layoutState =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -2142,7 +2129,7 @@ class LayoutStateCalculateTest {
   fun testLayoutOutputsForComponentWithBorderWidthAllAndBorderColor() {
     val component: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .child(TestDrawableComponent.create(c))
                   .border(
@@ -2154,7 +2141,7 @@ class LayoutStateCalculateTest {
         }
     val layoutState =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -2169,7 +2156,7 @@ class LayoutStateCalculateTest {
   fun testLayoutOutputsForComponentWithBorderWidthTopAndBorderColor() {
     val component: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
+          override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .child(TestDrawableComponent.create(c))
                   .border(
@@ -2181,7 +2168,7 @@ class LayoutStateCalculateTest {
         }
     val layoutState =
         calculateLayoutState(
-            legacyLithoViewRule.componentTree.context,
+            componentTreeContext,
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -2194,20 +2181,23 @@ class LayoutStateCalculateTest {
 
   @Test
   fun testWillRenderLayoutsOnce() {
-    val c = legacyLithoViewRule.context
-    val resolveContext = c.setRenderStateContextForTests()
+    val resolveContext = context.setRenderStateContextForTests()
     val steps: MutableList<StepInfo> = ArrayList()
     val component =
-        Column.create(c)
+        Column.create(context)
             .child(
-                LayoutSpecLifecycleTester.create(c).widthPx(100).heightPx(100).steps(steps).build())
+                LayoutSpecLifecycleTester.create(context)
+                    .widthPx(100)
+                    .heightPx(100)
+                    .steps(steps)
+                    .build())
             .build()
-    Component.willRender(c, component)
+    Component.willRender(context, component)
     assertThat(LifecycleStep.getSteps(steps)).containsOnlyOnce(LifecycleStep.ON_CREATE_LAYOUT)
     steps.clear()
     val cachedLayout = component.getLayoutCreatedInWillRender(resolveContext)
     assertThat(cachedLayout).isNotNull
-    val result = Resolver.resolve(resolveContext, c, component)
+    val result = Resolver.resolve(resolveContext, context, component)
     assertThat(result).isEqualTo(cachedLayout)
     assertThat(component.getLayoutCreatedInWillRender(resolveContext)).isNull()
     assertThat(LifecycleStep.getSteps(steps)).doesNotContain(LifecycleStep.ON_CREATE_LAYOUT)
@@ -2264,17 +2254,13 @@ class LayoutStateCalculateTest {
     val componentSpy = Mockito.spy(TestLayoutComponent.create(c, 0, 0, true, true, false).build())
     val root: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? {
+          override fun onCreateLayout(c: ComponentContext): Component {
             willRender(c, componentSpy)
             return Column.create(c).child(componentSpy).build()
           }
         }
     calculateLayoutState(
-        legacyLithoViewRule.componentTree.context,
-        root,
-        -1,
-        makeSizeSpec(100, EXACTLY),
-        makeSizeSpec(100, EXACTLY))
+        componentTreeContext, root, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY))
     verify(componentSpy, times(1))
         .render((anyOrNull()), (anyOrNull<ComponentContext>()), eq(0), eq(0))
   }
@@ -2294,9 +2280,8 @@ class LayoutStateCalculateTest {
   @Test
   fun whenAccessibleChildNodeExists_ParentNodeShouldImplementVirtualViews() {
     enableAccessibility()
-    val component = Text.create(context).text("hello world").build()
-    legacyLithoViewRule.setRoot(component).attachToWindow().measure().layout()
-    val innerHost = legacyLithoViewRule.lithoView.getChildAt(0) as ComponentHost
+    val testLithoView = lithoViewRule.render { Text.create(context).text("hello world").build() }
+    val innerHost = testLithoView.lithoView.getChildAt(0) as ComponentHost
     assertThat(innerHost.implementsVirtualViews())
         .describedAs("The parent output of the Text must implement virtual views")
         .isTrue
@@ -2305,9 +2290,9 @@ class LayoutStateCalculateTest {
   @Test
   fun whenNoAccessibleChildNodeExists_ParentNodeShouldNotImplementVirtualViews() {
     enableAccessibility()
-    val component = SolidColor.create(context).color(Color.BLACK).build()
-    legacyLithoViewRule.setRoot(component).attachToWindow().measure().layout()
-    assertThat(legacyLithoViewRule.lithoView.implementsVirtualViews())
+    val testLithoView =
+        lithoViewRule.render { SolidColor.create(context).color(Color.BLACK).build() }
+    assertThat(testLithoView.lithoView.implementsVirtualViews())
         .describedAs("The parent output of the drawable must not implement virtual views")
         .isFalse
   }
@@ -2315,40 +2300,29 @@ class LayoutStateCalculateTest {
   @Test
   fun onMountItemUpdatesImplementVirtualViews_ComponentHostShouldAlsoUpdate() {
     enableAccessibility()
-    legacyLithoViewRule
-        .setRoot(Text.create(context).text("hello world").build())
-        .attachToWindow()
-        .measure()
-        .layout()
-    val innerHost = legacyLithoViewRule.lithoView.getChildAt(0) as ComponentHost
+    var testLithoView = lithoViewRule.render { Text.create(context).text("hello world").build() }
+    val innerHost = testLithoView.lithoView.getChildAt(0) as ComponentHost
     assertThat(innerHost.implementsVirtualViews())
         .describedAs("The parent output of the Text must implement virtual views")
         .isTrue
-    legacyLithoViewRule
-        .setRootAndSizeSpecSync(
-            SolidColor.create(context).color(Color.BLACK).build(),
-            makeSizeSpec(100, EXACTLY),
-            makeSizeSpec(100, EXACTLY))
-        .measure()
-        .layout()
-    assertThat(legacyLithoViewRule.lithoView.implementsVirtualViews())
+    testLithoView =
+        lithoViewRule.render(widthPx = 100, heightPx = 100) {
+          SolidColor.create(context).color(Color.BLACK).build()
+        }
+    assertThat(testLithoView.lithoView.implementsVirtualViews())
         .describedAs("The parent output of the drawable must not implement virtual views")
         .isFalse
-    legacyLithoViewRule
-        .setRootAndSizeSpecSync(
-            Column.create(context)
-                .child(Text.create(context).text("hello world").build())
-                .child(SolidColor.create(context).color(Color.BLACK).build())
-                .build(),
-            makeSizeSpec(100, EXACTLY),
-            makeSizeSpec(200, EXACTLY))
-        .attachToWindow()
-        .measure()
-        .layout()
-    assertThat(legacyLithoViewRule.lithoView.implementsVirtualViews())
+    testLithoView =
+        lithoViewRule.render(widthPx = 100, heightPx = 200) {
+          Column.create(context)
+              .child(Text.create(context).text("hello world").build())
+              .child(SolidColor.create(context).color(Color.BLACK).build())
+              .build()
+        }
+    assertThat(testLithoView.lithoView.implementsVirtualViews())
         .describedAs("The root output must not implement virtual views")
         .isFalse
-    val host = legacyLithoViewRule.lithoView.getChildAt(0) as ComponentHost
+    val host = testLithoView.lithoView.getChildAt(0) as ComponentHost
     assertThat(host.implementsVirtualViews())
         .describedAs("The parent output of the Text must implement virtual views")
         .isTrue
@@ -2356,7 +2330,6 @@ class LayoutStateCalculateTest {
 
   @Test
   fun onMountHierarchyWithParentDisabled_shouldDisableDescendants() {
-    val c = legacyLithoViewRule.context
     val props = ItemCardComponentSpec.TreeProps()
     val view = Output<View>()
     val clicked = Output<Boolean>()
@@ -2368,44 +2341,41 @@ class LayoutStateCalculateTest {
     }
     props.onCardActionsTouched = Function { clicked.set(true) }
     props.areCardToolsDisabled = true
-    val root = ItemCardComponent.create(c).body(Text.create(c).text("hello").build()).id(1).build()
-    legacyLithoViewRule
-        .setTreeProp(ItemCardComponentSpec.TreeProps::class.java, props)
-        .useComponentTree(ComponentTree.create(c).build())
-        .setRoot(root)
-        .attachToWindow()
-        .measure()
-        .layout()
+    val root =
+        ItemCardComponent.create(context)
+            .body(Text.create(context).text("hello").build())
+            .id(1)
+            .build()
+    lithoViewRule.setTreeProp(ItemCardComponentSpec.TreeProps::class.java, props).render { root }
     assertThat(view.get()).isNotNull
     assertThat(view.get()?.isEnabled).isFalse
   }
 
   @Test
   fun onLayoutCreateInMeasure_shouldBeReusedDuringLayoutIfCompatibleMeasures() {
-    val c = legacyLithoViewRule.context
+    val c = lithoViewRule.context
     val steps: List<StepInfo> = ArrayList()
-    val component =
-        ComponentCaching.create(c)
-            .component(
-                LayoutSpecLifecycleTester.create(c).widthPx(100).heightPx(100).steps(steps).build())
-            .widthSpec(MeasureSpecUtils.exactly(100))
-            .heightSpec(MeasureSpecUtils.exactly(100))
-            .build()
-    legacyLithoViewRule.attachToWindow().setRoot(component).layout().measure()
+    lithoViewRule.render {
+      ComponentCaching.create(c)
+          .component(
+              LayoutSpecLifecycleTester.create(c).widthPx(100).heightPx(100).steps(steps).build())
+          .widthSpec(MeasureSpecUtils.exactly(100))
+          .heightSpec(MeasureSpecUtils.exactly(100))
+          .build()
+    }
     assertThat(LifecycleStep.getSteps(steps)).containsOnlyOnce(LifecycleStep.ON_CREATE_LAYOUT)
   }
 
   @Test
   fun onLayoutCreateInMeasure_shouldBeNotReusedDuringLayoutIfIncompatibleMeasures() {
-    val c = legacyLithoViewRule.context
     val steps: List<StepInfo> = ArrayList()
-    val component =
-        ComponentCaching.create(c)
-            .component(LayoutSpecLifecycleTester.create(c).steps(steps).build())
-            .widthSpec(MeasureSpecUtils.exactly(100))
-            .heightSpec(MeasureSpecUtils.exactly(100))
-            .build()
-    legacyLithoViewRule.attachToWindow().setRoot(component).layout().measure()
+    lithoViewRule.render {
+      ComponentCaching.create(context)
+          .component(LayoutSpecLifecycleTester.create(context).steps(steps).build())
+          .widthSpec(MeasureSpecUtils.exactly(100))
+          .heightSpec(MeasureSpecUtils.exactly(100))
+          .build()
+    }
     assertThat(LifecycleStep.getSteps(steps))
         .contains(LifecycleStep.ON_CREATE_LAYOUT, LifecycleStep.ON_CREATE_LAYOUT)
   }
