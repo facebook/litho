@@ -368,9 +368,6 @@ class LithoNodeTest {
   @Test
   fun testMeasureMightNotCacheInternalNode_ContextWithoutStateHandler_returnsMeasurement() {
     val c = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    if (c.shouldCacheLayouts()) {
-      return
-    }
     c.setRenderStateContextForTests()
     val component =
         Column.create(c)
@@ -386,9 +383,6 @@ class LithoNodeTest {
   @Test
   fun testMeasureMightNotCacheInternalNode_ContextWithoutLayoutStateContextOrStateHandler_returnsMeasurement() {
     val c = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    if (c.shouldCacheLayouts()) {
-      return
-    }
     c.setRenderStateContextForTests()
     val component =
         Column.create(c)

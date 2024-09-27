@@ -156,9 +156,6 @@ internal object LithoYogaLayoutFunction {
       node: LithoNode,
       result: LithoLayoutResult
   ) {
-    if (!node.tailComponentContext.shouldCacheLayouts()) {
-      return
-    }
     val layoutCache: LayoutCache = context.layoutCache
     // TODO(T163437982): Refactor this to build the cache after layout calculation
     val cacheItem = LayoutCache.CacheItem(result, -1, -1)
@@ -180,37 +177,35 @@ internal object LithoYogaLayoutFunction {
     var layoutResult: LithoLayoutResult? = null
     var yogaNode: YogaNode? = null
 
-    if (currentNode.tailComponentContext.shouldCacheLayouts()) {
-      val layoutCache: LayoutCache = context.layoutCache
-      var cacheItem: LayoutCache.CacheItem? = layoutCache[currentNode]
-      if (cacheItem != null) {
-        val cachedLayoutResult: LayoutResult = cacheItem.layoutResult
-        if (isTracing) {
-          ComponentsSystrace.beginSection(
-              "buildYogaTreeFromCache:${currentNode.headComponent.simpleName}")
-        }
-
-        // The situation that we can fully reuse the yoga tree
-        val lithoLayoutResult =
-            buildYogaTreeFromCache(context, cachedLayoutResult as LithoLayoutResult, isTracing)
-        resetSizeIfNecessary(parentNode, lithoLayoutResult)
-        if (isTracing) {
-          ComponentsSystrace.endSection()
-        }
-        return lithoLayoutResult
+    val layoutCache: LayoutCache = context.layoutCache
+    var cacheItem: LayoutCache.CacheItem? = layoutCache[currentNode]
+    if (cacheItem != null) {
+      val cachedLayoutResult: LayoutResult = cacheItem.layoutResult
+      if (isTracing) {
+        ComponentsSystrace.beginSection(
+            "buildYogaTreeFromCache:${currentNode.headComponent.simpleName}")
       }
 
-      cacheItem = layoutCache.get(currentNode.id.toLong())
-      if (cacheItem != null) {
-        val cachedLayoutResult: LayoutResult = cacheItem.layoutResult
-
-        // The situation that we can partially reuse the yoga tree
-        val clonedNode: YogaNode =
-            (cachedLayoutResult as LithoLayoutResult).getYogaNode().cloneWithoutChildren()
-        yogaNode = clonedNode
-        layoutResult = copyLayoutResult(cachedLayoutResult, currentNode, clonedNode)
-        resetSizeIfNecessary(parentNode, layoutResult)
+      // The situation that we can fully reuse the yoga tree
+      val lithoLayoutResult =
+          buildYogaTreeFromCache(context, cachedLayoutResult as LithoLayoutResult, isTracing)
+      resetSizeIfNecessary(parentNode, lithoLayoutResult)
+      if (isTracing) {
+        ComponentsSystrace.endSection()
       }
+      return lithoLayoutResult
+    }
+
+    cacheItem = layoutCache.get(currentNode.id.toLong())
+    if (cacheItem != null) {
+      val cachedLayoutResult: LayoutResult = cacheItem.layoutResult
+
+      // The situation that we can partially reuse the yoga tree
+      val clonedNode: YogaNode =
+          (cachedLayoutResult as LithoLayoutResult).getYogaNode().cloneWithoutChildren()
+      yogaNode = clonedNode
+      layoutResult = copyLayoutResult(cachedLayoutResult, currentNode, clonedNode)
+      resetSizeIfNecessary(parentNode, layoutResult)
     }
 
     if (layoutResult == null) {

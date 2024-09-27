@@ -105,23 +105,10 @@ class SplitFuturesTest {
 
     // Set new size specs. Only measure steps should occur
     legacyLithoViewRule.setSizeSpecs(widthSpec2, heightSpec2).measure().layout()
-    if (legacyLithoViewRule.context.shouldCacheLayouts()) {
-      // SHOULD_UPDATE happens after ON_MEASURE with layout caching
-      assertThat(tracker.steps)
-          .describedAs("Changing width and height triggers only re-measure steps")
-          .containsOnly(LifecycleStep.ON_MEASURE, LifecycleStep.ON_BOUNDS_DEFINED)
-    } else {
-      assertThat(tracker.steps)
-          .describedAs("Changing width and height triggers only re-measure steps")
-          .containsExactly(
-              LifecycleStep.SHOULD_UPDATE,
-              LifecycleStep.ON_MEASURE,
-              LifecycleStep.ON_BOUNDS_DEFINED,
-              LifecycleStep.ON_UNBIND,
-              LifecycleStep.ON_UNMOUNT,
-              LifecycleStep.ON_MOUNT,
-              LifecycleStep.ON_BIND)
-    }
+    // SHOULD_UPDATE happens after ON_MEASURE with layout caching
+    assertThat(tracker.steps)
+        .describedAs("Changing width and height triggers only re-measure steps")
+        .containsOnly(LifecycleStep.ON_MEASURE, LifecycleStep.ON_BOUNDS_DEFINED)
 
     // Reset the tracker
     tracker.reset()

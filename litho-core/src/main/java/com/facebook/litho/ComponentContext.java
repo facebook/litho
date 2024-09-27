@@ -742,10 +742,6 @@ public class ComponentContext {
     return Preconditions.checkNotNull(mScopedComponentInfo);
   }
 
-  public boolean shouldCacheLayouts() {
-    return true;
-  }
-
   public final boolean shouldUseNonRebindingEventHandlers() {
     return mLithoConfiguration.componentsConfig.getUseNonRebindingEventHandlers();
   }
