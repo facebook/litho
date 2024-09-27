@@ -522,7 +522,7 @@ object Resolver {
     val layout: LithoNode?
     when (mode) {
       ReconciliationMode.REUSE -> {
-        commitToLayoutStateRecursively(resolveContext, current)
+        commitToLayoutStateRecursively(resolveContext.treeState, current)
         layout = current
       }
       ReconciliationMode.RECONCILE -> {
@@ -576,7 +576,7 @@ object Resolver {
     val layout: LithoNode = current.clone()
     layout.children = ArrayList(current.childCount)
     layout.resetDebugInfo()
-    commitToLayoutState(resolveContext, current)
+    commitToLayoutState(resolveContext.treeState, current)
 
     // 3. Iterate over children.
     val parentContext: ComponentContext = layout.tailComponentContext
@@ -604,20 +604,21 @@ object Resolver {
     return layout
   }
 
+  /** Notify TreeState to keep state containers for the case where we reuse resolve results. */
   @JvmStatic
-  fun commitToLayoutStateRecursively(c: ResolveContext, node: LithoNode) {
+  fun commitToLayoutStateRecursively(treeState: TreeState, node: LithoNode) {
     val count: Int = node.childCount
-    commitToLayoutState(c, node)
+    commitToLayoutState(treeState, node)
     for (i in 0 until count) {
-      commitToLayoutStateRecursively(c, node.getChildAt(i))
+      commitToLayoutStateRecursively(treeState, node.getChildAt(i))
     }
   }
 
   @JvmStatic
-  fun commitToLayoutState(c: ResolveContext, node: LithoNode) {
+  fun commitToLayoutState(treeState: TreeState, node: LithoNode) {
     val scopedComponentInfos: List<ScopedComponentInfo> = node.scopedComponentInfos
     for (info in scopedComponentInfos) {
-      info.commitToLayoutState(c.treeState)
+      info.commitToLayoutState(treeState)
     }
   }
 

@@ -260,6 +260,14 @@ internal object Layout {
             heightSpec,
             currentLayout.width,
             currentLayout.height)) {
+      // Tell TreeState to keep state containers for the cache of NestedTree, otherwise we'll end up
+      // getting lost state containers when we commit layout state.
+      if (lithoLayoutContext.rootComponentContext
+          ?.lithoConfiguration
+          ?.componentsConfig
+          ?.enableFixForCachedNestedTree == true) {
+        Resolver.commitToLayoutStateRecursively(lithoLayoutContext.treeState, currentLayout.node)
+      }
       return currentLayout
     }
 
@@ -267,6 +275,14 @@ internal object Layout {
     val node: NestedTreeHolder = holderResult.node
     consumeAndGetCachedLayout(lithoLayoutContext, node, holderResult, widthSpec, heightSpec)?.let {
         cachedLayout ->
+      // Tell TreeState to keep state containers for the cache of NestedTree, otherwise we'll end up
+      // getting lost state containers when we commit layout state.
+      if (lithoLayoutContext.rootComponentContext
+          ?.lithoConfiguration
+          ?.componentsConfig
+          ?.enableFixForCachedNestedTree == true) {
+        Resolver.commitToLayoutStateRecursively(lithoLayoutContext.treeState, cachedLayout.node)
+      }
       return cachedLayout
     }
 

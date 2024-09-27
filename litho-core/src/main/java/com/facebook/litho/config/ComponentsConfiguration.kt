@@ -151,6 +151,11 @@ internal constructor(
      * working range.
      */
     @JvmField val enableSingleRunnableToReleaseTree: Boolean = false,
+    /**
+     * This flag is used to enable a fix for the issue where a cached NestedTree getting lost of
+     * state containers
+     */
+    @JvmField val enableFixForCachedNestedTree: Boolean = false,
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =
@@ -339,6 +344,7 @@ internal constructor(
     private var enableResolveWithoutSizeSpec = baseConfig.enableResolveWithoutSizeSpec
     private var enableHostWillNotDraw = baseConfig.enableHostWillNotDraw
     private var enableLoggingForRenderInFlight = baseConfig.enableLoggingForRenderInFlight
+    private var enableFixForCachedNestedTree = baseConfig.enableFixForCachedNestedTree
 
     fun shouldAddHostViewForRootComponent(enabled: Boolean): Builder = also {
       shouldAddHostViewForRootComponent = enabled
@@ -442,6 +448,10 @@ internal constructor(
       enableLoggingForRenderInFlight = enabled
     }
 
+    fun enableFixForCachedNestedTree(enabled: Boolean): Builder = also {
+      enableFixForCachedNestedTree = enabled
+    }
+
     fun build(): ComponentsConfiguration {
       return baseConfig.copy(
           shouldAddHostViewForRootComponent = shouldAddHostViewForRootComponent,
@@ -477,6 +487,7 @@ internal constructor(
           enableResolveWithoutSizeSpec = enableResolveWithoutSizeSpec,
           enableHostWillNotDraw = enableHostWillNotDraw,
           enableLoggingForRenderInFlight = enableLoggingForRenderInFlight,
+          enableFixForCachedNestedTree = enableFixForCachedNestedTree,
       )
     }
   }
