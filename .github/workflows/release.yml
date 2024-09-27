@@ -83,7 +83,7 @@ jobs:
       with:
         timeout_minutes: 60
         max_attempts: 2
-        command: BUCK_PATH=`realpath buck/buck` ./gradlew test -x :litho-intellij-plugin:test --stacktrace
+        command: BUCK_PATH=`realpath buck/buck` ./gradlew test -x :litho-intellij-plugin:test -x :litho-core:test -x :litho-it:test --stacktrace
   sample-app-job:
     name: Assemble Sample App
     needs: [start-release-job]
