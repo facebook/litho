@@ -44,3 +44,11 @@ The following table provides the supported events of the `Style` object:
 | `Style.performAccessibilityAction`        | <a href="https://developer.android.com/reference/android/support/v4/view/AccessibilityDelegateCompat.html#performAccessibilityAction(android.view.View, int, android.os.Bundle)">performAccessibilityAction</a> |
 | `Style.sendAccessibilityEvent`            | <a href="https://developer.android.com/reference/android/support/v4/view/AccessibilityDelegateCompat.html#sendAccessibilityEvent(android.view.View, int)">sendAccessibilityEvent</a> |
 | `Style.sendAccessibilityEventUnchecked`   | <a href="https://developer.android.com/reference/android/support/v4/view/AccessibilityDelegateCompat.html#sendAccessibilityEventUnchecked(android.view.View, android.view.accessibility.AccessibilityEvent)">sendAccessibilityEventUnchecked</a> |
+
+
+## Focus Order
+
+You can customize the default focus order behavior by creating focus order properties using `useFocusOrder()` hook and adding them to the `Style` object. This allows you to tailor the focus order to your specific needs, ensuring that interactive elements are navigable in a logical and predictable manner.
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/accessibility/FocusOrderComponent.kt start=start_focusorder_a11y_example end=end_focusorder_a11y_example
+```
