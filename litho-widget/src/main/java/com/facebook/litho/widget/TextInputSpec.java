@@ -197,6 +197,7 @@ import javax.annotation.Nullable;
       EditorActionEvent.class,
       SetTextEvent.class,
       InputConnectionEvent.class,
+      TextPastedEvent.class,
     })
 class TextInputSpec {
 
@@ -899,7 +900,8 @@ class TextInputSpec {
         TextInput.getKeyUpEventHandler(c),
         TextInput.getKeyPreImeEventHandler(c),
         TextInput.getEditorActionEventHandler(c),
-        TextInput.getInputConnectionEventHandler(c));
+        TextInput.getInputConnectionEventHandler(c),
+        TextInput.getTextPastedEventHandler(c));
   }
 
   static void onBindEditText(
@@ -914,7 +916,8 @@ class TextInputSpec {
       EventHandler keyUpEventHandler,
       EventHandler keyPreImeEventHandler,
       EventHandler EditorActionEventHandler,
-      EventHandler inputConnectionEventHandler) {
+      EventHandler inputConnectionEventHandler,
+      EventHandler textPastedEventHandler) {
     editText.attachWatchers(textWatchers);
     editText.setCustomSelectionActionModeCallback(selectionActionModeCallback);
     if (SDK_INT >= M) {
@@ -929,6 +932,7 @@ class TextInputSpec {
     editText.setKeyPreImeEventEventHandler(keyPreImeEventHandler);
     editText.setEditorActionEventHandler(EditorActionEventHandler);
     editText.setInputConnectionEventHandler(inputConnectionEventHandler);
+    editText.setTextPastedEventHandler(textPastedEventHandler);
   }
 
   @OnUnmount
@@ -963,6 +967,7 @@ class TextInputSpec {
     if (SDK_INT >= M) {
       editText.setCustomInsertionActionModeCallback(null);
     }
+    editText.setTextPastedEventHandler(null);
   }
 
   @Nullable
@@ -1184,6 +1189,7 @@ class TextInputSpec {
 
     private static final int UNMEASURED_LINE_COUNT = -1;
 
+    @Nullable private EventHandler<TextPastedEvent> mTextPastedEventHandler;
     @Nullable private EventHandler<TextChangedEvent> mTextChangedEventHandler;
     @Nullable private EventHandler<SelectionChangedEvent> mSelectionChangedEventHandler;
     @Nullable private EventHandler<InputFocusChangedEvent> mInputFocusChangedEventHandler;
@@ -1198,6 +1204,7 @@ class TextInputSpec {
     private boolean mIsSoftInputRequested = false;
 
     private boolean mDisableAutofill = false;
+    private boolean mIsTextPasted = false;
 
     @Nullable private ViewTreeObserver.OnWindowFocusChangeListener mOnWindowFocusChangeListener;
 
@@ -1228,6 +1235,11 @@ class TextInputSpec {
         TextInput.dispatchTextChangedEvent(
             mTextChangedEventHandler, EditTextWithEventHandlers.this, text.toString());
       }
+      if (mIsTextPasted && mTextPastedEventHandler != null) {
+        TextInput.dispatchTextPastedEvent(
+            mTextPastedEventHandler, EditTextWithEventHandlers.this, text.toString());
+        mIsTextPasted = false;
+      }
       // Line count of changed text.
       int lineCount = getLineCount();
       if (mLineCount != UNMEASURED_LINE_COUNT
@@ -1235,6 +1247,14 @@ class TextInputSpec {
           && mComponentContext != null) {
         com.facebook.litho.widget.TextInput.remeasureForUpdatedTextSync(mComponentContext);
       }
+    }
+
+    @Override
+    public boolean onTextContextMenuItem(int id) {
+      if (id == android.R.id.paste && mTextPastedEventHandler != null) {
+        mIsTextPasted = true;
+      }
+      return super.onTextContextMenuItem(id);
     }
 
     @Override
@@ -1305,6 +1325,11 @@ class TextInputSpec {
 
     void setDisableAutofill(Boolean value) {
       mDisableAutofill = value;
+    }
+
+    void setTextPastedEventHandler(
+        @Nullable EventHandler<TextPastedEvent> textPastedEventEventHandler) {
+      mTextPastedEventHandler = textPastedEventEventHandler;
     }
 
     void setTextChangedEventHandler(

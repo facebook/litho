@@ -82,6 +82,7 @@ import javax.annotation.Nullable;
       EditorActionEvent.class,
       SetTextEvent.class,
       InputConnectionEvent.class,
+      TextPastedEvent.class,
     })
 class MaterialTextInputSpec {
 
@@ -519,7 +520,9 @@ class MaterialTextInputSpec {
         // NULLSAFE_FIXME[Parameter Not Nullable]
         MaterialTextInput.getEditorActionEventHandler(c),
         // NULLSAFE_FIXME[Parameter Not Nullable]
-        MaterialTextInput.getInputConnectionEventHandler(c));
+        MaterialTextInput.getInputConnectionEventHandler(c),
+        // NULLSAFE_FIXME[Parameter Not Nullable]
+        MaterialTextInput.getTextPastedEventHandler(c));
   }
 
   @OnUnmount
