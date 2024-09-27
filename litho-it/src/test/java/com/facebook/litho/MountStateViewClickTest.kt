@@ -17,10 +17,9 @@
 package com.facebook.litho
 
 import android.content.Context
-import android.view.ViewGroup
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.config.TempComponentsConfigurations
-import com.facebook.litho.testing.LegacyLithoViewRule
+import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.eventhandler.EventHandlerTestHelper
 import com.facebook.litho.testing.helper.ComponentTestHelper
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec
@@ -39,13 +38,20 @@ import org.junit.runner.RunWith
 class MountStateViewClickTest {
 
   private lateinit var context: ComponentContext
+  private lateinit var componentTree: ComponentTree
 
-  @JvmField @Rule val legacyLithoViewRule = LegacyLithoViewRule()
+  @JvmField @Rule val lithoViewRule = LithoViewRule()
 
   @Before
   fun setup() {
     TempComponentsConfigurations.setShouldAddHostViewForRootComponent(true)
     context = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
+    componentTree =
+        ComponentTree.create(context)
+            .componentsConfiguration(
+                context.lithoConfiguration.componentsConfig.copy(
+                    incrementalMountEnabled = false, visibilityProcessingEnabled = false))
+            .build()
   }
 
   @After
@@ -55,12 +61,14 @@ class MountStateViewClickTest {
 
   @Test
   fun testInnerComponentHostClickable() {
-    val component =
-        LayoutWithInnerClickableChildTester.create(context).shouldSetClickHandler(true).build()
-    legacyLithoViewRule.setRoot(component)
-    val lithoView = legacyLithoViewRule.lithoView
-    setupLithoViewParentAndComponentTree(lithoView, component)
-    legacyLithoViewRule.attachToWindow().measure().layout()
+    val lithoView =
+        lithoViewRule
+            .render(componentTree = componentTree) {
+              LayoutWithInnerClickableChildTester.create(context)
+                  .shouldSetClickHandler(true)
+                  .build()
+            }
+            .lithoView
     assertThat(lithoView.childCount).isEqualTo(1)
     assertThat(lithoView.isClickable).isFalse
     assertThat(lithoView.isLongClickable).isFalse
@@ -71,12 +79,14 @@ class MountStateViewClickTest {
 
   @Test
   fun testInnerComponentHostClickableWithLongClickHandler() {
-    val component =
-        LayoutWithInnerClickableChildTester.create(context).shouldSetLongClickHandler(true).build()
-    legacyLithoViewRule.setRoot(component)
-    val lithoView = legacyLithoViewRule.lithoView
-    setupLithoViewParentAndComponentTree(lithoView, component)
-    legacyLithoViewRule.attachToWindow().measure().layout()
+    val lithoView =
+        lithoViewRule
+            .render(componentTree = componentTree) {
+              LayoutWithInnerClickableChildTester.create(context)
+                  .shouldSetLongClickHandler(true)
+                  .build()
+            }
+            .lithoView
     assertThat(lithoView.childCount).isEqualTo(1)
     assertThat(lithoView.isClickable).isFalse
     assertThat(lithoView.isLongClickable).isFalse
@@ -121,33 +131,15 @@ class MountStateViewClickTest {
 
   @Test
   fun testRootHostClickableUnmount() {
-    val component =
-        SimpleLayoutSpecWithClickHandlersTester.create(legacyLithoViewRule.context).build()
-    legacyLithoViewRule.setRoot(component)
-    setupLithoViewParentAndComponentTree(legacyLithoViewRule.lithoView, component)
-    legacyLithoViewRule.attachToWindow().measure().layout()
-    val rootHost = legacyLithoViewRule.lithoView.getChildAt(0)
+    val testLithoView =
+        lithoViewRule.render(componentTree = componentTree) {
+          SimpleLayoutSpecWithClickHandlersTester.create(context).build()
+        }
+    val rootHost = testLithoView.lithoView.getChildAt(0)
     assertThat(rootHost.isClickable).isTrue
     assertThat(rootHost.isLongClickable).isTrue
-    legacyLithoViewRule.lithoView.unmountAllItems()
+    testLithoView.lithoView.unmountAllItems()
     assertThat(rootHost.isClickable).isFalse
     assertThat(rootHost.isLongClickable).isFalse
-  }
-
-  // When testing a LithoView via a LegacyLithoViewRule - we must set the parent and component tree
-  // prior to attach / measure / layout for that LithoView otherwise mounting will not behave
-  // properly.
-  private fun setupLithoViewParentAndComponentTree(lithoView: LithoView, component: Component) {
-    val parent: ViewGroup =
-        object : ViewGroup(lithoView.context) {
-          override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) = Unit
-        }
-    parent.addView(lithoView)
-    lithoView.componentTree =
-        ComponentTree.create(context, component)
-            .componentsConfiguration(
-                context.lithoConfiguration.componentsConfig.copy(
-                    incrementalMountEnabled = false, visibilityProcessingEnabled = false))
-            .build()
   }
 }
