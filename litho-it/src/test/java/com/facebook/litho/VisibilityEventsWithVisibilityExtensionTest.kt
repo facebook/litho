@@ -18,7 +18,7 @@ package com.facebook.litho
 
 import android.widget.FrameLayout
 import com.facebook.litho.Column.Companion.create
-import com.facebook.litho.testing.LegacyLithoViewRule
+import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.Whitebox
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.Text
@@ -26,7 +26,6 @@ import com.facebook.rendercore.Reducer
 import com.facebook.rendercore.RenderTree
 import com.facebook.rendercore.RenderTreeNode
 import com.facebook.rendercore.visibility.VisibilityMountExtension
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -39,49 +38,37 @@ import org.mockito.kotlin.whenever
 @RunWith(LithoTestRunner::class)
 class VisibilityEventsWithVisibilityExtensionTest {
 
-  private val right = 10
-
-  private lateinit var context: ComponentContext
-  private lateinit var lithoView: LithoView
-  private lateinit var parent: FrameLayout
-
-  @JvmField @Rule val legacyLithoViewRule = LegacyLithoViewRule()
-
-  @Before
-  fun setup() {
-    context = legacyLithoViewRule.context
-    lithoView = LithoView(context)
-    legacyLithoViewRule.useLithoView(lithoView)
-    parent =
-        FrameLayout(context.androidContext).apply {
-          left = 0
-          top = 0
-          right = 10
-          bottom = 10
-          addView(lithoView)
-        }
-  }
+  @JvmField @Rule val lithoViewRule = LithoViewRule()
 
   @Test
   fun visibilityExtensionOnUnmountAllItems_shouldUnmount() {
+    val context = lithoViewRule.context
     val content: SpecGeneratedComponent = Text.create(context).text("hello world").build()
     val visibleEventHandler = EventHandlerTestUtil.create<VisibleEvent>(2, content)
-    val root: Component =
-        create(context)
-            .child(Wrapper.create(context).delegate(content).visibleHandler(visibleEventHandler))
-            .build()
-    legacyLithoViewRule.setRoot(root).attachToWindow().measure().layout()
+    val testLithoView = lithoViewRule.createTestLithoView()
+    FrameLayout(context.androidContext).apply {
+      left = 0
+      top = 0
+      right = 10
+      bottom = 10
+      addView(testLithoView.lithoView)
+    }
+    lithoViewRule.render(lithoView = testLithoView.lithoView) {
+      create(context)
+          .child(Wrapper.create(context).delegate(content).visibleHandler(visibleEventHandler))
+          .build()
+    }
     val layoutState: LayoutState = mock()
     val renderTree: RenderTree = mock()
     val rootNode: RenderTreeNode = mock()
     whenever(layoutState.toRenderTree()).thenReturn(renderTree)
     whenever(renderTree.getRenderTreeNodeAtIndex(0)).thenReturn(rootNode)
     whenever(rootNode.renderUnit).thenReturn(Reducer.ROOT_HOST_RENDER_UNIT)
-    legacyLithoViewRule.lithoView.setMountStateDirty()
+    testLithoView.lithoView.setMountStateDirty()
     val visibilityExtension: VisibilityMountExtension<*> =
         spy(VisibilityMountExtension.getInstance())
-    useVisibilityOutputsExtension(legacyLithoViewRule.lithoView, visibilityExtension)
-    legacyLithoViewRule.lithoView.unmountAllItems()
+    useVisibilityOutputsExtension(testLithoView.lithoView, visibilityExtension)
+    testLithoView.lithoView.unmountAllItems()
     verify(visibilityExtension).onUnbind(any())
     verify(visibilityExtension).onUnmount(any())
   }
