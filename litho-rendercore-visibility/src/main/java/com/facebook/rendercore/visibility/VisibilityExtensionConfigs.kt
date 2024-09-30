@@ -24,8 +24,6 @@ package com.facebook.rendercore.visibility
  */
 object VisibilityExtensionConfigs {
   const val DEBUG_TAG: String = "VisibilityExtension"
-  /** Skips visibility checks for fully visible items */
-  @JvmField var skipVisChecksForFullyVisible: Boolean = false
   /** Set this to true to enable debug logs for the visibility extension. */
   @JvmField var isDebugLoggingEnabled: Boolean = false
 }

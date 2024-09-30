@@ -288,9 +288,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
           wasFullyVisible = false;
         }
 
-        if (isFullyVisible
-            && wasFullyVisible
-            && VisibilityExtensionConfigs.skipVisChecksForFullyVisible) {
+        if (isFullyVisible && wasFullyVisible) {
           // VisibilityOutput is still fully visible, no new events to dispatch, skip to next
           if (isTracing) {
             RenderCoreSystrace.endSection();

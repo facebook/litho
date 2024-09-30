@@ -69,17 +69,19 @@ class VisibilityStylesTest {
     val focusFired = AtomicBoolean(false)
     val unfocusFired = AtomicBoolean(false)
 
+    // We cannot use LithoTestRule::render here because it will trigger render immediately, because
+    // the focus event cannot be invoked as the LithoView does not have a parent yet, which
+    // is required for FocusedVisible. Consequently, we will not dispatch the focus/unfocus event
+    // for a fully visible item again.
     val testLithoView =
-        mLithoTestRule
-            .render {
-              Row(
-                  style =
-                      Style.width(200.px)
-                          .height(200.px)
-                          .onFocusedVisible { focusFired.set(true) }
-                          .onUnfocusedVisible { unfocusFired.set(true) })
-            }
-            .attachToWindow()
+        mLithoTestRule.createTestLithoView {
+          Row(
+              style =
+                  Style.width(200.px)
+                      .height(200.px)
+                      .onFocusedVisible { focusFired.set(true) }
+                      .onUnfocusedVisible { unfocusFired.set(true) })
+        }
 
     // FocusedVisible requires a measured parent
     val frameLayout = FrameLayout(mLithoTestRule.context.androidContext)
