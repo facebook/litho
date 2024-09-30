@@ -53,6 +53,7 @@ import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaConstants
 import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaFlexDirection
+import com.facebook.yoga.YogaGutter
 import com.facebook.yoga.YogaJustify
 import com.facebook.yoga.YogaMeasureFunction
 import com.facebook.yoga.YogaWrap
@@ -83,6 +84,8 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
   internal var alignItems: YogaAlign? = null
   internal var flexDirection: YogaFlexDirection? = null
   internal var yogaWrap: YogaWrap? = null
+  internal var gap: Int? = null
+  internal var gapGutter: YogaGutter? = null
   internal var yogaMeasureFunction: YogaMeasureFunction? = null
   internal var nestedTreeHolder: NestedTreeHolder? = null
   internal var _needsHostView: Boolean = false
@@ -778,6 +781,11 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
     yogaWrap = wrap
   }
 
+  fun setGap(gutter: YogaGutter, gap: Int) {
+    this.gap = gap
+    this.gapGutter = gutter
+  }
+
   fun addSystemGestureExclusionZones(zones: MutableList<(Rect) -> Rect>) {
     (_systemGestureExclusionZones
             ?: ArrayList<(Rect) -> Rect>().also { _systemGestureExclusionZones = it })
@@ -857,6 +865,14 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
       if (shouldApplyTouchExpansion()) {
         touchExpansion?.let { edges -> FastMath.round(edges[YogaEdge.BOTTOM]) } ?: 0
       } else 0
+
+  internal fun withValidGap(isValid: (Int, YogaGutter) -> Unit) {
+    val gap = gap
+    val gapGutter = gapGutter
+    if(gap != null && gapGutter != null) {
+      isValid(gap, gapGutter)
+    }
+  }
 
   private fun hasCustomBindersForMountSpec(): Boolean =
       customDelegateBindersForMountSpec?.isNotEmpty() == true
@@ -1207,4 +1223,5 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
       return result
     }
   }
+
 }

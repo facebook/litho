@@ -1,3 +1,4 @@
+
 /*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -46,6 +47,9 @@ class LithoFlexLayoutDataProvider {
     node.alignContent?.let { writer.alignContent(it) }
     node.alignItems?.let { writer.alignItems(it) }
     node.yogaWrap?.let { writer.flexWrap(it) }
+
+    node.withValidGap { gap, gapGutter -> writer.gap(gapGutter, gap) }
+
     var nestedTreeHolderTransfered = false
 
     for (info in node.scopedComponentInfos) {

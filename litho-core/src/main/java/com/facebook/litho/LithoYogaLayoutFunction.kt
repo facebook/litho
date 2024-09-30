@@ -861,12 +861,13 @@ internal object LithoYogaLayoutFunction {
     val node: YogaNode = writer.node
 
     // Apply the extra layout props
-    layoutDirection?.let { node.setDirection(it.toYogaDirection()) }
+    layoutDirection.let { node.setDirection(it.toYogaDirection()) }
     flexDirection?.let { node.flexDirection = it }
     justifyContent?.let { node.justifyContent = it }
     alignContent?.let { node.alignContent = it }
     alignItems?.let { node.alignItems = it }
     yogaWrap?.let { node.wrap = it }
+    withValidGap { gap, yogaGutter ->  node.setGap(yogaGutter, gap.toFloat()) }
     yogaMeasureFunction?.let { node.setMeasureFunction(it) }
 
     var nestedTreeHolderTransfered = false
