@@ -418,34 +418,9 @@ open class ComponentHost(
     return contentDescription
   }
 
-  /**
-   * Host views implement their own content description handling instead of just delegating to the
-   * underlying view framework for performance reasons as the framework sets/resets content
-   * description very frequently on host views and the underlying accessibility notifications might
-   * cause performance issues. This is safe to do because the framework owns the accessibility state
-   * and knows how to update it efficiently.
-   */
   override fun setContentDescription(contentDescription: CharSequence?) {
-    if (this.contentDescription == null) {
-      if (contentDescription == null) {
-        return
-      }
-    } else if (this.contentDescription == contentDescription) {
-      return
-    }
+    super.setContentDescription(contentDescription)
     this.contentDescription = contentDescription
-
-    if (!contentDescription.isNullOrEmpty() &&
-        ViewCompat.getImportantForAccessibility(this) ==
-            ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
-      ViewCompat.setImportantForAccessibility(this, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES)
-    }
-    if (!contentDescription.isNullOrEmpty()) {
-      // To fix the issue that the TYPE_WINDOW_CONTENT_CHANGED event doesn't get triggered.
-      // More details at here: https://fburl.com/aoa2apq5
-      super.setContentDescription(contentDescription)
-    }
-    maybeInvalidateAccessibilityState()
   }
 
   override fun setTag(key: Int, tag: Any?) {
