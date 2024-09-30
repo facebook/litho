@@ -101,7 +101,7 @@ object MountItemsPool {
             RenderCoreSystrace.beginSection(
                 "MountItemsPool:createMountContent ${poolableMountContent.poolableContentTypeName}")
           }
-          val content = poolableMountContent.createPoolableContent(context)
+          val content = poolableMountContent.createContent(context)
           if (isTracing) {
             RenderCoreSystrace.endSection()
           }
@@ -170,7 +170,7 @@ object MountItemsPool {
 
     if (pool != null) {
       for (i in 0 until poolSize) {
-        if (!pool.release(poolableMountContent.createPoolableContent(context))) {
+        if (!pool.release(poolableMountContent.createContent(context))) {
           break
         }
       }

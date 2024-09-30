@@ -791,18 +791,6 @@ public abstract class SpecGeneratedComponent extends Component
 
   @Override
   public Object createContent(Context context) {
-    return createMountContent(context);
-  }
-
-  @Override
-  public RenderUnit.RenderType getRenderType() {
-    return getMountType() == Component.MountType.DRAWABLE
-        ? RenderUnit.RenderType.DRAWABLE
-        : RenderUnit.RenderType.VIEW;
-  }
-
-  @Override
-  public Object createPoolableContent(Context context) {
     final Object content = createMountContent(context);
     if (content == null) {
       throw new RuntimeException(
@@ -810,6 +798,13 @@ public abstract class SpecGeneratedComponent extends Component
               + getSimpleName());
     }
     return content;
+  }
+
+  @Override
+  public RenderUnit.RenderType getRenderType() {
+    return getMountType() == Component.MountType.DRAWABLE
+        ? RenderUnit.RenderType.DRAWABLE
+        : RenderUnit.RenderType.VIEW;
   }
 
   @Override
