@@ -20,7 +20,7 @@ import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Color
 import androidx.test.core.app.ApplicationProvider
-import com.facebook.litho.testing.LegacyLithoViewRule
+import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.TestDrawableComponent
 import com.facebook.litho.testing.atMost
 import com.facebook.litho.testing.exactly
@@ -38,7 +38,7 @@ import org.mockito.kotlin.spy
 @RunWith(LithoTestRunner::class)
 class MountStateRemountInPlaceTest {
 
-  @JvmField @Rule val legacyLithoViewRule = LegacyLithoViewRule()
+  @JvmField @Rule val lithoViewRule = LithoViewRule()
   private lateinit var context: ComponentContext
 
   @Before
@@ -82,18 +82,13 @@ class MountStateRemountInPlaceTest {
   fun testMountUnmountWithNewOrientation() {
     val tracker = LifecycleTracker()
     val root = MountSpecLifecycleTester.create(context).lifecycleTracker(tracker).build()
-    legacyLithoViewRule
-        .setRoot(root)
-        .attachToWindow()
-        .setSizeSpecs(exactly(10), exactly(20))
-        .measure()
-        .layout()
+    val testLithoView = lithoViewRule.render(widthPx = 10, heightPx = 20) { root }
     assertThat(tracker.steps)
         .describedAs("Should call lifecycle methods")
         .contains(LifecycleStep.ON_BIND, LifecycleStep.ON_MOUNT)
         .doesNotContain(LifecycleStep.ON_UNMOUNT)
     tracker.reset()
-    legacyLithoViewRule.setRootAndSizeSpecSync(root, exactly(20), exactly(10)).measure().layout()
+    testLithoView.setRootAndSizeSpecSync(root, exactly(20), exactly(10)).measure().layout()
     assertThat(tracker.steps)
         .describedAs("Should call lifecycle methods")
         .contains(
