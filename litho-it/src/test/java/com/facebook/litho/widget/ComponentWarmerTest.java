@@ -41,7 +41,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Shadows;
@@ -133,75 +132,6 @@ public class ComponentWarmerTest {
     binder.insertItemAt(0, mComponentRenderInfo);
 
     assertThat(binder.getComponentTreeHolderAt(0)).isEqualTo(cachedCTH);
-  }
-
-  @Test
-  @Ignore("T194213454")
-  public void testCancelDuringPrepareAsync() {
-    final RecyclerBinder binder =
-        new RecyclerBinder.Builder()
-            .recyclerBinderConfig(RecyclerBinderConfig.create().build())
-            .build(mContext);
-
-    binder.measure(
-        new Size(),
-        SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
-        SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
-        null);
-
-    final ComponentWarmer warmer = new ComponentWarmer(binder);
-
-    final CountDownLatch waitToResolveChild = new CountDownLatch(1);
-    final CountDownLatch waitToCancel = new CountDownLatch(1);
-
-    final boolean[] childrenResolved = {false, false};
-
-    final Component childComponent1 =
-        new InlineLayoutSpec() {
-          @Override
-          protected Component onCreateLayout(ComponentContext c) {
-            childrenResolved[0] = true;
-
-            waitToResolveChild.countDown();
-
-            ThreadTestingUtils.failSilentlyIfInterrupted(
-                () -> {
-                  waitToCancel.await(5, TimeUnit.SECONDS);
-                });
-
-            return Row.create(c).build();
-          }
-        };
-
-    final Component childComponent2 =
-        new InlineLayoutSpec() {
-          @Override
-          protected Component onCreateLayout(ComponentContext c) {
-            childrenResolved[1] = true;
-            return Row.create(c).build();
-          }
-        };
-
-    final Component component =
-        new InlineLayoutSpec() {
-          @Override
-          protected Component onCreateLayout(ComponentContext c) {
-            return Column.create(c).child(childComponent1).child(childComponent2).build();
-          }
-        };
-
-    warmer.prepareAsync("tag1", ComponentRenderInfo.create().component(component).build());
-
-    ThreadTestingUtils.failSilentlyIfInterrupted(
-        () -> {
-          waitToResolveChild.await(5, TimeUnit.SECONDS);
-          warmer.cancelPrepare("tag1");
-          waitToCancel.countDown();
-        });
-
-    assertThat(childrenResolved[0]).isTrue();
-    assertThat(childrenResolved[1]).isFalse();
-    assertThat(warmer.consume("tag1")).isNull();
   }
 
   @Test

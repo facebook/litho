@@ -30,7 +30,6 @@ import java.util.concurrent.TimeUnit
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.doReturn
@@ -118,69 +117,6 @@ class LayoutStateFutureReleaseTest {
     Assert.assertTrue(child1.hasRunLayout)
     Assert.assertFalse(child2.hasRunLayout)
     Assert.assertNull(result)
-  }
-
-  // This test is similar to testMainWaitingOnBgBeforeRelease, except that the bg thread
-  // LayoutStateFuture gets released after the sync layout is triggered. In this case the UI thread
-  // should not be blocked on the bg thread anymore, because the released Lsf will return a null
-  // LayoutState.
-  @Test
-  @Ignore("T194213454")
-  fun testDontWaitOnReleasedLSF() {
-    val layoutStateFutures = arrayOfNulls<TreeFuture<*>?>(2)
-    val waitBeforeAsserts = CountDownLatch(1)
-    val scheduleSyncLayout = CountDownLatch(1)
-    val finishBgLayout = CountDownLatch(1)
-    val componentTree: ComponentTree
-    val child1 =
-        TestChildComponent(
-            // Testing scenario: we schedule a LSF on bg thread which gets released before compat UI
-            // thread
-            // layout is scheduled.
-            waitActions =
-                object : WaitActions {
-                  override fun unblock(layoutStateFuture: TreeFuture<*>?) {
-                    // Something happens here which releases the ongoing lsf, such as a state update
-                    // triggered from onCreateLayout.
-                    if (layoutStateFutures[0] == null) {
-                      layoutStateFutures[0] = layoutStateFuture
-                      layoutStateFuture?.release()
-                      scheduleSyncLayout.countDown()
-                      ThreadTestingUtils.failSilentlyIfInterrupted {
-                        finishBgLayout.await(5000, TimeUnit.MILLISECONDS)
-                      }
-                      waitBeforeAsserts.countDown()
-                    } else {
-                      layoutStateFutures[1] = layoutStateFuture
-                      finishBgLayout.countDown()
-                    }
-                  }
-                })
-    val column_0 = Column.create(context).child(TestChildComponent()).build()
-    val column = Column.create(context).child(child1).build()
-    // val handler = ThreadPoolLayoutHandler.getNewInstance(LayoutThreadPoolConfigurationImpl(1, 1,
-    // 5))
-    componentTree =
-        ComponentTree.create(context, column_0)
-            // .layoutThreadHandler(handler)
-            .build()
-    componentTree.setLithoView(LithoView(context))
-
-    componentTree.setRootAndSizeSpecAsync(column, widthSpec, heightSpec)
-    runToEndOfTasks()
-    ThreadTestingUtils.failSilentlyIfInterrupted {
-      scheduleSyncLayout.await(5000, TimeUnit.MILLISECONDS)
-    }
-    componentTree.setRootAndSizeSpecSync(column, widthSpec, heightSpec, Size())
-    ThreadTestingUtils.failSilentlyIfInterrupted {
-      waitBeforeAsserts.await(5000, TimeUnit.MILLISECONDS)
-    }
-    Assert.assertNotNull(layoutStateFutures[0])
-    Assert.assertNotNull(layoutStateFutures[1])
-  }
-
-  private fun createTestStateUpdate(): StateContainer.StateUpdate {
-    return StateContainer.StateUpdate(0)
   }
 
   private interface WaitActions {
