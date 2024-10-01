@@ -35,13 +35,13 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.Handle;
 import com.facebook.litho.LithoView;
+import com.facebook.litho.it.R;
 import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.eventhandler.EventHandlerTestHelper;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import java.lang.reflect.Field;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -115,16 +115,12 @@ public class TextInputSpecTest {
   }
 
   @Test
-  @Ignore("T146174263")
-  public void testCursorDrawableResSet() throws IllegalAccessException, NoSuchFieldException {
-    int drawableRes = 10;
+  public void testCursorDrawableResSet() {
+    int drawableRes = R.drawable.litho;
     Component.Builder component = TextInput.create(mContext).cursorDrawableRes(drawableRes);
     final android.widget.EditText editText = getEditText(component);
-    Field f = TextView.class.getDeclaredField("mCursorDrawableRes");
-    f.setAccessible(true);
-    f.get(editText);
 
-    assertThat(f.get(editText)).isEqualTo(drawableRes);
+    assertThat(editText.getTextCursorDrawable()).isNotNull();
   }
 
   @Test
