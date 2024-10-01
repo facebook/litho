@@ -16,7 +16,6 @@
 
 package com.facebook.litho.intellij.inspections;
 
-import com.facebook.litho.intellij.adapters.AnnotationHolderAdapter;
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
@@ -28,13 +27,12 @@ import java.util.ArrayList;
 import java.util.List;
 import org.jetbrains.annotations.Nullable;
 
-class TestHolder implements AnnotationHolder, AnnotationHolderAdapter {
+class TestHolder implements AnnotationHolder {
   final List<PsiElement> errorElements = new ArrayList<>();
   final List<String> errorMessages = new ArrayList<>();
   final List<Annotation> createdAnnotations = new ArrayList<>();
 
   @Override
-  @SuppressWarnings("removal")
   public Annotation createErrorAnnotation(PsiElement elt, @Nullable String message) {
     errorElements.add(elt);
     errorMessages.add(message);
@@ -59,7 +57,6 @@ class TestHolder implements AnnotationHolder, AnnotationHolderAdapter {
   }
 
   @Override
-  @SuppressWarnings("removal")
   public Annotation createWarningAnnotation(ASTNode node, @Nullable String message) {
     return null;
   }
@@ -74,7 +71,6 @@ class TestHolder implements AnnotationHolder, AnnotationHolderAdapter {
     return null;
   }
 
-  @SuppressWarnings("removal")
   @Override
   public Annotation createWeakWarningAnnotation(ASTNode node, @Nullable String message) {
     return null;

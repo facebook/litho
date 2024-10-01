@@ -1,4 +1,3 @@
-load("@fbsource//third-party/java/intellij:defs.bzl", "select_glob_by_version")
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
     "ANDROID_STUDIO_PLUGIN_SDK_FOR_TESTS",
@@ -19,9 +18,7 @@ fb_java_test(
         "intellij/inspections/TestHolder.java",
         "intellij/logging/DebounceEventLoggerTest.java",
         "specmodels/processor/PsiTypeUtilsTest.java",
-    ] + select_glob_by_version([
-        "intellij/adapters/{}/AnnotationHolderAdapter.java",
-    ]),
+    ],
     source = "17",
     target = "17",
     visibility = ["PUBLIC"],
