@@ -23,7 +23,7 @@ import androidx.annotation.VisibleForTesting
 open class RootHostView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) :
     HostView(context, attrs), RootHost {
 
-  val rootHostDelegate: RootHostDelegate = RootHostDelegate(this)
+  open val rootHostDelegate: RootHostDelegate = RootHostDelegate(this)
 
   override fun setRenderState(renderState: RenderState<*, *, *>?) {
     rootHostDelegate.setRenderState(renderState)

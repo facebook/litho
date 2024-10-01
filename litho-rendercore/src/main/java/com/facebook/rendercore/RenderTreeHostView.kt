@@ -29,7 +29,7 @@ open class RenderTreeHostView
 constructor(context: Context, attrs: AttributeSet? = null) :
     HostView(context, attrs), RenderTreeHost {
 
-  private val mountState = MountState(this)
+  protected open val mountState = MountState(this)
   private var currentRenderTree: RenderTree? = null
 
   override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {

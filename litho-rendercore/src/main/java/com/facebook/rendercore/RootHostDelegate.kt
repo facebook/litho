@@ -19,9 +19,9 @@ package com.facebook.rendercore
 import com.facebook.infer.annotation.ThreadConfined
 import com.facebook.rendercore.extensions.RenderCoreExtension
 
-class RootHostDelegate(private val host: Host) : RenderState.HostListener, RootHost {
+open class RootHostDelegate(private val host: Host) : RenderState.HostListener, RootHost {
 
-  private val mountState: MountState = MountState(host)
+  protected open val mountState: MountState = MountState(host)
 
   private var currentRenderTree: RenderTree? = null
   private var doMeasureInLayout = false
