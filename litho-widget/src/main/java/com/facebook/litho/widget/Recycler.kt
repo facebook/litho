@@ -46,7 +46,6 @@ import com.facebook.rendercore.primitives.PrimitiveLayoutResult
 import com.facebook.rendercore.primitives.ViewAllocator
 import com.facebook.rendercore.toHeightSpec
 import com.facebook.rendercore.toWidthSpec
-import java.lang.IllegalStateException
 import kotlin.math.max
 
 class Recycler
@@ -117,8 +116,8 @@ constructor(
                   recyclerEventsController,
                   measureChild.value,
               )
-          PrimitiveRecyclerBinderStrategy.RECYCLER_SPEC_EQUIVALENT_AND_ITEM_DECORATION ->
-              RecyclerSpecEquivalentAndItemDecorationMountBehavior(
+          PrimitiveRecyclerBinderStrategy.DEFAULT ->
+              DefaultMountBehavior(
                   measureVersion,
                   onRefresh,
                   onScrollListeners,
@@ -142,7 +141,7 @@ constructor(
         style = style)
   }
 
-  private fun PrimitiveComponentScope.RecyclerSpecEquivalentAndItemDecorationMountBehavior(
+  private fun PrimitiveComponentScope.DefaultMountBehavior(
       measureVersion: State<Int>,
       onRefresh: (() -> Unit)?,
       onScrollListeners: List<RecyclerView.OnScrollListener>?,

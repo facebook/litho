@@ -24,6 +24,9 @@ enum class PrimitiveRecyclerBinderStrategy {
    */
   SPLIT_BINDERS,
 
-  /** In this strategy we only remove the item decoration binding from the original approach. */
-  RECYCLER_SPEC_EQUIVALENT_AND_ITEM_DECORATION
+  /**
+   * In this strategy, we are using the original RecyclerSpec Mount and Bind binders, and a separate
+   * one for the item decoration
+   */
+  DEFAULT
 }

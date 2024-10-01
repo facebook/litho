@@ -106,7 +106,7 @@ internal constructor(
      */
     @JvmField
     val primitiveRecyclerBinderStrategy: PrimitiveRecyclerBinderStrategy =
-        PrimitiveRecyclerBinderStrategy.RECYCLER_SPEC_EQUIVALENT_AND_ITEM_DECORATION,
+        PrimitiveRecyclerBinderStrategy.DEFAULT,
     /**
      * This flag is used to enable a fix for the issue where components that match the host view
      * size do not get unmounted when they go out of the viewport.
