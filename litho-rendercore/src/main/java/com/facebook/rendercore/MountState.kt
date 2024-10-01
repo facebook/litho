@@ -40,7 +40,7 @@ import com.facebook.rendercore.utils.isEqualOrEquivalentTo
 import java.util.ArrayList
 import java.util.HashMap
 
-class MountState
+open class MountState
 @JvmOverloads
 constructor(
     private val _rootHost: Host,
@@ -501,7 +501,7 @@ constructor(
 
   private fun isMounted(id: Long): Boolean = idToMountedItemMap[id] != null
 
-  private fun mountRenderUnit(renderTreeNode: RenderTreeNode) {
+  protected open fun mountRenderUnit(renderTreeNode: RenderTreeNode) {
     if (renderTreeNode.renderUnit.id == ROOT_HOST_ID) {
       mountRootItem(renderTreeNode)
       return
@@ -845,8 +845,7 @@ constructor(
     currentMountItem.update(renderTreeNode)
     currentRenderUnit.onStartUpdateRenderUnit()
     mountDelegate?.startNotifyVisibleBoundsChangedSection()
-    if (currentRenderUnit.shouldUpdate(renderUnit) ||
-        !isEqualOrEquivalentTo(currentLayoutData, newLayoutData)) {
+    if (shouldUpdateMountItem(currentRenderUnit, renderUnit, currentLayoutData, newLayoutData)) {
       val traceIdentifier =
           DebugEventDispatcher.generateTraceIdentifier(DebugEvent.RenderUnitUpdated)
       if (traceIdentifier != null) {
@@ -865,16 +864,13 @@ constructor(
       if (isTracing) {
         tracer.beginSection("UpdateItem: ${renderUnit.description}")
       }
-      renderUnit.updateBinders(
-          context,
+      updateRenderUnitBinders(
           content,
+          renderUnit,
           currentRenderUnit,
           currentLayoutData,
           newLayoutData,
-          mountDelegate,
-          currentMountItem.bindData,
-          currentMountItem.isBound,
-          tracer)
+          currentMountItem)
       if (isTracing) {
         tracer.endSection()
       }
@@ -894,6 +890,36 @@ constructor(
     }
     mountDelegate?.endNotifyVisibleBoundsChangedSection()
     currentRenderUnit.onEndUpdateRenderUnit()
+  }
+
+  protected open fun shouldUpdateMountItem(
+      currentRenderUnit: RenderUnit<*>,
+      renderUnit: RenderUnit<*>,
+      currentLayoutData: Any?,
+      newLayoutData: Any?,
+  ): Boolean {
+    return currentRenderUnit !== renderUnit ||
+        !isEqualOrEquivalentTo(currentLayoutData, newLayoutData)
+  }
+
+  protected open fun updateRenderUnitBinders(
+      content: Any,
+      renderUnit: RenderUnit<Any>,
+      currentRenderUnit: RenderUnit<Any>,
+      currentLayoutData: Any?,
+      newLayoutData: Any?,
+      currentMountItem: MountItem,
+  ) {
+    renderUnit.updateBinders(
+        context,
+        content,
+        currentRenderUnit,
+        currentLayoutData,
+        newLayoutData,
+        _mountDelegate,
+        currentMountItem.bindData,
+        currentMountItem.isBound,
+        tracer)
   }
 
   private fun maybeEnsureParentIsMounted(node: RenderTreeNode, parent: RenderUnit<*>) {
