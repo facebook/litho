@@ -64,7 +64,7 @@ class MountBehavior<ContentType : Any>(
           override val description: String
             get() =
                 this@MountBehavior.description?.invoke()?.take(MAX_DESCRIPTION_LENGTH)
-                    ?: getSectionNameForTracing(contentAllocator.getPoolableContentType())
+                    ?: getSectionNameForTracing(contentAllocator.getPoolKey())
         }
   }
 }

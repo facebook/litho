@@ -35,8 +35,8 @@ interface ContentAllocator<Content : Any> {
   /** Returns the [RenderUnit.RenderType] of the mountable content. */
   val renderType: RenderType
 
-  /** Returns the class of the content of the mountable content. */
-  fun getPoolableContentType(): Any {
+  /** Returns the key that should be used for the pool for the mountable content. */
+  fun getPoolKey(): Any {
     return javaClass
   }
 

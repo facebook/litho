@@ -42,7 +42,7 @@ public class DrawableWrapperUnit extends RenderUnit<Drawable>
   }
 
   @Override
-  public Class<?> getPoolableContentType() {
+  public Class<?> getPoolKey() {
     return drawable.getClass();
   }
 

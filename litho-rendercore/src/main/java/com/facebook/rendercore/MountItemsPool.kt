@@ -99,7 +99,7 @@ object MountItemsPool {
           val isTracing = RenderCoreSystrace.isTracing()
           if (isTracing) {
             RenderCoreSystrace.beginSection(
-                "MountItemsPool:createMountContent ${poolableMountContent.poolableContentTypeName}")
+                "MountItemsPool:createMountContent ${poolableMountContent.poolKeyTypeName}")
           }
           val content = poolableMountContent.createContent(context)
           if (isTracing) {
@@ -135,7 +135,7 @@ object MountItemsPool {
 
     if (mountItemPoolsReleaseValidator != null && mountContent is View) {
       mountItemPoolsReleaseValidator?.assertValidRelease(
-          mountContent, listOf(poolableMountContent.poolableContentTypeName))
+          mountContent, listOf(poolableMountContent.poolKeyTypeName))
     }
 
     pool.release(mountContent)
@@ -202,20 +202,18 @@ object MountItemsPool {
         mountContentPoolsByContext[context] = poolsMap
       }
 
-      val poolableContentType = allocator.getPoolableContentType()
-      var pool = poolsMap[poolableContentType]
+      val poolKey = allocator.getPoolKey()
+      var pool = poolsMap[poolKey]
 
       if (pool == null && hasMountContentPoolFactory) {
         pool = mountContentPoolFactory.get()?.createMountContentPool()
       }
 
       if (pool == null) {
-        pool =
-            allocator.onCreateMountContentPool(poolSize)
-                ?: DefaultItemPool(poolableContentType, poolSize)
+        pool = allocator.onCreateMountContentPool(poolSize) ?: DefaultItemPool(poolKey, poolSize)
       }
 
-      poolsMap[poolableContentType] = pool
+      poolsMap[poolKey] = pool
       return pool
     }
   }
@@ -333,10 +331,10 @@ object MountItemsPool {
     return currentContext === baseCtx
   }
 
-  private val ContentAllocator<*>.poolableContentTypeName: String
+  private val ContentAllocator<*>.poolKeyTypeName: String
     get() {
-      val poolableContentType: Any = getPoolableContentType()
-      return (poolableContentType as? Class<*>)?.simpleName ?: poolableContentType.toString()
+      val poolKey: Any = getPoolKey()
+      return (poolKey as? Class<*>)?.simpleName ?: poolKey.toString()
     }
 
   /** Empty implementation of the [Application.ActivityLifecycleCallbacks] interface */
@@ -440,12 +438,11 @@ object MountItemsPool {
     fun maybePreallocateContent(c: Context, contentAllocator: ContentAllocator<*>): Boolean
   }
 
-  open class DefaultItemPool(poolableContentType: Any, private val maxPoolSize: Int) : ItemPool {
+  open class DefaultItemPool(poolKey: Any, private val maxPoolSize: Int) : ItemPool {
 
     private val pool: Pools.SynchronizedPool<Any> = Pools.SynchronizedPool(maxPoolSize)
 
-    private val debugIdentifier: String =
-        (poolableContentType as? Class<*>)?.name ?: poolableContentType.toString()
+    private val debugIdentifier: String = (poolKey as? Class<*>)?.name ?: poolKey.toString()
 
     private val currentPoolSize: AtomicInteger = AtomicInteger(0)
 

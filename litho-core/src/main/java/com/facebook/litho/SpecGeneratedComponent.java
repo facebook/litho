@@ -808,7 +808,7 @@ public abstract class SpecGeneratedComponent extends Component
   }
 
   @Override
-  public Object getPoolableContentType() {
+  public Object getPoolKey() {
     return getClass();
   }
 
@@ -825,7 +825,7 @@ public abstract class SpecGeneratedComponent extends Component
    */
   @Override
   public MountItemsPool.ItemPool onCreateMountContentPool(int poolSizeOverride) {
-    return new MountItemsPool.DefaultItemPool(getPoolableContentType(), poolSizeOverride);
+    return new MountItemsPool.DefaultItemPool(getPoolKey(), poolSizeOverride);
   }
 
   @ThreadSafe

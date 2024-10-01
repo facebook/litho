@@ -151,8 +151,8 @@ class HostRecyclingTest {
     private val itemPool = MountItemsPool.DefaultItemPool(HostComponent::class.java, 5)
 
     override fun acquire(contentAllocator: ContentAllocator<*>): Any? {
-      val poolableContentType = contentAllocator.getPoolableContentType()
-      if (poolableContentType == HostComponent::class.java) {
+      val poolKey = contentAllocator.getPoolKey()
+      if (poolKey == HostComponent::class.java) {
         _numComponentHostAcquireRequests++
         val poolContent = itemPool.acquire(contentAllocator)
         if (poolContent != null) {

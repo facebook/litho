@@ -756,8 +756,8 @@ class MountStateTest {
     expectedException.expectMessage(
         """
               Trying to mount a RenderTreeNode, its parent should be a Host, but was 'LinearLayout'.
-              Parent RenderUnit: id=1; contentType='class android.widget.LinearLayout'.
-              Child RenderUnit: id=2; contentType='class android.view.View'.
+              Parent RenderUnit: id=1; poolKey='class android.widget.LinearLayout'.
+              Child RenderUnit: id=2; poolKey='class android.view.View'.
               """
             .trimIndent())
     val c = renderCoreTestRule.context

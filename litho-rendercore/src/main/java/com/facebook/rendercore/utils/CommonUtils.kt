@@ -32,11 +32,11 @@ object CommonUtils {
 
   /**
    * This API is used for tracing. It's the same as getSectionNameForTracing(Class), but it uses
-   * [contentType] instead of the class name.
+   * [poolKey] instead of the class name.
    */
   @JvmStatic
-  fun getSectionNameForTracing(contentType: Any): String {
-    return "contentType:$contentType".take(127)
+  fun getSectionNameForTracing(poolKey: Any): String {
+    return "poolKey:$poolKey".take(127)
   }
 
   /** Utility to re-throw exceptions. */

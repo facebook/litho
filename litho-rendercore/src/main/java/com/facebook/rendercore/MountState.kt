@@ -945,8 +945,8 @@ constructor(
         throw RuntimeException(
             """
             Trying to mount a RenderTreeNode, its parent should be a Host, but was '${parentContent.javaClass.simpleName}'.
-            Parent RenderUnit: id=${parentRenderUnit.id}; contentType='${parentRenderUnit.contentAllocator.getPoolableContentType()}'.
-            Child RenderUnit: id=${renderUnit.id}; contentType='${renderUnit.contentAllocator.getPoolableContentType()}'.
+            Parent RenderUnit: id=${parentRenderUnit.id}; poolKey='${parentRenderUnit.contentAllocator.getPoolKey()}'.
+            Child RenderUnit: id=${renderUnit.id}; poolKey='${renderUnit.contentAllocator.getPoolKey()}'.
             """
                 .trimIndent())
       }

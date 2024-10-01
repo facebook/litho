@@ -95,7 +95,7 @@ private constructor(
     return component.createMountContent(c)
   }
 
-  override fun getPoolableContentType(): Any {
+  override fun getPoolKey(): Any {
     return component.javaClass
   }
 
