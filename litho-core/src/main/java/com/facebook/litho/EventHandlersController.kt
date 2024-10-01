@@ -137,4 +137,9 @@ class EventHandlersController {
   class DispatchInfoWrapper(val dispatchInfo: EventDispatchInfo) {
     var usedInCurrentTree: Boolean = false
   }
+
+  @Synchronized
+  fun clear() {
+    _dispatchInfos.clear()
+  }
 }

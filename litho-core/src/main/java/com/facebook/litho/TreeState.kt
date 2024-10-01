@@ -331,6 +331,11 @@ class TreeState {
     }
   }
 
+  fun clearEventHandlersAndTriggers() {
+    synchronized(eventTriggersContainer) { eventTriggersContainer.clear() }
+    eventHandlersController.clear()
+  }
+
   fun clearUnusedTriggerHandlers() {
     synchronized(eventTriggersContainer) { eventTriggersContainer.clear() }
   }

@@ -2466,6 +2466,9 @@ public class ComponentTree
 
       if (mTreeState != null) {
         effectsHandler = mTreeState.getEffectsHandler();
+        if (ComponentsConfiguration.clearEventHandlersAndTriggers) {
+          mTreeState.clearEventHandlersAndTriggers();
+        }
       } else {
         effectsHandler = null;
       }
@@ -2488,7 +2491,7 @@ public class ComponentTree
       }
       mOnReleaseListeners = null;
     }
-    if (mTreeState != null) {
+    if (mTreeState != null && !ComponentsConfiguration.clearEventHandlersAndTriggers) {
       mTreeState.clearUnusedTriggerHandlers();
     }
   }

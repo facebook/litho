@@ -295,6 +295,9 @@ internal constructor(
     /** This config will enable logging of interactable components with 0 alpha */
     @JvmField var isZeroAlphaLoggingEnabled: Boolean = false
 
+    /** This flag is used to enable clearing event handlers and triggers */
+    @JvmField var clearEventHandlersAndTriggers: Boolean = false
+
     /**
      * This method is only used so that Java clients can have a builder like approach to override a
      * configuration.
