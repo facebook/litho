@@ -40,6 +40,7 @@ import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.extensions.OnItemCallbacks;
 import com.facebook.rendercore.extensions.VisibleBoundsCallbacks;
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtension.IncrementalMountExtensionState;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -420,9 +421,19 @@ public class IncrementalMountExtension
       return;
     }
 
-    final Collection<IncrementalMountOutput> outputs = state.mInput.getIncrementalMountOutputs();
-    for (IncrementalMountOutput output : outputs) {
-      maybeAcquireReference(extensionState, localVisibleRect, output, true);
+    if (RenderCoreConfig.enableUnmountingFromLeafNode) {
+      final List<IncrementalMountOutput> outputs =
+          new ArrayList<>(state.mInput.getIncrementalMountOutputs());
+      // Unmount components from leaf node if necessary, then we might be able to release Host
+      // because all children has been unmounted.
+      for (int i = outputs.size() - 1; i >= 0; i--) {
+        maybeAcquireReference(extensionState, localVisibleRect, outputs.get(i), true);
+      }
+    } else {
+      final Collection<IncrementalMountOutput> outputs = state.mInput.getIncrementalMountOutputs();
+      for (IncrementalMountOutput output : outputs) {
+        maybeAcquireReference(extensionState, localVisibleRect, output, true);
+      }
     }
 
     setupPreviousMountableOutputData(state, localVisibleRect);
@@ -439,21 +450,11 @@ public class IncrementalMountExtension
     // override that if the item is outside the visible bounds.
     // TODO (T64830748): extract animations logic out of this.
 
-    final boolean isMountable;
-    if (RenderCoreConfig.shouldEnableIMFix) {
-      // We should rely on the excludeFromIncrementalMount flag to determine if a host component is
-      // mountable
-      isMountable =
-          Rect.intersects(localVisibleRect, incrementalMountOutput.getBounds())
-              || incrementalMountOutput.excludeFromIncrementalMount();
-    } else {
-      isMountable =
-          isMountedHostWithChildContent(content)
-              || Rect.intersects(localVisibleRect, incrementalMountOutput.getBounds())
-              || isRootItem(id)
-              || incrementalMountOutput.excludeFromIncrementalMount();
-    }
-
+    final boolean isMountable =
+        isMountedHostWithChildContent(content)
+            || Rect.intersects(localVisibleRect, incrementalMountOutput.getBounds())
+            || isRootItem(id)
+            || incrementalMountOutput.excludeFromIncrementalMount();
     final boolean hasAcquiredMountRef = extensionState.ownsReference(id);
     if (isMountable && !hasAcquiredMountRef) {
       extensionState.acquireMountReference(incrementalMountOutput.getId(), isMounting);
