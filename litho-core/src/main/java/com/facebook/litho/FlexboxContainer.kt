@@ -61,14 +61,15 @@ inline fun ResourcesScope.Column(
     createColumn(alignContent, alignItems, justifyContent, wrap, isReversed, gap, style, null)
 
 /** Internal function to allow [Column] to be inlineable. */
-fun ResourcesScope.createColumn(
-    alignContent: YogaAlign? = null,
-    alignItems: YogaAlign? = null,
-    justifyContent: YogaJustify? = null,
-    wrap: YogaWrap? = null,
-    isReversed: Boolean = false,
-    gap: Dimen? = null,
-    style: Style? = null,
+@PublishedApi
+internal fun ResourcesScope.createColumn(
+    alignContent: YogaAlign?,
+    alignItems: YogaAlign?,
+    justifyContent: YogaJustify?,
+    wrap: YogaWrap?,
+    isReversed: Boolean,
+    gap: Dimen?,
+    style: Style?,
     resolvedContainerScope: FlexboxContainerScope?
 ): Column =
     Column(
@@ -123,14 +124,15 @@ inline fun ResourcesScope.Row(
 ): Row = createRow(alignContent, alignItems, justifyContent, wrap, isReversed, gap, style, null)
 
 /** Internal function to allow [Row] to be inlineable. */
-fun ResourcesScope.createRow(
-    alignContent: YogaAlign? = null,
-    alignItems: YogaAlign? = null,
-    justifyContent: YogaJustify? = null,
-    wrap: YogaWrap? = null,
-    isReversed: Boolean = false,
-    gap: Dimen? = null,
-    style: Style? = null,
+@PublishedApi
+internal fun ResourcesScope.createRow(
+    alignContent: YogaAlign?,
+    alignItems: YogaAlign?,
+    justifyContent: YogaJustify?,
+    wrap: YogaWrap?,
+    isReversed: Boolean,
+    gap: Dimen?,
+    style: Style?,
     resolvedContainerScope: FlexboxContainerScope?
 ): Row =
     Row(
