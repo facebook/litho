@@ -1352,7 +1352,6 @@ open class ComponentHost(
     scrapViewMountItemsArray = null
     scrapMountItemsArray = null
     scrapDrawableMountItems = null
-    disappearingItems = null
     contentDescription = null
     viewTags = null
     childDrawingOrder = IntArray(0)
