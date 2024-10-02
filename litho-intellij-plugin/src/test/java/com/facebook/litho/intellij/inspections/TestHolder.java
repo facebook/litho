@@ -71,7 +71,9 @@ class TestHolder implements AnnotationHolder {
     return null;
   }
 
-  @Override
+  // This method is removed in the newer APIs, but is present in the older ones, so let's keep it
+  // for now and remove it later.
+  // TODO: remove this method
   public Annotation createWeakWarningAnnotation(ASTNode node, @Nullable String message) {
     return null;
   }
