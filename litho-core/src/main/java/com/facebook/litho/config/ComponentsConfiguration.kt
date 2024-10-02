@@ -348,6 +348,7 @@ internal constructor(
     private var enableHostWillNotDraw = baseConfig.enableHostWillNotDraw
     private var enableLoggingForRenderInFlight = baseConfig.enableLoggingForRenderInFlight
     private var enableFixForCachedNestedTree = baseConfig.enableFixForCachedNestedTree
+    private var isHostViewAttributesCleanUpEnabled = baseConfig.isHostViewAttributesCleanUpEnabled
 
     fun shouldAddHostViewForRootComponent(enabled: Boolean): Builder = also {
       shouldAddHostViewForRootComponent = enabled
@@ -455,6 +456,10 @@ internal constructor(
       enableFixForCachedNestedTree = enabled
     }
 
+    fun enableHostViewAttributesCleanUp(enabled: Boolean): Builder = also {
+      isHostViewAttributesCleanUpEnabled = enabled
+    }
+
     fun build(): ComponentsConfiguration {
       return baseConfig.copy(
           shouldAddHostViewForRootComponent = shouldAddHostViewForRootComponent,
@@ -491,6 +496,7 @@ internal constructor(
           enableHostWillNotDraw = enableHostWillNotDraw,
           enableLoggingForRenderInFlight = enableLoggingForRenderInFlight,
           enableFixForCachedNestedTree = enableFixForCachedNestedTree,
+          isHostViewAttributesCleanUpEnabled = isHostViewAttributesCleanUpEnabled,
       )
     }
   }
