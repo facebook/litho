@@ -16,6 +16,7 @@
 
 package com.facebook.litho
 
+import com.facebook.rendercore.Dimen
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaJustify
 import com.facebook.yoga.YogaWrap
@@ -36,13 +37,14 @@ inline fun ResourcesScope.Column(
     justifyContent: YogaJustify? = null,
     wrap: YogaWrap? = null,
     isReversed: Boolean = false,
+    gap: Dimen? = null,
     style: Style? = null,
     init: FlexboxContainerScope.() -> Unit,
 ): Column {
   val containerScope = FlexboxContainerScope(context)
   containerScope.init()
   return createColumn(
-      alignContent, alignItems, justifyContent, wrap, isReversed, style, containerScope)
+      alignContent, alignItems, justifyContent, wrap, isReversed, gap, style, containerScope)
 }
 
 /** Constructs a new [Column] without any children. */
@@ -53,8 +55,10 @@ inline fun ResourcesScope.Column(
     justifyContent: YogaJustify? = null,
     wrap: YogaWrap? = null,
     isReversed: Boolean = false,
+    gap: Dimen? = null,
     style: Style? = null
-): Column = createColumn(alignContent, alignItems, justifyContent, wrap, isReversed, style, null)
+): Column =
+    createColumn(alignContent, alignItems, justifyContent, wrap, isReversed, gap, style, null)
 
 /** Internal function to allow [Column] to be inlineable. */
 fun ResourcesScope.createColumn(
@@ -63,6 +67,7 @@ fun ResourcesScope.createColumn(
     justifyContent: YogaJustify? = null,
     wrap: YogaWrap? = null,
     isReversed: Boolean = false,
+    gap: Dimen? = null,
     style: Style? = null,
     resolvedContainerScope: FlexboxContainerScope?
 ): Column =
@@ -72,6 +77,7 @@ fun ResourcesScope.createColumn(
             justifyContent,
             wrap,
             isReversed,
+            gap?.toPixels(),
             resolvedContainerScope?.children)
         .apply {
           style?.applyCommonProps(
@@ -94,13 +100,14 @@ inline fun ResourcesScope.Row(
     justifyContent: YogaJustify? = null,
     wrap: YogaWrap? = null,
     isReversed: Boolean = false,
+    gap: Dimen? = null,
     style: Style? = null,
     init: FlexboxContainerScope.() -> Unit,
 ): Row {
   val containerScope = FlexboxContainerScope(context)
   containerScope.init()
   return createRow(
-      alignContent, alignItems, justifyContent, wrap, isReversed, style, containerScope)
+      alignContent, alignItems, justifyContent, wrap, isReversed, gap, style, containerScope)
 }
 
 /** Constructs a new [Column] without any children. */
@@ -111,8 +118,9 @@ inline fun ResourcesScope.Row(
     justifyContent: YogaJustify? = null,
     wrap: YogaWrap? = null,
     isReversed: Boolean = false,
+    gap: Dimen? = null,
     style: Style? = null
-): Row = createRow(alignContent, alignItems, justifyContent, wrap, isReversed, style, null)
+): Row = createRow(alignContent, alignItems, justifyContent, wrap, isReversed, gap, style, null)
 
 /** Internal function to allow [Row] to be inlineable. */
 fun ResourcesScope.createRow(
@@ -121,6 +129,7 @@ fun ResourcesScope.createRow(
     justifyContent: YogaJustify? = null,
     wrap: YogaWrap? = null,
     isReversed: Boolean = false,
+    gap: Dimen? = null,
     style: Style? = null,
     resolvedContainerScope: FlexboxContainerScope?
 ): Row =
@@ -130,6 +139,7 @@ fun ResourcesScope.createRow(
             justifyContent,
             wrap,
             isReversed,
+            gap?.toPixels(),
             resolvedContainerScope?.children)
         .apply {
           style?.applyCommonProps(
