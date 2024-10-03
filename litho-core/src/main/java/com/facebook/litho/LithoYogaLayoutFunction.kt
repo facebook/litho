@@ -873,6 +873,7 @@ internal object LithoYogaLayoutFunction {
     alignItems?.let { node.alignItems = it }
     yogaWrap?.let { node.wrap = it }
     yogaMeasureFunction?.let { node.setMeasureFunction(it) }
+    withValidGap { gap, yogaGutter ->  node.setGap(yogaGutter, gap.toFloat()) }
 
     var nestedTreeHolderTransfered = false
     // Apply the layout props from the components to the YogaNode
