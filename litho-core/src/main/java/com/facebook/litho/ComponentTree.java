@@ -2227,35 +2227,6 @@ public class ComponentTree
     int rootHeight = 0;
     boolean committedNewLayout = false;
     synchronized (this) {
-      if (getLithoConfiguration().componentsConfig.enableLoggingForRenderInFlight
-          || getLithoConfiguration().componentsConfig.enableResolveWithoutSizeSpec) {
-        final int resolvedRootId = mRoot != null ? mRoot.getId() : INVALID_ID;
-        final boolean isRootNotCompatibleAndWithoutResolveFuture =
-            layoutState.getResolveResult().component.getId() != resolvedRootId
-                && mResolveResultFutures.isEmpty();
-        final boolean isSizeNotCompatibleAndWithoutLayoutFuture =
-            !isCompatibleSpec(layoutState, mWidthSpec, mHeightSpec) && mLayoutTreeFutures.isEmpty();
-        if (isRootNotCompatibleAndWithoutResolveFuture
-            || isSizeNotCompatibleAndWithoutLayoutFuture) {
-          // log debug error for in-flight renders
-          DebugEventDispatcher.dispatch(
-              LithoDebugEvent.DebugInfo,
-              () -> String.valueOf(mId),
-              LogLevel.ERROR,
-              attributes -> {
-                attributes.put(Name, "RenderInFlight");
-                attributes.put(DebugEventAttribute.Version, layoutVersion);
-                attributes.put(DebugEventAttribute.Source, layoutSourceToString(source));
-                attributes.put("Root", rootComponent.getSimpleName());
-                attributes.put(DebugEventAttribute.Width, layoutState.getWidth());
-                attributes.put(DebugEventAttribute.Height, layoutState.getHeight());
-                attributes.put(
-                    "withoutSizeSpec",
-                    getLithoConfiguration().componentsConfig.enableResolveWithoutSizeSpec);
-                return Unit.INSTANCE;
-              });
-        }
-      }
       // We don't want to compute, layout, or reduce trees while holding a lock. However this means
       // that another thread could compute a layout and commit it before we get to this point. To
       // handle this, we make sure that the committed setRootId is only ever increased, meaning
@@ -2279,6 +2250,43 @@ public class ComponentTree
               attributes.put(DebugEventAttribute.Height, layoutState.getHeight());
               return Unit.INSTANCE;
             });
+      } else {
+        if (getLithoConfiguration().componentsConfig.enableLoggingForRenderInFlight
+            || getLithoConfiguration().componentsConfig.enableResolveWithoutSizeSpec) {
+          final int resolvedRootId = mRoot != null ? mRoot.getId() : INVALID_ID;
+          final boolean isRootNotCompatibleAndWithoutResolveFuture =
+              layoutState.getResolveResult().component.getId() != resolvedRootId
+                  && mResolveResultFutures.isEmpty();
+          final boolean isSizeNotCompatibleAndWithoutLayoutFuture =
+              !isCompatibleSpec(layoutState, mWidthSpec, mHeightSpec)
+                  && mLayoutTreeFutures.isEmpty();
+          if (isRootNotCompatibleAndWithoutResolveFuture
+              || isSizeNotCompatibleAndWithoutLayoutFuture) {
+            // log debug error for in-flight renders
+            DebugEventDispatcher.dispatch(
+                LithoDebugEvent.DebugInfo,
+                () -> String.valueOf(mId),
+                LogLevel.ERROR,
+                attributes -> {
+                  attributes.put(Name, "RenderInFlight v2");
+                  attributes.put(DebugEventAttribute.Version, layoutVersion);
+                  attributes.put(DebugEventAttribute.Source, layoutSourceToString(source));
+                  attributes.put("Root", rootComponent.getSimpleName());
+                  attributes.put(DebugEventAttribute.Width, layoutState.getWidth());
+                  attributes.put(DebugEventAttribute.Height, layoutState.getHeight());
+                  attributes.put(
+                      "withoutSizeSpec",
+                      getLithoConfiguration().componentsConfig.enableResolveWithoutSizeSpec);
+                  attributes.put(
+                      "isRootNotCompatibleAndWithoutResolveFuture",
+                      isRootNotCompatibleAndWithoutResolveFuture);
+                  attributes.put(
+                      "isSizeNotCompatibleAndWithoutLayoutFuture",
+                      isSizeNotCompatibleAndWithoutLayoutFuture);
+                  return Unit.INSTANCE;
+                });
+          }
+        }
       }
 
       if (DEBUG_LOGS) {
