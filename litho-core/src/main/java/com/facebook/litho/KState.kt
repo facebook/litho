@@ -66,7 +66,7 @@ fun <T> ComponentScope.useState(initializer: () -> T): State<T> {
 
   // Only need to mark this global key as seen once
   if (hookIndex == 0) {
-    treeState.keepStateContainerForGlobalKey(globalKey, isNestedTreeContext)
+    treeState.markStateInUse(globalKey, isNestedTreeContext)
   }
 
   return State(

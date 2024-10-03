@@ -113,7 +113,7 @@ class ScopedComponentInfo(
 
   fun commitToLayoutState(treeState: TreeState) {
     // the get method adds the state container to the needed state container map
-    treeState.keepStateContainerForGlobalKey(context.globalKey, context.isNestedTreeContext)
+    treeState.markStateInUse(context.globalKey, context.isNestedTreeContext)
   }
 
   private fun hasState(): Boolean = component is SpecGeneratedComponent && component.hasState()

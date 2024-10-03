@@ -59,7 +59,7 @@ class HooksStateHandlerTest {
     assertThat(first.hasUncommittedUpdates()).isTrue
     assertThat(second.hasUncommittedUpdates()).isTrue
     val secondKstate = second.getState(GLOBAL_KEY)?.value as KStateContainer?
-    second.keepStateContainerForGlobalKey(GLOBAL_KEY)
+    second.markStateInUse(GLOBAL_KEY)
     assertThat(secondKstate?.states)
         .hasSize(4)
         .isEqualTo(Lists.newArrayList("test", 4, bazState, "newValue"))
@@ -98,7 +98,7 @@ class HooksStateHandlerTest {
     assertThat(second.hasUncommittedUpdates()).isTrue
     assertThat(second.stateContainers).hasSize(1)
     val secondKstate = second.getState(GLOBAL_KEY)?.value as KStateContainer?
-    second.keepStateContainerForGlobalKey(GLOBAL_KEY)
+    second.markStateInUse(GLOBAL_KEY)
     assertThat(secondKstate?.states)
         .hasSize(4)
         .isEqualTo(Lists.newArrayList("test", 6, bazState, "newValue"))
@@ -140,9 +140,9 @@ class HooksStateHandlerTest {
         })
     val third = StateHandler(first)
     third.applyStateUpdatesEarly(context = c, component = null, prevTreeRootNode = null)
-    third.keepStateContainerForGlobalKey(GLOBAL_KEY)
+    third.markStateInUse(GLOBAL_KEY)
     val secondKstate = second.getState(GLOBAL_KEY)?.value as KStateContainer?
-    second.keepStateContainerForGlobalKey(GLOBAL_KEY)
+    second.markStateInUse(GLOBAL_KEY)
     assertThat(secondKstate?.states)
         .hasSize(4)
         .isEqualTo(Lists.newArrayList("test", 6, bazState, "newValue"))

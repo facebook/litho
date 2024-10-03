@@ -135,7 +135,7 @@ class StateHandler {
     }
   }
 
-  fun keepStateContainerForGlobalKey(key: String) {
+  fun markStateInUse(key: String) {
     neededStateContainers.add(key)
   }
 
