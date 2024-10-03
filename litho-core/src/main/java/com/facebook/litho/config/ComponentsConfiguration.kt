@@ -112,7 +112,7 @@ internal constructor(
      * size do not get unmounted when they go out of the viewport.
      */
     @JvmField val enableFixForIM: Boolean = false,
-    @JvmField val enableLifecycleOwnerWrapper: Boolean = false,
+    @JvmField val enableLifecycleOwnerWrapper: Boolean = true,
     @JvmField val visibilityBoundsTransformer: VisibilityBoundsTransformer? = null,
     @JvmField val sectionsRecyclerViewOnCreateHandler: ((Object) -> Unit)? = null,
     /**
