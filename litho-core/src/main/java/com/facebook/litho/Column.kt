@@ -165,11 +165,11 @@ private constructor(
 
     override fun gapDip(gutter: YogaGutter, @Dimension(unit = Dimension.DP) gap: Float): Builder =
         apply {
-          column.orCreateCommonProps.gap(gutter, mResourceResolver.dipsToPixels(gap))
+          column.columnGap = mResourceResolver.dipsToPixels(gap)
         }
 
     override fun gapPx(gutter: YogaGutter, px: Int): Builder = apply {
-      column.orCreateCommonProps.gap(gutter, px)
+        column.columnGap = px
     }
 
     override fun wrap(wrap: YogaWrap?): Builder = apply { column.wrap = wrap }

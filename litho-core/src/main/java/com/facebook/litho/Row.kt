@@ -162,12 +162,12 @@ private constructor(
     }
 
     override fun gapPx(gutter: YogaGutter, px: Int): Builder = apply {
-      row.commonProps?.gap(gutter, px)
+      row.rowGap = px
     }
 
     override fun gapDip(gutter: YogaGutter, @Dimension(unit = Dimension.DP) gap: Float): Builder =
         apply {
-          row.commonProps?.gap(gutter, mResourceResolver.dipsToPixels(gap))
+          row.rowGap = mResourceResolver.dipsToPixels(gap)
         }
 
     override fun wrap(wrap: YogaWrap?): Builder = apply { row.wrap = wrap }
