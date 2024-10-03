@@ -46,7 +46,7 @@ class HooksStateHandlerTest {
     kStateContainer = KStateContainer.withNewState(kStateContainer, 4)
     kStateContainer = KStateContainer.withNewState(kStateContainer, bazState)
     val first = StateHandler()
-    first.addStateContainer(GLOBAL_KEY, ComponentState(value = kStateContainer))
+    first.addState(GLOBAL_KEY, ComponentState(value = kStateContainer))
     first.queueHookStateUpdate(
         GLOBAL_KEY,
         object : HookUpdater {
@@ -78,7 +78,7 @@ class HooksStateHandlerTest {
     var kStateContainer = KStateContainer.withNewState(null, "test")
     kStateContainer = KStateContainer.withNewState(kStateContainer, 4)
     kStateContainer = KStateContainer.withNewState(kStateContainer, bazState)
-    first.addStateContainer(GLOBAL_KEY, ComponentState(value = kStateContainer))
+    first.addState(GLOBAL_KEY, ComponentState(value = kStateContainer))
     first.queueHookStateUpdate(
         GLOBAL_KEY,
         object : HookUpdater {
@@ -117,7 +117,7 @@ class HooksStateHandlerTest {
     var kStateContainer = KStateContainer.withNewState(null, "test")
     kStateContainer = KStateContainer.withNewState(kStateContainer, 4)
     kStateContainer = KStateContainer.withNewState(kStateContainer, bazState)
-    first.addStateContainer(GLOBAL_KEY, ComponentState(value = kStateContainer))
+    first.addState(GLOBAL_KEY, ComponentState(value = kStateContainer))
     first.queueHookStateUpdate(
         GLOBAL_KEY,
         object : HookUpdater {

@@ -50,7 +50,7 @@ fun <T> ComponentScope.useState(initializer: () -> T): State<T> {
             initializer,
             isNestedTreeContext,
             context.scopedComponentInfo.component.simpleName)
-    treeState.addStateContainer(globalKey, state, isNestedTreeContext)
+    treeState.addState(globalKey, state, isNestedTreeContext)
 
     context.scopedComponentInfo.state = state
 

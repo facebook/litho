@@ -49,7 +49,7 @@ class TreeStateTests {
     val stateContainer = ComponentState(value = StateUpdateTestComponent.TestStateContainer())
 
     // Add state container
-    treeState.addStateContainer(testComponentKey, stateContainer, false)
+    treeState.addState(testComponentKey, stateContainer, false)
 
     // Queue state update
     treeState.queueStateUpdate(
@@ -113,7 +113,7 @@ class TreeStateTests {
   @Test
   fun testCommitRenderState() {
     val previousTreeState = TreeState()
-    previousTreeState.addStateContainer(
+    previousTreeState.addState(
         testComponentKey,
         ComponentState(value = StateUpdateTestComponent.TestStateContainer()),
         false,
@@ -130,7 +130,7 @@ class TreeStateTests {
   @Test
   fun testCommitLayoutState() {
     val previousTreeState = TreeState()
-    previousTreeState.addStateContainer(
+    previousTreeState.addState(
         testComponentKey,
         ComponentState(value = StateUpdateTestComponent.TestStateContainer()),
         true,
@@ -147,7 +147,7 @@ class TreeStateTests {
   @Test
   fun testCopyPreviousState() {
     val previousTreeState = TreeState()
-    previousTreeState.addStateContainer(
+    previousTreeState.addState(
         testComponentKey,
         ComponentState(value = StateUpdateTestComponent.TestStateContainer()),
         false,

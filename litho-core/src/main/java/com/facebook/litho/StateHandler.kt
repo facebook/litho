@@ -162,7 +162,7 @@ class StateHandler {
               scopedContext,
               key,
           )
-      addState(key, state)
+      this.addState(key, state)
       state
     }
   }
@@ -242,12 +242,6 @@ class StateHandler {
     _pendingStateUpdates.remove(key)
   }
 
-  @Synchronized
-  fun addState(key: String, state: ComponentState<*>) {
-    neededStateContainers.add(key)
-    _stateContainers[key] = state
-  }
-
   /**
    * Maps a component key to a component object that retains the current state values for that key.
    *
@@ -255,7 +249,7 @@ class StateHandler {
    * @param state the state value that needs to be retained
    */
   @Synchronized
-  fun addStateContainer(key: String, state: ComponentState<*>) {
+  fun addState(key: String, state: ComponentState<*>) {
     neededStateContainers.add(key)
     _stateContainers[key] = state
   }

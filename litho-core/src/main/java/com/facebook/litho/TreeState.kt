@@ -194,8 +194,8 @@ class TreeState {
       }
     }
 
-  fun addStateContainer(key: String, state: ComponentState<*>, isNestedTree: Boolean) {
-    getStateHandler(isNestedTree).addStateContainer(key, state)
+  fun addState(key: String, state: ComponentState<*>, isNestedTree: Boolean) {
+    getStateHandler(isNestedTree).addState(key, state)
   }
 
   fun keepStateContainerForGlobalKey(key: String, isNestedTree: Boolean) {
