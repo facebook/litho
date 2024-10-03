@@ -58,7 +58,7 @@ class TreeStateTests {
     // Apply state updates
     treeState.applyStateUpdatesEarly(context, testComponent, null, false)
     val previousStateContainer =
-        treeState.getStateContainer(testComponentKey, false)?.value
+        treeState.getState(testComponentKey, false)?.value
             as StateUpdateTestComponent.TestStateContainer?
     assertThat(previousStateContainer).isNotNull
     assertThat(previousStateContainer?.count).isEqualTo(1)
@@ -77,8 +77,7 @@ class TreeStateTests {
     localTreeState.registerLayoutState()
 
     // Add state containers in ISC
-    localTreeState.createOrGetStateContainerForComponent(
-        componentContext, testComponent, testComponentKey)
+    localTreeState.createOrGetState(componentContext, testComponent, testComponentKey)
     val resolveState = treeState.resolveState
     val layoutStateHandler = treeState.layoutState
     if (isNestedTree) {
@@ -121,7 +120,7 @@ class TreeStateTests {
     val treeState = TreeState()
     treeState.commitResolveState(previousTreeState)
     val previousStateContainer =
-        treeState.getStateContainer(testComponentKey, false)?.value
+        treeState.getState(testComponentKey, false)?.value
             as StateUpdateTestComponent.TestStateContainer?
     assertThat(previousStateContainer).isNotNull
     assertThat(previousStateContainer?.count).isEqualTo(0)
@@ -138,7 +137,7 @@ class TreeStateTests {
     val treeState = TreeState()
     treeState.commitLayoutState(previousTreeState)
     val previousStateContainer =
-        treeState.getStateContainer(testComponentKey, true)?.value
+        treeState.getState(testComponentKey, true)?.value
             as StateUpdateTestComponent.TestStateContainer?
     assertThat(previousStateContainer).isNotNull
     assertThat(previousStateContainer?.count).isEqualTo(0)
@@ -154,7 +153,7 @@ class TreeStateTests {
     )
     val treeState = TreeState(previousTreeState)
     val previousStateContainer =
-        treeState.getStateContainer(testComponentKey, false)?.value
+        treeState.getState(testComponentKey, false)?.value
             as StateUpdateTestComponent.TestStateContainer?
     assertThat(previousStateContainer).isNotNull
     assertThat(previousStateContainer?.count).isEqualTo(0)
@@ -182,7 +181,7 @@ class TreeStateTests {
   fun `queueDuplicateStateUpdates enabled - StateUpdate is enqueued if it is a duplicate`() {
     val treeState = TreeState(fromState = null)
 
-    treeState.createOrGetStateContainerForComponent(context, testComponent, testComponentKey)
+    treeState.createOrGetState(context, testComponent, testComponentKey)
 
     treeState.assertThatTestStateContainerHasValue(4)
 
@@ -213,7 +212,7 @@ class TreeStateTests {
 
   private fun TreeState.assertThatTestStateContainerHasValue(value: Int) {
     assertThat(
-            (getStateContainer(testComponentKey, false)?.value
+            (getState(testComponentKey, false)?.value
                     as StateUpdateTestComponent.TestStateContainer)
                 .count)
         .isEqualTo(value)

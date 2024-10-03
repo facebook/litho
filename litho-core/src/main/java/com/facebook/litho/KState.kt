@@ -38,8 +38,7 @@ fun <T> ComponentScope.useState(initializer: () -> T): State<T> {
 
   val isNestedTreeContext = context.isNestedTreeContext
   val kState =
-      treeState.getStateContainer(globalKey, isNestedTreeContext)
-          as ComponentState<KStateContainer>?
+      treeState.getState(globalKey, isNestedTreeContext) as ComponentState<KStateContainer>?
 
   if (kState == null || kState.value.states.size <= hookIndex) {
     // The initial state was not computed yet. let's create it and put it in the state

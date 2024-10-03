@@ -382,7 +382,7 @@ object Resolver {
     if (component is SpecGeneratedComponent) {
       if (component.hasState()) {
         c.scopedComponentInfo.state =
-            resolveContext.treeState.createOrGetStateContainerForComponent(c, component, globalKey)
+            resolveContext.treeState.createOrGetState(c, component, globalKey)
       }
 
       // Note: state must be set (via ScopedComponentInfo.setStateContainer) before invoking

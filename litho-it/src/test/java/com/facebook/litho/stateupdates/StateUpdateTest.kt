@@ -98,7 +98,7 @@ class StateUpdateTest {
     val state =
         Whitebox.invokeMethod<Any>(
             treeState,
-            "getStateContainer",
+            "getState",
             globalKey,
             true,
         ) as ComponentState<T>
@@ -113,7 +113,7 @@ class StateUpdateTest {
     val state =
         Whitebox.invokeMethod<Any>(
             treeState,
-            "getStateContainer",
+            "getState",
             globalKey,
             false,
         ) as ComponentState<T>

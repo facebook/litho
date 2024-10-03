@@ -143,7 +143,7 @@ class StateHandler {
    * StateContainer in this StateHandler should be accessed using this method as it will also ensure
    * that the state is marked as needed
    */
-  fun getStateContainer(key: String): ComponentState<out StateContainer>? = _stateContainers[key]
+  fun getState(key: String): ComponentState<out StateContainer>? = _stateContainers[key]
 
   fun createOrGetComponentState(
       scopedContext: ComponentContext,

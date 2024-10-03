@@ -202,11 +202,11 @@ class TreeState {
     getStateHandler(isNestedTree).keepStateContainerForGlobalKey(key)
   }
 
-  fun getStateContainer(key: String, isNestedTree: Boolean): ComponentState<out StateContainer>? {
-    return getStateHandler(isNestedTree).getStateContainer(key)
+  fun getState(key: String, isNestedTree: Boolean): ComponentState<out StateContainer>? {
+    return getStateHandler(isNestedTree).getState(key)
   }
 
-  fun createOrGetStateContainerForComponent(
+  fun createOrGetState(
       scopedContext: ComponentContext,
       component: Component,
       key: String
@@ -251,7 +251,7 @@ class TreeState {
       isNestedTree: Boolean
   ): Boolean {
     val stateHandler = getStateHandler(isNestedTree)
-    val committedState = stateHandler.getStateContainer(globalKey)
+    val committedState = stateHandler.getState(globalKey)
     if (committedState != null) {
       val committedStateWithUpdatesApplied =
           stateHandler.getStateContainerWithHookUpdates(globalKey)
