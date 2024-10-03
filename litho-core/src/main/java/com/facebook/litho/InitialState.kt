@@ -21,7 +21,6 @@ import com.facebook.litho.ComponentsSystrace.beginSection
 import com.facebook.litho.ComponentsSystrace.endSection
 import com.facebook.litho.ComponentsSystrace.isTracing
 import com.facebook.litho.state.ComponentState
-import java.util.Collections
 import java.util.HashMap
 import java.util.HashSet
 import javax.annotation.concurrent.GuardedBy
@@ -41,9 +40,11 @@ class InitialState {
   // All the initial states that have been created and can not yet be released. This is a concurrent
   // map as we can access it from multiple threads. The safety is given by the fact that we will
   // only get and set for a key while holding a lock for that specific key.
-  @JvmField
+  @GuardedBy("this")
   @VisibleForTesting
-  val states = Collections.synchronizedMap(HashMap<String, ComponentState<out StateContainer>>())
+  private val _states = hashMapOf<String, ComponentState<out StateContainer>>()
+  val states: Map<String, ComponentState<out StateContainer>>
+    get() = _states
 
   @GuardedBy("this") private val createInitialStateLocks: MutableMap<String, Any> = HashMap()
 
@@ -71,7 +72,7 @@ class InitialState {
 
     return synchronized(stateLock) {
       val state =
-          states.getOrPut(key) {
+          _states.getOrPut(key) {
             createInitialState(context = scopedContext, component = component)
           }
       state
@@ -140,7 +141,7 @@ class InitialState {
         ("Unexpected useState hook sequence encountered: $hookIndex (states size: ${hookStates.states.size}). This usually indicates that the useState hook is being called from within a conditional, loop, or after an early-exit condition. See https://fblitho.com/docs/mainconcepts/hooks-intro/#rules-for-hooks for more information on the Rules of Hooks.")
       }
       val newState = state?.copy(value = hookStates) ?: ComponentState(value = hookStates)
-      this.states[key] = newState
+      this._states[key] = newState
       newState
     }
   }
@@ -157,7 +158,7 @@ class InitialState {
       // This is safe as we have a guarantee that by this point there is no layout happening
       // and therefore we can not be executing createOrGetInitialStateForComponent or
       // createOrGetInitialHookState from any thread.
-      states.clear()
+      _states.clear()
     }
   }
 }
