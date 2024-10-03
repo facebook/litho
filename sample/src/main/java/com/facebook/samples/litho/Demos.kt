@@ -117,7 +117,6 @@ import com.facebook.samples.litho.kotlin.collection.SpanCollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.StaggeredGridCollectionExample
 import com.facebook.samples.litho.kotlin.collection.StickyHeaderCollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.TabsCollectionKComponent
-import com.facebook.samples.litho.kotlin.compose.ComposeExampleComponent
 import com.facebook.samples.litho.kotlin.errors.ErrorHandlingKotlinActivity
 import com.facebook.samples.litho.kotlin.gettingstarted.BasicList
 import com.facebook.samples.litho.kotlin.gettingstarted.ClickableText
@@ -270,13 +269,6 @@ class Demos {
                             SingleDemo(
                                 name = "Sections Demo: Lithography",
                                 klass = LithographyKotlinActivity::class.java))),
-                    DemoGrouping(
-                        name = "Compose",
-                        listOf(
-                            SingleDemo(
-                                name = "Compose Component Example",
-                                component = ComposeExampleComponent()),
-                        )),
                     DemoGrouping(
                         name = "Primitives",
                         listOf(
