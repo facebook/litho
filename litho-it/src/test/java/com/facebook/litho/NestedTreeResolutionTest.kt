@@ -20,7 +20,7 @@ import com.facebook.litho.LifecycleStep.StepInfo
 import com.facebook.litho.YogaLayoutOutput.Companion.getYogaNode
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.stateupdates.ComponentWithMeasureCall
-import com.facebook.litho.testing.LegacyLithoViewRule
+import com.facebook.litho.testing.LegacyLithoTestRule
 import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.helper.ComponentTestHelper
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -45,7 +45,7 @@ import org.robolectric.annotation.LooperMode
 @LooperMode(LooperMode.Mode.LEGACY)
 class NestedTreeResolutionTest {
 
-  @JvmField @Rule val legacyLithoViewRule = LegacyLithoViewRule()
+  @JvmField @Rule val legacyLithoTestRule = LegacyLithoTestRule()
 
   @Before
   fun before() {
@@ -54,13 +54,13 @@ class NestedTreeResolutionTest {
 
   @Test
   fun onRenderComponentWithSizeSpec_shouldContainNestTreeHolderAndNestedProps() {
-    val c = legacyLithoViewRule.context
+    val c = legacyLithoTestRule.context
     val component = RootComponentWithTreeProps.create(c).build()
-    legacyLithoViewRule.attachToWindow().setSizePx(100, 100).measure().setRoot(component).layout()
+    legacyLithoTestRule.attachToWindow().setSizePx(100, 100).measure().setRoot(component).layout()
 
     // At the end of layout calculation, the render & layout context container should be null
     assertThat(c.calculationStateContext).isNull()
-    val root = legacyLithoViewRule.currentRootNode
+    val root = legacyLithoTestRule.currentRootNode
     assertThat(root).isNotNull
     assertThat(root?.getChildAt(1)).isInstanceOf(NestedTreeHolderResult::class.java)
     val holder = root?.getChildAt(1) as NestedTreeHolderResult
@@ -71,18 +71,18 @@ class NestedTreeResolutionTest {
 
   @Test
   fun onRenderComponentWithSizeSpecWithoutReuse_shouldCallOnCreateLayoutTwice() {
-    val c = legacyLithoViewRule.context
+    val c = legacyLithoTestRule.context
     val component = RootComponentWithTreeProps.create(c).shouldNotUpdateState(true).build()
     val props = ExtraProps()
     props.steps = ArrayList()
-    legacyLithoViewRule
+    legacyLithoTestRule
         .setTreeProp(ExtraProps::class.java, props)
         .attachToWindow()
         .setSizePx(100, 100)
         .measure()
         .setRoot(component)
         .layout()
-    val root = legacyLithoViewRule.currentRootNode
+    val root = legacyLithoTestRule.currentRootNode
     assertThat(root).isNotNull
     assertThat(root?.getChildAt(1)).isInstanceOf(NestedTreeHolderResult::class.java)
     assertThat(props.steps)
@@ -93,19 +93,19 @@ class NestedTreeResolutionTest {
 
   @Test
   fun onRenderComponentWithSizeSpec_shouldNotTransferLayoutDirectionIfExplicitlySet() {
-    val c = legacyLithoViewRule.context
+    val c = legacyLithoTestRule.context
     val component = RootComponentWithTreeProps.create(c).shouldNotUpdateState(true).build()
     val props = ExtraProps()
     props.steps = ArrayList()
     props.mDirection = YogaDirection.RTL
-    legacyLithoViewRule
+    legacyLithoTestRule
         .setTreeProp(ExtraProps::class.java, props)
         .attachToWindow()
         .setSizePx(100, 100)
         .measure()
         .setRoot(component)
         .layout()
-    val root = legacyLithoViewRule.currentRootNode
+    val root = legacyLithoTestRule.currentRootNode
     assertThat(root).isNotNull
     assertThat(root?.getChildAt(1)).isInstanceOf(NestedTreeHolderResult::class.java)
     val holder = root?.getChildAt(1) as NestedTreeHolderResult
@@ -115,7 +115,7 @@ class NestedTreeResolutionTest {
 
   @Test
   fun onRenderComponentWithSizeSpec_shouldTransferLayoutDirectionIfNotExplicitlySet() {
-    val c = legacyLithoViewRule.context
+    val c = legacyLithoTestRule.context
     val component =
         RootComponentWithTreeProps.create(c)
             .shouldNotUpdateState(true)
@@ -123,14 +123,14 @@ class NestedTreeResolutionTest {
             .build()
     val props = ExtraProps()
     props.steps = ArrayList()
-    legacyLithoViewRule
+    legacyLithoTestRule
         .setTreeProp(ExtraProps::class.java, props)
         .attachToWindow()
         .setSizePx(100, 100)
         .measure()
         .setRoot(component)
         .layout()
-    val root = legacyLithoViewRule.currentRootNode
+    val root = legacyLithoTestRule.currentRootNode
     assertThat(root).isNotNull
     assertThat(root?.getChildAt(1)).isInstanceOf(NestedTreeHolderResult::class.java)
     val holder = root?.getChildAt(1) as NestedTreeHolderResult
@@ -140,7 +140,7 @@ class NestedTreeResolutionTest {
 
   @Test
   fun onReRenderComponentWithSizeSpec_shouldLeverageLayoutDiffing() {
-    val c = legacyLithoViewRule.context
+    val c = legacyLithoTestRule.context
     val info0: MutableList<StepInfo> = ArrayList()
     val tracker0 = LifecycleTracker()
     val mountable0 = MountSpecPureRenderLifecycleTester.create(c).lifecycleTracker(tracker0).build()
@@ -150,7 +150,7 @@ class NestedTreeResolutionTest {
             .child(LayoutWithSizeSpecLifecycleTester.create(c).steps(info0).body(mountable0))
             .child(Text.create(c).text("Hello World"))
             .build()
-    legacyLithoViewRule.setRoot(root0).attachToWindow().measure().layout()
+    legacyLithoTestRule.setRoot(root0).attachToWindow().measure().layout()
     assertThat(LifecycleStep.getSteps(info0))
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
@@ -188,7 +188,7 @@ class NestedTreeResolutionTest {
             .child(LayoutWithSizeSpecLifecycleTester.create(c).steps(info1).body(mountable1))
             .child(Text.create(c).text("Hello World"))
             .build()
-    legacyLithoViewRule.setRoot(root1)
+    legacyLithoTestRule.setRoot(root1)
     assertThat(LifecycleStep.getSteps(info0))
         .describedAs("Should not call any lifecycle methods.")
         .isEmpty()
@@ -217,7 +217,7 @@ class NestedTreeResolutionTest {
 
   @Test
   fun onReRenderComponentWithSizeSpecInsideComponentWithSizeSpec_shouldLeverageLayoutDiffing() {
-    val c = legacyLithoViewRule.context
+    val c = legacyLithoTestRule.context
     val info0: MutableList<StepInfo> = ArrayList()
     val tracker0 = LifecycleTracker()
     val info0_nested: MutableList<StepInfo> = ArrayList()
@@ -231,7 +231,7 @@ class NestedTreeResolutionTest {
                 LayoutWithSizeSpecLifecycleTester.create(c).steps(info0).body(layoutWithSizeSpec))
             .child(Text.create(c).text("Hello World"))
             .build()
-    legacyLithoViewRule.setRoot(root0).attachToWindow().measure().layout()
+    legacyLithoTestRule.setRoot(root0).attachToWindow().measure().layout()
     assertThat(LifecycleStep.getSteps(info0))
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
@@ -280,7 +280,7 @@ class NestedTreeResolutionTest {
                 LayoutWithSizeSpecLifecycleTester.create(c).steps(info1).body(layoutWithSizeSpec1))
             .child(Text.create(c).text("Hello World"))
             .build()
-    legacyLithoViewRule.setRoot(root1)
+    legacyLithoTestRule.setRoot(root1)
     assertThat(LifecycleStep.getSteps(info0))
         .describedAs("Should not call any lifecycle methods.")
         .isEmpty()
@@ -314,12 +314,12 @@ class NestedTreeResolutionTest {
 
   @Test
   fun onReRenderSimpleComponentWithSizeSpec_shouldLeverageLayoutDiffing() {
-    val c = legacyLithoViewRule.context
+    val c = legacyLithoTestRule.context
     val info0: MutableList<StepInfo> = ArrayList()
     val tracker0 = LifecycleTracker()
     val mountable0 = MountSpecPureRenderLifecycleTester.create(c).lifecycleTracker(tracker0).build()
     val root0 = LayoutWithSizeSpecLifecycleTester.create(c).steps(info0).body(mountable0).build()
-    legacyLithoViewRule.setRoot(root0).attachToWindow().measure().layout()
+    legacyLithoTestRule.setRoot(root0).attachToWindow().measure().layout()
     assertThat(LifecycleStep.getSteps(info0))
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
@@ -347,7 +347,7 @@ class NestedTreeResolutionTest {
             .shouldUpdate(false)
             .build()
     val root1 = LayoutWithSizeSpecLifecycleTester.create(c).steps(info1).body(mountable1).build()
-    legacyLithoViewRule.setRoot(root1)
+    legacyLithoTestRule.setRoot(root1)
     assertThat(LifecycleStep.getSteps(info0))
         .describedAs("Should not call any lifecycle methods.")
         .isEmpty()
@@ -377,7 +377,7 @@ class NestedTreeResolutionTest {
             .shouldUpdate(true)
             .build()
     val root2 = LayoutWithSizeSpecLifecycleTester.create(c).steps(info2).body(mountable2).build()
-    legacyLithoViewRule.setRoot(root2)
+    legacyLithoTestRule.setRoot(root2)
     assertThat(LifecycleStep.getSteps(info1))
         .describedAs("Should not call any lifecycle methods.")
         .isEmpty()
@@ -405,7 +405,7 @@ class NestedTreeResolutionTest {
 
   @Test
   fun onReRenderSimpleComponentWithSizeSpecInsideComponentWithSizeSpec_shouldLeverageLayoutDiffing() {
-    val c = legacyLithoViewRule.context
+    val c = legacyLithoTestRule.context
     val info0: MutableList<StepInfo> = ArrayList()
     val info0_nested: MutableList<StepInfo> = ArrayList()
     val tracker0 = LifecycleTracker()
@@ -414,7 +414,7 @@ class NestedTreeResolutionTest {
         LayoutWithSizeSpecLifecycleTester.create(c).steps(info0_nested).body(mountable0).build()
     val root0 =
         LayoutWithSizeSpecLifecycleTester.create(c).steps(info0).body(layoutWithSizeSpec0).build()
-    legacyLithoViewRule.setRoot(root0).attachToWindow().measure().layout()
+    legacyLithoTestRule.setRoot(root0).attachToWindow().measure().layout()
     assertThat(LifecycleStep.getSteps(info0))
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
@@ -451,7 +451,7 @@ class NestedTreeResolutionTest {
         LayoutWithSizeSpecLifecycleTester.create(c).steps(info1_nested).body(mountable1).build()
     val root1 =
         LayoutWithSizeSpecLifecycleTester.create(c).steps(info1).body(layoutWithSizeSpec1).build()
-    legacyLithoViewRule.setRoot(root1)
+    legacyLithoTestRule.setRoot(root1)
     assertThat(LifecycleStep.getSteps(info0))
         .describedAs("Should not call any lifecycle methods.")
         .isEmpty()
@@ -492,7 +492,7 @@ class NestedTreeResolutionTest {
         LayoutWithSizeSpecLifecycleTester.create(c).steps(info2nested).body(mountable2).build()
     val root2 =
         LayoutWithSizeSpecLifecycleTester.create(c).steps(info2).body(layoutWithSizeSpec2).build()
-    legacyLithoViewRule.setRoot(root2)
+    legacyLithoTestRule.setRoot(root2)
     assertThat(LifecycleStep.getSteps(info1))
         .describedAs("Should not call any lifecycle methods.")
         .isEmpty()
@@ -526,17 +526,17 @@ class NestedTreeResolutionTest {
 
   @Test
   fun LayoutWithSizeSpecUsingMeasureAPIShouldMountCorrectly() {
-    val c = legacyLithoViewRule.context
+    val c = legacyLithoTestRule.context
     val text_component = Text.create(c).text("sample_text").build()
     val root =
         ComponentWithSizeSpecWithMeasureCall.create(c)
             .component(text_component)
             .shouldCacheResult(true)
             .build()
-    legacyLithoViewRule.setRoot(root)
-    legacyLithoViewRule.attachToWindow().measure().layout()
+    legacyLithoTestRule.setRoot(root)
+    legacyLithoTestRule.attachToWindow().measure().layout()
     ComponentTestHelper.mountComponent(c, root)
-    assertThat(legacyLithoViewRule.findViewWithText("sample_text")).isNotNull
+    assertThat(legacyLithoTestRule.findViewWithText("sample_text")).isNotNull
   }
 
   /*
@@ -550,7 +550,7 @@ class NestedTreeResolutionTest {
   */
   @Test
   fun measureLayoutUsingMeasureApiInRenderWithDifferentSizeSpecs() {
-    val c = legacyLithoViewRule.context
+    val c = legacyLithoTestRule.context
     val stepsInfo: List<StepInfo> = ArrayList()
     val mountableLifecycleTracker = LifecycleTracker()
     val widthSpec = exactly(500)
@@ -560,9 +560,9 @@ class NestedTreeResolutionTest {
             c, stepsInfo, mountableLifecycleTracker, widthSpec, heightSpec)
     val lithoViewWidthSpec = exactly(300)
     val lithoViewHeightSpec = exactly(300)
-    legacyLithoViewRule.setRoot(root)
-    legacyLithoViewRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec)
-    legacyLithoViewRule.attachToWindow().measure().layout()
+    legacyLithoTestRule.setRoot(root)
+    legacyLithoTestRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec)
+    legacyLithoTestRule.attachToWindow().measure().layout()
     val steps = LifecycleStep.getSteps(stepsInfo)
 
     // Notice OCL is called only once even if size specs are not compatible because OCL is not
@@ -604,7 +604,7 @@ class NestedTreeResolutionTest {
   */
   @Test
   fun measureLayoutUsingMeasureApiInRenderWithCompatibleSizeSpecs() {
-    val c = legacyLithoViewRule.context
+    val c = legacyLithoTestRule.context
     val stepsInfo: List<StepInfo> = ArrayList()
     val mountableLifecycleTracker = LifecycleTracker()
     val widthSpec = exactly(500)
@@ -614,9 +614,9 @@ class NestedTreeResolutionTest {
             c, stepsInfo, mountableLifecycleTracker, widthSpec, heightSpec)
     val lithoViewWidthSpec = exactly(500)
     val lithoViewHeightSpec = exactly(500)
-    legacyLithoViewRule.setRoot(root)
-    legacyLithoViewRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec)
-    legacyLithoViewRule.attachToWindow().measure().layout()
+    legacyLithoTestRule.setRoot(root)
+    legacyLithoTestRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec)
+    legacyLithoTestRule.attachToWindow().measure().layout()
     val steps = LifecycleStep.getSteps(stepsInfo)
     assertThat(steps)
         .containsExactly(
@@ -656,7 +656,7 @@ class NestedTreeResolutionTest {
   */
   @Test
   fun measureLayoutWithSizeSpecAsRootUsingMeasureApiInRenderWithDifferentSizeSpecs() {
-    val c = legacyLithoViewRule.context
+    val c = legacyLithoTestRule.context
     val layoutWithSizeSpecStepsInfo: List<StepInfo> = ArrayList()
     val mountableLifecycleTracker = LifecycleTracker()
     val widthSpec = exactly(500)
@@ -666,9 +666,9 @@ class NestedTreeResolutionTest {
             c, layoutWithSizeSpecStepsInfo, mountableLifecycleTracker, widthSpec, heightSpec)
     val lithoViewWidthSpec = exactly(300)
     val lithoViewHeightSpec = exactly(300)
-    legacyLithoViewRule.setRoot(root)
-    legacyLithoViewRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec)
-    legacyLithoViewRule.attachToWindow().measure().layout()
+    legacyLithoTestRule.setRoot(root)
+    legacyLithoTestRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec)
+    legacyLithoTestRule.attachToWindow().measure().layout()
     val layoutWithSizeSpecSteps = LifecycleStep.getSteps(layoutWithSizeSpecStepsInfo)
     assertThat(layoutWithSizeSpecSteps)
         .containsExactly(
@@ -705,7 +705,7 @@ class NestedTreeResolutionTest {
   */
   @Test
   fun measureLayoutWithSizeSpecAsRootUsingMeasureApiInRenderWithCompatibleSizeSpecs() {
-    val c = legacyLithoViewRule.context
+    val c = legacyLithoTestRule.context
     val layoutWithSizeSpecStepsInfo: List<StepInfo> = ArrayList()
     val mountableLifecycleTracker = LifecycleTracker()
     val widthSpec = exactly(500)
@@ -713,9 +713,9 @@ class NestedTreeResolutionTest {
     val root =
         createComponentMeasuringLayoutWithSizeSpecAsRoot(
             c, layoutWithSizeSpecStepsInfo, mountableLifecycleTracker, widthSpec, heightSpec)
-    legacyLithoViewRule.setRoot(root)
-    legacyLithoViewRule.setSizeSpecs(widthSpec, heightSpec)
-    legacyLithoViewRule.attachToWindow().measure().layout()
+    legacyLithoTestRule.setRoot(root)
+    legacyLithoTestRule.setSizeSpecs(widthSpec, heightSpec)
+    legacyLithoTestRule.attachToWindow().measure().layout()
     val layoutWithSizeSpecSteps = LifecycleStep.getSteps(layoutWithSizeSpecStepsInfo)
 
     // Width and height specs are same, cache is reused and we don't see second OCLWSS call
@@ -752,7 +752,7 @@ class NestedTreeResolutionTest {
   */
   @Test
   fun measureLayoutWithSizeSpecAsChildUsingMeasureApiInRenderWithDifferentSizeSpecs() {
-    val c = legacyLithoViewRule.context
+    val c = legacyLithoTestRule.context
     val stepsInfo: List<StepInfo> = ArrayList()
     val layoutWithSizeSpecStepsInfo: List<StepInfo> = ArrayList()
     val mountableLifecycleTracker = LifecycleTracker()
@@ -768,9 +768,9 @@ class NestedTreeResolutionTest {
             heightSpec)
     val lithoViewWidthSpec = exactly(300)
     val lithoViewHeightSpec = exactly(300)
-    legacyLithoViewRule.setRoot(root)
-    legacyLithoViewRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec)
-    legacyLithoViewRule.attachToWindow().measure().layout()
+    legacyLithoTestRule.setRoot(root)
+    legacyLithoTestRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec)
+    legacyLithoTestRule.attachToWindow().measure().layout()
     val layoutWithSizeSpecSteps = LifecycleStep.getSteps(layoutWithSizeSpecStepsInfo)
     val steps = LifecycleStep.getSteps(stepsInfo)
 
@@ -826,7 +826,7 @@ class NestedTreeResolutionTest {
   */
   @Test
   fun measureLayoutWithSizeSpecAsChildUsingMeasureApiInRenderWithCompatibleSizeSpecs() {
-    val c = legacyLithoViewRule.context
+    val c = legacyLithoTestRule.context
     val stepsInfo: List<StepInfo> = ArrayList()
     val layoutWithSizeSpecStepsInfo: List<StepInfo> = ArrayList()
     val mountableLifecycleTracker = LifecycleTracker()
@@ -842,9 +842,9 @@ class NestedTreeResolutionTest {
             heightSpec)
     val lithoViewWidthSpec = exactly(500)
     val lithoViewHeightSpec = exactly(500)
-    legacyLithoViewRule.setRoot(root)
-    legacyLithoViewRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec)
-    legacyLithoViewRule.attachToWindow().measure().layout()
+    legacyLithoTestRule.setRoot(root)
+    legacyLithoTestRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec)
+    legacyLithoTestRule.attachToWindow().measure().layout()
     val layoutWithSizeSpecSteps = LifecycleStep.getSteps(layoutWithSizeSpecStepsInfo)
     val steps = LifecycleStep.getSteps(stepsInfo)
     assertThat(steps)
@@ -885,16 +885,16 @@ class NestedTreeResolutionTest {
   */
   @Test
   fun measureLayoutUsingMeasureApiInMeasure() {
-    val c = legacyLithoViewRule.context
+    val c = legacyLithoTestRule.context
     val stepsInfo: List<StepInfo> = ArrayList()
     val mountableLifecycleTracker = LifecycleTracker()
     val root =
         createComponentWithSizeSpecMeasuringOCLComponent(c, stepsInfo, mountableLifecycleTracker)
     val lithoViewWidthSpec = exactly(500)
     val lithoViewHeightSpec = exactly(500)
-    legacyLithoViewRule.setRoot(root)
-    legacyLithoViewRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec)
-    legacyLithoViewRule.attachToWindow().measure().layout()
+    legacyLithoTestRule.setRoot(root)
+    legacyLithoTestRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec)
+    legacyLithoTestRule.attachToWindow().measure().layout()
     val steps = LifecycleStep.getSteps(stepsInfo)
 
     // Notice OCL is called only once even if size specs are not compatible because OCL is not
@@ -936,7 +936,7 @@ class NestedTreeResolutionTest {
   */
   @Test
   fun measureLayoutWithSizeSpecAsRootUsingMeasureApiInMeasure() {
-    val c = legacyLithoViewRule.context
+    val c = legacyLithoTestRule.context
     val layoutWithSizeSpecStepsInfo: List<StepInfo> = ArrayList()
     val mountableLifecycleTracker = LifecycleTracker()
     val root =
@@ -944,9 +944,9 @@ class NestedTreeResolutionTest {
             c, layoutWithSizeSpecStepsInfo, mountableLifecycleTracker)
     val lithoViewWidthSpec = exactly(500)
     val lithoViewHeightSpec = exactly(500)
-    legacyLithoViewRule.setRoot(root)
-    legacyLithoViewRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec)
-    legacyLithoViewRule.attachToWindow().measure().layout()
+    legacyLithoTestRule.setRoot(root)
+    legacyLithoTestRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec)
+    legacyLithoTestRule.attachToWindow().measure().layout()
     val layoutWithSizeSpecSteps = LifecycleStep.getSteps(layoutWithSizeSpecStepsInfo)
     assertThat(layoutWithSizeSpecSteps)
         .containsExactly(
@@ -983,7 +983,7 @@ class NestedTreeResolutionTest {
   */
   @Test
   fun measureLayoutWithSizeSpecAsChildUsingMeasureApiInMeasure() {
-    val c = legacyLithoViewRule.context
+    val c = legacyLithoTestRule.context
     val stepsInfo: List<StepInfo> = ArrayList()
     val layoutWithSizeSpecStepsInfo: List<StepInfo> = ArrayList()
     val mountableLifecycleTracker = LifecycleTracker()
@@ -992,9 +992,9 @@ class NestedTreeResolutionTest {
             c, stepsInfo, layoutWithSizeSpecStepsInfo, mountableLifecycleTracker)
     val lithoViewWidthSpec = exactly(500)
     val lithoViewHeightSpec = exactly(500)
-    legacyLithoViewRule.setRoot(root)
-    legacyLithoViewRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec)
-    legacyLithoViewRule.attachToWindow().measure().layout()
+    legacyLithoTestRule.setRoot(root)
+    legacyLithoTestRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec)
+    legacyLithoTestRule.attachToWindow().measure().layout()
     val layoutWithSizeSpecSteps = LifecycleStep.getSteps(layoutWithSizeSpecStepsInfo)
     val steps = LifecycleStep.getSteps(stepsInfo)
 
@@ -1041,7 +1041,7 @@ class NestedTreeResolutionTest {
   */
   @Test
   fun measureComponentUsingMeasureApiInsideAnotherMeasureCallWithCompatibleSizeSpecs() {
-    val c = legacyLithoViewRule.context
+    val c = legacyLithoTestRule.context
     val layoutWithSizeSpecStepsInfo: List<StepInfo> = ArrayList()
     val mountableLifecycleTracker = LifecycleTracker()
     val widthSpec = exactly(500)
@@ -1060,9 +1060,9 @@ class NestedTreeResolutionTest {
             true)
     val lithoViewWidthSpec = exactly(500)
     val lithoViewHeightSpec = exactly(500)
-    legacyLithoViewRule.setRoot(root)
-    legacyLithoViewRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec)
-    legacyLithoViewRule.attachToWindow().measure().layout()
+    legacyLithoTestRule.setRoot(root)
+    legacyLithoTestRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec)
+    legacyLithoTestRule.attachToWindow().measure().layout()
     val stepsInfo = LifecycleStep.getSteps(layoutWithSizeSpecStepsInfo)
     assertThat(stepsInfo)
         .containsExactly(
@@ -1102,7 +1102,7 @@ class NestedTreeResolutionTest {
   */
   @Test
   fun measureComponentUsingMeasureApiInsideAnotherMeasureCallWithDifferentSizeSpecs() {
-    val c = legacyLithoViewRule.context
+    val c = legacyLithoTestRule.context
     val lifecycleStepsInfo: List<StepInfo> = ArrayList()
     val mountableLifecycleTracker = LifecycleTracker()
     val parentWidthSpec = exactly(500)
@@ -1123,9 +1123,9 @@ class NestedTreeResolutionTest {
             true)
     val lithoViewWidthSpec = exactly(300)
     val lithoViewHeightSpec = exactly(300)
-    legacyLithoViewRule.setRoot(root)
-    legacyLithoViewRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec)
-    legacyLithoViewRule.attachToWindow().measure().layout()
+    legacyLithoTestRule.setRoot(root)
+    legacyLithoTestRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec)
+    legacyLithoTestRule.attachToWindow().measure().layout()
     val stepsInfo = LifecycleStep.getSteps(lifecycleStepsInfo)
     assertThat(stepsInfo)
         .containsExactly(
@@ -1166,7 +1166,7 @@ class NestedTreeResolutionTest {
   */
   @Test
   fun measureComponentWithSizeSpecUsingMeasureApiInsideAnotherMeasureCallWithCompatibleSizeSpecs() {
-    val c = legacyLithoViewRule.context
+    val c = legacyLithoTestRule.context
     val layoutWithSizeSpecStepsInfo: List<StepInfo> = ArrayList()
     val mountableLifecycleTracker = LifecycleTracker()
     val widthSpec = exactly(500)
@@ -1185,9 +1185,9 @@ class NestedTreeResolutionTest {
             false)
     val lithoViewWidthSpec = exactly(500)
     val lithoViewHeightSpec = exactly(500)
-    legacyLithoViewRule.setRoot(root)
-    legacyLithoViewRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec)
-    legacyLithoViewRule.attachToWindow().measure().layout()
+    legacyLithoTestRule.setRoot(root)
+    legacyLithoTestRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec)
+    legacyLithoTestRule.attachToWindow().measure().layout()
     val stepsInfo = LifecycleStep.getSteps(layoutWithSizeSpecStepsInfo)
     assertThat(stepsInfo)
         .containsExactly(
@@ -1220,7 +1220,7 @@ class NestedTreeResolutionTest {
   */
   @Test
   fun measureComponentWithSizeSpecUsingMeasureApiInsideAnotherMeasureCallWithDifferentSizeSpecs() {
-    val c = legacyLithoViewRule.context
+    val c = legacyLithoTestRule.context
     val layoutWithSizeSpecStepsInfo: List<StepInfo> = ArrayList()
     val mountableLifecycleTracker = LifecycleTracker()
     val widthSpec = exactly(500)
@@ -1239,9 +1239,9 @@ class NestedTreeResolutionTest {
             false)
     val lithoViewWidthSpec = exactly(300)
     val lithoViewHeightSpec = exactly(300)
-    legacyLithoViewRule.setRoot(root)
-    legacyLithoViewRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec)
-    legacyLithoViewRule.attachToWindow().measure().layout()
+    legacyLithoTestRule.setRoot(root)
+    legacyLithoTestRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec)
+    legacyLithoTestRule.attachToWindow().measure().layout()
     val stepsInfo = LifecycleStep.getSteps(layoutWithSizeSpecStepsInfo)
     assertThat(stepsInfo)
         .containsExactly(
@@ -1274,7 +1274,7 @@ class NestedTreeResolutionTest {
   */
   @Test
   fun measureComponentWithSizeSpecInsideLayoutWithSizeSpecMeasuringOCLWithCompatibleSizeSpecs() {
-    val c = legacyLithoViewRule.context
+    val c = legacyLithoTestRule.context
     val layoutWithSizeSpecStepsInfo: List<StepInfo> = ArrayList()
     val mountableLifecycleTracker = LifecycleTracker()
     val widthSpec = exactly(500)
@@ -1293,9 +1293,9 @@ class NestedTreeResolutionTest {
             true)
     val lithoViewWidthSpec = exactly(500)
     val lithoViewHeightSpec = exactly(500)
-    legacyLithoViewRule.setRoot(root)
-    legacyLithoViewRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec)
-    legacyLithoViewRule.attachToWindow().measure().layout()
+    legacyLithoTestRule.setRoot(root)
+    legacyLithoTestRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec)
+    legacyLithoTestRule.attachToWindow().measure().layout()
     val stepsInfo = LifecycleStep.getSteps(layoutWithSizeSpecStepsInfo)
     assertThat(stepsInfo)
         .containsExactly(
@@ -1335,7 +1335,7 @@ class NestedTreeResolutionTest {
   */
   @Test
   fun measureComponentWithSizeSpecInsideLayoutWithSizeSpecMeasuringOCLWithDifferentSizeSpecs() {
-    val c = legacyLithoViewRule.context
+    val c = legacyLithoTestRule.context
     val layoutWithSizeSpecStepsInfo: List<StepInfo> = ArrayList()
     val mountableLifecycleTracker = LifecycleTracker()
     val widthSpec = exactly(500)
@@ -1354,9 +1354,9 @@ class NestedTreeResolutionTest {
             true)
     val lithoViewWidthSpec = exactly(300)
     val lithoViewHeightSpec = exactly(300)
-    legacyLithoViewRule.setRoot(root)
-    legacyLithoViewRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec)
-    legacyLithoViewRule.attachToWindow().measure().layout()
+    legacyLithoTestRule.setRoot(root)
+    legacyLithoTestRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec)
+    legacyLithoTestRule.attachToWindow().measure().layout()
     val stepsInfo = LifecycleStep.getSteps(layoutWithSizeSpecStepsInfo)
     assertThat(stepsInfo)
         .containsExactly(
@@ -1396,7 +1396,7 @@ class NestedTreeResolutionTest {
   */
   @Test
   fun measureComponentInsideLayoutWithSizeSpecWithCompatibleSizeSpecs() {
-    val c = legacyLithoViewRule.context
+    val c = legacyLithoTestRule.context
     val layoutWithSizeSpecStepsInfo: List<StepInfo> = ArrayList()
     val mountableLifecycleTracker = LifecycleTracker()
     val widthSpec = exactly(500)
@@ -1415,9 +1415,9 @@ class NestedTreeResolutionTest {
             true)
     val lithoViewWidthSpec = exactly(500)
     val lithoViewHeightSpec = exactly(500)
-    legacyLithoViewRule.setRoot(root)
-    legacyLithoViewRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec)
-    legacyLithoViewRule.attachToWindow().measure().layout()
+    legacyLithoTestRule.setRoot(root)
+    legacyLithoTestRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec)
+    legacyLithoTestRule.attachToWindow().measure().layout()
     val stepsInfo = LifecycleStep.getSteps(layoutWithSizeSpecStepsInfo)
     assertThat(stepsInfo)
         .containsExactly(
@@ -1457,7 +1457,7 @@ class NestedTreeResolutionTest {
   */
   @Test
   fun measureComponentInsideLayoutWithSizeSpecWithDifferentSizeSpecs() {
-    val c = legacyLithoViewRule.context
+    val c = legacyLithoTestRule.context
     val layoutWithSizeSpecStepsInfo: List<StepInfo> = ArrayList()
     val mountableLifecycleTracker = LifecycleTracker()
     val widthSpec = exactly(500)
@@ -1476,9 +1476,9 @@ class NestedTreeResolutionTest {
             true)
     val lithoViewWidthSpec = exactly(300)
     val lithoViewHeightSpec = exactly(300)
-    legacyLithoViewRule.setRoot(root)
-    legacyLithoViewRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec)
-    legacyLithoViewRule.attachToWindow().measure().layout()
+    legacyLithoTestRule.setRoot(root)
+    legacyLithoTestRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec)
+    legacyLithoTestRule.attachToWindow().measure().layout()
     val stepsInfo = LifecycleStep.getSteps(layoutWithSizeSpecStepsInfo)
     assertThat(stepsInfo)
         .containsExactly(
@@ -1519,7 +1519,7 @@ class NestedTreeResolutionTest {
   */
   @Test
   fun measureComponentWithSizeSpecWhichMeasuresAnotherComponentWithSizeSpecWithCompatibleSizeSpecs() {
-    val c = legacyLithoViewRule.context
+    val c = legacyLithoTestRule.context
     val layoutWithSizeSpecStepsInfo: List<StepInfo> = ArrayList()
     val mountableLifecycleTracker = LifecycleTracker()
     val widthSpec = exactly(500)
@@ -1538,9 +1538,9 @@ class NestedTreeResolutionTest {
             false)
     val lithoViewWidthSpec = exactly(500)
     val lithoViewHeightSpec = exactly(500)
-    legacyLithoViewRule.setRoot(root)
-    legacyLithoViewRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec)
-    legacyLithoViewRule.attachToWindow().measure().layout()
+    legacyLithoTestRule.setRoot(root)
+    legacyLithoTestRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec)
+    legacyLithoTestRule.attachToWindow().measure().layout()
     val stepsInfo = LifecycleStep.getSteps(layoutWithSizeSpecStepsInfo)
     assertThat(stepsInfo)
         .containsExactly(
@@ -1573,7 +1573,7 @@ class NestedTreeResolutionTest {
   */
   @Test
   fun measureComponentWithSizeSpecWhichMeasuresAnotherComponentWithSizeSpecWithDifferentSizeSpecs() {
-    val c = legacyLithoViewRule.context
+    val c = legacyLithoTestRule.context
     val layoutWithSizeSpecStepsInfo: List<StepInfo> = ArrayList()
     val mountableLifecycleTracker = LifecycleTracker()
     val widthSpec = exactly(500)
@@ -1592,9 +1592,9 @@ class NestedTreeResolutionTest {
             false)
     val lithoViewWidthSpec = exactly(300)
     val lithoViewHeightSpec = exactly(300)
-    legacyLithoViewRule.setRoot(root)
-    legacyLithoViewRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec)
-    legacyLithoViewRule.attachToWindow().measure().layout()
+    legacyLithoTestRule.setRoot(root)
+    legacyLithoTestRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec)
+    legacyLithoTestRule.attachToWindow().measure().layout()
     val stepsInfo = LifecycleStep.getSteps(layoutWithSizeSpecStepsInfo)
     assertThat(stepsInfo)
         .containsExactly(
@@ -1627,7 +1627,7 @@ class NestedTreeResolutionTest {
   */
   @Test
   fun componentWithSizeSpecMeasuringOCLWhichMeasuresAnotherComponentWithSizeSpecWithCompatibleSizeSpecs() {
-    val c = legacyLithoViewRule.context
+    val c = legacyLithoTestRule.context
     val layoutWithSizeSpecStepsInfo: List<StepInfo> = ArrayList()
     val mountableLifecycleTracker = LifecycleTracker()
     val widthSpec = exactly(500)
@@ -1646,9 +1646,9 @@ class NestedTreeResolutionTest {
             false)
     val lithoViewWidthSpec = exactly(500)
     val lithoViewHeightSpec = exactly(500)
-    legacyLithoViewRule.setRoot(root)
-    legacyLithoViewRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec)
-    legacyLithoViewRule.attachToWindow().measure().layout()
+    legacyLithoTestRule.setRoot(root)
+    legacyLithoTestRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec)
+    legacyLithoTestRule.attachToWindow().measure().layout()
     val stepsInfo = LifecycleStep.getSteps(layoutWithSizeSpecStepsInfo)
     assertThat(stepsInfo)
         .containsExactly(
@@ -1681,7 +1681,7 @@ class NestedTreeResolutionTest {
   */
   @Test
   fun componentWithSizeSpecMeasuringOCLWhichMeasuresAnotherComponentWithSizeSpecWithDifferentSizeSpecs() {
-    val c = legacyLithoViewRule.context
+    val c = legacyLithoTestRule.context
     val layoutWithSizeSpecStepsInfo: List<StepInfo> = ArrayList()
     val mountableLifecycleTracker = LifecycleTracker()
     val widthSpec = exactly(500)
@@ -1700,9 +1700,9 @@ class NestedTreeResolutionTest {
             false)
     val lithoViewWidthSpec = exactly(300)
     val lithoViewHeightSpec = exactly(300)
-    legacyLithoViewRule.setRoot(root)
-    legacyLithoViewRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec)
-    legacyLithoViewRule.attachToWindow().measure().layout()
+    legacyLithoTestRule.setRoot(root)
+    legacyLithoTestRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec)
+    legacyLithoTestRule.attachToWindow().measure().layout()
     val stepsInfo = LifecycleStep.getSteps(layoutWithSizeSpecStepsInfo)
     assertThat(stepsInfo)
         .containsExactly(
@@ -1735,7 +1735,7 @@ class NestedTreeResolutionTest {
   */
   @Test
   fun componentWithSizeSpecMeasuringComponentWithSizeSpecWhichMeasuresOCL() {
-    val c = legacyLithoViewRule.context
+    val c = legacyLithoTestRule.context
     val layoutWithSizeSpecStepsInfo: List<StepInfo> = ArrayList()
     val mountableLifecycleTracker = LifecycleTracker()
     val widthSpec = exactly(500)
@@ -1754,9 +1754,9 @@ class NestedTreeResolutionTest {
             true)
     val lithoViewWidthSpec = exactly(500)
     val lithoViewHeightSpec = exactly(500)
-    legacyLithoViewRule.setRoot(root)
-    legacyLithoViewRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec)
-    legacyLithoViewRule.attachToWindow().measure().layout()
+    legacyLithoTestRule.setRoot(root)
+    legacyLithoTestRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec)
+    legacyLithoTestRule.attachToWindow().measure().layout()
     val stepsInfo = LifecycleStep.getSteps(layoutWithSizeSpecStepsInfo)
     assertThat(stepsInfo)
         .containsExactly(
@@ -1796,7 +1796,7 @@ class NestedTreeResolutionTest {
   */
   @Test
   fun componentWithSizeSpecMeasuringOCLWSSWhichMeasuresAnotherOCLWSS() {
-    val c = legacyLithoViewRule.context
+    val c = legacyLithoTestRule.context
     val layoutWithSizeSpecStepsInfo: List<StepInfo> = ArrayList()
     val mountableLifecycleTracker = LifecycleTracker()
     val widthSpec = exactly(500)
@@ -1815,9 +1815,9 @@ class NestedTreeResolutionTest {
             false)
     val lithoViewWidthSpec = exactly(500)
     val lithoViewHeightSpec = exactly(500)
-    legacyLithoViewRule.setRoot(root)
-    legacyLithoViewRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec)
-    legacyLithoViewRule.attachToWindow().measure().layout()
+    legacyLithoTestRule.setRoot(root)
+    legacyLithoTestRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec)
+    legacyLithoTestRule.attachToWindow().measure().layout()
     val stepsInfo = LifecycleStep.getSteps(layoutWithSizeSpecStepsInfo)
     assertThat(stepsInfo)
         .containsExactly(

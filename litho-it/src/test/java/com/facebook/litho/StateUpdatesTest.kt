@@ -20,7 +20,7 @@ import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.components.StateUpdateTestLayout
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
-import com.facebook.litho.testing.LegacyLithoViewRule
+import com.facebook.litho.testing.LegacyLithoTestRule
 import com.facebook.litho.testing.ThreadTestingUtils
 import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec
@@ -52,7 +52,7 @@ open class StateUpdatesTest {
   @Rule
   var backgroundLayoutLooperRule: BackgroundLayoutLooperRule = BackgroundLayoutLooperRule()
 
-  @JvmField @Rule val legacyLithoViewRule: LegacyLithoViewRule = LegacyLithoViewRule()
+  @JvmField @Rule val legacyLithoTestRule: LegacyLithoTestRule = LegacyLithoTestRule()
 
   @Before
   fun setup() {
@@ -61,9 +61,9 @@ open class StateUpdatesTest {
     heightSpec = exactly(41)
     testComponent = StateUpdateTestComponent()
     testComponentKey = testComponent.key
-    legacyLithoViewRule.setRoot(testComponent)
-    componentTree = legacyLithoViewRule.componentTree
-    legacyLithoViewRule.attachToWindow().measure().layout().setSizeSpecs(widthSpec, heightSpec)
+    legacyLithoTestRule.setRoot(testComponent)
+    componentTree = legacyLithoTestRule.componentTree
+    legacyLithoTestRule.attachToWindow().measure().layout().setSizeSpecs(widthSpec, heightSpec)
   }
 
   @After
@@ -83,8 +83,8 @@ open class StateUpdatesTest {
           override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c).child(child1).child(child2).build()
         }
-    legacyLithoViewRule.setRoot(component)
-    legacyLithoViewRule
+    legacyLithoTestRule.setRoot(component)
+    legacyLithoTestRule
         .attachToWindow()
         .measure()
         .layout()
@@ -106,8 +106,8 @@ open class StateUpdatesTest {
                 .build()
           }
         }
-    legacyLithoViewRule.setRoot(component)
-    legacyLithoViewRule
+    legacyLithoTestRule.setRoot(component)
+    legacyLithoTestRule
         .attachToWindow()
         .measure()
         .layout()
@@ -144,8 +144,8 @@ open class StateUpdatesTest {
     assertThat(stateContainersMap?.keys?.contains(testComponentKey)).isTrue
     val child1 = StateUpdateTestComponent()
     child1.key = "key"
-    legacyLithoViewRule.setRoot(child1)
-    legacyLithoViewRule
+    legacyLithoTestRule.setRoot(child1)
+    legacyLithoTestRule
         .attachToWindow()
         .measure()
         .layout()

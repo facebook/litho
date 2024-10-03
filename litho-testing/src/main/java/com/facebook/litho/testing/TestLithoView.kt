@@ -51,7 +51,7 @@ import org.robolectric.Shadows
  *  @RunWith(AndroidJUnit4::class)
  *  class LithoSampleTest {
  *
- *  @Rule @JvmField val lithoViewRule = LithoViewRule()
+ *  @Rule @JvmField val lithoViewRule = LithoTestRule()
  *  @Test
  *  fun test() {
  *   val testLithoView =  lithoViewRule.render { TestComponent() }
@@ -125,7 +125,7 @@ internal constructor(
     _lithoView = lithoView
     if (lithoView.componentContext !== context) {
       throw RuntimeException(
-          "You must use the same ComponentContext for the LithoView as what is on the LithoViewRule @Rule!")
+          "You must use the same ComponentContext for the LithoView as what is on the LithoTestRule @Rule!")
     }
     lithoView.componentTree.let {
       if (it == null && _componentTree != null) {

@@ -16,7 +16,7 @@
 
 package com.facebook.litho
 
-import com.facebook.litho.testing.LegacyLithoViewRule
+import com.facebook.litho.testing.LegacyLithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.CardHeaderComponent
 import org.assertj.core.api.Assertions.assertThat
@@ -28,22 +28,22 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class MountStateMountTest {
 
-  @JvmField @Rule val legacyLithoViewRule: LegacyLithoViewRule = LegacyLithoViewRule()
+  @JvmField @Rule val legacyLithoTestRule: LegacyLithoTestRule = LegacyLithoTestRule()
   private lateinit var context: ComponentContext
 
   @Before
   fun setup() {
-    context = legacyLithoViewRule.context
+    context = legacyLithoTestRule.context
   }
 
   @Test
   fun unmountAll_mountStateNeedsRemount() {
     val root =
         Column.create(context).child(CardHeaderComponent.create(context).title("Title")).build()
-    legacyLithoViewRule.setRoot(root).attachToWindow().measure().layout()
-    val mountDelegateTarget = legacyLithoViewRule.lithoView.mountDelegateTarget
+    legacyLithoTestRule.setRoot(root).attachToWindow().measure().layout()
+    val mountDelegateTarget = legacyLithoTestRule.lithoView.mountDelegateTarget
     assertThat(mountDelegateTarget.needsRemount()).isFalse
-    legacyLithoViewRule.lithoView.unmountAllItems()
+    legacyLithoTestRule.lithoView.unmountAllItems()
     assertThat(mountDelegateTarget.needsRemount()).isTrue
   }
 }

@@ -36,7 +36,7 @@ Whenever possible, test your business logic in isolation.
 ### Setup
 
 * Add `@RunWith(LithoTestRunner.class)` to the top of the test class.
-* Add a JUnit [`@Rule`](https://github.com/junit-team/junit4/wiki/Rules) `LithoViewRule`.
+* Add a JUnit [`@Rule`](https://github.com/junit-team/junit4/wiki/Rules) `LithoTestRule`.
 * Add a check to ensure that tests are run in debug mode.
 `ComponentsConfiguration.IS_INTERNAL_BUILD` must be true.
 
@@ -49,7 +49,7 @@ The test class should look like the following:
 @RunWith(RobolectricTestRunner.class)
 public class TruncatingComponentTest {
 
-  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+  public final @Rule LithoTestRule mLithoTestRule = new LithoTestRule();
 
   @Before
   public void assumeInDebugMode() {
@@ -67,7 +67,7 @@ public class TruncatingComponentTest {
 ```java
 @Test
 public void whenTextLengthIsLessThan16_shouldContainTextComponentWithFullText() {
-  final ComponentContext c = mLithoViewRule.getContext();
+  final ComponentContext c = mLithoTestRule.getContext();
   final TruncatingComponent component = TruncatingComponent.create(c)
       .text("Mr. Meeseeks").build();
 
@@ -125,7 +125,7 @@ public class TruncatingComponentSpec {
 ```java
 @Test
 public void whenTextLengthIsLessThan16_shouldContainTextComponentWithFullText() {
-  final ComponentContext c = mLithoViewRule.getContext();
+  final ComponentContext c = mLithoTestRule.getContext();
   final TruncatingComponent component = TruncatingComponent.create(c).text("Mr. Meeseeks").build();
 
   LegacyLithoAssertions.assertThat(c, component)
@@ -154,7 +154,7 @@ This test can be fixed by using a different Condition API called `deepSubCompone
 ```java
 @Test
 public void whenTextLengthIsLessThan16_shouldContainTextComponentWithFullText() {
-  final ComponentContext c = mLithoViewRule.getContext();
+  final ComponentContext c = mLithoTestRule.getContext();
   final TruncatingComponent component = TruncatingComponent.create(c).text("Mr. Meeseeks").build();
 
   LegacyLithoAssertions.assertThat(c, component)
@@ -193,7 +193,7 @@ public static Condition<InspectableComponent> hasBackground() {
 ```java
 @Test
 public void whenTruncatingComponentIsRendered_shouldHaveBackground() {
-  final ComponentContext c = mLithoViewRule.getContext();
+  final ComponentContext c = mLithoTestRule.getContext();
   final TruncatingComponent component = TruncatingComponent.create(c).text("Mr. Meeseeks").build();
 
   LegacyLithoAssertions.assertThat(c, component)
@@ -216,7 +216,7 @@ public class StoryComponentTest {
 
   @Test
   public void whenStoryComponentIsRendered_shouldContainAllSubcomponents() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLithoTestRule.getContext();
     final StoryComponent.Builder builder = StoryComponent.create(c).build();
 
     assertThat(builder).hasSubComponents(
@@ -238,7 +238,7 @@ Litho provides a bridge interface [legacySubComponent](pathname:///javadoc/com/f
 ```java
 @Test
 public void testSubComponentLegacyBridge() {
-  final ComponentContext c = mLithoViewRule.getContext();
+  final ComponentContext c = mLithoTestRule.getContext();
 
   assertThat(c, mComponent)
       .has(

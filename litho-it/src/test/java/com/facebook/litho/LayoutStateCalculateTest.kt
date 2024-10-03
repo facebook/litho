@@ -30,7 +30,7 @@ import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.LifecycleStep.StepInfo
 import com.facebook.litho.SizeSpec.makeSizeSpec
 import com.facebook.litho.config.ComponentsConfiguration
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.TestDrawableComponent
 import com.facebook.litho.testing.TestLayoutComponent
 import com.facebook.litho.testing.TestSizeDependentComponent
@@ -77,7 +77,7 @@ class LayoutStateCalculateTest {
   val config =
       ComponentsConfiguration.defaultInstance.copy(shouldAddHostViewForRootComponent = true)
 
-  @JvmField @Rule val lithoViewRule = LithoViewRule(config)
+  @JvmField @Rule val lithoViewRule = LithoTestRule(config)
   private lateinit var context: ComponentContext
   private lateinit var componentTreeContext: ComponentContext
 

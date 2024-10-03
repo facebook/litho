@@ -17,7 +17,7 @@
 package com.facebook.litho
 
 import android.graphics.Rect
-import com.facebook.litho.testing.LegacyLithoViewRule
+import com.facebook.litho.testing.LegacyLithoTestRule
 import com.facebook.litho.testing.Whitebox
 import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -36,7 +36,7 @@ import org.robolectric.annotation.LooperMode
 @LooperMode(LooperMode.Mode.LEGACY)
 class LithoVisibilityEventsControllerTest {
 
-  @JvmField @Rule val legacyLithoViewRule: LegacyLithoViewRule = LegacyLithoViewRule()
+  @JvmField @Rule val legacyLithoTestRule: LegacyLithoTestRule = LegacyLithoTestRule()
   private lateinit var lithoView: LithoView
   private lateinit var component: LayoutSpecLifecycleTester
   private lateinit var mountableComponent: MountSpecLifecycleTester
@@ -46,7 +46,7 @@ class LithoVisibilityEventsControllerTest {
 
   @Before
   fun setup() {
-    val c = legacyLithoViewRule.context
+    val c = legacyLithoTestRule.context
     lithoLifecycleProviderDelegate = LithoVisibilityEventsControllerDelegate()
     steps = ArrayList<LifecycleStep.StepInfo>()
     lifecycleTracker = LifecycleTracker()
@@ -58,7 +58,7 @@ class LithoVisibilityEventsControllerTest {
             .lifecycleTracker(lifecycleTracker)
             .build()
     lithoView = LithoView.create(c, Column.create(c).build(), lithoLifecycleProviderDelegate)
-    legacyLithoViewRule.useLithoView(lithoView)
+    legacyLithoTestRule.useLithoView(lithoView)
   }
 
   @After
@@ -70,13 +70,13 @@ class LithoVisibilityEventsControllerTest {
 
   @Test
   fun lithoLifecycleProviderDelegateInvisibleToVisibleTest() {
-    legacyLithoViewRule
+    legacyLithoTestRule
         .setRoot(component)
         .attachToWindow()
         .setSizeSpecs(exactly(10), exactly(5))
         .measure()
         .layout()
-    legacyLithoViewRule.lithoView.notifyVisibleBoundsChanged(Rect(0, 0, 10, 10), true)
+    legacyLithoTestRule.lithoView.notifyVisibleBoundsChanged(Rect(0, 0, 10, 10), true)
     lithoLifecycleProviderDelegate.moveToVisibilityState(
         LithoVisibilityEventsController.LithoVisibilityState.HINT_INVISIBLE)
     assertThat(LifecycleStep.getSteps(steps))
@@ -92,8 +92,8 @@ class LithoVisibilityEventsControllerTest {
 
   @Test
   fun lithoLifecycleProviderDelegateInvisibleToInvisibleTest() {
-    legacyLithoViewRule.setRoot(component).setSizeSpecs(exactly(10), exactly(5))
-    legacyLithoViewRule.attachToWindow().measure().layout().setSizeSpecs(10, 10)
+    legacyLithoTestRule.setRoot(component).setSizeSpecs(exactly(10), exactly(5))
+    legacyLithoTestRule.attachToWindow().measure().layout().setSizeSpecs(10, 10)
     lithoLifecycleProviderDelegate.moveToVisibilityState(
         LithoVisibilityEventsController.LithoVisibilityState.HINT_INVISIBLE)
     assertThat(LifecycleStep.getSteps(steps))
@@ -109,8 +109,8 @@ class LithoVisibilityEventsControllerTest {
 
   @Test
   fun lithoLifecycleProviderDelegateVisibleToVisibleTest() {
-    legacyLithoViewRule.setRoot(component).setSizeSpecs(exactly(10), exactly(5))
-    legacyLithoViewRule.attachToWindow().measure().layout().setSizeSpecs(10, 10)
+    legacyLithoTestRule.setRoot(component).setSizeSpecs(exactly(10), exactly(5))
+    legacyLithoTestRule.attachToWindow().measure().layout().setSizeSpecs(10, 10)
     lithoLifecycleProviderDelegate.moveToVisibilityState(
         LithoVisibilityEventsController.LithoVisibilityState.HINT_VISIBLE)
     assertThat(LifecycleStep.getSteps(steps))
@@ -126,8 +126,8 @@ class LithoVisibilityEventsControllerTest {
 
   @Test
   fun lithoLifecycleProviderDelegateVisibleToDestroyedTest() {
-    legacyLithoViewRule.setRoot(mountableComponent).setSizeSpecs(exactly(10), exactly(5))
-    legacyLithoViewRule.attachToWindow().measure().layout().setSizeSpecs(10, 10)
+    legacyLithoTestRule.setRoot(mountableComponent).setSizeSpecs(exactly(10), exactly(5))
+    legacyLithoTestRule.attachToWindow().measure().layout().setSizeSpecs(10, 10)
     lithoLifecycleProviderDelegate.moveToVisibilityState(
         LithoVisibilityEventsController.LithoVisibilityState.HINT_VISIBLE)
     assertThat(lifecycleTracker.steps)
@@ -145,24 +145,24 @@ class LithoVisibilityEventsControllerTest {
   fun lithoLifecycleProviderComponentTreeResetVisibilityFlags() {
     // In the new implementation, `setVisibilityHintNonRecursive` is always called in
     // `setLithoView`, so mHasVisibilityHint will be still true after set new Component Tree
-    legacyLithoViewRule.setRoot(component).setSizeSpecs(exactly(10), exactly(5))
-    legacyLithoViewRule.attachToWindow().measure().layout().setSizeSpecs(10, 10)
+    legacyLithoTestRule.setRoot(component).setSizeSpecs(exactly(10), exactly(5))
+    legacyLithoTestRule.attachToWindow().measure().layout().setSizeSpecs(10, 10)
     lithoLifecycleProviderDelegate.moveToVisibilityState(
         LithoVisibilityEventsController.LithoVisibilityState.HINT_INVISIBLE)
     var hasVisibilityHint: Boolean =
-        Whitebox.getInternalState<Boolean>(legacyLithoViewRule.lithoView, "mHasVisibilityHint")
+        Whitebox.getInternalState<Boolean>(legacyLithoTestRule.lithoView, "mHasVisibilityHint")
     var pauseMountingWhileVisibilityHintFalse: Boolean =
         Whitebox.getInternalState<Boolean>(
-            legacyLithoViewRule.lithoView, "mPauseMountingWhileVisibilityHintFalse")
+            legacyLithoTestRule.lithoView, "mPauseMountingWhileVisibilityHintFalse")
     assertThat(hasVisibilityHint).isTrue
     assertThat(pauseMountingWhileVisibilityHintFalse).isTrue
 
-    legacyLithoViewRule.useComponentTree(ComponentTree.create(legacyLithoViewRule.context).build())
+    legacyLithoTestRule.useComponentTree(ComponentTree.create(legacyLithoTestRule.context).build())
     hasVisibilityHint =
-        Whitebox.getInternalState<Boolean>(legacyLithoViewRule.lithoView, "mHasVisibilityHint")
+        Whitebox.getInternalState<Boolean>(legacyLithoTestRule.lithoView, "mHasVisibilityHint")
     pauseMountingWhileVisibilityHintFalse =
         Whitebox.getInternalState<Boolean>(
-            legacyLithoViewRule.lithoView, "mPauseMountingWhileVisibilityHintFalse")
+            legacyLithoTestRule.lithoView, "mPauseMountingWhileVisibilityHintFalse")
     assertThat(hasVisibilityHint).isFalse
     assertThat(pauseMountingWhileVisibilityHintFalse).isFalse
   }

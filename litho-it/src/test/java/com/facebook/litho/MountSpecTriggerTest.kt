@@ -20,7 +20,7 @@ import com.facebook.litho.LifecycleStep.StepInfo
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.common.SingleComponentSection
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent
-import com.facebook.litho.testing.LegacyLithoViewRule
+import com.facebook.litho.testing.LegacyLithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.MountSpecTriggerTester
 import com.facebook.litho.widget.Text
@@ -36,11 +36,11 @@ import org.robolectric.annotation.LooperMode
 @RunWith(LithoTestRunner::class)
 class MountSpecTriggerTest {
 
-  @JvmField @Rule val legacyLithoViewRule: LegacyLithoViewRule = LegacyLithoViewRule()
+  @JvmField @Rule val legacyLithoTestRule: LegacyLithoTestRule = LegacyLithoTestRule()
 
   @Test
   fun mountSpec_setRootAndTriggerEvent_eventIsTriggered() {
-    val componentContext = legacyLithoViewRule.context
+    val componentContext = legacyLithoTestRule.context
     val triggerObjectRef = AtomicReference<Any>()
     val triggerHandle = Handle()
     val info: List<StepInfo> = ArrayList<StepInfo>()
@@ -50,11 +50,11 @@ class MountSpecTriggerTest {
             .triggerObjectRef(triggerObjectRef)
             .handle(triggerHandle)
             .build()
-    legacyLithoViewRule.setRoot(component).idle()
-    legacyLithoViewRule.attachToWindow().measure().layout()
+    legacyLithoTestRule.setRoot(component).idle()
+    legacyLithoTestRule.attachToWindow().measure().layout()
     val bazObject = Any()
     MountSpecTriggerTester.triggerTestEvent(
-        legacyLithoViewRule.componentTree.context, triggerHandle, bazObject)
+        legacyLithoTestRule.componentTree.context, triggerHandle, bazObject)
     assertThat(LifecycleStep.getSteps(info))
         .describedAs("Should call @OnTrigger method")
         .containsExactly(LifecycleStep.ON_TRIGGER)
@@ -65,7 +65,7 @@ class MountSpecTriggerTest {
 
   @Test
   fun mountSpec_setRootAndTriggerEvent_eventIsTriggered_handle_used_in_child() {
-    val componentContext = legacyLithoViewRule.context
+    val componentContext = legacyLithoTestRule.context
     val triggerObjectRef = AtomicReference<Any>()
     val triggerHandle = Handle()
     val info: List<StepInfo> = ArrayList<StepInfo>()
@@ -79,11 +79,11 @@ class MountSpecTriggerTest {
                     .handle(triggerHandle)
                     .build())
             .build()
-    legacyLithoViewRule.setRoot(component)
-    legacyLithoViewRule.attachToWindow().measure().layout()
+    legacyLithoTestRule.setRoot(component)
+    legacyLithoTestRule.attachToWindow().measure().layout()
     val bazObject = Any()
     MountSpecTriggerTester.triggerTestEvent(
-        legacyLithoViewRule.componentTree.context, triggerHandle, bazObject)
+        legacyLithoTestRule.componentTree.context, triggerHandle, bazObject)
     assertThat(LifecycleStep.getSteps(info))
         .describedAs("Should call @OnTrigger method")
         .containsExactly(LifecycleStep.ON_TRIGGER)
@@ -94,7 +94,7 @@ class MountSpecTriggerTest {
 
   @Test
   fun mountSpec_setRootAndTriggerEvent_eventIsTriggered_handle_used_in_nested_tree_root() {
-    val componentContext = legacyLithoViewRule.context
+    val componentContext = legacyLithoTestRule.context
     val triggerObjectRef = AtomicReference<Any>()
     val triggerHandle = Handle()
     val info: List<StepInfo> = ArrayList<StepInfo>()
@@ -113,11 +113,11 @@ class MountSpecTriggerTest {
                                     .handle(triggerHandle)
                                     .build())))
             .build()
-    legacyLithoViewRule.setRoot(component)
-    legacyLithoViewRule.attachToWindow().measure().layout()
+    legacyLithoTestRule.setRoot(component)
+    legacyLithoTestRule.attachToWindow().measure().layout()
     val bazObject = Any()
     MountSpecTriggerTester.triggerTestEvent(
-        legacyLithoViewRule.componentTree.context, triggerHandle, bazObject)
+        legacyLithoTestRule.componentTree.context, triggerHandle, bazObject)
     assertThat(LifecycleStep.getSteps(info))
         .describedAs("Should call @OnTrigger method")
         .containsExactly(LifecycleStep.ON_TRIGGER)
@@ -128,7 +128,7 @@ class MountSpecTriggerTest {
 
   @Test
   fun mountSpec_setRootAndTriggerEvent_eventIsTriggered_handle_used_in_nested_tree_deeper_in_hierarchy() {
-    val componentContext = legacyLithoViewRule.context
+    val componentContext = legacyLithoTestRule.context
     val triggerObjectRef = AtomicReference<Any>()
     val triggerHandle = Handle()
     val info: List<StepInfo> = ArrayList<StepInfo>()
@@ -150,11 +150,11 @@ class MountSpecTriggerTest {
                                             .handle(triggerHandle)
                                             .build()))))
             .build()
-    legacyLithoViewRule.setRoot(component)
-    legacyLithoViewRule.attachToWindow().measure().layout()
+    legacyLithoTestRule.setRoot(component)
+    legacyLithoTestRule.attachToWindow().measure().layout()
     val bazObject = Any()
     MountSpecTriggerTester.triggerTestEvent(
-        legacyLithoViewRule.componentTree.context, triggerHandle, bazObject)
+        legacyLithoTestRule.componentTree.context, triggerHandle, bazObject)
     assertThat(LifecycleStep.getSteps(info))
         .describedAs("Should call @OnTrigger method")
         .containsExactly(LifecycleStep.ON_TRIGGER)

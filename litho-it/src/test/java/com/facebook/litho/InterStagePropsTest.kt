@@ -16,7 +16,7 @@
 
 package com.facebook.litho
 
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.MountSpecInterStagePropsTester
 import com.facebook.litho.widget.SimpleStateUpdateEmulator
@@ -34,7 +34,7 @@ class InterStagePropsTest {
 
   private lateinit var context: ComponentContext
 
-  @JvmField @Rule val lithoViewRule = LithoViewRule()
+  @JvmField @Rule val lithoViewRule = LithoTestRule()
 
   @Before
   fun setUp() {

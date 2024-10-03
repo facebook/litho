@@ -20,7 +20,7 @@ import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Color
 import androidx.test.core.app.ApplicationProvider
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.TestDrawableComponent
 import com.facebook.litho.testing.atMost
 import com.facebook.litho.testing.exactly
@@ -38,7 +38,7 @@ import org.mockito.kotlin.spy
 @RunWith(LithoTestRunner::class)
 class MountStateRemountInPlaceTest {
 
-  @JvmField @Rule val lithoViewRule = LithoViewRule()
+  @JvmField @Rule val lithoViewRule = LithoTestRule()
   private lateinit var context: ComponentContext
 
   @Before

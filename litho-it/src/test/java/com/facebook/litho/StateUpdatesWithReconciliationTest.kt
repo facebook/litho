@@ -21,7 +21,7 @@ import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
-import com.facebook.litho.testing.LegacyLithoViewRule
+import com.facebook.litho.testing.LegacyLithoTestRule
 import com.facebook.litho.testing.assertj.LithoViewAssert.Companion.assertThat
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.ImmediateLazyStateUpdateDispatchingComponent
@@ -49,7 +49,7 @@ class StateUpdatesWithReconciliationTest() {
 
   @JvmField @Rule var backgroundLayoutLooperRule = BackgroundLayoutLooperRule()
 
-  @JvmField @Rule var lithoViewRule = LegacyLithoViewRule()
+  @JvmField @Rule var lithoViewRule = LegacyLithoTestRule()
 
   @Test
   fun `should not reuse layout when root with new props is set`() {

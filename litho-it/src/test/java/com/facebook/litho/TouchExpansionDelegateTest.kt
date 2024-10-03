@@ -21,7 +21,7 @@ import android.os.SystemClock
 import android.view.MotionEvent
 import android.view.View
 import androidx.test.core.app.ApplicationProvider
-import com.facebook.litho.testing.LegacyLithoViewRule
+import com.facebook.litho.testing.LegacyLithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.OnClickCallbackComponent
 import com.facebook.litho.widget.Text
@@ -37,13 +37,13 @@ import org.robolectric.annotation.LooperMode
 @RunWith(LithoTestRunner::class)
 class TouchExpansionDelegateTest {
 
-  @JvmField @Rule val legacyLithoViewRule: LegacyLithoViewRule = LegacyLithoViewRule()
+  @JvmField @Rule val legacyLithoTestRule: LegacyLithoTestRule = LegacyLithoTestRule()
 
   private lateinit var context: ComponentContext
 
   @Before
   fun setup() {
-    context = legacyLithoViewRule.context
+    context = legacyLithoTestRule.context
   }
 
   @Test
@@ -75,8 +75,8 @@ class TouchExpansionDelegateTest {
                     .touchExpansionPx(YogaEdge.ALL, 5))
             .paddingPx(YogaEdge.ALL, 10)
             .build()
-    legacyLithoViewRule.setRoot(component).attachToWindow().measure().layout()
-    legacyLithoViewRule.lithoView.emulateClickEvent(7, 7)
+    legacyLithoTestRule.setRoot(component).attachToWindow().measure().layout()
+    legacyLithoTestRule.lithoView.emulateClickEvent(7, 7)
     assertThat(callback.handled)
         .describedAs("TouchEvent within bounds bounds should be handled")
         .isTrue
@@ -98,8 +98,8 @@ class TouchExpansionDelegateTest {
                     .touchExpansionPx(YogaEdge.ALL, 5))
             .paddingPx(YogaEdge.ALL, 10)
             .build()
-    legacyLithoViewRule.setRoot(component).attachToWindow().measure().layout()
-    legacyLithoViewRule.lithoView.emulateClickEvent(2, 2)
+    legacyLithoTestRule.setRoot(component).attachToWindow().measure().layout()
+    legacyLithoTestRule.lithoView.emulateClickEvent(2, 2)
     assertThat(callback.handled)
         .describedAs("TouchEvent within bounds bounds should not be handled")
         .isFalse
@@ -118,16 +118,16 @@ class TouchExpansionDelegateTest {
                     .touchExpansionPx(YogaEdge.ALL, 5))
             .paddingPx(YogaEdge.ALL, 10)
             .build()
-    legacyLithoViewRule.setRoot(component).attachToWindow().measure().layout()
-    assertThat(legacyLithoViewRule.lithoView.touchExpansionDelegate?.size())
+    legacyLithoTestRule.setRoot(component).attachToWindow().measure().layout()
+    assertThat(legacyLithoTestRule.lithoView.touchExpansionDelegate?.size())
         .describedAs("touch expansion delegates should be present")
         .isEqualTo(1)
-    legacyLithoViewRule.lithoView.unmountAllItems()
-    legacyLithoViewRule.lithoView.emulateClickEvent(7, 7)
+    legacyLithoTestRule.lithoView.unmountAllItems()
+    legacyLithoTestRule.lithoView.emulateClickEvent(7, 7)
     assertThat(callback.handled)
         .describedAs("TouchEvent within bounds bounds should not be handled")
         .isFalse
-    assertThat(legacyLithoViewRule.lithoView.touchExpansionDelegate?.size())
+    assertThat(legacyLithoTestRule.lithoView.touchExpansionDelegate?.size())
         .describedAs("all touch expansion delegates should be released")
         .isEqualTo(0)
   }
@@ -145,7 +145,7 @@ class TouchExpansionDelegateTest {
                     .touchExpansionPx(YogaEdge.ALL, 5))
             .paddingPx(YogaEdge.ALL, 10)
             .build()
-    legacyLithoViewRule.setRoot(component).attachToWindow().measure().layout()
+    legacyLithoTestRule.setRoot(component).attachToWindow().measure().layout()
     val updated =
         Column.create(context)
             .child(
@@ -155,20 +155,20 @@ class TouchExpansionDelegateTest {
                     .callback(callback))
             .paddingPx(YogaEdge.ALL, 10)
             .build()
-    legacyLithoViewRule.setRoot(updated)
-    legacyLithoViewRule.lithoView.emulateClickEvent(7, 7)
+    legacyLithoTestRule.setRoot(updated)
+    legacyLithoTestRule.lithoView.emulateClickEvent(7, 7)
     assertThat(callback.handled)
         .describedAs("TouchEvent within bounds bounds should not be handled")
         .isFalse
-    legacyLithoViewRule.lithoView.emulateClickEvent(11, 11)
+    legacyLithoTestRule.lithoView.emulateClickEvent(11, 11)
     assertThat(callback.handled)
         .describedAs("TouchEvent within bounds bounds should be handled")
         .isTrue
     assertThat(callback.count)
         .describedAs("TouchEvent within bounds bounds should be handled only once")
         .isEqualTo(1)
-    legacyLithoViewRule.lithoView.unmountAllItems()
-    assertThat(legacyLithoViewRule.lithoView.touchExpansionDelegate?.size())
+    legacyLithoTestRule.lithoView.unmountAllItems()
+    assertThat(legacyLithoTestRule.lithoView.touchExpansionDelegate?.size())
         .describedAs("all touch expansion delegates should be released")
         .isEqualTo(0)
   }
@@ -186,7 +186,7 @@ class TouchExpansionDelegateTest {
                     .touchExpansionPx(YogaEdge.ALL, 5))
             .paddingPx(YogaEdge.ALL, 10)
             .build()
-    legacyLithoViewRule.setRoot(component).attachToWindow().measure().layout()
+    legacyLithoTestRule.setRoot(component).attachToWindow().measure().layout()
     val updated =
         Column.create(context)
             .child(Text.create(context).text("hello world").widthPx(10).heightPx(10))
@@ -198,12 +198,12 @@ class TouchExpansionDelegateTest {
                     .touchExpansionPx(YogaEdge.ALL, 5))
             .paddingPx(YogaEdge.ALL, 10)
             .build()
-    legacyLithoViewRule.setRoot(updated).measure().layout()
-    legacyLithoViewRule.lithoView.emulateClickEvent(7, 7)
+    legacyLithoTestRule.setRoot(updated).measure().layout()
+    legacyLithoTestRule.lithoView.emulateClickEvent(7, 7)
     assertThat(callback.handled)
         .describedAs("TouchEvent within bounds bounds should not be handled")
         .isFalse
-    legacyLithoViewRule.lithoView.emulateClickEvent(7, 21)
+    legacyLithoTestRule.lithoView.emulateClickEvent(7, 21)
     assertThat(callback.handled)
         .describedAs("TouchEvent within bounds bounds should be handled")
         .isTrue

@@ -19,7 +19,7 @@ package com.facebook.litho
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.stats.LithoStats
-import com.facebook.litho.testing.LegacyLithoViewRule
+import com.facebook.litho.testing.LegacyLithoTestRule
 import com.facebook.litho.testing.helper.ComponentTestHelper
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.TextInput
@@ -43,7 +43,7 @@ class LithoStatsTest {
   private lateinit var lithoView: LithoView
   private lateinit var testComponentKey: String
 
-  @JvmField @Rule val legacyLithoViewRule = LegacyLithoViewRule()
+  @JvmField @Rule val legacyLithoTestRule = LegacyLithoTestRule()
 
   @Before
   fun setup() {
@@ -133,8 +133,8 @@ class LithoStatsTest {
   @Test
   fun mount_incrementsMountCount() {
     val beforeMountCount = LithoStats.componentMountCount
-    val component = TextInput.create(legacyLithoViewRule.context).build()
-    legacyLithoViewRule.attachToWindow().setRoot(component).measure().layout()
+    val component = TextInput.create(legacyLithoTestRule.context).build()
+    legacyLithoTestRule.attachToWindow().setRoot(component).measure().layout()
     val afterMountCount = LithoStats.componentMountCount
     assertThat(afterMountCount - beforeMountCount).isEqualTo(1)
   }

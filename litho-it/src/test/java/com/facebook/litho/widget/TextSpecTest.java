@@ -39,7 +39,7 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.DynamicValue;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LithoView;
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LithoTestRule;
 import com.facebook.litho.testing.eventhandler.EventHandlerTestHelper;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
@@ -62,7 +62,7 @@ public class TextSpecTest {
       "\u0645\u0646 \u0627\u0644\u064A\u0645\u064A\u0646 \u0627\u0644\u0649"
           + " \u0627\u0644\u064A\u0633\u0627\u0631";
 
-  @Rule public final LithoViewRule mLithoViewRule = new LithoViewRule();
+  @Rule public final LithoTestRule mLithoTestRule = new LithoTestRule();
 
   @Before
   public void setup() {
@@ -602,7 +602,7 @@ public class TextSpecTest {
     final DynamicValue<Integer> textColor = new DynamicValue<>(Color.BLUE);
 
     LithoView lithoView =
-        mLithoViewRule
+        mLithoTestRule
             .render(
                 c ->
                     Text.create(c.getContext())

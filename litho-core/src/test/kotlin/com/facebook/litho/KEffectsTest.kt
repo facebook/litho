@@ -19,7 +19,7 @@ package com.facebook.litho
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import com.facebook.litho.kotlin.widget.Text
-import com.facebook.litho.testing.LegacyLithoViewRule
+import com.facebook.litho.testing.LegacyLithoTestRule
 import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.setRoot
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -38,7 +38,7 @@ import org.robolectric.annotation.LooperMode
 @RunWith(LithoTestRunner::class)
 class KEffectsTest {
 
-  @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()
+  @Rule @JvmField val lithoViewRule = LegacyLithoTestRule()
 
   @Test
   fun useEffect_createdThenReleased_callbacksAreInvoked() {

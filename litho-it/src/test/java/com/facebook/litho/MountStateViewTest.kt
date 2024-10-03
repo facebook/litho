@@ -24,7 +24,7 @@ import android.view.ContextThemeWrapper
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.config.TempComponentsConfigurations
 import com.facebook.litho.it.R
-import com.facebook.litho.testing.LegacyLithoViewRule
+import com.facebook.litho.testing.LegacyLithoTestRule
 import com.facebook.litho.testing.TestViewComponent
 import com.facebook.litho.testing.ViewGroupWithLithoViewChildren
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec
@@ -43,12 +43,12 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class MountStateViewTest {
 
-  @JvmField @Rule val legacyLithoViewRule: LegacyLithoViewRule = LegacyLithoViewRule()
+  @JvmField @Rule val legacyLithoTestRule: LegacyLithoTestRule = LegacyLithoTestRule()
   private lateinit var context: ComponentContext
 
   @Before
   fun setup() {
-    context = legacyLithoViewRule.context
+    context = legacyLithoTestRule.context
   }
 
   @Test
@@ -67,9 +67,9 @@ class MountStateViewTest {
                           .backgroundColor(color))
                   .build()
         }
-    legacyLithoViewRule.setRoot(component)
-    legacyLithoViewRule.attachToWindow().measure().layout()
-    val lithoView = legacyLithoViewRule.lithoView
+    legacyLithoTestRule.setRoot(component)
+    legacyLithoTestRule.attachToWindow().measure().layout()
+    val lithoView = legacyLithoTestRule.lithoView
     val child = lithoView.getChildAt(0)
     val background = child.background
     assertThat(child.paddingLeft).isEqualTo(5)
@@ -88,9 +88,9 @@ class MountStateViewTest {
                 ApplicationProvider.getApplicationContext(),
                 R.style.TestTheme_BackgroundWithPadding))
     val component = TextInput.create(c).paddingPx(YogaEdge.ALL, 9).build()
-    legacyLithoViewRule.useContext(c)
-    legacyLithoViewRule.attachToWindow().setRoot(component).measure().layout()
-    val lithoView = legacyLithoViewRule.lithoView
+    legacyLithoTestRule.useContext(c)
+    legacyLithoTestRule.attachToWindow().setRoot(component).measure().layout()
+    val lithoView = legacyLithoTestRule.lithoView
     val child = lithoView.getChildAt(0)
     assertThat(child.paddingLeft).isEqualTo(9)
     assertThat(child.paddingTop).isEqualTo(9)
@@ -106,9 +106,9 @@ class MountStateViewTest {
                 ApplicationProvider.getApplicationContext(),
                 R.style.TestTheme_BackgroundWithPadding))
     val component = TextInput.create(c).paddingPx(YogaEdge.LEFT, 12).build()
-    legacyLithoViewRule.useContext(c)
-    legacyLithoViewRule.attachToWindow().setRoot(component).measure().layout()
-    val lithoView = legacyLithoViewRule.lithoView
+    legacyLithoTestRule.useContext(c)
+    legacyLithoTestRule.attachToWindow().setRoot(component).measure().layout()
+    val lithoView = legacyLithoTestRule.lithoView
     val child = lithoView.getChildAt(0)
     assertThat(child.paddingLeft).isEqualTo(12)
     assertThat(child.paddingTop).isZero
@@ -128,14 +128,14 @@ class MountStateViewTest {
                   .child(Wrapper.create(c).delegate(testComponent).widthPx(10).heightPx(10))
                   .build()
         }
-    legacyLithoViewRule.setRoot(mountedTestComponent).attachToWindow().measure().layout()
+    legacyLithoTestRule.setRoot(mountedTestComponent).attachToWindow().measure().layout()
     assertThat(lifecycleTracker.isMounted).isTrue
     val viewGroup = ViewGroupWithLithoViewChildren(context.androidContext)
-    val child = legacyLithoViewRule.lithoView
+    val child = legacyLithoTestRule.lithoView
     viewGroup.addView(child)
-    legacyLithoViewRule.setRoot(TestViewComponent.create(context).testView(viewGroup).build())
+    legacyLithoTestRule.setRoot(TestViewComponent.create(context).testView(viewGroup).build())
     assertThat(lifecycleTracker.isMounted).isTrue
-    legacyLithoViewRule.lithoView.unmountAllItems()
+    legacyLithoTestRule.lithoView.unmountAllItems()
     assertThat(lifecycleTracker.isMounted).isFalse
   }
 
@@ -153,9 +153,9 @@ class MountStateViewTest {
                     .paddingPx(YogaEdge.ALL, 10)
                     .marginPx(YogaEdge.ALL, 10))
             .build()
-    legacyLithoViewRule.setRoot(component)
-    legacyLithoViewRule.attachToWindow().measure().layout()
-    val root = legacyLithoViewRule.lithoView
+    legacyLithoTestRule.setRoot(component)
+    legacyLithoTestRule.attachToWindow().measure().layout()
+    val root = legacyLithoTestRule.lithoView
     val view = root.getChildAt(0)
     val viewBounds = root.getMountItemAt(0).renderTreeNode.getAbsoluteBounds(Rect())
     assertThat(view.width).isEqualTo(viewBounds.width())
@@ -180,11 +180,11 @@ class MountStateViewTest {
             .backgroundRes(R.drawable.background_with_padding)
             .child(Text.create(context).text("hello world").textSizeSp(20f))
             .build()
-    legacyLithoViewRule.attachToWindow().setRoot(component).measure().layout()
-    assertThat(legacyLithoViewRule.lithoView.paddingTop).isEqualTo(0)
-    assertThat(legacyLithoViewRule.lithoView.paddingRight).isEqualTo(0)
-    assertThat(legacyLithoViewRule.lithoView.paddingBottom).isEqualTo(0)
-    assertThat(legacyLithoViewRule.lithoView.paddingLeft).isEqualTo(0)
+    legacyLithoTestRule.attachToWindow().setRoot(component).measure().layout()
+    assertThat(legacyLithoTestRule.lithoView.paddingTop).isEqualTo(0)
+    assertThat(legacyLithoTestRule.lithoView.paddingRight).isEqualTo(0)
+    assertThat(legacyLithoTestRule.lithoView.paddingBottom).isEqualTo(0)
+    assertThat(legacyLithoTestRule.lithoView.paddingLeft).isEqualTo(0)
     TempComponentsConfigurations.restoreShouldAddHostViewForRootComponent()
   }
 }

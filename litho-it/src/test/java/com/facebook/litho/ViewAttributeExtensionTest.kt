@@ -23,7 +23,7 @@ import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.kotlin.widget.SolidColor
 import com.facebook.litho.kotlin.widget.TextInput
-import com.facebook.litho.testing.LegacyLithoViewRule
+import com.facebook.litho.testing.LegacyLithoTestRule
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.onClick
@@ -42,7 +42,7 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class ViewAttributeExtensionTest {
 
-  @JvmField @Rule var lithoViewRule: LegacyLithoViewRule = LegacyLithoViewRule()
+  @JvmField @Rule var lithoViewRule: LegacyLithoTestRule = LegacyLithoTestRule()
   @JvmField @Rule var lithoTestRule = LithoTestRule()
 
   @Test

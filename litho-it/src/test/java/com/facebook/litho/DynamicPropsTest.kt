@@ -31,7 +31,7 @@ import com.facebook.litho.animated.alpha
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
-import com.facebook.litho.testing.LegacyLithoViewRule
+import com.facebook.litho.testing.LegacyLithoTestRule
 import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.helper.ComponentTestHelper
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -60,7 +60,7 @@ class DynamicPropsTest {
   val config =
       ComponentsConfiguration.defaultInstance.copy(shouldAddHostViewForRootComponent = true)
 
-  @JvmField @Rule val legacyLithoViewRule = LegacyLithoViewRule(config)
+  @JvmField @Rule val legacyLithoTestRule = LegacyLithoTestRule(config)
 
   @Before
   fun setup() {
@@ -72,7 +72,7 @@ class DynamicPropsTest {
     val startValue = 0.8f
     val alphaDV = DynamicValue(startValue)
     val lithoView =
-        legacyLithoViewRule
+        legacyLithoTestRule
             .attachToWindow()
             .setRoot(Column.create(context).widthPx(80).heightPx(80).alpha(alphaDV).build())
             .measure()
@@ -107,13 +107,13 @@ class DynamicPropsTest {
             .backgroundColor(Color.MAGENTA)
             .alpha(alphaDV)
             .build()
-    legacyLithoViewRule
+    legacyLithoTestRule
         .setRoot(component1)
         .setSizeSpecs(makeSizeSpec(80, EXACTLY), makeSizeSpec(80, EXACTLY))
         .attachToWindow()
         .measure()
         .layout()
-    val lithoView = legacyLithoViewRule.lithoView
+    val lithoView = legacyLithoTestRule.lithoView
 
     // Ensure we have one view.
     assertThat(lithoView.childCount).isEqualTo(1)
@@ -128,7 +128,7 @@ class DynamicPropsTest {
 
     // Mount component2, which is identical to component1, except with a different bg, invoking
     // an update sequence.
-    legacyLithoViewRule.setRoot(component2)
+    legacyLithoTestRule.setRoot(component2)
 
     // Grab the host again
     hostView = lithoView.getChildAt(0)
@@ -151,7 +151,7 @@ class DynamicPropsTest {
     val translationXDV = DynamicValue(startValueX)
     val translationYDV = DynamicValue(startValueY)
     val lithoView =
-        legacyLithoViewRule
+        legacyLithoTestRule
             .attachToWindow()
             .setRoot(
                 Column.create(context)
@@ -188,7 +188,7 @@ class DynamicPropsTest {
     val scaleXDV = DynamicValue(startValueX)
     val scaleYDV = DynamicValue(startValueY)
     val lithoView =
-        legacyLithoViewRule
+        legacyLithoTestRule
             .attachToWindow()
             .setRoot(
                 Column.create(context)
@@ -223,7 +223,7 @@ class DynamicPropsTest {
     val startValue = Color.RED
     val backgroundColorDV = DynamicValue(startValue)
     val lithoView =
-        legacyLithoViewRule
+        legacyLithoTestRule
             .attachToWindow()
             .setRoot(
                 Column.create(context)
@@ -253,7 +253,7 @@ class DynamicPropsTest {
     val rotationX = DynamicValue(startValue)
     val rotationY = DynamicValue(startValue)
     val lithoView =
-        legacyLithoViewRule
+        legacyLithoTestRule
             .attachToWindow()
             .setRoot(
                 Column.create(context)
@@ -357,7 +357,7 @@ class DynamicPropsTest {
     val startValue = 100f
     val translationZDV = DynamicValue(startValue)
     val lithoView =
-        legacyLithoViewRule
+        legacyLithoTestRule
             .attachToWindow()
             .setRoot(
                 Column.create(context)
@@ -382,8 +382,8 @@ class DynamicPropsTest {
   fun commonDynamicProps_unbindAndRebindContent_resetValues() {
     val stateUpdateCaller = DynamicPropsResetValueTesterSpec.Caller()
     val component = DynamicPropsResetValueTester.create(context).caller(stateUpdateCaller).build()
-    legacyLithoViewRule.setRoot(component).attachToWindow().measure().layout()
-    val mountDelegateTarget = legacyLithoViewRule.lithoView.mountDelegateTarget
+    legacyLithoTestRule.setRoot(component).attachToWindow().measure().layout()
+    val mountDelegateTarget = legacyLithoTestRule.lithoView.mountDelegateTarget
     var text1HostId: Long = -1
     var text2HostId: Long = -1
     for (i in 0 until mountDelegateTarget.getMountItemCount()) {
@@ -453,7 +453,7 @@ class DynamicPropsTest {
   fun testDynamicPropsAddedToSpecGeneratedComponentUsingWrapper() {
     val alphaDV = DynamicValue(0.5f)
     val lithoView =
-        legacyLithoViewRule
+        legacyLithoTestRule
             .attachToWindow()
             .setRoot(
                 Wrapper.create(context)
@@ -474,7 +474,7 @@ class DynamicPropsTest {
   fun testDynamicPropsAddedToPrimitiveComponentUsingWrapper() {
     val alphaDV = DynamicValue(0.5f)
     val lithoView =
-        legacyLithoViewRule
+        legacyLithoTestRule
             .attachToWindow()
             .setRoot(
                 Wrapper.create(context)
@@ -517,13 +517,13 @@ class DynamicPropsTest {
                             .build()))
             .build()
 
-    legacyLithoViewRule
+    legacyLithoTestRule
         .setRoot(Column.create(context).child(component1).child(component2))
         .setSizeSpecs(makeSizeSpec(80, EXACTLY), makeSizeSpec(80, EXACTLY))
         .attachToWindow()
         .measure()
         .layout()
-    val lithoView = legacyLithoViewRule.lithoView
+    val lithoView = legacyLithoTestRule.lithoView
 
     assertThat(lithoView.componentTree!!.committedLayoutState!!.dynamicValueOutputs)
         .describedAs("We should not collect empty dynamic values output for each component")
@@ -555,13 +555,13 @@ class DynamicPropsTest {
                     .build())
             .kotlinStyle(Style.alpha(alphaDV))
             .build()
-    legacyLithoViewRule
+    legacyLithoTestRule
         .setRoot(component1)
         .setSizeSpecs(makeSizeSpec(80, EXACTLY), makeSizeSpec(80, EXACTLY))
         .attachToWindow()
         .measure()
         .layout()
-    val lithoView = legacyLithoViewRule.lithoView
+    val lithoView = legacyLithoTestRule.lithoView
 
     // Ensure we have one view.
     assertThat(lithoView.childCount).isEqualTo(1)
@@ -576,7 +576,7 @@ class DynamicPropsTest {
 
     // Mount component2, which is identical to component1, except with a different yoga align,
     // invoking an update sequence.
-    legacyLithoViewRule.setRoot(component2)
+    legacyLithoTestRule.setRoot(component2)
 
     // Grab the host again
     hostView = lithoView.getChildAt(0)
@@ -608,13 +608,13 @@ class DynamicPropsTest {
                     style = Style.width(80.px).height(80.px).backgroundColor(Color.RED)))
             .kotlinStyle(Style.alpha(alphaDV))
             .build()
-    legacyLithoViewRule
+    legacyLithoTestRule
         .setRoot(component1)
         .setSizeSpecs(makeSizeSpec(80, EXACTLY), makeSizeSpec(80, EXACTLY))
         .attachToWindow()
         .measure()
         .layout()
-    val lithoView = legacyLithoViewRule.lithoView
+    val lithoView = legacyLithoTestRule.lithoView
 
     // Ensure we have one view.
     assertThat(lithoView.childCount).isEqualTo(1)
@@ -629,7 +629,7 @@ class DynamicPropsTest {
 
     // Mount component2, which is identical to component1, except with a different content
     // description, invoking an update sequence.
-    legacyLithoViewRule.setRoot(component2)
+    legacyLithoTestRule.setRoot(component2)
 
     // Grab the host again
     hostView = lithoView.getChildAt(0)
@@ -646,7 +646,7 @@ class DynamicPropsTest {
   fun testPrimitiveWithDynamicValueIsCorrectlyUnsubscribed() {
     val alphaDV1 = DynamicValue(1f)
     var lithoView =
-        legacyLithoViewRule
+        legacyLithoTestRule
             .attachToWindow()
             .setRoot(
                 SimpleTestPrimitiveComponent(
@@ -654,14 +654,14 @@ class DynamicPropsTest {
             .measure()
             .layout()
             .lithoView
-    legacyLithoViewRule.idle()
+    legacyLithoTestRule.idle()
 
     assertThat(alphaDV1.numberOfListeners).isEqualTo(1)
 
     // simulate update
     val alphaDV2 = DynamicValue(1f)
     lithoView =
-        legacyLithoViewRule
+        legacyLithoTestRule
             .attachToWindow()
             .setRoot(
                 SimpleTestPrimitiveComponent(
@@ -669,14 +669,14 @@ class DynamicPropsTest {
             .measure()
             .layout()
             .lithoView
-    legacyLithoViewRule.idle()
+    legacyLithoTestRule.idle()
 
     // should unsubscribe from the old DV and subscribe to the new DV
     assertThat(alphaDV1.numberOfListeners).isEqualTo(0)
     assertThat(alphaDV2.numberOfListeners).isEqualTo(1)
 
     lithoView.unmountAllItems()
-    legacyLithoViewRule.idle()
+    legacyLithoTestRule.idle()
 
     // should unsubscribe from all DVs
     assertThat(alphaDV1.numberOfListeners).isEqualTo(0)
@@ -688,7 +688,7 @@ class DynamicPropsTest {
   fun testWrappedPrimitiveWithDynamicValueIsCorrectlyUnsubscribed() {
     val alphaDV1 = DynamicValue(1f)
     var lithoView =
-        legacyLithoViewRule
+        legacyLithoTestRule
             .attachToWindow()
             .setRoot(
                 Wrapper.create(context)
@@ -699,14 +699,14 @@ class DynamicPropsTest {
             .measure()
             .layout()
             .lithoView
-    legacyLithoViewRule.idle()
+    legacyLithoTestRule.idle()
 
     assertThat(alphaDV1.numberOfListeners).isEqualTo(1)
 
     // simulate update
     val alphaDV2 = DynamicValue(1f)
     lithoView =
-        legacyLithoViewRule
+        legacyLithoTestRule
             .attachToWindow()
             .setRoot(
                 Wrapper.create(context)
@@ -717,14 +717,14 @@ class DynamicPropsTest {
             .measure()
             .layout()
             .lithoView
-    legacyLithoViewRule.idle()
+    legacyLithoTestRule.idle()
 
     // should unsubscribe from the old DV and subscribe to the new DV
     assertThat(alphaDV1.numberOfListeners).isEqualTo(0)
     assertThat(alphaDV2.numberOfListeners).isEqualTo(1)
 
     lithoView.unmountAllItems()
-    legacyLithoViewRule.idle()
+    legacyLithoTestRule.idle()
 
     // should unsubscribe from all DVs
     assertThat(alphaDV1.numberOfListeners).isEqualTo(0)
@@ -747,13 +747,13 @@ class DynamicPropsTest {
             }
           }
         }
-    legacyLithoViewRule
+    legacyLithoTestRule
         .setRoot(component)
         .attachToWindow()
         .setSizeSpecs(exactly(1_000), exactly(1_000))
         .measure()
         .layout()
-    val lithoView = legacyLithoViewRule.lithoView
+    val lithoView = legacyLithoTestRule.lithoView
 
     // mount rect that is above both components so none of them is visible
     lithoView.mountComponent(Rect(0, -50, 10, -20), true)

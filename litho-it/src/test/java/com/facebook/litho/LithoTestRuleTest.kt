@@ -40,7 +40,7 @@ class LithoTestRuleTest {
   @JvmField @Rule val mLithoTestRule = LithoTestRule()
 
   @Test
-  fun onLithoViewRuleWithTreeProp_shouldPropagateTreeProp() {
+  fun onLithoTestRuleWithTreeProp_shouldPropagateTreeProp() {
     val component = ComponentWithTreeProp.create(mLithoTestRule.context).build()
     val testLithoView =
         mLithoTestRule.setTreeProp(SimpleTreeProp::class.java, SimpleTreeProp("test")).render {
@@ -53,13 +53,13 @@ class LithoTestRuleTest {
   }
 
   @Test(expected = RuntimeException::class)
-  fun onLithoViewRuleWithoutTreeProp_shouldThrowException() {
+  fun onLithoTestRuleWithoutTreeProp_shouldThrowException() {
     val component = ComponentWithTreeProp.create(mLithoTestRule.context).build()
     mLithoTestRule.createTestLithoView().attachToWindow().setRoot(component).measure().layout()
   }
 
   @Test
-  fun onLithoViewRuleExceptionOnBackgroundThread_shouldPropagateExceptionImmediately() {
+  fun onLithoTestRuleExceptionOnBackgroundThread_shouldPropagateExceptionImmediately() {
     class TestComponent : KComponent() {
       override fun ComponentScope.render(): Component? {
         val randomState = useState { false }

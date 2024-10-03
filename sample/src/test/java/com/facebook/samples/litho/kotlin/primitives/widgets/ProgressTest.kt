@@ -21,7 +21,7 @@ import android.graphics.drawable.ColorDrawable
 import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.assertj.LithoAssertions.assertThat
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.ProgressView
@@ -36,7 +36,7 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class ProgressTest {
 
-  @Rule @JvmField val lithoViewRule = LithoViewRule()
+  @Rule @JvmField val lithoViewRule = LithoTestRule()
 
   @Test
   fun `ProgressComponent should render`() {

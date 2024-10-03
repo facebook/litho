@@ -48,7 +48,7 @@ For example, it may be needed if a component defines a visibility event that tri
 ```kotlin file=litho-core/src/test/kotlin/com/facebook/litho/examples/LithoTestRuleExampleTest.kt start=idle_component_start end=idle_component_end
 ```
 
-## Interactions with LithoViewRule
+## Interactions with LithoTestRule
 
 ### How to test a click action
 
@@ -72,7 +72,7 @@ The test case performs three steps:
 
 1. Confirm that the `Component` is not being rendered if there is no click on the `Row`.
    * In order to do this, find the `Component` based on the Text or its Class by using either: `findViewWithTextOrNull(String)` or `findComponent(Class<out Component?>)` and assert that it's null.
-2. Perform an action on the `LithoView` with the help of `LithoViewRule.act{}`.
+2. Perform an action on the `LithoView` with the help of `LithoTestRule.act{}`.
    * Clicking on the content description of the row triggers the state update.
 3. Confirm that the `Component` is being rendered and is not null.
    * Any of the available methods can be used to find the `Component`.
@@ -84,7 +84,7 @@ This test case is satisfied with the assertions shown in the following snippet:
 
 ### How to test `VisiblityEvent`
 
-In order to test `VisiblityEvent` instead of using `LithoViewRule.render(Component)`, separate the methods that are being called under the render call.
+In order to test `VisiblityEvent` instead of using `LithoTestRule.render(Component)`, separate the methods that are being called under the render call.
 
 This enables the state of the component to be checked before and after the visibility event is triggered:
 

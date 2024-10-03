@@ -59,7 +59,7 @@ import org.robolectric.Shadows.shadowOf
  *  @RunWith(AndroidJUnit4::class)
  *  class LithoSampleTest {
  *
- *  @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()
+ *  @Rule @JvmField val lithoViewRule = LegacyLithoTestRule()
  *  @Test
  *  fun test() {
  *    lithoViewRule.render { TestComponent() }
@@ -71,8 +71,8 @@ import org.robolectric.Shadows.shadowOf
  * }
  * ```
  */
-@Deprecated("Please use LithoViewRule and TestLithoView instead")
-class LegacyLithoViewRule
+@Deprecated("Please use LithoTestRule and TestLithoView instead")
+class LegacyLithoTestRule
 @JvmOverloads
 constructor(
     val componentsConfiguration: ComponentsConfiguration? = null,
@@ -151,17 +151,17 @@ constructor(
     }
   }
 
-  fun useContext(c: ComponentContext): LegacyLithoViewRule {
+  fun useContext(c: ComponentContext): LegacyLithoTestRule {
     context = c
     return this
   }
 
   /** Sets a new [LithoView] which should be used to render. */
-  fun useLithoView(lithoView: LithoView): LegacyLithoViewRule {
+  fun useLithoView(lithoView: LithoView): LegacyLithoTestRule {
     _lithoView = lithoView
     if (lithoView.componentContext !== context) {
       throw RuntimeException(
-          "You must use the same ComponentContext for the LithoView as what is on the LegacyLithoViewRule @Rule!")
+          "You must use the same ComponentContext for the LithoView as what is on the LegacyLithoTestRule @Rule!")
     }
     lithoView.componentTree.let {
       if (it == null && _componentTree != null) {
@@ -174,32 +174,32 @@ constructor(
   }
 
   /** Sets a new [ComponentTree] which should be used to render. */
-  fun useComponentTree(componentTree: ComponentTree?): LegacyLithoViewRule {
+  fun useComponentTree(componentTree: ComponentTree?): LegacyLithoTestRule {
     _componentTree = componentTree
     lithoView.componentTree = componentTree
     return this
   }
 
   /** Sets the new root [Component] to render. */
-  fun setRoot(component: Component?): LegacyLithoViewRule {
+  fun setRoot(component: Component?): LegacyLithoTestRule {
     componentTree.setRoot(component)
     return this
   }
 
   /** Sets the new root [Component.Builder] to render. */
-  fun setRoot(builder: Component.Builder<*>): LegacyLithoViewRule {
+  fun setRoot(builder: Component.Builder<*>): LegacyLithoTestRule {
     componentTree.setRoot(builder.build())
     return this
   }
 
   /** Sets the new root [Component] to render asynchronously. */
-  fun setRootAsync(component: Component?): LegacyLithoViewRule {
+  fun setRootAsync(component: Component?): LegacyLithoTestRule {
     componentTree.setRootAsync(component)
     return this
   }
 
   /** Sets the new root [Component.Builder] to render asynchronously. */
-  fun setRootAsync(builder: Component.Builder<*>): LegacyLithoViewRule {
+  fun setRootAsync(builder: Component.Builder<*>): LegacyLithoTestRule {
     componentTree.setRootAsync(builder.build())
     return this
   }
@@ -209,7 +209,7 @@ constructor(
       component: Component?,
       widthSpec: Int,
       heightSpec: Int
-  ): LegacyLithoViewRule {
+  ): LegacyLithoTestRule {
     this.widthSpec = widthSpec
     this.heightSpec = heightSpec
     componentTree.setRootAndSizeSpecSync(component, this.widthSpec, this.heightSpec)
@@ -217,21 +217,21 @@ constructor(
   }
 
   /** Sets a new width and height which should be used to render. */
-  fun setSizePx(widthPx: Int, heightPx: Int): LegacyLithoViewRule {
+  fun setSizePx(widthPx: Int, heightPx: Int): LegacyLithoTestRule {
     widthSpec = MeasureSpec.makeMeasureSpec(widthPx, MeasureSpec.EXACTLY)
     heightSpec = MeasureSpec.makeMeasureSpec(heightPx, MeasureSpec.EXACTLY)
     return this
   }
 
   /** Sets a new width spec and height spec which should be used to render. */
-  fun setSizeSpecs(widthSpec: Int, heightSpec: Int): LegacyLithoViewRule {
+  fun setSizeSpecs(widthSpec: Int, heightSpec: Int): LegacyLithoTestRule {
     this.widthSpec = widthSpec
     this.heightSpec = heightSpec
     return this
   }
 
   /** Sets a new [TreeProp] for the next layout pass. */
-  fun setTreeProp(klass: Class<*>, instance: Any?): LegacyLithoViewRule {
+  fun setTreeProp(klass: Class<*>, instance: Any?): LegacyLithoTestRule {
     val props = context.treePropContainer ?: TreePropContainer()
     props.put(klass, instance)
     context.treePropContainer = props
@@ -239,7 +239,7 @@ constructor(
   }
 
   /** Explicitly calls measure on the current root [LithoView] */
-  fun measure(): LegacyLithoViewRule {
+  fun measure(): LegacyLithoTestRule {
     lithoView.measure(widthSpec, heightSpec)
     return this
   }
@@ -248,32 +248,32 @@ constructor(
    * Explicitly calls layout on the current root [LithoView]. If there are any async events
    * triggered by layout use together with [idle]
    */
-  fun layout(): LegacyLithoViewRule {
+  fun layout(): LegacyLithoTestRule {
     val lithoView: LithoView = lithoView
     lithoView.layout(0, 0, lithoView.measuredWidth, lithoView.measuredHeight)
     return this
   }
 
-  fun dispatchGlobalLayout(): LegacyLithoViewRule {
+  fun dispatchGlobalLayout(): LegacyLithoTestRule {
     lithoView.notifyVisibleBoundsChanged()
 
     return this
   }
 
   /** Explicitly attaches current root [LithoView] */
-  fun attachToWindow(): LegacyLithoViewRule {
+  fun attachToWindow(): LegacyLithoTestRule {
     lithoView.onAttachedToWindowForTest()
     return this
   }
 
   /** Explicitly detaches current root [LithoView] */
-  fun detachFromWindow(): LegacyLithoViewRule {
+  fun detachFromWindow(): LegacyLithoTestRule {
     lithoView.onDetachedFromWindowForTest()
     return this
   }
 
   /** Explicitly releases current root [LithoView] */
-  fun release(): LegacyLithoViewRule {
+  fun release(): LegacyLithoTestRule {
     lithoView.release()
     return this
   }
@@ -431,15 +431,15 @@ constructor(
   }
 
   /**
-   * Perform any interactions defined in the [InteractionScope] or on the [LegacyLithoViewRule].
+   * Perform any interactions defined in the [InteractionScope] or on the [LegacyLithoTestRule].
    *
    * During tests we need to make sure that everything is in sync in the Main Thread and in the
    * Background Thread, just like in real life use case. This functions takes off the responsibility
    * from you to use the Loopers and manage the thread synchronisation. You only need to pass here
-   * one of the defined interactions from [LegacyLithoViewRule] or [InteractionScope], and we will
+   * one of the defined interactions from [LegacyLithoTestRule] or [InteractionScope], and we will
    * take care of all of the rest
    */
-  fun act(action: InteractionsScope.() -> Unit): LegacyLithoViewRule {
+  fun act(action: InteractionsScope.() -> Unit): LegacyLithoTestRule {
     interactionsScope.action()
     idle()
     return this
@@ -526,7 +526,7 @@ constructor(
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     @JvmStatic
     fun getRootLayout(
-        rule: LegacyLithoViewRule,
+        rule: LegacyLithoTestRule,
         component: Component?,
         widthSpec: Int,
         heightSpec: Int
@@ -541,7 +541,7 @@ constructor(
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     @JvmStatic
-    fun getRootLayout(rule: LegacyLithoViewRule, component: Component?): LithoLayoutResult? {
+    fun getRootLayout(rule: LegacyLithoTestRule, component: Component?): LithoLayoutResult? {
       return rule.attachToWindow().setRoot(component).measure().layout().currentRootNode
     }
   }

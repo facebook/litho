@@ -36,7 +36,7 @@ import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.key
 import com.facebook.litho.kotlin.widget.TextInput
-import com.facebook.litho.testing.LegacyLithoViewRule
+import com.facebook.litho.testing.LegacyLithoTestRule
 import com.facebook.litho.testing.assertMatches
 import com.facebook.litho.testing.child
 import com.facebook.litho.testing.match
@@ -56,7 +56,7 @@ import org.mockito.kotlin.mock
 @RunWith(LithoTestRunner::class)
 class ViewStylesTest {
 
-  @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()
+  @Rule @JvmField val lithoViewRule = LegacyLithoTestRule()
 
   @Test
   fun background_whenSet_isRespected() {
@@ -136,7 +136,7 @@ class ViewStylesTest {
     }
 
     val node =
-        LegacyLithoViewRule.getRootLayout(lithoViewRule, DuplicateChildrenStatesComponent())?.node
+        LegacyLithoTestRule.getRootLayout(lithoViewRule, DuplicateChildrenStatesComponent())?.node
     assertThat(node?.isDuplicateChildrenStatesEnabled).isTrue
   }
 
@@ -150,7 +150,7 @@ class ViewStylesTest {
     }
 
     val node =
-        LegacyLithoViewRule.getRootLayout(lithoViewRule, DuplicateChildrenStatesComponent())?.node
+        LegacyLithoTestRule.getRootLayout(lithoViewRule, DuplicateChildrenStatesComponent())?.node
     assertThat(node?.isDuplicateChildrenStatesEnabled).isFalse
   }
 
@@ -164,7 +164,7 @@ class ViewStylesTest {
     }
 
     val node =
-        LegacyLithoViewRule.getRootLayout(lithoViewRule, DuplicateParentStateComponent())?.node
+        LegacyLithoTestRule.getRootLayout(lithoViewRule, DuplicateParentStateComponent())?.node
     val childNode = node?.getChildAt(0)
     assertThat(childNode?.isDuplicateParentStateEnabled).isTrue
   }
@@ -179,7 +179,7 @@ class ViewStylesTest {
     }
 
     val node =
-        LegacyLithoViewRule.getRootLayout(lithoViewRule, DuplicateParentStateComponent())?.node
+        LegacyLithoTestRule.getRootLayout(lithoViewRule, DuplicateParentStateComponent())?.node
     val childNode = node?.getChildAt(0)
     assertThat(childNode?.isDuplicateParentStateEnabled).isFalse
   }
@@ -651,7 +651,7 @@ class ViewStylesTest {
       }
     }
 
-    val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, ElevationComponent())?.node
+    val node = LegacyLithoTestRule.getRootLayout(lithoViewRule, ElevationComponent())?.node
     val nodeInfo = node?.nodeInfo
     assertThat(nodeInfo?.shadowElevation).isEqualTo(elevation)
   }
@@ -672,7 +672,7 @@ class ViewStylesTest {
       }
     }
 
-    val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, ShadowComponent())?.node
+    val node = LegacyLithoTestRule.getRootLayout(lithoViewRule, ShadowComponent())?.node
     val nodeInfo = node?.nodeInfo
     assertThat(nodeInfo?.shadowElevation).isEqualTo(16.0f)
     assertThat(nodeInfo?.outlineProvider).isEqualTo(outlineProvider)
@@ -691,7 +691,7 @@ class ViewStylesTest {
       }
     }
 
-    val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, OutlineProviderComponent())?.node
+    val node = LegacyLithoTestRule.getRootLayout(lithoViewRule, OutlineProviderComponent())?.node
     val nodeInfo = node?.nodeInfo
     assertThat(nodeInfo?.outlineProvider).isEqualTo(outlineProvider)
   }
@@ -705,7 +705,7 @@ class ViewStylesTest {
       }
     }
 
-    val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, ComponentThatClips())?.node
+    val node = LegacyLithoTestRule.getRootLayout(lithoViewRule, ComponentThatClips())?.node
     assertThat(node?.nodeInfo?.clipToOutline).isTrue
 
     node?.mutableNodeInfo()?.clipToOutline = false
@@ -721,7 +721,7 @@ class ViewStylesTest {
       }
     }
 
-    val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, ElevationComponent())?.node
+    val node = LegacyLithoTestRule.getRootLayout(lithoViewRule, ElevationComponent())?.node
     val nodeInfo = node?.nodeInfo
     assertThat(nodeInfo?.transitionName).isEqualTo("test")
   }
@@ -735,7 +735,7 @@ class ViewStylesTest {
       }
     }
 
-    val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, TestKeyComponent())?.node
+    val node = LegacyLithoTestRule.getRootLayout(lithoViewRule, TestKeyComponent())?.node
     assertThat(node?.testKey).isEqualTo("test")
   }
 
@@ -756,7 +756,7 @@ class ViewStylesTest {
     }
 
     val node =
-        LegacyLithoViewRule.getRootLayout(lithoViewRule, key("root") { TestComponent() })?.node
+        LegacyLithoTestRule.getRootLayout(lithoViewRule, key("root") { TestComponent() })?.node
     assertThat(node?.transitionKey).isEqualTo("test")
     assertThat(node?.transitionOwnerKey).isEqualTo("\$root")
   }

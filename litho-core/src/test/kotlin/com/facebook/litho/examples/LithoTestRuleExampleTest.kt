@@ -56,7 +56,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.robolectric.annotation.LooperMode
 
-/** Examples of LithoViewRule usage */
+/** Examples of LithoTestRule usage */
 @LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(LithoTestRunner::class)
 class LithoTestRuleExampleTest {

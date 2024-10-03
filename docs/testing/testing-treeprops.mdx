@@ -26,20 +26,20 @@ class ComponentWithTreePropSpec {
 }
 ```
 
-To test a component that uses `@TreeProp`s, you can use `LithoViewRule#setTreeProp(Class, Object)`. This will set `@TreeProp`s on the hierachy, making them available to the components:
+To test a component that uses `@TreeProp`s, you can use `LithoTestRule#setTreeProp(Class, Object)`. This will set `@TreeProp`s on the hierachy, making them available to the components:
 
 ```java
 @RunWith(LithoTestRunner.class)
 public class ComponentWithTreePropTest {
 
-  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+  public final @Rule LithoTestRule mLithoTestRule = new LithoTestRule();
 
   @Test
   public void test() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLithoTestRule.getContext();
     final Component component = ComponentWithTreeProp.create(c).build();
 
-    mLithoViewRule
+    mLithoTestRule
       .attachToWindow()
       .setTreeProp(UserContext.class, new UserContext()) // setting tree props for the hierarchy.
       .setRoot(component)

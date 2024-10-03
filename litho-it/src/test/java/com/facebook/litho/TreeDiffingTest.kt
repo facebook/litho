@@ -24,7 +24,7 @@ import androidx.collection.SparseArrayCompat
 import com.facebook.litho.MountSpecLithoRenderUnit.UpdateState
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.drawable.ComparableColorDrawable
-import com.facebook.litho.testing.LegacyLithoViewRule
+import com.facebook.litho.testing.LegacyLithoTestRule
 import com.facebook.litho.testing.TestComponent
 import com.facebook.litho.testing.TestDrawableComponent
 import com.facebook.litho.testing.TestSizeDependentComponent
@@ -54,8 +54,8 @@ class TreeDiffingTest {
 
   @JvmField
   @Rule
-  val legacyLithoViewRule =
-      LegacyLithoViewRule(
+  val legacyLithoTestRule =
+      LegacyLithoTestRule(
           ComponentsConfiguration.defaultInstance.copy(shouldAddHostViewForRootComponent = true))
 
   @Before
@@ -79,7 +79,7 @@ class TreeDiffingTest {
         }
     val layoutState =
         calculateLayoutStateWithDiffing(
-            legacyLithoViewRule.componentTree.context, component, exactly(350), exactly(200), null)
+            legacyLithoTestRule.componentTree.context, component, exactly(350), exactly(200), null)
 
     // Check diff tree is not null and consistent.
     val node = layoutState.diffTree
@@ -89,66 +89,66 @@ class TreeDiffingTest {
 
   @Test
   fun testCachedMeasureFunction() {
-    val c = legacyLithoViewRule.context
+    val c = legacyLithoTestRule.context
     val component0: Component = Text.create(c).text("hello-world").build()
-    legacyLithoViewRule.attachToWindow().setRoot(component0).layout().measure()
-    val diffNode = legacyLithoViewRule.committedLayoutState?.diffTree
+    legacyLithoTestRule.attachToWindow().setRoot(component0).layout().measure()
+    val diffNode = legacyLithoTestRule.committedLayoutState?.diffTree
     val component1: Component = Text.create(c).text("hello-world").build()
-    legacyLithoViewRule.setRoot(component1).layout().measure()
-    val result = legacyLithoViewRule.currentRootNode
+    legacyLithoTestRule.setRoot(component1).layout().measure()
+    val result = legacyLithoTestRule.currentRootNode
     assertThat(result?.width).isEqualTo(diffNode?.lastMeasuredWidth)
     assertThat(result?.height).isEqualTo(diffNode?.lastMeasuredHeight)
   }
 
   @Test
   fun tesLastConstraints() {
-    val c = legacyLithoViewRule.context
+    val c = legacyLithoTestRule.context
     val component0: Component = Text.create(c).text("hello-world").build()
-    legacyLithoViewRule.attachToWindow().setRoot(component0).layout().measure()
-    val diffNode = legacyLithoViewRule.committedLayoutState?.diffTree
+    legacyLithoTestRule.attachToWindow().setRoot(component0).layout().measure()
+    val diffNode = legacyLithoTestRule.committedLayoutState?.diffTree
     val component1: Component = Text.create(c).text("hello-world").build()
-    legacyLithoViewRule.setRoot(component1).layout().measure()
-    val result = legacyLithoViewRule.currentRootNode
+    legacyLithoTestRule.setRoot(component1).layout().measure()
+    val result = legacyLithoTestRule.currentRootNode
     assertThat(diffNode?.lastWidthSpec).isEqualTo(result?.widthSpec)
     assertThat(diffNode?.lastHeightSpec).isEqualTo(result?.heightSpec)
   }
 
   @Test
   fun testCachedMeasures() {
-    val c = legacyLithoViewRule.context
+    val c = legacyLithoTestRule.context
     val component0: Component =
         Column.create(c)
             .child(Text.create(c).text("hello-world").build())
             .child(Text.create(c).text("hello-world").build())
             .build()
-    legacyLithoViewRule.attachToWindow().setRoot(component0).layout().measure()
+    legacyLithoTestRule.attachToWindow().setRoot(component0).layout().measure()
     val component1: Component =
         Column.create(c)
             .child(Text.create(c).text("hello-world").build())
             .child(Text.create(c).text("hello-world").build())
             .build()
-    legacyLithoViewRule.setRoot(component1).layout().measure()
-    val result = legacyLithoViewRule.currentRootNode
+    legacyLithoTestRule.setRoot(component1).layout().measure()
+    val result = legacyLithoTestRule.currentRootNode
     assertThat(result?.getChildAt(0)?.cachedMeasuresValid).isTrue
     assertThat(result?.getChildAt(1)?.cachedMeasuresValid).isTrue
   }
 
   @Test
   fun testPartiallyCachedMeasures() {
-    val c = legacyLithoViewRule.context
+    val c = legacyLithoTestRule.context
     val component0: Component =
         Column.create(c)
             .child(Text.create(c).text("hello-world-1").build())
             .child(Text.create(c).text("hello-world-2").build())
             .build()
-    legacyLithoViewRule.attachToWindow().setRoot(component0).layout().measure()
+    legacyLithoTestRule.attachToWindow().setRoot(component0).layout().measure()
     val component1: Component =
         Column.create(c)
             .child(Text.create(c).text("hello-world-1").build())
             .child(Text.create(c).text("hello-world-3").build())
             .build()
-    legacyLithoViewRule.setRoot(component1).layout().measure()
-    val result = legacyLithoViewRule.currentRootNode
+    legacyLithoTestRule.setRoot(component1).layout().measure()
+    val result = legacyLithoTestRule.currentRootNode
     assertThat(result?.getChildAt(0)?.cachedMeasuresValid).isTrue
     assertThat(result?.getChildAt(1)?.cachedMeasuresValid).isFalse
   }
@@ -178,10 +178,10 @@ class TreeDiffingTest {
         }
     val prevLayoutState =
         calculateLayoutStateWithDiffing(
-            legacyLithoViewRule.componentTree.context, component1, exactly(350), exactly(200), null)
+            legacyLithoTestRule.componentTree.context, component1, exactly(350), exactly(200), null)
     val layoutState =
         calculateLayoutStateWithDiffing(
-            legacyLithoViewRule.componentTree.context,
+            legacyLithoTestRule.componentTree.context,
             component2,
             exactly(350),
             exactly(200),
@@ -223,10 +223,10 @@ class TreeDiffingTest {
         }
     val prevLayoutState =
         calculateLayoutStateWithDiffing(
-            legacyLithoViewRule.componentTree.context, component1, exactly(350), exactly(200), null)
+            legacyLithoTestRule.componentTree.context, component1, exactly(350), exactly(200), null)
     val layoutState =
         calculateLayoutStateWithDiffing(
-            legacyLithoViewRule.componentTree.context,
+            legacyLithoTestRule.componentTree.context,
             component2,
             exactly(350),
             exactly(200),
@@ -260,7 +260,7 @@ class TreeDiffingTest {
 
   @Test
   fun testComponentHostMoveItem() {
-    val c = legacyLithoViewRule.componentTree.context
+    val c = legacyLithoTestRule.componentTree.context
     val hostHolder = ComponentHost(c)
     val mountItem: MountItem = mock()
     whenever(mountItem.renderTreeNode).thenReturn(createNode(Column.create(c).build()))
@@ -283,7 +283,7 @@ class TreeDiffingTest {
 
   @Test
   fun testComponentHostMoveItemPartial() {
-    val c = legacyLithoViewRule.componentTree.context
+    val c = legacyLithoTestRule.componentTree.context
     val hostHolder = ComponentHost(c)
     val mountItem: MountItem = mock()
     whenever(mountItem.renderTreeNode).thenReturn(createNode(Column.create(c).build()))
@@ -316,19 +316,19 @@ class TreeDiffingTest {
 
   @Test
   fun testLayoutOutputUpdateState() {
-    val c = legacyLithoViewRule.context
+    val c = legacyLithoTestRule.context
     val firstComponent: Component = TestDrawableComponent.create(c).color(Color.BLACK).build()
     val secondComponent: Component = TestDrawableComponent.create(c).color(Color.BLACK).build()
     val thirdComponent: Component = TestDrawableComponent.create(c).color(Color.WHITE).build()
-    legacyLithoViewRule.setRoot(firstComponent).attachToWindow()
-    legacyLithoViewRule.setRootAndSizeSpecSync(firstComponent, exactly(10), exactly(10))
-    val state = legacyLithoViewRule.componentTree.mainThreadLayoutState
+    legacyLithoTestRule.setRoot(firstComponent).attachToWindow()
+    legacyLithoTestRule.setRootAndSizeSpecSync(firstComponent, exactly(10), exactly(10))
+    val state = legacyLithoTestRule.componentTree.mainThreadLayoutState
     assertOutputsState(state, MountSpecLithoRenderUnit.STATE_UNKNOWN)
-    legacyLithoViewRule.setRoot(secondComponent)
-    val secondState = legacyLithoViewRule.componentTree.mainThreadLayoutState
+    legacyLithoTestRule.setRoot(secondComponent)
+    val secondState = legacyLithoTestRule.componentTree.mainThreadLayoutState
     assertOutputsState(secondState, MountSpecLithoRenderUnit.STATE_UPDATED)
-    legacyLithoViewRule.setRoot(thirdComponent)
-    val thirdState = legacyLithoViewRule.componentTree.mainThreadLayoutState
+    legacyLithoTestRule.setRoot(thirdComponent)
+    val thirdState = legacyLithoTestRule.componentTree.mainThreadLayoutState
     assertOutputsState(thirdState, MountSpecLithoRenderUnit.STATE_DIRTY)
   }
 
@@ -337,15 +337,15 @@ class TreeDiffingTest {
     val component1: Component = TestLayoutSpecBgState(false)
     val component2: Component = TestLayoutSpecBgState(false)
     val component3: Component = TestLayoutSpecBgState(true)
-    legacyLithoViewRule.setRoot(component1).attachToWindow()
-    legacyLithoViewRule.setRootAndSizeSpecSync(component1, exactly(10), exactly(10))
-    val state = legacyLithoViewRule.componentTree.mainThreadLayoutState
+    legacyLithoTestRule.setRoot(component1).attachToWindow()
+    legacyLithoTestRule.setRootAndSizeSpecSync(component1, exactly(10), exactly(10))
+    val state = legacyLithoTestRule.componentTree.mainThreadLayoutState
     assertOutputsState(state, MountSpecLithoRenderUnit.STATE_UNKNOWN)
-    legacyLithoViewRule.setRoot(component2)
-    val secondState = legacyLithoViewRule.componentTree.mainThreadLayoutState
+    legacyLithoTestRule.setRoot(component2)
+    val secondState = legacyLithoTestRule.componentTree.mainThreadLayoutState
     assertThat(secondState?.getMountableOutputCount()).isEqualTo(4)
-    legacyLithoViewRule.setRoot(component3)
-    val thirdState = legacyLithoViewRule.componentTree.mainThreadLayoutState
+    legacyLithoTestRule.setRoot(component3)
+    val thirdState = legacyLithoTestRule.componentTree.mainThreadLayoutState
     assertThat(thirdState?.getMountableOutputCount()).isEqualTo(4)
     assertThat(
             MountSpecLithoRenderUnit.getUpdateState(
@@ -363,14 +363,14 @@ class TreeDiffingTest {
     val component1: Component = TestLayoutSpecInnerState(false)
     val component2: Component = TestLayoutSpecInnerState(false)
     val component3: Component = TestLayoutSpecInnerState(true)
-    legacyLithoViewRule.setRoot(component1).attachToWindow()
-    legacyLithoViewRule.setRootAndSizeSpecSync(component1, exactly(10), exactly(10))
-    val state = legacyLithoViewRule.componentTree.mainThreadLayoutState
+    legacyLithoTestRule.setRoot(component1).attachToWindow()
+    legacyLithoTestRule.setRootAndSizeSpecSync(component1, exactly(10), exactly(10))
+    val state = legacyLithoTestRule.componentTree.mainThreadLayoutState
     assertThat(
             MountSpecLithoRenderUnit.getUpdateState(requireNotNull(state?.getMountableOutputAt(2))))
         .isEqualTo(MountSpecLithoRenderUnit.STATE_UNKNOWN)
-    legacyLithoViewRule.setRoot(component2)
-    val secondState = legacyLithoViewRule.componentTree.mainThreadLayoutState
+    legacyLithoTestRule.setRoot(component2)
+    val secondState = legacyLithoTestRule.componentTree.mainThreadLayoutState
     assertThat(
             MountSpecLithoRenderUnit.getUpdateState(
                 requireNotNull(secondState?.getMountableOutputAt(2))))
@@ -379,8 +379,8 @@ class TreeDiffingTest {
             MountSpecLithoRenderUnit.getUpdateState(
                 requireNotNull(secondState?.getMountableOutputAt(3))))
         .isEqualTo(MountSpecLithoRenderUnit.STATE_UPDATED)
-    legacyLithoViewRule.setRoot(component3)
-    val thirdState = legacyLithoViewRule.componentTree.mainThreadLayoutState
+    legacyLithoTestRule.setRoot(component3)
+    val thirdState = legacyLithoTestRule.componentTree.mainThreadLayoutState
     assertThat(
             MountSpecLithoRenderUnit.getUpdateState(
                 requireNotNull(thirdState?.getMountableOutputAt(2))))
@@ -395,12 +395,12 @@ class TreeDiffingTest {
   fun testLayoutOutputUpdateStateIdClash() {
     val component1: Component = TestLayoutWithStateIdClash(false)
     val component2: Component = TestLayoutWithStateIdClash(true)
-    legacyLithoViewRule.setRoot(component1).attachToWindow()
-    legacyLithoViewRule.setRootAndSizeSpecSync(component1, exactly(10), exactly(10))
-    val state = legacyLithoViewRule.componentTree.mainThreadLayoutState
+    legacyLithoTestRule.setRoot(component1).attachToWindow()
+    legacyLithoTestRule.setRootAndSizeSpecSync(component1, exactly(10), exactly(10))
+    val state = legacyLithoTestRule.componentTree.mainThreadLayoutState
     assertOutputsState(state, MountSpecLithoRenderUnit.STATE_UNKNOWN)
-    legacyLithoViewRule.setRoot(component2)
-    val secondState = legacyLithoViewRule.componentTree.mainThreadLayoutState
+    legacyLithoTestRule.setRoot(component2)
+    val secondState = legacyLithoTestRule.componentTree.mainThreadLayoutState
     assertThat(6).isEqualTo(secondState?.getMountableOutputCount())
     assertThat(MountSpecLithoRenderUnit.STATE_DIRTY)
         .isEqualTo(
@@ -430,7 +430,7 @@ class TreeDiffingTest {
 
   @Test
   fun testDiffTreeUsedIfRootMeasureSpecsAreDifferentButChildHasSame() {
-    val c = legacyLithoViewRule.componentTree.context
+    val c = legacyLithoTestRule.componentTree.context
     val component: TestComponent = TestDrawableComponent.create(c).color(Color.BLACK).build()
     val layoutComponent: Component = TestSimpleContainerLayout2(component)
     val firstLayoutState =
@@ -445,7 +445,7 @@ class TreeDiffingTest {
 
   @Test
   fun testDiffTreeUsedIfMeasureSpecsAreSame() {
-    val c = legacyLithoViewRule.componentTree.context
+    val c = legacyLithoTestRule.componentTree.context
     val component: TestComponent = TestDrawableComponent.create(c).color(Color.BLACK).build()
     val layoutComponent: Component = TestSimpleContainerLayout(component, 0)
     val firstLayoutState =
@@ -464,10 +464,10 @@ class TreeDiffingTest {
     val component2: Component = TestNestedTreeDelegateWithUndefinedSizeLayout()
     val prevLayoutState =
         calculateLayoutStateWithDiffing(
-            legacyLithoViewRule.componentTree.context, component1, exactly(350), exactly(200), null)
+            legacyLithoTestRule.componentTree.context, component1, exactly(350), exactly(200), null)
     val layoutState =
         calculateLayoutStateWithDiffing(
-            legacyLithoViewRule.componentTree.context,
+            legacyLithoTestRule.componentTree.context,
             component2,
             exactly(350),
             exactly(200),
@@ -490,10 +490,10 @@ class TreeDiffingTest {
     val component2: Component = TestUndefinedSizeLayout()
     val prevLayoutState =
         calculateLayoutStateWithDiffing(
-            legacyLithoViewRule.componentTree.context, component1, exactly(350), exactly(200), null)
+            legacyLithoTestRule.componentTree.context, component1, exactly(350), exactly(200), null)
     val layoutState =
         calculateLayoutStateWithDiffing(
-            legacyLithoViewRule.componentTree.context,
+            legacyLithoTestRule.componentTree.context,
             component2,
             exactly(350),
             exactly(200),
@@ -627,7 +627,7 @@ class TreeDiffingTest {
             0,
             component,
             null,
-            legacyLithoViewRule.context,
+            legacyLithoTestRule.context,
             null,
             0,
             0,

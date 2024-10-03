@@ -17,7 +17,7 @@
 package com.facebook.litho
 
 import android.app.Activity
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -39,7 +39,7 @@ import org.robolectric.Robolectric
 @RunWith(LithoTestRunner::class)
 class ComponentTreeScopeTest {
 
-  @Rule @JvmField val lithoViewRule = LithoViewRule()
+  @Rule @JvmField val lithoViewRule = LithoTestRule()
 
   private val testDispatcher = StandardTestDispatcher()
   private val context = Robolectric.buildActivity(Activity::class.java).create().get()

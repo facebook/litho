@@ -18,7 +18,7 @@ package com.facebook.litho
 
 import android.widget.FrameLayout
 import com.facebook.litho.Column.Companion.create
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.Whitebox
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.Text
@@ -38,7 +38,7 @@ import org.mockito.kotlin.whenever
 @RunWith(LithoTestRunner::class)
 class VisibilityEventsWithVisibilityExtensionTest {
 
-  @JvmField @Rule val lithoViewRule = LithoViewRule()
+  @JvmField @Rule val lithoViewRule = LithoTestRule()
 
   @Test
   fun visibilityExtensionOnUnmountAllItems_shouldUnmount() {

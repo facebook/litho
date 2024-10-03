@@ -24,7 +24,7 @@ import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.kotlinStyle
-import com.facebook.litho.testing.LegacyLithoViewRule
+import com.facebook.litho.testing.LegacyLithoTestRule
 import com.facebook.litho.testing.assertMatches
 import com.facebook.litho.testing.match
 import com.facebook.litho.testing.setRoot
@@ -39,7 +39,7 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class FlexboxStyleCompatibilityTest {
 
-  @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()
+  @Rule @JvmField val lithoViewRule = LegacyLithoTestRule()
 
   @Test
   fun specComponent_whenKotlinStyleSetOnBuilder_commonPropsAreApplied() {

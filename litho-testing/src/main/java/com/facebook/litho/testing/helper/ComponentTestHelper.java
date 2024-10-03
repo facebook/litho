@@ -634,7 +634,7 @@ public final class ComponentTestHelper {
    * This was added to replace usages of ComponentContext.withComponentScope in tests.
    *
    * <p>This method shouldn't be necessary if you're using the latest test practices with
-   * LithoViewRule (or LegacyLithoViewRule for Java-only tests). See
+   * LithoTestRule (or LegacyLithoTestRule for Java-only tests). See
    * https://fblitho.com/docs/kotlin/testing-getting-started/ for more info.
    *
    * @deprecated introduced for legacy test cases - don't add new callers

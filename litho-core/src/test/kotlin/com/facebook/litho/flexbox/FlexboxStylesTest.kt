@@ -39,7 +39,7 @@ import com.facebook.litho.core.padding
 import com.facebook.litho.core.paddingPercent
 import com.facebook.litho.core.width
 import com.facebook.litho.core.widthPercent
-import com.facebook.litho.testing.LegacyLithoViewRule
+import com.facebook.litho.testing.LegacyLithoTestRule
 import com.facebook.litho.testing.assertMatches
 import com.facebook.litho.testing.child
 import com.facebook.litho.testing.exactly
@@ -62,7 +62,7 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class FlexboxStylesTest {
 
-  @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()
+  @Rule @JvmField val lithoViewRule = LegacyLithoTestRule()
 
   @Test
   fun widthAndHeight_whenSet_isRespected() {
@@ -898,7 +898,7 @@ class FlexboxStylesTest {
       }
     }
 
-    val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, ComponentWithBorder())?.node
+    val node = LegacyLithoTestRule.getRootLayout(lithoViewRule, ComponentWithBorder())?.node
     assertThat(node?.borderColors)
         .isEqualTo(intArrayOf(Color.BLUE, Color.RED, Color.BLACK, Color.WHITE))
     assertThat(node?.borderRadius).isEqualTo(floatArrayOf(5f, 6f, 7f, 8f))

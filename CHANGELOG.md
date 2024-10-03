@@ -107,7 +107,7 @@ For more details, see the [full diff](https://github.com/facebook/litho/compare/
 _2022-10-27_
 
  * New APIs for debugging.
- * **Breaking**: `ComponentContext.withComponentScope` is now package-private: it was @VisibleForTesting before, but we are now enforcing the privacy. If you were using it in tests, you can replace it with `ComponentTestHelper.createScopedComponentContextWithStateForTest` (however you should really write tests against LithoViewRule for kt tests and LegacyLithoViewRule for java tests)
+ * **Breaking**: `ComponentContext.withComponentScope` is now package-private: it was @VisibleForTesting before, but we are now enforcing the privacy. If you were using it in tests, you can replace it with `ComponentTestHelper.createScopedComponentContextWithStateForTest` (however you should really write tests against LithoTestRule for kt tests and LegacyLithoTestRule for java tests)
 
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.43.0...v0.44.0).
 
@@ -272,7 +272,7 @@ _2020-05-01_
 * New: Update accessibility utils to support newer version of Talkback.
 * New: Replace Litho's `MountItem` with RenderCore's and wrap `LayoutOutput` with `RenderTreeNode`.
 * New: Litho tests are now migrated to Robolectric 4 and Mockito 2!
-* New: New testing utilities: `LithoViewRule`, `LithoStatsRule`, `BackgroundLayoutLooperRule`.
+* New: New testing utilities: `LithoTestRule`, `LithoStatsRule`, `BackgroundLayoutLooperRule`.
 * Fix: Remove 1px white margin between content and shadow for `CardSpec` [00f2bdb](https://github.com/facebook/litho/commit/00f2bdb852a7e0ded29494b909f0c65d1c7c7dc8).
 * Fix: Fix Sections not updating layout for sticky items with indices outside range ratio.
 * Fix: Fix `RecyclerSpec` not respecting RTL for padding.

@@ -30,7 +30,7 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.config.LithoDebugConfigurations;
-import com.facebook.litho.testing.LegacyLithoViewRule;
+import com.facebook.litho.testing.LegacyLithoTestRule;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.subcomponents.SubComponent;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
@@ -41,7 +41,7 @@ import org.junit.runner.RunWith;
 
 @RunWith(LithoTestRunner.class)
 public class FeedItemComponentSpecTest {
-  @Rule public LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
+  @Rule public LegacyLithoTestRule mLegacyLithoTestRule = new LegacyLithoTestRule();
 
   private Component mComponent;
 
@@ -51,7 +51,7 @@ public class FeedItemComponentSpecTest {
         "These tests can only be run in debug mode.",
         LithoDebugConfigurations.isDebugModeEnabled,
         is(true));
-    final ComponentContext c = mLegacyLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoTestRule.getContext();
     mComponent =
         FeedItemComponent.create(c)
             .artist(new Artist("Sindre Sorhus", "Rockstar Developer", 2010))
@@ -60,14 +60,14 @@ public class FeedItemComponentSpecTest {
 
   @Test
   public void recursiveSubComponentExists() {
-    final ComponentContext c = mLegacyLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoTestRule.getContext();
 
     assertThat(c, mComponent).extractingSubComponentAt(0).extractingSubComponents(c).hasSize(2);
   }
 
   @Test
   public void testLithoViewSubComponentMatching() {
-    final ComponentContext c = mLegacyLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoTestRule.getContext();
     final LithoView lithoView = ComponentTestHelper.mountComponent(c, mComponent);
 
     assertThat(lithoView).has(deepSubComponentWith(textEquals("Sindre Sorhus")));
@@ -75,7 +75,7 @@ public class FeedItemComponentSpecTest {
 
   @Test
   public void subComponentLegacyBridge() {
-    final ComponentContext c = mLegacyLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoTestRule.getContext();
 
     assertThat(c, mComponent)
         .extractingSubComponentAt(0)

@@ -17,7 +17,7 @@
 package com.facebook.litho
 
 import android.graphics.Color
-import com.facebook.litho.testing.LegacyLithoViewRule
+import com.facebook.litho.testing.LegacyLithoTestRule
 import com.facebook.litho.testing.assertMatches
 import com.facebook.litho.testing.child
 import com.facebook.litho.testing.match
@@ -36,7 +36,7 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class StyleCompatTest {
 
-  @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()
+  @Rule @JvmField val lithoViewRule = LegacyLithoTestRule()
 
   @Test
   fun widthAndHeight_whenSet_isRespected() {
@@ -405,7 +405,7 @@ class StyleCompatTest {
       }
     }
 
-    val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, ComponentWithBorder())?.node
+    val node = LegacyLithoTestRule.getRootLayout(lithoViewRule, ComponentWithBorder())?.node
     assertThat(node?.borderColors)
         .isEqualTo(intArrayOf(Color.BLUE, Color.RED, Color.BLACK, Color.WHITE))
     assertThat(node?.borderRadius).isEqualTo(floatArrayOf(5f, 6f, 7f, 8f))
@@ -423,7 +423,7 @@ class StyleCompatTest {
       }
     }
 
-    val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, ComponentWithTransition())?.node
+    val node = LegacyLithoTestRule.getRootLayout(lithoViewRule, ComponentWithTransition())?.node
     assertThat(node?.transitionKeyType).isEqualTo(Transition.TransitionKeyType.GLOBAL)
     assertThat(node?.transitionKey).isEqualTo("test")
   }

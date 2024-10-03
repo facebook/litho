@@ -39,8 +39,6 @@ import org.junit.runners.model.Statement
 import org.robolectric.Robolectric
 import org.robolectric.Shadows.shadowOf
 
-typealias LithoTestRule = LithoViewRule
-
 /**
  * This test utility allows clients to create a [TestLithoView] instance that allows to test
  * assertion on the view hierarchy rendered by a Litho components.
@@ -61,7 +59,7 @@ typealias LithoTestRule = LithoViewRule
  * }
  * ```
  */
-class LithoViewRule
+class LithoTestRule
 @JvmOverloads
 constructor(
     val componentsConfiguration: ComponentsConfiguration? = null,

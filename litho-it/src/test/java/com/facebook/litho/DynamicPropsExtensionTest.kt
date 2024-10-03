@@ -18,7 +18,7 @@ package com.facebook.litho
 
 import android.graphics.Rect
 import android.view.View
-import com.facebook.litho.testing.LegacyLithoViewRule
+import com.facebook.litho.testing.LegacyLithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.MountSpecLifecycleTester
 import org.assertj.core.api.Assertions.assertThat
@@ -29,7 +29,7 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class DynamicPropsExtensionTest {
 
-  @JvmField @Rule val lithoViewRule: LegacyLithoViewRule = LegacyLithoViewRule()
+  @JvmField @Rule val lithoViewRule: LegacyLithoTestRule = LegacyLithoTestRule()
 
   @Test
   fun `when dynamic vale is set should override attribute set by MountSpec`() {

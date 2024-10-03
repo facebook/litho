@@ -26,7 +26,7 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.EventDispatcher;
 import com.facebook.litho.HasEventDispatcher;
 import com.facebook.litho.config.LithoDebugConfigurations;
-import com.facebook.litho.testing.LegacyLithoViewRule;
+import com.facebook.litho.testing.LegacyLithoTestRule;
 import com.facebook.litho.testing.specmodels.MyGeneric;
 import com.facebook.litho.testing.specmodels.TestMyGeneric;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
@@ -40,7 +40,7 @@ import org.robolectric.annotation.LooperMode;
 @LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(LithoTestRunner.class)
 public class GenericMatcherGenerationTest {
-  @Rule public LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
+  @Rule public LegacyLithoTestRule mLegacyLithoTestRule = new LegacyLithoTestRule();
 
   private final GenericProp mGenericProp = new GenericProp();
 
@@ -54,7 +54,7 @@ public class GenericMatcherGenerationTest {
 
   @Test
   public void testGenericPropMatching() {
-    final ComponentContext c = mLegacyLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoTestRule.getContext();
     final Component component = MyGeneric.create(c).genericProp(mGenericProp).build();
     final Condition<InspectableComponent> matcher =
         TestMyGeneric.matcher(c).genericProp(mGenericProp).build();

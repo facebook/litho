@@ -19,7 +19,7 @@ package com.facebook.litho
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.config.TempComponentsConfigurations
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.eventhandler.EventHandlerTestHelper
 import com.facebook.litho.testing.helper.ComponentTestHelper
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec
@@ -40,7 +40,7 @@ class MountStateViewClickTest {
   private lateinit var context: ComponentContext
   private lateinit var componentTree: ComponentTree
 
-  @JvmField @Rule val lithoViewRule = LithoViewRule()
+  @JvmField @Rule val lithoViewRule = LithoTestRule()
 
   @Before
   fun setup() {

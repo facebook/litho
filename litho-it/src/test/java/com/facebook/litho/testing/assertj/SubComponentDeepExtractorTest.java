@@ -25,7 +25,7 @@ import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.config.LithoDebugConfigurations;
-import com.facebook.litho.testing.LegacyLithoViewRule;
+import com.facebook.litho.testing.LegacyLithoTestRule;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.Card;
@@ -39,7 +39,7 @@ import org.robolectric.annotation.LooperMode;
 @LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(LithoTestRunner.class)
 public class SubComponentDeepExtractorTest {
-  @Rule public LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
+  @Rule public LegacyLithoTestRule mLegacyLithoTestRule = new LegacyLithoTestRule();
 
   private Component mComponent;
 
@@ -63,15 +63,15 @@ public class SubComponentDeepExtractorTest {
 
   @Test
   public void testDeep() {
-    final ComponentContext c = mLegacyLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoTestRule.getContext();
     assertThat(c, mComponent)
         // We don't have a shallow Text component ...
         .doesNotHave(
             SubComponentExtractor.subComponentWith(
-                mLegacyLithoViewRule.getContext(), inspectedTypeIs(Text.class)))
+                mLegacyLithoTestRule.getContext(), inspectedTypeIs(Text.class)))
         // ... but we do have one deep down.
         .has(
             SubComponentDeepExtractor.deepSubComponentWith(
-                mLegacyLithoViewRule.getContext(), inspectedTypeIs(Text.class)));
+                mLegacyLithoTestRule.getContext(), inspectedTypeIs(Text.class)));
   }
 }

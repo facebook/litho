@@ -70,7 +70,7 @@ To verify the rendering of the text and the icon.
 
 * Create a new test class; `LikersComponentTest`.
 * Add `@RunWith(RobolectricTestRunner.class)` to the top of the test class.
-* Add a `LithoViewRule` JUnit [`@Rule`](https://github.com/junit-team/junit4/wiki/Rules) that sets up overrides for [Styleables](https://developer.android.com/reference/android/R.styleable.html)
+* Add a `LithoTestRule` JUnit [`@Rule`](https://github.com/junit-team/junit4/wiki/Rules) that sets up overrides for [Styleables](https://developer.android.com/reference/android/R.styleable.html)
 and exposes some useful APIs.
 
 The test class should look like the following:
@@ -79,7 +79,7 @@ The test class should look like the following:
 @RunWith(RobolectricTestRunner.class)
 public class LikersComponentTest {
 
-  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+  public final @Rule LithoTestRule mLithoTestRule = new LithoTestRule();
 
 }
 ```
@@ -92,10 +92,10 @@ public class LikersComponentTest {
 @RunWith(RobolectricTestRunner.class)
 public class LikersComponentTest {
 
-  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+  public final @Rule LithoTestRule mLithoTestRule = new LithoTestRule();
   @Test
   public void whenTwoUsersLike_shouldShowBothUserNames() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLithoTestRule.getContext();
     final ImmutableList<User> likers = ImmutableList.of(
       new User("Jane"), new User("Mike")
     );
@@ -108,7 +108,7 @@ public class LikersComponentTest {
 
   @Test
   public void whenUsersLike_shouldShowLikeIcon() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLithoTestRule.getContext();
     final ImmutableList<User> likers = ImmutableList.of(
       new User("Jane"), new User("Mike")
     );

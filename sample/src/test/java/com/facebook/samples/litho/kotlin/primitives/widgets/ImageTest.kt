@@ -33,7 +33,7 @@ import com.facebook.litho.accessibility.onInitializeAccessibilityNodeInfo
 import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.ExperimentalImage
 import com.facebook.rendercore.px
@@ -47,7 +47,7 @@ import org.mockito.kotlin.mock
 @RunWith(LithoTestRunner::class)
 class ImageTest {
 
-  @Rule @JvmField val lithoViewRule = LithoViewRule()
+  @Rule @JvmField val lithoViewRule = LithoTestRule()
 
   @OptIn(ExperimentalLithoApi::class)
   @Test

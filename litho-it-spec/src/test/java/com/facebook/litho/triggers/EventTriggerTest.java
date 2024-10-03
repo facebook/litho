@@ -21,7 +21,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.Handle;
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LithoTestRule;
 import com.facebook.litho.testing.TestLithoView;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import org.junit.Rule;
@@ -31,16 +31,16 @@ import org.junit.runner.RunWith;
 @RunWith(LithoTestRunner.class)
 public class EventTriggerTest {
 
-  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+  public final @Rule LithoTestRule mLithoTestRule = new LithoTestRule();
 
   @Test
   public void testCanTriggerEvent() {
-    final ComponentContext mComponentContext = mLithoViewRule.getContext();
+    final ComponentContext mComponentContext = mLithoTestRule.getContext();
     final Handle handle = new Handle();
     final ComponentWithTrigger component =
         ComponentWithTrigger.create(mComponentContext).handle(handle).uniqueString("A").build();
 
-    TestLithoView lithoTestView = mLithoViewRule.render(componentScope -> component);
+    TestLithoView lithoTestView = mLithoTestRule.render(componentScope -> component);
     final ComponentTree tree = lithoTestView.getComponentTree();
 
     assertThat(ComponentWithTrigger.testTriggerMethod(tree.getContext(), handle)).isEqualTo("A");
@@ -48,7 +48,7 @@ public class EventTriggerTest {
 
   @Test
   public void testCanTriggerEventOnNestedComponent() {
-    final ComponentContext mComponentContext = mLithoViewRule.getContext();
+    final ComponentContext mComponentContext = mLithoTestRule.getContext();
     final Handle handle = new Handle();
     final ComponentContainer component =
         ComponentContainer.create(mComponentContext)
@@ -56,7 +56,7 @@ public class EventTriggerTest {
             .uniqueString("A")
             .build();
 
-    TestLithoView lithoTestView = mLithoViewRule.render(componentScope -> component);
+    TestLithoView lithoTestView = mLithoTestRule.render(componentScope -> component);
     final ComponentTree tree = lithoTestView.getComponentTree();
 
     assertThat(ComponentWithTrigger.testTriggerMethod(tree.getContext(), handle)).isEqualTo("A");

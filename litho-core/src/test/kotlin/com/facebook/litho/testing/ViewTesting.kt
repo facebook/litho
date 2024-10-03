@@ -23,14 +23,14 @@ import com.facebook.rendercore.testing.ViewAssertions
 import com.facebook.rendercore.testing.match.ViewMatchNode
 
 /** Shorthand helper to create a root component that needs a ComponentScope. */
-fun LegacyLithoViewRule.setRoot(componentFunction: ComponentScope.() -> Component) =
+fun LegacyLithoTestRule.setRoot(componentFunction: ComponentScope.() -> Component) =
     setRoot(with(ComponentScope(context)) { componentFunction() })
 
 /**
  * Measures/lays out/attaches to window if not already done, then matches the hierarchy against the
  * provided [ViewMatchNode].
  */
-fun LegacyLithoViewRule.assertMatches(matchNode: ViewMatchNode) {
+fun LegacyLithoTestRule.assertMatches(matchNode: ViewMatchNode) {
   measure().layout().attachToWindow()
   ViewAssertions.assertThat(lithoView).matches(matchNode)
 }

@@ -25,7 +25,7 @@ import com.facebook.litho.sections.common.SingleComponentSection
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration
 import com.facebook.litho.sections.widget.RecyclerBinderConfiguration
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent
-import com.facebook.litho.testing.LegacyLithoViewRule
+import com.facebook.litho.testing.LegacyLithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.RecyclerBinderConfig
 import org.assertj.core.api.Assertions.assertThat
@@ -38,7 +38,7 @@ import org.robolectric.annotation.LooperMode
 @RunWith(LithoTestRunner::class)
 class ComponentsConfigurationTest {
 
-  @JvmField @Rule val legacyLithoViewRule = LegacyLithoViewRule()
+  @JvmField @Rule val legacyLithoTestRule = LegacyLithoTestRule()
 
   private val componentContext =
       ComponentContext(ApplicationProvider.getApplicationContext<Context>())
@@ -73,7 +73,7 @@ class ComponentsConfigurationTest {
                             incrementalMountEnabled = true)))
             .build()
 
-    legacyLithoViewRule
+    legacyLithoTestRule
         .setRoot(
             RecyclerCollectionComponent.create(componentContext)
                 .recyclerConfiguration(
@@ -90,8 +90,8 @@ class ComponentsConfigurationTest {
                         .build())
                 .build())
         .setSizeSpecs(makeSizeSpec(10, SizeSpec.EXACTLY), makeSizeSpec(5, SizeSpec.EXACTLY))
-    legacyLithoViewRule.attachToWindow().measure().layout().setSizeSpecs(10, 10)
-    val childView = legacyLithoViewRule.lithoView.findViewWithTag("rv_row") as LithoView?
+    legacyLithoTestRule.attachToWindow().measure().layout().setSizeSpecs(10, 10)
+    val childView = legacyLithoTestRule.lithoView.findViewWithTag("rv_row") as LithoView?
     assertThat(childView).isNotNull
     val componentsConfiguration =
         childView?.componentTree?.context?.mLithoConfiguration?.componentsConfig

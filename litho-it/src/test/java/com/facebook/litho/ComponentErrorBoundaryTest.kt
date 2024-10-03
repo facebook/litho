@@ -25,7 +25,7 @@ import com.facebook.litho.sections.common.SingleComponentSection
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
-import com.facebook.litho.testing.LegacyLithoViewRule
+import com.facebook.litho.testing.LegacyLithoTestRule
 import com.facebook.litho.testing.error.TestCrasherOnCreateLayout
 import com.facebook.litho.testing.error.TestCrasherOnCreateLayoutWithSizeSpec
 import com.facebook.litho.testing.error.TestCrasherOnMount
@@ -73,7 +73,7 @@ class ComponentErrorBoundaryTest {
   @Rule
   @JvmField
   val lithoViewRule =
-      LegacyLithoViewRule(componentsConfiguration = ComponentsConfiguration.create().build())
+      LegacyLithoTestRule(componentsConfiguration = ComponentsConfiguration.create().build())
 
   @Rule @JvmField val expectedException = ExpectedException.none()
 

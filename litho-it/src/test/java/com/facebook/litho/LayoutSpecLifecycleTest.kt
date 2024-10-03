@@ -19,7 +19,7 @@ package com.facebook.litho
 import com.facebook.litho.LifecycleStep.StepInfo
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
-import com.facebook.litho.testing.LegacyLithoViewRule
+import com.facebook.litho.testing.LegacyLithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.LayoutSpecLifecycleTester
 import com.facebook.litho.widget.LayoutSpecLifecycleTesterSpec
@@ -35,7 +35,7 @@ import org.robolectric.annotation.LooperMode
 @RunWith(LithoTestRunner::class)
 class LayoutSpecLifecycleTest {
 
-  @JvmField @Rule val legacyLithoViewRule = LegacyLithoViewRule()
+  @JvmField @Rule val legacyLithoTestRule = LegacyLithoTestRule()
 
   @JvmField @Rule var backgroundLayoutLooperRule = BackgroundLayoutLooperRule()
 
@@ -43,8 +43,8 @@ class LayoutSpecLifecycleTest {
   fun lifecycle_onSetRootWithoutLayout_shouldNotCallLifecycleMethods() {
     val info: List<StepInfo> = ArrayList()
     val component =
-        LayoutSpecLifecycleTester.create(legacyLithoViewRule.context).steps(info).build()
-    legacyLithoViewRule.setRoot(component).idle()
+        LayoutSpecLifecycleTester.create(legacyLithoTestRule.context).steps(info).build()
+    legacyLithoTestRule.setRoot(component).idle()
     assertThat(LifecycleStep.getSteps(info))
         .describedAs("Only render lifecycle methods should be called")
         .containsExactly(
@@ -59,9 +59,9 @@ class LayoutSpecLifecycleTest {
     ComponentsConfiguration.isAnimationDisabled = false
     val info: List<StepInfo> = ArrayList()
     val component =
-        LayoutSpecLifecycleTester.create(legacyLithoViewRule.context).steps(info).build()
-    legacyLithoViewRule.setRoot(component)
-    legacyLithoViewRule.attachToWindow().measure().layout()
+        LayoutSpecLifecycleTester.create(legacyLithoTestRule.context).steps(info).build()
+    legacyLithoTestRule.setRoot(component)
+    legacyLithoTestRule.attachToWindow().measure().layout()
     assertThat(LifecycleStep.getSteps(info))
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
@@ -78,11 +78,11 @@ class LayoutSpecLifecycleTest {
   fun lifecycle_release_shouldCallLifecycleMethodOnDetach() {
     val info: MutableList<StepInfo> = ArrayList()
     val component =
-        LayoutSpecLifecycleTester.create(legacyLithoViewRule.context).steps(info).build()
-    legacyLithoViewRule.setRoot(component)
-    legacyLithoViewRule.attachToWindow().measure().layout()
+        LayoutSpecLifecycleTester.create(legacyLithoTestRule.context).steps(info).build()
+    legacyLithoTestRule.setRoot(component)
+    legacyLithoTestRule.attachToWindow().measure().layout()
     info.clear()
-    legacyLithoViewRule.release()
+    legacyLithoTestRule.release()
     assertThat(LifecycleStep.getSteps(info))
         .describedAs("Should call onDetached")
         .containsExactly(LifecycleStep.ON_DETACHED)
@@ -92,14 +92,14 @@ class LayoutSpecLifecycleTest {
   fun lifecycle_subsequentSetRoot_shouldCallLifecycleMethod() {
     val info: MutableList<StepInfo> = ArrayList()
     val component =
-        LayoutSpecLifecycleTester.create(legacyLithoViewRule.context).steps(info).build()
-    legacyLithoViewRule.setRoot(component)
-    legacyLithoViewRule.attachToWindow().measure().layout()
+        LayoutSpecLifecycleTester.create(legacyLithoTestRule.context).steps(info).build()
+    legacyLithoTestRule.setRoot(component)
+    legacyLithoTestRule.attachToWindow().measure().layout()
     info.clear()
     val newComponent =
-        LayoutSpecLifecycleTester.create(legacyLithoViewRule.context).steps(info).build()
-    legacyLithoViewRule.setRoot(newComponent)
-    legacyLithoViewRule.attachToWindow().measure().layout()
+        LayoutSpecLifecycleTester.create(legacyLithoTestRule.context).steps(info).build()
+    legacyLithoTestRule.setRoot(newComponent)
+    legacyLithoTestRule.attachToWindow().measure().layout()
     assertThat(LifecycleStep.getSteps(info))
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
@@ -113,12 +113,12 @@ class LayoutSpecLifecycleTest {
     val info: MutableList<StepInfo> = ArrayList()
     val caller = LayoutSpecLifecycleTesterSpec.Caller()
     val component =
-        LayoutSpecLifecycleTester.create(legacyLithoViewRule.context)
+        LayoutSpecLifecycleTester.create(legacyLithoTestRule.context)
             .steps(info)
             .caller(caller)
             .build()
-    legacyLithoViewRule.setRoot(component)
-    legacyLithoViewRule.attachToWindow().measure().layout()
+    legacyLithoTestRule.setRoot(component)
+    legacyLithoTestRule.attachToWindow().measure().layout()
     info.clear()
     caller.updateStateSync()
     assertThat(LifecycleStep.getSteps(info))
@@ -135,12 +135,12 @@ class LayoutSpecLifecycleTest {
     val info: MutableList<StepInfo> = ArrayList()
     val caller = LayoutSpecLifecycleTesterSpec.Caller()
     val component =
-        LayoutSpecLifecycleTester.create(legacyLithoViewRule.context)
+        LayoutSpecLifecycleTester.create(legacyLithoTestRule.context)
             .steps(info)
             .caller(caller)
             .build()
-    legacyLithoViewRule.setRoot(component)
-    legacyLithoViewRule.attachToWindow().measure().layout()
+    legacyLithoTestRule.setRoot(component)
+    legacyLithoTestRule.attachToWindow().measure().layout()
     info.clear()
     caller.updateStateWithTransition()
     backgroundLayoutLooperRule.runToEndOfTasksSync()
@@ -158,12 +158,12 @@ class LayoutSpecLifecycleTest {
     val info: MutableList<StepInfo> = ArrayList()
     val caller = LayoutSpecLifecycleTesterSpec.Caller()
     val component =
-        LayoutSpecLifecycleTester.create(legacyLithoViewRule.context)
+        LayoutSpecLifecycleTester.create(legacyLithoTestRule.context)
             .steps(info)
             .caller(caller)
             .build()
-    legacyLithoViewRule.setRoot(component)
-    legacyLithoViewRule.attachToWindow().measure().layout()
+    legacyLithoTestRule.setRoot(component)
+    legacyLithoTestRule.attachToWindow().measure().layout()
     info.clear()
     val eventDispatched = EventWithoutAnnotation(1, true, "hello")
     caller.dispatchEventWithoutAnnotation(eventDispatched)

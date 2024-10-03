@@ -19,7 +19,7 @@ package com.facebook.samples.litho.kotlin.primitives.widgets
 import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.assertj.LithoAssertions.assertThat
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.rendercore.px
@@ -32,7 +32,7 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class TransparencyEnabledCardClipTest {
 
-  @Rule @JvmField val lithoViewRule: LithoViewRule = LithoViewRule()
+  @Rule @JvmField val lithoViewRule: LithoTestRule = LithoTestRule()
 
   @Test
   fun `TransparencyEnabledCardClip should render`() {

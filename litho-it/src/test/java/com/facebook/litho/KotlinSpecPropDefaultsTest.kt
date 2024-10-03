@@ -16,7 +16,7 @@
 
 package com.facebook.litho
 
-import com.facebook.litho.testing.LegacyLithoViewRule
+import com.facebook.litho.testing.LegacyLithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.KotlinClass
 import com.facebook.litho.widget.KotlinClassSpec
@@ -32,7 +32,7 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class KotlinSpecPropDefaultsTest {
 
-  @JvmField @Rule var lithoViewRule = LegacyLithoViewRule()
+  @JvmField @Rule var lithoViewRule = LegacyLithoTestRule()
 
   private lateinit var ensureAssertion: AtomicBoolean
 

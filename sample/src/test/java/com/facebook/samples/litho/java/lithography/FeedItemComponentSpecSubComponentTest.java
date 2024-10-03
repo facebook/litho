@@ -29,7 +29,7 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.config.LithoDebugConfigurations;
-import com.facebook.litho.testing.LegacyLithoViewRule;
+import com.facebook.litho.testing.LegacyLithoTestRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import org.hamcrest.core.IsNull;
 import org.junit.Before;
@@ -43,7 +43,7 @@ import org.junit.runner.RunWith;
  */
 @RunWith(LithoTestRunner.class)
 public class FeedItemComponentSpecSubComponentTest {
-  @Rule public LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
+  @Rule public LegacyLithoTestRule mLegacyLithoTestRule = new LegacyLithoTestRule();
 
   @Before
   public void setUp() {
@@ -55,7 +55,7 @@ public class FeedItemComponentSpecSubComponentTest {
 
   @Test
   public void subComponentWithoutProperties() {
-    final ComponentContext c = mLegacyLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoTestRule.getContext();
     final Component component = makeComponentWithTextInSubcomponent("Any String");
 
     // This will match as long as there is a FooterComponent, with any props.
@@ -66,7 +66,7 @@ public class FeedItemComponentSpecSubComponentTest {
 
   @Test
   public void subComponentWithRawText() {
-    final ComponentContext c = mLegacyLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoTestRule.getContext();
     final Component component = makeComponentWithTextInSubcomponent("Raw Text");
 
     // This will match if the component has exactly the specified text as property.
@@ -77,7 +77,7 @@ public class FeedItemComponentSpecSubComponentTest {
 
   @Test
   public void subComponentWithMatcher() {
-    final ComponentContext c = mLegacyLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoTestRule.getContext();
     final Component component =
         makeComponentWithTextInSubcomponent(
             "Long Text That We Don't Want To Match In Its Entirety");
@@ -92,7 +92,7 @@ public class FeedItemComponentSpecSubComponentTest {
 
   @Test
   public void subComponentWithRes() {
-    final ComponentContext c = mLegacyLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoTestRule.getContext();
     String string = c.getAndroidContext().getResources().getString(android.R.string.cancel);
     final Component component = makeComponentWithTextInSubcomponent(string);
 
@@ -106,7 +106,7 @@ public class FeedItemComponentSpecSubComponentTest {
 
   @Test
   public void footerHasNoClickHandler() {
-    final ComponentContext c = mLegacyLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoTestRule.getContext();
     final Component component = makeComponentWithTextInSubcomponent("Any Text");
 
     // Components commonly have conditional handlers assigned. Using the clickHandler matcher
@@ -123,7 +123,7 @@ public class FeedItemComponentSpecSubComponentTest {
   }
 
   private Component makeComponentWithTextInSubcomponent(String value) {
-    final ComponentContext c = mLegacyLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoTestRule.getContext();
     return FeedItemComponent.create(c).artist(new Artist("Some Name", value, 2001)).build();
   }
 }

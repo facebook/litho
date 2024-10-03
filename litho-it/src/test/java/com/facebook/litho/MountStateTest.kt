@@ -20,7 +20,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.config.TempComponentsConfigurations
-import com.facebook.litho.testing.LegacyLithoViewRule
+import com.facebook.litho.testing.LegacyLithoTestRule
 import com.facebook.litho.testing.Whitebox
 import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -43,12 +43,12 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class MountStateTest {
 
-  @JvmField @Rule val legacyLithoViewRule: LegacyLithoViewRule = LegacyLithoViewRule()
+  @JvmField @Rule val legacyLithoTestRule: LegacyLithoTestRule = LegacyLithoTestRule()
   private lateinit var context: ComponentContext
 
   @Before
   fun setup() {
-    context = legacyLithoViewRule.context
+    context = legacyLithoTestRule.context
   }
 
   @Test
@@ -58,16 +58,16 @@ class MountStateTest {
         Column.create(context)
             .child(Wrapper.create(context).delegate(child1).widthPx(10).heightPx(10))
             .build()
-    legacyLithoViewRule
+    legacyLithoTestRule
         .setRoot(root)
         .attachToWindow()
         .setSizeSpecs(exactly(1_000), exactly(1_000))
         .measure()
         .layout()
-    val dynamicPropsManager = legacyLithoViewRule.lithoView.dynamicPropsManager
+    val dynamicPropsManager = legacyLithoTestRule.lithoView.dynamicPropsManager
     assertThat(dynamicPropsManager).isNotNull
     assertThat(dynamicPropsManager?.hasCachedContent(child1)).isTrue
-    legacyLithoViewRule.detachFromWindow()
+    legacyLithoTestRule.detachFromWindow()
     assertThat(dynamicPropsManager?.hasCachedContent(child1)).isFalse
   }
 
@@ -78,15 +78,15 @@ class MountStateTest {
         Column.create(context)
             .child(Wrapper.create(context).delegate(child1).widthPx(10).heightPx(10))
             .build()
-    legacyLithoViewRule
+    legacyLithoTestRule
         .setRoot(root)
         .attachToWindow()
         .setSizeSpecs(exactly(1_000), exactly(1_000))
         .measure()
         .layout()
-    val dynamicPropsManager = legacyLithoViewRule.lithoView.dynamicPropsManager
+    val dynamicPropsManager = legacyLithoTestRule.lithoView.dynamicPropsManager
     assertThat(dynamicPropsManager?.hasCachedContent(child1)).isTrue
-    legacyLithoViewRule.setRoot(Column.create(context).build())
+    legacyLithoTestRule.setRoot(Column.create(context).build())
     assertThat(dynamicPropsManager?.hasCachedContent(child1)).isFalse
   }
 
@@ -96,14 +96,14 @@ class MountStateTest {
         Wrapper.create(context)
             .delegate(SolidColor.create(context).color(Color.BLACK).build())
             .build()
-    legacyLithoViewRule
+    legacyLithoTestRule
         .setRoot(root)
         .attachToWindow()
         .setSizeSpecs(exactly(1_000), exactly(1_000))
         .measure()
         .layout()
     val emptyRoot: Component = Wrapper.create(context).delegate(null).build()
-    legacyLithoViewRule.setRoot(emptyRoot)
+    legacyLithoTestRule.setRoot(emptyRoot)
   }
 
   @Test
@@ -112,19 +112,19 @@ class MountStateTest {
         Column.create(context)
             .child(TextInput.create(context).widthDip(100f).heightDip(100f))
             .build()
-    legacyLithoViewRule
+    legacyLithoTestRule
         .setRoot(root)
         .attachToWindow()
         .setSizeSpecs(exactly(1_000), exactly(1_000))
         .measure()
         .layout()
-    val view = legacyLithoViewRule.lithoView.getChildAt(0)
+    val view = legacyLithoTestRule.lithoView.getChildAt(0)
     val newRoot =
         Row.create(context)
             .child(TextInput.create(context).initialText("testing").widthDip(120f).heightDip(120f))
             .build()
-    legacyLithoViewRule.setRoot(newRoot).setSizeSpecs(exactly(1_000), exactly(1_000))
-    val newView = legacyLithoViewRule.lithoView.getChildAt(0)
+    legacyLithoTestRule.setRoot(newRoot).setSizeSpecs(exactly(1_000), exactly(1_000))
+    val newView = legacyLithoTestRule.lithoView.getChildAt(0)
     assertThat(newView).isSameAs(view)
   }
 
@@ -134,7 +134,7 @@ class MountStateTest {
         Column.create(context)
             .child(TextInput.create(context).widthDip(100f).heightDip(100f))
             .build()
-    legacyLithoViewRule
+    legacyLithoTestRule
         .setRoot(root)
         .attachToWindow()
         .setSizeSpecs(exactly(1_000), exactly(1_000))
@@ -144,20 +144,20 @@ class MountStateTest {
         Column.create(context)
             .child(Progress.create(context).widthDip(100f).heightDip(100f))
             .build()
-    legacyLithoViewRule.setRoot(newRoot).setSizeSpecs(exactly(1_000), exactly(1_000))
+    legacyLithoTestRule.setRoot(newRoot).setSizeSpecs(exactly(1_000), exactly(1_000))
   }
 
   @Test
   fun onSetRootWithNullComponentWithStatelessness_shouldMountWithoutCrashing() {
-    legacyLithoViewRule
+    legacyLithoTestRule
         .attachToWindow()
         .setRoot(EmptyComponent())
         .setSizeSpecs(exactly(1_000), exactly(1_000))
         .measure()
         .layout()
-    assertThat(legacyLithoViewRule.currentRootNode).isNull()
-    assertThat(legacyLithoViewRule.lithoView.childCount).isEqualTo(0)
-    val tree = legacyLithoViewRule.committedLayoutState?.toRenderTree()
+    assertThat(legacyLithoTestRule.currentRootNode).isNull()
+    assertThat(legacyLithoTestRule.lithoView.childCount).isEqualTo(0)
+    val tree = legacyLithoTestRule.committedLayoutState?.toRenderTree()
     assertThat(tree?.mountableOutputCount).isEqualTo(1)
     assertThat(tree?.root).isSameAs(tree?.getRenderTreeNodeAtIndex(0))
     assertThat(tree?.getRenderTreeNodeIndex(MountState.ROOT_HOST_ID)).isEqualTo(0)
@@ -183,7 +183,7 @@ class MountStateTest {
                             .color(YogaEdge.ALL, Color.YELLOW)
                             .build()))
             .build()
-    legacyLithoViewRule
+    legacyLithoTestRule
         .useComponentTree(
             ComponentTree.create(context)
                 .componentsConfiguration(
@@ -195,17 +195,17 @@ class MountStateTest {
         .setSizeSpecs(exactly(1_000), exactly(1_000))
         .measure()
         .layout()
-    val parentOfParent = legacyLithoViewRule.findViewWithTagOrNull("root") as ComponentHost
+    val parentOfParent = legacyLithoTestRule.findViewWithTagOrNull("root") as ComponentHost
     val parentNode = parentOfParent.getMountItemAt(0).renderTreeNode
     val parentId = parentNode.renderUnit.id
     val childId = parentNode.getChildAt(0).renderUnit.id
 
     // Unmount the parent
-    legacyLithoViewRule.lithoView.mountDelegateTarget.notifyUnmount(parentId)
+    legacyLithoTestRule.lithoView.mountDelegateTarget.notifyUnmount(parentId)
 
     // Attempt to mount the child (border drawable)
     // If there is a problem, a crash will occur here.
-    legacyLithoViewRule.lithoView.mountDelegateTarget.notifyMount(childId)
+    legacyLithoTestRule.lithoView.mountDelegateTarget.notifyMount(childId)
     TempComponentsConfigurations.restoreShouldAddHostViewForRootComponent()
   }
 
@@ -217,13 +217,13 @@ class MountStateTest {
             .child(
                 Image.create(context).drawable(ColorDrawable(Color.RED)).heightPx(100).widthPx(200))
             .build()
-    legacyLithoViewRule
+    legacyLithoTestRule
         .attachToWindow()
         .setRoot(root)
         .setSizeSpecs(exactly(1_000), exactly(1_000))
         .measure()
         .layout()
-    val lithoView = legacyLithoViewRule.lithoView
+    val lithoView = legacyLithoTestRule.lithoView
     val mountDelegate = lithoView.mountDelegateTarget.getMountDelegate()
     var coordinator =
         Whitebox.getInternalState<LithoHostListenerCoordinator>(
@@ -235,7 +235,7 @@ class MountStateTest {
     assertThat(mountDelegate?.extensionStates).isNotEmpty
 
     // Unmount the parent
-    legacyLithoViewRule.lithoView.unmountAllItems()
+    legacyLithoTestRule.lithoView.unmountAllItems()
     coordinator =
         Whitebox.getInternalState<LithoHostListenerCoordinator>(
             lithoView, "mLithoHostListenerCoordinator")
@@ -253,7 +253,7 @@ class MountStateTest {
    */
   @Test
   fun whenItemsAreMovedThenUnmountedInTheNextMountLoop_shouldUnmountTheCorrectItem() {
-    val c = legacyLithoViewRule.context
+    val c = legacyLithoTestRule.context
     val initialComponent =
         Column.create(c)
             .heightPx(800)

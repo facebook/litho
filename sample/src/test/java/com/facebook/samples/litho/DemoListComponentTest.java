@@ -25,7 +25,7 @@ import static org.junit.Assume.assumeThat;
 import com.facebook.litho.Component;
 import com.facebook.litho.config.LithoDebugConfigurations;
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
-import com.facebook.litho.testing.LegacyLithoViewRule;
+import com.facebook.litho.testing.LegacyLithoTestRule;
 import com.facebook.litho.testing.subcomponents.SubComponent;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import java.util.ArrayList;
@@ -36,7 +36,7 @@ import org.junit.runner.RunWith;
 
 @RunWith(LithoTestRunner.class)
 public class DemoListComponentTest {
-  @Rule public LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
+  @Rule public LegacyLithoTestRule mLegacyLithoTestRule = new LegacyLithoTestRule();
   private Component mComponent;
 
   @Before
@@ -50,7 +50,7 @@ public class DemoListComponentTest {
   @Before
   public void setUp() {
     mComponent =
-        DemoListRootComponent.create(mLegacyLithoViewRule.getContext())
+        DemoListRootComponent.create(mLegacyLithoTestRule.getContext())
             .demos(new ArrayList<Demos.DemoGrouping>())
             .previousIndices(null)
             .build();
@@ -58,16 +58,16 @@ public class DemoListComponentTest {
 
   @Test
   public void testSubComponents() {
-    assertThat(mLegacyLithoViewRule.getContext(), mComponent)
+    assertThat(mLegacyLithoTestRule.getContext(), mComponent)
         .containsOnlySubComponents(SubComponent.of(RecyclerCollectionComponent.class));
   }
 
   @Test
   public void testNumOfSubComponents() {
-    assertThat(mLegacyLithoViewRule.getContext(), mComponent)
-        .has(numOfSubComponents(mLegacyLithoViewRule.getContext(), is(1)));
+    assertThat(mLegacyLithoTestRule.getContext(), mComponent)
+        .has(numOfSubComponents(mLegacyLithoTestRule.getContext(), is(1)));
 
-    assertThat(mLegacyLithoViewRule.getContext(), mComponent)
-        .has(numOfSubComponents(mLegacyLithoViewRule.getContext(), greaterThan(0)));
+    assertThat(mLegacyLithoTestRule.getContext(), mComponent)
+        .has(numOfSubComponents(mLegacyLithoTestRule.getContext(), greaterThan(0)));
   }
 }
