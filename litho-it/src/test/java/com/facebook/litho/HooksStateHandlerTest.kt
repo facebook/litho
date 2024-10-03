@@ -96,7 +96,7 @@ class HooksStateHandlerTest {
     second.applyStateUpdatesEarly(context = c, component = null, prevTreeRootNode = null)
     assertThat(first.hasUncommittedUpdates()).isTrue
     assertThat(second.hasUncommittedUpdates()).isTrue
-    assertThat(second.stateContainers).hasSize(1)
+    assertThat(second.state).hasSize(1)
     val secondKstate = second.getState(GLOBAL_KEY)?.value as KStateContainer?
     second.markStateInUse(GLOBAL_KEY)
     assertThat(secondKstate?.states)

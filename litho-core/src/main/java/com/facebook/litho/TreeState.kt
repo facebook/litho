@@ -83,11 +83,11 @@ class TreeState {
   )
 
   constructor(
-      initialResolveStateContainer: InitialState,
-      initialLayoutStateContainer: InitialState,
+      initialResolveState: InitialState,
+      initialLayoutState: InitialState,
   ) : this(
-      resolveState = StateHandler(initialResolveStateContainer),
-      layoutState = StateHandler(initialLayoutStateContainer),
+      resolveState = StateHandler(initialResolveState),
+      layoutState = StateHandler(initialLayoutState),
       mountInfo = TreeMountInfo(),
       renderState = RenderState(),
       effectsHandler = AttachDetachHandler(),
@@ -253,8 +253,7 @@ class TreeState {
     val stateHandler = getStateHandler(isNestedTree)
     val committedState = stateHandler.getState(globalKey)
     if (committedState != null) {
-      val committedStateWithUpdatesApplied =
-          stateHandler.getStateContainerWithHookUpdates(globalKey)
+      val committedStateWithUpdatesApplied = stateHandler.getKStateWithUpdates(globalKey)
       if (committedStateWithUpdatesApplied != null) {
         val committedUpdatedValue: T =
             committedStateWithUpdatesApplied.states.getOrNull(hookStateIndex) as T

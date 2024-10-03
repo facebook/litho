@@ -47,7 +47,7 @@ class StateHandler {
           stateHandler.appliedStateUpdates,
           stateHandler.appliedHookUpdates,
       )
-      copyCurrentStateContainers(stateHandler.stateContainers)
+      copyCurrentState(stateHandler.state)
       copyPendingStateTransitions(stateHandler.pendingStateUpdateTransitions)
       stateHandler.cachedValues?.let { cachedValues = HashMap(it) }
     }
@@ -83,13 +83,13 @@ class StateHandler {
    * Maps a component key to a component object that retains the current state values for that key.
    */
   @GuardedBy("this")
-  private val _stateContainers: MutableMap<String, ComponentState<out StateContainer>> = HashMap()
+  private val _state: MutableMap<String, ComponentState<out StateContainer>> = HashMap()
 
   /**
    * Contains all keys of components that were present in the current ComponentTree and therefore
    * their StateContainer needs to be kept around.
    */
-  @GuardedBy("this") private val neededStateContainers = HashSet<String>()
+  @GuardedBy("this") private val neededState = HashSet<String>()
 
   /** Map of all cached values that are stored for the current ComponentTree. */
   @GuardedBy("this") private var cachedValues: MutableMap<CacheKey, CacheValue>? = null
@@ -105,7 +105,7 @@ class StateHandler {
 
   @get:Synchronized
   val isEmpty: Boolean
-    get() = _stateContainers.isEmpty()
+    get() = _state.isEmpty()
 
   /**
    * @return whether this StateHandler has updates that haven't been committed to the
@@ -136,24 +136,24 @@ class StateHandler {
   }
 
   fun markStateInUse(key: String) {
-    neededStateContainers.add(key)
+    neededState.add(key)
   }
 
   /**
    * StateContainer in this StateHandler should be accessed using this method as it will also ensure
    * that the state is marked as needed
    */
-  fun getState(key: String): ComponentState<out StateContainer>? = _stateContainers[key]
+  fun getState(key: String): ComponentState<out StateContainer>? = _state[key]
 
   fun createOrGetComponentState(
       scopedContext: ComponentContext,
       component: Component,
       key: String
   ): ComponentState<out StateContainer> {
-    val current: ComponentState<out StateContainer>? = synchronized(this) { _stateContainers[key] }
+    val current: ComponentState<out StateContainer>? = synchronized(this) { _state[key] }
 
     return if (current != null) {
-      neededStateContainers.add(key)
+      neededState.add(key)
       current
     } else {
       val state =
@@ -211,13 +211,13 @@ class StateHandler {
     for ((key, _) in _pendingStateUpdates) {
       try {
         val current: ComponentState<StateContainer> =
-            (_stateContainers[key] ?: initialState.getInitialStateForComponent(key))
+            (_state[key] ?: initialState.getInitialStateForComponent(key))
                 as ComponentState<StateContainer>? ?: continue
 
         val currentValue: StateContainer = current.value
 
         val newValue = currentValue.clone()
-        _stateContainers[key] = current.copy(value = newValue)
+        _state[key] = current.copy(value = newValue)
         applyStateUpdates(key, newValue)
       } catch (ex: Exception) {
 
@@ -250,8 +250,8 @@ class StateHandler {
    */
   @Synchronized
   fun addState(key: String, state: ComponentState<*>) {
-    neededStateContainers.add(key)
-    _stateContainers[key] = state
+    neededState.add(key)
+    _state[key] = state
   }
 
   fun applyLazyStateUpdatesForContainer(
@@ -280,8 +280,8 @@ class StateHandler {
    */
   fun commit(stateHandler: StateHandler) {
     clearStateUpdates(stateHandler.appliedStateUpdates)
-    clearUnusedStateContainers(stateHandler)
-    copyCurrentStateContainers(stateHandler.stateContainers)
+    clearUnusedState(stateHandler)
+    copyCurrentState(stateHandler.state)
     copyPendingStateTransitions(stateHandler.pendingStateUpdateTransitions)
     commitHookState(stateHandler.appliedHookUpdates)
   }
@@ -289,7 +289,7 @@ class StateHandler {
   fun commit() {
     synchronized(this) {
       clearStateUpdates(appliedStateUpdates)
-      clearUnusedStateContainers(this)
+      clearUnusedState(this)
       commitHookState(appliedHookUpdates)
       _appliedStateUpdates.clear()
       appliedHookUpdates.clear()
@@ -345,8 +345,8 @@ class StateHandler {
   }
 
   @get:Synchronized
-  val stateContainers: Map<String, ComponentState<out StateContainer>>
-    get() = _stateContainers
+  val state: Map<String, ComponentState<out StateContainer>>
+    get() = _state
 
   @get:Synchronized
   val pendingStateUpdates: Map<String, MutableList<StateUpdate>>
@@ -453,13 +453,11 @@ class StateHandler {
    * Copies the list of given state containers into the map that holds the current state containers
    * of components.
    */
-  private fun copyCurrentStateContainers(
-      stateContainers: Map<String, ComponentState<out StateContainer>>
-  ) {
+  private fun copyCurrentState(state: Map<String, ComponentState<out StateContainer>>) {
 
     synchronized(this) {
-      _stateContainers.clear()
-      _stateContainers.putAll(stateContainers)
+      _state.clear()
+      _state.putAll(state)
     }
   }
 
@@ -506,7 +504,7 @@ class StateHandler {
    */
   private fun runHooks() {
     for ((key, value) in pendingHookUpdates) {
-      val current = _stateContainers[key] as ComponentState<KStateContainer>?
+      val current = _state[key] as ComponentState<KStateContainer>?
       val stateContainer = current?.value
       /* currentState could be null if the state is removed from the StateHandler before the update runs */
       if (stateContainer is KStateContainer) {
@@ -516,7 +514,7 @@ class StateHandler {
           kStateContainer = hookUpdate.getUpdatedStateContainer(kStateContainer)
         }
 
-        _stateContainers[key] = current.copy(value = kStateContainer)
+        _state[key] = current.copy(value = kStateContainer)
       }
     }
     appliedHookUpdates.putAll(pendingHookUpdates)
@@ -527,11 +525,11 @@ class StateHandler {
    * Gets a state container with all applied updates for the given key without committing the
    * updates to a state handler.
    */
-  fun getStateContainerWithHookUpdates(globalKey: String): KStateContainer? {
+  fun getKStateWithUpdates(globalKey: String): KStateContainer? {
     val stateContainer: StateContainer?
     val updaters: List<HookUpdater>?
     synchronized(this) {
-      stateContainer = _stateContainers[globalKey]?.value ?: return null
+      stateContainer = _state[globalKey]?.value ?: return null
       updaters = pendingHookUpdates[globalKey]?.let { ArrayList(it) }
     }
 
@@ -633,17 +631,17 @@ class StateHandler {
       return list
     }
 
-    private fun clearUnusedStateContainers(currentStateHandler: StateHandler) {
-      if (currentStateHandler._stateContainers.isEmpty()) {
+    private fun clearUnusedState(currentStateHandler: StateHandler) {
+      if (currentStateHandler._state.isEmpty()) {
         return
       }
 
-      val neededStateContainers: Set<String> = currentStateHandler.neededStateContainers
-      val stateContainerKeys: List<String> = ArrayList(currentStateHandler._stateContainers.keys)
+      val neededState: Set<String> = currentStateHandler.neededState
+      val stateKeys: List<String> = ArrayList(currentStateHandler._state.keys)
 
-      for (key in stateContainerKeys) {
-        if (key !in neededStateContainers) {
-          currentStateHandler._stateContainers.remove(key)
+      for (key in stateKeys) {
+        if (key !in neededState) {
+          currentStateHandler._state.remove(key)
         }
       }
     }

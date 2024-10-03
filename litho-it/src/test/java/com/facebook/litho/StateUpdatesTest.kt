@@ -337,7 +337,7 @@ open class StateUpdatesTest {
     get() = componentTree.treeState?.resolveState
 
   private val stateContainersMap: Map<String, StateContainer>?
-    get() = resolveState?.stateContainers?.mapValues { it.value.value }
+    get() = resolveState?.state?.mapValues { it.value.value }
 
   private val pendingStateUpdates: Map<String, List<StateContainer.StateUpdate>>?
     get() = resolveState?.pendingStateUpdates
