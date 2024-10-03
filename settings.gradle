@@ -15,7 +15,6 @@
  */
 
 include ':litho-annotations'
-include ':litho-compose'
 include ':litho-core'
 include ':litho-coroutines-kotlin'
 include ':litho-editor-core'

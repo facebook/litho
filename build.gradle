@@ -157,11 +157,6 @@ ext.deps = [
         supportTransition  : 'androidx.transition:transition:1.0.0',
         supportSwipeRefresh: 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0',
         supportDynamicAnimations : 'androidx.dynamicanimation:dynamicanimation-ktx:1.0.0-alpha03',
-        // compose
-        activityCompose    : 'androidx.activity:activity-compose:1.9.0',
-        composeFoundation  : 'androidx.compose.foundation:foundation:1.7.0',
-        composeUi          : 'androidx.compose.ui:ui:1.7.0',
-        composeRuntime     : 'androidx.compose.runtime:runtime:1.7.0',
         // lifecycle
         lifecycle      : 'androidx.lifecycle:lifecycle-runtime:2.6.1',
         viewModel      : 'androidx.lifecycle:lifecycle-viewmodel:2.3.1',
