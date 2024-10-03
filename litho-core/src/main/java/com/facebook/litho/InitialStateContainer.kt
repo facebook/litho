@@ -43,7 +43,8 @@ class InitialStateContainer {
   // only get and set for a key while holding a lock for that specific key.
   @JvmField
   @VisibleForTesting
-  val initialStates = Collections.synchronizedMap(HashMap<String, ComponentState>())
+  val initialStates =
+      Collections.synchronizedMap(HashMap<String, ComponentState<out StateContainer>>())
 
   @GuardedBy("this") private val createInitialStateLocks: MutableMap<String, Any> = HashMap()
 
@@ -66,7 +67,7 @@ class InitialStateContainer {
       component: Component,
       scopedContext: ComponentContext,
       key: String
-  ): ComponentState {
+  ): ComponentState<out StateContainer> {
     val stateLock: Any = synchronized(this) { createInitialStateLocks.getOrPut(key) { Any() } }
 
     return synchronized(stateLock) {
@@ -93,7 +94,7 @@ class InitialStateContainer {
   private fun createInitialStateContainer(
       context: ComponentContext,
       component: Component
-  ): ComponentState {
+  ): ComponentState<out StateContainer> {
     val isTracing = isTracing
     if (isTracing) {
       beginSection("create-initial-state:${component.simpleName}")
@@ -105,11 +106,11 @@ class InitialStateContainer {
     return ComponentState(value = state)
   }
 
-  fun getInitialStateForComponent(key: String): StateContainer? {
+  fun getInitialStateForComponent(key: String): ComponentState<out StateContainer>? {
     val stateLock: Any = synchronized(this) { createInitialStateLocks.getOrPut(key) { Any() } }
 
     synchronized(stateLock) {
-      return initialStates[key]?.value
+      return initialStates[key]
     }
   }
 
@@ -122,17 +123,17 @@ class InitialStateContainer {
       hookIndex: Int,
       initializer: HookInitializer<T>,
       componentName: String,
-  ): KStateContainer {
+  ): ComponentState<KStateContainer> {
     val stateLock: Any = synchronized(this) { createInitialStateLocks.getOrPut(key) { Any() } }
 
     return synchronized(stateLock) {
-      val state = initialStates[key]
-      val initialHookStates = state?.value as KStateContainer?
+      val state = initialStates[key] as ComponentState<KStateContainer>?
+      val initialHookStates = state?.value
 
       // sequences are guaranteed to be used in order. If the states list size is greater than
       // hookIndex we should be guaranteed to find the state
       if (initialHookStates != null && initialHookStates.states.size > hookIndex) {
-        return initialHookStates
+        return state
       }
 
       val isTracing = isTracing
@@ -151,8 +152,9 @@ class InitialStateContainer {
       check(hookIndex < hookStates.states.size) {
         ("Unexpected useState hook sequence encountered: $hookIndex (states size: ${hookStates.states.size}). This usually indicates that the useState hook is being called from within a conditional, loop, or after an early-exit condition. See https://fblitho.com/docs/mainconcepts/hooks-intro/#rules-for-hooks for more information on the Rules of Hooks.")
       }
-      initialStates[key] = state?.copy(value = hookStates) ?: ComponentState(value = hookStates)
-      hookStates
+      val newState = state?.copy(value = hookStates) ?: ComponentState(value = hookStates)
+      initialStates[key] = newState
+      newState
     }
   }
 

@@ -381,7 +381,7 @@ object Resolver {
     // Set latest state and the TreeProps which will be passed to the descendants of the component.
     if (component is SpecGeneratedComponent) {
       if (component.hasState()) {
-        c.scopedComponentInfo.stateContainer =
+        c.scopedComponentInfo.state =
             resolveContext.treeState.createOrGetStateContainerForComponent(c, component, globalKey)
       }
 

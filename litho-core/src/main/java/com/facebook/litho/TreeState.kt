@@ -20,6 +20,7 @@ import android.util.Pair
 import androidx.annotation.VisibleForTesting
 import com.facebook.litho.Component.RenderData
 import com.facebook.litho.internal.HookKey
+import com.facebook.litho.state.ComponentState
 import com.facebook.rendercore.annotations.UIState
 
 class TreeState {
@@ -193,15 +194,15 @@ class TreeState {
       }
     }
 
-  fun addStateContainer(key: String, stateContainer: StateContainer, isNestedTree: Boolean) {
-    getStateHandler(isNestedTree).addStateContainer(key, stateContainer)
+  fun addStateContainer(key: String, state: ComponentState<*>, isNestedTree: Boolean) {
+    getStateHandler(isNestedTree).addStateContainer(key, state)
   }
 
   fun keepStateContainerForGlobalKey(key: String, isNestedTree: Boolean) {
     getStateHandler(isNestedTree).keepStateContainerForGlobalKey(key)
   }
 
-  fun getStateContainer(key: String, isNestedTree: Boolean): StateContainer? {
+  fun getStateContainer(key: String, isNestedTree: Boolean): ComponentState<out StateContainer>? {
     return getStateHandler(isNestedTree).getStateContainer(key)
   }
 
@@ -209,10 +210,20 @@ class TreeState {
       scopedContext: ComponentContext,
       component: Component,
       key: String
-  ): StateContainer {
+  ): ComponentState<out StateContainer> {
     return getStateHandler(scopedContext.isNestedTreeContext)
         .createOrGetComponentState(scopedContext, component, key)
-        .value
+  }
+
+  fun createOrGetEventDispatchInfoForComponent(
+      scopedContext: ComponentContext,
+      component: Component,
+      key: String,
+  ): EventDispatchInfo {
+    return checkNotNull(
+        getStateHandler(scopedContext.isNestedTreeContext)
+            .createOrGetComponentState(scopedContext, component, key)
+            .eventDispatchInfo)
   }
 
   fun removePendingStateUpdate(key: String, isNestedTree: Boolean) {
@@ -240,7 +251,7 @@ class TreeState {
       isNestedTree: Boolean
   ): Boolean {
     val stateHandler = getStateHandler(isNestedTree)
-    val committedState = stateHandler.getStateContainer(globalKey) as KStateContainer?
+    val committedState = stateHandler.getStateContainer(globalKey)
     if (committedState != null) {
       val committedStateWithUpdatesApplied =
           stateHandler.getStateContainerWithHookUpdates(globalKey)
@@ -297,7 +308,7 @@ class TreeState {
       initializer: HookInitializer<T>,
       isNestedTree: Boolean,
       componentName: String
-  ): KStateContainer {
+  ): ComponentState<KStateContainer> {
 
     return getStateHandler(isNestedTree)
         .initialStateContainer

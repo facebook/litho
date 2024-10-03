@@ -34,6 +34,7 @@ import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.state.ComponentState;
 import com.facebook.rendercore.LayoutCache;
 import com.facebook.rendercore.ResourceCache;
 import com.facebook.rendercore.ResourceResolver;
@@ -210,10 +211,10 @@ public class ComponentContext {
     // before any lifecycle methods are invoked.
     if (component instanceof SpecGeneratedComponent
         && ((SpecGeneratedComponent) component).hasState()) {
-      context
-          .getScopedComponentInfo()
-          .setStateContainer(
-              ((SpecGeneratedComponent) component).createInitialStateContainer(context));
+      ComponentState<StateContainer> state =
+          new ComponentState(
+              ((SpecGeneratedComponent) component).createInitialStateContainer(context), null);
+      context.getScopedComponentInfo().setState(state);
     }
     return context;
   }

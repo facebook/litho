@@ -17,6 +17,7 @@
 package com.facebook.litho
 
 import android.util.SparseIntArray
+import com.facebook.litho.state.ComponentState
 import com.facebook.proguard.annotations.DoNotStrip
 import java.util.ArrayList
 import kotlin.collections.HashMap
@@ -27,10 +28,13 @@ class ScopedComponentInfo(
     errorEventHandler: EventHandler<ErrorEvent>?
 ) : Cloneable {
 
-  var stateContainer: StateContainer? = null
+  var state: ComponentState<out StateContainer>? = null
   val prepareInterStagePropsContainer: PrepareInterStagePropsContainer? =
       if (component is SpecGeneratedComponent) component.createPrepareInterStagePropsContainer()
       else null
+
+  val stateContainer: StateContainer?
+    get() = state?.value
 
   /**
    * Holds onto how many direct component children of each type this Component has. Used for

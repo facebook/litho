@@ -18,6 +18,7 @@ package com.facebook.litho
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
+import com.facebook.litho.state.ComponentState
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -45,7 +46,7 @@ class TreeStateTests {
   @Test
   fun testQueueStateUpdate() {
     val treeState = TreeState()
-    val stateContainer = StateUpdateTestComponent.TestStateContainer()
+    val stateContainer = ComponentState(value = StateUpdateTestComponent.TestStateContainer())
 
     // Add state container
     treeState.addStateContainer(testComponentKey, stateContainer, false)
@@ -57,7 +58,7 @@ class TreeStateTests {
     // Apply state updates
     treeState.applyStateUpdatesEarly(context, testComponent, null, false)
     val previousStateContainer =
-        treeState.getStateContainer(testComponentKey, false)
+        treeState.getStateContainer(testComponentKey, false)?.value
             as StateUpdateTestComponent.TestStateContainer?
     assertThat(previousStateContainer).isNotNull
     assertThat(previousStateContainer?.count).isEqualTo(1)
@@ -113,11 +114,14 @@ class TreeStateTests {
   fun testCommitRenderState() {
     val previousTreeState = TreeState()
     previousTreeState.addStateContainer(
-        testComponentKey, StateUpdateTestComponent.TestStateContainer(), false)
+        testComponentKey,
+        ComponentState(value = StateUpdateTestComponent.TestStateContainer()),
+        false,
+    )
     val treeState = TreeState()
     treeState.commitResolveState(previousTreeState)
     val previousStateContainer =
-        treeState.getStateContainer(testComponentKey, false)
+        treeState.getStateContainer(testComponentKey, false)?.value
             as StateUpdateTestComponent.TestStateContainer?
     assertThat(previousStateContainer).isNotNull
     assertThat(previousStateContainer?.count).isEqualTo(0)
@@ -127,11 +131,14 @@ class TreeStateTests {
   fun testCommitLayoutState() {
     val previousTreeState = TreeState()
     previousTreeState.addStateContainer(
-        testComponentKey, StateUpdateTestComponent.TestStateContainer(), true)
+        testComponentKey,
+        ComponentState(value = StateUpdateTestComponent.TestStateContainer()),
+        true,
+    )
     val treeState = TreeState()
     treeState.commitLayoutState(previousTreeState)
     val previousStateContainer =
-        treeState.getStateContainer(testComponentKey, true)
+        treeState.getStateContainer(testComponentKey, true)?.value
             as StateUpdateTestComponent.TestStateContainer?
     assertThat(previousStateContainer).isNotNull
     assertThat(previousStateContainer?.count).isEqualTo(0)
@@ -141,10 +148,13 @@ class TreeStateTests {
   fun testCopyPreviousState() {
     val previousTreeState = TreeState()
     previousTreeState.addStateContainer(
-        testComponentKey, StateUpdateTestComponent.TestStateContainer(), false)
+        testComponentKey,
+        ComponentState(value = StateUpdateTestComponent.TestStateContainer()),
+        false,
+    )
     val treeState = TreeState(previousTreeState)
     val previousStateContainer =
-        treeState.getStateContainer(testComponentKey, false)
+        treeState.getStateContainer(testComponentKey, false)?.value
             as StateUpdateTestComponent.TestStateContainer?
     assertThat(previousStateContainer).isNotNull
     assertThat(previousStateContainer?.count).isEqualTo(0)
@@ -203,7 +213,7 @@ class TreeStateTests {
 
   private fun TreeState.assertThatTestStateContainerHasValue(value: Int) {
     assertThat(
-            (getStateContainer(testComponentKey, false)
+            (getStateContainer(testComponentKey, false)?.value
                     as StateUpdateTestComponent.TestStateContainer)
                 .count)
         .isEqualTo(value)

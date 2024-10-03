@@ -82,7 +82,8 @@ class StateHandler {
   /**
    * Maps a component key to a component object that retains the current state values for that key.
    */
-  @GuardedBy("this") private val _stateContainers: MutableMap<String, ComponentState> = HashMap()
+  @GuardedBy("this")
+  private val _stateContainers: MutableMap<String, ComponentState<out StateContainer>> = HashMap()
 
   /**
    * Contains all keys of components that were present in the current ComponentTree and therefore
@@ -142,14 +143,14 @@ class StateHandler {
    * StateContainer in this StateHandler should be accessed using this method as it will also ensure
    * that the state is marked as needed
    */
-  fun getStateContainer(key: String): StateContainer? = _stateContainers[key]?.value
+  fun getStateContainer(key: String): ComponentState<out StateContainer>? = _stateContainers[key]
 
   fun createOrGetComponentState(
       scopedContext: ComponentContext,
       component: Component,
       key: String
-  ): ComponentState {
-    val current: ComponentState? = synchronized(this) { _stateContainers[key] }
+  ): ComponentState<out StateContainer> {
+    val current: ComponentState<out StateContainer>? = synchronized(this) { _stateContainers[key] }
 
     return if (current != null) {
       neededStateContainers.add(key)
@@ -209,12 +210,14 @@ class StateHandler {
   ) {
     for ((key, _) in _pendingStateUpdates) {
       try {
-        val current = _stateContainers[key]
-        val currentValue =
-            current?.value ?: initialStateContainer.getInitialStateForComponent(key) ?: continue
+        val current: ComponentState<StateContainer> =
+            (_stateContainers[key] ?: initialStateContainer.getInitialStateForComponent(key))
+                as ComponentState<StateContainer>? ?: continue
+
+        val currentValue: StateContainer = current.value
 
         val newValue = currentValue.clone()
-        _stateContainers[key] = current?.copy(value = newValue) ?: ComponentState(value = newValue)
+        _stateContainers[key] = current.copy(value = newValue)
         applyStateUpdates(key, newValue)
       } catch (ex: Exception) {
 
@@ -240,7 +243,7 @@ class StateHandler {
   }
 
   @Synchronized
-  fun addState(key: String, state: ComponentState) {
+  fun addState(key: String, state: ComponentState<*>) {
     neededStateContainers.add(key)
     _stateContainers[key] = state
   }
@@ -252,10 +255,9 @@ class StateHandler {
    * @param state the state value that needs to be retained
    */
   @Synchronized
-  fun addStateContainer(key: String, state: StateContainer) {
+  fun addStateContainer(key: String, state: ComponentState<*>) {
     neededStateContainers.add(key)
-    val current = _stateContainers[key]
-    _stateContainers[key] = current?.copy(value = state) ?: ComponentState(value = state)
+    _stateContainers[key] = state
   }
 
   fun applyLazyStateUpdatesForContainer(
@@ -349,7 +351,7 @@ class StateHandler {
   }
 
   @get:Synchronized
-  val stateContainers: Map<String, ComponentState>
+  val stateContainers: Map<String, ComponentState<out StateContainer>>
     get() = _stateContainers
 
   @get:Synchronized
@@ -457,7 +459,9 @@ class StateHandler {
    * Copies the list of given state containers into the map that holds the current state containers
    * of components.
    */
-  private fun copyCurrentStateContainers(stateContainers: Map<String, ComponentState>) {
+  private fun copyCurrentStateContainers(
+      stateContainers: Map<String, ComponentState<out StateContainer>>
+  ) {
 
     synchronized(this) {
       _stateContainers.clear()
@@ -508,7 +512,7 @@ class StateHandler {
    */
   private fun runHooks() {
     for ((key, value) in pendingHookUpdates) {
-      val current = _stateContainers[key]
+      val current = _stateContainers[key] as ComponentState<KStateContainer>?
       val stateContainer = current?.value
       /* currentState could be null if the state is removed from the StateHandler before the update runs */
       if (stateContainer is KStateContainer) {

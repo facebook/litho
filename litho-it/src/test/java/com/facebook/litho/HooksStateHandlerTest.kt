@@ -18,6 +18,7 @@ package com.facebook.litho
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
+import com.facebook.litho.state.ComponentState
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.util.Lists
@@ -45,7 +46,7 @@ class HooksStateHandlerTest {
     kStateContainer = KStateContainer.withNewState(kStateContainer, 4)
     kStateContainer = KStateContainer.withNewState(kStateContainer, bazState)
     val first = StateHandler()
-    first.addStateContainer(GLOBAL_KEY, kStateContainer)
+    first.addStateContainer(GLOBAL_KEY, ComponentState(value = kStateContainer))
     first.queueHookStateUpdate(
         GLOBAL_KEY,
         object : HookUpdater {
@@ -57,14 +58,14 @@ class HooksStateHandlerTest {
     second.applyStateUpdatesEarly(context = c, component = null, prevTreeRootNode = null)
     assertThat(first.hasUncommittedUpdates()).isTrue
     assertThat(second.hasUncommittedUpdates()).isTrue
-    val secondKstate = second.getStateContainer(GLOBAL_KEY) as KStateContainer?
+    val secondKstate = second.getStateContainer(GLOBAL_KEY)?.value as KStateContainer?
     second.keepStateContainerForGlobalKey(GLOBAL_KEY)
     assertThat(secondKstate?.states)
         .hasSize(4)
         .isEqualTo(Lists.newArrayList("test", 4, bazState, "newValue"))
     first.commit(second)
     assertThat(first.hasUncommittedUpdates()).isFalse
-    val firstState = first.getStateContainer(GLOBAL_KEY) as KStateContainer?
+    val firstState = first.getStateContainer(GLOBAL_KEY)?.value as KStateContainer?
     assertThat(firstState?.states)
         .hasSize(4)
         .isEqualTo(Lists.newArrayList("test", 4, bazState, "newValue"))
@@ -77,7 +78,7 @@ class HooksStateHandlerTest {
     var kStateContainer = KStateContainer.withNewState(null, "test")
     kStateContainer = KStateContainer.withNewState(kStateContainer, 4)
     kStateContainer = KStateContainer.withNewState(kStateContainer, bazState)
-    first.addStateContainer(GLOBAL_KEY, kStateContainer)
+    first.addStateContainer(GLOBAL_KEY, ComponentState(value = kStateContainer))
     first.queueHookStateUpdate(
         GLOBAL_KEY,
         object : HookUpdater {
@@ -96,14 +97,14 @@ class HooksStateHandlerTest {
     assertThat(first.hasUncommittedUpdates()).isTrue
     assertThat(second.hasUncommittedUpdates()).isTrue
     assertThat(second.stateContainers).hasSize(1)
-    val secondKstate = second.getStateContainer(GLOBAL_KEY) as KStateContainer?
+    val secondKstate = second.getStateContainer(GLOBAL_KEY)?.value as KStateContainer?
     second.keepStateContainerForGlobalKey(GLOBAL_KEY)
     assertThat(secondKstate?.states)
         .hasSize(4)
         .isEqualTo(Lists.newArrayList("test", 6, bazState, "newValue"))
     first.commit(second)
     assertThat(first.hasUncommittedUpdates()).isFalse
-    val kState = first.getStateContainer(GLOBAL_KEY) as KStateContainer?
+    val kState = first.getStateContainer(GLOBAL_KEY)?.value as KStateContainer?
     assertThat(kState?.states)
         .hasSize(4)
         .isEqualTo(Lists.newArrayList("test", 6, bazState, "newValue"))
@@ -116,7 +117,7 @@ class HooksStateHandlerTest {
     var kStateContainer = KStateContainer.withNewState(null, "test")
     kStateContainer = KStateContainer.withNewState(kStateContainer, 4)
     kStateContainer = KStateContainer.withNewState(kStateContainer, bazState)
-    first.addStateContainer(GLOBAL_KEY, kStateContainer)
+    first.addStateContainer(GLOBAL_KEY, ComponentState(value = kStateContainer))
     first.queueHookStateUpdate(
         GLOBAL_KEY,
         object : HookUpdater {
@@ -140,20 +141,20 @@ class HooksStateHandlerTest {
     val third = StateHandler(first)
     third.applyStateUpdatesEarly(context = c, component = null, prevTreeRootNode = null)
     third.keepStateContainerForGlobalKey(GLOBAL_KEY)
-    val secondKstate = second.getStateContainer(GLOBAL_KEY) as KStateContainer?
+    val secondKstate = second.getStateContainer(GLOBAL_KEY)?.value as KStateContainer?
     second.keepStateContainerForGlobalKey(GLOBAL_KEY)
     assertThat(secondKstate?.states)
         .hasSize(4)
         .isEqualTo(Lists.newArrayList("test", 6, bazState, "newValue"))
     first.commit(second)
     assertThat(first.hasUncommittedUpdates()).isTrue
-    val kState = first.getStateContainer(GLOBAL_KEY) as KStateContainer?
+    val kState = first.getStateContainer(GLOBAL_KEY)?.value as KStateContainer?
     assertThat(kState?.states)
         .hasSize(4)
         .isEqualTo(Lists.newArrayList("test", 6, bazState, "newValue"))
     first.commit(third)
     assertThat(first.hasUncommittedUpdates()).isFalse
-    val firstStateUpdated = first.getStateContainer(GLOBAL_KEY) as KStateContainer?
+    val firstStateUpdated = first.getStateContainer(GLOBAL_KEY)?.value as KStateContainer?
     assertThat(firstStateUpdated?.states)
         .hasSize(4)
         .isEqualTo(Lists.newArrayList("test", 7, bazState, "newValue"))

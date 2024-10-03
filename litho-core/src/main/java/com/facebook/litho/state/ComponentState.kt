@@ -26,7 +26,8 @@ import com.facebook.litho.StateContainer
  * state, cached values, event dispatch info, etc.
  */
 @DataClassGenerate(toString = Mode.OMIT, equalsHashCode = Mode.KEEP)
-data class ComponentState(
-    val value: StateContainer,
+data class ComponentState<S : StateContainer>
+constructor(
+    val value: S,
     val eventDispatchInfo: EventDispatchInfo? = null,
 )

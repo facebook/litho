@@ -33,6 +33,7 @@ import com.facebook.litho.StateContainer
 import com.facebook.litho.StateHandler
 import com.facebook.litho.TreeState
 import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.state.ComponentState
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.TestLithoView
@@ -89,17 +90,34 @@ class StateUpdateTest {
     return Whitebox.getInternalState(componentTree, "mTreeState")
   }
 
-  private fun <T> getLayoutStateHandleStateContainer(
+  private fun <T : StateContainer> getLayoutStateHandleStateContainer(
       componentTree: ComponentTree,
       globalKey: String
   ): T {
     val treeState = getTreeState(componentTree)
-    return Whitebox.invokeMethod<Any>(treeState, "getStateContainer", globalKey, true) as T
+    val state =
+        Whitebox.invokeMethod<Any>(
+            treeState,
+            "getStateContainer",
+            globalKey,
+            true,
+        ) as ComponentState<T>
+    return state.value
   }
 
-  private fun <T> getStateHandleStateContainer(componentTree: ComponentTree, globalKey: String): T {
+  private fun <T : StateContainer> getStateHandleStateContainer(
+      componentTree: ComponentTree,
+      globalKey: String,
+  ): T {
     val treeState = getTreeState(componentTree)
-    return Whitebox.invokeMethod<Any>(treeState, "getStateContainer", globalKey, false) as T
+    val state =
+        Whitebox.invokeMethod<Any>(
+            treeState,
+            "getStateContainer",
+            globalKey,
+            false,
+        ) as ComponentState<T>
+    return state.value
   }
 
   private fun <T> getInitialStateContainer(componentTree: ComponentTree, globalKey: String): T? {

@@ -17,6 +17,7 @@
 package com.facebook.litho
 
 import com.facebook.litho.annotations.Hook
+import com.facebook.litho.state.ComponentState
 
 /**
  * Declares a state variable within a Component. The initializer will provide the initial value if
@@ -36,9 +37,11 @@ fun <T> ComponentScope.useState(initializer: () -> T): State<T> {
       context.stateUpdater ?: throw IllegalStateException("LithoTree is null")
 
   val isNestedTreeContext = context.isNestedTreeContext
-  val kState = treeState.getStateContainer(globalKey, isNestedTreeContext) as KStateContainer?
+  val kState =
+      treeState.getStateContainer(globalKey, isNestedTreeContext)
+          as ComponentState<KStateContainer>?
 
-  if (kState == null || kState.states.size <= hookIndex) {
+  if (kState == null || kState.value.states.size <= hookIndex) {
     // The initial state was not computed yet. let's create it and put it in the state
     val state =
         treeState.createOrGetInitialHookState(
@@ -49,7 +52,7 @@ fun <T> ComponentScope.useState(initializer: () -> T): State<T> {
             context.scopedComponentInfo.component.simpleName)
     treeState.addStateContainer(globalKey, state, isNestedTreeContext)
 
-    context.scopedComponentInfo.stateContainer = state
+    context.scopedComponentInfo.state = state
 
     return State(
         stateUpdater,
@@ -57,9 +60,9 @@ fun <T> ComponentScope.useState(initializer: () -> T): State<T> {
         globalKey,
         isNestedTreeContext,
         context.componentScope,
-        state.states[hookIndex] as T)
+        state.value.states[hookIndex] as T)
   } else {
-    context.scopedComponentInfo.stateContainer = kState
+    context.scopedComponentInfo.state = kState
   }
 
   // Only need to mark this global key as seen once
@@ -73,7 +76,7 @@ fun <T> ComponentScope.useState(initializer: () -> T): State<T> {
       globalKey,
       isNestedTreeContext,
       context.componentScope,
-      kState.states[hookIndex] as T)
+      kState.value.states[hookIndex] as T)
 }
 
 /** Interface with which a component gets the value from a state or updates it. */
