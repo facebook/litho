@@ -201,9 +201,6 @@ class UseLiveDataTest {
 
   @Test
   fun `should observe lifecycle change when lifecycle owner is set after render`() {
-    ComponentsConfiguration.defaultInstance =
-        ComponentsConfiguration.defaultInstance.copy(enableLifecycleOwnerWrapper = true)
-
     // Override new lifecycle owner and provider with local
     val rule = ruleWithoutVisibilityEventsController
     val fakeLifecycleOwner = FakeLifecycleOwner(Lifecycle.State.INITIALIZED)
@@ -238,9 +235,6 @@ class UseLiveDataTest {
     Assertions.assertThat(liveData.hasObservers()).isFalse
     val owner = tree.getTreeProp(LifecycleOwnerTreeProp)
     Assertions.assertThat((owner as LifecycleOwnerWrapper).hasObservers()).isFalse
-
-    ComponentsConfiguration.defaultInstance =
-        ComponentsConfiguration.defaultInstance.copy(enableLifecycleOwnerWrapper = false)
   }
 
   @Test
