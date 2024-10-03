@@ -59,7 +59,7 @@ The `FeedItemComponent` contains the logic for populating our complex props whic
 ```java
 @Test
 public void testComplexSubComponent() {
-  final ComponentContext c = mLithoViewRule.getContext();
+  final ComponentContext c = mLithoTestRule.getContext();
   final Component<FeedItemComponent> component = makeComponent("Two Brothers");
 
   assertThat(c, component)
@@ -86,7 +86,7 @@ If it's not possible to provide these props in your tests, or if you we don't wa
 ```java
 @Test
 public void testComplexSpecIsPresent() {
-  final ComponentContext c = mLithoViewRule.getContext();
+  final ComponentContext c = mLithoTestRule.getContext();
   final Component<FeedItemComponent> component = makeComponent("Rixty Minutes");
 
   assertThat(c, component)
@@ -129,7 +129,7 @@ It does take the same props as the underlying component but enable you to omit n
 ```java
 @Test
 public void testComplexTestSpecProps() {
-  final ComponentContext c = mLithoViewRule.getContext();
+  final ComponentContext c = mLithoTestRule.getContext();
   final Component<FeedItemComponent> component = makeComponent("Two Brothers");
 
   assertThat(c, component)
@@ -171,7 +171,7 @@ Instead of just matching against partial props, you can also provide 'hamcrest' 
 ```
 @Test
 public void testComplexTestSpecAdvancedProps() {
-  final ComponentContext c = mLithoViewRule.getContext();
+  final ComponentContext c = mLithoTestRule.getContext();
   final Component<FeedItemComponent> component =
       makeComponent("Rixty Minutes");
 
@@ -201,7 +201,7 @@ Continuing with the given example, suppose that the `FeedItemComponent` wraps th
 ```java
 @Test
 public void testComplexTestSpecProps() {
-  final ComponentContext c = mLithoViewRule.getContext();
+  final ComponentContext c = mLithoTestRule.getContext();
   final Component<FeedItemComponent> component = makeComponent("Ricksy Business");
 
   assertThat(c, component)
@@ -312,7 +312,7 @@ public interface TestMyLayoutSpec {}
 ```java
 @Test
 public void testComplexTestSpecAdvancedProps() {
-  final ComponentContext c = mLithoViewRule.getContext();
+  final ComponentContext c = mLithoTestRule.getContext();
   final Component<MyWrapperComponent> component = ...;
 
   assertThat(c, component)

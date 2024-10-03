@@ -66,7 +66,7 @@
  public interface TestMyLayoutSpec {}
 </code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div> This will generate a corresponding <code class="lang-kotlin">TestMyLayout</code> class which implements the provided interface. It contains a Matcher for the properties of the specified <code class="lang-kotlin">MyLayoutSpec</code> component spec. This can be used in tests as follows: <div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">@Test
  public void testMyLayoutSpec() {
-   final ComponentContext c = mLithoViewRule.getContext();
+   final ComponentContext c = mLithoTestRule.getContext();
    assertThat(c, mComponent)
        .has(subComponentWith(c,
            TestMyLayoutSpec.matcher(c)

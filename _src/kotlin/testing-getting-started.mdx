@@ -7,13 +7,13 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import VersionedCodeBlock from '@theme/VersionedCodeBlock';
 
-The **Litho Testing API** is presented through the `LithoViewRule` class, it enables the following:
+The **Litho Testing API** is presented through the `LithoTestRule` class, it enables the following:
 
 - Make assertions against the Component hierarchy.
 - Mark assertions against the View hierarchy.
 - Provides access to utility functions to interact with the View hierarchy (such as by clicking).
 
-`LithoViewRule` uses the Junit 'TestRule', which provides a flexible mechanism to execute code before and after a test method. As a result, Litho is able to prepare the environment then clean it up after testing has taken place, so there's no need to be concerned about it.
+`LithoTestRule` uses the Junit 'TestRule', which provides a flexible mechanism to execute code before and after a test method. As a result, Litho is able to prepare the environment then clean it up after testing has taken place, so there's no need to be concerned about it.
 
 For more information about the TestRules, refer to the official [JUnit documentation](https://junit.org/junit4/javadoc/4.12/org/junit/rules/TestRule.html).
 
@@ -34,7 +34,7 @@ In order to use the @Rule inside of a test class, it needs to be initialised:
 ```kotlin file=litho-core/src/test/kotlin/com/facebook/litho/examples/LithoTestRuleExampleTest.kt start=start_example end=end_example
 ```
 
-Then, within a test, render the component with the help of the `LithoViewRule.render(Component)` method and perform assertions or other actions on the `LithoView` returned by the `render` call:
+Then, within a test, render the component with the help of the `LithoTestRule.render(Component)` method and perform assertions or other actions on the `LithoView` returned by the `render` call:
 
 ```kotlin file=litho-core/src/test/kotlin/com/facebook/litho/examples/LithoTestRuleExampleTest.kt start=start_render_example end=end_render_example
 ```

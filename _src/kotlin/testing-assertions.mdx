@@ -9,7 +9,7 @@ import VersionedCodeBlock from '@theme/VersionedCodeBlock';
 
 It's possible to use `AssertJ-style` APIs to assert what gets rendered by a `Component` or `LithoView`. All of the `Component` and `LithoView` assertions are exposed in `LithoAssertions.assertThat()` methods.
 
-If you need to get a handle of a component that is inside the ComponentTree of the one you rendered using `LithoViewRule`, you can use the `findComponent()` method.
+If you need to get a handle of a component that is inside the ComponentTree of the one you rendered using `LithoTestRule`, you can use the `findComponent()` method.
 
 :::note
 All of the following examples use the `TestComponent` that has one direct child, `InnerComponent`, and one non-direct child, `Text`.
@@ -69,7 +69,7 @@ It's possible to check if your component requires Props, as shown in the followi
 
 ## Assertions against the view hierarchy
 
-`LithoViewRule.render(Component)` returns a `LithoView`, which can be used for assertions that can be found in the [LithoViewAssert](pathname:///javadoc/com/facebook/litho/testing/assertj/LithoViewAssert.html) class.
+`LithoTestRule.render(Component)` returns a `LithoView`, which can be used for assertions that can be found in the [LithoViewAssert](pathname:///javadoc/com/facebook/litho/testing/assertj/LithoViewAssert.html) class.
 
 With this assertion, you can, for example, check if a given text or drawable is visible or if the view contains a given test key, as shown in the following snippet:
 
