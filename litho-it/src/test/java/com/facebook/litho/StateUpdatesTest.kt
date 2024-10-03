@@ -121,7 +121,7 @@ open class StateUpdatesTest {
     assertThat(previousStateContainer).isNotNull
     assertThat(previousStateContainer?.count)
         .isEqualTo(StateUpdateTestComponent.INITIAL_COUNT_STATE_VALUE)
-    assertThat(resolveState?.initialState?.initialStates?.isEmpty()).isTrue
+    assertThat(resolveState?.initialState?.states?.isEmpty()).isTrue
   }
 
   @Test
@@ -326,7 +326,7 @@ open class StateUpdatesTest {
     thread1.start()
     thread2.start()
     ThreadTestingUtils.failSilentlyIfInterrupted { check.await(5_000, TimeUnit.MILLISECONDS) }
-    assertThat(resolveState?.initialState?.initialStates?.isEmpty()).isTrue
+    assertThat(resolveState?.initialState?.states?.isEmpty()).isTrue
     assertThat(resolveState?.initialState?.pendingStateHandlers?.isEmpty()).isTrue
     assertThat(stateUpdateCalled.toInt()).isEqualTo(1)
     assertThat(stateValue.toInt()).isEqualTo(secondStateValue.toInt())

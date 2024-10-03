@@ -58,7 +58,7 @@ class TreeState {
 
     if (resolveState.initialState === layoutState.initialState) {
       throw IllegalArgumentException(
-          "The same InitialStateContainer cannot be used for both resolve and layout states")
+          "The same InitialState cannot be used for both resolve and layout states")
     }
 
     this.resolveState = resolveState
@@ -83,8 +83,8 @@ class TreeState {
   )
 
   constructor(
-      initialResolveStateContainer: InitialStateContainer,
-      initialLayoutStateContainer: InitialStateContainer,
+      initialResolveStateContainer: InitialState,
+      initialLayoutStateContainer: InitialState,
   ) : this(
       resolveState = StateHandler(initialResolveStateContainer),
       layoutState = StateHandler(initialLayoutStateContainer),
@@ -304,7 +304,7 @@ class TreeState {
 
   fun <T> createOrGetInitialHookState(
       key: String,
-      hookStateIndex: Int,
+      kStateIndex: Int,
       initializer: HookInitializer<T>,
       isNestedTree: Boolean,
       componentName: String
@@ -312,9 +312,9 @@ class TreeState {
 
     return getStateHandler(isNestedTree)
         .initialState
-        .createOrGetInitialHookState(
+        .getOrCreateInitialKState(
             key,
-            hookStateIndex,
+            kStateIndex,
             initializer,
             componentName,
         )

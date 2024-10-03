@@ -122,7 +122,7 @@ class StateUpdateTest {
 
   private fun <T> getInitialStateContainer(componentTree: ComponentTree, globalKey: String): T? {
     val stateHandler = getResolveState(componentTree)
-    return stateHandler.initialState.initialStates[globalKey] as T?
+    return stateHandler.initialState.states[globalKey] as T?
   }
 
   private fun <T> getLayoutInitialStateContainer(
@@ -130,12 +130,12 @@ class StateUpdateTest {
       globalKey: String
   ): T? {
     val stateHandler = getLayoutState(componentTree)
-    return stateHandler.initialState.initialStates[globalKey] as T?
+    return stateHandler.initialState.states[globalKey] as T?
   }
 
   private fun getInitialStates(componentTree: ComponentTree): Map<String, StateContainer> {
     val stateHandler = getResolveState(componentTree)
-    return stateHandler.initialState.initialStates.mapValues { it.value.value }
+    return stateHandler.initialState.states.mapValues { it.value.value }
   }
 
   @Test

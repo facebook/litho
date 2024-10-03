@@ -129,7 +129,7 @@ fun preloadLithoClasses(additionalClasses: (() -> Set<Class<*>>)? = null) {
                 LruResourceCache::class.java,
                 ResourceResolver::class.java,
                 DynamicValue::class.java,
-                InitialStateContainer::class.java,
+                InitialState::class.java,
                 RenderUnitIdGenerator::class.java,
                 EventHandlersController::class.java,
                 EventTriggersContainer::class.java,

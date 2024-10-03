@@ -36,15 +36,14 @@ import javax.annotation.concurrent.ThreadSafe
  * the initial states cache.
  */
 @ThreadSafe
-class InitialStateContainer {
+class InitialState {
 
   // All the initial states that have been created and can not yet be released. This is a concurrent
   // map as we can access it from multiple threads. The safety is given by the fact that we will
   // only get and set for a key while holding a lock for that specific key.
   @JvmField
   @VisibleForTesting
-  val initialStates =
-      Collections.synchronizedMap(HashMap<String, ComponentState<out StateContainer>>())
+  val states = Collections.synchronizedMap(HashMap<String, ComponentState<out StateContainer>>())
 
   @GuardedBy("this") private val createInitialStateLocks: MutableMap<String, Any> = HashMap()
 
@@ -72,7 +71,7 @@ class InitialStateContainer {
 
     return synchronized(stateLock) {
       val state =
-          initialStates.getOrPut(key) {
+          states.getOrPut(key) {
             createInitialStateContainer(context = scopedContext, component = component)
           }
       state
@@ -110,7 +109,7 @@ class InitialStateContainer {
     val stateLock: Any = synchronized(this) { createInitialStateLocks.getOrPut(key) { Any() } }
 
     synchronized(stateLock) {
-      return initialStates[key]
+      return states[key]
     }
   }
 
@@ -118,7 +117,7 @@ class InitialStateContainer {
    * If an initial state for this component has already been created just return it, otherwise
    * execute the initializer and cache the result.
    */
-  fun <T> createOrGetInitialHookState(
+  fun <T> getOrCreateInitialKState(
       key: String,
       hookIndex: Int,
       initializer: HookInitializer<T>,
@@ -127,7 +126,7 @@ class InitialStateContainer {
     val stateLock: Any = synchronized(this) { createInitialStateLocks.getOrPut(key) { Any() } }
 
     return synchronized(stateLock) {
-      val state = initialStates[key] as ComponentState<KStateContainer>?
+      val state = states[key] as ComponentState<KStateContainer>?
       val initialHookStates = state?.value
 
       // sequences are guaranteed to be used in order. If the states list size is greater than
@@ -153,7 +152,7 @@ class InitialStateContainer {
         ("Unexpected useState hook sequence encountered: $hookIndex (states size: ${hookStates.states.size}). This usually indicates that the useState hook is being called from within a conditional, loop, or after an early-exit condition. See https://fblitho.com/docs/mainconcepts/hooks-intro/#rules-for-hooks for more information on the Rules of Hooks.")
       }
       val newState = state?.copy(value = hookStates) ?: ComponentState(value = hookStates)
-      initialStates[key] = newState
+      this.states[key] = newState
       newState
     }
   }
@@ -170,7 +169,7 @@ class InitialStateContainer {
       // This is safe as we have a guarantee that by this point there is no layout happening
       // and therefore we can not be executing createOrGetInitialStateForComponent or
       // createOrGetInitialHookState from any thread.
-      initialStates.clear()
+      states.clear()
     }
   }
 }

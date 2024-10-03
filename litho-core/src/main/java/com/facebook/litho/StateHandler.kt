@@ -37,8 +37,8 @@ import javax.annotation.concurrent.GuardedBy
 /** Holds information about the current State of the components in a Component Tree. */
 class StateHandler {
 
-  constructor(initialStateContainer: InitialStateContainer, stateHandler: StateHandler? = null) {
-    this.initialState = initialStateContainer
+  constructor(initialState: InitialState, stateHandler: StateHandler? = null) {
+    this.initialState = initialState
     if (stateHandler != null) {
       copyStateUpdatesMap(
           stateHandler.pendingStateUpdates,
@@ -56,7 +56,7 @@ class StateHandler {
   constructor(
       stateHandler: StateHandler? = null
   ) : this(
-      initialStateContainer = stateHandler?.initialState ?: InitialStateContainer(),
+      initialState = stateHandler?.initialState ?: InitialState(),
       stateHandler = stateHandler,
   )
 
@@ -100,7 +100,7 @@ class StateHandler {
   private val pendingHookUpdates: MutableMap<String, MutableList<HookUpdater>> = HashMap()
   private var appliedHookUpdates: MutableMap<String, List<HookUpdater>> = HashMap()
 
-  var initialState: InitialStateContainer
+  var initialState: InitialState
     private set
 
   @get:Synchronized

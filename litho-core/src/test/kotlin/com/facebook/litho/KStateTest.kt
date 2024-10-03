@@ -148,7 +148,7 @@ class KStateTest {
 
     assertThat(initCounter.get()).describedAs("initCounter is initialized only once").isEqualTo(1)
     val componentTree = view.componentTree
-    assertThat(getStateHandler(componentTree)?.initialState?.initialStates)
+    assertThat(getStateHandler(componentTree)?.initialState?.states)
         .describedAs("Initial hook state container is empty")
         .isEmpty()
     assertThat(getStateHandler(componentTree)?.initialState?.pendingStateHandlers)
@@ -374,7 +374,7 @@ class KStateTest {
 
     assertThat(initCounter.get()).describedAs("initCounter is initialized only once").isEqualTo(1)
     val componentTree = view.componentTree
-    assertThat(getStateHandler(componentTree)?.initialState?.initialStates)
+    assertThat(getStateHandler(componentTree)?.initialState?.states)
         .describedAs("Initial hook state container is empty")
         .isEmpty()
     assertThat(getStateHandler(componentTree)?.initialState?.pendingStateHandlers)
