@@ -145,7 +145,7 @@ class StateHandler {
    */
   fun getState(key: String): ComponentState<out StateContainer>? = _state[key]
 
-  fun createOrGetComponentState(
+  fun createOrGetState(
       scopedContext: ComponentContext,
       component: Component,
       key: String
@@ -157,7 +157,7 @@ class StateHandler {
       current
     } else {
       val state =
-          initialState.createOrGetComponentState(
+          initialState.createOrGetState(
               component,
               scopedContext,
               key,

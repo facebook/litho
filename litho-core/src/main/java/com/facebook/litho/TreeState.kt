@@ -212,7 +212,7 @@ class TreeState {
       key: String
   ): ComponentState<out StateContainer> {
     return getStateHandler(scopedContext.isNestedTreeContext)
-        .createOrGetComponentState(scopedContext, component, key)
+        .createOrGetState(scopedContext, component, key)
   }
 
   fun createOrGetEventDispatchInfoForComponent(
@@ -222,7 +222,7 @@ class TreeState {
   ): EventDispatchInfo {
     return checkNotNull(
         getStateHandler(scopedContext.isNestedTreeContext)
-            .createOrGetComponentState(scopedContext, component, key)
+            .createOrGetState(scopedContext, component, key)
             .eventDispatchInfo)
   }
 

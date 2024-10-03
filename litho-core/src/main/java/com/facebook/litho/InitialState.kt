@@ -62,7 +62,7 @@ class InitialState {
     pendingStateHandlers.add(stateHandler)
   }
 
-  fun createOrGetComponentState(
+  fun createOrGetState(
       component: Component,
       scopedContext: ComponentContext,
       key: String
@@ -72,25 +72,13 @@ class InitialState {
     return synchronized(stateLock) {
       val state =
           states.getOrPut(key) {
-            createInitialStateContainer(context = scopedContext, component = component)
+            createInitialState(context = scopedContext, component = component)
           }
       state
     }
   }
 
-  /**
-   * If an initial state for this component has already been created just transfers it to it.
-   * Otherwise onCreateInitialState gets called for the component and its result cached.
-   */
-  fun createOrGetInitialStateForComponent(
-      component: Component,
-      scopedContext: ComponentContext,
-      key: String
-  ): StateContainer {
-    return createOrGetComponentState(component, scopedContext, key).value
-  }
-
-  private fun createInitialStateContainer(
+  private fun createInitialState(
       context: ComponentContext,
       component: Component
   ): ComponentState<out StateContainer> {
