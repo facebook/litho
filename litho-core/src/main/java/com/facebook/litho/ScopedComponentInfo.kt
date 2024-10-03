@@ -116,8 +116,6 @@ class ScopedComponentInfo(
     treeState.markStateInUse(context.globalKey, context.isNestedTreeContext)
   }
 
-  private fun hasState(): Boolean = component is SpecGeneratedComponent && component.hasState()
-
   override fun clone(): ScopedComponentInfo =
       try {
         super.clone() as ScopedComponentInfo
