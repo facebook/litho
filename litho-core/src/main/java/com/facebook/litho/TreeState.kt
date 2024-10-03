@@ -56,7 +56,7 @@ class TreeState {
       eventHandlersController: EventHandlersController,
   ) {
 
-    if (resolveState.initialStateContainer === layoutState.initialStateContainer) {
+    if (resolveState.initialState === layoutState.initialState) {
       throw IllegalArgumentException(
           "The same InitialStateContainer cannot be used for both resolve and layout states")
     }
@@ -106,19 +106,19 @@ class TreeState {
   }
 
   fun registerResolveState() {
-    resolveState.initialStateContainer.registerStateHandler(resolveState)
+    resolveState.initialState.registerStateHandler(resolveState)
   }
 
   fun registerLayoutState() {
-    layoutState.initialStateContainer.registerStateHandler(layoutState)
+    layoutState.initialState.registerStateHandler(layoutState)
   }
 
   fun unregisterResolveInitialState() {
-    resolveState.initialStateContainer.unregisterStateHandler(resolveState)
+    resolveState.initialState.unregisterStateHandler(resolveState)
   }
 
   fun unregisterLayoutInitialState() {
-    layoutState.initialStateContainer.unregisterStateHandler(layoutState)
+    layoutState.initialState.unregisterStateHandler(layoutState)
   }
 
   fun commitResolveState(localTreeState: TreeState) {
@@ -311,7 +311,7 @@ class TreeState {
   ): ComponentState<KStateContainer> {
 
     return getStateHandler(isNestedTree)
-        .initialStateContainer
+        .initialState
         .createOrGetInitialHookState(
             key,
             hookStateIndex,

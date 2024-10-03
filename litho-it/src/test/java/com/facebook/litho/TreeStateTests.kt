@@ -81,11 +81,11 @@ class TreeStateTests {
     val resolveState = treeState.resolveState
     val layoutStateHandler = treeState.layoutState
     if (isNestedTree) {
-      assertThat(resolveState.initialStateContainer.initialStates).isEmpty()
-      assertThat(layoutStateHandler.initialStateContainer.initialStates).isNotEmpty
+      assertThat(resolveState.initialState.initialStates).isEmpty()
+      assertThat(layoutStateHandler.initialState.initialStates).isNotEmpty
     } else {
-      assertThat(resolveState.initialStateContainer.initialStates).isNotEmpty
-      assertThat(layoutStateHandler.initialStateContainer.initialStates).isEmpty()
+      assertThat(resolveState.initialState.initialStates).isNotEmpty
+      assertThat(layoutStateHandler.initialState.initialStates).isEmpty()
     }
 
     // Unregister local tree state from ISC
@@ -93,10 +93,10 @@ class TreeStateTests {
     localTreeState.unregisterLayoutInitialState()
 
     // State containers in ISC should be cleared
-    assertThat(resolveState.initialStateContainer).isNotNull
-    assertThat(resolveState.initialStateContainer.initialStates).isEmpty()
-    assertThat(layoutStateHandler.initialStateContainer).isNotNull
-    assertThat(layoutStateHandler.initialStateContainer.initialStates).isEmpty()
+    assertThat(resolveState.initialState).isNotNull
+    assertThat(resolveState.initialState.initialStates).isEmpty()
+    assertThat(layoutStateHandler.initialState).isNotNull
+    assertThat(layoutStateHandler.initialState.initialStates).isEmpty()
   }
 
   @Test

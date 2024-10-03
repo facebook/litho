@@ -38,7 +38,7 @@ import javax.annotation.concurrent.GuardedBy
 class StateHandler {
 
   constructor(initialStateContainer: InitialStateContainer, stateHandler: StateHandler? = null) {
-    this.initialStateContainer = initialStateContainer
+    this.initialState = initialStateContainer
     if (stateHandler != null) {
       copyStateUpdatesMap(
           stateHandler.pendingStateUpdates,
@@ -56,7 +56,7 @@ class StateHandler {
   constructor(
       stateHandler: StateHandler? = null
   ) : this(
-      initialStateContainer = stateHandler?.initialStateContainer ?: InitialStateContainer(),
+      initialStateContainer = stateHandler?.initialState ?: InitialStateContainer(),
       stateHandler = stateHandler,
   )
 
@@ -100,7 +100,7 @@ class StateHandler {
   private val pendingHookUpdates: MutableMap<String, MutableList<HookUpdater>> = HashMap()
   private var appliedHookUpdates: MutableMap<String, List<HookUpdater>> = HashMap()
 
-  var initialStateContainer: InitialStateContainer
+  var initialState: InitialStateContainer
     private set
 
   @get:Synchronized
@@ -157,7 +157,7 @@ class StateHandler {
       current
     } else {
       val state =
-          initialStateContainer.createOrGetComponentState(
+          initialState.createOrGetComponentState(
               component,
               scopedContext,
               key,
@@ -211,7 +211,7 @@ class StateHandler {
     for ((key, _) in _pendingStateUpdates) {
       try {
         val current: ComponentState<StateContainer> =
-            (_stateContainers[key] ?: initialStateContainer.getInitialStateForComponent(key))
+            (_stateContainers[key] ?: initialState.getInitialStateForComponent(key))
                 as ComponentState<StateContainer>? ?: continue
 
         val currentValue: StateContainer = current.value
