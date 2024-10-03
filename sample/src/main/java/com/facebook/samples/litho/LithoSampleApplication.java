@@ -44,7 +44,6 @@ public class LithoSampleApplication extends Application {
     Fresco.initialize(this);
     FrescoVito.initialize();
     SoLoader.init(this, false);
-    ComposeTracer.initialize();
 
     if (FlipperUtils.shouldEnableFlipper(this)) {
       final FlipperClient client = AndroidFlipperClient.getInstance(this);
