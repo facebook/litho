@@ -20,9 +20,9 @@ import android.content.Context
 import androidx.annotation.VisibleForTesting
 import com.facebook.rendercore.extensions.RenderCoreExtension
 
-class LazyMeasureHostView(context: Context) : HostView(context), RenderCoreExtensionHost {
+open class LazyMeasureHostView(context: Context) : HostView(context), RenderCoreExtensionHost {
 
-  private val mountState: MountState = MountState(this)
+  protected open val mountState: MountState = MountState(this)
 
   private var lazyRenderTreeProvider: LazyRenderTreeProvider<Any?>? = null
   private var currentRenderResult: RenderResult<*, Any?>? = null
