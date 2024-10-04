@@ -20,7 +20,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.widget.TextView
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
-import com.facebook.litho.testing.LegacyLithoTestRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.MountSpecWithShouldUpdate
 import com.facebook.litho.widget.SimpleStateUpdateEmulator
@@ -38,7 +38,7 @@ import org.robolectric.shadows.ShadowLooper
 @RunWith(LithoTestRunner::class)
 class LayoutDiffingTest {
 
-  @JvmField @Rule var legacyLithoTestRule = LegacyLithoTestRule()
+  @JvmField @Rule var lithoTestRule = LithoTestRule()
 
   @JvmField @Rule var backgroundLayoutLooperRule = BackgroundLayoutLooperRule()
 
@@ -53,14 +53,11 @@ class LayoutDiffingTest {
     val stateUpdater = SimpleStateUpdateEmulatorSpec.Caller()
     val operations = ArrayList<LifecycleStep>()
     val firstObjectForShouldUpdate = Any()
-    legacyLithoTestRule
-        .setRoot(
-            createRootComponentWithStateUpdater(
-                legacyLithoTestRule.context, firstObjectForShouldUpdate, operations, stateUpdater))
-        .setSizePx(100, 100)
-        .measure()
-        .layout()
-        .attachToWindow()
+    val testLithoView =
+        lithoTestRule.render(widthPx = 100, heightPx = 100) {
+          createRootComponentWithStateUpdater(
+              lithoTestRule.context, firstObjectForShouldUpdate, operations, stateUpdater)
+        }
     assertThat(operations)
         .describedAs("Test setup, there should be an initial mount")
         .containsExactly(LifecycleStep.ON_MOUNT)
@@ -74,7 +71,7 @@ class LayoutDiffingTest {
 
     // Now drain the main thread queue and mount the result
     ShadowLooper.idleMainLooper()
-    legacyLithoTestRule.layout()
+    testLithoView.layout()
     assertThat(operations).isEmpty()
   }
 
@@ -82,30 +79,26 @@ class LayoutDiffingTest {
   fun layoutDiffing_multipleSetRootsInParallelWithShouldUpdateFalse_mountContentIsNotRemounted() {
     val operations = ArrayList<LifecycleStep>()
     val firstObjectForShouldUpdate = Any()
-    legacyLithoTestRule
-        .setRoot(
-            createRootComponent(
-                legacyLithoTestRule.context, firstObjectForShouldUpdate, operations))
-        .setSizePx(100, 100)
-        .measure()
-        .layout()
-        .attachToWindow()
+    val testLithoView =
+        lithoTestRule.render(widthPx = 100, heightPx = 100) {
+          createRootComponent(lithoTestRule.context, firstObjectForShouldUpdate, operations)
+        }
     assertThat(operations)
         .describedAs("Test setup, there should be an initial mount")
         .containsExactly(LifecycleStep.ON_MOUNT)
     operations.clear()
 
     // Do two prop updates sequentially without draining the main thread queue
-    legacyLithoTestRule.setRootAsync(
-        createRootComponent(legacyLithoTestRule.context, firstObjectForShouldUpdate, operations))
+    testLithoView.setRootAsync(
+        createRootComponent(lithoTestRule.context, firstObjectForShouldUpdate, operations))
     backgroundLayoutLooperRule.runToEndOfTasksSync()
-    legacyLithoTestRule.setRootAsync(
-        createRootComponent(legacyLithoTestRule.context, firstObjectForShouldUpdate, operations))
+    testLithoView.setRootAsync(
+        createRootComponent(lithoTestRule.context, firstObjectForShouldUpdate, operations))
     backgroundLayoutLooperRule.runToEndOfTasksSync()
 
     // Now drain the main thread queue and mount the result
     ShadowLooper.idleMainLooper()
-    legacyLithoTestRule.layout()
+    testLithoView.layout()
     assertThat(operations).isEmpty()
   }
 
@@ -119,29 +112,25 @@ class LayoutDiffingTest {
   fun layoutDiffing_multipleSetRootsInParallelWithShouldUpdateTrueForFirstLayout_mountContentIsRemounted() {
     val operations = ArrayList<LifecycleStep>()
     val firstObjectForShouldUpdate = Any()
-    legacyLithoTestRule
-        .setRoot(
-            createRootComponent(
-                legacyLithoTestRule.context, firstObjectForShouldUpdate, operations))
-        .setSizePx(100, 100)
-        .measure()
-        .layout()
-        .attachToWindow()
+    val testLithoView =
+        lithoTestRule.render(widthPx = 100, heightPx = 100) {
+          createRootComponent(lithoTestRule.context, firstObjectForShouldUpdate, operations)
+        }
     assertThat(operations).containsExactly(LifecycleStep.ON_MOUNT)
     operations.clear()
     val secondObjectForShouldUpdate = Any()
 
     // Do two prop updates sequentially without draining the main thread queue
-    legacyLithoTestRule.setRootAsync(
-        createRootComponent(legacyLithoTestRule.context, secondObjectForShouldUpdate, operations))
+    testLithoView.setRootAsync(
+        createRootComponent(lithoTestRule.context, secondObjectForShouldUpdate, operations))
     backgroundLayoutLooperRule.runToEndOfTasksSync()
-    legacyLithoTestRule.setRootAsync(
-        createRootComponent(legacyLithoTestRule.context, secondObjectForShouldUpdate, operations))
+    testLithoView.setRootAsync(
+        createRootComponent(lithoTestRule.context, secondObjectForShouldUpdate, operations))
     backgroundLayoutLooperRule.runToEndOfTasksSync()
 
     // Now drain the main thread queue and mount the result
     ShadowLooper.idleMainLooper()
-    legacyLithoTestRule.layout()
+    testLithoView.layout()
 
     // In this case, we did change the object for shouldUpdate in layout 1 even though
     // it was the same for layouts 2. We expect to see unmount and mount.
@@ -153,29 +142,25 @@ class LayoutDiffingTest {
   fun layoutDiffing_multipleSetRootsInParallelWithShouldUpdateTrueForSecondLayout_mountContentIsRemounted() {
     val operations = ArrayList<LifecycleStep>()
     val firstObjectForShouldUpdate = Any()
-    legacyLithoTestRule
-        .setRoot(
-            createRootComponent(
-                legacyLithoTestRule.context, firstObjectForShouldUpdate, operations))
-        .setSizePx(100, 100)
-        .measure()
-        .layout()
-        .attachToWindow()
+    val testLithoView =
+        lithoTestRule.render(widthPx = 100, heightPx = 100) {
+          createRootComponent(lithoTestRule.context, firstObjectForShouldUpdate, operations)
+        }
     assertThat(operations).containsExactly(LifecycleStep.ON_MOUNT)
     operations.clear()
     val secondObjectForShouldUpdate = Any()
 
     // Do two prop updates sequentially without draining the main thread queue
-    legacyLithoTestRule.setRootAsync(
-        createRootComponent(legacyLithoTestRule.context, firstObjectForShouldUpdate, operations))
+    testLithoView.setRootAsync(
+        createRootComponent(lithoTestRule.context, firstObjectForShouldUpdate, operations))
     backgroundLayoutLooperRule.runToEndOfTasksSync()
-    legacyLithoTestRule.setRootAsync(
-        createRootComponent(legacyLithoTestRule.context, secondObjectForShouldUpdate, operations))
+    testLithoView.setRootAsync(
+        createRootComponent(lithoTestRule.context, secondObjectForShouldUpdate, operations))
     backgroundLayoutLooperRule.runToEndOfTasksSync()
 
     // Now drain the main thread queue and mount the result
     ShadowLooper.idleMainLooper()
-    legacyLithoTestRule.layout()
+    testLithoView.layout()
 
     // Similar to the previous test, but the object changes on the second layout instead.
     assertThat(operations).containsExactly(LifecycleStep.ON_UNMOUNT, LifecycleStep.ON_MOUNT)
@@ -183,13 +168,13 @@ class LayoutDiffingTest {
 
   @Test
   fun whenStateUpdateOnPureRenderMountSpec_shouldRemountItem() {
-    val c = legacyLithoTestRule.context
+    val c = lithoTestRule.context
     val component =
         Column.create(c)
             .child(TextViewCounter.create(c).viewWidth(200).viewHeight(200).build())
             .build()
-    legacyLithoTestRule.attachToWindow().setRoot(component).measure().layout()
-    val view = legacyLithoTestRule.lithoView.getChildAt(0)
+    val testLithoView = lithoTestRule.render { component }
+    val view = testLithoView.lithoView.getChildAt(0)
     assertThat(view).isNotNull
     assertThat(view).isInstanceOf(TextView::class.java)
     assertThat((view as TextView).text).isEqualTo("0")
@@ -199,7 +184,7 @@ class LayoutDiffingTest {
 
   @Test
   fun onSetRootWithSameComponent_thenShouldNotRemeasureMountSpec() {
-    val c = legacyLithoTestRule.context
+    val c = lithoTestRule.context
     val operations = ArrayList<LifecycleStep>()
     val objectForShouldUpdate = Any()
     val component =
@@ -216,16 +201,16 @@ class LayoutDiffingTest {
                             .objectForShouldUpdate(objectForShouldUpdate)
                             .operationsOutput(operations)))
             .build()
-    legacyLithoTestRule.attachToWindow().setRoot(component).measure().layout()
+    val testLithoView = lithoTestRule.render { component }
     assertThat(operations).containsExactly(LifecycleStep.ON_MEASURE, LifecycleStep.ON_MOUNT)
     operations.clear()
-    legacyLithoTestRule.attachToWindow().setRoot(component).measure().layout()
+    testLithoView.attachToWindow().setRoot(component).measure().layout()
     assertThat(operations).isEmpty()
   }
 
   @Test
   fun onSetRootWithSimilarComponent_thenShouldNotRemeasureMountSpec() {
-    val c = legacyLithoTestRule.context
+    val c = lithoTestRule.context
     val operations = ArrayList<LifecycleStep>()
     val objectForShouldUpdate = Any()
     val component =
@@ -242,7 +227,7 @@ class LayoutDiffingTest {
                             .objectForShouldUpdate(objectForShouldUpdate)
                             .operationsOutput(operations)))
             .build()
-    legacyLithoTestRule.attachToWindow().setRoot(component).measure().layout()
+    val testLithoView = lithoTestRule.render { component }
     assertThat(operations).containsExactly(LifecycleStep.ON_MEASURE, LifecycleStep.ON_MOUNT)
     operations.clear()
     val next =
@@ -259,13 +244,13 @@ class LayoutDiffingTest {
                             .objectForShouldUpdate(objectForShouldUpdate)
                             .operationsOutput(operations)))
             .build()
-    legacyLithoTestRule.attachToWindow().setRoot(next).measure().layout()
+    testLithoView.attachToWindow().setRoot(next).measure().layout()
     assertThat(operations).isEmpty()
   }
 
   @Test
   fun onSetRootWithSimilarComponentWithShouldUpdateTrue_thenShouldRemeasureMountSpec() {
-    val c = legacyLithoTestRule.context
+    val c = lithoTestRule.context
     val operations = ArrayList<LifecycleStep>()
     val objectForShouldUpdate = Any()
     val component =
@@ -282,7 +267,7 @@ class LayoutDiffingTest {
                             .objectForShouldUpdate(objectForShouldUpdate)
                             .operationsOutput(operations)))
             .build()
-    legacyLithoTestRule.attachToWindow().setRoot(component).measure().layout()
+    val testLithoView = lithoTestRule.render { component }
     assertThat(operations).containsExactly(LifecycleStep.ON_MEASURE, LifecycleStep.ON_MOUNT)
     operations.clear()
     val next =
@@ -299,7 +284,7 @@ class LayoutDiffingTest {
                             .objectForShouldUpdate(Any())
                             .operationsOutput(operations)))
             .build()
-    legacyLithoTestRule.attachToWindow().setRoot(next).measure().layout()
+    testLithoView.attachToWindow().setRoot(next).measure().layout()
     assertThat(operations)
         .containsExactly(LifecycleStep.ON_MEASURE, LifecycleStep.ON_UNMOUNT, LifecycleStep.ON_MOUNT)
   }
