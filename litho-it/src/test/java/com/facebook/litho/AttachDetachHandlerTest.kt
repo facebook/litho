@@ -17,11 +17,8 @@
 package com.facebook.litho
 
 import android.os.Looper
-import android.os.Looper.getMainLooper
-import com.facebook.litho.SizeSpec.EXACTLY
-import com.facebook.litho.SizeSpec.makeSizeSpec
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
-import com.facebook.litho.testing.LegacyLithoTestRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.AttachDetachTester
 import com.facebook.litho.widget.AttachDetachTesterSpec
@@ -40,21 +37,19 @@ import org.robolectric.annotation.LooperMode
 @RunWith(LithoTestRunner::class)
 class AttachDetachHandlerTest {
 
-  @JvmField @Rule val legacyLithoTestRule = LegacyLithoTestRule()
+  @JvmField @Rule val lithoTestRule = LithoTestRule()
 
   @JvmField @Rule var backgroundLayoutLooperRule = BackgroundLayoutLooperRule()
 
   @Test
   fun component_setRootWithLayout_onAttachedIsCalled() {
     val steps: List<String> = ArrayList()
-    val root =
-        AttachDetachTester.create(legacyLithoTestRule.context).name("root").steps(steps).build()
-    legacyLithoTestRule.setRoot(root)
-    legacyLithoTestRule.attachToWindow().measure().layout()
+    val root = AttachDetachTester.create(lithoTestRule.context).name("root").steps(steps).build()
+    val testLithoView = lithoTestRule.render { root }
     assertThat(steps)
         .describedAs("Should call @OnAttached method")
         .containsExactly("root:${AttachDetachTesterSpec.ON_ATTACHED}")
-    val attachDetachHandler = legacyLithoTestRule.componentTree.attachDetachHandler
+    val attachDetachHandler = testLithoView.componentTree.attachDetachHandler
     val currentAttached = attachDetachHandler?.attached ?: error("Should not be null")
 
     assertThat(currentAttached.size).isEqualTo(1)
@@ -63,15 +58,13 @@ class AttachDetachHandlerTest {
   @Test
   fun component_setEmptyRootAfterAttach_onDetachedIsCalled() {
     val steps: MutableList<String> = ArrayList()
-    val root =
-        AttachDetachTester.create(legacyLithoTestRule.context).name("root").steps(steps).build()
-    legacyLithoTestRule.setRoot(root)
-    legacyLithoTestRule.attachToWindow().measure().layout()
+    val root = AttachDetachTester.create(lithoTestRule.context).name("root").steps(steps).build()
+    val testLithoView = lithoTestRule.render { root }
     assertThat(steps)
         .describedAs("Should call @OnAttached method")
         .containsExactly("root:${AttachDetachTesterSpec.ON_ATTACHED}")
     steps.clear()
-    legacyLithoTestRule.setRoot(Column.create(legacyLithoTestRule.context).build())
+    testLithoView.setRoot(Column.create(lithoTestRule.context).build())
     assertThat(steps)
         .describedAs("Should call @OnDetached method")
         .containsExactly("root:${AttachDetachTesterSpec.ON_DETACHED}")
@@ -80,13 +73,11 @@ class AttachDetachHandlerTest {
   @Test
   fun component_releaseLithoView_onDetachedIsCalled() {
     val steps: MutableList<String> = ArrayList()
-    val root =
-        AttachDetachTester.create(legacyLithoTestRule.context).name("root").steps(steps).build()
-    legacyLithoTestRule.setRoot(root)
-    legacyLithoTestRule.attachToWindow().measure().layout()
-    val attachDetachHandler = legacyLithoTestRule.componentTree.attachDetachHandler
+    val root = AttachDetachTester.create(lithoTestRule.context).name("root").steps(steps).build()
+    val testLithoView = lithoTestRule.render { root }
+    val attachDetachHandler = testLithoView.componentTree.attachDetachHandler
     steps.clear()
-    legacyLithoTestRule.release()
+    testLithoView.release()
     assertThat(steps)
         .describedAs("Should call @OnDetached method")
         .containsExactly("root:${AttachDetachTesterSpec.ON_DETACHED}")
@@ -95,15 +86,14 @@ class AttachDetachHandlerTest {
 
   @Test
   fun component_replaceRootWithSameComponent_onDetachedIsNotCalled() {
-    val c = legacyLithoTestRule.context
+    val c = lithoTestRule.context
     val c3 = AttachDetachTester.create(c).name("c3")
     val c4 = AttachDetachTester.create(c).name("c4")
     val c1 = AttachDetachTester.create(c).name("c1").children(listOf(c3, c4))
     val c2 = AttachDetachTester.create(c).name("c2")
     val steps: MutableList<String> = ArrayList()
     val r1 = AttachDetachTester.create(c).children(listOf(c1, c2)).name("r1").steps(steps).build()
-    legacyLithoTestRule.setRoot(r1)
-    legacyLithoTestRule.attachToWindow().measure().layout()
+    val testLithoView = lithoTestRule.render { r1 }
     assertThat(steps)
         .describedAs("Should call @OnAttached methods in expected order")
         .containsExactly(
@@ -112,7 +102,7 @@ class AttachDetachHandlerTest {
             "c1:${AttachDetachTesterSpec.ON_ATTACHED}",
             "c2:${AttachDetachTesterSpec.ON_ATTACHED}",
             "r1:${AttachDetachTesterSpec.ON_ATTACHED}")
-    val attachDetachHandler = legacyLithoTestRule.componentTree.attachDetachHandler
+    val attachDetachHandler = testLithoView.componentTree.attachDetachHandler
     var currentAttached = attachDetachHandler?.attached ?: error("Should not be null")
     assertThat(currentAttached.size).isEqualTo(5)
     steps.clear()
@@ -128,7 +118,7 @@ class AttachDetachHandlerTest {
     val c7 = AttachDetachTester.create(c).name("c7")
     val c6 = AttachDetachTester.create(c).name("c6").children(listOf(c7))
     val r2 = AttachDetachTester.create(c).children(listOf(c5, c6)).name("r2").steps(steps).build()
-    legacyLithoTestRule.setRoot(r2)
+    testLithoView.setRoot(r2)
     assertThat(steps)
         .describedAs("Should call @OnDetached and @OnAttached methods in expect order")
         .containsExactly(
@@ -149,7 +139,7 @@ class AttachDetachHandlerTest {
     */
     val c8 = AttachDetachTester.create(c).name("c8")
     val r3 = AttachDetachTester.create(c).children(listOf(c8)).name("r3").steps(steps).build()
-    legacyLithoTestRule.setRoot(r3)
+    testLithoView.setRoot(r3)
     assertThat(steps)
         .describedAs("Should call @OnDetached methods in expect order")
         .containsExactly(
@@ -161,15 +151,14 @@ class AttachDetachHandlerTest {
 
   @Test
   fun component_replaceRootWithDifferentComponent_onDetachedIsNotCalled() {
-    val c = legacyLithoTestRule.context
+    val c = lithoTestRule.context
     val c3 = AttachDetachTester.create(c).name("c3")
     val c4 = AttachDetachTester.create(c).name("c4")
     val c1 = AttachDetachTester.create(c).name("c1").children(listOf(c3, c4))
     val c2 = AttachDetachTester.create(c).name("c2")
     val steps: MutableList<String> = ArrayList()
     val r1 = AttachDetachTester.create(c).children(listOf(c1, c2)).name("r1").steps(steps).build()
-    legacyLithoTestRule.setRoot(r1)
-    legacyLithoTestRule.attachToWindow().measure().layout()
+    val testLithoView = lithoTestRule.render { r1 }
     assertThat(steps)
         .describedAs("Should call @OnAttached methods in expected order")
         .containsExactly(
@@ -178,7 +167,7 @@ class AttachDetachHandlerTest {
             "c1:${AttachDetachTesterSpec.ON_ATTACHED}",
             "c2:${AttachDetachTesterSpec.ON_ATTACHED}",
             "r1:${AttachDetachTesterSpec.ON_ATTACHED}")
-    val attachDetachHandler = legacyLithoTestRule.componentTree.attachDetachHandler
+    val attachDetachHandler = testLithoView.componentTree.attachDetachHandler
     var currentAttached = attachDetachHandler?.attached ?: error("Should not be null")
 
     assertThat(currentAttached.size).isEqualTo(5)
@@ -201,7 +190,7 @@ class AttachDetachHandlerTest {
             .key("newKey")
             .steps(steps)
             .build()
-    legacyLithoTestRule.setRoot(r2)
+    testLithoView.setRoot(r2)
     assertThat(steps)
         .describedAs("Should call @OnDetached and @OnAttached methods in expect order")
         .containsExactly(
@@ -215,23 +204,19 @@ class AttachDetachHandlerTest {
             "c6:${AttachDetachTesterSpec.ON_ATTACHED}",
             "r2:${AttachDetachTesterSpec.ON_ATTACHED}")
 
-    currentAttached = attachDetachHandler?.attached ?: error("Should not be null")
+    currentAttached = attachDetachHandler.attached ?: error("Should not be null")
     assertThat(currentAttached.size).isEqualTo(4)
   }
 
   @Test
   fun component_setRootAndSizeSpecTwice_onAttachAndOnDetachedAreCalledOnlyOnce() {
-    val c = legacyLithoTestRule.context
+    val c = lithoTestRule.context
     val steps: MutableList<String> = ArrayList()
     val c1 = AttachDetachTester.create(c).name("c1")
     val component =
         AttachDetachTester.create(c).name("root").steps(steps).children(listOf(c1)).build()
-    legacyLithoTestRule.setRootAndSizeSpecSync(
-        component,
-        SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
-        SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY))
-    legacyLithoTestRule.attachToWindow().measure().layout()
-    legacyLithoTestRule.setRootAndSizeSpecSync(
+    val testLithoView = lithoTestRule.render(widthPx = 100, heightPx = 100) { component }
+    testLithoView.setRootAndSizeSpecSync(
         component,
         SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
         SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY))
@@ -241,7 +226,7 @@ class AttachDetachHandlerTest {
             "c1:${AttachDetachTesterSpec.ON_ATTACHED}",
             "root:${AttachDetachTesterSpec.ON_ATTACHED}")
     steps.clear()
-    legacyLithoTestRule.release()
+    testLithoView.release()
     assertThat(steps)
         .describedAs("Should call @OnDetached only once for each component")
         .containsExactly(
@@ -251,12 +236,13 @@ class AttachDetachHandlerTest {
 
   @Test
   fun component_setRootAndSizeSpecConcurrently_onAttachAndOnDetachedAreCalledOnlyOnce() {
-    val c = legacyLithoTestRule.context
+    val c = lithoTestRule.context
     val steps: List<String> = ArrayList()
     val c1 = AttachDetachTester.create(c).name("c1")
     val component =
         AttachDetachTester.create(c).name("root").steps(steps).children(listOf(c1)).build()
-    val componentTree = legacyLithoTestRule.componentTree
+    val testLithoView = lithoTestRule.createTestLithoView()
+    val componentTree = testLithoView.componentTree
     val latch1 = CountDownLatch(1)
     val thread1 = Thread {
       for (i in 0..9) {
@@ -294,17 +280,16 @@ class AttachDetachHandlerTest {
     val steps: List<String> = ArrayList()
     val extraThreadInfo = ConcurrentHashMap<String, Any>()
     val root =
-        AttachDetachTester.create(legacyLithoTestRule.context)
+        AttachDetachTester.create(lithoTestRule.context)
             .name("root")
             .steps(steps)
             .extraThreadInfo(extraThreadInfo)
             .build()
-    legacyLithoTestRule.attachToWindow().measure().layout()
-    legacyLithoTestRule.setRoot(root)
+    val testLithoView = lithoTestRule.render { root }
     assertThat(steps)
         .describedAs("Should call @OnAttached method")
         .containsExactly("root:${AttachDetachTesterSpec.ON_ATTACHED}")
-    val attachDetachHandler = legacyLithoTestRule.componentTree.attachDetachHandler
+    val attachDetachHandler = testLithoView.componentTree.attachDetachHandler
     val currentAttached = attachDetachHandler?.attached ?: error("Should not be null")
     assertThat(currentAttached.size).isEqualTo(1)
     val isMainThreadLayout =
@@ -320,19 +305,18 @@ class AttachDetachHandlerTest {
     val steps: List<String> = ArrayList()
     val extraThreadInfo = ConcurrentHashMap<String, Any>()
     val root =
-        AttachDetachTester.create(legacyLithoTestRule.context)
+        AttachDetachTester.create(lithoTestRule.context)
             .name("root")
             .steps(steps)
             .extraThreadInfo(extraThreadInfo)
             .build()
-    legacyLithoTestRule.attachToWindow().measure().layout()
-    legacyLithoTestRule.setRootAsync(root)
-    backgroundLayoutLooperRule.runToEndOfTasksSync()
-    Shadows.shadowOf(Looper.getMainLooper()).idle()
+    val testLithoView = lithoTestRule.createTestLithoView().measure().layout()
+    testLithoView.setRootAsync(root)
+    lithoTestRule.idle()
     assertThat(steps)
         .describedAs("Should call @OnAttached method")
         .containsExactly("root:${AttachDetachTesterSpec.ON_ATTACHED}")
-    val attachDetachHandler = legacyLithoTestRule.componentTree.attachDetachHandler
+    val attachDetachHandler = testLithoView.componentTree.attachDetachHandler
     val currentAttached = attachDetachHandler?.attached ?: error("Should not be null")
     assertThat(currentAttached.size).isEqualTo(1)
     val isMainThreadLayout =
