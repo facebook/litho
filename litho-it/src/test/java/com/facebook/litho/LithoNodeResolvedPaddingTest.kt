@@ -16,7 +16,7 @@
 
 package com.facebook.litho
 
-import com.facebook.litho.testing.LegacyLithoTestRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.yoga.YogaDirection
 import com.facebook.yoga.YogaEdge
@@ -29,12 +29,12 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class LithoNodeResolvedPaddingTest {
 
-  @JvmField @Rule val legacyLithoTestRule = LegacyLithoTestRule()
+  @JvmField @Rule val lithoTestRule = LithoTestRule()
   private lateinit var builder: Component.Builder<*>
 
   @Before
   fun setup() {
-    val context = legacyLithoTestRule.context
+    val context = lithoTestRule.context
     builder = Column.create(context)
   }
 
@@ -49,12 +49,7 @@ class LithoNodeResolvedPaddingTest {
   }
 
   private fun calculateLayout(): LithoLayoutResult? =
-      legacyLithoTestRule
-          .attachToWindow()
-          .setRoot(builder.build())
-          .measure()
-          .layout()
-          .currentRootNode
+      lithoTestRule.render { builder.build() }.currentRootNode
 
   @Test
   fun testPaddingLeftWithUndefinedStartEnd() {
