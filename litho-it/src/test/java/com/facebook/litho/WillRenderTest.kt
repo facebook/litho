@@ -20,7 +20,7 @@ import android.content.Context
 import android.view.View
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.LifecycleStep.StepInfo
-import com.facebook.litho.testing.LegacyLithoTestRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.assertj.LithoAssertions
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -40,7 +40,7 @@ import org.robolectric.annotation.LooperMode
 @RunWith(LithoTestRunner::class)
 class WillRenderTest {
 
-  @JvmField @Rule val legacyLithoTestRule: LegacyLithoTestRule = LegacyLithoTestRule()
+  @JvmField @Rule val lithoTestRule = LithoTestRule()
   @JvmField @Rule val expectedException = ExpectedException.none()
 
   private val nonNullSpec: InlineLayoutSpec =
@@ -65,21 +65,17 @@ class WillRenderTest {
 
   @Test
   fun testWillRenderForComponentThatReturnsNull() {
-    val c = legacyLithoTestRule.context
-    legacyLithoTestRule
-        .attachToWindow()
-        .setRoot(Wrapper.create(c).delegate(null))
-        .layout()
-        .measure()
-    assertThat(legacyLithoTestRule.committedLayoutState?.root).isNull()
+    val c = lithoTestRule.context
+    val testLithoView = lithoTestRule.render { Wrapper.create(c).delegate(null).build() }
+    assertThat(testLithoView.committedLayoutState?.root).isNull()
   }
 
   @Test
   fun testWillRenderForComponentThatReturnsNonNull() {
-    val c = legacyLithoTestRule.context
+    val c = lithoTestRule.context
     c.setRenderStateContextForTests()
-    legacyLithoTestRule.setRoot(Wrapper.create(c).delegate(nonNullSpec).build())
-    LithoAssertions.assertThat(legacyLithoTestRule.lithoView).willRenderContent()
+    val testLithoView = lithoTestRule.render { Wrapper.create(c).delegate(nonNullSpec).build() }
+    LithoAssertions.assertThat(testLithoView.lithoView).willRenderContent()
   }
 
   @Test
@@ -101,10 +97,8 @@ class WillRenderTest {
   @Test
   fun testWillRender_cachedLayoutUsedInDifferentComponentHierarchy() {
     val info: List<StepInfo> = ArrayList<StepInfo>()
-    val component =
-        LayoutSpecWillRenderTester.create(legacyLithoTestRule.context).steps(info).build()
-    legacyLithoTestRule.setRoot(component)
-    legacyLithoTestRule.attachToWindow().measure().layout()
+    val component = LayoutSpecWillRenderTester.create(lithoTestRule.context).steps(info).build()
+    lithoTestRule.render { component }
     assertThat(LifecycleStep.getSteps(info))
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
@@ -119,9 +113,8 @@ class WillRenderTest {
   fun testWillRender_cachedLayoutUsedInSameComponentHierarchy() {
     val info: List<StepInfo> = ArrayList<StepInfo>()
     val component =
-        LayoutSpecWillRenderReuseTester.create(legacyLithoTestRule.context).steps(info).build()
-    legacyLithoTestRule.setRoot(component)
-    legacyLithoTestRule.attachToWindow().measure().layout()
+        LayoutSpecWillRenderReuseTester.create(lithoTestRule.context).steps(info).build()
+    lithoTestRule.render { component }
     assertThat(LifecycleStep.getSteps(info))
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
