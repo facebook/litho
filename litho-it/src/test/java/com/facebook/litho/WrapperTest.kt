@@ -16,7 +16,7 @@
 
 package com.facebook.litho
 
-import com.facebook.litho.testing.LegacyLithoTestRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
@@ -25,12 +25,12 @@ import org.junit.runner.RunWith
 
 @RunWith(LithoTestRunner::class)
 class WrapperTest {
-  @JvmField @Rule var legacyLithoTestRule = LegacyLithoTestRule()
+  @JvmField @Rule var lithoTestRule = LithoTestRule()
 
   @Test
   fun testWrapperWithNullComponentReturnsNullLayout() {
-    val c = legacyLithoTestRule.context
+    val c = lithoTestRule.context
     val wrapper = Wrapper.create(c).delegate(null).build()
-    assertThat(LegacyLithoTestRule.getRootLayout(legacyLithoTestRule, wrapper)).isNull()
+    assertThat(lithoTestRule.render { wrapper }.currentRootNode).isNull()
   }
 }
