@@ -16,7 +16,7 @@
 
 package com.facebook.litho
 
-import androidx.compose.ui.platform.ComposeView
+import com.facebook.compose.view.MetaComposeView
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.primitives.LayoutBehavior
 import com.facebook.rendercore.primitives.LayoutScope
@@ -60,8 +60,8 @@ class ComposeComponent(
 
                   withDescription("composeComponentContentBinder") {
                     bind(composable) { content ->
-                      content.setContent { composable.content() }
-                      onUnbind { content.setContent {} }
+                      content.setContentWithReuse { composable.content() }
+                      onUnbind { content.deactivate() }
                     }
                   }
                 },
@@ -70,7 +70,9 @@ class ComposeComponent(
 
   companion object {
     @JvmField
-    val ALLOCATOR: ViewAllocator<ComposeView> = ViewAllocator { context -> ComposeView(context) }
+    val ALLOCATOR: ViewAllocator<MetaComposeView> = ViewAllocator { context ->
+      MetaComposeView(context)
+    }
   }
 }
 

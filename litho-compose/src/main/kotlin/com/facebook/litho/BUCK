@@ -42,6 +42,7 @@ litho_android_library(
     ],
     deps = [
         "//fbandroid/libraries/components/litho-widget/src/main/java/com/facebook/litho/widget:widget-bare",
+        "//fbandroid/libraries/compose/view:view",
         LITHO_KOTLIN_STDLIB_TARGET,
         LITHO_COMPOSE_FOUNDATION_TARGET,
         LITHO_COMPOSE_RUNTIME_TARGET,

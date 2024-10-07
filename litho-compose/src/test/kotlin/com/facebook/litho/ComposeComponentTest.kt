@@ -25,7 +25,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.ComposeView
+import com.facebook.compose.view.MetaComposeView
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import org.assertj.core.api.Assertions.assertThat
@@ -73,8 +73,8 @@ class ComposeComponentTest {
 
     assertThat(rendered).isTrue()
 
-    assertThat(testView.lithoView.getChildAt(0)).isInstanceOf(ComposeView::class.java)
-    val composeView = testView.lithoView.getChildAt(0) as ComposeView
+    assertThat(testView.lithoView.getChildAt(0)).isInstanceOf(MetaComposeView::class.java)
+    val composeView = testView.lithoView.getChildAt(0) as MetaComposeView
 
     assertThat(composeView.hasComposition).isTrue()
 
@@ -291,8 +291,8 @@ class ComposeComponentTest {
           TestComponent(contentType = TEST_COMPONENT_CONTENT_TYPE)
         }
 
-    assertThat(testViewFirst.lithoView.getChildAt(0)).isInstanceOf(ComposeView::class.java)
-    val composeViewFirst = testViewFirst.lithoView.getChildAt(0) as ComposeView
+    assertThat(testViewFirst.lithoView.getChildAt(0)).isInstanceOf(MetaComposeView::class.java)
+    val composeViewFirst = testViewFirst.lithoView.getChildAt(0) as MetaComposeView
 
     // unmount and return the view to the pool
     testViewFirst.lithoView.unmountAllItems()
@@ -303,8 +303,8 @@ class ComposeComponentTest {
           TestComponent(contentType = TEST_COMPONENT_CONTENT_TYPE)
         }
 
-    assertThat(testViewSecond.lithoView.getChildAt(0)).isInstanceOf(ComposeView::class.java)
-    val composeViewSecond = testViewSecond.lithoView.getChildAt(0) as ComposeView
+    assertThat(testViewSecond.lithoView.getChildAt(0)).isInstanceOf(MetaComposeView::class.java)
+    val composeViewSecond = testViewSecond.lithoView.getChildAt(0) as MetaComposeView
 
     // instances should be the same because content type is the same
     assertThat(composeViewFirst).isSameAs(composeViewSecond)
@@ -326,8 +326,8 @@ class ComposeComponentTest {
           TestComponent(contentType = TEST_COMPONENT_CONTENT_TYPE)
         }
 
-    assertThat(testViewFirst.lithoView.getChildAt(0)).isInstanceOf(ComposeView::class.java)
-    val composeViewFirst = testViewFirst.lithoView.getChildAt(0) as ComposeView
+    assertThat(testViewFirst.lithoView.getChildAt(0)).isInstanceOf(MetaComposeView::class.java)
+    val composeViewFirst = testViewFirst.lithoView.getChildAt(0) as MetaComposeView
 
     // unmount and return the view to the pool
     testViewFirst.lithoView.unmountAllItems()
@@ -338,8 +338,8 @@ class ComposeComponentTest {
           TestComponent(contentType = OTHER_TEST_COMPONENT_CONTENT_TYPE)
         }
 
-    assertThat(testViewSecond.lithoView.getChildAt(0)).isInstanceOf(ComposeView::class.java)
-    val composeViewSecond = testViewSecond.lithoView.getChildAt(0) as ComposeView
+    assertThat(testViewSecond.lithoView.getChildAt(0)).isInstanceOf(MetaComposeView::class.java)
+    val composeViewSecond = testViewSecond.lithoView.getChildAt(0) as MetaComposeView
 
     // instances should be different because content type is different
     assertThat(composeViewFirst).isNotSameAs(composeViewSecond)

@@ -24,29 +24,29 @@ package com.facebook.litho
 
 import android.app.Activity
 import android.view.ViewGroup
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.findViewTreeCompositionContext
 import androidx.compose.ui.platform.windowRecomposer
+import com.facebook.compose.view.MetaComposeView
 
 /**
  * Compose requires CompositionContext to be present when initial composition is executed, otherwise
  * it'll throw an exception. Compose looks for CompositionContext by walking up the View hierarchy
- * so it requires ComposeView to be attached when initial composition is performed. Litho sometimes
- * measures the content view before it's attached to the window and ComposeView.measure will perform
- * initial composition in case it hasn't been performed before.
+ * so it requires MetaComposeView to be attached when initial composition is performed. Litho
+ * sometimes measures the content view before it's attached to the window and
+ * MetaComposeView.measure will perform initial composition in case it hasn't been performed before.
  *
  * In order to prevent that crash from happening, we need to ensure that CompositionContext is
- * always present during initial composition, even if Litho measures ComposeView without attaching
- * it to the window.
+ * always present during initial composition, even if Litho measures MetaComposeView without
+ * attaching it to the window.
  */
 internal object CompositionContextHelper {
 
   /**
-   * Ensures that [ComposeView] has CompositionContext set.
+   * Ensures that [MetaComposeView] has CompositionContext set.
    *
    * @return returns true if custom CompositionContext was set, false otherwise.
    */
-  fun bind(content: ComposeView, activity: Activity): Boolean {
+  fun bind(content: MetaComposeView, activity: Activity): Boolean {
     return if (!content.isAttachedToWindow) {
       val ancestorViewInWindow =
           activity.findViewById<ViewGroup>(android.R.id.content).getChildAt(0)
@@ -62,7 +62,7 @@ internal object CompositionContextHelper {
   }
 
   /** Unsets the custom CompositionContext set by [bind]. */
-  fun unbind(content: ComposeView, shouldReset: Boolean) {
+  fun unbind(content: MetaComposeView, shouldReset: Boolean) {
     if (shouldReset) {
       content.setParentCompositionContext(null)
     }
