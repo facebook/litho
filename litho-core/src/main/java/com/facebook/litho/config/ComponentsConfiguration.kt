@@ -138,7 +138,7 @@ internal constructor(
      * This will unset TPs from the CT's context, and use the one present in the CT directly as the
      * ultimate source of truth.
      */
-    @JvmField val useComponentTreePropContainerAsSourceOfTruth: Boolean = false,
+    @JvmField val useComponentTreePropContainerAsSourceOfTruth: Boolean = true,
     @JvmField val componentEqualityMode: ComponentEqualityMode = ComponentEqualityMode.DEFAULT,
 
     /**
