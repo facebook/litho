@@ -6,6 +6,21 @@ _release-date_
 
 * [NEW] Add new `useFirstDrawReporter` hook together with `Style.reportFirstContentDraw` for executing actions when related Component is fully rendered on the screen. Can be used to mark the end of TTRC or TTI markers.
 
+## Version 0.50.2
+_2024-10-07_
+
+* Accessibility API Improvements.
+* Numerous bug fixes.
+
+For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.50.1...v0.50.2).
+
+## Version 0.50.1
+_2024-07-10_
+
+* Update the Barebones sample version
+
+For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.50.0...v0.50.1).
+
 ## Version 0.50.0
 _2024-07-10_
 
