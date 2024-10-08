@@ -49,7 +49,7 @@ class UserFeedWithStoriesKComponent(
                 usersWithStories.forEach { user -> child(StoryKComponent(user = user)) }
               })
 
-      child(Row(style = Style.height(1.px).backgroundColor(0x22888888)))
+      child(Row(gap = 200, style = Style.height(1.px).backgroundColor(0x22888888)))
 
       posts.forEach { post ->
         child(id = post.id, component = PostWithActionsKComponent(post = post))
