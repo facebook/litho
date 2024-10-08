@@ -63,8 +63,8 @@
   <div class="cover ">
     <h1 class="cover"><span>On</span><wbr><span>Create</span><wbr><span>Mount</span><wbr><span>Content</span><wbr><span><span>Pool</span></span></h1>
     <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-annotations:dokkaHtmlPartial/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/Retention.html"><span class="token annotation builtin">Retention</span></a><span class="token punctuation">(</span><span>value<span class="token operator"> = </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/RetentionPolicy.html">RetentionPolicy.SOURCE</a></span><wbr><span class="token punctuation">)</span></div></div><span class="token keyword">annotation class </span><a href="index.html">OnCreateMountContentPool</a></div><p class="paragraph">The annotated method will be called to create a custom MountContentPool for this mount spec. If a method with this annotation isn't provided, a DefaultMountContentPool will be used to recycle the mount content of this mount spec, which is almost always sufficient. </p><p class="paragraph">For example: </p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">@OnCreateMountContentPool
-  static MountItemsPool.ItemPool OnCreateMountContentPool(int poolSizeOverride) {
-    return new MountItemsPool.ItemPool(poolSizeOverride);
+  static MountContentPools.ContentPool OnCreateMountContentPool(int poolSizeOverride) {
+    return new MountContentPools.ContentPool(poolSizeOverride);
   }
 </code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
   </div>

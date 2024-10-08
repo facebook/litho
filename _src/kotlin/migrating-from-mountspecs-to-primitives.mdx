@@ -645,7 +645,7 @@ class FooComponent: PrimitiveComponent() {
 
 ### Pre-filling content pool
 
-Content can be manually pre-filled ahead of time using one of the methods from `MountItemsPool`, such as `prefillMountContentPool`. For MountSpec API the Component instance should be passed as the `ContentAllocator` parameter. In Primitive Components API a `ViewAllocator`/`DrawableAllocator` should be passed instead. In order to do that, the allocator can be defined inside of a `companion object` which will allow for accessing it without creating an instance of the Component.
+Content can be manually pre-filled ahead of time using one of the methods from `MountContentPools`, such as `prefillMountContentPool`. For MountSpec API the Component instance should be passed as the `ContentAllocator` parameter. In Primitive Components API a `ViewAllocator`/`DrawableAllocator` should be passed instead. In order to do that, the allocator can be defined inside of a `companion object` which will allow for accessing it without creating an instance of the Component.
 
 More information on pre-filling content pools with Primitive Component API can be found [here](../mainconcepts/primitivecomponents/primitive-preallocation.mdx/#pre-filling-content-pool).
 
@@ -658,7 +658,7 @@ More information on pre-filling content pools with Primitive Component API can b
 
 ```kotlin
 // Preallocate 40 FooComponent components.
-MountItemsPool.prefillMountContentPool(
+MountContentPools.prefillMountContentPool(
   androidContext,
   40,
   FooComponent.create(c).build()
@@ -684,7 +684,7 @@ class FooComponent: PrimitiveComponent() {
 }
 
 // Preallocate 40 FooComponent components.
-MountItemsPool.prefillMountContentPool(
+MountContentPools.prefillMountContentPool(
   androidContext,
   40,
   FooComponent.ALLOCATOR

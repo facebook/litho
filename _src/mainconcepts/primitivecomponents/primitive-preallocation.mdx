@@ -37,11 +37,11 @@ For the SampleTextInput component example above, ten instances of EditText will 
 
 ## Pre-filling content pool
 
-If automatic pre-allocation isn't enough, Litho provides an API that allows for manually pre-filling content pool ahead of time. For example, it may be useful when there is a complex component that needs to be displayed on the next screen. Pre-filling such component before the user opens the next screen may improve performance. In order to manually pre-fill content pool, you should use [MountItemsPool.prefillMountContentPool](https://github.com/facebook/litho/blob/75655943f348c0347d534e6931fb53b2f7f16195/litho-rendercore/src/main/java/com/facebook/rendercore/MountItemsPool.java#L127) method, as shown in the example below:
+If automatic pre-allocation isn't enough, Litho provides an API that allows for manually pre-filling content pool ahead of time. For example, it may be useful when there is a complex component that needs to be displayed on the next screen. Pre-filling such component before the user opens the next screen may improve performance. In order to manually pre-fill content pool, you should use [MountContentPools.prefillMountContentPool](https://github.com/facebook/litho/blob/75655943f348c0347d534e6931fb53b2f7f16195/litho-rendercore/src/main/java/com/facebook/rendercore/MountContentPools.java#L127) method, as shown in the example below:
 
 ```
 // preallocate 40 TestTextViewPrimitiveComponent components
-MountItemsPool.prefillMountContentPool(androidContext, 40, TestTextViewPrimitiveComponent.ALLOCATOR)
+MountContentPools.prefillMountContentPool(androidContext, 40, TestTextViewPrimitiveComponent.ALLOCATOR)
 ```
 
 The last parameter of `prefillMountContentPool` is the `ContentAllocator`, which for convenience, can be stored inside of PrimitiveComponent's companion object:
