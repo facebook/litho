@@ -1889,21 +1889,15 @@ public class ComponentTree
       }
     }
 
-    if (ComponentsConfiguration.enableFixForTheRaceOfAsyncUpdates) {
-      synchronized (mCurrentDoLayoutRunnableLock) {
-        if (mCurrentDoResolveRunnable != null) {
-          mLayoutThreadHandler.remove(mCurrentDoResolveRunnable);
-          mCurrentDoResolveRunnable = null;
-        }
+    synchronized (mCurrentDoLayoutRunnableLock) {
+      if (mCurrentDoResolveRunnable != null) {
+        mLayoutThreadHandler.remove(mCurrentDoResolveRunnable);
+        mCurrentDoResolveRunnable = null;
       }
     }
 
     if (isAsync) {
       synchronized (mCurrentDoLayoutRunnableLock) {
-        if (mCurrentDoResolveRunnable != null
-            && !ComponentsConfiguration.enableFixForTheRaceOfAsyncUpdates) {
-          mLayoutThreadHandler.remove(mCurrentDoResolveRunnable);
-        }
         mCurrentDoResolveRunnable =
             new DoResolveRunnable(
                 source, root, treePropContainer, widthSpec, heightSpec, extraAttribution);
@@ -1930,15 +1924,6 @@ public class ComponentTree
       final @Nullable TreePropContainer treePropContainer,
       final int widthSpec,
       final int heightSpec) {
-
-    if (!ComponentsConfiguration.enableFixForTheRaceOfAsyncUpdates) {
-      synchronized (mCurrentDoLayoutRunnableLock) {
-        if (mCurrentDoResolveRunnable != null) {
-          mLayoutThreadHandler.remove(mCurrentDoResolveRunnable);
-          mCurrentDoResolveRunnable = null;
-        }
-      }
-    }
 
     final int localResolveVersion;
     final TreeState treeState;
@@ -2088,21 +2073,15 @@ public class ComponentTree
           "Cannot generate output for async layout calculation (source = " + source + ")");
     }
 
-    if (ComponentsConfiguration.enableFixForTheRaceOfAsyncUpdates) {
-      synchronized (mCurrentDoLayoutRunnableLock) {
-        if (mCurrentDoLayoutRunnable != null) {
-          mLayoutThreadHandler.remove(mCurrentDoLayoutRunnable);
-          mCurrentDoLayoutRunnable = null;
-        }
+    synchronized (mCurrentDoLayoutRunnableLock) {
+      if (mCurrentDoLayoutRunnable != null) {
+        mLayoutThreadHandler.remove(mCurrentDoLayoutRunnable);
+        mCurrentDoLayoutRunnable = null;
       }
     }
 
     if (isAsync && !forceSyncCalculation) {
       synchronized (mCurrentDoLayoutRunnableLock) {
-        if (mCurrentDoLayoutRunnable != null
-            && !ComponentsConfiguration.enableFixForTheRaceOfAsyncUpdates) {
-          mLayoutThreadHandler.remove(mCurrentDoLayoutRunnable);
-        }
         mCurrentDoLayoutRunnable =
             new DoLayoutRunnable(resolveResult, source, widthSpec, heightSpec, extraAttribution);
 
@@ -2127,15 +2106,6 @@ public class ComponentTree
       @Nullable String extraAttribution,
       final int widthSpec,
       final int heightSpec) {
-
-    if (!ComponentsConfiguration.enableFixForTheRaceOfAsyncUpdates) {
-      synchronized (mCurrentDoLayoutRunnableLock) {
-        if (mCurrentDoLayoutRunnable != null) {
-          mLayoutThreadHandler.remove(mCurrentDoLayoutRunnable);
-          mCurrentDoLayoutRunnable = null;
-        }
-      }
-    }
 
     final int layoutVersion;
     final @Nullable LayoutState currentLayoutState;

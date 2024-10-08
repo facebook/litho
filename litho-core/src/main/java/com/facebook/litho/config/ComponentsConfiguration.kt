@@ -278,12 +278,6 @@ internal constructor(
     /** This flag is used to enable a fix for the ANR issue with sticky header RecyclerView. */
     @JvmField var enableFixForStickyHeader: Boolean = false
 
-    /**
-     * This flag is used to enable a fix for the race condition when two async updates are happening
-     * at the same time.
-     */
-    @JvmField var enableFixForTheRaceOfAsyncUpdates: Boolean = false
-
     /** This flag is used to enable a fix for the primitive component measurement issue. */
     @JvmField var enablePrimitiveMeasurementFix: Boolean = false
 
