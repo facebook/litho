@@ -91,11 +91,11 @@ class NestedPreallocationTest {
     return pool
   }
 
-  private class FakeMountContentPools : MountContentPools.ItemPool {
+  private class FakeMountContentPools : MountContentPools.ContentPool {
 
     var preallocationsAttempted: Int = 0
 
-    private val itemPool = MountContentPools.DefaultItemPool(TestComponent::class.java, 2)
+    private val itemPool = MountContentPools.DefaultContentPool(TestComponent::class.java, 2)
 
     override fun acquire(contentAllocator: ContentAllocator<*>): Any? {
       return itemPool.acquire(contentAllocator)

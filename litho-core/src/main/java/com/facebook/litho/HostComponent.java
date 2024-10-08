@@ -62,7 +62,7 @@ class HostComponent extends SpecGeneratedComponent {
   }
 
   @Override
-  public MountContentPools.ItemPool onCreateMountContentPool(int poolSizeOverride) {
+  public MountContentPools.ContentPool onCreateMountContentPool(int poolSizeOverride) {
     return new HostMountContentPool(
         poolSizeOverride, mPoolingPolicy.canAcquireContent || mPoolingPolicy.canReleaseContent);
   }

@@ -17,8 +17,8 @@
 package com.facebook.rendercore
 
 import android.content.Context
-import com.facebook.rendercore.MountContentPools.DefaultItemPool
-import com.facebook.rendercore.MountContentPools.ItemPool
+import com.facebook.rendercore.MountContentPools.ContentPool
+import com.facebook.rendercore.MountContentPools.DefaultContentPool
 import com.facebook.rendercore.RenderUnit.RenderType
 
 /**
@@ -60,9 +60,9 @@ interface ContentAllocator<Content : Any> {
   fun poolSize(): Int = DEFAULT_MAX_PREALLOCATION
 
   /** Creates the content pool the framework should use for this [ContentAllocator] */
-  fun onCreateMountContentPool(poolSizeOverride: Int = UNSET_POOL_SIZE): ItemPool? {
+  fun onCreateMountContentPool(poolSizeOverride: Int = UNSET_POOL_SIZE): ContentPool? {
     val size = if (poolSizeOverride > UNSET_POOL_SIZE) poolSizeOverride else poolSize()
-    return DefaultItemPool(javaClass, size)
+    return DefaultContentPool(javaClass, size)
   }
 
   companion object {

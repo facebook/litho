@@ -59,7 +59,7 @@ public interface ClassNames {
   ClassName COLLECTION = ClassName.bestGuess("java.util.Collection");
 
   ClassName MOUNT_CONTENT_POOL =
-      ClassName.bestGuess("com.facebook.rendercore.MountContentPools.ItemPool");
+      ClassName.bestGuess("com.facebook.rendercore.MountContentPools.ContentPool");
 
   ClassName LAYOUT_SPEC = ClassName.bestGuess("com.facebook.litho.annotations.LayoutSpec");
   ClassName MOUNT_SPEC = ClassName.bestGuess("com.facebook.litho.annotations.MountSpec");

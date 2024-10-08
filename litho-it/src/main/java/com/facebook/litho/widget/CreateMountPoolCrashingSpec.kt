@@ -59,7 +59,7 @@ object CreateMountPoolCrashingSpec {
 
   @JvmStatic
   @OnCreateMountContentPool
-  fun onCreateMountContentPool(poolSize: Int): MountContentPools.ItemPool {
+  fun onCreateMountContentPool(poolSize: Int): MountContentPools.ContentPool {
     throw CrashingMountableSpec.MountPhaseException(LifecycleStep.ON_CREATE_MOUNT_CONTENT_POOL)
     return TrackingMountContentPool(1)
   }

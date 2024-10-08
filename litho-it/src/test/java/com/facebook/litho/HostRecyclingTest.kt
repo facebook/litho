@@ -128,7 +128,7 @@ class HostRecyclingTest {
         }
   }
 
-  private class ComponentHostAcquireTrackingMountContentPools : MountContentPools.ItemPool {
+  private class ComponentHostAcquireTrackingMountContentPools : MountContentPools.ContentPool {
 
     private var _numComponentHostsAcquiredFromPool = 0
     private var _numComponentHostAcquireRequests = 0
@@ -148,7 +148,7 @@ class HostRecyclingTest {
     val numComponentHostsAcquiredFromPool
       get() = _numComponentHostsAcquiredFromPool
 
-    private val itemPool = MountContentPools.DefaultItemPool(HostComponent::class.java, 5)
+    private val itemPool = MountContentPools.DefaultContentPool(HostComponent::class.java, 5)
 
     override fun acquire(contentAllocator: ContentAllocator<*>): Any? {
       val poolKey = contentAllocator.getPoolKey()

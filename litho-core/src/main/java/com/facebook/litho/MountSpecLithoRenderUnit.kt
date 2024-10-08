@@ -28,7 +28,7 @@ import com.facebook.litho.ComponentsSystrace.isTracing
 import com.facebook.litho.LithoLayoutData.Companion.getInterStageProps
 import com.facebook.litho.LithoLayoutData.Companion.verifyAndGetLithoLayoutData
 import com.facebook.rendercore.ContentAllocator
-import com.facebook.rendercore.MountContentPools.ItemPool
+import com.facebook.rendercore.MountContentPools.ContentPool
 import com.facebook.rendercore.PoolingPolicy
 import com.facebook.rendercore.RenderTreeNode
 import com.facebook.rendercore.RenderUnit
@@ -76,7 +76,7 @@ private constructor(
     isShouldUpdateResultCached = false
   }
 
-  override fun onCreateMountContentPool(poolSizeOverride: Int): ItemPool? {
+  override fun onCreateMountContentPool(poolSizeOverride: Int): ContentPool? {
     return try {
       if (component is SpecGeneratedComponent) {
         component.onCreateMountContentPool(poolSizeOverride)

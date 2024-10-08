@@ -45,17 +45,17 @@ object MountContentPools {
 
   private var mountItemPoolsReleaseValidator: MountItemPoolsReleaseValidator? = null
 
-  /** A factory used to create [MountContentPools.ItemPool]s. */
+  /** A factory used to create [MountContentPools.ContentPool]s. */
   fun interface Factory {
 
-    /** Creates an ItemPool for the mountable content. */
-    fun createMountContentPool(): ItemPool
+    /** Creates an ContentPool for the mountable content. */
+    fun createMountContentPool(): ContentPool
   }
 
   private val mountContentLock: Any = Any()
 
   @GuardedBy("mountContentLock")
-  private val mountContentPoolsByContext: MutableMap<Context, MutableMap<Any, ItemPool>> =
+  private val mountContentPoolsByContext: MutableMap<Context, MutableMap<Any, ContentPool>> =
       HashMap(4)
 
   // This Map is used as a set and the values are ignored.
@@ -185,7 +185,7 @@ object MountContentPools {
       context: Context,
       allocator: ContentAllocator<*>,
       poolSize: Int = allocator.poolSize()
-  ): ItemPool? {
+  ): ContentPool? {
     if (isPoolingDisabled || poolSize <= 0) {
       return null
     }
@@ -210,7 +210,7 @@ object MountContentPools {
       }
 
       if (pool == null) {
-        pool = allocator.onCreateMountContentPool(poolSize) ?: DefaultItemPool(poolKey, poolSize)
+        pool = allocator.onCreateMountContentPool(poolSize) ?: DefaultContentPool(poolKey, poolSize)
       }
 
       poolsMap[poolKey] = pool
@@ -307,9 +307,9 @@ object MountContentPools {
   }
 
   @get:VisibleForTesting
-  val mountItemPools: List<ItemPool>
+  val mountContentPools: List<ContentPool>
     get() {
-      val result: MutableList<ItemPool> = ArrayList()
+      val result: MutableList<ContentPool> = ArrayList()
       for (poolMap in mountContentPoolsByContext.values) {
         for (pool in poolMap.values) {
           result.add(pool)
@@ -408,8 +408,8 @@ object MountContentPools {
             extraFields = extraFields)
   }
 
-  /** Content item pools that RenderCore uses to recycle content (such as Views) */
-  interface ItemPool {
+  /** Content pool that RenderCore uses to recycle content (such as Views) */
+  interface ContentPool {
 
     /**
      * Acquire a pooled content item from the pool
@@ -438,7 +438,7 @@ object MountContentPools {
     fun maybePreallocateContent(c: Context, contentAllocator: ContentAllocator<*>): Boolean
   }
 
-  open class DefaultItemPool(poolKey: Any, private val maxPoolSize: Int) : ItemPool {
+  open class DefaultContentPool(poolKey: Any, private val maxPoolSize: Int) : ContentPool {
 
     private val pool: Pools.SynchronizedPool<Any> = Pools.SynchronizedPool(maxPoolSize)
 
@@ -462,7 +462,7 @@ object MountContentPools {
         }
         releasedIntoPool
       } catch (e: IllegalStateException) {
-        val metadata = "Failed to release item to MountItemPool: $debugIdentifier"
+        val metadata = "Failed to release item to DefaultContentPool: $debugIdentifier"
         throw IllegalStateException(metadata, e)
       }
     }

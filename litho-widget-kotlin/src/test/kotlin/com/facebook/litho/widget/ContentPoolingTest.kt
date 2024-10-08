@@ -69,7 +69,7 @@ class ContentPoolingTest {
     }
 
     // Should create 1 Pool for TestDrawablePrimitiveComponent
-    assertThat(MountContentPools.mountItemPools.size).isEqualTo(1)
+    assertThat(MountContentPools.mountContentPools.size).isEqualTo(1)
 
     // Mount multiple Image components, and a TestTextViewPrimitiveComponent
     val lithoView =
@@ -90,7 +90,7 @@ class ContentPoolingTest {
             .lithoView
 
     // Should now have 2 Pools; one for the Image, and one for the Vertical Scroll component.
-    assertThat(MountContentPools.mountItemPools.size).isEqualTo(2)
+    assertThat(MountContentPools.mountContentPools.size).isEqualTo(2)
 
     // Unmount all content to release all the content to the pools
     lithoView.unmountAllItems()
@@ -118,7 +118,7 @@ class ContentPoolingTest {
         .lithoView
         .unmountAllItems()
 
-    assertThat(MountContentPools.mountItemPools.size).isEqualTo(1)
+    assertThat(MountContentPools.mountContentPools.size).isEqualTo(1)
     assertThat(createContentInvocationCount).isEqualTo(40)
 
     createContentInvocationCount = 0
@@ -139,7 +139,7 @@ class ContentPoolingTest {
         .lithoView
         .unmountAllItems()
 
-    assertThat(MountContentPools.mountItemPools.size).isEqualTo(1)
+    assertThat(MountContentPools.mountContentPools.size).isEqualTo(1)
     // Create content should be called 30 times because 10 components were in the pool
     assertThat(createContentInvocationCount).isEqualTo(30)
   }
@@ -150,16 +150,17 @@ class ContentPoolingTest {
         createPoolFactory(TestTextViewPrimitiveComponent.ALLOCATOR.poolSize()))
 
     // initially there is no pool
-    assertThat(MountContentPools.mountItemPools.size).isEqualTo(0)
+    assertThat(MountContentPools.mountContentPools.size).isEqualTo(0)
 
     // preallocate 40 Text components
     MountContentPools.prefillMountContentPool(
         mLithoTestRule.context.androidContext, 40, TestTextViewPrimitiveComponent.ALLOCATOR)
 
     // Should create 1 Pool for TestTextViewPrimitiveComponent
-    assertThat(MountContentPools.mountItemPools.size).isEqualTo(1)
+    assertThat(MountContentPools.mountContentPools.size).isEqualTo(1)
     // There should be 10 items in the pool
-    assertThat((MountContentPools.mountItemPools[0] as TrackedItemPool).currentSize).isEqualTo(10)
+    assertThat((MountContentPools.mountContentPools[0] as TrackedItemPool).currentSize)
+        .isEqualTo(10)
   }
 }
 
@@ -201,7 +202,7 @@ class TestTextViewPrimitiveComponent(val style: Style? = null) : PrimitiveCompon
 
 private fun createPoolFactory(poolSize: Int): MountContentPools.Factory {
   return object : MountContentPools.Factory {
-    override fun createMountContentPool(): MountContentPools.ItemPool {
+    override fun createMountContentPool(): MountContentPools.ContentPool {
       return TrackedItemPool(this, poolSize)
     }
   }

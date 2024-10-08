@@ -18,18 +18,18 @@ package com.facebook.litho
 
 import android.content.Context
 import com.facebook.rendercore.ContentAllocator
-import com.facebook.rendercore.MountContentPools.DefaultItemPool
-import com.facebook.rendercore.MountContentPools.ItemPool
+import com.facebook.rendercore.MountContentPools.ContentPool
+import com.facebook.rendercore.MountContentPools.DefaultContentPool
 
 /**
  * A specific MountContentPool for HostComponent - needed to do correct recycling with things like
  * duplicateParentState.
  */
-class HostMountContentPool(maxSize: Int, isEnabled: Boolean) : ItemPool {
+class HostMountContentPool(maxSize: Int, isEnabled: Boolean) : ContentPool {
 
-  private val pool: DefaultItemPool? =
+  private val pool: DefaultContentPool? =
       if (isEnabled) {
-        DefaultItemPool(ComponentHost::class.java, maxSize)
+        DefaultContentPool(ComponentHost::class.java, maxSize)
       } else {
         null
       }

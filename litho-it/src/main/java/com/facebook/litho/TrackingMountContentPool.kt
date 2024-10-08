@@ -20,7 +20,7 @@ import com.facebook.rendercore.ContentAllocator
 import com.facebook.rendercore.MountContentPools
 
 class TrackingMountContentPool(maxSize: Int) :
-    MountContentPools.DefaultItemPool(TrackingMountContentPool::class.java, maxSize) {
+    MountContentPools.DefaultContentPool(TrackingMountContentPool::class.java, maxSize) {
 
   var acquireCount: Int = 0
     private set

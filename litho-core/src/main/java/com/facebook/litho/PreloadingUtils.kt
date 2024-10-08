@@ -102,7 +102,7 @@ fun preloadLithoClasses(additionalClasses: (() -> Set<Class<*>>)? = null) {
                 DynamicPropsManager::class.java,
                 AnimationsDebug::class.java,
                 Wrapper::class.java,
-                MountContentPools.DefaultItemPool::class.java,
+                MountContentPools.DefaultContentPool::class.java,
                 LayoutSpecAttachable::class.java,
                 Attachable::class.java,
                 Touchable::class.java,

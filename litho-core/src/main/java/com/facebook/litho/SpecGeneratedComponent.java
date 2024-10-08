@@ -824,8 +824,8 @@ public abstract class SpecGeneratedComponent extends Component
    * @return the MountContentPool that should be used to recycle mount content for this mount spec.
    */
   @Override
-  public MountContentPools.ItemPool onCreateMountContentPool(int poolSizeOverride) {
-    return new MountContentPools.DefaultItemPool(getPoolKey(), poolSizeOverride);
+  public MountContentPools.ContentPool onCreateMountContentPool(int poolSizeOverride) {
+    return new MountContentPools.DefaultContentPool(getPoolKey(), poolSizeOverride);
   }
 
   @ThreadSafe

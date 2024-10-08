@@ -135,7 +135,7 @@ object CrashingMountableSpec {
   @OnCreateMountContentPool
   fun onCreateMountContentPool(
       poolSize: Int,
-  ): MountContentPools.ItemPool {
+  ): MountContentPools.ContentPool {
     return TrackingMountContentPool(1)
   }
 
