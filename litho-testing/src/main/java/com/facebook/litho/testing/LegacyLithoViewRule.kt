@@ -41,7 +41,7 @@ import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.testing.viewtree.ViewPredicates
 import com.facebook.litho.testing.viewtree.ViewTree
-import com.facebook.rendercore.MountItemsPool
+import com.facebook.rendercore.MountContentPools
 import com.google.common.base.Predicate
 import kotlin.reflect.KClass
 import org.junit.rules.TestRule
@@ -140,7 +140,7 @@ constructor(
           base.evaluate()
         } finally {
           threadLooperController.clean()
-          MountItemsPool.clear()
+          MountContentPools.clear()
           context.clearCalculationStateContext()
           _componentTree = null
           _lithoView = null

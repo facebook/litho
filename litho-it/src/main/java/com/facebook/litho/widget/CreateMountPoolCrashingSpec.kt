@@ -30,7 +30,7 @@ import com.facebook.litho.annotations.OnCreateMountContent
 import com.facebook.litho.annotations.OnCreateMountContentPool
 import com.facebook.litho.annotations.OnMeasure
 import com.facebook.litho.annotations.Reason
-import com.facebook.rendercore.MountItemsPool
+import com.facebook.rendercore.MountContentPools
 
 @ExcuseMySpec(reason = Reason.LEGACY)
 @MountSpec(isPureRender = true)
@@ -59,7 +59,7 @@ object CreateMountPoolCrashingSpec {
 
   @JvmStatic
   @OnCreateMountContentPool
-  fun onCreateMountContentPool(poolSize: Int): MountItemsPool.ItemPool {
+  fun onCreateMountContentPool(poolSize: Int): MountContentPools.ItemPool {
     throw CrashingMountableSpec.MountPhaseException(LifecycleStep.ON_CREATE_MOUNT_CONTENT_POOL)
     return TrackingMountContentPool(1)
   }

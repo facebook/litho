@@ -28,7 +28,7 @@ import com.facebook.litho.ComponentsSystrace.isTracing
 import com.facebook.litho.LithoLayoutData.Companion.getInterStageProps
 import com.facebook.litho.LithoLayoutData.Companion.verifyAndGetLithoLayoutData
 import com.facebook.rendercore.ContentAllocator
-import com.facebook.rendercore.MountItemsPool.ItemPool
+import com.facebook.rendercore.MountContentPools.ItemPool
 import com.facebook.rendercore.PoolingPolicy
 import com.facebook.rendercore.RenderTreeNode
 import com.facebook.rendercore.RenderUnit

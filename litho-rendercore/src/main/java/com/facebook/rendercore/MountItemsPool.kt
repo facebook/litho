@@ -41,11 +41,11 @@ import javax.annotation.concurrent.GuardedBy
  * FUTURE: Consider customizing the pool implementation such that we can match buffer sizes. Without
  * this we will tend to expand all buffers to the largest size needed.
  */
-object MountItemsPool {
+object MountContentPools {
 
   private var mountItemPoolsReleaseValidator: MountItemPoolsReleaseValidator? = null
 
-  /** A factory used to create [MountItemsPool.ItemPool]s. */
+  /** A factory used to create [MountContentPools.ItemPool]s. */
   fun interface Factory {
 
     /** Creates an ItemPool for the mountable content. */
@@ -99,7 +99,7 @@ object MountItemsPool {
           val isTracing = RenderCoreSystrace.isTracing()
           if (isTracing) {
             RenderCoreSystrace.beginSection(
-                "MountItemsPool:createMountContent ${poolableMountContent.poolKeyTypeName}")
+                "MountContentPools:createMountContent ${poolableMountContent.poolKeyTypeName}")
           }
           val content = poolableMountContent.createContent(context)
           if (isTracing) {

@@ -66,7 +66,7 @@ import com.facebook.litho.annotations.ShouldExcludeFromIncrementalMount;
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
-import com.facebook.rendercore.MountItemsPool;
+import com.facebook.rendercore.MountContentPools;
 import javax.annotation.Nullable;
 
 @MountSpec(
@@ -213,8 +213,8 @@ public class TestMountSpec<S extends View> implements TestTag {
   }
 
   @OnCreateMountContentPool
-  static MountItemsPool.ItemPool onCreateMountContentPool(int size) {
-    return new MountItemsPool.DefaultItemPool(TestMountSpec.class, size);
+  static MountContentPools.ItemPool onCreateMountContentPool(int size) {
+    return new MountContentPools.DefaultItemPool(TestMountSpec.class, size);
   }
 
   @OnCalculateCachedValue(name = "cached")

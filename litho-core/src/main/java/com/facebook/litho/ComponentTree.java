@@ -83,7 +83,7 @@ import com.facebook.litho.lifecycle.LifecycleOwnerWrapper;
 import com.facebook.litho.perfboost.LithoPerfBooster;
 import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.LogLevel;
-import com.facebook.rendercore.MountItemsPool;
+import com.facebook.rendercore.MountContentPools;
 import com.facebook.rendercore.RunnableHandler;
 import com.facebook.rendercore.RunnableHandler.DefaultHandler;
 import com.facebook.rendercore.debug.DebugEventAttribute;
@@ -440,7 +440,7 @@ public class ComponentTree
                       ? layoutState.getMountableOutputs()
                       : Collections.emptyList();
                 },
-                MountItemsPool::maybePreallocateContent);
+                MountContentPools::maybePreallocateContent);
       }
     }
 

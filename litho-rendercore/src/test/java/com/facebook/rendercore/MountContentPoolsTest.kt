@@ -21,12 +21,12 @@ import android.app.Service
 import android.content.Context
 import android.view.View
 import androidx.lifecycle.LifecycleService
-import com.facebook.rendercore.MountItemsPool.acquireMountContent
-import com.facebook.rendercore.MountItemsPool.clear
-import com.facebook.rendercore.MountItemsPool.onContextDestroyed
-import com.facebook.rendercore.MountItemsPool.prefillMountContentPool
-import com.facebook.rendercore.MountItemsPool.release
-import com.facebook.rendercore.MountItemsPool.setMountContentPoolFactory
+import com.facebook.rendercore.MountContentPools.acquireMountContent
+import com.facebook.rendercore.MountContentPools.clear
+import com.facebook.rendercore.MountContentPools.onContextDestroyed
+import com.facebook.rendercore.MountContentPools.prefillMountContentPool
+import com.facebook.rendercore.MountContentPools.release
+import com.facebook.rendercore.MountContentPools.setMountContentPoolFactory
 import java.lang.Thread
 import org.assertj.core.api.Java6Assertions
 import org.junit.After
@@ -40,7 +40,7 @@ import org.robolectric.android.controller.ActivityController
 import org.robolectric.android.controller.ServiceController
 
 @RunWith(RobolectricTestRunner::class)
-class MountItemsPoolTest {
+class MountContentPoolsTest {
 
   private val context: Context = RuntimeEnvironment.getApplication()
 

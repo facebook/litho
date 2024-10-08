@@ -29,7 +29,7 @@ class DefaultItemPoolTest {
 
   @Test
   fun `acquire - return null if pool is empty`() {
-    val pool = MountItemsPool.DefaultItemPool(this::class.java, 5)
+    val pool = MountContentPools.DefaultItemPool(this::class.java, 5)
     val contentAllocator = FakeContentAllocator()
 
     val content = pool.acquire(contentAllocator)
@@ -38,7 +38,7 @@ class DefaultItemPoolTest {
 
   @Test
   fun `acquire - should return content if pool is not empty`() {
-    val pool = MountItemsPool.DefaultItemPool(this::class.java, 5)
+    val pool = MountContentPools.DefaultItemPool(this::class.java, 5)
     val contentAllocator = FakeContentAllocator()
 
     val firstPooledContent = pool.acquire(contentAllocator)
@@ -54,7 +54,7 @@ class DefaultItemPoolTest {
 
   @Test
   fun `release - should be able to release until pool is full`() {
-    val pool = MountItemsPool.DefaultItemPool(this::class.java, 1)
+    val pool = MountContentPools.DefaultItemPool(this::class.java, 1)
     val contentAllocator = FakeContentAllocator()
 
     val context = ApplicationProvider.getApplicationContext<Context>()
@@ -70,7 +70,7 @@ class DefaultItemPoolTest {
 
   @Test
   fun `maybePreallocate - should only pre-allocate if has space`() {
-    val pool = MountItemsPool.DefaultItemPool(this::class.java, 1)
+    val pool = MountContentPools.DefaultItemPool(this::class.java, 1)
     val contentAllocator = FakeContentAllocator()
 
     val context = ApplicationProvider.getApplicationContext<Context>()

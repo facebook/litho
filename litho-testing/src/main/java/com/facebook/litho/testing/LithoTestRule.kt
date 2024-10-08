@@ -30,7 +30,7 @@ import com.facebook.litho.LithoVisibilityEventsController
 import com.facebook.litho.TreePropContainer
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.config.LithoDebugConfigurations
-import com.facebook.rendercore.MountItemsPool
+import com.facebook.rendercore.MountContentPools
 import com.facebook.rendercore.utils.MeasureSpecUtils.exactly
 import java.lang.Exception
 import org.junit.rules.TestRule
@@ -90,7 +90,7 @@ constructor(
           base.evaluate()
         } finally {
           threadLooperController.clean()
-          MountItemsPool.clear()
+          MountContentPools.clear()
           context.clearCalculationStateContext()
         }
       }

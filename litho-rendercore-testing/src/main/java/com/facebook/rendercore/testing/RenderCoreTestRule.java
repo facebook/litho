@@ -26,7 +26,7 @@ import androidx.annotation.Nullable;
 import androidx.test.core.app.ApplicationProvider;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.Host;
-import com.facebook.rendercore.MountItemsPool;
+import com.facebook.rendercore.MountContentPools;
 import com.facebook.rendercore.Node;
 import com.facebook.rendercore.RenderResult;
 import com.facebook.rendercore.RenderState;
@@ -95,7 +95,7 @@ public class RenderCoreTestRule implements TestRule {
           rootNode = null;
           extensions = null;
           renderState = null;
-          MountItemsPool.clear();
+          MountContentPools.clear();
         }
       }
     };

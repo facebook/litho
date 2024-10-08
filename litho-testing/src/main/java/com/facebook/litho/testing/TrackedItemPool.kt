@@ -17,10 +17,10 @@
 package com.facebook.litho.testing
 
 import com.facebook.rendercore.ContentAllocator
-import com.facebook.rendercore.MountItemsPool
+import com.facebook.rendercore.MountContentPools
 
 class TrackedItemPool(lifecycle: Any, size: Int) :
-    MountItemsPool.DefaultItemPool(lifecycle::class.java, size) {
+    MountContentPools.DefaultItemPool(lifecycle::class.java, size) {
 
   var currentSize: Int = 0
     private set

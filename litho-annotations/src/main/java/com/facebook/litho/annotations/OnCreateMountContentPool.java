@@ -29,8 +29,8 @@ import java.lang.annotation.RetentionPolicy;
  * <pre><code>
  *
  *  {@literal @OnCreateMountContentPool}
- *   static MountItemsPool.ItemPool OnCreateMountContentPool(int poolSizeOverride) {
- *     return new MountItemsPool.ItemPool(poolSizeOverride);
+ *   static MountContentPools.ItemPool OnCreateMountContentPool(int poolSizeOverride) {
+ *     return new MountContentPools.ItemPool(poolSizeOverride);
  *   }
  * </code></pre>
  */

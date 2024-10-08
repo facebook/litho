@@ -28,7 +28,7 @@ import com.facebook.litho.testing.assertj.LithoAssertions
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.collection.LazyList
 import com.facebook.rendercore.ContentAllocator
-import com.facebook.rendercore.MountItemsPool
+import com.facebook.rendercore.MountContentPools
 import com.facebook.rendercore.dp
 import com.facebook.rendercore.primitives.FixedSizeLayoutBehavior
 import com.facebook.rendercore.primitives.ViewAllocator
@@ -85,17 +85,17 @@ class NestedPreallocationTest {
     return lithoRule.render(heightPx = 2040, componentTree = componentTree) { TestComponent() }
   }
 
-  private fun setupFakeMountItemPool(): FakeMountItemsPool {
-    val pool = FakeMountItemsPool()
-    MountItemsPool.setMountContentPoolFactory { pool }
+  private fun setupFakeMountItemPool(): FakeMountContentPools {
+    val pool = FakeMountContentPools()
+    MountContentPools.setMountContentPoolFactory { pool }
     return pool
   }
 
-  private class FakeMountItemsPool : MountItemsPool.ItemPool {
+  private class FakeMountContentPools : MountContentPools.ItemPool {
 
     var preallocationsAttempted: Int = 0
 
-    private val itemPool = MountItemsPool.DefaultItemPool(TestComponent::class.java, 2)
+    private val itemPool = MountContentPools.DefaultItemPool(TestComponent::class.java, 2)
 
     override fun acquire(contentAllocator: ContentAllocator<*>): Any? {
       return itemPool.acquire(contentAllocator)

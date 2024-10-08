@@ -21,7 +21,7 @@ import android.util.SparseArray;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.rendercore.MountItemsPool;
+import com.facebook.rendercore.MountContentPools;
 import com.facebook.rendercore.PoolingPolicy;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
@@ -62,7 +62,7 @@ class HostComponent extends SpecGeneratedComponent {
   }
 
   @Override
-  public MountItemsPool.ItemPool onCreateMountContentPool(int poolSizeOverride) {
+  public MountContentPools.ItemPool onCreateMountContentPool(int poolSizeOverride) {
     return new HostMountContentPool(
         poolSizeOverride, mPoolingPolicy.canAcquireContent || mPoolingPolicy.canReleaseContent);
   }

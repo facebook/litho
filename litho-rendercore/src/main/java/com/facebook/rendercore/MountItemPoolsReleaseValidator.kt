@@ -28,7 +28,7 @@ import java.util.WeakHashMap
 
 /**
  * Inspects a [View] to understand if it has any view properties that were not cleaned up before the
- * item is sent back to the [MountItemsPool].
+ * item is sent back to the [MountContentPools].
  *
  * This should only be used for debugging purposes.
  */

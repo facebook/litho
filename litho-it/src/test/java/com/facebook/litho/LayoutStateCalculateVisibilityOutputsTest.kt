@@ -23,7 +23,7 @@ import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.SimpleMountSpecTester
 import com.facebook.litho.widget.TestNullLayoutComponent
-import com.facebook.rendercore.MountItemsPool
+import com.facebook.rendercore.MountContentPools
 import com.facebook.yoga.YogaEdge
 import java.lang.Exception
 import org.assertj.core.api.Assertions
@@ -41,7 +41,7 @@ class LayoutStateCalculateVisibilityOutputsTest {
   @Before
   @Throws(Exception::class)
   fun setup() {
-    MountItemsPool.clear()
+    MountContentPools.clear()
   }
 
   @Test

@@ -43,7 +43,7 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.debug.LithoDebugEvent;
 import com.facebook.litho.debug.LithoDebugEventAttributes;
 import com.facebook.rendercore.ContentAllocator;
-import com.facebook.rendercore.MountItemsPool;
+import com.facebook.rendercore.MountContentPools;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.debug.DebugEventAttribute;
 import com.facebook.rendercore.transitions.TransitionUtils;
@@ -824,8 +824,8 @@ public abstract class SpecGeneratedComponent extends Component
    * @return the MountContentPool that should be used to recycle mount content for this mount spec.
    */
   @Override
-  public MountItemsPool.ItemPool onCreateMountContentPool(int poolSizeOverride) {
-    return new MountItemsPool.DefaultItemPool(getPoolKey(), poolSizeOverride);
+  public MountContentPools.ItemPool onCreateMountContentPool(int poolSizeOverride) {
+    return new MountContentPools.DefaultItemPool(getPoolKey(), poolSizeOverride);
   }
 
   @ThreadSafe

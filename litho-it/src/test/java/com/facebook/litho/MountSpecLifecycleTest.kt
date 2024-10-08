@@ -32,7 +32,7 @@ import com.facebook.litho.widget.RecordsShouldUpdate
 import com.facebook.litho.widget.SimpleStateUpdateEmulator
 import com.facebook.litho.widget.SimpleStateUpdateEmulatorSpec
 import com.facebook.litho.widget.Text
-import com.facebook.rendercore.MountItemsPool
+import com.facebook.rendercore.MountContentPools
 import com.facebook.rendercore.RunnableHandler
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
@@ -432,7 +432,7 @@ class MountSpecLifecycleTest {
             LifecycleStep.ON_MEASURE,
             LifecycleStep.ON_BOUNDS_DEFINED,
             LifecycleStep.ON_ATTACHED)
-    assertThat(MountItemsPool.mountItemPools.size)
+    assertThat(MountContentPools.mountItemPools.size)
         .describedAs("Should contain only 1 content pool")
         .isEqualTo(1)
   }

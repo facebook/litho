@@ -31,7 +31,7 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.alpha
 import com.facebook.litho.view.wrapInView
 import com.facebook.rendercore.ContentAllocator
-import com.facebook.rendercore.MountItemsPool
+import com.facebook.rendercore.MountContentPools
 import com.facebook.rendercore.PoolingPolicy
 import com.facebook.rendercore.dp
 import org.assertj.core.api.Assertions.assertThat
@@ -46,17 +46,17 @@ class HostRecyclingTest {
 
   @get:Rule val mLithoTestRule = LithoTestRule()
 
-  private lateinit var fakeMountItemPools: ComponentHostAcquireTrackingMountItemsPool
+  private lateinit var fakeMountItemPools: ComponentHostAcquireTrackingMountContentPools
 
   @Before
   fun setup() {
-    fakeMountItemPools = ComponentHostAcquireTrackingMountItemsPool()
-    MountItemsPool.setMountContentPoolFactory { fakeMountItemPools }
+    fakeMountItemPools = ComponentHostAcquireTrackingMountContentPools()
+    MountContentPools.setMountContentPoolFactory { fakeMountItemPools }
   }
 
   @After
   fun tearDown() {
-    MountItemsPool.setMountContentPoolFactory(null)
+    MountContentPools.setMountContentPoolFactory(null)
   }
 
   @Test
@@ -128,7 +128,7 @@ class HostRecyclingTest {
         }
   }
 
-  private class ComponentHostAcquireTrackingMountItemsPool : MountItemsPool.ItemPool {
+  private class ComponentHostAcquireTrackingMountContentPools : MountContentPools.ItemPool {
 
     private var _numComponentHostsAcquiredFromPool = 0
     private var _numComponentHostAcquireRequests = 0
@@ -148,7 +148,7 @@ class HostRecyclingTest {
     val numComponentHostsAcquiredFromPool
       get() = _numComponentHostsAcquiredFromPool
 
-    private val itemPool = MountItemsPool.DefaultItemPool(HostComponent::class.java, 5)
+    private val itemPool = MountContentPools.DefaultItemPool(HostComponent::class.java, 5)
 
     override fun acquire(contentAllocator: ContentAllocator<*>): Any? {
       val poolKey = contentAllocator.getPoolKey()

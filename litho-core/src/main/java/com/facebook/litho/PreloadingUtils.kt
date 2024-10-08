@@ -22,7 +22,7 @@ import android.os.Handler
 import com.facebook.rendercore.Equivalence
 import com.facebook.rendercore.FastMath
 import com.facebook.rendercore.LruResourceCache
-import com.facebook.rendercore.MountItemsPool
+import com.facebook.rendercore.MountContentPools
 import com.facebook.rendercore.MountState
 import com.facebook.rendercore.ResourceCache
 import com.facebook.rendercore.ResourceResolver
@@ -102,7 +102,7 @@ fun preloadLithoClasses(additionalClasses: (() -> Set<Class<*>>)? = null) {
                 DynamicPropsManager::class.java,
                 AnimationsDebug::class.java,
                 Wrapper::class.java,
-                MountItemsPool.DefaultItemPool::class.java,
+                MountContentPools.DefaultItemPool::class.java,
                 LayoutSpecAttachable::class.java,
                 Attachable::class.java,
                 Touchable::class.java,
@@ -157,7 +157,7 @@ fun preloadLithoClasses(additionalClasses: (() -> Set<Class<*>>)? = null) {
                 TransitionsExtension::class.java,
                 ContextUtils::class.java,
                 ComponentUtils::class.java,
-                MountItemsPool::class.java,
+                MountContentPools::class.java,
                 LogTreePopulator::class.java,
                 TouchExpansionDelegate::class.java,
                 ComponentTouchListener::class.java,

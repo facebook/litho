@@ -18,8 +18,8 @@ package com.facebook.litho
 
 import android.content.Context
 import com.facebook.rendercore.ContentAllocator
-import com.facebook.rendercore.MountItemsPool.DefaultItemPool
-import com.facebook.rendercore.MountItemsPool.ItemPool
+import com.facebook.rendercore.MountContentPools.DefaultItemPool
+import com.facebook.rendercore.MountContentPools.ItemPool
 
 /**
  * A specific MountContentPool for HostComponent - needed to do correct recycling with things like

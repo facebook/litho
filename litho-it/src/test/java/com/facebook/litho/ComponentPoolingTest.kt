@@ -19,7 +19,7 @@ package com.facebook.litho
 import android.content.Context
 import android.view.View
 import com.facebook.litho.testing.testrunner.LithoTestRunner
-import com.facebook.rendercore.MountItemsPool
+import com.facebook.rendercore.MountContentPools
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
@@ -36,12 +36,12 @@ class ComponentPoolingTest {
 
   @Before
   fun setup() {
-    MountItemsPool.clear()
+    MountContentPools.clear()
   }
 
   @After
   fun cleanup() {
-    MountItemsPool.clear()
+    MountContentPools.clear()
   }
 
   @Test
@@ -50,7 +50,7 @@ class ComponentPoolingTest {
 
     // Preallocate content more times than the defined pool size
     for (i in 0 until POOL_SIZE * 2) {
-      MountItemsPool.maybePreallocateContent(context, component)
+      MountContentPools.maybePreallocateContent(context, component)
     }
 
     // Ensure onCreateMountContent was called POOL_SIZE times.
@@ -59,26 +59,26 @@ class ComponentPoolingTest {
     // Acquire POOL_SIZE contents
     val objects = MutableList(POOL_SIZE + 1) { Any() }
     for (i in 0 until POOL_SIZE) {
-      objects[i] = MountItemsPool.acquireMountContent(context, component)
+      objects[i] = MountContentPools.acquireMountContent(context, component)
     }
 
     // Ensure onCreateMountContent wasn't called an additional time.
     assertThat(component.onCreateMountContentCount).isEqualTo(POOL_SIZE)
 
     // Acquire one more content
-    objects[POOL_SIZE] = MountItemsPool.acquireMountContent(context, component)
+    objects[POOL_SIZE] = MountContentPools.acquireMountContent(context, component)
 
     // Ensure onCreateMountContent was called an additional time.
     assertThat(component.onCreateMountContentCount).isEqualTo(POOL_SIZE + 1)
 
     // Release all acquired content
     for (`object` in objects) {
-      MountItemsPool.release(context, component, `object`)
+      MountContentPools.release(context, component, `object`)
     }
 
     // Reacquire POOL_SIZE contents
     for (i in 0 until POOL_SIZE) {
-      MountItemsPool.acquireMountContent(context, component)
+      MountContentPools.acquireMountContent(context, component)
     }
 
     // Ensure onCreateMountContent wasn't called an additional time.

@@ -40,7 +40,7 @@ import com.facebook.litho.annotations.Prop
 import com.facebook.litho.annotations.Reason
 import com.facebook.litho.annotations.ShouldUpdate
 import com.facebook.litho.annotations.State
-import com.facebook.rendercore.MountItemsPool
+import com.facebook.rendercore.MountContentPools
 
 @ExcuseMySpec(reason = Reason.LEGACY)
 @MountSpec(isPureRender = true)
@@ -135,7 +135,7 @@ object CrashingMountableSpec {
   @OnCreateMountContentPool
   fun onCreateMountContentPool(
       poolSize: Int,
-  ): MountItemsPool.ItemPool {
+  ): MountContentPools.ItemPool {
     return TrackingMountContentPool(1)
   }
 

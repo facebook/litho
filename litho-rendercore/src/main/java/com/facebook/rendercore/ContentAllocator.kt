@@ -17,8 +17,8 @@
 package com.facebook.rendercore
 
 import android.content.Context
-import com.facebook.rendercore.MountItemsPool.DefaultItemPool
-import com.facebook.rendercore.MountItemsPool.ItemPool
+import com.facebook.rendercore.MountContentPools.DefaultItemPool
+import com.facebook.rendercore.MountContentPools.ItemPool
 import com.facebook.rendercore.RenderUnit.RenderType
 
 /**

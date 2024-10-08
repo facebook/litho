@@ -47,7 +47,7 @@ import com.facebook.litho.annotations.OnUnbind
 import com.facebook.litho.annotations.OnUnmount
 import com.facebook.litho.annotations.Prop
 import com.facebook.litho.annotations.State
-import com.facebook.rendercore.MountItemsPool
+import com.facebook.rendercore.MountContentPools
 
 @MountSpec
 object MountSpecLifecycleTesterDrawableSpec {
@@ -115,7 +115,8 @@ object MountSpecLifecycleTesterDrawableSpec {
 
   @JvmStatic
   @OnCreateMountContentPool
-  fun onCreateMountContentPool(poolSize: Int): MountItemsPool.ItemPool = TrackingMountContentPool(1)
+  fun onCreateMountContentPool(poolSize: Int): MountContentPools.ItemPool =
+      TrackingMountContentPool(1)
 
   @JvmStatic
   @UiThread
