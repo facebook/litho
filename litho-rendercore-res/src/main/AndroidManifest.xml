@@ -4,5 +4,4 @@
   Android Studio will sometimes helpfully add activities to this file.
   That's fine for local development, but don't check it in!
   -->
-  <uses-sdk android:minSdkVersion="19"/>
 </manifest>

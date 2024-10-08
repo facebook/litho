@@ -6,7 +6,7 @@
   <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
   <uses-permission android:name="android.permission.INTERNET" />
 
-  <uses-sdk android:targetSdkVersion="33" android:minSdkVersion="21"/>
+  <uses-sdk android:targetSdkVersion="33" android:minSdkVersion="24"/>
 
   <application
       android:name=".RenderCoreSampleApplication"

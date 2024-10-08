@@ -24,7 +24,7 @@ android {
   defaultConfig {
     applicationId "com.facebook.litho.codelab.groupsection"
 
-    minSdkVersion 22
+    minSdkVersion 24
     targetSdkVersion 28
 
     versionCode 1

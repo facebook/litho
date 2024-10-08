@@ -17,5 +17,5 @@
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.facebook.litho">
-    <uses-sdk android:minSdkVersion="21" />
+    <uses-sdk android:minSdkVersion="24" />
 </manifest>
