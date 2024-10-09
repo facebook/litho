@@ -42,7 +42,7 @@ import com.facebook.litho.StyleItemField
 import com.facebook.litho.SupportsPivotTransform
 import com.facebook.litho.SupportsPivotTransform.Companion.BadPivotClassErrorMessage
 import com.facebook.litho.TouchEvent
-import com.facebook.litho.binders.onBind
+import com.facebook.litho.binders.onBindWithDescription
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.debug.DebugInfoReporter
 import com.facebook.litho.debug.getComponentStackTraceElement
@@ -51,9 +51,6 @@ import com.facebook.litho.eventHandler
 import com.facebook.litho.eventHandlerWithReturn
 import com.facebook.rendercore.Dimen
 import com.facebook.rendercore.LogLevel
-import com.facebook.rendercore.primitives.BindFunc
-import com.facebook.rendercore.primitives.BindScope
-import com.facebook.rendercore.primitives.UnbindFunc
 import com.facebook.yoga.YogaEdge
 
 /** Enums for [ObjectStyleItem]. */
@@ -484,18 +481,12 @@ inline fun Style.pivotPercent(
     "Pivot values must be between 0 and 100f. Got ($pivotXPercent, $pivotYPercent)."
   }
   val model = Pair(pivotXPercent, pivotYPercent)
-  return this + Style.onBind(model, func = PivotPercentBinder(model))
-}
-
-class PivotPercentBinder(val model: Pair<Float, Float>) : BindFunc<View> {
-  override fun BindScope.bind(content: View): UnbindFunc {
-    check(content is SupportsPivotTransform) { BadPivotClassErrorMessage }
-    content.setTransformPivot(model.first, model.second)
-    return onUnbind { SupportsPivotTransform.resetPivot(content) }
-  }
-
-  override val description: String
-    get() = "pivotPercent"
+  return this +
+      Style.onBindWithDescription("PivotPercent", model) { content ->
+        check(content is SupportsPivotTransform) { BadPivotClassErrorMessage }
+        content.setTransformPivot(model.first, model.second)
+        onUnbind { SupportsPivotTransform.resetPivot(content) }
+      }
 }
 
 /**

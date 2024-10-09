@@ -45,13 +45,49 @@ import com.facebook.rendercore.primitives.binder
  *
  * @param deps the dependencies that will be compared to check if the binder should be rerun.
  * @param func the [RenderUnit.Binder] to be used to bind the model to the View content.
+ * @param name the name of the binder. This is used for debugging purposes.
+ */
+inline fun Style.onBindWithDescription(
+    name: String,
+    vararg deps: Any?,
+    func: BindFunc<View>,
+): Style =
+    this +
+        ObjectStyleItem(
+            BinderObjectField.DELEGATE_MOUNT_VIEW_BINDER,
+            binder(description = name, dep = deps, func = func),
+        )
+
+/**
+ * **Note: Please use [onBindWithDescription] instead.**
+ *
+ * This [Style] adds a mount callbacks. The [BindFunc] is invoked when the Component is mounted, and
+ * it receives a [BindScope] and the [View] this [Component] rendered to. The [BindFunc] must return
+ * an [UnbindFunc] and it must undo any mutations made to the [View] in the [BindFunc]. This API can
+ * be used to create higher-order Styles.
+ *
+ * If the [Component] does not render a view then this [Style] will wrap the content into a [View].
+ * The callbacks are guaranteed to be called on the main thread.
+ *
+ * The previous and new values of the [deps] are compared to check if the callbacks should be
+ * invoked again. If the [deps] are equivalent then the callbacks are not invoked again; if they are
+ * not equivalent then [UnbindFunc] is invoked followed by [BindFunc]. To invoke the callbacks only
+ * once use [Unit] as [deps].
+ *
+ * @param deps the dependencies that will be compared to check if the binder should be rerun.
+ * @param func the [RenderUnit.Binder] to be used to bind the model to the View content.
  */
 inline fun Style.onBind(vararg deps: Any?, func: BindFunc<View>): Style =
     this +
         ObjectStyleItem(
             BinderObjectField.DELEGATE_MOUNT_VIEW_BINDER,
-            binder(dep = deps, bindFunc = func),
+            binder(dep = deps, func = func),
         )
+
+@Deprecated(ON_BIND_NO_DEPS_ERROR, level = DeprecationLevel.ERROR)
+@Suppress("unused", "UNUSED_PARAMETER")
+inline fun Style.onBindWithDescription(name: String, func: BindFunc<View>): Style =
+    throw IllegalArgumentException(ON_BIND_NO_DEPS_ERROR)
 
 @Deprecated(ON_BIND_NO_DEPS_ERROR, level = DeprecationLevel.ERROR)
 @Suppress("unused", "UNUSED_PARAMETER")

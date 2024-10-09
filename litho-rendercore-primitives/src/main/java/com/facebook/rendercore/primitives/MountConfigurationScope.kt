@@ -59,19 +59,20 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
   fun bind(vararg deps: Any?, bindCall: BindScope.(content: ContentType) -> UnbindFunc) {
     _fixedBinders.add(
         binder(
-            deps,
-            object : BindFunc<ContentType> {
+            dep = deps,
+            func =
+                object : BindFunc<ContentType> {
 
-              val fixedBinderIndex: Int = _fixedBinders.size
-              val customDescription: String? = binderDescription
+                  val fixedBinderIndex: Int = _fixedBinders.size
+                  val customDescription: String? = binderDescription
 
-              override fun BindScope.bind(content: ContentType): UnbindFunc {
-                return bindCall(content)
-              }
+                  override fun BindScope.bind(content: ContentType): UnbindFunc {
+                    return bindCall(content)
+                  }
 
-              override val description: String
-                get() = "${customDescription ?: fixedBinderIndex}"
-            },
+                  override val description: String
+                    get() = "${customDescription ?: fixedBinderIndex}"
+                },
         ),
     )
   }
@@ -98,19 +99,20 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
   ) {
     _fixedBinders.add(
         binder(
-            deps,
-            object : BindFuncWithLayoutData<ContentType> {
+            dep = deps,
+            func =
+                object : BindFuncWithLayoutData<ContentType> {
 
-              val fixedBinderIndex: Int = _fixedBinders.size
-              val customDescription: String? = binderDescription
+                  val fixedBinderIndex: Int = _fixedBinders.size
+                  val customDescription: String? = binderDescription
 
-              override fun BindScope.bind(content: ContentType, layoutData: Any?): UnbindFunc {
-                return bindCall(content, layoutData as LayoutDataT)
-              }
+                  override fun BindScope.bind(content: ContentType, layoutData: Any?): UnbindFunc {
+                    return bindCall(content, layoutData as LayoutDataT)
+                  }
 
-              override val description: String
-                get() = "${customDescription ?: fixedBinderIndex}"
-            },
+                  override val description: String
+                    get() = "${customDescription ?: fixedBinderIndex}"
+                },
         ),
     )
   }
@@ -124,20 +126,21 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
   fun <T> T.bindTo(setter: KFunction2<ContentType, T, *>, defaultValue: T) {
     _fixedBinders.add(
         binder(
-            this,
-            object : BindFunc<ContentType> {
+            dep = this,
+            func =
+                object : BindFunc<ContentType> {
 
-              val fixedBinderIndex: Int = _fixedBinders.size
-              val customDescription: String? = binderDescription
+                  val fixedBinderIndex: Int = _fixedBinders.size
+                  val customDescription: String? = binderDescription
 
-              override fun BindScope.bind(content: ContentType): UnbindFunc {
-                setter(content, this@bindTo)
-                return onUnbind { setter(content, defaultValue) }
-              }
+                  override fun BindScope.bind(content: ContentType): UnbindFunc {
+                    setter(content, this@bindTo)
+                    return onUnbind { setter(content, defaultValue) }
+                  }
 
-              override val description: String
-                get() = "${customDescription ?: fixedBinderIndex}"
-            }))
+                  override val description: String
+                    get() = "${customDescription ?: fixedBinderIndex}"
+                }))
   }
 
   /**
@@ -149,20 +152,21 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
   fun <T> T.bindTo(setter: KMutableProperty1<ContentType, T>, defaultValue: T) {
     _fixedBinders.add(
         binder(
-            this,
-            object : BindFunc<ContentType> {
+            dep = this,
+            func =
+                object : BindFunc<ContentType> {
 
-              val fixedBinderIndex: Int = _fixedBinders.size
-              val customDescription: String? = binderDescription
+                  val fixedBinderIndex: Int = _fixedBinders.size
+                  val customDescription: String? = binderDescription
 
-              override fun BindScope.bind(content: ContentType): UnbindFunc {
-                setter.set(content, this@bindTo)
-                return onUnbind { setter.set(content, defaultValue) }
-              }
+                  override fun BindScope.bind(content: ContentType): UnbindFunc {
+                    setter.set(content, this@bindTo)
+                    return onUnbind { setter.set(content, defaultValue) }
+                  }
 
-              override val description: String
-                get() = "${customDescription ?: fixedBinderIndex}"
-            },
+                  override val description: String
+                    get() = "${customDescription ?: fixedBinderIndex}"
+                },
         ),
     )
   }

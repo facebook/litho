@@ -22,11 +22,14 @@ import com.facebook.rendercore.utils.CommonUtils.getSectionNameForTracing
 import com.facebook.rendercore.utils.areObjectsEquivalent
 
 fun <Model, Content> binder(
+    description: String? = null,
     dep: Model,
-    bindFunc: BindFuncWithLayoutData<Content>,
+    func: BindFuncWithLayoutData<Content>,
 ): RenderUnit.DelegateBinder<Model, Content, Any> {
-  return RenderUnit.DelegateBinder.createDelegateBinder(dep, KBinder(bindFunc))
-      as RenderUnit.DelegateBinder<Model, Content, Any>
+  return RenderUnit.DelegateBinder.createDelegateBinder(
+      dep,
+      KBinder(name = description, bindFunc = func),
+  ) as RenderUnit.DelegateBinder<Model, Content, Any>
 }
 
 /** Defines the functions that will be called when the content is mounted and unmounted. */
@@ -95,13 +98,14 @@ class BindScope {
 }
 
 internal class KBinder<Model, Content>(
+    private val name: String? = null,
     private val bindFunc: BindFuncWithLayoutData<Content>,
 ) : RenderUnit.Binder<Model, Content, UnbindFunc> {
 
   val scope: BindScope = BindScope()
 
   override val description: String
-    get() = "binder:${bindFunc.description}"
+    get() = "binder:${name ?: bindFunc.description}"
 
   override val type: Class<*>
     get() = bindFunc.javaClass
