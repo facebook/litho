@@ -264,7 +264,7 @@ abstract class TreeFuture<T : PotentiallyPartialResult>(
    * @return The expected result of calculation, or null if this future was released.
    */
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  fun runAndGet(@RenderSource source: Int): TreeFutureResult<T> {
+  fun runAndGet(@RenderSource source: Int, type: FutureExecutionType? = null): TreeFutureResult<T> {
     val myTid = Process.myTid()
     if (runningThreadId.compareAndSet(-1, myTid)) {
       futureTask.run()
@@ -275,8 +275,8 @@ abstract class TreeFuture<T : PotentiallyPartialResult>(
     val didRaiseThreadPriority: Boolean
     val shouldWaitForResult = !futureTask.isDone && notRunningOnMyThread
     if (shouldWaitForResult && !isMainThread && !isFromSyncLayout(source)) {
-      return TreeFutureResult.interruptWithMessage<T>(
-          FUTURE_RESULT_NULL_REASON_SYNC_RESULT_NON_MAIN_THREAD)
+      return TreeFutureResult.interruptWithMessage(
+          FUTURE_RESULT_NULL_REASON_SYNC_RESULT_NON_MAIN_THREAD, type)
     }
     if (isMainThread && shouldWaitForResult) {
       // This means the UI thread is about to be blocked by the bg thread. Instead of waiting,
@@ -358,8 +358,8 @@ abstract class TreeFuture<T : PotentiallyPartialResult>(
           // This means that the bg task was interrupted and the UI thread will pick up the rest
           // of the work. No need to return a LayoutState.
           treeFutureResult =
-              TreeFutureResult.interruptWithMessage<T>(
-                  FUTURE_RESULT_NULL_REASON_RESUME_NON_MAIN_THREAD)
+              TreeFutureResult.interruptWithMessage(
+                  FUTURE_RESULT_NULL_REASON_RESUME_NON_MAIN_THREAD, type)
           continuationToken =
               WorkContinuationInstrumenter.onOfferWorkForContinuation(
                   "offerPartial", interruptToken)
@@ -395,7 +395,7 @@ abstract class TreeFuture<T : PotentiallyPartialResult>(
     }
     synchronized(this@TreeFuture) {
       if (isReleased) {
-        return TreeFutureResult.interruptWithMessage<T>(FUTURE_RESULT_NULL_REASON_RELEASED)
+        return TreeFutureResult.interruptWithMessage(FUTURE_RESULT_NULL_REASON_RELEASED)
       }
       return treeFutureResult
     }
@@ -406,16 +406,24 @@ abstract class TreeFuture<T : PotentiallyPartialResult>(
    * will be populated with the result for it being null.
    */
   class TreeFutureResult<T : PotentiallyPartialResult>
-  private constructor(@JvmField val result: T?, val message: String?) {
+  private constructor(
+      @JvmField val result: T? = null,
+      val message: String? = null,
+      @JvmField val type: FutureExecutionType? = null
+  ) {
     companion object {
-      fun <T : PotentiallyPartialResult> finishWithResult(result: T): TreeFutureResult<T> {
-        return TreeFutureResult(result, null)
+      fun <T : PotentiallyPartialResult> finishWithResult(
+          result: T,
+          type: FutureExecutionType? = null
+      ): TreeFutureResult<T> {
+        return TreeFutureResult(result = result, type = type)
       }
 
       fun <T : PotentiallyPartialResult> interruptWithMessage(
-          message: String?
+          message: String?,
+          type: FutureExecutionType? = null,
       ): TreeFutureResult<T> {
-        return TreeFutureResult(null, message)
+        return TreeFutureResult(message = message, type = type)
       }
     }
   }
@@ -513,19 +521,18 @@ abstract class TreeFuture<T : PotentiallyPartialResult>(
           futureList.add(future)
         }
       }
-      if (futureExecutionListener != null) {
-        val executionType: FutureExecutionType =
-            if (isReusingFuture) {
-              FutureExecutionType.REUSE_FUTURE
-            } else {
-              FutureExecutionType.NEW_FUTURE
-            }
-        futureExecutionListener.onPreExecution(
-            future.getVersion(), executionType, future.getDescription())
-      }
+
+      val executionType: FutureExecutionType =
+          if (isReusingFuture) {
+            FutureExecutionType.REUSE_FUTURE
+          } else {
+            FutureExecutionType.NEW_FUTURE
+          }
+      futureExecutionListener?.onPreExecution(
+          future.getVersion(), executionType, future.getDescription())
 
       // Run and get the result
-      val result: TreeFutureResult<T> = future.runAndGet(source)
+      val result: TreeFutureResult<T> = future.runAndGet(source, executionType)
       synchronized(mutex) {
         futureExecutionListener?.onPostExecution(
             future.getVersion(), future.isReleased, future.getDescription())

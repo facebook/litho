@@ -266,6 +266,8 @@ public class ComponentTree
   @GuardedBy("this")
   private @Nullable TreeState mTreeState;
 
+  private boolean mIsResolveWithoutSizeFixEnabled = false;
+
   protected final int mId;
 
   @GuardedBy("this")
@@ -1856,7 +1858,7 @@ public class ComponentTree
       final int widthSpec,
       final int heightSpec,
       final Component root,
-      final TreePropContainer treePropContainer) {
+      @Nullable final TreePropContainer treePropContainer) {
     final ResolveResult currentResolveResult;
     synchronized (this) {
       currentResolveResult = mCommittedResolveResult;
@@ -1999,6 +2001,35 @@ public class ComponentTree
     final @Nullable ResolveResult resolveResult = resolveResultHolder.result;
 
     if (resolveResult == null) {
+      final boolean isWaitingButInterrupted =
+          resolveResultHolder.type == TreeFuture.FutureExecutionType.REUSE_FUTURE
+              && TreeFuture.FUTURE_RESULT_NULL_REASON_RESUME_NON_MAIN_THREAD.equals(
+                  resolveResultHolder.getMessage());
+      if (getLithoConfiguration().componentsConfig.enableResolveWithoutSizeSpec
+          && isWaitingButInterrupted) {
+        final boolean hasSameRootAndEquivalentSpecs;
+        synchronized (this) {
+          hasSameRootAndEquivalentSpecs =
+              isCompatibleComponentAndSpec(
+                  mMainThreadLayoutState, root.getId(), widthSpec, heightSpec);
+        }
+        if (!hasSameRootAndEquivalentSpecs) {
+          mIsResolveWithoutSizeFixEnabled = true;
+          // If we haven't found any committed layout state with the same root and specs, which
+          // means the current resolve request might be getting lost and we need to re-try it to
+          // make sure there's not render in flight.
+          requestRenderWithSplitFutures(
+              true,
+              output,
+              source,
+              extraAttribution,
+              widthSpec,
+              heightSpec,
+              root,
+              treePropContainer);
+        }
+      }
+
       return;
     }
 
@@ -2253,6 +2284,7 @@ public class ComponentTree
                   attributes.put(
                       "isSizeNotCompatibleAndWithoutLayoutFuture",
                       isSizeNotCompatibleAndWithoutLayoutFuture);
+                  attributes.put("isFixEnabled", mIsResolveWithoutSizeFixEnabled);
                   return Unit.INSTANCE;
                 });
           }
