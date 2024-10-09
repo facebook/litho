@@ -62,6 +62,7 @@ inline fun ResourcesScope.VerticalScroll(
     fillViewport: Boolean = false,
     overScrollMode: Int = View.OVER_SCROLL_IF_CONTENT_SCROLLS,
     eventsController: VerticalScrollEventsController? = null,
+    shouldCompareCommonProps: Boolean = false,
     noinline onScrollChange: ((NestedScrollView, scrollY: Int, oldScrollY: Int) -> Unit)? = null,
     noinline onScrollStateChange: ((View, Int) -> Unit)? = null,
     noinline onInterceptTouch: ((NestedScrollView, event: MotionEvent) -> Boolean)? = null,
@@ -96,6 +97,7 @@ inline fun ResourcesScope.VerticalScroll(
         .fadingEdgeLengthPx(fadingEdgeLength.toPixels())
         .fillViewport(fillViewport)
         .eventsController(eventsController)
+        .shouldCompareCommonProps(shouldCompareCommonProps)
         .apply {
           onScrollChange?.let {
             onScrollChangeListener { v, _, scrollY, _, oldScrollY -> it(v, scrollY, oldScrollY) }
