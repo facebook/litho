@@ -45,9 +45,9 @@ class PostWithActionsKComponent(val post: Post) : KComponent() {
     val isLiked = useState { false }
     // end_state_hook
 
-    return Column {
+    return Column(gap = 40.dp) {
       child(
-          Row(alignItems = YogaAlign.CENTER, style = Style.padding(all = 8.dp)) {
+          Row(gap = 40.dp, alignItems = YogaAlign.CENTER, style = Style.padding(all = 8.dp)) {
             child(
                 Image(
                     drawable = drawableRes(post.user.avatarRes),
