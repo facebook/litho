@@ -156,6 +156,8 @@ internal constructor(
      * state containers
      */
     @JvmField val enableFixForCachedNestedTree: Boolean = false,
+    /** This flag is to enable usage of Primitive Vertical Scroll Component */
+    @JvmField val usePrimitiveVerticalScroll: Boolean = false,
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =
