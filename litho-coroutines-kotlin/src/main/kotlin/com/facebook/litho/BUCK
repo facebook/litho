@@ -51,5 +51,6 @@ litho_android_library(
     exported_deps = [
         LITHO_JAVA_TARGET,
         LITHO_KOTLIN_COROUTINES_CORE_TARGET,
+        "//third-party/java/androidx/lifecycle/lifecycle-runtime-ktx:lifecycle-runtime-ktx",
     ],
 )

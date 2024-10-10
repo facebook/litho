@@ -16,7 +16,10 @@
 
 package com.facebook.litho
 
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import com.facebook.litho.annotations.Hook
+import com.facebook.litho.lifecycle.LifecycleOwnerTreeProp
 import kotlinx.coroutines.flow.StateFlow
 
 /**
@@ -28,6 +31,24 @@ import kotlinx.coroutines.flow.StateFlow
 @Hook
 fun <T> ComponentScope.useFlow(stateFlow: StateFlow<T>): T =
     useProducer(initialValue = { stateFlow.value }, stateFlow) { stateFlow.collect { update(it) } }
+
+/**
+ * Returns the current value of a given [stateFlow].
+ *
+ * This [StateFlow] is collected on the CoroutineScope given by [getTreeProp] as long as the
+ * [Lifecycle] is at the [minActiveState] state, and collection pauses when the [Lifecycle] falls
+ * below [minActiveState]. The collection is canceled when this component is detached.
+ */
+@Hook
+fun <T> ComponentScope.useFlowWithLifecycle(
+    stateFlow: StateFlow<T>,
+    minActiveState: Lifecycle.State = Lifecycle.State.RESUMED,
+): T {
+  val lifecycle = LifecycleOwnerTreeProp.value?.lifecycle ?: error("No LifecycleOwner found")
+  return useProducer(initialValue = { stateFlow.value }, stateFlow, minActiveState) {
+    lifecycle.repeatOnLifecycle(minActiveState) { stateFlow.collect { update(it) } }
+  }
+}
 
 /**
  * Uses the collection of a StateFlow that is dynamically supplied by [flowBlock], which will be

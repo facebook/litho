@@ -16,6 +16,13 @@
 
 package com.facebook.litho
 
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import com.facebook.litho.kotlin.widget.Text
+import com.facebook.litho.lifecycle.LifecycleOwnerTreeProp
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.testing.unspecified
@@ -28,6 +35,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.setMain
 import org.assertj.core.api.Assertions.assertThat
@@ -227,5 +235,119 @@ class UseFlowTest {
     lithoViewRule.idle()
 
     assertThat(stateRef.get()).isTrue
+  }
+
+  @Test
+  fun `when lifecycle state is below min state then flow should stop updating state`() {
+    var renders = AtomicInteger(0)
+    class TestComponent(private val count: StateFlow<Int>) : KComponent() {
+      override fun ComponentScope.render(): Component {
+        val counter = useFlowWithLifecycle(count, Lifecycle.State.RESUMED)
+        renders.addAndGet(1)
+        return Text(text = "Counter: $counter")
+      }
+    }
+
+    val count = MutableStateFlow(0)
+    val component = TestComponent(count)
+    val lifecycleOwner = TestLifecycleOwner().apply { updateState(Lifecycle.State.STARTED) }
+
+    val tree =
+        ComponentTree.create(
+                ComponentContext(
+                    lithoViewRule.context,
+                    TreePropContainer().apply { put(LifecycleOwnerTreeProp, lifecycleOwner) }))
+            .build()
+
+    val handle = lithoViewRule.render(componentTree = tree) { component }
+    testDispatcher.scheduler.runCurrent()
+
+    assertThat(renders.get()).isEqualTo(1)
+
+    lifecycleOwner.updateState(Lifecycle.State.RESUMED)
+
+    lithoViewRule.act(handle) {
+      count.value = 1
+      testDispatcher.scheduler.runCurrent()
+    }
+
+    assertThat(renders.get()).isEqualTo(2) // should re-renders
+
+    lifecycleOwner.updateState(Lifecycle.State.STARTED)
+    testDispatcher.scheduler.runCurrent()
+
+    lithoViewRule.act(handle) {
+      count.value = 2
+      testDispatcher.scheduler.runCurrent()
+    }
+
+    assertThat(renders.get()).isEqualTo(2) // should not re-render
+
+    lifecycleOwner.updateState(Lifecycle.State.RESUMED)
+    testDispatcher.scheduler.runCurrent()
+
+    lithoViewRule.act(handle) {
+      count.value = 3
+      testDispatcher.scheduler.runCurrent()
+    }
+
+    assertThat(renders.get()).isEqualTo(3) // should re-render
+  }
+}
+
+private class TestLifecycleOwner : LifecycleOwner {
+
+  private val testLifecycle = TestLifecycle(this)
+
+  override val lifecycle: Lifecycle = testLifecycle
+
+  fun updateState(state: Lifecycle.State) {
+    testLifecycle.updateState(state)
+  }
+}
+
+private class TestLifecycle(private val lifecycleOwner: LifecycleOwner) : Lifecycle() {
+
+  private var _state = State.INITIALIZED
+
+  override val currentState: State
+    get() = _state
+
+  private val observers = mutableListOf<LifecycleObserver>()
+
+  override fun addObserver(observer: LifecycleObserver) {
+    observers.add(observer)
+  }
+
+  override fun removeObserver(observer: LifecycleObserver) {
+    observers.remove(observer)
+  }
+
+  fun updateState(next: State) {
+    val previous = _state
+    _state = next
+    val observersCopy = buildList { addAll(observers) }
+    observersCopy.forEach { observer ->
+      if (observer is DefaultLifecycleObserver) {
+        when (next) {
+          State.INITIALIZED -> observer.onCreate(lifecycleOwner)
+          State.STARTED -> observer.onStart(lifecycleOwner)
+          State.RESUMED -> observer.onResume(lifecycleOwner)
+          State.CREATED -> observer.onCreate(lifecycleOwner)
+          State.DESTROYED -> observer.onDestroy(lifecycleOwner)
+        }
+      } else if (observer is LifecycleEventObserver) {
+        val event = toEvent(previous, next)
+        event?.let { observer.onStateChanged(lifecycleOwner, it) }
+      }
+    }
+  }
+
+  private fun toEvent(previous: Lifecycle.State, next: Lifecycle.State): Event? {
+    return if (previous > next) {
+      Event.downTo(next)
+    } else {
+      Event.upTo(next)
+    }
   }
 }
