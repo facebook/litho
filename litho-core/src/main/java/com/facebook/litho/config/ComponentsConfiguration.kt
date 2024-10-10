@@ -16,7 +16,6 @@
 
 package com.facebook.litho.config
 
-import android.os.Build
 import com.facebook.litho.BuildConfig
 import com.facebook.litho.ComponentHost
 import com.facebook.litho.ComponentHost.UnsafeModificationPolicy
@@ -193,11 +192,6 @@ internal constructor(
 
     /** Indicates that the incremental mount helper is required for this build. */
     @JvmField val USE_INCREMENTAL_MOUNT_HELPER: Boolean = BuildConfig.USE_INCREMENTAL_MOUNT_HELPER
-
-    /** Whether we need to account for lack of synchronization while accessing Themes. */
-    @JvmField
-    val NEEDS_THEME_SYNCHRONIZATION: Boolean =
-        Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1
 
     /** The default priority for threads that perform background layout calculations. */
     @JvmField var DEFAULT_BACKGROUND_THREAD_PRIORITY: Int = 5

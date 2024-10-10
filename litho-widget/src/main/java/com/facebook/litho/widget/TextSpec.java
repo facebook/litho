@@ -33,6 +33,7 @@ import static com.facebook.litho.widget.TextStylesHelper.DEFAULT_MIN_WIDTH;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -845,15 +846,12 @@ public class TextSpec {
       ellipsisTarget = customEllipsisTextWidth;
     }
     // Get character offset number corresponding to that X position:
-
-    int ellipsisOffset;
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      ellipsisOffset =
-          VersionedAndroidApis.M.getEllipsisOffsetFromPaintAdvance(
-              newLayout, text, isRtl, ellipsizedLineNumber, ellipsisTarget);
-    } else {
-      ellipsisOffset = newLayout.getOffsetForHorizontal(ellipsizedLineNumber, ellipsisTarget);
-    }
+    final Paint paint = newLayout.getPaint();
+    final int lineStart = newLayout.getLineStart(ellipsizedLineNumber);
+    final int lineEnd = newLayout.getLineEnd(ellipsizedLineNumber);
+    int ellipsisOffset =
+        paint.getOffsetForAdvance(
+            text, lineStart, lineEnd, lineStart, lineEnd, isRtl, ellipsisTarget);
 
     if (ellipsisOffset > 0) {
       // getOffsetForHorizontal returns the closest character, but we need to guarantee no

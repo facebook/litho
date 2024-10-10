@@ -17,7 +17,6 @@
 package com.facebook.litho.testing.viewtree;
 
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.view.View;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.ComponentHost;
@@ -131,10 +130,8 @@ class ComponentQueries {
     if (host.getBackground() != null) {
       drawables.add(host.getBackground());
     }
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      if (host.getForeground() != null) {
-        drawables.add(host.getForeground());
-      }
+    if (host.getForeground() != null) {
+      drawables.add(host.getForeground());
     }
     for (final Drawable drawable : drawables) {
       if (predicate.apply(drawable)) {

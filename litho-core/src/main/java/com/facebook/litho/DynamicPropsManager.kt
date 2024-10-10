@@ -16,7 +16,6 @@
 
 package com.facebook.litho
 
-import android.os.Build
 import android.util.Pair
 import android.util.SparseArray
 import android.view.View
@@ -24,6 +23,7 @@ import androidx.annotation.VisibleForTesting
 import com.facebook.litho.CollectionsUtils.isNotNullOrEmpty
 import com.facebook.litho.ComponentUtils.handle
 import com.facebook.litho.ComponentUtils.rethrow
+import com.facebook.litho.drawable.ComparableColorDrawable
 
 /**
  * Takes care of dynamic Props
@@ -241,8 +241,8 @@ class DynamicPropsManager : DynamicValue.OnValueChangeListener<Any?> {
               content.background = null
             }
         KEY_FOREGROUND_COLOR ->
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && content.foreground != null) {
-              setViewForeground(content, null)
+            if (content.foreground != null) {
+              content.foreground = null
             }
       }
     }
@@ -261,7 +261,7 @@ class DynamicPropsManager : DynamicValue.OnValueChangeListener<Any?> {
         KEY_ROTATION_X -> target.rotationX = resolve(value)
         KEY_ROTATION_Y -> target.rotationY = resolve(value)
         KEY_BACKGROUND_DRAWABLE -> target.background = resolve(value)
-        KEY_FOREGROUND_COLOR -> setViewForeground(target, resolve<Int>(value))
+        KEY_FOREGROUND_COLOR -> target.foreground = ComparableColorDrawable.create(resolve(value))
       }
     }
 

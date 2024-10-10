@@ -460,7 +460,7 @@ class ViewAttributes {
       setViewStateListAnimator(content, attributes, cloneStateListAnimators)
       if (attributes.disableDrawableOutputs) {
         setViewBackground(content, attributes)
-        setViewForeground(content, attributes.foreground)
+        setViewForeground(content, attributes)
 
         // when background outputs are disabled, they are wrapped by a ComponentHost.
         // A background can set the padding of a view, but ComponentHost should not have
@@ -474,7 +474,7 @@ class ViewAttributes {
         // Set view background, if applicable.  Do this before padding
         // as it otherwise overrides the padding.
         setViewBackground(content, attributes)
-        setViewForeground(content, attributes.foreground)
+        setViewForeground(content, attributes)
         setViewLayoutDirection(content, attributes)
       }
 
@@ -1050,18 +1050,18 @@ class ViewAttributes {
       view.background = drawable
     }
 
-    private fun unsetViewForeground(view: View, attributes: ViewAttributes) {
+    private fun setViewForeground(view: View, attributes: ViewAttributes) {
       val foreground = attributes.foreground
       if (foreground != null) {
-        unsetForeground(view)
+        view.foreground = foreground
       }
     }
 
-    fun unsetForeground(view: View) {
-      check(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        ("MountState has a ViewAttributes with foreground however the current Android version doesn't support foreground on Views")
+    private fun unsetViewForeground(view: View, attributes: ViewAttributes) {
+      val foreground = attributes.foreground
+      if (foreground != null) {
+        view.foreground = null
       }
-      view.foreground = null
     }
 
     private fun setViewLayoutDirection(view: View, attributes: ViewAttributes) {

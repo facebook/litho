@@ -16,7 +16,6 @@
 
 package com.facebook.samples.litho.kotlin.primitives.controllers
 
-import android.os.Build
 import android.widget.TimePicker
 import com.facebook.litho.LithoPrimitive
 import com.facebook.litho.PrimitiveComponent
@@ -64,39 +63,23 @@ class TimePickerController(private var currentHour: Int, private var currentMinu
   var minute: Int
     get() {
       ThreadUtils.assertMainThread()
-      return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        content?.minute ?: currentMinute
-      } else {
-        content?.currentMinute ?: currentMinute
-      }
+      return content?.minute ?: currentMinute
     }
     set(value) {
       ThreadUtils.assertMainThread()
       currentMinute = value
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        content?.minute = value
-      } else {
-        content?.currentMinute = value
-      }
+      content?.minute = value
     }
 
   var hour: Int
     get() {
       ThreadUtils.assertMainThread()
-      return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        content?.hour ?: currentHour
-      } else {
-        content?.currentHour ?: currentHour
-      }
+      return content?.hour ?: currentHour
     }
     set(value) {
       ThreadUtils.assertMainThread()
       currentHour = value
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        content?.hour = value
-      } else {
-        content?.currentHour = value
-      }
+      content?.hour = value
     }
 
   private val onTimeChangedListener =

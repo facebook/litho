@@ -18,7 +18,6 @@ package com.facebook.litho.widget;
 
 import static android.graphics.Color.TRANSPARENT;
 import static android.os.Build.VERSION.SDK_INT;
-import static android.os.Build.VERSION_CODES.M;
 import static android.view.View.TEXT_ALIGNMENT_GRAVITY;
 
 import android.content.Context;
@@ -920,10 +919,7 @@ class TextInputSpec {
       EventHandler textPastedEventHandler) {
     editText.attachWatchers(textWatchers);
     editText.setCustomSelectionActionModeCallback(selectionActionModeCallback);
-    if (SDK_INT >= M) {
-      editText.setCustomInsertionActionModeCallback(insertionActionModeCallback);
-    }
-
+    editText.setCustomInsertionActionModeCallback(insertionActionModeCallback);
     editText.setComponentContext(c);
     editText.setTextChangedEventHandler(textChangedEventHandler);
     editText.setSelectionChangedEventHandler(selectionChangedEventHandler);
@@ -964,9 +960,7 @@ class TextInputSpec {
     editText.setEditorActionEventHandler(null);
     editText.setInputConnectionEventHandler(null);
     editText.setCustomSelectionActionModeCallback(null);
-    if (SDK_INT >= M) {
-      editText.setCustomInsertionActionModeCallback(null);
-    }
+    editText.setCustomInsertionActionModeCallback(null);
     editText.setTextPastedEventHandler(null);
   }
 
@@ -1213,16 +1207,6 @@ class TextInputSpec {
       // Unfortunately we can't just override `void onEditorAction(int actionCode)` as that only
       // covers a subset of all cases where onEditorActionListener is invoked.
       this.setOnEditorActionListener(this);
-    }
-
-    @Override
-    public void requestLayout() {
-      // TextInputSpec$ForMeasureEditText.setText in API23 causing relayout for
-      // EditTextWithEventHandlers https://fburl.com/mgq76t3l
-      if (SDK_INT == M && !ThreadUtils.isMainThread()) {
-        return;
-      }
-      super.requestLayout();
     }
 
     @Override

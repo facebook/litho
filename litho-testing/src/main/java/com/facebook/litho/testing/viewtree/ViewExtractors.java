@@ -17,7 +17,6 @@
 package com.facebook.litho.testing.viewtree;
 
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
@@ -84,10 +83,8 @@ public final class ViewExtractors {
             if (host.getBackground() != null) {
               drawables.add(String.valueOf(host.getBackground()));
             }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-              if (host.getForeground() != null) {
-                drawables.add(String.valueOf(host.getForeground()));
-              }
+            if (host.getForeground() != null) {
+              drawables.add(String.valueOf(host.getForeground()));
             }
             return String.format(
                 "Found drawables: \"%s\", view is %s",

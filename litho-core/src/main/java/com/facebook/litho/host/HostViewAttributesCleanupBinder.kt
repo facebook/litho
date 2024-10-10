@@ -3,7 +3,6 @@
 package com.facebook.litho.host
 
 import android.content.Context
-import android.os.Build
 import android.view.View
 import android.view.ViewOutlineProvider
 import androidx.core.view.ViewCompat
@@ -14,7 +13,6 @@ import com.facebook.litho.ViewAttributes.Companion.unsetAmbientShadowColor
 import com.facebook.litho.ViewAttributes.Companion.unsetClickHandler
 import com.facebook.litho.ViewAttributes.Companion.unsetContentDescription
 import com.facebook.litho.ViewAttributes.Companion.unsetFocusChangeHandler
-import com.facebook.litho.ViewAttributes.Companion.unsetForeground
 import com.facebook.litho.ViewAttributes.Companion.unsetInterceptTouchEventHandler
 import com.facebook.litho.ViewAttributes.Companion.unsetLongClickHandler
 import com.facebook.litho.ViewAttributes.Companion.unsetSpotShadowColor
@@ -74,12 +72,8 @@ private fun unsetAllViewAttributes(content: Host) {
   ViewCompat.setElevation(content, 0f)
   unsetAmbientShadowColor(content, -1)
   unsetSpotShadowColor(content, -1)
-  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-    content.outlineProvider = ViewOutlineProvider.BACKGROUND
-  }
-  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-    content.clipToOutline = false
-  }
+  content.outlineProvider = ViewOutlineProvider.BACKGROUND
+  content.clipToOutline = false
   content.clipChildren = true
   unsetContentDescription(content)
   unsetTooltipText(content)
@@ -94,11 +88,11 @@ private fun unsetAllViewAttributes(content: Host) {
   content.isFocusable = false
   content.isEnabled = true
   content.isSelected = false
+  content.foreground = null
   ViewCompat.setKeyboardNavigationCluster(content, false)
   ViewCompat.setImportantForAccessibility(content, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO)
   unsetAccessibilityDelegate(content)
   setBackgroundCompat(content, null)
-  unsetForeground(content)
   unsetViewLayoutDirection(content)
   content.setLayerType(View.LAYER_TYPE_NONE, null)
   ViewCompat.setSystemGestureExclusionRects(content, emptyList())

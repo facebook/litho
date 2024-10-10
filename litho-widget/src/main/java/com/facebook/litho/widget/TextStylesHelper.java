@@ -24,14 +24,12 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Typeface;
-import android.os.Build;
 import android.text.TextUtils.TruncateAt;
 import android.view.Gravity;
 import android.view.View;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.Output;
 import com.facebook.litho.R;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.utils.SynchronizedTypefaceHelper;
 
 public final class TextStylesHelper {
@@ -89,26 +87,13 @@ public final class TextStylesHelper {
     // behavior,
     // we will parse textAppearance attributes first and then will override leftovers from main
     // style
-    TypedArray a;
-    if (ComponentsConfiguration.NEEDS_THEME_SYNCHRONIZATION) {
-      synchronized (theme) {
-        a = c.obtainStyledAttributes(R.styleable.Text_TextAppearanceAttr, 0);
-      }
-    } else {
-      a = c.obtainStyledAttributes(R.styleable.Text_TextAppearanceAttr, 0);
-    }
+    TypedArray a = c.obtainStyledAttributes(R.styleable.Text_TextAppearanceAttr, 0);
 
     int textAppearanceResId =
         a.getResourceId(R.styleable.Text_TextAppearanceAttr_android_textAppearance, -1);
     a.recycle();
     if (textAppearanceResId != -1) {
-      if (ComponentsConfiguration.NEEDS_THEME_SYNCHRONIZATION) {
-        synchronized (theme) {
-          a = theme.obtainStyledAttributes(textAppearanceResId, R.styleable.Text);
-        }
-      } else {
-        a = theme.obtainStyledAttributes(textAppearanceResId, R.styleable.Text);
-      }
+      a = theme.obtainStyledAttributes(textAppearanceResId, R.styleable.Text);
       resolveStyleAttrsForTypedArray(
           a,
           ellipsize,
@@ -142,13 +127,7 @@ public final class TextStylesHelper {
     }
 
     // now (after we parsed textAppearance) we can move on to main style attributes
-    if (ComponentsConfiguration.NEEDS_THEME_SYNCHRONIZATION) {
-      synchronized (theme) {
-        a = c.obtainStyledAttributes(R.styleable.Text, 0);
-      }
-    } else {
-      a = c.obtainStyledAttributes(R.styleable.Text, 0);
-    }
+    a = c.obtainStyledAttributes(R.styleable.Text, 0);
     resolveStyleAttrsForTypedArray(
         a,
         ellipsize,
@@ -273,17 +252,11 @@ public final class TextStylesHelper {
       } else if (attr == R.styleable.Text_android_fontFamily) {
         fontFamily = a.getString(attr);
       } else if (attr == R.styleable.Text_android_breakStrategy) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-          breakStrategy.set(a.getInt(attr, DEFAULT_BREAK_STRATEGY));
-        }
+        breakStrategy.set(a.getInt(attr, DEFAULT_BREAK_STRATEGY));
       } else if (attr == R.styleable.Text_android_hyphenationFrequency) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-          hyphenationFrequency.set(a.getInt(attr, DEFAULT_HYPHENATION_FREQUENCY));
-        }
+        hyphenationFrequency.set(a.getInt(attr, DEFAULT_HYPHENATION_FREQUENCY));
       } else if (attr == R.styleable.Text_android_justificationMode) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-          justificationMode.set(a.getInt(attr, DEFAULT_JUSTIFICATION_MODE));
-        }
+        justificationMode.set(a.getInt(attr, DEFAULT_JUSTIFICATION_MODE));
       }
     }
 

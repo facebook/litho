@@ -17,7 +17,6 @@
 package com.facebook.litho
 
 import android.graphics.drawable.Drawable
-import android.os.Build
 import android.util.SparseArray
 import androidx.core.util.isNotEmpty
 import androidx.core.view.ViewCompat
@@ -28,7 +27,6 @@ import com.facebook.litho.annotations.ImportantForAccessibility
 import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.drawable.BorderColorDrawable
 import com.facebook.litho.host.HostViewAttributesCleanupBinder
-import com.facebook.litho.utils.VersionedAndroidApis
 import com.facebook.rendercore.MountState
 import com.facebook.rendercore.RenderUnit
 import com.facebook.rendercore.primitives.Primitive
@@ -217,8 +215,7 @@ object LithoNodeUtils {
 
     /// Only create a foreground output when the component does not mount a View because
     // the foreground has already been set in the output of the component.
-    return if (foreground != null &&
-        (!node.willMountView || Build.VERSION.SDK_INT < Build.VERSION_CODES.M)) {
+    return if (foreground != null && (!node.willMountView)) {
       createDrawableRenderUnit(node, foreground, width, height, OutputUnitType.FOREGROUND, diffNode)
     } else {
       null
@@ -502,9 +499,7 @@ object LithoNodeUtils {
     // will be created for backgrounds and foreground.
     if (disableBgFgOutputs || !attrs.isHostSpec) {
       attrs.background = lithoNode.background
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        VersionedAndroidApis.M.setForeground(attrs, lithoNode.foreground)
-      }
+      attrs.foreground = lithoNode.foreground
     }
     attrs.layoutDirection = lithoNode.layoutDirection
     attrs.layerType = lithoNode.layerType
