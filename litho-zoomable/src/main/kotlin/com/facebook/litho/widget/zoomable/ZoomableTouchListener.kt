@@ -20,4 +20,6 @@ import android.view.MotionEvent
 
 interface ZoomableTouchListener {
   fun onTouchEvent(event: MotionEvent): Boolean
+
+  val isCurrentlyInZoom: Boolean
 }

@@ -42,5 +42,8 @@ class LithoZoomableController(
         override fun onTouchEvent(event: MotionEvent): Boolean {
           return onTouch(event)
         }
+
+        override val isCurrentlyInZoom: Boolean
+          get() = state != State.IDLE
       }
 }

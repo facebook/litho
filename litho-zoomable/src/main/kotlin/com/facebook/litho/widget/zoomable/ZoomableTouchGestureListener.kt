@@ -26,6 +26,9 @@ class ZoomableTouchGestureListener {
 
   private val listeners: MutableList<ZoomableTouchListener> = mutableListOf()
 
+  val isCurrentlyInZoom: Boolean
+    get() = listeners.any { it.isCurrentlyInZoom }
+
   fun addZoomableTouchListener(listener: ZoomableTouchListener) {
     listeners.add(listener)
   }
