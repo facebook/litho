@@ -2,7 +2,7 @@
 <html class="no-js">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
-    <title>alpha</title>
+    <title>useFlowWithLifecycle</title>
 <link href="../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../";</script>
     <script>document.documentElement.classList.replace("no-js","js");</script>
     <script>const storage = localStorage.getItem("dokka-dark-mode")
@@ -45,7 +45,7 @@
             </div>
         </div>
         <div class="filter-section" id="filter-section">
-                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":litho-core:dokkaHtmlPartial/release">androidJvm</button>
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":litho-coroutines-kotlin:dokkaHtmlPartial/release">androidJvm</button>
         </div>
     </div>
     <div class="navigation-controls">
@@ -58,12 +58,12 @@
                 <div class="sidebar--inner" id="sideMenu"></div>
             </div>
             <div id="main">
-<div class="main-content" data-page-type="member" id="content" pageids="litho-core::com.facebook.litho.view//alpha/com.facebook.litho.Style#kotlin.Float/PointingToDeclaration//947585829">
-  <div class="breadcrumbs"><a href="../index.html">litho-core</a><span class="delimiter">/</span><a href="index.html">com.facebook.litho.view</a><span class="delimiter">/</span><span class="current">alpha</span></div>
+<div class="main-content" data-page-type="member" id="content" pageids="litho-coroutines-kotlin::com.facebook.litho//useFlowWithLifecycle/com.facebook.litho.ComponentScope#kotlinx.coroutines.flow.StateFlow[TypeParam(bounds=[kotlin.Any?])]#androidx.lifecycle.Lifecycle.State/PointingToDeclaration//327655329">
+  <div class="breadcrumbs"><a href="../index.html">litho-coroutines-kotlin</a><span class="delimiter">/</span><a href="index.html">com.facebook.litho</a><span class="delimiter">/</span><span class="current">useFlowWithLifecycle</span></div>
   <div class="cover ">
-    <h1 class="cover"><span><span>alpha</span></span></h1>
+    <h1 class="cover"><span>use</span><wbr><span>Flow</span><wbr><span>With</span><wbr><span><span>Lifecycle</span></span></h1>
   </div>
-  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="alpha.html"><span class="token function">alpha</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">alpha<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><p class="paragraph">Sets an alpha on the View this Component mounts to. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p><p class="paragraph">See <a href="https://developer.android.com/reference/kotlin/android/view/View.html#setalpha">android.view.View.setAlpha</a></p></div></div>
+  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-coroutines-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="use-flow-with-lifecycle.html">T</a><span class="token operator">&gt; </span><a href="../../litho-core/com.facebook.litho/-component-scope/index.html">ComponentScope</a><span class="token punctuation">.</span><a href="use-flow-with-lifecycle.html"><span class="token function">useFlowWithLifecycle</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">stateFlow<span class="token operator">: </span><span data-unresolved-link="kotlinx.coroutines.flow/StateFlow///PointingToDeclaration/">StateFlow</span><span class="token operator">&lt;</span><a href="use-flow-with-lifecycle.html">T</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">minActiveState<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/Lifecycle.State.html">Lifecycle.State</a><span class="token operator"> = </span>Lifecycle.State.RESUMED</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="use-flow-with-lifecycle.html">T</a></div><p class="paragraph">Returns the current value of a given <a href="use-flow-with-lifecycle.html">stateFlow</a>.</p><p class="paragraph">This <span data-unresolved-link="kotlinx.coroutines.flow/StateFlow///PointingToDeclaration/">StateFlow</span> is collected on the CoroutineScope given by <a href="../../litho-core/com.facebook.litho/index.html">getTreeProp</a> as long as the <a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/Lifecycle.html">Lifecycle</a> is at the <a href="use-flow-with-lifecycle.html">minActiveState</a> state, and collection pauses when the <a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/Lifecycle.html">Lifecycle</a> falls below <a href="use-flow-with-lifecycle.html">minActiveState</a>. The collection is canceled when this component is detached.</p></div></div>
 </div>
       <div class="footer">
         <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
