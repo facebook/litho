@@ -89,6 +89,7 @@ public class RCTextView extends View {
   // NULLSAFE_FIXME[Field Not Initialized]
   private Paint mHighlightPaint;
   private boolean mIsSettingDefaultAccessibilityDelegate = false;
+  private boolean mShouldHandleTouch;
 
   public RCTextView(Context context) {
     super(context);
@@ -226,6 +227,7 @@ public class RCTextView extends View {
       }
     }
     mClickableSpans = textLayout.clickableSpans;
+    mShouldHandleTouch = mClickableSpans != null && mClickableSpans.length > 0;
     if (textLayout.textStyle.accessibilityLabel != null) {
       setContentDescription(textLayout.textStyle.accessibilityLabel);
     }
@@ -260,6 +262,7 @@ public class RCTextView extends View {
     }
     // NULLSAFE_FIXME[Field Not Nullable]
     mClickableSpans = null;
+    mShouldHandleTouch = false;
     setContentDescription("");
 
     if (mRCTextAccessibilityDelegate != null) {
@@ -343,6 +346,10 @@ public class RCTextView extends View {
 
   @Override
   public boolean onTouchEvent(MotionEvent event) {
+    if (!mShouldHandleTouch) {
+      return super.onTouchEvent(event);
+    }
+
     final int action = event.getActionMasked();
     if (action == ACTION_CANCEL) {
       clearSelection();
