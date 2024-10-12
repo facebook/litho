@@ -302,7 +302,7 @@ public final class TestLayout<S extends View> extends SpecGeneratedComponent imp
   protected Object dispatchOnEventImpl(final EventHandler eventHandler, final Object eventState) {
     int id = eventHandler.id;
     switch (id) {
-        // testLayoutEvent
+      // testLayoutEvent
       case 1328162206:
         {
           ClickEvent _event = (ClickEvent) eventState;
@@ -313,7 +313,7 @@ public final class TestLayout<S extends View> extends SpecGeneratedComponent imp
               (int) eventHandler.params[0]);
           return null;
         }
-        // __internalOnErrorHandler
+      // __internalOnErrorHandler
       case -1048037474:
         {
           ErrorEvent _event = (ErrorEvent) eventState;
