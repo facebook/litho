@@ -482,7 +482,7 @@ inline fun Style.pivotPercent(
   }
   val model = Pair(pivotXPercent, pivotYPercent)
   return this +
-      Style.onBindWithDescription("PivotPercent", model) { content ->
+      Style.onBindWithDescription({ "PivotPercent" }, model) { content ->
         check(content is SupportsPivotTransform) { BadPivotClassErrorMessage }
         content.setTransformPivot(model.first, model.second)
         onUnbind { SupportsPivotTransform.resetPivot(content) }

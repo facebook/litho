@@ -63,7 +63,7 @@ class BinderStyleTest {
         lithoTestRule.render {
           ComponentWithTextViewPrimitive(
               style =
-                  Style.onBindWithDescription("test-binder", Unit) { content ->
+                  Style.onBindWithDescription({ "test-binder" }, Unit) { content ->
                     wasBound = true
                     content.tag = "test-tag"
                     view = content
@@ -97,7 +97,7 @@ class BinderStyleTest {
         lithoTestRule.render {
           ComponentWithTextViewPrimitive(
               style =
-                  Style.onBindWithDescription("test-binder-1", Unit) { content ->
+                  Style.onBindWithDescription({ "test-binder-1" }, Unit) { content ->
                         wasBound1 = true
                         content.tag = "test-tag-1"
                         view = content
@@ -106,7 +106,7 @@ class BinderStyleTest {
                           content.tag = null
                         }
                       }
-                      .onBindWithDescription("test-binder-2", Unit) { content ->
+                      .onBindWithDescription({ "test-binder-2" }, Unit) { content ->
                         wasBound2 = true
                         content.tag = "test-tag-2"
                         view = content
@@ -144,7 +144,7 @@ class BinderStyleTest {
               Text(
                   "Hello",
                   style =
-                      Style.onBindWithDescription("test-binder", *deps()) {
+                      Style.onBindWithDescription({ "test-binder" }, *deps()) {
                         bindCalls++
                         onUnbind { unbindCalls++ }
                       },
@@ -188,7 +188,7 @@ class BinderStyleTest {
                   "Hello",
                   style =
                       Style.onBindWithDescription(
-                          "test-binder",
+                          { "test-binder" },
                           Unit,
                           func =
                               object : BindFunc<View> {
@@ -240,7 +240,7 @@ class BinderStyleTest {
     val lithoView =
         lithoTestRule.render {
           ComponentWithDrawableMountSpec(
-              textStyle = Style.onBindWithDescription("test-binder", Unit, func = testBinder))
+              textStyle = Style.onBindWithDescription({ "test-binder" }, Unit, func = testBinder))
         }
 
     LithoAssertions.assertThat(lithoView).hasVisibleText("Hello")
@@ -264,7 +264,7 @@ class BinderStyleTest {
     val lithoView =
         lithoTestRule.render {
           ComponentWithTextViewPrimitive(
-              style = Style.onBindWithDescription("test-binder", Unit, func = binder))
+              style = Style.onBindWithDescription({ "test-binder" }, Unit, func = binder))
         }
     LithoAssertions.assertThat(lithoView).hasVisibleText("Hello")
 
@@ -288,7 +288,7 @@ class BinderStyleTest {
     val lithoView =
         lithoTestRule.render {
           ComponentWithDrawableMountSpec(
-              textStyle = Style.onBindWithDescription("test-binder", Any(), func = testBinder))
+              textStyle = Style.onBindWithDescription({ "test-binder" }, Any(), func = testBinder))
         }
     LithoAssertions.assertThat(lithoView).hasVisibleText("Hello")
 
@@ -316,7 +316,7 @@ class BinderStyleTest {
     val lithoView =
         lithoTestRule.render {
           ComponentWithDrawableMountSpec(
-              textStyle = Style.onBindWithDescription("test-binder", Unit, func = testBinder))
+              textStyle = Style.onBindWithDescription({ "test-binder" }, Unit, func = testBinder))
         }
     LithoAssertions.assertThat(lithoView).hasVisibleText("Hello")
 
@@ -346,8 +346,8 @@ class BinderStyleTest {
         lithoTestRule.render {
           ComponentWithDrawableMountSpec(
               textStyle =
-                  Style.onBindWithDescription("test-binder-1", Unit, func = overridenBinder)
-                      .onBindWithDescription("test-binder-2", Unit, func = usedBinder))
+                  Style.onBindWithDescription({ "test-binder-1" }, Unit, func = overridenBinder)
+                      .onBindWithDescription({ "test-binder-2" }, Unit, func = usedBinder))
         }
     LithoAssertions.assertThat(lithoView).hasVisibleText("Hello")
 
@@ -379,8 +379,8 @@ class BinderStyleTest {
         lithoTestRule.render {
           ComponentWithTextViewPrimitive(
               style =
-                  Style.onBindWithDescription("test-binder", Unit, func = overridenBinder)
-                      .onBindWithDescription("test-binder", Unit, func = usedBinder))
+                  Style.onBindWithDescription({ "test-binder" }, Unit, func = overridenBinder)
+                      .onBindWithDescription({ "test-binder" }, Unit, func = usedBinder))
         }
     LithoAssertions.assertThat(lithoView).hasVisibleText("Hello")
 
@@ -410,7 +410,7 @@ class BinderStyleTest {
     val lithoView =
         lithoTestRule.render {
           ComponentWithDrawableMountSpec(
-              textStyle = Style.onBindWithDescription("test-binder", Unit, func = testBinder))
+              textStyle = Style.onBindWithDescription({ "test-binder" }, Unit, func = testBinder))
         }
     LithoAssertions.assertThat(lithoView).hasVisibleText("Hello")
 
@@ -434,7 +434,7 @@ class BinderStyleTest {
     val lithoView =
         lithoTestRule.render {
           ComponentWithDrawablePrimitive(
-              style = Style.onBindWithDescription("test-binder", Unit, func = testBinder))
+              style = Style.onBindWithDescription({ "test-binder" }, Unit, func = testBinder))
         }
 
     testBinder.assertNumOfBindInvocations(1)
@@ -458,7 +458,8 @@ class BinderStyleTest {
         lithoTestRule.render {
           ComponentWithDrawableMountSpec(
               textStyle =
-                  Style.wrapInView().onBindWithDescription("test-binder", Unit, func = testBinder))
+                  Style.wrapInView()
+                      .onBindWithDescription({ "test-binder" }, Unit, func = testBinder))
         }
     LithoAssertions.assertThat(lithoView).hasVisibleText("Hello")
 
@@ -483,7 +484,8 @@ class BinderStyleTest {
         lithoTestRule.render {
           ComponentWithDrawablePrimitive(
               style =
-                  Style.wrapInView().onBindWithDescription("test-binder", Unit, func = testBinder))
+                  Style.wrapInView()
+                      .onBindWithDescription({ "test-binder" }, Unit, func = testBinder))
         }
 
     testBinder.assertNumOfBindInvocations(1)
@@ -507,7 +509,8 @@ class BinderStyleTest {
         lithoTestRule.render {
           ComponentWithViewMountSpec(
               style =
-                  Style.wrapInView().onBindWithDescription("test-binder", Unit, func = testBinder))
+                  Style.wrapInView()
+                      .onBindWithDescription({ "test-binder" }, Unit, func = testBinder))
         }
 
     testBinder.assertNumOfBindInvocations(1)
@@ -531,7 +534,8 @@ class BinderStyleTest {
         lithoTestRule.render {
           ComponentWithTextViewPrimitive(
               style =
-                  Style.wrapInView().onBindWithDescription("test-binder", Unit, func = testBinder))
+                  Style.wrapInView()
+                      .onBindWithDescription({ "test-binder" }, Unit, func = testBinder))
         }
     LithoAssertions.assertThat(lithoView).hasVisibleText("Hello")
 
@@ -555,7 +559,7 @@ class BinderStyleTest {
     val lithoView =
         lithoTestRule.render {
           ComponentWithDrawableMountSpec(
-              rootStyle = Style.onBindWithDescription("test-binder", Unit, func = testBinder))
+              rootStyle = Style.onBindWithDescription({ "test-binder" }, Unit, func = testBinder))
         }
     LithoAssertions.assertThat(lithoView).hasVisibleText("Hello")
 

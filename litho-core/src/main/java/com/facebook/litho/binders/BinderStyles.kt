@@ -48,14 +48,14 @@ import com.facebook.rendercore.primitives.binder
  * @param name the name of the binder. This is used for debugging purposes.
  */
 inline fun Style.onBindWithDescription(
-    name: String,
+    noinline description: () -> String,
     vararg deps: Any?,
     func: BindFunc<View>,
 ): Style =
     this +
         ObjectStyleItem(
             BinderObjectField.DELEGATE_MOUNT_VIEW_BINDER,
-            binder(description = name, dep = deps, func = func),
+            binder(description = description, dep = deps, func = func),
         )
 
 /**

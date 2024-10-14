@@ -22,13 +22,23 @@ import com.facebook.rendercore.utils.CommonUtils.getSectionNameForTracing
 import com.facebook.rendercore.utils.areObjectsEquivalent
 
 fun <Model, Content> binder(
-    description: String? = null,
+    description: (() -> String)? = null,
+    dep: Model,
+    func: BindFunc<Content>,
+): RenderUnit.DelegateBinder<Model, Content, Any> =
+    binder(description, dep, func as BindFuncWithLayoutData<Content>)
+
+fun <Model, Content> binder(
+    description: (() -> String)? = null,
     dep: Model,
     func: BindFuncWithLayoutData<Content>,
 ): RenderUnit.DelegateBinder<Model, Content, Any> {
   return RenderUnit.DelegateBinder.createDelegateBinder(
       dep,
-      KBinder(name = description, bindFunc = func),
+      KBinder(
+          describe = description ?: { getSectionNameForTracing(func.javaClass) },
+          bindFunc = func,
+      ),
   ) as RenderUnit.DelegateBinder<Model, Content, Any>
 }
 
@@ -67,9 +77,6 @@ fun interface BindFuncWithLayoutData<Content> {
     return !areObjectsEquivalent(currentLayoutData, nextLayoutData) ||
         !areObjectsEquivalent(currentModel, newModel)
   }
-
-  val description: String
-    get() = getSectionNameForTracing(javaClass)
 }
 
 class UnbindFunc @PublishedApi internal constructor(val unbind: () -> Unit)
@@ -98,14 +105,14 @@ class BindScope {
 }
 
 internal class KBinder<Model, Content>(
-    private val name: String? = null,
+    private val describe: () -> String,
     private val bindFunc: BindFuncWithLayoutData<Content>,
 ) : RenderUnit.Binder<Model, Content, UnbindFunc> {
 
   val scope: BindScope = BindScope()
 
   override val description: String
-    get() = "binder:${name ?: bindFunc.description}"
+    get() = "binder:${describe()}"
 
   override val type: Class<*>
     get() = bindFunc.javaClass
