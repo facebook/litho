@@ -41,8 +41,6 @@ def make_dep_path(pth):
 
 LITHO_OSS_ROOT_TARGET = make_dep_path(":components")
 
-LITHO_ROOT_KOTLIN_TARGET = make_dep_path(":litho_core_kotlin")
-
 # Java source
 LITHO_JAVA_TARGET = make_dep_path("litho-core/src/main/java/com/facebook/litho:litho")
 
@@ -63,8 +61,6 @@ LITHO_EDITOR_CORE_TARGET = make_dep_path("litho-editor-core/src/main/java/com/fa
 LITHO_EDITOR_FLIPPER_TARGET = make_dep_path("litho-editor-flipper/src/main/java/com/facebook/litho/editor/flipper:editor")
 
 # Kotlin targets
-LITHO_KOTLIN_TARGET = make_dep_path("litho-core-kotlin/src/main/kotlin/com/facebook/litho:litho-kotlin")
-
 LITHO_WIDGET_KOTLIN_TARGET = make_dep_path("litho-widget-kotlin/src/main/kotlin/com/facebook/litho/kotlin/widget:widget")
 
 LITHO_SECTIONS_WIDGET_KOTLIN_TARGET = make_dep_path("litho-widget-kotlin/src/main/kotlin/com/facebook/litho/sections/widget:widget")

@@ -59,19 +59,6 @@ litho_android_library(
 )
 
 litho_android_library(
-    name = "litho_core_kotlin",
-    autoglob = False,
-    language = "JAVA",
-    visibility = [
-        "PUBLIC",
-    ],
-    exported_deps = [
-        ":components",
-        LITHO_JAVA_TARGET,
-    ],
-)
-
-litho_android_library(
     name = "litho_tooling",
     autoglob = False,
     visibility = [
