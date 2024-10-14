@@ -17,7 +17,7 @@
 package com.facebook.litho
 
 import android.graphics.Color
-import com.facebook.litho.testing.LegacyLithoTestRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.testing.unspecified
 import com.facebook.yoga.YogaAlign
@@ -32,21 +32,21 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class StyleCompatTest {
 
-  @Rule @JvmField val lithoViewRule = LegacyLithoTestRule()
+  @Rule @JvmField val lithoTestRule = LithoTestRule()
 
   @Test
   fun widthAndHeight_whenSet_isRespected() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot { Row(style = StyleCompat.widthDip(100f).heightDip(200f).build()) }
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
+          Row(style = StyleCompat.widthDip(100f).heightDip(200f).build())
+        }
         .assertMatches(match<LithoView> { bounds(0, 0, 100, 200) })
   }
 
   @Test
   fun widthPercentAndHeightPercent_whenSet_isRespected() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(style = StyleCompat.widthPx(100).heightPx(100).build()) {
             child(
                 Row(style = StyleCompat.heightPercent(50f).widthPercent(50f).wrapInView().build()))
@@ -61,9 +61,8 @@ class StyleCompatTest {
 
   @Test
   fun maxWidth_whenSet_isRespected() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(style = StyleCompat.heightPx(100).maxWidthPx(200).build()) {
             child(Row(style = StyleCompat.widthPx(500).build()))
           }
@@ -73,17 +72,17 @@ class StyleCompatTest {
 
   @Test
   fun minWidth_whenSet_isRespected() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot { Row(style = StyleCompat.heightPx(100).minWidthPx(200).build()) }
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
+          Row(style = StyleCompat.heightPx(100).minWidthPx(200).build())
+        }
         .assertMatches(match<LithoView> { bounds(0, 0, 200, 100) })
   }
 
   @Test
   fun maxHeight_whenSet_isRespected() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(style = StyleCompat.widthPx(100).maxHeightPx(200).build()) {
             child(Row(style = StyleCompat.heightPx(500).build()))
           }
@@ -93,17 +92,17 @@ class StyleCompatTest {
 
   @Test
   fun minHeight_whenSet_isRespected() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot { Row(style = StyleCompat.widthPx(100).minHeightPx(200).build()) }
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
+          Row(style = StyleCompat.widthPx(100).minHeightPx(200).build())
+        }
         .assertMatches(match<LithoView> { bounds(0, 0, 100, 200) })
   }
 
   @Test
   fun flexBasis_whenSet_becomesChildWidth() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(style = StyleCompat.widthPx(100).heightPx(100).build()) {
             child(Row(style = StyleCompat.flexBasisPx(50).wrapInView().build()))
           }
@@ -117,9 +116,8 @@ class StyleCompatTest {
 
   @Test
   fun flexGrow_whenSet_childTakesWholeSpace() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(style = StyleCompat.widthPx(100).heightPx(100).build()) {
             child(Row(style = StyleCompat.flexGrow(1f).wrapInView().build()))
           }
@@ -133,9 +131,8 @@ class StyleCompatTest {
 
   @Test
   fun flexShrink_whenSet_makesChildAsSmallAsPossible() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(
               alignItems = YogaAlign.STRETCH,
               style = StyleCompat.widthPx(100).heightPx(100).build()) {
@@ -158,9 +155,8 @@ class StyleCompatTest {
 
   @Test
   fun alignSelf_whenSet_isRespected() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(style = StyleCompat.widthPx(100).heightPx(100).build()) {
             child(
                 Row(
@@ -182,9 +178,8 @@ class StyleCompatTest {
     val right = 30
     val bottom = 40
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(
               alignItems = YogaAlign.STRETCH,
               style =
@@ -210,9 +205,8 @@ class StyleCompatTest {
     val horizontal = 10
     val vertical = 20
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(
               alignItems = YogaAlign.STRETCH,
               style =
@@ -237,9 +231,8 @@ class StyleCompatTest {
   fun padding_whenAllPaddingSet_isRespected() {
     val padding = 32
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(
               alignItems = YogaAlign.STRETCH,
               style =
@@ -263,9 +256,8 @@ class StyleCompatTest {
     val right = 30
     val bottom = 40
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(
               alignItems = YogaAlign.STRETCH,
               style = StyleCompat.widthPx(100).heightPx(100).build()) {
@@ -293,9 +285,8 @@ class StyleCompatTest {
     val horizontal = 10
     val vertical = 20
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(
               alignItems = YogaAlign.STRETCH,
               style = StyleCompat.widthPx(100).heightPx(100).build()) {
@@ -322,9 +313,8 @@ class StyleCompatTest {
   fun margin_whenAllMarginSet_isRespected() {
     val margin = 32
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(
               alignItems = YogaAlign.STRETCH,
               style = StyleCompat.widthPx(100).heightPx(100).build()) {
@@ -351,9 +341,8 @@ class StyleCompatTest {
     val right = 30
     val bottom = 40
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(style = StyleCompat.widthPx(100).heightPx(100).build()) {
             child(
                 Row(
@@ -401,7 +390,7 @@ class StyleCompatTest {
       }
     }
 
-    val node = LegacyLithoTestRule.getRootLayout(lithoViewRule, ComponentWithBorder())?.node
+    val node = lithoTestRule.render { ComponentWithBorder() }.currentRootNode?.node
     assertThat(node?.borderColors)
         .isEqualTo(intArrayOf(Color.BLUE, Color.RED, Color.BLACK, Color.WHITE))
     assertThat(node?.borderRadius).isEqualTo(floatArrayOf(5f, 6f, 7f, 8f))
@@ -419,7 +408,7 @@ class StyleCompatTest {
       }
     }
 
-    val node = LegacyLithoTestRule.getRootLayout(lithoViewRule, ComponentWithTransition())?.node
+    val node = lithoTestRule.render { ComponentWithTransition() }.currentRootNode?.node
     assertThat(node?.transitionKeyType).isEqualTo(Transition.TransitionKeyType.GLOBAL)
     assertThat(node?.transitionKey).isEqualTo("test")
   }
