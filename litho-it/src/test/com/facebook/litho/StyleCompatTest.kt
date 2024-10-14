@@ -18,10 +18,6 @@ package com.facebook.litho
 
 import android.graphics.Color
 import com.facebook.litho.testing.LegacyLithoTestRule
-import com.facebook.litho.testing.assertMatches
-import com.facebook.litho.testing.child
-import com.facebook.litho.testing.match
-import com.facebook.litho.testing.setRoot
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.testing.unspecified
 import com.facebook.yoga.YogaAlign

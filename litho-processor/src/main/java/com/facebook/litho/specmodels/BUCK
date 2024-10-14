@@ -22,7 +22,7 @@ fb_java_library(
     feature = FBApp_UIFrameworks_Litho_Litho,
     labels = [],
     tests = [
-        make_dep_path("litho-it/src/test/java/com/facebook/litho/specmodels:specmodels"),
+        make_dep_path("litho-it/src/test/com/facebook/litho/specmodels:specmodels"),
     ],
     visibility = [
         "PUBLIC",

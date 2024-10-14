@@ -18,7 +18,6 @@ package com.facebook.litho.widget;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.widget.ComponentRenderInfo.create;
-import static com.facebook.litho.widget.RecyclerBinderTest.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -80,7 +79,8 @@ public class RecyclerBinderSubAdapterTest {
       components1.add(create().component(mock(Component.class)).build());
       recyclerBinder.insertItemAt(i, components1.get(i));
     }
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetComplete(
+        true, RecyclerBinderTest.NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     recyclerBinder.updateSubAdapterVisibleRange(0, 10);
     assertThat(recyclerBinder.mCurrentFirstVisiblePosition).isEqualTo(0);
@@ -102,14 +102,16 @@ public class RecyclerBinderSubAdapterTest {
       components1.add(create().component(mock(Component.class)).build());
       recyclerBinder1.insertItemAt(i, components1.get(i));
     }
-    recyclerBinder1.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder1.notifyChangeSetComplete(
+        true, RecyclerBinderTest.NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     final List<ComponentRenderInfo> components2 = new ArrayList<>();
     for (int i = 0; i < 50; i++) {
       components2.add(create().component(mock(Component.class)).build());
       recyclerBinder2.insertItemAt(i, components2.get(i));
     }
-    recyclerBinder2.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder2.notifyChangeSetComplete(
+        true, RecyclerBinderTest.NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     assertThat(multiplexingAdapter.getItemCount()).isEqualTo(150);
   }

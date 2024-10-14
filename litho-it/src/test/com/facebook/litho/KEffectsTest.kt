@@ -21,7 +21,6 @@ import android.graphics.drawable.ColorDrawable
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.LegacyLithoTestRule
 import com.facebook.litho.testing.exactly
-import com.facebook.litho.testing.setRoot
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.rendercore.primitives.DrawableAllocator
 import com.facebook.rendercore.primitives.FixedSizeLayoutBehavior
@@ -683,42 +682,42 @@ class KEffectsTest {
     assertThat(attachCount).isEqualTo(1)
     assertThat(detachCount).isEqualTo(1)
   }
-}
 
-class TestCounterComponent(
-    private val initialCount: Int = 0,
-    private val onRender: () -> Unit,
-    private val onAttach: () -> Unit,
-    private val onDetach: () -> Unit,
-    private val controller: Controller,
-) : KComponent() {
-  override fun ComponentScope.render(): Component? {
+  class TestCounterComponent(
+      private val initialCount: Int = 0,
+      private val onRender: () -> Unit,
+      private val onAttach: () -> Unit,
+      private val onDetach: () -> Unit,
+      private val controller: Controller,
+  ) : KComponent() {
+    override fun ComponentScope.render(): Component? {
 
-    val count = useState { initialCount }
+      val count = useState { initialCount }
 
-    onRender()
+      onRender()
 
-    useEffect(onAttach, onDetach, controller) {
-      onAttach()
-      controller.increment = { count.updateSync { count -> count + 1 } }
-      controller.decrement = { count.updateSync { count -> count - 1 } }
-      onCleanup {
-        onDetach()
-        controller.increment = null
-        controller.decrement = null
+      useEffect(onAttach, onDetach, controller) {
+        onAttach()
+        controller.increment = { count.updateSync { count -> count + 1 } }
+        controller.decrement = { count.updateSync { count -> count - 1 } }
+        onCleanup {
+          onDetach()
+          controller.increment = null
+          controller.decrement = null
+        }
+      }
+
+      return if (count.value > 0) {
+        Text("count: ${count.value}")
+      } else {
+        null
       }
     }
 
-    return if (count.value > 0) {
-      Text("count: ${count.value}")
-    } else {
-      null
+    class Controller {
+      var increment: (() -> Unit)? = null
+      var decrement: (() -> Unit)? = null
     }
-  }
-
-  class Controller {
-    var increment: (() -> Unit)? = null
-    var decrement: (() -> Unit)? = null
   }
 }
 

@@ -60,7 +60,7 @@ litho_robolectric4_test(
         LITHO_YOGA_TARGET,
         LITHO_JSR_TARGET,
         "//fbandroid/libraries/components/litho-editor-flipper/src/main/java/com/facebook/litho/editor/flipper:flipper",
-        #"//fbandroid/libraries/components/litho-it-spec/src/test/java/com/facebook/litho:litho",
+        #"//fbandroid/libraries/components/litho-it-spec/src/test/com/facebook/litho:litho",
         "//xplat/sonar/android/src/main/java/com/facebook/flipper/core:core",
         "//xplat/sonar/android/src/main/java/com/facebook/flipper/plugins/inspector:inspectorAndroid",
         "//third-party/java/org/jetbrains/annotations:annotations",

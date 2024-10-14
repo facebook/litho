@@ -111,7 +111,7 @@ LITHO_SECTIONS_DEBUG_TARGET = make_dep_path("litho-sections-debug/src/main/java/
 LITHO_SECTIONS_DEBUG_WIDGET_TARGET = make_dep_path("litho-sections-debug/src/main/java/com/facebook/litho/sections/debug/widget:widget")
 
 # Test source
-LITHO_TEST_TARGET = make_dep_path("litho-it/src/test/java/com/facebook/litho:litho")
+LITHO_TEST_TARGET = make_dep_path("litho-it/src/test/com/facebook/litho:litho")
 
 LITHO_TEST_WIDGET_TARGET = make_dep_path("litho-it/src/main/java/com/facebook/litho/widget:widget")
 

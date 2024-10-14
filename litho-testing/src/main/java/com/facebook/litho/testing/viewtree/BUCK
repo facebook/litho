@@ -26,7 +26,7 @@ litho_android_library(
         LITHO_ROBOLECTRIC_V4_TARGET,
     ],
     tests = [
-        make_dep_path("litho-it/src/test/java/com/facebook/litho/testing/viewtree:viewtree"),
+        make_dep_path("litho-it/src/test/com/facebook/litho/testing/viewtree:viewtree"),
     ],
     visibility = [
         "PUBLIC",

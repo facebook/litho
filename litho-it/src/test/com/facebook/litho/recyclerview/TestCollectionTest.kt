@@ -44,18 +44,19 @@ import org.robolectric.annotation.LooperMode
 @RunWith(RobolectricTestRunner::class)
 class TestCollectionTest {
 
-  @Rule @JvmField val mLithoTestRule = LithoTestRule()
+  @Rule @JvmField val lithoTestRule = LithoTestRule()
 
   @Test
   fun `test helpful error when recycler collection components recycler view is not mounted`() {
 
     val testView =
-        mLithoTestRule.render {
+        lithoTestRule.render {
           TestComponent(
               RecyclerCollectionComponent(
-                  SingleComponentSection.create(SectionContext(context))
-                      .component(Text("0"))
-                      .build()))
+                  section =
+                      SingleComponentSection.create(SectionContext(context))
+                          .component(Text("0"))
+                          .build()))
         }
 
     val listComponent = testView.findCollectionComponent()
@@ -69,7 +70,7 @@ class TestCollectionTest {
   @Test
   fun `test helpful error when lazy list recycler view is unable to properly measure`() {
     assertThatThrownBy {
-          mLithoTestRule.render {
+          lithoTestRule.render {
             TestComponent(LazyList { child(id = 0, component = Text("child0")) })
           }
         }

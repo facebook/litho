@@ -45,7 +45,6 @@ import com.facebook.litho.kotlin.widget.Border
 import com.facebook.litho.kotlin.widget.BorderEdge
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.exactly
-import com.facebook.litho.testing.match
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.backgroundColor
 import com.facebook.litho.view.focusable

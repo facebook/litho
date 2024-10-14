@@ -67,7 +67,7 @@ litho_android_library(
     pure_kotlin = False,
     required_for_source_only_abi = True,
     tests = [
-        make_dep_path("litho-it/src/test/java/com/facebook/litho:litho"),
+        make_dep_path("litho-it/src/test/com/facebook/litho:litho"),
     ],
     visibility = [
         "PUBLIC",

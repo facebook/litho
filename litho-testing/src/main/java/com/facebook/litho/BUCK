@@ -38,7 +38,7 @@ litho_android_library(
     ],
     pure_kotlin = False,
     tests = [
-        make_dep_path("litho-it/src/test/java/com/facebook/litho/testing:testing"),
+        make_dep_path("litho-it/src/test/com/facebook/litho/testing:testing"),
     ],
     visibility = [
         "PUBLIC",

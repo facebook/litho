@@ -23,7 +23,7 @@ fb_java_test(
     source = "8",
     target = "8",
     tests = [
-        make_dep_path("litho-it/src/test/java/com/facebook/litho/specmodels/processor:processor"),
+        make_dep_path("litho-it/src/test/com/facebook/litho/specmodels/processor:processor"),
     ],
     visibility = LITHO_VISIBILITY,
     deps = [

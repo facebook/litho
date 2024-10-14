@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.testing
+package com.facebook.litho
 
 import android.view.View
-import com.facebook.litho.Component
-import com.facebook.litho.ComponentScope
+import com.facebook.litho.testing.LegacyLithoTestRule
 import com.facebook.rendercore.testing.ViewAssertions
 import com.facebook.rendercore.testing.match.ViewMatchNode
 

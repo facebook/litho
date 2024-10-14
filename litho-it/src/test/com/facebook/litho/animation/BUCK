@@ -12,21 +12,19 @@ load(
     "LITHO_JAVA_TARGET",
     "LITHO_JSR_TARGET",
     "LITHO_JUNIT_TARGET",
-    "LITHO_MOCKITO_KOTLIN_V2_TARGET",
     "LITHO_MOCKITO_V2_TARGET",
     "LITHO_RENDERCORE_TARGET",
     "LITHO_RENDERCORE_TESTING_TARGET",
     "LITHO_RENDERCORE_VISIBILITY_TARGET",
     "LITHO_ROBOLECTRIC_V4_TARGET",
     "LITHO_SOLOADER_TARGET",
-    "LITHO_TESTING_CORE_TARGET",
     "LITHO_TESTING_TARGET",
     "LITHO_TESTING_WHITEBOX_TARGET",
     "LITHO_TEST_RES",
     "LITHO_TEST_WIDGET_TARGET",
+    "LITHO_WIDGET_KOTLIN_TARGET",
     "LITHO_WIDGET_TARGET",
     "LITHO_YOGA_TARGET",
-    "litho_android_library",
     "litho_robolectric4_test",
     "make_dep_path",
 )
@@ -34,20 +32,18 @@ load(
 oncall("components_for_android")
 
 litho_robolectric4_test(
-    name = "tests",
+    name = "animation",
     srcs = glob(
         [
-            "*Test.kt",
+            "*.kt",
         ],
     ),
+    contacts = ["oncall+components_for_android@xmail.facebook.com"],
     provided_deps = [
         LITHO_ROBOLECTRIC_V4_TARGET,
     ],
-    source = "8",
-    target = "8",
     target_sdk_levels = ["33"],
     deps = [
-        ":nodes",
         LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
         LITHO_ANDROIDSUPPORT_TESTING_CORE_TARGET,
         LITHO_ASSERTJ_TARGET,
@@ -55,7 +51,6 @@ litho_robolectric4_test(
         LITHO_JAVA_TARGET,
         LITHO_JSR_TARGET,
         LITHO_JUNIT_TARGET,
-        LITHO_MOCKITO_KOTLIN_V2_TARGET,
         LITHO_MOCKITO_V2_TARGET,
         LITHO_RENDERCORE_TARGET,
         LITHO_RENDERCORE_TESTING_TARGET,
@@ -66,6 +61,7 @@ litho_robolectric4_test(
         LITHO_TEST_RES,
         LITHO_TEST_WIDGET_TARGET,
         LITHO_WIDGET_TARGET,
+        LITHO_WIDGET_KOTLIN_TARGET,
         LITHO_YOGA_TARGET,
         make_dep_path("litho-core/src/main/java/com/facebook/litho:litho"),
         make_dep_path("litho-it/src/main/java/com/facebook/litho:litho-testing"),
@@ -74,6 +70,7 @@ litho_robolectric4_test(
         make_dep_path("litho-it/src/main/java/com/facebook/litho/testing/error:error"),
         make_dep_path("litho-it/src/main/java/com/facebook/litho/testing/treeprop:treeprop"),
         make_dep_path("litho-it/src/main/java/com/facebook/litho/widget:widget"),
+        make_dep_path("litho-it/src/test/com/facebook/litho/dataflow:nodes"),
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal"),
         make_dep_path("litho-sections-core/src/main/java/com/facebook/litho/sections:sections"),
         make_dep_path("litho-sections-core/src/main/java/com/facebook/litho/sections/common:common"),
@@ -88,27 +85,5 @@ litho_robolectric4_test(
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/shadows:shadows"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/testrunner:testrunner"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/viewtree:viewtree"),
-    ],
-)
-
-litho_android_library(
-    name = "nodes",
-    srcs = glob(
-        [
-            "*Node.kt",
-        ],
-    ),
-    autoglob = False,
-    source = "8",
-    target = "8",
-    visibility = [
-        make_dep_path("litho-it/src/test/java/com/facebook/litho/..."),
-    ],
-    deps = [
-        LITHO_RENDERCORE_TARGET,
-        LITHO_JAVA_TARGET,
-        LITHO_JSR_TARGET,
-        LITHO_TESTING_CORE_TARGET,
-        LITHO_YOGA_TARGET,
     ],
 )
