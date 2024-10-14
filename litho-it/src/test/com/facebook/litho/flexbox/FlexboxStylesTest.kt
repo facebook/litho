@@ -42,13 +42,11 @@ import com.facebook.litho.core.paddingPercent
 import com.facebook.litho.core.width
 import com.facebook.litho.core.widthPercent
 import com.facebook.litho.match
-import com.facebook.litho.setRoot
-import com.facebook.litho.testing.LegacyLithoTestRule
-import com.facebook.litho.testing.exactly
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
-import com.facebook.litho.testing.unspecified
 import com.facebook.litho.view.wrapInView
 import com.facebook.rendercore.px
+import com.facebook.rendercore.utils.MeasureSpecUtils.unspecified
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaDirection
 import com.facebook.yoga.YogaEdge
@@ -62,21 +60,21 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class FlexboxStylesTest {
 
-  @Rule @JvmField val lithoViewRule = LegacyLithoTestRule()
+  @Rule @JvmField val lithoTestRule = LithoTestRule()
 
   @Test
   fun widthAndHeight_whenSet_isRespected() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot { Row(style = Style.width(100.px).height(100.px)) }
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
+          Row(style = Style.width(100.px).height(100.px))
+        }
         .assertMatches(match<LithoView> { bounds(0, 0, 100, 100) })
   }
 
   @Test
   fun widthPercentAndHeightPercent_whenSet_isRespected() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(style = Style.width(100.px).height(100.px)) {
             child(Row(style = Style.heightPercent(50f).widthPercent(50f).wrapInView()))
           }
@@ -90,9 +88,8 @@ class FlexboxStylesTest {
 
   @Test
   fun maxWidth_whenSet_isRespected() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(style = Style.height(100.px).maxWidth(200.px)) {
             child(Row(style = Style.width(500.px)))
           }
@@ -102,17 +99,17 @@ class FlexboxStylesTest {
 
   @Test
   fun minWidth_whenSet_isRespected() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot { Row(style = Style.height(100.px).minWidth(200.px)) }
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
+          Row(style = Style.height(100.px).minWidth(200.px))
+        }
         .assertMatches(match<LithoView> { bounds(0, 0, 200, 100) })
   }
 
   @Test
   fun maxHeight_whenSet_isRespected() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(style = Style.width(100.px).maxHeight(200.px)) {
             child(Row(style = Style.height(500.px)))
           }
@@ -122,17 +119,17 @@ class FlexboxStylesTest {
 
   @Test
   fun minHeight_whenSet_isRespected() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot { Row(style = Style.width(100.px).minHeight(200.px)) }
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
+          Row(style = Style.width(100.px).minHeight(200.px))
+        }
         .assertMatches(match<LithoView> { bounds(0, 0, 100, 200) })
   }
 
   @Test
   fun flexBasis_whenSet_becomesChildWidth() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(style = Style.width(100.px).height(100.px)) {
             child(Row(style = Style.flex(basis = 50.px).wrapInView()))
           }
@@ -146,9 +143,8 @@ class FlexboxStylesTest {
 
   @Test
   fun flexBasisPercent_whenSet_becomesChildWidth() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(style = Style.width(200.px).height(100.px)) {
             child(Row(style = Style.flex(basisPercent = 50f).wrapInView()))
           }
@@ -162,9 +158,8 @@ class FlexboxStylesTest {
 
   @Test
   fun flexGrow_whenSet_childTakesWholeSpace() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(style = Style.width(100.px).height(100.px)) {
             child(Row(style = Style.flex(grow = 1f).wrapInView()))
           }
@@ -178,9 +173,8 @@ class FlexboxStylesTest {
 
   @Test
   fun flexShrink_whenSet_makesChildAsSmallAsPossible() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(alignItems = YogaAlign.STRETCH, style = Style.width(100.px).height(100.px)) {
             child(Row(style = Style.height(100.px).minWidth(50.px).flex(shrink = 1f).wrapInView()))
           }
@@ -194,9 +188,8 @@ class FlexboxStylesTest {
 
   @Test
   fun alignSelf_whenSet_isRespected() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(style = Style.width(100.px).height(100.px)) {
             child(Row(style = Style.width(100.px).alignSelf(YogaAlign.STRETCH).wrapInView()))
           }
@@ -215,9 +208,8 @@ class FlexboxStylesTest {
     val right = 30
     val bottom = 40
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(
               alignItems = YogaAlign.STRETCH,
               style =
@@ -240,9 +232,8 @@ class FlexboxStylesTest {
     val start = 10
     val end = 20
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(
               alignItems = YogaAlign.STRETCH,
               style = Style.width(100.px).height(100.px).padding(start = start.px, end = end.px)) {
@@ -261,9 +252,8 @@ class FlexboxStylesTest {
     val start = 10.0f
     val end = 20.0f
 
-    lithoViewRule
-        .setSizeSpecs(exactly(100), exactly(100))
-        .setRoot {
+    lithoTestRule
+        .render(widthPx = 100, heightPx = 100) {
           Row(
               alignItems = YogaAlign.STRETCH,
               style = Style.width(100.px).height(100.px).paddingPercent(start = start, end = end)) {
@@ -282,9 +272,8 @@ class FlexboxStylesTest {
     val horizontal = 10
     val vertical = 20
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(
               alignItems = YogaAlign.STRETCH,
               style =
@@ -308,9 +297,8 @@ class FlexboxStylesTest {
     val horizontal = 10.0f
     val vertical = 20.0f
 
-    lithoViewRule
-        .setSizeSpecs(exactly(100), exactly(100))
-        .setRoot {
+    lithoTestRule
+        .render(widthPx = 100, heightPx = 100) {
           Row(
               style =
                   Style.width(100.px)
@@ -336,9 +324,8 @@ class FlexboxStylesTest {
   fun padding_whenAllPaddingSet_isRespected() {
     val padding = 32
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(
               alignItems = YogaAlign.STRETCH,
               style = Style.width(100.px).height(100.px).padding(padding.px)) {
@@ -358,9 +345,8 @@ class FlexboxStylesTest {
   fun `padding, when all padding set with percent, is respected`() {
     val padding = 32.0f
 
-    lithoViewRule
-        .setSizeSpecs(exactly(100), exactly(100))
-        .setRoot {
+    lithoTestRule
+        .render(widthPx = 100, heightPx = 100) {
           Row(
               alignItems = YogaAlign.STRETCH,
               style = Style.width(100.px).height(100.px).paddingPercent(all = padding)) {
@@ -387,9 +373,8 @@ class FlexboxStylesTest {
     val right = 30
     val bottom = 40
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(alignItems = YogaAlign.STRETCH, style = Style.width(100.px).height(100.px)) {
             child(
                 Row(
@@ -414,9 +399,8 @@ class FlexboxStylesTest {
     val right = 30.0f
     val bottom = 40.0f
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(alignItems = YogaAlign.STRETCH, style = Style.width(100.px).height(100.px)) {
             child(
                 Row(
@@ -444,9 +428,8 @@ class FlexboxStylesTest {
     val start = 10
     val end = 20
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(alignItems = YogaAlign.STRETCH, style = Style.width(100.px).height(100.px)) {
             child(
                 Row(
@@ -466,9 +449,8 @@ class FlexboxStylesTest {
     val start = 10.0f
     val end = 20.0f
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(alignItems = YogaAlign.STRETCH, style = Style.width(100.px).height(100.px)) {
             child(
                 Row(
@@ -488,9 +470,8 @@ class FlexboxStylesTest {
     val horizontal = 10
     val vertical = 20
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(alignItems = YogaAlign.STRETCH, style = Style.width(100.px).height(100.px)) {
             child(
                 Row(
@@ -514,9 +495,8 @@ class FlexboxStylesTest {
     val horizontal = 10.0f
     val vertical = 20.0f
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(alignItems = YogaAlign.STRETCH, style = Style.width(100.px).height(100.px)) {
             child(
                 Row(
@@ -543,9 +523,8 @@ class FlexboxStylesTest {
   fun margin_whenAllMarginSet_isRespected() {
     val margin = 32
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(alignItems = YogaAlign.STRETCH, style = Style.width(100.px).height(100.px)) {
             child(Row(style = Style.margin(margin.px).flex(grow = 1f).wrapInView()))
           }
@@ -561,9 +540,8 @@ class FlexboxStylesTest {
   fun `margin, when all margin set with percent, is respected`() {
     val margin = 32.0f
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(alignItems = YogaAlign.STRETCH, style = Style.width(100.px).height(100.px)) {
             child(Row(style = Style.marginPercent(margin).flex(grow = 1f).wrapInView()))
           }
@@ -588,9 +566,8 @@ class FlexboxStylesTest {
     val right = 30
     val bottom = 40
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(style = Style.width(100.px).height(100.px)) {
             child(
                 Row(
@@ -615,9 +592,8 @@ class FlexboxStylesTest {
     val right = 30f
     val bottom = 40f
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(style = Style.width(100.px).height(100.px)) {
             child(
                 Row(
@@ -647,9 +623,8 @@ class FlexboxStylesTest {
     val end = 30
     val bottom = 40
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(style = Style.width(100.px).height(100.px)) {
             child(
                 Row(
@@ -674,9 +649,8 @@ class FlexboxStylesTest {
     val end = 30f
     val bottom = 40f
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(style = Style.width(100.px).height(100.px)) {
             child(
                 Row(
@@ -703,9 +677,8 @@ class FlexboxStylesTest {
   fun position_whenAllSet_isRespected() {
     val all = 10
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(style = Style.width(100.px).height(100.px)) {
             child(
                 Row(
@@ -726,9 +699,8 @@ class FlexboxStylesTest {
   fun `position, when all set with percent, is respected`() {
     val all = 10f
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(style = Style.width(100.px).height(100.px)) {
             child(
                 Row(
@@ -752,9 +724,8 @@ class FlexboxStylesTest {
     val horizontal = 10
     val all = 50
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(style = Style.width(100.px).height(100.px)) {
             child(
                 Row(
@@ -778,9 +749,8 @@ class FlexboxStylesTest {
     val horizontal = 10f
     val all = 50f
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(style = Style.width(100.px).height(100.px)) {
             child(
                 Row(
@@ -808,9 +778,8 @@ class FlexboxStylesTest {
     val vertical = 10
     val all = 50
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(style = Style.width(100.px).height(100.px)) {
             child(
                 Row(
@@ -832,9 +801,8 @@ class FlexboxStylesTest {
     val vertical = 10f
     val all = 50f
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(style = Style.width(100.px).height(100.px)) {
             child(
                 Row(
@@ -859,17 +827,14 @@ class FlexboxStylesTest {
 
   @Test
   fun layoutDirection_whenSet_isRespected() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
-          Row(style = Style.width(100.px).height(100.px).layoutDirection(YogaDirection.RTL))
-        }
-        .measure()
-        .layout()
-        .attachToWindow()
+    val node =
+        lithoTestRule
+            .render(widthSpec = unspecified(), heightSpec = unspecified()) {
+              Row(style = Style.width(100.px).height(100.px).layoutDirection(YogaDirection.RTL))
+            }
+            .currentRootNode
 
-    assertThat(lithoViewRule.currentRootNode?.getYogaNode()?.layoutDirection)
-        .isEqualTo(YogaDirection.RTL)
+    assertThat(node?.getYogaNode()?.layoutDirection).isEqualTo(YogaDirection.RTL)
   }
 
   /**
@@ -881,7 +846,7 @@ class FlexboxStylesTest {
   @Test
   fun border_whenSet_isRespected() {
     class ComponentWithBorder : KComponent() {
-      override fun ComponentScope.render(): Component? {
+      override fun ComponentScope.render(): Component {
         return Row(
             style =
                 Style.border(
@@ -898,7 +863,7 @@ class FlexboxStylesTest {
       }
     }
 
-    val node = LegacyLithoTestRule.getRootLayout(lithoViewRule, ComponentWithBorder())?.node
+    val node = lithoTestRule.render { ComponentWithBorder() }.currentRootNode?.node
     assertThat(node?.borderColors)
         .isEqualTo(intArrayOf(Color.BLUE, Color.RED, Color.BLACK, Color.WHITE))
     assertThat(node?.borderRadius).isEqualTo(floatArrayOf(5f, 6f, 7f, 8f))
@@ -906,9 +871,8 @@ class FlexboxStylesTest {
 
   @Test
   fun marginAuto_whenSet_isRespected() {
-    lithoViewRule
-        .setSizeSpecs(200, 200)
-        .setRoot {
+    val testLithoView =
+        lithoTestRule.render(widthPx = 200, heightPx = 200) {
           Row(
               style =
                   Style.width(100.px)
@@ -916,47 +880,41 @@ class FlexboxStylesTest {
                       .marginAuto(YogaEdge.LEFT)
                       .marginAuto(YogaEdge.TOP))
         }
-        .measure()
-        .layout()
-        .attachToWindow()
 
-    assertThat(lithoViewRule.currentRootNode?.getYogaNode()?.getMargin(YogaEdge.LEFT).toString())
+    assertThat(testLithoView.currentRootNode?.getYogaNode()?.getMargin(YogaEdge.LEFT).toString())
         .isEqualTo("auto")
-    assertThat(lithoViewRule.currentRootNode?.getYogaNode()?.getMargin(YogaEdge.TOP).toString())
+    assertThat(testLithoView.currentRootNode?.getYogaNode()?.getMargin(YogaEdge.TOP).toString())
         .isEqualTo("auto")
   }
 
   @Test
   fun isReferenceBaseline_whenSet_isRespected() {
-    lithoViewRule
-        .setSizeSpecs(200, 200)
-        .setRoot { Row(style = Style.isReferenceBaseline(true)) }
-        .measure()
-        .layout()
-        .attachToWindow()
+    val testLithoView =
+        lithoTestRule.render(widthPx = 200, heightPx = 200) {
+          Row(style = Style.isReferenceBaseline(true))
+        }
 
-    assertThat(lithoViewRule.currentRootNode?.getYogaNode()?.isReferenceBaseline).isEqualTo(true)
+    assertThat(testLithoView.currentRootNode?.getYogaNode()?.isReferenceBaseline).isEqualTo(true)
   }
 
   @Test
   fun useHeightAsBaseline_whenSet_isRespected() {
-    lithoViewRule
-        .setSizeSpecs(200, 200)
-        .setRoot { Row(style = Style.useHeightAsBaseline(true)) }
-        .measure()
-        .layout()
-        .attachToWindow()
+    val testLithoView =
+        lithoTestRule
+            .render(widthPx = 200, heightPx = 200) { Row(style = Style.useHeightAsBaseline(true)) }
+            .measure()
+            .layout()
+            .attachToWindow()
 
-    assertThat(lithoViewRule.currentRootNode?.getYogaNode()?.isBaselineDefined).isEqualTo(true)
+    assertThat(testLithoView.currentRootNode?.getYogaNode()?.isBaselineDefined).isEqualTo(true)
   }
 
   @Test
   fun gap_whenSet_isRespected() {
     val gap = 10
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(style = Style.width(100.px).height(100.px).gap(all = gap.px)) {
             child(Row(style = Style.width(10.px).height(10.px).wrapInView()))
             child(Row(style = Style.width(20.px).height(20.px).wrapInView()))

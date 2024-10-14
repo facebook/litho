@@ -121,17 +121,18 @@ constructor(
       componentTree: ComponentTree? = null,
       widthPx: Int? = null,
       heightPx: Int? = null,
+      widthSpec: Int = DEFAULT_WIDTH_SPEC,
+      heightSpec: Int = DEFAULT_HEIGHT_SPEC,
       componentFunction: (ComponentScope.() -> Component?)? = null
   ): TestLithoView {
     val testLithoView =
         TestLithoView(context, componentsConfiguration, lithoVisibilityEventsController?.invoke())
     componentTree?.let { testLithoView.useComponentTree(componentTree) }
     lithoView?.let { testLithoView.useLithoView(lithoView) }
-    if (widthPx != null || heightPx != null) {
-      val widthSpec = if (widthPx != null) exactly(widthPx) else DEFAULT_WIDTH_SPEC
-      val heightSpec = if (heightPx != null) exactly(heightPx) else DEFAULT_HEIGHT_SPEC
-      testLithoView.setSizeSpecs(widthSpec, heightSpec)
-    }
+
+    val resolvedWidthSpec = if (widthPx != null) exactly(widthPx) else widthSpec
+    val resolvedHeightSpec = if (heightPx != null) exactly(heightPx) else heightSpec
+    testLithoView.setSizeSpecs(resolvedWidthSpec, resolvedHeightSpec)
 
     componentFunction?.let {
       with(ComponentScope(context)) { componentFunction() }
@@ -147,6 +148,8 @@ constructor(
       componentTree: ComponentTree? = null,
       widthPx: Int? = null,
       heightPx: Int? = null,
+      widthSpec: Int = DEFAULT_WIDTH_SPEC,
+      heightSpec: Int = DEFAULT_HEIGHT_SPEC,
       componentFunction: ComponentScope.() -> Component?
   ): TestLithoView {
     val testLithoView =
@@ -155,6 +158,8 @@ constructor(
             componentTree = componentTree,
             widthPx = widthPx,
             heightPx = heightPx,
+            widthSpec = widthSpec,
+            heightSpec = heightSpec,
             componentFunction = componentFunction)
     return testLithoView.attachToWindow().measure().layout()
   }

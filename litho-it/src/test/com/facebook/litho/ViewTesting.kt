@@ -18,6 +18,7 @@ package com.facebook.litho
 
 import android.view.View
 import com.facebook.litho.testing.LegacyLithoTestRule
+import com.facebook.litho.testing.TestLithoView
 import com.facebook.rendercore.testing.ViewAssertions
 import com.facebook.rendercore.testing.match.ViewMatchNode
 
@@ -31,6 +32,11 @@ fun LegacyLithoTestRule.setRoot(componentFunction: ComponentScope.() -> Componen
  */
 fun LegacyLithoTestRule.assertMatches(matchNode: ViewMatchNode) {
   measure().layout().attachToWindow()
+  ViewAssertions.assertThat(lithoView).matches(matchNode)
+}
+
+/** Provide the compatible testing API of rendercore for TestLithoView. */
+fun TestLithoView.assertMatches(matchNode: ViewMatchNode) {
   ViewAssertions.assertThat(lithoView).matches(matchNode)
 }
 
