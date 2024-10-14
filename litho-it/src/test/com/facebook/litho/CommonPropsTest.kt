@@ -24,7 +24,7 @@ import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_AUTO
 import com.facebook.litho.drawable.ComparableColorDrawable
 import com.facebook.litho.it.R.drawable.background_with_padding
-import com.facebook.litho.testing.LegacyLithoTestRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.TestViewComponent
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.Text
@@ -43,7 +43,7 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class CommonPropsTest {
 
-  @JvmField @Rule val legacyLithoTestRule: LegacyLithoTestRule = LegacyLithoTestRule()
+  @JvmField @Rule val lithoTestRule = LithoTestRule()
   private lateinit var node: LithoNode
   private lateinit var commonProps: CommonProps
   private lateinit var componentContext: ComponentContext
@@ -290,13 +290,13 @@ class CommonPropsTest {
 
   @Test
   fun testPaddingFromDrawable() {
-    val c = legacyLithoTestRule.context
+    val c = lithoTestRule.context
     val component =
         Column.create(c)
             .child(Text.create(c).text("Hello World").backgroundRes(background_with_padding))
             .build()
-    legacyLithoTestRule.attachToWindow().setRoot(component).measure().layout()
-    val result = legacyLithoTestRule.currentRootNode!!.getChildAt(0)
+    val testLithoView = lithoTestRule.render { component }
+    val result = testLithoView.currentRootNode!!.getChildAt(0)
     assertThat(result.paddingLeft).isEqualTo(48)
     assertThat(result.paddingTop).isEqualTo(0)
     assertThat(result.paddingRight).isEqualTo(0)
@@ -305,7 +305,7 @@ class CommonPropsTest {
 
   @Test
   fun testPaddingFromDrawableIsOverwritten() {
-    val c = legacyLithoTestRule.context
+    val c = lithoTestRule.context
     val component =
         Column.create(c)
             .child(
@@ -317,8 +317,8 @@ class CommonPropsTest {
                     .paddingPx(YogaEdge.TOP, 8)
                     .paddingPx(YogaEdge.BOTTOM, 8))
             .build()
-    legacyLithoTestRule.attachToWindow().setRoot(component).measure().layout()
-    val result = legacyLithoTestRule.currentRootNode!!.getChildAt(0)
+    val testLithoView = lithoTestRule.render { component }
+    val result = testLithoView.currentRootNode!!.getChildAt(0)
     assertThat(result.paddingLeft).isEqualTo(8)
     assertThat(result.paddingTop).isEqualTo(8)
     assertThat(result.paddingRight).isEqualTo(8)
