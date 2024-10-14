@@ -39,8 +39,7 @@ import com.facebook.litho.core.width
 import com.facebook.litho.key
 import com.facebook.litho.kotlin.widget.TextInput
 import com.facebook.litho.match
-import com.facebook.litho.setRoot
-import com.facebook.litho.testing.LegacyLithoTestRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.testing.unspecified
 import com.facebook.litho.transition.transitionKey
@@ -56,74 +55,60 @@ import org.mockito.kotlin.mock
 @RunWith(LithoTestRunner::class)
 class ViewStylesTest {
 
-  @Rule @JvmField val lithoViewRule = LegacyLithoTestRule()
+  @Rule @JvmField val lithoTestRule = LithoTestRule()
 
   @Test
   fun background_whenSet_isRespected() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    val testLithoView =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(style = Style.width(100.px).height(100.px).background(ColorDrawable(Color.WHITE)))
         }
-        .measure()
-        .layout()
-        .attachToWindow()
 
-    assertHasColorDrawableOfColor(lithoViewRule.lithoView, Color.WHITE)
+    assertHasColorDrawableOfColor(testLithoView.lithoView, Color.WHITE)
   }
 
   @Test
   fun backgroundColor_whenSet_isRespected() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot { Row(style = Style.width(100.px).height(100.px).backgroundColor(Color.WHITE)) }
-        .measure()
-        .layout()
-        .attachToWindow()
+    val testLithoView =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) {
+          Row(style = Style.width(100.px).height(100.px).backgroundColor(Color.WHITE))
+        }
 
-    assertHasColorDrawableOfColor(lithoViewRule.lithoView, Color.WHITE)
+    assertHasColorDrawableOfColor(testLithoView.lithoView, Color.WHITE)
   }
 
   @Test
   fun clickable_whenSet_isRespected() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot { Row(style = Style.width(100.px).height(100.px).clickable(true)) }
-        .measure()
-        .layout()
-        .attachToWindow()
+    val testLithoView1 =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) {
+          Row(style = Style.width(100.px).height(100.px).clickable(true))
+        }
 
-    assertThat(lithoViewRule.lithoView.isClickable).isTrue
+    assertThat(testLithoView1.lithoView.isClickable).isTrue
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot { Row(style = Style.width(100.px).height(100.px).clickable(false)) }
-        .measure()
-        .layout()
-        .attachToWindow()
+    val testLithoView2 =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) {
+          Row(style = Style.width(100.px).height(100.px).clickable(false))
+        }
 
-    assertThat(lithoViewRule.lithoView.isClickable).isFalse
+    assertThat(testLithoView2.lithoView.isClickable).isFalse
   }
 
   @Test
   fun clipChildren_whenSet_isRespected() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot { Row(style = Style.width(100.px).height(100.px).clipChildren(true)) }
-        .measure()
-        .layout()
-        .attachToWindow()
+    val testLithoView1 =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) {
+          Row(style = Style.width(100.px).height(100.px).clipChildren(true))
+        }
 
-    assertThat(lithoViewRule.lithoView.clipChildren).isTrue
+    assertThat(testLithoView1.lithoView.clipChildren).isTrue
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot { Row(style = Style.width(100.px).height(100.px).clipChildren(false)) }
-        .measure()
-        .layout()
-        .attachToWindow()
+    val testLithoView2 =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) {
+          Row(style = Style.width(100.px).height(100.px).clipChildren(false))
+        }
 
-    assertThat(lithoViewRule.lithoView.clipChildren).isFalse
+    assertThat(testLithoView2.lithoView.clipChildren).isFalse
   }
 
   @Test
@@ -135,8 +120,7 @@ class ViewStylesTest {
           }
     }
 
-    val node =
-        LegacyLithoTestRule.getRootLayout(lithoViewRule, DuplicateChildrenStatesComponent())?.node
+    val node = lithoTestRule.render { DuplicateChildrenStatesComponent() }.currentRootNode?.node
     assertThat(node?.isDuplicateChildrenStatesEnabled).isTrue
   }
 
@@ -149,8 +133,7 @@ class ViewStylesTest {
           }
     }
 
-    val node =
-        LegacyLithoTestRule.getRootLayout(lithoViewRule, DuplicateChildrenStatesComponent())?.node
+    val node = lithoTestRule.render { DuplicateChildrenStatesComponent() }.currentRootNode?.node
     assertThat(node?.isDuplicateChildrenStatesEnabled).isFalse
   }
 
@@ -163,8 +146,7 @@ class ViewStylesTest {
           }
     }
 
-    val node =
-        LegacyLithoTestRule.getRootLayout(lithoViewRule, DuplicateParentStateComponent())?.node
+    val node = lithoTestRule.render { DuplicateParentStateComponent() }.currentRootNode?.node
     val childNode = node?.getChildAt(0)
     assertThat(childNode?.isDuplicateParentStateEnabled).isTrue
   }
@@ -178,45 +160,37 @@ class ViewStylesTest {
           }
     }
 
-    val node =
-        LegacyLithoTestRule.getRootLayout(lithoViewRule, DuplicateParentStateComponent())?.node
+    val node = lithoTestRule.render { DuplicateParentStateComponent() }.currentRootNode?.node
     val childNode = node?.getChildAt(0)
     assertThat(childNode?.isDuplicateParentStateEnabled).isFalse
   }
 
   @Test
   fun focusable_whenSet_isRespected() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot { Row(style = Style.width(100.px).height(100.px).focusable(true)) }
-        .measure()
-        .layout()
-        .attachToWindow()
+    val testLithoView =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) {
+          Row(style = Style.width(100.px).height(100.px).focusable(true))
+        }
 
-    assertThat(lithoViewRule.lithoView.isFocusable).isTrue
+    assertThat(testLithoView.lithoView.isFocusable).isTrue
   }
 
   @Test
   fun foreground_whenSet_isRespected() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    val testLithoView =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(style = Style.width(100.px).height(100.px).foreground(ColorDrawable(Color.WHITE)))
         }
-        .measure()
-        .layout()
-        .attachToWindow()
 
-    assertHasColorDrawableOfColor(lithoViewRule.lithoView, Color.WHITE)
+    assertHasColorDrawableOfColor(testLithoView.lithoView, Color.WHITE)
   }
 
   @Test
   fun `onFocused Changed - invoked when set`() {
     val didFocusChangeTrigger = AtomicBoolean(false)
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    val testLithoView =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(style = Style.width(200.px).height(200.px)) {
             child(
                 TextInput(
@@ -227,20 +201,16 @@ class ViewStylesTest {
                         }))
           }
         }
-        .measure()
-        .layout()
-        .attachToWindow()
 
     assertThat(didFocusChangeTrigger.get()).isFalse
-    lithoViewRule.findViewWithTextOrNull("Try again")!!.requestFocus()
+    testLithoView.findViewWithTextOrNull("Try again")!!.requestFocus()
     assertThat(didFocusChangeTrigger.get()).isTrue
   }
 
   @Test
   fun `onFocused Changed - respects enablement check`() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    val testLithoView =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(style = Style.width(200.px).height(200.px)) {
             child(
                 TextInput(
@@ -251,18 +221,14 @@ class ViewStylesTest {
                         }))
           }
         }
-        .measure()
-        .layout()
-        .attachToWindow()
 
-    lithoViewRule.findViewWithTextOrNull("Try again")!!.requestFocus()
+    testLithoView.findViewWithTextOrNull("Try again")!!.requestFocus()
   }
 
   @Test
   fun `onFocused Changed - overrides prior set one when new (disabled) one set`() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    val testLithoView =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(style = Style.width(200.px).height(200.px)) {
             child(
                 TextInput(
@@ -276,20 +242,16 @@ class ViewStylesTest {
                             }))
           }
         }
-        .measure()
-        .layout()
-        .attachToWindow()
 
-    lithoViewRule.findViewWithTextOrNull("Try again")!!.requestFocus()
+    testLithoView.findViewWithTextOrNull("Try again")!!.requestFocus()
   }
 
   @Test
   fun `onFocused Changed - overrides prior set one when new (enabled) one set`() {
     val didFocusChangeTrigger = AtomicBoolean(false)
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    val testLithoView =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(style = Style.width(200.px).height(200.px)) {
             child(
                 TextInput(
@@ -301,12 +263,9 @@ class ViewStylesTest {
                             .onFocusedChanged(enabled = true) { didFocusChangeTrigger.set(true) }))
           }
         }
-        .measure()
-        .layout()
-        .attachToWindow()
 
     assertThat(didFocusChangeTrigger.get()).isFalse
-    lithoViewRule.findViewWithTextOrNull("Try again")!!.requestFocus()
+    testLithoView.findViewWithTextOrNull("Try again")!!.requestFocus()
     assertThat(didFocusChangeTrigger.get()).isTrue
   }
 
@@ -314,9 +273,8 @@ class ViewStylesTest {
   fun onClick_whenSet_isDispatchedOnClick() {
     val wasClicked = AtomicBoolean(false)
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    val testLithoView =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(style = Style.width(200.px).height(200.px)) {
             child(
                 Row(
@@ -326,20 +284,16 @@ class ViewStylesTest {
                         }))
           }
         }
-        .measure()
-        .layout()
-        .attachToWindow()
 
     assertThat(wasClicked.get()).isFalse()
-    lithoViewRule.findViewWithTag("click_me").performClick()
+    testLithoView.findViewWithTag("click_me").performClick()
     assertThat(wasClicked.get()).isTrue()
   }
 
   @Test
   fun `onClick - when set respects enable check`() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    val testLithoView =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(style = Style.width(200.px).height(200.px)) {
             child(
                 Row(
@@ -350,18 +304,14 @@ class ViewStylesTest {
                             }))
           }
         }
-        .measure()
-        .layout()
-        .attachToWindow()
 
-    lithoViewRule.findViewWithTag("click_me").performClick()
+    testLithoView.findViewWithTag("click_me").performClick()
   }
 
   @Test
   fun `onClick - when override respects last setup`() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    val testLithoView =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(style = Style.width(200.px).height(200.px)) {
             child(
                 Row(
@@ -375,20 +325,16 @@ class ViewStylesTest {
                             }))
           }
         }
-        .measure()
-        .layout()
-        .attachToWindow()
 
-    lithoViewRule.findViewWithTag("click_me").performClick()
+    testLithoView.findViewWithTag("click_me").performClick()
   }
 
   @Test
   fun onLongClick_whenSet_isDispatchedOnLongClick() {
     val wasLongClicked = AtomicBoolean(false)
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    val testLithoView =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(
               style =
                   Style.width(100.px).height(100.px).viewTag("click_me").onLongClick {
@@ -396,20 +342,16 @@ class ViewStylesTest {
                     true
                   })
         }
-        .measure()
-        .layout()
-        .attachToWindow()
 
     assertThat(wasLongClicked.get()).isFalse()
-    lithoViewRule.findViewWithTag("click_me").performLongClick()
+    testLithoView.findViewWithTag("click_me").performLongClick()
     assertThat(wasLongClicked.get()).isTrue()
   }
 
   @Test
   fun `onLongClick - when set respects enable check`() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    val testLithoView =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(style = Style.width(200.px).height(200.px)) {
             child(
                 Row(
@@ -417,24 +359,19 @@ class ViewStylesTest {
                         Style.width(100.px).height(100.px).viewTag("click_me").onLongClick(
                             enabled = false) {
                               error("We should have not executed this code block")
-                              true
                             }))
           }
         }
-        .measure()
-        .layout()
-        .attachToWindow()
 
-    lithoViewRule.findViewWithTag("click_me").performLongClick()
+    testLithoView.findViewWithTag("click_me").performLongClick()
   }
 
   @Test
   fun `onTouch - when set is dispatched on touch`() {
     val wasTouched = AtomicBoolean(false)
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    val testLithoView =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(style = Style.width(200.px).height(200.px)) {
             child(
                 Row(
@@ -445,20 +382,16 @@ class ViewStylesTest {
                         }))
           }
         }
-        .measure()
-        .layout()
-        .attachToWindow()
 
     assertThat(wasTouched.get()).isFalse()
-    lithoViewRule.findViewWithTag("touch_me").dispatchTouchEvent(getMotionEvent())
+    testLithoView.findViewWithTag("touch_me").dispatchTouchEvent(getMotionEvent())
     assertThat(wasTouched.get()).isTrue()
   }
 
   @Test
   fun `onTouch - when set respects enable check`() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    val testLithoView =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(style = Style.width(200.px).height(200.px)) {
             child(
                 Row(
@@ -466,24 +399,19 @@ class ViewStylesTest {
                         Style.width(100.px).height(100.px).viewTag("touch_me").onTouch(
                             enabled = false) {
                               error("We should have not executed this code block")
-                              true
                             }))
           }
         }
-        .measure()
-        .layout()
-        .attachToWindow()
 
-    lithoViewRule.findViewWithTag("touch_me").dispatchTouchEvent(getMotionEvent())
+    testLithoView.findViewWithTag("touch_me").dispatchTouchEvent(getMotionEvent())
   }
 
   @Test
   fun `onInterceptTouch - when set is dispatched on touch`() {
     val wasTouchedIntercepted = AtomicBoolean(false)
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    val testLithoView =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(style = Style.width(200.px).height(200.px)) {
             child(
                 Row(
@@ -494,20 +422,16 @@ class ViewStylesTest {
                         }))
           }
         }
-        .measure()
-        .layout()
-        .attachToWindow()
 
     assertThat(wasTouchedIntercepted.get()).isFalse()
-    lithoViewRule.findViewWithTag("touch_me").dispatchTouchEvent(getMotionEvent())
+    testLithoView.findViewWithTag("touch_me").dispatchTouchEvent(getMotionEvent())
     assertThat(wasTouchedIntercepted.get()).isTrue()
   }
 
   @Test
   fun `onInterceptTouch - when set respects enable check`() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    val testLithoView =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(style = Style.width(200.px).height(200.px)) {
             child(
                 Row(
@@ -515,65 +439,52 @@ class ViewStylesTest {
                         Style.width(100.px).height(100.px).viewTag("touch_me").onInterceptTouch(
                             enabled = false) {
                               error("We should have not executed this code block")
-                              true
                             }))
           }
         }
-        .measure()
-        .layout()
-        .attachToWindow()
 
-    lithoViewRule.findViewWithTag("touch_me").dispatchTouchEvent(getMotionEvent())
+    testLithoView.findViewWithTag("touch_me").dispatchTouchEvent(getMotionEvent())
   }
 
   @Test
   fun rotation_whenSet_isRespected() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    val testLithoView =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(
               style =
                   Style.width(100.px).height(100.px).rotation(90f).rotationX(45f).rotationY(30f))
         }
-        .measure()
-        .layout()
-        .attachToWindow()
 
-    assertThat(lithoViewRule.lithoView.rotation).isEqualTo(90f)
-    assertThat(lithoViewRule.lithoView.rotationX).isEqualTo(45f)
-    assertThat(lithoViewRule.lithoView.rotationY).isEqualTo(30f)
+    assertThat(testLithoView.lithoView.rotation).isEqualTo(90f)
+    assertThat(testLithoView.lithoView.rotationX).isEqualTo(45f)
+    assertThat(testLithoView.lithoView.rotationY).isEqualTo(30f)
   }
 
   @Test
   fun scale_whenSet_isRespected() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot { Row(style = Style.width(100.px).height(100.px).scale(0.5f)) }
-        .measure()
-        .layout()
-        .attachToWindow()
+    val testLithoView =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) {
+          Row(style = Style.width(100.px).height(100.px).scale(0.5f))
+        }
 
-    assertThat(lithoViewRule.lithoView.scaleX).isEqualTo(0.5f)
-    assertThat(lithoViewRule.lithoView.scaleY).isEqualTo(0.5f)
+    assertThat(testLithoView.lithoView.scaleX).isEqualTo(0.5f)
+    assertThat(testLithoView.lithoView.scaleY).isEqualTo(0.5f)
   }
 
   @Test
   fun selected_whenSet_isRespected() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot { Row(style = Style.width(100.px).height(100.px).selected(true)) }
-        .measure()
-        .layout()
-        .attachToWindow()
+    val testLithoView =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) {
+          Row(style = Style.width(100.px).height(100.px).selected(true))
+        }
 
-    assertThat(lithoViewRule.lithoView.isSelected).isTrue
+    assertThat(testLithoView.lithoView.isSelected).isTrue
   }
 
   @Test
   fun wrapInView_whenSet_isRespected() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(style = Style.width(100.px).height(100.px)) {
             child(Row(style = Style.width(1.px).height(1.px).wrapInView()))
           }
@@ -588,16 +499,12 @@ class ViewStylesTest {
   @Test
   fun viewTag_whenSet_isAddedToView() {
     assertThat(
-            lithoViewRule
-                .setSizeSpecs(unspecified(), unspecified())
-                .setRoot {
+            lithoTestRule
+                .render(widthSpec = unspecified(), heightSpec = unspecified()) {
                   Row(style = Style.width(200.px).height(200.px)) {
                     child(Row(style = Style.width(100.px).height(100.px).viewTag("view_tag")))
                   }
                 }
-                .measure()
-                .layout()
-                .attachToWindow()
                 .findViewWithTagOrNull("view_tag"))
         .isNotNull()
   }
@@ -610,29 +517,25 @@ class ViewStylesTest {
           append(456, "second tag")
         }
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot { Row(style = Style.width(100.px).height(100.px).viewTags(viewTags)) }
-        .measure()
-        .layout()
-        .attachToWindow()
+    val testLithoView =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) {
+          Row(style = Style.width(100.px).height(100.px).viewTags(viewTags))
+        }
 
-    assertThat(lithoViewRule.lithoView.getTag(123)).isEqualTo("first tag")
-    assertThat(lithoViewRule.lithoView.getTag(456)).isEqualTo("second tag")
+    assertThat(testLithoView.lithoView.getTag(123)).isEqualTo("first tag")
+    assertThat(testLithoView.lithoView.getTag(456)).isEqualTo("second tag")
   }
 
   @Test
   fun alpha_whenSet_isRespected() {
     val alpha = 0.5f
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot { Row(style = Style.width(100.px).height(100.px).alpha(alpha)) }
-        .measure()
-        .layout()
-        .attachToWindow()
+    val testLithoView =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) {
+          Row(style = Style.width(100.px).height(100.px).alpha(alpha))
+        }
 
-    assertThat(lithoViewRule.lithoView.alpha).isEqualTo(alpha)
+    assertThat(testLithoView.lithoView.alpha).isEqualTo(alpha)
   }
 
   /**
@@ -651,7 +554,7 @@ class ViewStylesTest {
       }
     }
 
-    val node = LegacyLithoTestRule.getRootLayout(lithoViewRule, ElevationComponent())?.node
+    val node = lithoTestRule.render { ElevationComponent() }.currentRootNode?.node
     val nodeInfo = node?.nodeInfo
     assertThat(nodeInfo?.shadowElevation).isEqualTo(elevation)
   }
@@ -672,7 +575,7 @@ class ViewStylesTest {
       }
     }
 
-    val node = LegacyLithoTestRule.getRootLayout(lithoViewRule, ShadowComponent())?.node
+    val node = lithoTestRule.render { ShadowComponent() }.currentRootNode?.node
     val nodeInfo = node?.nodeInfo
     assertThat(nodeInfo?.shadowElevation).isEqualTo(16.0f)
     assertThat(nodeInfo?.outlineProvider).isEqualTo(outlineProvider)
@@ -691,7 +594,7 @@ class ViewStylesTest {
       }
     }
 
-    val node = LegacyLithoTestRule.getRootLayout(lithoViewRule, OutlineProviderComponent())?.node
+    val node = lithoTestRule.render { OutlineProviderComponent() }.currentRootNode?.node
     val nodeInfo = node?.nodeInfo
     assertThat(nodeInfo?.outlineProvider).isEqualTo(outlineProvider)
   }
@@ -700,12 +603,12 @@ class ViewStylesTest {
   @Test
   fun clipToOutline_whenSet_isRespected() {
     class ComponentThatClips : KComponent() {
-      override fun ComponentScope.render(): Component? {
+      override fun ComponentScope.render(): Component {
         return Row(style = Style.clipToOutline(true))
       }
     }
 
-    val node = LegacyLithoTestRule.getRootLayout(lithoViewRule, ComponentThatClips())?.node
+    val node = lithoTestRule.render { ComponentThatClips() }.currentRootNode?.node
     assertThat(node?.nodeInfo?.clipToOutline).isTrue
 
     node?.mutableNodeInfo()?.clipToOutline = false
@@ -716,12 +619,12 @@ class ViewStylesTest {
   @Test
   fun transitionName_whenSet_isRespected() {
     class ElevationComponent : KComponent() {
-      override fun ComponentScope.render(): Component? {
+      override fun ComponentScope.render(): Component {
         return Row(style = Style.transitionName("test"))
       }
     }
 
-    val node = LegacyLithoTestRule.getRootLayout(lithoViewRule, ElevationComponent())?.node
+    val node = lithoTestRule.render { ElevationComponent() }.currentRootNode?.node
     val nodeInfo = node?.nodeInfo
     assertThat(nodeInfo?.transitionName).isEqualTo("test")
   }
@@ -730,12 +633,12 @@ class ViewStylesTest {
   @Test
   fun testKey_whenSet_isRespected() {
     class TestKeyComponent : KComponent() {
-      override fun ComponentScope.render(): Component? {
+      override fun ComponentScope.render(): Component {
         return Row(style = Style.testKey("test"))
       }
     }
 
-    val node = LegacyLithoTestRule.getRootLayout(lithoViewRule, TestKeyComponent())?.node
+    val node = lithoTestRule.render { TestKeyComponent() }.currentRootNode?.node
     assertThat(node?.testKey).isEqualTo("test")
   }
 
@@ -755,48 +658,39 @@ class ViewStylesTest {
       }
     }
 
-    val node =
-        LegacyLithoTestRule.getRootLayout(lithoViewRule, key("root") { TestComponent() })?.node
+    val node = lithoTestRule.render { key("root") { TestComponent() } }.currentRootNode?.node
     assertThat(node?.transitionKey).isEqualTo("test")
     assertThat(node?.transitionOwnerKey).isEqualTo("\$root")
   }
 
   @Test
   fun keyboardNavigationCluster_whenSet_isRespected() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot { Row(style = Style.width(100.px).height(100.px).keyboardNavigationCluster(true)) }
-        .measure()
-        .layout()
-        .attachToWindow()
+    val testLithoView =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) {
+          Row(style = Style.width(100.px).height(100.px).keyboardNavigationCluster(true))
+        }
 
-    assertThat(lithoViewRule.lithoView.isKeyboardNavigationCluster).isTrue
+    assertThat(testLithoView.lithoView.isKeyboardNavigationCluster).isTrue
   }
 
   @Test
   fun tooltipText_whenSet_isRespected() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot { Row(style = Style.width(100.px).height(100.px).tooltipText("Tooltip Text")) }
-        .measure()
-        .layout()
-        .attachToWindow()
+    val testLithoView =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) {
+          Row(style = Style.width(100.px).height(100.px).tooltipText("Tooltip Text"))
+        }
 
-    assertThat(lithoViewRule.lithoView.tooltipText).isEqualTo("Tooltip Text")
+    assertThat(testLithoView.lithoView.tooltipText).isEqualTo("Tooltip Text")
   }
 
   @Test
   fun layerType_whenSet_isRespected() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    val testLithoView =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(style = Style.width(100.px).height(100.px).layerType(LayerType.LAYER_TYPE_HARDWARE))
         }
-        .measure()
-        .layout()
-        .attachToWindow()
 
-    assertThat(lithoViewRule.lithoView.layerType).isEqualTo(View.LAYER_TYPE_HARDWARE)
+    assertThat(testLithoView.lithoView.layerType).isEqualTo(View.LAYER_TYPE_HARDWARE)
   }
 
   private fun assertHasColorDrawableOfColor(componentHost: ComponentHost, color: Int) {
