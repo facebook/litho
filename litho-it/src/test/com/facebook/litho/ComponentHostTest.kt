@@ -25,7 +25,7 @@ import android.util.SparseArray
 import android.view.MotionEvent
 import android.view.View
 import androidx.collection.SparseArrayCompat
-import com.facebook.litho.testing.LegacyLithoTestRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.TestViewComponent
 import com.facebook.litho.testing.Whitebox
 import com.facebook.litho.testing.helper.ComponentTestHelper
@@ -62,11 +62,11 @@ class ComponentHostTest {
   private lateinit var viewComponent: Component
   private lateinit var context: ComponentContext
 
-  @JvmField @Rule val legacyLithoTestRule = LegacyLithoTestRule()
+  @JvmField @Rule val lithoTestRule = LithoTestRule()
 
   @Before
   fun setup() {
-    context = legacyLithoTestRule.context
+    context = lithoTestRule.context
     viewComponent = TestViewComponent.create(context).key(viewComponentKey).build()
     drawableComponent = SimpleMountSpecTester.create(context).key(drawableComponentKey).build()
     host = TestableComponentHost(context)
@@ -609,15 +609,15 @@ class ComponentHostTest {
                             .touchExpansionPx(YogaEdge.ALL, 5)
                             .clickHandler(NoOpEventHandler.getNoOpEventHandler())))
             .build()
-    legacyLithoTestRule.setRoot(component).attachToWindow().measure().layout()
-    val delegate = legacyLithoTestRule.lithoView.touchExpansionDelegate
+    val testLithoView = lithoTestRule.render { component }
+    val delegate = testLithoView.lithoView.touchExpansionDelegate
     assertThat(delegate).describedAs("Should be not null for the host view of the Text").isNotNull
-    val child1 = legacyLithoTestRule.lithoView.getChildAt(0)
+    val child1 = testLithoView.lithoView.getChildAt(0)
     assertThat(child1).isInstanceOf(ComponentHost::class.java)
     assertThat((child1 as ComponentHost).touchExpansionDelegate)
         .describedAs("should be null for the Text")
         .isNull()
-    val child2 = legacyLithoTestRule.lithoView.getChildAt(1)
+    val child2 = testLithoView.lithoView.getChildAt(1)
     assertThat(child2).isInstanceOf(ComponentHost::class.java)
     assertThat((child2 as ComponentHost).touchExpansionDelegate)
         .describedAs("Should be not null for the host view of the Text Input")
