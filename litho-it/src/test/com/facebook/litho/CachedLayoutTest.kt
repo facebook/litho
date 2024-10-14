@@ -17,8 +17,7 @@
 package com.facebook.litho
 
 import com.facebook.litho.LifecycleStep.StepInfo
-import com.facebook.litho.testing.LegacyLithoTestRule
-import com.facebook.litho.testing.assertj.Conditions.exactly
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.LayoutSpecLifecycleTester
 import com.facebook.litho.widget.LayoutWithSizeSpecLifecycleTester
@@ -35,7 +34,7 @@ import org.robolectric.annotation.LooperMode
 @RunWith(LithoTestRunner::class)
 class CachedLayoutTest {
 
-  @Rule @JvmField val lithoViewRule = LegacyLithoTestRule()
+  @Rule @JvmField val lithoTestRule = LithoTestRule()
 
   val commonAssertion =
       fun(steps: List<StepInfo>) {
@@ -56,7 +55,7 @@ class CachedLayoutTest {
     val sizeSpec = Size(exactly(1080), 0)
     val root = TrackingComponent(tracker, steps, sizeSpec, commonAssertion)
 
-    lithoViewRule.render { root }
+    lithoTestRule.render { root }
 
     assertThat(LifecycleStep.getSteps(steps))
         .describedAs("cached layout spec should be resolved only once")
@@ -74,7 +73,7 @@ class CachedLayoutTest {
     val size = Size(exactly(200), 200)
     val root = TrackingComponent(tracker, steps, size, commonAssertion)
 
-    lithoViewRule.render { root }
+    lithoTestRule.render { root }
 
     assertThat(LifecycleStep.getSteps(steps))
         .describedAs("cached layout spec should be resolved only once")
@@ -83,7 +82,7 @@ class CachedLayoutTest {
 
   @Test
   fun `when component with flex has incompatible cached layout it should only be remeasured`() {
-    val c: ComponentContext = lithoViewRule.context
+    val c: ComponentContext = lithoTestRule.context
     val tracker = LifecycleTracker()
     val steps = mutableListOf<StepInfo>()
     val size = Size(exactly(200), 200)
@@ -97,7 +96,7 @@ class CachedLayoutTest {
             .child(Text.create(c).text("Hello World"))
             .build()
 
-    lithoViewRule.render { root }
+    lithoTestRule.render { root }
 
     assertThat(LifecycleStep.getSteps(steps))
         .describedAs("cached layout spec should be resolved only once")
