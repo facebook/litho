@@ -23,7 +23,7 @@ import com.facebook.litho.sections.common.DynamicComponentGroupSection
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent
 import com.facebook.litho.sections.widget.RecyclerConfiguration
-import com.facebook.litho.testing.LegacyLithoTestRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.MountSpecLifecycleTester
 import com.facebook.litho.widget.SectionsRecyclerView
@@ -39,12 +39,11 @@ import org.robolectric.annotation.LooperMode
 class IncrementalMountTest {
 
   private lateinit var context: ComponentContext
-  @JvmField @Rule var lithoViewRule = LegacyLithoTestRule()
+  @JvmField @Rule var lithoTestRule = LithoTestRule()
 
   @Before
   fun setup() {
-    context = lithoViewRule.context
-    lithoViewRule.useLithoView(LithoView(context))
+    context = lithoTestRule.context
   }
 
   private fun buildRecyclerCollectionComponent(
@@ -96,14 +95,7 @@ class IncrementalMountTest {
             lifecycleTracker1, lifecycleTracker2, lifecycleTracker3, 10, CHILD_HEIGHT)
 
     // Set LithoView with height so that it can fully show all the items
-    lithoViewRule
-        .setRoot(rcc)
-        .attachToWindow()
-        .setSizeSpecs(
-            SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
-            SizeSpec.makeSizeSpec(CHILD_HEIGHT * 15, SizeSpec.EXACTLY))
-        .measure()
-        .layout()
+    lithoTestRule.render(widthPx = 100, heightPx = CHILD_HEIGHT * 15) { rcc }
 
     // All 3 children are visible 5 times, so we should see ON_MOUNT being called 5 times
     // for each child
@@ -125,14 +117,7 @@ class IncrementalMountTest {
             lifecycleTracker1, lifecycleTracker2, lifecycleTracker3, 10, CHILD_HEIGHT)
 
     // Set LithoView with height so that it can fully show all the items
-    lithoViewRule
-        .setRoot(rcc)
-        .attachToWindow()
-        .setSizeSpecs(
-            SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
-            SizeSpec.makeSizeSpec(0, SizeSpec.EXACTLY))
-        .measure()
-        .layout()
+    lithoTestRule.render(widthPx = 100, heightPx = 0) { rcc }
 
     // SizeSpec height is 0, so nothing is visible and we should see that ON_MOUNT is not called.
     assertThat(getCountOfLifecycleSteps(lifecycleTracker1.steps, ON_MOUNT)).isEqualTo(0)
@@ -153,14 +138,7 @@ class IncrementalMountTest {
             lifecycleTracker1, lifecycleTracker2, lifecycleTracker3, 10, CHILD_HEIGHT)
 
     // Set LithoView with height so that it can fully show all the items
-    lithoViewRule
-        .setRoot(rcc)
-        .attachToWindow()
-        .setSizeSpecs(
-            SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
-            SizeSpec.makeSizeSpec(CHILD_HEIGHT * 9, SizeSpec.EXACTLY))
-        .measure()
-        .layout()
+    lithoTestRule.render(widthPx = 100, heightPx = CHILD_HEIGHT * 9) { rcc }
 
     // All 3 children are visible 3 times, so we should see ON_MOUNT being called 3 times
     // for each child
@@ -182,14 +160,7 @@ class IncrementalMountTest {
             lifecycleTracker1, lifecycleTracker2, lifecycleTracker3, 10, CHILD_HEIGHT)
 
     // Set LithoView with height so that it can fully show all the items
-    lithoViewRule
-        .setRoot(rcc)
-        .attachToWindow()
-        .setSizeSpecs(
-            SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
-            SizeSpec.makeSizeSpec(CHILD_HEIGHT * 8 + (CHILD_HEIGHT / 2), SizeSpec.EXACTLY))
-        .measure()
-        .layout()
+    lithoTestRule.render(widthPx = 100, heightPx = CHILD_HEIGHT * 8 + (CHILD_HEIGHT / 2)) { rcc }
 
     // All 3 children are visible 3 times, so we should see ON_MOUNT being called 3 times
     // for each child
@@ -210,17 +181,10 @@ class IncrementalMountTest {
             lifecycleTracker1, lifecycleTracker2, lifecycleTracker3, 10, CHILD_HEIGHT)
 
     // Set LithoView with height so that it can fully show exactly 3 items (3 children per item).
-    lithoViewRule
-        .setRoot(rcc)
-        .attachToWindow()
-        .setSizeSpecs(
-            SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
-            SizeSpec.makeSizeSpec(CHILD_HEIGHT * 9, SizeSpec.EXACTLY))
-        .measure()
-        .layout()
+    val testLithoView = lithoTestRule.render(widthPx = 100, heightPx = CHILD_HEIGHT * 9) { rcc }
 
     // Obtain the RV for scrolling later
-    val recyclerView = (lithoViewRule.lithoView.getChildAt(0) as SectionsRecyclerView).recyclerView
+    val recyclerView = (testLithoView.lithoView.getChildAt(0) as SectionsRecyclerView).recyclerView
 
     // All 3 children are visible 3 times, so we should see ON_MOUNT being called 3 times
     // for each child
