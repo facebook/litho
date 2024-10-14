@@ -23,7 +23,6 @@ import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.kotlin.widget.SolidColor
 import com.facebook.litho.kotlin.widget.TextInput
-import com.facebook.litho.testing.LegacyLithoTestRule
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.onClick
@@ -42,13 +41,12 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class ViewAttributeExtensionTest {
 
-  @JvmField @Rule var lithoViewRule: LegacyLithoTestRule = LegacyLithoTestRule()
   @JvmField @Rule var lithoTestRule = LithoTestRule()
 
   @Test
   fun `when view attributes is set it should override attribute set by mount spec`() {
 
-    val c: ComponentContext = lithoViewRule.context
+    val c: ComponentContext = lithoTestRule.context
 
     val root: Component =
         MountSpecLifecycleTester.create(c)
@@ -58,16 +56,16 @@ class ViewAttributeExtensionTest {
             .alpha(0.2f)
             .build()
 
-    lithoViewRule.render { root }
+    val testLithoView = lithoTestRule.render { root }
 
-    val content: View = lithoViewRule.lithoView.getChildAt(0)
+    val content: View = testLithoView.lithoView.getChildAt(0)
 
     assertThat(content.alpha)
         .describedAs("alpha should be applied from the common props")
         .isEqualTo(0.2f)
 
     // unmount everything
-    lithoViewRule.useComponentTree(null)
+    testLithoView.useComponentTree(null)
 
     assertThat(content.alpha)
         .describedAs("alpha should be restored to the initial value")
@@ -77,7 +75,7 @@ class ViewAttributeExtensionTest {
   @Test
   fun `when view attributes is set on LithoView should be unset when root is unmounted`() {
 
-    val c: ComponentContext = lithoViewRule.context
+    val c: ComponentContext = lithoTestRule.context
 
     val root: Component =
         Column.create(c)
@@ -88,15 +86,15 @@ class ViewAttributeExtensionTest {
                     .lifecycleTracker(LifecycleTracker()))
             .build()
 
-    lithoViewRule.render { root }
+    val testLithoView = lithoTestRule.render { root }
 
-    assertThat(lithoViewRule.lithoView.alpha)
+    assertThat(testLithoView.lithoView.alpha)
         .describedAs("alpha should be applied from the common props")
         .isEqualTo(0.2f)
 
-    lithoViewRule.lithoView.mountComponent(Rect(0, -10, 1080, -5), true)
+    testLithoView.lithoView.mountComponent(Rect(0, -10, 1080, -5), true)
 
-    assertThat(lithoViewRule.lithoView.alpha)
+    assertThat(testLithoView.lithoView.alpha)
         .describedAs("alpha should be restored to the default value")
         .isEqualTo(1f)
   }
