@@ -18,7 +18,7 @@ package com.facebook.litho
 
 import android.graphics.Rect
 import android.view.View
-import com.facebook.litho.testing.LegacyLithoTestRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.MountSpecLifecycleTester
 import org.assertj.core.api.Assertions.assertThat
@@ -29,11 +29,11 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class DynamicPropsExtensionTest {
 
-  @JvmField @Rule val lithoViewRule: LegacyLithoTestRule = LegacyLithoTestRule()
+  @JvmField @Rule val lithoTestRule = LithoTestRule()
 
   @Test
   fun `when dynamic vale is set should override attribute set by MountSpec`() {
-    val c: ComponentContext = lithoViewRule.context
+    val c: ComponentContext = lithoTestRule.context
     val root =
         MountSpecLifecycleTester.create(c)
             .intrinsicSize(Size(100, 100))
@@ -43,16 +43,16 @@ class DynamicPropsExtensionTest {
             .scaleY(DynamicValue(0.2f))
             .build()
 
-    lithoViewRule.render { root }
+    val testLithoView = lithoTestRule.render { root }
 
-    val content: View = lithoViewRule.lithoView.getChildAt(0)
+    val content: View = testLithoView.lithoView.getChildAt(0)
 
     assertThat(content.scaleX)
         .describedAs("scale should be applied from the dynamic value")
         .isEqualTo(0.2f)
 
     // unmount everything
-    lithoViewRule.useComponentTree(null)
+    testLithoView.useComponentTree(null)
 
     assertThat(content.scaleX)
         .describedAs("scale should be restored to the initial value")
@@ -61,7 +61,7 @@ class DynamicPropsExtensionTest {
 
   @Test
   fun `when dynamic vale is set on LithoView should be unset when root is unmounted`() {
-    val c: ComponentContext = lithoViewRule.context
+    val c: ComponentContext = lithoTestRule.context
     val root =
         Column.create(c)
             .alpha(DynamicValue(0.2f))
@@ -71,15 +71,15 @@ class DynamicPropsExtensionTest {
                     .lifecycleTracker(LifecycleTracker()))
             .build()
 
-    lithoViewRule.render { root }
+    val testLithoView = lithoTestRule.render { root }
 
-    assertThat(lithoViewRule.lithoView.alpha)
+    assertThat(testLithoView.lithoView.alpha)
         .describedAs("alpha should be applied from the dynamic value")
         .isEqualTo(0.2f)
 
-    lithoViewRule.lithoView.mountComponent(Rect(0, -10, 1080, -5), true)
+    testLithoView.lithoView.mountComponent(Rect(0, -10, 1080, -5), true)
 
-    assertThat(lithoViewRule.lithoView.alpha)
+    assertThat(testLithoView.lithoView.alpha)
         .describedAs("alpha should be restored to default value")
         .isEqualTo(1f)
   }
