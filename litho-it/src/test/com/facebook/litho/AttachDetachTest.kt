@@ -16,7 +16,7 @@
 
 package com.facebook.litho
 
-import com.facebook.litho.testing.LegacyLithoTestRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.HorizontalScroll
 import com.facebook.litho.widget.MountSpecLifecycleTester
@@ -27,22 +27,23 @@ import org.junit.runner.RunWith
 
 @RunWith(LithoTestRunner::class)
 class AttachDetachTest {
-  @JvmField @Rule val legacyLithoTestRule = LegacyLithoTestRule()
+  @JvmField @Rule val lithoTestRule = LithoTestRule()
 
   @Test
   fun horizontalScroll_releaseTree_childComponentShouldCallOnDetached() {
-    val c = legacyLithoTestRule.context
+    val c = lithoTestRule.context
     val lifecycleTracker = LifecycleTracker()
-    legacyLithoTestRule.setRoot(
-        HorizontalScroll.create(c)
-            .contentProps(
-                MountSpecLifecycleTester.create(c)
-                    .intrinsicSize(Size(800, 600))
-                    .lifecycleTracker(lifecycleTracker)
-                    .build())
-            .build())
-    legacyLithoTestRule.attachToWindow().measure().layout()
-    legacyLithoTestRule.release()
+    val testLithoView =
+        lithoTestRule.render {
+          HorizontalScroll.create(c)
+              .contentProps(
+                  MountSpecLifecycleTester.create(c)
+                      .intrinsicSize(Size(800, 600))
+                      .lifecycleTracker(lifecycleTracker)
+                      .build())
+              .build()
+        }
+    testLithoView.release()
     assertThat(lifecycleTracker.steps)
         .describedAs(
             "Child component should call @OnDetached when parent HorizontalScroll is detached")
