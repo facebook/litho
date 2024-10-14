@@ -18,14 +18,13 @@ package com.facebook.litho
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
-import com.facebook.litho.SizeSpec.makeSizeSpec
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.common.SingleComponentSection
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration
 import com.facebook.litho.sections.widget.RecyclerBinderConfiguration
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent
-import com.facebook.litho.testing.LegacyLithoTestRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.RecyclerBinderConfig
 import org.assertj.core.api.Assertions.assertThat
@@ -38,7 +37,7 @@ import org.robolectric.annotation.LooperMode
 @RunWith(LithoTestRunner::class)
 class ComponentsConfigurationTest {
 
-  @JvmField @Rule val legacyLithoTestRule = LegacyLithoTestRule()
+  @JvmField @Rule val lithoTestRule = LithoTestRule()
 
   private val componentContext =
       ComponentContext(ApplicationProvider.getApplicationContext<Context>())
@@ -73,25 +72,24 @@ class ComponentsConfigurationTest {
                             incrementalMountEnabled = true)))
             .build()
 
-    legacyLithoTestRule
-        .setRoot(
-            RecyclerCollectionComponent.create(componentContext)
-                .recyclerConfiguration(
-                    ListRecyclerConfiguration.create()
-                        .recyclerBinderConfiguration(recyclerBinderConfiguration)
-                        .build())
-                .section(
-                    SingleComponentSection.create(SectionContext(componentContext))
-                        .component(
-                            Row.create(componentContext)
-                                .viewTag("rv_row")
-                                .heightDip(100f)
-                                .widthDip(100f))
-                        .build())
-                .build())
-        .setSizeSpecs(makeSizeSpec(10, SizeSpec.EXACTLY), makeSizeSpec(5, SizeSpec.EXACTLY))
-    legacyLithoTestRule.attachToWindow().measure().layout().setSizeSpecs(10, 10)
-    val childView = legacyLithoTestRule.lithoView.findViewWithTag("rv_row") as LithoView?
+    val testLithoView =
+        lithoTestRule.render(widthPx = 10, heightPx = 10) {
+          RecyclerCollectionComponent.create(componentContext)
+              .recyclerConfiguration(
+                  ListRecyclerConfiguration.create()
+                      .recyclerBinderConfiguration(recyclerBinderConfiguration)
+                      .build())
+              .section(
+                  SingleComponentSection.create(SectionContext(componentContext))
+                      .component(
+                          Row.create(componentContext)
+                              .viewTag("rv_row")
+                              .heightDip(100f)
+                              .widthDip(100f))
+                      .build())
+              .build()
+        }
+    val childView = testLithoView.lithoView.findViewWithTag("rv_row") as LithoView?
     assertThat(childView).isNotNull
     val componentsConfiguration =
         childView?.componentTree?.context?.mLithoConfiguration?.componentsConfig
