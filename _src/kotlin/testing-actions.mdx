@@ -15,7 +15,7 @@ In `Litho`, the state of the `Components` is updated asynchronously, off the Mai
 
 During tests, it's important to ensure that everything is in sync in the Main Thread and the Background Thread, as in a real-life use case. This is the role of the `act{}` function, which removes the responsibility to use the Loopers and manage the thread synchronisation, as shown in the following snippet:
 
-```kotlin file=litho-core/src/test/kotlin/com/facebook/litho/examples/LithoTestRuleExampleTest.kt start=act_example_start end=act_example_end
+```kotlin file=litho-it/src/test/com/facebook/litho/examples/LithoTestRuleExampleTest.kt start=act_example_start end=act_example_end
 ```
 
 :::note
@@ -45,7 +45,7 @@ Use `act()` for events that trigger async updates (such as `clicks`). Otherwise,
 
 For example, it may be needed if a component defines a visibility event that triggers an async state update. In such a case, `idle()` should be called after layout to make sure the update is reflected in the UI before making test assertions:
 
-```kotlin file=litho-core/src/test/kotlin/com/facebook/litho/examples/LithoTestRuleExampleTest.kt start=idle_component_start end=idle_component_end
+```kotlin file=litho-it/src/test/com/facebook/litho/examples/LithoTestRuleExampleTest.kt start=idle_component_start end=idle_component_end
 ```
 
 ## Interactions with LithoTestRule
@@ -63,7 +63,7 @@ Four types of 'click' are supported:
 
 To illustrate how to test a click action, the following `TestComponent` shows/hides the Text after the click action is performed on a `Row`:
 
-```kotlin file=litho-core/src/test/kotlin/com/facebook/litho/examples/LithoTestRuleExampleTest.kt start=component_for_action_start end=component_for_action_end
+```kotlin file=litho-it/src/test/com/facebook/litho/examples/LithoTestRuleExampleTest.kt start=component_for_action_start end=component_for_action_end
 ```
 
 #### Testing the TestComponent for a click action
@@ -79,7 +79,7 @@ The test case performs three steps:
 
 This test case is satisfied with the assertions shown in the following snippet:
 
-```kotlin file=litho-core/src/test/kotlin/com/facebook/litho/examples/LithoTestRuleExampleTest.kt start=test_interaction_start end=test_interaction_end
+```kotlin file=litho-it/src/test/com/facebook/litho/examples/LithoTestRuleExampleTest.kt start=test_interaction_start end=test_interaction_end
 ```
 
 ### How to test `VisiblityEvent`
@@ -88,7 +88,7 @@ In order to test `VisiblityEvent` instead of using `LithoTestRule.render(Compone
 
 This enables the state of the component to be checked before and after the visibility event is triggered:
 
-```kotlin file=litho-core/src/test/kotlin/com/facebook/litho/examples/LithoTestRuleExampleTest.kt start=visibility_test_start end=visibility_test_end
+```kotlin file=litho-it/src/test/com/facebook/litho/examples/LithoTestRuleExampleTest.kt start=visibility_test_start end=visibility_test_end
 ```
 
 :::note
