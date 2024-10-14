@@ -20,15 +20,13 @@ import android.graphics.drawable.ColorDrawable
 import android.view.View
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.it.R
-import com.facebook.litho.testing.LegacyLithoTestRule
-import com.facebook.litho.testing.exactly
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.testing.unspecified
 import com.facebook.rendercore.testing.ViewAssertions
 import com.facebook.rendercore.testing.match.MatchNode
 import com.facebook.rendercore.testing.match.ViewMatchNode
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -38,53 +36,39 @@ class ApplyStylesTest {
 
   @JvmField
   @Rule
-  var legacyLithoTestRule: LegacyLithoTestRule =
-      LegacyLithoTestRule(
+  var lithoTestRule: LithoTestRule =
+      LithoTestRule(
           ComponentsConfiguration.defaultInstance.copy(shouldAddHostViewForRootComponent = true))
 
   @Test
   fun styles_withWidthHeightStyle_appliesWidthHeight() {
-    legacyLithoTestRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot(
-            Column.create(legacyLithoTestRule.context, 0, R.style.ApplyStylesTest_WidthHeight)
-                .build())
-        .measure()
-        .layout()
-        .attachToWindow()
-    assertThat(legacyLithoTestRule.lithoView.width).isEqualTo(37)
-    assertThat(legacyLithoTestRule.lithoView.height).isEqualTo(100)
+    val testLithoView =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) {
+          Column.create(lithoTestRule.context, 0, R.style.ApplyStylesTest_WidthHeight).build()
+        }
+    assertThat(testLithoView.lithoView.width).isEqualTo(37)
+    assertThat(testLithoView.lithoView.height).isEqualTo(100)
   }
 
   @Test
   fun styles_withMinWidthHeightStyle_appliesMinWidthHeight() {
-    legacyLithoTestRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot(
-            Column.create(legacyLithoTestRule.context, 0, R.style.ApplyStylesTest_MinWidthHeight)
-                .build())
-        .measure()
-        .layout()
-        .attachToWindow()
-    assertThat(legacyLithoTestRule.lithoView.width).isEqualTo(50)
-    assertThat(legacyLithoTestRule.lithoView.height).isEqualTo(75)
+    val testLithoView =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) {
+          Column.create(lithoTestRule.context, 0, R.style.ApplyStylesTest_MinWidthHeight).build()
+        }
+    assertThat(testLithoView.lithoView.width).isEqualTo(50)
+    assertThat(testLithoView.lithoView.height).isEqualTo(75)
   }
 
   @Test
   fun styles_withPaddingLeftTopRightBottomStyle_appliesPadding() {
-    legacyLithoTestRule
-        .setSizeSpecs(exactly(100), exactly(100))
-        .setRoot(
-            Row.create(
-                    legacyLithoTestRule.context,
-                    0,
-                    R.style.ApplyStylesTest_PaddingLeftTopRightBottom)
-                .child(Column.create(legacyLithoTestRule.context).flexGrow(1f).wrapInView())
-                .build())
-        .measure()
-        .layout()
-        .attachToWindow()
-    ViewAssertions.assertThat(legacyLithoTestRule.lithoView)
+    val testLithoView =
+        lithoTestRule.render(widthPx = 100, heightPx = 100) {
+          Row.create(lithoTestRule.context, 0, R.style.ApplyStylesTest_PaddingLeftTopRightBottom)
+              .child(Column.create(lithoTestRule.context).flexGrow(1f).wrapInView())
+              .build()
+        }
+    ViewAssertions.assertThat(testLithoView.lithoView)
         .matches(
             ViewMatchNode.forType(LithoView::class.java)
                 .child(
@@ -94,16 +78,13 @@ class ApplyStylesTest {
 
   @Test
   fun styles_withPaddingAllStyle_appliesPadding() {
-    legacyLithoTestRule
-        .setSizeSpecs(exactly(100), exactly(100))
-        .setRoot(
-            Row.create(legacyLithoTestRule.context, 0, R.style.ApplyStylesTest_PaddingAll)
-                .child(Column.create(legacyLithoTestRule.context).flexGrow(1f).wrapInView())
-                .build())
-        .measure()
-        .layout()
-        .attachToWindow()
-    ViewAssertions.assertThat(legacyLithoTestRule.lithoView)
+    val testLithoView =
+        lithoTestRule.render(widthPx = 100, heightPx = 100) {
+          Row.create(lithoTestRule.context, 0, R.style.ApplyStylesTest_PaddingAll)
+              .child(Column.create(lithoTestRule.context).flexGrow(1f).wrapInView())
+              .build()
+        }
+    ViewAssertions.assertThat(testLithoView.lithoView)
         .matches(
             ViewMatchNode.forType(LithoView::class.java)
                 .child(
@@ -111,19 +92,15 @@ class ApplyStylesTest {
                         .bounds(15, 15, 100 - 15 - 15, 100 - 15 - 15)))
   }
 
-  @Ignore("T66670905")
   @Test
   fun styles_withPaddingStartEndStyle_appliesPadding() {
-    legacyLithoTestRule
-        .setSizeSpecs(exactly(100), exactly(100))
-        .setRoot(
-            Row.create(legacyLithoTestRule.context, 0, R.style.ApplyStylesTest_PaddingStartEnd)
-                .child(Column.create(legacyLithoTestRule.context).flexGrow(1f).wrapInView())
-                .build())
-        .measure()
-        .layout()
-        .attachToWindow()
-    ViewAssertions.assertThat(legacyLithoTestRule.lithoView)
+    val testLithoView =
+        lithoTestRule.render(widthPx = 100, heightPx = 100) {
+          Row.create(lithoTestRule.context, 0, R.style.ApplyStylesTest_PaddingStartEnd)
+              .child(Column.create(lithoTestRule.context).flexGrow(1f).wrapInView())
+              .build()
+        }
+    ViewAssertions.assertThat(testLithoView.lithoView)
         .matches(
             ViewMatchNode.forType(LithoView::class.java)
                 .child(ViewMatchNode.forType(View::class.java).bounds(20, 0, 100 - 20 - 40, 100)))
@@ -131,22 +108,19 @@ class ApplyStylesTest {
 
   @Test
   fun styles_withMarginLeftTopRightBottomStyle_appliesMargin() {
-    legacyLithoTestRule
-        .setSizeSpecs(exactly(100), exactly(100))
-        .setRoot(
-            Row.create(legacyLithoTestRule.context)
-                .child(
-                    Column.create(
-                            legacyLithoTestRule.context,
-                            0,
-                            R.style.ApplyStylesTest_MarginLeftTopRightBottom)
-                        .flexGrow(1f)
-                        .wrapInView())
-                .build())
-        .measure()
-        .layout()
-        .attachToWindow()
-    ViewAssertions.assertThat(legacyLithoTestRule.lithoView)
+    val testLithoView =
+        lithoTestRule.render(widthPx = 100, heightPx = 100) {
+          Row.create(lithoTestRule.context)
+              .child(
+                  Column.create(
+                          lithoTestRule.context,
+                          0,
+                          R.style.ApplyStylesTest_MarginLeftTopRightBottom)
+                      .flexGrow(1f)
+                      .wrapInView())
+              .build()
+        }
+    ViewAssertions.assertThat(testLithoView.lithoView)
         .matches(
             ViewMatchNode.forType(LithoView::class.java)
                 .child(
@@ -156,19 +130,16 @@ class ApplyStylesTest {
 
   @Test
   fun styles_withMarginAllStyle_appliesMargin() {
-    legacyLithoTestRule
-        .setSizeSpecs(exactly(100), exactly(100))
-        .setRoot(
-            Row.create(legacyLithoTestRule.context)
-                .child(
-                    Column.create(legacyLithoTestRule.context, 0, R.style.ApplyStylesTest_MarginAll)
-                        .flexGrow(1f)
-                        .wrapInView())
-                .build())
-        .measure()
-        .layout()
-        .attachToWindow()
-    ViewAssertions.assertThat(legacyLithoTestRule.lithoView)
+    val testLithoView =
+        lithoTestRule.render(widthPx = 100, heightPx = 100) {
+          Row.create(lithoTestRule.context)
+              .child(
+                  Column.create(lithoTestRule.context, 0, R.style.ApplyStylesTest_MarginAll)
+                      .flexGrow(1f)
+                      .wrapInView())
+              .build()
+        }
+    ViewAssertions.assertThat(testLithoView.lithoView)
         .matches(
             ViewMatchNode.forType(LithoView::class.java)
                 .child(
@@ -176,23 +147,18 @@ class ApplyStylesTest {
                         .bounds(15, 15, 100 - 15 - 15, 100 - 15 - 15)))
   }
 
-  @Ignore("T66670905")
   @Test
   fun styles_withMarginStartEndStyle_appliesMargin() {
-    legacyLithoTestRule
-        .setSizeSpecs(exactly(100), exactly(100))
-        .setRoot(
-            Row.create(legacyLithoTestRule.context)
-                .child(
-                    Column.create(
-                            legacyLithoTestRule.context, 0, R.style.ApplyStylesTest_MarginStartEnd)
-                        .flexGrow(1f)
-                        .wrapInView())
-                .build())
-        .measure()
-        .layout()
-        .attachToWindow()
-    ViewAssertions.assertThat(legacyLithoTestRule.lithoView)
+    val testLithoView =
+        lithoTestRule.render(widthPx = 100, heightPx = 100) {
+          Row.create(lithoTestRule.context)
+              .child(
+                  Column.create(lithoTestRule.context, 0, R.style.ApplyStylesTest_MarginStartEnd)
+                      .flexGrow(1f)
+                      .wrapInView())
+              .build()
+        }
+    ViewAssertions.assertThat(testLithoView.lithoView)
         .matches(
             ViewMatchNode.forType(LithoView::class.java)
                 .child(ViewMatchNode.forType(View::class.java).bounds(10, 0, 100 - 10 - 30, 100)))
@@ -200,23 +166,18 @@ class ApplyStylesTest {
 
   @Test
   fun styles_withBackgroundForegroundStyle_appliesBackgroundAndForeground() {
-    legacyLithoTestRule
-        .setSizeSpecs(exactly(100), exactly(100))
-        .setRoot(
-            Row.create(legacyLithoTestRule.context)
-                .wrapInView()
-                .child(
-                    Column.create(
-                            legacyLithoTestRule.context,
-                            0,
-                            R.style.ApplyStylesTest_BackgroundForeground)
-                        .flexGrow(1f)
-                        .wrapInView())
-                .build())
-        .measure()
-        .layout()
-        .attachToWindow()
-    val innerHost = legacyLithoTestRule.lithoView.getChildAt(0) as ComponentHost
+    val testLithoView =
+        lithoTestRule.render(widthPx = 100, heightPx = 100) {
+          Row.create(lithoTestRule.context)
+              .wrapInView()
+              .child(
+                  Column.create(
+                          lithoTestRule.context, 0, R.style.ApplyStylesTest_BackgroundForeground)
+                      .flexGrow(1f)
+                      .wrapInView())
+              .build()
+        }
+    val innerHost = testLithoView.lithoView.getChildAt(0) as ComponentHost
     ViewAssertions.assertThat(innerHost)
         .matches(
             ViewMatchNode.forType(ComponentHost::class.java)
@@ -228,23 +189,20 @@ class ApplyStylesTest {
 
   @Test
   fun styles_withAccessibilityAndContentDescriptionStyle_appliesAccessibilityAndContentDescription() {
-    legacyLithoTestRule
-        .setSizeSpecs(exactly(100), exactly(100))
-        .setRoot(
-            Row.create(legacyLithoTestRule.context)
-                .wrapInView()
-                .child(
-                    Column.create(
-                            legacyLithoTestRule.context,
-                            0,
-                            R.style.ApplyStylesTest_AccessibilityAndContentDescription)
-                        .flexGrow(1f)
-                        .wrapInView())
-                .build())
-        .measure()
-        .layout()
-        .attachToWindow()
-    val innerHost = legacyLithoTestRule.lithoView.getChildAt(0) as ComponentHost
+    val testLithoView =
+        lithoTestRule.render(widthPx = 100, heightPx = 100) {
+          Row.create(lithoTestRule.context)
+              .wrapInView()
+              .child(
+                  Column.create(
+                          lithoTestRule.context,
+                          0,
+                          R.style.ApplyStylesTest_AccessibilityAndContentDescription)
+                      .flexGrow(1f)
+                      .wrapInView())
+              .build()
+        }
+    val innerHost = testLithoView.lithoView.getChildAt(0) as ComponentHost
     ViewAssertions.assertThat(innerHost)
         .matches(
             ViewMatchNode.forType(ComponentHost::class.java)
@@ -256,23 +214,18 @@ class ApplyStylesTest {
 
   @Test
   fun styles_withDuplicateParentStateStyle_appliesDuplicateParentState() {
-    legacyLithoTestRule
-        .setSizeSpecs(exactly(100), exactly(100))
-        .setRoot(
-            Row.create(legacyLithoTestRule.context)
-                .wrapInView()
-                .child(
-                    Column.create(
-                            legacyLithoTestRule.context,
-                            0,
-                            R.style.ApplyStylesTest_DuplicateParentState)
-                        .flexGrow(1f)
-                        .wrapInView())
-                .build())
-        .measure()
-        .layout()
-        .attachToWindow()
-    val innerHost = legacyLithoTestRule.lithoView.getChildAt(0) as ComponentHost
+    val testLithoView =
+        lithoTestRule.render(widthPx = 100, heightPx = 100) {
+          Row.create(lithoTestRule.context)
+              .wrapInView()
+              .child(
+                  Column.create(
+                          lithoTestRule.context, 0, R.style.ApplyStylesTest_DuplicateParentState)
+                      .flexGrow(1f)
+                      .wrapInView())
+              .build()
+        }
+    val innerHost = testLithoView.lithoView.getChildAt(0) as ComponentHost
     ViewAssertions.assertThat(innerHost)
         .matches(
             ViewMatchNode.forType(ComponentHost::class.java)
