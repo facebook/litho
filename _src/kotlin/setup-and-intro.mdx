@@ -28,11 +28,11 @@ To use the Litho Kotlin API, you'll need to add the following dependencies into 
 
 ```python title="BUCK"
 deps = [
-    "//fbandroid/libraries/components:litho_core_kotlin",
+    "//fbandroid/libraries/components/litho-core/src/main/java/com/facebook/litho:litho",
     "//fbandroid/libraries/components/litho-widget-kotlin/src/main/kotlin/com/facebook/litho/kotlin/widget:widget", # for widgets
 ],
 ```
 
 :::note
-If you're getting an "unresolved supertypes: com.facebook.litho.KComponent" or "incompatible types: com.facebook.&lt;Your new KComponent&gt; cannot be converted to com.facebook.litho.Component" error, be sure to also add the `litho_core_kotlin` dependency in the BUCK file for the module that is using the Kotlin component.
+If you're getting an "unresolved supertypes: com.facebook.litho.KComponent" or "incompatible types: com.facebook.&lt;Your new KComponent&gt; cannot be converted to com.facebook.litho.Component" error, be sure to also add the `litho_core` dependency in the BUCK file for the module that is using the Kotlin component.
 :::
