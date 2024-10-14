@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,7 @@ import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.kotlinStyle
 import com.facebook.litho.match
-import com.facebook.litho.setRoot
-import com.facebook.litho.testing.LegacyLithoTestRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.testing.unspecified
 import com.facebook.rendercore.px
@@ -37,14 +36,13 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class FlexboxStyleCompatibilityTest {
 
-  @Rule @JvmField val lithoViewRule = LegacyLithoTestRule()
+  @Rule @JvmField val lithoTestRule = LithoTestRule()
 
   @Test
   fun specComponent_whenKotlinStyleSetOnBuilder_commonPropsAreApplied() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
-          Row.create(lithoViewRule.context)
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
+          Row.create(lithoTestRule.context)
               .wrapInView()
               .kotlinStyle(Style.width(100.px).height(100.px))
               .build()
@@ -54,10 +52,9 @@ class FlexboxStyleCompatibilityTest {
 
   @Test
   fun specComponent_whenKotlinStyleSetOnBuilderThenOverriden_overriddenValuesApply() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
-          Row.create(lithoViewRule.context)
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
+          Row.create(lithoTestRule.context)
               .wrapInView()
               .kotlinStyle(Style.width(100.px).height(100.px))
               .widthPx(50)
