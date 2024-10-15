@@ -40,10 +40,10 @@ public class FrescoImageHierarchyTools {
       @Prop(optional = true) ScalingUtils.ScaleType placeholderImageScaleType,
       @Prop(optional = true, resType = DRAWABLE) Drawable progressBarImage,
       @Prop(optional = true) ScalingUtils.ScaleType progressBarImageScaleType,
-      @Prop(optional = true, resType = DRAWABLE) Drawable retryImage,
+      @Prop(optional = true, resType = DRAWABLE) @Nullable Drawable retryImage,
       @Prop(optional = true) ScalingUtils.ScaleType retryImageScaleType,
       @Prop(optional = true) @Nullable RoundingParams roundingParams,
-      @Prop(optional = true) ColorFilter colorFilter,
+      @Prop(optional = true) @Nullable ColorFilter colorFilter,
       GenericDraweeHierarchy draweeHierarchy) {
 
     if (placeholderImage == null) {
