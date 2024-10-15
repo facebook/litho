@@ -111,7 +111,8 @@ public final class ViewTree {
     return makeString(extraTextFunction, mView, startingDepth);
   }
 
-  private String makeString(Function<View, String> extraTextFunction, View view, int depth) {
+  private String makeString(
+      @Nullable Function<View, String> extraTextFunction, View view, int depth) {
     final StringBuilder builder = new StringBuilder();
     if (depth > 0) {
       builder.append('\n');
