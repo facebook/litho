@@ -20,6 +20,7 @@ import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.animation.AnimationBinding;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nullable;
 
 /** A set of {@link Transition}s. */
 @Nullsafe(Nullsafe.Mode.LOCAL)
@@ -39,7 +40,7 @@ public abstract class TransitionSet extends Transition {
     }
   }
 
-  private void addChild(Transition child) {
+  private void addChild(@Nullable Transition child) {
     if (child instanceof Transition.BaseTransitionUnitsBuilder) {
       final ArrayList<? extends Transition> transitions =
           ((Transition.BaseTransitionUnitsBuilder) child).getTransitionUnits();
