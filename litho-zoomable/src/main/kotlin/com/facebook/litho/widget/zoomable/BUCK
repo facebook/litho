@@ -28,6 +28,7 @@ oncall("playgroundapps")
 
 litho_android_library(
     name = "zoomable",
+    abi_generation_mode = "source_only",
     feature = FBApp_UIFrameworks_Litho_Litho,
     k2 = True,
     labels = [],
