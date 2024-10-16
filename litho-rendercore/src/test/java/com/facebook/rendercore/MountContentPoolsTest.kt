@@ -303,6 +303,182 @@ class MountContentPoolsTest {
     Java6Assertions.assertThat(thirdContent).isNotSameAs(secondContent)
   }
 
+  @Test
+  fun testPrefillMountContentPoolWithCustomPoolScope() {
+    val poolScope = PoolScope.ManuallyManaged()
+    val prefillCount = 4
+    val testRenderUnit = TestRenderUnit(/*id*/ 0, /*customPoolSize*/ prefillCount)
+    prefillMountContentPool(context, prefillCount, testRenderUnit, poolScope)
+    Java6Assertions.assertThat(testRenderUnit.createdCount).isEqualTo(prefillCount)
+    val testRenderUnitToAcquire = TestRenderUnit(0, /*customPoolSize*/ prefillCount)
+    for (i in 0 until prefillCount) {
+      acquireMountContent(context, testRenderUnitToAcquire, poolScope)
+    }
+    Java6Assertions.assertThat(testRenderUnitToAcquire.createdCount).isEqualTo(0)
+    acquireMountContent(context, testRenderUnitToAcquire)
+    Java6Assertions.assertThat(testRenderUnitToAcquire.createdCount).isEqualTo(1)
+  }
+
+  @Test
+  fun testPrefillMountContentPoolWithCustomPoolAndCustomPoolScope() {
+    val poolScope = PoolScope.ManuallyManaged()
+    val prefillCount = 4
+    val customPoolSize = 2
+    val testRenderUnit = TestRenderUnit(0, customPoolSize)
+    prefillMountContentPool(context, prefillCount, testRenderUnit, poolScope)
+    // the prefill count overrides the default pool size of the render unit
+    Java6Assertions.assertThat(testRenderUnit.createdCount).isEqualTo(prefillCount)
+    val testRenderUnitToAcquire = TestRenderUnit(0, 2)
+    for (i in 0 until prefillCount) {
+      acquireMountContent(context, testRenderUnitToAcquire, poolScope)
+    }
+    // expect no new render units to be created as the pool has been prefilled
+    Java6Assertions.assertThat(testRenderUnitToAcquire.createdCount).isEqualTo(0)
+  }
+
+  @Test
+  fun testReleaseMountContentWithCustomPoolScopeForDestroyedContextDoesNothing() {
+    val poolScope = PoolScope.ManuallyManaged()
+    val testRenderUnit = TestRenderUnit(0)
+    val content1 = acquireMountContent(activity, testRenderUnit, poolScope)
+    release(activity, testRenderUnit, content1, poolScope)
+    val content2 = acquireMountContent(activity, testRenderUnit, poolScope)
+
+    // Assert pooling was working before
+    Java6Assertions.assertThat(content1).isSameAs(content2)
+    release(activity, testRenderUnit, content2, poolScope)
+
+    // Now destroy the activity and assert pooling no longer works. Next acquire should produce
+    // difference content.
+    onContextDestroyed(activity)
+    val content3 = acquireMountContent(activity, testRenderUnit, poolScope)
+    Java6Assertions.assertThat(content3).isNotSameAs(content1)
+  }
+
+  @Test
+  fun testReleaseMountContentWithCustomPoolScopeForReleasedPoolScopeDoesNothing() {
+    val poolScope = PoolScope.ManuallyManaged()
+    val testRenderUnit = TestRenderUnit(0)
+    val content1 = acquireMountContent(activity, testRenderUnit, poolScope)
+    release(activity, testRenderUnit, content1, poolScope)
+    val content2 = acquireMountContent(activity, testRenderUnit, poolScope)
+
+    // Assert pooling was working before
+    Java6Assertions.assertThat(content1).isSameAs(content2)
+    release(activity, testRenderUnit, content2, poolScope)
+
+    // Now release custom pool scope. Next acquire should produce difference content.
+    poolScope.releaseScope()
+    val content3 = acquireMountContent(activity, testRenderUnit, poolScope)
+    Java6Assertions.assertThat(content3).isNotSameAs(content1)
+  }
+
+  @Test
+  fun testReleaseMountContentWithCustomPoolScopeForReleasedLifecycleAwarePoolScopeDoesNothing() {
+    val servicePoolScope = PoolScope.LifecycleAware((service as LifecycleService).lifecycle)
+    val testRenderUnit = TestRenderUnit(0)
+    val content1 = acquireMountContent(activity, testRenderUnit, servicePoolScope)
+    release(activity, testRenderUnit, content1, servicePoolScope)
+    val content2 = acquireMountContent(activity, testRenderUnit, servicePoolScope)
+
+    // Assert pooling was working before
+    Java6Assertions.assertThat(content1).isSameAs(content2)
+    release(activity, testRenderUnit, content2, servicePoolScope)
+
+    // Now release custom pool scope by destroying the Service. Next acquire should produce
+    // difference content.
+    serviceController.destroy()
+    val content3 = acquireMountContent(activity, testRenderUnit, servicePoolScope)
+    Java6Assertions.assertThat(content3).isNotSameAs(content1)
+  }
+
+  @Test
+  fun testDestroyingActivityReleasesTheCustomScopedPool() {
+    val poolScope = PoolScope.ManuallyManaged()
+    val testRenderUnit = TestRenderUnit(0)
+
+    val content1 = acquireMountContent(activity, testRenderUnit, poolScope)
+    release(activity, testRenderUnit, content1, poolScope)
+    val content2 = acquireMountContent(activity, testRenderUnit, poolScope)
+
+    // Ensure that the content is reused
+    Java6Assertions.assertThat(content1).isSameAs(content2)
+
+    // Release the content
+    release(activity, testRenderUnit, content2, poolScope)
+
+    // Destroy the activity
+    activityController.destroy()
+    onContextDestroyed(activity)
+
+    val content3 = acquireMountContent(activity, testRenderUnit, poolScope)
+    // Ensure that the content acquired after destroying the activity is different
+    Java6Assertions.assertThat(content3).isNotSameAs(content2)
+  }
+
+  @Test
+  fun testAcquireAndReleaseWithDifferentCustomPoolScopesReturnsCorrectContentInstances() {
+    val firstPoolScope = PoolScope.ManuallyManaged()
+    val secondPoolScope = PoolScope.ManuallyManaged()
+    val testRenderUnitToAcquire = TestRenderUnit(/*id*/ 0, /*customPoolSize*/ 2)
+
+    // acquire content objects
+    val firstContentFirstScope =
+        acquireMountContent(context, testRenderUnitToAcquire, firstPoolScope)
+    val secondContentFirstScope =
+        acquireMountContent(context, testRenderUnitToAcquire, firstPoolScope)
+
+    val firstContentSecondScope =
+        acquireMountContent(context, testRenderUnitToAcquire, secondPoolScope)
+    val secondContentSecondScope =
+        acquireMountContent(context, testRenderUnitToAcquire, secondPoolScope)
+
+    // all of them should be created and they shouldn't be the same instance
+    Java6Assertions.assertThat(testRenderUnitToAcquire.createdCount).isEqualTo(4)
+    Java6Assertions.assertThat(firstContentFirstScope).isNotNull
+    Java6Assertions.assertThat(secondContentFirstScope).isNotSameAs(firstContentFirstScope)
+    Java6Assertions.assertThat(firstContentSecondScope).isNotNull
+    Java6Assertions.assertThat(secondContentSecondScope).isNotSameAs(firstContentSecondScope)
+
+    // release the second content instances
+    release(context, testRenderUnitToAcquire, secondContentFirstScope, firstPoolScope)
+    release(context, testRenderUnitToAcquire, secondContentSecondScope, secondPoolScope)
+
+    // acquire the third content instances
+    val thirdContentFirstScope =
+        acquireMountContent(context, testRenderUnitToAcquire, firstPoolScope)
+    val thirdContentSecondScope =
+        acquireMountContent(context, testRenderUnitToAcquire, secondPoolScope)
+
+    // they should be the same instances that were just released
+    Java6Assertions.assertThat(thirdContentFirstScope).isSameAs(secondContentFirstScope)
+    Java6Assertions.assertThat(thirdContentSecondScope).isSameAs(secondContentSecondScope)
+  }
+
+  @Test
+  fun testAcquireContentWithCustomPoolScopeWhenPoolIsSize0ReturnsNewContentEveryTime() {
+    val poolScope = PoolScope.ManuallyManaged()
+    val testRenderUnitToAcquire = TestRenderUnit(/*id*/ 0, /*customPoolSize*/ 0) // disable Pooling
+
+    // acquire content objects
+    val firstContent = acquireMountContent(context, testRenderUnitToAcquire, poolScope)
+    val secondContent = acquireMountContent(context, testRenderUnitToAcquire, poolScope)
+
+    // both of them should be created and they shouldn't be the same instance
+    Java6Assertions.assertThat(testRenderUnitToAcquire.createdCount).isEqualTo(2)
+    Java6Assertions.assertThat(firstContent).isNotNull
+    Java6Assertions.assertThat(secondContent).isNotSameAs(firstContent)
+
+    // release the second content instance
+    release(context, testRenderUnitToAcquire, secondContent, poolScope)
+
+    // acquire the third content instance
+    val thirdContent = acquireMountContent(context, testRenderUnitToAcquire, poolScope)
+
+    // it should not be the same as just released instance because pool size is 0
+    Java6Assertions.assertThat(thirdContent).isNotSameAs(secondContent)
+  }
+
   class TestRenderUnit(
       override val id: Long,
       private val customPoolSize: Int = ContentAllocator.DEFAULT_MAX_PREALLOCATION,

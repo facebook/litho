@@ -55,8 +55,7 @@ object MountContentPools {
   private val mountContentLock: Any = Any()
 
   @GuardedBy("mountContentLock")
-  private val mountContentPoolsByContext: MutableMap<Context, MutableMap<Any, ContentPool>> =
-      HashMap(4)
+  private val mountContentPoolsByContext: MutableMap<Context, ContextContentPools> = HashMap(4)
 
   // This Map is used as a set and the values are ignored.
   @GuardedBy("mountContentLock")
@@ -83,30 +82,37 @@ object MountContentPools {
 
   private var hasMountContentPoolFactory = false
 
+  @JvmOverloads
   @JvmStatic
-  fun acquireMountContent(context: Context, poolableMountContent: ContentAllocator<*>): Any {
-    val content =
+  fun acquireMountContent(
+      context: Context,
+      poolableMountContent: ContentAllocator<*>,
+      poolScope: PoolScope = PoolScope.None
+  ): Any {
+    val contentFromPool =
         if (poolableMountContent.poolingPolicy.canAcquireContent) {
-          val pool = getOrCreateMountContentPool(context, poolableMountContent)
+          val pool =
+              getOrCreateMountContentPool(
+                  context = context, allocator = poolableMountContent, poolScope = poolScope)
           pool?.acquire(poolableMountContent)
         } else {
           null
         }
 
-    return if (content != null) {
-          content
+    return if (contentFromPool != null) {
+          contentFromPool
         } else {
           val isTracing = RenderCoreSystrace.isTracing()
           if (isTracing) {
             RenderCoreSystrace.beginSection(
                 "MountContentPools:createMountContent ${poolableMountContent.poolKeyTypeName}")
           }
-          val content = poolableMountContent.createContent(context)
+          val newContent = poolableMountContent.createContent(context)
           if (isTracing) {
             RenderCoreSystrace.endSection()
           }
 
-          content
+          newContent
         }
         .also { content ->
           if (content is View) {
@@ -115,8 +121,14 @@ object MountContentPools {
         }
   }
 
+  @JvmOverloads
   @JvmStatic
-  fun release(context: Context, poolableMountContent: ContentAllocator<*>, mountContent: Any) {
+  fun release(
+      context: Context,
+      poolableMountContent: ContentAllocator<*>,
+      mountContent: Any,
+      poolScope: PoolScope = PoolScope.None
+  ) {
     if (RenderCoreConfig.removeComponentHostListeners) {
       if (mountContent is Host) {
         mountContent.removeViewListeners()
@@ -124,7 +136,8 @@ object MountContentPools {
     }
     val pool =
         if (poolableMountContent.poolingPolicy.canReleaseContent) {
-          getOrCreateMountContentPool(context, poolableMountContent)
+          getOrCreateMountContentPool(
+              context = context, allocator = poolableMountContent, poolScope = poolScope)
         } else {
           null
         }
@@ -141,12 +154,16 @@ object MountContentPools {
     pool.release(mountContent)
   }
 
+  @JvmOverloads
   @JvmStatic
   fun maybePreallocateContent(
       context: Context,
-      poolableMountContent: ContentAllocator<*>
+      poolableMountContent: ContentAllocator<*>,
+      poolScope: PoolScope = PoolScope.None
   ): Boolean {
-    val pool = getOrCreateMountContentPool(context, poolableMountContent)
+    val pool =
+        getOrCreateMountContentPool(
+            context = context, allocator = poolableMountContent, poolScope = poolScope)
     return pool?.maybePreallocateContent(context, poolableMountContent) ?: false
   }
 
@@ -156,17 +173,24 @@ object MountContentPools {
    * The specified [poolSize] will only be respected if the [poolableMountContent] does not provide
    * a custom Pool implementation.
    */
+  @JvmOverloads
   @JvmStatic
   fun prefillMountContentPool(
       context: Context,
       poolSize: Int,
-      poolableMountContent: ContentAllocator<*>
+      poolableMountContent: ContentAllocator<*>,
+      poolScope: PoolScope = PoolScope.None
   ) {
     if (poolSize == 0) {
       return
     }
 
-    val pool = getOrCreateMountContentPool(context, poolableMountContent, poolSize)
+    val pool =
+        getOrCreateMountContentPool(
+            context = context,
+            allocator = poolableMountContent,
+            poolScope = poolScope,
+            poolSize = poolSize)
 
     if (pool != null) {
       for (i in 0 until poolSize) {
@@ -184,6 +208,7 @@ object MountContentPools {
   private fun getOrCreateMountContentPool(
       context: Context,
       allocator: ContentAllocator<*>,
+      poolScope: PoolScope,
       poolSize: Int = allocator.poolSize()
   ): ContentPool? {
     if (isPoolingDisabled || poolSize <= 0) {
@@ -191,19 +216,20 @@ object MountContentPools {
     }
 
     synchronized(mountContentLock) {
-      var poolsMap = mountContentPoolsByContext[context]
-      if (poolsMap == null) {
+      var contextContentPools = mountContentPoolsByContext[context]
+      if (contextContentPools == null) {
         val rootContext = getRootContext(context)
         if (destroyedRootContexts.containsKey(rootContext)) {
           return null
         }
         ensureLifecycleCallbacks(rootContext)
-        poolsMap = HashMap()
-        mountContentPoolsByContext[context] = poolsMap
+        contextContentPools = ContextContentPools()
+        mountContentPoolsByContext[context] = contextContentPools
       }
+      val scopedPools = contextContentPools.getPools(poolScope)
 
       val poolKey = allocator.getPoolKey()
-      var pool = poolsMap[poolKey]
+      var pool = scopedPools[poolKey]
 
       if (pool == null && hasMountContentPoolFactory) {
         pool = mountContentPoolFactory.get()?.createMountContentPool()
@@ -213,7 +239,7 @@ object MountContentPools {
         pool = allocator.onCreateMountContentPool(poolSize) ?: DefaultContentPool(poolKey, poolSize)
       }
 
-      poolsMap[poolKey] = pool
+      scopedPools[poolKey] = pool
       return pool
     }
   }
@@ -225,6 +251,13 @@ object MountContentPools {
       mountContentPoolsByContext.clear()
       destroyedRootContexts.clear()
       contextsWithLifecycleObservers.clear()
+    }
+  }
+
+  @JvmStatic
+  fun releaseScope(poolScope: PoolScope) {
+    synchronized(mountContentLock) {
+      mountContentPoolsByContext.values.forEach { it.releaseScope(poolScope) }
     }
   }
 
@@ -310,10 +343,9 @@ object MountContentPools {
   val mountContentPools: List<ContentPool>
     get() {
       val result: MutableList<ContentPool> = ArrayList()
-      for (poolMap in mountContentPoolsByContext.values) {
-        for (pool in poolMap.values) {
-          result.add(pool)
-        }
+      for (itemPools in mountContentPoolsByContext.values) {
+        itemPools.scopedPools.values.flatMap { it.values }.forEach { pool -> result.add(pool) }
+        itemPools.unscopedPools.values.forEach { pool -> result.add(pool) }
       }
       return result
     }
@@ -475,5 +507,71 @@ object MountContentPools {
         release(contentAllocator.createContent(c))
       } else false
     }
+  }
+}
+
+/**
+ * Represents a scope of a custom scoped pool.
+ *
+ * Use [LifecycleAware] if you want the scope to be automatically released when the [Lifecyle]
+ * transitions to destroyed state or [ManuallyManaged] if you want to manually control when the
+ * scope is released.
+ */
+sealed interface PoolScope {
+
+  /** An object representing none scope. Used as a default [PoolScope] value. */
+  object None : PoolScope
+
+  /**
+   * A pool scope that automatically releases the pool when the given [lifecycle] transitions to
+   * destroyed state
+   */
+  class LifecycleAware(private val lifecycle: Lifecycle) : PoolScope {
+    init {
+      lifecycle.addObserver(
+          object : DefaultLifecycleObserver {
+            override fun onDestroy(owner: LifecycleOwner) {
+              lifecycle.removeObserver(this)
+              MountContentPools.releaseScope(this@LifecycleAware)
+            }
+          })
+    }
+  }
+
+  /** A pool scope that needs to be manually released by calling [releaseScope] method on it. */
+  class ManuallyManaged : PoolScope {
+
+    /** Clears the pool associated with this [PoolScope]. */
+    fun releaseScope() {
+      MountContentPools.releaseScope(this)
+    }
+  }
+}
+
+/**
+ * A class that holds content pools.
+ *
+ * [scopedPools] contains pools scoped to [PoolScope] [unscopedPools] contains pools scoped to the
+ * [Context]
+ */
+private class ContextContentPools {
+
+  val scopedPools: MutableMap<PoolScope, MutableMap<Any, MountContentPools.ContentPool>> = HashMap()
+
+  val unscopedPools: MutableMap<Any, MountContentPools.ContentPool> = HashMap()
+
+  /** Returns pools associated with [poolScope] or [unscopedPools] if [poolScope] is null. */
+  fun getPools(
+      poolScope: PoolScope = PoolScope.None
+  ): MutableMap<Any, MountContentPools.ContentPool> {
+    if (poolScope == PoolScope.None) {
+      return unscopedPools
+    }
+    return scopedPools.getOrPut(poolScope) { HashMap() }
+  }
+
+  /** Clears the pool associated with [poolScope]. */
+  fun releaseScope(poolScope: PoolScope) {
+    scopedPools.remove(poolScope)
   }
 }
