@@ -74,16 +74,14 @@ abstract class TreeFuture<T : PotentiallyPartialResult>(
                   override fun call(): TreeFutureResult<T> {
                     synchronized(this@TreeFuture) {
                       if (isReleased) {
-                        return TreeFutureResult.interruptWithMessage(
-                            FUTURE_RESULT_NULL_REASON_RELEASED)
+                        return TreeFutureResult.interruptWithMessage(state = FutureState.RELEASED)
                       }
                     }
                     run(treeId, getDescription())
                     val result = calculate()
                     synchronized(this@TreeFuture) {
                       if (isReleased) {
-                        return TreeFutureResult.interruptWithMessage(
-                            FUTURE_RESULT_NULL_REASON_RELEASED)
+                        return TreeFutureResult.interruptWithMessage(state = FutureState.RELEASED)
                       } else {
                         return TreeFutureResult.finishWithResult(result)
                       }
@@ -276,7 +274,9 @@ abstract class TreeFuture<T : PotentiallyPartialResult>(
     val shouldWaitForResult = !futureTask.isDone && notRunningOnMyThread
     if (shouldWaitForResult && !isMainThread && !isFromSyncLayout(source)) {
       return TreeFutureResult.interruptWithMessage(
-          FUTURE_RESULT_NULL_REASON_SYNC_RESULT_NON_MAIN_THREAD, type)
+          type = type,
+          state = FutureState.INTERRUPTED,
+          description = FUTURE_RESULT_NULL_REASON_SYNC_RESULT_NON_MAIN_THREAD)
     }
     if (isMainThread && shouldWaitForResult) {
       // This means the UI thread is about to be blocked by the bg thread. Instead of waiting,
@@ -359,7 +359,9 @@ abstract class TreeFuture<T : PotentiallyPartialResult>(
           // of the work. No need to return a LayoutState.
           treeFutureResult =
               TreeFutureResult.interruptWithMessage(
-                  FUTURE_RESULT_NULL_REASON_RESUME_NON_MAIN_THREAD, type)
+                  type = type,
+                  state = FutureState.INTERRUPTED,
+                  description = FUTURE_RESULT_NULL_REASON_RESUME_NON_MAIN_THREAD)
           continuationToken =
               WorkContinuationInstrumenter.onOfferWorkForContinuation(
                   "offerPartial", interruptToken)
@@ -395,7 +397,7 @@ abstract class TreeFuture<T : PotentiallyPartialResult>(
     }
     synchronized(this@TreeFuture) {
       if (isReleased) {
-        return TreeFutureResult.interruptWithMessage(FUTURE_RESULT_NULL_REASON_RELEASED)
+        return TreeFutureResult.interruptWithMessage(state = FutureState.RELEASED)
       }
       return treeFutureResult
     }
@@ -407,23 +409,25 @@ abstract class TreeFuture<T : PotentiallyPartialResult>(
    */
   class TreeFutureResult<T : PotentiallyPartialResult>
   private constructor(
+      @JvmField val type: FutureExecutionType? = null,
+      @JvmField val state: FutureState,
       @JvmField val result: T? = null,
-      val message: String? = null,
-      @JvmField val type: FutureExecutionType? = null
+      @JvmField val description: String? = null,
   ) {
     companion object {
       fun <T : PotentiallyPartialResult> finishWithResult(
           result: T,
           type: FutureExecutionType? = null
       ): TreeFutureResult<T> {
-        return TreeFutureResult(result = result, type = type)
+        return TreeFutureResult(result = result, type = type, state = FutureState.SUCCESS)
       }
 
       fun <T : PotentiallyPartialResult> interruptWithMessage(
-          message: String?,
           type: FutureExecutionType? = null,
+          state: FutureState,
+          description: String? = null
       ): TreeFutureResult<T> {
-        return TreeFutureResult(message = message, type = type)
+        return TreeFutureResult(type = type, state = state, description = description)
       }
     }
   }
@@ -448,6 +452,12 @@ abstract class TreeFuture<T : PotentiallyPartialResult>(
 
     /** An already running future is about to be reused */
     REUSE_FUTURE
+  }
+
+  enum class FutureState {
+    SUCCESS,
+    INTERRUPTED,
+    RELEASED
   }
 
   companion object {

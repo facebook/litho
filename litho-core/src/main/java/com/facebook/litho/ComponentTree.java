@@ -44,7 +44,6 @@ import static com.facebook.litho.debug.LithoDebugEventAttributes.SizeSpecsMatch;
 import static com.facebook.litho.lifecycle.LithoLifecycleOwner.LifecycleOwnerTreeProp;
 import static com.facebook.rendercore.debug.DebugEventAttribute.Async;
 import static com.facebook.rendercore.debug.DebugEventAttribute.HeightSpec;
-import static com.facebook.rendercore.debug.DebugEventAttribute.Name;
 import static com.facebook.rendercore.debug.DebugEventAttribute.Source;
 import static com.facebook.rendercore.debug.DebugEventAttribute.WidthSpec;
 import static com.facebook.rendercore.instrumentation.HandlerInstrumenter.instrumentHandler;
@@ -76,6 +75,7 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.LithoDebugConfigurations;
 import com.facebook.litho.config.PreAllocationHandler;
 import com.facebook.litho.debug.AttributionUtils;
+import com.facebook.litho.debug.DebugInfoReporter;
 import com.facebook.litho.debug.DebugOverlay;
 import com.facebook.litho.debug.LithoDebugEvent;
 import com.facebook.litho.debug.LithoDebugEventAttributes;
@@ -265,8 +265,6 @@ public class ComponentTree
 
   @GuardedBy("this")
   private @Nullable TreeState mTreeState;
-
-  private boolean mIsResolveWithoutSizeFixEnabled = false;
 
   protected final int mId;
 
@@ -2001,21 +1999,17 @@ public class ComponentTree
     final @Nullable ResolveResult resolveResult = resolveResultHolder.result;
 
     if (resolveResult == null) {
-      final boolean isWaitingButInterrupted =
-          resolveResultHolder.type == TreeFuture.FutureExecutionType.REUSE_FUTURE
-              && TreeFuture.FUTURE_RESULT_NULL_REASON_RESUME_NON_MAIN_THREAD.equals(
-                  resolveResultHolder.getMessage());
-      if (getLithoConfiguration().componentsConfig.enableResolveWithoutSizeSpec
-          && isWaitingButInterrupted) {
-        final boolean hasSameRootAndEquivalentSpecs;
+      if (getLithoConfiguration().componentsConfig.enableResolveWithoutSizeSpec) {
+        final boolean isWaitingButInterrupted =
+            (resolveResultHolder.type == TreeFuture.FutureExecutionType.REUSE_FUTURE)
+                && (TreeFuture.FutureState.INTERRUPTED == resolveResultHolder.state);
+        final boolean isLatestRequest;
         synchronized (this) {
-          hasSameRootAndEquivalentSpecs =
-              isCompatibleComponentAndSpec(
-                  mMainThreadLayoutState, root.getId(), widthSpec, heightSpec);
+          // To check if this is the latest resolve request and we don't want to get lost of it.
+          isLatestRequest = (localResolveVersion == (mNextResolveVersion - 1));
         }
-        if (!hasSameRootAndEquivalentSpecs) {
-          mIsResolveWithoutSizeFixEnabled = true;
-          // If we haven't found any committed layout state with the same root and specs, which
+        if (isWaitingButInterrupted && !ThreadUtils.isMainThread() && isLatestRequest) {
+          // If we found any interrupted async resolve task which is also the latest request, which
           // means the current resolve request might be getting lost and we need to re-try it to
           // make sure there's not render in flight.
           requestRenderWithSplitFutures(
@@ -2028,27 +2022,45 @@ public class ComponentTree
               root,
               treePropContainer);
         }
+
+        DebugInfoReporter.report(
+            "RenderInFlight:Null Result",
+            LogLevel.ERROR,
+            mId,
+            attributes -> {
+              attributes.put(DebugEventAttribute.Version, localResolveVersion);
+              attributes.put(DebugEventAttribute.Source, layoutSourceToString(source));
+              attributes.put("Root", root.getSimpleName());
+              attributes.put(DebugEventAttribute.Width, SizeSpec.toSimpleString(widthSpec));
+              attributes.put(DebugEventAttribute.Height, SizeSpec.toSimpleString(heightSpec));
+              attributes.put(
+                  "withoutSizeSpec",
+                  getLithoConfiguration().componentsConfig.enableResolveWithoutSizeSpec);
+              attributes.put("isLatestRequest", isLatestRequest);
+              attributes.put("isMainThread", ThreadUtils.isMainThread());
+              attributes.put("FutureExecutionType", resolveResultHolder.type);
+              attributes.put("FutureState", resolveResultHolder.state);
+              return Unit.INSTANCE;
+            });
+      }
+    } else {
+      commitResolveResult(resolveResult);
+
+      ComponentsLogger logger = getLogger();
+      if (logger != null && resolvePerfEvent != null) {
+        logger.logPerfEvent(resolvePerfEvent);
       }
 
-      return;
+      requestLayoutWithSplitFutures(
+          resolveResult,
+          output,
+          source,
+          extraAttribution,
+          // Don't post when using the same thread handler, as it could cause heavy delays
+          true,
+          widthSpec,
+          heightSpec);
     }
-
-    commitResolveResult(resolveResult);
-
-    ComponentsLogger logger = getLogger();
-    if (logger != null && resolvePerfEvent != null) {
-      logger.logPerfEvent(resolvePerfEvent);
-    }
-
-    requestLayoutWithSplitFutures(
-        resolveResult,
-        output,
-        source,
-        extraAttribution,
-        // Don't post when using the same thread handler, as it could cause heavy delays
-        true,
-        widthSpec,
-        heightSpec);
   }
 
   /**
@@ -2264,12 +2276,11 @@ public class ComponentTree
           if (isRootNotCompatibleAndWithoutResolveFuture
               || isSizeNotCompatibleAndWithoutLayoutFuture) {
             // log debug error for in-flight renders
-            DebugEventDispatcher.dispatch(
-                LithoDebugEvent.DebugInfo,
-                () -> String.valueOf(mId),
+            DebugInfoReporter.report(
+                "RenderInFlight v2",
                 LogLevel.ERROR,
+                mId,
                 attributes -> {
-                  attributes.put(Name, "RenderInFlight v2");
                   attributes.put(DebugEventAttribute.Version, layoutVersion);
                   attributes.put(DebugEventAttribute.Source, layoutSourceToString(source));
                   attributes.put("Root", rootComponent.getSimpleName());
@@ -2284,7 +2295,6 @@ public class ComponentTree
                   attributes.put(
                       "isSizeNotCompatibleAndWithoutLayoutFuture",
                       isSizeNotCompatibleAndWithoutLayoutFuture);
-                  attributes.put("isFixEnabled", mIsResolveWithoutSizeFixEnabled);
                   return Unit.INSTANCE;
                 });
           }
