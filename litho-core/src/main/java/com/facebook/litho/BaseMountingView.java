@@ -333,7 +333,11 @@ public abstract class BaseMountingView extends ComponentHost
 
   private void maybeUnmountComponents() {
     final @Nullable ComponentsConfiguration config = getConfiguration();
-    if (config != null && config.enableFixForIM && !mIsTemporaryDetached && !hasTransientState()) {
+    if (config != null
+        && config.enableFixForIM
+        && !mIsTemporaryDetached
+        && !hasTransientState()
+        && isIncrementalMountEnabled()) {
       notifyVisibleBoundsChanged(EMPTY_RECT);
     }
   }
