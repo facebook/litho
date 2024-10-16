@@ -73,6 +73,7 @@ dependencies {
     implementation deps.kotlinStandardLib
     implementation deps.supportCore
     implementation deps.supportDynamicAnimations
+    implementation deps.lifecycleKtx
 
     // Android Support Library
     compileOnly deps.supportAnnotations

@@ -159,6 +159,7 @@ ext.deps = [
         supportDynamicAnimations : 'androidx.dynamicanimation:dynamicanimation-ktx:1.0.0-alpha03',
         // lifecycle
         lifecycle      : 'androidx.lifecycle:lifecycle-runtime:2.6.1',
+        lifecycleKtx       : 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.1',
         viewModel      : 'androidx.lifecycle:lifecycle-viewmodel:2.3.1',
         liveData           : 'androidx.lifecycle:lifecycle-livedata:2.6.1',
         lifecycleService   : 'androidx.lifecycle:lifecycle-service:2.6.1',
