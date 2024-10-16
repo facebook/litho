@@ -70,10 +70,10 @@ class MountContentPoolsTest {
   @Test
   fun testPrefillMountContentPool() {
     val prefillCount = 4
-    val testRenderUnit = TestRenderUnit(/*id*/ 0, /*customPoolSize*/ prefillCount)
+    val testRenderUnit = TestRenderUnit(id = 0, customPoolSize = prefillCount)
     prefillMountContentPool(context, prefillCount, testRenderUnit)
     Java6Assertions.assertThat(testRenderUnit.createdCount).isEqualTo(prefillCount)
-    val testRenderUnitToAcquire = TestRenderUnit(0, /*customPoolSize*/ prefillCount)
+    val testRenderUnitToAcquire = TestRenderUnit(0, customPoolSize = prefillCount)
     for (i in 0 until prefillCount) {
       acquireMountContent(context, testRenderUnitToAcquire)
     }
@@ -211,7 +211,7 @@ class MountContentPoolsTest {
 
   @Test
   fun testAcquireAndReleaseReturnsCorrectContentInstances() {
-    val testRenderUnitToAcquire = TestRenderUnit(/*id*/ 0, /*customPoolSize*/ 2)
+    val testRenderUnitToAcquire = TestRenderUnit(id = 0, customPoolSize = 2)
 
     // acquire content objects
     val firstContent = acquireMountContent(context, testRenderUnitToAcquire)
@@ -234,7 +234,7 @@ class MountContentPoolsTest {
 
   @Test
   fun testAcquireContentWhenPoolIsSize0ReturnsNewContentEveryTime() {
-    val testRenderUnitToAcquire = TestRenderUnit(/*id*/ 0, /*customPoolSize*/ 0) // disable Pooling
+    val testRenderUnitToAcquire = TestRenderUnit(id = 0, customPoolSize = 0) // disable Pooling
 
     // acquire content objects
     val firstContent = acquireMountContent(context, testRenderUnitToAcquire)
@@ -307,10 +307,10 @@ class MountContentPoolsTest {
   fun testPrefillMountContentPoolWithCustomPoolScope() {
     val poolScope = PoolScope.ManuallyManaged()
     val prefillCount = 4
-    val testRenderUnit = TestRenderUnit(/*id*/ 0, /*customPoolSize*/ prefillCount)
+    val testRenderUnit = TestRenderUnit(id = 0, customPoolSize = prefillCount)
     prefillMountContentPool(context, prefillCount, testRenderUnit, poolScope)
     Java6Assertions.assertThat(testRenderUnit.createdCount).isEqualTo(prefillCount)
-    val testRenderUnitToAcquire = TestRenderUnit(0, /*customPoolSize*/ prefillCount)
+    val testRenderUnitToAcquire = TestRenderUnit(0, customPoolSize = prefillCount)
     for (i in 0 until prefillCount) {
       acquireMountContent(context, testRenderUnitToAcquire, poolScope)
     }
@@ -420,7 +420,7 @@ class MountContentPoolsTest {
   fun testAcquireAndReleaseWithDifferentCustomPoolScopesReturnsCorrectContentInstances() {
     val firstPoolScope = PoolScope.ManuallyManaged()
     val secondPoolScope = PoolScope.ManuallyManaged()
-    val testRenderUnitToAcquire = TestRenderUnit(/*id*/ 0, /*customPoolSize*/ 2)
+    val testRenderUnitToAcquire = TestRenderUnit(id = 0, customPoolSize = 2)
 
     // acquire content objects
     val firstContentFirstScope =
@@ -458,7 +458,7 @@ class MountContentPoolsTest {
   @Test
   fun testAcquireContentWithCustomPoolScopeWhenPoolIsSize0ReturnsNewContentEveryTime() {
     val poolScope = PoolScope.ManuallyManaged()
-    val testRenderUnitToAcquire = TestRenderUnit(/*id*/ 0, /*customPoolSize*/ 0) // disable Pooling
+    val testRenderUnitToAcquire = TestRenderUnit(id = 0, customPoolSize = 0) // disable Pooling
 
     // acquire content objects
     val firstContent = acquireMountContent(context, testRenderUnitToAcquire, poolScope)
@@ -479,6 +479,113 @@ class MountContentPoolsTest {
     Java6Assertions.assertThat(thirdContent).isNotSameAs(secondContent)
   }
 
+  @Test
+  fun testContentDiscardedListenerIsTriggeredWhenPoolIsCleared() {
+    val testRenderUnit = TestRenderUnit(0)
+
+    val content1 = acquireMountContent(activity, testRenderUnit)
+    release(activity, testRenderUnit, content1)
+
+    // Release the pool
+    onContextDestroyed(activity)
+
+    // Assert that content discarded was called once
+    Java6Assertions.assertThat(testRenderUnit.contentDiscardedCount).isEqualTo(1)
+  }
+
+  @Test
+  fun testContentDiscardedListenerIsTriggeredWhenScopedPoolIsCleared() {
+    val poolScope = PoolScope.ManuallyManaged()
+    val testRenderUnit = TestRenderUnit(0)
+
+    val content1 = acquireMountContent(activity, testRenderUnit, poolScope)
+    release(activity, testRenderUnit, content1, poolScope)
+
+    // Release custom pool scope
+    poolScope.releaseScope()
+
+    // Assert that content discarded was called once
+    Java6Assertions.assertThat(testRenderUnit.contentDiscardedCount).isEqualTo(1)
+  }
+
+  @Test
+  fun testContentDiscardedListenerIsTriggeredWhenLifecycleAwareScopedPoolIsCleared() {
+    val servicePoolScope = PoolScope.LifecycleAware((service as LifecycleService).lifecycle)
+    val testRenderUnit = TestRenderUnit(0)
+
+    val content1 = acquireMountContent(activity, testRenderUnit, servicePoolScope)
+    release(activity, testRenderUnit, content1, servicePoolScope)
+
+    // Destroy the service should trigger custom pool release
+    serviceController.destroy()
+
+    // Assert that content discarded was called once
+    Java6Assertions.assertThat(testRenderUnit.contentDiscardedCount).isEqualTo(1)
+  }
+
+  @Test
+  fun testContentDiscardedListenerIsTriggeredWhenAllPoolsAreCleared() {
+    val poolScope = PoolScope.ManuallyManaged()
+    val unscopedTestRenderUnit = TestRenderUnit(0)
+    val scopedTestRenderUnit = TestRenderUnit(0)
+
+    val unscopedContent = acquireMountContent(activity, unscopedTestRenderUnit)
+    val scopedContent = acquireMountContent(activity, scopedTestRenderUnit, poolScope)
+
+    release(activity, unscopedTestRenderUnit, unscopedContent)
+    release(activity, scopedTestRenderUnit, scopedContent, poolScope)
+
+    // release all pools
+    clear()
+
+    // Assert that content discarded was called once for both units
+    Java6Assertions.assertThat(unscopedTestRenderUnit.contentDiscardedCount).isEqualTo(1)
+    Java6Assertions.assertThat(scopedTestRenderUnit.contentDiscardedCount).isEqualTo(1)
+  }
+
+  @Test
+  fun testContentDiscardedListenerIsTriggeredWhenPoolIsFull() {
+    val testRenderUnit = TestRenderUnit(id = 0, customPoolSize = 2)
+
+    val firstContent = acquireMountContent(activity, testRenderUnit)
+    val secondContent = acquireMountContent(activity, testRenderUnit)
+    val thirdContent = acquireMountContent(activity, testRenderUnit)
+
+    release(activity, testRenderUnit, firstContent)
+    // Pool size is 2 so first release shouldn't trigger content discarded listener
+    Java6Assertions.assertThat(testRenderUnit.contentDiscardedCount).isEqualTo(0)
+
+    release(activity, testRenderUnit, secondContent)
+    // Pool size is 2 so second release shouldn't trigger content discarded listener
+    Java6Assertions.assertThat(testRenderUnit.contentDiscardedCount).isEqualTo(0)
+
+    release(activity, testRenderUnit, thirdContent)
+    // Pool size is 2 so third release should trigger content discarded listener
+    Java6Assertions.assertThat(testRenderUnit.contentDiscardedCount).isEqualTo(1)
+  }
+
+  @Test
+  fun testContentDiscardedListenerIsTriggeredWhenScopedPoolIsFull() {
+    val poolScope = PoolScope.ManuallyManaged()
+    val testRenderUnit = TestRenderUnit(id = 0, customPoolSize = 2)
+
+    val firstContent = acquireMountContent(activity, testRenderUnit, poolScope)
+    val secondContent = acquireMountContent(activity, testRenderUnit, poolScope)
+    val thirdContent = acquireMountContent(activity, testRenderUnit, poolScope)
+
+    release(activity, testRenderUnit, firstContent, poolScope)
+    // Pool size is 2 so first release shouldn't trigger content discarded listener
+    Java6Assertions.assertThat(testRenderUnit.contentDiscardedCount).isEqualTo(0)
+
+    release(activity, testRenderUnit, secondContent, poolScope)
+    // Pool size is 2 so second release shouldn't trigger content discarded listener
+    Java6Assertions.assertThat(testRenderUnit.contentDiscardedCount).isEqualTo(0)
+
+    release(activity, testRenderUnit, thirdContent, poolScope)
+    // Pool size is 2 so third release should trigger content discarded listener
+    Java6Assertions.assertThat(testRenderUnit.contentDiscardedCount).isEqualTo(1)
+  }
+
   class TestRenderUnit(
       override val id: Long,
       private val customPoolSize: Int = ContentAllocator.DEFAULT_MAX_PREALLOCATION,
@@ -486,6 +593,9 @@ class MountContentPoolsTest {
   ) : RenderUnit<View>(RenderType.VIEW), ContentAllocator<View> {
 
     var createdCount: Int = 0
+      private set
+
+    var contentDiscardedCount: Int = 0
       private set
 
     override fun createContent(context: Context): View {
@@ -500,5 +610,8 @@ class MountContentPoolsTest {
       get() = policy
 
     override fun poolSize(): Int = customPoolSize
+
+    override val onContentDiscarded: ((Any) -> Unit)?
+      get() = { content -> contentDiscardedCount++ }
   }
 }

@@ -143,6 +143,8 @@ object MountContentPools {
         }
 
     if (pool == null) {
+      // There is no pool, call onContentDiscarded to allow for releasing resources if needed.
+      poolableMountContent.onContentDiscarded?.invoke(mountContent)
       return
     }
 
@@ -151,7 +153,13 @@ object MountContentPools {
           mountContent, listOf(poolableMountContent.poolKeyTypeName))
     }
 
-    pool.release(mountContent)
+    val releasedToThePool = pool.release(mountContent)
+
+    if (!releasedToThePool) {
+      // Content was not released to the pool. Call onContentDiscarded to allow for releasing
+      // resources if needed.
+      poolableMountContent.onContentDiscarded?.invoke(mountContent)
+    }
   }
 
   @JvmOverloads
@@ -237,6 +245,7 @@ object MountContentPools {
 
       if (pool == null) {
         pool = allocator.onCreateMountContentPool(poolSize) ?: DefaultContentPool(poolKey, poolSize)
+        pool.setOnClearedListener(allocator.onContentDiscarded)
       }
 
       scopedPools[poolKey] = pool
@@ -248,6 +257,9 @@ object MountContentPools {
   @VisibleForTesting(otherwise = androidx.annotation.VisibleForTesting.PACKAGE_PRIVATE)
   fun clear() {
     synchronized(mountContentLock) {
+      // Clear pools and dispatch OnClearedListeners before clearing the maps
+      mountContentPoolsByContext.values.forEach { contextContentPool -> contextContentPool.clear() }
+
       mountContentPoolsByContext.clear()
       destroyedRootContexts.clear()
       contextsWithLifecycleObservers.clear()
@@ -320,21 +332,26 @@ object MountContentPools {
   @JvmStatic
   fun onContextDestroyed(context: Context) {
     synchronized(mountContentLock) {
-      clearMatchingContexts(context, mountContentPoolsByContext)
+      clearMatchingContexts(context)
       destroyedRootContexts.put(getRootContext(context), true)
     }
   }
 
   @GuardedBy("mountContentLock")
-  private fun <T> clearMatchingContexts(context: Context, poolsMap: MutableMap<Context, T>) {
-    poolsMap.remove(context)
+  private fun clearMatchingContexts(
+      context: Context,
+  ) {
+    val removedContextContentPool = mountContentPoolsByContext.remove(context)
+    removedContextContentPool?.clear()
 
     // Clear any context wrappers holding a reference to this activity.
-    val it: MutableIterator<Map.Entry<Context, T>> = poolsMap.entries.iterator()
-    while (it.hasNext()) {
-      val contextKey = it.next().key
+    val iterator: MutableIterator<Map.Entry<Context, ContextContentPools>> =
+        mountContentPoolsByContext.entries.iterator()
+    while (iterator.hasNext()) {
+      val (contextKey, contextContentPool) = iterator.next()
       if (isContextWrapper(contextKey, context)) {
-        it.remove()
+        iterator.remove()
+        contextContentPool.clear()
       }
     }
   }
@@ -443,6 +460,16 @@ object MountContentPools {
   /** Content pool that RenderCore uses to recycle content (such as Views) */
   interface ContentPool {
 
+    /** Interface definition for a callback to be invoked when the pool is cleared. */
+    fun interface OnClearedListener {
+      /**
+       * Called when the pool is cleared.
+       *
+       * @param item The content that has been removed from the pool when pool has been cleared.
+       */
+      fun onCleared(item: Any)
+    }
+
     /**
      * Acquire a pooled content item from the pool
      *
@@ -468,6 +495,16 @@ object MountContentPools {
      *   the pool.
      */
     fun maybePreallocateContent(c: Context, contentAllocator: ContentAllocator<*>): Boolean
+
+    /**
+     * Register a callback to be invoked when this pool is cleared.
+     *
+     * @param listener The callback that will run
+     */
+    fun setOnClearedListener(listener: OnClearedListener?): Unit = Unit
+
+    /** Clears the pool and dispatches [OnClearedListener] if present. */
+    fun clear(): Unit = Unit
   }
 
   open class DefaultContentPool(poolKey: Any, private val maxPoolSize: Int) : ContentPool {
@@ -477,6 +514,8 @@ object MountContentPools {
     private val debugIdentifier: String = (poolKey as? Class<*>)?.name ?: poolKey.toString()
 
     private val currentPoolSize: AtomicInteger = AtomicInteger(0)
+
+    private var onClearedListener: ContentPool.OnClearedListener? = null
 
     override fun acquire(contentAllocator: ContentAllocator<*>): Any? {
       val content = pool.acquire()
@@ -506,6 +545,26 @@ object MountContentPools {
       return if (currentPoolSize.get() < maxPoolSize) {
         release(contentAllocator.createContent(c))
       } else false
+    }
+
+    override fun setOnClearedListener(listener: ContentPool.OnClearedListener?) {
+      onClearedListener = listener
+    }
+
+    override fun clear() {
+      // clear is currently used only in order to invoke the onClearedListener
+      // so if the listener isn't present, there is no need to do the additional work
+      if (onClearedListener == null || currentPoolSize.get() == 0) {
+        return
+      }
+
+      do {
+        val content = pool.acquire()
+        if (content != null) {
+          currentPoolSize.decrementAndGet()
+          onClearedListener?.onCleared(content)
+        }
+      } while (content != null)
     }
   }
 }
@@ -570,8 +629,30 @@ private class ContextContentPools {
     return scopedPools.getOrPut(poolScope) { HashMap() }
   }
 
-  /** Clears the pool associated with [poolScope]. */
+  /**
+   * Clears the pool associated with [poolScope] and dispatches
+   * [MountContentPools.ContentPool.OnClearedListener]s if present.
+   */
   fun releaseScope(poolScope: PoolScope) {
-    scopedPools.remove(poolScope)
+    val removedPool = scopedPools.remove(poolScope)
+    removedPool?.values?.forEach { contentPool -> clearContentPool(contentPool) }
+  }
+
+  /**
+   * Clears all pools and dispatches [MountContentPools.ContentPool.OnClearedListener]s if present.
+   */
+  fun clear() {
+    scopedPools.values
+        .flatMap { poolKeyToContentPoolMap -> poolKeyToContentPoolMap.values }
+        .forEach { contentPool -> clearContentPool(contentPool) }
+    scopedPools.clear()
+
+    unscopedPools.values.forEach { contentPool -> clearContentPool(contentPool) }
+    unscopedPools.clear()
+  }
+
+  private fun clearContentPool(contentPool: MountContentPools.ContentPool) {
+    contentPool.clear()
+    contentPool.setOnClearedListener(null)
   }
 }
