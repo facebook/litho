@@ -19,8 +19,5 @@
   },
   "devDependencies": {
     "prettier": "^2.0.2"
-  },
-  "resolutions": {
-    "cookie": "^0.7.0"
   }
 }
