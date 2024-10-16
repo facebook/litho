@@ -21,6 +21,7 @@ import android.graphics.drawable.Drawable
 import android.view.View
 import com.facebook.rendercore.ContentAllocator
 import com.facebook.rendercore.ContentAllocator.Companion.DEFAULT_MAX_PREALLOCATION
+import com.facebook.rendercore.MountContentPools
 import com.facebook.rendercore.PoolingPolicy
 import com.facebook.rendercore.RenderUnit
 
@@ -93,6 +94,14 @@ fun <Content : Any> ContentAllocator<Content>.withContentType(
   return object : ContentAllocator<Content> by this {
     override fun getPoolKey(): Any {
       return contentType
+    }
+
+    override fun acquireContent(context: Context): Any {
+      return MountContentPools.acquireMountContent(context, this)
+    }
+
+    override fun recycleContent(context: Context, content: Any) {
+      MountContentPools.release(context, this, content)
     }
   }
 }

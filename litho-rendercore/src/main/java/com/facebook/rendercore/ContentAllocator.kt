@@ -65,6 +65,29 @@ interface ContentAllocator<Content : Any> {
     return DefaultContentPool(javaClass, size)
   }
 
+  /**
+   * Called when the framework wants to acquire a pooled content item from the pool. Allows for
+   * customization of the acquiring logic.
+   */
+  fun acquireContent(context: Context): Any {
+    return MountContentPools.acquireMountContent(context, this)
+  }
+
+  /**
+   * Called when the framework wants to release [content] to the pool. Allows for customization of
+   * the releasing logic.
+   */
+  fun recycleContent(context: Context, content: Any) {
+    MountContentPools.release(context, this, content)
+  }
+
+  /**
+   * Returns a lambda that will be invoked when this [content] is discarded and should dispose any
+   * resources it may be holding onto, because the pool is either full or has been cleared.
+   */
+  val onContentDiscarded: ((Any) -> Unit)?
+    get() = null
+
   companion object {
     /** Default size of the content pool. */
     const val DEFAULT_MAX_PREALLOCATION: Int = 3

@@ -546,7 +546,7 @@ constructor(
       if (isTracing) {
         tracer.beginSection("MountItem:acquire-content ${renderUnit.description}")
       }
-      val content = MountContentPools.acquireMountContent(context, renderUnit.contentAllocator)
+      val content = renderUnit.contentAllocator.acquireContent(context)
       if (isTracing) {
         tracer.endSection()
       }

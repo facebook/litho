@@ -41,7 +41,7 @@ class MountItem(renderTreeNode: RenderTreeNode, val content: Any) {
   }
 
   fun releaseMountContent(context: Context) {
-    MountContentPools.release(context, renderUnit.contentAllocator, content)
+    renderUnit.contentAllocator.recycleContent(context, content)
   }
 
   companion object {
