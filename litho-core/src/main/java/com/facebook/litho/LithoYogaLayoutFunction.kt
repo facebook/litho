@@ -776,6 +776,7 @@ internal object LithoYogaLayoutFunction {
                   _cachedMeasuresValid = true,
                   _wasMeasured = false,
                   _measureHadExceptions = false,
+                  _nestedResult = null, // disable nested tree caching
                   _adjustedBounds = Rect(layoutResult.layoutOutput.adjustedBounds)))
 
   private fun LithoLayoutResult.shouldDrawBorders(): Boolean =
