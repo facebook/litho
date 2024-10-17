@@ -886,9 +886,10 @@ open class ComponentHost(
       return
     }
     if (isAccessibilityEnabled && componentAccessibilityDelegate == null) {
+      val nodeInfo = getTag(COMPONENT_NODE_INFO_ID) as? NodeInfo
       componentAccessibilityDelegate =
           ComponentAccessibilityDelegate(
-              this, this.isFocusable, ViewCompat.getImportantForAccessibility(this))
+              this, nodeInfo, this.isFocusable, ViewCompat.getImportantForAccessibility(this))
     }
     ViewCompat.setAccessibilityDelegate(
         this, if (isAccessibilityEnabled) componentAccessibilityDelegate else null)
