@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <functional>
 #include <numeric>
+#include <stdexcept>
 
 namespace facebook {
 namespace flexlayout {
@@ -37,6 +38,8 @@ struct Item {
   Violation violation = Violation::None;
 };
 } // namespace
+
+static constexpr auto kMaxIterations = 10000;
 
 static auto calculateRemainingFreeSpace(
     const std::vector<Item>& items,
@@ -151,7 +154,12 @@ auto FlexLine::resolveFlexibleLengths(
   // 4. Loop:
   // a. Check for flexible items. If all the flex items on the line are
   // frozen, free space has been distributed; exit this loop.
+  auto numIterations = 0;
   while (any_of(items, [](const Item& item) { return !item.isFrozen; })) {
+    ++numIterations;
+    if (numIterations > kMaxIterations) {
+      throw std::logic_error("Too many iterations: exceeded 10000 iterations");
+    }
     // Calculate the remaining free space as for initial free space, above.
     auto remainingFreeSpace = calculateRemainingFreeSpace(
         items,
