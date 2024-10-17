@@ -59,7 +59,7 @@ private constructor(
     alignContent?.let { node.alignContent(it) }
     justifyContent?.let { node.justifyContent(it) }
     wrap?.let { node.wrap(it) }
-    gapPx?.let { node.setGap(YogaGutter.ROW, it) }
+    gapPx?.let { node.setGap(YogaGutter.COLUMN, it) }
     children?.let { children ->
       for (child in children) {
         if (resolveContext.isFutureReleased) {
