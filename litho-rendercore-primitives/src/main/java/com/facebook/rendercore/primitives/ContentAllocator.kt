@@ -33,12 +33,22 @@ import com.facebook.rendercore.RenderUnit
  *   Setting this to 0 disables pooling of the content [View].
  * @property canPreallocate The flag indicating if the content pool for this Primitive should be
  *   filled ahead of time. See [ContentAllocator.canPreallocate]. The default is false.
+ * @property poolingPolicy The flag that defines which behaviors the mount pool can allow regarding
+ *   acquire and release.
+ * @property useCustomPoolScope The flag indicating if the custom pool scope should be used for
+ *   acquiring and recycling content. Custom pool scope will only be used if it's present in the
+ *   hierarchy and if this flag is set to true.
+ * @property onDiscarded The lambda callback that is called when the [Content] is either removed
+ *   from the pool or can't be added to the pool. Allows for disposing any resources [Content] may
+ *   be holding onto.
  * @property allocator The lambda callback that returns the actual [View].
  */
 class ViewAllocator<Content : View>(
     private val poolSize: Int = DEFAULT_MAX_PREALLOCATION,
     private val canPreallocate: Boolean = false,
     override val poolingPolicy: PoolingPolicy = PoolingPolicy.Default,
+    internal val useCustomPoolScope: Boolean = false,
+    private val onDiscarded: ((Content) -> Unit)? = null,
     private val allocator: Allocator<Content>
 ) : ContentAllocator<Content> {
   override fun createContent(context: Context): Content = allocator.allocate(context)
@@ -50,6 +60,10 @@ class ViewAllocator<Content : View>(
   override fun canPreallocate(): Boolean = canPreallocate
 
   override fun getPoolKey(): Any = allocator.javaClass
+
+  @Suppress("UNCHECKED_CAST")
+  override val onContentDiscarded: ((Any) -> Unit)?
+    get() = (this.onDiscarded as ((Any) -> Unit)?)
 }
 
 /**
@@ -59,12 +73,22 @@ class ViewAllocator<Content : View>(
  *   Setting this to 0 disables pooling of the content [Drawable].
  * @property canPreallocate The flag indicating if the content pool for this Primitive should be
  *   filled ahead of time. See [ContentAllocator.canPreallocate]. The default is false.
+ * @property poolingPolicy The flag that defines which behaviors the mount pool can allow regarding
+ *   acquire and release.
+ * @property useCustomPoolScope The flag indicating if the custom pool scope should be used for
+ *   acquiring and recycling content. Custom pool scope will only be used if it's present in the
+ *   hierarchy and if this flag is set to true.
+ * @property onDiscarded The lambda callback that is called when the [Content] is either removed
+ *   from the pool or can't be added to the pool. Allows for disposing any resources [Content] may
+ *   be holding onto.
  * @property allocator The lambda callback that returns the actual [Drawable].
  */
 class DrawableAllocator<Content : Drawable>(
     private val poolSize: Int = DEFAULT_MAX_PREALLOCATION,
     private val canPreallocate: Boolean = false,
     override val poolingPolicy: PoolingPolicy = PoolingPolicy.Default,
+    internal val useCustomPoolScope: Boolean = false,
+    private val onDiscarded: ((Content) -> Unit)? = null,
     private val allocator: Allocator<Content>
 ) : ContentAllocator<Content> {
   override fun createContent(context: Context): Content = allocator.allocate(context)
@@ -76,6 +100,10 @@ class DrawableAllocator<Content : Drawable>(
   override fun canPreallocate(): Boolean = canPreallocate
 
   override fun getPoolKey(): Any = allocator.javaClass
+
+  @Suppress("UNCHECKED_CAST")
+  override val onContentDiscarded: ((Any) -> Unit)?
+    get() = (this.onDiscarded as ((Any) -> Unit)?)
 }
 
 /**
@@ -92,17 +120,30 @@ fun interface Allocator<ContentType> {
 fun <Content : Any> ContentAllocator<Content>.withContentType(
     contentType: Any
 ): ContentAllocator<Content> {
+  require(this is ViewAllocator<*> || this is DrawableAllocator<*>) {
+    "withContentType() can only be used with ViewAllocator or DrawableAllocator"
+  }
+
+  val useCustomPoolScope =
+      when (this) {
+        is ViewAllocator<*> -> this.useCustomPoolScope
+        is DrawableAllocator<*> -> this.useCustomPoolScope
+        else -> false
+      }
+
   return object : ContentAllocator<Content> by this {
     override fun getPoolKey(): Any {
       return contentType
     }
 
     override fun acquireContent(context: Context, poolScope: PoolScope): Any {
-      return MountContentPools.acquireMountContent(context, this, poolScope)
+      return MountContentPools.acquireMountContent(
+          context, this, if (useCustomPoolScope) poolScope else PoolScope.None)
     }
 
     override fun recycleContent(context: Context, content: Any, poolScope: PoolScope) {
-      MountContentPools.release(context, this, content, poolScope)
+      MountContentPools.release(
+          context, this, content, if (useCustomPoolScope) poolScope else PoolScope.None)
     }
   }
 }

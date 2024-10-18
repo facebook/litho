@@ -45,7 +45,7 @@ class ComposeComponent(
         mountBehavior =
             MountBehavior(
                 description = { "ComposeComponent:$contentType" },
-                contentAllocator = ALLOCATOR.withContentType(contentType)) {
+                contentAllocator = ALLOCATOR.withContentType(contentType = contentType)) {
                   withDescription("composeComponentSetupBinder") {
                     bind(Unit) { content ->
                       val usedCustomCompositionContext =
