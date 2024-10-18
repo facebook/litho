@@ -38,6 +38,9 @@ litho_robolectric4_test(
     fork_mode = "per_test",
     jni_deps = LITHO_JNI_DEPS,
     language = "KOTLIN",
+    metadata = {
+        "buck.cfg_modifiers": ["fbsource//tools/build_defs/android/compose:compose-preview-mode-enabled"],
+    },
     provided_deps = [
         LITHO_ROBOLECTRIC_V4_TARGET,
     ],
