@@ -23,6 +23,7 @@ import com.facebook.litho.LithoRenderUnit.Companion.getRenderUnit
 import com.facebook.litho.LogTreePopulator.populatePerfEventFromLogger
 import com.facebook.litho.debug.LithoDebugEvent
 import com.facebook.rendercore.ContentAllocator
+import com.facebook.rendercore.PoolScope
 import com.facebook.rendercore.RenderTreeNode
 import com.facebook.rendercore.RunnableHandler
 import com.facebook.rendercore.debug.DebugEventDispatcher.beginTrace
@@ -41,7 +42,7 @@ class ContentPreAllocator(
     private val avoidRedundantPreAllocations: Boolean,
     private val logger: ComponentsLogger?,
     private val nodeSupplier: () -> List<RenderTreeNode>,
-    private val preAllocator: (Context, ContentAllocator<*>) -> Boolean
+    private val preAllocator: (Context, ContentAllocator<*>, PoolScope) -> Boolean
 ) {
 
   private val runnable = Runnable(::executeInternal)
@@ -120,7 +121,10 @@ class ContentPreAllocator(
 
       ComponentsSystrace.trace("preallocateMount: $componentSimpleName") {
         val preallocated =
-            preAllocator(componentContext.androidContext, treeNode.renderUnit.contentAllocator)
+            preAllocator(
+                componentContext.androidContext,
+                treeNode.renderUnit.contentAllocator,
+                PoolScope.None)
         Log.d(
             "ContentPreAllocator",
             "Preallocation of $componentSimpleName" + if (preallocated) " succeeded" else " failed")

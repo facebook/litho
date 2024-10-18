@@ -82,7 +82,6 @@ object MountContentPools {
 
   private var hasMountContentPoolFactory = false
 
-  @JvmOverloads
   @JvmStatic
   fun acquireMountContent(
       context: Context,
@@ -121,7 +120,6 @@ object MountContentPools {
         }
   }
 
-  @JvmOverloads
   @JvmStatic
   fun release(
       context: Context,
@@ -162,7 +160,6 @@ object MountContentPools {
     }
   }
 
-  @JvmOverloads
   @JvmStatic
   fun maybePreallocateContent(
       context: Context,
@@ -181,7 +178,6 @@ object MountContentPools {
    * The specified [poolSize] will only be respected if the [poolableMountContent] does not provide
    * a custom Pool implementation.
    */
-  @JvmOverloads
   @JvmStatic
   fun prefillMountContentPool(
       context: Context,

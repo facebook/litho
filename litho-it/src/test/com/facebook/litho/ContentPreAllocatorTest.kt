@@ -72,7 +72,7 @@ class ContentPreAllocatorTest {
         avoidRedundantPreAllocations = avoidRedundantAllocation,
         logger = null,
         nodeSupplier = { componentTree.mainThreadLayoutState?.mountableOutputs.orEmpty() },
-        preAllocator = { _, _ ->
+        preAllocator = { _, _, _ ->
           onPreAllocate()
           true
         })
