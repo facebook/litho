@@ -185,7 +185,8 @@ internal object LithoReducer {
                     expandedTouchBounds = null,
                     layoutData = null,
                     isSizeDependant = true,
-                    debugHierarchy = debugNode))
+                    debugHierarchy = debugNode),
+            poolScope = reductionState.componentContext.getTreeProp(PoolScopeTreeProp))
 
     addRenderTreeNode(
         reductionState = reductionState,
@@ -309,7 +310,8 @@ internal object LithoReducer {
                 isSizeDependant = isSizeDependant,
                 layoutData = layoutData,
                 debugHierarchy = debugHierarchyNode),
-        parent = parent)
+        parent = parent,
+        poolScope = reductionState.componentContext.getTreeProp(PoolScopeTreeProp))
   }
 
   /**

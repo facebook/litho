@@ -33,6 +33,7 @@ import com.facebook.litho.accessibility.importantForAccessibility
 import com.facebook.litho.accessibility.onInitializeAccessibilityNodeInfo
 import com.facebook.litho.accessibility.onPopulateAccessibilityNode
 import com.facebook.litho.animated.alpha
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.core.height
 import com.facebook.litho.core.heightPercent
 import com.facebook.litho.core.margin
@@ -54,6 +55,7 @@ import com.facebook.litho.visibility.onInvisible
 import com.facebook.litho.visibility.onVisible
 import com.facebook.litho.widget.LithoScrollView
 import com.facebook.rendercore.MeasureResult
+import com.facebook.rendercore.PoolScope
 import com.facebook.rendercore.Size
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.dp
@@ -1182,6 +1184,48 @@ class PrimitiveComponentsTest {
 
     assertThat(onBindAndroidContext).isNotNull
     assertThat(onUnbindAndroidContext).isNotNull
+  }
+
+  @Test
+  fun `should see custom pool scope in render only if pool scope is provided via component tree`() {
+    try {
+      ComponentsConfiguration.customPoolScopesEnabled = true
+      val poolScope = PoolScope.ManuallyManaged()
+      val componentTreeWithPoolScope =
+          ComponentTree.create(mLithoTestRule.context).poolScope(poolScope).build()
+      val componentTreeWithoutPoolScope = ComponentTree.create(mLithoTestRule.context).build()
+
+      var resolvedPoolScope: PoolScope? = null
+      val component =
+          object : PrimitiveComponent() {
+            override fun PrimitiveComponentScope.render(): LithoPrimitive {
+              resolvedPoolScope = PoolScopeTreeProp.value
+              val primitive =
+                  Primitive(
+                      layoutBehavior = FixedSizeLayoutBehavior(100.px, 100.px),
+                      MountBehavior(ViewAllocator { context -> TextView(context) }) {})
+              return LithoPrimitive(primitive, null)
+            }
+          }
+
+      // render component with CT that has pool scope
+      val testViewWithPoolScope =
+          mLithoTestRule.render(componentTree = componentTreeWithPoolScope) { component }
+      assertThat(resolvedPoolScope).isSameAs(poolScope)
+
+      resolvedPoolScope = null
+
+      // render component with CT that doesn't have pool scope
+      val testViewWithoutPoolScope =
+          mLithoTestRule.render(componentTree = componentTreeWithoutPoolScope) { component }
+      assertThat(resolvedPoolScope).isSameAs(PoolScope.None)
+
+      // cleanup
+      testViewWithPoolScope.lithoView.unmountAllItems()
+      testViewWithoutPoolScope.lithoView.unmountAllItems()
+    } finally {
+      ComponentsConfiguration.customPoolScopesEnabled = false
+    }
   }
 }
 

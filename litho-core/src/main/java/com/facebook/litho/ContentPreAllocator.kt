@@ -124,7 +124,7 @@ class ContentPreAllocator(
             preAllocator(
                 componentContext.androidContext,
                 treeNode.renderUnit.contentAllocator,
-                PoolScope.None)
+                componentContext.getTreeProp(PoolScopeTreeProp))
         Log.d(
             "ContentPreAllocator",
             "Preallocation of $componentSimpleName" + if (preallocated) " succeeded" else " failed")

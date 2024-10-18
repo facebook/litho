@@ -288,6 +288,9 @@ internal constructor(
     /** This flag is used to enable clearing event handlers and triggers */
     @JvmField var clearEventHandlersAndTriggers: Boolean = false
 
+    /** This flag is to enable usage custom pool scopes */
+    @JvmField var customPoolScopesEnabled: Boolean = false
+
     /**
      * This method is only used so that Java clients can have a builder like approach to override a
      * configuration.

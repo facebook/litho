@@ -14,20 +14,14 @@
  * limitations under the License.
  */
 
-@file:JvmName("RenderTreeNodeUtils")
-
 package com.facebook.litho
 
-import android.graphics.Rect
 import com.facebook.rendercore.PoolScope
-import com.facebook.rendercore.RenderTreeNode
 
-fun create(
-    unit: LithoRenderUnit,
-    bounds: Rect,
-    padding: Rect?,
-    layoutData: LithoLayoutData? = null,
-    parent: RenderTreeNode? = null,
-    poolScope: PoolScope = PoolScope.None,
-): RenderTreeNode =
-    RenderTreeNode(parent, unit, layoutData, bounds, padding, parent?.childrenCount ?: 0, poolScope)
+/**
+ * An internal [TreeProp] that allows to provide a custom [PoolScope] to the components in a Litho
+ * hierarchy.
+ */
+@PublishedApi
+@JvmField
+internal val PoolScopeTreeProp: TreeProp<PoolScope> = treePropOf { PoolScope.None }

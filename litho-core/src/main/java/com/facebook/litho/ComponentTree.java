@@ -24,6 +24,7 @@ import static com.facebook.litho.FrameworkLogEvents.PARAM_SOURCE;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_VERSION;
 import static com.facebook.litho.LayoutState.isFromSyncLayout;
 import static com.facebook.litho.LayoutState.layoutSourceToString;
+import static com.facebook.litho.PoolScopeTreePropKt.PoolScopeTreeProp;
 import static com.facebook.litho.RenderSourceUtils.getExecutionMode;
 import static com.facebook.litho.RenderSourceUtils.getSource;
 import static com.facebook.litho.StateContainer.StateUpdate;
@@ -71,6 +72,7 @@ import androidx.lifecycle.LifecycleOwner;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.LithoVisibilityEventsController.LithoVisibilityState;
+import com.facebook.litho.annotations.ExperimentalLithoApi;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.LithoDebugConfigurations;
 import com.facebook.litho.config.PreAllocationHandler;
@@ -84,6 +86,7 @@ import com.facebook.litho.perfboost.LithoPerfBooster;
 import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.LogLevel;
 import com.facebook.rendercore.MountContentPools;
+import com.facebook.rendercore.PoolScope;
 import com.facebook.rendercore.RunnableHandler;
 import com.facebook.rendercore.RunnableHandler.DefaultHandler;
 import com.facebook.rendercore.debug.DebugEventAttribute;
@@ -372,6 +375,11 @@ public class ComponentTree
     if (ComponentsConfiguration.defaultInstance.enableLifecycleOwnerWrapper) {
       LifecycleOwner implicitLifecycleOwner = getImplicitLifecycleOwner(builder.treePropContainer);
       mImplicitTreePropContainer = createImplicitTreePropContainer(implicitLifecycleOwner);
+    }
+
+    @Nullable final PoolScope poolScope = builder.mPoolScope;
+    if (poolScope != null) {
+      mImplicitTreePropContainer.put(PoolScopeTreeProp, poolScope);
     }
 
     if (useComponentTreePropContainerAsSourceOfTruth) {
@@ -3013,6 +3021,8 @@ public class ComponentTree
 
     private @Nullable StateUpdater mStateUpdater = null;
 
+    private PoolScope mPoolScope = PoolScope.None.INSTANCE;
+
     protected Builder(ComponentContext context) {
       config = context.mLithoConfiguration.componentsConfig;
       treePropContainer = context.getTreePropContainer();
@@ -3129,6 +3139,16 @@ public class ComponentTree
 
     public Builder stateUpdater(@Nullable StateUpdater stateUpdater) {
       mStateUpdater = stateUpdater;
+      return this;
+    }
+
+    @ExperimentalLithoApi
+    public Builder poolScope(PoolScope poolScope) {
+      if (!ComponentsConfiguration.customPoolScopesEnabled
+          || !ComponentsConfiguration.defaultInstance.enableLifecycleOwnerWrapper) {
+        return this;
+      }
+      mPoolScope = poolScope;
       return this;
     }
 
