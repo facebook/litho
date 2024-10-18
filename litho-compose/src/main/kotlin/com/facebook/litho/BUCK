@@ -20,6 +20,7 @@ load(
     "LITHO_COMPOSE_UI_TARGET",
     "LITHO_JAVA_TARGET",
     "LITHO_KOTLIN_STDLIB_TARGET",
+    "LITHO_RES_TARGET",
     "litho_android_library",
     "make_dep_path",
 )
@@ -44,6 +45,7 @@ litho_android_library(
         "//fbandroid/libraries/components/litho-widget/src/main/java/com/facebook/litho/widget:widget-bare",
         "//fbandroid/libraries/compose/view:view",
         LITHO_KOTLIN_STDLIB_TARGET,
+        LITHO_RES_TARGET,
         LITHO_COMPOSE_FOUNDATION_TARGET,
         LITHO_COMPOSE_RUNTIME_TARGET,
         LITHO_COMPOSE_UI_TARGET,

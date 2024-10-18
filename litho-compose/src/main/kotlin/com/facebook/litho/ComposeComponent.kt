@@ -52,7 +52,6 @@ class ComposeComponent(
                           CompositionContextHelper.bind(
                               content, requireNotNull(androidContext.findComponentActivity()))
                       onUnbind {
-                        content.disposeComposition()
                         CompositionContextHelper.unbind(content, usedCustomCompositionContext)
                       }
                     }
@@ -70,9 +69,17 @@ class ComposeComponent(
 
   companion object {
     @JvmField
-    val ALLOCATOR: ViewAllocator<MetaComposeView> = ViewAllocator { context ->
-      MetaComposeView(context)
-    }
+    val ALLOCATOR: ViewAllocator<MetaComposeView> =
+        ViewAllocator(
+            useCustomPoolScope = true, onDiscarded = { content -> content.disposeComposition() }) {
+                context ->
+              MetaComposeView(context).apply {
+                // Normally content shouldn't be modified within ViewAllocator, but in this case
+                // we want all MetaComposeViews used by ComposeComponent to use
+                // ComposeComponentViewCompositionStrategy
+                setViewCompositionStrategy(ComposeComponentViewCompositionStrategy)
+              }
+            }
   }
 }
 
