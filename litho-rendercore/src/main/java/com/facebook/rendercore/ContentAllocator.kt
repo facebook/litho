@@ -69,16 +69,16 @@ interface ContentAllocator<Content : Any> {
    * Called when the framework wants to acquire a pooled content item from the pool. Allows for
    * customization of the acquiring logic.
    */
-  fun acquireContent(context: Context): Any {
-    return MountContentPools.acquireMountContent(context, this)
+  fun acquireContent(context: Context, poolScope: PoolScope = PoolScope.None): Any {
+    return MountContentPools.acquireMountContent(context, this, poolScope)
   }
 
   /**
    * Called when the framework wants to release [content] to the pool. Allows for customization of
    * the releasing logic.
    */
-  fun recycleContent(context: Context, content: Any) {
-    MountContentPools.release(context, this, content)
+  fun recycleContent(context: Context, content: Any, poolScope: PoolScope = PoolScope.None) {
+    MountContentPools.release(context, this, content, poolScope)
   }
 
   /**

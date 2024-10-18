@@ -27,7 +27,8 @@ class RenderTreeNode(
     val layoutData: Any?,
     val bounds: Rect,
     val resolvedPadding: Rect?,
-    val positionInParent: Int
+    val positionInParent: Int,
+    val poolScope: PoolScope = PoolScope.None,
 ) {
   val absoluteX: Int = (parent?.absoluteX ?: 0) + bounds.left
   val absoluteY: Int = (parent?.absoluteY ?: 0) + bounds.top
