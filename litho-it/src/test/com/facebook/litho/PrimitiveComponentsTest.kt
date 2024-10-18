@@ -54,6 +54,7 @@ import com.facebook.litho.view.viewTag
 import com.facebook.litho.visibility.onInvisible
 import com.facebook.litho.visibility.onVisible
 import com.facebook.litho.widget.LithoScrollView
+import com.facebook.litho.widget.collection.LazyList
 import com.facebook.rendercore.MeasureResult
 import com.facebook.rendercore.PoolScope
 import com.facebook.rendercore.Size
@@ -1222,6 +1223,66 @@ class PrimitiveComponentsTest {
 
       // cleanup
       testViewWithPoolScope.lithoView.unmountAllItems()
+      testViewWithoutPoolScope.lithoView.unmountAllItems()
+    } finally {
+      ComponentsConfiguration.customPoolScopesEnabled = false
+    }
+  }
+
+  @Test
+  fun `should see custom pool scope in render only if the component is inside of a lazy list`() {
+    try {
+      ComponentsConfiguration.customPoolScopesEnabled = true
+      val componentTreeWithoutPoolScope = ComponentTree.create(mLithoTestRule.context).build()
+
+      var firstResolvedPoolScope: PoolScope? = null
+      val firstComponent =
+          object : PrimitiveComponent() {
+            override fun PrimitiveComponentScope.render(): LithoPrimitive {
+              firstResolvedPoolScope = PoolScopeTreeProp.value
+              val primitive =
+                  Primitive(
+                      layoutBehavior = FixedSizeLayoutBehavior(100.px, 100.px),
+                      MountBehavior(ViewAllocator { context -> TextView(context) }) {})
+              return LithoPrimitive(primitive, null)
+            }
+          }
+
+      var secondResolvedPoolScope: PoolScope? = null
+      val secondComponent =
+          object : PrimitiveComponent() {
+            override fun PrimitiveComponentScope.render(): LithoPrimitive {
+              secondResolvedPoolScope = PoolScopeTreeProp.value
+              val primitive =
+                  Primitive(
+                      layoutBehavior = FixedSizeLayoutBehavior(100.px, 100.px),
+                      MountBehavior(ViewAllocator { context -> TextView(context) }) {})
+              return LithoPrimitive(primitive, null)
+            }
+          }
+
+      // render component with CT that doesn't have pool scope
+      val testViewWithoutPoolScope =
+          mLithoTestRule.render(componentTree = componentTreeWithoutPoolScope) {
+            Row {
+              child(
+                  LazyList(style = Style.height(100.dp)) {
+                    // first component is inside of a lazy list
+                    child(firstComponent)
+                  })
+              // second component is outside of the lazy collection
+              child(secondComponent)
+            }
+          }
+
+      // first pool scope comes from the lazy list and is not null
+      assertThat(firstResolvedPoolScope).isNotNull()
+      assertThat(firstResolvedPoolScope).isNotSameAs(PoolScope.None)
+
+      // second pool scope is null
+      assertThat(secondResolvedPoolScope).isSameAs(PoolScope.None)
+
+      // cleanup
       testViewWithoutPoolScope.lithoView.unmountAllItems()
     } finally {
       ComponentsConfiguration.customPoolScopesEnabled = false

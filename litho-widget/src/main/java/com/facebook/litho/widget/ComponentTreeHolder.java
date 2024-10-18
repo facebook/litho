@@ -37,6 +37,7 @@ import com.facebook.litho.StateUpdaterDelegator;
 import com.facebook.litho.TreePropContainer;
 import com.facebook.litho.TreeState;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.rendercore.PoolScope;
 import com.facebook.rendercore.RunnableHandler;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
@@ -62,6 +63,8 @@ public class ComponentTreeHolder {
   private final ComponentsConfiguration mComponentsConfiguration;
 
   @Nullable private StateUpdaterDelegator mStateUpdaterDelegator;
+
+  private PoolScope mPoolScope;
 
   @IntDef({RENDER_UNINITIALIZED, RENDER_ADDED, RENDER_DRAWN})
   public @interface RenderState {}
@@ -125,6 +128,7 @@ public class ComponentTreeHolder {
     private ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory;
     private @Nullable LithoVisibilityEventsController lithoVisibilityEventsController;
     private @Nullable StateUpdaterDelegator stateUpdaterDelegator;
+    private PoolScope poolScope = PoolScope.None.INSTANCE;
     private boolean acquireTreeStateOnRelease;
 
     private Builder(ComponentsConfiguration configuration) {
@@ -164,6 +168,11 @@ public class ComponentTreeHolder {
       return this;
     }
 
+    public Builder poolScope(PoolScope poolScope) {
+      this.poolScope = poolScope;
+      return this;
+    }
+
     public ComponentTreeHolder build() {
       ensureMandatoryParams();
       return new ComponentTreeHolder(this);
@@ -186,6 +195,7 @@ public class ComponentTreeHolder {
     mLithoVisibilityEventsController = builder.lithoVisibilityEventsController;
     mComponentsConfiguration = builder.componentsConfiguration;
     mStateUpdaterDelegator = builder.stateUpdaterDelegator;
+    mPoolScope = builder.poolScope;
     mAcquireTreeStateOnRelease = builder.acquireTreeStateOnRelease;
   }
 
@@ -209,6 +219,10 @@ public class ComponentTreeHolder {
     } else {
       mPendingNewLayoutListener = listener;
     }
+  }
+
+  synchronized void setPoolScope(PoolScope poolScope) {
+    mPoolScope = poolScope;
   }
 
   int getId() {
@@ -439,6 +453,7 @@ public class ComponentTreeHolder {
         mStateUpdaterDelegator = new StateUpdaterDelegator();
       }
       builder.stateUpdater(mStateUpdaterDelegator);
+      builder.poolScope(mPoolScope);
       mComponentTree = builder.build();
       mStateUpdaterDelegator.attachStateUpdater(mComponentTree);
 

@@ -53,6 +53,7 @@ import com.facebook.litho.widget.RecyclerBinder
 import com.facebook.litho.widget.RecyclerEventsController
 import com.facebook.litho.widget.SectionsRecyclerView.SectionsRecyclerViewLogger
 import com.facebook.litho.widget.ViewportInfo.ViewportChanged
+import com.facebook.rendercore.PoolScope
 
 @LayoutSpec(events = [PTRRefreshEvent::class])
 object CollectionRecyclerSpec {
@@ -185,6 +186,7 @@ object CollectionRecyclerSpec {
       sectionTree: StateValue<SectionTree?>,
       binder: StateValue<Binder<RecyclerView>>,
       internalRecyclerEventsController: StateValue<RecyclerEventsController?>,
+      collectionRecyclerPoolScope: StateValue<PoolScope.ManuallyManaged>,
       @Prop section: Section,
       @Prop(optional = true) recyclerConfiguration: RecyclerConfiguration,
       @Prop(optional = true) sectionTreeTag: String?,
@@ -194,11 +196,15 @@ object CollectionRecyclerSpec {
   ) {
     val binderConfiguration = recyclerConfiguration.recyclerBinderConfiguration
 
+    val poolScope = PoolScope.ManuallyManaged()
+    collectionRecyclerPoolScope.set(poolScope)
+
     val recyclerBinder =
         RecyclerBinder.Builder()
             .layoutInfo(recyclerConfiguration.getLayoutInfo(c))
             .startupLogger(startupLogger)
             .recyclerBinderConfig(binderConfiguration.recyclerBinderConfig)
+            .poolScope(poolScope)
             .build(c)
 
     val targetBinder =
@@ -255,5 +261,12 @@ object CollectionRecyclerSpec {
 
   @JvmStatic
   @OnDetached
-  fun onDetached(c: ComponentContext, @State binder: Binder<RecyclerView>): Unit = binder.detach()
+  fun onDetached(
+      c: ComponentContext,
+      @State binder: Binder<RecyclerView>,
+      @State collectionRecyclerPoolScope: PoolScope.ManuallyManaged
+  ): Unit {
+    binder.detach()
+    collectionRecyclerPoolScope.releaseScope()
+  }
 }

@@ -78,6 +78,7 @@ import com.facebook.litho.widget.RecyclerEventsController;
 import com.facebook.litho.widget.SectionsRecyclerView.SectionsRecyclerViewLogger;
 import com.facebook.litho.widget.StickyHeaderControllerFactory;
 import com.facebook.litho.widget.ViewportInfo;
+import com.facebook.rendercore.PoolScope;
 import java.util.ArrayList;
 import java.util.List;
 import kotlin.Unit;
@@ -361,6 +362,7 @@ public class RecyclerCollectionComponentSpec {
       StateValue<LoadingState> loadingState,
       StateValue<RecyclerCollectionEventsController> internalEventsController,
       StateValue<LayoutInfo> layoutInfo,
+      StateValue<PoolScope.ManuallyManaged> collectionRecyclerPoolScope,
       @Prop Section section,
       @Prop(optional = true) RecyclerConfiguration recyclerConfiguration,
       @Prop(optional = true) @Nullable RecyclerCollectionEventsController eventsController,
@@ -395,6 +397,9 @@ public class RecyclerCollectionComponentSpec {
             ? recyclerBinderConfig.componentsConfiguration
             : c.getLithoConfiguration().componentsConfig;
 
+    PoolScope.ManuallyManaged poolScope = new PoolScope.ManuallyManaged();
+    collectionRecyclerPoolScope.set(poolScope);
+
     RecyclerBinder.Builder recyclerBinderBuilder =
         new RecyclerBinder.Builder()
             .recyclerBinderConfig(
@@ -407,7 +412,8 @@ public class RecyclerCollectionComponentSpec {
                     .build())
             .layoutInfo(newLayoutInfo)
             .stickyHeaderControllerFactory(stickyHeaderControllerFactory)
-            .startupLogger(startupLogger);
+            .startupLogger(startupLogger)
+            .poolScope(poolScope);
 
     if (additionalPostDispatchDrawListeners != null) {
       recyclerBinderBuilder.addAdditionalPostDispatchDrawListeners(
@@ -534,8 +540,12 @@ public class RecyclerCollectionComponentSpec {
   }
 
   @OnDetached
-  static void onDetached(ComponentContext c, @State Binder<RecyclerView> binder) {
+  static void onDetached(
+      ComponentContext c,
+      @State Binder<RecyclerView> binder,
+      @State PoolScope.ManuallyManaged collectionRecyclerPoolScope) {
     binder.detach();
+    collectionRecyclerPoolScope.releaseScope();
   }
 
   private static class RecyclerCollectionOnScrollListener extends OnScrollListener {

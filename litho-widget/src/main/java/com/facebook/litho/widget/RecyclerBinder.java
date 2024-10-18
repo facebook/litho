@@ -79,6 +79,7 @@ import com.facebook.litho.widget.ComponentTreeHolder.ComponentTreeMeasureListene
 import com.facebook.litho.widget.ComponentTreeHolder.RenderState;
 import com.facebook.litho.widget.ComponentWarmer.ComponentTreeHolderPreparer;
 import com.facebook.rendercore.FastMath;
+import com.facebook.rendercore.PoolScope;
 import com.facebook.rendercore.RunnableHandler;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -159,6 +160,8 @@ public class RecyclerBinder
   private final AtomicBoolean mIsInMeasure = new AtomicBoolean(false);
 
   private final @Nullable Function1<Exception, Unit> mErrorHandler;
+
+  private final PoolScope mPoolScope;
 
   @ThreadConfined(ThreadConfined.UI)
   @VisibleForTesting
@@ -459,6 +462,8 @@ public class RecyclerBinder
 
     private @Nullable Function1<Exception, Unit> errorHandler;
 
+    private PoolScope poolScope = PoolScope.None.INSTANCE;
+
     /**
      * Associates a {@link RecyclerBinderConfig} to the {@link RecyclerBinder} created by this
      * builder.
@@ -597,6 +602,11 @@ public class RecyclerBinder
       return this;
     }
 
+    public Builder poolScope(PoolScope poolScope) {
+      this.poolScope = poolScope;
+      return this;
+    }
+
     /**
      * @param c The {@link ComponentContext} the RecyclerBinder will use.
      */
@@ -627,6 +637,7 @@ public class RecyclerBinder
                     .componentTreeMeasureListenerFactory(measureListenerFactory)
                     .lithoVisibilityEventsController(lifecycleProvider)
                     .acquireTreeStateOnRelease(acquireStateHandlerOnRelease)
+                    .poolScope(poolScope)
                     .build();
       }
 
@@ -845,6 +856,7 @@ public class RecyclerBinder
     mStartupLogger = builder.startupLogger;
     mRecyclingStrategy = builder.recyclingStrategy;
     mErrorHandler = builder.errorHandler;
+    mPoolScope = builder.poolScope;
   }
 
   /**
@@ -4238,6 +4250,7 @@ public class RecyclerBinder
                 .getRenderInfo()
                 .addCustomAttribute(ComponentTreeHolder.PREVENT_RELEASE_TAG, preventRelease);
           }
+          holder.setPoolScope(mPoolScope);
           return holder;
         }
       }
@@ -4248,12 +4261,15 @@ public class RecyclerBinder
             ? mLayoutHandlerFactory.createLayoutCalculationHandler(renderInfo)
             : null;
 
-    return mComponentTreeHolderFactory.create(
-        renderInfo,
-        layoutHandler,
-        mComponentTreeMeasureListenerFactory,
-        mComponentsConfiguration,
-        mLithoVisibilityEventsController);
+    final ComponentTreeHolder holder =
+        mComponentTreeHolderFactory.create(
+            renderInfo,
+            layoutHandler,
+            mComponentTreeMeasureListenerFactory,
+            mComponentsConfiguration,
+            mLithoVisibilityEventsController);
+    holder.setPoolScope(mPoolScope);
+    return holder;
   }
 
   ComponentTreeHolderPreparer getComponentTreeHolderPreparer() {
