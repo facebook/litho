@@ -1247,6 +1247,13 @@ public abstract class BaseMountingView extends ComponentHost
     final int right = getRight() + translationX;
     final Rect previousRect = mPreviousMountVisibleRectBounds;
 
+    // Since we could have customized visible bounds, which means we should still run visibility
+    // extension to see if there's any visibility event to dispatch and cannot simply early return
+    // due to fully visible.
+    ComponentsConfiguration configuration = getConfiguration();
+    boolean hasVisibilityBoundsTransformer =
+        configuration != null && configuration.visibilityBoundsTransformer != null;
+
     if (left >= 0
         && top >= 0
         && right <= parentWidth
@@ -1256,7 +1263,8 @@ public abstract class BaseMountingView extends ComponentHost
         && previousRect.right <= parentWidth
         && previousRect.bottom <= parentHeight
         && previousRect.width() == getWidth()
-        && previousRect.height() == getHeight()) {
+        && previousRect.height() == getHeight()
+        && !hasVisibilityBoundsTransformer) {
       // View is fully visible, and has already been completely mounted.
       return;
     }

@@ -86,6 +86,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
     state.mVisibilityOutputs = input.getVisibilityOutputs();
     state.mRenderUnitIdsWhichHostRenderTrees = input.getRenderUnitIdsWhichHostRenderTrees();
     state.mPreviousLocalVisibleRect.setEmpty();
+    state.mPreviousTransformedVisibleRect.setEmpty();
     state.mCurrentLocalVisibleRect = localVisibleRect;
     state.mVisibilityBoundsTransformer = input.getVisibilityBoundsTransformer();
     state.mInput = input;
@@ -152,6 +153,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
   public void onUnmount(ExtensionState<VisibilityMountExtensionState> extensionState) {
     final VisibilityMountExtensionState state = extensionState.getState();
     state.mPreviousLocalVisibleRect.setEmpty();
+    state.mPreviousTransformedVisibleRect.setEmpty();
     state.mInput = null;
   }
 
@@ -168,6 +170,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
     final VisibilityMountExtensionState state = extensionState.getState();
     clearVisibilityItemsNonincremental(extensionState.getRenderStateId(), state);
     state.mPreviousLocalVisibleRect.setEmpty();
+    state.mPreviousTransformedVisibleRect.setEmpty();
   }
 
   /**
@@ -218,20 +221,56 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
       final ExtensionState<VisibilityMountExtensionState> extensionState,
       @Nullable Rect localVisibleRect,
       boolean isDirty) {
-    final Rect previousVisibleRect = extensionState.getState().mPreviousLocalVisibleRect;
-    if (localVisibleRect == null || (!isDirty && previousVisibleRect.equals(localVisibleRect))) {
+    if (localVisibleRect == null) {
       if (VisibilityExtensionConfigs.isDebugLoggingEnabled) {
-        Log.d(
-            DEBUG_TAG,
-            "Skip Processing: "
-                + "[isDirty="
-                + isDirty
-                + ", previousVisibleRect="
-                + previousVisibleRect
-                + "]");
+        Log.d(DEBUG_TAG, "SKIP: local visible rect is null.");
+      }
+      return;
+    }
+
+    final Rect previousVisibleRect = extensionState.getState().mPreviousLocalVisibleRect;
+    final @Nullable VisibilityBoundsTransformer transformer =
+        extensionState.getState().mVisibilityBoundsTransformer;
+    @Nullable Rect transformedLocalVisibleRect = null;
+    if (!isDirty && previousVisibleRect.equals(localVisibleRect)) {
+      // We can skip processing because the visible rect doesn't change, but we have to check if
+      // there's a transformed rect to process.
+
+      boolean hasTransformedRectToProcess = false;
+      if (transformer != null) {
+        transformedLocalVisibleRect =
+            transformer.getTransformedLocalVisibleRect(extensionState.getRootHost());
+        if (transformedLocalVisibleRect == null) {
+          extensionState.getState().mPreviousTransformedVisibleRect.setEmpty();
+        } else if (!extensionState
+            .getState()
+            .mPreviousTransformedVisibleRect
+            .equals(transformedLocalVisibleRect)) {
+          //  We can skip processing because the transformed visible rect doesn't change as well.
+          hasTransformedRectToProcess = true;
+          extensionState
+              .getState()
+              .mPreviousTransformedVisibleRect
+              .set(transformedLocalVisibleRect);
+        }
       }
 
-      return;
+      if (!hasTransformedRectToProcess) {
+        if (VisibilityExtensionConfigs.isDebugLoggingEnabled) {
+          Log.d(
+              DEBUG_TAG,
+              "Skip Processing: "
+                  + "[isDirty="
+                  + isDirty
+                  + ", previousVisibleRect="
+                  + previousVisibleRect
+                  + ", previousTransformedVisibleRect="
+                  + extensionState.getState().mPreviousTransformedVisibleRect
+                  + "]");
+        }
+
+        return;
+      }
     }
 
     final VisibilityMountExtensionState state = extensionState.getState();
@@ -242,11 +281,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
     }
 
     if (!extensionState.getState().mVisibilityOutputs.isEmpty()) {
-
-      final @Nullable VisibilityBoundsTransformer transformer =
-          extensionState.getState().mVisibilityBoundsTransformer;
-      @Nullable Rect transformedLocalVisibleRect = null;
-      if (transformer != null) {
+      if (transformer != null && transformedLocalVisibleRect == null) {
         transformedLocalVisibleRect =
             transformer.getTransformedLocalVisibleRect(extensionState.getRootHost());
       }
@@ -654,6 +689,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
     // the map.
     private final Map<String, VisibilityItem> mVisibilityIdToItemMap = new HashMap<>();
     private final Rect mPreviousLocalVisibleRect = new Rect();
+    private final Rect mPreviousTransformedVisibleRect = new Rect();
 
     private List<VisibilityOutput> mVisibilityOutputs = Collections.emptyList();
     private Set<Long> mRenderUnitIdsWhichHostRenderTrees = Collections.emptySet();
