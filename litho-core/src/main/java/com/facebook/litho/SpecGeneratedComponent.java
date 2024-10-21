@@ -885,9 +885,6 @@ public abstract class SpecGeneratedComponent extends Component
     return isEquivalentTo(other, ComponentsConfiguration.shouldCompareCommonPropsInIsEquivalentTo);
   }
 
-  /**
-   * @noinspection deprecation
-   */
   public final boolean isEquivalentTo(@Nullable Component other, boolean shouldCompareCommonProps) {
     if (shouldCompareCommonProps
         && other instanceof SpecGeneratedComponent

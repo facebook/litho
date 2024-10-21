@@ -478,18 +478,6 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     return isEquivalentProps(other);
   }
 
-  /**
-   * This method is retained in <b>Component</b> only to avoid breaking existing call sites. It'll
-   * be gradually removed over the next few iterations.
-   *
-   * <p>Note that the semantic of <i>shouldCompoareCommonProps</i> still makes sense in the context
-   * of <b>SpecGeneratedComponents</b>, so, this overload will continue to exist there indefinitely.
-   */
-  @Deprecated
-  public boolean isEquivalentTo(@Nullable Component other, boolean shouldCompareCommonProps) {
-    return isEquivalentTo(other);
-  }
-
   public Component makeShallowCopy() {
     try {
       return (Component) super.clone();
