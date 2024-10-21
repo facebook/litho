@@ -72,6 +72,7 @@ inline fun ResourcesScope.LazyGrid(
     isTopFadingEnabled: Boolean = true,
     isBottomFadingEnabled: Boolean = true,
     fadingEdgeLength: Dimen? = null,
+    mainAxisWrapContent: Boolean = false,
     preAllocationHandler: PreAllocationHandler? =
         context.lithoConfiguration.componentsConfig.preAllocationHandler,
     shouldExcludeFromIncrementalMount: Boolean = false,
@@ -92,7 +93,9 @@ inline fun ResourcesScope.LazyGrid(
               useBackgroundChangeSets = useBackgroundChangeSets,
               preAllocationHandler = preAllocationHandler,
               columns = columns,
-              enableStableIds = enableStableIds),
+              enableStableIds = enableStableIds,
+              mainAxisWrapContent = mainAxisWrapContent,
+          ),
       itemAnimator,
       itemDecoration,
       clipToPadding,

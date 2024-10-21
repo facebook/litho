@@ -173,7 +173,8 @@ internal object CollectionLayouts {
       useBackgroundChangeSets: Boolean = false,
       columns: Int = 2,
       preAllocationHandler: PreAllocationHandler?,
-      enableStableIds: Boolean
+      enableStableIds: Boolean,
+      mainAxisWrapContent: Boolean = false,
   ): CollectionLayout =
       object :
           CollectionLayout(
@@ -184,7 +185,9 @@ internal object CollectionLayouts {
               useBackgroundChangeSets = useBackgroundChangeSets,
               preAllocationHandler = preAllocationHandler,
               isCircular = false,
-              enableStableIds = enableStableIds) {
+              enableStableIds = enableStableIds,
+              mainAxisWrapContent = mainAxisWrapContent,
+          ) {
         override fun createRecyclerConfigurationBuilder(): RecyclerConfiguration.Builder =
             GridRecyclerConfiguration.create()
                 .snapMode(snapMode)
