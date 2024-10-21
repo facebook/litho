@@ -15,12 +15,12 @@ feature_native.kotlin_library(
     feature = FBApp_UIFrameworks_Litho_Litho,
     labels = [],
     provided_deps = [
-        "//third-party/kotlin:kotlin-compiler-embeddable",
+        "//third-party/kotlin:kotlin-compiler",
     ],
     resources = glob(["resources/**"]),
     resources_root = "resources",
     tests = [
-        "//fbandroid/libraries/components/litho-compiler-plugin/compiler:litho-compiler-test",
+        ":litho-compiler-test",
     ],
     visibility = [
         "PUBLIC",
@@ -34,12 +34,13 @@ fb_kotlin_test(
     srcs = glob(["src/test/kotlin/**/*.kt"]),
     deps = [
         ":litho-compiler",
+        "//fbandroid/libraries/components/litho-core/src/main/java/com/facebook/litho:litho",
         "//fbandroid/third-party/java/assertj:assertj-core",
         "//fbandroid/third-party/java/junit:junit",
         "//third-party/kotlin:kotlin",
-        "//third-party/kotlin:kotlin-compiler-embeddable",
+        "//third-party/kotlin:kotlin-compiler",
         "//third-party/kotlin:kotlin-reflect",
-        "//third-party/kotlin/kotlin-compile-testing:kotlin-compile-testing-k2-shaded",
+        "//third-party/kotlin/kotlin-compile-testing:kotlin-compile-testing",
         "//third-party/kotlin/mockito-kotlin2:mockito-kotlin2",
     ],
 )

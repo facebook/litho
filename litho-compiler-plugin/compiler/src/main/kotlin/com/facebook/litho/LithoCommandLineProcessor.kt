@@ -16,12 +16,27 @@
 
 package com.facebook.litho
 
+import com.facebook.litho.common.LithoCompilerConfig
+import com.facebook.litho.common.LithoCompilerConfig.Companion.ENABLED
 import org.jetbrains.kotlin.compiler.plugin.AbstractCliOption
+import org.jetbrains.kotlin.compiler.plugin.CliOptionProcessingException
 import org.jetbrains.kotlin.compiler.plugin.CommandLineProcessor
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
+import org.jetbrains.kotlin.config.CompilerConfiguration
 
 @OptIn(ExperimentalCompilerApi::class)
 class LithoCommandLineProcessor : CommandLineProcessor {
   override val pluginId: String = "com.facebook.litho.compiler"
-  override val pluginOptions: Collection<AbstractCliOption> = emptyList()
+  override val pluginOptions: Collection<AbstractCliOption> = LithoCompilerConfig.options
+
+  override fun processOption(
+      option: AbstractCliOption,
+      value: String,
+      configuration: CompilerConfiguration
+  ) {
+    when (option) {
+      ENABLED.cliOption -> configuration.put(ENABLED.configKey, value.toBoolean())
+      else -> throw CliOptionProcessingException("Unknown option: ${option.optionName}")
+    }
+  }
 }

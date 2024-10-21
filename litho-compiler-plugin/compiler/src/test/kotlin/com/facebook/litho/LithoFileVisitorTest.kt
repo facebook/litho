@@ -18,6 +18,7 @@ package com.facebook.litho
 
 import com.tschuchort.compiletesting.CompilationResult
 import com.tschuchort.compiletesting.KotlinCompilation
+import com.tschuchort.compiletesting.PluginOption
 import com.tschuchort.compiletesting.SourceFile
 import org.assertj.core.api.Assertions.assertThat
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
@@ -38,7 +39,7 @@ class LithoFileVisitorTest {
 
     val result = compile(SourceFile.kotlin("Test.kt", file))
 
-    assertThat(KotlinCompilation.ExitCode.OK).isEqualTo(result.exitCode)
+    assertThat(result.exitCode).isEqualTo(KotlinCompilation.ExitCode.OK)
   }
 
   @Test
@@ -56,7 +57,7 @@ class LithoFileVisitorTest {
 
     val result = compile(SourceFile.kotlin("Test.kt", file))
 
-    assertThat(KotlinCompilation.ExitCode.COMPILATION_ERROR).isEqualTo(result.exitCode)
+    assertThat(result.exitCode).isEqualTo(KotlinCompilation.ExitCode.COMPILATION_ERROR)
     assertThat(result.messages).contains("Litho: Test function called")
   }
 
@@ -68,7 +69,7 @@ class LithoFileVisitorTest {
               compilerPluginRegistrars = listOf(LithoComponentRegistrar())
               messageOutputStream = System.out
               commandLineProcessors = listOf(LithoCommandLineProcessor())
-              pluginOptions = listOf()
+              pluginOptions = listOf(PluginOption("com.facebook.litho.compiler", "enabled", "true"))
               languageVersion = "1.9"
               supportsK2 = false
             }
