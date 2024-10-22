@@ -581,7 +581,7 @@ sealed interface PoolScope {
    * A pool scope that automatically releases the pool when the given [lifecycle] transitions to
    * destroyed state
    */
-  class LifecycleAware(private val lifecycle: Lifecycle) : PoolScope {
+  class LifecycleAware(lifecycle: Lifecycle) : PoolScope {
     init {
       lifecycle.addObserver(
           object : DefaultLifecycleObserver {

@@ -375,11 +375,9 @@ public class ComponentTree
     if (ComponentsConfiguration.defaultInstance.enableLifecycleOwnerWrapper) {
       LifecycleOwner implicitLifecycleOwner = getImplicitLifecycleOwner(builder.treePropContainer);
       mImplicitTreePropContainer = createImplicitTreePropContainer(implicitLifecycleOwner);
-    }
-
-    @Nullable final PoolScope poolScope = builder.mPoolScope;
-    if (poolScope != null) {
-      mImplicitTreePropContainer.put(PoolScopeTreeProp, poolScope);
+      if (ComponentsConfiguration.customPoolScopesEnabled) {
+        mImplicitTreePropContainer.put(PoolScopeTreeProp, builder.mPoolScope);
+      }
     }
 
     if (useComponentTreePropContainerAsSourceOfTruth) {

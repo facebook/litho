@@ -69,6 +69,7 @@ import com.facebook.litho.RenderCompleteEvent;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.ThreadUtils;
+import com.facebook.litho.annotations.ExperimentalLithoApi;
 import com.facebook.litho.choreographercompat.ChoreographerCompat;
 import com.facebook.litho.choreographercompat.ChoreographerCompatImpl;
 import com.facebook.litho.config.ComponentsConfiguration;
@@ -602,6 +603,7 @@ public class RecyclerBinder
       return this;
     }
 
+    @ExperimentalLithoApi
     public Builder poolScope(PoolScope poolScope) {
       this.poolScope = poolScope;
       return this;
