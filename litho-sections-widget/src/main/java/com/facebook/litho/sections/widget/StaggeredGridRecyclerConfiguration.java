@@ -52,14 +52,15 @@ public class StaggeredGridRecyclerConfiguration implements RecyclerConfiguration
       boolean stackFromEnd,
       int gapStrategy,
       RecyclerBinderConfiguration recyclerBinderConfiguration,
-      StaggeredGridLayoutInfoFactory layoutInfoFactory) {
+      @Nullable StaggeredGridLayoutInfoFactory layoutInfoFactory) {
     mNumSpans = numSpans;
     mOrientation = orientation;
     mReverseLayout = reverseLayout;
     mStackFromEnd = stackFromEnd;
     mGapStrategy = gapStrategy;
     mRecyclerBinderConfiguration = recyclerBinderConfiguration;
-    mLayoutInfoFactory = layoutInfoFactory;
+    mLayoutInfoFactory =
+        layoutInfoFactory == null ? Builder.STAGGERED_GRID_LAYOUT_INFO_FACTORY : layoutInfoFactory;
   }
 
   @Override
@@ -125,7 +126,7 @@ public class StaggeredGridRecyclerConfiguration implements RecyclerConfiguration
     private int mGapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_NONE;
     private RecyclerBinderConfiguration mRecyclerBinderConfiguration =
         RECYCLER_BINDER_CONFIGURATION;
-    private StaggeredGridLayoutInfoFactory mLayoutInfoFactory = STAGGERED_GRID_LAYOUT_INFO_FACTORY;
+    private @Nullable StaggeredGridLayoutInfoFactory mLayoutInfoFactory;
 
     Builder() {}
 
@@ -185,7 +186,7 @@ public class StaggeredGridRecyclerConfiguration implements RecyclerConfiguration
      * StaggeredGridLayoutInfoFactory} interface.
      */
     public Builder staggeredGridLayoutInfoFactory(
-        StaggeredGridLayoutInfoFactory staggeredGridLayoutInfoFactory) {
+        @Nullable StaggeredGridLayoutInfoFactory staggeredGridLayoutInfoFactory) {
       mLayoutInfoFactory = staggeredGridLayoutInfoFactory;
       return this;
     }

@@ -68,9 +68,7 @@ public class GridRecyclerConfiguration implements RecyclerConfiguration {
     mRecyclerBinderConfiguration = recyclerBinderConfiguration;
     mAllowMeasureOverride = allowMeasureOverride;
     mGridLayoutInfoFactory =
-        gridLayoutInfoFactory == null
-            ? GridRecyclerConfiguration.Builder.GRID_LAYOUT_INFO_FACTORY
-            : gridLayoutInfoFactory;
+        gridLayoutInfoFactory == null ? Builder.GRID_LAYOUT_INFO_FACTORY : gridLayoutInfoFactory;
     mSnapMode = snapMode;
     mSnapHelper = snapHelper;
   }
@@ -142,7 +140,7 @@ public class GridRecyclerConfiguration implements RecyclerConfiguration {
     private boolean mAllowMeasureOverride = false;
     private RecyclerBinderConfiguration mRecyclerBinderConfiguration =
         RECYCLER_BINDER_CONFIGURATION;
-    private GridLayoutInfoFactory mGridLayoutInfoFactory = GRID_LAYOUT_INFO_FACTORY;
+    private @Nullable GridLayoutInfoFactory mGridLayoutInfoFactory;
     private int mDeltaJumpThreshold = Integer.MAX_VALUE;
     private int mSnapToStartFlingOffset = SnapUtil.SNAP_TO_START_DEFAULT_FLING_OFFSET;
     private @SnapMode int mSnapMode = SNAP_NONE;
@@ -227,7 +225,7 @@ public class GridRecyclerConfiguration implements RecyclerConfiguration {
     /**
      * Provide a customized {@link GridLayoutInfo} through {@link GridLayoutInfoFactory} interface.
      */
-    public Builder gridLayoutInfoFactory(GridLayoutInfoFactory gridLayoutInfoFactory) {
+    public Builder gridLayoutInfoFactory(@Nullable GridLayoutInfoFactory gridLayoutInfoFactory) {
       mGridLayoutInfoFactory = gridLayoutInfoFactory;
       return this;
     }

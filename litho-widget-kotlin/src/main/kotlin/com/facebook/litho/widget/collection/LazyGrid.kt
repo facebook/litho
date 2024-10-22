@@ -23,6 +23,7 @@ import com.facebook.litho.LithoStartupLogger
 import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Style
 import com.facebook.litho.config.PreAllocationHandler
+import com.facebook.litho.sections.widget.GridLayoutInfoFactory
 import com.facebook.litho.widget.LithoRecyclerView
 import com.facebook.litho.widget.SnapUtil
 import com.facebook.rendercore.Dimen
@@ -78,6 +79,7 @@ inline fun ResourcesScope.LazyGrid(
     shouldExcludeFromIncrementalMount: Boolean = false,
     enableStableIds: Boolean =
         context.lithoConfiguration.componentsConfig.useStableIdsInRecyclerBinder,
+    gridLayoutInfoFactory: GridLayoutInfoFactory? = null,
     crossinline init: LazyGridScope.() -> Unit
 ): Component {
   val lazyGridScope = LazyGridScope(context).apply { init() }
@@ -95,6 +97,7 @@ inline fun ResourcesScope.LazyGrid(
               columns = columns,
               enableStableIds = enableStableIds,
               mainAxisWrapContent = mainAxisWrapContent,
+              gridLayoutInfoFactory = gridLayoutInfoFactory,
           ),
       itemAnimator,
       itemDecoration,

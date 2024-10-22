@@ -21,7 +21,9 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.config.PreAllocationHandler
+import com.facebook.litho.sections.widget.GridLayoutInfoFactory
 import com.facebook.litho.sections.widget.GridRecyclerConfiguration
+import com.facebook.litho.sections.widget.LinearLayoutInfoFactory
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration
 import com.facebook.litho.sections.widget.RecyclerBinderConfiguration
 import com.facebook.litho.sections.widget.RecyclerConfiguration
@@ -131,7 +133,8 @@ internal object CollectionLayouts {
       mainAxisWrapContent: Boolean = false,
       preAllocationHandler: PreAllocationHandler?,
       isCircular: Boolean,
-      enableStableIds: Boolean
+      enableStableIds: Boolean,
+      linearLayoutInfoFactory: LinearLayoutInfoFactory?,
   ): CollectionLayout =
       object :
           CollectionLayout(
@@ -149,6 +152,7 @@ internal object CollectionLayouts {
         override fun createRecyclerConfigurationBuilder(): RecyclerConfiguration.Builder =
             ListRecyclerConfiguration.create()
                 .snapMode(snapMode)
+                .linearLayoutInfoFactory(linearLayoutInfoFactory)
                 .snapToStartOffset(snapToStartOffset)
       }
 
@@ -175,6 +179,7 @@ internal object CollectionLayouts {
       preAllocationHandler: PreAllocationHandler?,
       enableStableIds: Boolean,
       mainAxisWrapContent: Boolean = false,
+      gridLayoutInfoFactory: GridLayoutInfoFactory?,
   ): CollectionLayout =
       object :
           CollectionLayout(
@@ -192,6 +197,7 @@ internal object CollectionLayouts {
             GridRecyclerConfiguration.create()
                 .snapMode(snapMode)
                 .snapToStartOffset(snapToStartOffset)
+                .gridLayoutInfoFactory(gridLayoutInfoFactory)
                 .numColumns(columns)
       }
 
@@ -216,8 +222,7 @@ internal object CollectionLayouts {
       isIncrementalMountEnabled: Boolean = true,
       spans: Int = 2,
       gapStrategy: Int = StaggeredGridLayoutManager.GAP_HANDLING_NONE,
-      staggeredGridlayoutInfoFactory: StaggeredGridLayoutInfoFactory =
-          StaggeredGridRecyclerConfiguration.Builder.STAGGERED_GRID_LAYOUT_INFO_FACTORY,
+      staggeredGridlayoutInfoFactory: StaggeredGridLayoutInfoFactory?,
       preAllocationHandler: PreAllocationHandler?,
       enableStableIds: Boolean
   ): CollectionLayout =

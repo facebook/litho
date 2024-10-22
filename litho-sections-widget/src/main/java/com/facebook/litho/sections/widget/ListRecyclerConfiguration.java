@@ -143,7 +143,7 @@ public class ListRecyclerConfiguration implements RecyclerConfiguration {
     @SnapMode private int mSnapMode = SNAP_NONE;
     private RecyclerBinderConfiguration mRecyclerBinderConfiguration =
         RECYCLER_BINDER_CONFIGURATION;
-    private LinearLayoutInfoFactory mLinearLayoutInfoFactory = LINEAR_LAYOUT_INFO_FACTORY;
+    private @Nullable LinearLayoutInfoFactory mLinearLayoutInfoFactory;
     private int mDeltaJumpThreshold = Integer.MAX_VALUE;
     private int mSnapToStartFlingOffset = SnapUtil.SNAP_TO_START_DEFAULT_FLING_OFFSET;
 
@@ -194,7 +194,8 @@ public class ListRecyclerConfiguration implements RecyclerConfiguration {
       return this;
     }
 
-    public Builder linearLayoutInfoFactory(LinearLayoutInfoFactory linearLayoutInfoFactory) {
+    public Builder linearLayoutInfoFactory(
+        @Nullable LinearLayoutInfoFactory linearLayoutInfoFactory) {
       mLinearLayoutInfoFactory = linearLayoutInfoFactory;
       return this;
     }
