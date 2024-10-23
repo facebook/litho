@@ -22,6 +22,7 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.util.SparseArray
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewOutlineProvider
 import androidx.annotation.ColorInt
@@ -453,6 +454,17 @@ inline fun Style.onInterceptTouch(
     enabled: Boolean,
     noinline action: (InterceptTouchEvent) -> Boolean
 ): Style = this + ObjectStyleItem(ObjectField.ON_INTERCEPT_TOUCH, if (enabled) action else null)
+
+/**
+ * Sets a listener that will invoke the given lambda when this Component is hovered on. If the
+ * component does not render a view then the framework will render it inside a View.
+ */
+inline fun Style.onHover(noinline handler: (View, MotionEvent) -> Boolean): Style =
+    this +
+        Style.onBindWithDescription({ "hover-handler" }, handler) { content ->
+          content.setOnHoverListener(handler)
+          onUnbind { content.setOnHoverListener(null) }
+        }
 
 /**
  * Sets the transform pivot of a View (used for scale and rotation transforms) to be centered at the
