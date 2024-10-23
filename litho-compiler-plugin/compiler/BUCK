@@ -15,7 +15,7 @@ feature_native.kotlin_library(
     feature = FBApp_UIFrameworks_Litho_Litho,
     labels = [],
     provided_deps = [
-        "//third-party/kotlin:kotlin-compiler-embeddable",
+        "//third-party/kotlin:kotlin-compiler",
     ],
     resources = glob(["resources/**"]),
     resources_root = "resources",
@@ -38,7 +38,7 @@ fb_kotlin_test(
         "//fbandroid/third-party/java/assertj:assertj-core",
         "//fbandroid/third-party/java/junit:junit",
         "//third-party/kotlin:kotlin",
-        "//third-party/kotlin:kotlin-compiler-embeddable",
+        "//third-party/kotlin:kotlin-compiler",
         "//third-party/kotlin:kotlin-reflect",
         "//third-party/kotlin/kotlin-compile-testing:kotlin-compile-testing",
         "//third-party/kotlin/mockito-kotlin2:mockito-kotlin2",
