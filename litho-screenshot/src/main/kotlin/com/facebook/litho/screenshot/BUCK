@@ -1,0 +1,15 @@
+load(
+    "@fbsource//tools/build_defs/oss:litho_defs.bzl",
+    "litho_android_test_library",
+)
+
+oncall("litho_components_for_android")
+
+litho_android_test_library(
+    name = "screenshot",
+    deps = [
+        "//fbandroid/java/com/facebook/testing/uitest:uitest",
+        "//fbandroid/java/com/facebook/testing/uitest/screenshot:screenshot",
+        "//fbandroid/third-party/java/junit:junit",
+    ],
+)
