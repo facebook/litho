@@ -24,7 +24,7 @@ import androidx.annotation.StringDef
  * screen reader, and this list should be kept up to date with their implementation.
  *
  * @see
- *   [https://github.com/google/talkback/blob/master/utils/src/main/java/Role.java](https://github.com/google/talkback/blob/master/utils/src/main/java/Role.java)
+ *   [https://github.com/google/talkback/blob/master/utils/src/main/java/com/google/android/accessibility/utils/Role.java](https://github.com/google/talkback/blob/master/utils/src/main/java/com/google/android/accessibility/utils/Role.java)
  */
 object AccessibilityRole {
 
