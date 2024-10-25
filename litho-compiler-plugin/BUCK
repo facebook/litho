@@ -3,10 +3,7 @@
 # This source code is licensed under the Apache 2.0 license found in the
 # LICENSE file in the root directory of this source tree.
 
-load("@fbsource//third-party/java/jarjar:unshade.bzl", "shade_kotlin_compiler_plugin_rule")
 load("@fbsource//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
-load("@fbsource//tools/build_defs/features:native_feature_wrapper.bzl", "feature_native")
-load("@fbsource//xplat/pfh/FBApp_UIFrameworks_Litho_Litho:DEFS.bzl", "FBApp_UIFrameworks_Litho_Litho")
 
 oncall("litho_components_for_android")
 
@@ -16,11 +13,4 @@ fb_native.java_binary(
     deps = [
         "//fbandroid/libraries/components/litho-compiler-plugin/compiler:litho-compiler",
     ],
-)
-
-feature_native.prebuilt_jar(
-    name = "litho-compiler-plugin-shaded",
-    binary_jar = shade_kotlin_compiler_plugin_rule(":litho-compiler-plugin"),
-    feature = FBApp_UIFrameworks_Litho_Litho,
-    visibility = ["PUBLIC"],
 )
