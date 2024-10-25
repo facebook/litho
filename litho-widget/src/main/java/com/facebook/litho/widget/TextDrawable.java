@@ -567,6 +567,14 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
     return mLayout;
   }
 
+  public int getOutlineColor() {
+    return mOutlineColor;
+  }
+
+  public float getOutlineWidth() {
+    return mOutlineWidth;
+  }
+
   /**
    * Get the clickable span that is at the exact coordinates
    *
