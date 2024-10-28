@@ -29,6 +29,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewParent
+import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import androidx.annotation.FloatRange
 import androidx.annotation.IdRes
@@ -420,6 +421,16 @@ open class ComponentHost(
 
   override fun setContentDescription(contentDescription: CharSequence?) {
     super.setContentDescription(contentDescription)
+    if (this.contentDescription == contentDescription) {
+      return
+    }
+    // This is a fix for an issue where TalkBack doesn't re-announce the content description after
+    // a state update in some cases. It's behind a flag so that it can be turned off in case it
+    // breaks something unexpectedly. See T193726518 for more details.
+    if (!contentDescription.isNullOrEmpty() &&
+        ComponentsConfiguration.enableAccessibilityReannouncementFix) {
+      sendAccessibilityEvent(AccessibilityEvent.CONTENT_CHANGE_TYPE_CONTENT_DESCRIPTION)
+    }
     this.contentDescription = contentDescription
   }
 

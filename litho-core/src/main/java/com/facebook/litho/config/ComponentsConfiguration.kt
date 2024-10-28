@@ -292,6 +292,12 @@ internal constructor(
     @JvmField var customPoolScopesEnabled: Boolean = false
 
     /**
+     * This flag is used to enable a fix for the issue where content description is not re-announced
+     * by TalkBack after a state update in some specific situations.
+     */
+    @JvmField var enableAccessibilityReannouncementFix: Boolean = false
+
+    /**
      * This method is only used so that Java clients can have a builder like approach to override a
      * configuration.
      */
