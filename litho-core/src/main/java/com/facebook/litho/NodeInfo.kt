@@ -40,6 +40,10 @@ class NodeInfo : Equivalence<NodeInfo> {
   @Retention(AnnotationRetention.SOURCE)
   internal annotation class FocusState
 
+  @IntDef(SCREEN_READER_FOCUS_UNSET, SCREEN_READER_FOCUS_SET_TRUE, SCREEN_READER_FOCUS_SET_FALSE)
+  @Retention(AnnotationRetention.SOURCE)
+  internal annotation class ScreenReaderFocusState
+
   @IntDef(CLICKABLE_UNSET, CLICKABLE_SET_TRUE, CLICKABLE_SET_FALSE)
   @Retention(AnnotationRetention.SOURCE)
   internal annotation class ClickableState
@@ -128,6 +132,10 @@ class NodeInfo : Equivalence<NodeInfo> {
 
   @FocusState
   var focusState: Int = FOCUS_UNSET
+    private set
+
+  @ScreenReaderFocusState
+  var screenReaderFocusState: Int = SCREEN_READER_FOCUS_UNSET
     private set
 
   @ClickableState
@@ -410,10 +418,16 @@ class NodeInfo : Equivalence<NodeInfo> {
           _sendAccessibilityEventUncheckedHandler != null ||
           _accessibilityRole != null ||
           _accessibilityRoleDescription != null ||
-          _focusOrder != null
+          _focusOrder != null ||
+          screenReaderFocusState != SCREEN_READER_FOCUS_UNSET
 
   fun setFocusable(isFocusable: Boolean) {
     focusState = if (isFocusable) FOCUS_SET_TRUE else FOCUS_SET_FALSE
+  }
+
+  fun setScreenReaderFocusable(isFocusable: Boolean) {
+    screenReaderFocusState =
+        if (isFocusable) SCREEN_READER_FOCUS_SET_TRUE else SCREEN_READER_FOCUS_SET_FALSE
   }
 
   fun setClickable(isClickable: Boolean) {
@@ -560,6 +574,9 @@ class NodeInfo : Equivalence<NodeInfo> {
       return false
     }
     if (this.focusState != other.focusState) {
+      return false
+    }
+    if (this.screenReaderFocusState != other.screenReaderFocusState) {
       return false
     }
     if (!isEquivalentTo(this.interceptTouchHandler, other.interceptTouchHandler)) {
@@ -754,6 +771,9 @@ class NodeInfo : Equivalence<NodeInfo> {
     if (focusState != FOCUS_UNSET) {
       target.setFocusable(focusState == FOCUS_SET_TRUE)
     }
+    if (screenReaderFocusState != SCREEN_READER_FOCUS_UNSET) {
+      target.setScreenReaderFocusable(screenReaderFocusState == SCREEN_READER_FOCUS_SET_TRUE)
+    }
     if (clickableState != CLICKABLE_UNSET) {
       target.setClickable(clickableState == CLICKABLE_SET_TRUE)
     }
@@ -882,6 +902,9 @@ class NodeInfo : Equivalence<NodeInfo> {
     const val FOCUS_UNSET: Int = 0
     const val FOCUS_SET_TRUE: Int = 1
     const val FOCUS_SET_FALSE: Int = 2
+    const val SCREEN_READER_FOCUS_UNSET: Int = 0
+    const val SCREEN_READER_FOCUS_SET_TRUE: Int = 1
+    const val SCREEN_READER_FOCUS_SET_FALSE: Int = 2
     const val CLICKABLE_UNSET: Int = 0
     const val CLICKABLE_SET_TRUE: Int = 1
     const val CLICKABLE_SET_FALSE: Int = 2

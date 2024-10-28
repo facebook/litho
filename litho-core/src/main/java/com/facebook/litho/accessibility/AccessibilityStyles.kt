@@ -59,6 +59,7 @@ internal enum class AccessibilityField : StyleItemField {
   SEND_ACCESSIBILITY_EVENT_UNCHECKED,
   ON_PERFORM_ACTION_FOR_VIRTUAL_VIEW,
   ON_VIRTUAL_VIEW_KEYBOARD_FOCUS_CHANGED,
+  SCREEN_READER_FOCUSABLE,
 }
 
 @PublishedApi
@@ -108,6 +109,8 @@ internal data class AccessibilityStyleItem(
       AccessibilityField.ON_VIRTUAL_VIEW_KEYBOARD_FOCUS_CHANGED ->
           commonProps.onVirtualViewKeyboardFocusChangedHandler(
               eventHandler(value as (VirtualViewKeyboardFocusChangedEvent) -> Unit))
+      AccessibilityField.SCREEN_READER_FOCUSABLE ->
+          commonProps.screenReaderFocusable(value as Boolean)
     }
   }
 }
@@ -300,6 +303,14 @@ inline fun Style.onInitializeAccessibilityNodeInfo(
         AccessibilityStyleItem(
             AccessibilityField.ON_INITIALIZE_ACCESSIBILITY_NODE_INFO,
             onInitializeAccessibilityNodeInfoHandler)
+
+/**
+ * Sets whether this View should be a focusable element for screen readers
+ *
+ * See [android.view.View.setScreenReaderFocusable].
+ */
+inline fun Style.screenReaderFocusable(isFocusable: Boolean): Style =
+    this + AccessibilityStyleItem(AccessibilityField.SCREEN_READER_FOCUSABLE, isFocusable)
 
 /**
  * Enum values for [importantForAccessibility].

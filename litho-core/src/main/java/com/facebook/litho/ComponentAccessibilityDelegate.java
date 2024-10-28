@@ -113,6 +113,12 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
       super.onInitializeAccessibilityNodeInfo(host, node);
     }
 
+    if (mNodeInfo != null
+        && mNodeInfo.getScreenReaderFocusState() != NodeInfo.SCREEN_READER_FOCUS_UNSET) {
+      node.setScreenReaderFocusable(
+          mNodeInfo.getScreenReaderFocusState() == NodeInfo.SCREEN_READER_FOCUS_SET_TRUE);
+    }
+
     // If an accessibilityRole has been set, set the className here.  It's important that this
     // happens *after* any calls to super, since the super call will set a className of its own and
     // override this one.

@@ -348,6 +348,13 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
   val focusable: Boolean
     get() = _nodeInfo?.focusState == NodeInfo.FOCUS_SET_TRUE
 
+  fun screenReaderFocusable(isFocusable: Boolean) {
+    getOrCreateNodeInfo().setScreenReaderFocusable(isFocusable)
+  }
+
+  val screenReaderFocusable: Boolean
+    get() = _nodeInfo?.screenReaderFocusState == NodeInfo.SCREEN_READER_FOCUS_SET_TRUE
+
   fun clickable(isClickable: Boolean) {
     getOrCreateNodeInfo().setClickable(isClickable)
   }

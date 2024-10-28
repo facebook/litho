@@ -394,6 +394,7 @@ class LayoutStateCreateTreeTest {
             .touchHandler(touchHandler)
             .interceptTouchHandler(interceptTouchHandler)
             .focusable(true)
+            .screenReaderFocusable(true)
             .selected(false)
             .enabled(false)
             .keyboardNavigationCluster(false)

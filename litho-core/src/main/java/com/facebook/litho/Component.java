@@ -1376,6 +1376,11 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       return getThis();
     }
 
+    public T screenReaderFocusable(boolean isFocusable) {
+      mComponent.getOrCreateCommonProps().screenReaderFocusable(isFocusable);
+      return getThis();
+    }
+
     public T focusedHandler(@Nullable EventHandler<FocusedVisibleEvent> focusedHandler) {
       mComponent.getOrCreateCommonProps().focusedHandler(focusedHandler);
       return getThis();

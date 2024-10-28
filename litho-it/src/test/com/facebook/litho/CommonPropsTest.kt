@@ -115,6 +115,7 @@ class CommonPropsTest {
     commonProps.visibleHeightRatio(55f)
     commonProps.visibleWidthRatio(56f)
     commonProps.accessibilityHeading(false)
+    commonProps.screenReaderFocusable(true)
     val visibleHandler: EventHandler<VisibleEvent> = eventHandler {}
     val focusedHandler: EventHandler<FocusedVisibleEvent> = eventHandler {}
     val unfocusedHandler: EventHandler<UnfocusedVisibleEvent> = eventHandler {}
@@ -434,6 +435,7 @@ class CommonPropsTest {
     commonProps.visibleWidthRatio(56f)
     commonProps.accessibilityHeading(false)
     commonProps.tooltipText("test")
+    commonProps.screenReaderFocusable(true)
     val visibleHandler = EventHandlerTestUtil.create<VisibleEvent>(3, content)
     val focusedHandler = EventHandlerTestUtil.create<FocusedVisibleEvent>(3, content)
     val unfocusedHandler = EventHandlerTestUtil.create<UnfocusedVisibleEvent>(3, content)

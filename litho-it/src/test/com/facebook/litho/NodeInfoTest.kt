@@ -333,6 +333,26 @@ class NodeInfoTest {
   }
 
   @Test
+  fun testScreenReaderFocusableTrue() {
+    assertThat(nodeInfo.screenReaderFocusState).isEqualTo(NodeInfo.SCREEN_READER_FOCUS_UNSET)
+    nodeInfo.setScreenReaderFocusable(true)
+    assertThat(nodeInfo.screenReaderFocusState).isEqualTo(NodeInfo.SCREEN_READER_FOCUS_SET_TRUE)
+    nodeInfo.copyInto(updatedNodeInfo)
+    assertThat(updatedNodeInfo.screenReaderFocusState)
+        .isEqualTo(NodeInfo.SCREEN_READER_FOCUS_SET_TRUE)
+  }
+
+  @Test
+  fun testScreenReaderFocusableFalse() {
+    assertThat(nodeInfo.screenReaderFocusState).isEqualTo(NodeInfo.SCREEN_READER_FOCUS_UNSET)
+    nodeInfo.setScreenReaderFocusable(false)
+    assertThat(nodeInfo.screenReaderFocusState).isEqualTo(NodeInfo.SCREEN_READER_FOCUS_SET_FALSE)
+    nodeInfo.copyInto(updatedNodeInfo)
+    assertThat(updatedNodeInfo.screenReaderFocusState)
+        .isEqualTo(NodeInfo.SCREEN_READER_FOCUS_SET_FALSE)
+  }
+
+  @Test
   fun testSelectedTrue() {
     assertThat(nodeInfo.selectedState).isEqualTo(NodeInfo.SELECTED_UNSET)
     nodeInfo.setSelected(true)
