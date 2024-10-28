@@ -127,7 +127,7 @@ public class RCTextView extends View {
       shouldRestore = true;
     }
 
-    final OnPrePostDrawSpan[] onPrePostDrawSpans = getOnPrePostDrawableSpans();
+    final OnPrePostDrawSpan[] onPrePostDrawSpans = getOnPrePostDrawSpans();
     if (onPrePostDrawSpans.length == 0) {
       drawLayout(canvas);
     } else {
@@ -174,11 +174,18 @@ public class RCTextView extends View {
     mLayout.draw(canvas, getSelectionPath(), mHighlightPaint, 0);
   }
 
-  private OnPrePostDrawSpan[] getOnPrePostDrawableSpans() {
+  private OnPrePostDrawSpan[] getOnPrePostDrawSpans() {
     if (!(mText instanceof Spanned)) {
       return new OnPrePostDrawSpan[0];
     }
     return ((Spanned) mText).getSpans(0, mText.length(), OnPrePostDrawSpan.class);
+  }
+
+  private MountableSpan[] getMountableSpans() {
+    if (!(mText instanceof Spanned)) {
+      return new MountableSpan[0];
+    }
+    return ((Spanned) mText).getSpans(0, mText.length(), MountableSpan.class);
   }
 
   public void mount(TextLayout textLayout) {
@@ -231,6 +238,11 @@ public class RCTextView extends View {
     if (textLayout.textStyle.accessibilityLabel != null) {
       setContentDescription(textLayout.textStyle.accessibilityLabel);
     }
+
+    final MountableSpan[] mountableSpans = getMountableSpans();
+    for (MountableSpan mountableSpan : mountableSpans) {
+      mountableSpan.onMount(this);
+    }
     invalidate();
   }
 
@@ -239,6 +251,10 @@ public class RCTextView extends View {
   }
 
   public void unmount() {
+    final MountableSpan[] mountableSpans = getMountableSpans();
+    for (MountableSpan mountableSpan : mountableSpans) {
+      mountableSpan.onUnmount(this);
+    }
     // NULLSAFE_FIXME[Field Not Nullable]
     mText = null;
     // NULLSAFE_FIXME[Field Not Nullable]
