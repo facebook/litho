@@ -16,6 +16,7 @@
 
 package com.facebook.litho.specmodels.processor;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiClassType;
@@ -26,6 +27,7 @@ import com.squareup.javapoet.TypeVariableName;
 import java.util.ArrayList;
 import java.util.List;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class PsiTypeVariablesExtractor {
 
   public static ImmutableList<TypeVariableName> getTypeVariables(PsiClass psiClass) {
@@ -42,6 +44,7 @@ public class PsiTypeVariablesExtractor {
       }
 
       final TypeVariableName typeVariable =
+          // NULLSAFE_FIXME[Parameter Not Nullable]
           TypeVariableName.get(psiTypeParameter.getName(), boundsTypeNames);
       typeVariables.add(typeVariable);
     }
