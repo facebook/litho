@@ -763,10 +763,6 @@ public class ComponentContext {
     return c.mLithoConfiguration.componentsConfig.visibilityProcessingEnabled;
   }
 
-  public boolean isPrimitiveVerticalScrollEnabled() {
-    return false; // TODO: wire up with config
-  }
-
   @Nullable
   public LithoLayoutContext getLayoutStateContext() {
     final CalculationContext stateContext = mCalculationStateContextThreadLocal.get();

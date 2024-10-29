@@ -32,6 +32,7 @@ import com.facebook.litho.ResolveResult
 import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Style
 import com.facebook.litho.bindToRenderTreeView
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.kotlinStyle
 import com.facebook.litho.useNestedTree
 import com.facebook.litho.useState
@@ -69,7 +70,7 @@ inline fun ResourcesScope.VerticalScroll(
     style: Style? = null,
     crossinline child: ResourcesScope.() -> Component
 ): Component {
-  return if (context.isPrimitiveVerticalScrollEnabled) {
+  return if (ComponentsConfiguration.usePrimitiveVerticalScroll) {
     return VerticalScrollComponent(
         scrollbarEnabled = scrollbarEnabled,
         nestedScrollingEnabled = nestedScrollingEnabled,
