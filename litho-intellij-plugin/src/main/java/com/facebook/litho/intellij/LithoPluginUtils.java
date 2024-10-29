@@ -16,6 +16,7 @@
 
 package com.facebook.litho.intellij;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.annotations.Event;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.MountSpec;
@@ -53,6 +54,7 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class LithoPluginUtils {
   private static final NotificationGroup NOTIFICATION_GROUP =
       NotificationGroup.balloonGroup("Litho");
@@ -169,6 +171,7 @@ public class LithoPluginUtils {
   @Contract("null -> null")
   public static String getLithoComponentNameFromSpec(@Nullable String specName) {
     if (isSpecName(specName)) {
+      // NULLSAFE_FIXME[Nullable Dereference]
       return specName.substring(0, specName.length() - SPEC_SUFFIX.length());
     }
     return null;
