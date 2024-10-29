@@ -16,6 +16,7 @@
 
 package com.facebook.litho.intellij.navigation;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
@@ -37,6 +38,7 @@ import org.jetbrains.annotations.Nullable;
  * Adds usages of corresponding Generated class to the search results of the Spec class, and
  * excludes this generated class itself from the places to search.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class GeneratedClassFindUsagesHandler extends FindUsagesHandler {
   private final Function<PsiClass, PsiClass> findGeneratedClass;
 
