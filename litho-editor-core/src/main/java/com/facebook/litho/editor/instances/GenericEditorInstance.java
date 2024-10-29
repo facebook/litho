@@ -16,6 +16,7 @@
 
 package com.facebook.litho.editor.instances;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.editor.Editor;
 import com.facebook.litho.editor.EditorRegistry;
 import com.facebook.litho.editor.Reflection;
@@ -27,6 +28,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import javax.annotation.Nullable;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class GenericEditorInstance implements Editor {
 
   interface GenericEditorValueWriter {
