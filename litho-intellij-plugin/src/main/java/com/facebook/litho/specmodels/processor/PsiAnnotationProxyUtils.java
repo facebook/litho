@@ -16,6 +16,7 @@
 
 package com.facebook.litho.specmodels.processor;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.intellij.codeInsight.AnnotationUtil;
 import com.intellij.psi.PsiAnnotation;
 import com.intellij.psi.PsiExpression;
@@ -36,6 +37,7 @@ import org.jetbrains.annotations.Nullable;
  * usable and implements methods like {@code hashCode}, which go unimplemented by Psi's default
  * Annotation implementation.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class PsiAnnotationProxyUtils {
 
   @Nullable
@@ -71,12 +73,14 @@ public class PsiAnnotationProxyUtils {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws IllegalAccessException {
+      // NULLSAFE_FIXME[Not Vetted Third-Party]
       switch (method.getName()) {
         case "hashCode":
           return proxyHashCode();
         case "equals":
           return proxyEquals(args[0]);
         case "toString":
+          // NULLSAFE_FIXME[Not Vetted Third-Party]
           return mStubbed.toString();
         default:
           return invoke(method, args);
@@ -84,22 +88,27 @@ public class PsiAnnotationProxyUtils {
     }
 
     private Object invoke(Method method) throws IllegalAccessException {
+      // NULLSAFE_FIXME[Parameter Not Nullable]
       return invoke(method, null);
     }
 
     private Object invoke(Method method, Object[] args) throws IllegalAccessException {
+      // NULLSAFE_FIXME[Not Vetted Third-Party]
       Class<?> returnType = method.getReturnType();
       if (returnType.isEnum()) {
         PsiAnnotation currentAnnotation =
             AnnotationUtil.findAnnotationInHierarchy(
                 mListOwner, Collections.singleton(mAnnotationClass.getCanonicalName()));
         PsiExpression declaredValue =
+            // NULLSAFE_FIXME[Nullable Dereference]
             (PsiExpression) currentAnnotation.findAttributeValue(method.getName());
         if (declaredValue == null) {
+          // NULLSAFE_FIXME[Not Vetted Third-Party]
           return method.getDefaultValue();
         }
         PsiIdentifier identifier = PsiTreeUtil.getChildOfType(declaredValue, PsiIdentifier.class);
         if (identifier == null) {
+          // NULLSAFE_FIXME[Not Vetted Third-Party]
           return method.getDefaultValue();
         }
         return Enum.valueOf((Class<Enum>) returnType, identifier.getText());
@@ -107,10 +116,13 @@ public class PsiAnnotationProxyUtils {
 
       try {
         if (args == null) {
+          // NULLSAFE_FIXME[Return Not Nullable]
           return method.invoke(mStubbed);
         }
+        // NULLSAFE_FIXME[Return Not Nullable]
         return method.invoke(mStubbed, args);
       } catch (InvocationTargetException e) {
+        // NULLSAFE_FIXME[Not Vetted Third-Party]
         return method.getDefaultValue();
       }
     }
@@ -147,6 +159,7 @@ public class PsiAnnotationProxyUtils {
      */
     private <A> int proxyHashCode() {
       int hashCode = 0;
+      // NULLSAFE_FIXME[Not Vetted Third-Party]
       for (Method method : mAnnotationClass.getDeclaredMethods()) {
         Object returnedObject;
         try {
@@ -157,7 +170,9 @@ public class PsiAnnotationProxyUtils {
               e);
         }
 
+        // NULLSAFE_FIXME[Not Vetted Third-Party]
         int memberHash = 127 * method.getName().hashCode();
+        // NULLSAFE_FIXME[Not Vetted Third-Party]
         Class<?> returnType = method.getReturnType();
         if (returnType.isArray()) {
           A[] array = (A[]) returnedObject;
@@ -174,11 +189,14 @@ public class PsiAnnotationProxyUtils {
 
     // Approximates the Annotation.equals() javadoc's implementation
     private <A> boolean proxyEquals(@Nullable Object other) {
+      // NULLSAFE_FIXME[Parameter Not Nullable]
       if (!mAnnotationClass.isInstance(other)) {
         return false;
       }
       boolean equals = true;
+      // NULLSAFE_FIXME[Not Vetted Third-Party]
       for (Method method : mAnnotationClass.getDeclaredMethods()) {
+        // NULLSAFE_FIXME[Not Vetted Third-Party]
         Class<?> returnType = method.getReturnType();
 
         Object thisReturnedObject;
