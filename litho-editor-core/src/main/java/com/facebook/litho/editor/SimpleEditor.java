@@ -16,6 +16,7 @@
 
 package com.facebook.litho.editor;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.editor.model.EditorArray;
 import com.facebook.litho.editor.model.EditorBool;
 import com.facebook.litho.editor.model.EditorColor;
@@ -31,6 +32,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nullable;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public final class SimpleEditor {
 
   private SimpleEditor() {}
@@ -216,6 +218,7 @@ public final class SimpleEditor {
                 });
           }
         });
+    // NULLSAFE_FIXME[Return Not Nullable]
     return ref.get();
   }
 
@@ -344,36 +347,43 @@ public final class SimpleEditor {
     private static final EditorValue.EditorVisitor</*@Nullable*/ SimpleEditorValue> asPrimitive =
         new EditorValue.EditorVisitor</*@Nullable*/ SimpleEditorValue>() {
           @Override
+          // NULLSAFE_FIXME[Inconsistent Subclass Return Annotation]
           public @Nullable SimpleEditorValue isShape(EditorShape object) {
             return null;
           }
 
           @Override
+          // NULLSAFE_FIXME[Inconsistent Subclass Return Annotation]
           public @Nullable SimpleEditorValue isArray(EditorArray array) {
             return null;
           }
 
           @Override
+          // NULLSAFE_FIXME[Inconsistent Subclass Return Annotation]
           public @Nullable SimpleEditorValue isPick(EditorPick pick) {
             return SimpleEditorValue.pick(pick.values, pick.selected);
           }
 
           @Override
+          // NULLSAFE_FIXME[Inconsistent Subclass Return Annotation]
           public @Nullable SimpleEditorValue isNumber(EditorNumber number) {
             return SimpleEditorValue.number(number.value);
           }
 
           @Override
+          // NULLSAFE_FIXME[Inconsistent Subclass Return Annotation]
           public @Nullable SimpleEditorValue isColor(EditorColor color) {
             return SimpleEditorValue.color(color.value);
           }
 
           @Override
+          // NULLSAFE_FIXME[Inconsistent Subclass Return Annotation]
           public @Nullable SimpleEditorValue isString(EditorString string) {
             return SimpleEditorValue.string(string.value);
           }
 
           @Override
+          // NULLSAFE_FIXME[Inconsistent Subclass Return Annotation]
           public @Nullable SimpleEditorValue isBool(EditorBool bool) {
             return SimpleEditorValue.bool(bool.value);
           }
