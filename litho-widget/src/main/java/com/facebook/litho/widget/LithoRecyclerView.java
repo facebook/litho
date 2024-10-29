@@ -22,7 +22,6 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
-import com.facebook.litho.R;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,7 +48,7 @@ public class LithoRecyclerView extends RecyclerView implements HasPostDispatchDr
 
   public LithoRecyclerView(Context context, @Nullable AttributeSet attrs, int defStyle) {
     super(context, attrs, defStyle);
-    setTag(R.id.litho_pooling_container, true);
+    setTag(com.facebook.primitive.compose.R.id.rc_pooling_container, true);
   }
 
   /**

@@ -23,6 +23,5 @@
   <item type="id" name="component_touch_listener"/>
   <item type="id" name="component_node_info"/>
   <item type="id" name="component_focus_order"/>
-  <item type="id" name="litho_pooling_container"/>
 
 </resources>

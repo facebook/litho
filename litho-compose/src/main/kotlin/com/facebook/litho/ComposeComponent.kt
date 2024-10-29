@@ -16,13 +16,8 @@
 
 package com.facebook.litho
 
-import com.facebook.compose.view.MetaComposeView
-import com.facebook.rendercore.SizeConstraints
-import com.facebook.rendercore.primitives.LayoutBehavior
-import com.facebook.rendercore.primitives.LayoutScope
-import com.facebook.rendercore.primitives.PrimitiveLayoutResult
-import com.facebook.rendercore.primitives.ViewAllocator
-import com.facebook.rendercore.primitives.withContentType
+import com.facebook.primitive.compose.ComposableWithDeps
+import com.facebook.primitive.compose.ComposePrimitive
 
 /**
  * A Litho component that renders Jetpack Compose tree.
@@ -41,55 +36,9 @@ class ComposeComponent(
 ) : PrimitiveComponent() {
   override fun PrimitiveComponentScope.render(): LithoPrimitive {
     return LithoPrimitive(
-        layoutBehavior = ComposeComponentLayoutBehavior,
-        mountBehavior =
-            MountBehavior(
-                description = { "ComposeComponent:$contentType" },
-                contentAllocator = ALLOCATOR.withContentType(contentType = contentType)) {
-                  withDescription("composeComponentSetupBinder") {
-                    bind(Unit) { content ->
-                      val usedCustomCompositionContext =
-                          CompositionContextHelper.bind(
-                              content, requireNotNull(androidContext.findComponentActivity()))
-                      onUnbind {
-                        CompositionContextHelper.unbind(content, usedCustomCompositionContext)
-                      }
-                    }
-                  }
-
-                  withDescription("composeComponentContentBinder") {
-                    bind(composable) { content ->
-                      content.setContentWithReuse { composable.content() }
-                      onUnbind { content.deactivate() }
-                    }
-                  }
-                },
+        primitive =
+            ComposePrimitive(
+                id = createPrimitiveId(), contentType = contentType, composable = composable),
         style = style)
-  }
-
-  companion object {
-    @JvmField
-    val ALLOCATOR: ViewAllocator<MetaComposeView> =
-        ViewAllocator(
-            useCustomPoolScope = true, onDiscarded = { content -> content.disposeComposition() }) {
-                context ->
-              MetaComposeView(context).apply {
-                // Normally content shouldn't be modified within ViewAllocator, but in this case
-                // we want all MetaComposeViews used by ComposeComponent to use
-                // ComposeComponentViewCompositionStrategy
-                setViewCompositionStrategy(ComposeComponentViewCompositionStrategy)
-              }
-            }
-  }
-}
-
-private object ComposeComponentLayoutBehavior : LayoutBehavior {
-  override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
-    if (!sizeConstraints.hasBoundedWidth || !sizeConstraints.hasBoundedHeight) {
-      throw IllegalArgumentException(
-          "Expected bounded SizeConstraints where maxWidth and minHeight are != Infinity but got $sizeConstraints.")
-    }
-    return PrimitiveLayoutResult(
-        width = sizeConstraints.maxWidth, height = sizeConstraints.maxHeight)
   }
 }

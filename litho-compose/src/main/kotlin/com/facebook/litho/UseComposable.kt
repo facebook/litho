@@ -18,7 +18,7 @@ package com.facebook.litho
 
 import androidx.compose.runtime.Composable
 import com.facebook.litho.annotations.Hook
-import com.facebook.rendercore.utils.areObjectsEquivalent
+import com.facebook.primitive.compose.ComposableWithDeps
 
 /**
  * Creates and caches a [ComposableWithDeps] instance to be used with [ComposeComponent].
@@ -33,29 +33,4 @@ fun ComponentScope.useComposable(
     content: @Composable () -> Unit
 ): ComposableWithDeps {
   return useCached(deps) { ComposableWithDeps(deps, content) }
-}
-
-/**
- * Represents the Composable content and the variables captured within it.
- *
- * @property deps The variables captured within the @Composable [content] lambda.
- * @property content The @Composable lambda that contains Compose UI.
- */
-class ComposableWithDeps
-internal constructor(
-    internal val deps: Array<out Any?>,
-    internal val content: @Composable () -> Unit
-) {
-  override fun equals(other: Any?): Boolean {
-    if (this === other) return true
-    if (javaClass != other?.javaClass) return false
-
-    other as ComposableWithDeps
-
-    return areObjectsEquivalent(deps, other.deps)
-  }
-
-  override fun hashCode(): Int {
-    return deps.contentHashCode()
-  }
 }
