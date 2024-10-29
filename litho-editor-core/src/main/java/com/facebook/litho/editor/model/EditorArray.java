@@ -16,11 +16,13 @@
 
 package com.facebook.litho.editor.model;
 
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nullable;
 
 /** Wraps over a List to make it an EditorValue */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public final class EditorArray extends EditorValue {
 
   public final List<EditorValue> value;
