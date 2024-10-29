@@ -17,6 +17,7 @@
 package com.facebook.litho.specmodels.model.testing;
 
 import androidx.annotation.VisibleForTesting;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.BuilderMethodModel;
@@ -55,6 +56,7 @@ import javax.annotation.Nullable;
 /**
  * Model that is an abstract representation of a {@link com.facebook.litho.annotations.TestSpec}.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class TestSpecModel implements SpecModel, HasEnclosedSpecModel {
   private final SpecModel mSpecModel;
   private final TestSpecGenerator mTestSpecGenerator;
@@ -136,6 +138,7 @@ public class TestSpecModel implements SpecModel, HasEnclosedSpecModel {
 
   @Override
   @Nullable
+  // NULLSAFE_FIXME[Inconsistent Subclass Return Annotation]
   public SpecMethodModel<EventMethod, Void> getWorkingRangeRegisterMethod() {
     return mSpecModel.getWorkingRangeRegisterMethod();
   }
