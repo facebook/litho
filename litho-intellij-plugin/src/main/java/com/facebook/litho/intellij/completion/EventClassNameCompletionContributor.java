@@ -18,6 +18,7 @@ package com.facebook.litho.intellij.completion;
 
 import static com.facebook.litho.intellij.completion.CompletionUtils.METHOD_ANNOTATION_PARAMETER;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.OnTrigger;
 import com.facebook.litho.intellij.LithoPluginUtils;
@@ -46,6 +47,7 @@ import java.util.Optional;
 import java.util.Set;
 import org.jetbrains.annotations.Nullable;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class EventClassNameCompletionContributor extends CompletionContributor {
   private static final Set<String> ALLOWED_ANNOTATIONS = new HashSet<>();
 
