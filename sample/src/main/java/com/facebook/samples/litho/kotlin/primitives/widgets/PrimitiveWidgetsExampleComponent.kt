@@ -32,6 +32,7 @@ import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.view.background
 import com.facebook.litho.view.backgroundColor
 import com.facebook.litho.widget.ExperimentalImage
+import com.facebook.litho.widget.ExperimentalProgress
 import com.facebook.rendercore.dp
 import com.facebook.rendercore.drawableRes
 import com.facebook.samples.litho.R.drawable.ic_launcher
@@ -59,7 +60,7 @@ class PrimitiveWidgetsExampleComponent : KComponent() {
           ExperimentalImage(
               drawable = drawableRes(ic_launcher), style = Style.width(100.dp).height(100.dp)))
       child(Text("Progress"))
-      child(Progress(style = Style.width(100.dp).height(100.dp)))
+      child(ExperimentalProgress(style = Style.width(100.dp).height(100.dp)))
       child(Text("Horizontal Scroll"))
       child(HorizontalScroll { Row { getComponents(this) } })
       child(Text("Vertical Scroll"))

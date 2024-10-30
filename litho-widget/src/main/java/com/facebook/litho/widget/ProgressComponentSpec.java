@@ -51,7 +51,7 @@ import javax.annotation.Nullable;
  * @prop color Tint color for the drawable.
  */
 @MountSpec(isPureRender = true)
-class ProgressSpec {
+class ProgressComponentSpec {
 
   static final int DEFAULT_SIZE = 50;
 
@@ -65,7 +65,7 @@ class ProgressSpec {
   @OnPrepare
   static void onPrepare(
       ComponentContext c,
-      @Prop(optional = true, resType = ResType.DRAWABLE) Drawable indeterminateDrawable,
+      @Prop(optional = true, resType = ResType.DRAWABLE) @Nullable Drawable indeterminateDrawable,
       Output<Drawable> resolvedIndeterminateDrawable) {
     if (indeterminateDrawable != null) {
       resolvedIndeterminateDrawable.set(indeterminateDrawable);

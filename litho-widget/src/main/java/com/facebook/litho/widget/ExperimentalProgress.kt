@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-package com.facebook.samples.litho.kotlin.primitives.widgets
+package com.facebook.litho.widget
 
 import android.graphics.Color
-import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
+import androidx.core.graphics.BlendModeColorFilterCompat
+import androidx.core.graphics.BlendModeCompat
 import com.facebook.litho.LithoPrimitive
 import com.facebook.litho.PrimitiveComponent
 import com.facebook.litho.PrimitiveComponentScope
 import com.facebook.litho.Style
-import com.facebook.litho.widget.ProgressView
+import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.rendercore.Size
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.primitives.LayoutBehavior
@@ -38,13 +39,13 @@ import com.facebook.rendercore.utils.withEqualDimensions
  * @param indeterminateDrawable Drawable to be shown to show progress.
  * @param color Tint color for the drawable.
  */
-class Progress(
+@ExperimentalLithoApi
+class ExperimentalProgress(
     private val color: Int = Color.TRANSPARENT,
     private val indeterminateDrawable: Drawable? = null,
     private val style: Style? = null
 ) : PrimitiveComponent() {
 
-  @Suppress("DEPRECATION")
   override fun PrimitiveComponentScope.render(): LithoPrimitive {
     return LithoPrimitive(
         layoutBehavior = ProgressLayoutBehavior,
@@ -52,12 +53,13 @@ class Progress(
             MountBehavior(ViewAllocator { context -> ProgressView(context) }) {
               bind(indeterminateDrawable, color) { content ->
                 val defaultIndeterminateDrawable = content.indeterminateDrawable
+
                 indeterminateDrawable?.let { content.indeterminateDrawable = indeterminateDrawable }
                 content.indeterminateDrawable?.let {
                   if (color != Color.TRANSPARENT) {
-                    content.indeterminateDrawable
-                        .mutate()
-                        .setColorFilter(color, PorterDuff.Mode.MULTIPLY)
+                    content.indeterminateDrawable.mutate().colorFilter =
+                        BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+                            color, BlendModeCompat.MODULATE)
                   }
                 }
                 onUnbind {
@@ -65,6 +67,7 @@ class Progress(
                   if (color != Color.TRANSPARENT && content.indeterminateDrawable != null) {
                     content.indeterminateDrawable.mutate().clearColorFilter()
                   }
+
                   content.indeterminateDrawable = defaultIndeterminateDrawable
                 }
               }
