@@ -71,9 +71,9 @@ class ComponentPoolingTest {
     // Ensure onCreateMountContent was called an additional time.
     assertThat(component.onCreateMountContentCount).isEqualTo(POOL_SIZE + 1)
 
-    // Release all acquired content
+    // Recycle all acquired content
     for (`object` in objects) {
-      MountContentPools.release(context, component, `object`)
+      MountContentPools.recycle(context, component, `object`)
     }
 
     // Reacquire POOL_SIZE contents

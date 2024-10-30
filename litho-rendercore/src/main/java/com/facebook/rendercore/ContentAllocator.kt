@@ -78,7 +78,7 @@ interface ContentAllocator<Content : Any> {
    * the releasing logic.
    */
   fun recycleContent(context: Context, content: Any, poolScope: PoolScope = PoolScope.None) {
-    MountContentPools.release(context, this, content, poolScope)
+    MountContentPools.recycle(context, this, content, poolScope)
   }
 
   /**

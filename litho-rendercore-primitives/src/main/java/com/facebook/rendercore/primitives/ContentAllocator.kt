@@ -142,7 +142,7 @@ fun <Content : Any> ContentAllocator<Content>.withContentType(
     }
 
     override fun recycleContent(context: Context, content: Any, poolScope: PoolScope) {
-      MountContentPools.release(
+      MountContentPools.recycle(
           context, this, content, if (useCustomPoolScope) poolScope else PoolScope.None)
     }
   }
