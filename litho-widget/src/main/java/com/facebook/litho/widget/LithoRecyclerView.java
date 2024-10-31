@@ -48,7 +48,7 @@ public class LithoRecyclerView extends RecyclerView implements HasPostDispatchDr
 
   public LithoRecyclerView(Context context, @Nullable AttributeSet attrs, int defStyle) {
     super(context, attrs, defStyle);
-    setTag(com.facebook.primitive.compose.R.id.rc_pooling_container, true);
+    setTag(com.facebook.rendercore.R.id.rc_pooling_container, true);
   }
 
   /**
