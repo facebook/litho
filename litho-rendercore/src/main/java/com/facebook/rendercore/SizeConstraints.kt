@@ -272,6 +272,7 @@ value class SizeConstraints internal constructor(val encodedValue: Long) {
 
     /** Creates [SizeConstraints] from the provided width and height [View.MeasureSpec]s. */
     @JvmStatic
+    @JvmName("fromMeasureSpecs")
     fun fromMeasureSpecs(widthSpec: Int, heightSpec: Int): SizeConstraints {
       return SizeConstraints(encodeMeasureSpecs(widthSpec = widthSpec, heightSpec = heightSpec))
     }
