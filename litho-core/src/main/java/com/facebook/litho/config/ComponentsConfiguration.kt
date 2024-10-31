@@ -146,11 +146,6 @@ internal constructor(
      */
     @JvmField val isHostViewAttributesCleanUpEnabled: Boolean = false,
     /**
-     * To mitigate ANR issue with RecyclerBinder, using a single runnable to release tree out of
-     * working range.
-     */
-    @JvmField val enableSingleRunnableToReleaseTree: Boolean = false,
-    /**
      * This flag is used to enable a fix for the issue where a cached NestedTree getting lost of
      * state containers
      */

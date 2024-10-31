@@ -3535,23 +3535,14 @@ public class RecyclerBinder
     if (ThreadUtils.isMainThread()) {
       maybeAcquireStateAndReleaseTree(holder);
     } else {
-      if (ComponentsConfiguration.defaultInstance.enableSingleRunnableToReleaseTree) {
-        synchronized (mReleaseTreeRunnableLock) {
-          mComponentTreeHoldersToRelease.addLast(holder);
-          if (!mHasPendingReleaseTreeRunnable) {
-            mMainThreadHandler.post(mReleaseTreeRunnable);
-            mHasPendingReleaseTreeRunnable = true;
-          }
+      synchronized (mReleaseTreeRunnableLock) {
+        mComponentTreeHoldersToRelease.addLast(holder);
+        if (!mHasPendingReleaseTreeRunnable) {
+          mMainThreadHandler.post(mReleaseTreeRunnable);
+          mHasPendingReleaseTreeRunnable = true;
         }
-      } else {
-        mMainThreadHandler.post(getMaybeAcquireStateAndReleaseTreeRunnable(holder));
       }
     }
-  }
-
-  private static Runnable getMaybeAcquireStateAndReleaseTreeRunnable(
-      final ComponentTreeHolder holder) {
-    return () -> maybeAcquireStateAndReleaseTree(holder);
   }
 
   @UiThread
