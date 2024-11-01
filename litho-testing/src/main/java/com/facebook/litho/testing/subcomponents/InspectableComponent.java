@@ -252,7 +252,15 @@ public class InspectableComponent {
    */
   public boolean getFocusable() {
     final DebugLayoutNode layout = mComponent.getLayoutNode();
-    return layout == null ? false : layout.getFocusable();
+    return layout != null && layout.getFocusable();
+  }
+
+  /**
+   * @return The boolean value of the screenReaderFocusable property on this debug component.
+   */
+  public boolean getScreenReaderFocusable() {
+    final DebugLayoutNode layout = mComponent.getLayoutNode();
+    return layout != null && layout.getScreenReaderFocusable();
   }
 
   /**
