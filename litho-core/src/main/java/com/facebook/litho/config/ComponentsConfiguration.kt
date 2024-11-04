@@ -298,6 +298,9 @@ internal constructor(
     /** This flag is to enable usage of Primitive Vertical Scroll Component */
     @JvmField var usePrimitiveVerticalScroll: Boolean = false
 
+    /** This flag is to enable usage of Primitive Text */
+    @JvmField var usePrimitiveText: Boolean = false
+
     /**
      * This method is only used so that Java clients can have a builder like approach to override a
      * configuration.
