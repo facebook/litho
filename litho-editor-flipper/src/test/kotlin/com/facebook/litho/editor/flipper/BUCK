@@ -31,7 +31,6 @@ litho_robolectric4_test(
     name = "flipper",
     srcs = glob(["**/*.kt"]),
     contacts = ["oncall+components_for_android@xmail.facebook.com"],
-    fork_mode = "per_test",
     jni_deps = LITHO_JNI_DEPS,
     language = "KOTLIN",
     plugins = [

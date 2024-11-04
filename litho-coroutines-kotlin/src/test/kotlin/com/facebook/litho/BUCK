@@ -31,7 +31,6 @@ oncall("components_for_android")
 litho_robolectric4_test(
     name = "litho-coroutines-kotlin",
     srcs = glob(["**/*.kt"]),
-    fork_mode = "per_test",
     jni_deps = LITHO_JNI_DEPS,
     language = "KOTLIN",
     provided_deps = [
