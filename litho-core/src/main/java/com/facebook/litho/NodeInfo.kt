@@ -123,6 +123,7 @@ class NodeInfo : Equivalence<NodeInfo> {
   private var _sendAccessibilityEventUncheckedHandler:
       EventHandler<SendAccessibilityEventUncheckedEvent>? =
       null
+  private var _minDurationBetweenContentChangesMillis: Long? = null
 
   var visibility: Visibility? = null
     internal set(value) {
@@ -404,6 +405,13 @@ class NodeInfo : Equivalence<NodeInfo> {
       _sendAccessibilityEventUncheckedHandler = sendAccessibilityEventUncheckedHandler
     }
 
+  var minDurationBetweenContentChangesMillis: Long?
+    get() = _minDurationBetweenContentChangesMillis
+    set(duration) {
+      flags = flags or PFLAG_MIN_DURATION_BETWEEN_CHANGES_IS_SET
+      _minDurationBetweenContentChangesMillis = duration
+    }
+
   fun needsAccessibilityDelegate(): Boolean =
       _onInitializeAccessibilityEventHandler != null ||
           _onInitializeAccessibilityNodeInfoHandler != null ||
@@ -668,6 +676,12 @@ class NodeInfo : Equivalence<NodeInfo> {
     }
 
     if (!equals(this.focusOrder, other.focusOrder)) {
+      return false
+    }
+
+    if (!equals(
+        this.minDurationBetweenContentChangesMillis,
+        other.minDurationBetweenContentChangesMillis)) {
       return false
     }
 
@@ -1012,5 +1026,9 @@ class NodeInfo : Equivalence<NodeInfo> {
     private const val PFLAG_VISIBILITY_IS_SET = 1L shl 34
 
     private const val PFLAG_FOCUS_ORDER_IS_SET = 1L shl 35
+
+    // When this flag is set, setMinDurationBetweenContentChangesMillis was explicitly set on this
+    // node.
+    private const val PFLAG_MIN_DURATION_BETWEEN_CHANGES_IS_SET = 1L shl 36
   }
 }

@@ -142,6 +142,11 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
           mNodeInfo.getAccessibilityHeadingState() == NodeInfo.ACCESSIBILITY_HEADING_SET_TRUE);
     }
 
+    if (mNodeInfo != null && mNodeInfo.getMinDurationBetweenContentChangesMillis() != null) {
+      node.setMinDurationBetweenContentChangesMillis(
+          mNodeInfo.getMinDurationBetweenContentChangesMillis());
+    }
+
     if (mNodeInfo != null && mNodeInfo.getFocusOrder() != null && mountItem != null) {
       final ComponentContext scopedContext = getComponentContext(mountItem.getRenderTreeNode());
       final FocusOrderModel focusOrder = mNodeInfo.getFocusOrder();

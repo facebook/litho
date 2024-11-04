@@ -355,6 +355,10 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
   val screenReaderFocusable: Boolean
     get() = _nodeInfo?.screenReaderFocusState == NodeInfo.SCREEN_READER_FOCUS_SET_TRUE
 
+  fun setMinDurationBetweenContentChangesMillis(duration: Long) {
+    getOrCreateNodeInfo().minDurationBetweenContentChangesMillis = duration
+  }
+
   fun clickable(isClickable: Boolean) {
     getOrCreateNodeInfo().setClickable(isClickable)
   }

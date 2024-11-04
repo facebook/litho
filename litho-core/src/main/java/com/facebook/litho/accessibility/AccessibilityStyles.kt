@@ -60,6 +60,7 @@ internal enum class AccessibilityField : StyleItemField {
   ON_PERFORM_ACTION_FOR_VIRTUAL_VIEW,
   ON_VIRTUAL_VIEW_KEYBOARD_FOCUS_CHANGED,
   SCREEN_READER_FOCUSABLE,
+  MIN_DURATION_BETWEEN_CONTENT_CHANGES,
 }
 
 @PublishedApi
@@ -111,6 +112,8 @@ internal data class AccessibilityStyleItem(
               eventHandler(value as (VirtualViewKeyboardFocusChangedEvent) -> Unit))
       AccessibilityField.SCREEN_READER_FOCUSABLE ->
           commonProps.screenReaderFocusable(value as Boolean)
+      AccessibilityField.MIN_DURATION_BETWEEN_CONTENT_CHANGES ->
+          commonProps.setMinDurationBetweenContentChangesMillis(value as Long)
     }
   }
 }
@@ -311,6 +314,16 @@ inline fun Style.onInitializeAccessibilityNodeInfo(
  */
 inline fun Style.screenReaderFocusable(isFocusable: Boolean): Style =
     this + AccessibilityStyleItem(AccessibilityField.SCREEN_READER_FOCUSABLE, isFocusable)
+
+/**
+ * Sets the minimum time duration between two content change events, which is used in throttling
+ * content change events in accessibility services.
+ *
+ * See
+ * [androidx.core.view.accessibility.AccessibilityNodeInfoCompat.setMinDurationBetweenContentChangesMillis].
+ */
+inline fun Style.minDurationBetweenContentChangesMillis(duration: Long): Style =
+    this + AccessibilityStyleItem(AccessibilityField.MIN_DURATION_BETWEEN_CONTENT_CHANGES, duration)
 
 /**
  * Enum values for [importantForAccessibility].
