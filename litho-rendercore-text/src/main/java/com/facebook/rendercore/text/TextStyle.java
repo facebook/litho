@@ -219,8 +219,56 @@ public class TextStyle implements Cloneable {
     this.verticalGravity = verticalGravity;
   }
 
+  public void setMaxEms(int maxEms) {
+    this.maxEms = maxEms;
+  }
+
+  public void setMinEms(int minEms) {
+    this.minEms = minEms;
+  }
+
   public void setMaxLines(int maxNumberOfLines) {
     this.maxLines = maxNumberOfLines;
+  }
+
+  public void setMinLines(int minNumberOfLines) {
+    this.minLines = minNumberOfLines;
+  }
+
+  public void setMinTextWidth(int minTextWidth) {
+    this.minTextWidth = minTextWidth;
+  }
+
+  public void setMaxTextWidth(int maxTextWidth) {
+    this.maxTextWidth = maxTextWidth;
+  }
+
+  public void setLinkColor(int linkColor) {
+    this.linkColor = linkColor;
+  }
+
+  public void setHighlightStartOffset(int highlightStartOffset) {
+    this.highlightStartOffset = highlightStartOffset;
+  }
+
+  public void setHighlightEndOffset(int highlightEndOffset) {
+    this.highlightEndOffset = highlightEndOffset;
+  }
+
+  public void setHyphenationFrequency(int hyphenationFrequency) {
+    this.hyphenationFrequency = hyphenationFrequency;
+  }
+
+  public void setClipToBounds(boolean clipToBounds) {
+    this.clipToBounds = clipToBounds;
+  }
+
+  public void setBreakStrategy(int breakStrategy) {
+    this.breakStrategy = breakStrategy;
+  }
+
+  public void setJustificationMode(int justificationMode) {
+    this.justificationMode = justificationMode;
   }
 
   public void setHighlightColor(int color) {
