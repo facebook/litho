@@ -35,7 +35,6 @@ import javax.annotation.Nullable;
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class ComponentActivityTestRule extends LithoActivityTestRule<ComponentActivity> {
 
-  // NULLSAFE_FIXME[Field Not Initialized]
   @Nullable private volatile ComponentContext mComponentContext;
 
   public ComponentActivityTestRule() {
@@ -52,7 +51,6 @@ public class ComponentActivityTestRule extends LithoActivityTestRule<ComponentAc
   @Override
   protected synchronized void afterActivityFinished() {
     super.afterActivityFinished();
-    // NULLSAFE_FIXME[Field Not Nullable]
     mComponentContext = null;
   }
 
