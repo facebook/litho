@@ -436,6 +436,7 @@ class NodeInfo : Equivalence<NodeInfo> {
           _accessibilityRoleDescription != null ||
           _focusOrder != null ||
           _labeledBy != null ||
+          _minDurationBetweenContentChangesMillis != null ||
           screenReaderFocusState != SCREEN_READER_FOCUS_UNSET
 
   fun setFocusable(isFocusable: Boolean) {
@@ -833,6 +834,9 @@ class NodeInfo : Equivalence<NodeInfo> {
     }
     if (flags and PFLAG_LABELED_BY_IS_SET != 0L) {
       target.labeledBy = labeledBy
+    }
+    if (flags and PFLAG_MIN_DURATION_BETWEEN_CHANGES_IS_SET != 0L) {
+      target.minDurationBetweenContentChangesMillis = minDurationBetweenContentChangesMillis
     }
   }
 
