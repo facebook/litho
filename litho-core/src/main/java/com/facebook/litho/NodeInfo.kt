@@ -124,6 +124,7 @@ class NodeInfo : Equivalence<NodeInfo> {
       EventHandler<SendAccessibilityEventUncheckedEvent>? =
       null
   private var _minDurationBetweenContentChangesMillis: Long? = null
+  private var _labeledBy: Any? = null
 
   var visibility: Visibility? = null
     internal set(value) {
@@ -412,6 +413,13 @@ class NodeInfo : Equivalence<NodeInfo> {
       _minDurationBetweenContentChangesMillis = duration
     }
 
+  var labeledBy: Any?
+    get() = _labeledBy
+    set(viewTag) {
+      flags = flags or PFLAG_LABELED_BY_IS_SET
+      _labeledBy = viewTag
+    }
+
   fun needsAccessibilityDelegate(): Boolean =
       _onInitializeAccessibilityEventHandler != null ||
           _onInitializeAccessibilityNodeInfoHandler != null ||
@@ -427,6 +435,7 @@ class NodeInfo : Equivalence<NodeInfo> {
           _accessibilityRole != null ||
           _accessibilityRoleDescription != null ||
           _focusOrder != null ||
+          _labeledBy != null ||
           screenReaderFocusState != SCREEN_READER_FOCUS_UNSET
 
   fun setFocusable(isFocusable: Boolean) {
@@ -822,6 +831,9 @@ class NodeInfo : Equivalence<NodeInfo> {
     if (flags and PFLAG_VISIBILITY_IS_SET != 0L) {
       target.visibility = visibility
     }
+    if (flags and PFLAG_LABELED_BY_IS_SET != 0L) {
+      target.labeledBy = labeledBy
+    }
   }
 
   fun copyInto(target: ViewAttributes) {
@@ -1030,5 +1042,9 @@ class NodeInfo : Equivalence<NodeInfo> {
     // When this flag is set, setMinDurationBetweenContentChangesMillis was explicitly set on this
     // node.
     private const val PFLAG_MIN_DURATION_BETWEEN_CHANGES_IS_SET = 1L shl 36
+
+    // When this flag is set, setLabeledBy was explicitly set on this
+    // node.
+    private const val PFLAG_LABELED_BY_IS_SET = 1L shl 36
   }
 }

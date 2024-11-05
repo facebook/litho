@@ -359,6 +359,10 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
     getOrCreateNodeInfo().minDurationBetweenContentChangesMillis = duration
   }
 
+  fun setLabeledBy(viewTag: Any?) {
+    getOrCreateNodeInfo().labeledBy = viewTag
+  }
+
   fun clickable(isClickable: Boolean) {
     getOrCreateNodeInfo().setClickable(isClickable)
   }

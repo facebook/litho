@@ -61,6 +61,7 @@ internal enum class AccessibilityField : StyleItemField {
   ON_VIRTUAL_VIEW_KEYBOARD_FOCUS_CHANGED,
   SCREEN_READER_FOCUSABLE,
   MIN_DURATION_BETWEEN_CONTENT_CHANGES,
+  LABELED_BY,
 }
 
 @PublishedApi
@@ -114,6 +115,7 @@ internal data class AccessibilityStyleItem(
           commonProps.screenReaderFocusable(value as Boolean)
       AccessibilityField.MIN_DURATION_BETWEEN_CONTENT_CHANGES ->
           commonProps.setMinDurationBetweenContentChangesMillis(value as Long)
+      AccessibilityField.LABELED_BY -> commonProps.setLabeledBy(value)
     }
   }
 }
@@ -324,6 +326,17 @@ inline fun Style.screenReaderFocusable(isFocusable: Boolean): Style =
  */
 inline fun Style.minDurationBetweenContentChangesMillis(duration: Long): Style =
     this + AccessibilityStyleItem(AccessibilityField.MIN_DURATION_BETWEEN_CONTENT_CHANGES, duration)
+
+/**
+ * Sets the view which serves as the label of the view represented by this info for accessibility
+ * purposes.
+ *
+ * @param viewTag The view tag of the view which serves as the label of the view represented by this
+ *
+ * See [android.view.accessibility.AccessibilityNodeInfo.setLabeledBy].
+ */
+inline fun Style.labeledBy(viewTag: Any): Style =
+    this + AccessibilityStyleItem(AccessibilityField.LABELED_BY, viewTag)
 
 /**
  * Enum values for [importantForAccessibility].
