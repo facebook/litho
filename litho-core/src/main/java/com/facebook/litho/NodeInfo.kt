@@ -1045,6 +1045,6 @@ class NodeInfo : Equivalence<NodeInfo> {
 
     // When this flag is set, setLabeledBy was explicitly set on this
     // node.
-    private const val PFLAG_LABELED_BY_IS_SET = 1L shl 36
+    private const val PFLAG_LABELED_BY_IS_SET = 1L shl 37
   }
 }
