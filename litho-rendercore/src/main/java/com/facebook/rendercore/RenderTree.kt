@@ -127,6 +127,7 @@ class RenderTree(
         append("RenderTree details:\n")
         append(String.format(l, "Full child list (size = %d):\n", renderTree.flatList.size))
         for (node in renderTree.flatList) {
+          append("  ".repeat(node.getHierarchyDepth())) // indent
           append(String.format(l, "%s\n", node.generateDebugString(renderTree)))
         }
       }

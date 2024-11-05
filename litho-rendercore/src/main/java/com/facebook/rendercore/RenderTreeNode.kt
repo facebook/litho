@@ -81,6 +81,16 @@ class RenderTreeNode(
         parentId)
   }
 
+  fun getHierarchyDepth(): Int {
+    var depth = 0
+    var node: RenderTreeNode? = parent
+    while (node != null) {
+      depth++
+      node = node.parent
+    }
+    return depth
+  }
+
   companion object {
     private const val DEFAULT_SIZE = 4
   }
