@@ -99,7 +99,10 @@ class DebugLayoutNodeEditor(private val node: LithoNode) {
   fun setFlexBasis(value: YogaValue) {
     when (value.unit) {
       YogaUnit.UNDEFINED,
-      YogaUnit.AUTO -> {} // no ops for auto
+      YogaUnit.MAX_CONTENT,
+      YogaUnit.FIT_CONTENT,
+      YogaUnit.STRETCH,
+      YogaUnit.AUTO -> {} // no ops
       YogaUnit.PERCENT -> node.debugLayoutEditor?.flexBasisPercent(value.value)
       YogaUnit.POINT -> node.debugLayoutEditor?.flexBasisPx(value.value.toInt())
     }
@@ -108,7 +111,10 @@ class DebugLayoutNodeEditor(private val node: LithoNode) {
   fun setWidth(value: YogaValue) {
     when (value.unit) {
       YogaUnit.UNDEFINED,
-      YogaUnit.AUTO -> {} // no ops for auto
+      YogaUnit.MAX_CONTENT,
+      YogaUnit.FIT_CONTENT,
+      YogaUnit.STRETCH,
+      YogaUnit.AUTO -> {} // no ops
       YogaUnit.PERCENT -> node.debugLayoutEditor?.widthPercent(value.value)
       YogaUnit.POINT -> node.debugLayoutEditor?.widthPx(value.value.toInt())
     }
@@ -117,6 +123,9 @@ class DebugLayoutNodeEditor(private val node: LithoNode) {
   fun setMinWidth(value: YogaValue) {
     when (value.unit) {
       YogaUnit.UNDEFINED,
+      YogaUnit.MAX_CONTENT,
+      YogaUnit.FIT_CONTENT,
+      YogaUnit.STRETCH,
       YogaUnit.AUTO -> node.debugLayoutEditor?.minWidthPx(Int.MIN_VALUE)
       YogaUnit.PERCENT -> node.debugLayoutEditor?.minWidthPercent(value.value)
       YogaUnit.POINT -> node.debugLayoutEditor?.minWidthPx(value.value.toInt())
@@ -126,6 +135,9 @@ class DebugLayoutNodeEditor(private val node: LithoNode) {
   fun setMaxWidth(value: YogaValue) {
     when (value.unit) {
       YogaUnit.UNDEFINED,
+      YogaUnit.MAX_CONTENT,
+      YogaUnit.FIT_CONTENT,
+      YogaUnit.STRETCH,
       YogaUnit.AUTO -> node.debugLayoutEditor?.maxWidthPx(Int.MAX_VALUE)
       YogaUnit.PERCENT -> node.debugLayoutEditor?.maxWidthPercent(value.value)
       YogaUnit.POINT -> node.debugLayoutEditor?.maxWidthPx(value.value.toInt())
@@ -135,7 +147,10 @@ class DebugLayoutNodeEditor(private val node: LithoNode) {
   fun setHeight(value: YogaValue) {
     when (value.unit) {
       YogaUnit.UNDEFINED,
-      YogaUnit.AUTO -> {} // no ops for auto
+      YogaUnit.MAX_CONTENT,
+      YogaUnit.FIT_CONTENT,
+      YogaUnit.STRETCH,
+      YogaUnit.AUTO -> {} // no ops
       YogaUnit.PERCENT -> node.debugLayoutEditor?.heightPercent(value.value)
       YogaUnit.POINT -> node.debugLayoutEditor?.heightPx(value.value.toInt())
     }
@@ -144,6 +159,9 @@ class DebugLayoutNodeEditor(private val node: LithoNode) {
   fun setMinHeight(value: YogaValue) {
     when (value.unit) {
       YogaUnit.UNDEFINED,
+      YogaUnit.MAX_CONTENT,
+      YogaUnit.FIT_CONTENT,
+      YogaUnit.STRETCH,
       YogaUnit.AUTO -> node.debugLayoutEditor?.minHeightPx(Int.MIN_VALUE)
       YogaUnit.PERCENT -> node.debugLayoutEditor?.minHeightPercent(value.value)
       YogaUnit.POINT -> node.debugLayoutEditor?.minHeightPx(value.value.toInt())
@@ -153,6 +171,9 @@ class DebugLayoutNodeEditor(private val node: LithoNode) {
   fun setMaxHeight(value: YogaValue) {
     when (value.unit) {
       YogaUnit.UNDEFINED,
+      YogaUnit.MAX_CONTENT,
+      YogaUnit.FIT_CONTENT,
+      YogaUnit.STRETCH,
       YogaUnit.AUTO -> node.debugLayoutEditor?.maxHeightPx(Int.MAX_VALUE)
       YogaUnit.PERCENT -> node.debugLayoutEditor?.maxHeightPercent(value.value)
       YogaUnit.POINT -> node.debugLayoutEditor?.maxHeightPx(value.value.toInt())
@@ -165,6 +186,9 @@ class DebugLayoutNodeEditor(private val node: LithoNode) {
 
   fun setMargin(edge: YogaEdge, value: YogaValue) {
     when (value.unit) {
+      YogaUnit.MAX_CONTENT,
+      YogaUnit.FIT_CONTENT,
+      YogaUnit.STRETCH,
       YogaUnit.UNDEFINED -> node.debugLayoutEditor?.marginPx(edge, 0)
       YogaUnit.AUTO -> node.debugLayoutEditor?.marginAuto(edge)
       YogaUnit.PERCENT -> node.debugLayoutEditor?.marginPercent(edge, value.value)
@@ -175,6 +199,9 @@ class DebugLayoutNodeEditor(private val node: LithoNode) {
   fun setPadding(edge: YogaEdge, value: YogaValue) {
     when (value.unit) {
       YogaUnit.UNDEFINED,
+      YogaUnit.MAX_CONTENT,
+      YogaUnit.FIT_CONTENT,
+      YogaUnit.STRETCH,
       YogaUnit.AUTO -> node.debugLayoutEditor?.paddingPx(edge, 0)
       YogaUnit.PERCENT -> node.debugLayoutEditor?.paddingPercent(edge, value.value)
       YogaUnit.POINT -> node.debugLayoutEditor?.paddingPx(edge, value.value.toInt())
@@ -184,6 +211,9 @@ class DebugLayoutNodeEditor(private val node: LithoNode) {
   fun setPosition(edge: YogaEdge, value: YogaValue) {
     when (value.unit) {
       YogaUnit.UNDEFINED,
+      YogaUnit.MAX_CONTENT,
+      YogaUnit.FIT_CONTENT,
+      YogaUnit.STRETCH,
       YogaUnit.AUTO -> node.debugLayoutEditor?.positionPercent(edge, YogaConstants.UNDEFINED)
       YogaUnit.PERCENT -> node.debugLayoutEditor?.positionPercent(edge, value.value)
       YogaUnit.POINT -> node.debugLayoutEditor?.positionPx(edge, value.value.toInt())
