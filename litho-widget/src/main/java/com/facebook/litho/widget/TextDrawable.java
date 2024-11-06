@@ -46,6 +46,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.fbui.textlayoutbuilder.util.LayoutMeasureUtil;
+import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.TextContent;
 import com.facebook.litho.Touchable;
 import com.facebook.litho.utils.VersionedAndroidApis;
@@ -138,6 +139,10 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
    */
   @RequiresApi(Build.VERSION_CODES.Q)
   private void maybeDrawOutline(Canvas canvas) {
+    boolean isTracing = ComponentsSystrace.isTracing();
+    if (isTracing) {
+      ComponentsSystrace.beginSection("TextDrawable.maybeDrawOutline");
+    }
     if (mOutlineWidth > 0f) {
       Paint p = mLayout.getPaint();
       int savedColor = p.getColor();
@@ -154,6 +159,10 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       p.setStyle(savedStyle);
       p.setColor(savedColor);
       p.setStrokeJoin(savedJoin);
+    }
+
+    if (isTracing) {
+      ComponentsSystrace.endSection();
     }
   }
 
