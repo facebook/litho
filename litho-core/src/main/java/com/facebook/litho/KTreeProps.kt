@@ -81,12 +81,29 @@ inline fun TreePropProvider(
  * case it'll return null itself.
  */
 @Suppress("FunctionName")
+@Deprecated(
+    "Please, use the new [NullableTreePropProvider] with [TreePropValuePair] args. You can use " +
+        "[legacyTreePropOf] for interoperability with old API")
+@JvmName("NullableLegacyTreePropProvider") // avoid JVM declaration clash with overload
 inline fun NullableTreePropProvider(
     vararg props: ClassValuePair<*>,
     crossinline component: () -> Component?
 ): KComponent? {
   val resolvedComponent = component() ?: return null
   return TreePropProviderImpl(classProps = props, child = resolvedComponent)
+}
+
+/**
+ * Same as [TreePropProvider], but accepts a lambda that may return a nullable component, in which
+ * case it'll return null itself.
+ */
+@Suppress("FunctionName")
+inline fun NullableTreePropProvider(
+    vararg props: TreePropValuePair<*>,
+    crossinline component: () -> Component?
+): KComponent? {
+  val resolvedComponent = component() ?: return null
+  return TreePropProviderImpl(treeProps = props, child = resolvedComponent)
 }
 
 /** See [TreePropProvider]. */
