@@ -16,6 +16,8 @@
 
 package com.facebook.litho.accessibility
 
+import android.view.View
+import androidx.annotation.IntDef
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.litho.AccessibilityRole.AccessibilityRoleType
 import com.facebook.litho.CommonProps
@@ -63,6 +65,7 @@ internal enum class AccessibilityField : StyleItemField {
   MIN_DURATION_BETWEEN_CONTENT_CHANGES,
   LABELED_BY,
   PANE_TITLE,
+  LIVE_REGION,
 }
 
 @PublishedApi
@@ -118,6 +121,7 @@ internal data class AccessibilityStyleItem(
           commonProps.setMinDurationBetweenContentChangesMillis(value as Long)
       AccessibilityField.LABELED_BY -> commonProps.setLabeledBy(value)
       AccessibilityField.PANE_TITLE -> commonProps.setAccessibilityPaneTitle(value as CharSequence)
+      AccessibilityField.LIVE_REGION -> commonProps.setLiveRegion(value as Int)
     }
   }
 }
@@ -353,6 +357,16 @@ inline fun Style.paneTitle(accessibilityPaneTitle: CharSequence?): Style =
     this + AccessibilityStyleItem(AccessibilityField.PANE_TITLE, accessibilityPaneTitle)
 
 /**
+ * Sets the live region mode for this view. This indicates to accessibility services whether they
+ * should automatically notify the user about changes to the view's content description or text, or
+ * to the content descriptions or text of the view's children (where applicable).
+ *
+ * See [android.view.View.setAccessibilityLiveRegion].
+ */
+inline fun Style.liveRegion(@AccessibilityLiveRegion mode: Int): Style =
+    this + AccessibilityStyleItem(AccessibilityField.LIVE_REGION, mode)
+
+/**
  * Enum values for [importantForAccessibility].
  *
  * Note: if you are looking for YES_HIDE_DESCENDANTS, it has been deprecated: prefer to add an
@@ -371,3 +385,10 @@ enum class ImportantForAccessibility(val asInt: Int) {
   /** The view is not important for accessibility, nor are any of its descendant views. */
   NO_HIDE_DESCENDANTS(IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS),
 }
+
+@IntDef(
+    View.ACCESSIBILITY_LIVE_REGION_NONE,
+    View.ACCESSIBILITY_LIVE_REGION_POLITE,
+    View.ACCESSIBILITY_LIVE_REGION_ASSERTIVE)
+@Retention(AnnotationRetention.SOURCE)
+private annotation class AccessibilityLiveRegion

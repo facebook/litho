@@ -50,6 +50,7 @@ class ViewAttributes {
 
   var contentDescription: CharSequence? = null
   var accessibilityPaneTitle: CharSequence? = null
+  var liveRegionMode: Int? = null
   var tooltipText: String? = null
   var viewId: Int = View.NO_ID
     set(value) {
@@ -257,6 +258,7 @@ class ViewAttributes {
     if (clipChildren != other.clipChildren) return false
     if (!equals(contentDescription, other.contentDescription)) return false
     if (!equals(accessibilityPaneTitle, other.accessibilityPaneTitle)) return false
+    if (!equals(liveRegionMode, other.liveRegionMode)) return false
     if (!equals(tooltipText, other.tooltipText)) return false
     if (isEnabled != other.isEnabled) return false
     if (!isEquivalentTo(focusChangeHandler, other.focusChangeHandler)) return false
@@ -300,6 +302,7 @@ class ViewAttributes {
     result = 31 * result + disableDrawableOutputs.hashCode()
     result = 31 * result + (contentDescription?.hashCode() ?: 0)
     result = 31 * result + (accessibilityPaneTitle?.hashCode() ?: 0)
+    result = 31 * result + (liveRegionMode?.hashCode() ?: 0)
     result = 31 * result + (viewId.hashCode())
     result = 31 * result + (viewTag?.hashCode() ?: 0)
     result = 31 * result + (transitionName?.hashCode() ?: 0)
@@ -345,6 +348,7 @@ class ViewAttributes {
 
     contentDescription?.let { target.contentDescription = it }
     accessibilityPaneTitle?.let { target.accessibilityPaneTitle = it }
+    liveRegionMode?.let { target.liveRegionMode = it }
     tooltipText?.let { target.tooltipText = it }
     target.viewId = viewId
     viewTag?.let { target.viewTag = it }
@@ -445,6 +449,7 @@ class ViewAttributes {
       setClipChildren(content, attributes)
       setContentDescription(content, attributes.contentDescription)
       setPaneTitle(content, attributes.accessibilityPaneTitle)
+      setLiveRegion(content, attributes.liveRegionMode)
       setFocusable(content, attributes)
       setClickable(content, attributes)
       setEnabled(content, attributes)
@@ -551,6 +556,9 @@ class ViewAttributes {
       }
       if (!attributes.accessibilityPaneTitle.isNullOrEmpty()) {
         unsetPaneTitle(content)
+      }
+      if (attributes.liveRegionMode != null) {
+        unsetLiveRegion(content)
       }
       if (!attributes.tooltipText.isNullOrEmpty()) {
         unsetTooltipText(content)
@@ -907,6 +915,17 @@ class ViewAttributes {
 
     fun unsetPaneTitle(view: View) {
       ViewCompat.setAccessibilityPaneTitle(view, null)
+    }
+
+    private fun setLiveRegion(view: View, liveRegionMode: Int?) {
+      if (liveRegionMode == null) {
+        return
+      }
+      view.accessibilityLiveRegion = liveRegionMode
+    }
+
+    private fun unsetLiveRegion(view: View) {
+      view.accessibilityLiveRegion = View.ACCESSIBILITY_LIVE_REGION_NONE
     }
 
     private fun setImportantForAccessibility(view: View, importantForAccessibility: Int) {

@@ -126,6 +126,7 @@ class NodeInfo : Equivalence<NodeInfo> {
   private var _minDurationBetweenContentChangesMillis: Long? = null
   private var _labeledBy: Any? = null
   private var _accessibilityPaneTitle: CharSequence? = null
+  private var _liveRegionMode: Int? = null
 
   var visibility: Visibility? = null
     internal set(value) {
@@ -428,6 +429,13 @@ class NodeInfo : Equivalence<NodeInfo> {
       _accessibilityPaneTitle = paneTitle
     }
 
+  var liveRegionMode: Int?
+    get() = _liveRegionMode
+    set(mode) {
+      flags = flags or PFLAG_LIVE_REGION_IS_SET
+      _liveRegionMode = mode
+    }
+
   fun needsAccessibilityDelegate(): Boolean =
       _onInitializeAccessibilityEventHandler != null ||
           _onInitializeAccessibilityNodeInfoHandler != null ||
@@ -446,6 +454,7 @@ class NodeInfo : Equivalence<NodeInfo> {
           _labeledBy != null ||
           _minDurationBetweenContentChangesMillis != null ||
           _accessibilityPaneTitle != null ||
+          _liveRegionMode != null ||
           screenReaderFocusState != SCREEN_READER_FOCUS_UNSET
 
   fun setFocusable(isFocusable: Boolean) {
@@ -587,6 +596,9 @@ class NodeInfo : Equivalence<NodeInfo> {
       return false
     }
     if (!equals(this.accessibilityPaneTitle, other.accessibilityPaneTitle)) {
+      return false
+    }
+    if (!equals(this.liveRegionMode, other.liveRegionMode)) {
       return false
     }
     if (!equals(this.tooltipText, other.tooltipText)) {
@@ -771,6 +783,9 @@ class NodeInfo : Equivalence<NodeInfo> {
     if (flags and PFLAG_PANE_TITLE_IS_SET != 0L) {
       target.accessibilityPaneTitle = _accessibilityPaneTitle
     }
+    if (flags and PFLAG_LIVE_REGION_IS_SET != 0L) {
+      target.liveRegionMode = _liveRegionMode
+    }
     if (flags and PFLAG_TOOLTIP_TEXT_IS_SET != 0L) {
       target.tooltipText = _tooltipText
     }
@@ -876,6 +891,9 @@ class NodeInfo : Equivalence<NodeInfo> {
     }
     if (flags and PFLAG_PANE_TITLE_IS_SET != 0L) {
       target.accessibilityPaneTitle = _accessibilityPaneTitle
+    }
+    if (flags and PFLAG_LIVE_REGION_IS_SET != 0L) {
+      target.liveRegionMode = _liveRegionMode
     }
     if (flags and PFLAG_TOOLTIP_TEXT_IS_SET != 0L) {
       target.tooltipText = _tooltipText
@@ -1071,5 +1089,8 @@ class NodeInfo : Equivalence<NodeInfo> {
 
     // When this flag is set, paneTitle was explicitly set on this node.
     private const val PFLAG_PANE_TITLE_IS_SET = 1L shl 38
+
+    // When this flag is set, liveRegion was explicitly set on this node.
+    private const val PFLAG_LIVE_REGION_IS_SET = 1L shl 39
   }
 }

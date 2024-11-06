@@ -367,6 +367,10 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
     getOrCreateNodeInfo().accessibilityPaneTitle = accessibilityPaneTitle
   }
 
+  fun setLiveRegion(mode: Int) {
+    getOrCreateNodeInfo().liveRegionMode = mode
+  }
+
   fun clickable(isClickable: Boolean) {
     getOrCreateNodeInfo().setClickable(isClickable)
   }
