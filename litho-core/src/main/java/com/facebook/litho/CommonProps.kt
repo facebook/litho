@@ -363,6 +363,10 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
     getOrCreateNodeInfo().labeledBy = viewTag
   }
 
+  fun setAccessibilityPaneTitle(accessibilityPaneTitle: CharSequence?) {
+    getOrCreateNodeInfo().accessibilityPaneTitle = accessibilityPaneTitle
+  }
+
   fun clickable(isClickable: Boolean) {
     getOrCreateNodeInfo().setClickable(isClickable)
   }

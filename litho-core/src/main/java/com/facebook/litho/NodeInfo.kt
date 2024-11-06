@@ -125,6 +125,7 @@ class NodeInfo : Equivalence<NodeInfo> {
       null
   private var _minDurationBetweenContentChangesMillis: Long? = null
   private var _labeledBy: Any? = null
+  private var _accessibilityPaneTitle: CharSequence? = null
 
   var visibility: Visibility? = null
     internal set(value) {
@@ -420,6 +421,13 @@ class NodeInfo : Equivalence<NodeInfo> {
       _labeledBy = viewTag
     }
 
+  var accessibilityPaneTitle: CharSequence?
+    get() = _accessibilityPaneTitle
+    set(paneTitle) {
+      flags = flags or PFLAG_PANE_TITLE_IS_SET
+      _accessibilityPaneTitle = paneTitle
+    }
+
   fun needsAccessibilityDelegate(): Boolean =
       _onInitializeAccessibilityEventHandler != null ||
           _onInitializeAccessibilityNodeInfoHandler != null ||
@@ -437,6 +445,7 @@ class NodeInfo : Equivalence<NodeInfo> {
           _focusOrder != null ||
           _labeledBy != null ||
           _minDurationBetweenContentChangesMillis != null ||
+          _accessibilityPaneTitle != null ||
           screenReaderFocusState != SCREEN_READER_FOCUS_UNSET
 
   fun setFocusable(isFocusable: Boolean) {
@@ -575,6 +584,9 @@ class NodeInfo : Equivalence<NodeInfo> {
       return false
     }
     if (!equals(this.contentDescription, other.contentDescription)) {
+      return false
+    }
+    if (!equals(this.accessibilityPaneTitle, other.accessibilityPaneTitle)) {
       return false
     }
     if (!equals(this.tooltipText, other.tooltipText)) {
@@ -756,6 +768,9 @@ class NodeInfo : Equivalence<NodeInfo> {
     if (flags and PFLAG_CONTENT_DESCRIPTION_IS_SET != 0L) {
       target.contentDescription = _contentDescription
     }
+    if (flags and PFLAG_PANE_TITLE_IS_SET != 0L) {
+      target.accessibilityPaneTitle = _accessibilityPaneTitle
+    }
     if (flags and PFLAG_TOOLTIP_TEXT_IS_SET != 0L) {
       target.tooltipText = _tooltipText
     }
@@ -858,6 +873,9 @@ class NodeInfo : Equivalence<NodeInfo> {
     }
     if (flags and PFLAG_CONTENT_DESCRIPTION_IS_SET != 0L) {
       target.contentDescription = _contentDescription
+    }
+    if (flags and PFLAG_PANE_TITLE_IS_SET != 0L) {
+      target.accessibilityPaneTitle = _accessibilityPaneTitle
     }
     if (flags and PFLAG_TOOLTIP_TEXT_IS_SET != 0L) {
       target.tooltipText = _tooltipText
@@ -1050,5 +1068,8 @@ class NodeInfo : Equivalence<NodeInfo> {
     // When this flag is set, setLabeledBy was explicitly set on this
     // node.
     private const val PFLAG_LABELED_BY_IS_SET = 1L shl 37
+
+    // When this flag is set, paneTitle was explicitly set on this node.
+    private const val PFLAG_PANE_TITLE_IS_SET = 1L shl 38
   }
 }

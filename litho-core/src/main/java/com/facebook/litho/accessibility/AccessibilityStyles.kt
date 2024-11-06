@@ -62,6 +62,7 @@ internal enum class AccessibilityField : StyleItemField {
   SCREEN_READER_FOCUSABLE,
   MIN_DURATION_BETWEEN_CONTENT_CHANGES,
   LABELED_BY,
+  PANE_TITLE,
 }
 
 @PublishedApi
@@ -116,6 +117,7 @@ internal data class AccessibilityStyleItem(
       AccessibilityField.MIN_DURATION_BETWEEN_CONTENT_CHANGES ->
           commonProps.setMinDurationBetweenContentChangesMillis(value as Long)
       AccessibilityField.LABELED_BY -> commonProps.setLabeledBy(value)
+      AccessibilityField.PANE_TITLE -> commonProps.setAccessibilityPaneTitle(value as CharSequence)
     }
   }
 }
@@ -337,6 +339,18 @@ inline fun Style.minDurationBetweenContentChangesMillis(duration: Long): Style =
  */
 inline fun Style.labeledBy(viewTag: Any): Style =
     this + AccessibilityStyleItem(AccessibilityField.LABELED_BY, viewTag)
+
+/**
+ * Visually distinct portion of a window with window-like semantics are considered panes for
+ * accessibility purposes. One example is the content view of a large fragment that is replaced. In
+ * order for accessibility services to understand a pane's window-like behavior, panes should have
+ * descriptive titles. Views with pane titles produce AccessibilityEvent#TYPE_WINDOW_STATE_CHANGEDs
+ * when they appear, disappear, or change title.
+ *
+ * See [androidx.core.view.ViewCompat.setAccessibilityPaneTitle].
+ */
+inline fun Style.paneTitle(accessibilityPaneTitle: CharSequence?): Style =
+    this + AccessibilityStyleItem(AccessibilityField.PANE_TITLE, accessibilityPaneTitle)
 
 /**
  * Enum values for [importantForAccessibility].

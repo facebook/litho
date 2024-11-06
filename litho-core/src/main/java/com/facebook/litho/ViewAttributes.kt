@@ -1,5 +1,3 @@
-// (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
-
 /*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -51,6 +49,7 @@ class ViewAttributes {
   var disableDrawableOutputs: Boolean = false
 
   var contentDescription: CharSequence? = null
+  var accessibilityPaneTitle: CharSequence? = null
   var tooltipText: String? = null
   var viewId: Int = View.NO_ID
     set(value) {
@@ -257,6 +256,7 @@ class ViewAttributes {
     if (clipToOutline != other.clipToOutline) return false
     if (clipChildren != other.clipChildren) return false
     if (!equals(contentDescription, other.contentDescription)) return false
+    if (!equals(accessibilityPaneTitle, other.accessibilityPaneTitle)) return false
     if (!equals(tooltipText, other.tooltipText)) return false
     if (isEnabled != other.isEnabled) return false
     if (!isEquivalentTo(focusChangeHandler, other.focusChangeHandler)) return false
@@ -299,6 +299,7 @@ class ViewAttributes {
     result = 31 * result + importantForAccessibility
     result = 31 * result + disableDrawableOutputs.hashCode()
     result = 31 * result + (contentDescription?.hashCode() ?: 0)
+    result = 31 * result + (accessibilityPaneTitle?.hashCode() ?: 0)
     result = 31 * result + (viewId.hashCode())
     result = 31 * result + (viewTag?.hashCode() ?: 0)
     result = 31 * result + (transitionName?.hashCode() ?: 0)
@@ -343,6 +344,7 @@ class ViewAttributes {
     target.disableDrawableOutputs = disableDrawableOutputs
 
     contentDescription?.let { target.contentDescription = it }
+    accessibilityPaneTitle?.let { target.accessibilityPaneTitle = it }
     tooltipText?.let { target.tooltipText = it }
     target.viewId = viewId
     viewTag?.let { target.viewTag = it }
@@ -442,6 +444,7 @@ class ViewAttributes {
       setClipToOutline(content, attributes.clipToOutline)
       setClipChildren(content, attributes)
       setContentDescription(content, attributes.contentDescription)
+      setPaneTitle(content, attributes.accessibilityPaneTitle)
       setFocusable(content, attributes)
       setClickable(content, attributes)
       setEnabled(content, attributes)
@@ -545,6 +548,9 @@ class ViewAttributes {
       unsetClipChildren(content, attributes.clipChildren)
       if (!attributes.contentDescription.isNullOrEmpty()) {
         unsetContentDescription(content)
+      }
+      if (!attributes.accessibilityPaneTitle.isNullOrEmpty()) {
+        unsetPaneTitle(content)
       }
       if (!attributes.tooltipText.isNullOrEmpty()) {
         unsetTooltipText(content)
@@ -890,6 +896,17 @@ class ViewAttributes {
 
     fun unsetContentDescription(view: View) {
       view.contentDescription = null
+    }
+
+    private fun setPaneTitle(view: View, accessibilityPaneTitle: CharSequence?) {
+      if (accessibilityPaneTitle.isNullOrEmpty()) {
+        return
+      }
+      ViewCompat.setAccessibilityPaneTitle(view, accessibilityPaneTitle)
+    }
+
+    fun unsetPaneTitle(view: View) {
+      ViewCompat.setAccessibilityPaneTitle(view, null)
     }
 
     private fun setImportantForAccessibility(view: View, importantForAccessibility: Int) {
