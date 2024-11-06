@@ -372,12 +372,10 @@ public class ComponentTree
       mParentTreePropContainer = null;
     }
 
-    if (ComponentsConfiguration.defaultInstance.enableLifecycleOwnerWrapper) {
-      LifecycleOwner implicitLifecycleOwner = getImplicitLifecycleOwner(builder.treePropContainer);
-      mImplicitTreePropContainer = createImplicitTreePropContainer(implicitLifecycleOwner);
-      if (ComponentsConfiguration.customPoolScopesEnabled) {
-        mImplicitTreePropContainer.put(PoolScopeTreeProp, builder.mPoolScope);
-      }
+    LifecycleOwner implicitLifecycleOwner = getImplicitLifecycleOwner(builder.treePropContainer);
+    mImplicitTreePropContainer = createImplicitTreePropContainer(implicitLifecycleOwner);
+    if (ComponentsConfiguration.customPoolScopesEnabled) {
+      mImplicitTreePropContainer.put(PoolScopeTreeProp, builder.mPoolScope);
     }
 
     if (useComponentTreePropContainerAsSourceOfTruth) {
@@ -1884,8 +1882,7 @@ public class ComponentTree
       boolean isSameTreeProps =
           EquivalenceUtils.equals(
                   currentResolveResult.context.getTreePropContainer(), treePropContainer)
-              || (ComponentsConfiguration.defaultInstance.enableLifecycleOwnerWrapper
-                  && treePropContainer == null);
+              || treePropContainer == null;
 
       boolean canLayoutWithoutResolve = (currentResolveResult.component == root && isSameTreeProps);
       if (canLayoutWithoutResolve) {
@@ -2601,15 +2598,12 @@ public class ComponentTree
       }
       treePropContainer.putAll(inputTreeProps);
     }
-    if (ComponentsConfiguration.defaultInstance.enableLifecycleOwnerWrapper) {
-      // The default tree props implicit to the component tree so we don't want them to be
-      // overridden
-      // by the parent.
-      if (treePropContainer == null) {
-        treePropContainer = new TreePropContainer();
-      }
-      treePropContainer.putAll(mImplicitTreePropContainer);
+    // The default tree props implicit to the component tree so we don't want them to be
+    // overridden by the parent.
+    if (treePropContainer == null) {
+      treePropContainer = new TreePropContainer();
     }
+    treePropContainer.putAll(mImplicitTreePropContainer);
 
     return treePropContainer;
   }
@@ -2764,40 +2758,20 @@ public class ComponentTree
         useComponentTreePropContainerAsSourceOfTruth
             ? mTreePropContainer
             : mContext.getTreePropContainer();
-    if (ComponentsConfiguration.defaultInstance.enableLifecycleOwnerWrapper) {
-      if (treePropContainer == null) {
-        throw new NullPointerException("The treePropContainer cannot be null");
-      }
-      final LifecycleOwner lifecycleOwner = treePropContainer.get(LifecycleOwnerTreeProp);
-      if (lifecycleOwner instanceof LifecycleOwnerWrapper) {
-        final LifecycleOwnerWrapper wrapper = (LifecycleOwnerWrapper) lifecycleOwner;
-        if (Looper.myLooper() == Looper.getMainLooper()) {
-          wrapper.setDelegate(owner);
-        } else {
-          mMainThreadHandler.post(
-              () -> wrapper.setDelegate(owner), "LifecycleOwnerWrapper.setDelegate");
-        }
+    if (treePropContainer == null) {
+      throw new NullPointerException("The treePropContainer cannot be null");
+    }
+    final LifecycleOwner lifecycleOwner = treePropContainer.get(LifecycleOwnerTreeProp);
+    if (lifecycleOwner instanceof LifecycleOwnerWrapper) {
+      final LifecycleOwnerWrapper wrapper = (LifecycleOwnerWrapper) lifecycleOwner;
+      if (Looper.myLooper() == Looper.getMainLooper()) {
+        wrapper.setDelegate(owner);
       } else {
-        treePropContainer.put(LifecycleOwnerTreeProp, lifecycleOwner);
+        mMainThreadHandler.post(
+            () -> wrapper.setDelegate(owner), "LifecycleOwnerWrapper.setDelegate");
       }
     } else {
-      if (useComponentTreePropContainerAsSourceOfTruth) {
-        if (treePropContainer == null) {
-          @Nullable TreePropContainer container = createTreePropContainer(null);
-          treePropContainer = container != null ? container : new TreePropContainer();
-          mTreePropContainer = treePropContainer;
-        }
-        treePropContainer.put(LifecycleOwnerTreeProp, owner);
-      } else {
-        if (!mContext.isParentTreePropContainerCloned()) {
-          mContext.setTreePropContainer(TreePropContainer.acquire(treePropContainer));
-          mContext.setParentTreePropContainerCloned(true);
-        }
-        TreePropContainer container = mContext.getTreePropContainer();
-        if (container != null) {
-          container.put(LifecycleOwnerTreeProp, owner);
-        }
-      }
+      treePropContainer.put(LifecycleOwnerTreeProp, lifecycleOwner);
     }
   }
 
@@ -3142,8 +3116,7 @@ public class ComponentTree
 
     @ExperimentalLithoApi
     public Builder poolScope(PoolScope poolScope) {
-      if (!ComponentsConfiguration.customPoolScopesEnabled
-          || !ComponentsConfiguration.defaultInstance.enableLifecycleOwnerWrapper) {
+      if (!ComponentsConfiguration.customPoolScopesEnabled) {
         return this;
       }
       mPoolScope = poolScope;

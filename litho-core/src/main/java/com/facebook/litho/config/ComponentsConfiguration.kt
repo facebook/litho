@@ -111,7 +111,6 @@ internal constructor(
      * size do not get unmounted when they go out of the viewport.
      */
     @JvmField val enableFixForIM: Boolean = false,
-    @JvmField val enableLifecycleOwnerWrapper: Boolean = true,
     @JvmField val visibilityBoundsTransformer: VisibilityBoundsTransformer? = null,
     @JvmField val sectionsRecyclerViewOnCreateHandler: ((Object) -> Unit)? = null,
     /**
@@ -342,7 +341,6 @@ internal constructor(
         baseConfig.useDefaultItemAnimatorInLazyCollections
     private var primitiveRecyclerBinderStrategy = baseConfig.primitiveRecyclerBinderStrategy
     private var enableFixForIM = baseConfig.enableFixForIM
-    private var enableLifecycleOwnerWrapper = baseConfig.enableLifecycleOwnerWrapper
     private var visibilityBoundsTransformer = baseConfig.visibilityBoundsTransformer
     private var sectionsRecyclerViewOnCreateHandler: ((Object) -> Unit)? =
         baseConfig.sectionsRecyclerViewOnCreateHandler
@@ -431,10 +429,6 @@ internal constructor(
 
     fun enableFixForIM(enabled: Boolean): Builder = also { enableFixForIM = enabled }
 
-    fun enableLifecycleOwnerWrapper(enabled: Boolean): Builder = also {
-      enableLifecycleOwnerWrapper = enabled
-    }
-
     fun visibilityBoundsTransformer(transformer: VisibilityBoundsTransformer?): Builder = also {
       visibilityBoundsTransformer = transformer
     }
@@ -491,7 +485,6 @@ internal constructor(
           enableVisibilityFixForNestedLithoView = enableVisibilityFixForNestedLithoView,
           useDefaultItemAnimatorInLazyCollections = useDefaultItemAnimatorInLazyCollections,
           enableFixForIM = enableFixForIM,
-          enableLifecycleOwnerWrapper = enableLifecycleOwnerWrapper,
           visibilityBoundsTransformer = visibilityBoundsTransformer,
           sectionsRecyclerViewOnCreateHandler = sectionsRecyclerViewOnCreateHandler,
           useStableIdsInRecyclerBinder = useStableIdsInRecyclerBinder,

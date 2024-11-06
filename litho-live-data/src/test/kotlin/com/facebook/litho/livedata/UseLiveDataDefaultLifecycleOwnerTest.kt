@@ -52,7 +52,6 @@ class UseLiveDataDefaultLifecycleOwnerTest {
   fun setUp() {
     ComponentsConfiguration.defaultInstance =
         ComponentsConfiguration.defaultInstance.copy(
-            enableLifecycleOwnerWrapper = true,
             enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner = true,
             enableDefaultLifecycleOwnerAsFragmentOrActivity = false)
   }
