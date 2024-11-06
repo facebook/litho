@@ -36,7 +36,7 @@ import com.facebook.litho.annotations.PropDefault;
  * @prop alpha The alpha of the color, in the range [0.0, 1.0]
  */
 @LayoutSpec
-class SolidColorSpec {
+class SolidColorComponentSpec {
   @PropDefault static final float alpha = -1.0f;
 
   @OnCreateLayout
