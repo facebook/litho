@@ -16,8 +16,10 @@
 
 package com.facebook.litho.sections.treeprops;
 
+import com.facebook.infer.annotation.Nullsafe;
 import javax.annotation.Nullable;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class LogContext {
   public final String s;
 
