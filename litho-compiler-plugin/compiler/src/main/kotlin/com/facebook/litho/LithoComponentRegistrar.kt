@@ -18,12 +18,14 @@ package com.facebook.litho
 
 import com.facebook.litho.common.LithoCompilerConfig
 import com.facebook.litho.common.get
+import com.facebook.litho.k1.LithoFeCheckersContributor
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.compiler.plugin.CompilerPluginRegistrar
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.jetbrains.kotlin.config.CompilerConfiguration
+import org.jetbrains.kotlin.extensions.StorageComponentContainerContributor
 import org.jetbrains.kotlin.resolve.extensions.AnalysisHandlerExtension
 
 @OptIn(ExperimentalCompilerApi::class)
@@ -35,6 +37,7 @@ class LithoComponentRegistrar : CompilerPluginRegistrar() {
         configuration.get(CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY, MessageCollector.NONE)
 
     // K1 extensions
+    StorageComponentContainerContributor.registerExtension(LithoFeCheckersContributor())
     if (configuration[LithoCompilerConfig.DEBUG]) {
       AnalysisHandlerExtension.registerExtension(
           LithoCodeAnalysisExtension { message, location ->
