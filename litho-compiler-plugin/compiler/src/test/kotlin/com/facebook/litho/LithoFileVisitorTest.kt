@@ -69,7 +69,11 @@ class LithoFileVisitorTest {
               compilerPluginRegistrars = listOf(LithoComponentRegistrar())
               messageOutputStream = System.out
               commandLineProcessors = listOf(LithoCommandLineProcessor())
-              pluginOptions = listOf(PluginOption("com.facebook.litho.compiler", "enabled", "true"))
+              pluginOptions =
+                  listOf(
+                      PluginOption("com.facebook.litho.compiler", "enabled", "true"),
+                      PluginOption("com.facebook.litho.compiler", "internal.debug", "true"),
+                  )
               languageVersion = "1.9"
               supportsK2 = false
             }

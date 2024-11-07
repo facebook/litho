@@ -34,10 +34,15 @@ class LithoComponentRegistrar : CompilerPluginRegistrar() {
     val messageCollector =
         configuration.get(CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY, MessageCollector.NONE)
 
-    AnalysisHandlerExtension.registerExtension(
-        LithoCodeAnalysisExtension { message, location ->
-          messageCollector.report(CompilerMessageSeverity.ERROR, message, location)
-        })
+    // K1 extensions
+    if (configuration[LithoCompilerConfig.DEBUG]) {
+      AnalysisHandlerExtension.registerExtension(
+          LithoCodeAnalysisExtension { message, location ->
+            messageCollector.report(CompilerMessageSeverity.ERROR, message, location)
+          })
+    }
+    // K2 extensions
+    // Backend extensions
   }
 
   override val supportsK2: Boolean

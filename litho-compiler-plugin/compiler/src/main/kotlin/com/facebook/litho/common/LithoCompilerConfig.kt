@@ -32,9 +32,13 @@ class LithoCompilerConfig<T> private constructor(val cliOption: CliOption, val d
         LithoCompilerConfig(
             CliOption("enabled", "<true | false>", "whether plugin is enabled", false),
             default = false)
+    internal val DEBUG: LithoCompilerConfig<Boolean> =
+        LithoCompilerConfig(
+            CliOption("internal.debug", "<true | false>", "whether debug mode is enabled", false),
+            default = false)
 
     val options: List<CliOption>
-      get() = listOf(ENABLED.cliOption)
+      get() = listOf(ENABLED.cliOption, DEBUG.cliOption)
   }
 }
 

@@ -17,6 +17,7 @@
 package com.facebook.litho
 
 import com.facebook.litho.common.LithoCompilerConfig
+import com.facebook.litho.common.LithoCompilerConfig.Companion.DEBUG
 import com.facebook.litho.common.LithoCompilerConfig.Companion.ENABLED
 import org.jetbrains.kotlin.compiler.plugin.AbstractCliOption
 import org.jetbrains.kotlin.compiler.plugin.CliOptionProcessingException
@@ -36,6 +37,7 @@ class LithoCommandLineProcessor : CommandLineProcessor {
   ) {
     when (option) {
       ENABLED.cliOption -> configuration.put(ENABLED.configKey, value.toBoolean())
+      DEBUG.cliOption -> configuration.put(DEBUG.configKey, value.toBoolean())
       else -> throw CliOptionProcessingException("Unknown option: ${option.optionName}")
     }
   }
