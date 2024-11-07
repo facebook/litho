@@ -46,6 +46,8 @@ import com.facebook.litho.sections.widget.NoUpdateItemAnimator
 import com.facebook.litho.sections.widget.RecyclerConfiguration
 import com.facebook.litho.sections.widget.SectionBinderTarget
 import com.facebook.litho.widget.Binder
+import com.facebook.litho.widget.LithoRecyclerView.OnAfterLayoutListener
+import com.facebook.litho.widget.LithoRecyclerView.OnBeforeLayoutListener
 import com.facebook.litho.widget.LithoRecyclerView.TouchInterceptor
 import com.facebook.litho.widget.PTRRefreshEvent
 import com.facebook.litho.widget.Recycler
@@ -102,6 +104,8 @@ object CollectionRecyclerSpec {
       @Prop(optional = true) recyclerConfiguration: RecyclerConfiguration,
       @Prop(optional = true) sectionsViewLogger: SectionsRecyclerViewLogger?,
       @Prop(optional = true) shouldExcludeFromIncrementalMount: Boolean,
+      @Prop(optional = true) onBeforeLayoutListener: OnBeforeLayoutListener?,
+      @Prop(optional = true) onAfterLayoutListener: OnAfterLayoutListener?,
       @State internalRecyclerEventsController: RecyclerEventsController?,
       @State binder: Binder<RecyclerView>,
       @State sectionTree: SectionTree
@@ -176,6 +180,8 @@ object CollectionRecyclerSpec {
         refreshProgressBarColor = refreshProgressBarColor ?: Color.BLACK,
         recyclerViewId = recyclerViewId ?: View.NO_ID,
         overScrollMode = overScrollMode ?: View.OVER_SCROLL_ALWAYS,
+        onBeforeLayoutListener = onBeforeLayoutListener,
+        onAfterLayoutListener = onAfterLayoutListener,
         style = StyleCompat.touchHandler(recyclerTouchEventHandler).build())
   }
 

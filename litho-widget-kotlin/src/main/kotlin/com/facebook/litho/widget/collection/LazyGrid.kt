@@ -25,6 +25,8 @@ import com.facebook.litho.Style
 import com.facebook.litho.config.PreAllocationHandler
 import com.facebook.litho.sections.widget.GridLayoutInfoFactory
 import com.facebook.litho.widget.LithoRecyclerView
+import com.facebook.litho.widget.LithoRecyclerView.OnAfterLayoutListener
+import com.facebook.litho.widget.LithoRecyclerView.OnBeforeLayoutListener
 import com.facebook.litho.widget.SnapUtil
 import com.facebook.rendercore.Dimen
 import com.facebook.rendercore.dp
@@ -80,6 +82,8 @@ inline fun ResourcesScope.LazyGrid(
     enableStableIds: Boolean =
         context.lithoConfiguration.componentsConfig.useStableIdsInRecyclerBinder,
     gridLayoutInfoFactory: GridLayoutInfoFactory? = null,
+    onBeforeLayout: OnBeforeLayoutListener? = null,
+    onAfterLayout: OnAfterLayoutListener? = null,
     crossinline init: LazyGridScope.() -> Unit
 ): Component {
   val lazyGridScope = LazyGridScope(context).apply { init() }
@@ -134,5 +138,7 @@ inline fun ResourcesScope.LazyGrid(
       isBottomFadingEnabled,
       fadingEdgeLength,
       shouldExcludeFromIncrementalMount,
+      onBeforeLayout,
+      onAfterLayout,
       lazyGridScope.children)
 }

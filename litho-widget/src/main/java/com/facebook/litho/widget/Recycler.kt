@@ -36,6 +36,8 @@ import com.facebook.litho.Style
 import com.facebook.litho.config.PrimitiveRecyclerBinderStrategy
 import com.facebook.litho.eventHandler
 import com.facebook.litho.useState
+import com.facebook.litho.widget.LithoRecyclerView.OnAfterLayoutListener
+import com.facebook.litho.widget.LithoRecyclerView.OnBeforeLayoutListener
 import com.facebook.litho.widget.LithoRecyclerView.TouchInterceptor
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.dp
@@ -87,6 +89,8 @@ constructor(
     private val sectionsViewLogger: SectionsRecyclerView.SectionsRecyclerViewLogger? = null,
     private val excludeFromIncrementalMount: Boolean = false,
     private val paddingAdditionDisabled: Boolean = false,
+    private val onBeforeLayoutListener: OnBeforeLayoutListener? = null,
+    private val onAfterLayoutListener: OnAfterLayoutListener? = null,
     private val style: Style? = null
 ) : PrimitiveComponent() {
 
@@ -114,6 +118,8 @@ constructor(
                   onRefresh,
                   onScrollListeners,
                   recyclerEventsController,
+                  onBeforeLayoutListener,
+                  onAfterLayoutListener,
                   measureChild.value,
               )
           PrimitiveRecyclerBinderStrategy.DEFAULT ->
@@ -122,6 +128,8 @@ constructor(
                   onRefresh,
                   onScrollListeners,
                   recyclerEventsController,
+                  onBeforeLayoutListener,
+                  onAfterLayoutListener,
                   measureChild.value,
               )
         }
@@ -146,6 +154,8 @@ constructor(
       onRefresh: (() -> Unit)?,
       onScrollListeners: List<RecyclerView.OnScrollListener>?,
       recyclerEventsController: RecyclerEventsController?,
+      onBeforeLayoutListener: OnBeforeLayoutListener?,
+      onAfterLayoutListener: OnAfterLayoutListener?,
       measureChild: View.() -> Unit
   ): MountBehavior<SectionsRecyclerView> =
       MountBehavior(ViewAllocator { context -> createSectionsRecyclerView(context) }) {
@@ -236,6 +246,22 @@ constructor(
               }
         }
 
+        withDescription("recycler-before-layout") {
+          bind(onBeforeLayoutListener) { sectionsRecyclerView ->
+            val recyclerView = sectionsRecyclerView.requireLithoRecyclerView()
+            onBeforeLayoutListener?.let { recyclerView.setOnBeforeLayoutListener(it) }
+            onUnbind { recyclerView.setOnBeforeLayoutListener(null) }
+          }
+        }
+
+        withDescription("recycler-after-layout") {
+          bind(onAfterLayoutListener) { sectionsRecyclerView ->
+            val recyclerView = sectionsRecyclerView.requireLithoRecyclerView()
+            onAfterLayoutListener?.let { recyclerView.setOnAfterLayoutListener(it) }
+            onUnbind { recyclerView.setOnAfterLayoutListener(null) }
+          }
+        }
+
         withDescription("recycler-equivalent-bind") {
           bind(Any()) { sectionsRecyclerView ->
             bindLegacyAttachBinder(
@@ -275,6 +301,8 @@ constructor(
       onRefresh: (() -> Unit)?,
       onScrollListeners: List<RecyclerView.OnScrollListener>?,
       recyclerEventsController: RecyclerEventsController?,
+      onBeforeLayoutListener: OnBeforeLayoutListener?,
+      onAfterLayoutListener: OnAfterLayoutListener?,
       measureChild: View.() -> Unit
   ): MountBehavior<SectionsRecyclerView> =
       MountBehavior(ViewAllocator { context -> createSectionsRecyclerView(context) }) {
@@ -355,6 +383,22 @@ constructor(
                       snapHelper = snapHelper)
                 }
               }
+        }
+
+        withDescription("recycler-before-layout") {
+          bind(onBeforeLayoutListener) { sectionsRecyclerView ->
+            val recyclerView = sectionsRecyclerView.requireLithoRecyclerView()
+            onBeforeLayoutListener?.let { recyclerView.setOnBeforeLayoutListener(it) }
+            onUnbind { recyclerView.setOnBeforeLayoutListener(null) }
+          }
+        }
+
+        withDescription("recycler-after-layout") {
+          bind(onAfterLayoutListener) { sectionsRecyclerView ->
+            val recyclerView = sectionsRecyclerView.requireLithoRecyclerView()
+            onAfterLayoutListener?.let { recyclerView.setOnAfterLayoutListener(it) }
+            onUnbind { recyclerView.setOnAfterLayoutListener(null) }
+          }
         }
 
         withDescription("recycler-binder") {

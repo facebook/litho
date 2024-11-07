@@ -25,6 +25,8 @@ import com.facebook.litho.Style
 import com.facebook.litho.config.PreAllocationHandler
 import com.facebook.litho.sections.widget.LinearLayoutInfoFactory
 import com.facebook.litho.widget.LithoRecyclerView
+import com.facebook.litho.widget.LithoRecyclerView.OnAfterLayoutListener
+import com.facebook.litho.widget.LithoRecyclerView.OnBeforeLayoutListener
 import com.facebook.litho.widget.SnapUtil
 import com.facebook.rendercore.Dimen
 import com.facebook.rendercore.dp
@@ -81,6 +83,8 @@ inline fun ResourcesScope.LazyList(
     enableStableIds: Boolean =
         context.lithoConfiguration.componentsConfig.useStableIdsInRecyclerBinder,
     linearLayoutInfoFactory: LinearLayoutInfoFactory? = null,
+    onBeforeLayout: OnBeforeLayoutListener? = null,
+    onAfterLayout: OnAfterLayoutListener? = null,
     crossinline init: LazyListScope.() -> Unit
 ): Component {
   val lazyListScope = LazyListScope(context).apply { init() }
@@ -137,5 +141,7 @@ inline fun ResourcesScope.LazyList(
       isBottomFadingEnabled,
       fadingEdgeLength,
       shouldExcludeFromIncrementalMount,
+      onBeforeLayout,
+      onAfterLayout,
       lazyListScope.children)
 }

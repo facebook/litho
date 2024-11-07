@@ -36,6 +36,8 @@ import com.facebook.litho.sections.common.OnCheckIsSameItemEvent
 import com.facebook.litho.useState
 import com.facebook.litho.widget.ComponentRenderInfo
 import com.facebook.litho.widget.LithoRecyclerView
+import com.facebook.litho.widget.LithoRecyclerView.OnAfterLayoutListener
+import com.facebook.litho.widget.LithoRecyclerView.OnBeforeLayoutListener
 import com.facebook.litho.widget.RecyclerBinder
 import com.facebook.rendercore.Dimen
 
@@ -94,6 +96,8 @@ class LazyCollection(
     private val isBottomFadingEnabled: Boolean = true,
     private val fadingEdgeLength: Dimen? = null,
     private val shouldExcludeFromIncrementalMount: Boolean = false,
+    private val onBeforeLayout: OnBeforeLayoutListener? = null,
+    private val onAfterLayout: OnAfterLayoutListener? = null,
     private val lazyCollectionChildren: LazyCollectionChildren
 ) : KComponent() {
 
@@ -196,6 +200,8 @@ class LazyCollection(
         .onScrollListeners(onScrollListeners)
         .lazyCollectionController(lazyCollectionController)
         .shouldExcludeFromIncrementalMount(shouldExcludeFromIncrementalMount)
+        .onBeforeLayoutListener(onBeforeLayout)
+        .onAfterLayoutListener(onAfterLayout)
         .apply {
           val fadingEdgeLengthPx = fadingEdgeLength?.toPixels()
           if (fadingEdgeLengthPx != null && fadingEdgeLengthPx > 0) {

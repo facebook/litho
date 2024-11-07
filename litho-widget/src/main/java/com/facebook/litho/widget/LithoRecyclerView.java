@@ -31,12 +31,37 @@ import java.util.List;
  */
 public class LithoRecyclerView extends RecyclerView implements HasPostDispatchDrawListener {
 
+  /**
+   * Listener that will be called before RecyclerView and LayoutManager layout is called.
+   *
+   * <p>This is generally not recommended to be used unless you really know what you're doing
+   * because it will be called on every layout pass. Other callbacks like onDataBound and
+   * onDataRendered may be more appropriate.
+   */
+  public interface OnBeforeLayoutListener {
+    void onBeforeLayout(RecyclerView recyclerView);
+  }
+
+  /**
+   * Listener that will be called after RecyclerView and LayoutManager layout is called.
+   *
+   * <p>This is generally not recommended to be used unless you really know what you're doing
+   * because it will be called on every layout pass. Other callbacks like onDataBound and
+   * onDataRendered may be more appropriate. It is a good time to invoke code which needs to respond
+   * to child sizing changes.
+   */
+  public interface OnAfterLayoutListener {
+    void onAfterLayout(RecyclerView recyclerView);
+  }
+
   private boolean mLeftFadingEnabled = true;
   private boolean mRightFadingEnabled = true;
   private boolean mTopFadingEnabled = true;
   private boolean mBottomFadingEnabled = true;
   private @Nullable TouchInterceptor mTouchInterceptor;
   private @Nullable List<PostDispatchDrawListener> mPostDispatchDrawListeners;
+  private @Nullable OnBeforeLayoutListener mOnBeforeLayoutListener;
+  private @Nullable OnAfterLayoutListener mOnAfterLayoutListener;
 
   public LithoRecyclerView(Context context) {
     this(context, null);
@@ -57,6 +82,14 @@ public class LithoRecyclerView extends RecyclerView implements HasPostDispatchDr
    */
   public void setTouchInterceptor(@Nullable TouchInterceptor touchInterceptor) {
     mTouchInterceptor = touchInterceptor;
+  }
+
+  public void setOnBeforeLayoutListener(@Nullable OnBeforeLayoutListener onBeforeLayoutListener) {
+    mOnBeforeLayoutListener = onBeforeLayoutListener;
+  }
+
+  public void setOnAfterLayoutListener(@Nullable OnAfterLayoutListener onAfterLayoutListener) {
+    mOnAfterLayoutListener = onAfterLayoutListener;
   }
 
   @Override
@@ -101,6 +134,17 @@ public class LithoRecyclerView extends RecyclerView implements HasPostDispatchDr
   public void unregisterPostDispatchDrawListener(PostDispatchDrawListener listener) {
     if (mPostDispatchDrawListeners != null) {
       mPostDispatchDrawListeners.remove(listener);
+    }
+  }
+
+  @Override
+  protected void onLayout(boolean changed, int l, int t, int r, int b) {
+    if (mOnBeforeLayoutListener != null) {
+      mOnBeforeLayoutListener.onBeforeLayout(this);
+    }
+    super.onLayout(changed, l, t, r, b);
+    if (mOnAfterLayoutListener != null) {
+      mOnAfterLayoutListener.onAfterLayout(this);
     }
   }
 

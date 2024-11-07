@@ -195,6 +195,10 @@ public class RecyclerCollectionComponentSpec {
       // Caution: ignoreLoadingUpdates breaks loadingComponent/errorComponent/emptyComponent.
       // It's intended to be a temporary workaround, not something you should use often.
       @Prop(optional = true) boolean ignoreLoadingUpdates,
+      @Prop(optional = true) @Nullable
+          LithoRecyclerView.OnBeforeLayoutListener onBeforeLayoutListener,
+      @Prop(optional = true) @Nullable
+          LithoRecyclerView.OnAfterLayoutListener onAfterLayoutListener,
       @State(canUpdateLazily = true) boolean hasSetSectionTreeRoot,
       @State RecyclerCollectionEventsController internalEventsController,
       @State LayoutInfo layoutInfo,
@@ -321,6 +325,8 @@ public class RecyclerCollectionComponentSpec {
             sectionsViewLogger,
             shouldExcludeFromIncrementalMount,
             disableAddingPadding,
+            onBeforeLayoutListener,
+            onAfterLayoutListener,
             javaStyle.build());
 
     final ContainerBuilder containerBuilder =
