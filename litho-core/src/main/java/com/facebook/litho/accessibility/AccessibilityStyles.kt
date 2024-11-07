@@ -66,6 +66,7 @@ internal enum class AccessibilityField : StyleItemField {
   LABELED_BY,
   PANE_TITLE,
   LIVE_REGION,
+  REQUEST_INITIAL_ACCESSIBILITY_FOCUS,
 }
 
 @PublishedApi
@@ -122,6 +123,8 @@ internal data class AccessibilityStyleItem(
       AccessibilityField.LABELED_BY -> commonProps.setLabeledBy(value)
       AccessibilityField.PANE_TITLE -> commonProps.setAccessibilityPaneTitle(value as CharSequence)
       AccessibilityField.LIVE_REGION -> commonProps.setLiveRegion(value as Int)
+      AccessibilityField.REQUEST_INITIAL_ACCESSIBILITY_FOCUS ->
+          commonProps.requestInitialAccessibilityFocus(value as Boolean)
     }
   }
 }
@@ -365,6 +368,20 @@ inline fun Style.paneTitle(accessibilityPaneTitle: CharSequence?): Style =
  */
 inline fun Style.liveRegion(@AccessibilityLiveRegion mode: Int): Style =
     this + AccessibilityStyleItem(AccessibilityField.LIVE_REGION, mode)
+
+/**
+ * Sets whether the node has requested initial accessibility focus.
+ *
+ * See
+ * [androidx.core.view.accessibility.AccessibilityNodeInfoCompat.setRequestInitialAccessibilityFocus].
+ */
+inline fun Style.requestInitialAccessibilityFocus(
+    requestInitialAccessibilityFocus: Boolean
+): Style =
+    this +
+        AccessibilityStyleItem(
+            AccessibilityField.REQUEST_INITIAL_ACCESSIBILITY_FOCUS,
+            requestInitialAccessibilityFocus)
 
 /**
  * Enum values for [importantForAccessibility].

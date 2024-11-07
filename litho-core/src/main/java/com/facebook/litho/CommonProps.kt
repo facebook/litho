@@ -565,6 +565,10 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
         onPerformActionForVirtualViewHandler
   }
 
+  fun requestInitialAccessibilityFocus(requestInitialAccessibilityFocus: Boolean) {
+    getOrCreateNodeInfo().setInitialFocusState(requestInitialAccessibilityFocus)
+  }
+
   fun keyboardNavigationCluster(isKeyboardNavigationCluster: Boolean) {
     getOrCreateNodeInfo().setKeyboardNavigationCluster(isKeyboardNavigationCluster)
   }

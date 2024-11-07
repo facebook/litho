@@ -57,6 +57,13 @@ class NodeInfo : Equivalence<NodeInfo> {
   internal annotation class SelectedState
 
   @IntDef(
+      REQUEST_INITIAL_ACCESSIBILITY_FOCUS_UNSET,
+      REQUEST_INITIAL_ACCESSIBILITY_FOCUS_SET_FALSE,
+      REQUEST_INITIAL_ACCESSIBILITY_FOCUS_SET_TRUE)
+  @Retention(AnnotationRetention.SOURCE)
+  internal annotation class InitialFocusState
+
+  @IntDef(
       ACCESSIBILITY_HEADING_UNSET, ACCESSIBILITY_HEADING_SET_TRUE, ACCESSIBILITY_HEADING_SET_FALSE)
   @Retention(AnnotationRetention.SOURCE)
   internal annotation class AccessibilityHeadingState
@@ -136,6 +143,10 @@ class NodeInfo : Equivalence<NodeInfo> {
 
   @FocusState
   var focusState: Int = FOCUS_UNSET
+    private set
+
+  @InitialFocusState
+  var initialFocusState: Int = REQUEST_INITIAL_ACCESSIBILITY_FOCUS_UNSET
     private set
 
   @ScreenReaderFocusState
@@ -455,7 +466,8 @@ class NodeInfo : Equivalence<NodeInfo> {
           _minDurationBetweenContentChangesMillis != null ||
           _accessibilityPaneTitle != null ||
           _liveRegionMode != null ||
-          screenReaderFocusState != SCREEN_READER_FOCUS_UNSET
+          screenReaderFocusState != SCREEN_READER_FOCUS_UNSET ||
+          initialFocusState != REQUEST_INITIAL_ACCESSIBILITY_FOCUS_UNSET
 
   fun setFocusable(isFocusable: Boolean) {
     focusState = if (isFocusable) FOCUS_SET_TRUE else FOCUS_SET_FALSE
@@ -464,6 +476,12 @@ class NodeInfo : Equivalence<NodeInfo> {
   fun setScreenReaderFocusable(isFocusable: Boolean) {
     screenReaderFocusState =
         if (isFocusable) SCREEN_READER_FOCUS_SET_TRUE else SCREEN_READER_FOCUS_SET_FALSE
+  }
+
+  fun setInitialFocusState(isFocus: Boolean) {
+    initialFocusState =
+        if (isFocus) REQUEST_INITIAL_ACCESSIBILITY_FOCUS_SET_TRUE
+        else REQUEST_INITIAL_ACCESSIBILITY_FOCUS_SET_FALSE
   }
 
   fun setClickable(isClickable: Boolean) {
@@ -619,6 +637,9 @@ class NodeInfo : Equivalence<NodeInfo> {
       return false
     }
     if (this.screenReaderFocusState != other.screenReaderFocusState) {
+      return false
+    }
+    if (this.initialFocusState != other.initialFocusState) {
       return false
     }
     if (!isEquivalentTo(this.interceptTouchHandler, other.interceptTouchHandler)) {
@@ -828,6 +849,9 @@ class NodeInfo : Equivalence<NodeInfo> {
     if (screenReaderFocusState != SCREEN_READER_FOCUS_UNSET) {
       target.setScreenReaderFocusable(screenReaderFocusState == SCREEN_READER_FOCUS_SET_TRUE)
     }
+    if (initialFocusState != REQUEST_INITIAL_ACCESSIBILITY_FOCUS_UNSET) {
+      target.setInitialFocusState(initialFocusState == REQUEST_INITIAL_ACCESSIBILITY_FOCUS_SET_TRUE)
+    }
     if (clickableState != CLICKABLE_UNSET) {
       target.setClickable(clickableState == CLICKABLE_SET_TRUE)
     }
@@ -986,6 +1010,9 @@ class NodeInfo : Equivalence<NodeInfo> {
     const val KEYBOARD_NAVIGATION_CLUSTER_UNSET: Int = 0
     const val KEYBOARD_NAVIGATION_CLUSTER_SET_TRUE: Int = 1
     const val KEYBOARD_NAVIGATION_CLUSTER_SET_FALSE: Int = 2
+    const val REQUEST_INITIAL_ACCESSIBILITY_FOCUS_UNSET: Int = 0
+    const val REQUEST_INITIAL_ACCESSIBILITY_FOCUS_SET_TRUE: Int = 1
+    const val REQUEST_INITIAL_ACCESSIBILITY_FOCUS_SET_FALSE: Int = 2
 
     // When this flag is set, contentDescription was explicitly set on this node.
     private const val PFLAG_CONTENT_DESCRIPTION_IS_SET = 1L shl 0
@@ -1092,5 +1119,8 @@ class NodeInfo : Equivalence<NodeInfo> {
 
     // When this flag is set, liveRegion was explicitly set on this node.
     private const val PFLAG_LIVE_REGION_IS_SET = 1L shl 39
+
+    // When this flag is set, the node has requested initial accessibility focus.
+    private const val PFLAG_REQUEST_INITIAL_ACCESSIBILITY_FOCUS_IS_SET = 1L shl 40
   }
 }

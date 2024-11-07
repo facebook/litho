@@ -60,6 +60,10 @@ class DebugLayoutNode internal constructor(private val result: LithoLayoutResult
   val screenReaderFocusable: Boolean
     get() = node.nodeInfo?.screenReaderFocusState == NodeInfo.SCREEN_READER_FOCUS_SET_TRUE
 
+  val requestInitialAccessibilityFocus: Boolean
+    get() =
+        node.nodeInfo?.initialFocusState == NodeInfo.REQUEST_INITIAL_ACCESSIBILITY_FOCUS_SET_TRUE
+
   val contentDescription: CharSequence?
     get() = node.nodeInfo?.contentDescription
 
