@@ -21,30 +21,28 @@ import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.PluginOption
 import com.tschuchort.compiletesting.SourceFile
 import org.assertj.core.api.Assertions.assertThat
+import org.intellij.lang.annotations.Language
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.junit.Test
 
 /** Tests for [LithoFileVisitor] */
 @OptIn(ExperimentalCompilerApi::class)
-class LithoFileVisitorTest {
+class LithoFileVisitorTest : AbstractCompilerTest() {
 
   @Test
   fun test_litho_file_visitor_passing() {
-    // language = kotlin
     val file =
         """            
       fun main() {}
       """
             .trimMargin()
 
-    val result = compile(SourceFile.kotlin("Test.kt", file))
-
+    val result = compile(file)
     assertThat(result.exitCode).isEqualTo(KotlinCompilation.ExitCode.OK)
   }
 
   @Test
   fun test_litho_file_visitor_failing() {
-    // language = kotlin
     val file =
         """            
       fun test() {}
@@ -55,30 +53,18 @@ class LithoFileVisitorTest {
       """
             .trimMargin()
 
-    val result = compile(SourceFile.kotlin("Test.kt", file))
+    val result = compile(file)
 
     assertThat(result.exitCode).isEqualTo(KotlinCompilation.ExitCode.COMPILATION_ERROR)
     assertThat(result.messages).contains("Litho: Test function called")
   }
 
-  private fun compile(code: SourceFile): CompilationResult {
-    val compilationResult =
-        KotlinCompilation()
-            .apply {
-              sources = listOf(code)
-              compilerPluginRegistrars = listOf(LithoComponentRegistrar())
-              messageOutputStream = System.out
-              commandLineProcessors = listOf(LithoCommandLineProcessor())
-              pluginOptions =
-                  listOf(
-                      PluginOption("com.facebook.litho.compiler", "enabled", "true"),
-                      PluginOption("com.facebook.litho.compiler", "internal.debug", "true"),
-                  )
-              languageVersion = "1.9"
-              supportsK2 = false
-            }
-            .compile()
-
-    return compilationResult
+  private fun compile(@Language("kotlin") source: String): CompilationResult {
+    return compile(
+        code = SourceFile.kotlin("Test.kt", source),
+        options =
+            listOf(
+                PLUGIN_ENABLED,
+                PluginOption("com.facebook.litho.compiler", "internal.debug", "true")))
   }
 }
