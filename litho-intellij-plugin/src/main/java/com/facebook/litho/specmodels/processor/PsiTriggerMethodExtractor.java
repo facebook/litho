@@ -19,6 +19,7 @@ package com.facebook.litho.specmodels.processor;
 import static com.facebook.litho.specmodels.processor.PsiMethodExtractorUtils.getMethodParams;
 import static com.facebook.litho.specmodels.processor.PsiMethodExtractorUtils.getTypeVariables;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.annotations.OnTrigger;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
@@ -36,6 +37,7 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class PsiTriggerMethodExtractor {
 
   public static ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>>
@@ -63,11 +65,14 @@ public class PsiTriggerMethodExtractor {
         PsiAnnotation psiOnTriggerAnnotation =
             AnnotationUtil.findAnnotation(psiMethod, OnTrigger.class.getName());
         PsiNameValuePair valuePair =
+            // NULLSAFE_FIXME[Parameter Not Nullable]
             AnnotationUtil.findDeclaredAttribute(psiOnTriggerAnnotation, "value");
         PsiClassObjectAccessExpression valueClassExpression =
+            // NULLSAFE_FIXME[Nullable Dereference]
             (PsiClassObjectAccessExpression) valuePair.getValue();
 
         // Reuse EventMethodModel and EventDeclarationModel because we are capturing the same info
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         TypeSpec returnTypeSpec = PsiTypeUtils.generateTypeSpec(psiMethod.getReturnType());
         final SpecMethodModel<EventMethod, EventDeclarationModel> eventMethod =
             new SpecMethodModel<EventMethod, EventDeclarationModel>(
@@ -79,6 +84,7 @@ public class PsiTriggerMethodExtractor {
                 ImmutableList.copyOf(methodParams),
                 psiMethod,
                 null,
+                // NULLSAFE_FIXME[Parameter Not Nullable]
                 PsiEventDeclarationsExtractor.getEventDeclarationModel(valueClassExpression));
         delegateMethods.add(eventMethod);
       }
