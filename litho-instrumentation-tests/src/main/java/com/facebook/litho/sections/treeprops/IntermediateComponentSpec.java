@@ -16,12 +16,14 @@
 
 package com.facebook.litho.sections.treeprops;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.Row;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @LayoutSpec
 public class IntermediateComponentSpec {
   @OnCreateLayout
