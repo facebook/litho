@@ -28,6 +28,11 @@ import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.extensions.StorageComponentContainerContributor
 import org.jetbrains.kotlin.resolve.extensions.AnalysisHandlerExtension
 
+/**
+ * This class is responsible for registering the compiler extensions for Litho. It is the entry
+ * point through which extensions for K1 (old Frontend) and K2 (new Frontend IR), as well as the
+ * backend/IR compiler, are registered.
+ */
 @OptIn(ExperimentalCompilerApi::class)
 class LithoComponentRegistrar : CompilerPluginRegistrar() {
 

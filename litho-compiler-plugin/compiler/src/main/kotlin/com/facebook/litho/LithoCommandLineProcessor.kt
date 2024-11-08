@@ -25,6 +25,32 @@ import org.jetbrains.kotlin.compiler.plugin.CommandLineProcessor
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.jetbrains.kotlin.config.CompilerConfiguration
 
+/**
+ * Entry point through which options from the command line are processed and passed to the compiler
+ * plugin.
+ *
+ * Allowed options are defined in [LithoCompilerConfig].
+ *
+ * The options are passed to the compiler in the form of a list of strings, where each string is in
+ * the form of `-Xplugin:$pluginId:$optionName=$optionValue`. For example:
+ * `-Xplugin:com.facebook.litho.compiler:enabled=true`
+ *
+ * When using BUCK, this is equivalent to:
+ * ```
+ * kotlin_compiler_plugins = {
+ *   "//fbandroid/libraries/components/litho-compiler-plugin:litho-compiler-plugin": {
+ *      "plugin:com.facebook.litho.compiler:enabled": "true",
+ *   },
+ * },
+ * ```
+ *
+ * The options are then processed by this class and stored in the [CompilerConfiguration] object.
+ * This object is what gets passed to the compiler plugin, which can then use the options to
+ * configure its behavior.
+ *
+ * @see [LithoCompilerConfig]
+ * @see [LithoComponentRegistrar]
+ */
 @OptIn(ExperimentalCompilerApi::class)
 class LithoCommandLineProcessor : CommandLineProcessor {
   override val pluginId: String = "com.facebook.litho.compiler"
