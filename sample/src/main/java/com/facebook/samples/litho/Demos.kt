@@ -80,6 +80,7 @@ import com.facebook.samples.litho.kotlin.accessibility.FocusOrderComponent
 import com.facebook.samples.litho.kotlin.accessibility.InitialFocusComponent
 import com.facebook.samples.litho.kotlin.accessibility.LiveRegionModeComponent
 import com.facebook.samples.litho.kotlin.accessibility.PaneTitleComponent
+import com.facebook.samples.litho.kotlin.accessibility.StateDescriptionComponent
 import com.facebook.samples.litho.kotlin.animations.animatedapi.AnimatedComponent
 import com.facebook.samples.litho.kotlin.animations.animatedbadge.AnimatedBadgeKotlin
 import com.facebook.samples.litho.kotlin.animations.animatedcounter.AnimatingCounterRootComponent
@@ -181,6 +182,9 @@ class Demos {
                             SingleDemo(
                                 name = "Live Region Mode", component = LiveRegionModeComponent()),
                             SingleDemo(name = "Initial Focus", component = InitialFocusComponent()),
+                            SingleDemo(
+                                name = "State Description",
+                                component = StateDescriptionComponent()),
                         )),
                     DemoGrouping(
                         name = "Animations",

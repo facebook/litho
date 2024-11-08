@@ -143,6 +143,10 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
       }
     }
 
+    if (mNodeInfo != null && mNodeInfo.getStateDescription() != null) {
+      node.setStateDescription(mNodeInfo.getStateDescription());
+    }
+
     if (mNodeInfo != null
         && mNodeInfo.getAccessibilityHeadingState() != NodeInfo.ACCESSIBILITY_HEADING_UNSET) {
       node.setHeading(

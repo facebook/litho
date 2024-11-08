@@ -434,6 +434,10 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
     getOrCreateNodeInfo().contentDescription = contentDescription
   }
 
+  fun stateDescription(stateDescription: CharSequence?) {
+    getOrCreateNodeInfo().stateDescription = stateDescription
+  }
+
   val contentDescription: CharSequence?
     get() = _nodeInfo?.contentDescription
 

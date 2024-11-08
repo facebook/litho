@@ -67,6 +67,7 @@ internal enum class AccessibilityField : StyleItemField {
   PANE_TITLE,
   LIVE_REGION,
   REQUEST_INITIAL_ACCESSIBILITY_FOCUS,
+  STATE_DESCRIPTION
 }
 
 @PublishedApi
@@ -125,6 +126,7 @@ internal data class AccessibilityStyleItem(
       AccessibilityField.LIVE_REGION -> commonProps.setLiveRegion(value as Int)
       AccessibilityField.REQUEST_INITIAL_ACCESSIBILITY_FOCUS ->
           commonProps.requestInitialAccessibilityFocus(value as Boolean)
+      AccessibilityField.STATE_DESCRIPTION -> commonProps.stateDescription(value as CharSequence?)
     }
   }
 }
@@ -157,6 +159,10 @@ inline fun Style.accessibilityRoleDescription(accessibilityRoleDescription: Char
         accessibilityRoleDescription?.let {
           AccessibilityStyleItem(AccessibilityField.ACCESSIBILITY_ROLE_DESCRIPTION, it)
         }
+
+/** Sets the state description of the component associated to this [Style]. */
+inline fun Style.stateDescription(description: CharSequence?): Style =
+    this + description?.let { AccessibilityStyleItem(AccessibilityField.STATE_DESCRIPTION, it) }
 
 /**
  * A description of the contents of this Component for accessibility.

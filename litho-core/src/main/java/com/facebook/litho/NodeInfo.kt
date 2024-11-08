@@ -76,6 +76,7 @@ class NodeInfo : Equivalence<NodeInfo> {
   internal annotation class KeyboardNavigationClusterState
 
   private var _contentDescription: CharSequence? = null
+  private var _stateDescription: CharSequence? = null
   private var _viewId = View.NO_ID
   private var _viewTag: Any? = null
   var transitionName: String? = null
@@ -182,6 +183,13 @@ class NodeInfo : Equivalence<NodeInfo> {
     set(contentDescription) {
       flags = flags or PFLAG_CONTENT_DESCRIPTION_IS_SET
       _contentDescription = contentDescription
+    }
+
+  var stateDescription: CharSequence?
+    get() = _stateDescription
+    set(stateDescription) {
+      flags = flags or PFLAG_STATE_DESCRIPTION_IS_SET
+      _stateDescription = stateDescription
     }
 
   var tooltipText: String?
@@ -426,13 +434,6 @@ class NodeInfo : Equivalence<NodeInfo> {
       _minDurationBetweenContentChangesMillis = duration
     }
 
-  var labeledBy: Any?
-    get() = _labeledBy
-    set(viewTag) {
-      flags = flags or PFLAG_LABELED_BY_IS_SET
-      _labeledBy = viewTag
-    }
-
   var accessibilityPaneTitle: CharSequence?
     get() = _accessibilityPaneTitle
     set(paneTitle) {
@@ -445,6 +446,13 @@ class NodeInfo : Equivalence<NodeInfo> {
     set(mode) {
       flags = flags or PFLAG_LIVE_REGION_IS_SET
       _liveRegionMode = mode
+    }
+
+  var labeledBy: Any?
+    get() = _labeledBy
+    set(viewTag) {
+      flags = flags or PFLAG_LABELED_BY_IS_SET
+      _labeledBy = viewTag
     }
 
   fun needsAccessibilityDelegate(): Boolean =
@@ -619,6 +627,10 @@ class NodeInfo : Equivalence<NodeInfo> {
     if (!equals(this.liveRegionMode, other.liveRegionMode)) {
       return false
     }
+    if (!equals(this.stateDescription, other.stateDescription)) {
+      return false
+    }
+
     if (!equals(this.tooltipText, other.tooltipText)) {
       return false
     }
@@ -806,6 +818,9 @@ class NodeInfo : Equivalence<NodeInfo> {
     }
     if (flags and PFLAG_LIVE_REGION_IS_SET != 0L) {
       target.liveRegionMode = _liveRegionMode
+    }
+    if (flags and PFLAG_STATE_DESCRIPTION_IS_SET != 0L) {
+      target.stateDescription = _stateDescription
     }
     if (flags and PFLAG_TOOLTIP_TEXT_IS_SET != 0L) {
       target.tooltipText = _tooltipText
@@ -1122,5 +1137,8 @@ class NodeInfo : Equivalence<NodeInfo> {
 
     // When this flag is set, the node has requested initial accessibility focus.
     private const val PFLAG_REQUEST_INITIAL_ACCESSIBILITY_FOCUS_IS_SET = 1L shl 40
+
+    // When this flag is set, stateDescription was explicitly set on this node.
+    private const val PFLAG_STATE_DESCRIPTION_IS_SET = 1L shl 41
   }
 }
