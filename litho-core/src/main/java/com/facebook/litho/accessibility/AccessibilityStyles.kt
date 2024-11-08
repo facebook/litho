@@ -67,7 +67,8 @@ internal enum class AccessibilityField : StyleItemField {
   PANE_TITLE,
   LIVE_REGION,
   REQUEST_INITIAL_ACCESSIBILITY_FOCUS,
-  STATE_DESCRIPTION
+  STATE_DESCRIPTION,
+  CONTAINER_TITLE,
 }
 
 @PublishedApi
@@ -127,6 +128,7 @@ internal data class AccessibilityStyleItem(
       AccessibilityField.REQUEST_INITIAL_ACCESSIBILITY_FOCUS ->
           commonProps.requestInitialAccessibilityFocus(value as Boolean)
       AccessibilityField.STATE_DESCRIPTION -> commonProps.stateDescription(value as CharSequence?)
+      AccessibilityField.CONTAINER_TITLE -> commonProps.containerTitle(value as CharSequence?)
     }
   }
 }
@@ -388,6 +390,16 @@ inline fun Style.requestInitialAccessibilityFocus(
         AccessibilityStyleItem(
             AccessibilityField.REQUEST_INITIAL_ACCESSIBILITY_FOCUS,
             requestInitialAccessibilityFocus)
+
+/**
+ * Sets the container title for app-developer-defined container which can be any type of ViewGroup
+ * or layout. Container title will be used to group together related controls, similar to HTML
+ * fieldset.
+ *
+ * See [android.view.accessibility.AccessibilityNodeInfo.setContainerTitle].
+ */
+inline fun Style.containerTitle(containerTitle: CharSequence?): Style =
+    this + AccessibilityStyleItem(AccessibilityField.CONTAINER_TITLE, containerTitle)
 
 /**
  * Enum values for [importantForAccessibility].

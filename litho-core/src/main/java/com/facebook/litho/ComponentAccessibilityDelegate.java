@@ -176,6 +176,10 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
         }
       }
     }
+
+    if (mNodeInfo != null) {
+      node.setContainerTitle(mNodeInfo.getContainerTitle());
+    }
   }
 
   public static @Nullable View getNextView(

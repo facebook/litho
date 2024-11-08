@@ -102,6 +102,7 @@ class NodeInfo : Equivalence<NodeInfo> {
   private var _focusOrder: FocusOrderModel? = null
   @AccessibilityRoleType private var _accessibilityRole: String? = null
   private var _accessibilityRoleDescription: CharSequence? = null
+  private var _containerTitle: CharSequence? = null
   private var _dispatchPopulateAccessibilityEventHandler:
       EventHandler<DispatchPopulateAccessibilityEventEvent>? =
       null
@@ -135,6 +136,7 @@ class NodeInfo : Equivalence<NodeInfo> {
   private var _labeledBy: Any? = null
   private var _accessibilityPaneTitle: CharSequence? = null
   private var _liveRegionMode: Int? = null
+  private var _tooltipText: String? = null
 
   var visibility: Visibility? = null
     internal set(value) {
@@ -174,7 +176,6 @@ class NodeInfo : Equivalence<NodeInfo> {
   var keyboardNavigationClusterState: Int = KEYBOARD_NAVIGATION_CLUSTER_UNSET
     private set
 
-  private var _tooltipText: String? = null
   var flags: Long = 0
     private set
 
@@ -314,6 +315,13 @@ class NodeInfo : Equivalence<NodeInfo> {
     set(focusOrder) {
       flags = flags or PFLAG_FOCUS_ORDER_IS_SET
       _focusOrder = focusOrder
+    }
+
+  var containerTitle: CharSequence?
+    get() = _containerTitle
+    set(containerTitle) {
+      flags = flags or PFLAG_CONTAINER_TITLE_IS_SET
+      _containerTitle = containerTitle
     }
 
   fun addViewTag(id: Int, tag: Any) {
@@ -752,6 +760,10 @@ class NodeInfo : Equivalence<NodeInfo> {
       return false
     }
 
+    if (!equals(this.containerTitle, other.containerTitle)) {
+      return false
+    }
+
     return equals(this.viewTags, other.viewTags)
   }
 
@@ -906,6 +918,9 @@ class NodeInfo : Equivalence<NodeInfo> {
     }
     if (flags and PFLAG_MIN_DURATION_BETWEEN_CHANGES_IS_SET != 0L) {
       target.minDurationBetweenContentChangesMillis = minDurationBetweenContentChangesMillis
+    }
+    if (flags and PFLAG_CONTAINER_TITLE_IS_SET != 0L) {
+      target.containerTitle = _containerTitle
     }
   }
 
@@ -1140,5 +1155,8 @@ class NodeInfo : Equivalence<NodeInfo> {
 
     // When this flag is set, stateDescription was explicitly set on this node.
     private const val PFLAG_STATE_DESCRIPTION_IS_SET = 1L shl 41
+
+    // When this flag is set, AccessibilityNodeInfo.mContainerTitle was explicitly set on this node.
+    private const val PFLAG_CONTAINER_TITLE_IS_SET = 1L shl 42
   }
 }
