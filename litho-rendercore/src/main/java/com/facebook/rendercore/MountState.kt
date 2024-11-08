@@ -143,21 +143,13 @@ constructor(
 
       // Starting from 1 as the RenderTreeNode in position 0 always represents the root which
       // is handled in prepareMount()
-      for (i in 1 until renderTree.mountableOutputCount) {
-        val renderTreeNode = renderTree.getRenderTreeNodeAtIndex(i)
-        val isMountable = isMountable(renderTreeNode, i)
-        val currentMountItem = idToMountedItemMap[renderTreeNode.renderUnit.id]
-
-        if (currentMountItem != null) {
-          if (isMountable) {
-            updateMountItemIfNeeded(renderTreeNode, currentMountItem)
-          } else {
-            unmountItemRecursively(currentMountItem.renderTreeNode.renderUnit.id)
-          }
-        } else {
-          if (isMountable) {
-            mountRenderUnit(renderTreeNode)
-          }
+      if (RenderCoreConfig.processFromLeafNode) {
+        for (i in (renderTree.mountableOutputCount - 1) downTo 1) {
+          updateMountItem(renderTree, i)
+        }
+      } else {
+        for (i in 1 until renderTree.mountableOutputCount) {
+          updateMountItem(renderTree, i)
         }
       }
 
@@ -383,6 +375,25 @@ constructor(
         changed,
         tracer,
     )
+  }
+
+  /** Mount, unmount, or update each [MountItem] in the render tree. */
+  private fun updateMountItem(renderTree: RenderTree, index: Int) {
+    val renderTreeNode = renderTree.getRenderTreeNodeAtIndex(index)
+    val isMountable = isMountable(renderTreeNode, index)
+    val currentMountItem = idToMountedItemMap[renderTreeNode.renderUnit.id]
+
+    if (currentMountItem != null) {
+      if (isMountable) {
+        updateMountItemIfNeeded(renderTreeNode, currentMountItem)
+      } else {
+        unmountItemRecursively(currentMountItem.renderTreeNode.renderUnit.id)
+      }
+    } else {
+      if (isMountable) {
+        mountRenderUnit(renderTreeNode)
+      }
+    }
   }
 
   /** Updates the extensions of this [MountState] from the new [RenderTree]. */

@@ -421,7 +421,7 @@ public class IncrementalMountExtension
       return;
     }
 
-    if (RenderCoreConfig.enableUnmountingFromLeafNode) {
+    if (RenderCoreConfig.processFromLeafNode) {
       final List<IncrementalMountOutput> outputs =
           new ArrayList<>(state.mInput.getIncrementalMountOutputs());
       // Unmount components from leaf node if necessary, then we might be able to release Host

@@ -40,7 +40,7 @@ object RenderCoreConfig {
   @JvmField var shouldEnableIMFix: Boolean = false
 
   /** Enabling unmounting components reversely from bottom to top. */
-  @JvmField var enableUnmountingFromLeafNode: Boolean = false
+  @JvmField var processFromLeafNode: Boolean = false
 
   /** This flag is used to disable incremental unmounting in LithoView. */
   @JvmField var disableIncrementalUnmounting: Boolean = false
