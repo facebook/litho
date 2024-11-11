@@ -18,6 +18,7 @@ package com.facebook.litho.specmodels.processor;
 
 import static com.facebook.litho.sections.specmodels.processor.GroupSectionSpecModelFactory.DELEGATE_METHOD_ANNOTATIONS;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.sections.annotations.GroupSectionSpec;
 import com.facebook.litho.sections.specmodels.model.DefaultGroupSectionSpecGenerator;
@@ -36,6 +37,7 @@ import java.util.List;
 import org.jetbrains.annotations.Nullable;
 
 /** Factory for creating {@link GroupSectionSpecModel}s. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class PsiGroupSectionSpecModelFactory {
   private final List<Class<? extends Annotation>> mGroupSectionSpecDelegateMethodAnnotations;
   private final SpecGenerator<GroupSectionSpecModel> mGroupSectionSpecGenerator;
