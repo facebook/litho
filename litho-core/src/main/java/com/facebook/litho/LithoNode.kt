@@ -217,7 +217,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
    * Returns a nullable map of [RenderUnit.DelegateBinder] that is aimed to be used to set the
    * optional mount binders right after creating a [MountSpecLithoRenderUnit].
    */
-  var customDelegateBindersForMountSpec: MutableMap<Class<*>, DelegateBinder<Any, Any, Any>>? = null
+  var customViewBindersForMountSpec: MutableMap<Class<*>, DelegateBinder<Any, Any, Any>>? = null
     internal set
 
   /**
@@ -574,28 +574,28 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
    * view binders), the addition of the optional mount binders is delayed until the moment of its
    * creation. For that, we store these binders in the [LithoNode] and use them later.
    */
-  fun addCustomBinders(delegateBindersMap: Map<Class<*>, DelegateBinder<Any, Any, Any>>? = null) {
-    if (delegateBindersMap.isNullOrEmpty()) {
+  fun addViewCustomBinders(viewBindersMap: Map<Class<*>, DelegateBinder<Any, Any, Any>>? = null) {
+    if (viewBindersMap.isNullOrEmpty()) {
       return
     }
 
     privateFlags = privateFlags or PFLAG_BINDER_IS_SET
 
     if (!willMountDrawable(this)) {
-      allNotNull(primitive, delegateBindersMap) { primitive, map ->
+      allNotNull(primitive, viewBindersMap) { primitive, map ->
         for (binder in map.values) {
           primitive.renderUnit.addOptionalMountBinder(binder)
         }
       }
     }
 
-    customDelegateBindersForMountSpec
+    customViewBindersForMountSpec
         .getOrCreate {
           LinkedHashMap<Class<*>, DelegateBinder<Any, Any, Any>>().also {
-            customDelegateBindersForMountSpec = it
+            customViewBindersForMountSpec = it
           }
         }
-        .putAll(delegateBindersMap)
+        .putAll(viewBindersMap)
   }
 
   fun child(resolveContext: ResolveContext, c: ComponentContext, child: Component?) {
@@ -898,7 +898,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
   }
 
   private fun hasCustomBindersForMountSpec(): Boolean =
-      customDelegateBindersForMountSpec?.isNotEmpty() == true
+      customViewBindersForMountSpec?.isNotEmpty() == true
 
   companion object {
     private val idGenerator = AtomicInteger(1)

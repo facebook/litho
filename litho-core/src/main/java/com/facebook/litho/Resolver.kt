@@ -308,7 +308,7 @@ object Resolver {
               the common props are only initialized later, and some needed LithoNode for tail components
               is also filled later, and this is why we are moving the addition a bit below. */
               if (commonProps != null) {
-                node.addCustomBinders(commonProps.delegateViewBinders)
+                node.addViewCustomBinders(commonProps.viewBinders)
               }
 
               if (isTracing) {

@@ -84,7 +84,7 @@ object LithoNodeUtils {
             if (node.needsHostView() || node.primitive != null) {
               null
             } else {
-              node.customDelegateBindersForMountSpec
+              node.customViewBindersForMountSpec
             },
         debugKey = getLithoNodeDebugKey(node, OutputUnitType.CONTENT),
         viewAttributes =
@@ -133,7 +133,7 @@ object LithoNodeUtils {
         duplicateChildrenStates = node.isDuplicateChildrenStatesEnabled,
         isMountViewSpec = true,
         customDelegateBindersForMountSpec =
-            if (node.needsHostView()) node.customDelegateBindersForMountSpec else null,
+            if (node.needsHostView()) node.customViewBindersForMountSpec else null,
         debugKey = getLithoNodeDebugKey(node, OutputUnitType.HOST),
         viewAttributes =
             createViewAttributesForBinder(
@@ -172,7 +172,7 @@ object LithoNodeUtils {
         duplicateChildrenStates = node.isDuplicateChildrenStatesEnabled,
         isMountViewSpec = true,
         customDelegateBindersForMountSpec =
-            if (node.willMountView) null else node.customDelegateBindersForMountSpec,
+            if (node.willMountView) null else node.customViewBindersForMountSpec,
         debugKey = getLithoNodeDebugKey(node, OutputUnitType.HOST),
         viewAttributes =
             createViewAttributesForBinder(
