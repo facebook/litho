@@ -886,6 +886,8 @@ constructor(
         tracer.endSection()
       }
       traceIdentifier?.let { DebugEventDispatcher.endTrace(it) }
+    } else if (!currentMountItem.isBound) {
+      bindRenderUnitToContent(currentMountItem)
     }
     currentMountItem.isBound = true
 
