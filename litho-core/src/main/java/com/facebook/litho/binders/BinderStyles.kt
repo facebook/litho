@@ -54,7 +54,7 @@ inline fun Style.onBindWithDescription(
 ): Style =
     this +
         ObjectStyleItem(
-            BinderObjectField.DELEGATE_MOUNT_VIEW_BINDER,
+            BinderObjectField.VIEW_MOUNT_BINDER,
             binder(description = description, dep = deps, func = func),
         )
 
@@ -80,7 +80,7 @@ inline fun Style.onBindWithDescription(
 inline fun Style.onBind(vararg deps: Any?, func: BindFunc<View>): Style =
     this +
         ObjectStyleItem(
-            BinderObjectField.DELEGATE_MOUNT_VIEW_BINDER,
+            BinderObjectField.VIEW_MOUNT_BINDER,
             binder(dep = deps, func = func),
         )
 
@@ -125,9 +125,7 @@ inline fun <ModelT, BindDataT : Any> Style.viewBinder(
     binder: RenderUnit.Binder<ModelT, View, BindDataT>,
     model: ModelT
 ): Style =
-    this +
-        ObjectStyleItem(
-            BinderObjectField.DELEGATE_MOUNT_VIEW_BINDER, createDelegateBinder(model, binder))
+    this + ObjectStyleItem(BinderObjectField.VIEW_MOUNT_BINDER, createDelegateBinder(model, binder))
 
 /**
  * An overload of [Style.viewBinder] which takes a [RenderUnit.Binder] that does not require a
@@ -141,11 +139,11 @@ inline fun <BindDataT : Any> Style.viewBinder(
 
 @Deprecated("use parameterized viewBinder methods above")
 fun Style.viewBinder(binder: DelegateBinder<*, View, Any>): Style =
-    this + ObjectStyleItem(BinderObjectField.DELEGATE_MOUNT_VIEW_BINDER, binder)
+    this + ObjectStyleItem(BinderObjectField.VIEW_MOUNT_BINDER, binder)
 
 @PublishedApi
 internal enum class BinderObjectField : StyleItemField {
-  DELEGATE_MOUNT_VIEW_BINDER
+  VIEW_MOUNT_BINDER
 }
 
 @PublishedApi
@@ -156,7 +154,7 @@ internal data class ObjectStyleItem(
 ) : StyleItem<Any?> {
   override fun applyCommonProps(context: ComponentContext, commonProps: CommonProps) {
     when (field) {
-      BinderObjectField.DELEGATE_MOUNT_VIEW_BINDER ->
+      BinderObjectField.VIEW_MOUNT_BINDER ->
           commonProps.delegateMountViewBinder(value as DelegateBinder<Any, Any, Any>)
     }
   }
