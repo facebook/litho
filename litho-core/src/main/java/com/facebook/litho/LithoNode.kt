@@ -24,6 +24,7 @@ import android.graphics.Paint
 import android.graphics.PathEffect
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
+import android.view.View
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
@@ -33,6 +34,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import com.facebook.infer.annotation.ThreadConfined
 import com.facebook.litho.CommonProps.DefaultLayoutProps
+import com.facebook.litho.ComponentHostUtils.maybeSetDrawableState
 import com.facebook.litho.Transition.TransitionKeyType
 import com.facebook.litho.annotations.ImportantForAccessibility
 import com.facebook.litho.config.LithoDebugConfigurations
@@ -46,6 +48,7 @@ import com.facebook.rendercore.FastMath
 import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.Node
 import com.facebook.rendercore.RenderUnit
+import com.facebook.rendercore.RenderUnit.Binder
 import com.facebook.rendercore.RenderUnit.DelegateBinder
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.primitives.Primitive
@@ -437,6 +440,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
     }
 
     addViewAttributesBinderIfForPrimitive()
+    addRefreshDrawableStateBinder()
 
     // Sets mFrozen as true to avoid anymore mutation.
     frozen = true
@@ -485,6 +489,25 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
         nodePrimitive.renderUnit.addOptionalMountBinder(viewAttributesBinder)
       }
     }
+  }
+
+  /**
+   * This method will add a binder that updates the content drawable's drawable state to primitive
+   * render unit.
+   */
+  private fun addRefreshDrawableStateBinder() {
+    var flags = 0
+
+    if (isDuplicateParentStateEnabled) {
+      flags = flags or LithoRenderUnit.LAYOUT_FLAG_DUPLICATE_PARENT_STATE
+    }
+    if (nodeInfo?.hasTouchEventHandlers() == true) {
+      flags = flags or LithoRenderUnit.LAYOUT_FLAG_HAS_TOUCH_EVENT_HANDLERS
+    }
+
+    primitive
+        ?.renderUnit
+        ?.addAttachBinder(DelegateBinder.createDelegateBinder(flags, RefreshDrawableStateBinder))
   }
 
   fun addComponentNeedingPreviousRenderData(scopedComponentInfo: ScopedComponentInfo) {
@@ -1224,3 +1247,36 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
     }
   }
 }
+
+private val RefreshDrawableStateBinder: Binder<Int, Any, Any> =
+    object : Binder<Int, Any, Any> {
+      override fun shouldUpdate(
+          currentModel: Int,
+          newModel: Int,
+          currentLayoutData: Any?,
+          nextLayoutData: Any?,
+      ): Boolean = true
+
+      override fun bind(
+          context: Context,
+          content: Any,
+          model: Int, // flags
+          layoutData: Any?,
+      ): Any? {
+        if (content is Drawable) {
+          if (content.callback is View) {
+            val view = content.callback as View
+            maybeSetDrawableState(view, content, model)
+          }
+        }
+        return null
+      }
+
+      override fun unbind(
+          context: Context,
+          content: Any,
+          model: Int,
+          layoutData: Any?,
+          bindData: Any?,
+      ) = Unit
+    }
