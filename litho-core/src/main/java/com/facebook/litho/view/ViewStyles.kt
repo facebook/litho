@@ -43,7 +43,7 @@ import com.facebook.litho.StyleItemField
 import com.facebook.litho.SupportsPivotTransform
 import com.facebook.litho.SupportsPivotTransform.Companion.BadPivotClassErrorMessage
 import com.facebook.litho.TouchEvent
-import com.facebook.litho.binders.onBindWithDescription
+import com.facebook.litho.binders.onBindViewWithDescription
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.debug.DebugInfoReporter
 import com.facebook.litho.debug.getComponentStackTraceElement
@@ -461,7 +461,7 @@ inline fun Style.onInterceptTouch(
  */
 inline fun Style.onHover(noinline handler: (View, MotionEvent) -> Boolean): Style =
     this +
-        Style.onBindWithDescription({ "hover-handler" }, handler) { content ->
+        Style.onBindViewWithDescription({ "hover-handler" }, handler) { content ->
           content.setOnHoverListener(handler)
           onUnbind { content.setOnHoverListener(null) }
         }
@@ -494,7 +494,7 @@ inline fun Style.pivotPercent(
   }
   val model = Pair(pivotXPercent, pivotYPercent)
   return this +
-      Style.onBindWithDescription({ "PivotPercent" }, model) { content ->
+      Style.onBindViewWithDescription({ "PivotPercent" }, model) { content ->
         check(content is SupportsPivotTransform) { BadPivotClassErrorMessage }
         content.setTransformPivot(model.first, model.second)
         onUnbind { SupportsPivotTransform.resetPivot(content) }

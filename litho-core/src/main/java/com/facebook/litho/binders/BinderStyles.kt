@@ -47,7 +47,7 @@ import com.facebook.rendercore.primitives.binder
  * @param func the [RenderUnit.Binder] to be used to bind the model to the View content.
  * @param name the name of the binder. This is used for debugging purposes.
  */
-inline fun Style.onBindWithDescription(
+inline fun Style.onBindViewWithDescription(
     noinline description: () -> String,
     vararg deps: Any?,
     func: BindFunc<View>,
@@ -59,7 +59,7 @@ inline fun Style.onBindWithDescription(
         )
 
 /**
- * **Note: Please use [onBindWithDescription] instead.**
+ * **Note: Please use [onBindViewWithDescription] instead.**
  *
  * This [Style] adds a mount callbacks. The [BindFunc] is invoked when the Component is mounted, and
  * it receives a [BindScope] and the [View] this [Component] rendered to. The [BindFunc] must return
@@ -77,7 +77,7 @@ inline fun Style.onBindWithDescription(
  * @param deps the dependencies that will be compared to check if the binder should be rerun.
  * @param func the [RenderUnit.Binder] to be used to bind the model to the View content.
  */
-inline fun Style.onBind(vararg deps: Any?, func: BindFunc<View>): Style =
+inline fun Style.onBindView(vararg deps: Any?, func: BindFunc<View>): Style =
     this +
         ObjectStyleItem(
             BinderObjectField.VIEW_MOUNT_BINDER,
@@ -86,12 +86,12 @@ inline fun Style.onBind(vararg deps: Any?, func: BindFunc<View>): Style =
 
 @Deprecated(ON_BIND_NO_DEPS_ERROR, level = DeprecationLevel.ERROR)
 @Suppress("unused", "UNUSED_PARAMETER")
-inline fun Style.onBindWithDescription(name: String, func: BindFunc<View>): Style =
+inline fun Style.onBindViewWithDescription(name: String, func: BindFunc<View>): Style =
     throw IllegalArgumentException(ON_BIND_NO_DEPS_ERROR)
 
 @Deprecated(ON_BIND_NO_DEPS_ERROR, level = DeprecationLevel.ERROR)
 @Suppress("unused", "UNUSED_PARAMETER")
-inline fun Style.onBind(func: BindFunc<View>): Style =
+inline fun Style.onBindView(func: BindFunc<View>): Style =
     throw IllegalArgumentException(ON_BIND_NO_DEPS_ERROR)
 
 /**
