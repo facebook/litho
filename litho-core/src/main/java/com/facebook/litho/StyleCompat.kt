@@ -40,6 +40,7 @@ import com.facebook.litho.flexbox.positionType
 import com.facebook.litho.transition.transitionKey
 import com.facebook.litho.view.background
 import com.facebook.litho.view.clipChildren
+import com.facebook.litho.view.onLongClick
 import com.facebook.litho.view.onTouch
 import com.facebook.litho.view.testKey
 import com.facebook.litho.view.wrapInView
@@ -204,6 +205,10 @@ object StyleCompat {
   @JvmStatic
   fun touchHandler(touchHandler: EventHandler<TouchEvent>?): JavaStyle =
       JavaStyle().touchHandler(touchHandler)
+
+  /** @see [JavaStyle.onLongClick] */
+  @JvmStatic
+  fun onLongClick(action: (LongClickEvent) -> Boolean): JavaStyle = JavaStyle().onLongClick(action)
 }
 
 class JavaStyle {
@@ -464,6 +469,11 @@ class JavaStyle {
 
   fun testKey(value: String?): JavaStyle {
     style = style.testKey(value)
+    return this
+  }
+
+  fun onLongClick(action: (LongClickEvent) -> Boolean): JavaStyle {
+    style = style.onLongClick(action)
     return this
   }
 
