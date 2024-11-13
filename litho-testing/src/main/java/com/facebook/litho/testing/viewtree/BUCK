@@ -33,6 +33,7 @@ litho_android_library(
     ],
     deps = [
         "//fbandroid/third-party/java/infer-annotations:infer-annotations",
+        "//fbandroid/third-party/java/jsr-305:jsr-305",
         LITHO_ANDROIDSUPPORT_TESTING_CORE_TARGET,
         LITHO_DIFFUTILS_TARGET,
         LITHO_GUAVA_TARGET,

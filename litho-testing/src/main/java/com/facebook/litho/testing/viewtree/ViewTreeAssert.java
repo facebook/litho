@@ -231,8 +231,9 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
         ApplicationProvider.getApplicationContext().getResources().getString(resourceId));
   }
 
+  @Nullable
   private ImmutableList<View> getPathToVisibleSimilarText(final String text) {
-    // NULLSAFE_FIXME[Return Not Nullable, Nullable Dereference]
+    // NULLSAFE_FIXME[Nullable Dereference]
     return actual.findChild(
         Predicates.and(
             isVisible(),
@@ -363,7 +364,6 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
    */
   public ViewTreeAssert hasVisibleDrawable(final int resourceId) {
     hasVisibleDrawable(
-        // NULLSAFE_FIXME[Parameter Not Nullable]
         ApplicationProvider.getApplicationContext().getResources().getDrawable(resourceId));
     return this;
   }
@@ -399,7 +399,6 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
    */
   public ViewTreeAssert doesNotHaveVisibleDrawable(final int resourceId) {
     doesNotHaveVisibleDrawable(
-        // NULLSAFE_FIXME[Parameter Not Nullable]
         ApplicationProvider.getApplicationContext().getResources().getDrawable(resourceId));
     return this;
   }
