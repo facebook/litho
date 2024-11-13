@@ -39,9 +39,12 @@ enum class Reason {
   USES_WORKING_RANGES,
 
   /**
-   * Used when devs need to use [OnUpdateStateWithTransition] API, which is not yet supported in
-   * Litho Kotlin API.
+   * Used when devs need to use [OnUpdateStateWithTransition] API.
+   * [Convert this Spec](https://fblitho.com/docs/kotlin/kotlin-transitions/) to the Litho Kotlin
+   * API or change [USES_ON_UPDATE_STATE_WITH_TRANSITION] to other appropriate [Reason].
    */
+  @Deprecated(
+      "Convert to Litho Kotlin API: https://fblitho.com/docs/kotlin/kotlin-transitions/, or change it to other appropriate `reason`")
   USES_ON_UPDATE_STATE_WITH_TRANSITION,
 
   /**
