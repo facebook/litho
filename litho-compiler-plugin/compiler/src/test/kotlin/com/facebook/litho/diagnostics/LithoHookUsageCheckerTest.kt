@@ -24,9 +24,17 @@ import org.assertj.core.api.Assertions.assertThat
 import org.intellij.lang.annotations.Language
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.runners.Parameterized
+import org.junit.runners.Parameterized.Parameters
 
 @OptIn(ExperimentalCompilerApi::class)
-class LithoHookUsageCheckerTest : AbstractCompilerTest() {
+@RunWith(Parameterized::class)
+class LithoHookUsageCheckerTest(private val useK2: Boolean) : AbstractCompilerTest() {
+
+  companion object {
+    @Parameters(name = "useK2={0}") @JvmStatic fun useK2() = listOf(false, true)
+  }
 
   @Test
   fun `doesn't complain about hook used in render function`() {
@@ -312,6 +320,6 @@ class LithoHookUsageCheckerTest : AbstractCompilerTest() {
   }
 
   private fun compile(@Language("kotlin") source: String): CompilationResult {
-    return compile(SourceFile.kotlin("TestClass.kt", source))
+    return compile(SourceFile.kotlin("TestClass.kt", source), useK2 = useK2)
   }
 }
