@@ -19,6 +19,7 @@ package com.facebook.litho
 import com.facebook.litho.common.LithoCompilerConfig
 import com.facebook.litho.common.get
 import com.facebook.litho.k1.LithoFeCheckersContributor
+import com.facebook.litho.k2.LithoFirExtensionRegistrar
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
@@ -26,6 +27,7 @@ import org.jetbrains.kotlin.compiler.plugin.CompilerPluginRegistrar
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.extensions.StorageComponentContainerContributor
+import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrarAdapter
 import org.jetbrains.kotlin.resolve.extensions.AnalysisHandlerExtension
 
 /**
@@ -50,6 +52,7 @@ class LithoComponentRegistrar : CompilerPluginRegistrar() {
           })
     }
     // K2 extensions
+    FirExtensionRegistrarAdapter.registerExtension(LithoFirExtensionRegistrar())
     // Backend extensions
   }
 
