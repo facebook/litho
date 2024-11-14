@@ -73,14 +73,14 @@ public class EventHandler<E> implements Function<Void>, Equivalence<EventHandler
       }
 
       if (mode == EventHandlerRebindMode.REBIND && !ThreadUtils.isMainThread()) {
-        throw new RuntimeException(
-            "EventHandlingViolation. Event "
-                + CommonUtils.getSectionNameForTracing(event.getClass())
-                + " was dispatched from a non-UI thread ("
-                + Thread.currentThread().getName()
-                + "). This is only allowed for events that are marked as non-rebinding. Please "
-                + "annotate the event class with @Event(mode = EventHandlerRebindMode.NONE) to "
-                + "mark it as non-rebinding. Please use the Litho Support group for support.");
+        DebugInfoReporter.report(
+            "EventHandlingViolation",
+            (attribute) -> {
+              attribute.put("error", "DispatchedOnWrongThread");
+              attribute.put("event", CommonUtils.getSectionNameForTracing(event.getClass()));
+              attribute.put(Source, this.toString());
+              return Unit.INSTANCE;
+            });
       }
     }
 
