@@ -14,34 +14,37 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.k1
+package com.facebook.litho.k2
 
 import com.facebook.litho.common.LithoNames
-import org.jetbrains.kotlin.psi.KtCallExpression
-import org.jetbrains.kotlin.psi.KtElement
-import org.jetbrains.kotlin.psi.KtLambdaArgument
-import org.jetbrains.kotlin.psi.KtLoopExpression
-import org.jetbrains.kotlin.psi.KtNameReferenceExpression
-import org.jetbrains.kotlin.psi.KtNamedFunction
+import org.jetbrains.kotlin.fir.FirElement
+import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
+import org.jetbrains.kotlin.fir.expressions.FirAnonymousFunctionExpression
+import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
+import org.jetbrains.kotlin.fir.expressions.FirLoop
+import org.jetbrains.kotlin.fir.types.classId
+import org.jetbrains.kotlin.fir.types.coneType
 
-fun KtNamedFunction.isRenderMethod(): Boolean {
-  return nameAsName == LithoNames.render &&
-      valueParameters.isEmpty() &&
-      receiverTypeReference?.text.orEmpty().endsWith("ComponentScope")
+fun FirSimpleFunction.isRenderMethod(): Boolean {
+  val receiver = receiverParameter?.typeRef?.coneType?.classId
+  return name == LithoNames.render &&
+      (receiver == LithoNames.ComponentScope || receiver == LithoNames.PrimitiveComponentScope) &&
+      valueParameters.isEmpty()
 }
 
 /**
  * The node is a loop. Covers both regular loops (for, while, etc.) and iterator loops (forEach
  * etc.)
  */
-fun KtElement.isLoop(): Boolean = this is KtLoopExpression || isLambdaLoop()
+fun FirElement.isLoop(): Boolean = this is FirLoop || isLambdaLoop()
 
 /** Is a forEach loop or similar loop where a lambda is executed on the each item of an iterator. */
-fun KtElement.isLambdaLoop(): Boolean {
-  if (this !is KtCallExpression) return false
-  val referenceExpression = firstChild as? KtNameReferenceExpression ?: return false
-  return lastChild is KtLambdaArgument &&
-      referenceExpression.getReferencedName() in iteratorLoopExpressions
+fun FirElement.isLambdaLoop(): Boolean {
+  if (this !is FirFunctionCall) return false
+  return calleeReference.name.identifier in iteratorLoopExpressions &&
+      argumentList.arguments.any {
+        it is FirAnonymousFunctionExpression && it.anonymousFunction.isLambda
+      }
 }
 
 private val iteratorLoopExpressions: Set<String> =

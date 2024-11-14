@@ -39,4 +39,5 @@ object LithoNames {
 
   val getProps: Name = Name.identifier("getProps")
   val EMPTY_ARRAY: Name = Name.identifier("EMPTY_ARRAY")
+  val render = Name.identifier("render")
 }
