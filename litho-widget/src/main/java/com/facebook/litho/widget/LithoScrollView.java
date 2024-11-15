@@ -21,6 +21,7 @@ import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.ViewTreeObserver;
+import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.core.view.OneShotPreDrawListener;
 import androidx.core.widget.NestedScrollView;
@@ -55,6 +56,7 @@ public class LithoScrollView extends NestedScrollView implements HasLithoViewChi
 
   private @Nullable String mCurrentRootComponent;
   private @Nullable String mCurrentLogTag;
+  private @Nullable @ColorInt Integer mFadingEdgeColor = null;
 
   public LithoScrollView(Context context) {
     this(context, new LithoView(context));
@@ -286,6 +288,15 @@ public class LithoScrollView extends NestedScrollView implements HasLithoViewChi
           "This operation is only support for LithoRenderTreeView but it was : "
               + CommonUtils.getSectionNameForTracing(mLithoView.getClass()));
     }
+  }
+
+  public void setFadingEdgeColor(@Nullable @ColorInt Integer edgeColor) {
+    mFadingEdgeColor = edgeColor;
+  }
+
+  @Override
+  public int getSolidColor() {
+    return mFadingEdgeColor != null ? mFadingEdgeColor : super.getSolidColor();
   }
 
   public static class ScrollPosition {

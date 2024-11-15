@@ -19,6 +19,7 @@ package com.facebook.litho.kotlin.widget
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
+import androidx.annotation.ColorInt
 import androidx.core.widget.NestedScrollView
 import com.facebook.litho.Component
 import com.facebook.litho.LayoutState
@@ -60,6 +61,7 @@ inline fun ResourcesScope.VerticalScroll(
     verticalFadingEdgeEnabled: Boolean = false,
     nestedScrollingEnabled: Boolean = false,
     fadingEdgeLength: Dimen = 0.dp,
+    fadingEdgeColor: Int? = null,
     fillViewport: Boolean = false,
     overScrollMode: Int = View.OVER_SCROLL_IF_CONTENT_SCROLLS,
     eventsController: VerticalScrollEventsController? = null,
@@ -79,6 +81,7 @@ inline fun ResourcesScope.VerticalScroll(
         scrollbarFadingEnabled = scrollbarFadingEnabled,
         overScrollMode = overScrollMode,
         fadingEdgeLength = fadingEdgeLength,
+        fadingEdgeColor = fadingEdgeColor,
         initialScrollPosition = initialScrollPosition,
         eventsController = eventsController,
         onScrollChange = onScrollChange,
@@ -96,6 +99,7 @@ inline fun ResourcesScope.VerticalScroll(
         .verticalFadingEdgeEnabled(verticalFadingEdgeEnabled)
         .nestedScrollingEnabled(nestedScrollingEnabled)
         .fadingEdgeLengthPx(fadingEdgeLength.toPixels())
+        .fadingEdgeColor(fadingEdgeColor)
         .fillViewport(fillViewport)
         .eventsController(eventsController)
         .shouldCompareCommonProps(shouldCompareCommonProps)
@@ -120,6 +124,7 @@ internal class VerticalScrollComponent(
     val overScrollMode: Int,
     val fadingEdgeLength: Dimen,
     val initialScrollPosition: Dimen,
+    @ColorInt val fadingEdgeColor: Int?,
     val eventsController: VerticalScrollEventsController?,
     val onScrollChange: ((NestedScrollView, scrollY: Int, oldScrollY: Int) -> Unit)?,
     val onInterceptTouch: ((NestedScrollView, event: MotionEvent) -> Boolean)?,
@@ -183,6 +188,10 @@ internal class VerticalScrollComponent(
                         LithoScrollView::setFadingEdgeLength,
                         ViewConfiguration.get(androidContext).scaledFadingEdgeLength,
                     )
+                  }
+
+                  withDescription("fadingEdgeColor") {
+                    fadingEdgeColor.bindTo(LithoScrollView::setFadingEdgeColor, null)
                   }
 
                   withDescription("scrollbarEnabled") {

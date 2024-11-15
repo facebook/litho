@@ -24,6 +24,7 @@ import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.core.widget.NestedScrollView.OnScrollChangeListener;
 import com.facebook.litho.Component;
@@ -218,6 +219,7 @@ public class VerticalScrollSpec {
       @Prop(optional = true) boolean nestedScrollingEnabled,
       @Prop(optional = true) boolean verticalFadingEdgeEnabled,
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) int fadingEdgeLength,
+      @Prop(optional = true) @Nullable @ColorInt Integer fadingEdgeColor,
       @Prop(optional = true) @Nullable VerticalScrollEventsController eventsController,
       @Prop(optional = true) @Nullable OnScrollChangeListener onScrollChangeListener,
       @Prop(optional = true) ScrollStateListener scrollStateListener,
@@ -233,6 +235,7 @@ public class VerticalScrollSpec {
     lithoScrollView.setNestedScrollingEnabled(nestedScrollingEnabled);
     lithoScrollView.setVerticalFadingEdgeEnabled(verticalFadingEdgeEnabled);
     lithoScrollView.setFadingEdgeLength(fadingEdgeLength);
+    lithoScrollView.setFadingEdgeColor(fadingEdgeColor);
     lithoScrollView.setVerticalScrollBarEnabled(scrollbarEnabled);
     lithoScrollView.setOnScrollChangeListener(onScrollChangeListener);
     lithoScrollView.setOnInterceptTouchListener(onInterceptTouchListener);
@@ -254,6 +257,7 @@ public class VerticalScrollSpec {
     }
     lithoScrollView.setOnScrollChangeListener((OnScrollChangeListener) null);
     lithoScrollView.setOnInterceptTouchListener(null);
+    lithoScrollView.setFadingEdgeColor(null);
     lithoScrollView.unmount();
   }
 
