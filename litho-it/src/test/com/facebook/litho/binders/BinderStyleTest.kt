@@ -19,19 +19,24 @@ package com.facebook.litho
 import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import android.view.View
 import android.widget.TextView
+import com.facebook.litho.binders.onBind
+import com.facebook.litho.binders.onBindView
 import com.facebook.litho.binders.onBindViewWithDescription
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.kotlin.widget.Progress
 import com.facebook.litho.kotlin.widget.Text
+import com.facebook.litho.kotlin.widget.TextInput
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.assertj.LithoAssertions
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.onClick
 import com.facebook.litho.view.wrapInView
 import com.facebook.litho.widget.ProgressView
+import com.facebook.rendercore.Host
 import com.facebook.rendercore.dp
 import com.facebook.rendercore.primitives.BindFunc
 import com.facebook.rendercore.primitives.BindScope
@@ -579,6 +584,82 @@ class BinderStyleTest {
 
     testBinder.assertNumOfUnbindInvocations(1)
     testBinder.assertUnboundContentType(0, LithoView::class.java)
+  }
+
+  @Test
+  fun `setting a general binder on a drawable component should return the drawable`() {
+    var content: Any? = null
+    var host: Any? = null
+    class TestComponent : KComponent() {
+      override fun ComponentScope.render(): Component {
+        return Column {
+          child(
+              Text(
+                  text = "Hello",
+                  style =
+                      Style.onBind(Unit) { _content ->
+                            content = _content
+                            onUnbind {}
+                          }
+                          .onBindView(Unit) { _host ->
+                            host = _host
+                            onUnbind {}
+                          }))
+        }
+      }
+    }
+
+    lithoTestRule.render { TestComponent() }
+
+    assertThat(content is Drawable).isTrue
+    assertThat(host is Host).isTrue
+  }
+
+  @Test
+  fun `setting a general binder on a view component should return the view`() {
+    var content: Any? = null
+    class TestComponent : KComponent() {
+      override fun ComponentScope.render(): Component {
+        return Column {
+          child(
+              TextInput(
+                  initialText = "Hello",
+                  style =
+                      Style.onBind({ "test-binder" }, Unit) { _content ->
+                        content = _content
+                        onUnbind {}
+                      }))
+        }
+      }
+    }
+
+    lithoTestRule.render { TestComponent() }
+
+    assertThat(content is View).isTrue
+  }
+
+  @Test
+  fun `setting a general binder on a container component should return the view`() {
+    var content: Any? = null
+    class TestComponent : KComponent() {
+      override fun ComponentScope.render(): Component {
+        return Column {
+          child(
+              Column(
+                  style =
+                      Style.onBind(Unit) { _content ->
+                        content = _content
+                        onUnbind {}
+                      }) {
+                    child(Text(text = "Hello"))
+                  })
+        }
+      }
+    }
+
+    lithoTestRule.render { TestComponent() }
+
+    assertThat(content).isNull()
   }
 
   private class ComponentWithDrawableMountSpec(

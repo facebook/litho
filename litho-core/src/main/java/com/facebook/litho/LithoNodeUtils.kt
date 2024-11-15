@@ -29,6 +29,7 @@ import com.facebook.litho.drawable.BorderColorDrawable
 import com.facebook.litho.host.HostViewAttributesCleanupBinder
 import com.facebook.rendercore.MountState
 import com.facebook.rendercore.RenderUnit
+import com.facebook.rendercore.RenderUnit.DelegateBinder
 import com.facebook.rendercore.primitives.Primitive
 import com.facebook.rendercore.primitives.PrimitiveRenderUnit
 import com.facebook.rendercore.transitions.TransitionUtils
@@ -62,6 +63,14 @@ object LithoNodeUtils {
 
     val id: Long = context.calculateLayoutOutputId(componentKey, OutputUnitType.CONTENT)
 
+    val additionalBinders: MutableMap<Class<*>, DelegateBinder<Any, Any, Any>> = HashMap()
+    if (node.primitive == null) {
+      node.customBindersForMountSpec?.let { additionalBinders.putAll(it) }
+    }
+    if (node.primitive == null && component.mountType == MountType.VIEW) {
+      node.customViewBindersForMountSpec?.let { additionalBinders.putAll(it) }
+    }
+
     return createRenderUnit(
         id = id,
         component = component,
@@ -80,12 +89,7 @@ object LithoNodeUtils {
         duplicateParentState = node.isDuplicateParentStateEnabled,
         hasHostView = node.needsHostView(),
         isMountViewSpec = node.willMountView,
-        customDelegateBindersForMountSpec =
-            if (node.needsHostView() || node.primitive != null) {
-              null
-            } else {
-              node.customViewBindersForMountSpec
-            },
+        customDelegateBindersForMountSpec = additionalBinders,
         debugKey = getLithoNodeDebugKey(node, OutputUnitType.CONTENT),
         viewAttributes =
             if (node.needsHostView() || node.primitive != null || !node.willMountView) {

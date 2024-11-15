@@ -644,8 +644,15 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
     otherProps.delegateMountViewBinder(binder)
   }
 
+  fun mountBinder(binder: DelegateBinder<Any, Any, Any>) {
+    otherProps.mountBinder(binder)
+  }
+
   val viewBinders: Map<Class<*>, DelegateBinder<Any, Any, Any>>?
     get() = _otherProps?.typeToViewBinders
+
+  val mountBinders: Map<Class<*>, DelegateBinder<Any, Any, Any>>?
+    get() = _otherProps?.typeToMountBinders
 
   fun transitionKeyType(type: TransitionKeyType?) {
     otherProps.transitionKeyType(type)
@@ -723,6 +730,7 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
     private var invisibleHandler: EventHandler<InvisibleEvent>? = null
     private var visibilityChangedHandler: EventHandler<VisibilityChangedEvent>? = null
     var typeToViewBinders: MutableMap<Class<*>, DelegateBinder<Any, Any, Any>>? = null
+    var typeToMountBinders: MutableMap<Class<*>, DelegateBinder<Any, Any, Any>>? = null
     private var importantForAccessibility: Int = 0
     private var duplicateParentState: Boolean = false
     private var duplicateChildrenStates: Boolean = false
@@ -744,6 +752,11 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
     fun delegateMountViewBinder(binder: DelegateBinder<Any, Any, Any>) {
       typeToViewBinders =
           (typeToViewBinders ?: LinkedHashMap()).apply { this[binder.type] = binder }
+    }
+
+    fun mountBinder(binder: DelegateBinder<Any, Any, Any>) {
+      typeToMountBinders =
+          (typeToMountBinders ?: LinkedHashMap()).apply { this[binder.type] = binder }
     }
 
     fun importantForAccessibility(importantForAccessibility: Int) {

@@ -309,6 +309,7 @@ object Resolver {
               is also filled later, and this is why we are moving the addition a bit below. */
               if (commonProps != null) {
                 node.addViewCustomBinders(commonProps.viewBinders)
+                node.addCustomBinders(commonProps.mountBinders)
               }
 
               if (isTracing) {

@@ -220,6 +220,9 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
   var customViewBindersForMountSpec: MutableMap<Class<*>, DelegateBinder<Any, Any, Any>>? = null
     internal set
 
+  var customBindersForMountSpec: MutableMap<Class<*>, DelegateBinder<Any, Any, Any>>? = null
+    internal set
+
   /**
    * A unique identifier which may be set for retrieving a component and its bounds when testing.
    */
@@ -596,6 +599,28 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
           }
         }
         .putAll(viewBindersMap)
+  }
+
+  fun addCustomBinders(binders: Map<Class<*>, DelegateBinder<Any, Any, Any>>? = null) {
+    if (binders.isNullOrEmpty()) {
+      return
+    }
+
+    if (primitive != null) {
+      allNotNull(primitive, binders) { primitive, map ->
+        for (binder in map.values) {
+          primitive.renderUnit.addOptionalMountBinder(binder)
+        }
+      }
+    } else {
+      customBindersForMountSpec
+          .getOrCreate {
+            LinkedHashMap<Class<*>, DelegateBinder<Any, Any, Any>>().also {
+              customBindersForMountSpec = it
+            }
+          }
+          .putAll(binders)
+    }
   }
 
   fun child(resolveContext: ResolveContext, c: ComponentContext, child: Component?) {

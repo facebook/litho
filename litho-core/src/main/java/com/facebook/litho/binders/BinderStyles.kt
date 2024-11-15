@@ -31,6 +31,71 @@ import com.facebook.rendercore.primitives.binder
 
 /**
  * This [Style] adds a mount callbacks. The [BindFunc] is invoked when the Component is mounted, and
+ * it receives a [BindScope] and the content this [Component] rendered to which can be a [View] or
+ * [Drawable]. The [BindFunc] must return an [UnbindFunc] and it must undo any mutations made to the
+ * [View] in the [BindFunc]. This API can be used to create higher-order Styles.
+ *
+ * The callbacks are guaranteed to be called on the main thread.
+ *
+ * The previous and new values of the [deps] are compared to check if the callbacks should be
+ * invoked again. If the [deps] are equivalent then the callbacks are not invoked again; if they are
+ * not equivalent then [UnbindFunc] is invoked followed by [BindFunc]. To invoke the callbacks only
+ * once use [Unit] as [deps].
+ *
+ * @param deps the dependencies that will be compared to check if the binder should be rerun.
+ * @param func the [RenderUnit.Binder] to be used to bind the model to the View content.
+ * @param name the name of the binder. This is used for debugging purposes.
+ */
+inline fun Style.onBindWithDescription(
+    noinline description: () -> String,
+    vararg deps: Any?,
+    func: BindFunc<Any>,
+): Style =
+    this +
+        ObjectStyleItem(
+            BinderObjectField.MOUNT_BINDER,
+            binder(description = description, dep = deps, func = func),
+        )
+
+/**
+ * This [Style] adds a mount callbacks. The [BindFunc] is invoked when the Component is mounted, and
+ * it receives a [BindScope] and the content this [Component] rendered to which can be a [View] or
+ * [Drawable]. The [BindFunc] must return an [UnbindFunc] and it must undo any mutations made to the
+ * [View] in the [BindFunc]. This API can be used to create higher-order Styles.
+ *
+ * The callbacks are guaranteed to be called on the main thread.
+ *
+ * The previous and new values of the [deps] are compared to check if the callbacks should be
+ * invoked again. If the [deps] are equivalent then the callbacks are not invoked again; if they are
+ * not equivalent then [UnbindFunc] is invoked followed by [BindFunc]. To invoke the callbacks only
+ * once use [Unit] as [deps].
+ *
+ * @param deps the dependencies that will be compared to check if the binder should be rerun.
+ * @param func the [RenderUnit.Binder] to be used to bind the model to the View content.
+ */
+inline fun Style.onBind(vararg deps: Any?, func: BindFunc<Any>): Style =
+    this +
+        ObjectStyleItem(
+            BinderObjectField.MOUNT_BINDER,
+            binder(dep = deps, func = func),
+        )
+
+@Deprecated(ON_BIND_NO_DEPS_ERROR, level = DeprecationLevel.ERROR)
+@Suppress("unused", "UNUSED_PARAMETER")
+inline fun Style.onBindWithDescription(name: String, func: BindFunc<Any>): Style =
+    throw IllegalArgumentException(ON_BIND_NO_DEPS_ERROR)
+
+@Deprecated(ON_BIND_NO_DEPS_ERROR, level = DeprecationLevel.ERROR)
+@Suppress("unused", "UNUSED_PARAMETER")
+inline fun Style.onBind(func: BindFunc<Any>): Style =
+    throw IllegalArgumentException(ON_BIND_NO_DEPS_ERROR)
+
+/**
+ * Use this [Style] instead of [onBind] to force the binder to be applied on a [View]; for example
+ * if a binder needs to be set on a [Row] or [Column] component, or if the binder needs to set
+ * common view properties even for components that render a Drawable.
+ *
+ * This [Style] adds a mount callbacks. The [BindFunc] is invoked when the Component is mounted, and
  * it receives a [BindScope] and the [View] this [Component] rendered to. The [BindFunc] must return
  * an [UnbindFunc] and it must undo any mutations made to the [View] in the [BindFunc]. This API can
  * be used to create higher-order Styles.
@@ -143,7 +208,8 @@ fun Style.viewBinder(binder: DelegateBinder<*, View, Any>): Style =
 
 @PublishedApi
 internal enum class BinderObjectField : StyleItemField {
-  VIEW_MOUNT_BINDER
+  VIEW_MOUNT_BINDER,
+  MOUNT_BINDER,
 }
 
 @PublishedApi
@@ -154,6 +220,8 @@ internal data class ObjectStyleItem(
 ) : StyleItem<Any?> {
   override fun applyCommonProps(context: ComponentContext, commonProps: CommonProps) {
     when (field) {
+      BinderObjectField.MOUNT_BINDER ->
+          commonProps.mountBinder(value as DelegateBinder<Any, Any, Any>)
       BinderObjectField.VIEW_MOUNT_BINDER ->
           commonProps.delegateMountViewBinder(value as DelegateBinder<Any, Any, Any>)
     }
