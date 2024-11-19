@@ -46,6 +46,7 @@ import com.squareup.javapoet.TypeName;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -108,9 +109,10 @@ class MethodGenerateHandler extends GenerateMembersHandlerBase {
       this.project = project;
     }
 
+    @Nullable
     @Override
+    // NULLSAFE_FIXME[Inconsistent Subclass Return Annotation]
     protected PsiElement getTemplateElement(PsiMethod method) {
-      // NULLSAFE_FIXME[Return Not Nullable]
       return null;
     }
 
