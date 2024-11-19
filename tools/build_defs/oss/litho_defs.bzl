@@ -275,7 +275,7 @@ def litho_robolectric4_test(
     kwargs["cxx_library_whitelist"] = [
         "//lib/yogajni:jni",
     ]
-    kwargs["robolectric_manifest"] = kwargs.pop("robolectric_manifest", LITHO_TEST_MANIFEST)
+    kwargs["manifest"] = kwargs.pop("manifest", LITHO_TEST_MANIFEST)
 
     kwargs.pop("autoglob", False)
 
