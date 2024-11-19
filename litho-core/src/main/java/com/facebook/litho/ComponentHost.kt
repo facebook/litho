@@ -427,8 +427,7 @@ open class ComponentHost(
     // This is a fix for an issue where TalkBack doesn't re-announce the content description after
     // a state update in some cases. It's behind a flag so that it can be turned off in case it
     // breaks something unexpectedly. See T193726518 for more details.
-    if (!contentDescription.isNullOrEmpty() &&
-        ComponentsConfiguration.enableAccessibilityReannouncementFix) {
+    if (!contentDescription.isNullOrEmpty()) {
       sendAccessibilityEvent(AccessibilityEvent.CONTENT_CHANGE_TYPE_CONTENT_DESCRIPTION)
     }
     this.contentDescription = contentDescription

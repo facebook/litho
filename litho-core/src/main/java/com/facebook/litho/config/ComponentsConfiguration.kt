@@ -294,12 +294,6 @@ internal constructor(
     /** This flag is to enable usage custom pool scopes */
     @JvmField var customPoolScopesEnabled: Boolean = false
 
-    /**
-     * This flag is used to enable a fix for the issue where content description is not re-announced
-     * by TalkBack after a state update in some specific situations.
-     */
-    @JvmField var enableAccessibilityReannouncementFix: Boolean = false
-
     /** This flag is to enable usage of Primitive Vertical Scroll Component */
     @JvmField var usePrimitiveVerticalScroll: Boolean = false
 
