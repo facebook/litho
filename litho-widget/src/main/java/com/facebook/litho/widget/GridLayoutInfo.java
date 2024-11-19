@@ -298,7 +298,8 @@ public class GridLayoutInfo implements LayoutInfo {
     private final int mHeight;
     private final int mOrientation;
     private final int mSpanCount;
-    private int mFill;
+    private int mLastFill;
+    private int mMaxFill;
     private int mIndexOfSpan;
 
     public ViewportFiller(int width, int height, int orientation, int spanCount) {
@@ -311,30 +312,30 @@ public class GridLayoutInfo implements LayoutInfo {
     @Override
     public boolean wantsMore() {
       final int target = mOrientation == VERTICAL ? mHeight : mWidth;
-      return mFill < target;
+      return mMaxFill < target;
     }
 
     @Override
     public void add(RenderInfo renderInfo, int width, int height) {
-      if (mIndexOfSpan == 0) {
-        mFill += mOrientation == VERTICAL ? height : width;
-      }
+      mMaxFill = Math.max(mMaxFill, mLastFill + (mOrientation == VERTICAL ? height : width));
 
       if (renderInfo.isFullSpan()) {
         mIndexOfSpan = 0;
+        mLastFill = mMaxFill;
       } else {
         mIndexOfSpan += renderInfo.getSpanSize();
 
         if (mIndexOfSpan == mSpanCount) {
           // Reset the index after exceeding the span.
           mIndexOfSpan = 0;
+          mLastFill = mMaxFill;
         }
       }
     }
 
     @Override
     public int getFill() {
-      return mFill;
+      return mMaxFill;
     }
   }
 }

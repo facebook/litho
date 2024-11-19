@@ -30,6 +30,7 @@ import com.facebook.litho.SizeSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -317,6 +318,72 @@ public class GridLayoutInfoTest {
       viewportFiller.add(renderInfo, itemWidth, 10);
     }
     assertThat(viewportFiller.getFill()).isEqualTo(itemWidth * 3);
+  }
+
+  @Test
+  public void testVerticalViewportFillerWithDynamicHeight() {
+    final Random random = new Random();
+    int itemCount = 0;
+    while (itemCount == 0) {
+      itemCount = random.nextInt(50);
+    }
+    int spanCount = 0;
+    while (spanCount == 0) {
+      spanCount = random.nextInt(10);
+    }
+    final int[] itemHeight = new int[itemCount];
+    for (int i = 0; i < itemCount; i++) {
+      itemHeight[i] = random.nextInt(50);
+    }
+    GridLayoutInfo.ViewportFiller viewportFiller =
+        new GridLayoutInfo.ViewportFiller(100, 500, VERTICAL, spanCount);
+
+    int lastHeight = 0;
+    int totalHeight = 0;
+    for (int i = 0; i < itemCount; i++) {
+      if (i % spanCount == 0) {
+        lastHeight = totalHeight;
+      }
+      int height = itemHeight[i];
+      totalHeight = Math.max(totalHeight, lastHeight + height);
+      final RenderInfo renderInfo = mock(RenderInfo.class);
+      when(renderInfo.getSpanSize()).thenReturn(1);
+      viewportFiller.add(renderInfo, 100 / spanCount, height);
+    }
+    assertThat(viewportFiller.getFill()).isEqualTo(totalHeight);
+  }
+
+  @Test
+  public void testHorizontalViewportFillerWithDynamicWidth() {
+    final Random random = new Random();
+    int itemCount = 0;
+    while (itemCount == 0) {
+      itemCount = random.nextInt(50);
+    }
+    int spanCount = 0;
+    while (spanCount == 0) {
+      spanCount = random.nextInt(10);
+    }
+    final int[] itemWidth = new int[itemCount];
+    for (int i = 0; i < itemCount; i++) {
+      itemWidth[i] = random.nextInt(50);
+    }
+    GridLayoutInfo.ViewportFiller viewportFiller =
+        new GridLayoutInfo.ViewportFiller(500, 100, HORIZONTAL, spanCount);
+
+    int lastWidth = 0;
+    int totalWidth = 0;
+    for (int i = 0; i < itemCount; i++) {
+      if (i % spanCount == 0) {
+        lastWidth = totalWidth;
+      }
+      int width = itemWidth[i];
+      totalWidth = Math.max(totalWidth, lastWidth + width);
+      final RenderInfo renderInfo = mock(RenderInfo.class);
+      when(renderInfo.getSpanSize()).thenReturn(1);
+      viewportFiller.add(renderInfo, width, 100 / spanCount);
+    }
+    assertThat(viewportFiller.getFill()).isEqualTo(totalWidth);
   }
 
   @Test
