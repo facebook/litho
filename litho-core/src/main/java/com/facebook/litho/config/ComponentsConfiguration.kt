@@ -269,6 +269,12 @@ internal constructor(
      */
     @JvmField var usePrimitiveImage: Boolean = false
 
+    /**
+     * This flag is used to enable using PrimitiveComponent implementation of a SolidColor
+     * component.
+     */
+    @JvmField var usePrimitiveSolidColor: Boolean = false
+
     /** This config will enable logging of interactable components with 0 alpha */
     @JvmField var isZeroAlphaLoggingEnabled: Boolean = false
 
