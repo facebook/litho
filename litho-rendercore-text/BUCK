@@ -25,6 +25,7 @@ litho_android_library(
     deps = LITHO_TEXTLAYOUTBUILDER_UTILS_TARGET + [
         ":res",
         "//fbandroid/android_res/rendercore:rendercore",
+        "//fbandroid/java/com/facebook/annotations:annotations",
         "//fbandroid/java/com/facebook/proguard/annotations:annotations",
         "//fbandroid/third-party/java/infer-annotations:infer-annotations",
         "//third-party/java/androidx/core/core-ktx:core-ktx",

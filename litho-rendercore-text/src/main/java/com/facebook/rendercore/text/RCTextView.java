@@ -31,6 +31,7 @@ import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Layout;
 import android.text.Spanned;
@@ -44,15 +45,18 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.customview.widget.ExploreByTouchHelper;
+import com.facebook.annotations.DoNotOptimize;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.rendercore.text.TextMeasurementUtils.TextLayout;
 import com.facebook.rendercore.text.accessibility.AccessibilityUtils;
 import com.facebook.rendercore.text.accessibility.RCAccessibleClickableSpan;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -170,8 +174,12 @@ public class RCTextView extends View {
   }
 
   private void drawLayout(Canvas canvas) {
-    // NULLSAFE_FIXME[Parameter Not Nullable]
-    mLayout.draw(canvas, getSelectionPath(), mHighlightPaint, 0);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+      Api34Utils.draw(mLayout, canvas, getSelectionPath(), mHighlightPaint);
+    } else {
+      // NULLSAFE_FIXME[Parameter Not Nullable]
+      mLayout.draw(canvas, getSelectionPath(), mHighlightPaint, 0);
+    }
   }
 
   private OnPrePostDrawSpan[] getOnPrePostDrawSpans() {
@@ -679,6 +687,32 @@ public class RCTextView extends View {
       if (mWrappedAccessibilityDelegate != null) {
         mWrappedAccessibilityDelegate.onInitializeAccessibilityNodeInfo(host, info);
       }
+    }
+  }
+
+  @DoNotOptimize
+  @RequiresApi(api = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+  private static class Api34Utils {
+
+    private static List<Path> highlightPaths;
+    private static List<Paint> highlightPaints;
+
+    public static void draw(
+        Layout layout,
+        Canvas canvas,
+        @Nullable Path selectionPath,
+        @Nullable Paint selectionPaint) {
+      if (selectionPath != null) {
+        // Layout#drawHighlights noops when highlightPaths and highlightPaints are nulls
+        // Passing empty lists to fix that
+        if (highlightPaths == null) {
+          highlightPaths = new ArrayList<>();
+        }
+        if (highlightPaints == null) {
+          highlightPaints = new ArrayList<>();
+        }
+      }
+      layout.draw(canvas, highlightPaths, highlightPaints, selectionPath, selectionPaint, 0);
     }
   }
 }
