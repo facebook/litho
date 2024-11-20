@@ -50,7 +50,7 @@ class ReducerTest {
     val sizeConstraints = SizeConstraints.exact(100, 100)
     val layoutContext: LayoutContext<*> = LayoutContext<Any?>(c, null, -1, LayoutCache(), null)
     val result = root.calculateLayout(layoutContext, sizeConstraints)
-    val renderTree = getReducedTree(c, result, sizeConstraints, RenderState.NO_ID, null)
+    val renderTree = getReducedTree(layoutContext, result, sizeConstraints, RenderState.NO_ID)
 
     // We expect one RenderUnit for each of the leaves and one for the root.
     assertThat(renderTree.mountableOutputCount).isEqualTo(3)
@@ -69,7 +69,7 @@ class ReducerTest {
     val sizeConstraints = SizeConstraints.exact(200, 200)
     val layoutContext: LayoutContext<*> = LayoutContext<Any?>(c, null, -1, LayoutCache(), null)
     val result = root.calculateLayout(layoutContext, sizeConstraints)
-    val renderTree = getReducedTree(c, result, sizeConstraints, RenderState.NO_ID, null)
+    val renderTree = getReducedTree(layoutContext, result, sizeConstraints, RenderState.NO_ID)
 
     // We expect one RenderUnit for each of the leaves, one for the root and one for the Host.
     assertThat(renderTree.mountableOutputCount).isEqualTo(3)
@@ -89,13 +89,14 @@ class ReducerTest {
     leafTwo.setRenderUnit(TestRenderUnit())
     val c: Context = RuntimeEnvironment.getApplication()
     val sizeConstraints = SizeConstraints.exact(200, 200)
-    val layoutContext: LayoutContext<*> = LayoutContext<Any?>(c, null, -1, LayoutCache(), null)
-    val result = root.calculateLayout(layoutContext, sizeConstraints)
     val e1: RenderCoreExtension<*, *> = TestRenderCoreExtension()
     val e2: RenderCoreExtension<*, *> = RenderCoreExtension<Any?, Any?>()
     val e3: RenderCoreExtension<*, *> = TestRenderCoreExtension(TestLayoutResultVisitor(), null)
     val extensions = arrayOf(e1, e2, e3)
-    val renderTree = getReducedTree(c, result, sizeConstraints, RenderState.NO_ID, extensions)
+    val layoutContext: LayoutContext<*> =
+        LayoutContext<Any?>(c, null, -1, LayoutCache(), extensions)
+    val result = root.calculateLayout(layoutContext, sizeConstraints)
+    val renderTree = getReducedTree(layoutContext, result, sizeConstraints, RenderState.NO_ID)
     val results = renderTree.extensionResults
     assertThat(results).isNotNull
     assertThat(results).hasSize(3)
@@ -129,7 +130,7 @@ class ReducerTest {
     val sizeConstraints = SizeConstraints.exact(200, 200)
     val layoutContext: LayoutContext<*> = LayoutContext<Any?>(c, null, -1, LayoutCache(), null)
     val result = root.calculateLayout(layoutContext, sizeConstraints)
-    val renderTree = getReducedTree(c, result, sizeConstraints, RenderState.NO_ID, null)
+    val renderTree = getReducedTree(layoutContext, result, sizeConstraints, RenderState.NO_ID)
 
     // The root node and the two leaf nodes should be present in the mountable output.
     assertThat(renderTree.mountableOutputCount).isEqualTo(3)

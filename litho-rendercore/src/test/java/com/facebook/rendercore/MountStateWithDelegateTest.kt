@@ -290,7 +290,7 @@ class MountStateWithDelegateTest {
       val layoutContext: LayoutContext<*> =
           LayoutContext<Any?>(c, null, -1, LayoutCache(), extensions)
       val result = root.calculateLayout(layoutContext, sizeConstraints)
-      return getReducedTree(c, result, sizeConstraints, RenderState.NO_ID, extensions)
+      return getReducedTree(layoutContext, result, sizeConstraints, RenderState.NO_ID)
     }
 
     private fun createMountState(c: Context): MountState {

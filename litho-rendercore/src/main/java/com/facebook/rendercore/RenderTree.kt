@@ -29,6 +29,7 @@ class RenderTree(
     val sizeConstraints: SizeConstraints,
     val renderStateId: Int,
     val extensionResults: List<Pair<RenderCoreExtension<*, *>, Any>>?,
+    val layoutContext: LayoutContext<*>?,
     // This will vary by framework and will be null outside of debug builds
     val debugData: Any?
 ) {
@@ -73,6 +74,7 @@ class RenderTree(
         sizeConstraints: Long,
         renderStateId: Int,
         extensionResults: List<Pair<RenderCoreExtension<*, *>, Any>>?,
+        layoutContext: LayoutContext<*>?,
         debugData: Any?
     ): RenderTree {
       return RenderTree(
@@ -82,6 +84,7 @@ class RenderTree(
           SizeConstraints.Helper.encode(sizeConstraints),
           renderStateId,
           extensionResults,
+          layoutContext,
           debugData,
       )
     }

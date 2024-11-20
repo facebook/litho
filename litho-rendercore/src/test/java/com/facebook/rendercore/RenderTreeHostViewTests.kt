@@ -81,6 +81,7 @@ class RenderTreeHostViewTests {
           SizeConstraints.exact(0, 0),
           RenderState.NO_ID,
           null,
+          null,
           null)
     } catch (e: IllegalStateException) {
       // Exception occurred as expected, raise flag indicate valid state for assert.

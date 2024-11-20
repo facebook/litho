@@ -458,6 +458,7 @@ class IncrementalMountExtensionTest {
             SizeConstraints.exact(100, 100),
             RenderState.NO_ID,
             null,
+            null,
             null)
     val input1 = TestIncrementalMountExtensionInput(rootHost, host1, child1, host2, child2)
     extension.beforeMount(extensionState, input1, Rect(0, 80, 100, 90))
@@ -499,6 +500,7 @@ class IncrementalMountExtensionTest {
             SizeConstraints.exact(100, 100),
             RenderState.NO_ID,
             null,
+            null,
             null)
     val input = TestIncrementalMountExtensionInput(rootHost, host2, child2, host1, child1)
     extension.beforeMount(extensionState, input, Rect(0, 80, 100, 90))
@@ -524,6 +526,7 @@ class IncrementalMountExtensionTest {
             null,
             SizeConstraints.exact(100, 100),
             RenderState.NO_ID,
+            null,
             null,
             null)
     val inputReparented =

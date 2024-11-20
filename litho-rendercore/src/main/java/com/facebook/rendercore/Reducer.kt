@@ -130,27 +130,27 @@ object Reducer {
 
   @JvmStatic
   fun getReducedTree(
-      context: Context,
+      layoutContext: LayoutContext<*>,
       layoutResult: LayoutResult,
       sizeConstraints: SizeConstraints,
       renderStateId: Int,
-      extensions: Array<RenderCoreExtension<*, *>>?
   ): RenderTree {
     RenderCoreSystrace.beginSection("Reducer.reduceTree")
-    val results = populate(extensions)
+    val results = populate(layoutContext.extensions)
     val nodes = ArrayList<RenderTreeNode>()
     val bounds = Rect(0, 0, layoutResult.width, layoutResult.height)
     visit(null, layoutResult, bounds, 0, 0, 0, results)
     val root = createRenderTreeNode(layoutResult, ROOT_HOST_RENDER_UNIT, bounds, null)
     nodes.add(root)
-    reduceTree(context, layoutResult, root, 0, 0, nodes, results)
+    reduceTree(layoutContext.androidContext, layoutResult, root, 0, 0, nodes, results)
     val nodesArray = nodes.toTypedArray()
     RenderCoreSystrace.endSection()
     var debugData: Any? = null
     if (BuildConfig.DEBUG) {
       debugData = layoutResult
     }
-    return RenderTree(root, nodesArray, null, sizeConstraints, renderStateId, results, debugData)
+    return RenderTree(
+        root, nodesArray, null, sizeConstraints, renderStateId, results, layoutContext, debugData)
   }
 
   @JvmStatic

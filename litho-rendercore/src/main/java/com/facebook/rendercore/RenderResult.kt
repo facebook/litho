@@ -154,11 +154,11 @@ internal constructor(
     ): RenderResult<State, RenderContext> {
       return RenderResult(
           Reducer.getReducedTree(
-              c.androidContext,
+              c,
               layoutResult,
               sizeConstraints,
               RenderState.NO_ID, // TODO: Get render state id from layout context
-              c.extensions),
+          ),
           node,
           c.layoutCache.writeCacheData,
           state)

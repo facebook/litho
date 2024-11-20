@@ -904,7 +904,7 @@ class MountStateTest {
       val sizeConstraints = SizeConstraints.exact(200, 200)
       val layoutContext = LayoutContext<Any?>(c, null, -1, LayoutCache(), null)
       val result = root.calculateLayout(layoutContext, sizeConstraints)
-      return getReducedTree(c, result, sizeConstraints, RenderState.NO_ID, null)
+      return getReducedTree(layoutContext, result, sizeConstraints, RenderState.NO_ID)
     }
 
     private fun createMountState(c: Context): MountState {
