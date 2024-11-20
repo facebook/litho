@@ -23,7 +23,6 @@ import com.facebook.litho.LithoPrimitive
 import com.facebook.litho.PrimitiveComponent
 import com.facebook.litho.PrimitiveComponentScope
 import com.facebook.litho.Style
-import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.useCached
 import com.facebook.rendercore.primitives.DrawableAllocator
 import com.facebook.rendercore.primitives.FillLayoutBehavior
@@ -36,8 +35,7 @@ import kotlin.math.min
  * @prop color Color to be shown.
  * @prop alpha The alpha of the color, in the range [0.0, 1.0]
  */
-@ExperimentalLithoApi
-class ExperimentalSolidColor(
+class SolidColorPrimitiveComponent(
     @ColorInt private val color: Int,
     private val alpha: Float = -1.0f,
     private val style: Style? = null

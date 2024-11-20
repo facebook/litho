@@ -19,14 +19,12 @@ package com.facebook.litho.widget
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.annotations.ExcuseMySpec
-import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateLayout
 import com.facebook.litho.annotations.Prop
 import com.facebook.litho.annotations.PropDefault
 import com.facebook.litho.annotations.Reason
 import com.facebook.litho.annotations.ResType
-import com.facebook.litho.config.ComponentsConfiguration
 
 /**
  * A component that renders a solid color.
@@ -35,7 +33,6 @@ import com.facebook.litho.config.ComponentsConfiguration
  * @prop color Color to be shown.
  * @prop alpha The alpha of the color, in the range [0.0, 1.0]
  */
-@OptIn(ExperimentalLithoApi::class)
 @ExcuseMySpec(reason = Reason.J2K_CONVERSION)
 @LayoutSpec
 internal object SolidColorSpec {
@@ -48,10 +45,6 @@ internal object SolidColorSpec {
       @Prop(resType = ResType.COLOR) color: Int,
       @Prop(optional = true, isCommonProp = true, overrideCommonPropBehavior = true) alpha: Float
   ): Component {
-    return if (ComponentsConfiguration.usePrimitiveSolidColor) {
-      ExperimentalSolidColor(color = color, alpha = alpha)
-    } else {
-      SolidColorComponent.create(c).color(color).alpha(alpha).build()
-    }
+    return SolidColorPrimitiveComponent(color = color, alpha = alpha)
   }
 }
