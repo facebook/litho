@@ -42,6 +42,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityManager;
 import android.view.accessibility.AccessibilityNodeInfo;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -70,6 +71,7 @@ public class RCTextView extends View {
   // See TextView#getTextForAccessibility()
   private static final int SAFE_PARCELABLE_SIZE = 1000000;
   @Nullable private final RCTextAccessibilityDelegate mRCTextAccessibilityDelegate;
+  @Nullable private final AccessibilityManager mAccessibilityManager;
   // NULLSAFE_FIXME[Field Not Initialized]
   private CharSequence mText;
   // NULLSAFE_FIXME[Field Not Initialized]
@@ -94,6 +96,8 @@ public class RCTextView extends View {
   private Paint mHighlightPaint;
   private boolean mIsSettingDefaultAccessibilityDelegate = false;
   private boolean mShouldHandleTouch;
+  private boolean mShouldHandleKeyEvents;
+  @Nullable private Integer mWasFocusable;
 
   public RCTextView(Context context) {
     super(context);
@@ -101,8 +105,11 @@ public class RCTextView extends View {
     if (getImportantForAccessibility() == IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
       mRCTextAccessibilityDelegate = new RCTextAccessibilityDelegate();
       setDefaultAccessibilityDelegate();
+      mAccessibilityManager =
+          (AccessibilityManager) context.getSystemService(Context.ACCESSIBILITY_SERVICE);
     } else {
       mRCTextAccessibilityDelegate = null;
+      mAccessibilityManager = null;
     }
   }
 
@@ -243,6 +250,18 @@ public class RCTextView extends View {
     }
     mClickableSpans = textLayout.clickableSpans;
     mShouldHandleTouch = mClickableSpans != null && mClickableSpans.length > 0;
+    mShouldHandleKeyEvents =
+        mClickableSpans != null && mClickableSpans.length > 0 && Color.alpha(mHighlightColor) != 0;
+    if (mShouldHandleKeyEvents) {
+      // View needs to be focusable in order to receive key events
+      // Capture focusable state to restore it on unmount
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        mWasFocusable = Api26Utils.getFocusable(this);
+      } else {
+        mWasFocusable = isFocusable() ? 1 : 0;
+      }
+      setFocusable(true);
+    }
     if (textLayout.textStyle.accessibilityLabel != null) {
       setContentDescription(textLayout.textStyle.accessibilityLabel);
     }
@@ -287,6 +306,16 @@ public class RCTextView extends View {
     // NULLSAFE_FIXME[Field Not Nullable]
     mClickableSpans = null;
     mShouldHandleTouch = false;
+    mShouldHandleKeyEvents = false;
+    // Restore original focusable state if it was overridden
+    if (mWasFocusable != null) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        Api26Utils.setFocusable(this, mWasFocusable);
+      } else {
+        setFocusable(mWasFocusable == 1);
+      }
+      mWasFocusable = null;
+    }
     setContentDescription("");
 
     if (mRCTextAccessibilityDelegate != null) {
@@ -512,6 +541,9 @@ public class RCTextView extends View {
   @Override
   public final void onFocusChanged(
       boolean gainFocus, int direction, @Nullable Rect previouslyFocusedRect) {
+    if (mShouldHandleKeyEvents && !gainFocus) {
+      clearSelection();
+    }
     super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
     if (mRCTextAccessibilityDelegate != null && mClickableSpans.length > 0) {
       mRCTextAccessibilityDelegate.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
@@ -522,12 +554,132 @@ public class RCTextView extends View {
   public boolean dispatchKeyEvent(KeyEvent event) {
     return (mRCTextAccessibilityDelegate != null
             && mClickableSpans.length > 0
+            // ExploreByTouchHelper does the same check internally for all other methods, expect
+            // dispatchKeyEvent, this seems like a bug. Let's do the same check ourselves, otherwise
+            // ExploreByTouchHelper would consume keyDown events even when the screen reader is
+            // disabled.
+            && isScreenReaderEnabled()
             && mRCTextAccessibilityDelegate.dispatchKeyEvent(event))
         || super.dispatchKeyEvent(event);
   }
 
+  @Override
+  public boolean onKeyUp(int keyCode, KeyEvent event) {
+    if (mShouldHandleKeyEvents
+        && mSelectionStart == 0
+        && mSelectionEnd == 0
+        && (isDirectionKey(keyCode) || keyCode == KeyEvent.KEYCODE_TAB)) {
+      // View just received focus due to keyboard navigation. Nothing is currently selected,
+      // let's select first span according to the navigation direction.
+      ClickableSpan targetSpan = null;
+      if (isDirectionKey(keyCode) && event.hasNoModifiers()) {
+        if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT || keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+          targetSpan = mClickableSpans[0];
+        } else if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_UP) {
+          targetSpan = mClickableSpans[mClickableSpans.length - 1];
+        }
+      }
+
+      if (keyCode == KeyEvent.KEYCODE_TAB) {
+        if (event.hasNoModifiers()) {
+          targetSpan = mClickableSpans[0];
+        } else if (event.hasModifiers(KeyEvent.META_SHIFT_ON)) {
+          targetSpan = mClickableSpans[mClickableSpans.length - 1];
+        }
+      }
+
+      if (targetSpan != null) {
+        setSelection(targetSpan);
+        return true;
+      }
+    }
+
+    return super.onKeyUp(keyCode, event);
+  }
+
+  @Override
+  public boolean onKeyDown(int keyCode, KeyEvent event) {
+    if (mShouldHandleKeyEvents
+        && (isDirectionKey(keyCode) || isConfirmKey(keyCode))
+        && event.hasNoModifiers()) {
+      final int selectedSpanIndex = getSelectedSpanIndex();
+      if (selectedSpanIndex == -1) {
+        return super.onKeyDown(keyCode, event);
+      }
+
+      if (isDirectionKey(keyCode)) {
+        final int direction;
+        if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT || keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+          direction = 1;
+        } else {
+          // keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_UP
+          direction = -1;
+        }
+        final int repeatCount = 1 + event.getRepeatCount();
+        final int targetIndex = selectedSpanIndex + direction * repeatCount;
+        if (targetIndex >= 0 && targetIndex < mClickableSpans.length) {
+          setSelection(mClickableSpans[targetIndex]);
+          return true;
+        }
+      }
+
+      if (isConfirmKey(keyCode) && event.getRepeatCount() == 0) {
+        clearSelection();
+        mClickableSpans[selectedSpanIndex].onClick(this);
+        return true;
+      }
+    }
+
+    return super.onKeyDown(keyCode, event);
+  }
+
   public Layout getLayout() {
     return mLayout;
+  }
+
+  private static boolean isDirectionKey(int keyCode) {
+    return keyCode == KeyEvent.KEYCODE_DPAD_LEFT
+        || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT
+        || keyCode == KeyEvent.KEYCODE_DPAD_UP
+        || keyCode == KeyEvent.KEYCODE_DPAD_DOWN;
+  }
+
+  private static boolean isConfirmKey(int keyCode) {
+    return keyCode == KeyEvent.KEYCODE_DPAD_CENTER
+        || keyCode == KeyEvent.KEYCODE_ENTER
+        || keyCode == KeyEvent.KEYCODE_SPACE
+        || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER;
+  }
+
+  private int getSelectedSpanIndex() {
+    if (mClickableSpans == null
+        || mClickableSpans.length == 0
+        || (mSelectionStart == 0 && mSelectionEnd == 0)
+        || !(mText instanceof Spanned)) {
+      return -1;
+    }
+    final Spanned spanned = (Spanned) mText;
+    for (int i = 0; i < mClickableSpans.length; i++) {
+      final ClickableSpan span = mClickableSpans[i];
+      final int spanStart = spanned.getSpanStart(span);
+      final int spanEnd = spanned.getSpanEnd(span);
+      if (spanStart == mSelectionStart && spanEnd == mSelectionEnd) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  private boolean isScreenReaderEnabled() {
+    // this system boolean is used by litho and internal tooling to "force" the accessibility state
+    // copypaste of AccessibilityEnabledUtil, can't use this dependency directly because of WA
+    if (Boolean.getBoolean("is_accessibility_enabled")) {
+      return true;
+    }
+
+    return mAccessibilityManager != null
+        && mAccessibilityManager.isEnabled()
+        && mAccessibilityManager.isTouchExplorationEnabled();
   }
 
   private class RCTextAccessibilityDelegate extends ExploreByTouchHelper {
@@ -687,6 +839,19 @@ public class RCTextView extends View {
       if (mWrappedAccessibilityDelegate != null) {
         mWrappedAccessibilityDelegate.onInitializeAccessibilityNodeInfo(host, info);
       }
+    }
+  }
+
+  @DoNotOptimize
+  @RequiresApi(api = Build.VERSION_CODES.O)
+  private static class Api26Utils {
+
+    public static int getFocusable(View view) {
+      return view.getFocusable();
+    }
+
+    public static void setFocusable(View view, int focusable) {
+      view.setFocusable(focusable);
     }
   }
 
