@@ -275,11 +275,6 @@ internal constructor(
     @JvmField var usePrimitiveImage: Boolean = false
 
     /**
-     * This flag is used to enable using PrimitiveComponent implementation of a Progress component.
-     */
-    @JvmField var usePrimitiveProgress: Boolean = false
-
-    /**
      * This flag is used to enable using PrimitiveComponent implementation of a SolidColor
      * component.
      */

@@ -21,14 +21,12 @@ import android.graphics.drawable.Drawable
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.annotations.ExcuseMySpec
-import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateLayout
 import com.facebook.litho.annotations.Prop
 import com.facebook.litho.annotations.PropDefault
 import com.facebook.litho.annotations.Reason
 import com.facebook.litho.annotations.ResType
-import com.facebook.litho.config.ComponentsConfiguration
 
 /**
  * Renders an infinitely spinning progress bar.
@@ -43,20 +41,15 @@ object ProgressSpec {
 
   @PropDefault val color: Int = Color.TRANSPARENT
 
-  @OptIn(ExperimentalLithoApi::class)
   @OnCreateLayout
   fun onCreateLayout(
       c: ComponentContext,
       @Prop(optional = true, resType = ResType.COLOR) color: Int,
       @Prop(optional = true, resType = ResType.DRAWABLE) indeterminateDrawable: Drawable?,
   ): Component {
-    return if (ComponentsConfiguration.usePrimitiveProgress) {
-      ExperimentalProgress(
-          color = color,
-          indeterminateDrawable = indeterminateDrawable,
-      )
-    } else {
-      ProgressComponent.create(c).color(color).indeterminateDrawable(indeterminateDrawable).build()
-    }
+    return ProgressPrimitiveComponent(
+        color = color,
+        indeterminateDrawable = indeterminateDrawable,
+    )
   }
 }

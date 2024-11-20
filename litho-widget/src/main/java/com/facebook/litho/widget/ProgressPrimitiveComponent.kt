@@ -24,7 +24,6 @@ import com.facebook.litho.LithoPrimitive
 import com.facebook.litho.PrimitiveComponent
 import com.facebook.litho.PrimitiveComponentScope
 import com.facebook.litho.Style
-import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.rendercore.Size
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.primitives.LayoutBehavior
@@ -39,8 +38,7 @@ import com.facebook.rendercore.utils.withEqualDimensions
  * @param indeterminateDrawable Drawable to be shown to show progress.
  * @param color Tint color for the drawable.
  */
-@ExperimentalLithoApi
-class ExperimentalProgress(
+class ProgressPrimitiveComponent(
     private val color: Int = Color.TRANSPARENT,
     private val indeterminateDrawable: Drawable? = null,
     private val style: Style? = null
