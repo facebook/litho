@@ -132,11 +132,6 @@ internal constructor(
     @JvmField val enableHostWillNotDraw: Boolean = false,
     /** This will enable logging for render in-flight */
     @JvmField val enableLoggingForRenderInFlight: Boolean = false,
-    /**
-     * This will unset TPs from the CT's context, and use the one present in the CT directly as the
-     * ultimate source of truth.
-     */
-    @JvmField val useComponentTreePropContainerAsSourceOfTruth: Boolean = true,
     @JvmField val componentEqualityMode: ComponentEqualityMode = ComponentEqualityMode.DEFAULT,
 
     /**

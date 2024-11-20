@@ -235,9 +235,6 @@ public class ComponentTree
   @GuardedBy("this")
   private int mCommittedLayoutVersion = INVALID_LAYOUT_VERSION;
 
-  private final boolean useComponentTreePropContainerAsSourceOfTruth =
-      ComponentsConfiguration.defaultInstance.useComponentTreePropContainerAsSourceOfTruth;
-
   @GuardedBy("this")
   private final @Nullable TreePropContainer mParentTreePropContainer;
 
@@ -366,11 +363,7 @@ public class ComponentTree
     final StateUpdater stateUpdater =
         (builder.mStateUpdater != null) ? builder.mStateUpdater : this;
 
-    if (useComponentTreePropContainerAsSourceOfTruth) {
-      mParentTreePropContainer = builder.treePropContainer;
-    } else {
-      mParentTreePropContainer = null;
-    }
+    mParentTreePropContainer = builder.treePropContainer;
 
     LifecycleOwner implicitLifecycleOwner = getImplicitLifecycleOwner(builder.treePropContainer);
     mImplicitTreePropContainer = createImplicitTreePropContainer(implicitLifecycleOwner);
@@ -378,40 +371,21 @@ public class ComponentTree
       mImplicitTreePropContainer.put(PoolScopeTreeProp, builder.mPoolScope);
     }
 
-    if (useComponentTreePropContainerAsSourceOfTruth) {
-      // This must be called after both mParentTreePropContainer and mImplicitTreePropContainer are
-      // initialized.
-      mTreePropContainer = createTreePropContainer(null);
-      mContext =
-          new ComponentContext(
-              androidContext,
-              null,
-              config,
-              LithoTree.Companion.create(this, stateUpdater),
-              "root",
-              ComponentsConfiguration.defaultInstance.enableVisibilityFixForNestedLithoView
-                  ? builder.lithoVisibilityEventsController
-                  : getLithoVisibilityEventsController(),
-              null,
-              null);
-    } else {
-      TreePropContainer treePropContainer =
-          mImplicitTreePropContainer == null
-              ? builder.treePropContainer
-              : createTreePropContainer(builder.treePropContainer);
-      mContext =
-          new ComponentContext(
-              androidContext,
-              treePropContainer,
-              config,
-              LithoTree.Companion.create(this, stateUpdater),
-              "root",
-              ComponentsConfiguration.defaultInstance.enableVisibilityFixForNestedLithoView
-                  ? builder.lithoVisibilityEventsController
-                  : getLithoVisibilityEventsController(),
-              null,
-              builder.parentTreePropContainer);
-    }
+    // This must be called after both mParentTreePropContainer and mImplicitTreePropContainer are
+    // initialized.
+    mTreePropContainer = createTreePropContainer(null);
+    mContext =
+        new ComponentContext(
+            androidContext,
+            null,
+            config,
+            LithoTree.Companion.create(this, stateUpdater),
+            "root",
+            ComponentsConfiguration.defaultInstance.enableVisibilityFixForNestedLithoView
+                ? builder.lithoVisibilityEventsController
+                : getLithoVisibilityEventsController(),
+            null,
+            null);
 
     PreAllocationHandler preAllocationHandler = builder.config.preAllocationHandler;
     if (preAllocationHandler != null) {
@@ -456,11 +430,6 @@ public class ComponentTree
       if (builder.lithoVisibilityEventsController != null) {
         subscribeToVisibilityEventsController(builder.lithoVisibilityEventsController);
       }
-    }
-    if (!useComponentTreePropContainerAsSourceOfTruth) {
-      // Set the default root tree props from the context.
-      // TODO(T192860025): Clean up if required
-      mTreePropContainer = mContext.getTreePropContainer();
     }
 
     ComponentTreeDebugEventListener debugEventListener = config.componentsConfig.debugEventListener;
@@ -1304,16 +1273,10 @@ public class ComponentTree
   }
 
   void updateStateInternal(boolean isAsync, String attribution) {
-    final @Nullable TreePropContainer treePropContainer;
     synchronized (this) {
       if (mRoot == null) {
         return;
       }
-      treePropContainer =
-          useComponentTreePropContainerAsSourceOfTruth
-              ? null
-              : TreePropContainer.copy(mTreePropContainer);
-
       mBatchedStateUpdatesStrategy.onInternalStateUpdateStart();
     }
 
@@ -1326,7 +1289,7 @@ public class ComponentTree
         isAsync ? RenderSource.UPDATE_STATE_ASYNC : RenderSource.UPDATE_STATE_SYNC,
         INVALID_LAYOUT_VERSION,
         attribution,
-        treePropContainer,
+        null,
         false);
   }
 
@@ -1341,11 +1304,7 @@ public class ComponentTree
   @VisibleForTesting
   @Nullable
   public synchronized <T> T getTreeProp(TreeProp<T> key) {
-    @Nullable
-    TreePropContainer treePropContainer =
-        useComponentTreePropContainerAsSourceOfTruth
-            ? mTreePropContainer
-            : mContext.getTreePropContainer();
+    @Nullable TreePropContainer treePropContainer = mTreePropContainer;
     return treePropContainer == null ? null : treePropContainer.get(key);
   }
 
@@ -2753,11 +2712,7 @@ public class ComponentTree
   }
 
   synchronized void setLifecycleOwnerTreeProp(LifecycleOwner owner) {
-    @Nullable
-    TreePropContainer treePropContainer =
-        useComponentTreePropContainerAsSourceOfTruth
-            ? mTreePropContainer
-            : mContext.getTreePropContainer();
+    @Nullable TreePropContainer treePropContainer = mTreePropContainer;
     if (treePropContainer == null) {
       throw new NullPointerException("The treePropContainer cannot be null");
     }
