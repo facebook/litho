@@ -53,12 +53,12 @@ public class ProgressSpecTest {
         View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
         View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
 
-    assertThat(view.getMeasuredWidth()).isEqualTo(ProgressComponentSpec.DEFAULT_SIZE);
-    assertThat(view.getMeasuredHeight()).isEqualTo(ProgressComponentSpec.DEFAULT_SIZE);
+    assertThat(view.getMeasuredWidth()).isEqualTo(ProgressPrimitiveComponent.DEFAULT_SIZE);
+    assertThat(view.getMeasuredHeight()).isEqualTo(ProgressPrimitiveComponent.DEFAULT_SIZE);
   }
 
   private LithoView getMountedView() {
-    ProgressComponent.Builder progress = ProgressComponent.create(mContext);
+    Progress.Builder progress = Progress.create(mContext);
 
     return ComponentTestHelper.mountComponent(progress);
   }

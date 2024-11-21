@@ -72,16 +72,19 @@ class ProgressPrimitiveComponent(
             },
         style = style)
   }
+
+  companion object {
+    const val DEFAULT_SIZE: Int = 50
+  }
 }
 
 internal object ProgressLayoutBehavior : LayoutBehavior {
-  private const val DEFAULT_SIZE: Int = 50
 
   override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
     return PrimitiveLayoutResult(
         size =
             if (!sizeConstraints.hasBoundedWidth && !sizeConstraints.hasBoundedHeight) {
-              Size(DEFAULT_SIZE, DEFAULT_SIZE)
+              Size(ProgressPrimitiveComponent.DEFAULT_SIZE, ProgressPrimitiveComponent.DEFAULT_SIZE)
             } else {
               Size.withEqualDimensions(sizeConstraints)
             })
