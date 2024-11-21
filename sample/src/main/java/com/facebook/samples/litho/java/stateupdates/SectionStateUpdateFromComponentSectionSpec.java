@@ -85,13 +85,14 @@ class SectionStateUpdateFromComponentSectionSpec {
   static RenderInfo onRenderEvent(SectionContext c, @FromEvent Integer model) {
     return ComponentRenderInfo.create()
         .component(
-            TouchableFeedback.create(c)
-                .content(
-                    SectionStateUpdateFromComponentItem.create(c)
-                        .itemNumber(model)
-                        .listItemSelectedEventHandler(
-                            SectionStateUpdateFromComponentSection.onListItemSelectedEvent(c))
-                        .build()))
+            new TouchableFeedback(
+                SectionStateUpdateFromComponentItem.create(c)
+                    .itemNumber(model)
+                    .listItemSelectedEventHandler(
+                        SectionStateUpdateFromComponentSection.onListItemSelectedEvent(c))
+                    .build(),
+                Color.WHITE,
+                Color.LTGRAY))
         .build();
   }
 

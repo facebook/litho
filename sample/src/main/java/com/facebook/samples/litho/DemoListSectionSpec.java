@@ -74,19 +74,21 @@ class DemoListSectionSpec {
     newIndices[newIndices.length - 1] = index;
     return ComponentRenderInfo.create()
         .component(
-            TouchableFeedback.create(c)
-                .content(
-                    Column.create(c)
-                        .child(SingleDemoComponent.create(c).title(model.getName()))
-                        .child(
-                            index != groupSize - 1
-                                ? Image.create(c)
-                                    .drawable(new ColorDrawable(Color.BLACK))
-                                    .paddingDip(YogaEdge.LEFT, 16)
-                                    .widthPercent(100)
-                                    .heightPx(1)
-                                : null)
-                        .clickHandler(DemoListSection.onClickEvent(c, newIndices, model))))
+            new TouchableFeedback(
+                Column.create(c)
+                    .child(SingleDemoComponent.create(c).title(model.getName()))
+                    .child(
+                        index != groupSize - 1
+                            ? Image.create(c)
+                                .drawable(new ColorDrawable(Color.BLACK))
+                                .paddingDip(YogaEdge.LEFT, 16)
+                                .widthPercent(100)
+                                .heightPx(1)
+                            : null)
+                    .clickHandler(DemoListSection.onClickEvent(c, newIndices, model))
+                    .build(),
+                Color.WHITE,
+                Color.LTGRAY))
         .build();
   }
 

@@ -16,6 +16,7 @@
 
 package com.facebook.samples.litho;
 
+import android.graphics.Color;
 import android.text.Layout;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Column;
@@ -59,15 +60,16 @@ class SampleRootSectionSpec {
                 .child(
                     Card.create(c)
                         .content(
-                            TouchableFeedback.create(c)
-                                .content(
-                                    Text.create(c)
-                                        .text(model.getName())
-                                        .textSizeSp(22)
-                                        .textAlignment(Layout.Alignment.ALIGN_CENTER)
-                                        .paddingDip(YogaEdge.VERTICAL, 20)
-                                        .clickHandler(
-                                            SampleRootSection.onClickEvent(c, model, index))))
+                            new TouchableFeedback(
+                                Text.create(c)
+                                    .text(model.getName())
+                                    .textSizeSp(22)
+                                    .textAlignment(Layout.Alignment.ALIGN_CENTER)
+                                    .paddingDip(YogaEdge.VERTICAL, 20)
+                                    .clickHandler(SampleRootSection.onClickEvent(c, model, index))
+                                    .build(),
+                                Color.WHITE,
+                                Color.LTGRAY))
                         .marginDip(YogaEdge.HORIZONTAL, 16)
                         .marginDip(YogaEdge.TOP, 16)))
         .build();
