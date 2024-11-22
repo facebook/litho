@@ -25,6 +25,7 @@ import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.ComponentHost;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,14 +52,14 @@ public final class ViewExtractors {
           }
           if (text == null) {
             return String.format(
-                // NULLSAFE_FIXME[Nullable Dereference]
-                "No text found, view is %s", getVisibilityString(input.getVisibility()));
+                "No text found, view is %s",
+                getVisibilityString(Preconditions.checkNotNull(input).getVisibility()));
           }
 
           return String.format(
               "Found text: \"%s\", view is %s",
-              // NULLSAFE_FIXME[Nullable Dereference]
-              Strings.nullToEmpty(text.toString()), getVisibilityString(input.getVisibility()));
+              Strings.nullToEmpty(text.toString()),
+              getVisibilityString(Preconditions.checkNotNull(input).getVisibility()));
         }
       };
 
