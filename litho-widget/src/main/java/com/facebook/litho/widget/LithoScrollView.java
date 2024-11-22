@@ -19,6 +19,7 @@ package com.facebook.litho.widget;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
+import android.view.ContextThemeWrapper;
 import android.view.MotionEvent;
 import android.view.ViewTreeObserver;
 import androidx.annotation.ColorInt;
@@ -79,7 +80,7 @@ public class LithoScrollView extends NestedScrollView implements HasLithoViewChi
       final BaseMountingView view,
       final @Nullable AttributeSet attrs,
       final int defStyleAttr) {
-    super(context, attrs, defStyleAttr);
+    super(new ContextThemeWrapper(context, R.style.LithoScrollView), attrs, defStyleAttr);
     mLithoView = view;
     addView(mLithoView);
   }
