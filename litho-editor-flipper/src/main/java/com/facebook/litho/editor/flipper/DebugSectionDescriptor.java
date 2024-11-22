@@ -33,6 +33,7 @@ import com.facebook.flipper.plugins.inspector.Touch;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.sections.Section;
 import com.facebook.litho.sections.debug.DebugSection;
+import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -153,8 +154,7 @@ public class DebugSectionDescriptor extends NodeDescriptor<DebugSection> {
       for (int i = 0; i < childCount; i++) {
         final Object child = getChildAt(node, i);
         final NodeDescriptor descriptor = descriptorForClass(child.getClass());
-        // NULLSAFE_FIXME[Nullable Dereference]
-        descriptor.setHighlighted(child, selected, isAlignmentMode);
+        Preconditions.checkNotNull(descriptor).setHighlighted(child, selected, isAlignmentMode);
       }
     }
   }
@@ -249,8 +249,7 @@ public class DebugSectionDescriptor extends NodeDescriptor<DebugSection> {
   @Override
   public boolean matches(String query, DebugSection node) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(Object.class);
-    // NULLSAFE_FIXME[Nullable Dereference]
-    return descriptor.matches(query, node);
+    return Preconditions.checkNotNull(descriptor).matches(query, node);
   }
 
   @Override
