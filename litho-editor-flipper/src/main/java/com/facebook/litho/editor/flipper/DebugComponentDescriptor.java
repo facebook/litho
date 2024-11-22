@@ -51,6 +51,7 @@ import com.facebook.yoga.YogaFlexDirection;
 import com.facebook.yoga.YogaJustify;
 import com.facebook.yoga.YogaPositionType;
 import com.facebook.yoga.YogaValue;
+import com.google.common.base.Preconditions;
 import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -141,10 +142,8 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
   @Override
   public String getName(DebugComponent node) throws Exception {
     NodeDescriptor componentDescriptor = descriptorForClass(node.getComponent().getClass());
-    // NULLSAFE_FIXME[Nullable Dereference]
-    if (componentDescriptor.getClass() != ObjectDescriptor.class) {
-      // NULLSAFE_FIXME[Nullable Dereference]
-      return componentDescriptor.getName(node.getComponent());
+    if (Preconditions.checkNotNull(componentDescriptor).getClass() != ObjectDescriptor.class) {
+      return Preconditions.checkNotNull(componentDescriptor).getName(node.getComponent());
     }
     return node.getComponent().getSimpleName();
   }
@@ -175,10 +174,8 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
   @Override
   public List<Named<FlipperObject>> getData(DebugComponent node) throws Exception {
     NodeDescriptor componentDescriptor = descriptorForClass(node.getComponent().getClass());
-    // NULLSAFE_FIXME[Nullable Dereference]
-    if (componentDescriptor.getClass() != ObjectDescriptor.class) {
-      // NULLSAFE_FIXME[Nullable Dereference]
-      return componentDescriptor.getData(node.getComponent());
+    if (Preconditions.checkNotNull(componentDescriptor).getClass() != ObjectDescriptor.class) {
+      return Preconditions.checkNotNull(componentDescriptor).getData(node.getComponent());
     }
 
     final List<Named<FlipperObject>> data = new ArrayList<>();
@@ -528,10 +525,8 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
   public String getDecoration(DebugComponent node) throws Exception {
     if (node.getComponent() != null) {
       NodeDescriptor componentDescriptor = descriptorForClass(node.getComponent().getClass());
-      // NULLSAFE_FIXME[Nullable Dereference]
-      if (componentDescriptor.getClass() != ObjectDescriptor.class) {
-        // NULLSAFE_FIXME[Nullable Dereference]
-        return componentDescriptor.getDecoration(node.getComponent());
+      if (Preconditions.checkNotNull(componentDescriptor).getClass() != ObjectDescriptor.class) {
+        return Preconditions.checkNotNull(componentDescriptor).getDecoration(node.getComponent());
       }
     }
     return "litho";
