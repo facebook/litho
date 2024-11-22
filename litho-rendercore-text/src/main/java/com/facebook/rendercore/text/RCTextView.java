@@ -44,6 +44,7 @@ import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
 import android.view.accessibility.AccessibilityNodeInfo;
+import androidx.annotation.DoNotInline;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -51,7 +52,6 @@ import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.customview.widget.ExploreByTouchHelper;
-import com.facebook.annotations.DoNotOptimize;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.rendercore.text.TextMeasurementUtils.TextLayout;
@@ -842,26 +842,27 @@ public class RCTextView extends View {
     }
   }
 
-  @DoNotOptimize
   @RequiresApi(api = Build.VERSION_CODES.O)
   private static class Api26Utils {
 
+    @DoNotInline
     public static int getFocusable(View view) {
       return view.getFocusable();
     }
 
+    @DoNotInline
     public static void setFocusable(View view, int focusable) {
       view.setFocusable(focusable);
     }
   }
 
-  @DoNotOptimize
   @RequiresApi(api = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
   private static class Api34Utils {
 
     private static List<Path> highlightPaths;
     private static List<Paint> highlightPaints;
 
+    @DoNotInline
     public static void draw(
         Layout layout,
         Canvas canvas,
