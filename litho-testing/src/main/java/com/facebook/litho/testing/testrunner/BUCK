@@ -18,6 +18,7 @@ litho_android_library(
         "PUBLIC",
     ],
     deps = [
+        "//fbandroid/third-party/java/guava:guava",
         "//fbandroid/third-party/java/infer-annotations:infer-annotations",
         LITHO_JUNIT_TARGET,
         LITHO_ROBOLECTRIC_V4_TARGET,

@@ -21,6 +21,7 @@ import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.google.common.base.Preconditions;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -194,8 +195,9 @@ public class LithoTestRunner extends RobolectricTestRunner {
       // See comment in beforeTest above
       if (lithoMethod.configurationInstance != null) {
         Class<LithoTestRunner> testConfig =
-            // NULLSAFE_FIXME[Not Vetted Third-Party, Nullable Dereference]
-            lithoMethod.sandbox.bootstrappedClass(LithoTestRunConfiguration.class);
+            Preconditions.checkNotNull(lithoMethod.sandbox)
+                // NULLSAFE_FIXME[Not Vetted Third-Party]
+                .bootstrappedClass(LithoTestRunConfiguration.class);
         try {
           testConfig
               .getMethod("afterTest", FrameworkMethod.class)
@@ -208,8 +210,9 @@ public class LithoTestRunner extends RobolectricTestRunner {
 
       if (lithoMethod.localConfigurationInstance != null) {
         Class<LithoTestRunner> localTestConfig =
-            // NULLSAFE_FIXME[Not Vetted Third-Party, Nullable Dereference]
-            lithoMethod.sandbox.bootstrappedClass(LithoLocalTestRunConfiguration.class);
+            Preconditions.checkNotNull(lithoMethod.sandbox)
+                // NULLSAFE_FIXME[Not Vetted Third-Party]
+                .bootstrappedClass(LithoLocalTestRunConfiguration.class);
         try {
           localTestConfig
               .getMethod("afterTest", FrameworkMethod.class)
