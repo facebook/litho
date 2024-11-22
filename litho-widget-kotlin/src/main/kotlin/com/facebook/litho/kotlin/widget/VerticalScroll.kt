@@ -19,6 +19,7 @@ package com.facebook.litho.kotlin.widget
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
+import android.view.ViewGroup
 import androidx.annotation.ColorInt
 import androidx.core.widget.NestedScrollView
 import com.facebook.litho.Component
@@ -267,10 +268,15 @@ internal class VerticalScrollLayoutBehavior(
           )
         }
 
+    val (minMeasureWidth, maxMeasureWidth) =
+        getChildMeasureSize(
+            constraints.minWidth, constraints.maxWidth, ViewGroup.LayoutParams.MATCH_PARENT)
+    val childConstraints = constraints.copy(minWidth = minMeasureWidth, maxWidth = maxMeasureWidth)
+
     val layoutState =
         NestedLithoTree.layout(
             result = resolveResult,
-            sizeConstraints = constraints,
+            sizeConstraints = childConstraints,
             current = previousLayoutData as LayoutState?,
         )
 
@@ -292,7 +298,30 @@ internal class VerticalScrollLayoutBehavior(
         }
 
     layoutState.toRenderTree()
-
     return PrimitiveLayoutResult(width = width, height = height, layoutData = layoutState)
   }
+
+  /**
+   * Equivalent to [VerticalScrollComponent.onMeasure] code calling [ViewGroup.getChildMeasureSpec]
+   */
+  private fun getChildMeasureSize(min: Int, max: Int, preferred: Int): Pair<Int, Int> =
+      when {
+        preferred >= 0 || min == max -> {
+          // Fixed size due to fixed size layout param or fixed constraints.
+          preferred.coerceIn(min, max) to preferred.coerceIn(min, max)
+        }
+        preferred == ViewGroup.LayoutParams.WRAP_CONTENT && max != SizeConstraints.Infinity -> {
+          // Wrap content layout param with finite max constraint. If max constraint is infinite, we
+          // will measure the child with UNSPECIFIED.
+          0 to max
+        }
+        preferred == ViewGroup.LayoutParams.MATCH_PARENT && max != SizeConstraints.Infinity -> {
+          // Match parent layout param, so we force the child to fill the available space.
+          max to max
+        }
+        else -> {
+          // max constraint is infinite and layout param is WRAP_CONTENT or MATCH_PARENT.
+          0 to SizeConstraints.Infinity
+        }
+      }
 }
