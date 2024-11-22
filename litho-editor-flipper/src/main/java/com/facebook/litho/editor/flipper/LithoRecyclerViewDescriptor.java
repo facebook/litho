@@ -28,6 +28,7 @@ import com.facebook.flipper.plugins.inspector.Touch;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.sections.debug.DebugSection;
 import com.facebook.litho.widget.LithoRecyclerView;
+import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -48,8 +49,7 @@ public class LithoRecyclerViewDescriptor extends NodeDescriptor<LithoRecyclerVie
         if (child instanceof DebugSection) {
           DebugSection childSection = (DebugSection) child;
           final NodeDescriptor descriptor = descriptorForClass(DebugSection.class);
-          // NULLSAFE_FIXME[Nullable Dereference]
-          descriptor.invalidate(childSection);
+          Preconditions.checkNotNull(descriptor).invalidate(childSection);
         }
       }
     }.run();
@@ -58,22 +58,19 @@ public class LithoRecyclerViewDescriptor extends NodeDescriptor<LithoRecyclerVie
   @Override
   public void init(final LithoRecyclerView node) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
-    // NULLSAFE_FIXME[Nullable Dereference]
-    descriptor.init(node);
+    Preconditions.checkNotNull(descriptor).init(node);
   }
 
   @Override
   public String getId(LithoRecyclerView node) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
-    // NULLSAFE_FIXME[Nullable Dereference]
-    return descriptor.getId(node);
+    return Preconditions.checkNotNull(descriptor).getId(node);
   }
 
   @Override
   public String getName(LithoRecyclerView node) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
-    // NULLSAFE_FIXME[Nullable Dereference]
-    return descriptor.getName(node);
+    return Preconditions.checkNotNull(descriptor).getName(node);
   }
 
   @Override
@@ -85,21 +82,18 @@ public class LithoRecyclerViewDescriptor extends NodeDescriptor<LithoRecyclerVie
   @Override
   public int getAXChildCount(LithoRecyclerView node) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
-    // NULLSAFE_FIXME[Nullable Dereference]
-    return descriptor.getAXChildCount(node);
+    return Preconditions.checkNotNull(descriptor).getAXChildCount(node);
   }
 
   @Override
   public Object getChildAt(LithoRecyclerView node, int index) throws Exception {
     // TODO T39526148 account for the case above
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
-    // NULLSAFE_FIXME[Nullable Dereference]
-    int count = descriptor.getChildCount(node);
+    int count = Preconditions.checkNotNull(descriptor).getChildCount(node);
 
     final List<View> childrenViews = new ArrayList<>();
     for (int i = 0; i < count; i++) {
-      // NULLSAFE_FIXME[Nullable Dereference]
-      childrenViews.add((View) descriptor.getChildAt(node, i));
+      childrenViews.add((View) Preconditions.checkNotNull(descriptor).getChildAt(node, i));
     }
 
     // NULLSAFE_FIXME[Return Not Nullable]
@@ -109,16 +103,15 @@ public class LithoRecyclerViewDescriptor extends NodeDescriptor<LithoRecyclerVie
   @Override
   public Object getAXChildAt(LithoRecyclerView node, int index) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
-    // NULLSAFE_FIXME[Return Not Nullable, Nullable Dereference]
-    return descriptor.getAXChildAt(node, index);
+    // NULLSAFE_FIXME[Return Not Nullable]
+    return Preconditions.checkNotNull(descriptor).getAXChildAt(node, index);
   }
 
   @Override
   public List<Named<FlipperObject>> getData(LithoRecyclerView node) throws Exception {
     final List<Named<FlipperObject>> props = new ArrayList<>();
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
-    // NULLSAFE_FIXME[Nullable Dereference]
-    props.addAll(descriptor.getData(node));
+    props.addAll(Preconditions.checkNotNull(descriptor).getData(node));
 
     return props;
   }
@@ -126,8 +119,7 @@ public class LithoRecyclerViewDescriptor extends NodeDescriptor<LithoRecyclerVie
   @Override
   public List<Named<FlipperObject>> getAXData(LithoRecyclerView node) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
-    // NULLSAFE_FIXME[Nullable Dereference]
-    return descriptor.getAXData(node);
+    return Preconditions.checkNotNull(descriptor).getAXData(node);
   }
 
   @Override
@@ -138,22 +130,19 @@ public class LithoRecyclerViewDescriptor extends NodeDescriptor<LithoRecyclerVie
       FlipperDynamic value)
       throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
-    // NULLSAFE_FIXME[Nullable Dereference]
-    descriptor.setValue(node, path, kind, value);
+    Preconditions.checkNotNull(descriptor).setValue(node, path, kind, value);
   }
 
   @Override
   public List<Named<String>> getAttributes(LithoRecyclerView node) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
-    // NULLSAFE_FIXME[Nullable Dereference]
-    return descriptor.getAttributes(node);
+    return Preconditions.checkNotNull(descriptor).getAttributes(node);
   }
 
   @Override
   public FlipperObject getExtraInfo(LithoRecyclerView node) {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
-    // NULLSAFE_FIXME[Nullable Dereference]
-    return descriptor.getExtraInfo(node);
+    return Preconditions.checkNotNull(descriptor).getExtraInfo(node);
   }
 
   @Override
@@ -164,30 +153,26 @@ public class LithoRecyclerViewDescriptor extends NodeDescriptor<LithoRecyclerVie
   @Override
   public void axHitTest(LithoRecyclerView node, Touch touch) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
-    // NULLSAFE_FIXME[Nullable Dereference]
-    descriptor.axHitTest(node, touch);
+    Preconditions.checkNotNull(descriptor).axHitTest(node, touch);
   }
 
   @Override
   public String getAXName(LithoRecyclerView node) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
-    // NULLSAFE_FIXME[Nullable Dereference]
-    return descriptor.getAXName(node);
+    return Preconditions.checkNotNull(descriptor).getAXName(node);
   }
 
   @Override
   public List<Named<String>> getAXAttributes(LithoRecyclerView node) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
-    // NULLSAFE_FIXME[Nullable Dereference]
-    return descriptor.getAXAttributes(node);
+    return Preconditions.checkNotNull(descriptor).getAXAttributes(node);
   }
 
   @Override
   public void setHighlighted(LithoRecyclerView node, boolean selected, boolean isAlignmentMode)
       throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
-    // NULLSAFE_FIXME[Nullable Dereference]
-    descriptor.setHighlighted(node, selected, isAlignmentMode);
+    Preconditions.checkNotNull(descriptor).setHighlighted(node, selected, isAlignmentMode);
   }
 
   @Override
@@ -203,21 +188,18 @@ public class LithoRecyclerViewDescriptor extends NodeDescriptor<LithoRecyclerVie
   @Override
   public String getDecoration(LithoRecyclerView node) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
-    // NULLSAFE_FIXME[Nullable Dereference]
-    return descriptor.getDecoration(node);
+    return Preconditions.checkNotNull(descriptor).getDecoration(node);
   }
 
   @Override
   public String getAXDecoration(LithoRecyclerView node) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
-    // NULLSAFE_FIXME[Nullable Dereference]
-    return descriptor.getAXDecoration(node);
+    return Preconditions.checkNotNull(descriptor).getAXDecoration(node);
   }
 
   @Override
   public boolean matches(String query, LithoRecyclerView node) throws Exception {
     NodeDescriptor descriptor = descriptorForClass(Object.class);
-    // NULLSAFE_FIXME[Nullable Dereference]
-    return descriptor.matches(query, node);
+    return Preconditions.checkNotNull(descriptor).matches(query, node);
   }
 }
