@@ -28,6 +28,7 @@ import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.LithoViewTestHelper;
 import com.facebook.litho.TestItem;
+import com.google.common.base.Preconditions;
 
 /** Utilities for interacting with an app. */
 @Nullsafe(Nullsafe.Mode.LOCAL)
@@ -60,8 +61,7 @@ public class InteractionUtil {
 
   public static void clickBottom(LithoView lithoView, String testKey) {
     final TestItem testItem = LithoViewTestHelper.findTestItem(lithoView, testKey);
-    // NULLSAFE_FIXME[Nullable Dereference]
-    final Rect testItemBounds = testItem.getBounds();
+    final Rect testItemBounds = Preconditions.checkNotNull(testItem).getBounds();
     final int[] locationOnScreen = new int[2];
     lithoView.getLocationOnScreen(locationOnScreen);
 
