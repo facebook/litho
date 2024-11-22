@@ -29,6 +29,7 @@ import com.facebook.litho.EventHandler;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.LithoViewTestHelper;
 import com.facebook.litho.StateContainer;
+import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -71,13 +72,10 @@ public class InspectableComponent {
     while (!queue.isEmpty()) {
       final DebugComponent childComponent = queue.remove();
 
-      // NULLSAFE_FIXME[Nullable Dereference]
-      if (childComponent.getComponent() == component) {
-        // NULLSAFE_FIXME[Parameter Not Nullable]
+      if (Preconditions.checkNotNull(childComponent).getComponent() == component) {
         return new InspectableComponent(childComponent);
       }
 
-      // NULLSAFE_FIXME[Nullable Dereference]
       queue.addAll(childComponent.getChildComponents());
     }
 
