@@ -57,7 +57,7 @@ import com.facebook.litho.annotations.State;
 /**
  * Component that wraps another component, allowing it to be vertically scrollable. It's analogous
  * to {@link android.widget.ScrollView}. TreeProps will only be set during @OnCreateInitialState
- * once, so updating TreeProps on the parent will not reflect on the VerticalScroll.
+ * once, so updating TreeProps on the parent will not reflect on the VerticalScrollComponent.
  *
  * <p>See also: {@link com.facebook.litho.widget.HorizontalScroll} for horizontal scrollability.
  *
@@ -72,7 +72,7 @@ import com.facebook.litho.annotations.State;
  *     Litho prop wraps the component into another view and intercepts there.
  */
 @MountSpec(hasChildLithoViews = true, isPureRender = true)
-public class VerticalScrollSpec {
+public class VerticalScrollComponentSpec {
 
   @PropDefault static final boolean scrollbarFadingEnabled = true;
   @PropDefault static final int overScrollMode = OVER_SCROLL_IF_CONTENT_SCROLLS;
@@ -222,7 +222,7 @@ public class VerticalScrollSpec {
       @Prop(optional = true) @Nullable @ColorInt Integer fadingEdgeColor,
       @Prop(optional = true) @Nullable VerticalScrollEventsController eventsController,
       @Prop(optional = true) @Nullable OnScrollChangeListener onScrollChangeListener,
-      @Prop(optional = true) ScrollStateListener scrollStateListener,
+      @Prop(optional = true) @Nullable ScrollStateListener scrollStateListener,
       @Prop(optional = true) int overScrollMode,
       // NOT THE SAME AS LITHO'S interceptTouchHandler COMMON PROP, see class javadocs
       @Prop(optional = true) @Nullable

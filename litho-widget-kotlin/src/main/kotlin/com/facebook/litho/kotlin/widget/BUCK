@@ -16,6 +16,7 @@ load("@fbsource//xplat/pfh/FBApp_UIFrameworks_Litho_Litho:DEFS.bzl", "FBApp_UIFr
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
     "LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET",
+    "LITHO_BARE_WIDGET_TARGET",
     "LITHO_JAVA_TARGET",
     "LITHO_KOTLIN_SECTIONS_TARGET",
     "LITHO_PERF_LOGGER",
@@ -45,6 +46,7 @@ litho_android_library(
     tests = [make_dep_path("litho-widget-kotlin/src/test/kotlin/com/facebook/litho/widget:widget")],
     visibility = ["PUBLIC"],
     deps = [
+        LITHO_BARE_WIDGET_TARGET,
         LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
         LITHO_KOTLIN_SECTIONS_TARGET,
         LITHO_SECTIONS_TARGET,

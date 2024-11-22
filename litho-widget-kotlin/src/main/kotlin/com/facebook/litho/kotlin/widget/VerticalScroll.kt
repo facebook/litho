@@ -18,40 +18,18 @@ package com.facebook.litho.kotlin.widget
 
 import android.view.MotionEvent
 import android.view.View
-import android.view.ViewConfiguration
-import android.view.ViewGroup
-import androidx.annotation.ColorInt
 import androidx.core.widget.NestedScrollView
 import com.facebook.litho.Component
-import com.facebook.litho.LayoutState
-import com.facebook.litho.LithoPrimitive
-import com.facebook.litho.LithoRenderTreeView
-import com.facebook.litho.NestedLithoTree
-import com.facebook.litho.NestedLithoTreeState
-import com.facebook.litho.PrimitiveComponent
-import com.facebook.litho.PrimitiveComponentScope
-import com.facebook.litho.ResolveResult
 import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Style
-import com.facebook.litho.bindToRenderTreeView
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.kotlinStyle
-import com.facebook.litho.useNestedTree
-import com.facebook.litho.useState
-import com.facebook.litho.widget.LithoScrollView
+import com.facebook.litho.widget.ExperimentalVerticalScroll
+import com.facebook.litho.widget.VerticalScrollComponent
 import com.facebook.litho.widget.VerticalScrollEventsController
 import com.facebook.rendercore.Dimen
-import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.dp
-import com.facebook.rendercore.primitives.LayoutBehavior
-import com.facebook.rendercore.primitives.LayoutScope
-import com.facebook.rendercore.primitives.PrimitiveLayoutResult
-import com.facebook.rendercore.primitives.ViewAllocator
 import com.facebook.rendercore.px
-import kotlin.math.max
-import kotlin.math.min
-
-typealias VerticalScrollSpecComponent = com.facebook.litho.widget.VerticalScroll
 
 /** Builder function for creating Vertical Scroll Primitive. */
 @Suppress("FunctionName")
@@ -74,7 +52,7 @@ inline fun ResourcesScope.VerticalScroll(
     crossinline child: ResourcesScope.() -> Component
 ): Component {
   return if (ComponentsConfiguration.usePrimitiveVerticalScroll) {
-    return VerticalScrollComponent(
+    return ExperimentalVerticalScroll(
         scrollbarEnabled = scrollbarEnabled,
         nestedScrollingEnabled = nestedScrollingEnabled,
         verticalFadingEdgeEnabled = verticalFadingEdgeEnabled,
@@ -92,11 +70,12 @@ inline fun ResourcesScope.VerticalScroll(
         style = style,
     )
   } else {
-    VerticalScrollSpecComponent.create(context)
+    VerticalScrollComponent.create(context)
         .childComponent(child())
         .initialScrollOffsetPixels(initialScrollPosition.toPixels())
         .scrollbarEnabled(scrollbarEnabled)
         .scrollbarFadingEnabled(scrollbarFadingEnabled)
+        .overScrollMode(overScrollMode)
         .verticalFadingEdgeEnabled(verticalFadingEdgeEnabled)
         .nestedScrollingEnabled(nestedScrollingEnabled)
         .fadingEdgeLengthPx(fadingEdgeLength.toPixels())
@@ -113,215 +92,4 @@ inline fun ResourcesScope.VerticalScroll(
         .kotlinStyle(style)
         .build()
   }
-}
-
-@PublishedApi
-internal class VerticalScrollComponent(
-    val scrollbarEnabled: Boolean,
-    val nestedScrollingEnabled: Boolean,
-    val verticalFadingEdgeEnabled: Boolean,
-    val fillViewport: Boolean,
-    val scrollbarFadingEnabled: Boolean,
-    val overScrollMode: Int,
-    val fadingEdgeLength: Dimen,
-    val initialScrollPosition: Dimen,
-    @ColorInt val fadingEdgeColor: Int?,
-    val eventsController: VerticalScrollEventsController?,
-    val onScrollChange: ((NestedScrollView, scrollY: Int, oldScrollY: Int) -> Unit)?,
-    val onInterceptTouch: ((NestedScrollView, event: MotionEvent) -> Boolean)?,
-    val onScrollStateChange: ((View, Int) -> Unit)?,
-    val child: Component,
-    val style: Style?,
-) : PrimitiveComponent() {
-
-  override fun PrimitiveComponentScope.render(): LithoPrimitive {
-
-    val fadingEdgeLengthPx = fadingEdgeLength.toPixels()
-
-    val (
-        state: NestedLithoTreeState,
-        resolveResult: ResolveResult,
-    ) = useNestedTree(root = child, treeProps = context.treePropContainer)
-
-    val scrollPosition = useState {
-      LithoScrollView.ScrollPosition(initialScrollPosition.toPixels())
-    }
-
-    return LithoPrimitive(
-        layoutBehavior =
-            VerticalScrollLayoutBehavior(
-                resolveResult = resolveResult,
-                fillViewport = fillViewport,
-            ),
-        mountBehavior =
-            MountBehavior(
-                { "VerticalScroll" },
-                ViewAllocator { context ->
-                  LithoScrollView(context, LithoRenderTreeView(context))
-                }) {
-
-                  // bind to LithoRenderTreeView
-                  bindToRenderTreeView(state = state) { renderTreeView as LithoRenderTreeView }
-
-                  withDescription("onScrollStateChange") {
-                    onScrollStateChange.bindTo(LithoScrollView::setScrollStateListener, null)
-                  }
-
-                  withDescription("scrollPosition") {
-                    scrollPosition.value.bindTo(LithoScrollView::setScrollPosition, null)
-                  }
-
-                  withDescription("scrollbarFadingEnabled") {
-                    scrollbarFadingEnabled.bindTo(LithoScrollView::setScrollbarFadingEnabled, false)
-                  }
-
-                  withDescription("nestedScrollingEnabled") {
-                    nestedScrollingEnabled.bindTo(LithoScrollView::setNestedScrollingEnabled, false)
-                  }
-
-                  withDescription("verticalFadingEdgeEnabled") {
-                    verticalFadingEdgeEnabled.bindTo(
-                        LithoScrollView::setVerticalFadingEdgeEnabled, false)
-                  }
-
-                  withDescription("fadingEdgeLengthPx") {
-                    fadingEdgeLengthPx.bindTo(
-                        LithoScrollView::setFadingEdgeLength,
-                        ViewConfiguration.get(androidContext).scaledFadingEdgeLength,
-                    )
-                  }
-
-                  withDescription("fadingEdgeColor") {
-                    fadingEdgeColor.bindTo(LithoScrollView::setFadingEdgeColor, null)
-                  }
-
-                  withDescription("scrollbarEnabled") {
-                    bind(scrollbarEnabled) { content ->
-                      content.isVerticalScrollBarEnabled = scrollbarEnabled
-                      onUnbind { content.isVerticalScrollBarEnabled = false }
-                    }
-                  }
-
-                  withDescription("onScrollChange") {
-                    bind(onScrollChange) { content ->
-                      onScrollChange?.let { onScrollChangeListener ->
-                        content.setOnScrollChangeListener {
-                            nestedScrollView: NestedScrollView,
-                            _: Int,
-                            scrollY: Int,
-                            _: Int,
-                            oldScrollY: Int ->
-                          onScrollChangeListener(nestedScrollView, scrollY, oldScrollY)
-                        }
-                      }
-                      onUnbind {
-                        content.setOnScrollChangeListener(
-                            null as NestedScrollView.OnScrollChangeListener?,
-                        )
-                      }
-                    }
-                  }
-
-                  withDescription("onInterceptTouch") {
-                    bind(onInterceptTouch) { content ->
-                      content.setOnInterceptTouchListener(onInterceptTouch)
-                      onUnbind { content.setOnInterceptTouchListener(null) }
-                    }
-                  }
-
-                  withDescription("overScrollMode") {
-                    overScrollMode.bindTo(
-                        LithoScrollView::setOverScrollMode,
-                        View.OVER_SCROLL_IF_CONTENT_SCROLLS,
-                    )
-                  }
-
-                  withDescription("eventsController") {
-                    bind(eventsController) { content ->
-                      eventsController?.setScrollView(content)
-                      onUnbind { eventsController?.setScrollView(null) }
-                    }
-                  }
-                },
-        style = style)
-  }
-}
-
-internal class VerticalScrollLayoutBehavior(
-    private val resolveResult: ResolveResult,
-    private val fillViewport: Boolean,
-) : LayoutBehavior {
-  override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
-
-    val constraints: SizeConstraints =
-        if (fillViewport) {
-          sizeConstraints.copy(
-              minHeight = sizeConstraints.maxHeight,
-              maxHeight = SizeConstraints.Infinity,
-          )
-        } else {
-          SizeConstraints(
-              minWidth = 0,
-              maxWidth = sizeConstraints.maxWidth,
-              minHeight = 0,
-              maxHeight = SizeConstraints.Infinity,
-          )
-        }
-
-    val (minMeasureWidth, maxMeasureWidth) =
-        getChildMeasureSize(
-            constraints.minWidth, constraints.maxWidth, ViewGroup.LayoutParams.MATCH_PARENT)
-    val childConstraints = constraints.copy(minWidth = minMeasureWidth, maxWidth = maxMeasureWidth)
-
-    val layoutState =
-        NestedLithoTree.layout(
-            result = resolveResult,
-            sizeConstraints = childConstraints,
-            current = previousLayoutData as LayoutState?,
-        )
-
-    // Ensure that width is not less than 0
-    val width: Int = max(sizeConstraints.minWidth, layoutState.width)
-
-    // Compute the appropriate size depending on the heightSpec
-    val height: Int =
-        if (sizeConstraints.hasExactHeight) {
-          // If this Vertical scroll is being measured with an exact height we
-          // don't care about the size of the content and just use that instead
-          sizeConstraints.maxHeight
-        } else if (sizeConstraints.hasBoundedHeight) {
-          // For bounded height we want the VerticalScroll to be as big as its
-          // content up to the maximum height specified in the heightSpec
-          max(sizeConstraints.minHeight, min(sizeConstraints.maxHeight, layoutState.height))
-        } else {
-          max(sizeConstraints.minHeight, layoutState.height)
-        }
-
-    layoutState.toRenderTree()
-    return PrimitiveLayoutResult(width = width, height = height, layoutData = layoutState)
-  }
-
-  /**
-   * Equivalent to [VerticalScrollComponent.onMeasure] code calling [ViewGroup.getChildMeasureSpec]
-   */
-  private fun getChildMeasureSize(min: Int, max: Int, preferred: Int): Pair<Int, Int> =
-      when {
-        preferred >= 0 || min == max -> {
-          // Fixed size due to fixed size layout param or fixed constraints.
-          preferred.coerceIn(min, max) to preferred.coerceIn(min, max)
-        }
-        preferred == ViewGroup.LayoutParams.WRAP_CONTENT && max != SizeConstraints.Infinity -> {
-          // Wrap content layout param with finite max constraint. If max constraint is infinite, we
-          // will measure the child with UNSPECIFIED.
-          0 to max
-        }
-        preferred == ViewGroup.LayoutParams.MATCH_PARENT && max != SizeConstraints.Infinity -> {
-          // Match parent layout param, so we force the child to fill the available space.
-          max to max
-        }
-        else -> {
-          // max constraint is infinite and layout param is WRAP_CONTENT or MATCH_PARENT.
-          0 to SizeConstraints.Infinity
-        }
-      }
 }
