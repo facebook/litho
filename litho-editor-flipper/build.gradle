@@ -42,6 +42,7 @@ android {
         implementation project(':litho-sections-debug')
         implementation deps.flipper
         implementation deps.supportAppCompat
+        implementation deps.guava
         compileOnly deps.jsr305
         compileOnly deps.proguardAnnotations
         compileOnly project(':litho-annotations')
