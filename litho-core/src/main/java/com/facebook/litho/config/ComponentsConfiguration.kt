@@ -278,9 +278,6 @@ internal constructor(
     /** This config will enable logging of interactable components with 0 alpha */
     @JvmField var isZeroAlphaLoggingEnabled: Boolean = false
 
-    /** This flag is used to enable clearing event handlers and triggers */
-    @JvmField var clearEventHandlersAndTriggers: Boolean = false
-
     /** This flag is to enable usage custom pool scopes */
     @JvmField var customPoolScopesEnabled: Boolean = false
 
