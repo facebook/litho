@@ -16,12 +16,14 @@
 
 package com.facebook.litho.intellij.toolwindows;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Condition;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
 
 /** Factory sets {@link ComponentStructureView} in the {@link ToolWindow}. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class LithoToolWindowFactory implements ToolWindowFactory, Condition<Project> {
 
   @Override
