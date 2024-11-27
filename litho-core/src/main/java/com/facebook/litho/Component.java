@@ -18,7 +18,6 @@ package com.facebook.litho;
 
 import static android.content.Context.ACCESSIBILITY_SERVICE;
 import static androidx.annotation.Dimension.DP;
-import static com.facebook.litho.ComponentContext.NO_SCOPE_EVENT_HANDLER;
 import static com.facebook.litho.DynamicPropsManager.KEY_ALPHA;
 import static com.facebook.litho.DynamicPropsManager.KEY_BACKGROUND_COLOR;
 import static com.facebook.litho.DynamicPropsManager.KEY_BACKGROUND_DRAWABLE;
@@ -32,7 +31,6 @@ import static com.facebook.litho.DynamicPropsManager.KEY_SCALE_Y;
 import static com.facebook.litho.DynamicPropsManager.KEY_TRANSLATION_X;
 import static com.facebook.litho.DynamicPropsManager.KEY_TRANSLATION_Y;
 import static com.facebook.litho.DynamicPropsManager.KEY_TRANSLATION_Z;
-import static com.facebook.rendercore.debug.DebugEventAttribute.Source;
 import static com.facebook.rendercore.utils.CommonUtils.getSectionNameForTracing;
 
 import android.animation.AnimatorInflater;
@@ -105,7 +103,6 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
   // Since we cannot easily share this identifier across modules, we verify the consistency through
   // integration tests.
   static final int ERROR_EVENT_HANDLER_ID = "__internalOnErrorHandler".hashCode();
-  static final String WRONG_CONTEXT_FOR_EVENT_HANDLER = "Component:WrongContextForEventHandler";
   static final YogaMeasureFunction sMeasureFunction = new LithoYogaMeasureFunction();
 
   @GuardedBy("sTypeIdByComponentType")
@@ -345,48 +342,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       final int id,
       final Object[] params,
       final EventHandlerRebindMode mode) {
-    if (c == null
-        || c.getComponentScope() == null
-        || !(c.getComponentScope() instanceof HasEventDispatcher)) {
-      ComponentsReporter.emitMessage(
-          ComponentsReporter.LogLevel.FATAL,
-          NO_SCOPE_EVENT_HANDLER,
-          "Creating event handler without scope.");
-      return NoOpEventHandler.getNoOpEventHandler();
-    } else if (reference != c.getComponentScope().getClass()) {
-      ComponentsReporter.emitMessage(
-          ComponentsReporter.LogLevel.ERROR,
-          WRONG_CONTEXT_FOR_EVENT_HANDLER + ":" + c.getComponentScope().getSimpleName(),
-          String.format(
-              "A Event handler from %s was created using a context from %s. "
-                  + "Event Handlers must be created using a ComponentContext from its Component.",
-              className, c.getComponentScope().getSimpleName()));
-    }
-    final EventHandler eventHandler =
-        new EventHandler<>(
-            id, mode, new EventDispatchInfo((HasEventDispatcher) c.getComponentScope(), c), params);
-    final CalculationContext calculationContext = c.getCalculationStateContext();
-    if (calculationContext != null) {
-      if (c.shouldUseNonRebindingEventHandlers()) {
-        if (mode == EventHandlerRebindMode.REBIND) {
-          calculationContext.recordEventHandler(c.getGlobalKey(), eventHandler);
-        }
-      } else {
-        calculationContext.recordEventHandler(c.getGlobalKey(), eventHandler);
-      }
-    } else {
-      eventHandler.dispatchInfo.isBound = true;
-      if (ComponentsConfiguration.isEventHandlerRebindLoggingEnabled) {
-        final String component = getSectionNameForTracing(reference);
-        DebugInfoReporter.report(
-            "EventHandlerCreatedAfterLayout",
-            attributes -> {
-              attributes.put(Source, component);
-              return Unit.INSTANCE;
-            });
-      }
-    }
-    return eventHandler;
+    return c.createEventHandler(id, mode, params, reference, className);
   }
 
   /**
