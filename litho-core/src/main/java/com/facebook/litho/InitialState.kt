@@ -90,7 +90,14 @@ class InitialState {
     if (isTracing) {
       endSection()
     }
-    return ComponentState(value = state)
+    return ComponentState(
+        value = state,
+        eventDispatchInfo =
+            EventDispatchInfo(
+                hasEventDispatcher = component,
+                componentContext = context,
+            ),
+    )
   }
 
   fun getInitialStateForComponent(key: String): ComponentState<out StateContainer>? {

@@ -27,6 +27,15 @@ fun <T> mergeLists(a: List<T>?, b: List<T>?): List<T>? {
   return a + b
 }
 
+operator fun <K, V> Map<K, V>?.plus(map: Map<K, V>?): Map<K, V>? {
+  return when {
+    this == null && map == null -> null
+    this == null -> map
+    map == null -> this
+    else -> toMutableMap().apply { putAll(map) }
+  }
+}
+
 /**
  * Util method that returns the instance if it's not `null` otherwise calls [initBlock] to create a
  * new instance.

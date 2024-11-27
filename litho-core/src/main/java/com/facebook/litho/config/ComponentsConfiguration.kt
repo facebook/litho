@@ -144,6 +144,9 @@ internal constructor(
      * state containers
      */
     @JvmField val enableFixForCachedNestedTree: Boolean = false,
+
+    /** This flag is used to enable the redesigned event handler rebinding logic. */
+    @JvmField val useStateForEventDispatchInfo: Boolean = false
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =
