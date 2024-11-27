@@ -16,6 +16,7 @@
 
 package com.facebook.litho.intellij.completion;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.annotations.Event;
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.OnEvent;
@@ -41,6 +42,7 @@ import java.util.Collection;
  * Helper class for Litho {@literal @OnEvent} method related code generation. Details about this
  * method in the <a href="https://fblitho.com/docs/events-overview">docs</a>
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class OnEventGenerateUtils {
   private static final String CONTEXT_PARAMETER_NAME = "c";
 
