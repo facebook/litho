@@ -16,6 +16,7 @@
 
 package com.facebook.litho.intellij.completion;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.annotations.RequiredProp;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.specmodels.processor.PsiAnnotationProxyUtils;
@@ -43,6 +44,7 @@ import java.util.stream.Stream;
  * Contributor improves available method completions: prioritizes existing required prop setters,
  * adds new component builder completion.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class RequiredPropMethodContributor extends CompletionContributor {
 
   public RequiredPropMethodContributor() {
@@ -82,6 +84,7 @@ public class RequiredPropMethodContributor extends CompletionContributor {
                         suggestedMethod,
                         suggestedLookup,
                         parameters.getPosition().getPrevSibling(),
+                        // NULLSAFE_FIXME[Parameter Not Nullable]
                         parameters.getEditor().getProject())
                     .map(
                         newLookupElement ->
