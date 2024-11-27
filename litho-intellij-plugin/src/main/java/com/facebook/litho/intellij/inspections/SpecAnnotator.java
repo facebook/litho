@@ -16,6 +16,7 @@
 
 package com.facebook.litho.intellij.inspections;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.DebounceEventLogger;
@@ -41,6 +42,7 @@ import java.util.Optional;
  * Annotator that uses {@link LayoutSpecModel} and {@link MountSpecModel} validation to annotate
  * class with error messages. This re-uses Litho compile-time check.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class SpecAnnotator implements Annotator {
   private static final Logger DEBUG_LOGGER = Logger.getInstance(SpecAnnotator.class);
   private static final EventLogger LOGGER = new DebounceEventLogger(60_000);
