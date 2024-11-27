@@ -32,6 +32,7 @@ import com.facebook.litho.PrimitiveComponentScope
 import com.facebook.litho.ResolveResult
 import com.facebook.litho.Style
 import com.facebook.litho.bindToRenderTreeView
+import com.facebook.litho.useCached
 import com.facebook.litho.useNestedTree
 import com.facebook.litho.useState
 import com.facebook.rendercore.Dimen
@@ -65,11 +66,19 @@ class ExperimentalVerticalScroll(
   override fun PrimitiveComponentScope.render(): LithoPrimitive {
 
     val fadingEdgeLengthPx = fadingEdgeLength.toPixels()
-
+    val config =
+        useCached(incrementalMountEnabled) {
+          val defaultConfig = context.lithoConfiguration.componentsConfig
+          if (incrementalMountEnabled != defaultConfig.incrementalMountEnabled) {
+            defaultConfig.copy(incrementalMountEnabled = incrementalMountEnabled)
+          } else {
+            defaultConfig
+          }
+        }
     val (
         state: NestedLithoTreeState,
         resolveResult: ResolveResult,
-    ) = useNestedTree(root = child, treeProps = context.treePropContainer)
+    ) = useNestedTree(root = child, config = config, treeProps = context.treePropContainer)
 
     val scrollPosition = useState {
       LithoScrollView.ScrollPosition(initialScrollPosition.toPixels())
@@ -87,8 +96,6 @@ class ExperimentalVerticalScroll(
                 ViewAllocator { context ->
                   LithoScrollView(context, LithoRenderTreeView(context))
                 }) {
-                  shouldExcludeFromIncrementalMount = !incrementalMountEnabled
-
                   // bind to LithoRenderTreeView
                   bindToRenderTreeView(state = state) { renderTreeView as LithoRenderTreeView }
 
