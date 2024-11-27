@@ -433,7 +433,7 @@ internal object LithoReducer {
         for (i in 1 until node.componentCount) {
           val scope: ScopedComponentInfo = node.getComponentInfoAt(i)
           if (scope.component is SpecGeneratedComponent) {
-            reductionState.scopedSpecComponentInfos.add(scope)
+            reductionState.componentScopes.add(scope)
           }
         }
       }
@@ -664,7 +664,7 @@ internal object LithoReducer {
       // calculation.
       node.getComponentContextAt(i).let { delegateScopedContext ->
         if (delegate is SpecGeneratedComponent) {
-          reductionState.scopedSpecComponentInfos.add(delegateScopedContext.scopedComponentInfo)
+          reductionState.componentScopes.add(delegateScopedContext.scopedComponentInfo)
         }
       }
       if (delegateKey != null || delegate.hasHandle()) {

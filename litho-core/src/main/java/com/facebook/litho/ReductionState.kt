@@ -52,7 +52,7 @@ internal data class ReductionState(
     val visibilityOutputs: MutableList<VisibilityOutput> = ArrayList(8),
     val testOutputs: MutableList<TestOutput>? =
         if (ComponentsConfiguration.isEndToEndTestRun) ArrayList(8) else null,
-    val scopedSpecComponentInfos: MutableList<ScopedComponentInfo> = ArrayList(),
+    val componentScopes: MutableList<ScopedComponentInfo> = ArrayList(),
     val componentKeyToBounds: MutableMap<String, Rect> = HashMap(),
     val componentHandleToBounds: MutableMap<Handle, Rect> = HashMap(),
     val duplicatedTransitionIds: MutableSet<TransitionId> = HashSet(),

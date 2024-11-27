@@ -2322,7 +2322,7 @@ public class ComponentTree
   }
 
   private static void bindEventHandlersAndTriggers(LayoutState layoutState, TreeState treeState) {
-    List<ScopedComponentInfo> scopes = layoutState.consumeScopedSpecComponentInfos();
+    List<ScopedComponentInfo> scopes = layoutState.consumeComponentScopes();
     List<Pair<String, EventHandler<?>>> handlers = layoutState.consumeCreatedEventHandlers();
     treeState.bindEventAndTriggerHandlers(handlers, scopes);
   }

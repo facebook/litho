@@ -178,8 +178,7 @@ internal constructor(
   // needed to be var as it's being updated in setShouldProcessVisibilityOutputs
   private var shouldProcessVisibilityOutputs = false
   // needed to be var as it's being reset via consumeScopedSpecComponentInfos
-  private var scopedSpecComponentInfos: List<ScopedComponentInfo>? =
-      reductionState.scopedSpecComponentInfos
+  private var componentScopes: List<ScopedComponentInfo>? = reductionState.componentScopes
 
   // needed to be var as a previously evaluated reference is set(restored) in LithoViewTestHelper
   var rootLayoutResult: LayoutResult? = reductionState.layoutResult
@@ -193,9 +192,9 @@ internal constructor(
   var rootHeightAnimation: RootBoundsTransition? = null
     private set
 
-  fun consumeScopedSpecComponentInfos(): List<ScopedComponentInfo>? {
-    val scopedSpecComponentInfos = scopedSpecComponentInfos
-    this.scopedSpecComponentInfos = null
+  fun consumeComponentScopes(): List<ScopedComponentInfo>? {
+    val scopedSpecComponentInfos = componentScopes
+    this.componentScopes = null
     return scopedSpecComponentInfos
   }
 

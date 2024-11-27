@@ -88,7 +88,7 @@ object NestedLithoTree {
   }
 
   fun LayoutState.commit() {
-    val components = consumeScopedSpecComponentInfos()
+    val components = consumeComponentScopes()
     val eventHandlers = consumeCreatedEventHandlers()
     val stateUpdater = checkNotNull(componentContext.stateUpdater)
     val mountedView = checkNotNull(componentContext.lithoTree).mountedViewReference
