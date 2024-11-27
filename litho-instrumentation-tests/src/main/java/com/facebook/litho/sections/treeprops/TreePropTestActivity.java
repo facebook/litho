@@ -18,10 +18,12 @@ package com.facebook.litho.sections.treeprops;
 
 import android.app.Activity;
 import android.os.Bundle;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
 import com.facebook.soloader.SoLoader;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class TreePropTestActivity extends Activity {
 
   @Override
