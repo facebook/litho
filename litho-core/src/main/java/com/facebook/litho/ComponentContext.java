@@ -19,7 +19,6 @@ package com.facebook.litho;
 import static com.facebook.litho.ComponentContextUtils.buildDefaultLithoConfiguration;
 import static com.facebook.litho.StateContainer.StateUpdate;
 import static com.facebook.rendercore.debug.DebugEventAttribute.Source;
-import static com.facebook.rendercore.utils.CommonUtils.getSectionNameForTracing;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -845,40 +844,44 @@ public class ComponentContext {
       final Object[] params,
       final Class<? extends Component> reference,
       final String source) {
-    if (getComponentScope() == null || !(getComponentScope() instanceof HasEventDispatcher)) {
+
+    final @Nullable Component component = mComponentScope;
+
+    // EventHandler no-ops if ComponentContext is not associated with a Component.
+    if (!(component instanceof HasEventDispatcher)) {
       ComponentsReporter.emitMessage(
           ComponentsReporter.LogLevel.FATAL,
           NO_SCOPE_EVENT_HANDLER,
           "Creating event handler without scope.");
       return NoOpEventHandler.getNoOpEventHandler();
-    } else if (reference != getComponentScope().getClass()) {
+    }
+
+    // Log a debug event if the event handler is created using the correct context
+    if (reference != component.getClass()) {
       ComponentsReporter.emitMessage(
           ComponentsReporter.LogLevel.ERROR,
-          "WrongContextForEventHandler" + ":" + getComponentScope().getSimpleName(),
+          "WrongContextForEventHandler" + ":" + component.getSimpleName(),
           String.format(
               "A Event handler from %s was created using a context from %s. "
                   + "Event Handlers must be created using a ComponentContext from its Component.",
-              source, getComponentScope().getSimpleName()));
+              source, component.getSimpleName()));
     }
-    final EventHandler eventHandler =
-        new EventHandler<>(
-            id,
-            mode,
-            new EventDispatchInfo((HasEventDispatcher) getComponentScope(), this),
-            params);
-    final CalculationContext calculationContext = getCalculationStateContext();
-    if (calculationContext != null) {
+
+    final @Nullable CalculationContext context = getCalculationStateContext();
+    final EventDispatchInfo info = new EventDispatchInfo((HasEventDispatcher) component, this);
+    final EventHandler eventHandler = new EventHandler<>(id, mode, info, params);
+
+    if (context != null) {
       if (shouldUseNonRebindingEventHandlers()) {
         if (mode == EventHandlerRebindMode.REBIND) {
-          calculationContext.recordEventHandler(getGlobalKey(), eventHandler);
+          context.recordEventHandler(getGlobalKey(), eventHandler);
         }
       } else {
-        calculationContext.recordEventHandler(getGlobalKey(), eventHandler);
+        context.recordEventHandler(getGlobalKey(), eventHandler);
       }
     } else {
       eventHandler.dispatchInfo.isBound = true;
       if (ComponentsConfiguration.isEventHandlerRebindLoggingEnabled) {
-        final String component = getSectionNameForTracing(reference);
         DebugInfoReporter.report(
             "EventHandlerCreatedAfterLayout",
             attributes -> {
@@ -887,6 +890,7 @@ public class ComponentContext {
             });
       }
     }
+
     return eventHandler;
   }
 }
