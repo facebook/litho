@@ -261,9 +261,6 @@ internal constructor(
     /** This flag is used to enable a fix for the ANR issue with sticky header RecyclerView. */
     @JvmField var enableFixForStickyHeader: Boolean = false
 
-    /** This flag is used to enable a fix for the primitive component measurement issue. */
-    @JvmField var enablePrimitiveMeasurementFix: Boolean = false
-
     /**
      * This flag is used to enable using PrimitiveComponent implementation of an Image component.
      */

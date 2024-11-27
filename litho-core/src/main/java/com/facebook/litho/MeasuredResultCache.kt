@@ -17,7 +17,6 @@
 package com.facebook.litho
 
 import androidx.collection.SparseArrayCompat
-import com.facebook.litho.config.ComponentsConfiguration
 import java.util.HashMap
 import kotlin.jvm.JvmField
 
@@ -124,9 +123,7 @@ constructor(private val delegateCache: MeasuredResultCache? = null) {
     val node = componentIdToNodeCache[componentId] ?: return
     nodeToResultCache.remove(node)
     componentIdToNodeCache.remove(componentId)
-    if (ComponentsConfiguration.enablePrimitiveMeasurementFix) {
-      delegateCache?.removeCachedResult(node)
-    }
+    delegateCache?.removeCachedResult(node)
   }
 
   companion object {

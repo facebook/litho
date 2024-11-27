@@ -25,7 +25,6 @@ import com.facebook.litho.LithoNode.Companion.applyBorderWidth
 import com.facebook.litho.LithoNode.Companion.applyNestedPadding
 import com.facebook.litho.LithoNode.Companion.writeStyledAttributesToLayoutProps
 import com.facebook.litho.YogaLayoutOutput.Companion.getYogaNode
-import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.drawable.BorderColorDrawable
 import com.facebook.litho.layout.LayoutDirection
@@ -537,9 +536,8 @@ internal object LithoYogaLayoutFunction {
     } else if (Component.isPrimitive(component)) {
 
       hasLayoutSizeChanged =
-          ((layoutResult.isCachedLayout || ComponentsConfiguration.enablePrimitiveMeasurementFix) &&
-              (newContentWidth != layoutResult.contentWidth ||
-                  newContentHeight != layoutResult.contentHeight))
+          newContentWidth != layoutResult.contentWidth ||
+              newContentHeight != layoutResult.contentHeight
 
       if (layoutResult.delegate == null || hasLayoutSizeChanged) {
 

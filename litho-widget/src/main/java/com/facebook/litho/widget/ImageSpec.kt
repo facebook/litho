@@ -51,10 +51,7 @@ object ImageSpec {
       @Prop(optional = true) scaleType: ImageView.ScaleType?,
       @Prop(optional = true) useIntrinsicSize: Boolean,
   ): Component {
-    return if (ComponentsConfiguration.usePrimitiveImage &&
-        // Currently there is a measurement bug that causes the image to be measured incorrectly
-        // so we only want to use the primitive implementation when the fix is enabled.
-        ComponentsConfiguration.enablePrimitiveMeasurementFix) {
+    return if (ComponentsConfiguration.usePrimitiveImage) {
       ExperimentalImage(drawable, scaleType ?: ImageView.ScaleType.FIT_CENTER, useIntrinsicSize)
     } else {
       ImageComponent.create(c)
