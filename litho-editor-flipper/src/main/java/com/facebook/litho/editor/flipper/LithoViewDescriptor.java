@@ -25,12 +25,14 @@ import com.facebook.flipper.plugins.inspector.Named;
 import com.facebook.flipper.plugins.inspector.NodeDescriptor;
 import com.facebook.flipper.plugins.inspector.SetDataOperations;
 import com.facebook.flipper.plugins.inspector.Touch;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.BaseMountingView;
 import com.facebook.litho.DebugComponent;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class LithoViewDescriptor extends NodeDescriptor<BaseMountingView> {
 
   @Override
@@ -48,18 +50,21 @@ public class LithoViewDescriptor extends NodeDescriptor<BaseMountingView> {
   @Override
   public String getId(BaseMountingView node) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
+    // NULLSAFE_FIXME[Nullable Dereference]
     return descriptor.getId(node);
   }
 
   @Override
   public String getName(BaseMountingView node) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
+    // NULLSAFE_FIXME[Nullable Dereference]
     return descriptor.getName(node);
   }
 
   @Override
   public String getAXName(BaseMountingView node) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
+    // NULLSAFE_FIXME[Nullable Dereference]
     return descriptor.getAXName(node);
   }
 
@@ -71,17 +76,20 @@ public class LithoViewDescriptor extends NodeDescriptor<BaseMountingView> {
   @Override
   public int getAXChildCount(BaseMountingView node) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
+    // NULLSAFE_FIXME[Nullable Dereference]
     return descriptor.getAXChildCount(node);
   }
 
   @Override
   public Object getChildAt(BaseMountingView node, int index) {
+    // NULLSAFE_FIXME[Return Not Nullable]
     return DebugComponent.getRootInstance(node);
   }
 
   @Override
   public @Nullable Object getAXChildAt(BaseMountingView node, int index) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
+    // NULLSAFE_FIXME[Nullable Dereference]
     return descriptor.getChildAt(node, index);
   }
 
@@ -105,6 +113,7 @@ public class LithoViewDescriptor extends NodeDescriptor<BaseMountingView> {
                         .put("bottom", mountedBounds.bottom))
                 .build()));
 
+    // NULLSAFE_FIXME[Nullable Dereference]
     props.addAll(descriptor.getData(node));
 
     return props;
@@ -114,6 +123,7 @@ public class LithoViewDescriptor extends NodeDescriptor<BaseMountingView> {
   public List<Named<FlipperObject>> getAXData(BaseMountingView node) throws Exception {
     final List<Named<FlipperObject>> props = new ArrayList<>();
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
+    // NULLSAFE_FIXME[Nullable Dereference]
     props.addAll(descriptor.getAXData(node));
     return props;
   }
@@ -126,24 +136,28 @@ public class LithoViewDescriptor extends NodeDescriptor<BaseMountingView> {
       FlipperDynamic value)
       throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
+    // NULLSAFE_FIXME[Nullable Dereference]
     descriptor.setValue(node, path, kind, value);
   }
 
   @Override
   public List<Named<String>> getAttributes(BaseMountingView node) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
+    // NULLSAFE_FIXME[Nullable Dereference]
     return descriptor.getAttributes(node);
   }
 
   @Override
   public List<Named<String>> getAXAttributes(BaseMountingView node) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
+    // NULLSAFE_FIXME[Nullable Dereference]
     return descriptor.getAXAttributes(node);
   }
 
   @Override
   public FlipperObject getExtraInfo(BaseMountingView node) {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
+    // NULLSAFE_FIXME[Nullable Dereference]
     return descriptor.getExtraInfo(node);
   }
 
@@ -151,6 +165,7 @@ public class LithoViewDescriptor extends NodeDescriptor<BaseMountingView> {
   public void setHighlighted(BaseMountingView node, boolean selected, boolean isAlignmentMode)
       throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
+    // NULLSAFE_FIXME[Nullable Dereference]
     descriptor.setHighlighted(node, selected, isAlignmentMode);
   }
 
@@ -172,24 +187,28 @@ public class LithoViewDescriptor extends NodeDescriptor<BaseMountingView> {
   @Override
   public void axHitTest(BaseMountingView node, Touch touch) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
+    // NULLSAFE_FIXME[Nullable Dereference]
     descriptor.axHitTest(node, touch);
   }
 
   @Override
   public String getDecoration(BaseMountingView node) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
+    // NULLSAFE_FIXME[Nullable Dereference]
     return descriptor.getDecoration(node);
   }
 
   @Override
   public String getAXDecoration(BaseMountingView node) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
+    // NULLSAFE_FIXME[Nullable Dereference]
     return descriptor.getAXDecoration(node);
   }
 
   @Override
   public boolean matches(String query, BaseMountingView node) throws Exception {
     NodeDescriptor descriptor = descriptorForClass(Object.class);
+    // NULLSAFE_FIXME[Nullable Dereference]
     return descriptor.matches(query, node);
   }
 }
