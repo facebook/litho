@@ -47,7 +47,7 @@ constructor(
     private val tracer: Systracer = RenderCoreSystrace.getInstance()
 ) : MountDelegateTarget {
 
-  private val idToMountedItemMap: LongSparseArray<MountItem?> = LongSparseArray()
+  protected val idToMountedItemMap: LongSparseArray<MountItem?> = LongSparseArray()
   private val context: Context = _rootHost.context
   private var isMounting = false
   private var _needsRemount = false
@@ -143,15 +143,7 @@ constructor(
 
       // Starting from 1 as the RenderTreeNode in position 0 always represents the root which
       // is handled in prepareMount()
-      if (RenderCoreConfig.processFromLeafNode) {
-        for (i in (renderTree.mountableOutputCount - 1) downTo 1) {
-          updateMountItem(renderTree, i)
-        }
-      } else {
-        for (i in 1 until renderTree.mountableOutputCount) {
-          updateMountItem(renderTree, i)
-        }
-      }
+      mountItemsInternal(renderTree)
 
       _needsRemount = false
 
@@ -195,6 +187,18 @@ constructor(
             attrs[RootHostHashCode] = _rootHost.hashCode()
             attrs[NumMountableOutputs] = renderTree.mountableOutputCount
           })
+    }
+  }
+
+  protected open fun mountItemsInternal(renderTree: RenderTree) {
+    if (RenderCoreConfig.processFromLeafNode) {
+      for (i in (renderTree.mountableOutputCount - 1) downTo 1) {
+        updateMountItem(renderTree, i)
+      }
+    } else {
+      for (i in 1 until renderTree.mountableOutputCount) {
+        updateMountItem(renderTree, i)
+      }
     }
   }
 
@@ -347,10 +351,10 @@ constructor(
     }
   }
 
-  private fun isMountable(renderTreeNode: RenderTreeNode, index: Int): Boolean =
+  protected fun isMountable(renderTreeNode: RenderTreeNode, index: Int): Boolean =
       _mountDelegate?.maybeLockForMount(renderTreeNode, index) ?: true
 
-  private fun updateBoundsForMountedRenderTreeNode(
+  protected fun updateBoundsForMountedRenderTreeNode(
       renderTreeNode: RenderTreeNode,
       item: MountItem,
       mountDelegate: MountDelegate?
@@ -611,7 +615,7 @@ constructor(
     }
   }
 
-  private fun unmountItemRecursively(id: Long) {
+  protected fun unmountItemRecursively(id: Long) {
     val item = idToMountedItemMap[id] ?: return // Already has been unmounted.
 
     // When unmounting use the render unit from the MountItem
@@ -824,7 +828,7 @@ constructor(
     unit.unmountBinders(context, content, node.layoutData, bindData, tracer)
   }
 
-  private fun bindRenderUnitToContent(item: MountItem) {
+  protected fun bindRenderUnitToContent(item: MountItem) {
     val renderUnit = item.renderUnit as RenderUnit<Any>
     val content = item.content
     val layoutData = item.renderTreeNode.layoutData
