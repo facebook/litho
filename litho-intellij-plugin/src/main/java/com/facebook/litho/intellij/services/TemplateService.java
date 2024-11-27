@@ -16,6 +16,7 @@
 
 package com.facebook.litho.intellij.services;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.DebounceEventLogger;
 import com.intellij.openapi.Disposable;
@@ -32,6 +33,7 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jetbrains.annotations.Nullable;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class TemplateService implements Disposable {
   private static final String TAG_ROOT = "templateSet";
   private static final EventLogger LOGGER = new DebounceEventLogger(60_000);
