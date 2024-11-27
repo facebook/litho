@@ -17,8 +17,10 @@
 package com.facebook.litho.testing.espresso;
 
 import android.app.Application;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.soloader.SoLoader;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class InstrumentationApp extends Application {
   @Override
   public void onCreate() {
