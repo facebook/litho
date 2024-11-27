@@ -182,10 +182,17 @@ internal class VerticalScrollLayoutBehavior(
 
     val constraints: SizeConstraints =
         if (fillViewport) {
-          sizeConstraints.copy(
-              minHeight = sizeConstraints.maxHeight,
-              maxHeight = sizeConstraints.maxHeight,
-          )
+          if (!sizeConstraints.hasBoundedHeight) {
+            sizeConstraints.copy(
+                minHeight = 0,
+                maxHeight = sizeConstraints.maxHeight,
+            )
+          } else {
+            sizeConstraints.copy(
+                minHeight = sizeConstraints.maxHeight,
+                maxHeight = sizeConstraints.maxHeight,
+            )
+          }
         } else {
           SizeConstraints(
               minWidth = 0,
