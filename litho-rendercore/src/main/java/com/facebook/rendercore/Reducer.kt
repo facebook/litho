@@ -150,7 +150,14 @@ object Reducer {
       debugData = layoutResult
     }
     return RenderTree(
-        root, nodesArray, null, sizeConstraints, renderStateId, results, layoutContext, debugData)
+        root,
+        nodesArray,
+        null,
+        sizeConstraints,
+        renderStateId,
+        results,
+        layoutContext.renderContext,
+        debugData)
   }
 
   @JvmStatic
