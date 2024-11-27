@@ -16,6 +16,7 @@
 
 package com.facebook.litho.intellij.inspections;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.intellij.codeInsight.intention.HighPriorityAction;
@@ -34,6 +35,7 @@ import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.Nls;
 
 /** Fix replaces argument list in the given method call. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class AddArgumentFix extends BaseIntentionAction implements HighPriorityAction {
   private final PsiExpressionList newArgumentList;
   private final PsiCall originalCall;
@@ -63,7 +65,9 @@ public class AddArgumentFix extends BaseIntentionAction implements HighPriorityA
   @Override
   public void invoke(Project project, Editor editor, PsiFile file)
       throws IncorrectOperationException {
+    // NULLSAFE_FIXME[Nullable Dereference]
     originalCall.getArgumentList().replace(newArgumentList);
+    // NULLSAFE_FIXME[Nullable Dereference]
     int offset = originalCall.getArgumentList().getLastChild().getTextOffset() - 1;
     // Move cursor before the ')'.
     editor.getCaretModel().moveToOffset(offset);
@@ -77,6 +81,7 @@ public class AddArgumentFix extends BaseIntentionAction implements HighPriorityA
       String methodName,
       PsiElementFactory elementFactory) {
     PsiExpressionList newArgumentList =
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         createArgumentList(originalMethodCall.getContext(), clsName, methodName, elementFactory);
     String fixDescription =
         "Add ." + methodName + "() " + getCapitalizedMethoName(originalMethodCall);
@@ -84,6 +89,7 @@ public class AddArgumentFix extends BaseIntentionAction implements HighPriorityA
   }
 
   static String getCapitalizedMethoName(PsiMethodCallExpression methodCall) {
+    // NULLSAFE_FIXME[Parameter Not Nullable]
     return StringUtil.capitalize(methodCall.getMethodExpression().getReferenceName());
   }
 
