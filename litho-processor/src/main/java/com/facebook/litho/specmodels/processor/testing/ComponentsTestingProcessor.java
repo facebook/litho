@@ -16,6 +16,7 @@
 
 package com.facebook.litho.specmodels.processor.testing;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.processor.AbstractComponentsProcessor;
@@ -25,6 +26,7 @@ import java.util.Set;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class ComponentsTestingProcessor extends AbstractComponentsProcessor {
 
