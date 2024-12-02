@@ -275,13 +275,14 @@ A simple spinner (dropdown) component. Derived from the standard Android `Spinne
   </TabItem>
   <TabItem value="specapi_widget">
 
-```java
-List<String> myOptions = ...
+```kotlin
+val myOptions: List<String> = ...
 Component component =
-	  Spinner.create(c)
-        .options(myOptions)
-        .selectedOption(myOptions.get(0))
-        .build();
+	  Spinner(
+        options = myOptions,
+        selectedOption = myOptions.get(0),
+        onItemSelected = { newSelection -> ...}
+    )
 ```
 
   </TabItem>
