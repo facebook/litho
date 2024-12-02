@@ -21,14 +21,12 @@ import android.widget.ImageView
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.annotations.ExcuseMySpec
-import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateLayout
 import com.facebook.litho.annotations.Prop
 import com.facebook.litho.annotations.PropDefault
 import com.facebook.litho.annotations.Reason
 import com.facebook.litho.annotations.ResType
-import com.facebook.litho.config.ComponentsConfiguration
 
 /**
  * A component that is able to display drawable resources. It takes a drawable resource ID as prop.
@@ -43,7 +41,6 @@ object ImageSpec {
 
   @PropDefault val useIntrinsicSize: Boolean = true
 
-  @OptIn(ExperimentalLithoApi::class)
   @OnCreateLayout
   fun onCreateLayout(
       c: ComponentContext,
@@ -51,14 +48,7 @@ object ImageSpec {
       @Prop(optional = true) scaleType: ImageView.ScaleType?,
       @Prop(optional = true) useIntrinsicSize: Boolean,
   ): Component {
-    return if (ComponentsConfiguration.usePrimitiveImage) {
-      ExperimentalImage(drawable, scaleType ?: ImageView.ScaleType.FIT_CENTER, useIntrinsicSize)
-    } else {
-      ImageComponent.create(c)
-          .drawable(drawable)
-          .scaleType(scaleType ?: ImageView.ScaleType.FIT_CENTER)
-          .useIntrinsicSize(useIntrinsicSize)
-          .build()
-    }
+    return ExperimentalImage(
+        drawable, scaleType ?: ImageView.ScaleType.FIT_CENTER, useIntrinsicSize)
   }
 }

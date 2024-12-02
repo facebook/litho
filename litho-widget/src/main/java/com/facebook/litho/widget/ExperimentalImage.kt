@@ -24,7 +24,6 @@ import com.facebook.litho.MatrixDrawable
 import com.facebook.litho.PrimitiveComponent
 import com.facebook.litho.PrimitiveComponentScope
 import com.facebook.litho.Style
-import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.rendercore.Size
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.primitives.DrawableAllocator
@@ -46,7 +45,6 @@ import kotlin.math.max
  * @param useIntrinsicSize Whether to use the intrinsic size of the [drawable] for component
  *   measurement.
  */
-@ExperimentalLithoApi
 class ExperimentalImage(
     private val drawable: Drawable?,
     private val scaleType: ScaleType = ScaleType.FIT_CENTER,

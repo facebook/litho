@@ -265,11 +265,6 @@ internal constructor(
     @JvmField var enableFixForStickyHeader: Boolean = false
 
     /**
-     * This flag is used to enable using PrimitiveComponent implementation of an Image component.
-     */
-    @JvmField var usePrimitiveImage: Boolean = false
-
-    /**
      * This flag is used to enable using PrimitiveComponent implementation of a SolidColor
      * component.
      */
