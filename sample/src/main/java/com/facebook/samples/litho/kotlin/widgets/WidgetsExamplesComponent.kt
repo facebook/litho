@@ -36,11 +36,11 @@ import com.facebook.litho.kotlin.widget.HorizontalScroll
 import com.facebook.litho.kotlin.widget.Image
 import com.facebook.litho.kotlin.widget.Progress
 import com.facebook.litho.kotlin.widget.SolidColor
-import com.facebook.litho.kotlin.widget.Spinner
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.kotlin.widget.TextInput
 import com.facebook.litho.kotlin.widget.VerticalScroll
 import com.facebook.litho.view.background
+import com.facebook.litho.widget.Spinner
 import com.facebook.litho.widget.TextAlignment
 import com.facebook.rendercore.dp
 import com.facebook.rendercore.drawableRes

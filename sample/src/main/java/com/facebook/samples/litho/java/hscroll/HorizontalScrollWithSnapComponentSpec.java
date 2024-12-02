@@ -31,6 +31,7 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.Row;
 import com.facebook.litho.StateValue;
+import com.facebook.litho.StyleCompat;
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateInitialState;
@@ -48,7 +49,6 @@ import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
 import com.facebook.litho.sections.widget.RecyclerCollectionEventsController;
 import com.facebook.litho.sections.widget.RecyclerConfiguration;
 import com.facebook.litho.widget.ComponentRenderInfo;
-import com.facebook.litho.widget.ItemSelectedEvent;
 import com.facebook.litho.widget.RenderInfo;
 import com.facebook.litho.widget.Spinner;
 import com.facebook.litho.widget.Text;
@@ -99,12 +99,15 @@ public class HorizontalScrollWithSnapComponentSpec {
                         .text("Snap type: ")
                         .textSizeSp(20))
                 .child(
-                    Spinner.create(c)
-                        .flexGrow(1.f)
-                        .options(Arrays.asList(SNAP_MODE_STRING))
-                        .selectedOption(getSnapModeString(snapMode))
-                        .itemSelectedEventHandler(
-                            HorizontalScrollWithSnapComponent.onSnapModeSelected(c))))
+                    new Spinner(
+                        Arrays.asList(SNAP_MODE_STRING),
+                        getSnapModeString(snapMode),
+                        newSelection -> {
+                          HorizontalScrollWithSnapComponent.updateSnapModeSync(
+                              c, getSnapModeInt(newSelection));
+                          return null;
+                        },
+                        StyleCompat.flexGrow(1f).build())))
         .child(
             RecyclerCollectionComponent.create(c)
                 .key("snapMode" + snapMode)
@@ -159,11 +162,6 @@ public class HorizontalScrollWithSnapComponentSpec {
                         .text(Integer.toString(index))
                         .verticalGravity(VerticalGravity.CENTER)))
         .build();
-  }
-
-  @OnEvent(ItemSelectedEvent.class)
-  static void onSnapModeSelected(ComponentContext c, @FromEvent String newSelection) {
-    HorizontalScrollWithSnapComponent.updateSnapModeSync(c, getSnapModeInt(newSelection));
   }
 
   @OnUpdateState

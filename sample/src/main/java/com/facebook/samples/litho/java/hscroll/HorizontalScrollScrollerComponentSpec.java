@@ -21,14 +21,13 @@ import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.Row;
-import com.facebook.litho.annotations.FromEvent;
+import com.facebook.litho.StyleCompat;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.sections.widget.RecyclerCollectionEventsController;
-import com.facebook.litho.widget.ItemSelectedEvent;
 import com.facebook.litho.widget.Spinner;
 import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaAlign;
@@ -40,7 +39,10 @@ import java.util.List;
 public class HorizontalScrollScrollerComponentSpec {
 
   @OnCreateLayout
-  static Component onCreateLayout(ComponentContext c, @Prop Integer[] colors) {
+  static Component onCreateLayout(
+      ComponentContext c,
+      @Prop Integer[] colors,
+      @Prop RecyclerCollectionEventsController eventsController) {
     return Column.create(c)
         .paddingDip(YogaEdge.ALL, 5)
         .child(
@@ -78,12 +80,15 @@ public class HorizontalScrollScrollerComponentSpec {
                         .text("Smooth scroll to: ")
                         .textSizeSp(20))
                 .child(
-                    Spinner.create(c)
-                        .flexGrow(1.f)
-                        .options(getPositionsFromDataset(colors))
-                        .selectedOption("0")
-                        .itemSelectedEventHandler(
-                            HorizontalScrollScrollerComponent.onScrollToPositionSelected(c))))
+                    new Spinner(
+                        getPositionsFromDataset(colors),
+                        "0",
+                        newSelection -> {
+                          eventsController.requestScrollToPositionWithSnap(
+                              Integer.parseInt(newSelection));
+                          return null;
+                        },
+                        StyleCompat.flexGrow(1f).build())))
         .build();
   }
 
@@ -93,14 +98,6 @@ public class HorizontalScrollScrollerComponentSpec {
       positions.add(i, Integer.toString(i));
     }
     return positions;
-  }
-
-  @OnEvent(ItemSelectedEvent.class)
-  static void onScrollToPositionSelected(
-      ComponentContext c,
-      @Prop RecyclerCollectionEventsController eventsController,
-      @FromEvent String newSelection) {
-    eventsController.requestScrollToPositionWithSnap(Integer.parseInt(newSelection));
   }
 
   @OnEvent(ClickEvent.class)
