@@ -244,7 +244,8 @@ open class ComponentHost(
   init {
     setWillNotDraw(ComponentsConfiguration.defaultInstance.enableHostWillNotDraw)
     isChildrenDrawingOrderEnabled = true
-    refreshAccessibilityDelegatesIfNeeded(isAccessibilityEnabled(context))
+    refreshAccessibilityDelegatesIfNeeded(
+        ComponentsConfiguration.enableA11Y || isAccessibilityEnabled(context))
   }
 
   override fun mount(index: Int, mountItem: MountItem) {
@@ -436,7 +437,8 @@ open class ComponentHost(
   override fun setTag(key: Int, tag: Any?) {
     super.setTag(key, tag)
     if (key == COMPONENT_NODE_INFO_ID && tag != null) {
-      refreshAccessibilityDelegatesIfNeeded(isAccessibilityEnabled(context))
+      refreshAccessibilityDelegatesIfNeeded(
+          ComponentsConfiguration.enableA11Y || isAccessibilityEnabled(context))
       if (componentAccessibilityDelegate != null) {
         (tag as? NodeInfo)?.let { componentAccessibilityDelegate?.setNodeInfo(it) }
       }

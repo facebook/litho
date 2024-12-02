@@ -277,6 +277,11 @@ internal constructor(
     @JvmField var usePrimitiveText: Boolean = false
 
     /**
+     * This flag is used to enable A11Y support for Litho by default to measure the impact of perf.
+     */
+    @JvmField var enableA11Y: Boolean = false
+
+    /**
      * This method is only used so that Java clients can have a builder like approach to override a
      * configuration.
      */

@@ -551,7 +551,8 @@ public class LithoView extends BaseMountingView {
       mComponentTree.attach();
     }
 
-    refreshAccessibilityDelegatesIfNeeded(isAccessibilityEnabled(getContext()));
+    refreshAccessibilityDelegatesIfNeeded(
+        ComponentsConfiguration.enableA11Y || isAccessibilityEnabled(getContext()));
 
     AccessibilityManagerCompat.addAccessibilityStateChangeListener(
         mAccessibilityManager, mAccessibilityStateChangeListener);
