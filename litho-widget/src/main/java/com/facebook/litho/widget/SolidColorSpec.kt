@@ -26,7 +26,6 @@ import com.facebook.litho.annotations.Prop
 import com.facebook.litho.annotations.PropDefault
 import com.facebook.litho.annotations.Reason
 import com.facebook.litho.annotations.ResType
-import com.facebook.litho.config.ComponentsConfiguration
 
 /**
  * A component that renders a solid color.
@@ -48,10 +47,6 @@ internal object SolidColorSpec {
       @Prop(resType = ResType.COLOR) color: Int,
       @Prop(optional = true, isCommonProp = true, overrideCommonPropBehavior = true) alpha: Float
   ): Component {
-    return if (ComponentsConfiguration.usePrimitiveSolidColor) {
-      ExperimentalSolidColor(color = color, alpha = alpha)
-    } else {
-      SolidColorComponent.create(c).color(color).alpha(alpha).build()
-    }
+    return ExperimentalSolidColor(color = color, alpha = alpha)
   }
 }

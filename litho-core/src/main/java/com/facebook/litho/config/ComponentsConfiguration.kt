@@ -264,12 +264,6 @@ internal constructor(
     /** This flag is used to enable a fix for the ANR issue with sticky header RecyclerView. */
     @JvmField var enableFixForStickyHeader: Boolean = false
 
-    /**
-     * This flag is used to enable using PrimitiveComponent implementation of a SolidColor
-     * component.
-     */
-    @JvmField var usePrimitiveSolidColor: Boolean = false
-
     /** This config will enable logging of interactable components with 0 alpha */
     @JvmField var isZeroAlphaLoggingEnabled: Boolean = false
 
