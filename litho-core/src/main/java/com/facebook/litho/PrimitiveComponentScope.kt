@@ -216,7 +216,7 @@ fun <ContentType : ViewGroup> MountConfigurationScope<ContentType>.bindToRenderT
 
   withDescription("root-host-reference") {
     bind(state.mountedViewReference) { content ->
-      state.mountedViewReference.mountedView = content
+      state.mountedViewReference.mountedView = content.getRenderTreeView()
       onUnbind { state.mountedViewReference.mountedView = null }
     }
   }
