@@ -31,19 +31,27 @@ The following list provides the supported properties of the `Style` object:
 * `Style.accessibilityRoleDescription`
 * `Style.contentDescription`
 * `Style.importantForAccessibility`
+* `Style.screenReaderFocusable`
+* `Style.requestInitialAccessibilityFocus`
+* `Style.stateDescription`
+* `Style.minDurationBetweenContentChangesMillis`
+* `Style.labeledBy`
+* `Style.paneTitle`
+* `Style.liveRegion`
+* `Style.containerTitle`
 
 The following table provides the supported events of the `Style` object:
 
 | Event | AccessibilityDelegate method |
 | ----- | ---------------------------- |
-| `Style.onInitializeAccessibilityEvent`    | <a href="https://developer.android.com/reference/android/support/v4/view/AccessibilityDelegateCompat.html#onInitializeAccessibilityEvent(android.view.View, android.view.accessibility.AccessibilityEvent)">onInitializeAccessibilityEvent</a> |
-| `Style.onInitializeAccessibilityNodeInfo` | <a href="https://developer.android.com/reference/android/support/v4/view/AccessibilityDelegateCompat.html#onInitializeAccessibilityNodeInfo(android.view.View, android.support.v4.view.accessibility.AccessibilityNodeInfoCompat)">onInitializeAccessibilityNodeInfo</a> |
+| `Style.onInitializeAccessibilityEvent`    | <a href="https://developer.android.com/reference/kotlin/androidx/core/view/AccessibilityDelegateCompat#onInitializeAccessibilityEvent(android.view.View,android.view.accessibility.AccessibilityEvent)">onInitializeAccessibilityEvent</a> |
+| `Style.onInitializeAccessibilityNodeInfo` | <a href="https://developer.android.com/reference/kotlin/androidx/core/view/AccessibilityDelegateCompat#onInitializeAccessibilityNodeInfo(android.view.View,androidx.core.view.accessibility.AccessibilityNodeInfoCompat)">onInitializeAccessibilityNodeInfo</a> |
 | `Style.onPopulateAccessibilityNode`       | <a href="https://fburl.com/onpopulateaccessibilitynode">Populate an accessibility node with information about the component</a> |
-| `Style.onPopulateAccessibilityEvent`      | <a href="https://developer.android.com/reference/android/support/v4/view/AccessibilityDelegateCompat.html#onPopulateAccessibilityEvent(android.view.View, android.view.accessibility.AccessibilityEvent)">onPopulateAccessibilityEvent</a> |
-| `Style.onRequestSendAccessibilityEvent`   | <a href="https://developer.android.com/reference/android/support/v4/view/AccessibilityDelegateCompat.html#onRequestSendAccessibilityEvent(android.view.ViewGroup, android.view.View, android.view.accessibility.AccessibilityEvent)">onRequestSendAccessibilityEvent</a> |
-| `Style.performAccessibilityAction`        | <a href="https://developer.android.com/reference/android/support/v4/view/AccessibilityDelegateCompat.html#performAccessibilityAction(android.view.View, int, android.os.Bundle)">performAccessibilityAction</a> |
-| `Style.sendAccessibilityEvent`            | <a href="https://developer.android.com/reference/android/support/v4/view/AccessibilityDelegateCompat.html#sendAccessibilityEvent(android.view.View, int)">sendAccessibilityEvent</a> |
-| `Style.sendAccessibilityEventUnchecked`   | <a href="https://developer.android.com/reference/android/support/v4/view/AccessibilityDelegateCompat.html#sendAccessibilityEventUnchecked(android.view.View, android.view.accessibility.AccessibilityEvent)">sendAccessibilityEventUnchecked</a> |
+| `Style.onPopulateAccessibilityEvent`      | <a href="https://developer.android.com/reference/kotlin/androidx/core/view/AccessibilityDelegateCompat#onPopulateAccessibilityEvent(android.view.View,android.view.accessibility.AccessibilityEvent)">onPopulateAccessibilityEvent</a> |
+| `Style.onRequestSendAccessibilityEvent`   | <a href="https://developer.android.com/reference/kotlin/androidx/core/view/AccessibilityDelegateCompat#onRequestSendAccessibilityEvent(android.view.ViewGroup,android.view.View,android.view.accessibility.AccessibilityEvent)">onRequestSendAccessibilityEvent</a> |
+| `Style.performAccessibilityAction`        | <a href="https://developer.android.com/reference/kotlin/androidx/core/view/AccessibilityDelegateCompat#performAccessibilityAction(android.view.View,int,android.os.Bundle)">performAccessibilityAction</a> |
+| `Style.sendAccessibilityEvent`            | <a href="https://developer.android.com/reference/kotlin/androidx/core/view/AccessibilityDelegateCompat#sendAccessibilityEvent(android.view.View,int)">sendAccessibilityEvent</a> |
+| `Style.sendAccessibilityEventUnchecked`   | <a href="https://developer.android.com/reference/kotlin/androidx/core/view/AccessibilityDelegateCompat#sendAccessibilityEventUnchecked(android.view.View,android.view.accessibility.AccessibilityEvent)">sendAccessibilityEventUnchecked</a> |
 
 
 ## Focus Order
