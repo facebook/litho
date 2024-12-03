@@ -850,22 +850,18 @@ public class ComponentContext {
 
     // EventHandler no-ops if ComponentContext is not associated with a Component.
     if (!(component instanceof HasEventDispatcher)) {
-      ComponentsReporter.emitMessage(
-          ComponentsReporter.LogLevel.FATAL,
-          NO_SCOPE_EVENT_HANDLER,
-          "Creating event handler without scope.");
       return NoOpEventHandler.getNoOpEventHandler();
     }
 
     // Log a debug event if the event handler is created using the correct context
     if (reference != component.getClass()) {
-      ComponentsReporter.emitMessage(
-          ComponentsReporter.LogLevel.ERROR,
-          "WrongContextForEventHandler" + ":" + component.getSimpleName(),
-          String.format(
-              "A Event handler from %s was created using a context from %s. "
-                  + "Event Handlers must be created using a ComponentContext from its Component.",
-              source, component.getSimpleName()));
+      DebugInfoReporter.report(
+          "WrongContextForEventHandler",
+          attributes -> {
+            attributes.put(Source, source);
+            attributes.put("reference", reference);
+            return Unit.INSTANCE;
+          });
     }
 
     final @Nullable CalculationContext context = getCalculationStateContext();
