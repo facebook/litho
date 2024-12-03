@@ -192,6 +192,10 @@ constructor(
     shadowOf(Looper.getMainLooper()).idle()
   }
 
+  fun finishAsyncUpdates() {
+    threadLooperController.runToEndOfTasksSync()
+  }
+
   /**
    * Creates a ComponentTree that will propagate exceptions.
    *

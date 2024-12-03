@@ -375,6 +375,26 @@ class TreeState {
     eventHandlersController.clearUnusedEventDispatchInfos()
   }
 
+  fun updateEventDispatchers(toUpdate: List<ScopedComponentInfo>) {
+    toUpdate.forEach { scope ->
+      val context = scope.context
+      val key = context.globalKey
+      val component = context.componentScope
+
+      if (component is SpecGeneratedComponent) {
+        component.recordEventTrigger(context, eventTriggersContainer)
+      }
+
+      val info =
+          resolveState.getState(key)?.eventDispatchInfo
+              ?: layoutState.getState(key)?.eventDispatchInfo
+              ?: return@forEach
+
+      info.componentContext = context
+      info.hasEventDispatcher = context.componentScope as HasEventDispatcher
+    }
+  }
+
   companion object {
     private fun getKeysForPendingStateUpdates(stateHandler: StateHandler): Set<String> {
       return stateHandler.keysForPendingUpdates

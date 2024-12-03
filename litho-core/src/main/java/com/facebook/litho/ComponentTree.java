@@ -867,10 +867,22 @@ public class ComponentTree
       return false;
     }
 
-    final @Nullable TreeState committedTreeState = mTreeState;
-    if (getLithoConfiguration().componentsConfig.getUseNonRebindingEventHandlers()
-        && committedTreeState != null) {
-      bindEventHandlersAndTriggers(mMainThreadLayoutState, committedTreeState);
+    final @Nullable TreeState state = mTreeState;
+    final @Nullable LayoutState layoutState = mMainThreadLayoutState;
+    final boolean useNonRebindingEventHandlers =
+        getLithoConfiguration().componentsConfig.getUseNonRebindingEventHandlers();
+    final boolean useStateForEventDispatchInfo =
+        getLithoConfiguration().componentsConfig.useStateForEventDispatchInfo;
+
+    if (useNonRebindingEventHandlers && layoutState != null && state != null) {
+      if (useStateForEventDispatchInfo) {
+        List<ScopedComponentInfo> scopes = layoutState.consumeComponentScopes();
+        if (scopes != null) {
+          state.updateEventDispatchers(scopes);
+        }
+      } else {
+        bindEventHandlersAndTriggers(layoutState, state);
+      }
     }
 
     dispatchOnAttached();

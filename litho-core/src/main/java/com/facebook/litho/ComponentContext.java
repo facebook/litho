@@ -846,6 +846,7 @@ public class ComponentContext {
       final String source) {
 
     final @Nullable Component component = mComponentScope;
+    final @Nullable ScopedComponentInfo info = mScopedComponentInfo;
 
     // EventHandler no-ops if ComponentContext is not associated with a Component.
     if (!(component instanceof HasEventDispatcher)) {
@@ -868,18 +869,17 @@ public class ComponentContext {
     }
 
     final @Nullable CalculationContext context = getCalculationStateContext();
-    final EventDispatchInfo info = new EventDispatchInfo((HasEventDispatcher) component, this);
-    final EventHandler eventHandler = new EventHandler<>(id, mode, info, params);
-
-    if (context != null) {
-      if (shouldUseNonRebindingEventHandlers()) {
-        if (mode == EventHandlerRebindMode.REBIND) {
-          context.recordEventHandler(getGlobalKey(), eventHandler);
-        }
-      } else {
-        context.recordEventHandler(getGlobalKey(), eventHandler);
-      }
+    final EventDispatchInfo dispatchInfo;
+    if (canUseStateForEventDispatchInfo(getComponentsConfig(this), mode, context, info)) {
+      ComponentState<?> state = Preconditions.checkNotNull(getScopedComponentInfo().getState());
+      dispatchInfo = Preconditions.checkNotNull(state.getEventDispatchInfo());
     } else {
+      dispatchInfo = new EventDispatchInfo((HasEventDispatcher) component, this);
+    }
+
+    final EventHandler<E> eventHandler = new EventHandler<>(id, mode, dispatchInfo, params);
+
+    if (context == null) {
       eventHandler.dispatchInfo.isBound = true;
       if (ComponentsConfiguration.isEventHandlerRebindLoggingEnabled) {
         DebugInfoReporter.report(
@@ -889,8 +889,47 @@ public class ComponentContext {
               return Unit.INSTANCE;
             });
       }
+    } else if (shouldRecordEventHandler(this, mode)) {
+      context.recordEventHandler(getGlobalKey(), eventHandler);
     }
 
     return eventHandler;
+  }
+
+  private static boolean canUseStateForEventDispatchInfo(
+      final ComponentsConfiguration config,
+      final EventHandlerRebindMode mode,
+      final @Nullable CalculationContext calculationContext,
+      final @Nullable ScopedComponentInfo info) {
+
+    if (mode != EventHandlerRebindMode.REBIND) {
+      return false;
+    }
+
+    if (!config.useStateForEventDispatchInfo) {
+      return false;
+    }
+
+    if (calculationContext == null) {
+      return false;
+    }
+
+    if (info == null || info.getState() == null || info.getState().getEventDispatchInfo() == null) {
+      return false;
+    }
+
+    return true;
+  }
+
+  private static boolean shouldRecordEventHandler(ComponentContext c, EventHandlerRebindMode mode) {
+    if (c.getLithoConfiguration().componentsConfig.useStateForEventDispatchInfo) {
+      return false;
+    }
+
+    if (c.shouldUseNonRebindingEventHandlers() && mode != EventHandlerRebindMode.REBIND) {
+      return false;
+    }
+
+    return true;
   }
 }

@@ -41,6 +41,10 @@ object EventHandlerBindingComponentSpec {
     fun updateCounterSync(counter: Int) {
       componentContext?.let { EventHandlerBindingComponent.updateCounterSync(it, counter) }
     }
+
+    fun updateCounter(counter: Int) {
+      componentContext?.let { EventHandlerBindingComponent.updateCounter(it, counter) }
+    }
   }
 
   fun interface OnButtonClickListener {
@@ -69,6 +73,7 @@ object EventHandlerBindingComponentSpec {
       c: ComponentContext,
       @Prop stateUpdater: StateUpdater,
       @Prop buttonCreator: ButtonCreator,
+      @Prop(optional = true) extraChild: Component?,
       @State counter: Int,
       @State @ColorInt buttonBgColor: Int,
   ): Component {
@@ -82,6 +87,7 @@ object EventHandlerBindingComponentSpec {
                     .delegate(buttonCreator.createButton(c))
                     .clickHandler(EventHandlerBindingComponent.onRowClick(c))
                     .build()))
+        .child(extraChild)
         .build()
   }
 

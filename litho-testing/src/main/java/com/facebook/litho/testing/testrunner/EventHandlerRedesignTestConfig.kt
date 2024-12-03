@@ -21,15 +21,20 @@ import org.junit.runners.model.FrameworkMethod
 
 class EventHandlerRedesignTestConfig : LithoTestRunConfiguration {
 
-  val default = ComponentsConfiguration.defaultInstance.useNonRebindingEventHandlers
+  val defaultRebindMode = ComponentsConfiguration.defaultInstance.useNonRebindingEventHandlers
+  val defaultState = ComponentsConfiguration.defaultInstance.useStateForEventDispatchInfo
 
   override fun beforeTest(method: FrameworkMethod) {
     ComponentsConfiguration.defaultInstance =
-        ComponentsConfiguration.defaultInstance.copy(useNonRebindingEventHandlers = !default)
+        ComponentsConfiguration.defaultInstance.copy(
+            useNonRebindingEventHandlers = !defaultRebindMode,
+            useStateForEventDispatchInfo = !defaultState,
+        )
   }
 
   override fun afterTest(method: FrameworkMethod) {
     ComponentsConfiguration.defaultInstance =
-        ComponentsConfiguration.defaultInstance.copy(enableFixForIM = default)
+        ComponentsConfiguration.defaultInstance.copy(
+            enableFixForIM = defaultRebindMode, useStateForEventDispatchInfo = defaultState)
   }
 }
