@@ -32,10 +32,12 @@ import com.facebook.litho.PrimitiveComponentScope
 import com.facebook.litho.ResolveResult
 import com.facebook.litho.Style
 import com.facebook.litho.bindToRenderTreeView
+import com.facebook.litho.debug.DebugInfoReporter
 import com.facebook.litho.useCached
 import com.facebook.litho.useNestedTree
 import com.facebook.litho.useState
 import com.facebook.rendercore.Dimen
+import com.facebook.rendercore.MaxPossibleHeightValue
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.primitives.LayoutBehavior
 import com.facebook.rendercore.primitives.LayoutScope
@@ -195,9 +197,17 @@ internal class VerticalScrollLayoutBehavior(
                 maxHeight = sizeConstraints.maxHeight,
             )
           } else {
+            val height = min(sizeConstraints.MaxPossibleHeightValue, sizeConstraints.maxHeight)
+            if (height != sizeConstraints.maxHeight) {
+              DebugInfoReporter.report(category = "SizeConstraintViolation") {
+                this["component"] = "<cls>${resolveResult.component}</cls>"
+                this["sizeConstraints"] = sizeConstraints.toString()
+                this["MaxPossibleHeightValue"] = sizeConstraints.MaxPossibleHeightValue
+              }
+            }
             sizeConstraints.copy(
-                minHeight = sizeConstraints.maxHeight,
-                maxHeight = sizeConstraints.maxHeight,
+                minHeight = height,
+                maxHeight = SizeConstraints.Infinity,
             )
           }
         } else {
