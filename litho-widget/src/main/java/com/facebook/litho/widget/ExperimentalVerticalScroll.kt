@@ -200,7 +200,7 @@ internal class VerticalScrollLayoutBehavior(
             val height = min(sizeConstraints.MaxPossibleHeightValue, sizeConstraints.maxHeight)
             if (height != sizeConstraints.maxHeight) {
               DebugInfoReporter.report(category = "SizeConstraintViolation") {
-                this["component"] = "<cls>${resolveResult.component}</cls>"
+                this["component"] = resolveResult.component.getSimpleName()
                 this["sizeConstraints"] = sizeConstraints.toString()
                 this["MaxPossibleHeightValue"] = sizeConstraints.MaxPossibleHeightValue
               }
