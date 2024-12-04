@@ -73,6 +73,8 @@ import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.LithoVisibilityEventsController.LithoVisibilityState;
 import com.facebook.litho.annotations.ExperimentalLithoApi;
+import com.facebook.litho.choreographercompat.ChoreographerCompat;
+import com.facebook.litho.choreographercompat.ChoreographerCompatImpl;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.LithoDebugConfigurations;
 import com.facebook.litho.config.PreAllocationHandler;
@@ -2201,6 +2203,64 @@ public class ComponentTree
     mFutureExecutionListener = futureExecutionListener;
   }
 
+  /** Helper to log render in flight in the next frame. */
+  class RenderInFlightLogging extends ChoreographerCompat.FrameCallback {
+
+    private final LayoutState mLayoutState;
+    private final int mLayoutVersion;
+    private final @RenderSource int mSource;
+    private final Component mRootComponent;
+
+    public RenderInFlightLogging(
+        final LayoutState layoutState,
+        final int layoutVersion,
+        final @RenderSource int source,
+        final Component rootComponent) {
+      mLayoutState = layoutState;
+      mLayoutVersion = layoutVersion;
+      mSource = source;
+      mRootComponent = rootComponent;
+    }
+
+    @Override
+    public void doFrame(long frameTimeNanos) {
+      final boolean isRootNotCompatibleAndWithoutResolveFuture;
+      final boolean isSizeNotCompatibleAndWithoutLayoutFuture;
+      synchronized (ComponentTree.this) {
+        final int resolvedRootId = mRoot != null ? mRoot.getId() : INVALID_ID;
+        isRootNotCompatibleAndWithoutResolveFuture =
+            mLayoutState.getResolveResult().component.getId() != resolvedRootId
+                && mResolveResultFutures.isEmpty();
+        isSizeNotCompatibleAndWithoutLayoutFuture =
+            !isCompatibleSpec(mLayoutState, mWidthSpec, mHeightSpec)
+                && mLayoutTreeFutures.isEmpty();
+      }
+      if (isRootNotCompatibleAndWithoutResolveFuture || isSizeNotCompatibleAndWithoutLayoutFuture) {
+        DebugInfoReporter.report(
+            "RenderInFlight v3",
+            LogLevel.ERROR,
+            mId,
+            attributes -> {
+              attributes.put(DebugEventAttribute.Version, mLayoutVersion);
+              attributes.put(DebugEventAttribute.Source, layoutSourceToString(mSource));
+              attributes.put("Root", mRootComponent.getSimpleName());
+              attributes.put(DebugEventAttribute.Width, mLayoutState.getWidth());
+              attributes.put(DebugEventAttribute.Height, mLayoutState.getHeight());
+              attributes.put(
+                  "withoutSizeSpec",
+                  getLithoConfiguration().componentsConfig.enableResolveWithoutSizeSpec);
+              attributes.put(
+                  "isRootNotCompatibleAndWithoutResolveFuture",
+                  isRootNotCompatibleAndWithoutResolveFuture);
+              attributes.put(
+                  "isSizeNotCompatibleAndWithoutLayoutFuture",
+                  isSizeNotCompatibleAndWithoutLayoutFuture);
+              return Unit.INSTANCE;
+            });
+      }
+    }
+  }
+
   private void commitLayoutState(
       final LayoutState layoutState,
       final int layoutVersion,
@@ -2237,42 +2297,10 @@ public class ComponentTree
               attributes.put(DebugEventAttribute.Height, layoutState.getHeight());
               return Unit.INSTANCE;
             });
-      } else {
-        if (getLithoConfiguration().componentsConfig.enableLoggingForRenderInFlight
-            || getLithoConfiguration().componentsConfig.enableResolveWithoutSizeSpec) {
-          final int resolvedRootId = mRoot != null ? mRoot.getId() : INVALID_ID;
-          final boolean isRootNotCompatibleAndWithoutResolveFuture =
-              layoutState.getResolveResult().component.getId() != resolvedRootId
-                  && mResolveResultFutures.isEmpty();
-          final boolean isSizeNotCompatibleAndWithoutLayoutFuture =
-              !isCompatibleSpec(layoutState, mWidthSpec, mHeightSpec)
-                  && mLayoutTreeFutures.isEmpty();
-          if (isRootNotCompatibleAndWithoutResolveFuture
-              || isSizeNotCompatibleAndWithoutLayoutFuture) {
-            // log debug error for in-flight renders
-            DebugInfoReporter.report(
-                "RenderInFlight v2",
-                LogLevel.ERROR,
-                mId,
-                attributes -> {
-                  attributes.put(DebugEventAttribute.Version, layoutVersion);
-                  attributes.put(DebugEventAttribute.Source, layoutSourceToString(source));
-                  attributes.put("Root", rootComponent.getSimpleName());
-                  attributes.put(DebugEventAttribute.Width, layoutState.getWidth());
-                  attributes.put(DebugEventAttribute.Height, layoutState.getHeight());
-                  attributes.put(
-                      "withoutSizeSpec",
-                      getLithoConfiguration().componentsConfig.enableResolveWithoutSizeSpec);
-                  attributes.put(
-                      "isRootNotCompatibleAndWithoutResolveFuture",
-                      isRootNotCompatibleAndWithoutResolveFuture);
-                  attributes.put(
-                      "isSizeNotCompatibleAndWithoutLayoutFuture",
-                      isSizeNotCompatibleAndWithoutLayoutFuture);
-                  return Unit.INSTANCE;
-                });
-          }
-        }
+      } else if (getLithoConfiguration().componentsConfig.enableLoggingForRenderInFlight) {
+        ChoreographerCompatImpl.getInstance()
+            .postFrameCallback(
+                new RenderInFlightLogging(layoutState, layoutVersion, source, rootComponent));
       }
 
       if (DEBUG_LOGS) {
