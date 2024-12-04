@@ -16,19 +16,16 @@
 
 package com.facebook.samples.litho.java.textinput;
 
-import android.view.View;
-import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.Handle;
 import com.facebook.litho.Row;
 import com.facebook.litho.StateValue;
-import com.facebook.litho.annotations.FromEvent;
+import com.facebook.litho.StyleCompat;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateLayout;
-import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.widget.Button;
 import com.facebook.litho.widget.TextInput;
@@ -50,26 +47,24 @@ class TextInputRequestAndClearFocusSpec {
         .child(
             Row.create(c)
                 .child(
-                    Button.create(c)
-                        .text("Request Focus")
-                        .clickHandler(TextInputRequestAndClearFocus.onRequestFocusClick(c))
-                        .marginDip(YogaEdge.HORIZONTAL, 8))
+                    new Button(
+                        "Request Focus",
+                        StyleCompat.onClick(
+                                clickEvent -> {
+                                  TextInput.requestFocus(c, textInputHandle);
+                                  return null;
+                                })
+                            .marginDip(YogaEdge.HORIZONTAL, 8)
+                            .build()))
                 .child(
-                    Button.create(c)
-                        .text("Clear Focus")
-                        .clickHandler(TextInputRequestAndClearFocus.onClearFocusClick(c))))
+                    new Button(
+                        "Clear Focus",
+                        StyleCompat.onClick(
+                                clickEvent -> {
+                                  TextInput.clearFocus(c, textInputHandle);
+                                  return null;
+                                })
+                            .build())))
         .build();
-  }
-
-  @OnEvent(ClickEvent.class)
-  static void onRequestFocusClick(
-      ComponentContext c, @FromEvent View view, @State Handle textInputHandle) {
-    TextInput.requestFocus(c, textInputHandle);
-  }
-
-  @OnEvent(ClickEvent.class)
-  static void onClearFocusClick(
-      ComponentContext c, @FromEvent View view, @State Handle textInputHandle) {
-    TextInput.clearFocus(c, textInputHandle);
   }
 }

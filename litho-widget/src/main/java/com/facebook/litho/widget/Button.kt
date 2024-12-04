@@ -14,23 +14,21 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget;
+package com.facebook.litho.widget
 
-import com.facebook.litho.AccessibilityRole;
-import com.facebook.litho.Component;
-import com.facebook.litho.ComponentContext;
-import com.facebook.litho.annotations.LayoutSpec;
-import com.facebook.litho.annotations.OnCreateLayout;
-import com.facebook.litho.annotations.Prop;
+import com.facebook.litho.AccessibilityRole
+import com.facebook.litho.Component
+import com.facebook.litho.ComponentScope
+import com.facebook.litho.KComponent
+import com.facebook.litho.Style
+import com.facebook.litho.kotlinStyle
 
-@LayoutSpec
-class ButtonSpec {
-
-  @OnCreateLayout
-  static Component onCreateLayout(ComponentContext c, @Prop String text) {
-    return Text.create(c, android.R.attr.buttonStyle, 0)
+class Button(private val text: String, private val style: Style? = null) : KComponent() {
+  override fun ComponentScope.render(): Component {
+    return Text.create(context, android.R.attr.buttonStyle, 0)
         .text(text)
         .accessibilityRole(AccessibilityRole.BUTTON)
-        .build();
+        .kotlinStyle(style)
+        .build()
   }
 }
