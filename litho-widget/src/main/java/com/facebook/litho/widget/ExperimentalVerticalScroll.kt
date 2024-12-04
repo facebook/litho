@@ -207,7 +207,7 @@ internal class VerticalScrollLayoutBehavior(
             }
             sizeConstraints.copy(
                 minHeight = height,
-                maxHeight = SizeConstraints.Infinity,
+                maxHeight = sizeConstraints.maxHeight,
             )
           }
         } else {
