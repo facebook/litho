@@ -84,6 +84,7 @@ import com.facebook.litho.utils.MeasureUtils;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nullable;
 
@@ -1361,7 +1362,12 @@ class TextInputSpec {
     }
 
     void attachWatchers(@Nullable List<TextWatcher> textWatchers) {
-      if (textWatchers != null && textWatchers.size() > 0) {
+      if (textWatchers == null) {
+        return;
+      }
+
+      textWatchers.removeIf(Objects::isNull);
+      if (!textWatchers.isEmpty()) {
         mTextWatcher =
             textWatchers.size() == 1 ? textWatchers.get(0) : new CompositeTextWatcher(textWatchers);
         addTextChangedListener(mTextWatcher);
