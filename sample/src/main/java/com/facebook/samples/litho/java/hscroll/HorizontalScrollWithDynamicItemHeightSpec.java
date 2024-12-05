@@ -39,6 +39,7 @@ import com.facebook.litho.widget.RenderInfo;
 import com.facebook.litho.widget.Text;
 import com.facebook.litho.widget.TextAlignment;
 import com.facebook.litho.widget.VerticalGravity;
+import com.facebook.litho.widget.collection.CrossAxisWrapMode;
 import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaJustify;
 import java.util.Arrays;
@@ -58,7 +59,9 @@ public class HorizontalScrollWithDynamicItemHeightSpec {
             .recyclerBinderConfiguration(
                 RecyclerBinderConfiguration.create()
                     .recyclerBinderConfig(
-                        RecyclerBinderConfig.create().hasDynamicItemHeight(true).build())
+                        RecyclerBinderConfig.create()
+                            .crossAxisWrapMode(CrossAxisWrapMode.Dynamic)
+                            .build())
                     .build())
             .build();
 

@@ -83,19 +83,29 @@ Update `onCreateChildren()` to add a `SingleComponentSection` before the `DataDi
 ```java
 @OnCreateChildren
 static Children onCreateChildren(final SectionContext c) {
+  final RecyclerConfiguration recyclerConfiguration =
+          ListRecyclerConfiguration.create()
+              .orientation(LinearLayoutManager.HORIZONTAL)
+              .reverseLayout(false)
+              .snapMode(SnapUtil.SNAP_TO_CENTER)
+              .recyclerBinderConfiguration(
+                  RecyclerBinderConfiguration.create()
+                      .recyclerBinderConfig(
+                          RecyclerBinderConfig.create().crossAxisWrapMode(CrossAxisWrapMode.MatchFirstChild).build())
+                      .build())
+              .build();
   return Children.create()
       .child(
           SingleComponentSection.create(c)
               .component(
                   RecyclerCollectionComponent.create(c)
                       .disablePTR(true)
-                      .recyclerConfiguration(new ListRecyclerConfiguration(LinearLayoutManager.HORIZONTAL, /*reverse layout*/ false, SNAP_TO_CENTER))
+                      .recyclerConfiguration(recyclerConfiguration)
                       .section(
                           DataDiffSection.<Integer>create(c)
                               .data(generateData(32))
                               .renderEventHandler(ListSection.onRender(c))
-                              .build())
-                      .canMeasureRecycler(true))
+                              .build()))
               .build())
         .child(
             DataDiffSection.<Integer>create(c)
@@ -107,7 +117,7 @@ static Children onCreateChildren(final SectionContext c) {
 
 We're seeing a couple new props for `RecyclerCollectionComponent` here.
 - `recyclerConfiguration` is a configuration object for setting the layout of the components and the snapping behavior for the `RecyclerCollectionComponent`.
-- `canMeasureRecycler` needs to be set to true for a horizontal `RecyclerCollectionComponent` if you can't set a static height on it. The framework will measure the first child of the `RecyclerCollectionComponent` and use that child's height as the height of the entire horizontal scrolling list.
+- `CrossAxisWrapMode.MatchFirstChild` needs to be set for a horizontal `RecyclerCollectionComponent` if you can't set a static height on it. The framework will measure the first child of the `RecyclerCollectionComponent` and use that child's height as the height of the entire horizontal scrolling list.
 
 Run the app now, you should see something like this:
 
