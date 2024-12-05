@@ -33,6 +33,7 @@ import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.collection.CrossAxisWrapMode;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.After;
@@ -181,10 +182,12 @@ public class RecyclerBinderManualRangeTest {
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
             .recyclerBinderConfig(
-                RecyclerBinderConfig.create().estimatedViewportCount(1).rangeRatio(.05f).build())
+                RecyclerBinderConfig.create()
+                    .crossAxisWrapMode(CrossAxisWrapMode.MatchFirstChild)
+                    .estimatedViewportCount(1)
+                    .rangeRatio(.05f)
+                    .build())
             .build(mComponentContext);
-
-    recyclerBinder.setCanMeasure(true);
 
     recyclerBinder.measure(
         new Size(),

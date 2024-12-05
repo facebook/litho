@@ -178,7 +178,6 @@ class LazyCollection(
         .recyclerConfiguration(layout.recyclerConfiguration)
         .itemAnimator(itemAnimator)
         .itemDecoration(itemDecoration)
-        .canMeasureRecycler(layout.canMeasureRecycler)
         .clipToPadding(clipToPadding)
         .clipChildren(clipChildren)
         .startPaddingPx(startPadding?.toPixels(resourceResolver) ?: 0)

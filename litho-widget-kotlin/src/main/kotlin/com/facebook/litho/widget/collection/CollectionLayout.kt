@@ -48,9 +48,8 @@ abstract class CollectionLayout(
     useBackgroundChangeSets: Boolean = false,
     isIncrementalMountEnabled: Boolean =
         componentContext.lithoConfiguration.componentsConfig.incrementalMountEnabled,
-    hasDynamicItemHeight: Boolean = false,
-    val canMeasureRecycler: Boolean = false,
     mainAxisWrapContent: Boolean = false,
+    crossAxisWrapMode: CrossAxisWrapMode = CrossAxisWrapMode.NoWrap,
     preAllocationHandler: PreAllocationHandler?,
     isCircular: Boolean,
     enableStableIds: Boolean
@@ -65,13 +64,13 @@ abstract class CollectionLayout(
               RecyclerBinderConfiguration.create()
                   .recyclerBinderConfig(
                       RecyclerBinderConfig(
-                          hasDynamicItemHeight = hasDynamicItemHeight,
                           componentsConfiguration =
                               componentContext.lithoConfiguration.componentsConfig.copy(
                                   preAllocationHandler = preAllocationHandler,
                                   incrementalMountEnabled = isIncrementalMountEnabled),
                           rangeRatio = rangeRatio ?: RecyclerBinderConfig.DEFAULT_RANGE_RATIO,
                           wrapContent = mainAxisWrapContent,
+                          crossAxisWrapMode = crossAxisWrapMode,
                           isCircular = isCircular,
                           enableStableIds = enableStableIds))
                   .useBackgroundChangeSets(useBackgroundChangeSets)
@@ -79,26 +78,6 @@ abstract class CollectionLayout(
           .build()
 
   val isVertical: Boolean = orientation == RecyclerView.VERTICAL
-}
-
-/**
- * Specifies how a [Collection] will wrap its contents across the cross axis. For example, in a
- * horizontal list, the cross axis is vertical, meaning this enum controls how the Collection will
- * determine its height.
- */
-enum class CrossAxisWrapMode(val canMeasureRecycler: Boolean, val hasDynamicItemHeight: Boolean) {
-  /** No wrapping specified. The size should be specified on the [Collection]'s style parameter. */
-  NoWrap(false, false),
-
-  /** The cross axis dimension will match the first child in the [Collection] */
-  MatchFirstChild(true, false),
-
-  /**
-   * The cross axis dimension will match the largest item in the [Collection]. Measuring all the
-   * children comes with a high performance cost, especially for infinite scrolls. This should only
-   * be used if absolutely necessary.
-   */
-  Dynamic(true, true),
 }
 
 /** Provide [CollectionLayout]s that can be applied to [Collection]'s `layout` parameter. */
@@ -143,9 +122,8 @@ internal object CollectionLayouts {
               reverse = reverse,
               rangeRatio = rangeRatio,
               useBackgroundChangeSets = useBackgroundChangeSets,
-              hasDynamicItemHeight = crossAxisWrapMode.hasDynamicItemHeight,
-              canMeasureRecycler = crossAxisWrapMode.canMeasureRecycler,
               mainAxisWrapContent = mainAxisWrapContent,
+              crossAxisWrapMode = crossAxisWrapMode,
               preAllocationHandler = preAllocationHandler,
               isCircular = isCircular,
               enableStableIds = enableStableIds) {

@@ -79,6 +79,7 @@ import com.facebook.litho.viewcompat.ViewCreator;
 import com.facebook.litho.widget.ComponentTreeHolder.ComponentTreeMeasureListenerFactory;
 import com.facebook.litho.widget.ComponentTreeHolder.RenderState;
 import com.facebook.litho.widget.ComponentWarmer.ComponentTreeHolderPreparer;
+import com.facebook.litho.widget.collection.CrossAxisWrapMode;
 import com.facebook.rendercore.FastMath;
 import com.facebook.rendercore.PoolScope;
 import com.facebook.rendercore.RunnableHandler;
@@ -298,15 +299,9 @@ public class RecyclerBinder
       };
 
   private final boolean mIsCircular;
+  private final boolean mIsMainAxisWrapContent;
+  private final boolean mIsCrossAxisWrapContent;
   private final boolean mHasDynamicItemHeight;
-  private final boolean mWrapContent;
-
-  /**
-   * Only for horizontally scrolling layouts! If true, the height of the RecyclerView is not known
-   * when it's measured; the first item is measured and its height will determine the height of the
-   * RecyclerView.
-   */
-  private boolean mCanMeasure;
 
   private int mLastWidthSpec = LayoutManagerOverrideParams.UNINITIALIZED;
   private int mLastHeightSpec = LayoutManagerOverrideParams.UNINITIALIZED;
@@ -648,18 +643,13 @@ public class RecyclerBinder
   }
 
   @Override
-  public boolean isWrapContent() {
-    return mWrapContent;
+  public boolean isMainAxisWrapContent() {
+    return mIsMainAxisWrapContent;
   }
 
   @Override
-  public boolean canMeasure() {
-    return mCanMeasure;
-  }
-
-  @Override
-  public void setCanMeasure(boolean canMeasure) {
-    mCanMeasure = canMeasure;
+  public boolean isCrossAxisWrapContent() {
+    return mIsCrossAxisWrapContent;
   }
 
   @Override
@@ -816,7 +806,8 @@ public class RecyclerBinder
     mIsCircular = mRecyclerBinderConfig.isCircular;
     mHasDynamicItemHeight =
         mLayoutInfo.getScrollDirection() == HORIZONTAL
-            ? mRecyclerBinderConfig.hasDynamicItemHeight
+            ? (mRecyclerBinderConfig.hasDynamicItemHeight
+                || mRecyclerBinderConfig.crossAxisWrapMode == CrossAxisWrapMode.Dynamic)
             : false;
     mComponentTreeMeasureListenerFactory =
         !mHasDynamicItemHeight
@@ -828,7 +819,8 @@ public class RecyclerBinder
               }
             };
 
-    mWrapContent = mRecyclerBinderConfig.wrapContent;
+    mIsMainAxisWrapContent = mRecyclerBinderConfig.wrapContent;
+    mIsCrossAxisWrapContent = mRecyclerBinderConfig.crossAxisWrapMode != CrossAxisWrapMode.NoWrap;
     mTraverseLayoutBackwards = getStackFromEnd();
 
     if (builder.recyclerRangeTraverser != null) {
@@ -2105,9 +2097,9 @@ public class RecyclerBinder
       return;
     }
 
-    if (mRequiresRemeasure.get() || mWrapContent) {
+    if (mRequiresRemeasure.get() || mIsMainAxisWrapContent) {
       maybeRequestRemeasureIfBoundsChanged();
-      if (!mWrapContent) {
+      if (!mIsMainAxisWrapContent) {
         return;
       }
     }
@@ -2365,14 +2357,15 @@ public class RecyclerBinder
       synchronized (this) {
         if (mLastWidthSpec != LayoutManagerOverrideParams.UNINITIALIZED
             && !mRequiresRemeasure.get()
-            && !mWrapContent) {
+            && !mIsMainAxisWrapContent) {
           switch (scrollDirection) {
             case VERTICAL:
               if (mMeasuredSize != null
                   && MeasureComparisonUtils.isMeasureSpecCompatible(
                       mLastWidthSpec, widthSpec, mMeasuredSize.width)) {
                 outSize.width = mMeasuredSize.width;
-                outSize.height = mWrapContent ? mMeasuredSize.height : SizeSpec.getSize(heightSpec);
+                outSize.height =
+                    mIsMainAxisWrapContent ? mMeasuredSize.height : SizeSpec.getSize(heightSpec);
 
                 return;
               }
@@ -2381,7 +2374,8 @@ public class RecyclerBinder
               if (mMeasuredSize != null
                   && MeasureComparisonUtils.isMeasureSpecCompatible(
                       mLastHeightSpec, heightSpec, mMeasuredSize.height)) {
-                outSize.width = mWrapContent ? mMeasuredSize.width : SizeSpec.getSize(widthSpec);
+                outSize.width =
+                    mIsMainAxisWrapContent ? mMeasuredSize.width : SizeSpec.getSize(widthSpec);
                 outSize.height = mMeasuredSize.height;
 
                 return;
@@ -2412,10 +2406,10 @@ public class RecyclerBinder
         switch (scrollDirection) {
           case VERTICAL:
             if (!shouldMeasureItemForSize || mSizeForMeasure != null) {
-              mReMeasureEventEventHandler = mWrapContent ? reMeasureEventHandler : null;
+              mReMeasureEventEventHandler = mIsMainAxisWrapContent ? reMeasureEventHandler : null;
             } else {
               mReMeasureEventEventHandler = reMeasureEventHandler;
-              mRequiresRemeasure.set(!mWrapContent);
+              mRequiresRemeasure.set(!mIsMainAxisWrapContent);
             }
             break;
 
@@ -2423,16 +2417,16 @@ public class RecyclerBinder
           default:
             if (!shouldMeasureItemForSize || mSizeForMeasure != null) {
               mReMeasureEventEventHandler =
-                  (mHasDynamicItemHeight || mWrapContent) ? reMeasureEventHandler : null;
+                  (mHasDynamicItemHeight || mIsMainAxisWrapContent) ? reMeasureEventHandler : null;
               mRequiresRemeasure.set(mHasDynamicItemHeight);
             } else {
               mReMeasureEventEventHandler = reMeasureEventHandler;
-              mRequiresRemeasure.set(!mWrapContent);
+              mRequiresRemeasure.set(!mIsMainAxisWrapContent);
             }
             break;
         }
 
-        if (mWrapContent) {
+        if (mIsMainAxisWrapContent) {
           final Size wrapSize = new Size();
           fillListViewport(initialMeasuredSize.width, initialMeasuredSize.height, wrapSize);
           outSize.width = wrapSize.width;
@@ -2492,7 +2486,8 @@ public class RecyclerBinder
       ComponentsSystrace.beginSection("fillListViewport");
     }
 
-    final int firstVisiblePosition = mWrapContent ? 0 : mLayoutInfo.findFirstVisibleItemPosition();
+    final int firstVisiblePosition =
+        mIsMainAxisWrapContent ? 0 : mLayoutInfo.findFirstVisibleItemPosition();
 
     // NB: This does not handle 1) partially visible items 2) item decorations
     final int startIndex =

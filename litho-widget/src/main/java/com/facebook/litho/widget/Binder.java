@@ -72,20 +72,11 @@ public interface Binder<V extends ViewGroup> {
    */
   void setViewportChangedListener(@Nullable ViewportInfo.ViewportChanged viewportChangedListener);
 
-  /** Return true if wrap content is enabled, false otherwise. */
-  boolean isWrapContent();
+  /** Return true if wrap content is enabled for the main axis, false otherwise. */
+  boolean isMainAxisWrapContent();
 
-  /**
-   * Only for horizontally scrolling layouts: return true if height is not known when measuring the
-   * view and the first item will be measured to determine the height.
-   */
-  boolean canMeasure();
-
-  /**
-   * Only for horizontally scrolling layouts: set to true if height is not known when measuring the
-   * view and the first item will need to be measured to determine the height of the view.
-   */
-  void setCanMeasure(boolean canMeasure);
+  /** Return true if wrap content is enabled for the cross axis, false otherwise. */
+  boolean isCrossAxisWrapContent();
 
   /** Detach items under the hood. */
   void detach();

@@ -180,18 +180,13 @@ public class SectionBinderTarget implements Target, Binder<RecyclerView> {
   }
 
   @Override
-  public boolean isWrapContent() {
-    return mRecyclerBinder.isWrapContent();
+  public boolean isMainAxisWrapContent() {
+    return mRecyclerBinder.isMainAxisWrapContent();
   }
 
   @Override
-  public boolean canMeasure() {
-    return mRecyclerBinder.canMeasure();
-  }
-
-  @Override
-  public void setCanMeasure(boolean canMeasure) {
-    mRecyclerBinder.setCanMeasure(canMeasure);
+  public boolean isCrossAxisWrapContent() {
+    return mRecyclerBinder.isCrossAxisWrapContent();
   }
 
   @Override

@@ -78,6 +78,7 @@ import com.facebook.litho.widget.RecyclerEventsController;
 import com.facebook.litho.widget.SectionsRecyclerView.SectionsRecyclerViewLogger;
 import com.facebook.litho.widget.StickyHeaderControllerFactory;
 import com.facebook.litho.widget.ViewportInfo;
+import com.facebook.litho.widget.collection.CrossAxisWrapMode;
 import com.facebook.rendercore.PoolScope;
 import java.util.ArrayList;
 import java.util.List;
@@ -199,6 +200,7 @@ public class RecyclerCollectionComponentSpec {
           LithoRecyclerView.OnBeforeLayoutListener onBeforeLayoutListener,
       @Prop(optional = true) @Nullable
           LithoRecyclerView.OnAfterLayoutListener onAfterLayoutListener,
+      @Prop(optional = true) boolean canMeasureRecycler,
       @State(canUpdateLazily = true) boolean hasSetSectionTreeRoot,
       @State RecyclerCollectionEventsController internalEventsController,
       @State LayoutInfo layoutInfo,
@@ -232,11 +234,9 @@ public class RecyclerCollectionComponentSpec {
     final boolean canPTR =
         recyclerConfiguration.getOrientation() != OrientationHelper.HORIZONTAL && !disablePTR;
 
-    ComponentsConfiguration componentsConfiguration =
-        recyclerConfiguration
-            .getRecyclerBinderConfiguration()
-            .getRecyclerBinderConfig()
-            .componentsConfiguration;
+    RecyclerBinderConfig recyclerBinderConfig =
+        recyclerConfiguration.getRecyclerBinderConfiguration().getRecyclerBinderConfig();
+    ComponentsConfiguration componentsConfiguration = recyclerBinderConfig.componentsConfiguration;
 
     if (componentsConfiguration == null) {
       componentsConfiguration = c.mLithoConfiguration.componentsConfig;
@@ -251,11 +251,9 @@ public class RecyclerCollectionComponentSpec {
             : componentsConfiguration.primitiveRecyclerBinderStrategy;
 
     boolean shouldNotWrapContent =
-        !binder.canMeasure()
-            && !recyclerConfiguration
-                .getRecyclerBinderConfiguration()
-                .getRecyclerBinderConfig()
-                .wrapContent;
+        !recyclerBinderConfig.wrapContent
+            && !canMeasureRecycler
+            && (recyclerBinderConfig.crossAxisWrapMode == CrossAxisWrapMode.NoWrap);
 
     /*
      * This is a hacky way to detect that the user opted by using our default implementation. We
@@ -314,6 +312,7 @@ public class RecyclerCollectionComponentSpec {
             listenersToUse,
             snapHelper,
             canPTR,
+            canMeasureRecycler,
             touchInterceptor,
             itemTouchListener,
             canPTR
@@ -383,7 +382,6 @@ public class RecyclerCollectionComponentSpec {
       // It's intended to be a temporary workaround, not something you should use often.
       @Prop(optional = true) boolean ignoreLoadingUpdates,
       @Prop(optional = true) String sectionTreeTag,
-      @Prop(optional = true) boolean canMeasureRecycler,
       // Don't use this. If false, off incremental mount for all subviews of this Recycler.
       @Prop(optional = true) boolean incrementalMount,
       @Prop(optional = true) @Nullable LithoStartupLogger startupLogger,
@@ -481,7 +479,6 @@ public class RecyclerCollectionComponentSpec {
         };
 
     targetBinder.setViewportChangedListener(viewPortChanged);
-    targetBinder.setCanMeasure(canMeasureRecycler);
 
     if (ignoreLoadingUpdates) {
       loadingState.set(LoadingState.LOADED);

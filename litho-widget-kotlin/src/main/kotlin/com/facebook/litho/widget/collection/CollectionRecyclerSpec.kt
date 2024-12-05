@@ -196,7 +196,6 @@ object CollectionRecyclerSpec {
       @Prop section: Section,
       @Prop(optional = true) recyclerConfiguration: RecyclerConfiguration,
       @Prop(optional = true) sectionTreeTag: String?,
-      @Prop(optional = true) canMeasureRecycler: Boolean,
       @Prop(optional = true) startupLogger: LithoStartupLogger?,
       @Prop(optional = true) lazyCollectionController: LazyCollectionController?
   ) {
@@ -243,7 +242,6 @@ object CollectionRecyclerSpec {
               state)
         }
     targetBinder.setViewportChangedListener(viewPortChanged)
-    targetBinder.setCanMeasure(canMeasureRecycler)
   }
 
   @JvmStatic

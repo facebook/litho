@@ -139,7 +139,9 @@ class LegacyRecyclerSpec {
         measureOutput,
         widthSpecToUse,
         heightSpecToUse,
-        (binder.canMeasure() || binder.isWrapContent()) ? LegacyRecycler.onRemeasure(c) : null);
+        (binder.isCrossAxisWrapContent() || binder.isMainAxisWrapContent())
+            ? LegacyRecycler.onRemeasure(c)
+            : null);
 
     measuredWidth.set(measureOutput.width);
     measuredHeight.set(measureOutput.height);
@@ -561,7 +563,7 @@ class LegacyRecyclerSpec {
 
   @ShouldAlwaysRemeasure
   protected static boolean shouldAlwaysRemeasure(@Prop Binder<RecyclerView> binder) {
-    return binder.isWrapContent();
+    return binder.isMainAxisWrapContent() || binder.isCrossAxisWrapContent();
   }
 
   public static class NoUpdateItemAnimator extends DefaultItemAnimator {

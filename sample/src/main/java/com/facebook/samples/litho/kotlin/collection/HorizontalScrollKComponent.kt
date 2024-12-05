@@ -69,7 +69,12 @@ class WrapFirstItemHeightHScroll : KComponent() {
           crossAxisWrapMode = CrossAxisWrapMode.MatchFirstChild,
           itemDecoration = LinearSpacing(all = 10.dp),
       ) {
-        children(items = (0..10), id = { it }) { ListItem("$it") }
+        children(items = (1..10), id = { it }) {
+          ListItem(
+              text = "$it",
+              style = Style.padding(horizontal = 30.dp, vertical = (it * 10).dp),
+          )
+        }
       }
 }
 

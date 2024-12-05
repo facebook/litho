@@ -19,6 +19,7 @@ package com.facebook.litho.widget
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
 import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.widget.collection.CrossAxisWrapMode
 
 /**
  * This configuration is meant to be used in the context of [RecyclerBinder]. It allows you to
@@ -144,6 +145,8 @@ data class RecyclerBinderConfig(
      * orientation is horizontal.
      */
     @JvmField val wrapContent: Boolean = false,
+    /** Specifies how a [Collection] will wrap its contents across the cross axis. */
+    @JvmField val crossAxisWrapMode: CrossAxisWrapMode = CrossAxisWrapMode.NoWrap,
     /**
      * The strategy to make Recycler stick to the last unseen item while pagination, which is only
      * supposed to be used in full screen size surfaces like Reels.
@@ -205,6 +208,7 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
   private var layoutHandlerFactory = configuration.layoutHandlerFactory
   private var enableStableIds = configuration.enableStableIds
   private var wrapContent = configuration.wrapContent
+  private var crossAxisWrapMode = configuration.crossAxisWrapMode
   private var paginationStrategy = configuration.paginationStrategy
 
   fun isCircular(isCircular: Boolean): RecyclerBinderConfigBuilder = also {
@@ -241,6 +245,10 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
 
   fun hasDynamicItemHeight(hasDynamicItemHeight: Boolean): RecyclerBinderConfigBuilder = also {
     this.hasDynamicItemHeight = hasDynamicItemHeight
+  }
+
+  fun crossAxisWrapMode(crossAxisWrapMode: CrossAxisWrapMode): RecyclerBinderConfigBuilder = also {
+    this.crossAxisWrapMode = crossAxisWrapMode
   }
 
   fun componentsConfiguration(
@@ -283,6 +291,7 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
         layoutHandlerFactory = layoutHandlerFactory,
         enableStableIds = enableStableIds,
         wrapContent = wrapContent,
+        crossAxisWrapMode = crossAxisWrapMode,
         paginationStrategy = paginationStrategy,
     )
   }

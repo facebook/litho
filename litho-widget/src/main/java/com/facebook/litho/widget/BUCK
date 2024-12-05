@@ -48,6 +48,7 @@ litho_android_library(
     srcs = glob([
         "*.java",
         "*.kt",
+        "**/*.kt",
     ]),
     autoglob = False,
     exported_provided_deps = [
