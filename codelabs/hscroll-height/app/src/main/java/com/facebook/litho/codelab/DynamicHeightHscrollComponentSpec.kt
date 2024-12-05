@@ -33,6 +33,7 @@ import com.facebook.litho.sections.widget.RecyclerCollectionComponent
 import com.facebook.litho.widget.ComponentRenderInfo
 import com.facebook.litho.widget.RecyclerBinderConfig
 import com.facebook.litho.widget.RenderInfo
+import com.facebook.litho.widget.collection.CrossAxisWrapMode
 
 /**
  * This component renders a horizontal list with items of various heights, which can adapt height to
@@ -53,7 +54,8 @@ object DynamicHeightHscrollComponentSpec {
                 .recyclerBinderConfiguration(
                     RecyclerBinderConfiguration.create()
                         // This enables dynamic height measurement.
-                        .recyclerBinderConfig(RecyclerBinderConfig(hasDynamicItemHeight = true))
+                        .recyclerBinderConfig(
+                            RecyclerBinderConfig(crossAxisWrapMode = CrossAxisWrapMode.Dynamic))
                         .build())
                 .orientation(OrientationHelper.HORIZONTAL)
                 .build())
@@ -62,7 +64,6 @@ object DynamicHeightHscrollComponentSpec {
                 .data(colors)
                 .renderEventHandler(DynamicHeightHscrollComponent.onRender(c))
                 .build())
-        .canMeasureRecycler(true)
         .build()
   }
 
