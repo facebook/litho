@@ -23,7 +23,7 @@ import android.util.SparseArray
 import androidx.core.view.ViewCompat
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.layout.LayoutDirection
-import com.facebook.litho.testing.LegacyLithoTestRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.Whitebox
 import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.logging.TestComponentsReporter
@@ -44,16 +44,11 @@ import org.mockito.kotlin.whenever
 @RunWith(LithoTestRunner::class)
 class LithoNodeTest {
 
-  @JvmField @Rule val legacyLithoTestRule = LegacyLithoTestRule()
+  @JvmField @Rule val lithoTestRule = LithoTestRule()
 
   private fun acquireInternalNode(): LithoNode {
-    val context = legacyLithoTestRule.context
-    legacyLithoTestRule
-        .attachToWindow()
-        .setRootAndSizeSpecSync(Column.create(context).build(), unspecified(0), unspecified(0))
-        .measure()
-        .layout()
-    val root = requireNotNull(legacyLithoTestRule.currentRootNode)
+    val lithoTestView = lithoTestRule.render(widthPx = unspecified(0)) { Column() }
+    val root = requireNotNull(lithoTestView.currentRootNode)
     return root.node
   }
 
