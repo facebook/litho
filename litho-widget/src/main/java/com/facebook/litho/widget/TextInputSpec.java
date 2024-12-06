@@ -86,6 +86,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 /**
@@ -1366,10 +1367,15 @@ class TextInputSpec {
         return;
       }
 
-      textWatchers.removeIf(Objects::isNull);
-      if (!textWatchers.isEmpty()) {
+      List<TextWatcher> nonNullTextWatchers =
+          new ArrayList<>(textWatchers)
+              .stream().filter(Objects::nonNull).collect(Collectors.toList());
+
+      if (!nonNullTextWatchers.isEmpty()) {
         mTextWatcher =
-            textWatchers.size() == 1 ? textWatchers.get(0) : new CompositeTextWatcher(textWatchers);
+            nonNullTextWatchers.size() == 1
+                ? nonNullTextWatchers.get(0)
+                : new CompositeTextWatcher(nonNullTextWatchers);
         addTextChangedListener(mTextWatcher);
       }
     }
