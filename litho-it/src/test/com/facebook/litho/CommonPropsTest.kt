@@ -214,7 +214,7 @@ class CommonPropsTest {
     assertThat(yogaNode.minHeight.value).isEqualTo(33f)
     assertThat(yogaNode.maxHeight.value).isEqualTo(34f)
     assertThat(yogaNode.aspectRatio).isEqualTo(20f)
-    assertThat(yogaNode.getGap(YogaGutter.ALL)).isEqualTo(10f)
+    assertThat(yogaNode.getGap(YogaGutter.ALL).value).isEqualTo(10f)
     assertThat(node.importantForAccessibility).isEqualTo(IMPORTANT_FOR_ACCESSIBILITY_AUTO)
     assertThat(node.isDuplicateChildrenStatesEnabled).isEqualTo(false)
     assertThat(node.hasBorderColor()).isTrue
