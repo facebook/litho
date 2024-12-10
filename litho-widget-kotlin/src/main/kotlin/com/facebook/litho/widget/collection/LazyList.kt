@@ -17,6 +17,7 @@
 package com.facebook.litho.widget.collection
 
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.SnapHelper
 import com.facebook.litho.Component
 import com.facebook.litho.Handle
 import com.facebook.litho.LithoStartupLogger
@@ -36,6 +37,7 @@ import com.facebook.rendercore.dp
 inline fun ResourcesScope.LazyList(
     @RecyclerView.Orientation orientation: Int = RecyclerView.VERTICAL,
     @SnapUtil.SnapMode snapMode: Int = SnapUtil.SNAP_NONE,
+    snapHelper: SnapHelper? = null,
     snapToStartOffset: Dimen = 0.dp,
     reverse: Boolean = false,
     crossAxisWrapMode: CrossAxisWrapMode = CrossAxisWrapMode.NoWrap,
@@ -95,6 +97,7 @@ inline fun ResourcesScope.LazyList(
               componentContext = context,
               orientation = orientation,
               snapMode = snapMode,
+              snapHelper = snapHelper,
               snapToStartOffset = snapToStartOffset.toPixels(resourceResolver),
               reverse = reverse,
               rangeRatio = rangeRatio,

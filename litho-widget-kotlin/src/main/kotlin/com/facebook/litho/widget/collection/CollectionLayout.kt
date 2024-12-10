@@ -18,6 +18,7 @@ package com.facebook.litho.widget.collection
 
 import androidx.annotation.Px
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.SnapHelper
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.config.PreAllocationHandler
@@ -114,6 +115,7 @@ internal object CollectionLayouts {
       isCircular: Boolean,
       enableStableIds: Boolean,
       linearLayoutInfoFactory: LinearLayoutInfoFactory?,
+      snapHelper: SnapHelper?,
   ): CollectionLayout =
       object :
           CollectionLayout(
@@ -132,6 +134,11 @@ internal object CollectionLayouts {
                 .snapMode(snapMode)
                 .linearLayoutInfoFactory(linearLayoutInfoFactory)
                 .snapToStartOffset(snapToStartOffset)
+                .also {
+                  if (snapHelper != null) {
+                    it.snapHelper(snapHelper)
+                  }
+                }
       }
 
   /**
