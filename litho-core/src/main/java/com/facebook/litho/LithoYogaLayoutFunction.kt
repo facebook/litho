@@ -45,6 +45,7 @@ import com.facebook.yoga.YogaDisplay
 import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaMeasureOutput
 import com.facebook.yoga.YogaNode
+import com.facebook.yoga.YogaValue
 
 typealias YogaEdgeIntFunction = ((YogaEdge, Int) -> Unit)
 
@@ -52,6 +53,9 @@ typealias YogaEdgeFloatFunction = ((YogaEdge, Float) -> Unit)
 
 /** Layout function for LithoNode that layout their children via Flexbox. */
 internal object LithoYogaLayoutFunction {
+
+  private val AUTO: YogaValue = YogaValue.parse("auto")
+  private val UNDEFINED: YogaValue = YogaValue.parse("undefined")
 
   /** Calculate the layout for a component using Yoga. */
   fun calculateLayout(
@@ -290,6 +294,18 @@ internal object LithoYogaLayoutFunction {
     }
     if (layoutResult.layoutOutput.heightFromStyle.compareTo(yogaNode.height.value) != 0) {
       yogaNode.setHeightAuto()
+    }
+
+    if (ComponentsConfiguration.setMinYogaSizes && ComponentsConfiguration.resetMinYogaSizes) {
+      val targetValue = if (ComponentsConfiguration.useUndefinedYogaValue) UNDEFINED else AUTO
+      yogaNode.apply {
+        if (minWidth != targetValue) {
+          setMinWidth(targetValue.value)
+        }
+        if (minHeight != targetValue) {
+          setMinHeight(targetValue.value)
+        }
+      }
     }
   }
 

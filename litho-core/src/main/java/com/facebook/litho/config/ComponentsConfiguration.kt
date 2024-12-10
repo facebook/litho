@@ -282,6 +282,11 @@ internal constructor(
     @JvmField var setMinYogaSizes: Boolean = false
 
     /**
+     * This flag is to enable resetting minWidth and minHeight sizes on Yoga node for measurement.
+     */
+    @JvmField var resetMinYogaSizes: Boolean = false
+
+    /**
      * This flag is to enable setting undefined yoga value to minWidth and minHeight sizes in reset.
      */
     @JvmField var useUndefinedYogaValue: Boolean = false
