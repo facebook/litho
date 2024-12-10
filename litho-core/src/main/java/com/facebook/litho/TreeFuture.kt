@@ -275,7 +275,7 @@ abstract class TreeFuture<T : PotentiallyPartialResult>(
     if (shouldWaitForResult && !isMainThread && !isFromSyncLayout(source)) {
       return TreeFutureResult.interruptWithMessage(
           type = type,
-          state = FutureState.INTERRUPTED,
+          state = FutureState.WAITING,
           description = FUTURE_RESULT_NULL_REASON_SYNC_RESULT_NON_MAIN_THREAD)
     }
     if (isMainThread && shouldWaitForResult) {
@@ -456,6 +456,7 @@ abstract class TreeFuture<T : PotentiallyPartialResult>(
 
   enum class FutureState {
     SUCCESS,
+    WAITING,
     INTERRUPTED,
     RELEASED
   }

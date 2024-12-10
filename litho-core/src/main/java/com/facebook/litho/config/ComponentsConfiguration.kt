@@ -128,6 +128,8 @@ internal constructor(
      * possibility of reusing resolve result.
      */
     @JvmField val enableResolveWithoutSizeSpec: Boolean = false,
+    /** This will enable the fix for render in flight */
+    @JvmField val enableFixForResolveWithoutSizeSpec: Boolean = false,
     /** This will skip calling `onDraw` for ComponentHost. */
     @JvmField val enableHostWillNotDraw: Boolean = false,
     /** This will enable logging for render in-flight */
@@ -329,6 +331,7 @@ internal constructor(
     private var enableResolveWithoutSizeSpec = baseConfig.enableResolveWithoutSizeSpec
     private var enableHostWillNotDraw = baseConfig.enableHostWillNotDraw
     private var enableLoggingForRenderInFlight = baseConfig.enableLoggingForRenderInFlight
+    private var enableFixForResolveWithoutSizeSpec = baseConfig.enableFixForResolveWithoutSizeSpec
     private var enableFixForCachedNestedTree = baseConfig.enableFixForCachedNestedTree
     private var isHostViewAttributesCleanUpEnabled = baseConfig.isHostViewAttributesCleanUpEnabled
 
@@ -430,6 +433,10 @@ internal constructor(
       enableLoggingForRenderInFlight = enabled
     }
 
+    fun enableFixForResolveWithoutSizeSpec(enabled: Boolean): Builder = also {
+      enableFixForResolveWithoutSizeSpec = enabled
+    }
+
     fun enableFixForCachedNestedTree(enabled: Boolean): Builder = also {
       enableFixForCachedNestedTree = enabled
     }
@@ -472,6 +479,7 @@ internal constructor(
           enableResolveWithoutSizeSpec = enableResolveWithoutSizeSpec,
           enableHostWillNotDraw = enableHostWillNotDraw,
           enableLoggingForRenderInFlight = enableLoggingForRenderInFlight,
+          enableFixForResolveWithoutSizeSpec = enableFixForResolveWithoutSizeSpec,
           enableFixForCachedNestedTree = enableFixForCachedNestedTree,
           isHostViewAttributesCleanUpEnabled = isHostViewAttributesCleanUpEnabled,
       )

@@ -1975,49 +1975,55 @@ public class ComponentTree
     final @Nullable ResolveResult resolveResult = resolveResultHolder.result;
 
     if (resolveResult == null) {
-      if (getLithoConfiguration().componentsConfig.enableResolveWithoutSizeSpec) {
+      final boolean isLoggingEnabled =
+          getLithoConfiguration().componentsConfig.enableLoggingForRenderInFlight;
+      final boolean enableResolveWithoutSizeSpec =
+          getLithoConfiguration().componentsConfig.enableResolveWithoutSizeSpec;
+      final boolean enableFixForResolveWithoutSizeSpec =
+          getLithoConfiguration().componentsConfig.enableFixForResolveWithoutSizeSpec;
+
+      if (isLoggingEnabled || enableResolveWithoutSizeSpec || enableFixForResolveWithoutSizeSpec) {
         final boolean isWaitingButInterrupted =
-            (resolveResultHolder.type == TreeFuture.FutureExecutionType.REUSE_FUTURE)
-                && (TreeFuture.FutureState.INTERRUPTED == resolveResultHolder.state);
+            TreeFuture.FutureState.WAITING == resolveResultHolder.state;
         final boolean isLatestRequest;
         synchronized (this) {
           // To check if this is the latest resolve request and we don't want to get lost of it.
           isLatestRequest = (localResolveVersion == (mNextResolveVersion - 1));
         }
-        if (isWaitingButInterrupted && !ThreadUtils.isMainThread() && isLatestRequest) {
-          // If we found any interrupted async resolve task which is also the latest request, which
-          // means the current resolve request might be getting lost and we need to re-try it to
-          // make sure there's not render in flight.
-          requestRenderWithSplitFutures(
-              true,
-              output,
-              source,
-              extraAttribution,
-              widthSpec,
-              heightSpec,
-              root,
-              treePropContainer);
-        }
 
-        DebugInfoReporter.report(
-            "RenderInFlight:Null Result",
-            LogLevel.ERROR,
-            mId,
-            attributes -> {
-              attributes.put(DebugEventAttribute.Version, localResolveVersion);
-              attributes.put(DebugEventAttribute.Source, layoutSourceToString(source));
-              attributes.put("Root", root.getSimpleName());
-              attributes.put(DebugEventAttribute.Width, SizeSpec.toSimpleString(widthSpec));
-              attributes.put(DebugEventAttribute.Height, SizeSpec.toSimpleString(heightSpec));
-              attributes.put(
-                  "withoutSizeSpec",
-                  getLithoConfiguration().componentsConfig.enableResolveWithoutSizeSpec);
-              attributes.put("isLatestRequest", isLatestRequest);
-              attributes.put("isMainThread", ThreadUtils.isMainThread());
-              attributes.put("FutureExecutionType", resolveResultHolder.type);
-              attributes.put("FutureState", resolveResultHolder.state);
-              return Unit.INSTANCE;
-            });
+        if (isWaitingButInterrupted && isLatestRequest) {
+          if (enableFixForResolveWithoutSizeSpec) {
+            // If we found any interrupted async resolve task which is also the latest request,
+            // which
+            // means the current resolve request might be getting lost and we need to re-try it to
+            // make sure there's not render in flight.
+            requestRenderWithSplitFutures(
+                true,
+                output,
+                source,
+                extraAttribution,
+                widthSpec,
+                heightSpec,
+                root,
+                treePropContainer);
+          }
+          DebugInfoReporter.report(
+              "RenderInFlight v3:Null Result",
+              LogLevel.ERROR,
+              mId,
+              attributes -> {
+                attributes.put(DebugEventAttribute.Version, localResolveVersion);
+                attributes.put(DebugEventAttribute.Source, layoutSourceToString(source));
+                attributes.put("Root", root.getSimpleName());
+                attributes.put(DebugEventAttribute.Width, SizeSpec.toSimpleString(widthSpec));
+                attributes.put(DebugEventAttribute.Height, SizeSpec.toSimpleString(heightSpec));
+                attributes.put("withoutSizeSpec", enableResolveWithoutSizeSpec);
+                attributes.put("fix", enableFixForResolveWithoutSizeSpec);
+                attributes.put("FutureExecutionType", resolveResultHolder.type);
+                attributes.put("FutureState", resolveResultHolder.state);
+                return Unit.INSTANCE;
+              });
+        }
       }
     } else {
       commitResolveResult(resolveResult);
@@ -2249,6 +2255,9 @@ public class ComponentTree
               attributes.put(
                   "withoutSizeSpec",
                   getLithoConfiguration().componentsConfig.enableResolveWithoutSizeSpec);
+              attributes.put(
+                  "fix",
+                  getLithoConfiguration().componentsConfig.enableFixForResolveWithoutSizeSpec);
               attributes.put(
                   "isRootNotCompatibleAndWithoutResolveFuture",
                   isRootNotCompatibleAndWithoutResolveFuture);
