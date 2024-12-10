@@ -725,16 +725,69 @@ public class TransitionManager {
   }
 
   private void restoreInitialStates() {
-    for (PropertyHandle propertyHandle : mInitialStatesToRestore.keySet()) {
-      final float value = mInitialStatesToRestore.get(propertyHandle);
-      final TransitionId transitionId = propertyHandle.getTransitionId();
-      final AnimationState animationState = mAnimationStates.get(transitionId);
-      if (animationState.mountContentGroup != null) {
-        setPropertyValue(propertyHandle.getProperty(), value, animationState.mountContentGroup);
+    PropertyHandle lastPropertyHandle = null;
+    try {
+      for (PropertyHandle propertyHandle : mInitialStatesToRestore.keySet()) {
+        lastPropertyHandle = propertyHandle;
+        final float value = mInitialStatesToRestore.get(propertyHandle);
+        final TransitionId transitionId = propertyHandle.getTransitionId();
+        final AnimationState animationState = mAnimationStates.get(transitionId);
+
+        if (animationState.mountContentGroup != null) {
+          setPropertyValue(propertyHandle.getProperty(), value, animationState.mountContentGroup);
+        }
       }
+    } catch (Exception e) {
+      throw new InconsistentInitialStateRestorationException(lastPropertyHandle, e);
     }
 
     mInitialStatesToRestore.clear();
+  }
+
+  private class InconsistentInitialStateRestorationException extends RuntimeException {
+
+    @Nullable private PropertyHandle lastPropHandle;
+
+    public InconsistentInitialStateRestorationException(
+        @Nullable PropertyHandle lastPropHandle, Exception cause) {
+      super(cause);
+      this.lastPropHandle = lastPropHandle;
+    }
+
+    @Override
+    public String getMessage() {
+      StringBuilder message = new StringBuilder();
+      message
+          .append("Inconsistent initial state restoration:\n")
+          .append("- mAnimationStates (")
+          .append(mAnimationStates.ids().size())
+          .append("):\n")
+          .append("   - ids: ")
+          .append(mAnimationStates.ids())
+          .append("\n- mInitialStatesToRestore (")
+          .append(mInitialStatesToRestore.size())
+          .append("):\n");
+
+      for (PropertyHandle propertyHandle : mInitialStatesToRestore.keySet()) {
+        Float value = mInitialStatesToRestore.get(propertyHandle);
+        final TransitionId transitionid = propertyHandle.getTransitionId();
+        boolean isCrashingOne =
+            lastPropHandle != null && lastPropHandle.getTransitionId().equals(transitionid);
+        final String propertyName = propertyHandle.getProperty().getName();
+
+        message
+            .append("   - propertyHandle[transitionId=")
+            .append(transitionid)
+            .append(", property=")
+            .append(propertyName)
+            .append("]")
+            .append(isCrashingOne ? "[crashing] " : " ")
+            .append(value)
+            .append("\n");
+      }
+
+      return message.toString();
+    }
   }
 
   private void setMountContentInner(
