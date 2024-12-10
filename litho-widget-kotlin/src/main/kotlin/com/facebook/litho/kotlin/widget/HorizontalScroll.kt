@@ -19,6 +19,8 @@ package com.facebook.litho.kotlin.widget
 import android.view.View
 import com.facebook.litho.Component
 import com.facebook.litho.ResourcesScope
+import com.facebook.litho.Style
+import com.facebook.litho.kotlinStyle
 import com.facebook.litho.widget.HorizontalScroll
 import com.facebook.litho.widget.HorizontalScrollEventsController
 import com.facebook.rendercore.Dimen
@@ -34,6 +36,7 @@ inline fun ResourcesScope.HorizontalScroll(
     noinline onScrollChange: ((View, scrollX: Int, oldScrollX: Int) -> Unit)? = null,
     horizontalFadingEdgeEnabled: Boolean = false,
     fadingEdgeLength: Int = 0,
+    style: Style? = null,
     crossinline child: ResourcesScope.() -> Component
 ): HorizontalScroll =
     HorizontalScroll.create(context)
@@ -46,4 +49,5 @@ inline fun ResourcesScope.HorizontalScroll(
         .onScrollChangeListener(onScrollChange)
         .horizontalFadingEdgeEnabled(horizontalFadingEdgeEnabled)
         .fadingEdgeLength(fadingEdgeLength)
+        .kotlinStyle(style)
         .build()
