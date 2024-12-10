@@ -32,6 +32,7 @@ import com.facebook.litho.PrimitiveComponentScope
 import com.facebook.litho.ResolveResult
 import com.facebook.litho.Style
 import com.facebook.litho.bindToRenderTreeView
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.debug.DebugInfoReporter
 import com.facebook.litho.useCached
 import com.facebook.litho.useNestedTree
@@ -207,7 +208,12 @@ internal class VerticalScrollLayoutBehavior(
             }
             sizeConstraints.copy(
                 minHeight = height,
-                maxHeight = sizeConstraints.maxHeight,
+                maxHeight =
+                    if (ComponentsConfiguration.setMinYogaSizes) {
+                      SizeConstraints.Infinity
+                    } else {
+                      sizeConstraints.maxHeight
+                    },
             )
           }
         } else {

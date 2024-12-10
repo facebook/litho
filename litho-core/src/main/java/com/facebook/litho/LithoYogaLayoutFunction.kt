@@ -25,6 +25,7 @@ import com.facebook.litho.LithoNode.Companion.applyBorderWidth
 import com.facebook.litho.LithoNode.Companion.applyNestedPadding
 import com.facebook.litho.LithoNode.Companion.writeStyledAttributesToLayoutProps
 import com.facebook.litho.YogaLayoutOutput.Companion.getYogaNode
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.drawable.BorderColorDrawable
 import com.facebook.litho.layout.LayoutDirection
@@ -80,11 +81,24 @@ internal object LithoYogaLayoutFunction {
     if (lithoNode.layoutDirection == LayoutDirection.RTL) {
       yogaRoot.setDirection(YogaDirection.RTL)
     }
+
     if (YogaConstants.isUndefined(yogaRoot.width.value)) {
       setStyleWidthFromSpec(yogaRoot, widthSpec)
+      if (ComponentsConfiguration.setMinYogaSizes &&
+          !sizeConstraints.hasExactWidth &&
+          sizeConstraints.minWidth != 0 &&
+          sizeConstraints.minWidth != SizeConstraints.Infinity) {
+        yogaRoot.setMinWidth(sizeConstraints.minWidth.toFloat())
+      }
     }
     if (YogaConstants.isUndefined(yogaRoot.height.value)) {
       setStyleHeightFromSpec(yogaRoot, heightSpec)
+      if (ComponentsConfiguration.setMinYogaSizes &&
+          !sizeConstraints.hasExactHeight &&
+          sizeConstraints.minHeight != 0 &&
+          sizeConstraints.minHeight != SizeConstraints.Infinity) {
+        yogaRoot.setMinHeight(sizeConstraints.minHeight.toFloat())
+      }
     }
 
     val width: Float =
