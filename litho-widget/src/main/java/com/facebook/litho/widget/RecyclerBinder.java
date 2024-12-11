@@ -806,15 +806,13 @@ public class RecyclerBinder
     mIsCircular = mRecyclerBinderConfig.isCircular;
     mHasDynamicItemHeight =
         mLayoutInfo.getScrollDirection() == HORIZONTAL
-            ? (mRecyclerBinderConfig.hasDynamicItemHeight
-                || mRecyclerBinderConfig.crossAxisWrapMode == CrossAxisWrapMode.Dynamic)
-            : false;
+            && (mRecyclerBinderConfig.crossAxisWrapMode == CrossAxisWrapMode.Dynamic);
     mComponentTreeMeasureListenerFactory =
         !mHasDynamicItemHeight
             ? null
             : new ComponentTreeMeasureListenerFactory() {
               @Override
-              public @Nullable MeasureListener create(final ComponentTreeHolder holder) {
+              public MeasureListener create(final ComponentTreeHolder holder) {
                 return getMeasureListener(holder);
               }
             };

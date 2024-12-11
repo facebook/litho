@@ -104,19 +104,6 @@ data class RecyclerBinderConfig(
      */
     @JvmField val estimatedViewportCount: Int? = null,
     /**
-     * Do not enable this. This is an experimental feature and your Section surface will take a perf
-     * hit if you use it.
-     *
-     * <p>Whether the items of this RecyclerBinder can change height after the initial measure. Only
-     * applicable to horizontally scrolling RecyclerBinders. If true, the children of this h-scroll
-     * are all measured with unspecified height. When the ComponentTree of a child is remeasured,
-     * this will cause the RecyclerBinder to remeasure in case the height of the child changed and
-     * the RecyclerView needs to have a different height to account for it. This only supports
-     * changing the height of the item that triggered the remeasuring, not the height of all items
-     * in the h-scroll.
-     */
-    @JvmField val hasDynamicItemHeight: Boolean = false,
-    /**
      * The [RecyclerBinder] will use this [LayoutHandlerFactory] when creating
      * [com.facebook.litho.ComponentTree] in order to specify on which thread layout calculation
      * should happen. Setting it to [null] means that the computation will be done in the background
@@ -202,7 +189,6 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
   private var requestMountForPrefetchedItems = configuration.requestMountForPrefetchedItems
   private var recyclerViewItemPrefetch = configuration.recyclerViewItemPrefetch
   private var itemViewCacheSize = configuration.itemViewCacheSize
-  private var hasDynamicItemHeight = configuration.hasDynamicItemHeight
   private var componentsConfiguration = configuration.componentsConfiguration
   private var rangeRatio = configuration.rangeRatio
   private var layoutHandlerFactory = configuration.layoutHandlerFactory
@@ -241,10 +227,6 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
 
   fun componentWarmer(componentWarmer: ComponentWarmer?): RecyclerBinderConfigBuilder = also {
     this.componentWarmer = componentWarmer
-  }
-
-  fun hasDynamicItemHeight(hasDynamicItemHeight: Boolean): RecyclerBinderConfigBuilder = also {
-    this.hasDynamicItemHeight = hasDynamicItemHeight
   }
 
   fun crossAxisWrapMode(crossAxisWrapMode: CrossAxisWrapMode): RecyclerBinderConfigBuilder = also {
@@ -286,7 +268,6 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
         itemViewCacheSize = itemViewCacheSize,
         componentWarmer = componentWarmer,
         estimatedViewportCount = estimatedViewportCount,
-        hasDynamicItemHeight = hasDynamicItemHeight,
         rangeRatio = rangeRatio,
         layoutHandlerFactory = layoutHandlerFactory,
         enableStableIds = enableStableIds,
