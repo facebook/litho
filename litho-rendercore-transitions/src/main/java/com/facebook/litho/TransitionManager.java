@@ -97,6 +97,8 @@ import java.util.Set;
  */
 public class TransitionManager {
 
+  @Nullable private final AnimationInconsistencyDebugger mAnimationInconsistencyDebugger;
+
   /**
    * Whether a piece of content identified by a transition key is appearing, disappearing, or just
    * possibly changing some properties.
@@ -118,7 +120,7 @@ public class TransitionManager {
   }
 
   /** The animation state of a single property (e.g. X, Y, ALPHA) on a piece of mount content. */
-  private static class PropertyState {
+  protected static class PropertyState {
 
     /**
      * The {@link AnimatedPropertyNode} for this property: it contains the current animated value
@@ -144,7 +146,7 @@ public class TransitionManager {
    * transition key, such as whether it's appearing, disappearing, or changing, as well as
    * information about any animating properties on this mount content.
    */
-  private static class AnimationState {
+  static class AnimationState {
 
     /**
      * The states for all the properties of this mount content that have an animated value (e.g. a
@@ -208,6 +210,7 @@ public class TransitionManager {
     mOnAnimationCompleteListener = onAnimationCompleteListener;
     mDebugTag = debugTag;
     mTracer = systracer;
+    mAnimationInconsistencyDebugger = AnimationInconsistencyDebugger.Factory.get();
   }
 
   void setupTransitions(
@@ -312,7 +315,8 @@ public class TransitionManager {
           final AnimationBinding animationBinding = propertyState.animation;
           if (animationBinding != null) {
             animationBinding.stop();
-            mAnimationBindingListener.finishAnimation(animationBinding);
+            mAnimationBindingListener.finishAnimation(
+                animationBinding, AnimationCleanupTrigger.UNDECLARED_TRANSITIONS);
           }
         }
       }
@@ -377,12 +381,16 @@ public class TransitionManager {
 
   /** To be called when a MountState is recycled for a new component tree. Clears all animations. */
   void reset() {
+    if (mAnimationInconsistencyDebugger != null) {
+      mAnimationInconsistencyDebugger.reset(mAnimationStates);
+    }
     for (TransitionId transitionId : mAnimationStates.ids()) {
       final AnimationState animationState = mAnimationStates.get(transitionId);
       setMountContentInner(transitionId, animationState, null);
       clearLayoutOutputs(animationState);
     }
     mAnimationStates.clear();
+
     mTraceNames.clear();
 
     // Clear these so that stopping animations below doesn't cause us to trigger any useless
@@ -416,6 +424,9 @@ public class TransitionManager {
     if (animationState == null) {
       animationState = new AnimationState();
       mAnimationStates.put(transitionId, animationState);
+      if (mAnimationInconsistencyDebugger != null) {
+        mAnimationInconsistencyDebugger.trackAnimationStateCreated(transitionId);
+      }
     }
 
     if (currentLayoutOutputsGroup == null && nextLayoutOutputsGroup == null) {
@@ -786,6 +797,11 @@ public class TransitionManager {
             .append("\n");
       }
 
+      if (mAnimationInconsistencyDebugger != null) {
+        message.append("\n - Animation Inconsistency Debugger data: \n");
+        message.append(mAnimationInconsistencyDebugger.getReadableStatus());
+      }
+
       return message.toString();
     }
   }
@@ -888,7 +904,17 @@ public class TransitionManager {
     }
 
     for (TransitionId transitionId : toRemove) {
-      mAnimationStates.remove(transitionId);
+      removeAnimationState(transitionId, AnimationCleanupTrigger.NON_ANIMATING_CLEANUP);
+    }
+  }
+
+  private void trackAnimationStateRemoval(
+      TransitionId transitionId,
+      AnimationCleanupTrigger animationFinishTrigger,
+      @Nullable AnimationState animationState) {
+    if (mAnimationInconsistencyDebugger != null) {
+      mAnimationInconsistencyDebugger.trackAnimationStateRemoved(
+          transitionId, animationFinishTrigger, animationState);
     }
   }
 
@@ -902,7 +928,7 @@ public class TransitionManager {
     // TODO(t20726089): Restore introspection of animations
   }
 
-  private static String changeTypeToString(int changeType) {
+  protected static String changeTypeToString(int changeType) {
     switch (changeType) {
       case ChangeType.APPEARED:
         return "APPEARED";
@@ -973,12 +999,12 @@ public class TransitionManager {
           mOnAnimationCompleteListener.onAnimationUnitComplete(propertyHandle, binding.getTag());
         }
       }
-      finishAnimation(binding);
+      finishAnimation(binding, AnimationCleanupTrigger.FINISHED_TO_CONCLUSION);
     }
 
     @Override
     public void onCanceledBeforeStart(AnimationBinding binding) {
-      finishAnimation(binding);
+      finishAnimation(binding, AnimationCleanupTrigger.CANCELED_BEFORE_START);
     }
 
     @Override
@@ -1061,7 +1087,8 @@ public class TransitionManager {
       mTempPropertyAnimations.clear();
     }
 
-    private void finishAnimation(AnimationBinding binding) {
+    private void finishAnimation(
+        AnimationBinding binding, AnimationCleanupTrigger animationFinishTrigger) {
       final List<PropertyHandle> keys = mAnimationsToPropertyHandles.remove(binding);
       if (keys == null) {
         return;
@@ -1132,7 +1159,7 @@ public class TransitionManager {
           if (mOnAnimationCompleteListener != null) {
             mOnAnimationCompleteListener.onAnimationComplete(transitionId);
           }
-          mAnimationStates.remove(transitionId);
+          removeAnimationState(transitionId, animationFinishTrigger);
           clearLayoutOutputs(animationState);
         }
       }
@@ -1155,6 +1182,13 @@ public class TransitionManager {
       }
       return true;
     }
+  }
+
+  private void removeAnimationState(
+      TransitionId transitionId, AnimationCleanupTrigger animationFinishTrigger) {
+    AnimationState animationState = mAnimationStates.get(transitionId);
+    mAnimationStates.remove(transitionId);
+    trackAnimationStateRemoval(transitionId, animationFinishTrigger, animationState);
   }
 
   private class TransitionsResolver implements Resolver {
@@ -1217,5 +1251,13 @@ public class TransitionManager {
     public boolean shouldStart(AnimationBinding binding) {
       return true;
     }
+  }
+
+  enum AnimationCleanupTrigger {
+    CANCELED_BEFORE_START,
+    FINISHED_TO_CONCLUSION,
+    NON_ANIMATING_CLEANUP,
+    UNDECLARED_TRANSITIONS,
+    RESET
   }
 }
