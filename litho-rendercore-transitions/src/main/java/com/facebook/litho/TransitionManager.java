@@ -100,6 +100,21 @@ public class TransitionManager {
   @Nullable private final AnimationInconsistencyDebugger mAnimationInconsistencyDebugger;
 
   /**
+   * Whether we should remove the {@link PropertyState} in the {@link
+   * TransitionManager#mInitialStatesToRestore} for transitions that are cleaned up by {@link
+   * TransitionManager#finishUndeclaredTransitions()} or {@link
+   * TransitionManager#cleanupNonAnimatingAnimationStates()}.
+   *
+   * <p>There is a suspicion that this is leading to crashes where we try to restore an animation
+   * state, but there is no longer an animation state for it.
+   */
+  private static boolean sRemoveStateToRestoreIfAnimationIsCleanedUp = false;
+
+  public static void enableInitialStateCleanupAfterAnimationCleanup(boolean enabled) {
+    sRemoveStateToRestoreIfAnimationIsCleanedUp = enabled;
+  }
+
+  /**
    * Whether a piece of content identified by a transition key is appearing, disappearing, or just
    * possibly changing some properties.
    */
@@ -306,18 +321,54 @@ public class TransitionManager {
   //       which change without a change transition declared. Also the flag should probably belong
   //       to the properties and not to the AnimationState.
   void finishUndeclaredTransitions() {
-    for (AnimationState animationState : new ArrayList<>(mAnimationStates.values())) {
-      if (animationState.shouldFinishUndeclaredAnimation) {
-        animationState.shouldFinishUndeclaredAnimation = false;
+    if (sRemoveStateToRestoreIfAnimationIsCleanedUp) {
+      Set<TransitionId> toRemove = new HashSet<>();
+      for (TransitionId transitionId : new ArrayList<>(mAnimationStates.ids())) {
+        AnimationState animationState = mAnimationStates.get(transitionId);
+        if (animationState.shouldFinishUndeclaredAnimation) {
+          animationState.shouldFinishUndeclaredAnimation = false;
 
-        for (PropertyState propertyState :
-            new ArrayList<>(animationState.propertyStates.values())) {
-          final AnimationBinding animationBinding = propertyState.animation;
-          if (animationBinding != null) {
-            animationBinding.stop();
-            mAnimationBindingListener.finishAnimation(
-                animationBinding, AnimationCleanupTrigger.UNDECLARED_TRANSITIONS);
+          for (PropertyState propertyState :
+              new ArrayList<>(animationState.propertyStates.values())) {
+            final AnimationBinding animationBinding = propertyState.animation;
+            if (animationBinding != null) {
+              animationBinding.stop();
+              mAnimationBindingListener.finishAnimation(
+                  animationBinding, AnimationCleanupTrigger.UNDECLARED_TRANSITIONS);
+            }
           }
+
+          toRemove.add(transitionId);
+        }
+      }
+
+      removeStatesToRestoreForTransitionIds(toRemove);
+    } else {
+      for (AnimationState animationState : new ArrayList<>(mAnimationStates.values())) {
+        if (animationState.shouldFinishUndeclaredAnimation) {
+          animationState.shouldFinishUndeclaredAnimation = false;
+
+          for (PropertyState propertyState :
+              new ArrayList<>(animationState.propertyStates.values())) {
+            final AnimationBinding animationBinding = propertyState.animation;
+            if (animationBinding != null) {
+              animationBinding.stop();
+              mAnimationBindingListener.finishAnimation(
+                  animationBinding, AnimationCleanupTrigger.UNDECLARED_TRANSITIONS);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  private void removeStatesToRestoreForTransitionIds(Set<TransitionId> toRemove) {
+    if (!toRemove.isEmpty()) {
+      for (PropertyHandle propertyHandle : new ArrayList<>(mInitialStatesToRestore.keySet())) {
+        TransitionId transitionId =
+            propertyHandle != null ? propertyHandle.getTransitionId() : null;
+        if (transitionId != null && toRemove.contains(transitionId)) {
+          mInitialStatesToRestore.remove(propertyHandle);
         }
       }
     }
@@ -725,7 +776,6 @@ public class TransitionManager {
     final List<PropertyHandle> animatedPropertyHandles = new ArrayList<>();
     animatedPropertyHandles.add(propertyHandle);
     mAnimationsToPropertyHandles.put(animation, animatedPropertyHandles);
-
     mInitialStatesToRestore.put(propertyHandle, startValue);
 
     if (!TextUtils.isEmpty(transition.getTraceName())) {
@@ -905,6 +955,10 @@ public class TransitionManager {
 
     for (TransitionId transitionId : toRemove) {
       removeAnimationState(transitionId, AnimationCleanupTrigger.NON_ANIMATING_CLEANUP);
+    }
+
+    if (sRemoveStateToRestoreIfAnimationIsCleanedUp) {
+      removeStatesToRestoreForTransitionIds(toRemove);
     }
   }
 
