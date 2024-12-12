@@ -21,6 +21,7 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.text.InputFilter
+import android.text.TextUtils.TruncateAt
 import android.text.TextWatcher
 import android.view.Gravity
 import android.view.View
@@ -64,6 +65,7 @@ inline fun ResourcesScope.TextInput(
     imeOptions: Int = EditorInfo.IME_NULL,
     inputFilter: InputFilter? = null,
     inputFilters: List<InputFilter>? = null,
+    ellipsize: TruncateAt? = null,
     /** Called when the text entered by the user changes. */
     noinline onTextChanged: ((TextChangedEvent) -> Unit)? = null,
     /** Called when the selection (particular case: cursor position) gets changed by user. */
@@ -114,5 +116,6 @@ inline fun ResourcesScope.TextInput(
           onKeyPreIme?.let { keyPreImeEventHandler(eventHandlerWithReturn(it)) }
           onEditorAction?.let { editorActionEventHandler(eventHandlerWithReturn(it)) }
           onInputConnection?.let { inputConnectionEventHandler(eventHandlerWithReturn(it)) }
+          ellipsize?.let { ellipsize(it) }
         }
         .build()
