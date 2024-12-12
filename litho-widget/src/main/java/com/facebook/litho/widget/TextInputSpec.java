@@ -943,6 +943,9 @@ class TextInputSpec {
       editText.setKeyListener(null); // Clear any KeyListener
       editText.setInputType(inputType); // Set the input type back to default.
     }
+    if (ComponentsConfiguration.clearMovementMethod) {
+      editText.setMovementMethod(null);
+    }
     editText.setTextState(null);
     editText.removeOnWindowFocusChangeListener();
     editText.setPrivateImeOptions(null);

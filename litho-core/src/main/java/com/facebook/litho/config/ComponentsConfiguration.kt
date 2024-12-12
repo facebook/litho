@@ -296,6 +296,9 @@ internal constructor(
      */
     @JvmField var enableA11Y: Boolean = false
 
+    /** This flag is used clear MovementMethod on TextInput to avoid a potential crash. */
+    @JvmField var clearMovementMethod: Boolean = true
+
     /**
      * This method is only used so that Java clients can have a builder like approach to override a
      * configuration.
