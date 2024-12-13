@@ -42,6 +42,7 @@ public final class TextStylesHelper {
   public static final int DEFAULT_EMS = -1;
   public static final int DEFAULT_MIN_WIDTH = 0;
   public static final int DEFAULT_MAX_WIDTH = Integer.MAX_VALUE;
+  public static final float DEFAULT_LINE_HEIGHT = Float.MAX_VALUE;
   // BREAK_STRATEGY_SIMPLE (AOSP Default)
   public static final int DEFAULT_BREAK_STRATEGY = 0;
   // HYPHENATION_FREQUENCY_NONE (AOSP Default)
