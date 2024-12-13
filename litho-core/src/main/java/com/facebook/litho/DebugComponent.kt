@@ -243,6 +243,10 @@ private constructor(
       return Rect(x, y, x + result.width, y + result.height)
     }
 
+  /** @return The alpha value of this component */
+  val alpha: Float
+    get() = result.node.nodeInfo?.alpha ?: 1.0f
+
   /** @return True if this and given debug components share the same internal node */
   fun isSameNode(other: DebugComponent): Boolean = node === other.node
 
