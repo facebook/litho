@@ -28,7 +28,6 @@ load(
 
 fb_native.android_binary(
     name = "sample",
-    aapt_mode = "aapt2",
     allow_r_dot_java_in_secondary_dex = True,
     includes_vector_drawables = True,
     keystore = DEBUG_KEYSTORE,
@@ -46,7 +45,6 @@ fb_native.android_binary(
 
 fb_native.android_binary(
     name = "sample_arm64",
-    aapt_mode = "aapt2",
     allow_r_dot_java_in_secondary_dex = True,
     cpu_filters = ["arm64"],
     includes_vector_drawables = True,

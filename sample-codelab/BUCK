@@ -21,7 +21,6 @@ load(
 
 fb_native.android_binary(
     name = "sample-codelab",
-    aapt_mode = "aapt2",
     includes_vector_drawables = True,
     keystore = ":debug_keystore",
     manifest = "src/main/AndroidManifest.xml",
