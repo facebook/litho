@@ -85,7 +85,9 @@ public class LithoRecyclerViewDescriptor extends NodeDescriptor<LithoRecyclerVie
     return Preconditions.checkNotNull(descriptor).getAXChildCount(node);
   }
 
+  @Nullable
   @Override
+  // NULLSAFE_FIXME[Inconsistent Subclass Return Annotation]
   public Object getChildAt(LithoRecyclerView node, int index) throws Exception {
     // TODO T39526148 account for the case above
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
@@ -96,7 +98,6 @@ public class LithoRecyclerViewDescriptor extends NodeDescriptor<LithoRecyclerVie
       childrenViews.add((View) Preconditions.checkNotNull(descriptor).getChildAt(node, i));
     }
 
-    // NULLSAFE_FIXME[Return Not Nullable]
     return DebugSection.getRootInstance(childrenViews);
   }
 
