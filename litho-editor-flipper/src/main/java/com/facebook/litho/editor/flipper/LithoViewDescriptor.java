@@ -80,9 +80,10 @@ public class LithoViewDescriptor extends NodeDescriptor<BaseMountingView> {
     return descriptor.getAXChildCount(node);
   }
 
+  @Nullable
   @Override
+  // NULLSAFE_FIXME[Inconsistent Subclass Return Annotation]
   public Object getChildAt(BaseMountingView node, int index) {
-    // NULLSAFE_FIXME[Return Not Nullable]
     return DebugComponent.getRootInstance(node);
   }
 
