@@ -27,9 +27,12 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
+import androidx.annotation.Nullable;
+import java.util.Arrays;
 
 public class TransparencyEnabledCardClipDrawable extends Drawable {
 
+  private static final int CORNER_RADII_LIST_SIZE = 8;
   static final int NONE = 0;
   static final int TOP_LEFT = 1 << 0;
   static final int TOP_RIGHT = 1 << 1;
@@ -41,6 +44,9 @@ public class TransparencyEnabledCardClipDrawable extends Drawable {
   private boolean mDirty = true;
   private int mDisableClipCorners = NONE;
   private float mCornerRadius;
+  @Nullable private Drawable mBackgroundDrawable;
+  private final float[] drawableCornerRadii = new float[CORNER_RADII_LIST_SIZE];
+  private final RectF rectF = new RectF();
 
   public TransparencyEnabledCardClipDrawable() {
     mBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
@@ -65,6 +71,7 @@ public class TransparencyEnabledCardClipDrawable extends Drawable {
   @Override
   public void draw(Canvas canvas) {
     final Rect bounds = getBounds();
+    rectF.set(bounds);
     if (areAllDisableClipFalse()) {
       canvas.drawRect(bounds, mCornerPaint);
       drawWithRoundRectImplementation(canvas, bounds);
@@ -78,6 +85,12 @@ public class TransparencyEnabledCardClipDrawable extends Drawable {
       buildClippingCorners();
       mDirty = false;
     }
+
+    if (mBackgroundDrawable != null) {
+      drawWithClipPathImplementationOnDrawable(canvas, bounds);
+      return;
+    }
+
     canvas.drawRect(bounds, mBackgroundPaint);
     if ((mDisableClipCorners & TOP_LEFT) == 0) {
       int saved = canvas.save();
@@ -111,15 +124,53 @@ public class TransparencyEnabledCardClipDrawable extends Drawable {
     }
   }
 
+  private void drawWithClipPathImplementationOnDrawable(Canvas canvas, Rect bounds) {
+    float topLeftRadius = (mDisableClipCorners & TOP_LEFT) == 0 ? mCornerRadius : 0;
+    float topRightRadius = (mDisableClipCorners & TOP_RIGHT) == 0 ? mCornerRadius : 0;
+    float bottomLeftRadius = (mDisableClipCorners & BOTTOM_LEFT) == 0 ? mCornerRadius : 0;
+    float bottomRightRadius = (mDisableClipCorners & BOTTOM_RIGHT) == 0 ? mCornerRadius : 0;
+
+    drawableCornerRadii[0] = topLeftRadius;
+    drawableCornerRadii[1] = topLeftRadius;
+    drawableCornerRadii[2] = topRightRadius;
+    drawableCornerRadii[3] = topRightRadius;
+    drawableCornerRadii[4] = bottomRightRadius;
+    drawableCornerRadii[5] = bottomRightRadius;
+    drawableCornerRadii[6] = bottomLeftRadius;
+    drawableCornerRadii[7] = bottomLeftRadius;
+
+    drawOnBackgroundDrawable(canvas, bounds);
+  }
+
+  private void drawOnBackgroundDrawable(Canvas canvas, Rect bounds) {
+    if (mBackgroundDrawable != null) {
+      int checkpoint = canvas.save();
+      mCornerPath.reset();
+      mCornerPath.addRoundRect(rectF, drawableCornerRadii, Path.Direction.CW);
+      canvas.clipPath(mCornerPath);
+      mBackgroundDrawable.setBounds(bounds);
+      mBackgroundDrawable.draw(canvas);
+      canvas.restoreToCount(checkpoint);
+
+      // Reset the path and rectF
+      mCornerPath.reset();
+      rectF.setEmpty();
+    }
+  }
+
   private void drawWithRoundRectImplementation(Canvas canvas, Rect bounds) {
-    canvas.drawRoundRect(
-        bounds.left,
-        bounds.top,
-        bounds.right,
-        bounds.bottom,
-        mCornerRadius,
-        mCornerRadius,
-        mBackgroundPaint);
+    if (mBackgroundDrawable != null) {
+      drawOnBackgroundDrawable(canvas, bounds);
+    } else {
+      canvas.drawRoundRect(
+          bounds.left,
+          bounds.top,
+          bounds.right,
+          bounds.bottom,
+          mCornerRadius,
+          mCornerRadius,
+          mBackgroundPaint);
+    }
   }
 
   public void setBackgroundColor(int backgroundColor) {
@@ -152,6 +203,11 @@ public class TransparencyEnabledCardClipDrawable extends Drawable {
     mCornerPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
   }
 
+  public void setBackgroundDrawable(@Nullable Drawable backgroundDrawable) {
+    mBackgroundDrawable = backgroundDrawable;
+    invalidateSelf();
+  }
+
   public void setCornerRadius(float radius) {
     radius = (int) (radius + .5f);
     if (mCornerRadius == radius) {
@@ -160,6 +216,7 @@ public class TransparencyEnabledCardClipDrawable extends Drawable {
 
     mDirty = true;
     mCornerRadius = radius;
+    Arrays.fill(drawableCornerRadii, radius);
     invalidateSelf();
   }
 

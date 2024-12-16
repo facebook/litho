@@ -29,6 +29,7 @@ import static com.facebook.yoga.YogaPositionType.ABSOLUTE;
 
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import androidx.annotation.Nullable;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
@@ -94,6 +95,7 @@ class CardSpec {
   static Component onCreateLayout(
       ComponentContext c,
       @Prop Component content,
+      @Prop(optional = true) @Nullable Drawable cardBackgroundDrawable,
       @Prop(optional = true) @Nullable String cardBackgroundTransitionKey,
       @Prop(optional = true, resType = ResType.COLOR) int cardBackgroundColor,
       @Prop(optional = true) @Nullable DynamicValue<Integer> cardBackgroundColorDv,
@@ -164,6 +166,7 @@ class CardSpec {
               .child(
                   makeTransparencyEnabledCardClip(
                       c,
+                      cardBackgroundDrawable,
                       cardBackgroundColor,
                       cardBackgroundColorDv,
                       realClippingColor,
@@ -224,6 +227,7 @@ class CardSpec {
 
   private static Component.Builder makeTransparencyEnabledCardClip(
       ComponentContext c,
+      @Nullable Drawable backgroundDrawable,
       int backgroundColor,
       @Nullable DynamicValue<Integer> backgroundColorDv,
       int clippingColor,
@@ -235,6 +239,7 @@ class CardSpec {
       @Nullable String cardBackgroundTransitionKey) {
     Component.Builder transparencyEnabledCardClipBuilder =
         TransparencyEnabledCardClip.create(c)
+            .backgroundDrawable(backgroundDrawable)
             .cardBackgroundColor(backgroundColor)
             .cardBackgroundColorDv(backgroundColorDv)
             .clippingColor(clippingColor)

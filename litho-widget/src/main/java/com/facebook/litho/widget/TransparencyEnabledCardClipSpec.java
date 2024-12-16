@@ -24,6 +24,7 @@ import static com.facebook.litho.widget.CardClipDrawable.TOP_RIGHT;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import androidx.annotation.ColorInt;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.annotations.MountSpec;
@@ -34,6 +35,7 @@ import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
+import javax.annotation.Nullable;
 
 /**
  * A component that paints a card with rounded edges to perform a clipping operation on the
@@ -57,6 +59,7 @@ class TransparencyEnabledCardClipSpec {
   static void onMount(
       ComponentContext c,
       TransparencyEnabledCardClipDrawable cardClipDrawable,
+      @Prop(optional = true) @Nullable Drawable backgroundDrawable,
       @Prop(optional = true, resType = ResType.COLOR) int cardBackgroundColor,
       @Prop(optional = true, resType = ResType.COLOR) int clippingColor,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float cornerRadius,
@@ -64,6 +67,7 @@ class TransparencyEnabledCardClipSpec {
       @Prop(optional = true) boolean disableClipTopRight,
       @Prop(optional = true) boolean disableClipBottomLeft,
       @Prop(optional = true) boolean disableClipBottomRight) {
+    cardClipDrawable.setBackgroundDrawable(backgroundDrawable);
     cardClipDrawable.setBackgroundColor(cardBackgroundColor);
     cardClipDrawable.setClippingColor(clippingColor);
     cardClipDrawable.setCornerRadius(cornerRadius);
@@ -82,6 +86,7 @@ class TransparencyEnabledCardClipSpec {
     cardClipDrawable.setClippingColor(Color.TRANSPARENT);
     cardClipDrawable.resetCornerPaint();
     cardClipDrawable.setDisableClip(NONE);
+    cardClipDrawable.setBackgroundDrawable(null);
   }
 
   @OnBindDynamicValue
