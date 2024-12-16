@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.text.InputFilter;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -119,6 +120,7 @@ class MaterialTextInputSpec {
   @PropDefault protected static final int editTextBottomPadding = UNSET;
   @PropDefault protected static final int importantForAutofill = 0;
   @PropDefault protected static final boolean disableAutofill = false;
+  @PropDefault protected static final String tooltipText = "";
 
   @OnCreateInitialState
   static void onCreateInitialState(
@@ -182,6 +184,7 @@ class MaterialTextInputSpec {
       @Prop(optional = true) @Nullable String[] autofillHints,
       @Prop(optional = true) boolean disableAutofill,
       @Prop(optional = true) @Nullable KeyListener keyListener,
+      @Prop(optional = true) @Nullable String tooltipText,
       @State AtomicReference<CharSequence> savedText) {
     EditText editText =
         TextInputSpec.createAndMeasureEditText(
@@ -237,7 +240,8 @@ class MaterialTextInputSpec {
         editTextStartPadding,
         editTextTopPadding,
         editTextEndPadding,
-        editTextBottomPadding);
+        editTextBottomPadding,
+        tooltipText);
     textInputLayout.addView(editText);
 
     textInputLayout.measure(
@@ -285,6 +289,7 @@ class MaterialTextInputSpec {
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) Diff<Integer> editTextEndPadding,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) Diff<Integer> editTextBottomPadding,
       @Prop(optional = true) Diff<KeyListener> keyListener,
+      @Prop(optional = true) Diff<String> tooltipText,
       @State Diff<Integer> measureSeqNumber,
       @State Diff<AtomicReference<EditTextWithEventHandlers>> mountedEditTextRef,
       @State Diff<AtomicReference<CharSequence>> savedText) {
@@ -331,7 +336,8 @@ class MaterialTextInputSpec {
         || !ObjectsCompat.equals(editTextTopPadding.getPrevious(), editTextTopPadding.getNext())
         || !ObjectsCompat.equals(editTextEndPadding.getPrevious(), editTextEndPadding.getNext())
         || !ObjectsCompat.equals(
-            editTextBottomPadding.getPrevious(), editTextBottomPadding.getNext())) {
+            editTextBottomPadding.getPrevious(), editTextBottomPadding.getNext())
+        || !ObjectsCompat.equals(tooltipText.getPrevious(), tooltipText.getNext())) {
       return true;
     }
 
@@ -390,6 +396,7 @@ class MaterialTextInputSpec {
       @Prop(optional = true) int importantForAutofill,
       @Prop(optional = true) @Nullable String[] autofillHints,
       @Prop(optional = true) boolean disableAutofill,
+      @Prop(optional = true) @Nullable String tooltipText,
       @State AtomicReference<CharSequence> savedText,
       @State AtomicReference<EditTextWithEventHandlers> mountedEditTextRef) {
     EditTextWithEventHandlers editText = (EditTextWithEventHandlers) textInputLayout.getEditText();
@@ -447,7 +454,8 @@ class MaterialTextInputSpec {
         editTextStartPadding,
         editTextTopPadding,
         editTextEndPadding,
-        editTextBottomPadding);
+        editTextBottomPadding,
+        tooltipText);
     // NULLSAFE_FIXME[Nullable Dereference]
     editText.setTextState(savedText);
     // NULLSAFE_FIXME[Nullable Dereference]
@@ -466,7 +474,8 @@ class MaterialTextInputSpec {
       int editTextStartPadding,
       int editTextTopPadding,
       int editTextEndPadding,
-      int editTextBottomPadding) {
+      int editTextBottomPadding,
+      @Nullable String tooltipText) {
     textInputLayout.setHint(hint);
     textInputLayout.setCounterEnabled(counterEnabled);
     textInputLayout.setCounterMaxLength(counterMaxLength);
@@ -475,6 +484,9 @@ class MaterialTextInputSpec {
     // vertical center issue
     textInputLayout.setBoxBackgroundMode(boxBackgroundMode);
     textInputLayout.setBoxStrokeWidth(boxStrokeWidth);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      editText.setTooltipText(tooltipText);
+    }
     if (editTextStartPadding != UNSET
         || editTextTopPadding != UNSET
         || editTextEndPadding != UNSET
