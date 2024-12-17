@@ -20,6 +20,7 @@ import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
 import com.facebook.litho.AccessibilityRole.AccessibilityRoleType
 import com.facebook.litho.accessibility.accessibilityRole
+import com.facebook.litho.accessibility.contentDescription
 import com.facebook.litho.animated.translationX
 import com.facebook.litho.animated.translationY
 import com.facebook.litho.core.height
@@ -181,6 +182,10 @@ object StyleCompat {
   @JvmStatic
   fun accessibilityRole(@AccessibilityRoleType role: String): JavaStyle =
       JavaStyle().accessibilityRole(role)
+
+  /** @see [JavaStyle.contentDescription] */
+  @JvmStatic
+  fun contentDescription(value: CharSequence?): JavaStyle = JavaStyle().contentDescription(value)
 
   /** @see [JavaStyle.translationY] */
   @JvmStatic
@@ -458,6 +463,11 @@ class JavaStyle {
 
   fun accessibilityRole(@AccessibilityRoleType role: String): JavaStyle {
     style = style.accessibilityRole(role)
+    return this
+  }
+
+  fun contentDescription(value: CharSequence?): JavaStyle {
+    style = style.contentDescription(value)
     return this
   }
 
