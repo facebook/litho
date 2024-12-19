@@ -14,8 +14,5 @@
   target = android-33
   build_tools_version = 33.0.2
 
-[tools]
-  java11_for_tests = "/usr/local/java-runtime/impl/11/bin/java"
-
 [cxx]
   link_path_normalization_args_enabled = true
