@@ -35,9 +35,10 @@ public class TestMountExtension extends MountExtension<Object, Object> {
   }
 
   @Override
-  // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
-  public void beforeMount(ExtensionState<Object> state, Object o, @Nullable Rect localVisibleRect) {
+  public void beforeMount(
+      ExtensionState<Object> state, @Nullable Object o, @Nullable Rect localVisibleRect) {
     super.beforeMount(state, o, localVisibleRect);
+    // NULLSAFE_FIXME[Field Not Nullable]
     this.input = o;
   }
 
