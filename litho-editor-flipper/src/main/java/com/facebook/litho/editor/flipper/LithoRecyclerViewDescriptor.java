@@ -101,10 +101,10 @@ public class LithoRecyclerViewDescriptor extends NodeDescriptor<LithoRecyclerVie
     return DebugSection.getRootInstance(childrenViews);
   }
 
+  @Nullable
   @Override
   public Object getAXChildAt(LithoRecyclerView node, int index) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
-    // NULLSAFE_FIXME[Return Not Nullable]
     return Preconditions.checkNotNull(descriptor).getAXChildAt(node, index);
   }
 
