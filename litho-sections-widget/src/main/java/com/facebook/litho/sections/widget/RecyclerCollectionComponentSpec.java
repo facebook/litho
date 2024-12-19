@@ -174,7 +174,7 @@ public class RecyclerCollectionComponentSpec {
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) int topPadding,
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) int bottomPadding,
       @Prop(optional = true) boolean disableAddingPadding,
-      @Prop(optional = true) EventHandler<TouchEvent> recyclerTouchEventHandler,
+      @Prop(optional = true) @Nullable EventHandler<TouchEvent> recyclerTouchEventHandler,
       @Prop(optional = true) boolean horizontalFadingEdgeEnabled,
       @Prop(optional = true) boolean verticalFadingEdgeEnabled,
       @Prop(optional = true) boolean isLeftFadingEnabled,
