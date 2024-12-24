@@ -45,6 +45,7 @@ import com.facebook.litho.view.onClick
 import com.facebook.litho.view.onLongClick
 import com.facebook.litho.view.onTouch
 import com.facebook.litho.view.testKey
+import com.facebook.litho.view.touchExpansion
 import com.facebook.litho.view.wrapInView
 import com.facebook.rendercore.dp
 import com.facebook.rendercore.px
@@ -218,6 +219,11 @@ object StyleCompat {
 
   /** @see [JavaStyle.onClick] */
   @JvmStatic fun onClick(action: (ClickEvent) -> Unit): JavaStyle = JavaStyle().onClick(action)
+
+  /** @see [JavaStyle.touchExpansionDip] */
+  @JvmStatic
+  fun touchExpansionDip(yogaEdge: YogaEdge, value: Float): JavaStyle =
+      JavaStyle().touchExpansionDip(yogaEdge, value)
 }
 
 class JavaStyle {
@@ -493,6 +499,23 @@ class JavaStyle {
 
   fun onClick(action: (ClickEvent) -> Unit): JavaStyle {
     style = style.onClick(action)
+    return this
+  }
+
+  fun touchExpansionDip(yogaEdge: YogaEdge, value: Float): JavaStyle {
+    val valueDip = value.dp
+    style =
+        when (yogaEdge) {
+          YogaEdge.LEFT -> style.touchExpansion(left = valueDip)
+          YogaEdge.VERTICAL -> style.touchExpansion(vertical = valueDip)
+          YogaEdge.TOP -> style.touchExpansion(top = valueDip)
+          YogaEdge.RIGHT -> style.touchExpansion(right = valueDip)
+          YogaEdge.BOTTOM -> style.touchExpansion(bottom = valueDip)
+          YogaEdge.START -> style.touchExpansion(start = valueDip)
+          YogaEdge.END -> style.touchExpansion(end = valueDip)
+          YogaEdge.HORIZONTAL -> style.touchExpansion(horizontal = valueDip)
+          YogaEdge.ALL -> style.touchExpansion(all = valueDip)
+        }
     return this
   }
 
