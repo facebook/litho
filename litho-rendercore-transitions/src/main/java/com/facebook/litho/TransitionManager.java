@@ -114,6 +114,12 @@ public class TransitionManager {
     sRemoveStateToRestoreIfAnimationIsCleanedUp = enabled;
   }
 
+  private static boolean sClearInitialStatesOnReset = false;
+
+  public static void setClearInitialStatesOnReset(boolean enabled) {
+    sClearInitialStatesOnReset = enabled;
+  }
+
   /**
    * Whether a piece of content identified by a transition key is appearing, disappearing, or just
    * possibly changing some properties.
@@ -435,6 +441,11 @@ public class TransitionManager {
     if (mAnimationInconsistencyDebugger != null) {
       mAnimationInconsistencyDebugger.reset(mAnimationStates);
     }
+
+    if (sClearInitialStatesOnReset) {
+      mInitialStatesToRestore.clear();
+    }
+
     for (TransitionId transitionId : mAnimationStates.ids()) {
       final AnimationState animationState = mAnimationStates.get(transitionId);
       setMountContentInner(transitionId, animationState, null);
