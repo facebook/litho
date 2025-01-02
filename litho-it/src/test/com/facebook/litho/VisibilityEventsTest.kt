@@ -1933,7 +1933,7 @@ class VisibilityEventsTest {
 
   private fun getCurrentVisibilityToItemMap(lithoView: LithoView): Map<String?, VisibilityItem?>? {
     val lithoHostListenerCoordinator: LithoHostListenerCoordinator? =
-        Whitebox.getInternalState(lithoView, "mLithoHostListenerCoordinator")
+        Whitebox.getInternalState(lithoView, "lithoHostListenerCoordinator")
     val extensionState: ExtensionState<VisibilityMountExtensionState>? =
         Whitebox.getInternalState(lithoHostListenerCoordinator, "mVisibilityExtensionState")
     return if (extensionState != null) {

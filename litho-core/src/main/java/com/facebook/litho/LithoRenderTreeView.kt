@@ -35,7 +35,7 @@ class LithoRenderTreeView @JvmOverloads constructor(context: Context, attrs: Att
 
   // Set together
   private var layoutState: LayoutState? = null
-  private var treeState: TreeState? = null
+  private var _treeState: TreeState? = null
 
   private var currentLifecycleOwner: LifecycleOwner? = null
 
@@ -65,34 +65,38 @@ class LithoRenderTreeView @JvmOverloads constructor(context: Context, attrs: Att
     }
   }
 
-  override fun getConfiguration(): ComponentsConfiguration? {
-    return layoutState?.componentContext?.lithoConfiguration?.componentsConfig
-  }
+  override val configuration: ComponentsConfiguration?
+    get() = layoutState?.componentContext?.lithoConfiguration?.componentsConfig
 
-  override fun isIncrementalMountEnabled(): Boolean {
-    val componentContext = layoutState?.componentContext ?: return false
-    return ComponentContext.isIncrementalMountEnabled(componentContext)
-  }
+  override val isIncrementalMountEnabled: Boolean
+    get() {
+      val componentContext = layoutState?.componentContext ?: return false
+      return ComponentContext.isIncrementalMountEnabled(componentContext)
+    }
 
-  override fun getCurrentLayoutState(): LayoutState? = layoutState
+  override val currentLayoutState: LayoutState?
+    get() = layoutState
 
-  override fun isVisibilityProcessingEnabled(): Boolean {
-    val componentContext = layoutState?.componentContext ?: return false
-    return ComponentContext.isVisibilityProcessingEnabled(componentContext)
-  }
+  override val isVisibilityProcessingEnabled: Boolean
+    get() {
+      val componentContext = layoutState?.componentContext ?: return false
+      return ComponentContext.isVisibilityProcessingEnabled(componentContext)
+    }
 
-  override fun getTreeState(): TreeState? = treeState
+  override val treeState: TreeState?
+    get() = _treeState
 
-  override fun hasTree(): Boolean = layoutState != null
+  override val hasTree: Boolean
+    get() = layoutState != null
 
   override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
     // mAnimatedWidth/mAnimatedHeight >= 0 if something is driving a width/height animation.
-    val isAnimating = mAnimatedWidth != -1 || mAnimatedHeight != -1
+    val isAnimating = animatedWidth != -1 || animatedHeight != -1
     // up to date view sizes, taking into account running animations
-    val upToDateWidth = if (mAnimatedWidth != -1) mAnimatedWidth else width
-    val upToDateHeight = if (mAnimatedHeight != -1) mAnimatedHeight else height
-    mAnimatedWidth = -1
-    mAnimatedHeight = -1
+    val upToDateWidth = if (animatedWidth != -1) animatedWidth else width
+    val upToDateHeight = if (animatedHeight != -1) animatedHeight else height
+    animatedWidth = -1
+    animatedHeight = -1
     if (isAnimating) {
       // If the mount state is dirty, we want to ignore the current animation and calculate the
       // new LayoutState as normal below. That LayoutState has the opportunity to define its own
@@ -154,7 +158,7 @@ class LithoRenderTreeView @JvmOverloads constructor(context: Context, attrs: Att
       onBeforeSettingNewTree()
     }
     this.layoutState = layoutState
-    this.treeState = treeState
+    this._treeState = treeState
 
     if (this.layoutState == null) {
       clearDebugOverlay(this)
@@ -171,7 +175,7 @@ class LithoRenderTreeView @JvmOverloads constructor(context: Context, attrs: Att
     currentLifecycleOwner?.lifecycle?.removeObserver(this)
     currentLifecycleOwner = null
     layoutState = null
-    treeState = null
+    _treeState = null
     hasNewTree = true
     requestLayout()
   }

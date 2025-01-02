@@ -192,7 +192,7 @@ class MountStateTest {
     val mountDelegate = lithoView.mountDelegateTarget.getMountDelegate()
     var coordinator =
         Whitebox.getInternalState<LithoHostListenerCoordinator>(
-            lithoView, "mLithoHostListenerCoordinator")
+            lithoView, "lithoHostListenerCoordinator")
     assertThat(coordinator).isNotNull
     assertThat(coordinator.visibilityExtensionState).isNotNull
     assertThat(coordinator.incrementalMountExtensionState).isNotNull
@@ -201,7 +201,7 @@ class MountStateTest {
 
     // Unmount the parent
     testLithoView.lithoView.unmountAllItems()
-    coordinator = Whitebox.getInternalState(lithoView, "mLithoHostListenerCoordinator")
+    coordinator = Whitebox.getInternalState(lithoView, "lithoHostListenerCoordinator")
     assertThat(coordinator).isNull()
     assertThat(mountDelegate).isNotNull
     assertThat(mountDelegate?.extensionStates).isEmpty()

@@ -68,7 +68,7 @@ object ViewAttributesViewBinder : RenderUnit.Binder<ViewAttributesViewBinder.Mod
   override fun bind(context: Context, content: View, model: Model, layoutData: Any?): Int {
     val flags =
         if (model.isRootHost) {
-          (content as BaseMountingView).mViewAttributeFlags
+          (content as BaseMountingView).viewAttributeFlags
         } else {
           LithoMountData.getViewAttributeFlags(content)
         }

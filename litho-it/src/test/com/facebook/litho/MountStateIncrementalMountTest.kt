@@ -1431,7 +1431,8 @@ class MountStateIncrementalMountTest {
       previousIncrementalMountBounds.set(visibleRect)
     }
 
-    override fun isIncrementalMountEnabled(): Boolean = true
+    override val isIncrementalMountEnabled: Boolean
+      get() = true
   }
 
   companion object {

@@ -258,5 +258,9 @@ class LithoViewMountTest {
     fun setMeasured(width: Int, height: Int) {
       setMeasuredDimension(width, height)
     }
+
+    public override fun performLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
+      super.performLayout(changed, l, t, r, b)
+    }
   }
 }

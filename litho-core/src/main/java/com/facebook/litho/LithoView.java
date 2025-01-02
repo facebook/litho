@@ -222,12 +222,12 @@ public class LithoView extends BaseMountingView {
 
   private void onMeasureInternal(int widthMeasureSpec, int heightMeasureSpec) {
     // mAnimatedWidth/mAnimatedHeight >= 0 if something is driving a width/height animation.
-    final boolean animating = mAnimatedWidth != SIZE_UNSET || mAnimatedHeight != SIZE_UNSET;
+    final boolean animating = animatedWidth != SIZE_UNSET || animatedHeight != SIZE_UNSET;
     // up to date view sizes, taking into account running animations
-    final int upToDateWidth = (mAnimatedWidth != SIZE_UNSET) ? mAnimatedWidth : getWidth();
-    final int upToDateHeight = (mAnimatedHeight != SIZE_UNSET) ? mAnimatedHeight : getHeight();
-    mAnimatedWidth = SIZE_UNSET;
-    mAnimatedHeight = SIZE_UNSET;
+    final int upToDateWidth = (animatedWidth != SIZE_UNSET) ? animatedWidth : getWidth();
+    final int upToDateHeight = (animatedHeight != SIZE_UNSET) ? animatedHeight : getHeight();
+    animatedWidth = SIZE_UNSET;
+    animatedHeight = SIZE_UNSET;
 
     if (animating) {
       // If the mount state is dirty, we want to ignore the current animation and calculate the
@@ -572,7 +572,7 @@ public class LithoView extends BaseMountingView {
   }
 
   @Override
-  Object onBeforeMount() {
+  public Object onBeforeMount() {
     super.onBeforeMount();
     final boolean loggedFirstMount =
         LithoView.MountStartupLoggingInfo.maybeLogFirstMountStart(mMountStartupLoggingInfo);
@@ -582,7 +582,7 @@ public class LithoView extends BaseMountingView {
   }
 
   @Override
-  void onAfterMount(@Nullable Object fromOnBeforeMount) {
+  public void onAfterMount(@Nullable Object fromOnBeforeMount) {
     super.onAfterMount(fromOnBeforeMount);
     if (fromOnBeforeMount == null) {
       throw new IllegalStateException(
@@ -642,7 +642,7 @@ public class LithoView extends BaseMountingView {
   }
 
   @Override
-  protected boolean hasTree() {
+  protected boolean getHasTree() {
     return mComponentTree != null;
   }
 
@@ -795,6 +795,21 @@ public class LithoView extends BaseMountingView {
     refreshAccessibilityDelegatesIfNeeded(enabled);
     // must force (not just request)
     forceRelayout();
+  }
+
+  @Override
+  public void setVisibilityHintNonRecursive(boolean isVisible) {
+    super.setVisibilityHintNonRecursive(isVisible);
+  }
+
+  @Override
+  public void resetVisibilityHint() {
+    super.resetVisibilityHint();
+  }
+
+  @Override
+  public void performLayout(boolean changed, int l, int t, int r, int b) {
+    super.performLayout(changed, l, t, r, b);
   }
 
   /**

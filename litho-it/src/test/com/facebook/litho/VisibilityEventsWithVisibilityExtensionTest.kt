@@ -79,7 +79,7 @@ class VisibilityEventsWithVisibilityExtensionTest {
   ) {
     val lithoHostListenerCoordinator =
         Whitebox.getInternalState<LithoHostListenerCoordinator>(
-            lithoView, "mLithoHostListenerCoordinator")
+            lithoView, "lithoHostListenerCoordinator")
     lithoHostListenerCoordinator.useVisibilityExtension(visibilityOutputsExtension)
   }
 }

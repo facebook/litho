@@ -1435,7 +1435,7 @@ class VisibilityEventsIncrementalMountDisabledTest {
   private fun getVisibilityIdToItemMap(lithoView: LithoView): Map<String?, VisibilityItem>? {
     val lithoHostListenerCoordinator =
         Whitebox.getInternalState<LithoHostListenerCoordinator>(
-            lithoView, "mLithoHostListenerCoordinator")
+            lithoView, "lithoHostListenerCoordinator")
     val extensionState =
         Whitebox.getInternalState<ExtensionState<VisibilityMountExtensionState>>(
             lithoHostListenerCoordinator, "mVisibilityExtensionState")

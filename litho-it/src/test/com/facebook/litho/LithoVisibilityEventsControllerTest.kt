@@ -147,7 +147,7 @@ class LithoVisibilityEventsControllerTest {
   @Test
   fun lithoLifecycleProviderComponentTreeResetVisibilityFlags() {
     // In the new implementation, `setVisibilityHintNonRecursive` is always called in
-    // `setLithoView`, so mHasVisibilityHint will be still true after set new Component Tree
+    // `setLithoView`, so hasVisibilityHint will be still true after set new Component Tree
     val testLithoView =
         lithoTestRule
             .createTestLithoView(lithoView = lithoView, widthPx = 10, heightPx = 5)
@@ -156,19 +156,19 @@ class LithoVisibilityEventsControllerTest {
     lithoLifecycleProviderDelegate.moveToVisibilityState(
         LithoVisibilityEventsController.LithoVisibilityState.HINT_INVISIBLE)
     var hasVisibilityHint: Boolean =
-        Whitebox.getInternalState<Boolean>(testLithoView.lithoView, "mHasVisibilityHint")
+        Whitebox.getInternalState<Boolean>(testLithoView.lithoView, "hasVisibilityHint")
     var pauseMountingWhileVisibilityHintFalse: Boolean =
         Whitebox.getInternalState<Boolean>(
-            testLithoView.lithoView, "mPauseMountingWhileVisibilityHintFalse")
+            testLithoView.lithoView, "pauseMountingWhileVisibilityHintFalse")
     assertThat(hasVisibilityHint).isTrue
     assertThat(pauseMountingWhileVisibilityHintFalse).isTrue
 
     testLithoView.useComponentTree(ComponentTree.create(lithoTestRule.context).build())
     hasVisibilityHint =
-        Whitebox.getInternalState<Boolean>(testLithoView.lithoView, "mHasVisibilityHint")
+        Whitebox.getInternalState<Boolean>(testLithoView.lithoView, "hasVisibilityHint")
     pauseMountingWhileVisibilityHintFalse =
         Whitebox.getInternalState<Boolean>(
-            testLithoView.lithoView, "mPauseMountingWhileVisibilityHintFalse")
+            testLithoView.lithoView, "pauseMountingWhileVisibilityHintFalse")
     assertThat(hasVisibilityHint).isFalse
     assertThat(pauseMountingWhileVisibilityHintFalse).isFalse
   }
