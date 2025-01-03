@@ -32,6 +32,10 @@ feature_native.kotlin_library(
 fb_kotlin_test(
     name = "litho-compiler-test",
     srcs = glob(["src/test/kotlin/**/*.kt"]),
+    friend_paths = [
+        ":litho-compiler",
+    ],
+    resources = glob(["src/test/resources/**"]),
     deps = [
         ":litho-compiler",
         "//fbandroid/libraries/components/litho-core/src/main/java/com/facebook/litho:litho",
