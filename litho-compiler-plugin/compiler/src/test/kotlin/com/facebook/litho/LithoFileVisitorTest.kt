@@ -16,9 +16,9 @@
 
 package com.facebook.litho
 
+import com.facebook.litho.common.LithoCompilerConfig
 import com.tschuchort.compiletesting.CompilationResult
 import com.tschuchort.compiletesting.KotlinCompilation
-import com.tschuchort.compiletesting.PluginOption
 import com.tschuchort.compiletesting.SourceFile
 import org.assertj.core.api.Assertions.assertThat
 import org.intellij.lang.annotations.Language
@@ -61,10 +61,10 @@ class LithoFileVisitorTest : AbstractCompilerTest() {
 
   private fun compile(@Language("kotlin") source: String): CompilationResult {
     return compile(
-        code = SourceFile.kotlin("Test.kt", source),
+        SourceFile.kotlin("Test.kt", source),
         options =
             listOf(
-                PLUGIN_ENABLED,
-                PluginOption("com.facebook.litho.compiler", "internal.debug", "true")))
+                LithoCompilerConfig.ENABLED.asOption("true"),
+                LithoCompilerConfig.DEBUG.asOption("true")))
   }
 }

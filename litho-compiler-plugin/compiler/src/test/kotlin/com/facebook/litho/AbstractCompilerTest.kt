@@ -18,32 +18,63 @@
 
 package com.facebook.litho
 
-import com.tschuchort.compiletesting.CompilationResult
+import com.facebook.litho.common.LithoCompilerConfig
+import com.facebook.litho.util.testData
+import com.tschuchort.compiletesting.JvmCompilationResult
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.PluginOption
 import com.tschuchort.compiletesting.SourceFile
+import org.assertj.core.api.Assertions.assertThat
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 
 abstract class AbstractCompilerTest {
-  companion object {
-    @JvmField val PLUGIN_ENABLED = PluginOption("com.facebook.litho.compiler", "enabled", "true")
-  }
+  private val processor = LithoCommandLineProcessor()
 
   fun compile(
-      code: SourceFile,
-      options: List<PluginOption> = listOf(PLUGIN_ENABLED),
+      vararg code: SourceFile,
+      options: List<PluginOption> = listOf(LithoCompilerConfig.ENABLED.asOption("true")),
       useK2: Boolean = false
-  ): CompilationResult {
+  ): JvmCompilationResult {
     val compilation =
-        KotlinCompilation().apply {
-          sources = listOf(code)
+        newCompilation(useK2) {
+          sources = code.asList()
           compilerPluginRegistrars = listOf(LithoComponentRegistrar())
-          commandLineProcessors = listOf(LithoCommandLineProcessor())
           pluginOptions = options
-          inheritClassPath = true
-          languageVersion = if (useK2) "2.0" else "1.9"
-          supportsK2 = useK2
         }
     return compilation.compile()
   }
+
+  fun runTest(
+      path: String,
+      options: List<PluginOption> = listOf(LithoCompilerConfig.ENABLED.asOption("true")),
+      useK2: Boolean = false
+  ) {
+    val testData = testData(path)
+    val compilation =
+        newCompilation(useK2) {
+          sources = testData.sourceFiles
+          compilerPluginRegistrars =
+              listOf(LithoComponentRegistrar(), TestComponentRegistrar(testData.processor))
+          pluginOptions = options
+        }
+    val compilationResult = compilation.compile()
+    val processorActualResult = testData.processor.getProcessorResult()
+    val compilerActualResult = testData.processor.extractCompilerResult(compilationResult)
+    assertThat(processorActualResult).isEqualTo(testData.processorExpectedOutput)
+    assertThat(compilerActualResult).isEqualTo(testData.compilerExpectedOutput)
+  }
+
+  fun LithoCompilerConfig<*>.asOption(value: String): PluginOption {
+    return PluginOption(processor.pluginId, cliOption.optionName, value)
+  }
+
+  private inline fun newCompilation(useK2: Boolean, configure: KotlinCompilation.() -> Unit) =
+      KotlinCompilation().apply {
+        configure()
+        verbose = false
+        commandLineProcessors = listOf(processor)
+        inheritClassPath = true
+        languageVersion = if (useK2) "2.0" else "1.9"
+        supportsK2 = useK2
+      }
 }
