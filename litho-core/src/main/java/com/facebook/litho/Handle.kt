@@ -16,6 +16,8 @@
 
 package com.facebook.litho
 
+import com.facebook.litho.annotations.Hook
+
 /**
  * Instances of this class are used to uniquely identify [Component]s for triggering external events
  * including showing a [LithoTooltip] or triggering an [com.facebook.litho.annotations.OnTrigger]
@@ -48,4 +50,13 @@ class Handle {
     this.stateUpdater = stateUpdater
     this.mountedViewReference = mountedViewReference
   }
+}
+
+/**
+ * Returns a new, cached [Handle] instance if it hasn't already been provided or if the [inputs]
+ * have changed since the previous invocation of this method.
+ */
+@Hook
+fun ComponentScope.useHandle(vararg inputs: Any?): Handle {
+  return useCached(inputs) { Handle() }
 }
