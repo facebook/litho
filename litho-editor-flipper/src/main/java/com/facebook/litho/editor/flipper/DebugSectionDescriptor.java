@@ -239,10 +239,11 @@ public class DebugSectionDescriptor extends NodeDescriptor<DebugSection> {
     if (finish) touch.finish();
   }
 
+  @Nullable
   @Override
+  // NULLSAFE_FIXME[Inconsistent Subclass Return Annotation]
   public String getDecoration(DebugSection node) throws Exception {
     // TODO T39526148
-    // NULLSAFE_FIXME[Return Not Nullable]
     return null;
   }
 
