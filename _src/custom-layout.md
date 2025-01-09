@@ -63,11 +63,11 @@ In the following example, a `Text` component is measured to check if the given t
 
 ## Kotlin Integration
 
-Kotlin equivalent of `@OnCreateLayoutWithSizeSpec` is called `SizeConstraintsAwareComponent`. `SizeConstraintsAwareComponent` is a Component that defines its own content according to the available space, based on the incoming `SizeConstraints`. It can be used in situations when a different content needs to be displayed depending on the available space.
+Kotlin equivalent of `@OnCreateLayoutWithSizeSpec` is called `RenderWithConstraints`. `RenderWithConstraints` is a Component that defines its own content according to the available space, based on the incoming `SizeConstraints`. It can be used in situations when a different content needs to be displayed depending on the available space.
 
-Below, there is an example that uses `SizeConstraints` provided by `SizeConstraintsAwareComponent`:
+Below, there is an example that uses `SizeConstraints` provided by `RenderWithConstraints`:
 
-``` kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/sizeconstraintsawarecomponent/SizeConstraintsAwareComponentKComponent.kt start=start_sizeconstraintsawarecomponent_example end=end_sizeconstraintsawarecomponent_example
+``` kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/renderwithconstraints/RenderWithConstraintsKComponent.kt start=start_renderwithconstraints_example end=end_renderwithconstraints_example
 ```
 
 :::note
