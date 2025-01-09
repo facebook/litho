@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.samples.litho.kotlin.sizeconstraintsawarecomponent
+package com.facebook.samples.litho.kotlin.renderwithconstraints
 
 import android.view.View.MeasureSpec.UNSPECIFIED
 import com.facebook.litho.Column
@@ -29,7 +29,7 @@ import com.facebook.litho.core.margin
 import com.facebook.litho.core.padding
 import com.facebook.litho.core.width
 import com.facebook.litho.kotlin.widget.Image
-import com.facebook.litho.kotlin.widget.SizeConstraintsAwareComponent
+import com.facebook.litho.kotlin.widget.RenderWithConstraints
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.useState
 import com.facebook.litho.view.onClick
@@ -39,7 +39,7 @@ import com.facebook.rendercore.sp
 import com.facebook.samples.litho.R
 import com.facebook.yoga.YogaAlign
 
-class SizeConstraintsAwareComponentKComponent : KComponent() {
+class RenderWithConstraintsKComponent : KComponent() {
 
   override fun ComponentScope.render(): Component {
     val width = useState { 50 }
@@ -67,8 +67,8 @@ class SizeConstraintsAwareComponentKComponent : KComponent() {
                         }))
           })
       child(
-          // start_sizeconstraintsawarecomponent_example
-          SizeConstraintsAwareComponent(style = Style.width(width.value.dp)) { sizeConstraints ->
+          // start_renderwithconstraints_example
+          RenderWithConstraints(style = Style.width(width.value.dp)) { sizeConstraints ->
             val textComponent = Text(textSize = 16.sp, text = "Some text to measure")
 
             val textOutputSize = Size()
@@ -88,7 +88,7 @@ class SizeConstraintsAwareComponentKComponent : KComponent() {
 
             if (doesTextFit) textComponent else imageComponent
           })
-      // end_sizeconstraintsawarecomponent_example
+      // end_renderwithconstraints_example
     }
   }
 }

@@ -135,7 +135,7 @@ import com.facebook.samples.litho.kotlin.primitives.SimpleImageViewWithAccessibi
 import com.facebook.samples.litho.kotlin.primitives.bindto.PrimitiveBindToExampleComponent
 import com.facebook.samples.litho.kotlin.primitives.controllers.ControllersExamplePrimitiveComponent
 import com.facebook.samples.litho.kotlin.primitives.widgets.PrimitiveWidgetsExampleComponent
-import com.facebook.samples.litho.kotlin.sizeconstraintsawarecomponent.SizeConstraintsAwareComponentKComponent
+import com.facebook.samples.litho.kotlin.renderwithconstraints.RenderWithConstraintsKComponent
 import com.facebook.samples.litho.kotlin.state.IdentityRootComponent
 import com.facebook.samples.litho.kotlin.state.StateParentChildComponent
 import com.facebook.samples.litho.kotlin.treeprops.TreePropsExampleComponent
@@ -227,8 +227,8 @@ class Demos {
                                 name = "[KComponent] Animated Dynamic Props",
                                 component = AnimateDynamicPropsKComponent()),
                             SingleDemo(
-                                name = "[KComponent] SizeConstraintsAwareComponent",
-                                component = SizeConstraintsAwareComponentKComponent()),
+                                name = "[KComponent] RenderWithConstraints",
+                                component = RenderWithConstraintsKComponent()),
                         )),
                     DemoGrouping(
                         name = "Getting started",

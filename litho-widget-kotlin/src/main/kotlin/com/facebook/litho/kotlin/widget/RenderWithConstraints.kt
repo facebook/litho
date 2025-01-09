@@ -21,9 +21,11 @@ import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Style
+import com.facebook.litho.annotations.ExcuseMySpec
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec
 import com.facebook.litho.annotations.Prop
+import com.facebook.litho.annotations.Reason
 import com.facebook.litho.kotlinStyle
 import com.facebook.rendercore.SizeConstraints
 
@@ -35,7 +37,7 @@ import com.facebook.rendercore.SizeConstraints
  *
  * Example:
  * ```
- * SizeConstraintsAwareComponent { sizeConstraints ->
+ * RenderWithConstraints { sizeConstraints ->
  *     val textComponent = Text(textSize = 16.sp, text = "Some text to measure")
  *
  *     val textOutputSize = Size()
@@ -46,7 +48,7 @@ import com.facebook.rendercore.SizeConstraints
  *     SizeSpec.makeSizeSpec(0, UNSPECIFIED),
  *     textOutputSize)
  *
- *     // Small component to use in case textComponent doesn’t fit within
+ *     // Small component to use in case textComponent doesn't fit within
  *     // the current layout.
  *     val imageComponent = Image(drawable = drawableRes(R.drawable.ic_launcher))
  *
@@ -58,15 +60,16 @@ import com.facebook.rendercore.SizeConstraints
  * ```
  */
 @Suppress("FunctionName")
-fun ResourcesScope.SizeConstraintsAwareComponent(
+fun ResourcesScope.RenderWithConstraints(
     style: Style? = null,
     content: ComponentScope.(SizeConstraints) -> Component
 ): Component {
-  return SizeSpecsWrapperComponent.create(context).content(content).kotlinStyle(style).build()
+  return RenderWithConstraints.create(context).content(content).kotlinStyle(style).build()
 }
 
+@ExcuseMySpec(reason = Reason.J2K_CONVERSION)
 @LayoutSpec
-private object SizeSpecsWrapperComponentSpec {
+private object RenderWithConstraintsSpec {
   @JvmStatic
   @OnCreateLayoutWithSizeSpec
   fun onCreateLayoutWithSizeSpec(
