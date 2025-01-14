@@ -20,11 +20,16 @@ import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.LithoTestRule
+import com.facebook.litho.testing.LithoTestRuleResizeMode
 import com.facebook.litho.testing.testrunner.LithoTestRunner
+import com.facebook.litho.view.alpha
 import com.facebook.litho.view.onClick
+import com.facebook.litho.view.viewTag
+import com.facebook.litho.view.wrapInView
 import com.facebook.litho.widget.ComponentWithTreeProp
 import com.facebook.litho.widget.TextDrawable
 import com.facebook.litho.widget.treeprops.SimpleTreeProp
+import com.facebook.rendercore.Dimen
 import com.facebook.rendercore.px
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
@@ -38,6 +43,9 @@ import org.robolectric.annotation.LooperMode
 class LithoTestRuleTest {
 
   @JvmField @Rule val mLithoTestRule = LithoTestRule()
+  @JvmField
+  @Rule
+  val manualResizeLithoTestRule = LithoTestRule(resizeMode = LithoTestRuleResizeMode.MANUAL)
 
   @Test
   fun onLithoTestRuleWithTreeProp_shouldPropagateTreeProp() {
@@ -81,5 +89,122 @@ class LithoTestRuleTest {
     assertThat(thrown).isInstanceOf(RuntimeException::class.java)
     assertThat((thrown.stackTraceToString()).contains("Timed out!")).isFalse
     assertThat(thrown).hasStackTraceContaining("Hi There!")
+  }
+
+  @Test
+  fun `given dynamic size component when size is updated then view has updated size on resetting root`() {
+    val testLithoView =
+        mLithoTestRule.render {
+          ComponentWithDynamicSize(width = 100.px, height = 100.px, alpha = 1f)
+        }
+
+    testLithoView.findViewWithTag(ComponentWithDynamicSize.VIEW_TAG).run {
+      assertThat(width).isEqualTo(100)
+      assertThat(height).isEqualTo(100)
+      assertThat(alpha).isEqualTo(1f)
+    }
+
+    val updatedWidth = 200
+    val updatedHeight = 300
+    val updatedAlpha = 0.5f
+    testLithoView.setRoot(
+        ComponentWithDynamicSize(
+            width = updatedWidth.px, height = updatedHeight.px, alpha = updatedAlpha))
+
+    with(testLithoView.findViewWithTag(ComponentWithDynamicSize.VIEW_TAG)) {
+      assertThat(width).isEqualTo(updatedWidth)
+      assertThat(height).isEqualTo(updatedHeight)
+      assertThat(alpha).isEqualTo(updatedAlpha)
+    }
+  }
+
+  @Test
+  fun `given rule with manual resizing and dynamic size component when size is updated then view size not updated on resetting root`() {
+    val width = 100
+    val height = 200
+    val alpha = 1f
+    val testLithoView =
+        manualResizeLithoTestRule.render { ComponentWithDynamicSize(width.px, height.px, alpha) }
+
+    with(testLithoView.findViewWithTag(ComponentWithDynamicSize.VIEW_TAG)) {
+      assertThat(this.width).isEqualTo(width)
+      assertThat(this.height).isEqualTo(height)
+      assertThat(this.alpha).isEqualTo(alpha)
+    }
+
+    testLithoView.setRoot(ComponentWithDynamicSize(width = 200.px, height = 300.px, alpha = .5f))
+
+    with(testLithoView.findViewWithTag(ComponentWithDynamicSize.VIEW_TAG)) {
+      assertThat(this.width).isEqualTo(width)
+      assertThat(this.height).isEqualTo(height)
+      assertThat(this.alpha).isEqualTo(alpha)
+    }
+  }
+
+  @Test
+  fun `given dynamic size component when size is updated then view has updated size on resetting root async`() {
+    val testLithoView =
+        mLithoTestRule.render {
+          ComponentWithDynamicSize(width = 100.px, height = 100.px, alpha = 1f)
+        }
+
+    testLithoView.findViewWithTag(ComponentWithDynamicSize.VIEW_TAG).run {
+      assertThat(width).isEqualTo(100)
+      assertThat(height).isEqualTo(100)
+      assertThat(alpha).isEqualTo(1f)
+    }
+
+    val updatedWidth = 200
+    val updatedHeight = 300
+    val updatedAlpha = 0.5f
+    testLithoView.setRootAsync(
+        ComponentWithDynamicSize(
+            width = updatedWidth.px, height = updatedHeight.px, alpha = updatedAlpha))
+
+    with(testLithoView.findViewWithTag(ComponentWithDynamicSize.VIEW_TAG)) {
+      assertThat(width).isEqualTo(updatedWidth)
+      assertThat(height).isEqualTo(updatedHeight)
+      assertThat(alpha).isEqualTo(updatedAlpha)
+    }
+  }
+
+  @Test
+  fun `given rule with manual resizing and dynamic size component when size is updated then view size not updated on resetting root async`() {
+    val width = 100
+    val height = 200
+    val alpha = 1f
+    val testLithoView =
+        manualResizeLithoTestRule.render { ComponentWithDynamicSize(width.px, height.px, alpha) }
+
+    with(testLithoView.findViewWithTag(ComponentWithDynamicSize.VIEW_TAG)) {
+      assertThat(this.width).isEqualTo(width)
+      assertThat(this.height).isEqualTo(height)
+      assertThat(this.alpha).isEqualTo(alpha)
+    }
+
+    testLithoView.setRootAsync(
+        ComponentWithDynamicSize(width = 200.px, height = 300.px, alpha = .5f))
+
+    with(testLithoView.findViewWithTag(ComponentWithDynamicSize.VIEW_TAG)) {
+      assertThat(this.width).isEqualTo(width)
+      assertThat(this.height).isEqualTo(height)
+      assertThat(this.alpha).isEqualTo(alpha)
+    }
+  }
+}
+
+private class ComponentWithDynamicSize(
+    private val width: Dimen,
+    private val height: Dimen,
+    private val alpha: Float,
+) : KComponent() {
+  override fun ComponentScope.render(): Component {
+    val style = Style.width(width).height(height).alpha(alpha).viewTag(VIEW_TAG)
+
+    return Row(style = Style.wrapInView()) { child(Row(style = style) { child(Text("test")) }) }
+  }
+
+  companion object {
+    const val VIEW_TAG = "test_view"
   }
 }

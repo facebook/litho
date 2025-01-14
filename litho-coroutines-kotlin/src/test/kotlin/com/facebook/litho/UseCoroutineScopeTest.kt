@@ -17,6 +17,7 @@
 package com.facebook.litho
 
 import com.facebook.litho.testing.LithoTestRule
+import com.facebook.litho.testing.LithoTestRuleResizeMode
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import java.lang.Exception
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -41,6 +42,10 @@ import org.junit.runner.RunWith
 class UseCoroutineScopeTest {
 
   @Rule @JvmField val lithoViewRule = LithoTestRule()
+
+  @Rule
+  @JvmField
+  val manualResizeLithoTestRule = LithoTestRule(resizeMode = LithoTestRuleResizeMode.MANUAL)
 
   private val testDispatcher = StandardTestDispatcher()
 
@@ -243,7 +248,7 @@ class UseCoroutineScopeTest {
       }
     }
 
-    val lithoView = lithoViewRule.createTestLithoView()
+    val lithoView = manualResizeLithoTestRule.createTestLithoView()
     try {
       lithoView.setRoot(UseCoroutineScopeComponent())
     } catch (e: Exception) {

@@ -36,6 +36,7 @@ import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.state.ComponentState
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
 import com.facebook.litho.testing.LithoTestRule
+import com.facebook.litho.testing.LithoTestRuleResizeMode
 import com.facebook.litho.testing.TestLithoView
 import com.facebook.litho.testing.Whitebox
 import com.facebook.litho.testing.assertj.LithoViewAssert.Companion.assertThat
@@ -55,7 +56,7 @@ class StateUpdateTest {
   private var widthSpec = 0
   private var heightSpec = 0
 
-  @Rule @JvmField val mLithoTestRule = LithoTestRule()
+  @Rule @JvmField val mLithoTestRule = LithoTestRule(resizeMode = LithoTestRuleResizeMode.MANUAL)
 
   @Rule @JvmField val backgroundLayoutLooperRule = BackgroundLayoutLooperRule()
 

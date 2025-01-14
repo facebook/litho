@@ -21,6 +21,7 @@ import com.facebook.litho.LithoPrimitive
 import com.facebook.litho.PrimitiveComponent
 import com.facebook.litho.PrimitiveComponentScope
 import com.facebook.litho.testing.LithoTestRule
+import com.facebook.litho.testing.LithoTestRuleResizeMode
 import com.facebook.litho.widget.collection.LazyList
 import com.facebook.rendercore.primitives.FixedSizeLayoutBehavior
 import com.facebook.rendercore.primitives.ViewAllocator
@@ -39,7 +40,7 @@ import org.robolectric.annotation.LooperMode
 @RunWith(RobolectricTestRunner::class)
 class RecyclerBinderPreparationOrderTest {
 
-  @JvmField @Rule val mLithoTestRule = LithoTestRule()
+  @JvmField @Rule val mLithoTestRule = LithoTestRule(resizeMode = LithoTestRuleResizeMode.MANUAL)
 
   @Test
   fun `default traversal order should match RecyclerView layout order for primitive`() {

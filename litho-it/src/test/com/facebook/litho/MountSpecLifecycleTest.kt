@@ -21,6 +21,7 @@ import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.config.PreAllocationHandler
 import com.facebook.litho.testing.LithoStatsRule
 import com.facebook.litho.testing.LithoTestRule
+import com.facebook.litho.testing.LithoTestRuleResizeMode
 import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.testing.unspecified
@@ -48,6 +49,10 @@ class MountSpecLifecycleTest {
 
   @JvmField @Rule val lithoViewRule: LithoTestRule = LithoTestRule()
 
+  @JvmField
+  @Rule
+  val manualResizeLithoViewRule = LithoTestRule(resizeMode = LithoTestRuleResizeMode.MANUAL)
+
   @JvmField @Rule val lithoStatsRule: LithoStatsRule = LithoStatsRule()
 
   @JvmField @Rule val expectedException = ExpectedException.none()
@@ -55,12 +60,12 @@ class MountSpecLifecycleTest {
   @Test
   fun lifecycle_onSetComponentWithoutLayout_shouldNotCallLifecycleMethods() {
     val lifecycleTracker = LifecycleTracker()
-    lithoViewRule.createTestLithoView {
-      MountSpecLifecycleTester.create(lithoViewRule.context)
+    manualResizeLithoViewRule.createTestLithoView {
+      MountSpecLifecycleTester.create(manualResizeLithoViewRule.context)
           .lifecycleTracker(lifecycleTracker)
           .build()
     }
-    lithoViewRule.idle()
+    manualResizeLithoViewRule.idle()
     assertThat(lifecycleTracker.steps)
         .describedAs("Only render lifecycle methods should be called")
         .containsExactly(
@@ -384,19 +389,17 @@ class MountSpecLifecycleTest {
   fun onSetRootWithPreallocatedMountContent_shouldCallLifecycleMethods() {
     val looper = ShadowLooper.getLooperForThread(Thread.currentThread())
     val info: List<StepInfo> = ArrayList()
-    val testLithoView =
-        lithoViewRule.createTestLithoView(
-            componentTree =
-                ComponentTree.create(lithoViewRule.context)
-                    .componentsConfiguration(
-                        ComponentsConfiguration.defaultInstance.copy(
-                            preAllocationHandler =
-                                PreAllocationHandler.Custom(
-                                    RunnableHandler.DefaultHandler(looper))))
-                    .build()) {
-              PreallocatedMountSpecLifecycleTester.create(lithoViewRule.context).steps(info).build()
-            }
-    testLithoView.measure()
+    lithoViewRule.createTestLithoView(
+        componentTree =
+            ComponentTree.create(lithoViewRule.context)
+                .componentsConfiguration(
+                    ComponentsConfiguration.defaultInstance.copy(
+                        preAllocationHandler =
+                            PreAllocationHandler.Custom(RunnableHandler.DefaultHandler(looper))))
+                .build()) {
+          PreallocatedMountSpecLifecycleTester.create(lithoViewRule.context).steps(info).build()
+        }
+
     ShadowLooper.runUiThreadTasks()
     assertThat(LifecycleStep.getSteps(info))
         .describedAs("Should call the lifecycle methods on new instance in expected order")
@@ -404,26 +407,27 @@ class MountSpecLifecycleTest {
             LifecycleStep.ON_PREPARE,
             LifecycleStep.ON_MEASURE,
             LifecycleStep.ON_BOUNDS_DEFINED,
-            LifecycleStep.ON_ATTACHED)
+            LifecycleStep.ON_ATTACHED,
+            LifecycleStep.ON_CREATE_MOUNT_CONTENT,
+            LifecycleStep.ON_MOUNT,
+            LifecycleStep.ON_BIND)
   }
 
   @Test
   fun onSetRootWithPreallocatedMountContent_shouldCallLifecycleMethodsInRenderCore() {
     val looper = ShadowLooper.getLooperForThread(Thread.currentThread())
     val info: List<StepInfo> = ArrayList()
-    val testLithoView =
-        lithoViewRule.createTestLithoView(
-            componentTree =
-                ComponentTree.create(lithoViewRule.context)
-                    .componentsConfiguration(
-                        ComponentsConfiguration.defaultInstance.copy(
-                            preAllocationHandler =
-                                PreAllocationHandler.Custom(
-                                    RunnableHandler.DefaultHandler(looper))))
-                    .build()) {
-              PreallocatedMountSpecLifecycleTester.create(lithoViewRule.context).steps(info).build()
-            }
-    testLithoView.measure()
+    lithoViewRule.createTestLithoView(
+        componentTree =
+            ComponentTree.create(lithoViewRule.context)
+                .componentsConfiguration(
+                    ComponentsConfiguration.defaultInstance.copy(
+                        preAllocationHandler =
+                            PreAllocationHandler.Custom(RunnableHandler.DefaultHandler(looper))))
+                .build()) {
+          PreallocatedMountSpecLifecycleTester.create(lithoViewRule.context).steps(info).build()
+        }
+
     ShadowLooper.runUiThreadTasks()
     assertThat(LifecycleStep.getSteps(info))
         .describedAs("Should call the lifecycle methods on new instance in expected order")
@@ -431,7 +435,10 @@ class MountSpecLifecycleTest {
             LifecycleStep.ON_PREPARE,
             LifecycleStep.ON_MEASURE,
             LifecycleStep.ON_BOUNDS_DEFINED,
-            LifecycleStep.ON_ATTACHED)
+            LifecycleStep.ON_ATTACHED,
+            LifecycleStep.ON_CREATE_MOUNT_CONTENT,
+            LifecycleStep.ON_MOUNT,
+            LifecycleStep.ON_BIND)
     assertThat(MountContentPools.mountContentPools.size)
         .describedAs("Should contain only 1 content pool")
         .isEqualTo(1)

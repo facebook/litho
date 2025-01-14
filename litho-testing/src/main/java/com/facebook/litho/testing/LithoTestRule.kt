@@ -64,7 +64,8 @@ class LithoTestRule
 constructor(
     val componentsConfiguration: ComponentsConfiguration? = null,
     val themeResId: Int? = null,
-    private val lithoVisibilityEventsController: (() -> LithoVisibilityEventsController)? = null
+    private val lithoVisibilityEventsController: (() -> LithoVisibilityEventsController)? = null,
+    private val resizeMode: LithoTestRuleResizeMode = LithoTestRuleResizeMode.AUTO,
 ) : TestRule {
   lateinit var context: ComponentContext
   private var threadLooperController: BaseThreadLooperController = ThreadLooperController()
@@ -126,7 +127,12 @@ constructor(
       componentFunction: (ComponentScope.() -> Component?)? = null
   ): TestLithoView {
     val testLithoView =
-        TestLithoView(context, componentsConfiguration, lithoVisibilityEventsController?.invoke())
+        TestLithoView(
+            context = context,
+            componentsConfiguration = componentsConfiguration,
+            lithoVisibilityEventsController = lithoVisibilityEventsController?.invoke(),
+            resizeMode = resizeMode,
+            idleTask = { idle() })
     componentTree?.let { testLithoView.useComponentTree(componentTree) }
     lithoView?.let { testLithoView.useLithoView(lithoView) }
 

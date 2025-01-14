@@ -24,6 +24,7 @@ import android.widget.HorizontalScrollView
 import com.facebook.litho.LifecycleStep.StepInfo
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.LithoTestRule
+import com.facebook.litho.testing.LithoTestRuleResizeMode
 import com.facebook.litho.testing.TestDrawableComponent
 import com.facebook.litho.testing.TestViewComponent
 import com.facebook.litho.testing.ViewGroupWithLithoViewChildren
@@ -53,7 +54,9 @@ import org.robolectric.util.ReflectionHelpers
 @RunWith(LithoTestRunner::class)
 class VisibilityEventsTest {
 
-  @JvmField @Rule val lithoTestRule: LithoTestRule = LithoTestRule()
+  @JvmField
+  @Rule
+  val lithoTestRule: LithoTestRule = LithoTestRule(resizeMode = LithoTestRuleResizeMode.MANUAL)
 
   @Test
   fun testVisibleEvent() {

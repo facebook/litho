@@ -74,7 +74,9 @@ class TestLithoView
 internal constructor(
     val context: ComponentContext,
     val componentsConfiguration: ComponentsConfiguration? = null,
-    private val lithoVisibilityEventsController: LithoVisibilityEventsController? = null
+    private val lithoVisibilityEventsController: LithoVisibilityEventsController? = null,
+    private val resizeMode: LithoTestRuleResizeMode,
+    private val idleTask: () -> Unit,
 ) {
   val componentTree: ComponentTree
     get() {
@@ -147,25 +149,44 @@ internal constructor(
   /** Sets the new root [Component] to render. */
   fun setRoot(component: Component?): TestLithoView {
     componentTree.setRoot(component)
+    resizeIfRequired()
     return this
   }
 
   /** Sets the new root [Component.Builder] to render. */
   fun setRoot(builder: Component.Builder<*>): TestLithoView {
     componentTree.setRoot(builder.build())
+    resizeIfRequired()
     return this
   }
 
   /** Sets the new root [Component] to render asynchronously. */
   fun setRootAsync(component: Component?): TestLithoView {
     componentTree.setRootAsync(component)
+    idleAndResizeIfRequired()
     return this
   }
 
   /** Sets the new root [Component.Builder] to render asynchronously. */
   fun setRootAsync(builder: Component.Builder<*>): TestLithoView {
     componentTree.setRootAsync(builder.build())
+    idleAndResizeIfRequired()
     return this
+  }
+
+  private fun resizeIfRequired() {
+    if (resizeMode == LithoTestRuleResizeMode.AUTO) {
+      measure()
+      layout()
+    }
+  }
+
+  private fun idleAndResizeIfRequired() {
+    if (resizeMode == LithoTestRuleResizeMode.AUTO) {
+      idleTask()
+      measure()
+      layout()
+    }
   }
 
   /** Sets the new root [Component] with new size spec to render. */

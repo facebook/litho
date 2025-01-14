@@ -18,6 +18,7 @@ package com.facebook.litho
 
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.LithoTestRule
+import com.facebook.litho.testing.LithoTestRuleResizeMode
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.ClickEventTrackingImage
 import com.facebook.litho.widget.ClickEventTrackingRow
@@ -31,6 +32,9 @@ import org.robolectric.annotation.LooperMode
 @RunWith(LithoTestRunner::class)
 class ClickEventHandlerUpdateTest {
   @JvmField @Rule val mLithoTestRule = LithoTestRule()
+  @JvmField
+  @Rule
+  val manualResizeLithoTestRule = LithoTestRule(resizeMode = LithoTestRuleResizeMode.MANUAL)
 
   @Test
   fun `click event handler on host should update`() {
@@ -40,7 +44,7 @@ class ClickEventHandlerUpdateTest {
 
     // render with tag 0
     val testView =
-        mLithoTestRule.render(widthPx = 1000, heightPx = 1000) {
+        manualResizeLithoTestRule.render(widthPx = 1000, heightPx = 1000) {
           Row.create(context)
               .wrapInView()
               .child(ClickEventTrackingRow.create(context).id("0").clickObserver(clickObserver))
