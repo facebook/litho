@@ -489,8 +489,8 @@ public class ComponentTree
     if (handler == null) {
       handler = new DefaultHandler(getDefaultLayoutThreadLooper());
     } else if (sDefaultLayoutThreadLooper != null
-        && sBoostPerfLayoutStateFuture == false
-        && ComponentsConfiguration.boostPerfLayoutStateFuture == true
+        && !sBoostPerfLayoutStateFuture
+        && ComponentsConfiguration.boostPerfLayoutStateFuture
         && ComponentsConfiguration.perfBoosterFactory != null) {
       /* Right now we don't care about testing this per surface, so we'll use the config value. */
       LithoPerfBooster booster = ComponentsConfiguration.perfBoosterFactory.acquireInstance();
