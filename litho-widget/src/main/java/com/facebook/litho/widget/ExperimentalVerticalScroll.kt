@@ -44,6 +44,8 @@ import com.facebook.rendercore.primitives.LayoutBehavior
 import com.facebook.rendercore.primitives.LayoutScope
 import com.facebook.rendercore.primitives.PrimitiveLayoutResult
 import com.facebook.rendercore.primitives.ViewAllocator
+import com.facebook.rendercore.toWidthSpec
+import com.facebook.rendercore.utils.MeasureSpecUtils.getMode
 import kotlin.math.max
 import kotlin.math.min
 
@@ -227,9 +229,11 @@ internal class VerticalScrollLayoutBehavior(
 
     val (minMeasureWidth, maxMeasureWidth) =
         getChildMeasureSize(
-            constraints.minWidth, constraints.maxWidth, ViewGroup.LayoutParams.MATCH_PARENT)
+            constraints.minWidth,
+            constraints.maxWidth,
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            getMode(sizeConstraints.toWidthSpec()))
     val childConstraints = constraints.copy(minWidth = minMeasureWidth, maxWidth = maxMeasureWidth)
-
     val layoutState =
         NestedLithoTree.layout(
             result = resolveResult,
@@ -262,7 +266,12 @@ internal class VerticalScrollLayoutBehavior(
   /**
    * Equivalent to [VerticalScrollComponent.onMeasure] code calling [ViewGroup.getChildMeasureSpec]
    */
-  private fun getChildMeasureSize(min: Int, max: Int, preferred: Int): Pair<Int, Int> =
+  private fun getChildMeasureSize(
+      min: Int,
+      max: Int,
+      preferred: Int,
+      widthMode: Int
+  ): Pair<Int, Int> =
       when {
         preferred >= 0 || min == max -> {
           // Fixed size due to fixed size layout param or fixed constraints.
@@ -274,8 +283,14 @@ internal class VerticalScrollLayoutBehavior(
           0 to max
         }
         preferred == ViewGroup.LayoutParams.MATCH_PARENT && max != SizeConstraints.Infinity -> {
-          // Match parent layout param, so we force the child to fill the available space.
-          max to max
+          if (widthMode == View.MeasureSpec.AT_MOST) {
+            // Match parent layout param with AT_MOST constraint, so we let the child decide its
+            // size.
+            0 to max
+          } else {
+            // Match parent layout param, so we force the child to fill the available space.
+            max to max
+          }
         }
         else -> {
           // max constraint is infinite and layout param is WRAP_CONTENT or MATCH_PARENT.
