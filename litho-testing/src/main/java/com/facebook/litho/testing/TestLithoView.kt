@@ -394,7 +394,7 @@ internal constructor(
   }
 
   private fun findViewWithPredicateOrNull(viewTree: ViewTree, predicate: Predicate<View>): View? {
-    return viewTree.findChild(predicate)?.last()
+    return viewTree.findChild(predicate)?.lastOrNull()
   }
 
   /** Returns the first [LazyCollection] from the ComponentTree, or null if not found. */

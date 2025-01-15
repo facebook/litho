@@ -427,7 +427,7 @@ constructor(
   }
 
   private fun findViewWithPredicateOrNull(viewTree: ViewTree, predicate: Predicate<View>): View? {
-    return viewTree.findChild(predicate)?.last()
+    return viewTree.findChild(predicate)?.lastOrNull()
   }
 
   /**
