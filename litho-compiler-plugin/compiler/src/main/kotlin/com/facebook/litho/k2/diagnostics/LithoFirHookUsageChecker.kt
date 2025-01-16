@@ -29,6 +29,7 @@ import org.jetbrains.kotlin.fir.declarations.hasAnnotation
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.expressions.FirWhenExpression
 import org.jetbrains.kotlin.fir.references.symbol
+import org.jetbrains.kotlin.utils.addToStdlib.lastIsInstanceOrNull
 
 /**
  * Checks that the rules surrounding hooks usage are not violated, specifically around usage in
@@ -60,8 +61,7 @@ class LithoFirHookUsageChecker : FirFunctionCallChecker(MppCheckerKind.Platform)
   }
 
   private fun CheckerContext.hasInvalidParent(): Boolean {
-    return containingElements.filterIsInstance<FirSimpleFunction>().any {
-      !(it.isRenderMethod() || it.hasAnnotation(LithoNames.Hook, session))
-    }
+    val container = containingElements.lastIsInstanceOrNull<FirSimpleFunction>() ?: return false
+    return !(container.isRenderMethod() || container.hasAnnotation(LithoNames.Hook, session))
   }
 }
