@@ -18,6 +18,7 @@ package com.facebook.litho.testing.api
 
 import android.annotation.SuppressLint
 import android.view.ViewGroup
+import com.facebook.litho.BaseMountingView
 import com.facebook.litho.Component
 import com.facebook.litho.LithoLayoutResult
 import com.facebook.litho.LithoView
@@ -119,14 +120,12 @@ class LithoViewComponentsTraverser {
   }
 
   @SuppressLint("RestrictedApi")
-  private fun LithoView.extractLayoutResult(isRoot: Boolean): LithoLayoutResult? {
-    val committedLayoutState = componentTree?.committedLayoutState
-
-    check(!isRoot || committedLayoutState != null) {
+  private fun BaseMountingView.extractLayoutResult(isRoot: Boolean): LithoLayoutResult? {
+    check(!isRoot || currentLayoutState != null) {
       "No ComponentTree/Committed Layout/Layout Root found. Please call render() first"
     }
 
-    return committedLayoutState?.rootLayoutResult as? LithoLayoutResult
+    return currentLayoutState?.rootLayoutResult as? LithoLayoutResult
   }
 
   private val LithoLayoutResult.childResults: List<LithoLayoutResult>
@@ -149,13 +148,13 @@ class LithoViewComponentsTraverser {
    * found [LithoView] will be used to start a new traversal with [traverse] - which will enable the
    * full traverse (even on scenarios of nested [LithoView]
    */
-  private val ViewGroup.firstLevelInnerLithoViews: List<LithoView>
+  private val ViewGroup.firstLevelInnerLithoViews: List<BaseMountingView>
     get() {
-      val lithoViews = mutableListOf<LithoView>()
+      val lithoViews = mutableListOf<BaseMountingView>()
 
       for (i in 0..childCount) {
         val child = getChildAt(i)
-        if (child is LithoView) {
+        if (child is BaseMountingView) {
           lithoViews.add(child)
         } else {
           (child as? ViewGroup)?.let { lithoViews.addAll(child.firstLevelInnerLithoViews) }
