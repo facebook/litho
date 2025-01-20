@@ -23,6 +23,7 @@ import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.project.Project;
 import java.util.HashMap;
 import java.util.Map;
+import javax.annotation.Nullable;
 import javax.swing.JComponent;
 import org.jetbrains.annotations.Nls;
 
@@ -30,8 +31,7 @@ import org.jetbrains.annotations.Nls;
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class AppSettingsController implements Configurable {
   private final Project project;
-  // NULLSAFE_FIXME[Field Not Initialized]
-  private AppSettingsView view;
+  @Nullable private AppSettingsView view;
 
   public AppSettingsController(Project project) {
     this.project = project;
@@ -52,12 +52,14 @@ public class AppSettingsController implements Configurable {
   @Override
   public boolean isModified() {
     final AppSettingsState.Model model = AppSettingsState.getInstance(project).getState();
+    // NULLSAFE_FIXME[Nullable Dereference]
     return view.isResolveRedSymbols() != model.resolveRedSymbols;
   }
 
   @Override
   public void apply() {
     final AppSettingsState.Model model = AppSettingsState.getInstance(project).getState();
+    // NULLSAFE_FIXME[Nullable Dereference]
     final boolean resolveRedSymbols = view.isResolveRedSymbols();
     model.resolveRedSymbols = resolveRedSymbols;
     final Map<String, String> eventData = new HashMap<>(1);
@@ -68,12 +70,12 @@ public class AppSettingsController implements Configurable {
   @Override
   public void reset() {
     final AppSettingsState.Model model = AppSettingsState.getInstance(project).getState();
+    // NULLSAFE_FIXME[Nullable Dereference]
     view.setResolveRedSymbols(model.resolveRedSymbols);
   }
 
   @Override
   public void disposeUIResources() {
-    // NULLSAFE_FIXME[Field Not Nullable]
     view = null;
   }
 }
