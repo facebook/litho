@@ -19,7 +19,6 @@ package com.facebook.litho;
 import static android.content.Context.ACCESSIBILITY_SERVICE;
 import static com.facebook.litho.AccessibilityUtils.isAccessibilityEnabled;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
-import static com.facebook.rendercore.utils.MeasureSpecUtils.unspecified;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -35,6 +34,7 @@ import androidx.lifecycle.LifecycleOwner;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.rendercore.utils.CommonUtils;
+import com.facebook.rendercore.utils.MeasureSpecUtils;
 import java.lang.ref.WeakReference;
 import java.util.Deque;
 import java.util.LinkedList;
@@ -245,11 +245,11 @@ public class LithoView extends BaseMountingView {
       LayoutManagerOverrideParams layoutManagerOverrideParams =
           (LayoutManagerOverrideParams) layoutParams;
       final int overrideWidthSpec = layoutManagerOverrideParams.getWidthMeasureSpec();
-      if (overrideWidthSpec != LayoutManagerOverrideParams.UNINITIALIZED) {
+      if (overrideWidthSpec != MeasureSpecUtils.unspecified()) {
         widthMeasureSpec = overrideWidthSpec;
       }
       final int overrideHeightSpec = layoutManagerOverrideParams.getHeightMeasureSpec();
-      if (overrideHeightSpec != LayoutManagerOverrideParams.UNINITIALIZED) {
+      if (overrideHeightSpec != MeasureSpecUtils.unspecified()) {
         heightMeasureSpec = overrideHeightSpec;
       }
     }
@@ -810,31 +810,6 @@ public class LithoView extends BaseMountingView {
   @Override
   public void performLayout(boolean changed, int l, int t, int r, int b) {
     super.performLayout(changed, l, t, r, b);
-  }
-
-  /**
-   * LayoutParams that override the LayoutManager.
-   *
-   * <p>If you set LayoutParams on a LithoView that implements this interface, the view will
-   * completely ignore the layout specs given to it by its LayoutManager and use these specs
-   * instead. To use, set the LayoutParams height and width to {@link
-   * ViewGroup.LayoutParams#WRAP_CONTENT} and then provide a width and height measure spec though
-   * this interface.
-   *
-   * <p>This is helpful for implementing {@link View.MeasureSpec#AT_MOST} support since Android
-   * LayoutManagers don't support an AT_MOST concept as part of {@link ViewGroup.LayoutParams}'s
-   * special values.
-   */
-  public interface LayoutManagerOverrideParams {
-
-    int UNINITIALIZED = unspecified();
-
-    int getWidthMeasureSpec();
-
-    int getHeightMeasureSpec();
-
-    // TODO T30527513 Remove after fixing 0 height issues.
-    boolean hasValidAdapterPosition();
   }
 
   @Override

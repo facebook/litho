@@ -294,14 +294,11 @@ class LithoViewTest {
   }
 
   private class RecyclerViewLayoutManagerOverrideParams(
-      private val _widthMeasureSpec: Int,
-      private val _heightMeasureSpec: Int
-  ) : ViewGroup.LayoutParams(WRAP_CONTENT, WRAP_CONTENT), LithoView.LayoutManagerOverrideParams {
-    override fun hasValidAdapterPosition(): Boolean = false
-
-    override fun getWidthMeasureSpec(): Int = _widthMeasureSpec
-
-    override fun getHeightMeasureSpec(): Int = _heightMeasureSpec
+      _widthMeasureSpec: Int,
+      _heightMeasureSpec: Int
+  ) : ViewGroup.LayoutParams(WRAP_CONTENT, WRAP_CONTENT), LayoutManagerOverrideParams {
+    override val widthMeasureSpec: Int = _widthMeasureSpec
+    override val heightMeasureSpec: Int = _heightMeasureSpec
   }
 
   companion object {

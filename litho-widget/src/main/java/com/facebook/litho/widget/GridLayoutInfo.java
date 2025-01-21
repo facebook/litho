@@ -25,7 +25,7 @@ import android.view.ViewGroup;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.OrientationHelper;
 import androidx.recyclerview.widget.RecyclerView;
-import com.facebook.litho.LithoView;
+import com.facebook.litho.LayoutManagerOverrideParams;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.widget.RecyclerBinder.RecyclerViewLayoutManagerOverrideParams;
 import java.util.List;
@@ -264,7 +264,7 @@ public class GridLayoutInfo implements LayoutInfo {
     }
 
     public static class LayoutParams extends GridLayoutManager.LayoutParams
-        implements LithoView.LayoutManagerOverrideParams {
+        implements LayoutManagerOverrideParams {
 
       private final int mOverrideWidthMeasureSpec;
       private final int mOverrideHeightMeasureSpec;
@@ -283,11 +283,6 @@ public class GridLayoutInfo implements LayoutInfo {
       @Override
       public int getHeightMeasureSpec() {
         return mOverrideHeightMeasureSpec;
-      }
-
-      @Override
-      public boolean hasValidAdapterPosition() {
-        return false;
       }
     }
   }

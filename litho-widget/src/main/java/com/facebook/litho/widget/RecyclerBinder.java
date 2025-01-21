@@ -57,9 +57,9 @@ import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.ComponentsReporter;
 import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.EventHandler;
+import com.facebook.litho.LayoutManagerOverrideParams;
 import com.facebook.litho.LithoStartupLogger;
 import com.facebook.litho.LithoView;
-import com.facebook.litho.LithoView.LayoutManagerOverrideParams;
 import com.facebook.litho.LithoVisibilityEventsController;
 import com.facebook.litho.LogTreePopulator;
 import com.facebook.litho.MeasureComparisonUtils;
@@ -83,6 +83,7 @@ import com.facebook.litho.widget.collection.CrossAxisWrapMode;
 import com.facebook.rendercore.FastMath;
 import com.facebook.rendercore.PoolScope;
 import com.facebook.rendercore.RunnableHandler;
+import com.facebook.rendercore.utils.MeasureSpecUtils;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Field;
@@ -116,11 +117,10 @@ public class RecyclerBinder
   private static final int DATA_RENDERED_CALLBACKS_QUEUE_MAX_SIZE = 20;
   private static final String DATA_RENDERED_NOT_TRIGGERED =
       "RecyclerBinder:DataRenderedNotTriggered";
+  private static final int UNINITIALIZED = MeasureSpecUtils.unspecified();
   static final int UNSET = -1;
   static final int APPLY_READY_BATCHES_RETRY_LIMIT = 100;
   public static final String ID_CUSTOM_ATTR_KEY = "id";
-
-  private static Field mViewHolderField;
 
   @GuardedBy("this")
   private final List<ComponentTreeHolder> mComponentTreeHolders = new ArrayList<>();
@@ -303,8 +303,8 @@ public class RecyclerBinder
   private final boolean mIsCrossAxisWrapContent;
   private final boolean mHasDynamicItemHeight;
 
-  private int mLastWidthSpec = LayoutManagerOverrideParams.UNINITIALIZED;
-  private int mLastHeightSpec = LayoutManagerOverrideParams.UNINITIALIZED;
+  private int mLastWidthSpec = UNINITIALIZED;
+  private int mLastHeightSpec = UNINITIALIZED;
   private Size mMeasuredSize;
   private @Nullable RecyclerView mMountedView;
 
@@ -2353,7 +2353,7 @@ public class RecyclerBinder
 
     try {
       synchronized (this) {
-        if (mLastWidthSpec != LayoutManagerOverrideParams.UNINITIALIZED
+        if (mLastWidthSpec != UNINITIALIZED
             && !mRequiresRemeasure.get()
             && !mIsMainAxisWrapContent) {
           switch (scrollDirection) {
@@ -2891,7 +2891,7 @@ public class RecyclerBinder
    */
   @Override
   public synchronized void setSize(int width, int height) {
-    if (mLastWidthSpec == LayoutManagerOverrideParams.UNINITIALIZED
+    if (mLastWidthSpec == UNINITIALIZED
         || !isCompatibleSize(
             SizeSpec.makeSizeSpec(width, SizeSpec.EXACTLY),
             SizeSpec.makeSizeSpec(height, SizeSpec.EXACTLY))) {
@@ -3231,7 +3231,7 @@ public class RecyclerBinder
 
     final int scrollDirection = mLayoutInfo.getScrollDirection();
 
-    if (mLastWidthSpec != LayoutManagerOverrideParams.UNINITIALIZED) {
+    if (mLastWidthSpec != UNINITIALIZED) {
 
       switch (scrollDirection) {
         case HORIZONTAL:
@@ -4162,7 +4162,7 @@ public class RecyclerBinder
   }
 
   public static class RecyclerViewLayoutManagerOverrideParams extends RecyclerView.LayoutParams
-      implements LithoView.LayoutManagerOverrideParams {
+      implements LayoutManagerOverrideParams {
 
     private final int mWidthMeasureSpec;
     private final int mHeightMeasureSpec;
@@ -4193,31 +4193,6 @@ public class RecyclerBinder
     public boolean isFullSpan() {
       return mIsFullSpan;
     }
-
-    @Override
-    public boolean hasValidAdapterPosition() {
-      final RecyclerView.ViewHolder viewHolder = getViewHolderFromLayoutParam(this);
-      // If adapter position is invalid it means that this item is being removed in pre-layout
-      // phase of RecyclerView layout when predictive animation is turned on.
-      return viewHolder != null && viewHolder.getAdapterPosition() == RecyclerView.NO_POSITION;
-    }
-  }
-
-  private static @Nullable RecyclerView.ViewHolder getViewHolderFromLayoutParam(
-      RecyclerView.LayoutParams layoutParams) {
-    try {
-      if (mViewHolderField == null) {
-        mViewHolderField = RecyclerView.LayoutParams.class.getDeclaredField("mViewHolder");
-        mViewHolderField.setAccessible(true);
-      }
-
-      final RecyclerView.ViewHolder viewHolder =
-          (RecyclerView.ViewHolder) mViewHolderField.get(layoutParams);
-
-      return viewHolder;
-    } catch (Exception ignore) {
-    }
-    return null;
   }
 
   private ComponentTreeHolder createComponentTreeHolder(RenderInfo renderInfo) {

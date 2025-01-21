@@ -24,7 +24,7 @@ import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
-import com.facebook.litho.LithoView;
+import com.facebook.litho.LayoutManagerOverrideParams;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.widget.RecyclerBinder.RecyclerViewLayoutManagerOverrideParams;
 import java.lang.ref.WeakReference;
@@ -334,7 +334,7 @@ public class StaggeredGridLayoutInfo implements LayoutInfo {
     }
 
     public static class LayoutParams extends StaggeredGridLayoutManager.LayoutParams
-        implements LithoView.LayoutManagerOverrideParams {
+        implements LayoutManagerOverrideParams {
       private final int mOverrideWidthMeasureSpec;
       private final int mOverrideHeightMeasureSpec;
 
@@ -353,11 +353,6 @@ public class StaggeredGridLayoutInfo implements LayoutInfo {
       @Override
       public int getHeightMeasureSpec() {
         return mOverrideHeightMeasureSpec;
-      }
-
-      @Override
-      public boolean hasValidAdapterPosition() {
-        return false;
       }
     }
 
