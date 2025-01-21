@@ -23,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.facebook.infer.annotation.Nullsafe;
 import java.util.ArrayList;
+import javax.annotation.Nullable;
 import org.assertj.core.api.Java6Assertions;
 
 /**
@@ -62,12 +63,9 @@ public class ViewMatchNode extends MatchNode {
   }
 
   private final ArrayList<ViewMatchNode> mChildren = new ArrayList<>();
-  // NULLSAFE_FIXME[Field Not Initialized]
-  private Rect mBounds;
-  // NULLSAFE_FIXME[Field Not Initialized]
-  private Rect mPadding;
-  // NULLSAFE_FIXME[Field Not Initialized]
-  private Rect mAbsoluteBounds;
+  @Nullable private Rect mBounds;
+  @Nullable private Rect mPadding;
+  @Nullable private Rect mAbsoluteBounds;
   // NULLSAFE_FIXME[Field Not Initialized]
   private Class mRootType;
 
