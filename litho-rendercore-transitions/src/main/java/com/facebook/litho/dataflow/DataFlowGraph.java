@@ -44,7 +44,7 @@ public class DataFlowGraph {
 
   private static final String STATE_NOT_INTIALIZED_FOR_VALUE_NODE =
       "DataFlowGraph:StateNotInitializedForValueNode";
-  private static DataFlowGraph sInstance;
+  @Nullable private static DataFlowGraph sInstance;
 
   public static DataFlowGraph getInstance() {
     if (sInstance == null) {
@@ -67,7 +67,6 @@ public class DataFlowGraph {
    */
   @VisibleForTesting
   public static void setInstance(@Nullable DataFlowGraph dataFlowGraph) {
-    // NULLSAFE_FIXME[Field Not Nullable]
     sInstance = dataFlowGraph;
   }
 
