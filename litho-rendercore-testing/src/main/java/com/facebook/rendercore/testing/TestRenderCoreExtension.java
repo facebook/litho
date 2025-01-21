@@ -29,7 +29,7 @@ public class TestRenderCoreExtension extends RenderCoreExtension {
 
   private final LayoutResultVisitor mLayoutResultVisitor;
   private final MountExtension mMountExtension;
-  private final Supplier mInputSupplier;
+  @Nullable private final Supplier mInputSupplier;
 
   public TestRenderCoreExtension() {
     this(new TestLayoutResultVisitor(), new TestMountExtension(), ArrayList::new);
@@ -53,7 +53,6 @@ public class TestRenderCoreExtension extends RenderCoreExtension {
     mLayoutResultVisitor = layoutResultVisitor;
     // NULLSAFE_FIXME[Field Not Nullable]
     mMountExtension = mountExtension;
-    // NULLSAFE_FIXME[Field Not Nullable]
     mInputSupplier = inputSupplier;
   }
 
