@@ -44,10 +44,8 @@ public abstract class ValueNode {
 
   public static final String DEFAULT_INPUT = "default_input";
 
-  // NULLSAFE_FIXME[Field Not Nullable]
-  private Map<String, ValueNode> mInputs = null;
-  // NULLSAFE_FIXME[Field Not Nullable]
-  private ArrayList<ValueNode> mOutputs = null;
+  @Nullable private Map<String, ValueNode> mInputs = null;
+  @Nullable private ArrayList<ValueNode> mOutputs = null;
   private float mValue;
   private long mTimeNs = 0;
 
@@ -162,6 +160,7 @@ public abstract class ValueNode {
   }
 
   ValueNode getOutputAt(int i) {
+    // NULLSAFE_FIXME[Nullable Dereference]
     return mOutputs.get(i);
   }
 
@@ -173,6 +172,7 @@ public abstract class ValueNode {
   }
 
   void removeOutput(ValueNode output) {
+    // NULLSAFE_FIXME[Nullable Dereference]
     if (!mOutputs.remove(output)) {
       throw new RuntimeException("Tried to remove non-existent input!");
     }
