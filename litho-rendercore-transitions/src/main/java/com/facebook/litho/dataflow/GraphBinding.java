@@ -19,6 +19,7 @@ package com.facebook.litho.dataflow;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.Nullsafe;
 import java.util.ArrayList;
+import javax.annotation.Nullable;
 
 /**
  * Defines the relationship of a set of input values to a set of output values where the values from
@@ -34,8 +35,7 @@ public final class GraphBinding {
   private final DataFlowGraph mDataFlowGraph;
   private final Bindings mBindings = new Bindings();
   private final ArrayList<ValueNode> mAllNodes = new ArrayList<>();
-  // NULLSAFE_FIXME[Field Not Initialized]
-  private BindingListener mListener;
+  @Nullable private BindingListener mListener;
   private boolean mIsActive = false;
   private boolean mHasBeenActivated = false;
 
