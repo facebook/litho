@@ -190,11 +190,8 @@ public class ComponentTree
   private RunnableHandler mMainThreadHandler = new DefaultHandler(Looper.getMainLooper());
 
   private final Runnable mBackgroundLayoutStateUpdateRunnable =
-      new Runnable() {
-        @Override
-        public void run() {
-          backgroundLayoutStateUpdated();
-        }
+      () -> {
+        backgroundLayoutStateUpdated();
       };
 
   private volatile @Nullable NewLayoutStateReadyListener mNewLayoutStateReadyListener;
@@ -2381,6 +2378,10 @@ public class ComponentTree
    * if necessary.
    */
   private void postBackgroundLayoutStateUpdated() {
+
+    // Remove the job from the queue to avoid unnecessary cost
+    mMainThreadHandler.remove(mBackgroundLayoutStateUpdateRunnable);
+
     if (isMainThread()) {
       // We need to possibly update mMainThreadLayoutState. This call will
       // cause the host view to be invalidated and re-laid out, if necessary.
