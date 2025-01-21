@@ -57,7 +57,6 @@ import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.ComponentsReporter;
 import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.EventHandler;
-import com.facebook.litho.LayoutManagerOverrideParams;
 import com.facebook.litho.LithoStartupLogger;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.LithoVisibilityEventsController;
@@ -4159,40 +4158,6 @@ public class RecyclerBinder
   @GuardedBy("this")
   private int getNormalizedPosition(int position) {
     return mIsCircular ? position % mComponentTreeHolders.size() : position;
-  }
-
-  public static class RecyclerViewLayoutManagerOverrideParams extends RecyclerView.LayoutParams
-      implements LayoutManagerOverrideParams {
-
-    private final int mWidthMeasureSpec;
-    private final int mHeightMeasureSpec;
-    private final boolean mIsFullSpan;
-
-    private RecyclerViewLayoutManagerOverrideParams(
-        int width,
-        int height,
-        int overrideWidthMeasureSpec,
-        int overrideHeightMeasureSpec,
-        boolean isFullSpan) {
-      super(width, height);
-      mWidthMeasureSpec = overrideWidthMeasureSpec;
-      mHeightMeasureSpec = overrideHeightMeasureSpec;
-      mIsFullSpan = isFullSpan;
-    }
-
-    @Override
-    public int getWidthMeasureSpec() {
-      return mWidthMeasureSpec;
-    }
-
-    @Override
-    public int getHeightMeasureSpec() {
-      return mHeightMeasureSpec;
-    }
-
-    public boolean isFullSpan() {
-      return mIsFullSpan;
-    }
   }
 
   private ComponentTreeHolder createComponentTreeHolder(RenderInfo renderInfo) {

@@ -27,7 +27,6 @@ import androidx.recyclerview.widget.OrientationHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import com.facebook.litho.LayoutManagerOverrideParams;
 import com.facebook.litho.SizeSpec;
-import com.facebook.litho.widget.RecyclerBinder.RecyclerViewLayoutManagerOverrideParams;
 import java.util.List;
 import javax.annotation.Nullable;
 

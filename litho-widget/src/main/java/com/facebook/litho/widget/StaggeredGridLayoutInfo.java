@@ -26,7 +26,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import com.facebook.litho.LayoutManagerOverrideParams;
 import com.facebook.litho.SizeSpec;
-import com.facebook.litho.widget.RecyclerBinder.RecyclerViewLayoutManagerOverrideParams;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
