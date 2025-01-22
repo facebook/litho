@@ -100,9 +100,8 @@ class ZoomableComponent(
   }
 
   companion object {
-    private val ALLOCATOR: ViewAllocator<LithoZoomableView> = ViewAllocator { context ->
-      LithoZoomableView(context)
-    }
+    private val ALLOCATOR: ViewAllocator<LithoZoomableView> =
+        ViewAllocator(canPreallocate = true, poolSize = 5) { context -> LithoZoomableView(context) }
   }
 }
 
