@@ -37,6 +37,7 @@ import com.facebook.litho.CommonProps.DefaultLayoutProps
 import com.facebook.litho.ComponentHostUtils.maybeSetDrawableState
 import com.facebook.litho.Transition.TransitionKeyType
 import com.facebook.litho.annotations.ImportantForAccessibility
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.drawable.ComparableColorDrawable
 import com.facebook.litho.layout.LayoutDirection
@@ -1227,7 +1228,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
           ComponentContext.getComponentsConfig(c).shouldAddRootHostViewOrDisableBgFgOutputs &&
               (node.background != null || node.foreground != null)
       val hasAccessibilityContent =
-          (context?.isAccessibilityEnabled == true) &&
+          ((context?.isAccessibilityEnabled == true) || ComponentsConfiguration.enableA11Y) &&
               (importantForAccessibility != ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO) &&
               (implementsAccessibility ||
                   !(nodeInfo?.contentDescription.isNullOrEmpty()) ||
