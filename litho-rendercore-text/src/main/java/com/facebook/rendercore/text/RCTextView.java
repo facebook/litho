@@ -98,8 +98,6 @@ public class RCTextView extends View {
   private boolean mShouldHandleTouch;
   private boolean mShouldHandleKeyEvents;
   @Nullable private Integer mWasFocusable;
-  private int mStrokeColor;
-  private float mStrokeWidth;
 
   public RCTextView(Context context) {
     super(context);
@@ -183,38 +181,12 @@ public class RCTextView extends View {
   }
 
   private void drawLayout(Canvas canvas) {
-    if (shouldDrawStrokeStyle()) {
-      drawStrokeStyle(canvas);
-    }
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
       Api34Utils.draw(mLayout, canvas, getSelectionPath(), mHighlightPaint);
     } else {
       // NULLSAFE_FIXME[Parameter Not Nullable]
       mLayout.draw(canvas, getSelectionPath(), mHighlightPaint, 0);
     }
-  }
-
-  private boolean shouldDrawStrokeStyle() {
-    return mStrokeColor != 0 && mStrokeWidth != 0;
-  }
-
-  private void drawStrokeStyle(Canvas canvas) {
-    if (mLayout == null) {
-      return;
-    }
-    Paint mPaint = mLayout.getPaint();
-    mPaint.setStyle(Paint.Style.STROKE);
-    mPaint.setColor(mStrokeColor);
-    mPaint.setStrokeWidth(mStrokeWidth);
-    mPaint.setStrokeJoin(Paint.Join.ROUND);
-    Path path = getSelectionPath();
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-      Api34Utils.draw(mLayout, canvas, path, mHighlightPaint);
-    } else if (path != null) {
-      mLayout.draw(canvas, path, mHighlightPaint, 0);
-    }
-    mPaint.setStyle(Paint.Style.FILL);
-    mPaint.setColor(mLinkColor);
   }
 
   private OnPrePostDrawSpan[] getOnPrePostDrawSpans() {
@@ -254,8 +226,6 @@ public class RCTextView extends View {
             .setColor(mColorStateList.getColorForState(getDrawableState(), mLinkColor));
       }
     }
-    mStrokeColor = textLayout.textStyle.strokeColor;
-    mStrokeWidth = textLayout.textStyle.strokeWidth;
 
     if (highlightOffsetsValid(
         mText,
