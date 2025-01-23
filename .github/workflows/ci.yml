@@ -33,7 +33,7 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
       - name: Install CMake
-        run: sdkmanager cmake;3.18.1
+        run: sdkmanager 'cmake;3.18.1'
       - name: Gradle caches
         uses: actions/cache@v3
         with:
