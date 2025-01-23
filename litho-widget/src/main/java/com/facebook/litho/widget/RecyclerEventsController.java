@@ -158,8 +158,7 @@ public class RecyclerEventsController {
     mOnRecyclerUpdateListener = onRecyclerUpdateListener;
   }
 
-  // todo make this package private once ExperimentalPrimitiveRecycler is moved to this module
-  public void setSnapHelper(@Nullable SnapHelper snapHelper) {
+  void setSnapHelper(@Nullable SnapHelper snapHelper) {
     mSnapHelper = snapHelper;
   }
 
