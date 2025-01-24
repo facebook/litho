@@ -71,8 +71,6 @@ public class TextStyle implements Cloneable {
   int highlightEndOffset = UNSET;
   int highlightCornerRadius = 0;
   boolean shouldLayoutEmptyText = false;
-  int strokeColor = Color.TRANSPARENT;
-  int strokeWidth = 0;
 
   boolean shouldTruncateTextUsingConstraints = false;
   int manualBaselineSpacing = Integer.MIN_VALUE;
@@ -358,10 +356,5 @@ public class TextStyle implements Cloneable {
       this.cornerRadius = cornerRadius;
       this.backgroundColor = backgroundColor;
     }
-  }
-
-  public void setStrokeStyle(int strokeColor, int strokeWidth) {
-    this.strokeColor = strokeColor;
-    this.strokeWidth = strokeWidth;
   }
 }
