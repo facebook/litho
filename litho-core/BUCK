@@ -1,3 +1,4 @@
+load("@fbsource//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
 load("@fbsource//xplat/pfh/FBApp_UIFrameworks_Litho_Litho:DEFS.bzl", "FBApp_UIFrameworks_Litho_Litho")
 
 # Copyright (c) 2017-present, Facebook, Inc.
@@ -18,5 +19,16 @@ fb_android_resource(
         "PUBLIC",
     ],
     deps = [
+    ],
+)
+
+fb_native.android_aar(
+    name = "lithocore-res",
+    manifest_skeleton = "src/main/AndroidManifest.xml",
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        ":res",
     ],
 )
