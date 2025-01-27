@@ -85,6 +85,7 @@ internal constructor(
     @JvmField var enablePreAllocationSameThreadCheck: Boolean = false,
     @JvmField val enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner: Boolean = false,
     @JvmField val enableDefaultLifecycleOwnerAsFragmentOrActivity: Boolean = false,
+    @JvmField val enableCheckVisibilityAggregated: Boolean = false,
     /**
      * This is a temporary config param for debugging state list animator crashes during layout of a
      * [ComponentHost]

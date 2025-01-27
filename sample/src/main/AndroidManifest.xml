@@ -154,6 +154,9 @@
         <activity
             android:name=".kotlin.logging.LoggingActivity"
             android:exported="true" />
+        <activity
+            android:name=".kotlin.visibility.SetVisibilityActivity"
+            android:exported="true" />
 
     </application>
     <uses-permission android:name="android.permission.INTERNET" />

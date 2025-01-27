@@ -1143,6 +1143,17 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
     return super.shouldRequestLayout()
   }
 
+  override fun onVisibilityAggregated(isVisible: Boolean) {
+    super.onVisibilityAggregated(isVisible)
+    if (ComponentsConfiguration.defaultInstance.enableCheckVisibilityAggregated) {
+      if (isVisible) {
+        setVisibilityHintInternal(isVisible = true, skipMountingIfNotVisible = true)
+      } else {
+        setVisibilityHintInternal(isVisible = false, skipMountingIfNotVisible = true)
+      }
+    }
+  }
+
   /**
    * An encapsulation of currentVisibleArea and processVisibilityOutputs for each re-entrant mount.
    */
