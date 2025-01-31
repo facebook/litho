@@ -25,8 +25,7 @@ import com.facebook.rendercore.extensions.RenderCoreExtension
  * computation will make the next computation of a new [RenderResult] more efficient with internal
  * caching.
  */
-class RenderResult<State, RenderContext>
-internal constructor(
+class RenderResult<State, RenderContext>(
     val renderTree: RenderTree,
     val nodeTree: Node<RenderContext>,
     val layoutCacheData: Map<Any, Any?>,
