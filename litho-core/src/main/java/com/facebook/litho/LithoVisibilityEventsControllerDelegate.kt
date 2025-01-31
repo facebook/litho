@@ -28,11 +28,14 @@ import java.util.ArrayList
  * lifecycle state but delegate to this to handle the effects of the state change. See an example of
  * how this facilitates a custom lifecycle implementation in [AOSPLithoVisibilityEventsController].
  */
-class LithoVisibilityEventsControllerDelegate : LithoVisibilityEventsController {
+class LithoVisibilityEventsControllerDelegate(
+    private var _visibilityState: LithoVisibilityState = LithoVisibilityState.HINT_VISIBLE
+) : LithoVisibilityEventsController {
 
   private val lithoVisibilityEventsListeners: MutableSet<LithoVisibilityEventsListener> = HashSet()
-  override var visibilityState: LithoVisibilityState = LithoVisibilityState.HINT_VISIBLE
-    private set
+
+  override val visibilityState: LithoVisibilityState
+    get() = _visibilityState
 
   @IntDef(
       LifecycleTransitionStatus.VALID,
@@ -50,20 +53,20 @@ class LithoVisibilityEventsControllerDelegate : LithoVisibilityEventsController 
   override fun moveToVisibilityState(newVisibilityState: LithoVisibilityState) {
     ThreadUtils.assertMainThread()
     if (newVisibilityState === LithoVisibilityState.DESTROYED &&
-        visibilityState === LithoVisibilityState.HINT_VISIBLE) {
+        _visibilityState === LithoVisibilityState.HINT_VISIBLE) {
       moveToVisibilityState(LithoVisibilityState.HINT_INVISIBLE)
     }
     @LifecycleTransitionStatus
-    val transitionStatus = getTransitionState(visibilityState, newVisibilityState)
+    val transitionStatus = getTransitionState(_visibilityState, newVisibilityState)
     if (transitionStatus == LifecycleTransitionStatus.INVALID) {
       ComponentsReporter.emitMessage(
           ComponentsReporter.LogLevel.WARNING,
           "LithoVisibilityEventsController",
-          "Cannot move from state $visibilityState to state $newVisibilityState")
+          "Cannot move from state $_visibilityState to state $newVisibilityState")
       return
     }
     if (transitionStatus == LifecycleTransitionStatus.VALID) {
-      visibilityState = newVisibilityState
+      _visibilityState = newVisibilityState
       when (newVisibilityState) {
         LithoVisibilityState.HINT_VISIBLE -> {
           notifyOnResumeVisible()

@@ -21,6 +21,7 @@ import androidx.lifecycle.Lifecycle.Event
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import com.facebook.litho.LithoVisibilityEventsController.LithoVisibilityState
+import com.facebook.litho.config.ComponentsConfiguration
 
 /**
  * This LithoVisibilityEventsController implementation dispatches to the registered observers the
@@ -32,7 +33,15 @@ open class AOSPLithoVisibilityEventsController(final override val lifecycleOwner
     LithoVisibilityEventsController, LifecycleEventObserver, AOSPLifecycleOwnerProvider {
 
   private val delegate: LithoVisibilityEventsControllerDelegate =
-      LithoVisibilityEventsControllerDelegate()
+      if (ComponentsConfiguration.defaultInstance
+          .enableInitStateForAOSPLithoVisibilityEventsController)
+          LithoVisibilityEventsControllerDelegate(
+              if (lifecycleOwner.lifecycle.currentState == Lifecycle.State.RESUMED)
+                  LithoVisibilityState.HINT_VISIBLE
+              else LithoVisibilityState.HINT_INVISIBLE)
+      else {
+        LithoVisibilityEventsControllerDelegate()
+      }
 
   init {
     lifecycleOwner.lifecycle.addObserver(this)

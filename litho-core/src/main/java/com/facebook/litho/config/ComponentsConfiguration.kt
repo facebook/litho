@@ -82,9 +82,14 @@ internal constructor(
      */
     @JvmField val debugEventListener: ComponentTreeDebugEventListener? = null,
     @JvmField var enablePreAllocationSameThreadCheck: Boolean = false,
+
+    /** Lifecycle Owner in BaseMountingView and TreeProp */
     @JvmField val enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner: Boolean = false,
     @JvmField val enableDefaultLifecycleOwnerAsFragmentOrActivity: Boolean = false,
+
+    /** Visibility Events related */
     @JvmField val enableCheckVisibilityAggregated: Boolean = false,
+    @JvmField val enableInitStateForAOSPLithoVisibilityEventsController: Boolean = false,
     /**
      * This is a temporary config param for debugging state list animator crashes during layout of a
      * [ComponentHost]
