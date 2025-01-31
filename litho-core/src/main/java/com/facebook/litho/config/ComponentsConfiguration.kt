@@ -44,7 +44,6 @@ internal constructor(
     val shouldAddHostViewForRootComponent: Boolean = false,
     @JvmField
     val useIncrementalMountGapWorker: Boolean = IncrementalMountExtensionConfigs.useGapWorker,
-    val useNonRebindingEventHandlers: Boolean = false,
     internal val shouldDisableBgFgOutputs: Boolean = false,
     /** The handler [ComponentTree] will be used to run the pre-allocation process */
     @JvmField val preAllocationHandler: PreAllocationHandler? = null,
@@ -149,7 +148,8 @@ internal constructor(
     @JvmField val enableFixForCachedNestedTree: Boolean = false,
 
     /** This flag is used to enable the redesigned event handler rebinding logic. */
-    @JvmField val useStateForEventDispatchInfo: Boolean = false
+    @JvmField val useStateForEventDispatchInfo: Boolean = true,
+    val useNonRebindingEventHandlers: Boolean = true,
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =
