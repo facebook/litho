@@ -29,7 +29,7 @@ abstract class KComponent : Component() {
 
     /** Method that will ensure the KComponent class is loaded. */
     @JvmStatic
-    fun preload() =
+    fun preload(): KComponent =
         object : KComponent() {
           override fun ComponentScope.render(): Component? = null
         }
@@ -129,26 +129,27 @@ abstract class KComponent : Component() {
   // All other Component lifecycle methods are made final and no-op here as they shouldn't be
   // overriden.
 
-  final override fun isEquivalentTo(other: Component?) = super.isEquivalentTo(other)
+  final override fun isEquivalentTo(other: Component?): Boolean = super.isEquivalentTo(other)
 
-  final override fun canMeasure() = false
+  final override fun canMeasure(): Boolean = false
 
-  final override fun getMountType() = super.getMountType()
+  final override fun getMountType(): MountType = super.getMountType()
 
   final override fun getSimpleName(): String = super.getSimpleName()
 
-  final override fun isPureRender() = false
+  final override fun isPureRender(): Boolean = false
 
-  final override fun makeShallowCopy() = super.makeShallowCopy()
+  final override fun makeShallowCopy(): Component = super.makeShallowCopy()
 
-  final override fun onCreateMountContent(context: Context) = super.onCreateMountContent(context)
+  final override fun onCreateMountContent(context: Context): Any =
+      super.onCreateMountContent(context)
 
   final override fun shouldUpdate(
       previous: Component,
       prevStateContainer: StateContainer?,
       next: Component,
       nextStateContainer: StateContainer?
-  ) = super.shouldUpdate(previous, prevStateContainer, next, nextStateContainer)
+  ): Boolean = super.shouldUpdate(previous, prevStateContainer, next, nextStateContainer)
 }
 
 /**
