@@ -38,11 +38,13 @@ import com.facebook.rendercore.primitives.LayoutBehavior
 import com.facebook.rendercore.primitives.LayoutScope
 import com.facebook.rendercore.primitives.PrimitiveLayoutResult
 import com.facebook.rendercore.primitives.ViewAllocator
+import com.facebook.rendercore.zoomable.ZoomableViewBaseController
 import kotlin.math.max
 
 @ExperimentalLithoApi
 class ZoomableComponent(
     private val zoomableTouchGestureListener: ZoomableTouchGestureListener? = null,
+    private val zoomableEventListener: ZoomableViewBaseController.Listener? = null,
     private val style: Style = Style,
     private val child: () -> Component
 ) : PrimitiveComponent() {
@@ -83,14 +85,18 @@ class ZoomableComponent(
             MountBehavior(ALLOCATOR) {
               bindToRenderTreeView(state = state) { renderTreeView }
 
-              bind(lithoZoomableController) { content ->
+              bind(lithoZoomableController, zoomableEventListener) { content ->
                 lithoZoomableController.bindTo(content)
                 zoomableTouchGestureListener.addZoomableTouchListener(
                     lithoZoomableController.zoomableTouchListener)
+                zoomableEventListener?.let { lithoZoomableController.addZoomableEventListener(it) }
 
                 onUnbind {
                   zoomableTouchGestureListener.removeZoomableTouchListener(
                       lithoZoomableController.zoomableTouchListener)
+                  zoomableEventListener?.let {
+                    lithoZoomableController.removeZoomableEventListener(it)
+                  }
                   lithoZoomableController.unbind()
                 }
               }
