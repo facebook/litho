@@ -245,7 +245,7 @@ open class ComponentHost(
     setWillNotDraw(ComponentsConfiguration.defaultInstance.enableHostWillNotDraw)
     isChildrenDrawingOrderEnabled = true
     refreshAccessibilityDelegatesIfNeeded(
-        ComponentsConfiguration.enableA11Y || isAccessibilityEnabled(context))
+        ComponentsConfiguration.skipA11YValidationForKeyboard || isAccessibilityEnabled(context))
   }
 
   override fun mount(index: Int, mountItem: MountItem) {
@@ -438,7 +438,7 @@ open class ComponentHost(
     super.setTag(key, tag)
     if (key == COMPONENT_NODE_INFO_ID && tag != null) {
       refreshAccessibilityDelegatesIfNeeded(
-          ComponentsConfiguration.enableA11Y || isAccessibilityEnabled(context))
+          ComponentsConfiguration.skipA11YValidationForKeyboard || isAccessibilityEnabled(context))
       if (componentAccessibilityDelegate != null) {
         (tag as? NodeInfo)?.let { componentAccessibilityDelegate?.setNodeInfo(it) }
       }

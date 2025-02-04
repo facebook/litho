@@ -298,9 +298,10 @@ internal constructor(
     @JvmField var useUndefinedYogaValue: Boolean = false
 
     /**
-     * This flag is used to enable A11Y support for Litho by default to measure the impact of perf.
+     * This flag is used to enable A11Y support for keyboard navigation, which was disabled due to
+     * Litho's A11Y sanity check.
      */
-    @JvmField var enableA11Y: Boolean = false
+    @JvmField var skipA11YValidationForKeyboard: Boolean = false
 
     /** This flag is used clear MovementMethod on TextInput to avoid a potential crash. */
     @JvmField var clearMovementMethod: Boolean = true
