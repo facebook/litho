@@ -171,7 +171,7 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
   }
 
   override fun performLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
-    trace("LithoView.performLayout") {
+    trace("BaseMountingView.performLayout") {
       if (hasTree) {
         onBeforeLayout(l, t, r, b)
 
