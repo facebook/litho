@@ -18,6 +18,7 @@ package com.facebook.litho.widget;
 
 import android.graphics.PointF;
 import android.view.View;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.LinearSnapHelper;
 import androidx.recyclerview.widget.OrientationHelper;
 import androidx.recyclerview.widget.RecyclerView;
@@ -33,9 +34,15 @@ import androidx.recyclerview.widget.SnapHelper;
 public class CustomSpeedLinearSnapHelper extends LinearSnapHelper {
   private static final float INVALID_DISTANCE = 1f;
   private final int mDeltaJumpThreshold;
+  private final boolean mIsStrictMode;
 
   public CustomSpeedLinearSnapHelper(int deltaJumpThreshold) {
+    this(deltaJumpThreshold, false);
+  }
+
+  public CustomSpeedLinearSnapHelper(int deltaJumpThreshold, boolean isStrictMode) {
     mDeltaJumpThreshold = deltaJumpThreshold;
+    mIsStrictMode = isStrictMode;
   }
 
   @Override
@@ -55,7 +62,17 @@ public class CustomSpeedLinearSnapHelper extends LinearSnapHelper {
       return RecyclerView.NO_POSITION;
     }
 
-    final int currentPosition = layoutManager.getPosition(currentView);
+    int currentPosition;
+    if (mIsStrictMode) {
+      if (velocityX > 0 || velocityY > 0) {
+        currentPosition = ((LinearLayoutManager) layoutManager).findFirstVisibleItemPosition();
+      } else {
+        currentPosition = ((LinearLayoutManager) layoutManager).findLastVisibleItemPosition();
+      }
+    } else {
+      currentPosition = layoutManager.getPosition(currentView);
+    }
+
     if (currentPosition == RecyclerView.NO_POSITION) {
       return RecyclerView.NO_POSITION;
     }

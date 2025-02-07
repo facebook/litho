@@ -145,6 +145,7 @@ public class GridRecyclerConfiguration implements RecyclerConfiguration {
     private int mSnapToStartFlingOffset = SnapUtil.SNAP_TO_START_DEFAULT_FLING_OFFSET;
     private @SnapMode int mSnapMode = SNAP_NONE;
     private int mSnapToStartOffset = 0;
+    private boolean mIsStrictMode = false;
     private @Nullable SnapHelper mSnapHelper;
 
     Builder() {}
@@ -185,6 +186,11 @@ public class GridRecyclerConfiguration implements RecyclerConfiguration {
 
     public Builder snapToStartOffset(int snapToStartOffset) {
       mSnapToStartOffset = snapToStartOffset;
+      return this;
+    }
+
+    public Builder isStrictMode(boolean isStrictMode) {
+      mIsStrictMode = isStrictMode;
       return this;
     }
 
@@ -248,7 +254,11 @@ public class GridRecyclerConfiguration implements RecyclerConfiguration {
           (mSnapHelper != null)
               ? mSnapHelper
               : SnapUtil.getSnapHelper(
-                  mSnapMode, mDeltaJumpThreshold, mSnapToStartFlingOffset, mSnapToStartOffset);
+                  mSnapMode,
+                  mDeltaJumpThreshold,
+                  mSnapToStartFlingOffset,
+                  mSnapToStartOffset,
+                  mIsStrictMode);
       final GridRecyclerConfiguration configuration =
           new GridRecyclerConfiguration(
               mOrientation,

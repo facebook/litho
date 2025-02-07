@@ -62,7 +62,8 @@ public class SnapUtil {
       @SnapMode int snapMode,
       int deltaJumpThreshold,
       int snapToStartFlingOffset,
-      int snapToStartOffset) {
+      int snapToStartOffset,
+      boolean useExactScrollPosition) {
     switch (snapMode) {
       case SNAP_TO_CENTER:
         return new PagerSnapHelper();
@@ -71,7 +72,7 @@ public class SnapUtil {
       case SNAP_TO_CENTER_CHILD:
         return new LinearSnapHelper();
       case SNAP_TO_CENTER_CHILD_WITH_CUSTOM_SPEED:
-        return new CustomSpeedLinearSnapHelper(deltaJumpThreshold);
+        return new CustomSpeedLinearSnapHelper(deltaJumpThreshold, useExactScrollPosition);
       case SNAP_TO_END:
       case SNAP_NONE:
       default:

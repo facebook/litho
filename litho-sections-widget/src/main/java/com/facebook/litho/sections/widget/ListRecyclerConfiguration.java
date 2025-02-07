@@ -149,6 +149,8 @@ public class ListRecyclerConfiguration implements RecyclerConfiguration {
 
     private int mSnapToStartOffset = 0;
 
+    private boolean mIsStrictMode = false;
+
     private @Nullable SnapHelper mSnapHelper;
 
     Builder() {}
@@ -215,6 +217,18 @@ public class ListRecyclerConfiguration implements RecyclerConfiguration {
       return this;
     }
 
+    /**
+     * Controls carousel H-Scroll behaviors. For a hard user scroll (large scroll velocity): if
+     * strict mode is on, user will scroll from card indexed N to card indexed N+x, where x is
+     * deltaJumpThreshold if strict mode is off, user will scroll from card indexed N to card
+     * indexed N+x+1; For a soft user scroll (small scroll velocity): the scroll behavior is the
+     * same regardless of strict mode
+     */
+    public Builder isStrictMode(boolean isStrictMode) {
+      mIsStrictMode = isStrictMode;
+      return this;
+    }
+
     public Builder snapHelper(SnapHelper snapHelper) {
       mSnapHelper = snapHelper;
       return this;
@@ -238,7 +252,11 @@ public class ListRecyclerConfiguration implements RecyclerConfiguration {
           (mSnapHelper != null)
               ? mSnapHelper
               : SnapUtil.getSnapHelper(
-                  mSnapMode, mDeltaJumpThreshold, mSnapToStartFlingOffset, mSnapToStartOffset);
+                  mSnapMode,
+                  mDeltaJumpThreshold,
+                  mSnapToStartFlingOffset,
+                  mSnapToStartOffset,
+                  mIsStrictMode);
       ListRecyclerConfiguration configuration =
           new ListRecyclerConfiguration(
               mOrientation,
