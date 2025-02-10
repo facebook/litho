@@ -133,6 +133,7 @@ class HorizontalScroll(
                         lastScrollPosition.value,
                         horizontalScrollLayoutData.measuredWidth,
                         horizontalScrollLayoutData.measuredHeight,
+                        lastScrollPosition.value.x,
                         onScrollChangeListener,
                         scrollStateListener)
                     onUnbind { content.unmount() }

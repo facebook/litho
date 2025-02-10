@@ -224,6 +224,7 @@ class HorizontalScrollSpec {
         lastScrollPosition,
         componentWidth != null ? componentWidth : 0,
         componentHeight != null ? componentHeight : 0,
+        lastScrollPosition.x,
         onScrollChangeListener,
         scrollStateListener);
     Runnable preDrawRunnable =

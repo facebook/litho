@@ -123,6 +123,7 @@ public class HorizontalScrollLithoView extends HorizontalScrollView
       ScrollPosition scrollPosition,
       int width,
       int height,
+      int scrollX,
       @Nullable OnScrollChangeListener onScrollChangeListener,
       @Nullable ScrollStateListener scrollStateListener) {
     mLithoView.setComponentTree(componentTree);
@@ -130,7 +131,7 @@ public class HorizontalScrollLithoView extends HorizontalScrollView
     mOnScrollChangeListener = onScrollChangeListener;
     mComponentWidth = width;
     mComponentHeight = height;
-
+    setScrollX(scrollX);
     if (scrollStateListener != null) {
       if (mScrollStateDetector == null) {
         mScrollStateDetector = new ScrollStateDetector(this);
