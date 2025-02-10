@@ -57,7 +57,10 @@ import org.robolectric.shadows.ShadowLooper;
  *
  * <p>Allows simple and short creation of views that are created and mounted in a similar way to how
  * they are in real apps.
+ *
+ * @deprecated use {@link com.facebook.litho.testing.LithoTestRule} instead
  */
+@Deprecated
 public final class ComponentTestHelper {
 
   private ComponentTestHelper() {}
