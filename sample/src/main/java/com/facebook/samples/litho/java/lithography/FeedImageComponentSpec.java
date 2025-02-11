@@ -30,11 +30,14 @@ import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.common.DataDiffSection;
 import com.facebook.litho.sections.common.RenderEvent;
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration;
+import com.facebook.litho.sections.widget.RecyclerBinderConfiguration;
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
 import com.facebook.litho.sections.widget.RecyclerConfiguration;
 import com.facebook.litho.widget.ComponentRenderInfo;
+import com.facebook.litho.widget.RecyclerBinderConfig;
 import com.facebook.litho.widget.RenderInfo;
 import com.facebook.litho.widget.SnapUtil;
+import com.facebook.litho.widget.collection.CrossAxisWrapMode;
 import java.util.Arrays;
 import javax.annotation.Nullable;
 
@@ -45,6 +48,13 @@ public class FeedImageComponentSpec {
       ListRecyclerConfiguration.create()
           .orientation(LinearLayoutManager.HORIZONTAL)
           .snapMode(SnapUtil.SNAP_TO_START)
+          .recyclerBinderConfiguration(
+              RecyclerBinderConfiguration.create()
+                  .recyclerBinderConfig(
+                      RecyclerBinderConfig.create()
+                          .crossAxisWrapMode(CrossAxisWrapMode.MatchFirstChild)
+                          .build())
+                  .build())
           .build();
 
   @OnCreateLayout
@@ -59,7 +69,6 @@ public class FeedImageComponentSpec {
                     .data(Arrays.asList(images))
                     .renderEventHandler(FeedImageComponent.onRender(c))
                     .build())
-            .canMeasureRecycler(true)
             .aspectRatio(2)
             .build();
   }
