@@ -62,7 +62,6 @@ public class LithoTestRunner extends RobolectricTestRunner {
   public LithoTestRunner(final Class<?> testClass) throws InitializationError {
     super(testClass);
     @Nullable
-    // NULLSAFE_FIXME[Not Vetted Third-Party]
     LocalConfigurations annotation = getTestClass().getAnnotation(LocalConfigurations.class);
     if (annotation != null) {
       mLocalTestRunConfigs = Arrays.asList(annotation.value());
