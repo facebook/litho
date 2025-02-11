@@ -45,14 +45,17 @@ import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.common.DataDiffSection;
 import com.facebook.litho.sections.common.RenderEvent;
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration;
+import com.facebook.litho.sections.widget.RecyclerBinderConfiguration;
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
 import com.facebook.litho.sections.widget.RecyclerCollectionEventsController;
 import com.facebook.litho.sections.widget.RecyclerConfiguration;
 import com.facebook.litho.widget.ComponentRenderInfo;
+import com.facebook.litho.widget.RecyclerBinderConfig;
 import com.facebook.litho.widget.RenderInfo;
 import com.facebook.litho.widget.Spinner;
 import com.facebook.litho.widget.Text;
 import com.facebook.litho.widget.VerticalGravity;
+import com.facebook.litho.widget.collection.CrossAxisWrapMode;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaJustify;
@@ -82,6 +85,13 @@ public class HorizontalScrollWithSnapComponentSpec {
     final RecyclerConfiguration recyclerConfiguration =
         ListRecyclerConfiguration.create()
             .orientation(LinearLayoutManager.HORIZONTAL)
+            .recyclerBinderConfiguration(
+                RecyclerBinderConfiguration.create()
+                    .recyclerBinderConfig(
+                        RecyclerBinderConfig.create()
+                            .crossAxisWrapMode(CrossAxisWrapMode.MatchFirstChild)
+                            .build())
+                    .build())
             .reverseLayout(false)
             .snapMode(snapMode)
             .build();
@@ -118,7 +128,6 @@ public class HorizontalScrollWithSnapComponentSpec {
                         .data(Arrays.asList(colors))
                         .renderEventHandler(HorizontalScrollWithSnapComponent.<Integer>onRender(c))
                         .build())
-                .canMeasureRecycler(true)
                 .itemDecoration(
                     new RecyclerView.ItemDecoration() {
                       @Override
