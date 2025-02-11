@@ -28,14 +28,18 @@ import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.common.DataDiffSection
 import com.facebook.litho.sections.common.RenderEvent
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration
+import com.facebook.litho.sections.widget.RecyclerBinderConfiguration
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent
 import com.facebook.litho.widget.ComponentRenderInfo
+import com.facebook.litho.widget.RecyclerBinderConfig
 import com.facebook.litho.widget.RenderInfo
 import com.facebook.litho.widget.SolidColor
+import com.facebook.litho.widget.collection.CrossAxisWrapMode
 
 /**
  * Renders a horizontal list who gets its height by measuring the first item in the list. This
- * option is enabled by enabling the `canMeasureRecycler` prop on the RecyclerCollectionComponent.
+ * option is enabled by enabling the `CrossAxisWrapMode.MatchFirstChild` prop on the
+ * RecyclerCollectionComponent.
  */
 @LayoutSpec
 object MeasureFirstItemForHeightHscrollComponentSpec {
@@ -45,13 +49,20 @@ object MeasureFirstItemForHeightHscrollComponentSpec {
 
     return RecyclerCollectionComponent.create(c)
         .recyclerConfiguration(
-            ListRecyclerConfiguration.create().orientation(OrientationHelper.HORIZONTAL).build())
+            ListRecyclerConfiguration.create()
+                .orientation(OrientationHelper.HORIZONTAL)
+                .recyclerBinderConfiguration(
+                    RecyclerBinderConfiguration.create()
+                        .recyclerBinderConfig(
+                            RecyclerBinderConfig(
+                                crossAxisWrapMode = CrossAxisWrapMode.MatchFirstChild))
+                        .build())
+                .build())
         .section(
             DataDiffSection.create<Int>(SectionContext(c))
                 .data(colors)
                 .renderEventHandler(MeasureFirstItemForHeightHscrollComponent.onRender(c))
                 .build())
-        .canMeasureRecycler(true)
         .build()
   }
 
