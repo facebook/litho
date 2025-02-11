@@ -31,6 +31,7 @@ import com.facebook.litho.core.width
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.view.background
 import com.facebook.litho.view.backgroundColor
+import com.facebook.litho.widget.ExperimentalCardClip
 import com.facebook.litho.widget.ExperimentalImage
 import com.facebook.litho.widget.ProgressPrimitiveComponent
 import com.facebook.rendercore.dp
@@ -44,7 +45,7 @@ class PrimitiveWidgetsExampleComponent : KComponent() {
     return Column {
       child(Text("CardClip"))
       child(
-          CardClip(
+          ExperimentalCardClip(
               clippingColor = Color.WHITE,
               cornerRadius = 20f,
               style = Style.width(60.dp).height(60.dp).backgroundColor(Color.GRAY)))

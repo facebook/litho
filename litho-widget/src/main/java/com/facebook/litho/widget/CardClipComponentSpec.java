@@ -45,7 +45,7 @@ import com.facebook.litho.annotations.ResType;
  * @prop disableClipBottomRight If set, opt out of clipping the bottom-right corner
  */
 @MountSpec(isPureRender = true)
-class CardClipSpec {
+class CardClipComponentSpec {
 
   @PropDefault static final int clippingColor = Color.WHITE;
 

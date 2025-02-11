@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-package com.facebook.samples.litho.kotlin.primitives.widgets
+package com.facebook.litho.widget
 
 import android.graphics.Color
+import androidx.annotation.ColorInt
 import com.facebook.litho.LithoPrimitive
 import com.facebook.litho.PrimitiveComponent
 import com.facebook.litho.PrimitiveComponentScope
 import com.facebook.litho.Style
-import com.facebook.litho.widget.CardClipDrawable
 import com.facebook.rendercore.primitives.DrawableAllocator
 import com.facebook.rendercore.primitives.ExactSizeConstraintsLayoutBehavior
 
 /**
  * A component that paints rounded edges to mimic a clipping operation on the component being
- * rendered below it. Used in {@link CardSpec}.
+ * rendered below it. Used in [CardSpec].
  *
  * @param clippingColor Color for corner clipping.
  * @param cornerRadius Radius for corner clipping.
@@ -36,9 +36,9 @@ import com.facebook.rendercore.primitives.ExactSizeConstraintsLayoutBehavior
  * @param disableClipBottomLeft If set, opt out of clipping the bottom-left corner
  * @param disableClipBottomRight If set, opt out of clipping the bottom-right corner
  */
-class CardClip(
-    private val clippingColor: Int = Color.WHITE,
-    private val cornerRadius: Float? = null,
+class ExperimentalCardClip(
+    @ColorInt private val clippingColor: Int = Color.WHITE,
+    private val cornerRadius: Float = 0f,
     private val disableClipTopLeft: Boolean = false,
     private val disableClipTopRight: Boolean = false,
     private val disableClipBottomLeft: Boolean = false,
@@ -52,10 +52,7 @@ class CardClip(
         mountBehavior =
             MountBehavior(DrawableAllocator { CardClipDrawable() }) {
               clippingColor.bindTo(CardClipDrawable::setClippingColor, Color.WHITE)
-              bind(cornerRadius) { content ->
-                cornerRadius?.let { content.setCornerRadius(it) }
-                onUnbind { content.setCornerRadius(0f) }
-              }
+              cornerRadius.bindTo(CardClipDrawable::setCornerRadius, 0f)
               bind(
                   disableClipTopLeft,
                   disableClipTopRight,

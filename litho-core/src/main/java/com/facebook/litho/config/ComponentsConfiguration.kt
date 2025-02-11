@@ -307,6 +307,11 @@ internal constructor(
     @JvmField var clearMovementMethod: Boolean = true
 
     /**
+     * This flag is used to enable using PrimitiveComponent implementation of a CardClip component.
+     */
+    @JvmField var usePrimitiveCardClip: Boolean = false
+
+    /**
      * This method is only used so that Java clients can have a builder like approach to override a
      * configuration.
      */

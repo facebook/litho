@@ -21,6 +21,7 @@ import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
+import com.facebook.litho.widget.ExperimentalCardClip
 import com.facebook.rendercore.px
 import junit.framework.Assert.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
@@ -37,10 +38,10 @@ class CardClipTest {
   @Test
   fun `CardClip should render`() {
     val testLithoView =
-        lithoViewRule.render { CardClip(style = Style.width(100.px).height(100.px)) }
+        lithoViewRule.render { ExperimentalCardClip(style = Style.width(100.px).height(100.px)) }
 
     // should find an CardClip in the tree
-    assertNotNull(testLithoView.findComponent(CardClip::class))
+    assertNotNull(testLithoView.findComponent(ExperimentalCardClip::class))
 
     // should mount an CardClip
     assertThat(testLithoView.lithoView.mountItemCount).isEqualTo(1)

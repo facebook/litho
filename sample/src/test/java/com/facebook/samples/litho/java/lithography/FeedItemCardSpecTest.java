@@ -88,7 +88,7 @@ public class FeedItemCardSpecTest {
     assertThat(c, mComponent)
         .extractingSubComponentAt(0)
         .extractingSubComponentsDeeply(c)
-        .hasSize(23) // TODO: T53372437 Remove or rewrite test.
+        .hasSize(24) // TODO: T53372437 Remove or rewrite test.
         .has(
             new Condition<InspectableComponent>() {
               @Override
@@ -98,7 +98,7 @@ public class FeedItemCardSpecTest {
                     && "JavaScript Rockstar".equals(value.getTextContent());
               }
             },
-            atIndex(10));
+            atIndex(11));
   }
 
   @Test
