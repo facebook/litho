@@ -82,8 +82,7 @@ public class HorizontalScrollWithDynamicItemHeightSpec {
                         .data(ITEM_HEIGHTS)
                         .renderEventHandler(
                             HorizontalScrollWithDynamicItemHeight.<Integer>onRender(c))
-                        .build())
-                .canMeasureRecycler(true))
+                        .build()))
         .child(
             Text.create(c)
                 .paddingDip(YogaEdge.VERTICAL, 8)
