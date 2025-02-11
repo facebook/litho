@@ -37,7 +37,7 @@ import com.facebook.litho.annotations.ResType;
  * @prop shadowDy The y offset of the shadow.
  */
 @MountSpec(isPureRender = true)
-class CardShadowSpec {
+class CardShadowComponentSpec {
 
   @PropDefault static final float shadowDx = CardShadowDrawable.UNDEFINED;
   @PropDefault static final float shadowDy = CardShadowDrawable.UNDEFINED;

@@ -312,6 +312,12 @@ internal constructor(
     @JvmField var usePrimitiveCardClip: Boolean = false
 
     /**
+     * This flag is used to enable using PrimitiveComponent implementation of a CardShadow
+     * component.
+     */
+    @JvmField var usePrimitiveCardShadow: Boolean = false
+
+    /**
      * This method is only used so that Java clients can have a builder like approach to override a
      * configuration.
      */

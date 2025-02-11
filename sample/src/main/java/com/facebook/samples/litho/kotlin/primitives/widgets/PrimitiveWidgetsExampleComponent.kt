@@ -32,6 +32,7 @@ import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.view.background
 import com.facebook.litho.view.backgroundColor
 import com.facebook.litho.widget.ExperimentalCardClip
+import com.facebook.litho.widget.ExperimentalCardShadow
 import com.facebook.litho.widget.ExperimentalImage
 import com.facebook.litho.widget.ProgressPrimitiveComponent
 import com.facebook.rendercore.dp
@@ -51,7 +52,7 @@ class PrimitiveWidgetsExampleComponent : KComponent() {
               style = Style.width(60.dp).height(60.dp).backgroundColor(Color.GRAY)))
       child(Text("CardShadow"))
       child(
-          CardShadow(
+          ExperimentalCardShadow(
               shadowEndColor = Color.GRAY,
               shadowSize = 100f,
               cornerRadius = 20f,

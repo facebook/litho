@@ -21,6 +21,7 @@ import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
+import com.facebook.litho.widget.ExperimentalCardShadow
 import com.facebook.rendercore.px
 import junit.framework.Assert.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
@@ -37,10 +38,10 @@ class CardShadowTest {
   @Test
   fun `CardShadow should render`() {
     val testLithoView =
-        lithoViewRule.render { CardShadow(style = Style.width(100.px).height(100.px)) }
+        lithoViewRule.render { ExperimentalCardShadow(style = Style.width(100.px).height(100.px)) }
 
     // should find an CardShadow in the tree
-    assertNotNull(testLithoView.findComponent(CardShadow::class))
+    assertNotNull(testLithoView.findComponent(ExperimentalCardShadow::class))
 
     // should mount an CardShadow
     assertThat(testLithoView.lithoView.mountItemCount).isEqualTo(1)

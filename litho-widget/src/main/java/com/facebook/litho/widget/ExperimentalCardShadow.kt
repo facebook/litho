@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.facebook.samples.litho.kotlin.primitives.widgets
+package com.facebook.litho.widget
 
 import android.graphics.Color
+import androidx.annotation.ColorInt
 import com.facebook.litho.LithoPrimitive
 import com.facebook.litho.PrimitiveComponent
 import com.facebook.litho.PrimitiveComponentScope
 import com.facebook.litho.Style
-import com.facebook.litho.widget.CardShadowDrawable
 import com.facebook.rendercore.primitives.DrawableAllocator
 import com.facebook.rendercore.primitives.ExactSizeConstraintsLayoutBehavior
 
@@ -35,11 +35,11 @@ import com.facebook.rendercore.primitives.ExactSizeConstraintsLayoutBehavior
  * @param shadowDx The x offset of the shadow.
  * @param shadowDy The y offset of the shadow.
  */
-class CardShadow(
-    private val shadowStartColor: Int? = null,
-    private val shadowEndColor: Int? = null,
-    private val cornerRadius: Float? = null,
-    private val shadowSize: Float? = null,
+class ExperimentalCardShadow(
+    @ColorInt private val shadowStartColor: Int = Color.TRANSPARENT,
+    @ColorInt private val shadowEndColor: Int = Color.TRANSPARENT,
+    private val cornerRadius: Float = 0f,
+    private val shadowSize: Float = 0f,
     private val shadowDx: Float = CardShadowDrawable.UNDEFINED,
     private val shadowDy: Float = CardShadowDrawable.UNDEFINED,
     private val hideTopShadow: Boolean = false,
@@ -61,22 +61,10 @@ class CardShadow(
                   CardShadowDrawable::setShadowRightSizeOverride, CardShadowDrawable.UNDEFINED)
               shadowDx.bindTo(CardShadowDrawable::setShadowDx, CardShadowDrawable.UNDEFINED)
               shadowDy.bindTo(CardShadowDrawable::setShadowDy, CardShadowDrawable.UNDEFINED)
-              bind(shadowStartColor) { content ->
-                shadowStartColor?.let { content.setShadowStartColor(it) }
-                onUnbind { content.setShadowStartColor(Color.BLACK) }
-              }
-              bind(shadowEndColor) { content ->
-                shadowEndColor?.let { content.setShadowEndColor(it) }
-                onUnbind { content.setShadowEndColor(Color.BLACK) }
-              }
-              bind(cornerRadius) { content ->
-                cornerRadius?.let { content.setCornerRadius(it) }
-                onUnbind { content.setCornerRadius(0f) }
-              }
-              bind(shadowSize) { content ->
-                shadowSize?.let { content.setShadowSize(it) }
-                onUnbind { content.setShadowSize(0f) }
-              }
+              shadowStartColor.bindTo(CardShadowDrawable::setShadowStartColor, Color.TRANSPARENT)
+              shadowEndColor.bindTo(CardShadowDrawable::setShadowEndColor, Color.TRANSPARENT)
+              cornerRadius.bindTo(CardShadowDrawable::setCornerRadius, 0f)
+              shadowSize.bindTo(CardShadowDrawable::setShadowSize, 0f)
             },
         style = style)
   }
