@@ -32,7 +32,6 @@ import org.robolectric.shadows.ShadowDrawable;
 @Implements(value = ColorDrawable.class)
 public class ColorDrawableShadow extends ShadowDrawable {
 
-  // NULLSAFE_FIXME[Field Not Initialized]
   @RealObject private ColorDrawable mRealColorDrawable;
 
   @Implementation
