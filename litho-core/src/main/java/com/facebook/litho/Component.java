@@ -71,6 +71,7 @@ import com.facebook.rendercore.Equivalence;
 import com.facebook.rendercore.LayoutCache;
 import com.facebook.rendercore.LogLevel;
 import com.facebook.rendercore.ResourceResolver;
+import com.facebook.rendercore.debug.DebugEventAttribute;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
@@ -463,6 +464,27 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       final boolean shouldCacheResult) {
 
     final CalculationContext calculationContext = c.getCalculationStateContext();
+    if (calculationContext instanceof ResolveContext
+        && LithoDebugConfigurations.isDebugModeEnabled) {
+      DebugInfoReporter.report(
+          "Component:MeasureInResolve",
+          attr -> {
+            Component scope = c.getComponentScope();
+            if (scope != null) {
+              attr.put(DebugEventAttribute.Key, c.getGlobalKey());
+              attr.put(DebugEventAttribute.Source, scope);
+            }
+            attr.put("measured.component", toString());
+            attr.put("measured.key", getKey());
+
+            StringBuilder sb = new StringBuilder();
+            StackTraceElement[] traces = Thread.currentThread().getStackTrace();
+            for (int i = 0; i < 10; i++) sb.append(traces[i]).append("\n");
+            attr.put("stacktrace", sb.toString());
+
+            return Unit.INSTANCE;
+          });
+    }
 
     if (calculationContext == null) {
       if (shouldCacheResult) {
