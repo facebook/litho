@@ -129,7 +129,6 @@ public class ComponentTree
   public static final int INVALID_ID = -1;
   private static final String TAG = ComponentTree.class.getSimpleName();
   public static final int SIZE_UNINITIALIZED = -1;
-  private static final String DEFAULT_RESOLVE_THREAD_NAME = "ComponentResolveThread";
   /* package-private */ static final String DEFAULT_LAYOUT_THREAD_NAME = "ComponentLayoutThread";
   private static final String EMPTY_STRING = "";
   private static final String CT_CONTEXT_IS_DIFFERENT_FROM_ROOT_BUILDER_CONTEXT =
@@ -1012,9 +1011,9 @@ public class ComponentTree
       debugLog(
           "FinishMeasure",
           "WidthSpec: "
-              + View.MeasureSpec.toString(widthSpec)
+              + SizeSpec.toSimpleString(widthSpec)
               + ", HeightSpec: "
-              + View.MeasureSpec.toString(heightSpec)
+              + SizeSpec.toSimpleString(heightSpec)
               + ", OutWidth: "
               + measureOutput[0]
               + ", OutHeight: "
@@ -1727,9 +1726,9 @@ public class ComponentTree
                   + ", Extra: "
                   + extraAttribution
                   + ", WidthSpec: "
-                  + View.MeasureSpec.toString(resolvedWidthSpec)
+                  + SizeSpec.toSimpleString(resolvedWidthSpec)
                   + ", HeightSpec: "
-                  + View.MeasureSpec.toString(resolvedHeightSpec));
+                  + SizeSpec.toSimpleString(resolvedHeightSpec));
         }
 
         return;
@@ -1743,9 +1742,9 @@ public class ComponentTree
                 + ", Extra: "
                 + extraAttribution
                 + ", WidthSpec: "
-                + View.MeasureSpec.toString(resolvedWidthSpec)
+                + SizeSpec.toSimpleString(resolvedWidthSpec)
                 + ", HeightSpec: "
-                + View.MeasureSpec.toString(resolvedHeightSpec));
+                + SizeSpec.toSimpleString(resolvedHeightSpec));
       }
 
       if (widthSpecInitialized) {
@@ -2411,9 +2410,9 @@ public class ComponentTree
             + ", Extra: "
             + extraAttribution
             + ", WidthSpec: "
-            + View.MeasureSpec.toString(localLayoutState.getWidthSpec())
+            + SizeSpec.toSimpleString(localLayoutState.getWidthSpec())
             + ", HeightSpec: "
-            + View.MeasureSpec.toString(localLayoutState.getHeightSpec())
+            + SizeSpec.toSimpleString(localLayoutState.getHeightSpec())
             + ", Width: "
             + localLayoutState.getWidth()
             + ", Height: "
