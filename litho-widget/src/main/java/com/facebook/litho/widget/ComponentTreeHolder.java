@@ -541,11 +541,11 @@ public class ComponentTreeHolder {
           LithoVisibilityEventsListener,
           AOSPLifecycleOwnerProvider {
 
-    private LithoVisibilityEventsControllerDelegate mLithoVisibilityEventsControllerDelegate;
+    private final LithoVisibilityEventsControllerDelegate mLithoVisibilityEventsControllerDelegate =
+        new LithoVisibilityEventsControllerDelegate();
 
     public ComponentTreeHolderVisibilityEventsController() {
       mLithoVisibilityEventsController.addListener(this);
-      mLithoVisibilityEventsControllerDelegate = new LithoVisibilityEventsControllerDelegate();
     }
 
     @Override
