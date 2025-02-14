@@ -29,9 +29,10 @@ enum class CrossAxisWrapMode {
   MatchFirstChild,
 
   /**
-   * The cross axis dimension will match the largest item in the [Collection]. Measuring all the
-   * children comes with a high performance cost, especially for infinite scrolls. This should only
-   * be used if absolutely necessary.
+   * The cross axis dimension will match the largest item seen so far in the [Collection]. The
+   * dimension is adjusted dynamically (ie: during scrolling). Measuring all the children comes with
+   * a high performance cost, especially for infinite scrolls. This should only be used if
+   * absolutely necessary.
    *
    * This is an experimental feature and your Section surface will take a perf hit if you use it.
    *
