@@ -21,7 +21,7 @@ import androidx.annotation.UiThread
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
 import com.facebook.rendercore.SizeConstraints
-import com.facebook.rendercore.utils.ThreadUtils.assertMainThread
+import com.facebook.rendercore.thread.utils.ThreadUtils.assertMainThread
 
 /**
  * The [NestedLithoTree] should be used to render Litho components in a container, say a Primitive

@@ -23,7 +23,7 @@ import android.os.Message
 import com.facebook.infer.annotation.ThreadConfined
 import com.facebook.rendercore.StateUpdateReceiver.StateUpdate
 import com.facebook.rendercore.extensions.RenderCoreExtension
-import com.facebook.rendercore.utils.ThreadUtils
+import com.facebook.rendercore.thread.utils.ThreadUtils
 import com.facebook.rendercore.utils.VSyncUtils
 import java.util.Objects
 import java.util.concurrent.Executor

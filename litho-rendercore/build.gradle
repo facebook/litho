@@ -59,6 +59,8 @@ android {
 }
 
 dependencies {
+  api project(":litho-rendercore-thread-utils")
+
   // Annotations
   compileOnly deps.jsr305
   implementation deps.inferAnnotations

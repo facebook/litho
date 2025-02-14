@@ -30,7 +30,7 @@ import androidx.core.util.Pools
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
-import com.facebook.rendercore.utils.ThreadUtils.runOnUiThread
+import com.facebook.rendercore.thread.utils.ThreadUtils.runOnUiThread
 import java.util.WeakHashMap
 import java.util.concurrent.atomic.AtomicInteger
 import javax.annotation.concurrent.GuardedBy

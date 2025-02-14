@@ -18,6 +18,7 @@ package com.facebook.rendercore
 
 import com.facebook.rendercore.RenderState.ResolveFunc
 import com.facebook.rendercore.StateUpdateReceiver.StateUpdate
+import com.facebook.rendercore.thread.utils.ThreadInheritingPriorityFuture
 import java.util.concurrent.Callable
 
 class ResolveFuture<State, RenderContext, StateUpdateType : StateUpdate<*>>(
