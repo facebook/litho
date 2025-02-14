@@ -1,0 +1,23 @@
+load("@fbsource//xplat/pfh/FBApp_UIFrameworks_Litho:DEFS.bzl", "FBApp_UIFrameworks_Litho")
+load(
+    "//tools/build_defs/oss:litho_defs.bzl",
+    "fb_android_library",
+)
+
+oncall("litho_components_for_android")
+
+fb_android_library(
+    name = "rendercore-thread-utils",
+    srcs = glob(
+        ["src/main/java/**/*.kt"],
+    ),
+    autoglob = False,
+    feature = FBApp_UIFrameworks_Litho,
+    labels = [],
+    required_for_source_only_abi = True,
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+    ],
+)
