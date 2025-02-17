@@ -24,7 +24,7 @@ load(
     "litho_android_library",
 )
 
-oncall("litho_components_for_android")
+oncall("playgroundapps")
 
 litho_android_library(
     name = "components",

@@ -10,7 +10,7 @@ load(
     "make_dep_path",
 )
 
-oncall("litho_components_for_android")
+oncall("playgroundapps")
 
 fb_java_binary(
     name = "litho-annotations",

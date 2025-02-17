@@ -11,7 +11,7 @@ load(
     "fb_core_android_library",
 )
 
-oncall("litho_components_for_android")
+oncall("playgroundapps")
 
 fb_core_android_library(
     name = "inlinelayoutspec",
