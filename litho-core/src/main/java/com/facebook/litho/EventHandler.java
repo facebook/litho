@@ -25,8 +25,8 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.debug.DebugInfoReporter;
 import com.facebook.rendercore.Equivalence;
 import com.facebook.rendercore.Function;
+import com.facebook.rendercore.thread.utils.ThreadUtils;
 import com.facebook.rendercore.utils.CommonUtils;
-import com.facebook.rendercore.utils.ThreadUtils;
 import kotlin.Unit;
 
 public class EventHandler<E> implements Function<Void>, Equivalence<EventHandler<E>> {

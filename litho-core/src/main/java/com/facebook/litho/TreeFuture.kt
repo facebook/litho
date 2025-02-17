@@ -30,7 +30,7 @@ import com.facebook.litho.debug.LithoDebugEvents.TreeFuture.resume
 import com.facebook.litho.debug.LithoDebugEvents.TreeFuture.run
 import com.facebook.litho.debug.LithoDebugEvents.TreeFuture.wait
 import com.facebook.rendercore.Systracer
-import com.facebook.rendercore.instrumentation.FutureInstrumenter.instrument
+import com.facebook.rendercore.thread.utils.instrumentation.FutureInstrumenter.instrument
 import java.util.concurrent.Callable
 import java.util.concurrent.CancellationException
 import java.util.concurrent.ExecutionException

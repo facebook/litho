@@ -18,6 +18,7 @@ package com.facebook.rendercore
 
 import android.content.Context
 import com.facebook.rendercore.extensions.RenderCoreExtension
+import com.facebook.rendercore.thread.utils.ThreadInheritingPriorityFuture
 import java.util.concurrent.Callable
 
 class LayoutFuture<State, RenderContext>(

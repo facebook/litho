@@ -16,7 +16,7 @@
 
 package com.facebook.litho;
 
-import static com.facebook.rendercore.utils.ThreadUtils.assertMainThread;
+import static com.facebook.rendercore.thread.utils.ThreadUtils.assertMainThread;
 
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;

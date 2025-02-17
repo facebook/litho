@@ -17,7 +17,7 @@
 package com.facebook.rendercore.incrementalmount;
 
 import static com.facebook.rendercore.incrementalmount.IncrementalMountExtensionConfigs.DEBUG_TAG;
-import static com.facebook.rendercore.utils.ThreadUtils.assertMainThread;
+import static com.facebook.rendercore.thread.utils.ThreadUtils.assertMainThread;
 
 import android.graphics.Rect;
 import android.util.Log;

@@ -25,7 +25,7 @@ import com.facebook.rendercore.LogLevel
 import com.facebook.rendercore.debug.DebugEvent
 import com.facebook.rendercore.debug.DebugEventAttribute
 import com.facebook.rendercore.debug.DebugEventDispatcher
-import com.facebook.rendercore.utils.ThreadUtils
+import com.facebook.rendercore.thread.utils.ThreadUtils
 
 /**
  * Creates an [ItemDecoration] that provides the developer a function to measure the [View] if the
