@@ -19,6 +19,7 @@ package com.facebook.litho
 import android.view.View
 import com.facebook.litho.SizeSpec.EXACTLY
 import com.facebook.litho.accessibility.contentDescription
+import com.facebook.litho.annotations.Hook
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.kotlin.widget.Text
@@ -49,6 +50,7 @@ class KStateTest {
   @Rule @JvmField val mLithoTestRule = LithoTestRule()
   @Rule @JvmField val expectedException = ExpectedException.none()
 
+  @Hook
   private fun <T> ComponentScope.useCustomState(value: T): State<T> {
     val state = useState { value }
     return state
