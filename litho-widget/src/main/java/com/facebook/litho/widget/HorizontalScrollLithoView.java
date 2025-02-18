@@ -25,7 +25,10 @@ import androidx.annotation.Nullable;
 import com.facebook.litho.BaseMountingView;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.HasLithoViewChildren;
+import com.facebook.litho.LayoutState;
+import com.facebook.litho.LithoRenderTreeView;
 import com.facebook.litho.LithoView;
+import com.facebook.litho.TreeState;
 import java.util.List;
 
 /**
@@ -34,7 +37,7 @@ import java.util.List;
  */
 public class HorizontalScrollLithoView extends HorizontalScrollView
     implements HasLithoViewChildren {
-  private final LithoView mLithoView;
+  private final BaseMountingView mBaseMountingView;
 
   private int mComponentWidth;
   private int mComponentHeight;
@@ -45,9 +48,17 @@ public class HorizontalScrollLithoView extends HorizontalScrollView
   @Nullable private ScrollStateDetector mScrollStateDetector;
 
   public HorizontalScrollLithoView(Context context) {
+    this(context, new LithoView(context));
+  }
+
+  public HorizontalScrollLithoView(Context context, BaseMountingView view) {
     super(context);
-    mLithoView = new LithoView(context);
-    addView(mLithoView);
+    mBaseMountingView = view;
+    addView(mBaseMountingView);
+  }
+
+  public BaseMountingView getRenderTreeView() {
+    return mBaseMountingView;
   }
 
   @Override
@@ -73,7 +84,7 @@ public class HorizontalScrollLithoView extends HorizontalScrollView
     // We need to notify LithoView about the visibility bounds that has changed when View is
     // scrolled so that correct visibility events are fired for the child components of
     // HorizontalScroll.
-    mLithoView.notifyVisibleBoundsChanged();
+    mBaseMountingView.notifyVisibleBoundsChanged();
 
     if (mScrollPosition != null) {
       if (mOnScrollChangeListener != null) {
@@ -104,7 +115,7 @@ public class HorizontalScrollLithoView extends HorizontalScrollView
     // ensure that there will never be a size-mismatch between the view and the
     // component-based content, which would trigger a layout pass in the
     // UI thread.
-    mLithoView.measure(
+    mBaseMountingView.measure(
         MeasureSpec.makeMeasureSpec(mComponentWidth, MeasureSpec.EXACTLY),
         MeasureSpec.makeMeasureSpec(mComponentHeight, MeasureSpec.EXACTLY));
 
@@ -115,7 +126,13 @@ public class HorizontalScrollLithoView extends HorizontalScrollView
 
   @Override
   public void obtainLithoViewChildren(List<BaseMountingView> lithoViews) {
-    lithoViews.add(mLithoView);
+    lithoViews.add(mBaseMountingView);
+  }
+
+  public void mount(final @Nullable LayoutState layoutState, final @Nullable TreeState state) {
+    if (layoutState != null && state != null && mBaseMountingView instanceof LithoRenderTreeView) {
+      ((LithoRenderTreeView) mBaseMountingView).setLayoutState(layoutState, state);
+    }
   }
 
   public void mount(
@@ -126,7 +143,11 @@ public class HorizontalScrollLithoView extends HorizontalScrollView
       int scrollX,
       @Nullable OnScrollChangeListener onScrollChangeListener,
       @Nullable ScrollStateListener scrollStateListener) {
-    mLithoView.setComponentTree(componentTree);
+    if (!(mBaseMountingView instanceof LithoView)) {
+      throw new UnsupportedOperationException(
+          "API can only be invoked from Horizontal Scroll Spec");
+    }
+    ((LithoView) mBaseMountingView).setComponentTree(componentTree);
     mScrollPosition = scrollPosition;
     mOnScrollChangeListener = onScrollChangeListener;
     mComponentWidth = width;
@@ -141,7 +162,11 @@ public class HorizontalScrollLithoView extends HorizontalScrollView
   }
 
   public void unmount() {
-    mLithoView.setComponentTree(null, false);
+    if (mBaseMountingView instanceof LithoRenderTreeView) {
+      ((LithoRenderTreeView) mBaseMountingView).clean();
+    } else if (mBaseMountingView instanceof LithoView) {
+      ((LithoView) mBaseMountingView).setComponentTree(null, false);
+    }
     mComponentWidth = 0;
     mComponentHeight = 0;
     mScrollPosition = null;
