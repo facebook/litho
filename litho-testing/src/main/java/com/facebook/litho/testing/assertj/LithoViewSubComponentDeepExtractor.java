@@ -17,7 +17,7 @@
 package com.facebook.litho.testing.assertj;
 
 import com.facebook.infer.annotation.Nullsafe;
-import com.facebook.litho.LithoView;
+import com.facebook.litho.BaseMountingView;
 import com.facebook.litho.config.LithoDebugConfigurations;
 import com.facebook.litho.testing.subcomponents.InspectableComponent;
 import java.util.LinkedList;
@@ -39,16 +39,17 @@ import org.assertj.core.util.Preconditions;
 @Nullsafe(Nullsafe.Mode.LOCAL)
 @Deprecated
 public final class LithoViewSubComponentDeepExtractor
-    implements Extractor<LithoView, List<InspectableComponent>> {
+    implements Extractor<BaseMountingView, List<InspectableComponent>> {
 
   private LithoViewSubComponentDeepExtractor() {}
 
   @Override
-  public List<InspectableComponent> extract(LithoView lithoView) {
+  public List<InspectableComponent> extract(BaseMountingView baseMountingView) {
     final List<InspectableComponent> res = new LinkedList<>();
     final Stack<InspectableComponent> stack = new Stack<>();
 
-    final InspectableComponent rootInstance = InspectableComponent.getRootInstance(lithoView);
+    final InspectableComponent rootInstance =
+        InspectableComponent.getRootInstance(baseMountingView);
     if (rootInstance == null) {
       Preconditions.checkState(
           LithoDebugConfigurations.isDebugModeEnabled,
@@ -73,13 +74,13 @@ public final class LithoViewSubComponentDeepExtractor
     return new LithoViewSubComponentDeepExtractor();
   }
 
-  public static Condition<LithoView> deepSubComponentWith(
+  public static Condition<BaseMountingView> deepSubComponentWith(
       final Condition<InspectableComponent> inner) {
-    return new Condition<LithoView>() {
+    return new Condition<BaseMountingView>() {
       @Override
-      public boolean matches(LithoView lithoView) {
+      public boolean matches(BaseMountingView baseMountingView) {
         as("deep sub component with <%s>", inner);
-        for (InspectableComponent component : subComponentsDeeply().extract(lithoView)) {
+        for (InspectableComponent component : subComponentsDeeply().extract(baseMountingView)) {
           if (inner.matches(component)) {
             return true;
           }

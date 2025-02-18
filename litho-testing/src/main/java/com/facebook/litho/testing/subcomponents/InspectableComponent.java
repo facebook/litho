@@ -54,7 +54,7 @@ public class InspectableComponent {
    * @return The root {@link InspectableComponent} of a LithoView.
    */
   @Nullable
-  public static InspectableComponent getRootInstance(LithoView view) {
+  public static InspectableComponent getRootInstance(BaseMountingView view) {
     final DebugComponent rootInstance = DebugComponent.getRootInstance(view);
 
     if (rootInstance == null) {
