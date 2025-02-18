@@ -200,7 +200,6 @@ public class RecyclerCollectionComponentSpec {
           LithoRecyclerView.OnBeforeLayoutListener onBeforeLayoutListener,
       @Prop(optional = true) @Nullable
           LithoRecyclerView.OnAfterLayoutListener onAfterLayoutListener,
-      @Prop(optional = true) boolean canMeasureRecycler,
       @State(canUpdateLazily = true) boolean hasSetSectionTreeRoot,
       @State RecyclerCollectionEventsController internalEventsController,
       @State LayoutInfo layoutInfo,
@@ -252,7 +251,6 @@ public class RecyclerCollectionComponentSpec {
 
     boolean shouldNotWrapContent =
         !recyclerBinderConfig.wrapContent
-            && !canMeasureRecycler
             && (recyclerBinderConfig.crossAxisWrapMode == CrossAxisWrapMode.NoWrap);
 
     /*
@@ -312,7 +310,6 @@ public class RecyclerCollectionComponentSpec {
             listenersToUse,
             snapHelper,
             canPTR,
-            canMeasureRecycler,
             touchInterceptor,
             itemTouchListener,
             canPTR

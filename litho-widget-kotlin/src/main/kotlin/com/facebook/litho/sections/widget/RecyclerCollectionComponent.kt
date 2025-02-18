@@ -46,7 +46,6 @@ inline fun ResourcesScope.RecyclerCollectionComponent(
         RecyclerCollectionComponentSpec.recyclerConfiguration,
     itemAnimator: ItemAnimator? = RecyclerCollectionComponentSpec.itemAnimator,
     itemDecoration: ItemDecoration? = null,
-    canMeasureRecycler: Boolean = false,
     loadingComponent: Component? = null,
     emptyComponent: Component? = null,
     errorComponent: Component? = null,
@@ -77,7 +76,6 @@ inline fun ResourcesScope.RecyclerCollectionComponent(
         .recyclerConfiguration(recyclerConfiguration)
         .itemAnimator(itemAnimator)
         .itemDecoration(itemDecoration)
-        .canMeasureRecycler(canMeasureRecycler)
         .loadingComponent(loadingComponent)
         .emptyComponent(emptyComponent)
         .errorComponent(errorComponent)

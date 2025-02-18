@@ -83,7 +83,6 @@ constructor(
     private val onScrollListeners: List<RecyclerView.OnScrollListener>? = null,
     private val snapHelper: SnapHelper? = null,
     private val isPullToRefreshEnabled: Boolean = true,
-    private val canMeasureRecycler: Boolean = false,
     private val touchInterceptor: LithoRecyclerView.TouchInterceptor? = null,
     private val onItemTouchListener: RecyclerView.OnItemTouchListener? = null,
     private val onRefresh: (() -> Unit)? = null,
@@ -142,8 +141,7 @@ constructor(
                 startPadding = leftPadding,
                 endPadding = rightPadding,
                 topPadding = topPadding,
-                bottomPadding = bottomPadding,
-                canMeasureRecycler = canMeasureRecycler) {
+                bottomPadding = bottomPadding) {
                   measureVersion.update { v -> v + 1 }
                 },
         mountBehavior = mountBehavior,
@@ -457,7 +455,6 @@ private class RecyclerLayoutBehavior(
     private val endPadding: Int,
     private val topPadding: Int,
     private val bottomPadding: Int,
-    private val canMeasureRecycler: Boolean = false,
     private val onRemeasure: () -> Unit
 ) : LayoutBehavior {
   override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
@@ -467,7 +464,7 @@ private class RecyclerLayoutBehavior(
         size,
         maybeGetSpecWithPadding(sizeConstraints.toWidthSpec(), startPadding + endPadding),
         maybeGetSpecWithPadding(sizeConstraints.toHeightSpec(), topPadding + bottomPadding),
-        if (binder.isCrossAxisWrapContent || binder.isMainAxisWrapContent || canMeasureRecycler)
+        if (binder.isCrossAxisWrapContent || binder.isMainAxisWrapContent)
             eventHandler { onRemeasure() }
         else null)
     return PrimitiveLayoutResult(
