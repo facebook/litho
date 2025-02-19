@@ -45,6 +45,7 @@ inline fun ResourcesScope.VerticalScroll(
     overScrollMode: Int = View.OVER_SCROLL_IF_CONTENT_SCROLLS,
     eventsController: VerticalScrollEventsController? = null,
     shouldCompareCommonProps: Boolean = false,
+    incrementalMountEnabled: Boolean = true,
     noinline onScrollChange: ((NestedScrollView, scrollY: Int, oldScrollY: Int) -> Unit)? = null,
     noinline onScrollStateChange: ((View, Int) -> Unit)? = null,
     noinline onInterceptTouch: ((NestedScrollView, event: MotionEvent) -> Boolean)? = null,
@@ -66,6 +67,7 @@ inline fun ResourcesScope.VerticalScroll(
         onScrollChange = onScrollChange,
         onInterceptTouch = onInterceptTouch,
         onScrollStateChange = onScrollStateChange,
+        incrementalMountEnabled = incrementalMountEnabled,
         child = child(),
         style = style,
     )
@@ -83,6 +85,7 @@ inline fun ResourcesScope.VerticalScroll(
         .fillViewport(fillViewport)
         .eventsController(eventsController)
         .shouldCompareCommonProps(shouldCompareCommonProps)
+        .incrementalMountEnabled(incrementalMountEnabled)
         .apply {
           onScrollChange?.let {
             onScrollChangeListener { v, _, scrollY, _, oldScrollY -> it(v, scrollY, oldScrollY) }
