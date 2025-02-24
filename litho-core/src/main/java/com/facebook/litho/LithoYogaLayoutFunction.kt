@@ -25,7 +25,6 @@ import com.facebook.litho.LithoNode.Companion.applyBorderWidth
 import com.facebook.litho.LithoNode.Companion.applyNestedPadding
 import com.facebook.litho.LithoNode.Companion.writeStyledAttributesToLayoutProps
 import com.facebook.litho.YogaLayoutOutput.Companion.getYogaNode
-import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.drawable.BorderColorDrawable
 import com.facebook.litho.layout.LayoutDirection
@@ -55,7 +54,6 @@ typealias YogaEdgeFloatFunction = ((YogaEdge, Float) -> Unit)
 internal object LithoYogaLayoutFunction {
 
   private val AUTO: YogaValue = YogaValue.parse("auto")
-  private val UNDEFINED: YogaValue = YogaValue.parse("undefined")
 
   /** Calculate the layout for a component using Yoga. */
   fun calculateLayout(
@@ -88,8 +86,7 @@ internal object LithoYogaLayoutFunction {
 
     if (YogaConstants.isUndefined(yogaRoot.width.value)) {
       setStyleWidthFromSpec(yogaRoot, widthSpec)
-      if (ComponentsConfiguration.setMinYogaSizes &&
-          !sizeConstraints.hasExactWidth &&
+      if (!sizeConstraints.hasExactWidth &&
           sizeConstraints.minWidth != 0 &&
           sizeConstraints.minWidth != SizeConstraints.Infinity) {
         yogaRoot.setMinWidth(sizeConstraints.minWidth.toFloat())
@@ -97,8 +94,7 @@ internal object LithoYogaLayoutFunction {
     }
     if (YogaConstants.isUndefined(yogaRoot.height.value)) {
       setStyleHeightFromSpec(yogaRoot, heightSpec)
-      if (ComponentsConfiguration.setMinYogaSizes &&
-          !sizeConstraints.hasExactHeight &&
+      if (!sizeConstraints.hasExactHeight &&
           sizeConstraints.minHeight != 0 &&
           sizeConstraints.minHeight != SizeConstraints.Infinity) {
         yogaRoot.setMinHeight(sizeConstraints.minHeight.toFloat())
@@ -296,15 +292,13 @@ internal object LithoYogaLayoutFunction {
       yogaNode.setHeightAuto()
     }
 
-    if (ComponentsConfiguration.setMinYogaSizes && ComponentsConfiguration.resetMinYogaSizes) {
-      val targetValue = if (ComponentsConfiguration.useUndefinedYogaValue) UNDEFINED else AUTO
-      yogaNode.apply {
-        if (minWidth != targetValue) {
-          setMinWidth(targetValue.value)
-        }
-        if (minHeight != targetValue) {
-          setMinHeight(targetValue.value)
-        }
+    val targetValue = AUTO
+    yogaNode.apply {
+      if (minWidth != targetValue) {
+        setMinWidth(targetValue.value)
+      }
+      if (minHeight != targetValue) {
+        setMinHeight(targetValue.value)
       }
     }
   }

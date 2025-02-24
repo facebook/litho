@@ -284,19 +284,6 @@ internal constructor(
     /** This flag is to enable usage of Primitive Text */
     @JvmField var usePrimitiveText: Boolean = false
 
-    /** This flag is to enable setting minWidth and minHeight sizes on Yoga node for measurement. */
-    @JvmField var setMinYogaSizes: Boolean = false
-
-    /**
-     * This flag is to enable resetting minWidth and minHeight sizes on Yoga node for measurement.
-     */
-    @JvmField var resetMinYogaSizes: Boolean = false
-
-    /**
-     * This flag is to enable setting undefined yoga value to minWidth and minHeight sizes in reset.
-     */
-    @JvmField var useUndefinedYogaValue: Boolean = false
-
     /**
      * This flag is used to enable A11Y support for keyboard navigation, which was disabled due to
      * Litho's A11Y sanity check.
