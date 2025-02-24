@@ -25,6 +25,7 @@ import com.facebook.litho.ResourcesScope
 import com.facebook.litho.annotations.Hook
 import com.facebook.litho.sections.SectionTree
 import com.facebook.litho.useState
+import com.facebook.litho.widget.RecyclerBinder
 import com.facebook.litho.widget.RecyclerEventsController
 import com.facebook.litho.widget.SmoothScrollAlignmentType
 import com.facebook.rendercore.Dimen
@@ -42,8 +43,8 @@ fun ComponentScope.useLazyCollectionController(): LazyCollectionController {
  */
 class LazyCollectionController {
 
-  internal var sectionTree: SectionTree? = null
   internal var recyclerEventsController: RecyclerEventsController? = null
+  internal var scrollerDelegate: ScrollerDelegate? = null
 
   /** Request a call back when a [RecyclerView] is bound or unbound. */
   fun setRecyclerUpdate(listener: (RecyclerView?) -> Unit) {
@@ -115,7 +116,7 @@ class LazyCollectionController {
    */
   @UiThread
   fun scrollToIndex(index: Int, @Px offset: Int = 0) {
-    sectionTree?.requestFocusOnRoot(index, offset)
+    scrollerDelegate?.scrollToIndex(index, offset)
   }
 
   /**
@@ -133,7 +134,7 @@ class LazyCollectionController {
       @Px offset: Int = 0,
       smoothScrollAlignmentType: SmoothScrollAlignmentType? = SmoothScrollAlignmentType.DEFAULT,
   ) {
-    sectionTree?.requestSmoothFocusOnRoot(index, offset, smoothScrollAlignmentType)
+    scrollerDelegate?.smoothScrollToIndex(index, offset, smoothScrollAlignmentType)
   }
 
   /**
@@ -149,7 +150,7 @@ class LazyCollectionController {
       id: Any,
       @Px offset: Int = 0,
   ) {
-    sectionTree?.requestFocusOnRoot(id, offset)
+    scrollerDelegate?.scrollToId(id, offset)
   }
 
   /**
@@ -167,7 +168,117 @@ class LazyCollectionController {
       @Px offset: Int = 0,
       smoothScrollAlignmentType: SmoothScrollAlignmentType? = SmoothScrollAlignmentType.DEFAULT,
   ) {
-    sectionTree?.requestSmoothFocusOnRoot(id, offset, smoothScrollAlignmentType)
+    scrollerDelegate?.smoothScrollToId(id, offset, smoothScrollAlignmentType)
+  }
+}
+
+sealed interface ScrollerDelegate {
+
+  /**
+   * Perform an animated scroll on the [LazyCollection] so that the child with the given id is fully
+   * visible. For an animated scroll use [smoothScrollToId].
+   *
+   * @param id The id of the child to scroll to
+   * @param offset Attempt to offset the child by this number of pixels from the start of the
+   *   Collection.
+   * @param smoothScrollAlignmentType Attempt to position the child based on this alignment type.
+   */
+  fun smoothScrollToId(
+      id: Any,
+      @Px offset: Int = 0,
+      smoothScrollAlignmentType: SmoothScrollAlignmentType? = SmoothScrollAlignmentType.DEFAULT,
+  )
+
+  /**
+   * Perform an animated scroll on the [LazyCollection] so that the child at the given index is
+   * fully visible. For an instantaneous scroll use [scrollToIndex].
+   *
+   * @param index The index of the child to scroll to
+   * @param offset Attempt to offset the child by this number of pixels from the start of the
+   *   Collection.
+   * @param smoothScrollAlignmentType Attempt to position the child based on this alignment type.
+   */
+  fun smoothScrollToIndex(
+      index: Int,
+      @Px offset: Int = 0,
+      smoothScrollAlignmentType: SmoothScrollAlignmentType? = SmoothScrollAlignmentType.DEFAULT,
+  )
+
+  /**
+   * Scroll the [LazyCollection] so that the child with the given id is fully visible. For an
+   * animated scroll use [smoothScrollToId].
+   *
+   * @param id The id of the child to scroll to
+   * @param offset Attempt to offset the child by this number of pixels from the start of the
+   *   Collection.
+   */
+  fun scrollToId(
+      id: Any,
+      @Px offset: Int = 0,
+  )
+
+  /**
+   * Scroll the [LazyCollection] so that the child at the given index is fully visible. For an
+   * animated scroll use [smoothScrollToIndex].
+   *
+   * @param index The index of the child to scroll to
+   * @param offset Attempt to offset the child by this number of pixels from the start of the
+   *   Collection.
+   */
+  fun scrollToIndex(index: Int, @Px offset: Int = 0)
+
+  class SectionTreeScroller(private val sectionTree: SectionTree) : ScrollerDelegate {
+
+    override fun smoothScrollToId(
+        id: Any,
+        offset: Int,
+        smoothScrollAlignmentType: SmoothScrollAlignmentType?
+    ) {
+      sectionTree.requestSmoothFocusOnRoot(id, offset, smoothScrollAlignmentType)
+    }
+
+    override fun smoothScrollToIndex(
+        index: Int,
+        offset: Int,
+        smoothScrollAlignmentType: SmoothScrollAlignmentType?
+    ) {
+      sectionTree.requestSmoothFocusOnRoot(index, offset, smoothScrollAlignmentType)
+    }
+
+    override fun scrollToId(id: Any, offset: Int) {
+      sectionTree.requestFocusOnRoot(id, offset)
+    }
+
+    override fun scrollToIndex(index: Int, offset: Int) {
+      sectionTree.requestFocusOnRoot(index, offset)
+    }
+  }
+
+  class RecyclerBinderScroller(private val recyclerBinder: RecyclerBinder) : ScrollerDelegate {
+
+    override fun smoothScrollToId(
+        id: Any,
+        offset: Int,
+        smoothScrollAlignmentType: SmoothScrollAlignmentType?
+    ) {
+      recyclerBinder.scrollSmoothToPosition(id, offset, smoothScrollAlignmentType)
+    }
+
+    override fun smoothScrollToIndex(
+        index: Int,
+        offset: Int,
+        smoothScrollAlignmentType: SmoothScrollAlignmentType?
+    ) {
+      recyclerBinder.scrollSmoothToPosition(index, offset, smoothScrollAlignmentType)
+    }
+
+    override fun scrollToId(id: Any, offset: Int) {
+      recyclerBinder.scrollToPositionWithOffset(id, offset)
+    }
+
+    override fun scrollToIndex(index: Int, offset: Int) {
+      recyclerBinder.scrollToPositionWithOffset(index, offset)
+    }
   }
 }
 

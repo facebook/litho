@@ -223,7 +223,8 @@ object CollectionRecyclerSpec {
                 binderConfiguration.isPostToFrontOfQueueForFirstChangeset)
             .build()
     sectionTree.set(sectionTreeInstance)
-    lazyCollectionController?.sectionTree = sectionTreeInstance
+    lazyCollectionController?.scrollerDelegate =
+        ScrollerDelegate.SectionTreeScroller(sectionTreeInstance)
     val recyclerEventsController = RecyclerEventsController()
     lazyCollectionController?.recyclerEventsController = recyclerEventsController
     internalRecyclerEventsController.set(recyclerEventsController)

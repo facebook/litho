@@ -24,7 +24,6 @@ import com.facebook.litho.KComponent
 import com.facebook.litho.LithoView
 import com.facebook.litho.Style
 import com.facebook.litho.kotlin.widget.Text
-import com.facebook.litho.sections.SectionTree
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.TestLithoView
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -134,22 +133,23 @@ class LazyCollectionControllerTest {
   fun `test scrollToIndex delegates to SectionTree`() {
     val lazyCollectionController = LazyCollectionController()
 
-    val mockSectionTree = mock<SectionTree>()
-    lazyCollectionController.sectionTree = mockSectionTree
+    val mockSectionTreeScroller = mock<ScrollerDelegate.SectionTreeScroller>()
+    lazyCollectionController.scrollerDelegate = mockSectionTreeScroller
 
     lazyCollectionController.scrollToIndex(5, 10)
-    verify(mockSectionTree).requestFocusOnRoot(5, 10)
+    verify(mockSectionTreeScroller).scrollToIndex(5, 10)
   }
 
   @Test
   fun `test smoothScrollToIndex delegates to SectionTree`() {
     val lazyCollectionController = LazyCollectionController()
 
-    val mockSectionTree = mock<SectionTree>()
-    lazyCollectionController.sectionTree = mockSectionTree
+    val mockSectionTreeScroller = mock<ScrollerDelegate.SectionTreeScroller>()
+    lazyCollectionController.scrollerDelegate = mockSectionTreeScroller
 
     lazyCollectionController.smoothScrollToIndex(5, 10, SmoothScrollAlignmentType.SNAP_TO_START)
-    verify(mockSectionTree).requestSmoothFocusOnRoot(5, 10, SmoothScrollAlignmentType.SNAP_TO_START)
+    verify(mockSectionTreeScroller)
+        .smoothScrollToIndex(5, 10, SmoothScrollAlignmentType.SNAP_TO_START)
   }
 
   @Test
