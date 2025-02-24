@@ -85,7 +85,6 @@ object CollectionGroupSectionSpec {
         monoTimestampMs,
         firstVisibleIndex,
         lastVisibleIndex,
-        changesInfo,
         globalOffset)
   }
 }

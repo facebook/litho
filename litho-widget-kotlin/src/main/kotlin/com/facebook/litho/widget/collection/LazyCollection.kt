@@ -26,7 +26,6 @@ import com.facebook.litho.LithoStartupLogger
 import com.facebook.litho.Style
 import com.facebook.litho.eventHandlerWithReturn
 import com.facebook.litho.kotlinStyle
-import com.facebook.litho.sections.ChangesInfo
 import com.facebook.litho.sections.Children
 import com.facebook.litho.sections.Section
 import com.facebook.litho.sections.SectionContext
@@ -49,6 +48,8 @@ typealias OnViewportChanged =
         firstFullyVisibleIndex: Int,
         lastFullyVisibleIndex: Int) -> Unit
 
+typealias OnDataBound = () -> Unit
+
 typealias OnDataRendered =
     (
         isDataChanged: Boolean,
@@ -56,7 +57,6 @@ typealias OnDataRendered =
         monoTimestampMs: Long,
         firstVisibleIndex: Int,
         lastVisibleIndex: Int,
-        changesInfo: ChangesInfo,
         globalOffset: Int) -> Unit
 
 class LazyCollection(
@@ -80,7 +80,6 @@ class LazyCollection(
     private val startupLogger: LithoStartupLogger? = null,
     private val style: Style? = null,
     private val onViewportChanged: OnViewportChanged? = null,
-    private val onDataBound: (() -> Unit)? = null,
     handle: Handle? = null,
     private val onPullToRefresh: (() -> Unit)? = null,
     private val onNearEnd: OnNearCallback? = null,
@@ -88,6 +87,7 @@ class LazyCollection(
     private val onScrollListeners: List<RecyclerView.OnScrollListener?>? = null,
     private val lazyCollectionController: LazyCollectionController? = null,
     private val onDataRendered: OnDataRendered? = null,
+    private val onDataBound: OnDataBound? = null,
     private val childEquivalenceIncludesCommonProps: Boolean = true,
     private val alwaysDetectDuplicates: Boolean = false,
     private val isLeftFadingEnabled: Boolean = true,
@@ -140,7 +140,6 @@ class LazyCollection(
             monoTimestampMs: Long,
             firstVisibleIndex: Int,
             lastVisibleIndex: Int,
-            changesInfo: ChangesInfo,
             globalOffset: Int ->
           childTracker.onScrollOrUpdated(
               lazyCollectionChildren.effectiveIndexToId,
@@ -153,7 +152,6 @@ class LazyCollection(
               monoTimestampMs,
               firstVisibleIndex,
               lastVisibleIndex,
-              changesInfo,
               globalOffset)
         }
 
