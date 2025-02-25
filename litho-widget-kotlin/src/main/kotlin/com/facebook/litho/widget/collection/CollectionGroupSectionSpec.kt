@@ -80,11 +80,6 @@ object CollectionGroupSectionSpec {
       @Prop(optional = true) onDataRendered: OnDataRendered?
   ) {
     onDataRendered?.invoke(
-        isDataChanged,
-        isMounted,
-        monoTimestampMs,
-        firstVisibleIndex,
-        lastVisibleIndex,
-        globalOffset)
+        isDataChanged, isMounted, monoTimestampMs, firstVisibleIndex, lastVisibleIndex)
   }
 }

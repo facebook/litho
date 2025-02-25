@@ -56,8 +56,7 @@ typealias OnDataRendered =
         isMounted: Boolean,
         monoTimestampMs: Long,
         firstVisibleIndex: Int,
-        lastVisibleIndex: Int,
-        globalOffset: Int) -> Unit
+        lastVisibleIndex: Int) -> Unit
 
 class LazyCollection(
     private val layout: CollectionLayout,
@@ -140,20 +139,14 @@ class LazyCollection(
             isMounted: Boolean,
             monoTimestampMs: Long,
             firstVisibleIndex: Int,
-            lastVisibleIndex: Int,
-            globalOffset: Int ->
+            lastVisibleIndex: Int ->
           childTracker.onScrollOrUpdated(
               lazyCollectionChildren.effectiveIndexToId,
               lazyCollectionChildren.idToChild,
               firstVisibleIndex,
               lastVisibleIndex)
           onDataRendered?.invoke(
-              isDataChanged,
-              isMounted,
-              monoTimestampMs,
-              firstVisibleIndex,
-              lastVisibleIndex,
-              globalOffset)
+              isDataChanged, isMounted, monoTimestampMs, firstVisibleIndex, lastVisibleIndex)
         }
 
     val section =
