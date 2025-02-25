@@ -39,6 +39,7 @@ import com.facebook.litho.flexbox.flex
 import com.facebook.litho.flexbox.position
 import com.facebook.litho.flexbox.positionType
 import com.facebook.litho.transition.transitionKey
+import com.facebook.litho.view.alpha
 import com.facebook.litho.view.background
 import com.facebook.litho.view.clipChildren
 import com.facebook.litho.view.onClick
@@ -224,6 +225,9 @@ object StyleCompat {
   @JvmStatic
   fun touchExpansionDip(yogaEdge: YogaEdge, value: Float): JavaStyle =
       JavaStyle().touchExpansionDip(yogaEdge, value)
+
+  /** @see [JavaStyle.alpha] */
+  fun alpha(value: Float): JavaStyle = JavaStyle().alpha(value)
 }
 
 class JavaStyle {
@@ -516,6 +520,11 @@ class JavaStyle {
           YogaEdge.HORIZONTAL -> style.touchExpansion(horizontal = valueDip)
           YogaEdge.ALL -> style.touchExpansion(all = valueDip)
         }
+    return this
+  }
+
+  fun alpha(value: Float): JavaStyle {
+    style = style.alpha(value)
     return this
   }
 
