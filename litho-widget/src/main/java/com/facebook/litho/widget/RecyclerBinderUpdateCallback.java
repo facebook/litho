@@ -43,7 +43,7 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
   }
 
   public interface OperationExecutor {
-    void executeOperations(@Nullable ComponentContext c, List<Operation> operations);
+    void executeOperations(ComponentContext c, List<Operation> operations);
   }
 
   private final int mOldDataSize;
