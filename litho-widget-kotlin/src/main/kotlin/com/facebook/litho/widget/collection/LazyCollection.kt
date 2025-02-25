@@ -73,6 +73,7 @@ class LazyCollection(
     private val scrollBarStyle: Int? = null,
     private val recyclerViewId: Int? = null,
     private val overScrollMode: Int? = null,
+    private val refreshProgressBarBackgroundColor: Int? = null,
     private val refreshProgressBarColor: Int? = null,
     private val touchInterceptor: LithoRecyclerView.TouchInterceptor? = null,
     private val itemTouchListener: RecyclerView.OnItemTouchListener? = null,
@@ -187,6 +188,7 @@ class LazyCollection(
         .scrollBarStyle(scrollBarStyle)
         .recyclerViewId(recyclerViewId)
         .overScrollMode(overScrollMode)
+        .refreshProgressBarBackgroundColor(refreshProgressBarBackgroundColor)
         .refreshProgressBarColor(refreshProgressBarColor)
         .touchInterceptor(touchInterceptor)
         .itemTouchListener(itemTouchListener)
