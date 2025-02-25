@@ -40,24 +40,6 @@ import com.facebook.litho.widget.LithoRecyclerView.OnBeforeLayoutListener
 import com.facebook.litho.widget.RecyclerBinder
 import com.facebook.rendercore.Dimen
 
-typealias OnViewportChanged =
-    (
-        firstVisibleIndex: Int,
-        lastVisibleIndex: Int,
-        totalCount: Int,
-        firstFullyVisibleIndex: Int,
-        lastFullyVisibleIndex: Int) -> Unit
-
-typealias OnDataBound = () -> Unit
-
-typealias OnDataRendered =
-    (
-        isDataChanged: Boolean,
-        isMounted: Boolean,
-        monoTimestampMs: Long,
-        firstVisibleIndex: Int,
-        lastVisibleIndex: Int) -> Unit
-
 class LazyCollection(
     private val layout: CollectionLayout,
     private val itemAnimator: RecyclerView.ItemAnimator?,

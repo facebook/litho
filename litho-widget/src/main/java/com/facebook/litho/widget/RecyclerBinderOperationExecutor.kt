@@ -17,12 +17,20 @@
 package com.facebook.litho.widget
 
 import com.facebook.litho.ComponentContext
+import com.facebook.litho.widget.collection.OnDataBound
+import com.facebook.litho.widget.collection.OnDataRendered
 
 /**
  * An implementation of [RecyclerBinderUpdateCallback.OperationExecutor] that uses [RecyclerBinder].
  */
-class RecyclerBinderOperationExecutor(private val recyclerBinder: RecyclerBinder) :
-    RecyclerBinderUpdateCallback.OperationExecutor {
+class RecyclerBinderOperationExecutor(
+    private val recyclerBinder: RecyclerBinder,
+    private val useBackgroundChangeSets: Boolean = false,
+    private val onDataBound: OnDataBound? = null,
+    private val onDataRendered: OnDataRendered? = null,
+) : RecyclerBinderUpdateCallback.OperationExecutor {
+
+  constructor(recyclerBinder: RecyclerBinder) : this(recyclerBinder, false, null, null)
 
   override fun executeOperations(
       context: ComponentContext,
@@ -40,38 +48,85 @@ class RecyclerBinderOperationExecutor(private val recyclerBinder: RecyclerBinder
         }
       }
 
-      when (operation.type) {
-        RecyclerBinderUpdateCallback.Operation.INSERT ->
-            if (renderInfos != null) {
-              recyclerBinder.insertRangeAt(operation.index, renderInfos)
-            } else {
-              recyclerBinder.insertItemAt(
-                  operation.index, operation.componentContainers[0].renderInfo)
-            }
-        RecyclerBinderUpdateCallback.Operation.DELETE ->
-            recyclerBinder.removeRangeAt(operation.index, operation.toIndex)
-        RecyclerBinderUpdateCallback.Operation.MOVE ->
-            recyclerBinder.moveItem(operation.index, operation.toIndex)
-        RecyclerBinderUpdateCallback.Operation.UPDATE ->
-            if (renderInfos != null) {
-              recyclerBinder.updateRangeAt(operation.index, renderInfos)
-            } else {
-              recyclerBinder.updateItemAt(
-                  operation.index, operation.componentContainers[0].renderInfo)
-            }
+      if (useBackgroundChangeSets) {
+        applyChangeSetSetAsync(operation, renderInfos)
+      } else {
+        applyChangeSetSetSync(operation, renderInfos)
       }
     }
 
-    recyclerBinder.notifyChangeSetComplete(
-        true,
+    val isDataChanged = operations.isNotEmpty()
+    val changeSetCompleteCallback =
         object : ChangeSetCompleteCallback {
           override fun onDataBound() {
-            // Do nothing.
+            if (!isDataChanged) {
+              return
+            }
+            onDataBound?.invoke()
           }
 
           override fun onDataRendered(isMounted: Boolean, uptimeMillis: Long) {
-            // Do nothing.
+            // Leverage a combined callback from LazyCollections to return the correct index
+            onDataRendered?.invoke(isDataChanged, isMounted, uptimeMillis, -1, -1)
           }
-        })
+        }
+
+    if (useBackgroundChangeSets) {
+      recyclerBinder.notifyChangeSetCompleteAsync(isDataChanged, changeSetCompleteCallback)
+    } else {
+      recyclerBinder.notifyChangeSetComplete(isDataChanged, changeSetCompleteCallback)
+    }
+  }
+
+  private fun applyChangeSetSetSync(
+      operation: RecyclerBinderUpdateCallback.Operation,
+      renderInfos: MutableList<RenderInfo>?
+  ) {
+    when (operation.type) {
+      RecyclerBinderUpdateCallback.Operation.INSERT ->
+          if (renderInfos != null) {
+            recyclerBinder.insertRangeAt(operation.index, renderInfos)
+          } else {
+            recyclerBinder.insertItemAt(
+                operation.index, operation.componentContainers[0].renderInfo)
+          }
+      RecyclerBinderUpdateCallback.Operation.DELETE ->
+          recyclerBinder.removeRangeAt(operation.index, operation.toIndex)
+      RecyclerBinderUpdateCallback.Operation.MOVE ->
+          recyclerBinder.moveItem(operation.index, operation.toIndex)
+      RecyclerBinderUpdateCallback.Operation.UPDATE ->
+          if (renderInfos != null) {
+            recyclerBinder.updateRangeAt(operation.index, renderInfos)
+          } else {
+            recyclerBinder.updateItemAt(
+                operation.index, operation.componentContainers[0].renderInfo)
+          }
+    }
+  }
+
+  private fun applyChangeSetSetAsync(
+      operation: RecyclerBinderUpdateCallback.Operation,
+      renderInfos: MutableList<RenderInfo>?
+  ) {
+    when (operation.type) {
+      RecyclerBinderUpdateCallback.Operation.INSERT ->
+          if (renderInfos != null) {
+            recyclerBinder.insertRangeAtAsync(operation.index, renderInfos)
+          } else {
+            recyclerBinder.insertItemAtAsync(
+                operation.index, operation.componentContainers[0].renderInfo)
+          }
+      RecyclerBinderUpdateCallback.Operation.DELETE ->
+          recyclerBinder.removeRangeAtAsync(operation.index, operation.toIndex)
+      RecyclerBinderUpdateCallback.Operation.MOVE ->
+          recyclerBinder.moveItemAsync(operation.index, operation.toIndex)
+      RecyclerBinderUpdateCallback.Operation.UPDATE ->
+          if (renderInfos != null) {
+            recyclerBinder.updateRangeAtAsync(operation.index, renderInfos)
+          } else {
+            recyclerBinder.updateItemAtAsync(
+                operation.index, operation.componentContainers[0].renderInfo)
+          }
+    }
   }
 }
