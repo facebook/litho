@@ -22,6 +22,7 @@ import com.facebook.litho.core.width
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.assertj.LithoAssertions.assertThat
 import com.facebook.litho.testing.testrunner.LithoTestRunner
+import com.facebook.litho.widget.ExperimentalTransparencyEnabledCardClip
 import com.facebook.rendercore.px
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
@@ -36,12 +37,13 @@ class TransparencyEnabledCardClipTest {
 
   @Test
   fun `TransparencyEnabledCardClip should render`() {
-    val component = TransparencyEnabledCardClip(style = Style.width(100.px).height(100.px))
+    val component =
+        ExperimentalTransparencyEnabledCardClip(style = Style.width(100.px).height(100.px))
 
     val testLithoView = lithoViewRule.render { component }
 
     assertThat(testLithoView).willRenderContent()
-    assertThat(testLithoView).containsExactlyOne(TransparencyEnabledCardClip::class)
+    assertThat(testLithoView).containsExactlyOne(ExperimentalTransparencyEnabledCardClip::class)
     assertThat(testLithoView.lithoView.mountItemCount).isEqualTo(1)
   }
 }

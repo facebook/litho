@@ -45,7 +45,7 @@ import javax.annotation.Nullable;
  * @prop cornerRadius Radius for corner clipping.
  */
 @MountSpec(isPureRender = true)
-class TransparencyEnabledCardClipSpec {
+class TransparencyEnabledCardClipComponentSpec {
 
   @PropDefault static final int cardBackgroundColor = Color.WHITE;
   @PropDefault static final int clippingColor = Color.TRANSPARENT;

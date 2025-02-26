@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
-package com.facebook.samples.litho.kotlin.primitives.widgets
+package com.facebook.litho.widget
 
 import android.graphics.Color
+import android.graphics.drawable.Drawable
 import androidx.annotation.ColorInt
 import com.facebook.litho.DynamicValue
 import com.facebook.litho.LithoPrimitive
 import com.facebook.litho.PrimitiveComponent
 import com.facebook.litho.PrimitiveComponentScope
 import com.facebook.litho.Style
-import com.facebook.litho.widget.CardClipDrawable
 import com.facebook.litho.widget.CardClipDrawable.BOTTOM_LEFT
 import com.facebook.litho.widget.CardClipDrawable.BOTTOM_RIGHT
 import com.facebook.litho.widget.CardClipDrawable.NONE
 import com.facebook.litho.widget.CardClipDrawable.TOP_LEFT
 import com.facebook.litho.widget.CardClipDrawable.TOP_RIGHT
-import com.facebook.litho.widget.TransparencyEnabledCardClipDrawable
 import com.facebook.rendercore.primitives.DrawableAllocator
 import com.facebook.rendercore.primitives.ExactSizeConstraintsLayoutBehavior
 
@@ -40,6 +39,7 @@ private const val DEFAULT_CLIPPING_COLOR = Color.TRANSPARENT
  * A component that paints a card with rounded edges to perform a clipping operation on the
  * component being rendered below it. Used in [CardSpec] when transparencyEnabled(true).
  *
+ * @param backgroundDrawable Drawable to use as a background.
  * @param cardBackgroundColor Background color for the drawable.
  * @param clippingColor Color for corner clipping.
  * @param cornerRadius Radius for corner clipping.
@@ -48,10 +48,11 @@ private const val DEFAULT_CLIPPING_COLOR = Color.TRANSPARENT
  * @param disableClipBottomLeft If set, opt out of clipping the bottom-left corner.
  * @param disableClipBottomRight If set, opt out of clipping the bottom-right corner.
  */
-class TransparencyEnabledCardClip(
+class ExperimentalTransparencyEnabledCardClip(
+    private val backgroundDrawable: Drawable? = null,
     private val cardBackgroundColor: Int = DEFAULT_BACKGROUND_COLOR,
     private val clippingColor: Int = DEFAULT_CLIPPING_COLOR,
-    private val cornerRadius: Float? = null,
+    private val cornerRadius: Float = 0f,
     private val disableClipTopLeft: Boolean = false,
     private val disableClipTopRight: Boolean = false,
     private val disableClipBottomLeft: Boolean = false,
@@ -65,16 +66,7 @@ class TransparencyEnabledCardClip(
         layoutBehavior = ExactSizeConstraintsLayoutBehavior,
         mountBehavior =
             MountBehavior(DrawableAllocator { TransparencyEnabledCardClipDrawable() }) {
-              bind(cornerRadius) { content ->
-                if (cornerRadius != null) {
-                  content.setCornerRadius(cornerRadius)
-                }
-                onUnbind {
-                  if (cornerRadius != null) {
-                    content.setCornerRadius(0f)
-                  }
-                }
-              }
+              cornerRadius.bindTo(TransparencyEnabledCardClipDrawable::setCornerRadius, 0f)
 
               bind(
                   disableClipTopLeft,
@@ -92,6 +84,9 @@ class TransparencyEnabledCardClip(
 
               cardBackgroundColor.bindTo(
                   TransparencyEnabledCardClipDrawable::setBackgroundColor, DEFAULT_BACKGROUND_COLOR)
+
+              backgroundDrawable.bindTo(
+                  TransparencyEnabledCardClipDrawable::setBackgroundDrawable, null)
 
               clippingColor.bindTo(
                   TransparencyEnabledCardClipDrawable::setClippingColor, DEFAULT_CLIPPING_COLOR)
