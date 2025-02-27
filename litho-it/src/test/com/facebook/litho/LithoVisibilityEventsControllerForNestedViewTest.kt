@@ -16,7 +16,6 @@
 
 package com.facebook.litho
 
-import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.kotlin.widget.Text
@@ -27,8 +26,6 @@ import com.facebook.litho.visibility.onVisible
 import com.facebook.litho.widget.collection.LazyList
 import com.facebook.rendercore.sp
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.After
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -44,18 +41,6 @@ class LithoVisibilityEventsControllerForNestedViewTest {
   private val lithoVisibilityEventsControllerDelegate: LithoVisibilityEventsController =
       LithoVisibilityEventsControllerDelegate()
   private val invisibleTags: MutableSet<Int> = mutableSetOf()
-
-  @Before
-  fun setup() {
-    ComponentsConfiguration.defaultInstance =
-        ComponentsConfiguration.defaultInstance.copy(enableVisibilityFixForNestedLithoView = true)
-  }
-
-  @After
-  fun breakdown() {
-    ComponentsConfiguration.defaultInstance =
-        ComponentsConfiguration.defaultInstance.copy(enableVisibilityFixForNestedLithoView = false)
-  }
 
   @Test
   fun `test visibility events for nested LithoView`() {

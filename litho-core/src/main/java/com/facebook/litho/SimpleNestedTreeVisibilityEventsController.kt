@@ -17,7 +17,6 @@
 package com.facebook.litho
 
 import com.facebook.litho.LithoVisibilityEventsController.LithoVisibilityState
-import com.facebook.litho.config.ComponentsConfiguration
 
 /**
  * LithoVisibilityEventsController implementation that can be used to subscribe a nested
@@ -55,9 +54,7 @@ class SimpleNestedTreeVisibilityEventsController(
       LithoVisibilityState.HINT_INVISIBLE ->
           moveToVisibilityState(LithoVisibilityState.HINT_INVISIBLE)
       LithoVisibilityState.DESTROYED -> {
-        if (ComponentsConfiguration.defaultInstance.enableVisibilityFixForNestedLithoView) {
-          moveToVisibilityState(LithoVisibilityState.DESTROYED)
-        }
+        moveToVisibilityState(LithoVisibilityState.DESTROYED)
       }
     }
   }

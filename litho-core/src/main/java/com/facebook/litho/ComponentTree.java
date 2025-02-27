@@ -379,9 +379,7 @@ public class ComponentTree
             config,
             LithoTree.Companion.create(this, stateUpdater),
             "root",
-            ComponentsConfiguration.defaultInstance.enableVisibilityFixForNestedLithoView
-                ? builder.lithoVisibilityEventsController
-                : getLithoVisibilityEventsController(),
+            builder.lithoVisibilityEventsController,
             null,
             null);
 
@@ -420,14 +418,8 @@ public class ComponentTree
       }
     }
 
-    if (ComponentsConfiguration.defaultInstance.enableVisibilityFixForNestedLithoView) {
-      if (mContext.getLithoVisibilityEventsController() != null) {
-        subscribeToVisibilityEventsController(mContext.getLithoVisibilityEventsController());
-      }
-    } else {
-      if (builder.lithoVisibilityEventsController != null) {
-        subscribeToVisibilityEventsController(builder.lithoVisibilityEventsController);
-      }
+    if (mContext.getLithoVisibilityEventsController() != null) {
+      subscribeToVisibilityEventsController(mContext.getLithoVisibilityEventsController());
     }
 
     ComponentTreeDebugEventListener debugEventListener = config.componentsConfig.debugEventListener;
@@ -2534,14 +2526,13 @@ public class ComponentTree
     }
     Object cachedValue =
         mTreeState.getCachedValue(globalKey, index, cachedValueInputs, isLayoutState);
-    if (ComponentsConfiguration.defaultInstance.enableVisibilityFixForNestedLithoView) {
-      // This is a temporary solution to solve the issue of visibility events for
-      // VerticalScrollComponentSpec and HorizontalScrollSpec. We can remove it after shipping the
-      // primitive version of VerticalScroll and HorizontalScroll
-      if (cachedValue instanceof ComponentTree) {
-        if (((ComponentTree) cachedValue).isReleased()) {
-          return null;
-        }
+
+    // This is a temporary solution to solve the issue of visibility events for
+    // VerticalScrollComponentSpec and HorizontalScrollSpec. We can remove it after shipping the
+    // primitive version of VerticalScroll and HorizontalScroll
+    if (cachedValue instanceof ComponentTree) {
+      if (((ComponentTree) cachedValue).isReleased()) {
+        return null;
       }
     }
     return cachedValue;

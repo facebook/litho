@@ -95,7 +95,6 @@ internal constructor(
      * [ComponentHost]
      */
     @JvmField val cloneStateListAnimators: Boolean = false,
-    @JvmField val enableVisibilityFixForNestedLithoView: Boolean = false,
     /**
      * This flag is used to enable the use of default item animators in lazy collections, so that
      * the behavior is compatible to what exists nowadays in the
@@ -345,8 +344,6 @@ internal constructor(
     private var enableDefaultLifecycleOwnerAsFragmentOrActivity =
         baseConfig.enableDefaultLifecycleOwnerAsFragmentOrActivity
     private var cloneStateListAnimators = baseConfig.cloneStateListAnimators
-    private var enableVisibilityFixForNestedLithoView =
-        baseConfig.enableVisibilityFixForNestedLithoView
     private var useDefaultItemAnimatorInLazyCollections =
         baseConfig.useDefaultItemAnimatorInLazyCollections
     private var primitiveRecyclerBinderStrategy = baseConfig.primitiveRecyclerBinderStrategy
@@ -430,10 +427,6 @@ internal constructor(
       cloneStateListAnimators = enabled
     }
 
-    fun enableVisibilityFixForNestedLithoView(enabled: Boolean): Builder = also {
-      enableVisibilityFixForNestedLithoView = enabled
-    }
-
     fun useDefaultItemAnimatorInLazyCollections(enabled: Boolean): Builder = also {
       useDefaultItemAnimatorInLazyCollections = enabled
     }
@@ -497,7 +490,6 @@ internal constructor(
           enableDefaultLifecycleOwnerAsFragmentOrActivity =
               enableDefaultLifecycleOwnerAsFragmentOrActivity,
           cloneStateListAnimators = cloneStateListAnimators,
-          enableVisibilityFixForNestedLithoView = enableVisibilityFixForNestedLithoView,
           useDefaultItemAnimatorInLazyCollections = useDefaultItemAnimatorInLazyCollections,
           enableFixForIM = enableFixForIM,
           visibilityBoundsTransformer = visibilityBoundsTransformer,
