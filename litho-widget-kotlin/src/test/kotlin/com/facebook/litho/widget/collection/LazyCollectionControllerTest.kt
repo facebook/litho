@@ -24,6 +24,7 @@ import com.facebook.litho.KComponent
 import com.facebook.litho.LithoView
 import com.facebook.litho.Style
 import com.facebook.litho.kotlin.widget.Text
+import com.facebook.litho.sections.SectionTree
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.TestLithoView
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -44,7 +45,7 @@ import org.robolectric.annotation.LooperMode
 @RunWith(LithoTestRunner::class)
 class LazyCollectionControllerTest {
 
-  @Rule @JvmField val mLithoTestRule = LithoTestRule()
+  @Rule @JvmField val lithoTestRule = LithoTestRule()
 
   private fun getLazyCollectionRecyclerView(
       testLithoView: TestLithoView,
@@ -68,8 +69,8 @@ class LazyCollectionControllerTest {
 
     assertThat(lazyCollectionController.recyclerView).isNull()
 
-    val testLithoView = mLithoTestRule.render(widthPx = 100, heightPx = 100) { Test() }
-    mLithoTestRule.idle()
+    val testLithoView = lithoTestRule.render(widthPx = 100, heightPx = 100) { Test() }
+    lithoTestRule.idle()
 
     assertThat(lazyCollectionController.recyclerView)
         .isSameAs(getLazyCollectionRecyclerView(testLithoView, "collection_tag"))
@@ -133,23 +134,24 @@ class LazyCollectionControllerTest {
   fun `test scrollToIndex delegates to SectionTree`() {
     val lazyCollectionController = LazyCollectionController()
 
-    val mockSectionTreeScroller = mock<ScrollerDelegate.SectionTreeScroller>()
-    lazyCollectionController.scrollerDelegate = mockSectionTreeScroller
+    val mockSectionTree = mock<SectionTree>()
+    val sectionTreeScroller = ScrollerDelegate.SectionTreeScroller(mockSectionTree)
+    lazyCollectionController.scrollerDelegate = sectionTreeScroller
 
     lazyCollectionController.scrollToIndex(5, 10)
-    verify(mockSectionTreeScroller).scrollToIndex(5, 10)
+    verify(mockSectionTree).requestFocusOnRoot(5, 10)
   }
 
   @Test
   fun `test smoothScrollToIndex delegates to SectionTree`() {
     val lazyCollectionController = LazyCollectionController()
 
-    val mockSectionTreeScroller = mock<ScrollerDelegate.SectionTreeScroller>()
-    lazyCollectionController.scrollerDelegate = mockSectionTreeScroller
+    val mockSectionTree = mock<SectionTree>()
+    val sectionTreeScroller = ScrollerDelegate.SectionTreeScroller(mockSectionTree)
+    lazyCollectionController.scrollerDelegate = sectionTreeScroller
 
     lazyCollectionController.smoothScrollToIndex(5, 10, SmoothScrollAlignmentType.SNAP_TO_START)
-    verify(mockSectionTreeScroller)
-        .smoothScrollToIndex(5, 10, SmoothScrollAlignmentType.SNAP_TO_START)
+    verify(mockSectionTree).requestSmoothFocusOnRoot(5, 10, SmoothScrollAlignmentType.SNAP_TO_START)
   }
 
   @Test
@@ -166,14 +168,14 @@ class LazyCollectionControllerTest {
           }
     }
 
-    val testLithoView = mLithoTestRule.render(widthPx = 100, heightPx = 100) { Test() }
-    mLithoTestRule.idle()
+    val testLithoView = lithoTestRule.render(widthPx = 100, heightPx = 100) { Test() }
+    lithoTestRule.idle()
 
-    mLithoTestRule.act(testLithoView) { lazyCollectionController.scrollToId(9) }
+    lithoTestRule.act(testLithoView) { lazyCollectionController.scrollToId(9) }
 
     // Additional `setRoot()` to kick the test infra into applying RecyclerView changes
     testLithoView.setRoot(Test())
-    mLithoTestRule.idle()
+    lithoTestRule.idle()
 
     val recyclerView = getLazyCollectionRecyclerView(testLithoView, "collection_tag")
     assertThat(recyclerView).isNotNull
