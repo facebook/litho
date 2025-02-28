@@ -290,7 +290,8 @@ public class ComponentContext {
             null,
             null,
             null,
-            getLogger());
+            getLogger(),
+            false);
     setRenderStateContext(resolveContext);
 
     return resolveContext;

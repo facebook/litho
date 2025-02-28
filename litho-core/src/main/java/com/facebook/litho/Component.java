@@ -465,9 +465,10 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
 
     final CalculationContext calculationContext = c.getCalculationStateContext();
     if (calculationContext instanceof ResolveContext
+        && !((ResolveContext) calculationContext).isInLayout()
         && LithoDebugConfigurations.isDebugModeEnabled) {
       DebugInfoReporter.report(
-          "Component:MeasureInResolve",
+          "Component:MeasureInResolve.v2",
           attr -> {
             Component scope = c.getComponentScope();
             if (scope != null) {
@@ -479,7 +480,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
 
             StringBuilder sb = new StringBuilder();
             StackTraceElement[] traces = Thread.currentThread().getStackTrace();
-            for (int i = 0; i < 10; i++) sb.append(traces[i]).append("\n");
+            for (int i = 5; i < 15; i++) sb.append(traces[i]).append("\n");
             attr.put("stacktrace", sb.toString());
 
             return Unit.INSTANCE;
@@ -538,7 +539,8 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
                   null,
                   null,
                   null,
-                  null);
+                  null,
+                  true);
           c.setRenderStateContext(nestedRsc);
 
           node = Resolver.resolveTree(nestedRsc, c, this);
@@ -656,7 +658,8 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
               null,
               null,
               null,
-              null);
+              null,
+              true);
 
       c.setRenderStateContext(tempRsc);
 

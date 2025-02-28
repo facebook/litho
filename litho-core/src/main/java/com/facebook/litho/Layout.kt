@@ -334,7 +334,8 @@ internal object Layout {
               treeFuture = null,
               currentRoot = null,
               perfEventLogger = null,
-              componentsLogger = null)
+              componentsLogger = null,
+              isInLayout = true)
       parentContext.renderStateContext = nestedRsc
 
       // 4.b Create a new layout.

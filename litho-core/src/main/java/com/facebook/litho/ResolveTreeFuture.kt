@@ -207,7 +207,8 @@ constructor(
                 future,
                 currentRootNode,
                 perfEventLogger,
-                context.logger)
+                context.logger,
+                false)
         val previousStateContext = context.calculationStateContext
         val node: LithoNode?
         try {
