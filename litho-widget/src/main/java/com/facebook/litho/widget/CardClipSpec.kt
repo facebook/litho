@@ -26,7 +26,6 @@ import com.facebook.litho.annotations.Prop
 import com.facebook.litho.annotations.PropDefault
 import com.facebook.litho.annotations.Reason
 import com.facebook.litho.annotations.ResType
-import com.facebook.litho.config.ComponentsConfiguration
 
 /**
  * A component that paints rounded edges to mimic a clipping operation on the component being
@@ -55,23 +54,12 @@ internal object CardClipSpec {
       @Prop(optional = true) disableClipBottomLeft: Boolean,
       @Prop(optional = true) disableClipBottomRight: Boolean
   ): Component {
-    return if (ComponentsConfiguration.usePrimitiveCardClip) {
-      ExperimentalCardClip(
-          clippingColor = clippingColor,
-          cornerRadius = cornerRadius,
-          disableClipTopLeft = disableClipTopLeft,
-          disableClipTopRight = disableClipTopRight,
-          disableClipBottomLeft = disableClipBottomLeft,
-          disableClipBottomRight = disableClipBottomRight)
-    } else {
-      CardClipComponent.create(c)
-          .clippingColor(clippingColor)
-          .cornerRadiusPx(cornerRadius)
-          .disableClipTopLeft(disableClipTopLeft)
-          .disableClipTopRight(disableClipTopRight)
-          .disableClipBottomLeft(disableClipBottomLeft)
-          .disableClipBottomRight(disableClipBottomRight)
-          .build()
-    }
+    return ExperimentalCardClip(
+        clippingColor = clippingColor,
+        cornerRadius = cornerRadius,
+        disableClipTopLeft = disableClipTopLeft,
+        disableClipTopRight = disableClipTopRight,
+        disableClipBottomLeft = disableClipBottomLeft,
+        disableClipBottomRight = disableClipBottomRight)
   }
 }
