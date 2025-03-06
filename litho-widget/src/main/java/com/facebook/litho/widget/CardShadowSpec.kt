@@ -25,7 +25,6 @@ import com.facebook.litho.annotations.Prop
 import com.facebook.litho.annotations.PropDefault
 import com.facebook.litho.annotations.Reason
 import com.facebook.litho.annotations.ResType
-import com.facebook.litho.config.ComponentsConfiguration
 
 /**
  * A component that is able to render the card's shadow. Used in the implementation of [CardSpec].
@@ -60,31 +59,16 @@ internal object CardShadowSpec {
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) shadowLeftSizeOverride: Float,
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) shadowRightSizeOverride: Float
   ): Component {
-    return if (ComponentsConfiguration.usePrimitiveCardShadow) {
-      ExperimentalCardShadow(
-          shadowStartColor = shadowStartColor,
-          shadowEndColor = shadowEndColor,
-          cornerRadius = cornerRadius,
-          shadowSize = shadowSize,
-          shadowDx = shadowDx,
-          shadowDy = shadowDy,
-          hideTopShadow = hideTopShadow,
-          hideBottomShadow = hideBottomShadow,
-          shadowLeftSizeOverride = shadowLeftSizeOverride,
-          shadowRightSizeOverride = shadowRightSizeOverride)
-    } else {
-      CardShadowComponent.create(c)
-          .shadowStartColor(shadowStartColor)
-          .shadowEndColor(shadowEndColor)
-          .cornerRadiusPx(cornerRadius)
-          .shadowSizePx(shadowSize)
-          .shadowDxPx(shadowDx)
-          .shadowDyPx(shadowDy)
-          .hideTopShadow(hideTopShadow)
-          .hideBottomShadow(hideBottomShadow)
-          .shadowLeftSizeOverridePx(shadowLeftSizeOverride)
-          .shadowRightSizeOverridePx(shadowRightSizeOverride)
-          .build()
-    }
+    return ExperimentalCardShadow(
+        shadowStartColor = shadowStartColor,
+        shadowEndColor = shadowEndColor,
+        cornerRadius = cornerRadius,
+        shadowSize = shadowSize,
+        shadowDx = shadowDx,
+        shadowDy = shadowDy,
+        hideTopShadow = hideTopShadow,
+        hideBottomShadow = hideBottomShadow,
+        shadowLeftSizeOverride = shadowLeftSizeOverride,
+        shadowRightSizeOverride = shadowRightSizeOverride)
   }
 }
