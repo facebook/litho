@@ -816,7 +816,7 @@ public class ComponentContext {
   }
 
   @Nullable
-  public LithoVisibilityEventsController getLithoVisibilityEventsController() {
+  LithoVisibilityEventsController getLithoVisibilityEventsController() {
     return mLithoVisibilityEventsController;
   }
 
