@@ -1367,8 +1367,6 @@ open class ComponentHost(
     scrapDrawableMountItems = null
     contentDescription = null
     viewTags = null
-    childDrawingOrder = IntArray(0)
-    isChildDrawingOrderDirty = false
     inLayout = false
     hadChildWithDuplicateParentState = false
     componentAccessibilityDelegate = null
