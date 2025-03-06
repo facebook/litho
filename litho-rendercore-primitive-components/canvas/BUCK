@@ -25,7 +25,7 @@ fb_android_library(
     deps = [
         LITHO_RENDERCORE_TARGET,
         LITHO_RENDERCORE_PRIMITIVES_TARGET,
-        "//fbandroid/third-party/android/androidx:collection",
+        "//third-party/java/androidx/collection/collection:collection",
         "//third-party/java/androidx/core/core-ktx:core-ktx",
     ],
     exported_deps = [
