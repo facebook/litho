@@ -16,7 +16,10 @@
  * @format
  */
 
-const {fbContent, fbInternalOnly} = require('docusaurus-plugin-internaldocs-fb/internal');
+const {
+  fbContent,
+  fbInternalOnly,
+} = require('docusaurus-plugin-internaldocs-fb/internal');
 module.exports = {
   mainSidebar: [
     {
@@ -44,7 +47,7 @@ module.exports = {
             'mainconcepts/use-cached',
             'mainconcepts/use-error-boundary',
             'mainconcepts/use-live-data',
-            'mainconcepts/use-callback'
+            'mainconcepts/use-callback',
           ],
         },
         {
@@ -96,9 +99,9 @@ module.exports = {
         ...fbInternalOnly(['fb/widgets/design-components']),
       ],
       'Adopting Litho': [
-          'kotlin/migration-strategies',
-          'kotlin/custom-view-compat',
-        ],
+        'kotlin/migration-strategies',
+        'kotlin/custom-view-compat',
+      ],
       'Spec APIs': [
         'codegen/overview',
         'codegen/layout-specs',
@@ -113,7 +116,7 @@ module.exports = {
             'sections/best-practices',
             'sections/hscrolls',
             {
-              'Advanced': [
+              Advanced: [
                 'sections/working-ranges',
                 'sections/communicating-with-the-ui',
                 'sections/services',
@@ -142,9 +145,12 @@ module.exports = {
         'kotlin/kotlin-transitions',
         'kotlin/kotlin-flexbox-containers',
         'kotlin/event-handling',
+        'kotlin/migrate-layout-spec',
         'kotlin/migrating-from-mountspecs-to-primitives',
         'kotlin/lazycollections/lazycollections-sections-migration',
-        ...fbInternalOnly(['kotlin/lazycollections/fb/lazycollections-fb-internal']),
+        ...fbInternalOnly([
+          'kotlin/lazycollections/fb/lazycollections-fb-internal',
+        ]),
         'kotlin/kotlin-api-cheatsheet',
       ],
       // TODO: clean this section up, add intro page
@@ -316,5 +322,5 @@ module.exports = {
         ],
       }),
     },
-  ]
+  ],
 };
