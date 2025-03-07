@@ -1,0 +1,56 @@
+---
+id: migrate-layout-spec
+title: Migrating Layout Spec
+keywords:
+    - litho
+    - litho kotlin
+    - kotlin litho
+    - layout spec
+custom_edit_url: https://www.internalfb.com/intern/diffusion/FBS/browsefile/master/fbandroid/libraries/components/docs/kotlin/migrating-layout-spec.mdx
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import VersionedCodeBlock from '@theme/VersionedCodeBlock';
+
+## Overview
+
+This guide provides detailed instructions for migrating from the Litho LayoutSpec API to the KComponent API. The transition is crucial as the Litho Spec API is now in maintenance mode, with limited support and no new features being added. Migrating to the KComponent API offers performance improvements, enhanced stability, and compile-time reliability checks.
+## Benefits of Migration
+* Stability: Converts many runtime crashes into compile-time errors.
+* Performance: Improves build time as there is no generated code required.
+* Support: The Spec API will only receive bug fixes, with all new APIs and improvements available exclusively in the Kotlin API.
+
+## Migration Process
+
+1. Preparation:
+    1. Ensure you have screenshot tests and/or end-to-end tests in place to verify functionality post-migration.
+    2. Consider breaking down large or complex specs into smaller components.
+2. Conversion:
+    1. Convert your Java layout spec to Kotlin using the j2k tool.
+    2. Run the conversion script for the Layout spec:
+
+```
+.fbandroid/scripts/litho/convert_spec_to_kotlin_api.sh <spec.kt>
+```
+
+If automatic conversion fails, use the `--save` option to save changes and manually fix errors:
+
+```
+.fbandroid/scripts/litho/convert_spec_to_kotlin_api.sh <spec.kt> --save
+```
+
+3. Testing:
+    1. Run buck build for the migrated module to ensure it can be built successfully.
+    2. Run screenshot or end-to-end tests to ensure they still pass.
+
+
+## Current Limitations
+
+* The current codemod cannot handle all APIs due to the complexity of the Layout spec. [Unhandled APIs ](https://www.internalfb.com/code/fbsource/xplat/scripts/codemod_service/litho/spec_to_kotlin_api_conversion_input.sh?lines=5)are filtered out, and manual migration will be needed to handle all these cases.
+* There is no codemod available for MountSpec and Sections as the small number of usages. Refer to the [Migrating MountSpecs to PrimitiveComponents](https://fblitho.com/docs/kotlin/migrating-from-mountspecs-to-primitives/) and [Migrating Sections to LazyCollections](https://fblitho.com/docs/kotlin/lazycollections/lazycollections-sections-migration/) for detailed steps.
+
+## Additional Resources
+
+* [Kotlin API](https://fblitho.com/docs/kotlin/kotlin-api-basics/)
+* [Cheatsheet](https://fblitho.com/docs/kotlin/kotlin-api-cheatsheet/)
