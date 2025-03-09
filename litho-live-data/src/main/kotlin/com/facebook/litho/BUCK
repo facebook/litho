@@ -16,7 +16,7 @@ litho_android_library(
     ],
     deps = [
         LITHO_JAVA_TARGET,
-        "//fbandroid/third-party/android/androidx:lifecycle-common",
-        "//fbandroid/third-party/android/androidx:lifecycle-livedata-ktx",
+        "//third-party/java/androidx/lifecycle/lifecycle-common:lifecycle-common",
+        "//third-party/java/androidx/lifecycle/lifecycle-livedata-ktx:lifecycle-livedata-ktx",
     ],
 )
