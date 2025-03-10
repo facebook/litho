@@ -23,11 +23,8 @@ import androidx.recyclerview.widget.OrientationHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
-import com.facebook.litho.EventHandler
 import com.facebook.litho.LithoStartupLogger
 import com.facebook.litho.StateValue
-import com.facebook.litho.StyleCompat
-import com.facebook.litho.TouchEvent
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateInitialState
 import com.facebook.litho.annotations.OnCreateLayout
@@ -88,7 +85,6 @@ object CollectionRecyclerSpec {
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) endPadding: Int,
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) topPadding: Int,
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) bottomPadding: Int,
-      @Prop(optional = true) recyclerTouchEventHandler: EventHandler<TouchEvent>?,
       @Prop(optional = true) horizontalFadingEdgeEnabled: Boolean,
       @Prop(optional = true) verticalFadingEdgeEnabled: Boolean,
       @Prop(optional = true) isLeftFadingEnabled: Boolean,
@@ -181,8 +177,7 @@ object CollectionRecyclerSpec {
         recyclerViewId = recyclerViewId ?: View.NO_ID,
         overScrollMode = overScrollMode ?: View.OVER_SCROLL_ALWAYS,
         onBeforeLayoutListener = onBeforeLayoutListener,
-        onAfterLayoutListener = onAfterLayoutListener,
-        style = StyleCompat.touchHandler(recyclerTouchEventHandler).build())
+        onAfterLayoutListener = onAfterLayoutListener)
   }
 
   @JvmStatic
