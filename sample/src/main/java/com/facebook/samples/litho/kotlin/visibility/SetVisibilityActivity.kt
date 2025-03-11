@@ -29,7 +29,6 @@ import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.LithoView
 import com.facebook.litho.Style
-import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.core.width
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.visibility.onInvisible
@@ -43,7 +42,6 @@ const val PARENT_INVISIBLE: String = "Set Parent visibility to INVISIBLE"
 const val PARENT_VISIBLE: String = "Set Parent visibility to VISIBLE"
 
 class SetVisibilityActivity : NavigatableDemoActivity() {
-  var defaultInstance: ComponentsConfiguration = ComponentsConfiguration.defaultInstance
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -93,17 +91,6 @@ class SetVisibilityActivity : NavigatableDemoActivity() {
       parent.visibility = if (parent.visibility == View.VISIBLE) View.GONE else View.VISIBLE
       button.text = if (parent.visibility == View.VISIBLE) PARENT_VISIBLE else PARENT_INVISIBLE
     }
-  }
-
-  override fun onResume() {
-    super.onResume()
-    ComponentsConfiguration.defaultInstance =
-        defaultInstance.copy(enableCheckVisibilityAggregated = true)
-  }
-
-  override fun onPause() {
-    super.onPause()
-    ComponentsConfiguration.defaultInstance = defaultInstance
   }
 
   private class VisibilityComponent : KComponent() {

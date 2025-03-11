@@ -360,10 +360,10 @@ class Demos {
                             SingleDemo(name = "useLiveData", component = UseLiveDataComponent()),
                             SingleDemo(name = "useFlow", component = UseFlowComponent()))),
                     DemoGrouping(
-                        name = "Visibility",
+                        name = "Visibility Events",
                         listOf(
                             SingleDemo(
-                                name = "setVisibility",
+                                name = "Android setVisibility API (in experiment)",
                                 klass = SetVisibilityActivity::class.java))),
                 )),
             DemoList(
