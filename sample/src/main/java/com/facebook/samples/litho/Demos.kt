@@ -140,6 +140,7 @@ import com.facebook.samples.litho.kotlin.state.IdentityRootComponent
 import com.facebook.samples.litho.kotlin.state.StateParentChildComponent
 import com.facebook.samples.litho.kotlin.treeprops.TreePropsExampleComponent
 import com.facebook.samples.litho.kotlin.triggers.TooltipTriggerExampleKComponent
+import com.facebook.samples.litho.kotlin.visibility.AOSPLithoVisibilityEventsControllerActivity
 import com.facebook.samples.litho.kotlin.visibility.LithoVisibilityEventsControllerActivity
 import com.facebook.samples.litho.kotlin.visibility.SetVisibilityActivity
 import com.facebook.samples.litho.onboarding.FirstComponentActivity
@@ -369,6 +370,9 @@ class Demos {
                             SingleDemo(
                                 name = "LithoVisibilityEventsController",
                                 klass = LithoVisibilityEventsControllerActivity::class.java),
+                            SingleDemo(
+                                name = "AOSPLithoVisibilityEventsController",
+                                klass = AOSPLithoVisibilityEventsControllerActivity::class.java),
                         )),
                 )),
             DemoList(
