@@ -19,9 +19,9 @@ package com.facebook.litho.widget.collection
 import androidx.recyclerview.widget.DiffUtil
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.ComponentRenderInfo
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.kotlin.times
 import org.robolectric.annotation.LooperMode
 
 @LooperMode(LooperMode.Mode.LEGACY)
@@ -68,8 +68,9 @@ class CollectionDiffTest {
     val contentComparator = { a: Item, b: Item -> a.content == b.content }
     val diffCallback = CollectionDiffCallback(oldData, newData, itemComparator, contentComparator)
     val listUpdateCallback =
-        CollectionUpdateCallback(
-            oldData, newData, { _: Int, _: Item -> ComponentRenderInfo.createEmpty() })
+        CollectionUpdateCallback(oldData, newData) { _: Int, _: Item ->
+          ComponentRenderInfo.createEmpty()
+        }
     DiffUtil.calculateDiff(diffCallback).dispatchUpdatesTo(listUpdateCallback)
     return listUpdateCallback.operations
   }
@@ -77,29 +78,29 @@ class CollectionDiffTest {
   @Test
   fun `test two empty lists end up no change`() {
     val operations = calculateDiff(testCases[0].first, testCases[0].second)
-    assert(operations.isEmpty())
+    assertThat(operations).isEmpty()
   }
 
   @Test
   fun `test two identical lists end up no change`() {
     val operations = calculateDiff(testCases[1].first, testCases[1].second)
-    assert(operations.isEmpty())
+    assertThat(operations).isEmpty()
   }
 
   @Test
   fun `test two different lists end up removing and inserting`() {
     val operations = calculateDiff(testCases[2].first, testCases[2].second)
 
-    assert(operations.size == 2)
+    assertThat(operations.size).isEqualTo(2)
     operations[0].let { operation ->
-      assert(operation.type == CollectionOperation.Type.DELETE)
-      assert(operation.index == 0)
-      assert(operation.count == 2)
+      assertThat(operation.type).isEqualTo(CollectionOperation.Type.DELETE)
+      assertThat(operation.index).isEqualTo(0)
+      assertThat(operation.count).isEqualTo(2)
     }
     operations[1].let { operation ->
-      assert(operation.type == CollectionOperation.Type.INSERT)
-      assert(operation.index == 0)
-      assert(operation.count == 2)
+      assertThat(operation.type).isEqualTo(CollectionOperation.Type.INSERT)
+      assertThat(operation.index).isEqualTo(0)
+      assertThat(operation.count).isEqualTo(2)
     }
   }
 
@@ -107,10 +108,10 @@ class CollectionDiffTest {
   fun `test single item change ends up updating`() {
     val operations = calculateDiff(testCases[3].first, testCases[3].second)
 
-    assert(operations.size == 1)
+    assertThat(operations.size).isEqualTo(1)
     operations[0].let { operation ->
-      assert(operation.type == CollectionOperation.Type.UPDATE)
-      assert(operation.index == 0)
+      assertThat(operation.type).isEqualTo(CollectionOperation.Type.UPDATE)
+      assertThat(operation.index).isEqualTo(0)
     }
   }
 
@@ -118,11 +119,11 @@ class CollectionDiffTest {
   fun `test multiple item changes end up updating range`() {
     val operations = calculateDiff(testCases[4].first, testCases[4].second)
 
-    assert(operations.size == 1)
+    assertThat(operations.size).isEqualTo(1)
     operations[0].let { operation ->
-      assert(operation.type == CollectionOperation.Type.UPDATE)
-      assert(operation.index == 0)
-      assert(operation.count == 2)
+      assertThat(operation.type).isEqualTo(CollectionOperation.Type.UPDATE)
+      assertThat(operation.index).isEqualTo(0)
+      assertThat(operation.count).isEqualTo(2)
     }
   }
 
@@ -130,11 +131,11 @@ class CollectionDiffTest {
   fun `test reordered items end up moving`() {
     val operations = calculateDiff(testCases[5].first, testCases[5].second)
 
-    assert(operations.size == 1)
+    assertThat(operations.size).isEqualTo(1)
     operations[0].let { operation ->
-      assert(operation.type == CollectionOperation.Type.MOVE)
-      assert(operation.index == 0)
-      assert(operation.toIndex == 1)
+      assertThat(operation.type).isEqualTo(CollectionOperation.Type.MOVE)
+      assertThat(operation.index).isEqualTo(0)
+      assertThat(operation.toIndex).isEqualTo(1)
     }
   }
 
@@ -142,11 +143,11 @@ class CollectionDiffTest {
   fun `test single item insertion end up inserting an item`() {
     val operations = calculateDiff(testCases[6].first, testCases[6].second)
 
-    assert(operations.size == 1)
+    assertThat(operations.size).isEqualTo(1)
     operations[0].let { operation ->
-      assert(operation.type == CollectionOperation.Type.INSERT)
-      assert(operation.index == 0)
-      assert(operation.count == 1)
+      assertThat(operation.type).isEqualTo(CollectionOperation.Type.INSERT)
+      assertThat(operation.index).isEqualTo(1)
+      assertThat(operation.count).isEqualTo(1)
     }
   }
 
@@ -154,11 +155,11 @@ class CollectionDiffTest {
   fun `test multiple items insertion end up inserting a range`() {
     val operations = calculateDiff(testCases[7].first, testCases[7].second)
 
-    assert(operations.size == 1)
+    assertThat(operations.size).isEqualTo(1)
     operations[0].let { operation ->
-      assert(operation.type == CollectionOperation.Type.INSERT)
-      assert(operation.index == 0)
-      assert(operation.count == 2)
+      assertThat(operation.type).isEqualTo(CollectionOperation.Type.INSERT)
+      assertThat(operation.index).isEqualTo(1)
+      assertThat(operation.count).isEqualTo(2)
     }
   }
 
@@ -166,11 +167,11 @@ class CollectionDiffTest {
   fun `test single item deletion end up removing an item`() {
     val operations = calculateDiff(testCases[8].first, testCases[8].second)
 
-    assert(operations.size == 1)
+    assertThat(operations.size).isEqualTo(1)
     operations[0].let { operation ->
-      assert(operation.type == CollectionOperation.Type.DELETE)
-      assert(operation.index == 1)
-      assert(operation.count == 1)
+      assertThat(operation.type).isEqualTo(CollectionOperation.Type.DELETE)
+      assertThat(operation.index).isEqualTo(1)
+      assertThat(operation.count).isEqualTo(1)
     }
   }
 
@@ -178,11 +179,11 @@ class CollectionDiffTest {
   fun `test multiple items deletion end up removing a range`() {
     val operations = calculateDiff(testCases[9].first, testCases[9].second)
 
-    assert(operations.size == 1)
+    assertThat(operations.size).isEqualTo(1)
     operations[0].let { operation ->
-      assert(operation.type == CollectionOperation.Type.DELETE)
-      assert(operation.index == 1)
-      assert(operation.count == 2)
+      assertThat(operation.type).isEqualTo(CollectionOperation.Type.DELETE)
+      assertThat(operation.index).isEqualTo(1)
+      assertThat(operation.count).isEqualTo(2)
     }
   }
 
@@ -190,21 +191,21 @@ class CollectionDiffTest {
   fun `test mixed operations end up removing, inserting, and updating`() {
     val operations = calculateDiff(testCases[10].first, testCases[10].second)
 
-    assert(operations.size == 3)
+    assertThat(operations.size).isEqualTo(3)
     operations[0].let { operation ->
-      assert(operation.type == CollectionOperation.Type.DELETE)
-      assert(operation.index == 1)
-      assert(operation.count == 1)
+      assertThat(operation.type).isEqualTo(CollectionOperation.Type.DELETE)
+      assertThat(operation.index).isEqualTo(1)
+      assertThat(operation.count).isEqualTo(1)
     }
     operations[1].let { operation ->
-      assert(operation.type == CollectionOperation.Type.INSERT)
-      assert(operation.index == 1)
-      assert(operation.count == 1)
+      assertThat(operation.type).isEqualTo(CollectionOperation.Type.INSERT)
+      assertThat(operation.index).isEqualTo(1)
+      assertThat(operation.count).isEqualTo(1)
     }
     operations[2].let { operation ->
-      assert(operation.type == CollectionOperation.Type.UPDATE)
-      assert(operation.index == 0)
-      assert(operation.count == 1)
+      assertThat(operation.type).isEqualTo(CollectionOperation.Type.UPDATE)
+      assertThat(operation.index).isEqualTo(0)
+      assertThat(operation.count).isEqualTo(1)
     }
   }
 
