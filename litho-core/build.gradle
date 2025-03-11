@@ -92,6 +92,7 @@ dependencies {
     implementation deps.supportCore
     implementation deps.supportCustomView
     implementation deps.supportViewPager
+    implementation deps.supportViewPager2
     implementation deps.supportDynamicAnimations
     implementation deps.lifecycle
 

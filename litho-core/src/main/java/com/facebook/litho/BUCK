@@ -62,6 +62,7 @@ litho_android_library(
         "//third-party/java/androidx/activity/activity:activity",
         "//third-party/java/androidx/lifecycle/lifecycle-runtime:lifecycle-runtime",
         "//third-party/java/androidx/viewpager/viewpager:viewpager",
+        "//third-party/java/androidx/viewpager2/viewpager2:viewpager2",
         LITHO_ANDROIDSUPPORT_ANNOTATION_TARGET,
         LITHO_ANDROIDSUPPORT_DYNAMICANIMATION_TARGET,
         LITHO_BUILD_CONFIG_TARGET,

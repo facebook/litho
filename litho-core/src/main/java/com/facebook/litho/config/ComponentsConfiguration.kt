@@ -154,6 +154,9 @@ internal constructor(
     /** This flag is used to enable the redesigned event handler rebinding logic. */
     @JvmField val useStateForEventDispatchInfo: Boolean = true,
     val useNonRebindingEventHandlers: Boolean = true,
+
+    /** This flag is used to enable incremental mount helper for ViewPager2. */
+    @JvmField val enableIMHelperForViewPager2: Boolean = false,
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =
@@ -347,6 +350,7 @@ internal constructor(
     private var enableFixForResolveWithoutSizeSpec = baseConfig.enableFixForResolveWithoutSizeSpec
     private var enableFixForCachedNestedTree = baseConfig.enableFixForCachedNestedTree
     private var isHostViewAttributesCleanUpEnabled = baseConfig.isHostViewAttributesCleanUpEnabled
+    private var enableIMHelperForViewPager2 = baseConfig.enableIMHelperForViewPager2
 
     fun shouldAddHostViewForRootComponent(enabled: Boolean): Builder = also {
       shouldAddHostViewForRootComponent = enabled
@@ -454,6 +458,10 @@ internal constructor(
       isHostViewAttributesCleanUpEnabled = enabled
     }
 
+    fun enableIMHelperForViewPager2(enabled: Boolean): Builder = also {
+      enableIMHelperForViewPager2 = enabled
+    }
+
     fun build(): ComponentsConfiguration {
       return baseConfig.copy(
           shouldAddHostViewForRootComponent = shouldAddHostViewForRootComponent,
@@ -490,6 +498,7 @@ internal constructor(
           enableFixForResolveWithoutSizeSpec = enableFixForResolveWithoutSizeSpec,
           enableFixForCachedNestedTree = enableFixForCachedNestedTree,
           isHostViewAttributesCleanUpEnabled = isHostViewAttributesCleanUpEnabled,
+          enableIMHelperForViewPager2 = enableIMHelperForViewPager2,
       )
     }
   }
