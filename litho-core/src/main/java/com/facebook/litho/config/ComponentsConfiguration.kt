@@ -301,6 +301,9 @@ internal constructor(
      */
     @JvmField var usePrimitiveTransparencyEnabledCardClip: Boolean = false
 
+    /** This flag is to enable usage of Primitive Horizontal Scroll Component */
+    @JvmField var usePrimitiveHorizontalScroll: Boolean = false
+
     /**
      * This method is only used so that Java clients can have a builder like approach to override a
      * configuration.

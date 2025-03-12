@@ -36,6 +36,7 @@ import com.facebook.litho.debug.DebugInfoReporter
 import com.facebook.litho.useCached
 import com.facebook.litho.useNestedTree
 import com.facebook.litho.useState
+import com.facebook.litho.utils.MeasureUtils.getChildMeasureSize
 import com.facebook.rendercore.Dimen
 import com.facebook.rendercore.MaxPossibleHeightValue
 import com.facebook.rendercore.SizeConstraints
@@ -253,39 +254,4 @@ internal class VerticalScrollLayoutBehavior(
 
     return PrimitiveLayoutResult(width = width, height = height, layoutData = layoutState)
   }
-
-  /**
-   * Equivalent to [VerticalScrollComponent.onMeasure] code calling [ViewGroup.getChildMeasureSpec]
-   */
-  private fun getChildMeasureSize(
-      min: Int,
-      max: Int,
-      preferred: Int,
-      widthMode: Int
-  ): Pair<Int, Int> =
-      when {
-        preferred >= 0 || min == max -> {
-          // Fixed size due to fixed size layout param or fixed constraints.
-          preferred.coerceIn(min, max) to preferred.coerceIn(min, max)
-        }
-        preferred == ViewGroup.LayoutParams.WRAP_CONTENT && max != SizeConstraints.Infinity -> {
-          // Wrap content layout param with finite max constraint. If max constraint is infinite, we
-          // will measure the child with UNSPECIFIED.
-          0 to max
-        }
-        preferred == ViewGroup.LayoutParams.MATCH_PARENT && max != SizeConstraints.Infinity -> {
-          if (widthMode == View.MeasureSpec.AT_MOST) {
-            // Match parent layout param with AT_MOST constraint, so we let the child decide its
-            // size.
-            0 to max
-          } else {
-            // Match parent layout param, so we force the child to fill the available space.
-            max to max
-          }
-        }
-        else -> {
-          // max constraint is infinite and layout param is WRAP_CONTENT or MATCH_PARENT.
-          0 to SizeConstraints.Infinity
-        }
-      }
 }

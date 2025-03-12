@@ -17,7 +17,9 @@
 package com.facebook.litho.utils
 
 import android.util.Log
+import android.view.View
 import android.view.View.MeasureSpec
+import android.view.ViewGroup
 import com.facebook.litho.Size
 import com.facebook.litho.SizeSpec
 import com.facebook.litho.SizeSpec.getMode
@@ -29,6 +31,7 @@ import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.debug.LithoDebugEvent
 import com.facebook.rendercore.LogLevel
 import com.facebook.rendercore.MeasureResult
+import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.debug.DebugEventAttribute
 import com.facebook.rendercore.debug.DebugEventDispatcher
 import kotlin.math.ceil
@@ -303,4 +306,35 @@ object MeasureUtils {
       outputSize.height = heightSize
     }
   }
+
+  /**
+   * Equivalent to [HorizontalScrollComponent.onMeasure] and [VerticalScrollComponent.onMeasure]
+   * code calling [ViewGroup.getChildMeasureSpec]
+   */
+  fun getChildMeasureSize(min: Int, max: Int, preferred: Int, widthMode: Int): Pair<Int, Int> =
+      when {
+        preferred >= 0 || min == max -> {
+          // Fixed size due to fixed size layout param or fixed constraints.
+          preferred.coerceIn(min, max) to preferred.coerceIn(min, max)
+        }
+        preferred == ViewGroup.LayoutParams.WRAP_CONTENT && max != SizeConstraints.Infinity -> {
+          // Wrap content layout param with finite max constraint. If max constraint is infinite, we
+          // will measure the child with UNSPECIFIED.
+          0 to max
+        }
+        preferred == ViewGroup.LayoutParams.MATCH_PARENT && max != SizeConstraints.Infinity -> {
+          if (widthMode == View.MeasureSpec.AT_MOST) {
+            // Match parent layout param with AT_MOST constraint, so we let the child decide its
+            // size.
+            0 to max
+          } else {
+            // Match parent layout param, so we force the child to fill the available space.
+            max to max
+          }
+        }
+        else -> {
+          // max constraint is infinite and layout param is WRAP_CONTENT or MATCH_PARENT.
+          0 to SizeConstraints.Infinity
+        }
+      }
 }

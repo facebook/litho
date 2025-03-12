@@ -20,8 +20,10 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.HorizontalScrollView;
 import androidx.annotation.Nullable;
+import androidx.core.view.OneShotPreDrawListener;
 import com.facebook.litho.BaseMountingView;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.HasLithoViewChildren;
@@ -29,6 +31,7 @@ import com.facebook.litho.LayoutState;
 import com.facebook.litho.LithoRenderTreeView;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.TreeState;
+import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.List;
 
 /**
@@ -37,6 +40,8 @@ import java.util.List;
  */
 public class HorizontalScrollLithoView extends HorizontalScrollView
     implements HasLithoViewChildren {
+
+  private static final int LAST_SCROLL_POSITION_UNSET = -1;
   private final BaseMountingView mBaseMountingView;
 
   private int mComponentWidth;
@@ -174,6 +179,46 @@ public class HorizontalScrollLithoView extends HorizontalScrollView
     setScrollX(0);
     if (mScrollStateDetector != null) {
       mScrollStateDetector.setListener(null);
+    }
+  }
+
+  public void setScrollPosition(ScrollPosition scrollPosition) {
+    mScrollPosition = scrollPosition;
+    Runnable preDrawRunnable =
+        () -> {
+          if (mScrollPosition.x == LAST_SCROLL_POSITION_UNSET) {
+            fullScroll(HorizontalScrollView.FOCUS_RIGHT);
+            mScrollPosition.x = getScrollX();
+          } else {
+            setScrollX(mScrollPosition.x);
+          }
+        };
+    if (ComponentsConfiguration.useOneShotPreDrawListener) {
+      OneShotPreDrawListener.add(this, preDrawRunnable);
+    } else {
+      final ViewTreeObserver viewTreeObserver = getViewTreeObserver();
+      viewTreeObserver.addOnPreDrawListener(
+          new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+              getViewTreeObserver().removeOnPreDrawListener(this);
+              preDrawRunnable.run();
+              return true;
+            }
+          });
+    }
+  }
+
+  public void setOnScrollChangeListener(OnScrollChangeListener onScrollChangeListener) {
+    mOnScrollChangeListener = onScrollChangeListener;
+  }
+
+  public void setScrollStateListener(ScrollStateListener scrollStateListener) {
+    if (scrollStateListener != null) {
+      if (mScrollStateDetector == null) {
+        mScrollStateDetector = new ScrollStateDetector(this);
+      }
+      mScrollStateDetector.setListener(scrollStateListener);
     }
   }
 
