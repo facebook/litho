@@ -64,7 +64,7 @@ class ExperimentalHorizontalScroll(
 ) : PrimitiveComponent() {
 
   companion object {
-    internal const val LAST_SCROLL_POSITION_UNSET = -1
+    const val LAST_SCROLL_POSITION_UNSET = -1
   }
 
   override fun PrimitiveComponentScope.render(): LithoPrimitive {

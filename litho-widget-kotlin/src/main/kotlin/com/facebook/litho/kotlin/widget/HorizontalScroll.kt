@@ -20,28 +20,51 @@ import android.view.View
 import com.facebook.litho.Component
 import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Style
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.kotlinStyle
+import com.facebook.litho.widget.ExperimentalHorizontalScroll
 import com.facebook.litho.widget.HorizontalScroll
 import com.facebook.litho.widget.HorizontalScrollEventsController
+import com.facebook.litho.widget.ScrollStateListener
 import com.facebook.rendercore.Dimen
+import com.facebook.rendercore.dp
 
 /** Builder function for creating [HorizontalScrollSpec] components. */
 @Suppress("FunctionName")
 inline fun ResourcesScope.HorizontalScroll(
-    initialScrollPosition: Dimen? = null,
+    initialScrollPosition: Dimen = ExperimentalHorizontalScroll.LAST_SCROLL_POSITION_UNSET.dp,
     scrollbarEnabled: Boolean = true,
     wrapContent: Boolean = false,
     fillViewport: Boolean = false,
     eventsController: HorizontalScrollEventsController? = null,
     noinline onScrollChange: ((View, scrollX: Int, oldScrollX: Int) -> Unit)? = null,
     horizontalFadingEdgeEnabled: Boolean = false,
+    incrementalMountEnabled: Boolean = false,
+    overScrollMode: Int = View.OVER_SCROLL_IF_CONTENT_SCROLLS,
+    scrollStateListener: ScrollStateListener? = null,
     fadingEdgeLength: Int = 0,
     style: Style? = null,
     crossinline child: ResourcesScope.() -> Component
-): HorizontalScroll =
+): Component {
+  return if (ComponentsConfiguration.usePrimitiveHorizontalScroll) {
+    ExperimentalHorizontalScroll(
+        wrapContent = wrapContent,
+        fillViewport = fillViewport,
+        scrollbarEnabled = scrollbarEnabled,
+        eventsController = eventsController,
+        onScrollChangeListener = onScrollChange,
+        scrollStateListener = scrollStateListener,
+        overScrollMode = overScrollMode,
+        horizontalFadingEdgeEnabled = horizontalFadingEdgeEnabled,
+        fadingEdgeLength = fadingEdgeLength.dp,
+        incrementalMountEnabled = incrementalMountEnabled,
+        initialScrollPosition = initialScrollPosition,
+        child = child(),
+        style = style)
+  } else {
     HorizontalScroll.create(context)
         .contentProps(child())
-        .apply { initialScrollPosition?.let { initialScrollPosition(it.toPixels()) } }
+        .initialScrollPosition(initialScrollPosition.toPixels())
         .scrollbarEnabled(scrollbarEnabled)
         .wrapContent(wrapContent)
         .fillViewport(fillViewport)
@@ -51,3 +74,5 @@ inline fun ResourcesScope.HorizontalScroll(
         .fadingEdgeLength(fadingEdgeLength)
         .kotlinStyle(style)
         .build()
+  }
+}
