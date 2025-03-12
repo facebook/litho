@@ -62,6 +62,10 @@ constructor(
     this.ensureParentMounted = ensureParentMounted
   }
 
+  protected open fun createMountItem(renderTreeNode: RenderTreeNode, content: Any): MountItem {
+    return MountItem(renderTreeNode, content)
+  }
+
   /**
    * True if we have manually unmounted content (e.g. via unmountAllItems) which means that while we
    * may not have a new RenderTree, the mounted content does not match what the viewport for the
@@ -569,7 +573,7 @@ constructor(
       if (isTracing) {
         tracer.beginSection("MountItem:mount ${renderTreeNode.renderUnit.description}")
       }
-      val item = MountItem(renderTreeNode, content)
+      val item = createMountItem(renderTreeNode, content)
       mountRenderUnitToContent(renderTreeNode, renderUnit, content, item.bindData)
 
       // 4. Mount the content into the selected host.
@@ -743,7 +747,7 @@ constructor(
 
   private fun mountRootItem(rootNode: RenderTreeNode) {
     // Create root mount item.
-    val item = MountItem(rootNode, _rootHost)
+    val item = createMountItem(rootNode, _rootHost)
 
     // Run mount callbacks.
     mountRenderUnitToContent(

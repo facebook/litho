@@ -18,7 +18,7 @@ package com.facebook.rendercore
 
 import android.content.Context
 
-class MountItem(renderTreeNode: RenderTreeNode, val content: Any) {
+open class MountItem(renderTreeNode: RenderTreeNode, val content: Any) {
 
   private var _renderTreeNode: RenderTreeNode = renderTreeNode
 
