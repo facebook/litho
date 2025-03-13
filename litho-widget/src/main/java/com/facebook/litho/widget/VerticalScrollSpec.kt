@@ -26,7 +26,6 @@ import com.facebook.litho.annotations.OnCreateLayout
 import com.facebook.litho.annotations.Prop
 import com.facebook.litho.annotations.Reason
 import com.facebook.litho.annotations.ResType
-import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.rendercore.dp
 
 @ExcuseMySpec(reason = Reason.J2K_CONVERSION)
@@ -56,50 +55,29 @@ object VerticalScrollSpec {
       @Prop(optional = true) incrementalMountEnabled: Boolean,
   ): Component? {
     requireNotNull(childComponent)
-    return if (ComponentsConfiguration.usePrimitiveVerticalScroll) {
-      ExperimentalVerticalScroll(
-          scrollbarEnabled = scrollbarEnabled,
-          nestedScrollingEnabled = nestedScrollingEnabled,
-          verticalFadingEdgeEnabled = verticalFadingEdgeEnabled,
-          fillViewport = fillViewport,
-          scrollbarFadingEnabled = scrollbarFadingEnabled,
-          overScrollMode = overScrollMode,
-          fadingEdgeLength = fadingEdgeLength.dp,
-          fadingEdgeColor = fadingEdgeColor,
-          initialScrollPosition = initialScrollPosition.dp,
-          eventsController = eventsController,
-          onScrollChange =
-              onScrollChangeListener?.let {
-                { view, scrollY, oldScrollY -> it.onScrollChange(view, 0, scrollY, 0, oldScrollY) }
-              },
-          onInterceptTouch =
-              onInterceptTouchListener?.let { { view, event -> it.onInterceptTouch(view, event) } },
-          onScrollStateChange =
-              scrollStateListener?.let {
-                { view, scrollState -> it.onScrollStateChanged(view, scrollState) }
-              },
-          incrementalMountEnabled = incrementalMountEnabled,
-          child = childComponent,
-          style = null)
-    } else {
-      VerticalScrollComponent.create(c)
-          .childComponent(childComponent)
-          .initialScrollOffsetPixels(initialScrollOffsetPixels)
-          .scrollbarEnabled(scrollbarEnabled)
-          .scrollbarFadingEnabled(scrollbarFadingEnabled)
-          .verticalFadingEdgeEnabled(verticalFadingEdgeEnabled)
-          .nestedScrollingEnabled(nestedScrollingEnabled)
-          .fadingEdgeLengthPx(fadingEdgeLength)
-          .fadingEdgeColor(fadingEdgeColor)
-          .fillViewport(fillViewport)
-          .eventsController(eventsController)
-          .overScrollMode(overScrollMode)
-          .scrollStateListener(scrollStateListener)
-          .shouldCompareCommonProps(shouldCompareCommonProps)
-          .onScrollChangeListener(onScrollChangeListener)
-          .onInterceptTouchListener(onInterceptTouchListener)
-          .incrementalMountEnabled(incrementalMountEnabled)
-          .build()
-    }
+    return ExperimentalVerticalScroll(
+        scrollbarEnabled = scrollbarEnabled,
+        nestedScrollingEnabled = nestedScrollingEnabled,
+        verticalFadingEdgeEnabled = verticalFadingEdgeEnabled,
+        fillViewport = fillViewport,
+        scrollbarFadingEnabled = scrollbarFadingEnabled,
+        overScrollMode = overScrollMode,
+        fadingEdgeLength = fadingEdgeLength.dp,
+        fadingEdgeColor = fadingEdgeColor,
+        initialScrollPosition = initialScrollPosition.dp,
+        eventsController = eventsController,
+        onScrollChange =
+            onScrollChangeListener?.let {
+              { view, scrollY, oldScrollY -> it.onScrollChange(view, 0, scrollY, 0, oldScrollY) }
+            },
+        onInterceptTouch =
+            onInterceptTouchListener?.let { { view, event -> it.onInterceptTouch(view, event) } },
+        onScrollStateChange =
+            scrollStateListener?.let {
+              { view, scrollState -> it.onScrollStateChanged(view, scrollState) }
+            },
+        incrementalMountEnabled = incrementalMountEnabled,
+        child = childComponent,
+        style = null)
   }
 }

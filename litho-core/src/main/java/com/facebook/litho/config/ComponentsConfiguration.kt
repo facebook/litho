@@ -280,9 +280,6 @@ internal constructor(
     /** This flag is to enable usage custom pool scopes */
     @JvmField var customPoolScopesEnabled: Boolean = false
 
-    /** This flag is to enable usage of Primitive Vertical Scroll Component */
-    @JvmField var usePrimitiveVerticalScroll: Boolean = false
-
     /** This flag is to enable usage of Primitive Text */
     @JvmField var usePrimitiveText: Boolean = false
 

@@ -213,8 +213,8 @@ class LithoViewComponentsTraverserTest : RunWithDebugInfoTest() {
     val expected =
         """
         component[type=ComponentWithVerticalScroll]
-        component[type=VerticalScrollComponent]  parent[type=ComponentWithVerticalScroll]
-        component[type=Column]  parent[type=VerticalScrollComponent]
+        component[type=ExperimentalVerticalScroll]  parent[type=ComponentWithVerticalScroll]
+        component[type=Column]  parent[type=ExperimentalVerticalScroll]
         component[type=Header]  parent[type=Column]
         component[type=Row]  parent[type=Header]
         component[type=Text, testKey=first-name]  parent[type=Row]

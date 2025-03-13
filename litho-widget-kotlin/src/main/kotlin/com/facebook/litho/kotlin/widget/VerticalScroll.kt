@@ -22,10 +22,7 @@ import androidx.core.widget.NestedScrollView
 import com.facebook.litho.Component
 import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Style
-import com.facebook.litho.config.ComponentsConfiguration
-import com.facebook.litho.kotlinStyle
 import com.facebook.litho.widget.ExperimentalVerticalScroll
-import com.facebook.litho.widget.VerticalScrollComponent
 import com.facebook.litho.widget.VerticalScrollEventsController
 import com.facebook.rendercore.Dimen
 import com.facebook.rendercore.dp
@@ -52,47 +49,22 @@ inline fun ResourcesScope.VerticalScroll(
     style: Style? = null,
     crossinline child: ResourcesScope.() -> Component
 ): Component {
-  return if (ComponentsConfiguration.usePrimitiveVerticalScroll) {
-    return ExperimentalVerticalScroll(
-        scrollbarEnabled = scrollbarEnabled,
-        nestedScrollingEnabled = nestedScrollingEnabled,
-        verticalFadingEdgeEnabled = verticalFadingEdgeEnabled,
-        fillViewport = fillViewport,
-        scrollbarFadingEnabled = scrollbarFadingEnabled,
-        overScrollMode = overScrollMode,
-        fadingEdgeLength = fadingEdgeLength,
-        fadingEdgeColor = fadingEdgeColor,
-        initialScrollPosition = initialScrollPosition,
-        eventsController = eventsController,
-        onScrollChange = onScrollChange,
-        onInterceptTouch = onInterceptTouch,
-        onScrollStateChange = onScrollStateChange,
-        incrementalMountEnabled = incrementalMountEnabled,
-        child = child(),
-        style = style,
-    )
-  } else {
-    VerticalScrollComponent.create(context)
-        .childComponent(child())
-        .initialScrollOffsetPixels(initialScrollPosition.toPixels())
-        .scrollbarEnabled(scrollbarEnabled)
-        .scrollbarFadingEnabled(scrollbarFadingEnabled)
-        .overScrollMode(overScrollMode)
-        .verticalFadingEdgeEnabled(verticalFadingEdgeEnabled)
-        .nestedScrollingEnabled(nestedScrollingEnabled)
-        .fadingEdgeLengthPx(fadingEdgeLength.toPixels())
-        .fadingEdgeColor(fadingEdgeColor)
-        .fillViewport(fillViewport)
-        .eventsController(eventsController)
-        .shouldCompareCommonProps(shouldCompareCommonProps)
-        .incrementalMountEnabled(incrementalMountEnabled)
-        .apply {
-          onScrollChange?.let {
-            onScrollChangeListener { v, _, scrollY, _, oldScrollY -> it(v, scrollY, oldScrollY) }
-          }
-        }
-        .onInterceptTouchListener(onInterceptTouch)
-        .kotlinStyle(style)
-        .build()
-  }
+  return ExperimentalVerticalScroll(
+      scrollbarEnabled = scrollbarEnabled,
+      nestedScrollingEnabled = nestedScrollingEnabled,
+      verticalFadingEdgeEnabled = verticalFadingEdgeEnabled,
+      fillViewport = fillViewport,
+      scrollbarFadingEnabled = scrollbarFadingEnabled,
+      overScrollMode = overScrollMode,
+      fadingEdgeLength = fadingEdgeLength,
+      fadingEdgeColor = fadingEdgeColor,
+      initialScrollPosition = initialScrollPosition,
+      eventsController = eventsController,
+      onScrollChange = onScrollChange,
+      onInterceptTouch = onInterceptTouch,
+      onScrollStateChange = onScrollStateChange,
+      incrementalMountEnabled = incrementalMountEnabled,
+      child = child(),
+      style = style,
+  )
 }
