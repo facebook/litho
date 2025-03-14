@@ -13,7 +13,7 @@ load(
     "make_dep_path",
 )
 
-oncall("playgroundapps")
+oncall("litho_components_for_android")
 
 fb_java_library(
     name = "testing",

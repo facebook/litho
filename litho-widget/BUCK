@@ -7,7 +7,7 @@ load("//tools/build_defs/oss:litho_defs.bzl", "fb_android_resource")
 # This source code is licensed under the Apache 2.0 license found in the
 # LICENSE file in the root directory of this source tree.
 
-oncall("playgroundapps")
+oncall("litho_components_for_android")
 
 fb_android_resource(
     name = "res",
