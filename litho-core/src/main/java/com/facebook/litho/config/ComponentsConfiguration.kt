@@ -157,6 +157,12 @@ internal constructor(
 
     /** This flag is used to enable incremental mount helper for ViewPager2. */
     @JvmField val enableIMHelperForViewPager2: Boolean = false,
+
+    /**
+     * This flag enables the check for equivalent components optimization in setRoot especially when
+     * their IDs may be different
+     */
+    @JvmField val checkComponentEquivalenceInSetRoot: Boolean = false,
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =

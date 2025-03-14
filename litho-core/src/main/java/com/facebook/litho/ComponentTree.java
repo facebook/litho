@@ -1697,12 +1697,20 @@ public class ComponentTree
       final int resolvedWidthSpec = widthSpecInitialized ? widthSpec : mWidthSpec;
       final int resolvedHeightSpec = heightSpecInitialized ? heightSpec : mHeightSpec;
       final LayoutState mostRecentLayoutState = mCommittedLayoutState;
+      final boolean checkComponentEquivalence =
+          getLithoConfiguration().componentsConfig.checkComponentEquivalenceInSetRoot;
 
       if (!forceLayout
           && resolvedRoot != null
           && mostRecentLayoutState != null
-          && mostRecentLayoutState.isCompatibleComponentAndSpec(
-              resolvedRoot.getId(), resolvedWidthSpec, resolvedHeightSpec)) {
+          && (mostRecentLayoutState.isCompatibleComponentAndSpec(
+                  resolvedRoot.getId(), resolvedWidthSpec, resolvedHeightSpec)
+              || (checkComponentEquivalence
+                  && isEquivalentComponentAndSpec(
+                      mostRecentLayoutState,
+                      resolvedRoot,
+                      resolvedWidthSpec,
+                      resolvedHeightSpec)))) {
         // The spec and the root haven't changed and we have a compatible LayoutState already
         // committed
         if (output != null) {
@@ -2612,6 +2620,16 @@ public class ComponentTree
     treePropContainer.putAll(mImplicitTreePropContainer);
 
     return treePropContainer;
+  }
+
+  private boolean isEquivalentComponentAndSpec(
+      @Nullable LayoutState layoutState,
+      Component component,
+      final int widthSpec,
+      final int heightSpec) {
+    return layoutState != null
+        && EquivalenceUtils.isEquivalentTo(layoutState.getRootComponent(), component)
+        && isCompatibleSpec(layoutState, widthSpec, heightSpec);
   }
 
   private boolean isCompatibleSpec(
