@@ -56,6 +56,7 @@ litho_android_library(
     ],
     exported_deps = [
         LITHO_SECTIONS_WIDGET_TARGET,
+        LITHO_WIDGET_KOTLIN_TARGET,
         LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
     ],
 )
