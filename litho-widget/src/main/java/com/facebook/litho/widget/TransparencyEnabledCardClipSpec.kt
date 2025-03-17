@@ -28,7 +28,6 @@ import com.facebook.litho.annotations.Prop
 import com.facebook.litho.annotations.PropDefault
 import com.facebook.litho.annotations.Reason
 import com.facebook.litho.annotations.ResType
-import com.facebook.litho.config.ComponentsConfiguration
 
 /**
  * A component that paints a card with rounded edges to perform a clipping operation on the
@@ -57,30 +56,16 @@ internal object TransparencyEnabledCardClipSpec {
       @Prop(optional = true) disableClipBottomRight: Boolean,
       @Prop(optional = true) cardBackgroundColorDv: DynamicValue<Int>?,
   ): Component {
-    return if (ComponentsConfiguration.usePrimitiveTransparencyEnabledCardClip) {
-      ExperimentalTransparencyEnabledCardClip(
-          backgroundDrawable = backgroundDrawable,
-          cardBackgroundColor = cardBackgroundColor,
-          clippingColor = clippingColor,
-          cornerRadius = cornerRadius,
-          disableClipTopLeft = disableClipTopLeft,
-          disableClipTopRight = disableClipTopRight,
-          disableClipBottomLeft = disableClipBottomLeft,
-          disableClipBottomRight = disableClipBottomRight,
-          dynamicCardBackgroundColor = cardBackgroundColorDv,
-      )
-    } else {
-      TransparencyEnabledCardClipComponent.create(c)
-          .backgroundDrawable(backgroundDrawable)
-          .cardBackgroundColor(cardBackgroundColor)
-          .clippingColor(clippingColor)
-          .cornerRadiusPx(cornerRadius)
-          .disableClipTopLeft(disableClipTopLeft)
-          .disableClipTopRight(disableClipTopRight)
-          .disableClipBottomLeft(disableClipBottomLeft)
-          .disableClipBottomRight(disableClipBottomRight)
-          .cardBackgroundColorDv(cardBackgroundColorDv)
-          .build()
-    }
+    return ExperimentalTransparencyEnabledCardClip(
+        backgroundDrawable = backgroundDrawable,
+        cardBackgroundColor = cardBackgroundColor,
+        clippingColor = clippingColor,
+        cornerRadius = cornerRadius,
+        disableClipTopLeft = disableClipTopLeft,
+        disableClipTopRight = disableClipTopRight,
+        disableClipBottomLeft = disableClipBottomLeft,
+        disableClipBottomRight = disableClipBottomRight,
+        dynamicCardBackgroundColor = cardBackgroundColorDv,
+    )
   }
 }

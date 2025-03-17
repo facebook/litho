@@ -298,12 +298,6 @@ internal constructor(
     /** This flag is used clear MovementMethod on TextInput to avoid a potential crash. */
     @JvmField var clearMovementMethod: Boolean = true
 
-    /**
-     * This flag is used to enable using PrimitiveComponent implementation of a
-     * TransparencyEnabledCardClip component.
-     */
-    @JvmField var usePrimitiveTransparencyEnabledCardClip: Boolean = false
-
     /** This flag is to enable usage of Primitive Horizontal Scroll Component */
     @JvmField var usePrimitiveHorizontalScroll: Boolean = false
 
