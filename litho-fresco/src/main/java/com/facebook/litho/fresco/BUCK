@@ -13,7 +13,7 @@ load(
     "litho_android_library",
 )
 
-oncall("litho_components_for_android")
+oncall("fresco")
 
 litho_android_library(
     name = "fresco",
