@@ -418,7 +418,13 @@ enum class ImportantForAccessibility(val asInt: Int) {
   NO(IMPORTANT_FOR_ACCESSIBILITY_NO),
 
   /** The view is not important for accessibility, nor are any of its descendant views. */
-  NO_HIDE_DESCENDANTS(IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS),
+  NO_HIDE_DESCENDANTS(IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
+
+  companion object {
+    private val map = ImportantForAccessibility.values().associateBy { it.asInt }
+
+    operator fun get(value: Int): ImportantForAccessibility? = map[value]
+  }
 }
 
 @IntDef(
