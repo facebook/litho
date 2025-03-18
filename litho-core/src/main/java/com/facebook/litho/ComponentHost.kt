@@ -21,6 +21,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.os.Bundle
 import android.util.AttributeSet
 import android.util.SparseArray
@@ -428,7 +429,9 @@ open class ComponentHost(
     // This is a fix for an issue where TalkBack doesn't re-announce the content description after
     // a state update in some cases. It's behind a flag so that it can be turned off in case it
     // breaks something unexpectedly. See T193726518 for more details.
-    if (!contentDescription.isNullOrEmpty()) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
+        !contentDescription.isNullOrEmpty() &&
+        this.isAccessibilityFocused) {
       sendAccessibilityEvent(AccessibilityEvent.CONTENT_CHANGE_TYPE_CONTENT_DESCRIPTION)
     }
     this.contentDescription = contentDescription
