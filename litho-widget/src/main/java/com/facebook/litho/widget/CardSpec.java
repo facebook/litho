@@ -16,27 +16,12 @@
 
 package com.facebook.litho.widget;
 
-import static com.facebook.litho.widget.CardShadowDrawable.getShadowBottom;
-import static com.facebook.litho.widget.CardShadowDrawable.getShadowLeft;
-import static com.facebook.litho.widget.CardShadowDrawable.getShadowRight;
-import static com.facebook.litho.widget.CardShadowDrawable.getShadowTop;
-import static com.facebook.yoga.YogaEdge.ALL;
-import static com.facebook.yoga.YogaEdge.BOTTOM;
-import static com.facebook.yoga.YogaEdge.LEFT;
-import static com.facebook.yoga.YogaEdge.RIGHT;
-import static com.facebook.yoga.YogaEdge.TOP;
-import static com.facebook.yoga.YogaPositionType.ABSOLUTE;
-
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import androidx.annotation.Nullable;
-import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.DynamicValue;
-import com.facebook.litho.LayerType;
-import com.facebook.litho.Transition;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
@@ -69,8 +54,6 @@ import com.facebook.litho.annotations.ResType;
 @LayoutSpec
 class CardSpec {
 
-  private static final int DEFAULT_CORNER_RADIUS_DP = 2;
-  private static final int DEFAULT_SHADOW_SIZE_DP = 2;
   // Colors are clamped between 0x00000000 and 0xffffffff so this value is safe
   private static final int UNSET_CLIPPING = Integer.MIN_VALUE;
 
@@ -85,11 +68,6 @@ class CardSpec {
   @PropDefault static final float shadowLeftOverride = CardShadowDrawable.UNDEFINED;
   @PropDefault static final float shadowRightOverride = CardShadowDrawable.UNDEFINED;
   @PropDefault static final boolean transparencyEnabled = false;
-
-  private static float pixels(Resources resources, int dips) {
-    final float scale = resources.getDisplayMetrics().density;
-    return dips * scale + 0.5f;
-  }
 
   @OnCreateLayout
   static Component onCreateLayout(
@@ -127,160 +105,25 @@ class CardSpec {
       @Prop(optional = true) boolean disableClipTopRight,
       @Prop(optional = true) boolean disableClipBottomLeft,
       @Prop(optional = true) boolean disableClipBottomRight) {
-
-    final Resources resources = c.getResources();
-
-    if (cornerRadius == -1) {
-      cornerRadius = pixels(resources, DEFAULT_CORNER_RADIUS_DP);
-    }
-
-    if (elevation == -1) {
-      elevation = pixels(resources, DEFAULT_SHADOW_SIZE_DP);
-    }
-
-    final int shadowTop = shadowTopOverride == -1 ? getShadowTop(elevation) : shadowTopOverride;
-    final int shadowBottom =
-        shadowBottomOverride == -1 ? getShadowBottom(elevation) : shadowBottomOverride;
-    final int shadowLeft =
-        shadowLeftOverride == CardShadowDrawable.UNDEFINED
-            ? getShadowLeft(elevation)
-            : (int) Math.ceil(shadowLeftOverride);
-    final int shadowRight =
-        shadowRightOverride == CardShadowDrawable.UNDEFINED
-            ? getShadowRight(elevation)
-            : (int) Math.ceil(shadowRightOverride);
-
-    Column.Builder columnBuilder =
-        Column.create(c)
-            .marginPx(LEFT, shadowLeft)
-            .marginPx(RIGHT, shadowRight)
-            .marginPx(TOP, disableClipTopLeft && disableClipTopRight ? 0 : shadowTop)
-            .marginPx(BOTTOM, disableClipBottomLeft && disableClipBottomRight ? 0 : shadowBottom);
-
-    if (transparencyEnabled) {
-      final int realClippingColor =
-          clippingColor == UNSET_CLIPPING ? Color.TRANSPARENT : clippingColor;
-      columnBuilder =
-          columnBuilder
-              .backgroundColor(realClippingColor)
-              .child(
-                  makeTransparencyEnabledCardClip(
-                      c,
-                      cardBackgroundDrawable,
-                      cardBackgroundColor,
-                      cardBackgroundColorDv,
-                      realClippingColor,
-                      cornerRadius,
-                      disableClipTopLeft,
-                      disableClipTopRight,
-                      disableClipBottomLeft,
-                      disableClipBottomRight,
-                      cardBackgroundTransitionKey))
-              .child(content);
-    } else {
-      final int realClippingColor = clippingColor == UNSET_CLIPPING ? Color.WHITE : clippingColor;
-      columnBuilder =
-          columnBuilder
-              .child(
-                  Column.create(c)
-                      .backgroundColor(cardBackgroundColor)
-                      .flexGrow(1)
-                      .flexShrink(0)
-                      .positionType(ABSOLUTE)
-                      .positionPx(ALL, 0)
-                      .transitionKey(cardBackgroundTransitionKey)
-                      .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
-                      .build())
-              .child(content)
-              .child(
-                  makeCardClip(
-                      c,
-                      realClippingColor,
-                      cornerRadius,
-                      disableClipTopLeft,
-                      disableClipTopRight,
-                      disableClipBottomLeft,
-                      disableClipBottomRight));
-    }
-
-    Component.Builder shadow = null;
-
-    if (elevation > 0) {
-      CardShadow.Builder cardShadowBuilder =
-          CardShadow.create(c)
-              .shadowStartColor(shadowStartColor)
-              .shadowEndColor(shadowEndColor)
-              .cornerRadiusPx(cornerRadius)
-              .shadowSizePx(elevation)
-              .hideTopShadow(disableClipTopLeft && disableClipTopRight)
-              .hideBottomShadow(disableClipBottomLeft && disableClipBottomRight)
-              .positionType(ABSOLUTE)
-              .positionPx(ALL, 0)
-              .shadowLeftSizeOverridePx(shadowLeftOverride)
-              .shadowRightSizeOverridePx(shadowRightOverride);
-
-      shadow = cardShadowBuilder;
-    }
-
-    return Column.create(c).child(columnBuilder).child(shadow).build();
-  }
-
-  private static Component.Builder makeTransparencyEnabledCardClip(
-      ComponentContext c,
-      @Nullable Drawable backgroundDrawable,
-      int backgroundColor,
-      @Nullable DynamicValue<Integer> backgroundColorDv,
-      int clippingColor,
-      float cornerRadius,
-      boolean disableClipTopLeft,
-      boolean disableClipTopRight,
-      boolean disableClipBottomLeft,
-      boolean disableClipBottomRight,
-      @Nullable String cardBackgroundTransitionKey) {
-    Component.Builder transparencyEnabledCardClipBuilder =
-        TransparencyEnabledCardClip.create(c)
-            .backgroundDrawable(backgroundDrawable)
-            .cardBackgroundColor(backgroundColor)
-            .cardBackgroundColorDv(backgroundColorDv)
-            .clippingColor(clippingColor)
-            .cornerRadiusPx(cornerRadius)
-            .disableClipBottomLeft(disableClipBottomLeft)
-            .disableClipBottomRight(disableClipBottomRight)
-            .disableClipTopLeft(disableClipTopLeft)
-            .disableClipTopRight(disableClipTopRight)
-            .positionType(ABSOLUTE)
-            .positionPx(ALL, 0)
-            .transitionKey(cardBackgroundTransitionKey)
-            .transitionKeyType(Transition.TransitionKeyType.GLOBAL);
-
-    if ((disableClipBottomLeft
-            || disableClipBottomRight
-            || disableClipTopLeft
-            || disableClipTopRight)
-        && clippingColor == Color.TRANSPARENT) {
-      // For any of the above enclosing conditions, the TransparencyEnabledDrawable implementation
-      // relies on PorterDuffXfermode which only works on view layer type software
-      transparencyEnabledCardClipBuilder.layerType(LayerType.LAYER_TYPE_SOFTWARE, null);
-    }
-    return transparencyEnabledCardClipBuilder;
-  }
-
-  private static Component.Builder makeCardClip(
-      ComponentContext c,
-      int clippingColor,
-      float cornerRadius,
-      boolean disableClipTopLeft,
-      boolean disableClipTopRight,
-      boolean disableClipBottomLeft,
-      boolean disableClipBottomRight) {
-    return CardClip.create(c)
-        .clippingColor(clippingColor)
-        .cornerRadiusPx(cornerRadius)
-        .positionType(ABSOLUTE)
-        .positionPx(ALL, 0)
-        .disableClipTopLeft(disableClipTopLeft)
-        .disableClipTopRight(disableClipTopRight)
-        .disableClipBottomLeft(disableClipBottomLeft)
-        .disableClipBottomRight(disableClipBottomRight);
+    return new ExperimentalCard(
+        content,
+        cardBackgroundDrawable,
+        cardBackgroundTransitionKey,
+        cardBackgroundColor,
+        cardBackgroundColorDv,
+        clippingColor,
+        shadowStartColor,
+        shadowEndColor,
+        cornerRadius,
+        elevation,
+        shadowTopOverride,
+        shadowBottomOverride,
+        shadowLeftOverride,
+        shadowRightOverride,
+        transparencyEnabled,
+        disableClipTopLeft,
+        disableClipTopRight,
+        disableClipBottomLeft,
+        disableClipBottomRight);
   }
 }
