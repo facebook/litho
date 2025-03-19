@@ -32,6 +32,7 @@ public abstract class RCAccessibleClickableSpan extends ClickableSpan {
   private @Nullable String mAccessibilityLabel;
   private @Nullable String mAccessibilityRole;
   private boolean mIsKeyboardFocused = false;
+  private boolean mIsKeyboardSelected = false;
 
   public RCAccessibleClickableSpan(@Nullable String accessibilityLabel) {
     this(accessibilityLabel, null);
@@ -62,11 +63,25 @@ public abstract class RCAccessibleClickableSpan extends ClickableSpan {
     mAccessibilityRole = accessibilityRole;
   }
 
+  /**
+   * @return true if the view containing this span is keyboard focused.
+   */
   public boolean isKeyboardFocused() {
     return mIsKeyboardFocused;
   }
 
   public void setKeyboardFocused(boolean isKeyboardFocused) {
     mIsKeyboardFocused = isKeyboardFocused;
+  }
+
+  /**
+   * @return true if the span is selected due to keyboard navigation.
+   */
+  public boolean isKeyboardSelected() {
+    return mIsKeyboardSelected;
+  }
+
+  public void setKeyboardSelected(boolean isKeyboardSelected) {
+    mIsKeyboardSelected = isKeyboardSelected;
   }
 }

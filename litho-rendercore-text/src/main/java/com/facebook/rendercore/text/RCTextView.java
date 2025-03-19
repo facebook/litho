@@ -545,7 +545,14 @@ public class RCTextView extends View {
   public final void onFocusChanged(
       boolean gainFocus, int direction, @Nullable Rect previouslyFocusedRect) {
     if (mShouldHandleKeyEvents && !gainFocus) {
-      clearSelection();
+      final int selectedSpanIndex = getSelectedSpanIndex();
+      if (selectedSpanIndex != -1) {
+        final ClickableSpan selectedSpan = mClickableSpans[selectedSpanIndex];
+        if (selectedSpan instanceof RCAccessibleClickableSpan) {
+          ((RCAccessibleClickableSpan) selectedSpan).setKeyboardSelected(false);
+        }
+        clearSelection();
+      }
     }
     super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
     if (mRCTextAccessibilityDelegate != null && mClickableSpans.length > 0) {
@@ -592,6 +599,9 @@ public class RCTextView extends View {
       }
 
       if (targetSpan != null) {
+        if (targetSpan instanceof RCAccessibleClickableSpan) {
+          ((RCAccessibleClickableSpan) targetSpan).setKeyboardSelected(true);
+        }
         setSelection(targetSpan);
         return true;
       }
@@ -609,6 +619,7 @@ public class RCTextView extends View {
       if (selectedSpanIndex == -1) {
         return super.onKeyDown(keyCode, event);
       }
+      final ClickableSpan selectedSpan = mClickableSpans[selectedSpanIndex];
 
       if (isDirectionKey(keyCode)) {
         final int direction;
@@ -621,14 +632,24 @@ public class RCTextView extends View {
         final int repeatCount = 1 + event.getRepeatCount();
         final int targetIndex = selectedSpanIndex + direction * repeatCount;
         if (targetIndex >= 0 && targetIndex < mClickableSpans.length) {
-          setSelection(mClickableSpans[targetIndex]);
+          final ClickableSpan targetSpan = mClickableSpans[targetIndex];
+          if (selectedSpan instanceof RCAccessibleClickableSpan) {
+            ((RCAccessibleClickableSpan) selectedSpan).setKeyboardSelected(false);
+          }
+          if (targetSpan instanceof RCAccessibleClickableSpan) {
+            ((RCAccessibleClickableSpan) targetSpan).setKeyboardSelected(true);
+          }
+          setSelection(targetSpan);
           return true;
         }
       }
 
       if (isConfirmKey(keyCode) && event.getRepeatCount() == 0) {
+        if (selectedSpan instanceof RCAccessibleClickableSpan) {
+          ((RCAccessibleClickableSpan) selectedSpan).setKeyboardSelected(false);
+        }
         clearSelection();
-        mClickableSpans[selectedSpanIndex].onClick(this);
+        selectedSpan.onClick(this);
         return true;
       }
     }
