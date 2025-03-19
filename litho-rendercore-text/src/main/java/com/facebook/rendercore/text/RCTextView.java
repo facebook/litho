@@ -158,6 +158,9 @@ public class RCTextView extends View {
             drawLayout(canvas);
           }
         };
+    if (!(mText instanceof Spanned)) {
+      return;
+    }
     final Spanned text = (Spanned) mText;
     // OnPrePostDraw spans are retrieved in the same order in which they are applied (i.e. in order
     // of pre-order traversal of the composable span tree).  We want to have their onDraw calls
@@ -729,6 +732,9 @@ public class RCTextView extends View {
     @Override
     protected void onPopulateNodeForVirtualView(
         int virtualViewId, AccessibilityNodeInfoCompat node) {
+      if (!(mText instanceof Spanned)) {
+        return;
+      }
       final Spanned spanned = (Spanned) mText;
       final Rect sTempRect = new Rect();
       // it can happen as part of an unmount/mount cycle that the accessibility framework will
