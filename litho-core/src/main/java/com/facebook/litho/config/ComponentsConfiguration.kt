@@ -261,7 +261,6 @@ internal constructor(
     @JvmField var shouldCompareRootCommonPropsInSingleComponentSection: Boolean = false
     @JvmField var isYogaFlexBasisFixEnabled: Boolean = true
 
-    @JvmField var recyclerBinderStrategy: Int = 0
     @JvmField var shouldOverrideHasTransientState: Boolean = false
     @JvmField var enableFixForDisappearTransitionInRecyclerBinder: Boolean = false
     @JvmField var disableReleaseComponentTreeInRecyclerBinder: Boolean = false

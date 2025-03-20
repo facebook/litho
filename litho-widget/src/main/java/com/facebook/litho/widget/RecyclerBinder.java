@@ -448,8 +448,6 @@ public class RecyclerBinder
     private @Nullable LithoStartupLogger startupLogger;
     private RunnableHandler mAsyncInsertLayoutHandler;
     private boolean acquireStateHandlerOnRelease = true;
-    private @RecyclingStrategy int recyclingStrategy =
-        ComponentsConfiguration.recyclerBinderStrategy;
     private @Nullable LithoVisibilityEventsController lithoVisibilityEventsController;
     private @Nullable RecyclerBinderAdapterDelegate adapterDelegate = null;
 
@@ -562,11 +560,6 @@ public class RecyclerBinder
      */
     public Builder isSubAdapter(boolean isSubAdapter) {
       this.isSubAdapter = isSubAdapter;
-      return this;
-    }
-
-    public Builder recyclingStrategy(@RecyclingStrategy int recyclingStrategy) {
-      this.recyclingStrategy = recyclingStrategy;
       return this;
     }
 
@@ -845,7 +838,7 @@ public class RecyclerBinder
     mIsSubAdapter = builder.isSubAdapter;
     mComponentWarmer = mRecyclerBinderConfig.componentWarmer;
     mStartupLogger = builder.startupLogger;
-    mRecyclingStrategy = builder.recyclingStrategy;
+    mRecyclingStrategy = mRecyclerBinderConfig.recyclingStrategy;
     mErrorHandler = builder.errorHandler;
     mPoolScope = builder.poolScope;
   }

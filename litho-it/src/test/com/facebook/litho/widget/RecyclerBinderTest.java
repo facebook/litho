@@ -888,9 +888,12 @@ public class RecyclerBinderTest {
   public void testMoveRange_withRetainMaximumRangeRecyclingStrategy() {
     final RecyclerBinder recyclerBinder =
         mRecyclerBinderBuilder
-            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
-            .recyclerBinderConfig(RecyclerBinderConfig.create().estimatedViewportCount(1).build())
-            .recyclingStrategy(RecyclerBinder.RecyclingStrategy.RETAIN_MAXIMUM_RANGE)
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create()
+                    .rangeRatio(RANGE_RATIO)
+                    .estimatedViewportCount(1)
+                    .recyclingStrategy(RecyclerBinder.RecyclingStrategy.RETAIN_MAXIMUM_RANGE)
+                    .build())
             .build(mComponentContext);
     final List<ComponentRenderInfo> components = prepareLoadedBinder(recyclerBinder, 100);
     final int newRangeStart = 40;
@@ -909,8 +912,8 @@ public class RecyclerBinderTest {
                 RecyclerBinderConfig.create()
                     .rangeRatio(RANGE_RATIO)
                     .estimatedViewportCount(1)
+                    .recyclingStrategy(RecyclerBinder.RecyclingStrategy.RETAIN_MAXIMUM_RANGE)
                     .build())
-            .recyclingStrategy(RecyclerBinder.RecyclingStrategy.RETAIN_MAXIMUM_RANGE)
             .build(mComponentContext);
     final List<ComponentRenderInfo> components = prepareLoadedBinder(recyclerBinder, 100);
 
@@ -932,8 +935,8 @@ public class RecyclerBinderTest {
                 RecyclerBinderConfig.create()
                     .rangeRatio(RANGE_RATIO)
                     .estimatedViewportCount(1)
+                    .recyclingStrategy(RecyclerBinder.RecyclingStrategy.RETAIN_MAXIMUM_RANGE)
                     .build())
-            .recyclingStrategy(RecyclerBinder.RecyclingStrategy.RETAIN_MAXIMUM_RANGE)
             .build(mComponentContext);
     final List<ComponentRenderInfo> components = prepareLoadedBinder(recyclerBinder, 100);
 

@@ -139,6 +139,10 @@ data class RecyclerBinderConfig(
      * supposed to be used in full screen size surfaces like Reels.
      */
     @JvmField val paginationStrategy: Int = RecyclerBinder.PaginationStrategy.DEFAULT,
+    /** The strategy to recycle layouts in the RecyclerBinder. */
+    @JvmField
+    @RecyclerBinder.RecyclingStrategy
+    val recyclingStrategy: Int = RecyclerBinder.RecyclingStrategy.DEFAULT,
 ) {
 
   init {
@@ -196,6 +200,7 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
   private var wrapContent = configuration.wrapContent
   private var crossAxisWrapMode = configuration.crossAxisWrapMode
   private var paginationStrategy = configuration.paginationStrategy
+  private var recyclingStrategy = configuration.recyclingStrategy
 
   fun isCircular(isCircular: Boolean): RecyclerBinderConfigBuilder = also {
     this.isCircular = isCircular
@@ -257,6 +262,10 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
     this.paginationStrategy = strategy
   }
 
+  fun recyclingStrategy(
+      @RecyclerBinder.RecyclingStrategy strategy: Int
+  ): RecyclerBinderConfigBuilder = also { this.recyclingStrategy = strategy }
+
   fun build(): RecyclerBinderConfig {
     return RecyclerBinderConfig(
         componentsConfiguration = componentsConfiguration,
@@ -274,6 +283,7 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
         wrapContent = wrapContent,
         crossAxisWrapMode = crossAxisWrapMode,
         paginationStrategy = paginationStrategy,
+        recyclingStrategy = recyclingStrategy,
     )
   }
 }
