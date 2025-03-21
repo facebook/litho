@@ -1300,7 +1300,7 @@ internal object TextInputSpec {
       return super.onKeyPreIme(keyCode, event)
     }
 
-    override fun onEditorAction(v: TextView, actionId: Int, event: KeyEvent): Boolean {
+    override fun onEditorAction(v: TextView, actionId: Int, event: KeyEvent?): Boolean {
       if (editorActionEventHandler != null) {
         return TextInput.dispatchEditorActionEvent(editorActionEventHandler, v, actionId, event)
       }
