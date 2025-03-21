@@ -28,7 +28,11 @@ class LayoutCache(oldWriteCache: Map<Any, Any?>? = null) {
   private val writeCache: MutableMap<Any, Any?> = HashMap()
   private val readCache: Map<Any, Any?> = oldWriteCache ?: emptyMap()
 
-  class CacheItem(val layoutResult: LayoutResult, val widthSpec: Int, val heightSpec: Int)
+  open class CacheItem(
+      open val layoutResult: LayoutResult,
+      open val widthSpec: Int,
+      open val heightSpec: Int
+  )
 
   fun put(key: Any, cacheItem: Any?) {
     writeCache[key] = cacheItem
