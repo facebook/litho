@@ -19,6 +19,9 @@ oncall("litho_components_for_android")
 litho_android_library(
     name = "widget",
     feature = FBApp_UIFrameworks_Litho_Litho,
+    friend_paths = [
+        LITHO_WIDGET_TARGET,
+    ],
     labels = [],
     language = "JAVA",
     plugins = [
