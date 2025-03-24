@@ -88,7 +88,7 @@ class RecyclerBinderOperationExecutor(
             recyclerBinder.insertRangeAt(operation.index, renderInfos)
           } else {
             recyclerBinder.insertItemAt(
-                operation.index, operation.componentContainers[0].renderInfo)
+                operation.index, operation.componentContainers?.get(0)?.renderInfo)
           }
       RecyclerBinderUpdateCallback.Operation.DELETE ->
           recyclerBinder.removeRangeAt(operation.index, operation.toIndex)
@@ -99,7 +99,7 @@ class RecyclerBinderOperationExecutor(
             recyclerBinder.updateRangeAt(operation.index, renderInfos)
           } else {
             recyclerBinder.updateItemAt(
-                operation.index, operation.componentContainers[0].renderInfo)
+                operation.index, operation.componentContainers?.get(0)?.renderInfo)
           }
     }
   }
@@ -114,7 +114,7 @@ class RecyclerBinderOperationExecutor(
             recyclerBinder.insertRangeAtAsync(operation.index, renderInfos)
           } else {
             recyclerBinder.insertItemAtAsync(
-                operation.index, operation.componentContainers[0].renderInfo)
+                operation.index, operation.componentContainers?.get(0)?.renderInfo)
           }
       RecyclerBinderUpdateCallback.Operation.DELETE ->
           recyclerBinder.removeRangeAtAsync(operation.index, operation.toIndex)
@@ -125,7 +125,7 @@ class RecyclerBinderOperationExecutor(
             recyclerBinder.updateRangeAtAsync(operation.index, renderInfos)
           } else {
             recyclerBinder.updateItemAtAsync(
-                operation.index, operation.componentContainers[0].renderInfo)
+                operation.index, operation.componentContainers?.get(0)?.renderInfo)
           }
     }
   }

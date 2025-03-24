@@ -207,7 +207,7 @@ public class RecyclerCollectionComponentSpec {
       @State Binder<RecyclerView> binder,
       @State SectionTree sectionTree,
       @State RecyclerCollectionLoadEventsHandler recyclerCollectionLoadEventsHandler,
-      @State SnapHelper snapHelper) {
+      @State @Nullable SnapHelper snapHelper) {
     // This is a side effect from OnCreateLayout, so it's inherently prone to race conditions:
     recyclerCollectionLoadEventsHandler.setLoadEventsHandler(loadEventsHandler);
 

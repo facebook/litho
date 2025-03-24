@@ -273,7 +273,7 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
         int type,
         int index,
         int toIndex,
-        List<ComponentContainer> placeholder,
+        @Nullable List<ComponentContainer> placeholder,
         List<Diff> dataHolders) {
       mType = type;
       mIndex = index;
@@ -294,7 +294,7 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
       return mToIndex;
     }
 
-    public List<ComponentContainer> getComponentContainers() {
+    public @Nullable List<ComponentContainer> getComponentContainers() {
       return mComponentContainers;
     }
 

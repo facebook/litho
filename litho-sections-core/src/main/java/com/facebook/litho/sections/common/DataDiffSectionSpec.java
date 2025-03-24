@@ -270,10 +270,12 @@ public class DataDiffSectionSpec<T> {
             if (opSize == 1) {
               mChangeSet.insert(
                   operation.getIndex(),
+                  // NULLSAFE_FIXME[Nullable Dereference]
                   components.get(0).getRenderInfo(),
                   c.getTreePropContainerCopy(),
                   dataHolders.get(0).getNext());
             } else {
+              // NULLSAFE_FIXME[Parameter Not Nullable]
               final List<RenderInfo> renderInfos = extractComponentInfos(opSize, components);
               mChangeSet.insertRange(
                   operation.getIndex(),
@@ -303,11 +305,13 @@ public class DataDiffSectionSpec<T> {
             if (opSize == 1) {
               mChangeSet.update(
                   operation.getIndex(),
+                  // NULLSAFE_FIXME[Nullable Dereference]
                   components.get(0).getRenderInfo(),
                   c.getTreePropContainerCopy(),
                   dataHolders.get(0).getPrevious(),
                   dataHolders.get(0).getNext());
             } else {
+              // NULLSAFE_FIXME[Parameter Not Nullable]
               final List<RenderInfo> renderInfos = extractComponentInfos(opSize, components);
               mChangeSet.updateRange(
                   operation.getIndex(),
