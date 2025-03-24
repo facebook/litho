@@ -26,7 +26,9 @@ import com.facebook.litho.widget.EventHandlerBindingComponent
 import com.facebook.litho.widget.EventHandlerBindingComponentSpec
 import com.facebook.litho.widget.EventHandlerBindingSection
 import com.facebook.litho.widget.EventHandlerBindingSectionSpec
+import com.facebook.litho.widget.ExperimentalVerticalScroll
 import com.facebook.rendercore.Dimen
+import com.facebook.rendercore.dp
 import com.facebook.rendercore.sp
 import java.util.concurrent.atomic.AtomicInteger
 import org.assertj.core.api.Assertions.assertThat
@@ -368,6 +370,80 @@ class EventHandlerRebindTest {
               .buttonCreator(buttonCreator)
               .extraChild(ComponentWithStateUpdate())
               .build()
+        }
+
+    specStateUpdater.updateCounter(1)
+    mLithoTestRule.finishAsyncUpdates()
+    updater.update()
+    mLithoTestRule.idle()
+
+    mLithoTestRule.act(testLithoView) { clickOnText("Click Me") }
+
+    LithoViewAssert.assertThat(testLithoView.lithoView).hasVisibleText("Counter: 1")
+    LithoViewAssert.assertThat(testLithoView.lithoView).hasVisibleText("current character is b")
+    assertThat(numButtonRenders.get()).isEqualTo(1)
+    assertThat(clickListener.events).hasSize(1)
+    assertThat(clickListener.events[0]).isEqualTo(1)
+    clickListener.clear()
+  }
+
+  @Test
+  fun `when nested components are reconciled before being rendered then event handlers should still update`() {
+    val specStateUpdater = EventHandlerBindingComponentSpec.StateUpdater()
+    val clickListener = RecordingClickListener()
+    val numButtonRenders = AtomicInteger()
+    val buttonCreator =
+        EventHandlerBindingComponentSpec.ButtonCreator {
+          RecordingButton(numRenders = numButtonRenders, textSize = 10.sp)
+        }
+
+    class Updater {
+      var listener: (() -> Unit)? = null
+
+      fun update() {
+        listener?.invoke()
+      }
+    }
+
+    val updater = Updater()
+    class ComponentWithStateUpdate : KComponent() {
+      override fun ComponentScope.render(): Component {
+        val alphabet = useState { 'a' }
+
+        useEffect(updater) {
+          val listener = { alphabet.update { current -> current + 1 } }
+          updater.listener = listener
+          onCleanup { updater.listener = null }
+        }
+
+        return Column { child(Text("current character is ${alphabet.value}")) }
+      }
+    }
+
+    val testLithoView =
+        mLithoTestRule.render(widthPx = 1000, heightPx = 1000) {
+          ExperimentalVerticalScroll(
+              scrollbarEnabled = false,
+              nestedScrollingEnabled = false,
+              verticalFadingEdgeEnabled = false,
+              fillViewport = true,
+              scrollbarFadingEnabled = false,
+              overScrollMode = 0,
+              fadingEdgeLength = 0.dp,
+              fadingEdgeColor = null,
+              initialScrollPosition = 0.dp,
+              eventsController = null,
+              onScrollChange = null,
+              onInterceptTouch = null,
+              onScrollStateChange = null,
+              child =
+                  EventHandlerBindingComponent.create(context)
+                      .stateUpdater(specStateUpdater)
+                      .onButtonClickListener(clickListener)
+                      .buttonCreator(buttonCreator)
+                      .extraChild(ComponentWithStateUpdate())
+                      .build(),
+              style = null)
         }
 
     specStateUpdater.updateCounter(1)

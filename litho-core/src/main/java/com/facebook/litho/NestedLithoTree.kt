@@ -95,9 +95,16 @@ object NestedLithoTree {
 
     // clear state updates
     treeState.commit()
-
-    // bind event handlers
-    treeState.bindEventAndTriggerHandlers(eventHandlers, components)
+    val useStateForEventDispatchInfo =
+        componentContext.lithoConfiguration.componentsConfig.useStateForEventDispatchInfo
+    if (useStateForEventDispatchInfo) {
+      if (components != null) {
+        treeState.updateEventDispatchers(components)
+      }
+    } else {
+      // bind event handlers
+      treeState.bindEventAndTriggerHandlers(eventHandlers, components)
+    }
 
     // bind handles
     for (handle in componentHandles) {
