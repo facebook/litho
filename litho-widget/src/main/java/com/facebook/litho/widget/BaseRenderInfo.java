@@ -295,7 +295,7 @@ public abstract class BaseRenderInfo implements RenderInfo {
       return (T) this;
     }
 
-    public T debugInfo(String key, Object value) {
+    public T debugInfo(String key, @Nullable Object value) {
       if (mDebugInfo == null) {
         mDebugInfo = Collections.synchronizedMap(new HashMap<String, Object>());
       }

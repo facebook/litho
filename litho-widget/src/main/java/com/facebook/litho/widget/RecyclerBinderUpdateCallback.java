@@ -47,7 +47,7 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
   }
 
   private final int mOldDataSize;
-  private final List<? extends T> mPrevData;
+  private final @Nullable List<? extends T> mPrevData;
   private final List<? extends T> mNextData;
   private final List<Operation> mOperations;
   private final List<ComponentContainer> mPlaceholders;
@@ -65,7 +65,7 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
   }
 
   public RecyclerBinderUpdateCallback(
-      List<? extends T> prevData,
+      @Nullable List<? extends T> prevData,
       List<? extends T> nextData,
       ComponentRenderer<T> componentRenderer,
       OperationExecutor operationExecutor) {

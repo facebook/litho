@@ -3615,7 +3615,9 @@ public class RecyclerBinder
   }
 
   private int getActualChildrenWidthSpec(
-      final ComponentTreeHolder treeHolder, final Size measuredSize, final int lastWidthSpec) {
+      final ComponentTreeHolder treeHolder,
+      final @Nullable Size measuredSize,
+      final int lastWidthSpec) {
     if (isMeasured()) {
 
       if (isMatchingParentSize(treeHolder.getRenderInfo().getParentWidthPercent())) {

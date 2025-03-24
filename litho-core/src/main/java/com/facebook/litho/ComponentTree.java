@@ -3001,7 +3001,7 @@ public class ComponentTree
     // optional
     private ComponentsConfiguration config;
     @Nullable private Boolean incrementalMountEnabled = null;
-    private RunnableHandler layoutThreadHandler;
+    private @Nullable RunnableHandler layoutThreadHandler;
     private @Nullable TreeState treeState;
     private int overrideComponentTreeId = INVALID_ID;
     private @Nullable MeasureListener mMeasureListener;
@@ -3088,7 +3088,7 @@ public class ComponentTree
      * the UI thread. For example, if you rotate the screen, we must measure on the UI thread. If
      * you don't specify a Looper here, the Components default Looper will be used.
      */
-    public Builder layoutThreadHandler(RunnableHandler handler) {
+    public Builder layoutThreadHandler(@Nullable RunnableHandler handler) {
       layoutThreadHandler = handler;
       return this;
     }

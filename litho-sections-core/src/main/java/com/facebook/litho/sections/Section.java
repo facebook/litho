@@ -381,6 +381,7 @@ public abstract class Section extends SectionLifecycle
     return section.mStateContainer;
   }
 
+  @Nullable
   protected StateContainer getStateContainer() {
     return Section.getStateContainer(mScopedContext, this);
   }

@@ -216,7 +216,7 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
       final String className,
       final SectionContext c,
       final int id,
-      final Object[] params,
+      final @Nullable Object[] params,
       final EventHandlerRebindMode mode) {
     Section section;
     if (c == null || (section = c.getSectionScope()) == null) {

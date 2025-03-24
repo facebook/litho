@@ -152,7 +152,7 @@ public class ComponentTreeHolder {
     }
 
     public Builder lithoVisibilityEventsController(
-        LithoVisibilityEventsController lithoVisibilityEventsController) {
+        @Nullable LithoVisibilityEventsController lithoVisibilityEventsController) {
       this.lithoVisibilityEventsController = lithoVisibilityEventsController;
       return this;
     }
