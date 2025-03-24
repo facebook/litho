@@ -423,7 +423,7 @@ enum class ImportantForAccessibility(val asInt: Int) {
   companion object {
     private val map = ImportantForAccessibility.values().associateBy { it.asInt }
 
-    operator fun get(value: Int): ImportantForAccessibility? = map[value]
+    operator fun get(value: Int): ImportantForAccessibility = map[value] ?: AUTO
   }
 }
 
