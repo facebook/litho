@@ -24,6 +24,6 @@ import com.facebook.litho.config.ComponentsConfiguration;
  */
 public class SectionsDebug {
 
-  public static final boolean ENABLED = ComponentsConfiguration.isEndToEndTestRun;
+  public static boolean ENABLED = ComponentsConfiguration.isEndToEndTestRun;
   public static final String TAG = "SectionsDebug";
 }
