@@ -57,7 +57,7 @@ public class SectionBinderTarget implements Target, Binder<RecyclerView> {
       Size outSize,
       int widthSpec,
       int heightSpec,
-      EventHandler<ReMeasureEvent> reMeasureEventEventHandler) {
+      @Nullable EventHandler<ReMeasureEvent> reMeasureEventEventHandler) {
     mRecyclerBinder.measure(outSize, widthSpec, heightSpec, reMeasureEventEventHandler);
   }
 

@@ -209,7 +209,6 @@ public class RecyclerCollectionComponentSpec {
       @State RecyclerCollectionLoadEventsHandler recyclerCollectionLoadEventsHandler,
       @State SnapHelper snapHelper) {
     // This is a side effect from OnCreateLayout, so it's inherently prone to race conditions:
-    // NULLSAFE_FIXME[Parameter Not Nullable]
     recyclerCollectionLoadEventsHandler.setLoadEventsHandler(loadEventsHandler);
 
     // More side effects in OnCreateLayout. Watch out:
@@ -580,8 +579,7 @@ public class RecyclerCollectionComponentSpec {
 
   static class RecyclerCollectionLoadEventsHandler extends BaseLoadEventsHandler {
 
-    // NULLSAFE_FIXME[Field Not Initialized]
-    private LoadEventsHandler mDelegate;
+    private @Nullable LoadEventsHandler mDelegate;
     private LoadingState mLastState = LoadingState.LOADING;
     private final ComponentContext mComponentContext;
     private final RecyclerEventsController mRecyclerEventsController;
@@ -597,7 +595,7 @@ public class RecyclerCollectionComponentSpec {
     }
 
     /** May be called from any thread (in OnCreateLayout). (Does this need synchronization?) */
-    public void setLoadEventsHandler(LoadEventsHandler delegate) {
+    public void setLoadEventsHandler(@Nullable LoadEventsHandler delegate) {
       mDelegate = delegate;
     }
 
