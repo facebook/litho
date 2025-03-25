@@ -446,7 +446,7 @@ object LithoNodeUtils {
 
   @JvmStatic
   fun getDebugKey(componentKey: String?, @OutputUnitType outputUnitType: Int): String? =
-      if (LithoDebugConfigurations.isDebugModeEnabled) {
+      if (!LithoDebugConfigurations.isDebugModeEnabled) {
         null
       } else {
         when (outputUnitType) {
