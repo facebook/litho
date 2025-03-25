@@ -2556,7 +2556,7 @@ public class ComponentTree
       String globalKey,
       int index,
       Object cachedValueInputs,
-      Object cachedValue,
+      @Nullable Object cachedValue,
       boolean isLayoutState) {
     if (mReleased || mTreeState == null) {
       return;
