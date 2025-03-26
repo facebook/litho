@@ -690,7 +690,7 @@ public class TransitionManager {
   }
 
   private @Nullable AnimationBinding maybeCreateAnimation(
-      TransitionUnit transition, TransitionId transitionId, AnimatedProperty property) {
+      TransitionUnit transition, @Nullable TransitionId transitionId, AnimatedProperty property) {
     final AnimationState animationState = mAnimationStates.get(transitionId);
 
     if (mDebugTag != null) {

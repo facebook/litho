@@ -93,7 +93,7 @@ class TransitionIdMap<V> {
    * @see #put(TransitionId, Object)
    */
   @Nullable
-  V get(TransitionId id) {
+  V get(@Nullable TransitionId id) {
     return mIds.get(id);
   }
 
