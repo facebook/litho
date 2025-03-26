@@ -39,7 +39,7 @@ The following example provides an implementation of `Primitive` with an `ImageVi
 This stage of the Primitive's lifecycle can occur on any thread.
 :::
 
-Each Primitive should privide an implementation of [LayoutBehavior](https://github.com/facebook/litho/blob/75655943f348c0347d534e6931fb53b2f7f16195/litho-rendercore-primitives/src/main/java/com/facebook/rendercore/primitives/LayoutBehavior.kt#L30) interface to define how it measures itself given arbitrary width and height specs. The `PrimitiveLayoutResult` object it returns contains the width and height of the content, and optionally any layout data, as shown in the following example:
+Each Primitive should provide an implementation of [LayoutBehavior](https://github.com/facebook/litho/blob/75655943f348c0347d534e6931fb53b2f7f16195/litho-rendercore-primitives/src/main/java/com/facebook/rendercore/primitives/LayoutBehavior.kt#L30) interface to define how it measures itself given arbitrary width and height specs. The `PrimitiveLayoutResult` object it returns contains the width and height of the content, and optionally any layout data, as shown in the following example:
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/primitives/SimpleImageViewPrimitiveComponent.kt start=start_image_primitive_layout_behavior_example end=end_image_primitive_layout_behavior_example
 ```
