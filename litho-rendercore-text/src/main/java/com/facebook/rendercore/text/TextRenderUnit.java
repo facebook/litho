@@ -63,7 +63,7 @@ public class TextRenderUnit extends RenderUnit<RCTextView> implements ContentAll
         }
 
         @Override
-        public Void bind(
+        public @Nullable Void bind(
             Context context,
             RCTextView textView,
             TextRenderUnit textRenderUnit,
