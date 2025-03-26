@@ -416,9 +416,9 @@ class RenderUnitTest {
 
     // assert optional mount binders bind data is correct
     Java6Assertions.assertThat(bindData.optionalMountBindersBindData).hasSize(2)
-    Java6Assertions.assertThat(bindData.optionalMountBindersBindData?.get(mountBinder1.javaClass))
+    Java6Assertions.assertThat(bindData.optionalMountBindersBindData?.get(mountBinder1.type))
         .isEqualTo(3)
-    Java6Assertions.assertThat(bindData.optionalMountBindersBindData?.get(mountBinder2.javaClass))
+    Java6Assertions.assertThat(bindData.optionalMountBindersBindData?.get(mountBinder2.type))
         .isEqualTo(4)
 
     // assert no attach binders bind data is present when calling mountBinders
@@ -444,10 +444,8 @@ class RenderUnitTest {
 
     // assert attach binders bind data is correct
     Java6Assertions.assertThat(bindData.attachBindersBindData).hasSize(2)
-    Java6Assertions.assertThat(bindData.attachBindersBindData?.get(attachBinder1.javaClass))
-        .isEqualTo(1)
-    Java6Assertions.assertThat(bindData.attachBindersBindData?.get(attachBinder2.javaClass))
-        .isEqualTo(2)
+    Java6Assertions.assertThat(bindData.attachBindersBindData?.get(attachBinder1.type)).isEqualTo(1)
+    Java6Assertions.assertThat(bindData.attachBindersBindData?.get(attachBinder2.type)).isEqualTo(2)
   }
 
   @Test
@@ -470,7 +468,7 @@ class RenderUnitTest {
     val bindData =
         createBindData(
             mutableListOf<Any>(1, 2),
-            listOf(Pair(mountBinder1.javaClass, 3), Pair(mountBinder2.javaClass, 4)),
+            listOf(Pair(mountBinder1.type, 3), Pair(mountBinder2.type, 4)),
             null)
     renderUnit.unmountBinders(context, content, null, bindData, tracer)
 
@@ -495,9 +493,7 @@ class RenderUnitTest {
     // Create BindData that will be passed to updateBinders
     val bindData =
         createBindData(
-            null,
-            null,
-            Arrays.asList(Pair(attachBinder1.javaClass, 1), Pair(attachBinder2.javaClass, 2)))
+            null, null, Arrays.asList(Pair(attachBinder1.type, 1), Pair(attachBinder2.type, 2)))
     renderUnit.detachBinders(context, content, null, bindData, tracer)
 
     // assert that unbind was called in correct order and correct bind data was passed
@@ -538,8 +534,8 @@ class RenderUnitTest {
     val bindData =
         createBindData(
             mutableListOf<Any>(1, 2),
-            Arrays.asList(Pair(mountBinder1.javaClass, 3), Pair(mountBinder2.javaClass, 4)),
-            Arrays.asList(Pair(attachBinder1.javaClass, 5), Pair(attachBinder2.javaClass, 6)))
+            Arrays.asList(Pair(mountBinder1.type, 3), Pair(mountBinder2.type, 4)),
+            Arrays.asList(Pair(attachBinder1.type, 5), Pair(attachBinder2.type, 6)))
     nextRU.updateBinders(context, content, currentRU, null, Any(), null, bindData, true, tracer)
 
     // assert that unbind was called in correct order and correct bind data was passed
@@ -556,16 +552,16 @@ class RenderUnitTest {
 
     // assert optional mount binders bind data is correct
     Java6Assertions.assertThat(bindData.optionalMountBindersBindData).hasSize(2)
-    Java6Assertions.assertThat(bindData.optionalMountBindersBindData?.get(mountBinder1.javaClass))
+    Java6Assertions.assertThat(bindData.optionalMountBindersBindData?.get(mountBinder1.type))
         .isEqualTo(300)
-    Java6Assertions.assertThat(bindData.optionalMountBindersBindData?.get(mountBinder2.javaClass))
+    Java6Assertions.assertThat(bindData.optionalMountBindersBindData?.get(mountBinder2.type))
         .isEqualTo(400)
 
     // assert attach binders bind data is correct
     Java6Assertions.assertThat(bindData.attachBindersBindData).hasSize(2)
-    Java6Assertions.assertThat(bindData.attachBindersBindData?.get(attachBinder1.javaClass))
+    Java6Assertions.assertThat(bindData.attachBindersBindData?.get(attachBinder1.type))
         .isEqualTo(100)
-    Java6Assertions.assertThat(bindData.attachBindersBindData?.get(attachBinder2.javaClass))
+    Java6Assertions.assertThat(bindData.attachBindersBindData?.get(attachBinder2.type))
         .isEqualTo(200)
   }
 
@@ -599,8 +595,8 @@ class RenderUnitTest {
     val bindData =
         createBindData(
             mutableListOf<Any>(1, 2),
-            Arrays.asList(Pair(mountBinder1.javaClass, 3), Pair(mountBinder2.javaClass, 4)),
-            Arrays.asList(Pair(attachBinder1.javaClass, 5), Pair(attachBinder2.javaClass, 6)))
+            Arrays.asList(Pair(mountBinder1.type, 3), Pair(mountBinder2.type, 4)),
+            Arrays.asList(Pair(attachBinder1.type, 5), Pair(attachBinder2.type, 6)))
     nextRU.updateBinders(context, content, currentRU, null, Any(), null, bindData, true, tracer)
 
     // assert that unbind was called in correct order and correct bind data was passed
@@ -617,12 +613,12 @@ class RenderUnitTest {
 
     // assert optional mount binders bind data is correct
     Java6Assertions.assertThat(bindData.optionalMountBindersBindData).hasSize(1)
-    Java6Assertions.assertThat(bindData.optionalMountBindersBindData?.get(mountBinder1.javaClass))
+    Java6Assertions.assertThat(bindData.optionalMountBindersBindData?.get(mountBinder1.type))
         .isEqualTo(300)
 
     // assert attach binders bind data is correct
     Java6Assertions.assertThat(bindData.attachBindersBindData).hasSize(1)
-    Java6Assertions.assertThat(bindData.attachBindersBindData?.get(attachBinder1.javaClass))
+    Java6Assertions.assertThat(bindData.attachBindersBindData?.get(attachBinder1.type))
         .isEqualTo(100)
   }
 
@@ -699,8 +695,7 @@ class RenderUnitTest {
 
     // Create BindData that will be passed to updateBinders
     val bindData =
-        createBindData(
-            null, listOf(Pair(mountBinder1.javaClass, 1), Pair(mountBinder2.javaClass, 2)), null)
+        createBindData(null, listOf(Pair(mountBinder1.type, 1), Pair(mountBinder2.type, 2)), null)
 
     // Call update -  only first binder should update
     nextRU.updateBinders(context, content, currentRU, null, Any(), null, bindData, true, tracer)
@@ -714,9 +709,9 @@ class RenderUnitTest {
 
     // assert optional mount binders bind data is correct
     Java6Assertions.assertThat(bindData.optionalMountBindersBindData).hasSize(2)
-    Java6Assertions.assertThat(bindData.optionalMountBindersBindData?.get(mountBinder1.javaClass))
+    Java6Assertions.assertThat(bindData.optionalMountBindersBindData?.get(mountBinder1.type))
         .isEqualTo(100)
-    Java6Assertions.assertThat(bindData.optionalMountBindersBindData?.get(mountBinder2.javaClass))
+    Java6Assertions.assertThat(bindData.optionalMountBindersBindData?.get(mountBinder2.type))
         .isEqualTo(2)
 
     // assert no attach binders bind data is present
@@ -737,9 +732,9 @@ class RenderUnitTest {
 
     // assert optional mount binders bind data is correct
     Java6Assertions.assertThat(bindData.optionalMountBindersBindData).hasSize(2)
-    Java6Assertions.assertThat(bindData.optionalMountBindersBindData?.get(mountBinder1.javaClass))
+    Java6Assertions.assertThat(bindData.optionalMountBindersBindData?.get(mountBinder1.type))
         .isEqualTo(100)
-    Java6Assertions.assertThat(bindData.optionalMountBindersBindData?.get(mountBinder2.javaClass))
+    Java6Assertions.assertThat(bindData.optionalMountBindersBindData?.get(mountBinder2.type))
         .isEqualTo(200)
 
     // assert no attach binders bind data is present
@@ -761,9 +756,9 @@ class RenderUnitTest {
 
     // assert optional mount binders bind data is correct
     Java6Assertions.assertThat(bindData.optionalMountBindersBindData).hasSize(2)
-    Java6Assertions.assertThat(bindData.optionalMountBindersBindData?.get(mountBinder1.javaClass))
+    Java6Assertions.assertThat(bindData.optionalMountBindersBindData?.get(mountBinder1.type))
         .isEqualTo(100)
-    Java6Assertions.assertThat(bindData.optionalMountBindersBindData?.get(mountBinder2.javaClass))
+    Java6Assertions.assertThat(bindData.optionalMountBindersBindData?.get(mountBinder2.type))
         .isEqualTo(200)
 
     // assert no attach binders bind data is present
@@ -829,8 +824,8 @@ class RenderUnitTest {
 
     fun createBindData(
         fixedBindersBindData: List<Any>?,
-        optionalMountBindersBindData: List<Pair<Class<*>, Any>>?,
-        attachBindersBindData: List<Pair<Class<*>, Any>>?
+        optionalMountBindersBindData: List<Pair<BinderKey, Any>>?,
+        attachBindersBindData: List<Pair<BinderKey, Any>>?
     ): BindData {
       val bindData = BindData()
       if (fixedBindersBindData != null) {

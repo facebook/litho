@@ -21,6 +21,7 @@ import androidx.collection.LongSparseArray
 import androidx.core.view.ViewCompat
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.config.LithoDebugConfigurations
+import com.facebook.rendercore.ClassBinderKey
 import com.facebook.rendercore.LayoutCache
 import com.facebook.rendercore.LayoutResult
 import com.facebook.rendercore.MountState
@@ -897,7 +898,8 @@ internal object LithoReducer {
     val position: Int = reductionState.mountableOutputs.size
     val absoluteBounds: Rect = node.getAbsoluteBounds(Rect())
     val shouldExcludePrimitiveFromIncrementalMount: Boolean =
-        unit.findAttachBinderByClass(ExcludeFromIncrementalMountBinder::class.java) != null
+        unit.findAttachBinderByKey<ExcludeFromIncrementalMountBinder>(
+            ClassBinderKey(ExcludeFromIncrementalMountBinder::class.java)) != null
     val shouldExcludeSpecGeneratedComponentFromIncrementalMount: Boolean =
         component is SpecGeneratedComponent && component.excludeFromIncrementalMount()
 

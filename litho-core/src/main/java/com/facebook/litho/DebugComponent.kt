@@ -21,6 +21,7 @@ import android.graphics.drawable.Drawable
 import android.view.View
 import android.widget.TextView
 import com.facebook.litho.LithoRenderUnit.Companion.getRenderUnit
+import com.facebook.rendercore.ClassBinderKey
 import com.facebook.rendercore.RenderUnit
 import com.facebook.rendercore.incrementalmount.ExcludeFromIncrementalMountBinder
 import com.facebook.rendercore.visibility.VisibilityMountExtension
@@ -413,7 +414,8 @@ private constructor(
       val component = debugComponent.component
 
       val shouldExcludePrimitiveFromIncrementalMount: Boolean =
-          renderUnit?.findAttachBinderByClass(ExcludeFromIncrementalMountBinder::class.java) != null
+          renderUnit?.findAttachBinderByKey<ExcludeFromIncrementalMountBinder>(
+              ClassBinderKey(ExcludeFromIncrementalMountBinder::class.java)) != null
       val shouldExcludeSpecGeneratedComponentFromIncrementalMount: Boolean =
           component is SpecGeneratedComponent && component.excludeFromIncrementalMount()
 

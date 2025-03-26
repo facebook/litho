@@ -17,6 +17,8 @@
 package com.facebook.rendercore.primitives
 
 import android.content.Context
+import com.facebook.rendercore.BinderKey
+import com.facebook.rendercore.ClassBinderKey
 import com.facebook.rendercore.RenderUnit
 import com.facebook.rendercore.utils.CommonUtils.getSectionNameForTracing
 import com.facebook.rendercore.utils.areObjectsEquivalent
@@ -114,8 +116,7 @@ internal class KBinder<Model, Content>(
   override val description: String
     get() = "binder:${describe()}"
 
-  override val type: Class<*>
-    get() = bindFunc.javaClass
+  override val type: BinderKey = ClassBinderKey(bindFunc.javaClass)
 
   override fun shouldUpdate(
       currentModel: Model,

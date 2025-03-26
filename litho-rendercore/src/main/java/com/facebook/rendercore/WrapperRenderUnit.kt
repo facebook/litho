@@ -57,8 +57,8 @@ constructor(private val renderUnit: RenderUnit<ContentType>, idOverride: Long = 
     super.addAttachBinder(binder)
   }
 
-  override fun <T : Binder<*, *, *>?> findAttachBinderByClass(klass: Class<T>): T? =
-      renderUnit.findAttachBinderByClass(klass) ?: super.findAttachBinderByClass(klass)
+  override fun <T : Binder<*, *, *>?> findAttachBinderByKey(key: BinderKey): T? =
+      renderUnit.findAttachBinderByKey(key) ?: super.findAttachBinderByKey(key)
 
   override fun mountBinders(
       context: Context,

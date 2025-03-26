@@ -20,6 +20,7 @@ import android.content.Context
 import android.util.SparseArray
 import androidx.annotation.IdRes
 import com.facebook.rendercore.BindData
+import com.facebook.rendercore.BinderKey
 import com.facebook.rendercore.ContentAllocator
 import com.facebook.rendercore.MountDelegate
 import com.facebook.rendercore.RenderUnit
@@ -125,8 +126,8 @@ private constructor(
         tracer)
   }
 
-  override fun <T : Binder<*, *, *>?> findAttachBinderByClass(klass: Class<T>): T? {
-    return primitiveRenderUnit.findAttachBinderByClass(klass)
+  override fun <T : Binder<*, *, *>?> findAttachBinderByKey(key: BinderKey): T? {
+    return primitiveRenderUnit.findAttachBinderByKey(key)
   }
 
   override fun containsAttachBinder(delegateBinder: DelegateBinder<*, *, *>): Boolean {

@@ -27,6 +27,7 @@ import com.facebook.litho.annotations.ImportantForAccessibility
 import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.drawable.BorderColorDrawable
 import com.facebook.litho.host.HostViewAttributesCleanupBinder
+import com.facebook.rendercore.BinderKey
 import com.facebook.rendercore.MountState
 import com.facebook.rendercore.RenderUnit
 import com.facebook.rendercore.RenderUnit.DelegateBinder
@@ -63,7 +64,7 @@ object LithoNodeUtils {
 
     val id: Long = context.calculateLayoutOutputId(componentKey, OutputUnitType.CONTENT)
 
-    val additionalBinders: MutableMap<Class<*>, DelegateBinder<Any, Any, Any>> = HashMap()
+    val additionalBinders: MutableMap<BinderKey, DelegateBinder<Any, Any, Any>> = HashMap()
     if (node.primitive == null) {
       node.customBindersForMountSpec?.let { additionalBinders.putAll(it) }
     }
@@ -317,7 +318,7 @@ object LithoNodeUtils {
       duplicateChildrenStates: Boolean = false,
       hasHostView: Boolean = false,
       isMountViewSpec: Boolean = false,
-      customDelegateBindersForMountSpec: Map<Class<*>, RenderUnit.DelegateBinder<Any, Any, Any>>? =
+      customDelegateBindersForMountSpec: Map<BinderKey, RenderUnit.DelegateBinder<Any, Any, Any>>? =
           null,
       debugKey: String? = null,
       viewAttributes: ViewAttributes?

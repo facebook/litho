@@ -53,7 +53,7 @@ constructor(
   // These maps are used to match a binder with its Binder class.
   // Every RenderUnit should have only one Binder per type.
   private var optionalMountBinderTypeToDelegateMap:
-      MutableMap<Class<*>, DelegateBinder<*, in MOUNT_CONTENT, *>>? =
+      MutableMap<BinderKey, DelegateBinder<*, in MOUNT_CONTENT, *>>? =
       null
   private var optionalMountBinders: MutableList<DelegateBinder<*, in MOUNT_CONTENT, *>>? = null
 
@@ -61,7 +61,7 @@ constructor(
   // always in the same order.
   private val fixedMountBinders: List<DelegateBinder<*, in MOUNT_CONTENT, *>>?
   private var attachBinderTypeToDelegateMap:
-      MutableMap<Class<*>, DelegateBinder<*, in MOUNT_CONTENT, *>>? =
+      MutableMap<BinderKey, DelegateBinder<*, in MOUNT_CONTENT, *>>? =
       null
   private var attachBinders: MutableList<DelegateBinder<*, in MOUNT_CONTENT, *>>? = null
 
@@ -647,8 +647,8 @@ constructor(
     }
   }
 
-  open fun <T : Binder<*, *, *>?> findAttachBinderByClass(klass: Class<T>): T? {
-    return attachBinderTypeToDelegateMap?.get(klass)?.binder as T?
+  open fun <T : Binder<*, *, *>?> findAttachBinderByKey(key: BinderKey): T? {
+    return attachBinderTypeToDelegateMap?.get(key)?.binder as T?
   }
 
   open fun containsAttachBinder(delegateBinder: DelegateBinder<*, *, *>): Boolean {
@@ -690,7 +690,7 @@ constructor(
     val description: String
       get() = binder.description
 
-    val type: Class<*>
+    val type: BinderKey
       get() = binder.type
 
     companion object {
@@ -741,8 +741,8 @@ constructor(
     val description: String
       get() = getSectionNameForTracing(javaClass)
 
-    val type: Class<*>
-      get() = javaClass
+    val type: BinderKey
+      get() = ClassBinderKey(javaClass)
   }
 
   companion object {
@@ -756,7 +756,7 @@ constructor(
     // If that's the case, remove the old binder and add the new one at the current list position
     // which is at the end.
     private fun <MOUNT_CONTENT> addBinder(
-        binderTypeToBinderMap: MutableMap<Class<*>, DelegateBinder<*, in MOUNT_CONTENT, *>>,
+        binderTypeToBinderMap: MutableMap<BinderKey, DelegateBinder<*, in MOUNT_CONTENT, *>>,
         binders: MutableList<DelegateBinder<*, in MOUNT_CONTENT, *>>,
         binder: DelegateBinder<*, in MOUNT_CONTENT, *>
     ) {
@@ -820,7 +820,7 @@ constructor(
     private fun <MOUNT_CONTENT> resolveBindersToUpdate(
         currentBinders: List<DelegateBinder<*, in MOUNT_CONTENT, *>>?,
         newBinders: List<DelegateBinder<*, in MOUNT_CONTENT, *>>?,
-        currentBinderTypeToBinderMap: Map<Class<*>, DelegateBinder<*, in MOUNT_CONTENT, *>>?,
+        currentBinderTypeToBinderMap: Map<BinderKey, DelegateBinder<*, in MOUNT_CONTENT, *>>?,
         currentLayoutData: Any?,
         newLayoutData: Any?,
         bindersToBind: MutableList<DelegateBinder<*, in MOUNT_CONTENT, *>>,
@@ -839,13 +839,13 @@ constructor(
         bindersToUnbind.addAll(currentBinders)
         return
       }
-      val binderToShouldUpdate: MutableMap<Class<*>, Boolean> = HashMap(newBinders.size)
+      val binderToShouldUpdate: MutableMap<BinderKey, Boolean> = HashMap(newBinders.size)
 
       // Parse all new binders and resolve which ones are to bind.
       for (i in newBinders.indices) {
         val newBinder = newBinders[i]
-        val binderClass: Class<*> = newBinder.binder.type
-        val currentBinder = currentBinderTypeToBinderMap?.get(binderClass)
+        val binderKey = newBinder.binder.type
+        val currentBinder = currentBinderTypeToBinderMap?.get(binderKey)
         if (currentBinder == null) {
           // Found new binder, has to be bound.
           bindersToBind.add(newBinder)
@@ -855,7 +855,7 @@ constructor(
             (newBinder as DelegateBinder<Any, Any, Any>).shouldUpdate(
                 currentBinder as DelegateBinder<Any, Any, Any>, currentLayoutData, newLayoutData)
         // Memoize the result for the next for-loop.
-        binderToShouldUpdate[binderClass] = shouldUpdate
+        binderToShouldUpdate[binderKey] = shouldUpdate
         if (shouldUpdate) {
           bindersToBind.add(newBinder)
         }
@@ -864,9 +864,9 @@ constructor(
       // Parse all current binders and resolve which ones are to unbind.
       for (i in currentBinders.indices) {
         val currentBinder = currentBinders[i]
-        val binderClass: Class<*> = currentBinder.binder.type
-        if (!binderToShouldUpdate.containsKey(binderClass) ||
-            binderToShouldUpdate[binderClass] == true) {
+        val binderKey = currentBinder.binder.type
+        if (!binderToShouldUpdate.containsKey(binderKey) ||
+            binderToShouldUpdate[binderKey] == true) {
           // Found a current binder which either is not in the new RenderUnit or shouldUpdate is
           // true, therefore we need to unbind it.
           bindersToUnbind.add(currentBinder)

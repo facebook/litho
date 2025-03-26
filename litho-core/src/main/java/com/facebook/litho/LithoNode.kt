@@ -44,6 +44,7 @@ import com.facebook.litho.layout.LayoutDirection.Companion.INHERIT
 import com.facebook.litho.layout.LayoutDirection.Companion.isNullOrInherit
 import com.facebook.litho.transition.MutableTransitionData
 import com.facebook.litho.transition.TransitionData
+import com.facebook.rendercore.BinderKey
 import com.facebook.rendercore.FastMath
 import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.Node
@@ -217,10 +218,10 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
    * Returns a nullable map of [RenderUnit.DelegateBinder] that is aimed to be used to set the
    * optional mount binders right after creating a [MountSpecLithoRenderUnit].
    */
-  var customViewBindersForMountSpec: MutableMap<Class<*>, DelegateBinder<Any, Any, Any>>? = null
+  var customViewBindersForMountSpec: MutableMap<BinderKey, DelegateBinder<Any, Any, Any>>? = null
     internal set
 
-  var customBindersForMountSpec: MutableMap<Class<*>, DelegateBinder<Any, Any, Any>>? = null
+  var customBindersForMountSpec: MutableMap<BinderKey, DelegateBinder<Any, Any, Any>>? = null
     internal set
 
   /**
@@ -577,7 +578,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
    * view binders), the addition of the optional mount binders is delayed until the moment of its
    * creation. For that, we store these binders in the [LithoNode] and use them later.
    */
-  fun addViewCustomBinders(viewBindersMap: Map<Class<*>, DelegateBinder<Any, Any, Any>>? = null) {
+  fun addViewCustomBinders(viewBindersMap: Map<BinderKey, DelegateBinder<Any, Any, Any>>? = null) {
     if (viewBindersMap.isNullOrEmpty()) {
       return
     }
@@ -594,14 +595,14 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
 
     customViewBindersForMountSpec
         .getOrCreate {
-          LinkedHashMap<Class<*>, DelegateBinder<Any, Any, Any>>().also {
+          LinkedHashMap<BinderKey, DelegateBinder<Any, Any, Any>>().also {
             customViewBindersForMountSpec = it
           }
         }
         .putAll(viewBindersMap)
   }
 
-  fun addCustomBinders(binders: Map<Class<*>, DelegateBinder<Any, Any, Any>>? = null) {
+  fun addCustomBinders(binders: Map<BinderKey, DelegateBinder<Any, Any, Any>>? = null) {
     if (binders.isNullOrEmpty()) {
       return
     }
@@ -615,7 +616,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
     } else {
       customBindersForMountSpec
           .getOrCreate {
-            LinkedHashMap<Class<*>, DelegateBinder<Any, Any, Any>>().also {
+            LinkedHashMap<BinderKey, DelegateBinder<Any, Any, Any>>().also {
               customBindersForMountSpec = it
             }
           }

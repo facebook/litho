@@ -35,6 +35,7 @@ import com.facebook.litho.Transition.TransitionKeyType
 import com.facebook.litho.drawable.DrawableUtils
 import com.facebook.litho.layout.LayoutDirection
 import com.facebook.litho.visibility.Visibility
+import com.facebook.rendercore.BinderKey
 import com.facebook.rendercore.Equivalence
 import com.facebook.rendercore.RenderUnit.DelegateBinder
 import com.facebook.rendercore.utils.equals
@@ -648,10 +649,10 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
     otherProps.mountBinder(binder)
   }
 
-  val viewBinders: Map<Class<*>, DelegateBinder<Any, Any, Any>>?
+  val viewBinders: Map<BinderKey, DelegateBinder<Any, Any, Any>>?
     get() = _otherProps?.typeToViewBinders
 
-  val mountBinders: Map<Class<*>, DelegateBinder<Any, Any, Any>>?
+  val mountBinders: Map<BinderKey, DelegateBinder<Any, Any, Any>>?
     get() = _otherProps?.typeToMountBinders
 
   fun transitionKeyType(type: TransitionKeyType?) {
@@ -729,8 +730,8 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
     private var fullImpressionHandler: EventHandler<FullImpressionVisibleEvent>? = null
     private var invisibleHandler: EventHandler<InvisibleEvent>? = null
     private var visibilityChangedHandler: EventHandler<VisibilityChangedEvent>? = null
-    var typeToViewBinders: MutableMap<Class<*>, DelegateBinder<Any, Any, Any>>? = null
-    var typeToMountBinders: MutableMap<Class<*>, DelegateBinder<Any, Any, Any>>? = null
+    var typeToViewBinders: MutableMap<BinderKey, DelegateBinder<Any, Any, Any>>? = null
+    var typeToMountBinders: MutableMap<BinderKey, DelegateBinder<Any, Any, Any>>? = null
     private var importantForAccessibility: Int = 0
     private var duplicateParentState: Boolean = false
     private var duplicateChildrenStates: Boolean = false

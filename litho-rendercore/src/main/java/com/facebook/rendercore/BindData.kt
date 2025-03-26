@@ -24,10 +24,10 @@ class BindData {
   var fixedBindersBindData: Array<Any?>? = null
     private set
 
-  var optionalMountBindersBindData: MutableMap<Class<*>, Any?>? = null
+  var optionalMountBindersBindData: MutableMap<BinderKey, Any?>? = null
     private set
 
-  var attachBindersBindData: MutableMap<Class<*>, Any?>? = null
+  var attachBindersBindData: MutableMap<BinderKey, Any?>? = null
     private set
 
   /**
@@ -64,14 +64,14 @@ class BindData {
    */
   fun setOptionalMountBindersBindData(
       bindData: Any?,
-      key: Class<*>,
+      key: BinderKey,
       optionalMountBindersSize: Int
   ) {
     if (bindData == null) {
       return
     }
 
-    val bindersBindData: MutableMap<Class<*>, Any?> =
+    val bindersBindData: MutableMap<BinderKey, Any?> =
         optionalMountBindersBindData ?: LinkedHashMap(optionalMountBindersSize)
     bindersBindData[key] = bindData
     if (optionalMountBindersBindData == null) {
@@ -83,7 +83,7 @@ class BindData {
    * Removes the bindData for specified [key] and returns it if it was present or `null` if it
    * wasn't present or [optionalMountBindersBindData] map was `null`.
    */
-  fun removeOptionalMountBindersBindData(key: Class<*>): Any? {
+  fun removeOptionalMountBindersBindData(key: BinderKey): Any? {
     return optionalMountBindersBindData?.remove(key)
   }
 
@@ -91,12 +91,12 @@ class BindData {
    * Sets the bindData at specified [index] to the provided value. If [attachBindersBindData]
    * doesn't exist, it creates it and then sets the bindData value.
    */
-  fun setAttachBindersBindData(bindData: Any?, key: Class<*>, attachBindersSize: Int) {
+  fun setAttachBindersBindData(bindData: Any?, key: BinderKey, attachBindersSize: Int) {
     if (bindData == null) {
       return
     }
 
-    val bindersBindData: MutableMap<Class<*>, Any?> =
+    val bindersBindData: MutableMap<BinderKey, Any?> =
         attachBindersBindData ?: LinkedHashMap(attachBindersSize)
     bindersBindData[key] = bindData
     if (attachBindersBindData == null) {
@@ -108,7 +108,7 @@ class BindData {
    * Removes the bindData for specified [key] and returns it if it was present or `null` if it
    * wasn't present or [attachBindersBindData] map was `null`.
    */
-  fun removeAttachBindersBindData(key: Class<*>): Any? {
+  fun removeAttachBindersBindData(key: BinderKey): Any? {
     return attachBindersBindData?.remove(key)
   }
 }

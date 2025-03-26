@@ -18,6 +18,8 @@ package com.facebook.rendercore.incrementalmount;
 
 import android.graphics.Rect;
 import androidx.annotation.Nullable;
+import com.facebook.rendercore.BinderKey;
+import com.facebook.rendercore.ClassBinderKey;
 import com.facebook.rendercore.LayoutResult;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
@@ -236,13 +238,10 @@ public class IncrementalMountRenderCoreExtension
                   ? y + Math.max(bounds.height(), 1)
                   : y + bounds.height());
 
+      final BinderKey binderKey = new ClassBinderKey(ExcludeFromIncrementalMountBinder.class);
       results.addOutput(
           new IncrementalMountOutput(
-              id,
-              position,
-              rect,
-              unit.findAttachBinderByClass(ExcludeFromIncrementalMountBinder.class) != null,
-              host));
+              id, position, rect, unit.findAttachBinderByKey(binderKey) != null, host));
       if (unit.doesMountRenderTreeHosts()) {
         results.addRenderTreeHostId(id);
       }
