@@ -186,6 +186,9 @@ public class HorizontalScrollLithoView extends HorizontalScrollView
     mScrollPosition = scrollPosition;
     Runnable preDrawRunnable =
         () -> {
+          if (mScrollPosition == null) {
+            return;
+          }
           if (mScrollPosition.x == LAST_SCROLL_POSITION_UNSET) {
             fullScroll(HorizontalScrollView.FOCUS_RIGHT);
             mScrollPosition.x = getScrollX();
