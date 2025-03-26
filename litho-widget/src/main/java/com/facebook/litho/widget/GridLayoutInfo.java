@@ -105,7 +105,7 @@ public class GridLayoutInfo implements LayoutInfo {
   }
 
   @Override
-  public void setRenderInfoCollection(RenderInfoCollection renderInfoCollection) {
+  public void setRenderInfoCollection(@Nullable RenderInfoCollection renderInfoCollection) {
     mRenderInfoCollection = renderInfoCollection;
   }
 

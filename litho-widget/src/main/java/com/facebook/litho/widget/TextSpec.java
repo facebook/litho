@@ -1232,7 +1232,7 @@ public class TextSpec {
   }
 
   private static TextDirectionHeuristicCompat getTextDirection(
-      TextDirectionHeuristicCompat textDirection, YogaDirection layoutDirection) {
+      @Nullable TextDirectionHeuristicCompat textDirection, YogaDirection layoutDirection) {
     if (textDirection == null) {
       textDirection =
           layoutDirection == YogaDirection.RTL
