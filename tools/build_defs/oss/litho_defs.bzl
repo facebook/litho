@@ -272,7 +272,7 @@ def litho_robolectric4_test(
     ]
     kwargs["vm_args"] = extra_vm_args
     kwargs["use_cxx_libraries"] = True
-    kwargs["cxx_library_whitelist"] = [
+    kwargs["cxx_library_allowlist"] = [
         "//lib/yogajni:jni",
     ]
     kwargs["manifest"] = kwargs.pop("manifest", LITHO_TEST_MANIFEST)
