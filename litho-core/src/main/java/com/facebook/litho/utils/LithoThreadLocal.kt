@@ -57,6 +57,10 @@ internal class LithoThreadLocal<T> {
   }
 }
 
+internal inline fun <T : Any> LithoThreadLocal<T>.getOrSet(default: () -> T): T {
+  return get() ?: default().also(::set)
+}
+
 internal class ThreadMap(
     private val size: Int,
     private val keys: LongArray,
