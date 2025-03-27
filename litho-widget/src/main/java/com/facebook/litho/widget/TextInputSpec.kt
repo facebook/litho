@@ -77,6 +77,7 @@ import com.facebook.litho.annotations.Prop
 import com.facebook.litho.annotations.PropDefault
 import com.facebook.litho.annotations.Reason
 import com.facebook.litho.annotations.ResType
+import com.facebook.litho.annotations.ShouldExcludeFromIncrementalMount
 import com.facebook.litho.annotations.ShouldUpdate
 import com.facebook.litho.annotations.State
 import com.facebook.litho.config.ComponentsConfiguration
@@ -217,6 +218,7 @@ internal object TextInputSpec {
   @JvmField @PropDefault val maxLines: Int = Int.MAX_VALUE
   @JvmField @PropDefault val importantForAutofill: Int = 0
   @JvmField @PropDefault val disableAutofill: Boolean = false
+  @JvmField @PropDefault val shouldExcludeFromIncrementalMount: Boolean = false
 
   @JvmField @PropDefault val movementMethod: MovementMethod = ArrowKeyMovementMethod.getInstance()
 
@@ -630,6 +632,7 @@ internal object TextInputSpec {
       @Prop(optional = true) movementMethod: Diff<MovementMethod?>,
       @Prop(optional = true, resType = ResType.STRING) error: Diff<CharSequence?>,
       @Prop(optional = true) keyListener: Diff<KeyListener?>,
+      @Prop(optional = true) shouldExcludeFromIncrementalMount: Diff<Boolean>,
       @State measureSeqNumber: Diff<Int?>,
       @State mountedView: Diff<AtomicReference<EditTextWithEventHandlers?>>,
       @State savedText: Diff<AtomicReference<CharSequence?>>
@@ -689,6 +692,10 @@ internal object TextInputSpec {
       return true
     }
     if (!ObjectsCompat.equals(keyListener.previous, keyListener.next)) {
+      return true
+    }
+    if (!ObjectsCompat.equals(
+        shouldExcludeFromIncrementalMount.previous, shouldExcludeFromIncrementalMount.next)) {
       return true
     }
     if (!ObjectsCompat.equals(imeOptions.previous, imeOptions.next)) {
@@ -1205,6 +1212,12 @@ internal object TextInputSpec {
   fun remeasureForUpdatedText(measureSeqNumber: StateValue<Int>) {
     measureSeqNumber.set((measureSeqNumber.get() ?: 0) + 1)
   }
+
+  @JvmStatic
+  @ShouldExcludeFromIncrementalMount
+  fun shouldExcludeFromIncrementalMount(
+      @Prop(optional = true) shouldExcludeFromIncrementalMount: Boolean
+  ): Boolean = shouldExcludeFromIncrementalMount
 
   internal class EditTextWithEventHandlers(context: Context?) :
       EditText(context), TextView.OnEditorActionListener {

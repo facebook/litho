@@ -86,6 +86,7 @@ inline fun ResourcesScope.TextInput(
     handle: Handle? = null,
     inputBackground: Drawable? = null,
     textWatcher: TextWatcher? = null,
+    shouldExcludeFromIncrementalMount: Boolean = false,
 ): TextInput =
     TextInput.create(context)
         .inputFilters(inputFilters)
@@ -108,6 +109,7 @@ inline fun ResourcesScope.TextInput(
         .textWatcher(textWatcher)
         .handle(handle)
         .kotlinStyle(style)
+        .shouldExcludeFromIncrementalMount(shouldExcludeFromIncrementalMount)
         .apply {
           onTextChanged?.let { textChangedEventHandler(eventHandler(it)) }
           onSelectionChanged?.let { selectionChangedEventHandler(eventHandler(it)) }

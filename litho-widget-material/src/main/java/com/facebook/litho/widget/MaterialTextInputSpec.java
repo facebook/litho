@@ -289,6 +289,7 @@ class MaterialTextInputSpec {
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) Diff<Integer> editTextEndPadding,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) Diff<Integer> editTextBottomPadding,
       @Prop(optional = true) Diff<KeyListener> keyListener,
+      @Prop(optional = true) Diff<Boolean> shouldExcludeFromIncrementalMount,
       @Prop(optional = true) Diff<String> tooltipText,
       @State Diff<Integer> measureSeqNumber,
       @State Diff<AtomicReference<EditTextWithEventHandlers>> mountedEditTextRef,
@@ -324,6 +325,7 @@ class MaterialTextInputSpec {
             movementMethod,
             error,
             keyListener,
+            shouldExcludeFromIncrementalMount,
             measureSeqNumber,
             mountedEditTextRef,
             savedText);
