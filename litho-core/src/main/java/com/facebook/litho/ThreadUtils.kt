@@ -30,6 +30,8 @@ object ThreadUtils {
   const val OVERRIDE_MAIN_THREAD_TRUE: Int = 1
   const val OVERRIDE_MAIN_THREAD_FALSE: Int = 2
   @MainThreadOverride private var mainThreadOverride = OVERRIDE_DISABLED
+  // Defaults to -1 for cases where the Android SDK is stubbed out. E.g when running unit tests.
+  private val mainThreadId = runCatching { Looper.getMainLooper().thread.id }.getOrDefault(-1)
 
   @JvmStatic
   @VisibleForTesting
@@ -43,12 +45,16 @@ object ThreadUtils {
         when (mainThreadOverride) {
           OVERRIDE_MAIN_THREAD_FALSE -> false
           OVERRIDE_MAIN_THREAD_TRUE -> true
-          else -> Looper.getMainLooper().thread === Thread.currentThread()
+          else -> mainThreadId == Thread.currentThread().id
         }
 
   @get:JvmStatic
   val isLayoutThread: Boolean
     get() = Thread.currentThread().name.startsWith(ComponentTree.DEFAULT_LAYOUT_THREAD_NAME)
+
+  @get:JvmStatic
+  val isDefaultLayoutThread: Boolean
+    get() = Thread.currentThread().name == ComponentTree.DEFAULT_LAYOUT_THREAD_NAME
 
   @JvmStatic
   fun assertMainThread() {
