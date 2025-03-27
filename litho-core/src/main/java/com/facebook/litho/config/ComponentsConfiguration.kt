@@ -154,6 +154,8 @@ internal constructor(
     /** This flag is used to enable the redesigned event handler rebinding logic. */
     @JvmField val useStateForEventDispatchInfo: Boolean = true,
     val useNonRebindingEventHandlers: Boolean = true,
+    /** This flag is used to enable the new state read tracking logic. */
+    @JvmField val enableStateReadTracking: Boolean = false,
 
     /** This flag is used to enable incremental mount helper for ViewPager2. */
     @JvmField val enableIMHelperForViewPager2: Boolean = false,
