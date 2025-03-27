@@ -480,7 +480,7 @@ public class TransitionManager {
    */
   private void recordLayoutOutputsGroupDiff(
       TransitionId transitionId,
-      OutputUnitsAffinityGroup<AnimatableItem> currentLayoutOutputsGroup,
+      @Nullable OutputUnitsAffinityGroup<AnimatableItem> currentLayoutOutputsGroup,
       OutputUnitsAffinityGroup<AnimatableItem> nextLayoutOutputsGroup) {
     AnimationState animationState = mAnimationStates.get(transitionId);
     if (animationState == null) {
@@ -559,7 +559,7 @@ public class TransitionManager {
     mRootAnimationToRun = createAnimationsForTransition(rootTransition);
   }
 
-  private AnimationBinding createAnimationsForTransition(Transition transition) {
+  private @Nullable AnimationBinding createAnimationsForTransition(Transition transition) {
     if (transition instanceof TransitionUnit) {
       return createAnimationsForTransitionUnit((TransitionUnit) transition);
     } else if (transition instanceof TransitionSet) {

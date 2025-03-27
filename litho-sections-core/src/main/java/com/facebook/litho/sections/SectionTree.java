@@ -1493,7 +1493,8 @@ public class SectionTree {
   }
 
   @ThreadConfined(ThreadConfined.ANY)
-  private void applyChangeSetsToTargetBackgroundAllowed(ChangesetDebugInfo changesetDebugInfo) {
+  private void applyChangeSetsToTargetBackgroundAllowed(
+      @Nullable ChangesetDebugInfo changesetDebugInfo) {
     if (!mUseBackgroundChangeSets) {
       throw new IllegalStateException(
           "Must use UIThread-only variant when background change sets are not enabled.");

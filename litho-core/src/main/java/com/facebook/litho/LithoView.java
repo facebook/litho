@@ -76,7 +76,7 @@ public class LithoView extends BaseMountingView {
    * @param component The root component to draw.
    * @return {@link LithoView} able to render a {@link Component} hierarchy.
    */
-  public static LithoView create(Context context, Component component) {
+  public static LithoView create(Context context, @Nullable Component component) {
     final LithoView lithoView = new LithoView(context);
     lithoView.setComponentTree(
         ComponentTree.create(new ComponentContext(context), component).build());
@@ -84,7 +84,7 @@ public class LithoView extends BaseMountingView {
   }
 
   public static LithoView create(
-      Context context, Component component, LithoVisibilityEventsController controller) {
+      Context context, @Nullable Component component, LithoVisibilityEventsController controller) {
     return create(new ComponentContext(context), component, controller);
   }
 

@@ -279,7 +279,7 @@ public abstract class Transition {
     TransitionUnit(
         AnimationTarget animationTarget,
         TransitionAnimator transitionAnimator,
-        RuntimeValue appearFrom,
+        @Nullable RuntimeValue appearFrom,
         RuntimeValue disappearTo,
         @Nullable String traceName,
         @Nullable Function<Void> transitionEndHandler) {
