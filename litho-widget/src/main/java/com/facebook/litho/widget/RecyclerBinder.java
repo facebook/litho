@@ -3635,7 +3635,9 @@ public class RecyclerBinder
   }
 
   private int getActualChildrenHeightSpec(
-      final ComponentTreeHolder treeHolder, final Size measuredSize, final int lastHeightSpec) {
+      final ComponentTreeHolder treeHolder,
+      final @Nullable Size measuredSize,
+      final int lastHeightSpec) {
     if (mHasDynamicItemHeight) {
 
       if (isMeasured()

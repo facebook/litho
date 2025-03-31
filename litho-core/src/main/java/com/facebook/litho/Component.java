@@ -341,7 +341,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       final String className,
       final ComponentContext c,
       final int id,
-      final Object[] params,
+      final @Nullable Object[] params,
       final EventHandlerRebindMode mode) {
     return c.createEventHandler(id, mode, params, reference, className);
   }

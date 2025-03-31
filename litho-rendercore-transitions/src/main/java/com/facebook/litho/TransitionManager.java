@@ -652,7 +652,9 @@ public class TransitionManager {
   }
 
   private void createAnimationsForTransitionUnit(
-      TransitionUnit transition, TransitionId transitionId, ArrayList<AnimationBinding> outList) {
+      TransitionUnit transition,
+      @Nullable TransitionId transitionId,
+      ArrayList<AnimationBinding> outList) {
     final Transition.AnimationTarget animationTarget = transition.getAnimationTarget();
     switch (animationTarget.propertyTarget.propertyTargetType) {
       case AUTO_LAYOUT:

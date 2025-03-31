@@ -931,7 +931,7 @@ public class TextSpec {
       @Nullable @Prop(optional = true) TouchableSpanListener touchableSpanListener,
       final @FromBoundsDefined CharSequence processedText,
       @FromBoundsDefined Layout textLayout,
-      @FromBoundsDefined Float textLayoutTranslationX,
+      @Nullable @FromBoundsDefined Float textLayoutTranslationX,
       @FromBoundsDefined Float textLayoutTranslationY,
       @Nullable @FromBoundsDefined ClickableSpan[] clickableSpans,
       @Nullable @FromBoundsDefined ImageSpan[] imageSpans) {
@@ -1206,7 +1206,8 @@ public class TextSpec {
 
   @OnBindDynamicValue
   static void onBindTextColor(
-      TextDrawable textDrawable, @Prop(optional = true, dynamic = true) Integer dynamicTextColor) {
+      TextDrawable textDrawable,
+      @Nullable @Prop(optional = true, dynamic = true) Integer dynamicTextColor) {
     if (dynamicTextColor != null) {
       textDrawable.setTextColor(dynamicTextColor);
     }

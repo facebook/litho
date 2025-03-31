@@ -377,11 +377,11 @@ public class RecyclerCollectionComponentSpec {
       // Caution: ignoreLoadingUpdates breaks loadingComponent/errorComponent/emptyComponent.
       // It's intended to be a temporary workaround, not something you should use often.
       @Prop(optional = true) boolean ignoreLoadingUpdates,
-      @Prop(optional = true) String sectionTreeTag,
+      @Prop(optional = true) @Nullable String sectionTreeTag,
       // Don't use this. If false, off incremental mount for all subviews of this Recycler.
       @Prop(optional = true) boolean incrementalMount,
       @Prop(optional = true) @Nullable LithoStartupLogger startupLogger,
-      @Prop(optional = true) StickyHeaderControllerFactory stickyHeaderControllerFactory,
+      @Prop(optional = true) @Nullable StickyHeaderControllerFactory stickyHeaderControllerFactory,
       @Prop(optional = true) @Nullable
           List<PostDispatchDrawListener> additionalPostDispatchDrawListeners) {
 

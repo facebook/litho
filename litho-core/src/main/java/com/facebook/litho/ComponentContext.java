@@ -842,7 +842,7 @@ public class ComponentContext {
   <E> EventHandler<E> createEventHandler(
       final int id,
       final EventHandlerRebindMode mode,
-      final Object[] params,
+      final @Nullable Object[] params,
       final Class<? extends Component> reference,
       final String source) {
 
