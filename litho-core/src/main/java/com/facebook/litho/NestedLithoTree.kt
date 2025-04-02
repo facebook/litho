@@ -20,6 +20,7 @@ import android.view.View
 import androidx.annotation.UiThread
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
+import com.facebook.litho.state.TreeStateProvider
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.thread.utils.ThreadUtils.assertMainThread
 
@@ -154,13 +155,16 @@ object NestedLithoTree {
 class NestedStateUpdater(
     private val state: TreeState,
     private val updater: StateUpdateRequester,
-) : StateUpdater {
+) : StateUpdater, TreeStateProvider {
 
   override var isFirstMount: Boolean
     get() = state.mountInfo.isFirstMount
     set(value) {
       state.mountInfo.isFirstMount = value
     }
+
+  override val treeState: TreeState
+    get() = state
 
   override fun updateHookStateAsync(
       globalKey: String,

@@ -281,14 +281,15 @@ fun PrimitiveComponentScope.useNestedTree(
   }
 
   val errorComponentRef = useState { AtomicReference<Component?>(null) }
-
+  val stateUpdater = NestedStateUpdater(state = newState, updater = onStateUpdate)
   val componentContext =
       ComponentContext(
           androidContext,
           treeProps,
           lithoConfig,
           LithoTree(
-              stateUpdater = NestedStateUpdater(state = newState, updater = onStateUpdate),
+              treeStateProvider = stateUpdater,
+              stateUpdater = stateUpdater,
               mountedViewReference = nestedTreeState.mountedViewReference,
               errorComponentReceiver = { errorComponentRef.update(AtomicReference(it)) },
               lithoTreeLifecycleProvider = nestedTreeState.treeLifecycleProvider,

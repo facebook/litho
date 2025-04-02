@@ -18,6 +18,10 @@ package com.facebook.litho
 
 import com.facebook.litho.annotations.Hook
 import com.facebook.litho.state.ComponentState
+import com.facebook.litho.state.StateId
+import com.facebook.litho.state.StateProvider
+import com.facebook.litho.state.StateReadRecorder
+import java.util.Objects
 
 /**
  * Declares a state variable within a Component. The initializer will provide the initial value if
@@ -33,8 +37,7 @@ fun <T> ComponentScope.useState(initializer: () -> T): State<T> {
   val treeState: TreeState =
       resolveContext?.treeState
           ?: throw IllegalStateException("Cannot create state outside of layout calculation")
-  val stateUpdater: StateUpdater =
-      context.stateUpdater ?: throw IllegalStateException("LithoTree is null")
+  val lithoTree = context.lithoTree ?: error("LithoTree is null")
 
   val isNestedTreeContext = context.isNestedTreeContext
   val kState =
@@ -54,11 +57,13 @@ fun <T> ComponentScope.useState(initializer: () -> T): State<T> {
     context.scopedComponentInfo.state = state
 
     return State(
-        stateUpdater,
+        lithoTree.stateProvider,
+        lithoTree.stateUpdater,
         hookIndex,
         globalKey,
         isNestedTreeContext,
         context.componentScope,
+        lithoTree.isReadTrackingEnabled,
         state.value.states[hookIndex] as T)
   } else {
     context.scopedComponentInfo.state = kState
@@ -70,24 +75,37 @@ fun <T> ComponentScope.useState(initializer: () -> T): State<T> {
   }
 
   return State(
-      stateUpdater,
+      lithoTree.stateProvider,
+      lithoTree.stateUpdater,
       hookIndex,
       globalKey,
       isNestedTreeContext,
       context.componentScope,
+      lithoTree.isReadTrackingEnabled,
       kState.value.states[hookIndex] as T)
 }
 
 /** Interface with which a component gets the value from a state or updates it. */
 class State<T>
 internal constructor(
+    private val stateProvider: StateProvider,
     private val stateUpdater: StateUpdater,
     private val hookStateIndex: Int,
     private val globalKey: String,
-    private val isNestedTreeContext: Boolean,
+    internal val isNestedTreeContext: Boolean,
     private val componentScope: Component?,
-    val value: T
+    private val isReadTrackingEnabled: Boolean,
+    private val fallback: T
 ) {
+
+  internal val stateId: StateId = StateId(stateProvider.treeId, globalKey, hookStateIndex)
+
+  val value: T
+    get() {
+      if (!isReadTrackingEnabled) return fallback
+      StateReadRecorder.read(stateId)
+      return stateProvider.getValue(this)
+    }
 
   /**
    * Updates this state value and enqueues a new layout calculation reflecting it to execute in the
@@ -215,10 +233,12 @@ internal constructor(
 
     return globalKey == other.globalKey &&
         hookStateIndex == other.hookStateIndex &&
-        value == other.value
+        if (isReadTrackingEnabled) stateId.treeId == other.stateId.treeId
+        else fallback == other.fallback
   }
 
   override fun hashCode(): Int {
-    return globalKey.hashCode() * 17 + (value?.hashCode() ?: 0) * 11 + hookStateIndex
+    return Objects.hash(
+        globalKey, hookStateIndex, if (isReadTrackingEnabled) stateId.treeId else fallback)
   }
 }

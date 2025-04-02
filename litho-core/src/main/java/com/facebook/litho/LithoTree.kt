@@ -17,18 +17,28 @@
 package com.facebook.litho
 
 import com.facebook.infer.annotation.ThreadConfined
+import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.state.StateProvider
+import com.facebook.litho.state.StateProviderImpl
+import com.facebook.litho.state.TreeStateProvider
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
 
 /** Represents a pointer to the Tree that a ComponentContext is attached to */
 class LithoTree
-constructor(
+internal constructor(
+    treeStateProvider: TreeStateProvider,
     @field:ThreadConfined(ThreadConfined.ANY) val stateUpdater: StateUpdater,
     @field:ThreadConfined(ThreadConfined.UI) val mountedViewReference: MountedViewReference,
     val errorComponentReceiver: ErrorComponentReceiver,
     val lithoTreeLifecycleProvider: LithoTreeLifecycleProvider,
     val id: Int
 ) {
+  @field:ThreadConfined(ThreadConfined.ANY)
+  val stateProvider: StateProvider = StateProviderImpl(id, treeStateProvider)
+
+  val isReadTrackingEnabled: Boolean =
+      ComponentsConfiguration.defaultInstance.enableStateReadTracking
 
   // Used to lazily store a CoroutineScope, if coroutine helper methods are used.
   @JvmField val internalScopeRef: AtomicReference<Any> = AtomicReference<Any>()
@@ -39,6 +49,7 @@ constructor(
 
     fun create(componentTree: ComponentTree, stateUpdater: StateUpdater): LithoTree =
         LithoTree(
+            componentTree,
             stateUpdater,
             componentTree,
             componentTree,

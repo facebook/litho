@@ -180,16 +180,14 @@ fun createdNestedTreeComponentContext(
     errorComponent: (Component?) -> Unit,
     lifecycleProvider: NestedLithoTreeLifecycleProvider,
 ): ComponentContext {
+  val stateUpdater = NestedStateUpdater(state = updatedState, updater = updater)
   return ComponentContext(
       androidContext,
       treeProps,
       lithoConfiguration,
       LithoTree(
-          stateUpdater =
-              NestedStateUpdater(
-                  state = updatedState,
-                  updater = updater,
-              ),
+          treeStateProvider = stateUpdater,
+          stateUpdater = stateUpdater,
           mountedViewReference = rootHostReference,
           errorComponentReceiver = errorComponent,
           lithoTreeLifecycleProvider = lifecycleProvider,

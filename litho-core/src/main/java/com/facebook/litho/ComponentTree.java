@@ -85,6 +85,7 @@ import com.facebook.litho.debug.LithoDebugEvent;
 import com.facebook.litho.debug.LithoDebugEventAttributes;
 import com.facebook.litho.lifecycle.LifecycleOwnerWrapper;
 import com.facebook.litho.perfboost.LithoPerfBooster;
+import com.facebook.litho.state.TreeStateProvider;
 import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.LogLevel;
 import com.facebook.rendercore.MountContentPools;
@@ -119,6 +120,7 @@ import kotlin.jvm.functions.Function1;
 public class ComponentTree
     implements LithoVisibilityEventsListener,
         StateUpdater,
+        TreeStateProvider,
         MountedViewReference,
         ErrorComponentReceiver,
         LithoTreeLifecycleProvider {

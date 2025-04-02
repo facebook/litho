@@ -91,6 +91,11 @@ internal class StateProviderImpl(
   }
 
   override fun <T> getValue(state: State<T>): T {
-    error("Not yet implemented")
+    val stateId = state.stateId
+    require(stateId.treeId == treeId) {
+      "State tree (id=${stateId.treeId}) does not match StateProvider tree (id=$treeId)"
+    }
+    val source = currentSource.get() ?: treeStateProvider.treeState
+    return source.getHookStateValue(stateId.globalKey, stateId.index, state.isNestedTreeContext)
   }
 }

@@ -82,7 +82,7 @@ public class ComponentContext {
   private boolean mIsParentTreePropsCloned;
 
   @ThreadConfined(ThreadConfined.ANY)
-  private @Nullable LithoTree mLithoTree;
+  private @Nullable final LithoTree mLithoTree;
 
   private @Nullable LithoVisibilityEventsController mLithoVisibilityEventsController;
 
