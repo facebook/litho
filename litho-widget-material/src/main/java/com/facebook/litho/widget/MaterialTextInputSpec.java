@@ -16,7 +16,7 @@
 
 package com.facebook.litho.widget;
 
-import static com.facebook.litho.widget.TextInputSpec.EditTextWithEventHandlers;
+import static com.facebook.litho.widget.TextInputComponentSpec.EditTextWithEventHandlers;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -90,29 +90,40 @@ class MaterialTextInputSpec {
   private static final int UNSET = Integer.MIN_VALUE;
 
   @PropDefault
-  protected static final ColorStateList textColorStateList = TextInputSpec.textColorStateList;
+  protected static final ColorStateList textColorStateList =
+      TextInputComponentSpec.textColorStateList;
 
   @PropDefault
-  protected static final ColorStateList hintColorStateList = TextInputSpec.hintColorStateList;
+  protected static final ColorStateList hintColorStateList =
+      TextInputComponentSpec.hintColorStateList;
 
-  @PropDefault static final CharSequence hint = TextInputSpec.hint;
-  @PropDefault static final CharSequence initialText = TextInputSpec.initialText;
-  @PropDefault protected static final int shadowColor = TextInputSpec.shadowColor;
-  @PropDefault protected static final int textSize = TextInputSpec.textSize;
-  @PropDefault protected static final Drawable inputBackground = TextInputSpec.inputBackground;
-  @PropDefault protected static final Typeface typeface = TextInputSpec.typeface;
-  @PropDefault protected static final int textAlignment = TextInputSpec.textAlignment;
-  @PropDefault protected static final int gravity = TextInputSpec.gravity;
-  @PropDefault protected static final boolean editable = TextInputSpec.editable;
-  @PropDefault protected static final boolean cursorVisible = TextInputSpec.cursorVisible;
-  @PropDefault protected static final int inputType = TextInputSpec.inputType;
-  @PropDefault protected static final int rawInputType = TextInputSpec.rawInputType;
-  @PropDefault protected static final int imeOptions = TextInputSpec.imeOptions;
-  @PropDefault protected static final int cursorDrawableRes = TextInputSpec.cursorDrawableRes;
-  @PropDefault static final boolean multiline = TextInputSpec.multiline;
-  @PropDefault protected static final int minLines = TextInputSpec.minLines;
-  @PropDefault protected static final int maxLines = TextInputSpec.maxLines;
-  @PropDefault protected static final MovementMethod movementMethod = TextInputSpec.movementMethod;
+  @PropDefault static final CharSequence hint = TextInputComponentSpec.hint;
+  @PropDefault static final CharSequence initialText = TextInputComponentSpec.initialText;
+  @PropDefault protected static final int shadowColor = TextInputComponentSpec.shadowColor;
+  @PropDefault protected static final int textSize = TextInputComponentSpec.textSize;
+
+  @PropDefault
+  protected static final Drawable inputBackground = TextInputComponentSpec.inputBackground;
+
+  @PropDefault protected static final Typeface typeface = TextInputComponentSpec.typeface;
+  @PropDefault protected static final int textAlignment = TextInputComponentSpec.textAlignment;
+  @PropDefault protected static final int gravity = TextInputComponentSpec.gravity;
+  @PropDefault protected static final boolean editable = TextInputComponentSpec.editable;
+  @PropDefault protected static final boolean cursorVisible = TextInputComponentSpec.cursorVisible;
+  @PropDefault protected static final int inputType = TextInputComponentSpec.inputType;
+  @PropDefault protected static final int rawInputType = TextInputComponentSpec.rawInputType;
+  @PropDefault protected static final int imeOptions = TextInputComponentSpec.imeOptions;
+
+  @PropDefault
+  protected static final int cursorDrawableRes = TextInputComponentSpec.cursorDrawableRes;
+
+  @PropDefault static final boolean multiline = TextInputComponentSpec.multiline;
+  @PropDefault protected static final int minLines = TextInputComponentSpec.minLines;
+  @PropDefault protected static final int maxLines = TextInputComponentSpec.maxLines;
+
+  @PropDefault
+  protected static final MovementMethod movementMethod = TextInputComponentSpec.movementMethod;
+
   @PropDefault protected static final int boxBackgroundMode = TextInputLayout.BOX_BACKGROUND_NONE;
   @PropDefault protected static final int editTextStartPadding = UNSET;
   @PropDefault protected static final int editTextTopPadding = UNSET;
@@ -129,13 +140,13 @@ class MaterialTextInputSpec {
       StateValue<AtomicReference<CharSequence>> savedText,
       StateValue<Integer> measureSeqNumber,
       @Prop(optional = true, resType = ResType.STRING) CharSequence initialText) {
-    TextInputSpec.onCreateInitialState(
+    TextInputComponentSpec.onCreateInitialState(
         mountedEditTextRef, savedText, measureSeqNumber, initialText);
   }
 
   @OnLoadStyle
   static void onLoadStyle(ComponentContext c, Output<Integer> highlightColor) {
-    TextInputSpec.onLoadStyle(c, highlightColor);
+    TextInputComponentSpec.onLoadStyle(c, highlightColor);
   }
 
   @OnMeasure
@@ -187,7 +198,7 @@ class MaterialTextInputSpec {
       @Prop(optional = true) @Nullable String tooltipText,
       @State AtomicReference<CharSequence> savedText) {
     EditText editText =
-        TextInputSpec.createAndMeasureEditText(
+        TextInputComponentSpec.createAndMeasureEditText(
             c,
             layout,
             widthSpec,
@@ -247,7 +258,7 @@ class MaterialTextInputSpec {
     textInputLayout.measure(
         MeasureUtils.getViewMeasureSpec(widthSpec), MeasureUtils.getViewMeasureSpec(heightSpec));
 
-    TextInputSpec.setSizeForView(size, widthSpec, heightSpec, textInputLayout);
+    TextInputComponentSpec.setSizeForView(size, widthSpec, heightSpec, textInputLayout);
   }
 
   @ShouldUpdate
@@ -295,7 +306,7 @@ class MaterialTextInputSpec {
       @State Diff<AtomicReference<EditTextWithEventHandlers>> mountedEditTextRef,
       @State Diff<AtomicReference<CharSequence>> savedText) {
     boolean shouldUpdateEditText =
-        TextInputSpec.shouldUpdate(
+        TextInputComponentSpec.shouldUpdate(
             initialText,
             hint,
             inputBackground,
@@ -404,11 +415,11 @@ class MaterialTextInputSpec {
     EditTextWithEventHandlers editText = (EditTextWithEventHandlers) textInputLayout.getEditText();
     mountedEditTextRef.set(editText);
 
-    TextInputSpec.setParams(
+    TextInputComponentSpec.setParams(
         // NULLSAFE_FIXME[Parameter Not Nullable]
         editText,
         null,
-        TextInputSpec.getBackgroundOrDefault(c, inputBackground),
+        TextInputComponentSpec.getBackgroundOrDefault(c, inputBackground),
         shadowRadius,
         shadowDx,
         shadowDy,
@@ -514,7 +525,7 @@ class MaterialTextInputSpec {
       @Prop(optional = true) @Nullable ActionMode.Callback insertionActionModeCallback) {
     final EditTextWithEventHandlers editText =
         (EditTextWithEventHandlers) textInputLayout.getEditText();
-    TextInputSpec.onBindEditText(
+    TextInputComponentSpec.onBindEditText(
         c,
         // NULLSAFE_FIXME[Parameter Not Nullable]
         editText,
@@ -548,7 +559,7 @@ class MaterialTextInputSpec {
     final EditTextWithEventHandlers editText =
         (EditTextWithEventHandlers) textInputLayout.getEditText();
     // NULLSAFE_FIXME[Parameter Not Nullable]
-    TextInputSpec.onUnmount(c, editText, keyListener, mountedEditTextRef);
+    TextInputComponentSpec.onUnmount(c, editText, keyListener, mountedEditTextRef);
   }
 
   @OnUnbind
@@ -556,19 +567,19 @@ class MaterialTextInputSpec {
     final EditTextWithEventHandlers editText =
         (EditTextWithEventHandlers) textInputLayout.getEditText();
     // NULLSAFE_FIXME[Parameter Not Nullable]
-    TextInputSpec.onUnbind(c, editText);
+    TextInputComponentSpec.onUnbind(c, editText);
   }
 
   @OnTrigger(RequestFocusEvent.class)
   static void requestFocus(
       ComponentContext c, @State AtomicReference<EditTextWithEventHandlers> mountedEditTextRef) {
-    TextInputSpec.requestFocus(c, mountedEditTextRef);
+    TextInputComponentSpec.requestFocus(c, mountedEditTextRef);
   }
 
   @OnTrigger(ClearFocusEvent.class)
   static void clearFocus(
       ComponentContext c, @State AtomicReference<EditTextWithEventHandlers> mountedEditTextRef) {
-    TextInputSpec.clearFocus(c, mountedEditTextRef);
+    TextInputComponentSpec.clearFocus(c, mountedEditTextRef);
   }
 
   @OnTrigger(GetTextEvent.class)
@@ -577,7 +588,7 @@ class MaterialTextInputSpec {
       ComponentContext c,
       @State AtomicReference<EditTextWithEventHandlers> mountedEditTextRef,
       @State AtomicReference<CharSequence> savedText) {
-    return TextInputSpec.getText(c, mountedEditTextRef, savedText);
+    return TextInputComponentSpec.getText(c, mountedEditTextRef, savedText);
   }
 
   @OnTrigger(SetTextEvent.class)
@@ -586,7 +597,8 @@ class MaterialTextInputSpec {
       @State AtomicReference<EditTextWithEventHandlers> mountedEditTextRef,
       @State AtomicReference<CharSequence> savedText,
       @FromTrigger CharSequence text) {
-    boolean shouldRemeasure = TextInputSpec.setTextEditText(mountedEditTextRef, savedText, text);
+    boolean shouldRemeasure =
+        TextInputComponentSpec.setTextEditText(mountedEditTextRef, savedText, text);
     if (shouldRemeasure) {
       MaterialTextInput.remeasureForUpdatedTextSync(c);
     }
@@ -597,7 +609,7 @@ class MaterialTextInputSpec {
       ComponentContext c,
       @State AtomicReference<EditTextWithEventHandlers> mountedEditTextRef,
       @FromTrigger KeyEvent keyEvent) {
-    TextInputSpec.dispatchKey(c, mountedEditTextRef, keyEvent);
+    TextInputComponentSpec.dispatchKey(c, mountedEditTextRef, keyEvent);
   }
 
   @OnTrigger(SetSelectionEvent.class)
@@ -606,7 +618,7 @@ class MaterialTextInputSpec {
       @State AtomicReference<EditTextWithEventHandlers> mountedEditTextRef,
       @FromTrigger int start,
       @FromTrigger int end) {
-    TextInputSpec.setSelection(c, mountedEditTextRef, start, end);
+    TextInputComponentSpec.setSelection(c, mountedEditTextRef, start, end);
   }
 
   @OnUpdateState

@@ -538,7 +538,7 @@ internal class TextInputLayoutBehavior(
  * Dummy drawable used for differentiating user-provided null background drawable from default
  * drawable of the spec
  */
-@JvmField val UNSET_DRAWABLE: Drawable = TextInputSpec.UNSET_DRAWABLE
+@JvmField val UNSET_DRAWABLE: Drawable = TextInputComponentSpec.UNSET_DRAWABLE
 
 /** UI thread only; used in OnMount. */
 private val BackgroundPaddingRect = Rect()

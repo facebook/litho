@@ -290,6 +290,9 @@ internal constructor(
     /** This flag is to enable usage of Primitive Text */
     @JvmField var usePrimitiveText: Boolean = false
 
+    /** This flag is to enable usage of Primitive TextInput */
+    @JvmField var usePrimitiveTextInput: Boolean = false
+
     /**
      * This flag is used to enable A11Y support for keyboard navigation, which was disabled due to
      * Litho's A11Y sanity check.
