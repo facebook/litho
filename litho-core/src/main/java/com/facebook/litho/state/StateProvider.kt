@@ -69,8 +69,13 @@ interface StateProvider {
  * The [TreeState] supplied here is typically used whenever there's no active scope in flight.
  */
 internal interface TreeStateProvider {
-  /** The default [TreeState] needed by the [StateProvider]. */
-  val treeState: TreeState
+  /**
+   * The default [TreeState] needed by the [StateProvider].
+   *
+   * This value can also be null in some rare cases, which typically indicates that the tree state
+   * may have been disposed.
+   */
+  val treeState: TreeState?
 }
 
 internal class StateProviderImpl(
@@ -95,7 +100,7 @@ internal class StateProviderImpl(
     require(stateId.treeId == treeId) {
       "State tree (id=${stateId.treeId}) does not match StateProvider tree (id=$treeId)"
     }
-    val source = currentSource.get() ?: treeStateProvider.treeState
+    val source = currentSource.get() ?: treeStateProvider.treeState ?: return state.fallback
     return source.getHookStateValue(stateId.globalKey, stateId.index, state.isNestedTreeContext)
   }
 }

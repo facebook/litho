@@ -95,7 +95,7 @@ internal constructor(
     internal val isNestedTreeContext: Boolean,
     private val componentScope: Component?,
     private val isReadTrackingEnabled: Boolean,
-    private val fallback: T
+    internal val fallback: T
 ) {
 
   internal val stateId: StateId = StateId(stateProvider.treeId, globalKey, hookStateIndex)
