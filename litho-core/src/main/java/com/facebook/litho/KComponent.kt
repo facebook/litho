@@ -41,9 +41,8 @@ abstract class KComponent : Component() {
       widthSpec: Int,
       heightSpec: Int
   ): RenderResult {
-    val componentScope = ComponentScope(c, resolveContext)
-    val componentResult = componentScope.render()
-    componentScope.cleanUp()
+    val componentScope = ComponentScope(c)
+    val componentResult = componentScope.withResolveContext(resolveContext) { render() }
     return RenderResult(
         componentResult, componentScope.transitionData, componentScope.useEffectEntries)
   }
@@ -66,21 +65,9 @@ abstract class KComponent : Component() {
               accumulator[Name] = simpleName
             },
         ) {
-          val isTracing = ComponentsSystrace.isTracing
-          if (isTracing) {
-            ComponentsSystrace.beginSection("render:$simpleName")
+          ComponentsSystrace.trace("render:$simpleName") {
+            render(resolveContext, c, parentWidthSpec, parentHeightSpec)
           }
-
-          val result =
-              try {
-                render(resolveContext, c, parentWidthSpec, parentHeightSpec)
-              } finally {
-                if (isTracing) {
-                  ComponentsSystrace.endSection()
-                }
-              }
-
-          return@trace result
         }
 
     val root = renderResult.component

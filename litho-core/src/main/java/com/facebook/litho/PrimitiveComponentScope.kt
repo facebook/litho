@@ -35,9 +35,8 @@ import kotlin.reflect.KFunction2
 import kotlin.reflect.KMutableProperty1
 
 /** The implicit receiver for [PrimitiveComponent.render] call. */
-class PrimitiveComponentScope
-internal constructor(context: ComponentContext, resolveContext: ResolveContext) :
-    ComponentScope(context, resolveContext) {
+class PrimitiveComponentScope internal constructor(context: ComponentContext) :
+    ComponentScope(context) {
 
   /**
    * Indicates whether the component skips Incremental Mount. If this is true then the Component

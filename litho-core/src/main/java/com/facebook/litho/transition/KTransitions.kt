@@ -60,8 +60,7 @@ fun ComponentScope.useTransition(
   val data = transitionData ?: MutableTransitionData()
   val identityKey = HookKey(context.globalKey, data.transitionCreators?.size ?: 0)
   val transitionCreator = KTransitionCreator(identityKey, deps, createTransition)
-  val renderData =
-      checkNotNull(resolveContext).treeState.getPreviousRenderData(transitionCreator.identityKey)
+  val renderData = resolveContext.treeState.getPreviousRenderData(transitionCreator.identityKey)
   data.addTransitionCreator(transitionCreator, renderData)
   transitionData = data
 }

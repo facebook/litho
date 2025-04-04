@@ -17,21 +17,59 @@
 package com.facebook.litho
 
 import android.view.View
+import androidx.collection.ScatterSet
+import com.facebook.litho.state.StateId
+import com.facebook.litho.state.StateReadRecorder
 import com.facebook.litho.transition.MutableTransitionData
 
 /**
  * The implicit receiver for [KComponent.render] call. This class exposes the ability to use hooks,
  * like [useState], and convenience functions, like [dp].
  */
-open class ComponentScope(
-    override val context: ComponentContext,
-    internal var resolveContext: ResolveContext? = null
-) : ResourcesScope {
+open class ComponentScope(override val context: ComponentContext) : ResourcesScope {
+
+  @Deprecated("Use the primary constructor instead, and call withResolveContext explicitly")
+  constructor(context: ComponentContext, resolveContext: ResolveContext?) : this(context) {
+    _resolveContext = resolveContext
+  }
+
+  private val isReadTrackingEnabled: Boolean
+    get() = context.lithoTree?.isReadTrackingEnabled == true
+
+  private var _resolveContext: ResolveContext? = null
+
+  internal val resolveContext: ResolveContext
+    get() =
+        checkNotNull(_resolveContext) {
+          "ResolveContext not found in scope. Did you forget to call ComponentScope.withResolveContext?"
+        }
+
   // TODO: Extract into more generic container to track hooks when needed
-  internal var useStateIndex = 0
-  internal var useCachedIndex = 0
+  internal var useStateIndex: Int = 0
+  internal var useCachedIndex: Int = 0
   internal var transitionData: MutableTransitionData? = null
   internal var useEffectEntries: MutableList<Attachable>? = null
+  internal var stateReads: ScatterSet<StateId>? = null
+
+  @Suppress("UNCHECKED_CAST")
+  internal inline fun <T> withResolveContext(
+      resolveContext: ResolveContext,
+      crossinline block: ComponentScope.() -> T
+  ): T {
+    try {
+      _resolveContext = resolveContext
+      var result: T? = null
+      if (isReadTrackingEnabled) {
+        val readSet = StateReadRecorder.record(resolveContext.treeId) { result = block() }
+        if (readSet.isNotEmpty()) stateReads = readSet
+      } else {
+        result = block()
+      }
+      return result as T
+    } finally {
+      _resolveContext = null
+    }
+  }
 
   /**
    * A utility function to find the View with a given tag under the current Component's LithoView.
@@ -49,9 +87,5 @@ open class ComponentScope(
    */
   fun <T : View> findViewWithTag(tag: Any): T? {
     return context.findViewWithTag(tag)
-  }
-
-  internal fun cleanUp() {
-    resolveContext = null
   }
 }

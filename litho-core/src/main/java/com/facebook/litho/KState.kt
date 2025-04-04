@@ -34,9 +34,7 @@ import java.util.Objects
 fun <T> ComponentScope.useState(initializer: () -> T): State<T> {
   val globalKey = context.globalKey
   val hookIndex = useStateIndex++
-  val treeState: TreeState =
-      resolveContext?.treeState
-          ?: throw IllegalStateException("Cannot create state outside of layout calculation")
+  val treeState: TreeState = resolveContext.treeState
   val lithoTree = context.lithoTree ?: error("LithoTree is null")
 
   val isNestedTreeContext = context.isNestedTreeContext

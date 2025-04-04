@@ -17,8 +17,6 @@
 package com.facebook.litho
 
 import android.content.Context
-import com.facebook.litho.ComponentsSystrace.beginSection
-import com.facebook.litho.ComponentsSystrace.endSection
 import com.facebook.litho.debug.LithoDebugEvent.ComponentRendered
 import com.facebook.litho.debug.LithoDebugEventAttributes.Component
 import com.facebook.rendercore.RenderUnit
@@ -55,7 +53,7 @@ abstract class PrimitiveComponent : Component() {
         )
 
     val c = scopedComponentInfo.context
-    val primitiveComponentScope = PrimitiveComponentScope(c, resolveContext)
+    val primitiveComponentScope = PrimitiveComponentScope(c)
     val lithoPrimitive: LithoPrimitive =
         DebugEventDispatcher.trace(
             type = ComponentRendered,
@@ -65,23 +63,12 @@ abstract class PrimitiveComponent : Component() {
               it[DebugEventAttribute.Name] = simpleName
             },
         ) {
-          val isTracing = ComponentsSystrace.isTracing
-          if (isTracing) {
-            beginSection("render:$simpleName")
+          ComponentsSystrace.trace("render:$simpleName") {
+            primitiveComponentScope.withResolveContext(resolveContext) {
+              primitiveComponentScope.render()
+            }
           }
-          val result: LithoPrimitive =
-              try {
-                primitiveComponentScope.render()
-              } finally {
-                if (isTracing) {
-                  endSection()
-                }
-              }
-
-          return@trace result
         }
-
-    primitiveComponentScope.cleanUp()
 
     if (lithoPrimitive.style != null) {
       commonProps = CommonProps()
