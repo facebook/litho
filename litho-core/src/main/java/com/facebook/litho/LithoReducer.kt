@@ -910,6 +910,7 @@ internal object LithoReducer {
             absoluteBounds,
             shouldExcludeSpecGeneratedComponentFromIncrementalMount ||
                 shouldExcludePrimitiveFromIncrementalMount,
+            node.renderUnit.debugKey,
             if (parent != null) reductionState.incrementalMountOutputs[parent.renderUnit.id]
             else null)
     if (shouldExcludeSpecGeneratedComponentFromIncrementalMount ||

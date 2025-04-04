@@ -360,7 +360,8 @@ class LayoutStateCalculateTopsAndBottomsTest {
         index: Int,
         hostId: Long = 0
     ): IncrementalMountOutput {
-      return IncrementalMountOutput((index + 1) * 1L, index, Rect(0, top, 10, bottom), false, null)
+      return IncrementalMountOutput(
+          (index + 1) * 1L, index, Rect(0, top, 10, bottom), false, "", null)
     }
   }
 }

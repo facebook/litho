@@ -18,13 +18,16 @@ package com.facebook.rendercore.incrementalmount;
 
 import android.graphics.Rect;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 
 /** The output object for incremental mount extension */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class IncrementalMountOutput {
   private final int index;
   private @Nullable Rect originalBounds;
   private final Rect bounds;
   private final long id;
+  private final @Nullable String debugKey;
   private final @Nullable IncrementalMountOutput host;
   private boolean excludeFromIncrementalMount;
 
@@ -33,11 +36,13 @@ public class IncrementalMountOutput {
       final int index,
       final Rect bounds,
       final boolean excludeFromIncrementalMount,
+      final @Nullable String debugKey,
       final @Nullable IncrementalMountOutput host) {
     this.id = id;
     this.index = index;
     this.bounds = new Rect(bounds);
     this.host = host;
+    this.debugKey = debugKey;
     this.excludeFromIncrementalMount = excludeFromIncrementalMount;
     // TODO: invert API to add child to a host rather than passing the host to the child.
     if (host != null) {
@@ -67,6 +72,10 @@ public class IncrementalMountOutput {
 
   public boolean excludeFromIncrementalMount() {
     return excludeFromIncrementalMount;
+  }
+
+  public @Nullable String getDebugKey() {
+    return debugKey;
   }
 
   /** Ensure the host IncrementalMountOuput's bounds are containing the bounds of this item. */

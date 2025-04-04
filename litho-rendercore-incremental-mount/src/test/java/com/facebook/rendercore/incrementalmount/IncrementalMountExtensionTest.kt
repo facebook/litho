@@ -434,19 +434,19 @@ class IncrementalMountExtensionTest {
     val extensionState =
         mountState.registerMountExtension(extension)
             as ExtensionState<IncrementalMountExtensionState>
-    val rootHost = IncrementalMountOutput(0, 0, Rect(0, 100, 100, 200), false, null)
+    val rootHost = IncrementalMountOutput(0, 0, Rect(0, 100, 100, 200), false, "root", null)
     val hostRenderUnit = TestHostRenderUnit(0)
     val hostRenderTreeNode = RenderTreeNode(null, hostRenderUnit, null, rootHost.bounds, null, 0)
-    val host1 = IncrementalMountOutput(1, 1, Rect(0, 100, 50, 200), false, rootHost)
+    val host1 = IncrementalMountOutput(1, 1, Rect(0, 100, 50, 200), false, "host1", rootHost)
     val host1RenderUnit = TestHostRenderUnit(1)
     val host1RTN = RenderTreeNode(hostRenderTreeNode, host1RenderUnit, null, host1.bounds, null, 0)
-    val child1 = IncrementalMountOutput(2, 2, Rect(0, 85, 50, 190), false, host1)
+    val child1 = IncrementalMountOutput(2, 2, Rect(0, 85, 50, 190), false, "child1", host1)
     val child1RenderUnit = TestRenderUnit(2)
     val child11RTN = RenderTreeNode(host1RTN, child1RenderUnit, null, child1.bounds, null, 0)
-    val host2 = IncrementalMountOutput(3, 3, Rect(50, 100, 50, 200), false, rootHost)
+    val host2 = IncrementalMountOutput(3, 3, Rect(50, 100, 50, 200), false, "host2", rootHost)
     val host2RenderUnit = TestHostRenderUnit(3)
     val host2RTN = RenderTreeNode(hostRenderTreeNode, host2RenderUnit, null, host2.bounds, null, 1)
-    val child2 = IncrementalMountOutput(4, 4, Rect(50, 100, 50, 200), false, host2)
+    val child2 = IncrementalMountOutput(4, 4, Rect(50, 100, 50, 200), false, "child2", host2)
     val child2RenderUnit = TestRenderUnit(4)
     val child2RTN = RenderTreeNode(host2RTN, child2RenderUnit, null, child2.bounds, null, 0)
     val flatList = arrayOf(hostRenderTreeNode, host1RTN, child11RTN, host2RTN, child2RTN)
@@ -476,19 +476,19 @@ class IncrementalMountExtensionTest {
     val extensionState =
         mountState.registerMountExtension(extension)
             as ExtensionState<IncrementalMountExtensionState>
-    val rootHost = IncrementalMountOutput(0, 0, Rect(0, 100, 100, 200), false, null)
+    val rootHost = IncrementalMountOutput(0, 0, Rect(0, 100, 100, 200), false, "root", null)
     val hostRenderUnit = TestHostRenderUnit(0)
     val hostRenderTreeNode = RenderTreeNode(null, hostRenderUnit, null, rootHost.bounds, null, 0)
-    val host1 = IncrementalMountOutput(1, 1, Rect(0, 100, 50, 200), false, rootHost)
+    val host1 = IncrementalMountOutput(1, 1, Rect(0, 100, 50, 200), false, "host1", rootHost)
     val host1RenderUnit = TestHostRenderUnit(1)
     val host1RTN = RenderTreeNode(hostRenderTreeNode, host1RenderUnit, null, host1.bounds, null, 0)
-    val child1 = IncrementalMountOutput(2, 2, Rect(0, 85, 50, 190), false, host1)
+    val child1 = IncrementalMountOutput(2, 2, Rect(0, 85, 50, 190), false, "child1", host1)
     val child1RenderUnit = TestRenderUnit(2)
     val child11RTN = RenderTreeNode(host1RTN, child1RenderUnit, null, child1.bounds, null, 0)
-    val host2 = IncrementalMountOutput(3, 3, Rect(50, 100, 50, 200), false, rootHost)
+    val host2 = IncrementalMountOutput(3, 3, Rect(50, 100, 50, 200), false, "host2", rootHost)
     val host2RenderUnit = TestHostRenderUnit(3)
     val host2RTN = RenderTreeNode(hostRenderTreeNode, host2RenderUnit, null, host2.bounds, null, 1)
-    val child2 = IncrementalMountOutput(4, 4, Rect(50, 100, 50, 200), false, host2)
+    val child2 = IncrementalMountOutput(4, 4, Rect(50, 100, 50, 200), false, "child2", host2)
     val child2RenderUnit = TestRenderUnit(4)
     val child2RTN = RenderTreeNode(host2RTN, child2RenderUnit, null, child2.bounds, null, 0)
     val flatList = arrayOf(hostRenderTreeNode, host2RTN, child2RTN, host1RTN, child11RTN)
@@ -507,12 +507,12 @@ class IncrementalMountExtensionTest {
     mountState.mount(renderTree)
     assertThat(extensionState.ownsReference(1)).isTrue
     assertThat(extensionState.ownsReference(2)).isTrue
-    val host1Reparented = IncrementalMountOutput(1, 1, Rect(0, 100, 50, 200), false, host2)
+    val host1Reparented = IncrementalMountOutput(1, 1, Rect(0, 100, 50, 200), false, "host1", host2)
     val host1RenderUnitReparented = TestHostRenderUnit(1)
     val host1RTNReparented =
         RenderTreeNode(host2RTN, host1RenderUnitReparented, null, host1Reparented.bounds, null, 1)
     val child1Reparented =
-        IncrementalMountOutput(2, 2, Rect(0, 85, 50, 190), false, host1Reparented)
+        IncrementalMountOutput(2, 2, Rect(0, 85, 50, 190), false, "child1", host1Reparented)
     val child1RenderUnitReparented = TestRenderUnit(2)
     val child11RTNReparented =
         RenderTreeNode(

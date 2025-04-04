@@ -241,7 +241,12 @@ public class IncrementalMountRenderCoreExtension
       final BinderKey binderKey = new ClassBinderKey(ExcludeFromIncrementalMountBinder.class);
       results.addOutput(
           new IncrementalMountOutput(
-              id, position, rect, unit.findAttachBinderByKey(binderKey) != null, host));
+              id,
+              position,
+              rect,
+              unit.findAttachBinderByKey(binderKey) != null,
+              unit.getDebugKey(),
+              host));
       if (unit.doesMountRenderTreeHosts()) {
         results.addRenderTreeHostId(id);
       }
