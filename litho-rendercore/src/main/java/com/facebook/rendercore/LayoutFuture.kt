@@ -33,6 +33,7 @@ class LayoutFuture<State, RenderContext>(
     val sizeConstraints: SizeConstraints
 ) :
     ThreadInheritingPriorityFuture<RenderResult<State, RenderContext>>(
+        "LayoutFuture",
         Callable {
           if (previousResult != null &&
               RenderResult.shouldReuseResult(tree, sizeConstraints, previousResult)) {
@@ -45,5 +46,4 @@ class LayoutFuture<State, RenderContext>(
                 state,
                 sizeConstraints)
           }
-        },
-        "LayoutFuture")
+        })

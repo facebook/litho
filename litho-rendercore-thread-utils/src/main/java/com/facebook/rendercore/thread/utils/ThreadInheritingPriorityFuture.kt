@@ -30,7 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger
  *
  * @param <T> The type that is returned from the future
  */
-open class ThreadInheritingPriorityFuture<T>(callable: Callable<T>, tag: String) {
+open class ThreadInheritingPriorityFuture<T>(tag: String, callable: Callable<T>) {
   private var futureTask: RunnableFuture<T>? =
       FutureInstrumenter.instrument(FutureTask(callable), tag)
   private var resolvedResult: T? = null

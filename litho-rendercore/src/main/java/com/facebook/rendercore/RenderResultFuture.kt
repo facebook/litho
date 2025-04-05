@@ -28,7 +28,7 @@ class RenderResultFuture<State, RenderContext>(
     callable: Callable<RenderResult<State, RenderContext>>
 ) :
     ThreadInheritingPriorityFuture<RenderResult<State, RenderContext>>(
-        callable, "RenderResultFuture") {
+        "RenderResultFuture", callable) {
 
   @Deprecated(message = "Use the constructor that accepts SizeConstraints")
   constructor(

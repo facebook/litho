@@ -31,7 +31,7 @@ class ResolveFuture<State, RenderContext, StateUpdateType : StateUpdate<*>>(
     val frameId: Int,
 ) :
     ThreadInheritingPriorityFuture<ResolveResult<Node<RenderContext>, State>>(
+        "ResolveFuture",
         Callable {
           resolveFunc.resolve(resolveContext, committedTree, committedState, stateUpdatesToApply)
-        },
-        "ResolveFuture")
+        })
