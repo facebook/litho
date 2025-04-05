@@ -8,6 +8,11 @@ oncall("litho_components_for_android")
 
 fb_java_binary(
     name = "litho-intellij-plugin",
+    blocklist = [
+        "^kotlin.*",
+        "org.intellij.lang.annotations",
+        "org.jetbrains.annotations",
+    ],
     tests = [
         make_dep_path("litho-intellij-plugin/src/test/java/com/facebook/litho:test"),
     ],
