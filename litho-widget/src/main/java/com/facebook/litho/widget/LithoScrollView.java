@@ -36,7 +36,6 @@ import com.facebook.litho.LithoMetadataExceptionWrapper;
 import com.facebook.litho.LithoRenderTreeView;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.TreeState;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.ErrorReporter;
 import com.facebook.rendercore.LogLevel;
 import com.facebook.rendercore.utils.CommonUtils;
@@ -189,25 +188,7 @@ public class LithoScrollView extends NestedScrollView implements HasLithoViewChi
 
   public void setScrollPosition(final @Nullable ScrollPosition scrollPosition) {
     if (scrollPosition != null) {
-      if (ComponentsConfiguration.useOneShotPreDrawListener) {
-        mOnPreDrawListener = OneShotPreDrawListener.add(this, () -> setScrollY(scrollPosition.y));
-      } else {
-        final ViewTreeObserver.OnPreDrawListener onPreDrawListener =
-            new ViewTreeObserver.OnPreDrawListener() {
-              @Override
-              public boolean onPreDraw() {
-                setScrollY(scrollPosition.y);
-                ViewTreeObserver currentViewTreeObserver = getViewTreeObserver();
-                if (currentViewTreeObserver.isAlive()) {
-                  currentViewTreeObserver.removeOnPreDrawListener(this);
-                }
-                return true;
-              }
-            };
-        getViewTreeObserver().addOnPreDrawListener(onPreDrawListener);
-
-        mOnPreDrawListener = onPreDrawListener;
-      }
+      mOnPreDrawListener = OneShotPreDrawListener.add(this, () -> setScrollY(scrollPosition.y));
     } else {
       setScrollY(0);
       getViewTreeObserver().removeOnPreDrawListener(mOnPreDrawListener);
@@ -239,25 +220,7 @@ public class LithoScrollView extends NestedScrollView implements HasLithoViewChi
     ((LithoView) mLithoView).setComponentTree(contentComponentTree);
 
     mScrollPosition = scrollPosition;
-    if (ComponentsConfiguration.useOneShotPreDrawListener) {
-      mOnPreDrawListener = OneShotPreDrawListener.add(this, () -> setScrollY(scrollPosition.y));
-    } else {
-      final ViewTreeObserver.OnPreDrawListener onPreDrawListener =
-          new ViewTreeObserver.OnPreDrawListener() {
-            @Override
-            public boolean onPreDraw() {
-              setScrollY(scrollPosition.y);
-              ViewTreeObserver currentViewTreeObserver = getViewTreeObserver();
-              if (currentViewTreeObserver.isAlive()) {
-                currentViewTreeObserver.removeOnPreDrawListener(this);
-              }
-              return true;
-            }
-          };
-      getViewTreeObserver().addOnPreDrawListener(onPreDrawListener);
-
-      mOnPreDrawListener = onPreDrawListener;
-    }
+    mOnPreDrawListener = OneShotPreDrawListener.add(this, () -> setScrollY(scrollPosition.y));
     if (scrollStateListener != null) {
       if (mScrollStateDetector == null) {
         mScrollStateDetector = new ScrollStateDetector(this);

@@ -272,7 +272,6 @@ internal constructor(
     @JvmField var bindOnSameComponentTree: Boolean = true
     @JvmField var isEventHandlerRebindLoggingEnabled: Boolean = false
     @JvmField var useSafeSpanEndInTextInputSpec: Boolean = false
-    @JvmField var useOneShotPreDrawListener: Boolean = false
     /**
      * This flag is used to enable logging for the issue where components with an aspect ratio, like
      * NaN or Infinity.

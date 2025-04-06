@@ -20,7 +20,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.widget.HorizontalScrollView;
 import androidx.annotation.Nullable;
 import androidx.core.view.OneShotPreDrawListener;
@@ -31,7 +30,6 @@ import com.facebook.litho.LayoutState;
 import com.facebook.litho.LithoRenderTreeView;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.TreeState;
-import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.List;
 
 /**
@@ -184,7 +182,8 @@ public class HorizontalScrollLithoView extends HorizontalScrollView
 
   public void setScrollPosition(ScrollPosition scrollPosition) {
     mScrollPosition = scrollPosition;
-    Runnable preDrawRunnable =
+    OneShotPreDrawListener.add(
+        this,
         () -> {
           if (mScrollPosition == null) {
             return;
@@ -195,21 +194,7 @@ public class HorizontalScrollLithoView extends HorizontalScrollView
           } else {
             setScrollX(mScrollPosition.x);
           }
-        };
-    if (ComponentsConfiguration.useOneShotPreDrawListener) {
-      OneShotPreDrawListener.add(this, preDrawRunnable);
-    } else {
-      final ViewTreeObserver viewTreeObserver = getViewTreeObserver();
-      viewTreeObserver.addOnPreDrawListener(
-          new ViewTreeObserver.OnPreDrawListener() {
-            @Override
-            public boolean onPreDraw() {
-              getViewTreeObserver().removeOnPreDrawListener(this);
-              preDrawRunnable.run();
-              return true;
-            }
-          });
-    }
+        });
   }
 
   public void setOnScrollChangeListener(OnScrollChangeListener onScrollChangeListener) {

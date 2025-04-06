@@ -23,7 +23,6 @@ import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.view.ViewTreeObserver;
 import android.widget.HorizontalScrollView;
 import androidx.annotation.Nullable;
 import androidx.core.view.OneShotPreDrawListener;
@@ -52,7 +51,6 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.yoga.YogaDirection;
 
 /**
@@ -227,34 +225,18 @@ class HorizontalScrollComponentSpec {
         lastScrollPosition.x,
         onScrollChangeListener,
         scrollStateListener);
-    Runnable preDrawRunnable =
-        new Runnable() {
-          @Override
-          public void run() {
-            if (lastScrollPosition.x == LAST_SCROLL_POSITION_UNSET) {
-              if (layoutDirection == YogaDirection.RTL) {
-                horizontalScrollLithoView.fullScroll(HorizontalScrollView.FOCUS_RIGHT);
-              }
-              lastScrollPosition.x = horizontalScrollLithoView.getScrollX();
-            } else {
-              horizontalScrollLithoView.setScrollX(lastScrollPosition.x);
+    OneShotPreDrawListener.add(
+        horizontalScrollLithoView,
+        () -> {
+          if (lastScrollPosition.x == LAST_SCROLL_POSITION_UNSET) {
+            if (layoutDirection == YogaDirection.RTL) {
+              horizontalScrollLithoView.fullScroll(HorizontalScrollView.FOCUS_RIGHT);
             }
+            lastScrollPosition.x = horizontalScrollLithoView.getScrollX();
+          } else {
+            horizontalScrollLithoView.setScrollX(lastScrollPosition.x);
           }
-        };
-    if (ComponentsConfiguration.useOneShotPreDrawListener) {
-      OneShotPreDrawListener.add(horizontalScrollLithoView, preDrawRunnable);
-    } else {
-      final ViewTreeObserver viewTreeObserver = horizontalScrollLithoView.getViewTreeObserver();
-      viewTreeObserver.addOnPreDrawListener(
-          new ViewTreeObserver.OnPreDrawListener() {
-            @Override
-            public boolean onPreDraw() {
-              horizontalScrollLithoView.getViewTreeObserver().removeOnPreDrawListener(this);
-              preDrawRunnable.run();
-              return true;
-            }
-          });
-    }
+        });
 
     if (eventsController != null) {
       eventsController.setScrollableView(horizontalScrollLithoView);
