@@ -26,7 +26,8 @@ import android.widget.TextView;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
-import com.facebook.litho.testing.LegacyLithoTestRule;
+import com.facebook.litho.testing.LithoTestRule;
+import com.facebook.litho.testing.TestLithoView;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.testing.treeprop.TreePropNumberType;
 import com.facebook.litho.testing.treeprop.TreePropStringType;
@@ -46,7 +47,7 @@ import org.robolectric.annotation.LooperMode;
 @RunWith(LithoTestRunner.class)
 public class TreePropTest {
 
-  public final @Rule LegacyLithoTestRule mLegacyLithoTestRule = new LegacyLithoTestRule();
+  public final @Rule LithoTestRule mTestRule = new LithoTestRule();
   private ComponentContext mContext;
 
   @Before
@@ -98,14 +99,11 @@ public class TreePropTest {
   public void testTreePropChangeShouldUpdateMountSpec() {
     SimpleTreeProp treeProp = new SimpleTreeProp("sampleTreeProp");
     final Component component =
-        ComponentWithTreePropParent.create(mLegacyLithoTestRule.getContext())
-            .propA(treeProp)
-            .build();
-    mLegacyLithoTestRule.setRoot(component);
+        ComponentWithTreePropParent.create(mTestRule.getContext()).propA(treeProp).build();
 
-    mLegacyLithoTestRule.attachToWindow().measure().layout();
+    TestLithoView testLithoView = mTestRule.render(componentScope -> component);
 
-    View view = mLegacyLithoTestRule.getLithoView().getChildAt(0);
+    View view = testLithoView.getLithoView().getChildAt(0);
     assertThat(view).isNotNull();
     assertThat(view).isInstanceOf(TextView.class);
 
@@ -113,12 +111,10 @@ public class TreePropTest {
 
     SimpleTreeProp treePropChanged = new SimpleTreeProp("sampleTreeProp_changed");
     final Component updatedComponent =
-        ComponentWithTreePropParent.create(mLegacyLithoTestRule.getContext())
-            .propA(treePropChanged)
-            .build();
-    mLegacyLithoTestRule.setRoot(updatedComponent);
+        ComponentWithTreePropParent.create(mTestRule.getContext()).propA(treePropChanged).build();
+    testLithoView.setRoot(updatedComponent);
 
-    view = mLegacyLithoTestRule.getLithoView().getChildAt(0);
+    view = testLithoView.getLithoView().getChildAt(0);
     assertThat(view).isNotNull();
     assertThat(view).isInstanceOf(TextView.class);
 
