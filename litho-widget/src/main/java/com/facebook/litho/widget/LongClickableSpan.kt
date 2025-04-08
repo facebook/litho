@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget;
+package com.facebook.litho.widget
 
-import android.text.style.ClickableSpan;
-import android.view.View;
+import android.text.style.ClickableSpan
+import android.view.View
 
-/** Extension of {@link ClickableSpan} that provides longclick capability in addition to click. */
-public abstract class LongClickableSpan extends ClickableSpan {
+/** Extension of [ClickableSpan] that provides longclick capability in addition to click. */
+abstract class LongClickableSpan : ClickableSpan() {
   /**
    * Callback for longclick of this span.
    *
    * @return true if the callback consumed the longclick, false otherwise.
    */
-  public abstract boolean onLongClick(View view);
+  abstract fun onLongClick(view: View): Boolean
 }
