@@ -36,7 +36,8 @@ import com.facebook.litho.EventHandler;
 import com.facebook.litho.Handle;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.it.R;
-import com.facebook.litho.testing.LegacyLithoTestRule;
+import com.facebook.litho.testing.LithoTestRule;
+import com.facebook.litho.testing.TestLithoView;
 import com.facebook.litho.testing.eventhandler.EventHandlerTestHelper;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
@@ -53,7 +54,7 @@ import org.robolectric.annotation.LooperMode;
 public class TextInputSpecTest {
   private ComponentContext mContext;
 
-  public @Rule LegacyLithoTestRule mLegacyLithoTestRule = new LegacyLithoTestRule();
+  public @Rule LithoTestRule lithoTestRule = new LithoTestRule();
 
   @Before
   public void setup() {
@@ -189,19 +190,17 @@ public class TextInputSpecTest {
   @Test
   public void textInput_getTextTrigger_returnsCurrentText() {
     final Handle handle = new Handle();
-    mLegacyLithoTestRule
-        .setRoot(
-            Column.create(mLegacyLithoTestRule.getContext())
-                .child(TextInput.create(mLegacyLithoTestRule.getContext()).handle(handle)))
-        .measure()
-        .layout()
-        .attachToWindow();
+    TestLithoView testLithoView =
+        lithoTestRule.render(
+            componentScope ->
+                Column.create(lithoTestRule.context)
+                    .child(TextInput.create(lithoTestRule.context).handle(handle))
+                    .build());
 
-    getEditText(mLegacyLithoTestRule.getLithoView()).setText("text for test");
+    getEditText(testLithoView.getLithoView()).setText("text for test");
 
     // We need a context with a ComponentTree on it for the Handle to properly resolve
-    final CharSequence text =
-        TextInput.getText(mLegacyLithoTestRule.getComponentTree().getContext(), handle);
+    final CharSequence text = TextInput.getText(lithoTestRule.context, handle);
     assertThat(text).isNotNull();
     assertThat(text.toString()).isEqualTo("text for test");
   }
@@ -209,38 +208,34 @@ public class TextInputSpecTest {
   @Test
   public void textInput_setTextTrigger_setsText() {
     final Handle handle = new Handle();
-    mLegacyLithoTestRule
-        .setRoot(
-            Column.create(mLegacyLithoTestRule.getContext())
-                .child(TextInput.create(mLegacyLithoTestRule.getContext()).handle(handle)))
-        .measure()
-        .layout()
-        .attachToWindow();
+    TestLithoView testLithoView =
+        lithoTestRule.render(
+            componentScope ->
+                Column.create(lithoTestRule.context)
+                    .child(TextInput.create(lithoTestRule.context).handle(handle))
+                    .build());
 
     // We need a context with a ComponentTree on it for the Handle to properly resolve
-    TextInput.setText(
-        mLegacyLithoTestRule.getComponentTree().getContext(), handle, "set text in test");
-    assertThat(getEditText(mLegacyLithoTestRule.getLithoView()).getText().toString())
+    TextInput.setText(lithoTestRule.context, handle, "set text in test");
+    assertThat(getEditText(testLithoView.getLithoView()).getText().toString())
         .isEqualTo("set text in test");
   }
 
   @Test
   public void textInput_getTextTriggerFromUnmountedView_returnsCurrentText() {
     final Handle handle = new Handle();
-    mLegacyLithoTestRule
-        .setRoot(
-            Column.create(mLegacyLithoTestRule.getContext())
-                .child(TextInput.create(mLegacyLithoTestRule.getContext()).handle(handle)))
-        .measure()
-        .layout()
-        .attachToWindow();
+    TestLithoView testLithoView =
+        lithoTestRule.render(
+            componentScope ->
+                Column.create(lithoTestRule.context)
+                    .child(TextInput.create(lithoTestRule.context).handle(handle))
+                    .build());
 
-    getEditText(mLegacyLithoTestRule.getLithoView()).setText("text for test");
-    mLegacyLithoTestRule.getLithoView().unmountAllItems();
+    getEditText(testLithoView.getLithoView()).setText("text for test");
+    testLithoView.getLithoView().unmountAllItems();
 
     // We need a context with a ComponentTree on it for the Handle to properly resolve
-    final CharSequence text =
-        TextInput.getText(mLegacyLithoTestRule.getComponentTree().getContext(), handle);
+    final CharSequence text = TextInput.getText(lithoTestRule.context, handle);
     assertThat(text).isNotNull();
     assertThat(text.toString()).isEqualTo("text for test");
   }
@@ -248,55 +243,48 @@ public class TextInputSpecTest {
   @Test
   public void textInput_setTextTriggerForUnmountedView_setsTextAfterMount() {
     final Handle handle = new Handle();
-    mLegacyLithoTestRule
-        .setRoot(
-            Column.create(mLegacyLithoTestRule.getContext())
-                .child(TextInput.create(mLegacyLithoTestRule.getContext()).handle(handle)))
-        .measure()
-        .layout()
-        .attachToWindow();
+    TestLithoView testLithoView =
+        lithoTestRule.render(
+            componentScope ->
+                Column.create(lithoTestRule.context)
+                    .child(TextInput.create(lithoTestRule.context).handle(handle))
+                    .build());
 
-    mLegacyLithoTestRule.getLithoView().unmountAllItems();
+    testLithoView.getLithoView().unmountAllItems();
 
     // We need a context with a ComponentTree on it for the Handle to properly resolve
-    TextInput.setText(
-        mLegacyLithoTestRule.getComponentTree().getContext(), handle, "set text in test");
-    final CharSequence text =
-        TextInput.getText(mLegacyLithoTestRule.getComponentTree().getContext(), handle);
+    TextInput.setText(lithoTestRule.context, handle, "set text in test");
+    final CharSequence text = TextInput.getText(lithoTestRule.context, handle);
     assertThat(text).isNotNull();
     assertThat(text.toString()).isEqualTo("set text in test");
 
     // Mount the view again
-    mLegacyLithoTestRule.layout();
+    testLithoView.layout();
 
-    assertThat(getEditText(mLegacyLithoTestRule.getLithoView()).getText().toString())
+    assertThat(getEditText(testLithoView.getLithoView()).getText().toString())
         .isEqualTo("set text in test");
   }
 
   @Test
   public void textInput_updateWithNewTextInputAndUseGetTextTrigger_returnsCurrentText() {
-    mLegacyLithoTestRule
-        .setRoot(
-            Column.create(mLegacyLithoTestRule.getContext())
-                .child(TextInput.create(mLegacyLithoTestRule.getContext())))
-        .measure()
-        .layout()
-        .attachToWindow();
+    lithoTestRule.render(
+        componentScope ->
+            Column.create(lithoTestRule.context)
+                .child(TextInput.create(lithoTestRule.context))
+                .build());
 
     final Handle handle = new Handle();
-    mLegacyLithoTestRule
-        .setRoot(
-            Column.create(mLegacyLithoTestRule.getContext())
-                .child(
-                    TextInput.create(mLegacyLithoTestRule.getContext())
-                        .key("different_key")
-                        .handle(handle)))
-        .layout();
+    TestLithoView testLithoView =
+        lithoTestRule.render(
+            componentScope ->
+                Column.create(lithoTestRule.context)
+                    .child(
+                        TextInput.create(lithoTestRule.context).key("different_key").handle(handle))
+                    .build());
 
-    getEditText(mLegacyLithoTestRule.getLithoView()).setText("text for test");
+    getEditText(testLithoView.getLithoView()).setText("text for test");
 
-    CharSequence text =
-        TextInput.getText(mLegacyLithoTestRule.getComponentTree().getContext(), handle);
+    CharSequence text = TextInput.getText(lithoTestRule.context, handle);
     assertThat(text).isNotNull();
     assertThat(text.toString()).isEqualTo("text for test");
   }
@@ -312,20 +300,18 @@ public class TextInputSpecTest {
   @Test
   public void textInput_setReplaceText_replacesText() {
     final Handle handle = new Handle();
-    mLegacyLithoTestRule
-        .setRoot(
-            Column.create(mLegacyLithoTestRule.getContext())
-                .child(TextInput.create(mLegacyLithoTestRule.getContext()).handle(handle)))
-        .measure()
-        .layout()
-        .attachToWindow();
+    TestLithoView testLithoView =
+        lithoTestRule.render(
+            componentScope ->
+                Column.create(lithoTestRule.context)
+                    .child(TextInput.create(lithoTestRule.context).handle(handle))
+                    .build());
 
     final CharSequence textToSet = "set text in test";
-    final EditText editText = getEditText(mLegacyLithoTestRule.getLithoView());
+    final EditText editText = getEditText(testLithoView.getLithoView());
 
     // We need a context with a ComponentTree on it for the Handle to properly resolve
-    TextInput.replaceText(
-        mLegacyLithoTestRule.getComponentTree().getContext(), handle, textToSet, 0, 0, false);
+    TextInput.replaceText(lithoTestRule.context, handle, textToSet, 0, 0, false);
     assertThat(editText.getText().toString()).isEqualTo(textToSet);
     assertThat(editText.getSelectionStart()).isEqualTo(textToSet.length());
     assertThat(editText.getSelectionEnd()).isEqualTo(textToSet.length());
@@ -334,28 +320,21 @@ public class TextInputSpecTest {
   @Test
   public void textInput_setReplaceText_replacesTextWithSkippedSelection() {
     final Handle handle = new Handle();
-    mLegacyLithoTestRule
-        .setRoot(
-            Column.create(mLegacyLithoTestRule.getContext())
-                .child(TextInput.create(mLegacyLithoTestRule.getContext()).handle(handle)))
-        .measure()
-        .layout()
-        .attachToWindow();
+    TestLithoView testLithoView =
+        lithoTestRule.render(
+            componentScope ->
+                Column.create(lithoTestRule.context)
+                    .child(TextInput.create(lithoTestRule.context).handle(handle))
+                    .build());
 
     final CharSequence initialText = "some text with suggestion";
     final CharSequence textToSet = "";
-    final EditText editText = getEditText(mLegacyLithoTestRule.getLithoView());
-    TextInput.setText(mLegacyLithoTestRule.getComponentTree().getContext(), handle, initialText);
+    final EditText editText = getEditText(testLithoView.getLithoView());
+    TextInput.setText(lithoTestRule.context, handle, initialText);
     editText.setSelection(5);
 
     // We need a context with a ComponentTree on it for the Handle to properly resolve
-    TextInput.replaceText(
-        mLegacyLithoTestRule.getComponentTree().getContext(),
-        handle,
-        textToSet,
-        9,
-        initialText.length(),
-        true);
+    TextInput.replaceText(lithoTestRule.context, handle, textToSet, 9, initialText.length(), true);
     assertThat(editText.getText().toString()).isEqualTo("some text");
     assertThat(editText.getSelectionStart()).isEqualTo(5);
     assertThat(editText.getSelectionEnd()).isEqualTo(5);
@@ -364,21 +343,19 @@ public class TextInputSpecTest {
   @Test
   public void textInput_setReplaceText_replacesTextAtGivenIndices() {
     final Handle handle = new Handle();
-    mLegacyLithoTestRule
-        .setRoot(
-            Column.create(mLegacyLithoTestRule.getContext())
-                .child(TextInput.create(mLegacyLithoTestRule.getContext()).handle(handle)))
-        .measure()
-        .layout()
-        .attachToWindow();
+    TestLithoView testLithoView =
+        lithoTestRule.render(
+            componentScope ->
+                Column.create(lithoTestRule.context)
+                    .child(TextInput.create(lithoTestRule.context).handle(handle))
+                    .build());
 
-    final EditText editText = getEditText(mLegacyLithoTestRule.getLithoView());
+    final EditText editText = getEditText(testLithoView.getLithoView());
     editText.setText("0123");
     final CharSequence textToSet = "set text in test";
 
     // We need a context with a ComponentTree on it for the Handle to properly resolve
-    TextInput.replaceText(
-        mLegacyLithoTestRule.getComponentTree().getContext(), handle, textToSet, 0, 2, false);
+    TextInput.replaceText(lithoTestRule.context, handle, textToSet, 0, 2, false);
     assertThat(editText.getText().toString()).isEqualTo(textToSet + "23");
     assertThat(editText.getSelectionStart()).isEqualTo(textToSet.length());
     assertThat(editText.getSelectionEnd()).isEqualTo(textToSet.length());
@@ -387,63 +364,56 @@ public class TextInputSpecTest {
   @Test
   public void textInput_setReplaceTextForUnmountedView_replacesTextAfterMount() {
     final Handle handle = new Handle();
-    mLegacyLithoTestRule
-        .setRoot(
-            Column.create(mLegacyLithoTestRule.getContext())
-                .child(TextInput.create(mLegacyLithoTestRule.getContext()).handle(handle)))
-        .measure()
-        .layout()
-        .attachToWindow();
+    TestLithoView testLithoView =
+        lithoTestRule.render(
+            componentScope ->
+                Column.create(lithoTestRule.context)
+                    .child(TextInput.create(lithoTestRule.context).handle(handle))
+                    .build());
 
-    mLegacyLithoTestRule.getLithoView().unmountAllItems();
+    testLithoView.getLithoView().unmountAllItems();
 
     final CharSequence textToSet = "set text in test";
 
     // We need a context with a ComponentTree on it for the Handle to properly resolve
-    TextInput.replaceText(
-        mLegacyLithoTestRule.getComponentTree().getContext(), handle, textToSet, 0, 0, false);
-    final CharSequence text =
-        TextInput.getText(mLegacyLithoTestRule.getComponentTree().getContext(), handle);
+    TextInput.replaceText(lithoTestRule.context, handle, textToSet, 0, 0, false);
+    final CharSequence text = TextInput.getText(lithoTestRule.context, handle);
     assertThat(text).isNotNull();
     assertThat(text.toString()).isEqualTo(textToSet);
 
     // Mount the view again
-    mLegacyLithoTestRule.layout();
+    testLithoView.layout();
 
-    assertThat(getEditText(mLegacyLithoTestRule.getLithoView()).getText().toString())
-        .isEqualTo(textToSet);
+    assertThat(getEditText(testLithoView.getLithoView()).getText().toString()).isEqualTo(textToSet);
   }
 
   @Test
   public void textInput_setReplaceTextForUnmountedViewWithExistingText_replacesTextAfterMount() {
     final Handle handle = new Handle();
-    mLegacyLithoTestRule
-        .setRoot(
-            Column.create(mLegacyLithoTestRule.getContext())
-                .child(TextInput.create(mLegacyLithoTestRule.getContext()).handle(handle)))
-        .measure()
-        .layout()
-        .attachToWindow();
+    TestLithoView testLithoView =
+        lithoTestRule.render(
+            componentScope ->
+                Column.create(lithoTestRule.context)
+                    .child(TextInput.create(lithoTestRule.context).handle(handle))
+                    .build());
 
-    final EditText editText = getEditText(mLegacyLithoTestRule.getLithoView());
+    final EditText editText = getEditText(testLithoView.getLithoView());
     editText.setText("0123");
 
-    mLegacyLithoTestRule.getLithoView().unmountAllItems();
+    testLithoView.getLithoView().unmountAllItems();
 
     final CharSequence textToSet = "set text in test";
 
     // We need a context with a ComponentTree on it for the Handle to properly resolve
-    TextInput.replaceText(
-        mLegacyLithoTestRule.getComponentTree().getContext(), handle, textToSet, 0, 2, false);
-    final CharSequence text =
-        TextInput.getText(mLegacyLithoTestRule.getComponentTree().getContext(), handle);
+    TextInput.replaceText(lithoTestRule.context, handle, textToSet, 0, 2, false);
+    final CharSequence text = TextInput.getText(lithoTestRule.context, handle);
     assertThat(text).isNotNull();
     assertThat(text.toString()).isEqualTo(textToSet + "23");
 
     // Mount the view again
-    mLegacyLithoTestRule.layout();
+    testLithoView.layout();
 
-    assertThat(getEditText(mLegacyLithoTestRule.getLithoView()).getText().toString())
+    assertThat(getEditText(testLithoView.getLithoView()).getText().toString())
         .isEqualTo(textToSet + "23");
   }
 }
