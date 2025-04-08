@@ -25,7 +25,7 @@ import static org.junit.Assume.assumeThat;
 import com.facebook.litho.Component;
 import com.facebook.litho.config.LithoDebugConfigurations;
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
-import com.facebook.litho.testing.LegacyLithoTestRule;
+import com.facebook.litho.testing.LithoTestRule;
 import com.facebook.litho.testing.subcomponents.SubComponent;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import java.util.ArrayList;
@@ -36,7 +36,7 @@ import org.junit.runner.RunWith;
 
 @RunWith(LithoTestRunner.class)
 public class DemoListComponentTest {
-  @Rule public LegacyLithoTestRule mLegacyLithoTestRule = new LegacyLithoTestRule();
+  @Rule public LithoTestRule lithoTestRule = new LithoTestRule();
   private Component mComponent;
 
   @Before
@@ -50,7 +50,7 @@ public class DemoListComponentTest {
   @Before
   public void setUp() {
     mComponent =
-        DemoListRootComponent.create(mLegacyLithoTestRule.getContext())
+        DemoListRootComponent.create(lithoTestRule.getContext())
             .demos(new ArrayList<Demos.DemoGrouping>())
             .previousIndices(null)
             .build();
@@ -58,16 +58,16 @@ public class DemoListComponentTest {
 
   @Test
   public void testSubComponents() {
-    assertThat(mLegacyLithoTestRule.getContext(), mComponent)
+    assertThat(lithoTestRule.getContext(), mComponent)
         .containsOnlySubComponents(SubComponent.of(RecyclerCollectionComponent.class));
   }
 
   @Test
   public void testNumOfSubComponents() {
-    assertThat(mLegacyLithoTestRule.getContext(), mComponent)
-        .has(numOfSubComponents(mLegacyLithoTestRule.getContext(), is(1)));
+    assertThat(lithoTestRule.getContext(), mComponent)
+        .has(numOfSubComponents(lithoTestRule.getContext(), is(1)));
 
-    assertThat(mLegacyLithoTestRule.getContext(), mComponent)
-        .has(numOfSubComponents(mLegacyLithoTestRule.getContext(), greaterThan(0)));
+    assertThat(lithoTestRule.getContext(), mComponent)
+        .has(numOfSubComponents(lithoTestRule.getContext(), greaterThan(0)));
   }
 }
