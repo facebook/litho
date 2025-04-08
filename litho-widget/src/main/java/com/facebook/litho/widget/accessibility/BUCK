@@ -15,19 +15,12 @@ oncall("litho_components_for_android")
 
 litho_android_library(
     name = "accessibility",
-    srcs = glob([
-        "*.java",
-        "*.kt",
-        "**/*.kt",
-    ]),
-    autoglob = False,
     feature = FBApp_UIFrameworks_Litho_Litho,
     labels = [],
     provided_deps = [
         LITHO_JAVA_TARGET,
         LITHO_JSR_TARGET,
     ],
-    pure_kotlin = False,
     visibility = [
         "PUBLIC",
     ],
