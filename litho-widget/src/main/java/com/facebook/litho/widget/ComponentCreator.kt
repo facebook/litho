@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget;
+package com.facebook.litho.widget
 
-import com.facebook.litho.Component;
-import com.facebook.litho.ComponentContext;
+import com.facebook.litho.Component
+import com.facebook.litho.ComponentContext
 
-/** A provider function for a {@link Component}. */
-public interface ComponentCreator {
+/** A provider function for a [Component]. */
+fun interface ComponentCreator {
 
-  /** Creates a new instance of {@link Component}. */
-  Component create(ComponentContext c);
+  /** Creates a new instance of [Component]. */
+  fun create(c: ComponentContext): Component
 }
