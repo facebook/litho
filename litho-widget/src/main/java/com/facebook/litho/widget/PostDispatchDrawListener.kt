@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget;
+package com.facebook.litho.widget
 
-public interface PostDispatchDrawListener {
-
-  void postDispatchDraw(int childCount);
+fun interface PostDispatchDrawListener {
+  fun postDispatchDraw(childCount: Int)
 }
