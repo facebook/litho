@@ -20,7 +20,8 @@ import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.components.StateUpdateTestLayout
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
-import com.facebook.litho.testing.LegacyLithoTestRule
+import com.facebook.litho.testing.LithoTestRule
+import com.facebook.litho.testing.TestLithoView
 import com.facebook.litho.testing.ThreadTestingUtils
 import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec
@@ -45,6 +46,7 @@ open class StateUpdatesTest {
   private var heightSpec = 0
   private lateinit var context: ComponentContext
   private lateinit var testComponent: StateUpdateTestComponent
+  private lateinit var testLithoView: TestLithoView
   private lateinit var componentTree: ComponentTree
   private lateinit var testComponentKey: String
 
@@ -52,7 +54,7 @@ open class StateUpdatesTest {
   @Rule
   var backgroundLayoutLooperRule: BackgroundLayoutLooperRule = BackgroundLayoutLooperRule()
 
-  @JvmField @Rule val legacyLithoTestRule: LegacyLithoTestRule = LegacyLithoTestRule()
+  @JvmField @Rule val lithoTestRule: LithoTestRule = LithoTestRule()
 
   @Before
   fun setup() {
@@ -61,9 +63,9 @@ open class StateUpdatesTest {
     heightSpec = exactly(41)
     testComponent = StateUpdateTestComponent()
     testComponentKey = testComponent.key
-    legacyLithoTestRule.setRoot(testComponent)
-    componentTree = legacyLithoTestRule.componentTree
-    legacyLithoTestRule.attachToWindow().measure().layout().setSizeSpecs(widthSpec, heightSpec)
+    testLithoView =
+        lithoTestRule.render(widthSpec = widthSpec, heightSpec = heightSpec) { testComponent }
+    componentTree = testLithoView.componentTree
   }
 
   @After
@@ -83,12 +85,10 @@ open class StateUpdatesTest {
           override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c).child(child1).child(child2).build()
         }
-    legacyLithoTestRule.setRoot(component)
-    legacyLithoTestRule
-        .attachToWindow()
+    testLithoView
+        .setRootAndSizeSpecSync(component, exactly(1_000), unspecified())
         .measure()
         .layout()
-        .setSizeSpecs(exactly(1_000), unspecified())
   }
 
   @Test
@@ -99,19 +99,17 @@ open class StateUpdatesTest {
     child2.key = "key"
     val component: Component =
         object : InlineLayoutSpec() {
-          protected override fun onCreateLayout(c: ComponentContext): Component {
+          override fun onCreateLayout(c: ComponentContext): Component {
             return Column.create(c)
                 .child(Column.create(c).child(child1))
                 .child(Column.create(c).child(child2))
                 .build()
           }
         }
-    legacyLithoTestRule.setRoot(component)
-    legacyLithoTestRule
-        .attachToWindow()
+    testLithoView
+        .setRootAndSizeSpecSync(component, exactly(1_000), unspecified())
         .measure()
         .layout()
-        .setSizeSpecs(exactly(1_000), unspecified())
   }
 
   @Test
@@ -144,12 +142,7 @@ open class StateUpdatesTest {
     assertThat(stateContainersMap?.keys?.contains(testComponentKey)).isTrue
     val child1 = StateUpdateTestComponent()
     child1.key = "key"
-    legacyLithoTestRule.setRoot(child1)
-    legacyLithoTestRule
-        .attachToWindow()
-        .measure()
-        .layout()
-        .setSizeSpecs(exactly(1_000), unspecified())
+    testLithoView.setRootAndSizeSpecSync(child1, exactly(1_000), unspecified())
     componentTree.updateStateSync(
         "\$key", StateUpdateTestComponent.createIncrementStateUpdate(), "test", false)
     assertThat(stateContainersMap?.keys?.size).isEqualTo(1)
