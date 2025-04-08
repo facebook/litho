@@ -16,21 +16,19 @@
 
 package com.facebook.samples.lithocodelab.examples.modules;
 
+import static com.facebook.litho.testing.assertj.StateValueAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assume.assumeThat;
 
-import com.facebook.litho.ClickEvent;
-import com.facebook.litho.Component;
-import com.facebook.litho.ComponentContext;
-import com.facebook.litho.EventHandler;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.config.LithoDebugConfigurations;
-import com.facebook.litho.testing.LegacyLithoTestRule;
-import com.facebook.litho.testing.assertj.LegacyLithoAssertions;
-import com.facebook.litho.testing.assertj.SubComponentExtractor;
+import com.facebook.litho.testing.LithoTestRule;
+import com.facebook.litho.testing.TestLithoView;
+import com.facebook.litho.testing.assertj.LithoAssertions;
+import com.facebook.litho.testing.subcomponents.InspectableComponent;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
-import com.facebook.litho.widget.TestText;
-import org.hamcrest.core.IsNull;
+import com.facebook.litho.widget.Text;
+import org.assertj.core.api.Condition;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -38,7 +36,7 @@ import org.junit.runner.RunWith;
 
 @RunWith(LithoTestRunner.class)
 public class LearningStateComponentSpecTest {
-  @Rule public LegacyLithoTestRule mLegacyLithoTestRule = new LegacyLithoTestRule();
+  @Rule public LithoTestRule lithoTestRule = new LithoTestRule();
 
   @Before
   public void assumeDebug() {
@@ -50,30 +48,38 @@ public class LearningStateComponentSpecTest {
 
   @Test
   public void testComponentOnClick() {
-    final ComponentContext c = mLegacyLithoTestRule.getContext();
-    final Component component = LearningStateComponent.create(c).canClick(true).build();
+    final TestLithoView testLithoView =
+        lithoTestRule.render(
+            componentScope ->
+                LearningStateComponent.create(lithoTestRule.context).canClick(true).build());
 
-    LegacyLithoAssertions.assertThat(c, component)
-        .has(
-            SubComponentExtractor.subComponentWith(
-                c,
-                TestText.matcher(c)
-                    .clickHandler(IsNull.<EventHandler<ClickEvent>>notNullValue(null))
-                    .build()));
+    LithoAssertions.assertThat(testLithoView)
+        .hasAnyMatchingComponent(
+            new Condition<InspectableComponent>() {
+
+              @Override
+              public boolean matches(InspectableComponent value) {
+                return value.getComponentClass() == Text.class && value.getClickHandler() != null;
+              }
+            });
   }
 
   @Test
   public void testNoComponentOnClick() {
-    final ComponentContext c = mLegacyLithoTestRule.getContext();
-    final Component component = LearningStateComponent.create(c).canClick(false).build();
+    final TestLithoView testLithoView =
+        lithoTestRule.render(
+            componentScope ->
+                LearningStateComponent.create(lithoTestRule.context).canClick(false).build());
 
-    LegacyLithoAssertions.assertThat(c, component)
-        .has(
-            SubComponentExtractor.subComponentWith(
-                c,
-                TestText.matcher(c)
-                    .clickHandler(IsNull.<EventHandler<ClickEvent>>nullValue(null))
-                    .build()));
+    LithoAssertions.assertThat(testLithoView)
+        .hasAnyMatchingComponent(
+            new Condition<InspectableComponent>() {
+
+              @Override
+              public boolean matches(InspectableComponent value) {
+                return value.getComponentClass() == Text.class && value.getClickHandler() == null;
+              }
+            });
   }
 
   @Test
@@ -82,6 +88,6 @@ public class LearningStateComponentSpecTest {
     count.set(0);
     LearningStateComponentSpec.incrementClickCount(count);
 
-    LegacyLithoAssertions.assertThat(count).valueEqualTo(1);
+    assertThat(count).valueEqualTo(1);
   }
 }
