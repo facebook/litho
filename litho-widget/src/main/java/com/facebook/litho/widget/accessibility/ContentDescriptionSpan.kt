@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-package com.facebook.widget.accessibility.delegates;
+package com.facebook.widget.accessibility.delegates
 
-import android.text.TextPaint;
-import android.text.style.CharacterStyle;
-import com.facebook.infer.annotation.Nullsafe;
-import javax.annotation.Nullable;
+import android.text.TextPaint
+import android.text.style.CharacterStyle
 
 /**
  * Extends the CharacterStyle class to include a dedicated field for an accessibility content
@@ -27,35 +25,18 @@ import javax.annotation.Nullable;
  * spanned text alone (for example, an image) or when the text of the span could use extra
  * clarification for users of accessibility services like screen readers.
  *
- * <p>For example, some text that says "Click the button above to continue" may not be descriptive
+ * For example, some text that says "Click the button above to continue" may not be descriptive
  * enough for a user without the visual context of which button is above the text. You could use
  * this span to change "button above" to something more descriptive like "next step button" without
  * changing the visual text.
  *
- * <pre>{@code
- * SpannableStringBuilder sb = new SpannableStringBuilder("Click the button above to continue");
- * sb.setSpan(
- *   new ContentDescriptionSpan("next step button"), 10, 22, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+ * ```
+ * val sb: SpannableStringBuilder = SpannableStringBuilder("Click the button above to continue")
+ * sb.setSpan(ContentDescriptionSpan("next step button"), 10, 22, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
  *
- * Text.create(c).text(sb).build();
- * }</pre>
+ * Text.create(c).text(sb).build()
+ * ```
  */
-@Nullsafe(Nullsafe.Mode.LOCAL)
-public class ContentDescriptionSpan extends CharacterStyle {
-  private @Nullable String mContentDescription;
-
-  public ContentDescriptionSpan(@Nullable String contentDescription) {
-    mContentDescription = contentDescription;
-  }
-
-  public @Nullable String getContentDescription() {
-    return mContentDescription;
-  }
-
-  public void setContentDescription(String contentDescription) {
-    mContentDescription = contentDescription;
-  }
-
-  @Override
-  public void updateDrawState(TextPaint tp) {}
+class ContentDescriptionSpan(var contentDescription: String?) : CharacterStyle() {
+  override fun updateDrawState(tp: TextPaint): Unit = Unit
 }
