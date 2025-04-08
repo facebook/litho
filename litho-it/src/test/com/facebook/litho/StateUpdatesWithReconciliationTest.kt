@@ -21,7 +21,7 @@ import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
-import com.facebook.litho.testing.LegacyLithoTestRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.assertj.LithoViewAssert.Companion.assertThat
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.ImmediateLazyStateUpdateDispatchingComponent
@@ -45,29 +45,29 @@ import org.robolectric.shadows.ShadowLooper
 
 @LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(LithoTestRunner::class)
-class StateUpdatesWithReconciliationTest() {
+class StateUpdatesWithReconciliationTest {
 
   @JvmField @Rule var backgroundLayoutLooperRule = BackgroundLayoutLooperRule()
 
-  @JvmField @Rule var lithoViewRule = LegacyLithoTestRule()
+  @JvmField @Rule var lithoViewRule = LithoTestRule()
 
   @Test
   fun `should not reuse layout when root with new props is set`() {
     val lifecycleSteps: MutableList<StepInfo> = mutableListOf()
     class TestComponent(val dummyProp: Int) : KComponent() {
-      override fun ComponentScope.render(): Component? {
+      override fun ComponentScope.render(): Component {
         return Column {
           child(LayoutSpecLifecycleTester.create(context).steps(lifecycleSteps).build())
         }
       }
     }
 
-    lithoViewRule.setRoot(TestComponent(dummyProp = 0)).measure().layout().attachToWindow()
+    lithoViewRule.render { TestComponent(dummyProp = 0) }
 
     assertThat(LifecycleStep.getSteps(lifecycleSteps)).contains(LifecycleStep.ON_CREATE_LAYOUT)
     lifecycleSteps.clear()
 
-    lithoViewRule.setRoot(TestComponent(dummyProp = 1))
+    lithoViewRule.render { TestComponent(dummyProp = 1) }
     assertThat(LifecycleStep.getSteps(lifecycleSteps)).contains(LifecycleStep.ON_CREATE_LAYOUT)
   }
 
@@ -75,19 +75,19 @@ class StateUpdatesWithReconciliationTest() {
   fun `should not reuse layout when root with same props is set`() {
     val lifecycleSteps: MutableList<StepInfo> = mutableListOf()
     class TestComponent(val dummyProp: Int) : KComponent() {
-      override fun ComponentScope.render(): Component? {
+      override fun ComponentScope.render(): Component {
         return Column {
           child(LayoutSpecLifecycleTester.create(context).steps(lifecycleSteps).build())
         }
       }
     }
 
-    lithoViewRule.setRoot(TestComponent(dummyProp = 0)).measure().layout().attachToWindow()
+    lithoViewRule.render { TestComponent(dummyProp = 0) }
 
     assertThat(LifecycleStep.getSteps(lifecycleSteps)).contains(LifecycleStep.ON_CREATE_LAYOUT)
     lifecycleSteps.clear()
 
-    lithoViewRule.setRoot(TestComponent(dummyProp = 0))
+    lithoViewRule.render { TestComponent(dummyProp = 0) }
     assertThat(LifecycleStep.getSteps(lifecycleSteps)).contains(LifecycleStep.ON_CREATE_LAYOUT)
   }
 
@@ -96,7 +96,7 @@ class StateUpdatesWithReconciliationTest() {
     val stateUpdater = SimpleStateUpdateEmulatorSpec.Caller()
     val lifecycleSteps: MutableList<StepInfo> = mutableListOf()
     class TestComponent() : KComponent() {
-      override fun ComponentScope.render(): Component? {
+      override fun ComponentScope.render(): Component {
         return Column {
           child(LayoutSpecLifecycleTester.create(context).steps(lifecycleSteps).build())
           child(
@@ -110,7 +110,7 @@ class StateUpdatesWithReconciliationTest() {
       }
     }
 
-    lithoViewRule.setRoot(TestComponent()).measure().layout().attachToWindow()
+    val testLithoView = lithoViewRule.render { TestComponent() }
 
     assertThat(LifecycleStep.getSteps(lifecycleSteps)).contains(LifecycleStep.ON_CREATE_LAYOUT)
     lifecycleSteps.clear()
@@ -119,7 +119,7 @@ class StateUpdatesWithReconciliationTest() {
     assertThat(LifecycleStep.getSteps(lifecycleSteps))
         .doesNotContain(LifecycleStep.ON_CREATE_LAYOUT)
 
-    assertThat(lithoViewRule.lithoView).hasVisibleText("Count: 2")
+    assertThat(testLithoView.lithoView).hasVisibleText("Count: 2")
   }
 
   @Test
@@ -142,17 +142,17 @@ class StateUpdatesWithReconciliationTest() {
       }
     }
 
-    lithoViewRule.setRoot(TestComponent()).measure().layout().attachToWindow()
+    val testLithoView = lithoViewRule.render { TestComponent() }
 
     assertThat(LifecycleStep.getSteps(lifecycleSteps)).contains(LifecycleStep.ON_CREATE_LAYOUT)
     lifecycleSteps.clear()
 
     stateUpdater.increment()
-    lithoViewRule.measure().layout() // TODO: Why is this required?
+    testLithoView.measure().layout() // TODO: Why is this required?
     assertThat(LifecycleStep.getSteps(lifecycleSteps))
         .doesNotContain(LifecycleStep.ON_CREATE_LAYOUT)
 
-    assertThat(lithoViewRule.lithoView).hasVisibleText("Count: 1")
+    assertThat(testLithoView.lithoView).hasVisibleText("Count: 1")
   }
 
   @Test
@@ -178,28 +178,28 @@ class StateUpdatesWithReconciliationTest() {
       }
     }
 
-    lithoViewRule.setRoot(TestComponent()).measure().layout().attachToWindow()
+    val testLithoView = lithoViewRule.render { TestComponent() }
 
     assertThat(LifecycleStep.getSteps(lifecycleSteps)).contains(LifecycleStep.ON_CREATE_LAYOUT)
-    assertThat(lithoViewRule.lithoView).hasVisibleText("hello world")
-    assertThat(lithoViewRule.lithoView).hasVisibleText("Count: 1")
+    assertThat(testLithoView.lithoView).hasVisibleText("hello world")
+    assertThat(testLithoView.lithoView).hasVisibleText("Count: 1")
     lifecycleSteps.clear()
 
     stateUpdater.decrement()
-    lithoViewRule.measure().layout() // TODO: Why is this required?
+    testLithoView.measure().layout() // TODO: Why is this required?
     assertThat(LifecycleStep.getSteps(lifecycleSteps))
         .doesNotContain(LifecycleStep.ON_CREATE_LAYOUT)
 
-    assertThat(lithoViewRule.lithoView).hasVisibleText("hello world")
-    assertThat(lithoViewRule.lithoView).doesNotHaveVisibleTextContaining("Count")
+    assertThat(testLithoView.lithoView).hasVisibleText("hello world")
+    assertThat(testLithoView.lithoView).doesNotHaveVisibleTextContaining("Count")
   }
 
   @Test
   fun `should reuse unaffected part of layout when async state update occurs`() {
     val stateUpdater = SimpleStateUpdateEmulatorSpec.Caller()
     val lifecycleSteps: MutableList<StepInfo> = mutableListOf()
-    class TestComponent() : KComponent() {
-      override fun ComponentScope.render(): Component? {
+    class TestComponent : KComponent() {
+      override fun ComponentScope.render(): Component {
         return Column {
           child(LayoutSpecLifecycleTester.create(context).steps(lifecycleSteps).build())
           child(
@@ -213,7 +213,7 @@ class StateUpdatesWithReconciliationTest() {
       }
     }
 
-    lithoViewRule.setRoot(TestComponent()).measure().layout().attachToWindow()
+    val testLithoView = lithoViewRule.render { TestComponent() }
 
     assertThat(LifecycleStep.getSteps(lifecycleSteps)).contains(LifecycleStep.ON_CREATE_LAYOUT)
     lifecycleSteps.clear()
@@ -225,15 +225,15 @@ class StateUpdatesWithReconciliationTest() {
     assertThat(LifecycleStep.getSteps(lifecycleSteps))
         .doesNotContain(LifecycleStep.ON_CREATE_LAYOUT)
 
-    assertThat(lithoViewRule.lithoView).hasVisibleText("Count: 2")
+    assertThat(testLithoView.lithoView).hasVisibleText("Count: 2")
   }
 
   @Test
   fun `should reuse unaffected part of layout when async state update occurs child component using will render`() {
     val stateUpdater = SimpleStateUpdateEmulatorWillRenderSpec.Caller()
     val lifecycleSteps: MutableList<StepInfo> = mutableListOf()
-    class TestComponent() : KComponent() {
-      override fun ComponentScope.render(): Component? {
+    class TestComponent : KComponent() {
+      override fun ComponentScope.render(): Component {
         return Column {
           child(LayoutSpecLifecycleTester.create(context).steps(lifecycleSteps).build())
           child(
@@ -247,7 +247,7 @@ class StateUpdatesWithReconciliationTest() {
       }
     }
 
-    lithoViewRule.setRoot(TestComponent()).measure().layout().attachToWindow()
+    val testLithoView = lithoViewRule.render { TestComponent() }
 
     assertThat(LifecycleStep.getSteps(lifecycleSteps)).contains(LifecycleStep.ON_CREATE_LAYOUT)
     lifecycleSteps.clear()
@@ -259,7 +259,7 @@ class StateUpdatesWithReconciliationTest() {
     assertThat(LifecycleStep.getSteps(lifecycleSteps))
         .doesNotContain(LifecycleStep.ON_CREATE_LAYOUT)
 
-    assertThat(lithoViewRule.lithoView).hasVisibleText("Count: 2")
+    assertThat(testLithoView.lithoView).hasVisibleText("Count: 2")
   }
 
   @Test
@@ -267,7 +267,7 @@ class StateUpdatesWithReconciliationTest() {
     val stateUpdater = SimpleStateUpdateEmulatorSpec.Caller()
     val lifecycleSteps: MutableList<StepInfo> = mutableListOf()
     class TestComponent(val dummyProp: Int) : KComponent() {
-      override fun ComponentScope.render(): Component? {
+      override fun ComponentScope.render(): Component {
         return Column {
           child(
               com.facebook.litho.widget.LayoutSpecLifecycleTester.create(context)
@@ -284,14 +284,14 @@ class StateUpdatesWithReconciliationTest() {
       }
     }
 
-    lithoViewRule.setRoot(TestComponent(dummyProp = 0)).measure().layout().attachToWindow()
+    val testLithoView = lithoViewRule.render { TestComponent(dummyProp = 0) }
 
     assertThat(LifecycleStep.getSteps(lifecycleSteps)).contains(LifecycleStep.ON_CREATE_LAYOUT)
     lifecycleSteps.clear()
 
     stateUpdater.incrementAsync()
 
-    lithoViewRule.setRoot(TestComponent(dummyProp = 0))
+    testLithoView.setRoot(TestComponent(dummyProp = 0))
 
     backgroundLayoutLooperRule.runToEndOfTasksSync()
     ShadowLooper.idleMainLooper()
@@ -299,7 +299,7 @@ class StateUpdatesWithReconciliationTest() {
     assertThat(LifecycleStep.getSteps(lifecycleSteps))
         .doesNotContain(LifecycleStep.ON_CREATE_LAYOUT)
 
-    assertThat(lithoViewRule.lithoView).hasVisibleText("Count: 2")
+    assertThat(testLithoView.lithoView).hasVisibleText("Count: 2")
   }
 
   @Test
@@ -307,7 +307,7 @@ class StateUpdatesWithReconciliationTest() {
     val stateUpdater = SimpleStateUpdateEmulatorSpec.Caller()
     val lifecycleSteps: MutableList<StepInfo> = mutableListOf()
     class TestComponent(val dummyProp: Int) : KComponent() {
-      override fun ComponentScope.render(): Component? {
+      override fun ComponentScope.render(): Component {
         return Column {
           child(
               com.facebook.litho.widget.LayoutSpecLifecycleTester.create(context)
@@ -324,21 +324,21 @@ class StateUpdatesWithReconciliationTest() {
       }
     }
 
-    lithoViewRule.setRoot(TestComponent(dummyProp = 0)).measure().layout().attachToWindow()
+    val testLithoView = lithoViewRule.render { TestComponent(dummyProp = 0) }
 
     assertThat(LifecycleStep.getSteps(lifecycleSteps)).contains(LifecycleStep.ON_CREATE_LAYOUT)
     lifecycleSteps.clear()
 
     stateUpdater.incrementAsync()
 
-    lithoViewRule.setRoot(TestComponent(dummyProp = 1))
+    testLithoView.setRoot(TestComponent(dummyProp = 1))
 
     backgroundLayoutLooperRule.runToEndOfTasksSync()
     ShadowLooper.idleMainLooper()
 
     assertThat(LifecycleStep.getSteps(lifecycleSteps)).contains(LifecycleStep.ON_CREATE_LAYOUT)
 
-    assertThat(lithoViewRule.lithoView).hasVisibleText("Count: 2")
+    assertThat(testLithoView.lithoView).hasVisibleText("Count: 2")
   }
 
   /**
@@ -349,29 +349,30 @@ class StateUpdatesWithReconciliationTest() {
   @Test
   fun `should apply state updates when two different state updates occur simultaneously in the background`() {
     val c = lithoViewRule.context
-    lithoViewRule.setSizePx(100, 100).measure().layout().attachToWindow()
+
     val stateUpdater1 = SimpleStateUpdateEmulatorSpec.Caller()
     val stateUpdater2 = SimpleStateUpdateEmulatorSpec.Caller()
-    lithoViewRule.setRootAsync(
-        Row.create(c)
-            .child(
-                Column.create(c)
-                    .child(
-                        SimpleStateUpdateEmulator.create(c)
-                            .caller(stateUpdater1)
-                            .widthPx(100)
-                            .heightPx(100)
-                            .prefix("First: "))
-                    .child(
-                        SimpleStateUpdateEmulator.create(c)
-                            .caller(stateUpdater2)
-                            .widthPx(100)
-                            .heightPx(100)
-                            .prefix("Second: ")))
-            .build())
-    backgroundLayoutLooperRule.runToEndOfTasksSync()
-    ShadowLooper.idleMainLooper()
-    lithoViewRule.layout()
+
+    val testLithoView =
+        lithoViewRule.render(widthPx = 100, heightPx = 100) {
+          Row.create(c)
+              .child(
+                  Column.create(c)
+                      .child(
+                          SimpleStateUpdateEmulator.create(c)
+                              .caller(stateUpdater1)
+                              .widthPx(100)
+                              .heightPx(100)
+                              .prefix("First: "))
+                      .child(
+                          SimpleStateUpdateEmulator.create(c)
+                              .caller(stateUpdater2)
+                              .widthPx(100)
+                              .heightPx(100)
+                              .prefix("Second: ")))
+              .build()
+        }
+    lithoViewRule.idle()
 
     // Do two state updates sequentially without draining the main thread queue
     stateUpdater1.incrementAsync()
@@ -380,10 +381,9 @@ class StateUpdatesWithReconciliationTest() {
     backgroundLayoutLooperRule.runToEndOfTasksSync()
 
     // Now drain the main thread queue and mount the result
-    ShadowLooper.idleMainLooper()
-    lithoViewRule.layout()
-    assertThat(lithoViewRule.lithoView).hasVisibleText("First: 2")
-    assertThat(lithoViewRule.lithoView).hasVisibleText("Second: 2")
+    lithoViewRule.idle()
+    assertThat(testLithoView.lithoView).hasVisibleText("First: 2")
+    assertThat(testLithoView.lithoView).hasVisibleText("Second: 2")
   }
 
   /**
@@ -393,31 +393,29 @@ class StateUpdatesWithReconciliationTest() {
    */
   @Test
   fun `should apply state updates when two different state updates occur simultaneously in the background, stateless version`() {
-
     val c = lithoViewRule.context
-    lithoViewRule.setSizePx(100, 100).measure().layout().attachToWindow()
     val stateUpdater1 = SimpleStateUpdateEmulatorSpec.Caller()
     val stateUpdater2 = SimpleStateUpdateEmulatorSpec.Caller()
-    lithoViewRule.setRootAsync(
-        Row.create(c)
-            .child(
-                Column.create(c)
-                    .child(
-                        SimpleStateUpdateEmulator.create(c)
-                            .caller(stateUpdater1)
-                            .widthPx(100)
-                            .heightPx(100)
-                            .prefix("First: "))
-                    .child(
-                        SimpleStateUpdateEmulator.create(c)
-                            .caller(stateUpdater2)
-                            .widthPx(100)
-                            .heightPx(100)
-                            .prefix("Second: ")))
-            .build())
-    backgroundLayoutLooperRule.runToEndOfTasksSync()
-    ShadowLooper.idleMainLooper()
-    lithoViewRule.layout()
+    val testLithoView =
+        lithoViewRule.render(widthPx = 100, heightPx = 100) {
+          Row.create(c)
+              .child(
+                  Column.create(c)
+                      .child(
+                          SimpleStateUpdateEmulator.create(c)
+                              .caller(stateUpdater1)
+                              .widthPx(100)
+                              .heightPx(100)
+                              .prefix("First: "))
+                      .child(
+                          SimpleStateUpdateEmulator.create(c)
+                              .caller(stateUpdater2)
+                              .widthPx(100)
+                              .heightPx(100)
+                              .prefix("Second: ")))
+              .build()
+        }
+    lithoViewRule.idle()
 
     // Do two state updates sequentially without draining the main thread queue
     stateUpdater1.incrementAsync()
@@ -426,23 +424,21 @@ class StateUpdatesWithReconciliationTest() {
     backgroundLayoutLooperRule.runToEndOfTasksSync()
 
     // Now drain the main thread queue and mount the result
-    ShadowLooper.idleMainLooper()
-    lithoViewRule.layout()
-    assertThat(lithoViewRule.lithoView).hasVisibleText("First: 2")
-    assertThat(lithoViewRule.lithoView).hasVisibleText("Second: 2")
+    lithoViewRule.idle()
+    assertThat(testLithoView.lithoView).hasVisibleText("First: 2")
+    assertThat(testLithoView.lithoView).hasVisibleText("Second: 2")
   }
 
   @Test
   fun `should not reconcile when setRoot with different props with pending update`() {
     val c = lithoViewRule.context
-    val child =
-        com.facebook.litho.widget.ImmediateLazyStateUpdateDispatchingComponent.create(c).build()
+    val child = ImmediateLazyStateUpdateDispatchingComponent.create(c).build()
     val initial: Component = Column.create(c).child(child).build()
-    lithoViewRule.attachToWindow().setRoot(initial).measure().layout()
+    val testLithoView = lithoViewRule.render { initial }
     val info: MutableList<StepInfo> = ArrayList()
     val updated: Component =
         Column.create(c).child(child).child(LayoutSpecLifecycleTester.create(c).steps(info)).build()
-    lithoViewRule.setRoot(updated)
+    testLithoView.setRoot(updated)
 
     // If the new component resolves then the root component (column) was not reconciled.
     Assertions.assertThat(LifecycleStep.getSteps(info)).contains(LifecycleStep.ON_CREATE_LAYOUT)
@@ -459,7 +455,7 @@ class StateUpdatesWithReconciliationTest() {
                     .child(ImmediateLazyStateUpdateDispatchingComponent.create(c))
                     .child(LayoutSpecLifecycleTester.create(c).steps(info)))
             .build()
-    lithoViewRule.attachToWindow().setRoot(initial).measure().layout()
+    val testLithoView = lithoViewRule.render { initial }
     val updated: Component =
         TestWrapperComponent.create(c)
             .delegate(
@@ -468,7 +464,7 @@ class StateUpdatesWithReconciliationTest() {
                     .child(LayoutSpecLifecycleTester.create(c).steps(info)))
             .build()
     info.clear()
-    lithoViewRule.setRoot(updated)
+    testLithoView.setRoot(updated)
 
     // If the new component's on create layout is not called then it was reconciled.
     assertThat(LifecycleStep.getSteps(info)).doesNotContain(LifecycleStep.ON_CREATE_LAYOUT)
@@ -484,22 +480,22 @@ class StateUpdatesWithReconciliationTest() {
             .child(SimpleStateUpdateEmulator.create(c).caller(caller_1))
             .child(SimpleStateUpdateEmulator.create(c).caller(caller_2))
             .build()
-    lithoViewRule.attachToWindow().setRoot(root).measure().layout()
+    val testLithoView = lithoViewRule.render { root }
 
     // trigger a state update
     caller_1.increment()
-    assertThat(lithoViewRule.lithoView).hasVisibleText("Text: 2")
-    assertThat(lithoViewRule.lithoView).hasVisibleText("Text: 1")
+    assertThat(testLithoView.lithoView).hasVisibleText("Text: 2")
+    assertThat(testLithoView.lithoView).hasVisibleText("Text: 1")
 
     // trigger a state update
     caller_2.increment()
-    assertThat(lithoViewRule.lithoView).hasVisibleText("Text: 2")
-    assertThat(lithoViewRule.lithoView).hasVisibleText("Text: 2")
+    assertThat(testLithoView.lithoView).hasVisibleText("Text: 2")
+    assertThat(testLithoView.lithoView).hasVisibleText("Text: 2")
 
     // trigger a state update
     caller_1.increment()
-    assertThat(lithoViewRule.lithoView).hasVisibleText("Text: 3")
-    assertThat(lithoViewRule.lithoView).hasVisibleText("Text: 2")
+    assertThat(testLithoView.lithoView).hasVisibleText("Text: 3")
+    assertThat(testLithoView.lithoView).hasVisibleText("Text: 2")
   }
 
   @Test
@@ -510,7 +506,7 @@ class StateUpdatesWithReconciliationTest() {
     data class Updater(var callback: (() -> Unit)?)
 
     class RootComponentWithState(private val updater: Updater) : KComponent() {
-      override fun ComponentScope.render(): Component? {
+      override fun ComponentScope.render(): Component {
 
         val count = useState { 1 }
 
@@ -526,25 +522,25 @@ class StateUpdatesWithReconciliationTest() {
     val updater = Updater(null)
     val root: Component = RootComponentWithState(updater)
 
-    lithoViewRule.attachToWindow().setRoot(root).measure().layout()
+    val testLithoView = lithoViewRule.render { root }
 
-    assertThat(lithoViewRule.lithoView).hasVisibleText("Root Text: 1")
-    assertThat(lithoViewRule.lithoView).hasVisibleText("Text: 1")
+    assertThat(testLithoView.lithoView).hasVisibleText("Root Text: 1")
+    assertThat(testLithoView.lithoView).hasVisibleText("Text: 1")
 
     updater.callback?.let { it() }
 
-    assertThat(lithoViewRule.lithoView).hasVisibleText("Root Text: 2")
-    assertThat(lithoViewRule.lithoView).hasVisibleText("Text: 1")
+    assertThat(testLithoView.lithoView).hasVisibleText("Root Text: 2")
+    assertThat(testLithoView.lithoView).hasVisibleText("Text: 1")
 
     caller.increment()
 
-    assertThat(lithoViewRule.lithoView).hasVisibleText("Root Text: 2")
-    assertThat(lithoViewRule.lithoView).hasVisibleText("Text: 2")
+    assertThat(testLithoView.lithoView).hasVisibleText("Root Text: 2")
+    assertThat(testLithoView.lithoView).hasVisibleText("Text: 2")
 
     updater.callback?.let { it() }
 
-    assertThat(lithoViewRule.lithoView).hasVisibleText("Root Text: 3")
-    assertThat(lithoViewRule.lithoView).hasVisibleText("Text: 2")
+    assertThat(testLithoView.lithoView).hasVisibleText("Root Text: 3")
+    assertThat(testLithoView.lithoView).hasVisibleText("Text: 2")
   }
 
   @Test
@@ -552,7 +548,7 @@ class StateUpdatesWithReconciliationTest() {
     val stateUpdater = SimpleStateUpdateEmulatorSpec.Caller()
     val lifecycleSteps: MutableList<StepInfo> = mutableListOf()
     class TestComponent() : KComponent() {
-      override fun ComponentScope.render(): Component? {
+      override fun ComponentScope.render(): Component {
         return Column(style = Style.width(100.px).height(100.px)) {
           child(LayoutSpecLifecycleTester.create(context).steps(lifecycleSteps).build())
           child(NestedTreeComponentWithChildState.create(context).caller(stateUpdater).build())
@@ -560,7 +556,7 @@ class StateUpdatesWithReconciliationTest() {
       }
     }
 
-    lithoViewRule.render { TestComponent() }
+    val testLithoView = lithoViewRule.render { TestComponent() }
 
     assertThat(LifecycleStep.getSteps(lifecycleSteps)).contains(LifecycleStep.ON_CREATE_LAYOUT)
     lifecycleSteps.clear()
@@ -569,7 +565,7 @@ class StateUpdatesWithReconciliationTest() {
     assertThat(LifecycleStep.getSteps(lifecycleSteps))
         .doesNotContain(LifecycleStep.ON_CREATE_LAYOUT)
 
-    assertThat(lithoViewRule.lithoView).hasVisibleText("Count: 2")
+    assertThat(testLithoView.lithoView).hasVisibleText("Count: 2")
   }
 
   @Test
@@ -578,7 +574,7 @@ class StateUpdatesWithReconciliationTest() {
     val nestedStateUpdater = SimpleStateUpdateEmulatorSpec.Caller()
 
     class TestComponent() : KComponent() {
-      override fun ComponentScope.render(): Component? {
+      override fun ComponentScope.render(): Component {
         return Column(style = Style.width(200.px).height(200.px)) {
           child(
               SimpleStateUpdateEmulator.create(context)
@@ -591,17 +587,17 @@ class StateUpdatesWithReconciliationTest() {
       }
     }
 
-    lithoViewRule.render { TestComponent() }
+    val testLithoView = lithoViewRule.render { TestComponent() }
 
     stateUpdater.increment()
     // main tree counter gets incremented
-    assertThat(lithoViewRule.lithoView).hasVisibleText("SimpleTextCount: 2")
+    assertThat(testLithoView.lithoView).hasVisibleText("SimpleTextCount: 2")
 
     nestedStateUpdater.increment()
 
     // nested tree counter gets incremented
-    assertThat(lithoViewRule.lithoView).hasVisibleText("Count: 2")
+    assertThat(testLithoView.lithoView).hasVisibleText("Count: 2")
     // main tree counter remains same
-    assertThat(lithoViewRule.lithoView).hasVisibleText("SimpleTextCount: 2")
+    assertThat(testLithoView.lithoView).hasVisibleText("SimpleTextCount: 2")
   }
 }
