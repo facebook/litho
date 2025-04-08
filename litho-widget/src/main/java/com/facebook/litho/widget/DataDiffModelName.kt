@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget;
+package com.facebook.litho.widget
 
 /** Interface to provide name of the model used for tracing purposes. */
-public interface DataDiffModelName {
+interface DataDiffModelName {
 
-  /**
-   * @return name of the data model.
-   */
-  String getName();
+  /** The name of the data model. */
+  val name: String?
 }
