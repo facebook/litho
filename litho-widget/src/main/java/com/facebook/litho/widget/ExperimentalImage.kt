@@ -56,24 +56,23 @@ class ExperimentalImage(
         layoutBehavior = ImageLayoutBehavior(drawable, scaleType, useIntrinsicSize),
         mountBehavior =
             // start_image_primitive_mount_behavior_example
-            MountBehavior(IMAGE_ALLOCATOR) {
-              bindWithLayoutData<PrimitiveImageLayoutData>(drawable, scaleType) {
-                  content,
-                  layoutData ->
-                content.mount(drawable, layoutData.matrix)
-                content.bind(layoutData.width, layoutData.height)
-                onUnbind { content.unmount() }
-              }
-            }
+            MountBehavior(
+                DrawableAllocator(poolSize = 30, canPreallocate = true) {
+                  MatrixDrawable<Drawable>()
+                }) {
+                  bindWithLayoutData<PrimitiveImageLayoutData>(drawable, scaleType) {
+                      content,
+                      layoutData ->
+                    content.mount(drawable, layoutData.matrix)
+                    content.bind(layoutData.width, layoutData.height)
+                    onUnbind { content.unmount() }
+                  }
+                }
         // end_image_primitive_mount_behavior_example
         ,
         style = style)
   }
 }
-
-@JvmField
-val IMAGE_ALLOCATOR: DrawableAllocator<MatrixDrawable<Drawable>> =
-    DrawableAllocator(poolSize = 30, canPreallocate = true) { MatrixDrawable<Drawable>() }
 
 internal class ImageLayoutBehavior(
     private val drawable: Drawable?,
