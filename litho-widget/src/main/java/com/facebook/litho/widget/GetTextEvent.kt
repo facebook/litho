@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget;
+package com.facebook.litho.widget
 
-import com.facebook.litho.annotations.Event;
+import com.facebook.litho.annotations.Event
 
 /** Use this with TextInput to get the field's current text. */
-@Event(returnType = CharSequence.class)
-public class GetTextEvent {}
+@Event(returnType = CharSequence::class) class GetTextEvent
