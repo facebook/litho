@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget;
+package com.facebook.litho.widget
 
-public interface HasPostDispatchDrawListener {
-
+interface HasPostDispatchDrawListener {
   // Register a listener that calls postDispatchDraw() when ViewGroup#dispachDraw() is called.
-  void registerPostDispatchDrawListener(PostDispatchDrawListener listener);
+  fun registerPostDispatchDrawListener(listener: PostDispatchDrawListener)
 
   // Unregister the listener.
-  void unregisterPostDispatchDrawListener(PostDispatchDrawListener listener);
+  fun unregisterPostDispatchDrawListener(listener: PostDispatchDrawListener)
 }
