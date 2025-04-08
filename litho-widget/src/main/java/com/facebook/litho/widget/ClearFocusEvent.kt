@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget;
+package com.facebook.litho.widget
 
-import com.facebook.litho.annotations.Event;
+import com.facebook.litho.annotations.Event
 
 /** Event sent to TextEdit to clear focus. */
-@Event
-public class ClearFocusEvent {}
+@Event class ClearFocusEvent
