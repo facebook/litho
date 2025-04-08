@@ -62,30 +62,43 @@
   <div class="breadcrumbs"><a href="../../index.html">litho-widget</a><span class="delimiter">/</span><a href="../index.html">com.facebook.widget.accessibility.delegates</a><span class="delimiter">/</span><span class="current">ContentDescriptionSpan</span></div>
   <div class="cover ">
     <h1 class="cover"><span>Content</span><wbr><span>Description</span><wbr><span><span>Span</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="index.html">ContentDescriptionSpan</a> : <a href="https://developer.android.com/reference/kotlin/android/text/style/CharacterStyle.html">CharacterStyle</a></div><p class="paragraph">Extends the CharacterStyle class to include a dedicated field for an accessibility content description. This is useful in cases where the spanned content either cannot be described via the spanned text alone (for example, an image) or when the text of the span could use extra clarification for users of accessibility services like screen readers. </p><p class="paragraph">For example, some text that says "Click the button above to continue" may not be descriptive enough for a user without the visual context of which button is above the text. You could use this span to change "button above" to something more descriptive like "next step button" without changing the visual text. </p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">
-SpannableStringBuilder sb = new SpannableStringBuilder("Click the button above to continue");
-sb.setSpan(
-  new ContentDescriptionSpan("next step button"), 10, 22, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-Text.create(c).text(sb).build();
-</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">ContentDescriptionSpan</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">var </span>contentDescription<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span> : <a href="https://developer.android.com/reference/kotlin/android/text/style/CharacterStyle.html">CharacterStyle</a></div><p class="paragraph">Extends the CharacterStyle class to include a dedicated field for an accessibility content description. This is useful in cases where the spanned content either cannot be described via the spanned text alone (for example, an image) or when the text of the span could use extra clarification for users of accessibility services like screen readers.</p><p class="paragraph">For example, some text that says "Click the button above to continue" may not be descriptive enough for a user without the visual context of which button is above the text. You could use this span to change "button above" to something more descriptive like "next step button" without changing the visual text.</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">val sb: SpannableStringBuilder = SpannableStringBuilder("Click the button above to continue")<br>sb.setSpan(ContentDescriptionSpan("next step button"), 10, 22, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)<br><br>Text.create(c).text(sb).build()</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
     <div class="tabs-section-body">
       <div data-togglable="CONSTRUCTOR">
         <h2 class="">Constructors</h2>
-        <div class="table"><a data-name="1168386649%2FConstructors%2F-534206624" anchor-label="ContentDescriptionSpan" id="1168386649%2FConstructors%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
+        <div class="table"><a data-name="-2002180547%2FConstructors%2F-534206624" anchor-label="ContentDescriptionSpan" id="-2002180547%2FConstructors%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
           <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":litho-widget:dokkaHtmlPartial/release" data-filterable-set=":litho-widget:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="-content-description-span.html"><span>Content</span><wbr><span>Description</span><wbr><span><span>Span</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1168386649%2FConstructors%2F-534206624"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2002180547%2FConstructors%2F-534206624"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://docs.oracle.com/javase/8/docs/api/javax/annotation/Nullable.html"><span class="token annotation builtin">Nullable</span></a>&nbsp;</span>contentDescription<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">contentDescription<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="">Properties</h2>
+        <div class="table"><a data-name="1751552552%2FProperties%2F-534206624" anchor-label="contentDescription" id="1751552552%2FProperties%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-widget:dokkaHtmlPartial/release" data-filterable-set=":litho-widget:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="content-description.html"><span>content</span><wbr><span><span>Description</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1751552552%2FProperties%2F-534206624"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">var </span><a href="content-description.html">contentDescription</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></div></div></div>
                 </div>
               </div>
             </div>
@@ -94,22 +107,7 @@ Text.create(c).text(sb).build();
       </div>
       <div data-togglable="FUNCTION">
         <h2 class="">Functions</h2>
-        <div class="table"><a data-name="-650651498%2FFunctions%2F-534206624" anchor-label="getContentDescription" id="-650651498%2FFunctions%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-filterable-current=":litho-widget:dokkaHtmlPartial/release" data-filterable-set=":litho-widget:dokkaHtmlPartial/release">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="get-content-description.html"><span>get</span><wbr><span>Content</span><wbr><span><span>Description</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-650651498%2FFunctions%2F-534206624"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://docs.oracle.com/javase/8/docs/api/javax/annotation/Nullable.html"><span class="token annotation builtin">Nullable</span></a></div></div><span class="token keyword">open </span><span class="token keyword">fun </span><a href="get-content-description.html"><span class="token function">getContentDescription</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="709026833%2FFunctions%2F-534206624" anchor-label="getUnderlying" id="709026833%2FFunctions%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
+        <div class="table"><a data-name="709026833%2FFunctions%2F-534206624" anchor-label="getUnderlying" id="709026833%2FFunctions%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
           <div class="table-row" data-filterable-current=":litho-widget:dokkaHtmlPartial/release" data-filterable-set=":litho-widget:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
@@ -124,21 +122,6 @@ Text.create(c).text(sb).build();
               </div>
             </div>
           </div>
-<a data-name="577229317%2FFunctions%2F-534206624" anchor-label="setContentDescription" id="577229317%2FFunctions%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-filterable-current=":litho-widget:dokkaHtmlPartial/release" data-filterable-set=":litho-widget:dokkaHtmlPartial/release">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="set-content-description.html"><span>set</span><wbr><span>Content</span><wbr><span><span>Description</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="577229317%2FFunctions%2F-534206624"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="set-content-description.html"><span class="token function">setContentDescription</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">contentDescription<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a></span></span><span class="token punctuation">)</span></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
 <a data-name="692916220%2FFunctions%2F-534206624" anchor-label="updateDrawState" id="692916220%2FFunctions%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
           <div class="table-row" data-filterable-current=":litho-widget:dokkaHtmlPartial/release" data-filterable-set=":litho-widget:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
@@ -149,22 +132,7 @@ Text.create(c).text(sb).build();
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="update-draw-state.html"><span class="token function">updateDrawState</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">tp<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/text/TextPaint.html">TextPaint</a></span></span><span class="token punctuation">)</span></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="2020758447%2FFunctions%2F-534206624" anchor-label="wrap" id="2020758447%2FFunctions%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-filterable-current=":litho-widget:dokkaHtmlPartial/release" data-filterable-set=":litho-widget:dokkaHtmlPartial/release">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="index.html#2020758447%2FFunctions%2F-534206624"><span><span>wrap</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2020758447%2FFunctions%2F-534206624"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#2020758447%2FFunctions%2F-534206624"><span class="token function">wrap</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">cs<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/text/style/CharacterStyle.html">CharacterStyle</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/text/style/CharacterStyle.html">CharacterStyle</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="update-draw-state.html"><span class="token function">updateDrawState</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">tp<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/text/TextPaint.html">TextPaint</a></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
