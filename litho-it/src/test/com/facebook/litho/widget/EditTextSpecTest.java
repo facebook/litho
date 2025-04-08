@@ -18,10 +18,8 @@ package com.facebook.litho.widget;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.facebook.litho.ComponentContext;
-import com.facebook.litho.LithoView;
-import com.facebook.litho.testing.LegacyLithoTestRule;
-import com.facebook.litho.testing.helper.ComponentTestHelper;
+import com.facebook.litho.testing.LithoTestRule;
+import com.facebook.litho.testing.TestLithoView;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,18 +28,23 @@ import org.junit.runner.RunWith;
 /** Tests {@link EditText} component. */
 @RunWith(LithoTestRunner.class)
 public class EditTextSpecTest {
-  @Rule public LegacyLithoTestRule mLegacyLithoTestRule = new LegacyLithoTestRule();
+  @Rule public LithoTestRule lithoTestRule = new LithoTestRule();
 
   private static final String TEXT = "Hello Components";
 
   @Test
   public void testEditTextWithText() {
-    final ComponentContext c = mLegacyLithoTestRule.getContext();
-    final LithoView lithoView =
-        ComponentTestHelper.mountComponent(
-            EditText.create(c).textChangedEventHandler(null).textSizePx(10).text(TEXT));
+    TestLithoView testLithoView =
+        lithoTestRule.render(
+            componentScope ->
+                EditText.create(lithoTestRule.context)
+                    .textChangedEventHandler(null)
+                    .textSizePx(10)
+                    .text(TEXT)
+                    .build());
 
-    final android.widget.EditText editText = (android.widget.EditText) lithoView.getChildAt(0);
+    final android.widget.EditText editText =
+        (android.widget.EditText) testLithoView.getLithoView().getChildAt(0);
     assertThat(editText.getText().toString()).isEqualTo(TEXT);
     assertThat(editText.getTextSize()).isEqualTo(10);
   }
