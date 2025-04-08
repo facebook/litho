@@ -152,12 +152,7 @@ class RenderResult<State, RenderContext>(
         state: State?
     ): RenderResult<State, RenderContext> {
       return RenderResult(
-          Reducer.getReducedTree(
-              c,
-              layoutResult,
-              sizeConstraints,
-              RenderState.NO_ID, // TODO: Get render state id from layout context
-          ),
+          Reducer.getReducedTree(c, layoutResult, sizeConstraints, c.layoutVersion),
           node,
           c.layoutCache.writeCacheData,
           state)
