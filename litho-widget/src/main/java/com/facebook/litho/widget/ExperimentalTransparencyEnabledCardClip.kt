@@ -24,11 +24,11 @@ import com.facebook.litho.LithoPrimitive
 import com.facebook.litho.PrimitiveComponent
 import com.facebook.litho.PrimitiveComponentScope
 import com.facebook.litho.Style
-import com.facebook.litho.widget.CardClipDrawable.BOTTOM_LEFT
-import com.facebook.litho.widget.CardClipDrawable.BOTTOM_RIGHT
-import com.facebook.litho.widget.CardClipDrawable.NONE
-import com.facebook.litho.widget.CardClipDrawable.TOP_LEFT
-import com.facebook.litho.widget.CardClipDrawable.TOP_RIGHT
+import com.facebook.litho.widget.CardClipDrawable.Companion.BOTTOM_LEFT
+import com.facebook.litho.widget.CardClipDrawable.Companion.BOTTOM_RIGHT
+import com.facebook.litho.widget.CardClipDrawable.Companion.NONE
+import com.facebook.litho.widget.CardClipDrawable.Companion.TOP_LEFT
+import com.facebook.litho.widget.CardClipDrawable.Companion.TOP_RIGHT
 import com.facebook.rendercore.primitives.DrawableAllocator
 import com.facebook.rendercore.primitives.ExactSizeConstraintsLayoutBehavior
 
