@@ -18,7 +18,7 @@ package com.facebook.litho
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
-import com.facebook.litho.testing.LegacyLithoTestRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.TestLayoutComponent
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import org.assertj.core.api.Assertions.assertThat
@@ -32,7 +32,7 @@ class LayoutStateAddChildWithInputTest {
 
   private lateinit var context: ComponentContext
 
-  @JvmField @Rule var legacyLithoTestRule = LegacyLithoTestRule()
+  @JvmField @Rule var lithoTestRule = LithoTestRule()
 
   @Before
   fun setup() {
@@ -47,7 +47,7 @@ class LayoutStateAddChildWithInputTest {
             .child(TestLayoutComponent.create(context))
             .child(TestLayoutComponent.create(context))
             .build()
-    val node = LegacyLithoTestRule.getRootLayout(legacyLithoTestRule, component)?.node
+    val node = lithoTestRule.render { component }.currentRootNode
     assertThat(node?.childCount).isEqualTo(2)
     assertThat(node?.getChildAt(0)?.childCount).isEqualTo(0)
     assertThat(node?.getChildAt(1)?.childCount).isEqualTo(0)
