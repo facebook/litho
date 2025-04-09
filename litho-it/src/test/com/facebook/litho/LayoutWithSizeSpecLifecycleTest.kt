@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.facebook.litho
 
 import androidx.core.view.ViewCompat
 import com.facebook.litho.LifecycleStep.StepInfo
 import com.facebook.litho.LifecycleStep.getSteps
-import com.facebook.litho.testing.LegacyLithoTestRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.LayoutWithSizeSpecLifecycleTester
 import com.facebook.litho.widget.MountSpecPureRenderLifecycleTester
@@ -34,14 +35,16 @@ import org.robolectric.annotation.LooperMode
 @RunWith(LithoTestRunner::class)
 class LayoutWithSizeSpecLifecycleTest {
 
-  @JvmField @Rule val legacyLithoTestRule: LegacyLithoTestRule = LegacyLithoTestRule()
+  @JvmField @Rule val lithoTestRule: LithoTestRule = LithoTestRule()
 
   @Test
   fun onSetRootWithoutLayoutWithSizeSpec_shouldNotCallLifecycleMethods() {
     val info: List<StepInfo> = ArrayList()
     val component: Component =
-        LayoutWithSizeSpecLifecycleTester.create(legacyLithoTestRule.context).steps(info).build()
-    legacyLithoTestRule.setRoot(component).idle()
+        LayoutWithSizeSpecLifecycleTester.create(lithoTestRule.context).steps(info).build()
+    val testLithoView = lithoTestRule.createTestLithoView()
+    testLithoView.lithoView.setComponent(component)
+    lithoTestRule.idle()
     assertThat(getSteps(info))
         .describedAs("No lifecycle methods should be called")
         .containsExactly(LifecycleStep.ON_CREATE_INITIAL_STATE)
@@ -51,9 +54,8 @@ class LayoutWithSizeSpecLifecycleTest {
   fun onSetRootWithLayoutWithSizeSpecAtRoot_shouldCallLifecycleMethods() {
     val info: List<StepInfo> = ArrayList()
     val component: Component =
-        LayoutWithSizeSpecLifecycleTester.create(legacyLithoTestRule.context).steps(info).build()
-    legacyLithoTestRule.setRoot(component)
-    legacyLithoTestRule.attachToWindow().measure().layout()
+        LayoutWithSizeSpecLifecycleTester.create(lithoTestRule.context).steps(info).build()
+    lithoTestRule.render { component }
     assertThat(getSteps(info))
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
@@ -63,7 +65,7 @@ class LayoutWithSizeSpecLifecycleTest {
   @Test
   fun onSetRootWithLayoutWithSizeSpecWhichDoesNotRemeasure_shouldCallLifecycleMethods() {
     val info: List<StepInfo> = ArrayList()
-    val c = legacyLithoTestRule.context
+    val c = lithoTestRule.context
     val component: Component =
         Column.create(c)
             .child(
@@ -71,8 +73,7 @@ class LayoutWithSizeSpecLifecycleTest {
                     .steps(info)
                     .importantForAccessibility(ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES))
             .build()
-    legacyLithoTestRule.setRoot(component)
-    legacyLithoTestRule.attachToWindow().measure().layout()
+    lithoTestRule.render { component }
     assertThat(getSteps(info))
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
@@ -82,7 +83,7 @@ class LayoutWithSizeSpecLifecycleTest {
   @Test
   fun onSetRootWithLayoutWithSizeSpecWhichRemeasure_shouldCallLifecycleMethods() {
     val info: List<StepInfo> = ArrayList()
-    val c = legacyLithoTestRule.context
+    val c = lithoTestRule.context
     val tracker = LifecycleTracker()
     val mountable: Component =
         MountSpecPureRenderLifecycleTester.create(c).lifecycleTracker(tracker).build()
@@ -92,7 +93,7 @@ class LayoutWithSizeSpecLifecycleTest {
             .child(LayoutWithSizeSpecLifecycleTester.create(c).steps(info).body(mountable))
             .child(Text.create(c).text("Hello World"))
             .build()
-    legacyLithoTestRule.setRoot(component).attachToWindow().measure().layout()
+    lithoTestRule.render { component }
     assertThat(getSteps(info))
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
