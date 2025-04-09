@@ -44,6 +44,7 @@ litho_android_library(
     exported_provided_deps = [
     ],
     feature = FBApp_UIFrameworks_Litho_Litho,
+    incremental = True,
     k2 = False,
     labels = [],
     provided_deps = [
