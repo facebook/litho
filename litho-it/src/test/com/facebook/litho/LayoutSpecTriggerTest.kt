@@ -20,7 +20,7 @@ import com.facebook.litho.LifecycleStep.StepInfo
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.common.SingleComponentSection
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent
-import com.facebook.litho.testing.LegacyLithoTestRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.LayoutSpecTriggerTester
 import com.facebook.litho.widget.Text
@@ -36,11 +36,11 @@ import org.robolectric.annotation.LooperMode
 @RunWith(LithoTestRunner::class)
 class LayoutSpecTriggerTest {
 
-  @JvmField @Rule val legacyLithoTestRule = LegacyLithoTestRule()
+  @JvmField @Rule val lithoTestRule = LithoTestRule()
 
   @Test
   fun layoutSpec_setRootAndTriggerEvent_eventIsTriggered() {
-    val componentContext = legacyLithoTestRule.context
+    val componentContext = lithoTestRule.context
     val triggerObjectRef = AtomicReference<Any>()
     val triggerHandle = Handle()
     val info: List<StepInfo> = ArrayList()
@@ -50,13 +50,11 @@ class LayoutSpecTriggerTest {
             .triggerObjectRef(triggerObjectRef)
             .handle(triggerHandle)
             .build()
-    legacyLithoTestRule.setRoot(component)
-    legacyLithoTestRule.attachToWindow().measure().layout()
+    lithoTestRule.render { component }
     val bazObject = Any()
 
     // We need to use a ComponentContext with a ComponentTree on it
-    LayoutSpecTriggerTester.triggerTestEvent(
-        legacyLithoTestRule.componentTree.context, triggerHandle, bazObject)
+    LayoutSpecTriggerTester.triggerTestEvent(lithoTestRule.context, triggerHandle, bazObject)
     assertThat(LifecycleStep.getSteps(info))
         .describedAs("Should call @OnTrigger method")
         .containsExactly(LifecycleStep.ON_TRIGGER)
@@ -67,7 +65,7 @@ class LayoutSpecTriggerTest {
 
   @Test
   fun layoutSpec_setRootAndTriggerEvent_eventIsTriggered_handle_used_in_child() {
-    val componentContext = legacyLithoTestRule.context
+    val componentContext = lithoTestRule.context
     val triggerObjectRef = AtomicReference<Any>()
     val triggerHandle = Handle()
     val info: List<StepInfo> = ArrayList()
@@ -81,13 +79,11 @@ class LayoutSpecTriggerTest {
                     .handle(triggerHandle)
                     .build())
             .build()
-    legacyLithoTestRule.setRoot(component)
-    legacyLithoTestRule.attachToWindow().measure().layout()
+    lithoTestRule.render { component }
     val bazObject = Any()
 
     // We need to use a ComponentContext with a ComponentTree on it
-    LayoutSpecTriggerTester.triggerTestEvent(
-        legacyLithoTestRule.componentTree.context, triggerHandle, bazObject)
+    LayoutSpecTriggerTester.triggerTestEvent(lithoTestRule.context, triggerHandle, bazObject)
     assertThat(LifecycleStep.getSteps(info))
         .describedAs("Should call @OnTrigger method")
         .containsExactly(LifecycleStep.ON_TRIGGER)
@@ -98,7 +94,7 @@ class LayoutSpecTriggerTest {
 
   @Test
   fun layoutSpec_setRootAndTriggerEvent_eventIsTriggered_handle_used_in_nested_tree_root() {
-    val componentContext = legacyLithoTestRule.context
+    val componentContext = lithoTestRule.context
     val triggerObjectRef = AtomicReference<Any>()
     val triggerHandle = Handle()
     val info: List<StepInfo> = ArrayList()
@@ -117,13 +113,11 @@ class LayoutSpecTriggerTest {
                                     .handle(triggerHandle)
                                     .build())))
             .build()
-    legacyLithoTestRule.setRoot(component)
-    legacyLithoTestRule.attachToWindow().measure().layout()
+    lithoTestRule.render { component }
     val bazObject = Any()
 
     // We need to use a ComponentContext with a ComponentTree on it
-    LayoutSpecTriggerTester.triggerTestEvent(
-        legacyLithoTestRule.componentTree.context, triggerHandle, bazObject)
+    LayoutSpecTriggerTester.triggerTestEvent(lithoTestRule.context, triggerHandle, bazObject)
     assertThat(LifecycleStep.getSteps(info))
         .describedAs("Should call @OnTrigger method")
         .containsExactly(LifecycleStep.ON_TRIGGER)
@@ -134,7 +128,7 @@ class LayoutSpecTriggerTest {
 
   @Test
   fun layoutSpec_setRootAndTriggerEvent_eventIsTriggered_handle_used_in_nested_tree_deeper_in_hierarchy() {
-    val componentContext = legacyLithoTestRule.context
+    val componentContext = lithoTestRule.context
     val triggerObjectRef = AtomicReference<Any>()
     val triggerHandle = Handle()
     val info: List<StepInfo> = ArrayList()
@@ -156,13 +150,11 @@ class LayoutSpecTriggerTest {
                                             .handle(triggerHandle)
                                             .build()))))
             .build()
-    legacyLithoTestRule.setRoot(component)
-    legacyLithoTestRule.attachToWindow().measure().layout()
+    lithoTestRule.render { component }
     val bazObject = Any()
 
     // We need to use a ComponentContext with a ComponentTree on it
-    LayoutSpecTriggerTester.triggerTestEvent(
-        legacyLithoTestRule.componentTree.context, triggerHandle, bazObject)
+    LayoutSpecTriggerTester.triggerTestEvent(lithoTestRule.context, triggerHandle, bazObject)
     assertThat(LifecycleStep.getSteps(info))
         .describedAs("Should call @OnTrigger method")
         .containsExactly(LifecycleStep.ON_TRIGGER)
