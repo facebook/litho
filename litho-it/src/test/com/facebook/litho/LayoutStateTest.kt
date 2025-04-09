@@ -28,11 +28,11 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class LayoutStateTest {
 
-  @JvmField @Rule val mLegacyLithoTestRule: LithoTestRule = LithoTestRule()
+  @JvmField @Rule val lithoTestRule: LithoTestRule = LithoTestRule()
 
   @Test
   fun toRenderTree_emptyMountableOutputs_hasPositionForRoot() {
-    val context = mLegacyLithoTestRule.context
+    val context = lithoTestRule.context
     val result =
         ResolveTreeFuture.resolve(
             context,
