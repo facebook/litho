@@ -14,26 +14,26 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget;
+package com.facebook.litho.widget
 
-import com.facebook.litho.ComponentTree;
+import com.facebook.litho.ComponentTree
 
-public interface HasStickyHeader extends ViewportInfo {
+interface HasStickyHeader : ViewportInfo {
   /**
    * @param position
    * @return Whether the item at given position is *sticky*
    */
-  boolean isSticky(int position);
+  fun isSticky(position: Int): Boolean
 
   /**
    * @param position
    * @return Whether the item at given position is *valid*, i.e. whether such position exists.
    */
-  boolean isValidPosition(int position);
+  fun isValidPosition(position: Int): Boolean
 
   /**
    * @param position
    * @return a component tree for the item at position.
    */
-  ComponentTree getComponentForStickyHeaderAt(int position);
+  fun getComponentForStickyHeaderAt(position: Int): ComponentTree?
 }
