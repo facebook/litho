@@ -21,7 +21,7 @@ import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.TouchExpansionDelegateTest.Companion.emulateClickEvent
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.config.LithoDebugConfigurations
-import com.facebook.litho.testing.LegacyLithoTestRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.error.TestCrasherOnCreateLayout
 import com.facebook.litho.testing.error.TestHasDelegateThatCrashesOnCreateLayout
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -47,7 +47,7 @@ import org.robolectric.annotation.LooperMode
 @RunWith(LithoTestRunner::class)
 class LithoMetadataExceptionWrapperTest {
 
-  @JvmField @Rule var legacyLithoTestRule = LegacyLithoTestRule()
+  @JvmField @Rule var lithoTestRule = LithoTestRule()
 
   @JvmField @Rule var expectedException = ExpectedException.none()
 
@@ -69,31 +69,23 @@ class LithoMetadataExceptionWrapperTest {
 
           override fun describeTo(description: Description) = Unit
         })
-    val c = legacyLithoTestRule.context
-    legacyLithoTestRule
-        .setRoot(
-            Wrapper.create(c)
-                .delegate(
-                    Row.create(c)
-                        .child(
-                            Column.create(c)
-                                .child(TestHasDelegateThatCrashesOnCreateLayout.create(c)))
-                        .build()))
-        .measure()
-        .layout()
-        .attachToWindow()
+    val c = lithoTestRule.context
+    lithoTestRule.render {
+      Wrapper.create(c)
+          .delegate(
+              Row.create(c)
+                  .child(Column.create(c).child(TestHasDelegateThatCrashesOnCreateLayout.create(c)))
+                  .build())
+          .build()
+    }
   }
 
   @Test
   fun onCreateLayout_onlyRootComponent_exceptionShowsComponentStack() {
     expectedException.expect(LithoMetadataExceptionWrapper::class.java)
     expectedException.expectMessage("layout_stack: TestCrasherOnCreateLayout")
-    val c = legacyLithoTestRule.context
-    legacyLithoTestRule
-        .setRoot(TestCrasherOnCreateLayout.create(c))
-        .measure()
-        .layout()
-        .attachToWindow()
+    val c = lithoTestRule.context
+    lithoTestRule.render { TestCrasherOnCreateLayout.create(c).build() }
   }
 
   @Test
@@ -117,14 +109,13 @@ class LithoMetadataExceptionWrapperTest {
           override fun describeTo(description: Description) = Unit
         })
     val info: List<String> = ArrayList()
-    val context = legacyLithoTestRule.context
+    val context = lithoTestRule.context
     val component: Component =
         OnErrorPassUpParentTester.create(context)
             .child(OnErrorPassUpChildTester.create(context).info(info).build())
             .info(info)
             .build()
-    legacyLithoTestRule.setRoot(component)
-    legacyLithoTestRule.attachToWindow().measure().layout()
+    lithoTestRule.render { component }
   }
 
   @Test
@@ -148,14 +139,13 @@ class LithoMetadataExceptionWrapperTest {
           override fun describeTo(description: Description) = Unit
         })
     val info: List<String> = ArrayList()
-    val context = legacyLithoTestRule.context
+    val context = lithoTestRule.context
     val component =
         OnErrorPassUpParentTester.create(context)
             .child(OnErrorNotPresentChild.create(context).build())
             .info(info)
             .build()
-    legacyLithoTestRule.setRoot(component)
-    legacyLithoTestRule.attachToWindow().measure().layout()
+    lithoTestRule.render { component }
   }
 
   @Test
@@ -163,12 +153,9 @@ class LithoMetadataExceptionWrapperTest {
     expectedException.expect(LithoMetadataExceptionWrapper::class.java)
     expectedException.expectMessage("log_tag: myLogTag")
     val c = getComponentContextForTest()
-    legacyLithoTestRule
-        .useComponentTree(ComponentTree.create(c).build())
-        .setRoot(TestCrasherOnCreateLayout.create(c))
-        .measure()
-        .layout()
-        .attachToWindow()
+    lithoTestRule.render(componentTree = ComponentTree.create(c).build()) {
+      TestCrasherOnCreateLayout.create(c).build()
+    }
   }
 
   @Test
@@ -176,13 +163,10 @@ class LithoMetadataExceptionWrapperTest {
     expectedException.expect(LithoMetadataExceptionWrapper::class.java)
     expectedException.expectMessage("log_tag: myLogTag")
     val c = getComponentContextForTest()
-    legacyLithoTestRule
-        .useComponentTree(ComponentTree.create(c).build())
-        .setSizePx(100, 100)
-        .setRoot(TestCrasherOnCreateLayout.create(c))
-        .measure()
-        .layout()
-        .attachToWindow()
+    lithoTestRule.render(
+        componentTree = ComponentTree.create(c).build(), widthPx = 100, heightPx = 100) {
+          TestCrasherOnCreateLayout.create(c).build()
+        }
   }
 
   @Test
@@ -198,13 +182,9 @@ class LithoMetadataExceptionWrapperTest {
                   throw RuntimeException("Expected test exception")
                 })
             .build()
-    legacyLithoTestRule
-        .useComponentTree(ComponentTree.create(c).build())
-        .setRoot(component)
-        .attachToWindow()
-        .measure()
-        .layout()
-    legacyLithoTestRule.lithoView.emulateClickEvent(7, 7)
+    val testLithoView =
+        lithoTestRule.render(componentTree = ComponentTree.create(c).build()) { component }
+    testLithoView.lithoView.emulateClickEvent(7, 7)
   }
 
   @Test
@@ -223,13 +203,8 @@ class LithoMetadataExceptionWrapperTest {
                     .handle(handle)
                     .callback { throw RuntimeException("Expected test exception") })
             .build()
-    legacyLithoTestRule
-        .useComponentTree(ComponentTree.create(c).build())
-        .setRoot(component)
-        .attachToWindow()
-        .measure()
-        .layout()
-    TriggerCallbackComponent.doTrigger(legacyLithoTestRule.componentTree.context, handle)
+    lithoTestRule.render(componentTree = ComponentTree.create(c).build()) { component }
+    TriggerCallbackComponent.doTrigger(lithoTestRule.context, handle)
   }
 
   private fun getComponentContextForTest(): ComponentContext {
