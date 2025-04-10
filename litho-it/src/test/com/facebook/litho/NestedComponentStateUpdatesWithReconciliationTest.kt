@@ -18,7 +18,7 @@ package com.facebook.litho
 
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
-import com.facebook.litho.testing.LegacyLithoTestRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.assertj.LithoViewAssert.Companion.assertThat
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.onClick
@@ -33,10 +33,10 @@ import org.robolectric.shadows.ShadowLooper
 
 @LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(LithoTestRunner::class)
-class NestedComponentStateUpdatesWithReconciliationTest() {
+class NestedComponentStateUpdatesWithReconciliationTest {
 
   @JvmField @Rule var backgroundLayoutLooperRule = BackgroundLayoutLooperRule()
-  @JvmField @Rule var lithoViewRule = LegacyLithoTestRule()
+  @JvmField @Rule var lithoViewRule = LithoTestRule()
 
   /*
 
@@ -50,23 +50,20 @@ class NestedComponentStateUpdatesWithReconciliationTest() {
   @Test
   fun `when component C is updated sync, A, B, and D should not re-render`() {
     val renderCounts = RenderCounts()
-    lithoViewRule
-        .setRoot(RootComponent(renderCounts = renderCounts, asyncUpdates = false))
-        .measure()
-        .layout()
-        .attachToWindow()
+    val testLithoView =
+        lithoViewRule.render { RootComponent(renderCounts = renderCounts, asyncUpdates = false) }
 
-    lithoViewRule.findViewWithTag("C").performClick()
+    testLithoView.findViewWithTag("C").performClick()
 
     assertThat(renderCounts.A).hasValue(1)
     assertThat(renderCounts.B).hasValue(1)
     assertThat(renderCounts.C).hasValue(2)
     assertThat(renderCounts.D).hasValue(1)
 
-    assertThat(lithoViewRule.lithoView).hasVisibleText("Count[A]: 0")
-    assertThat(lithoViewRule.lithoView).hasVisibleText("Count[B]: 0")
-    assertThat(lithoViewRule.lithoView).hasVisibleText("Count[C]: 1")
-    assertThat(lithoViewRule.lithoView).hasVisibleText("Count[D]: 0")
+    assertThat(testLithoView.lithoView).hasVisibleText("Count[A]: 0")
+    assertThat(testLithoView.lithoView).hasVisibleText("Count[B]: 0")
+    assertThat(testLithoView.lithoView).hasVisibleText("Count[C]: 1")
+    assertThat(testLithoView.lithoView).hasVisibleText("Count[D]: 0")
   }
 
   /*
@@ -81,13 +78,10 @@ class NestedComponentStateUpdatesWithReconciliationTest() {
   @Test
   fun `when component C is updated async, A, B, and D should not re-render`() {
     val renderCounts = RenderCounts()
-    lithoViewRule
-        .setRoot(RootComponent(renderCounts = renderCounts, asyncUpdates = true))
-        .measure()
-        .layout()
-        .attachToWindow()
+    val testLithoView =
+        lithoViewRule.render { RootComponent(renderCounts = renderCounts, asyncUpdates = true) }
 
-    lithoViewRule.findViewWithTag("C").performClick()
+    testLithoView.findViewWithTag("C").performClick()
 
     backgroundLayoutLooperRule.runToEndOfTasksSync()
     ShadowLooper.idleMainLooper()
@@ -97,10 +91,10 @@ class NestedComponentStateUpdatesWithReconciliationTest() {
     assertThat(renderCounts.C).hasValue(2)
     assertThat(renderCounts.D).hasValue(1)
 
-    assertThat(lithoViewRule.lithoView).hasVisibleText("Count[A]: 0")
-    assertThat(lithoViewRule.lithoView).hasVisibleText("Count[B]: 0")
-    assertThat(lithoViewRule.lithoView).hasVisibleText("Count[C]: 1")
-    assertThat(lithoViewRule.lithoView).hasVisibleText("Count[D]: 0")
+    assertThat(testLithoView.lithoView).hasVisibleText("Count[A]: 0")
+    assertThat(testLithoView.lithoView).hasVisibleText("Count[B]: 0")
+    assertThat(testLithoView.lithoView).hasVisibleText("Count[C]: 1")
+    assertThat(testLithoView.lithoView).hasVisibleText("Count[D]: 0")
   }
 
   /*
@@ -115,23 +109,20 @@ class NestedComponentStateUpdatesWithReconciliationTest() {
   @Test
   fun `when component D is updated sync, A, B, and C should not re-render`() {
     val renderCounts = RenderCounts()
-    lithoViewRule
-        .setRoot(RootComponent(renderCounts = renderCounts, asyncUpdates = false))
-        .measure()
-        .layout()
-        .attachToWindow()
+    val testLithoView =
+        lithoViewRule.render { RootComponent(renderCounts = renderCounts, asyncUpdates = false) }
 
-    lithoViewRule.findViewWithTag("D").performClick()
+    testLithoView.findViewWithTag("D").performClick()
 
     assertThat(renderCounts.A).hasValue(1)
     assertThat(renderCounts.B).hasValue(1)
     assertThat(renderCounts.C).hasValue(1)
     assertThat(renderCounts.D).hasValue(2)
 
-    assertThat(lithoViewRule.lithoView).hasVisibleText("Count[A]: 0")
-    assertThat(lithoViewRule.lithoView).hasVisibleText("Count[B]: 0")
-    assertThat(lithoViewRule.lithoView).hasVisibleText("Count[C]: 0")
-    assertThat(lithoViewRule.lithoView).hasVisibleText("Count[D]: 1")
+    assertThat(testLithoView.lithoView).hasVisibleText("Count[A]: 0")
+    assertThat(testLithoView.lithoView).hasVisibleText("Count[B]: 0")
+    assertThat(testLithoView.lithoView).hasVisibleText("Count[C]: 0")
+    assertThat(testLithoView.lithoView).hasVisibleText("Count[D]: 1")
   }
 
   /*
@@ -146,13 +137,10 @@ class NestedComponentStateUpdatesWithReconciliationTest() {
   @Test
   fun `when component D is updated async, A, B, and C should not re-render`() {
     val renderCounts = RenderCounts()
-    lithoViewRule
-        .setRoot(RootComponent(renderCounts = renderCounts, asyncUpdates = true))
-        .measure()
-        .layout()
-        .attachToWindow()
+    val testLithoView =
+        lithoViewRule.render { RootComponent(renderCounts = renderCounts, asyncUpdates = true) }
 
-    lithoViewRule.findViewWithTag("D").performClick()
+    testLithoView.findViewWithTag("D").performClick()
 
     backgroundLayoutLooperRule.runToEndOfTasksSync()
     ShadowLooper.idleMainLooper()
@@ -162,10 +150,10 @@ class NestedComponentStateUpdatesWithReconciliationTest() {
     assertThat(renderCounts.C).hasValue(1)
     assertThat(renderCounts.D).hasValue(2)
 
-    assertThat(lithoViewRule.lithoView).hasVisibleText("Count[A]: 0")
-    assertThat(lithoViewRule.lithoView).hasVisibleText("Count[B]: 0")
-    assertThat(lithoViewRule.lithoView).hasVisibleText("Count[C]: 0")
-    assertThat(lithoViewRule.lithoView).hasVisibleText("Count[D]: 1")
+    assertThat(testLithoView.lithoView).hasVisibleText("Count[A]: 0")
+    assertThat(testLithoView.lithoView).hasVisibleText("Count[B]: 0")
+    assertThat(testLithoView.lithoView).hasVisibleText("Count[C]: 0")
+    assertThat(testLithoView.lithoView).hasVisibleText("Count[D]: 1")
   }
 
   /*
@@ -180,14 +168,11 @@ class NestedComponentStateUpdatesWithReconciliationTest() {
   @Test
   fun `when components C and D are updated async in the same frame, A and B should not re-render`() {
     val renderCounts = RenderCounts()
-    lithoViewRule
-        .setRoot(RootComponent(renderCounts = renderCounts, asyncUpdates = true))
-        .measure()
-        .layout()
-        .attachToWindow()
+    val testLithoView =
+        lithoViewRule.render { RootComponent(renderCounts = renderCounts, asyncUpdates = true) }
 
-    lithoViewRule.findViewWithTag("C").performClick()
-    lithoViewRule.findViewWithTag("D").performClick()
+    testLithoView.findViewWithTag("C").performClick()
+    testLithoView.findViewWithTag("D").performClick()
 
     backgroundLayoutLooperRule.runToEndOfTasksSync()
     ShadowLooper.idleMainLooper()
@@ -197,10 +182,10 @@ class NestedComponentStateUpdatesWithReconciliationTest() {
     assertThat(renderCounts.C).hasValue(2)
     assertThat(renderCounts.D).hasValue(2)
 
-    assertThat(lithoViewRule.lithoView).hasVisibleText("Count[A]: 0")
-    assertThat(lithoViewRule.lithoView).hasVisibleText("Count[B]: 0")
-    assertThat(lithoViewRule.lithoView).hasVisibleText("Count[C]: 1")
-    assertThat(lithoViewRule.lithoView).hasVisibleText("Count[D]: 1")
+    assertThat(testLithoView.lithoView).hasVisibleText("Count[A]: 0")
+    assertThat(testLithoView.lithoView).hasVisibleText("Count[B]: 0")
+    assertThat(testLithoView.lithoView).hasVisibleText("Count[C]: 1")
+    assertThat(testLithoView.lithoView).hasVisibleText("Count[D]: 1")
   }
 
   class RenderCounts {
@@ -215,7 +200,7 @@ class NestedComponentStateUpdatesWithReconciliationTest() {
       val renderCount: AtomicInteger,
       val asyncUpdates: Boolean
   ) : KComponent() {
-    override fun ComponentScope.render(): Component? {
+    override fun ComponentScope.render(): Component {
       val clickCount = useState { 0 }
 
       renderCount.incrementAndGet()
@@ -235,7 +220,7 @@ class NestedComponentStateUpdatesWithReconciliationTest() {
 
   private class BComponent(val renderCounts: RenderCounts, val asyncUpdates: Boolean) :
       KComponent() {
-    override fun ComponentScope.render(): Component? {
+    override fun ComponentScope.render(): Component {
       val clickCount = useState { 0 }
 
       renderCounts.B.incrementAndGet()
@@ -275,7 +260,7 @@ class NestedComponentStateUpdatesWithReconciliationTest() {
   */
   private class RootComponent(val renderCounts: RenderCounts, val asyncUpdates: Boolean) :
       KComponent() {
-    override fun ComponentScope.render(): Component? {
+    override fun ComponentScope.render(): Component {
       return Column {
         child(
             StateUpdatingLeafComponent(
