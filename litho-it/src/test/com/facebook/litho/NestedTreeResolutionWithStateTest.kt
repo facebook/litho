@@ -22,7 +22,8 @@ import com.facebook.litho.stateupdates.ComponentWithMeasureCallAndState
 import com.facebook.litho.stateupdates.ComponentWithMeasureCallAndStateSpec
 import com.facebook.litho.stateupdates.ComponentWithSizeAndMeasureCallAndState
 import com.facebook.litho.stateupdates.ComponentWithSizeAndMeasureCallAndStateSpec
-import com.facebook.litho.testing.LegacyLithoTestRule
+import com.facebook.litho.testing.LithoTestRule
+import com.facebook.litho.testing.TestLithoView
 import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.MountSpecPureRenderLifecycleTester
@@ -65,7 +66,7 @@ import org.robolectric.annotation.LooperMode
 @RunWith(LithoTestRunner::class)
 class NestedTreeResolutionWithStateTest {
 
-  @JvmField @Rule val legacyLithoTestRule: LegacyLithoTestRule = LegacyLithoTestRule()
+  @JvmField @Rule val lithoTestRule: LithoTestRule = LithoTestRule()
 
   /**
    * Tests OCL_OCL_OCL hierarchy.
@@ -930,7 +931,7 @@ class NestedTreeResolutionWithStateTest {
       botStepsStateUpdate3: Array<LifecycleStep>,
       mountSpecStateUpdate3: Array<LifecycleStep?>
   ) {
-    val c = legacyLithoTestRule.context
+    val c = lithoTestRule.context
     val widthSpec = exactly(500)
     val heightSpec = exactly(500)
 
@@ -939,13 +940,12 @@ class NestedTreeResolutionWithStateTest {
         createComponentHierarchySetup(c, widthSpec, heightSpec, isRootOCL, isMidOCL, isBotOCL)
 
     // Set the root and layout
-    legacyLithoTestRule.setRoot(holder.component)
-    legacyLithoTestRule.setSizeSpecs(widthSpec, heightSpec)
-    legacyLithoTestRule.attachToWindow().measure().layout()
+    val testLithoView =
+        lithoTestRule.render(widthSpec = widthSpec, heightSpec = heightSpec) { holder.component }
 
     // Ensure the root node is not null. We'll need this to extract scoped contexts to simulate
     // state updates.
-    assertThat(legacyLithoTestRule.currentRootNode).isNotNull
+    assertThat(testLithoView.currentRootNode).isNotNull
 
     // Ensure the lifecycle steps are as expected before any state updates.
     var rootSteps = LifecycleStep.getSteps(holder.rootLayoutSpecSteps)
@@ -966,16 +966,16 @@ class NestedTreeResolutionWithStateTest {
         .containsExactly(*mountSpecStepsPreStateUpdate)
 
     // Ensure all texts showing initial states are as expected
-    assertThat(legacyLithoTestRule.findViewWithText("root 0")).isNotNull
-    assertThat(legacyLithoTestRule.findViewWithText("mid 0")).isNotNull
-    assertThat(legacyLithoTestRule.findViewWithText("bot 0")).isNotNull
+    assertThat(testLithoView.findViewWithText("root 0")).isNotNull
+    assertThat(testLithoView.findViewWithText("mid 0")).isNotNull
+    assertThat(testLithoView.findViewWithText("bot 0")).isNotNull
 
     // Test state update 1/3
     // Reset the lifecycle steps
     holder.clearAllSteps()
 
     // Extract the root component's context to simulate state updates
-    val rootScopedContext = rootComponentContext
+    val rootScopedContext = rootComponentContext(testLithoView)
 
     // Simulate the state update for the root.
     holder.rootStateCaller.increment(rootScopedContext)
@@ -999,16 +999,16 @@ class NestedTreeResolutionWithStateTest {
         .containsExactly(*mountSpecStateUpdate1)
 
     // Ensure the texts properly reflect the correct values after the state update
-    assertThat(legacyLithoTestRule.findViewWithText("root 1")).isNotNull // Updated!
-    assertThat(legacyLithoTestRule.findViewWithText("mid 0")).isNotNull
-    assertThat(legacyLithoTestRule.findViewWithText("bot 0")).isNotNull
+    assertThat(testLithoView.findViewWithText("root 1")).isNotNull // Updated!
+    assertThat(testLithoView.findViewWithText("mid 0")).isNotNull
+    assertThat(testLithoView.findViewWithText("bot 0")).isNotNull
 
     // Test state update 2/3
     // Reset the lifecycle steps
     holder.clearAllSteps()
 
     // Extract the mid component's context to simulate state updates
-    val midScopedContext = midComponentContext
+    val midScopedContext = midComponentContext(testLithoView)
 
     // Simulate the state update for the mid component.
     holder.midStateCaller.increment(midScopedContext)
@@ -1032,16 +1032,16 @@ class NestedTreeResolutionWithStateTest {
         .containsExactly(*mountSpecStateUpdate2)
 
     // Ensure the texts properly reflect the correct values after the state update
-    assertThat(legacyLithoTestRule.findViewWithText("root 1")).isNotNull
-    assertThat(legacyLithoTestRule.findViewWithText("mid 1")).isNotNull // Updated!
-    assertThat(legacyLithoTestRule.findViewWithText("bot 0")).isNotNull
+    assertThat(testLithoView.findViewWithText("root 1")).isNotNull
+    assertThat(testLithoView.findViewWithText("mid 1")).isNotNull // Updated!
+    assertThat(testLithoView.findViewWithText("bot 0")).isNotNull
 
     // Test state update 3/3
     // Reset the lifecycle steps
     holder.clearAllSteps()
 
     // Extract the bottom component's context to simulate state updates
-    val botScopedContext = botComponentContext
+    val botScopedContext = botComponentContext(testLithoView)
 
     // Simulate the state update for the bottom component.
     holder.botStateCaller.increment(botScopedContext)
@@ -1065,60 +1065,55 @@ class NestedTreeResolutionWithStateTest {
         .containsExactly(*mountSpecStateUpdate3)
 
     // Ensure the texts properly reflect the correct values after the state update
-    assertThat(legacyLithoTestRule.findViewWithText("root 1")).isNotNull
-    assertThat(legacyLithoTestRule.findViewWithText("mid 1")).isNotNull
-    assertThat(legacyLithoTestRule.findViewWithText("bot 1")).isNotNull // Updated!
+    assertThat(testLithoView.findViewWithText("root 1")).isNotNull
+    assertThat(testLithoView.findViewWithText("mid 1")).isNotNull
+    assertThat(testLithoView.findViewWithText("bot 1")).isNotNull // Updated!
   }
 
   /** Returns the ComponentContext to be used to trigger state-updates on the Root. */
-  private val rootComponentContext: ComponentContext
-    get() {
-      assertThat(legacyLithoTestRule.currentRootNode).isNotNull
-      return requireNotNull(
-          getCorrectLayoutResult(legacyLithoTestRule.currentRootNode)
-              ?.node
-              ?.getComponentContextAt(1))
-    }
+  private fun rootComponentContext(testLithoView: TestLithoView): ComponentContext {
+    assertThat(testLithoView.currentRootNode).isNotNull
+    return requireNotNull(
+        getCorrectLayoutResult(testLithoView.currentRootNode)?.node?.getComponentContextAt(1))
+  }
 
   /** Returns the ComponentContext to be used to trigger state-updates on the Mid */
-  private val midComponentContext: ComponentContext
-    get() {
-      val rootLayoutResult = legacyLithoTestRule.currentRootNode
-      assertThat(rootLayoutResult).isNotNull
-      return requireNotNull(
-          if (rootLayoutResult is NestedTreeHolderResult) {
-            val nestedResult = getCorrectLayoutResult(rootLayoutResult)
-            val nestedMidResult = getCorrectLayoutResult(nestedResult?.getChildAt(1))
-            assertThat(nestedMidResult).isNotNull
-            nestedMidResult?.node?.getComponentContextAt(1)
-          } else {
-            rootLayoutResult?.node?.getChildAt(1)?.getComponentContextAt(0)
-          })
-    }
+  private fun midComponentContext(testLithoView: TestLithoView): ComponentContext {
+    val rootLayoutResult = testLithoView.currentRootNode
+    assertThat(rootLayoutResult).isNotNull
+    return requireNotNull(
+        if (rootLayoutResult is NestedTreeHolderResult) {
+          val nestedResult = getCorrectLayoutResult(rootLayoutResult)
+          val nestedMidResult = getCorrectLayoutResult(nestedResult?.getChildAt(1))
+          assertThat(nestedMidResult).isNotNull
+          nestedMidResult?.node?.getComponentContextAt(1)
+        } else {
+          rootLayoutResult?.node?.getChildAt(1)?.getComponentContextAt(0)
+        })
+  }
 
   /** Returns the ComponentContext to be used to trigger state-updates on the Bot */
-  private val botComponentContext: ComponentContext
-    get() {
-      val rootLayoutResult = legacyLithoTestRule.currentRootNode
-      assertThat(rootLayoutResult).isNotNull
-      return requireNotNull(
-          if (rootLayoutResult is NestedTreeHolderResult) {
-            val nestedResult = getCorrectLayoutResult(rootLayoutResult)
-            val nestedMidResult = getCorrectLayoutResult(nestedResult?.getChildAt(1))
-            assertThat(nestedMidResult).isNotNull
-            val nestedBotResult = getCorrectLayoutResult(nestedMidResult?.getChildAt(1))
+  private fun botComponentContext(testLithoView: TestLithoView): ComponentContext {
+    val rootLayoutResult = testLithoView.currentRootNode
+    assertThat(rootLayoutResult).isNotNull
+    return requireNotNull(
+        if (rootLayoutResult is NestedTreeHolderResult) {
+          val nestedResult = getCorrectLayoutResult(rootLayoutResult)
+          val nestedMidResult = getCorrectLayoutResult(nestedResult?.getChildAt(1))
+          assertThat(nestedMidResult).isNotNull
+          val nestedBotResult = getCorrectLayoutResult(nestedMidResult?.getChildAt(1))
+          getCorrectLayoutResult(nestedBotResult)?.node?.getComponentContextAt(1)
+        } else {
+          val midResult = rootLayoutResult?.getChildAt(1)
+          if (midResult is NestedTreeHolderResult) {
+            val nestedResult = getCorrectLayoutResult(midResult)
+            val nestedBotResult = getCorrectLayoutResult(nestedResult?.getChildAt(1))
             getCorrectLayoutResult(nestedBotResult)?.node?.getComponentContextAt(1)
           } else {
-            val midResult = rootLayoutResult?.getChildAt(1)
-            if (midResult is NestedTreeHolderResult) {
-              val nestedResult = getCorrectLayoutResult(midResult)
-              val nestedBotResult = getCorrectLayoutResult(nestedResult?.getChildAt(1))
-              getCorrectLayoutResult(nestedBotResult)?.node?.getComponentContextAt(1)
-            } else {
-              rootLayoutResult?.node?.getChildAt(1)?.getChildAt(1)?.getComponentContextAt(0)
-            }
-          })
-    }
+            rootLayoutResult?.node?.getChildAt(1)?.getChildAt(1)?.getComponentContextAt(0)
+          }
+        })
+  }
 
   /**
    * Holder class for a component hierarchy described above. Holds the root component, state update
