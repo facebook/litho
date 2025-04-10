@@ -16,7 +16,7 @@
 
 package com.facebook.litho
 
-import com.facebook.litho.testing.LegacyLithoTestRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.CardHeaderComponent
 import org.assertj.core.api.Assertions.assertThat
@@ -28,22 +28,22 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class MountStateMountTest {
 
-  @JvmField @Rule val legacyLithoTestRule: LegacyLithoTestRule = LegacyLithoTestRule()
+  @JvmField @Rule val lithoTestRule: LithoTestRule = LithoTestRule()
   private lateinit var context: ComponentContext
 
   @Before
   fun setup() {
-    context = legacyLithoTestRule.context
+    context = lithoTestRule.context
   }
 
   @Test
   fun unmountAll_mountStateNeedsRemount() {
     val root =
         Column.create(context).child(CardHeaderComponent.create(context).title("Title")).build()
-    legacyLithoTestRule.setRoot(root).attachToWindow().measure().layout()
-    val mountDelegateTarget = legacyLithoTestRule.lithoView.mountDelegateTarget
+    val testLithoView = lithoTestRule.render { root }
+    val mountDelegateTarget = testLithoView.lithoView.mountDelegateTarget
     assertThat(mountDelegateTarget.needsRemount()).isFalse
-    legacyLithoTestRule.lithoView.unmountAllItems()
+    testLithoView.lithoView.unmountAllItems()
     assertThat(mountDelegateTarget.needsRemount()).isTrue
   }
 }
