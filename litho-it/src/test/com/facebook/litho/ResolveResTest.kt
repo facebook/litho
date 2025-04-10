@@ -21,7 +21,7 @@ import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.it.R.dimen.test_dimen
 import com.facebook.litho.it.R.dimen.test_dimen_float
 import com.facebook.litho.it.R.style.TestTheme
-import com.facebook.litho.testing.LegacyLithoTestRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.TextInput
 import com.facebook.rendercore.utils.MeasureSpecUtils.unspecified
@@ -37,58 +37,52 @@ import org.robolectric.annotation.LooperMode
 @RunWith(LithoTestRunner::class)
 class ResolveResTest {
 
-  @JvmField @Rule val legacyLithoTestRule: LegacyLithoTestRule = LegacyLithoTestRule()
+  @JvmField @Rule val lithoTestRule: LithoTestRule = LithoTestRule()
 
   @Before
   fun setup() {
-    legacyLithoTestRule.useContext(
+    lithoTestRule.useContext(
         ComponentContext(
             ContextThemeWrapper(ApplicationProvider.getApplicationContext(), TestTheme)))
   }
 
   @Test
   fun testDefaultDimenWidthRes() {
-    val c = legacyLithoTestRule.context
+    val c = lithoTestRule.context
     val column = Column.create(c).widthRes(test_dimen).build()
-    legacyLithoTestRule
-        .setRootAndSizeSpecSync(column, unspecified(), unspecified())
-        .measure()
-        .layout()
+    val testLithoView =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) { column }
     val dimen = c.resources.getDimensionPixelSize(test_dimen)
-    assertThat(legacyLithoTestRule.lithoView.width).isEqualTo(dimen)
+    assertThat(testLithoView.lithoView.width).isEqualTo(dimen)
   }
 
   @Test
   fun testDefaultDimenPaddingRes() {
-    val c = legacyLithoTestRule.context
+    val c = lithoTestRule.context
     val column = Column.create(c).paddingRes(YogaEdge.LEFT, test_dimen).build()
-    legacyLithoTestRule
-        .setRootAndSizeSpecSync(column, unspecified(), unspecified())
-        .measure()
-        .layout()
+    val testLithoView =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) { column }
     val dimen = c.resources.getDimensionPixelSize(test_dimen)
-    assertThat(legacyLithoTestRule.lithoView.width).isEqualTo(dimen)
+    assertThat(testLithoView.lithoView.width).isEqualTo(dimen)
   }
 
   @Test
   fun testFloatDimenWidthRes() {
-    val c = legacyLithoTestRule.context
+    val c = lithoTestRule.context
     val column = Column.create(c).widthRes(test_dimen_float).build()
-    legacyLithoTestRule
-        .setRootAndSizeSpecSync(column, unspecified(), unspecified())
-        .measure()
-        .layout()
+    val testLithoView =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) { column }
     val dimen = c.resources.getDimensionPixelSize(test_dimen_float)
-    assertThat(legacyLithoTestRule.lithoView.width).isEqualTo(dimen)
+    assertThat(testLithoView.lithoView.width).isEqualTo(dimen)
   }
 
   @Test
   fun testFloatDimenPaddingRes() {
-    val c = legacyLithoTestRule.context
+    val c = lithoTestRule.context
     val row =
         Row.create(c).child(TextInput.create(c).paddingRes(YogaEdge.LEFT, test_dimen_float)).build()
-    legacyLithoTestRule.attachToWindow().setSizePx(100, 100).setRoot(row).measure().layout()
+    val testLithoView = lithoTestRule.render(widthPx = 100, heightPx = 100) { row }
     val dimen = c.resources.getDimensionPixelSize(test_dimen_float)
-    assertThat(legacyLithoTestRule.lithoView.getChildAt(0).paddingLeft).isEqualTo(dimen)
+    assertThat(testLithoView.lithoView.getChildAt(0).paddingLeft).isEqualTo(dimen)
   }
 }
