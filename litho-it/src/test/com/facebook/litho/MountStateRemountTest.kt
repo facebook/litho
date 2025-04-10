@@ -22,7 +22,7 @@ import android.view.ViewGroup
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.drawable.ComparableDrawable
-import com.facebook.litho.testing.LegacyLithoTestRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.TestDrawableComponent
 import com.facebook.litho.testing.TestViewComponent
 import com.facebook.litho.testing.exactly
@@ -47,7 +47,7 @@ class MountStateRemountTest {
 
   private lateinit var context: ComponentContext
 
-  @JvmField @Rule val legacyLithoTestRule = LegacyLithoTestRule(config)
+  @JvmField @Rule val lithoTestRule = LithoTestRule(config)
 
   @Before
   fun setup() {
@@ -71,20 +71,18 @@ class MountStateRemountTest {
     val component2 = TestDrawableComponent.create(context).build()
     val component3 = TestDrawableComponent.create(context).build()
     val component4 = TestDrawableComponent.create(context).build()
-    legacyLithoTestRule
-        .setRoot(
-            Column.create(context)
-                .widthPx(100)
-                .heightPx(100)
-                .child(component1)
-                .child(component2)
-                .build())
-        .measure()
-        .layout()
-        .attachToWindow()
+    val testLithoView =
+        lithoTestRule.render {
+          Column.create(context)
+              .widthPx(100)
+              .heightPx(100)
+              .child(component1)
+              .child(component2)
+              .build()
+        }
     assertThat(component1.isMounted).isTrue
     assertThat(component2.isMounted).isTrue
-    legacyLithoTestRule.setRoot(
+    testLithoView.setRoot(
         Column.create(context)
             .widthPx(100)
             .heightPx(100)
@@ -95,7 +93,7 @@ class MountStateRemountTest {
     assertThat(component2.isMounted).isTrue
     assertThat(component3.isMounted).isFalse
     assertThat(component4.isMounted).isFalse
-    val mountDelegateTarget = legacyLithoTestRule.lithoView.mountDelegateTarget
+    val mountDelegateTarget = testLithoView.lithoView.mountDelegateTarget
     val components: MutableList<Component> = ArrayList()
     for (i in 0 until mountDelegateTarget.getMountItemCount()) {
       mountDelegateTarget.getMountItemAt(i)?.let { mountItem ->
@@ -115,15 +113,15 @@ class MountStateRemountTest {
    */
   @Test
   fun testRemountDifferentMountType() {
-    legacyLithoTestRule
-        .setRoot(TestViewComponent.create(context).build())
-        .setSizeSpecs(exactly(10), exactly(5))
-    legacyLithoTestRule.attachToWindow().measure().layout().setSizeSpecs(10, 10)
-    assertThat(legacyLithoTestRule.lithoView.childCount).isEqualTo(1)
-    legacyLithoTestRule
-        .setRoot(TestDrawableComponent.create(context).build())
-        .setSizeSpecs(exactly(10), exactly(5))
-    assertThat(legacyLithoTestRule.lithoView.drawables[0]).isNotNull
+    val testLithoView =
+        lithoTestRule.render(widthSpec = exactly(10), heightSpec = exactly(5)) {
+          TestViewComponent.create(context).build()
+        }
+    testLithoView.setSizeSpecs(exactly(10), exactly(10))
+    assertThat(testLithoView.lithoView.childCount).isEqualTo(1)
+    testLithoView.setRootAndSizeSpecSync(
+        TestDrawableComponent.create(context).build(), exactly(10), exactly(5))
+    assertThat(testLithoView.lithoView.drawables[0]).isNotNull
   }
 
   @Test
@@ -171,20 +169,18 @@ class MountStateRemountTest {
     val component2 = TestDrawableComponent.create(context).build()
     val component3 = TestDrawableComponent.create(context).build()
     val component4 = TestDrawableComponent.create(context).build()
-    legacyLithoTestRule
-        .setRoot(
-            Column.create(context)
-                .widthPx(100)
-                .heightPx(100)
-                .child(component1)
-                .child(component2)
-                .build())
-        .measure()
-        .layout()
-        .attachToWindow()
+    val testLithoView =
+        lithoTestRule.render {
+          Column.create(context)
+              .widthPx(100)
+              .heightPx(100)
+              .child(component1)
+              .child(component2)
+              .build()
+        }
     assertThat(component1.isMounted).isTrue
     assertThat(component2.isMounted).isTrue
-    legacyLithoTestRule.setRoot(
+    testLithoView.setRoot(
         Column.create(context)
             .widthPx(100)
             .heightPx(100)
