@@ -17,23 +17,9 @@
 package com.facebook.litho
 
 import android.view.View
-import com.facebook.litho.testing.LegacyLithoTestRule
 import com.facebook.litho.testing.TestLithoView
 import com.facebook.rendercore.testing.ViewAssertions
 import com.facebook.rendercore.testing.match.ViewMatchNode
-
-/** Shorthand helper to create a root component that needs a ComponentScope. */
-fun LegacyLithoTestRule.setRoot(componentFunction: ComponentScope.() -> Component) =
-    setRoot(with(ComponentScope(context)) { componentFunction() })
-
-/**
- * Measures/lays out/attaches to window if not already done, then matches the hierarchy against the
- * provided [ViewMatchNode].
- */
-fun LegacyLithoTestRule.assertMatches(matchNode: ViewMatchNode) {
-  measure().layout().attachToWindow()
-  ViewAssertions.assertThat(lithoView).matches(matchNode)
-}
 
 /** Provide the compatible testing API of rendercore for TestLithoView. */
 fun TestLithoView.assertMatches(matchNode: ViewMatchNode) {

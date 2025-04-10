@@ -19,7 +19,7 @@ package com.facebook.litho
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import com.facebook.litho.kotlin.widget.Text
-import com.facebook.litho.testing.LegacyLithoTestRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.rendercore.primitives.DrawableAllocator
@@ -37,12 +37,12 @@ import org.robolectric.annotation.LooperMode
 @RunWith(LithoTestRunner::class)
 class KEffectsTest {
 
-  @Rule @JvmField val lithoViewRule = LegacyLithoTestRule()
+  @Rule @JvmField val lithoViewRule = LithoTestRule()
 
   @Test
   fun useEffect_createdThenReleased_callbacksAreInvoked() {
     class UseEffectComponent(val useEffectCalls: MutableList<String>) : KComponent() {
-      override fun ComponentScope.render(): Component? {
+      override fun ComponentScope.render(): Component {
         useEffect(Unit) {
           useEffectCalls.add("attach")
           onCleanup { useEffectCalls.add("detach") }
@@ -53,11 +53,9 @@ class KEffectsTest {
 
     val useEffectCalls = mutableListOf<String>()
     lithoViewRule
-        .setSizeSpecs(exactly(100), exactly(100))
-        .setRoot { UseEffectComponent(useEffectCalls) }
-        .attachToWindow()
-        .measure()
-        .layout()
+        .render(widthSpec = exactly(100), heightSpec = exactly(100)) {
+          UseEffectComponent(useEffectCalls)
+        }
         .detachFromWindow()
         .release()
 
@@ -67,7 +65,7 @@ class KEffectsTest {
   @Test
   fun useEffect_anyParam_callbacksAreInvokedOnUpdate() {
     class UseEffectComponent(val useEffectCalls: MutableList<String>, val seq: Int) : KComponent() {
-      override fun ComponentScope.render(): Component? {
+      override fun ComponentScope.render(): Component {
         useEffect(Any()) {
           useEffectCalls.add("attach $seq")
           onCleanup { useEffectCalls.add("detach $seq") }
@@ -77,22 +75,20 @@ class KEffectsTest {
     }
 
     val useEffectCalls = mutableListOf<String>()
-    lithoViewRule
-        .setSizeSpecs(exactly(100), exactly(100))
-        .setRoot { UseEffectComponent(useEffectCalls, seq = 0) }
-        .attachToWindow()
-        .measure()
-        .layout()
+    val testLithoView =
+        lithoViewRule.render(widthSpec = exactly(100), heightSpec = exactly(100)) {
+          UseEffectComponent(useEffectCalls, seq = 0)
+        }
 
     assertThat(useEffectCalls).containsExactly("attach 0")
     useEffectCalls.clear()
 
-    lithoViewRule.setRoot(UseEffectComponent(useEffectCalls, seq = 1))
+    testLithoView.setRoot(UseEffectComponent(useEffectCalls, seq = 1))
 
     assertThat(useEffectCalls).containsExactly("detach 0", "attach 1")
     useEffectCalls.clear()
 
-    lithoViewRule.release()
+    testLithoView.release()
 
     assertThat(useEffectCalls).containsExactly("detach 1")
   }
@@ -101,7 +97,7 @@ class KEffectsTest {
   fun useEffect_withDeps_callbacksAreInvokedOnlyIfDepsChange() {
     class UseEffectComponent(val useEffectCalls: MutableList<String>, val dep: Int, val seq: Int) :
         KComponent() {
-      override fun ComponentScope.render(): Component? {
+      override fun ComponentScope.render(): Component {
         useEffect(dep) {
           useEffectCalls.add("attach $seq")
           onCleanup { useEffectCalls.add("detach $seq") }
@@ -111,27 +107,25 @@ class KEffectsTest {
     }
 
     val useEffectCalls = mutableListOf<String>()
-    lithoViewRule
-        .setSizeSpecs(exactly(100), exactly(100))
-        .setRoot { UseEffectComponent(useEffectCalls, dep = 0, seq = 0) }
-        .attachToWindow()
-        .measure()
-        .layout()
+    val testLithoView =
+        lithoViewRule.render(widthSpec = exactly(100), heightSpec = exactly(100)) {
+          UseEffectComponent(useEffectCalls, dep = 0, seq = 0)
+        }
 
     assertThat(useEffectCalls).containsExactly("attach 0")
     useEffectCalls.clear()
 
-    lithoViewRule.setRoot(UseEffectComponent(useEffectCalls, dep = 0, seq = 1))
+    testLithoView.setRoot(UseEffectComponent(useEffectCalls, dep = 0, seq = 1))
 
     assertThat(useEffectCalls).isEmpty()
     useEffectCalls.clear()
 
-    lithoViewRule.setRoot(UseEffectComponent(useEffectCalls, dep = 1, seq = 2))
+    testLithoView.setRoot(UseEffectComponent(useEffectCalls, dep = 1, seq = 2))
 
     assertThat(useEffectCalls).containsExactly("detach 0", "attach 2")
     useEffectCalls.clear()
 
-    lithoViewRule.release()
+    testLithoView.release()
 
     assertThat(useEffectCalls).containsExactly("detach 2")
   }
@@ -140,7 +134,7 @@ class KEffectsTest {
   fun useEffect_withNullableDeps_callbacksAreInvokedOnlyIfDepsChange() {
     class UseEffectComponent(val useEffectCalls: MutableList<String>, val dep: Int?, val seq: Int) :
         KComponent() {
-      override fun ComponentScope.render(): Component? {
+      override fun ComponentScope.render(): Component {
         useEffect(dep) {
           useEffectCalls.add("attach $seq")
           onCleanup { useEffectCalls.add("detach $seq") }
@@ -151,23 +145,24 @@ class KEffectsTest {
 
     val useEffectCalls = mutableListOf<String>()
 
-    lithoViewRule.render { UseEffectComponent(useEffectCalls, dep = null, seq = 0) }
+    val testLithoView =
+        lithoViewRule.render { UseEffectComponent(useEffectCalls, dep = null, seq = 0) }
     assertThat(useEffectCalls).containsExactly("attach 0")
     useEffectCalls.clear()
 
-    lithoViewRule.render { UseEffectComponent(useEffectCalls, dep = null, seq = 1) }
+    testLithoView.setRoot(UseEffectComponent(useEffectCalls, dep = null, seq = 1))
     assertThat(useEffectCalls).isEmpty()
     useEffectCalls.clear()
 
-    lithoViewRule.render { UseEffectComponent(useEffectCalls, dep = 1, seq = 2) }
+    testLithoView.setRoot(UseEffectComponent(useEffectCalls, dep = 1, seq = 2))
     assertThat(useEffectCalls).containsExactly("detach 0", "attach 2")
     useEffectCalls.clear()
 
-    lithoViewRule.render { UseEffectComponent(useEffectCalls, dep = null, seq = 3) }
+    testLithoView.setRoot(UseEffectComponent(useEffectCalls, dep = null, seq = 3))
     assertThat(useEffectCalls).containsExactly("detach 2", "attach 3")
     useEffectCalls.clear()
 
-    lithoViewRule.release()
+    testLithoView.release()
     assertThat(useEffectCalls).containsExactly("detach 3")
   }
 
@@ -179,7 +174,7 @@ class KEffectsTest {
         val dep2: Int,
         val seq: Int,
     ) : KComponent() {
-      override fun ComponentScope.render(): Component? {
+      override fun ComponentScope.render(): Component {
         useEffect(dep1, dep2) {
           useEffectCalls.add("attach $dep1:$dep2:$seq")
           onCleanup { useEffectCalls.add("detach $dep1:$dep2:$seq") }
@@ -189,37 +184,35 @@ class KEffectsTest {
     }
 
     val useEffectCalls = mutableListOf<String>()
-    lithoViewRule
-        .setSizeSpecs(exactly(100), exactly(100))
-        .setRoot { UseEffectComponent(useEffectCalls, dep1 = 0, dep2 = 0, seq = 0) }
-        .attachToWindow()
-        .measure()
-        .layout()
+    val testLithoView =
+        lithoViewRule.render(widthSpec = exactly(100), heightSpec = exactly(100)) {
+          UseEffectComponent(useEffectCalls, dep1 = 0, dep2 = 0, seq = 0)
+        }
 
     assertThat(useEffectCalls).containsExactly("attach 0:0:0")
     useEffectCalls.clear()
 
-    lithoViewRule.setRoot(UseEffectComponent(useEffectCalls, dep1 = 0, dep2 = 0, seq = 1))
+    testLithoView.setRoot(UseEffectComponent(useEffectCalls, dep1 = 0, dep2 = 0, seq = 1))
 
     assertThat(useEffectCalls).isEmpty()
     useEffectCalls.clear()
 
-    lithoViewRule.setRoot(UseEffectComponent(useEffectCalls, dep1 = 0, dep2 = 1, seq = 2))
+    testLithoView.setRoot(UseEffectComponent(useEffectCalls, dep1 = 0, dep2 = 1, seq = 2))
 
     assertThat(useEffectCalls).containsExactly("detach 0:0:0", "attach 0:1:2")
     useEffectCalls.clear()
 
-    lithoViewRule.setRoot(UseEffectComponent(useEffectCalls, dep1 = 1, dep2 = 1, seq = 3))
+    testLithoView.setRoot(UseEffectComponent(useEffectCalls, dep1 = 1, dep2 = 1, seq = 3))
 
     assertThat(useEffectCalls).containsExactly("detach 0:1:2", "attach 1:1:3")
     useEffectCalls.clear()
 
-    lithoViewRule.setRoot(UseEffectComponent(useEffectCalls, dep1 = 2, dep2 = 2, seq = 4))
+    testLithoView.setRoot(UseEffectComponent(useEffectCalls, dep1 = 2, dep2 = 2, seq = 4))
 
     assertThat(useEffectCalls).containsExactly("detach 1:1:3", "attach 2:2:4")
     useEffectCalls.clear()
 
-    lithoViewRule.release()
+    testLithoView.release()
 
     assertThat(useEffectCalls).containsExactly("detach 2:2:4")
   }
@@ -233,7 +226,7 @@ class KEffectsTest {
         val dep3: Int,
         val seq: Int,
     ) : KComponent() {
-      override fun ComponentScope.render(): Component? {
+      override fun ComponentScope.render(): Component {
         useEffect(dep1) {
           useEffectCalls.add("dep1: attach $seq")
           onCleanup { useEffectCalls.add("dep1: detach $seq") }
@@ -251,33 +244,31 @@ class KEffectsTest {
     }
 
     val useEffectCalls = mutableListOf<String>()
-    lithoViewRule
-        .setSizeSpecs(exactly(100), exactly(100))
-        .setRoot { UseEffectComponent(useEffectCalls, dep1 = 0, dep2 = 0, dep3 = 0, seq = 0) }
-        .attachToWindow()
-        .measure()
-        .layout()
+    val testLithoView =
+        lithoViewRule.render(widthSpec = exactly(100), heightSpec = exactly(100)) {
+          UseEffectComponent(useEffectCalls, dep1 = 0, dep2 = 0, dep3 = 0, seq = 0)
+        }
 
     assertThat(useEffectCalls).containsExactly("dep1: attach 0", "dep2: attach 0", "dep3: attach 0")
     useEffectCalls.clear()
 
-    lithoViewRule.setRoot(UseEffectComponent(useEffectCalls, dep1 = 0, dep2 = 1, dep3 = 0, seq = 1))
+    testLithoView.setRoot(UseEffectComponent(useEffectCalls, dep1 = 0, dep2 = 1, dep3 = 0, seq = 1))
 
     assertThat(useEffectCalls).containsExactly("dep2: detach 0", "dep2: attach 1")
     useEffectCalls.clear()
 
-    lithoViewRule.setRoot(UseEffectComponent(useEffectCalls, dep1 = 1, dep2 = 1, dep3 = 1, seq = 2))
+    testLithoView.setRoot(UseEffectComponent(useEffectCalls, dep1 = 1, dep2 = 1, dep3 = 1, seq = 2))
 
     assertThat(useEffectCalls)
         .containsExactly("dep1: detach 0", "dep1: attach 2", "dep3: detach 0", "dep3: attach 2")
     useEffectCalls.clear()
 
-    lithoViewRule.setRoot(UseEffectComponent(useEffectCalls, dep1 = 1, dep2 = 1, dep3 = 1, seq = 3))
+    testLithoView.setRoot(UseEffectComponent(useEffectCalls, dep1 = 1, dep2 = 1, dep3 = 1, seq = 3))
 
     assertThat(useEffectCalls).isEmpty()
     useEffectCalls.clear()
 
-    lithoViewRule.release()
+    testLithoView.release()
 
     assertThat(useEffectCalls).containsExactly("dep1: detach 2", "dep2: detach 1", "dep3: detach 2")
   }
@@ -288,7 +279,7 @@ class KEffectsTest {
         val useEffectCalls: MutableList<String>,
         val seq: Int,
     ) : KComponent() {
-      override fun ComponentScope.render(): Component? {
+      override fun ComponentScope.render(): Component {
         useEffect(Unit) {
           useEffectCalls.add("attach $seq")
           onCleanup { useEffectCalls.add("detach $seq") }
@@ -298,22 +289,20 @@ class KEffectsTest {
     }
 
     val useEffectCalls = mutableListOf<String>()
-    lithoViewRule
-        .setSizeSpecs(exactly(100), exactly(100))
-        .setRoot { UseEffectComponent(useEffectCalls, seq = 0) }
-        .attachToWindow()
-        .measure()
-        .layout()
+    val testLithoView =
+        lithoViewRule.render(widthSpec = exactly(100), heightSpec = exactly(100)) {
+          UseEffectComponent(useEffectCalls, seq = 0)
+        }
 
     assertThat(useEffectCalls).containsExactly("attach 0")
     useEffectCalls.clear()
 
-    lithoViewRule.setRoot(UseEffectComponent(useEffectCalls, seq = 1))
+    testLithoView.setRoot(UseEffectComponent(useEffectCalls, seq = 1))
 
     assertThat(useEffectCalls).isEmpty()
     useEffectCalls.clear()
 
-    lithoViewRule.release()
+    testLithoView.release()
 
     assertThat(useEffectCalls).containsExactly("detach 0")
   }
@@ -332,11 +321,9 @@ class KEffectsTest {
 
     val useEffectCalls = mutableListOf<String>()
     lithoViewRule
-        .setSizeSpecs(exactly(100), exactly(100))
-        .setRoot { UseEffectComponent(useEffectCalls) }
-        .attachToWindow()
-        .measure()
-        .layout()
+        .render(widthSpec = exactly(100), heightSpec = exactly(100)) {
+          UseEffectComponent(useEffectCalls)
+        }
         .detachFromWindow()
         .release()
 
@@ -357,22 +344,20 @@ class KEffectsTest {
     }
 
     val useEffectCalls = mutableListOf<String>()
-    lithoViewRule
-        .setSizeSpecs(exactly(100), exactly(100))
-        .setRoot { UseEffectComponent(useEffectCalls, seq = 0) }
-        .attachToWindow()
-        .measure()
-        .layout()
+    val testLithoView =
+        lithoViewRule.render(widthSpec = exactly(100), heightSpec = exactly(100)) {
+          UseEffectComponent(useEffectCalls, seq = 0)
+        }
 
     assertThat(useEffectCalls).containsExactly("attach 0")
     useEffectCalls.clear()
 
-    lithoViewRule.setRoot(UseEffectComponent(useEffectCalls, seq = 1))
+    testLithoView.setRoot(UseEffectComponent(useEffectCalls, seq = 1))
 
     assertThat(useEffectCalls).containsExactly("detach 0", "attach 1")
     useEffectCalls.clear()
 
-    lithoViewRule.release()
+    testLithoView.release()
 
     assertThat(useEffectCalls).containsExactly("detach 1")
   }
@@ -391,22 +376,20 @@ class KEffectsTest {
     }
 
     val useEffectCalls = mutableListOf<String>()
-    lithoViewRule
-        .setSizeSpecs(exactly(100), exactly(100))
-        .setRoot { UseEffectComponent(useEffectCalls, seq = 0) }
-        .attachToWindow()
-        .measure()
-        .layout()
+    val testLithoView =
+        lithoViewRule.render(widthSpec = exactly(100), heightSpec = exactly(100)) {
+          UseEffectComponent(useEffectCalls, seq = 0)
+        }
 
     assertThat(useEffectCalls).containsExactly("attach 0")
     useEffectCalls.clear()
 
-    lithoViewRule.setRoot(UseEffectComponent(useEffectCalls, seq = 1))
+    testLithoView.setRoot(UseEffectComponent(useEffectCalls, seq = 1))
 
     assertThat(useEffectCalls).containsExactly("detach 0", "attach 1")
     useEffectCalls.clear()
 
-    lithoViewRule.release()
+    testLithoView.release()
 
     assertThat(useEffectCalls).containsExactly("detach 1")
   }
@@ -425,27 +408,25 @@ class KEffectsTest {
     }
 
     val useEffectCalls = mutableListOf<String>()
-    lithoViewRule
-        .setSizeSpecs(exactly(100), exactly(100))
-        .setRoot { UseEffectComponent(useEffectCalls, dep = 0, seq = 0) }
-        .attachToWindow()
-        .measure()
-        .layout()
+    val testLithoView =
+        lithoViewRule.render(widthSpec = exactly(100), heightSpec = exactly(100)) {
+          UseEffectComponent(useEffectCalls, dep = 0, seq = 0)
+        }
 
     assertThat(useEffectCalls).containsExactly("attach 0")
     useEffectCalls.clear()
 
-    lithoViewRule.setRoot(UseEffectComponent(useEffectCalls, dep = 0, seq = 1))
+    testLithoView.setRoot(UseEffectComponent(useEffectCalls, dep = 0, seq = 1))
 
     assertThat(useEffectCalls).isEmpty()
     useEffectCalls.clear()
 
-    lithoViewRule.setRoot(UseEffectComponent(useEffectCalls, dep = 1, seq = 2))
+    testLithoView.setRoot(UseEffectComponent(useEffectCalls, dep = 1, seq = 2))
 
     assertThat(useEffectCalls).containsExactly("detach 0", "attach 2")
     useEffectCalls.clear()
 
-    lithoViewRule.release()
+    testLithoView.release()
 
     assertThat(useEffectCalls).containsExactly("detach 2")
   }
@@ -465,23 +446,24 @@ class KEffectsTest {
 
     val useEffectCalls = mutableListOf<String>()
 
-    lithoViewRule.render { UseEffectComponent(useEffectCalls, dep = null, seq = 0) }
+    val testLithoView =
+        lithoViewRule.render { UseEffectComponent(useEffectCalls, dep = null, seq = 0) }
     assertThat(useEffectCalls).containsExactly("attach 0")
     useEffectCalls.clear()
 
-    lithoViewRule.render { UseEffectComponent(useEffectCalls, dep = null, seq = 1) }
+    testLithoView.setRoot(UseEffectComponent(useEffectCalls, dep = null, seq = 1))
     assertThat(useEffectCalls).isEmpty()
     useEffectCalls.clear()
 
-    lithoViewRule.render { UseEffectComponent(useEffectCalls, dep = 1, seq = 2) }
+    testLithoView.setRoot(UseEffectComponent(useEffectCalls, dep = 1, seq = 2))
     assertThat(useEffectCalls).containsExactly("detach 0", "attach 2")
     useEffectCalls.clear()
 
-    lithoViewRule.render { UseEffectComponent(useEffectCalls, dep = null, seq = 3) }
+    testLithoView.setRoot(UseEffectComponent(useEffectCalls, dep = null, seq = 3))
     assertThat(useEffectCalls).containsExactly("detach 2", "attach 3")
     useEffectCalls.clear()
 
-    lithoViewRule.release()
+    testLithoView.release()
     assertThat(useEffectCalls).containsExactly("detach 3")
   }
 
@@ -503,37 +485,35 @@ class KEffectsTest {
     }
 
     val useEffectCalls = mutableListOf<String>()
-    lithoViewRule
-        .setSizeSpecs(exactly(100), exactly(100))
-        .setRoot { UseEffectComponent(useEffectCalls, dep1 = 0, dep2 = 0, seq = 0) }
-        .attachToWindow()
-        .measure()
-        .layout()
+    val testLithoView =
+        lithoViewRule.render(widthSpec = exactly(100), heightSpec = exactly(100)) {
+          UseEffectComponent(useEffectCalls, dep1 = 0, dep2 = 0, seq = 0)
+        }
 
     assertThat(useEffectCalls).containsExactly("attach 0:0:0")
     useEffectCalls.clear()
 
-    lithoViewRule.setRoot(UseEffectComponent(useEffectCalls, dep1 = 0, dep2 = 0, seq = 1))
+    testLithoView.setRoot(UseEffectComponent(useEffectCalls, dep1 = 0, dep2 = 0, seq = 1))
 
     assertThat(useEffectCalls).isEmpty()
     useEffectCalls.clear()
 
-    lithoViewRule.setRoot(UseEffectComponent(useEffectCalls, dep1 = 0, dep2 = 1, seq = 2))
+    testLithoView.setRoot(UseEffectComponent(useEffectCalls, dep1 = 0, dep2 = 1, seq = 2))
 
     assertThat(useEffectCalls).containsExactly("detach 0:0:0", "attach 0:1:2")
     useEffectCalls.clear()
 
-    lithoViewRule.setRoot(UseEffectComponent(useEffectCalls, dep1 = 1, dep2 = 1, seq = 3))
+    testLithoView.setRoot(UseEffectComponent(useEffectCalls, dep1 = 1, dep2 = 1, seq = 3))
 
     assertThat(useEffectCalls).containsExactly("detach 0:1:2", "attach 1:1:3")
     useEffectCalls.clear()
 
-    lithoViewRule.setRoot(UseEffectComponent(useEffectCalls, dep1 = 2, dep2 = 2, seq = 4))
+    testLithoView.setRoot(UseEffectComponent(useEffectCalls, dep1 = 2, dep2 = 2, seq = 4))
 
     assertThat(useEffectCalls).containsExactly("detach 1:1:3", "attach 2:2:4")
     useEffectCalls.clear()
 
-    lithoViewRule.release()
+    testLithoView.release()
 
     assertThat(useEffectCalls).containsExactly("detach 2:2:4")
   }
@@ -565,33 +545,31 @@ class KEffectsTest {
     }
 
     val useEffectCalls = mutableListOf<String>()
-    lithoViewRule
-        .setSizeSpecs(exactly(100), exactly(100))
-        .setRoot { UseEffectComponent(useEffectCalls, dep1 = 0, dep2 = 0, dep3 = 0, seq = 0) }
-        .attachToWindow()
-        .measure()
-        .layout()
+    val testLithoView =
+        lithoViewRule.render(widthSpec = exactly(100), heightSpec = exactly(100)) {
+          UseEffectComponent(useEffectCalls, dep1 = 0, dep2 = 0, dep3 = 0, seq = 0)
+        }
 
     assertThat(useEffectCalls).containsExactly("dep1: attach 0", "dep2: attach 0", "dep3: attach 0")
     useEffectCalls.clear()
 
-    lithoViewRule.setRoot(UseEffectComponent(useEffectCalls, dep1 = 0, dep2 = 1, dep3 = 0, seq = 1))
+    testLithoView.setRoot(UseEffectComponent(useEffectCalls, dep1 = 0, dep2 = 1, dep3 = 0, seq = 1))
 
     assertThat(useEffectCalls).containsExactly("dep2: detach 0", "dep2: attach 1")
     useEffectCalls.clear()
 
-    lithoViewRule.setRoot(UseEffectComponent(useEffectCalls, dep1 = 1, dep2 = 1, dep3 = 1, seq = 2))
+    testLithoView.setRoot(UseEffectComponent(useEffectCalls, dep1 = 1, dep2 = 1, dep3 = 1, seq = 2))
 
     assertThat(useEffectCalls)
         .containsExactly("dep1: detach 0", "dep1: attach 2", "dep3: detach 0", "dep3: attach 2")
     useEffectCalls.clear()
 
-    lithoViewRule.setRoot(UseEffectComponent(useEffectCalls, dep1 = 1, dep2 = 1, dep3 = 1, seq = 3))
+    testLithoView.setRoot(UseEffectComponent(useEffectCalls, dep1 = 1, dep2 = 1, dep3 = 1, seq = 3))
 
     assertThat(useEffectCalls).isEmpty()
     useEffectCalls.clear()
 
-    lithoViewRule.release()
+    testLithoView.release()
 
     assertThat(useEffectCalls).containsExactly("dep1: detach 2", "dep2: detach 1", "dep3: detach 2")
   }
@@ -612,22 +590,20 @@ class KEffectsTest {
     }
 
     val useEffectCalls = mutableListOf<String>()
-    lithoViewRule
-        .setSizeSpecs(exactly(100), exactly(100))
-        .setRoot { UseEffectComponent(useEffectCalls, seq = 0) }
-        .attachToWindow()
-        .measure()
-        .layout()
+    val testLithoView =
+        lithoViewRule.render(widthSpec = exactly(100), heightSpec = exactly(100)) {
+          UseEffectComponent(useEffectCalls, seq = 0)
+        }
 
     assertThat(useEffectCalls).containsExactly("attach 0")
     useEffectCalls.clear()
 
-    lithoViewRule.setRoot(UseEffectComponent(useEffectCalls, seq = 1))
+    testLithoView.setRoot(UseEffectComponent(useEffectCalls, seq = 1))
 
     assertThat(useEffectCalls).isEmpty()
     useEffectCalls.clear()
 
-    lithoViewRule.release()
+    testLithoView.release()
 
     assertThat(useEffectCalls).containsExactly("detach 0")
   }
@@ -647,17 +623,17 @@ class KEffectsTest {
             controller = controller,
         )
 
-    lithoViewRule.render { Column { child(component) } }
+    val testLithoView = lithoViewRule.render { Column { child(component) } }
 
     // first render
     assertThat(renderCount).isEqualTo(1)
-    lithoViewRule.findViewWithText("count: 2")
+    testLithoView.findViewWithText("count: 2")
     assertThat(attachCount).isEqualTo(1)
     assertThat(detachCount).isEqualTo(0)
 
     // state update
     controller.decrement!!()
-    lithoViewRule.findViewWithText("count: 1")
+    testLithoView.findViewWithText("count: 1")
     assertThat(renderCount).isEqualTo(2)
     assertThat(attachCount).isEqualTo(1)
     assertThat(detachCount).isEqualTo(0)
@@ -670,14 +646,17 @@ class KEffectsTest {
 
     // state update
     controller.increment!!.invoke()
-    lithoViewRule.findViewWithText("count: 1")
+    testLithoView.findViewWithText("count: 1")
     assertThat(renderCount).isEqualTo(4)
     assertThat(attachCount).isEqualTo(1)
     assertThat(detachCount).isEqualTo(0)
 
     // remove component
-    lithoViewRule.render { Text(text = "hello") }
-    lithoViewRule.findViewWithText("hello")
+    testLithoView.setRoot(
+        with(ComponentScope(ComponentContext(lithoViewRule.context))) { Text(text = "hello") })
+
+    // testLithoView.setRoot(component)
+    testLithoView.findViewWithText("hello")
     assertThat(renderCount).isEqualTo(4)
     assertThat(attachCount).isEqualTo(1)
     assertThat(detachCount).isEqualTo(1)
