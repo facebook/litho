@@ -23,7 +23,7 @@ import com.facebook.litho.sections.widget.ListRecyclerConfiguration
 import com.facebook.litho.sections.widget.RecyclerBinderConfiguration
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent
 import com.facebook.litho.sections.widget.RecyclerConfiguration
-import com.facebook.litho.testing.LegacyLithoTestRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.atMost
 import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -45,11 +45,11 @@ import org.robolectric.annotation.LooperMode
 @RunWith(LithoTestRunner::class)
 class LayoutCachingTest {
 
-  @JvmField @Rule var legacyLithoTestRule = LegacyLithoTestRule()
+  @JvmField @Rule var lithoTestRule = LithoTestRule()
 
   @Test
   fun `verify the background of container is properly reused or created with layout caching`() {
-    val c = legacyLithoTestRule.context
+    val c = lithoTestRule.context
     val caller = SimpleStateUpdateEmulatorSpec.Caller()
 
     val component =
@@ -63,24 +63,24 @@ class LayoutCachingTest {
                     .build())
             .build()
 
-    legacyLithoTestRule.setRoot(component).attachToWindow().measure().layout()
+    val testLithoView = lithoTestRule.render { component }
 
-    val background1 = legacyLithoTestRule.committedLayoutState?.getMountableOutputAt(1)?.renderUnit
+    val background1 = testLithoView.committedLayoutState?.getMountableOutputAt(1)?.renderUnit
 
     // the height should be changed so we're not supposed to reuse the background outputs
     caller.increment()
-    val background2 = legacyLithoTestRule.committedLayoutState?.getMountableOutputAt(1)?.renderUnit
+    val background2 = testLithoView.committedLayoutState?.getMountableOutputAt(1)?.renderUnit
     Assertions.assertThat(background1 != background2).isTrue
 
     // the height should not be changed so we could reuse the background outputs
     caller.increment()
-    val background3 = legacyLithoTestRule.committedLayoutState?.getMountableOutputAt(1)?.renderUnit
+    val background3 = testLithoView.committedLayoutState?.getMountableOutputAt(1)?.renderUnit
     Assertions.assertThat(background2 === background3).isTrue
   }
 
   @Test
   fun `verify the layout behavior of container with background, padding is as expected`() {
-    val c = legacyLithoTestRule.context
+    val c = lithoTestRule.context
 
     val caller = SimpleStateUpdateEmulatorSpec.Caller()
     val component =
@@ -89,19 +89,19 @@ class LayoutCachingTest {
             .child(SimpleStateUpdateEmulator.create(c).prefix("\n\n\n").caller(caller).build())
             .build()
 
-    legacyLithoTestRule.setRoot(component).attachToWindow().measure().layout()
+    val testLithoView = lithoTestRule.render { component }
 
-    val background1 = legacyLithoTestRule.committedLayoutState?.getMountableOutputAt(1)?.renderUnit
+    val background1 = testLithoView.committedLayoutState?.getMountableOutputAt(1)?.renderUnit
 
     // the background of column should be reused because it doesn't change at all
     caller.increment()
-    val background2 = legacyLithoTestRule.committedLayoutState?.getMountableOutputAt(1)?.renderUnit
+    val background2 = testLithoView.committedLayoutState?.getMountableOutputAt(1)?.renderUnit
     Assertions.assertThat(background1 === background2).isTrue
   }
 
   @Test
   fun `verify the layout result of a fixed size component is not reused when its size has changed`() {
-    val c = legacyLithoTestRule.context
+    val c = lithoTestRule.context
     val lifecycleTracker = LifecycleTracker()
     val component =
         MountSpecLifecycleTester.create(c)
@@ -110,15 +110,11 @@ class LayoutCachingTest {
             .lifecycleTracker(lifecycleTracker)
             .build()
 
-    legacyLithoTestRule
-        .setRoot(component)
-        .setSizeSpecs(exactly(400), exactly(200))
-        .attachToWindow()
-        .measure()
-        .layout()
+    val testLithoView =
+        lithoTestRule.render(widthSpec = exactly(400), heightSpec = exactly(200)) { component }
     lifecycleTracker.reset()
 
-    legacyLithoTestRule.setSizeSpecs(exactly(200), exactly(400)).measure().layout()
+    testLithoView.setSizeSpecs(exactly(200), exactly(400)).measure().layout()
     Assertions.assertThat(lifecycleTracker.steps)
         .containsExactly(
             LifecycleStep.ON_BOUNDS_DEFINED,
@@ -130,7 +126,7 @@ class LayoutCachingTest {
 
   @Test
   fun `verify the layout result of a component with different size specs is re-measured`() {
-    val c = legacyLithoTestRule.context
+    val c = lithoTestRule.context
     val lifecycleTracker = LifecycleTracker()
     val component =
         MountSpecLifecycleTester.create(c)
@@ -139,15 +135,11 @@ class LayoutCachingTest {
             .lifecycleTracker(lifecycleTracker)
             .build()
 
-    legacyLithoTestRule
-        .setRoot(component)
-        .setSizeSpecs(exactly(1080), unspecified())
-        .attachToWindow()
-        .measure()
-        .layout()
+    val testLithoView =
+        lithoTestRule.render(widthSpec = exactly(1080), heightSpec = unspecified()) { component }
     lifecycleTracker.reset()
 
-    legacyLithoTestRule.setSizeSpecs(atMost(200), atMost(200)).measure().layout()
+    testLithoView.setSizeSpecs(atMost(200), atMost(200)).measure().layout()
     Assertions.assertThat(lifecycleTracker.steps)
         .containsExactly(
             LifecycleStep.ON_BOUNDS_DEFINED,
@@ -158,7 +150,7 @@ class LayoutCachingTest {
 
   @Test
   fun `unchanged node with inter stage prop should not be remeasured when state updates`() {
-    val c = legacyLithoTestRule.context
+    val c = lithoTestRule.context
     val lifecycleTracker = LifecycleTracker()
     val caller = SimpleStateUpdateEmulatorSpec.Caller()
     val component =
@@ -168,7 +160,7 @@ class LayoutCachingTest {
                 MountSpecInterStagePropsTester.create(c).lifecycleTracker(lifecycleTracker).build())
             .build()
 
-    legacyLithoTestRule.setRoot(component).attachToWindow().measure().layout()
+    lithoTestRule.render { component }
     Assertions.assertThat(lifecycleTracker.steps)
         .containsExactly(
             LifecycleStep.ON_CREATE_INITIAL_STATE,
@@ -187,7 +179,7 @@ class LayoutCachingTest {
 
   @Test
   fun `unchanged node without inter stage prop should not get rebinding when state updates`() {
-    val c = legacyLithoTestRule.context
+    val c = lithoTestRule.context
     val lifecycleTracker = LifecycleTracker()
     val caller = SimpleStateUpdateEmulatorSpec.Caller()
     val component =
@@ -202,7 +194,7 @@ class LayoutCachingTest {
                     .build())
             .build()
 
-    legacyLithoTestRule.setRoot(component).attachToWindow().measure().layout()
+    lithoTestRule.render { component }
     Assertions.assertThat(lifecycleTracker.steps)
         .containsExactly(
             LifecycleStep.ON_CREATE_INITIAL_STATE,
@@ -226,7 +218,7 @@ class LayoutCachingTest {
 
   @Test
   fun `unchanged subtree should not get rebinding when state updates`() {
-    val c = legacyLithoTestRule.context
+    val c = lithoTestRule.context
     val lifecycleTracker1 = LifecycleTracker()
     val lifecycleTracker2 = LifecycleTracker()
     val caller: SimpleStateUpdateEmulatorSpec.Caller = SimpleStateUpdateEmulatorSpec.Caller()
@@ -247,7 +239,7 @@ class LayoutCachingTest {
                                     .lifecycleTracker(lifecycleTracker2))))
             .build()
 
-    legacyLithoTestRule.setRoot(component).attachToWindow().measure().layout()
+    lithoTestRule.render { component }
     Assertions.assertThat(lifecycleTracker1.steps)
         .containsExactly(
             LifecycleStep.ON_CREATE_INITIAL_STATE,
@@ -282,7 +274,7 @@ class LayoutCachingTest {
 
   @Test
   fun `changing size spec should trigger re-measurement`() {
-    val c = legacyLithoTestRule.context
+    val c = lithoTestRule.context
     val lifecycleTracker = LifecycleTracker()
     val component =
         MountSpecPureRenderLifecycleTester.create(c)
@@ -291,12 +283,8 @@ class LayoutCachingTest {
             .build()
 
     // Make the target component to be the root component and change the size spec
-    legacyLithoTestRule
-        .setRoot(component)
-        .attachToWindow()
-        .setSizeSpecs(exactly(100), unspecified())
-        .measure()
-        .layout()
+    val testLithoView =
+        lithoTestRule.render(widthSpec = exactly(100), heightSpec = unspecified()) { component }
     Assertions.assertThat(lifecycleTracker.steps)
         .containsExactly(
             LifecycleStep.ON_CREATE_INITIAL_STATE,
@@ -311,14 +299,14 @@ class LayoutCachingTest {
             LifecycleStep.ON_BIND)
 
     lifecycleTracker.reset()
-    legacyLithoTestRule.setSizeSpecs(exactly(200), unspecified()).measure().layout()
+    testLithoView.setSizeSpecs(exactly(200), unspecified()).measure().layout()
     Assertions.assertThat(lifecycleTracker.steps)
         .containsExactly(LifecycleStep.ON_MEASURE, LifecycleStep.ON_BOUNDS_DEFINED)
   }
 
   @Test
   fun `inter stage data should be copied for cached nodes`() {
-    val c = legacyLithoTestRule.context
+    val c = lithoTestRule.context
     val lifecycleTracker = LifecycleTracker()
     val caller = SimpleStateUpdateEmulatorSpec.Caller()
     val component =
@@ -330,7 +318,7 @@ class LayoutCachingTest {
                     .viewTag("test"))
             .build()
 
-    legacyLithoTestRule.setRoot(component).attachToWindow().measure().layout()
+    lithoTestRule.render { component }
     Assertions.assertThat(lifecycleTracker.steps)
         .containsExactly(
             LifecycleStep.ON_CREATE_INITIAL_STATE,
@@ -350,7 +338,7 @@ class LayoutCachingTest {
 
   @Test
   fun `unchanged node should not get rebinding when the size of root node changes`() {
-    val c = legacyLithoTestRule.context
+    val c = lithoTestRule.context
     val lifecycleTracker = LifecycleTracker()
     val component =
         Column.create(c)
@@ -361,12 +349,8 @@ class LayoutCachingTest {
                     .maxHeightPx(200))
             .build()
 
-    legacyLithoTestRule
-        .setRoot(component)
-        .setSizeSpecs(exactly(300), exactly(300))
-        .attachToWindow()
-        .measure()
-        .layout()
+    val testLithoView =
+        lithoTestRule.render(widthSpec = exactly(300), heightSpec = exactly(300)) { component }
     Assertions.assertThat(lifecycleTracker.steps)
         .containsExactly(
             LifecycleStep.ON_CREATE_INITIAL_STATE,
@@ -381,13 +365,13 @@ class LayoutCachingTest {
             LifecycleStep.ON_BIND)
 
     lifecycleTracker.reset()
-    legacyLithoTestRule.setSizeSpecs(exactly(200), exactly(200)).measure().layout()
+    testLithoView.setSizeSpecs(exactly(200), exactly(200)).measure().layout()
     Assertions.assertThat(lifecycleTracker.steps).isEmpty()
   }
 
   @Test
   fun `verify the behavior of nested container with flex settings`() {
-    val c = legacyLithoTestRule.context
+    val c = lithoTestRule.context
     val lifecycleTracker1 = LifecycleTracker()
     val lifecycleTracker2 = LifecycleTracker()
     val lifecycleTracker3 = LifecycleTracker()
@@ -450,14 +434,8 @@ class LayoutCachingTest {
             .child(Row.create(c).viewTag("Row2").child(child3).child(child4))
             .build()
 
-    legacyLithoTestRule
-        .setSizeSpecs(
-            SizeSpec.makeSizeSpec(SizeSpec.UNSPECIFIED, 0),
-            SizeSpec.makeSizeSpec(SizeSpec.UNSPECIFIED, 0))
-        .setRoot(component)
-        .attachToWindow()
-        .measure()
-        .layout()
+    val testLithoView =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) { component }
 
     Assertions.assertThat(lifecycleTracker1.steps)
         .contains(
@@ -484,14 +462,14 @@ class LayoutCachingTest {
             LifecycleStep.ON_MOUNT,
             LifecycleStep.ON_BIND)
 
-    val lithoView = legacyLithoTestRule.lithoView
-    val component_child1 = legacyLithoTestRule.findViewWithTag("child1")
-    val component_child2 = legacyLithoTestRule.findViewWithTag("child2")
-    val component_row1 = legacyLithoTestRule.findViewWithTag("Row1")
-    val component_child3 = legacyLithoTestRule.findViewWithTag("child3")
-    val component_child4 = legacyLithoTestRule.findViewWithTag("child4")
-    val component_row2 = legacyLithoTestRule.findViewWithTag("Row2")
-    val component_updater = legacyLithoTestRule.findViewWithTag("StateUpdater")
+    val lithoView = testLithoView.lithoView
+    val component_child1 = testLithoView.findViewWithTag("child1")
+    val component_child2 = testLithoView.findViewWithTag("child2")
+    val component_row1 = testLithoView.findViewWithTag("Row1")
+    val component_child3 = testLithoView.findViewWithTag("child3")
+    val component_child4 = testLithoView.findViewWithTag("child4")
+    val component_row2 = testLithoView.findViewWithTag("Row2")
+    val component_updater = testLithoView.findViewWithTag("StateUpdater")
 
     Assertions.assertThat(component_child1.width)
         .describedAs("Child1 should be measured with specified width")
@@ -559,7 +537,7 @@ class LayoutCachingTest {
     lifecycleTracker2.reset()
     lifecycleTracker3.reset()
     lifecycleTracker4.reset()
-    legacyLithoTestRule.setSizePx(200, 200).measure().layout()
+    testLithoView.setSizePx(200, 200).measure().layout()
     Assertions.assertThat(component_child1.width)
         .describedAs("Child1 should take half of the width")
         .isEqualTo(100)
@@ -617,7 +595,7 @@ class LayoutCachingTest {
     lifecycleTracker2.reset()
     lifecycleTracker3.reset()
     lifecycleTracker4.reset()
-    legacyLithoTestRule.setSizePx(40, 200).measure().layout()
+    testLithoView.setSizePx(40, 200).measure().layout()
     Assertions.assertThat(component_child1.width)
         .describedAs("Shrink width due to the size constraints")
         .isEqualTo(20)
@@ -673,7 +651,7 @@ class LayoutCachingTest {
 
   @Test
   fun `verify the behavior of onBoundsDefined with padding and border`() {
-    val c = legacyLithoTestRule.context
+    val c = lithoTestRule.context
     val lifecycleTracker = LifecycleTracker()
     val caller = SimpleStateUpdateEmulatorSpec.Caller()
     val component =
@@ -689,7 +667,7 @@ class LayoutCachingTest {
             .build()
 
     // initial mount
-    legacyLithoTestRule.setRoot(component).attachToWindow().measure().layout()
+    val testLithoView = lithoTestRule.render { component }
     Assertions.assertThat(lifecycleTracker.steps)
         .contains(LifecycleStep.ON_MEASURE, LifecycleStep.ON_BOUNDS_DEFINED)
     Assertions.assertThat(lifecycleTracker.width).isEqualTo(972)
@@ -698,7 +676,7 @@ class LayoutCachingTest {
     // set root with the same component to verify that:
     // We're reusing the correct size that saved from diff node
     lifecycleTracker.reset()
-    legacyLithoTestRule
+    testLithoView
         .setRootAndSizeSpecSync(
             Column.create(c)
                 .child(SimpleStateUpdateEmulator.create(c).caller(caller).build())
@@ -736,7 +714,7 @@ class LayoutCachingTest {
     // 2. we should subtract padding and border from measured size when `onMeasure` not being called
     // 3. we're creating new render units
     lifecycleTracker.reset()
-    legacyLithoTestRule
+    testLithoView
         .setRoot(
             Column.create(c)
                 .child(SimpleStateUpdateEmulator.create(c).caller(caller).build())
@@ -777,7 +755,7 @@ class LayoutCachingTest {
    */
   @Test
   fun `RecyclerCollectionComponent with wrapContent should be re-measured with the latest size specs when it changes`() {
-    val context = legacyLithoTestRule.context
+    val context = lithoTestRule.context
     val lifecycleTracker1 = LifecycleTracker()
     val lifecycleTracker2 = LifecycleTracker()
     val lifecycleTracker3 = LifecycleTracker()
@@ -787,12 +765,8 @@ class LayoutCachingTest {
             context, lifecycleTracker1, lifecycleTracker2, lifecycleTracker3)
 
     // Set LithoView with height so that it can fully show all the items
-    legacyLithoTestRule
-        .setRoot(component)
-        .attachToWindow()
-        .setSizeSpecs(exactly(100), unspecified())
-        .measure()
-        .layout()
+    val testLithoView =
+        lithoTestRule.render(widthSpec = exactly(100), heightSpec = unspecified()) { component }
 
     Assertions.assertThat(
             getCountOfLifecycleSteps(lifecycleTracker1.steps, LifecycleStep.ON_MEASURE))
@@ -804,15 +778,14 @@ class LayoutCachingTest {
             getCountOfLifecycleSteps(lifecycleTracker3.steps, LifecycleStep.ON_MEASURE))
         .isEqualTo(5)
 
-    val height = legacyLithoTestRule.lithoView.height
+    val height = testLithoView.lithoView.height
 
     lifecycleTracker1.reset()
     lifecycleTracker2.reset()
     lifecycleTracker3.reset()
 
     val measuredSize = Size()
-    legacyLithoTestRule.lithoView.componentTree?.setSizeSpec(
-        exactly(200), unspecified(), measuredSize)
+    testLithoView.lithoView.componentTree?.setSizeSpec(exactly(200), unspecified(), measuredSize)
     Assertions.assertThat(measuredSize.height).isEqualTo(height)
     Assertions.assertThat(
             getCountOfLifecycleSteps(lifecycleTracker1.steps, LifecycleStep.ON_MEASURE))
