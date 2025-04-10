@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget;
+package com.facebook.litho.widget
 
-import com.facebook.litho.annotations.Event;
+import com.facebook.litho.annotations.Event
 
 /**
- * An event that a {@link RecyclerBinder} can trigger to notify the {@link Recycler} that it should
- * re-measure.
+ * An event that a [RecyclerBinder] can trigger to notify the [Recycler] that it should re-measure.
  */
-@Event
-public class ReMeasureEvent {}
+@Event class ReMeasureEvent
