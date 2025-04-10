@@ -25,7 +25,7 @@ import com.facebook.litho.it.R.attr.testAttrLargeText
 import com.facebook.litho.it.R.style.PaddingStyle
 import com.facebook.litho.it.R.style.TestTheme
 import com.facebook.litho.it.R.style.TextSizeStyle
-import com.facebook.litho.testing.LegacyLithoTestRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.Whitebox
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.Text
@@ -45,14 +45,14 @@ class ComponentStyleTest {
   private var largeDimen = 0
   private lateinit var context: ComponentContext
 
-  @JvmField @Rule var legacyLithoTestRule: LegacyLithoTestRule = LegacyLithoTestRule()
+  @JvmField @Rule var lithoTestRule: LithoTestRule = LithoTestRule()
 
   @Before
   fun setup() {
     context =
         ComponentContext(
             ContextThemeWrapper(ApplicationProvider.getApplicationContext(), TestTheme))
-    legacyLithoTestRule.useContext(context)
+    lithoTestRule.useContext(context)
     dimen = context.resources.getDimensionPixelSize(R.dimen.test_dimen)
     largeDimen = context.resources.getDimensionPixelSize(R.dimen.test_large_dimen)
   }
@@ -74,8 +74,11 @@ class ComponentStyleTest {
   fun testStyleLayout() {
     val component = Text.create(context, 0, PaddingStyle).text("text").build()
     val result =
-        LegacyLithoTestRule.getRootLayout(
-            legacyLithoTestRule, component, SizeSpec.UNSPECIFIED, SizeSpec.UNSPECIFIED)
+        lithoTestRule
+            .render(widthSpec = SizeSpec.UNSPECIFIED, heightSpec = SizeSpec.UNSPECIFIED) {
+              component
+            }
+            .currentRootNode
     assertThat(result?.getYogaNode()?.getPadding(YogaEdge.LEFT)).isEqualTo(dimen)
   }
 
@@ -87,8 +90,11 @@ class ComponentStyleTest {
             .paddingPx(YogaEdge.ALL, dimen * 2)
             .build()
     val result =
-        LegacyLithoTestRule.getRootLayout(
-            legacyLithoTestRule, component, SizeSpec.UNSPECIFIED, SizeSpec.UNSPECIFIED)
+        lithoTestRule
+            .render(widthSpec = SizeSpec.UNSPECIFIED, heightSpec = SizeSpec.UNSPECIFIED) {
+              component
+            }
+            .currentRootNode
     assertThat(result?.getYogaNode()?.getPadding(YogaEdge.LEFT)).isEqualTo(2 * dimen)
   }
 
@@ -109,8 +115,11 @@ class ComponentStyleTest {
   fun testAttributeStyleLayout() {
     val component = Text.create(context, testAttrLargePadding, 0).text("text").build()
     val result =
-        LegacyLithoTestRule.getRootLayout(
-            legacyLithoTestRule, component, SizeSpec.UNSPECIFIED, SizeSpec.UNSPECIFIED)
+        lithoTestRule
+            .render(widthSpec = SizeSpec.UNSPECIFIED, heightSpec = SizeSpec.UNSPECIFIED) {
+              component
+            }
+            .currentRootNode
     assertThat(result?.getYogaNode()?.getPadding(YogaEdge.LEFT)).isEqualTo(largeDimen)
   }
 
@@ -122,8 +131,11 @@ class ComponentStyleTest {
             .paddingPx(YogaEdge.ALL, dimen * 2)
             .build()
     val result =
-        LegacyLithoTestRule.getRootLayout(
-            legacyLithoTestRule, component, SizeSpec.UNSPECIFIED, SizeSpec.UNSPECIFIED)
+        lithoTestRule
+            .render(widthSpec = SizeSpec.UNSPECIFIED, heightSpec = SizeSpec.UNSPECIFIED) {
+              component
+            }
+            .currentRootNode
     assertThat(result?.getYogaNode()?.getPadding(YogaEdge.LEFT)).isEqualTo(2 * dimen)
   }
 
@@ -137,8 +149,11 @@ class ComponentStyleTest {
   fun testStyleResOverridenByAttrResForLayout() {
     val component = Text.create(context, testAttrLargePadding, PaddingStyle).text("text").build()
     val result =
-        LegacyLithoTestRule.getRootLayout(
-            legacyLithoTestRule, component, SizeSpec.UNSPECIFIED, SizeSpec.UNSPECIFIED)
+        lithoTestRule
+            .render(widthSpec = SizeSpec.UNSPECIFIED, heightSpec = SizeSpec.UNSPECIFIED) {
+              component
+            }
+            .currentRootNode
     assertThat(result?.getYogaNode()?.getPadding(YogaEdge.LEFT)).isEqualTo(largeDimen)
   }
 }
