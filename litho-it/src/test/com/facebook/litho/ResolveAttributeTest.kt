@@ -28,9 +28,9 @@ import com.facebook.litho.it.R.dimen.test_dimen
 import com.facebook.litho.it.R.dimen.test_dimen_float
 import com.facebook.litho.it.R.drawable.test_bg
 import com.facebook.litho.it.R.style.TestTheme
-import com.facebook.litho.testing.LegacyLithoTestRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
-import com.facebook.rendercore.utils.MeasureSpecUtils
+import com.facebook.litho.testing.unspecified
 import com.facebook.yoga.YogaEdge
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -42,100 +42,77 @@ import org.robolectric.Shadows
 @RunWith(LithoTestRunner::class)
 class ResolveAttributeTest {
 
-  @JvmField @Rule val legacyLithoTestRule: LegacyLithoTestRule = LegacyLithoTestRule()
+  @JvmField @Rule val lithoTestRule: LithoTestRule = LithoTestRule()
 
   @Before
   fun setup() {
-    legacyLithoTestRule.useContext(
+    lithoTestRule.useContext(
         ComponentContext(
             ContextThemeWrapper(ApplicationProvider.getApplicationContext(), TestTheme)))
   }
 
   @Test
   fun testResolveDrawableAttribute() {
-    val c = legacyLithoTestRule.context
+    val c = lithoTestRule.context
     val column = Column.create(c).backgroundAttr(testAttrDrawable, 0).build()
-    legacyLithoTestRule
-        .setRootAndSizeSpecSync(
-            column, MeasureSpecUtils.unspecified(), MeasureSpecUtils.unspecified())
-        .measure()
-        .layout()
+    val testLithoView =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) { column }
     val d = c.resources.getDrawable(test_bg)
-    val drawable = legacyLithoTestRule.currentRootNode?.node?.background
+    val drawable = testLithoView.currentRootNode?.node?.background
     assertThat(Shadows.shadowOf(drawable).createdFromResId)
         .isEqualTo(Shadows.shadowOf(d).createdFromResId)
   }
 
   @Test
   fun testResolveDimenAttribute() {
-    val c = legacyLithoTestRule.context
+    val c = lithoTestRule.context
     val column = Column.create(c).widthAttr(testAttrDimen, default_dimen).build()
-    legacyLithoTestRule
-        .setRootAndSizeSpecSync(
-            column, MeasureSpecUtils.unspecified(), MeasureSpecUtils.unspecified())
-        .measure()
-        .layout()
-    val node = legacyLithoTestRule.currentRootNode
+    val testLithoView =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) { column }
     val dimen = c.resources.getDimensionPixelSize(R.dimen.test_dimen)
-    assertThat(node?.width).isEqualTo(dimen)
+    assertThat(testLithoView.currentRootNode?.width).isEqualTo(dimen)
   }
 
   @Test
   fun testDefaultDrawableAttribute() {
-    val c = legacyLithoTestRule.context
+    val c = lithoTestRule.context
     val column = Column.create(c).backgroundAttr(undefinedAttrDrawable, test_bg).build()
-    legacyLithoTestRule
-        .setRootAndSizeSpecSync(
-            column, MeasureSpecUtils.unspecified(), MeasureSpecUtils.unspecified())
-        .measure()
-        .layout()
-    val result = legacyLithoTestRule.currentRootNode
+    val testLithoView =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) { column }
     val d = c.resources.getDrawable(test_bg)
-    val drawable = result?.node?.background
+    val drawable = testLithoView.currentRootNode?.node?.background
     assertThat(Shadows.shadowOf(drawable).createdFromResId)
         .isEqualTo(Shadows.shadowOf(d).createdFromResId)
   }
 
   @Test
   fun testDefaultDimenAttribute() {
-    val c = legacyLithoTestRule.context
+    val c = lithoTestRule.context
     val column = Column.create(c).widthAttr(undefinedAttrDimen, test_dimen).build()
-    legacyLithoTestRule
-        .setRootAndSizeSpecSync(
-            column, MeasureSpecUtils.unspecified(), MeasureSpecUtils.unspecified())
-        .measure()
-        .layout()
-    val node = legacyLithoTestRule.currentRootNode
+    val testLithoView =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) { column }
     val dimen = c.resources.getDimensionPixelSize(R.dimen.test_dimen)
-    assertThat(node?.width).isEqualTo(dimen)
+    assertThat(testLithoView.currentRootNode?.width).isEqualTo(dimen)
   }
 
   @Test
   fun testFloatDimenWidthAttribute() {
-    val c = legacyLithoTestRule.context
+    val c = lithoTestRule.context
     val column = Column.create(c).widthAttr(undefinedAttrDimen, test_dimen_float).build()
-    legacyLithoTestRule
-        .setRootAndSizeSpecSync(
-            column, MeasureSpecUtils.unspecified(), MeasureSpecUtils.unspecified())
-        .measure()
-        .layout()
-    val node = legacyLithoTestRule.currentRootNode
+    val testLithoView =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) { column }
     val dimen = c.resources.getDimensionPixelSize(test_dimen_float)
-    assertThat(node?.width).isEqualTo(dimen)
+    assertThat(testLithoView.currentRootNode?.width).isEqualTo(dimen)
   }
 
   @Test
   fun testFloatDimenPaddingAttribute() {
-    val c = legacyLithoTestRule.context
+    val c = lithoTestRule.context
     val column =
         Column.create(c).paddingAttr(YogaEdge.LEFT, undefinedAttrDimen, test_dimen_float).build()
-    legacyLithoTestRule
-        .setRootAndSizeSpecSync(
-            column, MeasureSpecUtils.unspecified(), MeasureSpecUtils.unspecified())
-        .measure()
-        .layout()
-    val node = legacyLithoTestRule.currentRootNode
+    val testLithoView =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) { column }
     val dimen = c.resources.getDimensionPixelSize(test_dimen_float)
-    assertThat(node?.paddingLeft).isEqualTo(dimen)
+    assertThat(testLithoView.currentRootNode?.paddingLeft).isEqualTo(dimen)
   }
 }
