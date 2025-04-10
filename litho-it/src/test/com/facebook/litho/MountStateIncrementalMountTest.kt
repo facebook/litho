@@ -17,7 +17,6 @@
 package com.facebook.litho
 
 import android.content.Context
-import android.content.Context.ACCESSIBILITY_SERVICE
 import android.graphics.Rect
 import android.os.Looper
 import android.view.ViewGroup
@@ -32,7 +31,7 @@ import com.facebook.litho.sections.common.SingleComponentSection
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration
 import com.facebook.litho.sections.widget.RecyclerBinderConfiguration
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent
-import com.facebook.litho.testing.LegacyLithoTestRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.TestViewComponent
 import com.facebook.litho.testing.ViewGroupWithLithoViewChildren
 import com.facebook.litho.testing.Whitebox
@@ -53,8 +52,8 @@ import com.facebook.rendercore.utils.MeasureSpecUtils.exactly
 import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaPositionType
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Java6Assertions.fail
 import org.junit.After
-import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Rule
@@ -83,14 +82,13 @@ class MountStateIncrementalMountTest {
 
   @JvmField
   @Rule
-  val legacyLithoTestRule =
-      LegacyLithoTestRule(
+  val lithoTestRule =
+      LithoTestRule(
           ComponentsConfiguration.defaultInstance.copy(shouldAddHostViewForRootComponent = true))
 
   @Before
   fun setup() {
-    context = legacyLithoTestRule.context
-    legacyLithoTestRule.useLithoView(LithoView(context))
+    context = lithoTestRule.context
     layoutThreadShadowLooper =
         Shadows.shadowOf(
             Whitebox.invokeMethod<Any>(ComponentTree::class.java, "getDefaultLayoutThreadLooper")
@@ -173,14 +171,18 @@ class MountStateIncrementalMountTest {
                     .build())
             .wrapInView()
             .build()
-    legacyLithoTestRule.attachToWindow().setSizeSpecs(exactly(100), exactly(100)).measure()
+    val testLithoView =
+        lithoTestRule
+            .createTestLithoView(widthSpec = exactly(100), heightSpec = exactly(100))
+            .attachToWindow()
+            .measure()
     val info = ComponentRenderInfo.create().component(root).build()
     val holder =
         ComponentTreeHolder.create(ComponentsConfiguration.defaultInstance).renderInfo(info).build()
     holder.computeLayoutSync(context, exactly(100), exactly(100), Size())
-    val lithoView = legacyLithoTestRule.lithoView
-    lithoView.componentTree = holder.componentTree
-    lithoView.mountComponent(Rect(0, 0, 100, 30), true)
+    testLithoView.lithoView.componentTree = holder.componentTree
+    testLithoView.lithoView.mountComponent(Rect(0, 0, 100, 30), true)
+
     assertThat(tracker1.isMounted)
         .describedAs("Visible component WITHOUT excludeFromIM should get mounted")
         .isTrue
@@ -197,7 +199,7 @@ class MountStateIncrementalMountTest {
 
     // move the view out of visible area and make sure the component that marked as excludeFromIM
     // will not get unmounted
-    lithoView.notifyVisibleBoundsChanged(Rect(0, -50, 100, -10), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, -50, 100, -10), true)
     assertThat(tracker1.isMounted)
         .describedAs("Invisible component WITHOUT excludeFromIM should get unmounted")
         .isFalse
@@ -210,7 +212,7 @@ class MountStateIncrementalMountTest {
     // verify that the visibility callback of the invisible component should not be called
     verify(eventHandler1, times(1)).call(anyOrNull<VisibleEvent>())
     verify(eventHandler2, times(0)).call(anyOrNull<VisibleEvent>())
-    lithoView.notifyVisibleBoundsChanged(Rect(0, 15, 100, 45), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 15, 100, 45), true)
     // verify that the visibility callback of the visible component should be called
     verify(eventHandler1, times(2)).call(anyOrNull<VisibleEvent>())
     verify(eventHandler2, times(1)).call(anyOrNull<VisibleEvent>())
@@ -243,15 +245,9 @@ class MountStateIncrementalMountTest {
                     .child(doesNotExcludeIMComponent)
                     .child(excludeIMComponent))
             .build()
-    val lithoView = LithoView(context)
-    legacyLithoTestRule
-        .useLithoView(lithoView)
-        .setRoot(root)
-        .attachToWindow()
-        .setSizeSpecs(exactly(100), exactly(500))
-        .measure()
-        .layout()
-    lithoView.mountComponent(Rect(0, 400, 100, 500), false)
+    val testLithoView =
+        lithoTestRule.render(widthSpec = exactly(100), heightSpec = exactly(500)) { root }
+    testLithoView.lithoView.mountComponent(Rect(0, 400, 100, 500), false)
     assertThat(notSkipIMTracker.isMounted)
         .describedAs(
             "Component without excludeFromIncrementalMount doesn't get mounted when out of visible rect")
@@ -260,7 +256,7 @@ class MountStateIncrementalMountTest {
         .describedAs(
             "Component with excludeFromIncrementalMount do get mounted when out of visible rect")
         .isTrue
-    lithoView.mountComponent(Rect(0, 0, 100, 300), false)
+    testLithoView.lithoView.mountComponent(Rect(0, 0, 100, 300), false)
     assertThat(notSkipIMTracker.isMounted)
         .describedAs(
             "Component without excludeFromIncrementalMount get mounted when in visible rect")
@@ -268,7 +264,7 @@ class MountStateIncrementalMountTest {
     assertThat(skipIMTracker.isMounted)
         .describedAs("Component with excludeFromIncrementalMount get mounted when in visible rect")
         .isTrue
-    lithoView.mountComponent(Rect(0, 400, 50, 450), false)
+    testLithoView.lithoView.mountComponent(Rect(0, 400, 50, 450), false)
     assertThat(notSkipIMTracker.isMounted)
         .describedAs(
             "Component without excludeFromIncrementalMount get unmounted when out of visible rect")
@@ -277,7 +273,7 @@ class MountStateIncrementalMountTest {
         .describedAs(
             "Component with excludeFromIncrementalMount doesn't get unmounted when out of visible rect")
         .isTrue
-    lithoView.mountComponent(Rect(0, 400, 50, 450), false)
+    testLithoView.lithoView.mountComponent(Rect(0, 400, 50, 450), false)
     assertThat(skipIMTracker.isMounted)
         .describedAs(
             "Component with excludeFromIncrementalMount doesn't get unmounted while doing IncrementalMount")
@@ -294,13 +290,10 @@ class MountStateIncrementalMountTest {
             .child(Wrapper.create(context).delegate(child1).widthPx(10).heightPx(10))
             .child(Wrapper.create(context).delegate(child2).widthPx(10).heightPx(10))
             .build()
-    legacyLithoTestRule
-        .setRoot(root)
-        .attachToWindow()
-        .setSizeSpecs(exactly(1_000), exactly(1_000))
-        .measure()
-        .layout()
-    val lithoView = legacyLithoTestRule.lithoView
+    val lithoView =
+        lithoTestRule
+            .render(widthSpec = exactly(1_000), heightSpec = exactly(1_000)) { root }
+            .lithoView
     lithoView.mountComponent(Rect(0, -10, 10, -5), true)
     assertThat(child1.isMounted).isFalse
     assertThat(child2.isMounted).isFalse
@@ -330,13 +323,10 @@ class MountStateIncrementalMountTest {
             .child(Wrapper.create(context).delegate(child1).widthPx(10).heightPx(10))
             .child(Wrapper.create(context).delegate(child2).widthPx(10).heightPx(10))
             .build()
-    legacyLithoTestRule
-        .setRoot(root)
-        .attachToWindow()
-        .setSizeSpecs(exactly(1_000), exactly(1_000))
-        .measure()
-        .layout()
-    val lithoView = legacyLithoTestRule.lithoView
+    val lithoView =
+        lithoTestRule
+            .render(widthSpec = exactly(1_000), heightSpec = exactly(1_000)) { root }
+            .lithoView
     lithoView.mountComponent(Rect(0, 20, 10, 30), true)
     assertThat(child1.isMounted).isFalse
     assertThat(child2.isMounted).isFalse
@@ -365,13 +355,10 @@ class MountStateIncrementalMountTest {
             .child(Wrapper.create(context).delegate(child2).widthPx(10).heightPx(10))
             .child(Wrapper.create(context).delegate(child3).widthPx(10).heightPx(10))
             .build()
-    legacyLithoTestRule
-        .setRoot(root)
-        .attachToWindow()
-        .setSizeSpecs(exactly(100), exactly(100))
-        .measure()
-        .layout()
-    val lithoView = legacyLithoTestRule.lithoView
+    val lithoView =
+        lithoTestRule
+            .render(widthSpec = exactly(1_000), heightSpec = exactly(1_000)) { root }
+            .lithoView
     lithoView.mountComponent(Rect(0, 10, 10, 30), true)
     assertThat(child1.isMounted).isFalse
     assertThat(child2.isMounted).isTrue
@@ -389,13 +376,8 @@ class MountStateIncrementalMountTest {
             .child(Wrapper.create(context).delegate(child2).widthPx(10).heightPx(10))
             .child(Wrapper.create(context).delegate(child3).widthPx(10).heightPx(10))
             .build()
-    legacyLithoTestRule
-        .setRoot(root)
-        .attachToWindow()
-        .setSizeSpecs(exactly(100), exactly(100))
-        .measure()
-        .layout()
-    val lithoView = legacyLithoTestRule.lithoView
+    val lithoView =
+        lithoTestRule.render(widthSpec = exactly(100), heightSpec = exactly(100)) { root }.lithoView
     lithoView.mountComponent(Rect(0, 0, 10, 20), true)
     assertThat(child1.isMounted).isTrue
     assertThat(child2.isMounted).isTrue
@@ -413,13 +395,8 @@ class MountStateIncrementalMountTest {
             .child(Wrapper.create(context).delegate(child2).widthPx(10).heightPx(10))
             .child(Wrapper.create(context).delegate(child3).widthPx(10).heightPx(10))
             .build()
-    legacyLithoTestRule
-        .setRoot(root)
-        .attachToWindow()
-        .setSizeSpecs(exactly(100), exactly(100))
-        .measure()
-        .layout()
-    val lithoView = legacyLithoTestRule.lithoView
+    val lithoView =
+        lithoTestRule.render(widthSpec = exactly(100), heightSpec = exactly(100)) { root }.lithoView
     lithoView.mountComponent(Rect(0, 10, 10, 20), true)
     assertThat(child1.isMounted).isFalse
     assertThat(child2.isMounted).isTrue
@@ -437,13 +414,8 @@ class MountStateIncrementalMountTest {
             .child(Wrapper.create(context).delegate(child2).widthPx(10).heightPx(10))
             .child(Wrapper.create(context).delegate(child3).widthPx(10).heightPx(10))
             .build()
-    legacyLithoTestRule
-        .setRoot(root)
-        .attachToWindow()
-        .setSizeSpecs(exactly(100), exactly(100))
-        .measure()
-        .layout()
-    val lithoView = legacyLithoTestRule.lithoView
+    val lithoView =
+        lithoTestRule.render(widthSpec = exactly(100), heightSpec = exactly(100)) { root }.lithoView
     lithoView.mountComponent(Rect(0, 0, 0, 0), true)
     assertThat(child1.isMounted).isFalse
     assertThat(child2.isMounted).isFalse
@@ -461,13 +433,8 @@ class MountStateIncrementalMountTest {
             .child(Wrapper.create(context).delegate(child2).widthPx(10).heightPx(0))
             .child(Wrapper.create(context).delegate(child3).widthPx(10).heightPx(10))
             .build()
-    legacyLithoTestRule
-        .setRoot(root)
-        .attachToWindow()
-        .setSizeSpecs(exactly(100), exactly(100))
-        .measure()
-        .layout()
-    val lithoView = legacyLithoTestRule.lithoView
+    val lithoView =
+        lithoTestRule.render(widthSpec = exactly(100), heightSpec = exactly(100)) { root }.lithoView
     lithoView.mountComponent(Rect(0, 0, 10, 30), true)
     assertThat(child1.isMounted).isTrue
     assertThat(child2.isMounted).isTrue
@@ -481,13 +448,8 @@ class MountStateIncrementalMountTest {
         Column.create(context)
             .child(Wrapper.create(context).delegate(child1).widthPx(10).heightPx(0))
             .build()
-    legacyLithoTestRule
-        .setRoot(root)
-        .attachToWindow()
-        .setSizeSpecs(exactly(100), exactly(100))
-        .measure()
-        .layout()
-    val lithoView = legacyLithoTestRule.lithoView
+    val lithoView =
+        lithoTestRule.render(widthSpec = exactly(100), heightSpec = exactly(100)) { root }.lithoView
     lithoView.mountComponent(Rect(0, 0, 10, 0), true)
     assertThat(child1.isMounted).isFalse
   }
@@ -504,13 +466,10 @@ class MountStateIncrementalMountTest {
             .child(Wrapper.create(context).delegate(child1).widthPx(10).heightPx(10))
             .child(Wrapper.create(context).delegate(child2).widthPx(10).heightPx(10))
             .build()
-    legacyLithoTestRule
-        .setRoot(root)
-        .attachToWindow()
-        .setSizeSpecs(exactly(1_000), exactly(1_000))
-        .measure()
-        .layout()
-    val lithoView = legacyLithoTestRule.lithoView
+    val lithoView =
+        lithoTestRule
+            .render(widthSpec = exactly(1_000), heightSpec = exactly(1_000)) { root }
+            .lithoView
     lithoView.mountComponent(Rect(-10, 0, -5, 10), true)
     assertThat(child1.isMounted).isFalse
     assertThat(child2.isMounted).isFalse
@@ -544,13 +503,10 @@ class MountStateIncrementalMountTest {
             .child(Wrapper.create(context).delegate(child1).widthPx(10).heightPx(10))
             .child(Wrapper.create(context).delegate(child2).widthPx(10).heightPx(10))
             .build()
-    legacyLithoTestRule
-        .setRoot(root)
-        .attachToWindow()
-        .setSizeSpecs(exactly(1_000), exactly(1_000))
-        .measure()
-        .layout()
-    val lithoView = legacyLithoTestRule.lithoView
+    val lithoView =
+        lithoTestRule
+            .render(widthSpec = exactly(1_000), heightSpec = exactly(1_000)) { root }
+            .lithoView
     lithoView.mountComponent(Rect(0, -10, 10, -5), true)
     assertThat(lifecycleTracker1.isMounted).isFalse
     assertThat(lifecycleTracker2.isMounted).isFalse
@@ -582,13 +538,10 @@ class MountStateIncrementalMountTest {
             .child(Wrapper.create(context).delegate(child).widthPx(10).heightPx(10))
             .child(SimpleMountSpecTester.create(context))
             .build()
-    legacyLithoTestRule
-        .setRoot(root)
-        .attachToWindow()
-        .setSizeSpecs(exactly(1_000), exactly(1_000))
-        .measure()
-        .layout()
-    val lithoView = legacyLithoTestRule.lithoView
+    val lithoView =
+        lithoTestRule
+            .render(widthSpec = exactly(1_000), heightSpec = exactly(1_000)) { root }
+            .lithoView
     lithoView.mountComponent(Rect(0, 0, 50, 20), true)
     assertThat(child.isMounted).isFalse
     lithoView.mountComponent(Rect(0, 0, 50, 40), true)
@@ -607,13 +560,12 @@ class MountStateIncrementalMountTest {
     val parent = FrameLayout(context.androidContext)
     parent.measure(exactly(10), exactly(1_000))
     parent.layout(0, 0, 10, 1_000)
-    legacyLithoTestRule
-        .setRoot(Row.create(context).build())
-        .attachToWindow()
-        .setSizeSpecs(exactly(10), exactly(100))
-        .measure()
-        .layout()
-    val lithoView = legacyLithoTestRule.lithoView
+    val lithoView =
+        lithoTestRule
+            .render(widthSpec = exactly(10), heightSpec = exactly(100)) {
+              Row.create(context).build()
+            }
+            .lithoView
     parent.addView(lithoView)
     lithoView.translationY = 105f
     val eventHandler: EventHandler<ClickEvent> = mock()
@@ -644,13 +596,12 @@ class MountStateIncrementalMountTest {
     val parent = FrameLayout(context.androidContext)
     parent.measure(exactly(10), exactly(1_000))
     parent.layout(0, 0, 10, 1_000)
-    legacyLithoTestRule
-        .setRoot(Row.create(context).build())
-        .attachToWindow()
-        .setSizeSpecs(exactly(10), exactly(100))
-        .measure()
-        .layout()
-    val lithoView = legacyLithoTestRule.lithoView
+    val lithoView =
+        lithoTestRule
+            .render(widthSpec = exactly(10), heightSpec = exactly(100)) {
+              Row.create(context).build()
+            }
+            .lithoView
     parent.addView(lithoView)
     lithoView.translationY = 105f
     val eventHandler: EventHandler<ClickEvent> = mock()
@@ -692,13 +643,12 @@ class MountStateIncrementalMountTest {
     val parent = FrameLayout(context.androidContext)
     parent.measure(exactly(10), exactly(1_000))
     parent.layout(0, 0, 10, 1_000)
-    legacyLithoTestRule
-        .setRoot(Row.create(context).build())
-        .attachToWindow()
-        .setSizeSpecs(exactly(10), exactly(100))
-        .measure()
-        .layout()
-    val lithoView = legacyLithoTestRule.lithoView
+    val lithoView =
+        lithoTestRule
+            .render(widthSpec = exactly(10), heightSpec = exactly(100)) {
+              Row.create(context).build()
+            }
+            .lithoView
     parent.addView(lithoView)
     lithoView.translationY = 95f
     val eventHandler1: EventHandler<ClickEvent> = mock()
@@ -779,13 +729,10 @@ class MountStateIncrementalMountTest {
                     .heightPx(10))
             .child(SimpleMountSpecTester.create(context))
             .build()
-    legacyLithoTestRule
-        .setRoot(root)
-        .attachToWindow()
-        .setSizeSpecs(exactly(1_000), exactly(1_000))
-        .measure()
-        .layout()
-    val lithoView = legacyLithoTestRule.lithoView
+    val lithoView =
+        lithoTestRule
+            .render(widthSpec = exactly(1_000), heightSpec = exactly(1_000)) { root }
+            .lithoView
     lithoView.mountComponent(Rect(0, 0, 5, 5), true)
     assertThat(child1.isMounted).isTrue
     assertThat(child2.isMounted).isFalse
@@ -811,13 +758,10 @@ class MountStateIncrementalMountTest {
     val childView3 = getMockLithoViewWithBounds(Rect(30, 35, 50, 60))
     whenever(mountedView.getChildAt(2)).thenReturn(childView3)
     val root = TestViewComponent.create(context).testView(mountedView).build()
-    legacyLithoTestRule
-        .setRoot(root)
-        .attachToWindow()
-        .setSizeSpecs(exactly(1_000), exactly(1_000))
-        .measure()
-        .layout()
-    val lithoView = legacyLithoTestRule.lithoView
+    val lithoView =
+        lithoTestRule
+            .render(widthSpec = exactly(1_000), heightSpec = exactly(1_000)) { root }
+            .lithoView
     verify(childView1).notifyVisibleBoundsChanged()
     verify(childView2).notifyVisibleBoundsChanged()
     verify(childView3).notifyVisibleBoundsChanged()
@@ -850,20 +794,17 @@ class MountStateIncrementalMountTest {
     val childView3 = getMockLithoViewWithBounds(Rect(30, 35, 50, 60))
     whenever(mountedView.getChildAt(2)).thenReturn(childView3)
     val root = TestViewComponent.create(context).testView(mountedView).build()
-    legacyLithoTestRule
-        .setRoot(root)
-        .attachToWindow()
-        .setSizeSpecs(exactly(1_000), exactly(1_000))
-        .measure()
-        .layout()
-    val lithoView = legacyLithoTestRule.lithoView
+    val lithoView =
+        lithoTestRule
+            .render(widthSpec = exactly(1_000), heightSpec = exactly(1_000)) { root }
+            .lithoView
 
     // Can't verify directly as the object will have changed by the time we get the chance to
     // verify it.
     doAnswer { invocation ->
           val rect = invocation.arguments[0] as Rect
           if (rect != Rect(0, 0, 15, 20)) {
-            fail()
+            fail("invalid visible rect")
           }
           null
         }
@@ -872,7 +813,7 @@ class MountStateIncrementalMountTest {
     doAnswer { invocation ->
           val rect = invocation.arguments[0] as Rect
           if (rect != Rect(0, 0, 40, 50)) {
-            fail()
+            fail("invalid visible rect")
           }
           null
         }
@@ -881,7 +822,7 @@ class MountStateIncrementalMountTest {
     doAnswer { invocation ->
           val rect = invocation.arguments[0] as Rect
           if (rect != Rect(0, 0, 20, 25)) {
-            fail()
+            fail("invalid visible rect")
           }
           null
         }
@@ -910,13 +851,10 @@ class MountStateIncrementalMountTest {
         Column.create(context)
             .child(Wrapper.create(context).delegate(child1).widthPx(10).heightPx(10))
             .build()
-    legacyLithoTestRule
-        .setRoot(root)
-        .attachToWindow()
-        .setSizeSpecs(exactly(1_000), exactly(1_000))
-        .measure()
-        .layout()
-    val lithoView = legacyLithoTestRule.lithoView
+    val lithoView =
+        lithoTestRule
+            .render(widthSpec = exactly(1_000), heightSpec = exactly(1_000)) { root }
+            .lithoView
     lithoView.mountComponent(Rect(0, -10, 10, -5), true)
     assertThat(child1.isMounted).isFalse
     assertThat(child1.wasOnUnbindCalled()).isTrue
@@ -949,13 +887,10 @@ class MountStateIncrementalMountTest {
             .child(Wrapper.create(context).delegate(child1).widthPx(10).heightPx(10))
             .child(Wrapper.create(context).delegate(child2).widthPx(10).heightPx(10))
             .build()
-    legacyLithoTestRule
-        .setRoot(root)
-        .attachToWindow()
-        .setSizeSpecs(exactly(1_000), exactly(1_000))
-        .measure()
-        .layout()
-    val lithoView = legacyLithoTestRule.lithoView
+    val lithoView =
+        lithoTestRule
+            .render(widthSpec = exactly(1_000), heightSpec = exactly(1_000)) { root }
+            .lithoView
     lithoView.mountComponent(Rect(0, -10, 10, -5), true)
     assertThat(lifecycleTracker1.isMounted).isFalse
     assertThat(lifecycleTracker2.isMounted).isFalse
@@ -986,13 +921,10 @@ class MountStateIncrementalMountTest {
             .child(Wrapper.create(context).delegate(child1).widthPx(10).heightPx(10))
             .child(Wrapper.create(context).delegate(child2).widthPx(10).heightPx(10))
             .build()
-    legacyLithoTestRule
-        .setRoot(root)
-        .attachToWindow()
-        .setSizeSpecs(exactly(1_000), exactly(1_000))
-        .measure()
-        .layout()
-    val lithoView = legacyLithoTestRule.lithoView
+    val lithoView =
+        lithoTestRule
+            .render(widthSpec = exactly(1_000), heightSpec = exactly(1_000)) { root }
+            .lithoView
     assertThat(lithoView.mountStateNeedsRemount()).isFalse
     lithoView.unmountAllItems()
     assertThat(lithoView.mountStateNeedsRemount()).isTrue
@@ -1004,13 +936,10 @@ class MountStateIncrementalMountTest {
   fun testRootViewAttributes_incrementalMountAfterUnmount_setViewAttributes() {
     enableAccessibility()
     val root = Text.create(context).text("Test").contentDescription("testcd").build()
-    legacyLithoTestRule
-        .setRoot(root)
-        .attachToWindow()
-        .setSizeSpecs(exactly(1_000), exactly(1_000))
-        .measure()
-        .layout()
-    val lithoView = legacyLithoTestRule.lithoView
+    val lithoView =
+        lithoTestRule
+            .render(widthSpec = exactly(1_000), heightSpec = exactly(1_000)) { root }
+            .lithoView
     var innerView = lithoView.getChildAt(0)
     assertThat(innerView.contentDescription).isEqualTo("testcd")
     lithoView.unmountAllItems()
@@ -1032,13 +961,10 @@ class MountStateIncrementalMountTest {
     val viewGroup = ViewGroupWithLithoViewChildren(context.androidContext)
     viewGroup.addView(lithoView)
     val root = TestViewComponent.create(context, true, true, true).testView(viewGroup).build()
-    legacyLithoTestRule
-        .setRoot(root)
-        .attachToWindow()
-        .setSizeSpecs(exactly(1_000), exactly(1_000))
-        .measure()
-        .layout()
-    val lithoViewParent = legacyLithoTestRule.lithoView
+    val lithoViewParent =
+        lithoTestRule
+            .render(widthSpec = exactly(1_000), heightSpec = exactly(1_000)) { root }
+            .lithoView
     verify(lithoView).notifyVisibleBoundsChanged()
     reset(lithoView)
 
@@ -1065,25 +991,24 @@ class MountStateIncrementalMountTest {
     val info_child2 = LifecycleTracker()
     val stateUpdater = SimpleStateUpdateEmulatorSpec.Caller()
     val root =
-        Column.create(legacyLithoTestRule.context)
+        Column.create(lithoTestRule.context)
             .child(
-                MountSpecLifecycleTester.create(legacyLithoTestRule.context)
+                MountSpecLifecycleTester.create(lithoTestRule.context)
                     .intrinsicSize(Size(10, 10))
                     .lifecycleTracker(info_child1)
                     .key("some_key"))
             .child(
-                MountSpecLifecycleTester.create(legacyLithoTestRule.context)
+                MountSpecLifecycleTester.create(lithoTestRule.context)
                     .intrinsicSize(Size(10, 10))
                     .lifecycleTracker(info_child2)
                     .key("other_key"))
-            .child(
-                SimpleStateUpdateEmulator.create(legacyLithoTestRule.context).caller(stateUpdater))
+            .child(SimpleStateUpdateEmulator.create(lithoTestRule.context).caller(stateUpdater))
             .build()
-    legacyLithoTestRule.setRoot(root).setSizePx(10, 40).attachToWindow().measure().layout()
+    val testLithoView = lithoTestRule.render(widthPx = exactly(10), heightPx = exactly(40)) { root }
     val parent = FrameLayout(context.androidContext)
     parent.measure(exactly(100), exactly(100))
     parent.layout(0, 0, 10, 40)
-    parent.addView(legacyLithoTestRule.lithoView, 0, 40)
+    parent.addView(testLithoView.lithoView, 0, 40)
     val scrollView = ScrollView(context.androidContext)
     scrollView.measure(exactly(10), exactly(20))
     scrollView.layout(0, 0, 10, 20)
@@ -1094,7 +1019,7 @@ class MountStateIncrementalMountTest {
     info_child1.reset()
     info_child2.reset()
     scrollView.scrollBy(0, 12)
-    legacyLithoTestRule.dispatchGlobalLayout()
+    testLithoView.lithoView.notifyVisibleBoundsChanged()
     assertThat(info_child1.steps).describedAs("Mounted.").contains(LifecycleStep.ON_UNMOUNT)
   }
 
@@ -1104,31 +1029,31 @@ class MountStateIncrementalMountTest {
     val info_child2 = LifecycleTracker()
     val stateUpdater = SimpleStateUpdateEmulatorSpec.Caller()
     val root =
-        Column.create(legacyLithoTestRule.context)
+        Column.create(lithoTestRule.context)
             .child(
-                MountSpecLifecycleTester.create(legacyLithoTestRule.context)
+                MountSpecLifecycleTester.create(lithoTestRule.context)
                     .intrinsicSize(Size(10, 10))
                     .lifecycleTracker(info_child1)
                     .key("some_key"))
             .child(
-                MountSpecLifecycleTester.create(legacyLithoTestRule.context)
+                MountSpecLifecycleTester.create(lithoTestRule.context)
                     .intrinsicSize(Size(10, 10))
                     .lifecycleTracker(info_child2)
                     .key("other_key"))
-            .child(
-                SimpleStateUpdateEmulator.create(legacyLithoTestRule.context).caller(stateUpdater))
+            .child(SimpleStateUpdateEmulator.create(lithoTestRule.context).caller(stateUpdater))
             .build()
-    legacyLithoTestRule.setRoot(root).setSizePx(10, 20).attachToWindow().measure().layout()
+    val testLithoView =
+        lithoTestRule.render(widthPx = exactly(10), heightPx = exactly(20)) { root }.lithoView
     val parent = FrameLayout(context.androidContext)
     parent.measure(exactly(100), exactly(100))
     parent.layout(0, 0, 10, 20)
-    parent.addView(legacyLithoTestRule.lithoView, 0, 20)
+    parent.addView(testLithoView, 0, 20)
     assertThat(info_child1.steps).describedAs("Mounted.").contains(LifecycleStep.ON_MOUNT)
     assertThat(info_child2.steps).describedAs("Mounted.").contains(LifecycleStep.ON_MOUNT)
     stateUpdater.increment()
     info_child1.reset()
     info_child2.reset()
-    legacyLithoTestRule.lithoView.translationY = -12f
+    testLithoView.translationY = -12f
     assertThat(info_child1.steps).describedAs("Mounted.").contains(LifecycleStep.ON_UNMOUNT)
   }
 
@@ -1155,13 +1080,8 @@ class MountStateIncrementalMountTest {
                     .widthPx(10)
                     .heightPx(10))
             .build()
-    legacyLithoTestRule
-        .setRoot(root)
-        .attachToWindow()
-        .setSizeSpecs(exactly(10), exactly(20))
-        .measure()
-        .layout()
-    val lithoView = legacyLithoTestRule.lithoView
+    val lithoView =
+        lithoTestRule.render(widthPx = exactly(10), heightPx = exactly(20)) { root }.lithoView
     lithoView.mountComponent(Rect(0, 0, 10, 5), true)
     assertThat(child2.isMounted).isFalse
     child1.dispatchedEventHandlers.clear()
@@ -1195,13 +1115,8 @@ class MountStateIncrementalMountTest {
                     .widthPx(10)
                     .heightPx(10))
             .build()
-    legacyLithoTestRule
-        .setRoot(root)
-        .attachToWindow()
-        .setSizeSpecs(exactly(10), exactly(100))
-        .measure()
-        .layout()
-    val lithoView = legacyLithoTestRule.lithoView
+    val lithoView =
+        lithoTestRule.render(widthPx = exactly(10), heightPx = exactly(100)) { root }.lithoView
     assertThat(child1.dispatchedEventHandlers).contains(visibleEventHandler1)
     lithoView.setVisibilityHint(false, true)
     val child2 = TestViewComponent.create(context).build()
@@ -1262,12 +1177,7 @@ class MountStateIncrementalMountTest {
             .section(
                 SingleComponentSection.create(SectionContext(context)).component(root1).build())
             .build()
-    legacyLithoTestRule
-        .setRoot(rcc)
-        .attachToWindow()
-        .setSizeSpecs(exactly(10), exactly(19))
-        .measure()
-        .layout()
+    val testLithoView = lithoTestRule.render(widthPx = exactly(10), heightPx = exactly(19)) { rcc }
     assertThat(lifecycleTracker1.steps).contains(LifecycleStep.ON_MOUNT)
     assertThat(lifecycleTracker2.steps).contains(LifecycleStep.ON_MOUNT)
     assertThat(lifecycleTracker3.steps).doesNotContain(LifecycleStep.ON_MOUNT)
@@ -1296,9 +1206,9 @@ class MountStateIncrementalMountTest {
                     .sticky(true)
                     .build())
             .build()
-    legacyLithoTestRule.setRoot(rcc2)
+    testLithoView.setRoot(rcc2)
     runToEndOfTasks()
-    legacyLithoTestRule.dispatchGlobalLayout()
+    testLithoView.lithoView.notifyVisibleBoundsChanged()
     assertThat(lifecycleTracker2.steps).contains(LifecycleStep.ON_UNMOUNT)
   }
 
@@ -1341,16 +1251,13 @@ class MountStateIncrementalMountTest {
             .build()
 
     // Set LithoView with height so that it can fully show exactly 3 items (3 children per item).
-    legacyLithoTestRule
-        .setRoot(rcc)
-        .attachToWindow()
-        .setSizeSpecs(exactly(100), exactly(CHILD_HEIGHT * 9))
-        .measure()
-        .layout()
+    val testLithoView =
+        lithoTestRule.render(widthSpec = exactly(100), heightSpec = exactly(CHILD_HEIGHT * 9)) {
+          rcc
+        }
 
     // Obtain the RV for scrolling later
-    val recyclerView =
-        (legacyLithoTestRule.lithoView.getChildAt(0) as SectionsRecyclerView).recyclerView
+    val recyclerView = (testLithoView.lithoView.getChildAt(0) as SectionsRecyclerView).recyclerView
 
     // All 3 children are visible 3 times, so we should see ON_MOUNT being called 3 times
     // for each child
