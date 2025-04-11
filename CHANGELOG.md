@@ -5,6 +5,7 @@
 _release-date_
 
 * [NEW] Add new `useFirstDrawReporter` hook together with `Style.reportFirstContentDraw` for executing actions when related Component is fully rendered on the screen. Can be used to mark the end of TTRC or TTI markers.
+* [BREAKING] Remove `LegacyLithoViewRule` from `com.facebook.litho.testing`, please use `LithoTestRule` and `TestLithoView` instead.
 
 ## Version 0.50.2
 _2024-10-07_
