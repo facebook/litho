@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget;
+package com.facebook.litho.widget
 
-public interface RecyclerBinderAdapter {
+interface RecyclerBinderAdapter {
+  fun findFirstVisibleItemPosition(): Int
 
-  int findFirstVisibleItemPosition();
+  fun findLastVisibleItemPosition(): Int
 
-  int findLastVisibleItemPosition();
+  fun getRenderInfoAt(position: Int): RenderInfo?
 
-  RenderInfo getRenderInfoAt(int position);
-
-  int getItemCount();
+  fun getItemCount(): Int
 }
