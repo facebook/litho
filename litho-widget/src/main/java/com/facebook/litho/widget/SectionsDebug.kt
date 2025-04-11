@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget;
+package com.facebook.litho.widget
 
-import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.config.ComponentsConfiguration
 
 /**
  * Utilities for sections debugging. Note: this should probably be in the sections package, but that
  * package has a dependency on the widget package where RecyclerBinder lives.
  */
-public class SectionsDebug {
-
-  public static boolean ENABLED = ComponentsConfiguration.isEndToEndTestRun;
-  public static final String TAG = "SectionsDebug";
+object SectionsDebug {
+  @JvmField var ENABLED: Boolean = ComponentsConfiguration.isEndToEndTestRun
+  const val TAG: String = "SectionsDebug"
 }
