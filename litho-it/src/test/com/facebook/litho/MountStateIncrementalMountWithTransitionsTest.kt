@@ -23,7 +23,7 @@ import com.facebook.litho.sections.common.TestSingleComponentListSection
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration
 import com.facebook.litho.sections.widget.RecyclerBinderConfiguration
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent
-import com.facebook.litho.testing.LegacyLithoTestRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.TransitionTestRule
 import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -44,7 +44,7 @@ import org.robolectric.annotation.LooperMode
 @RunWith(LithoTestRunner::class)
 class MountStateIncrementalMountWithTransitionsTest {
 
-  @JvmField @Rule val legacyLithoTestRule: LegacyLithoTestRule = LegacyLithoTestRule()
+  @JvmField @Rule val lithoTestRule: LithoTestRule = LithoTestRule()
   @JvmField @Rule val transitionTestRule: TransitionTestRule = TransitionTestRule()
 
   private val stateCaller = StateCaller()
@@ -59,17 +59,17 @@ class MountStateIncrementalMountWithTransitionsTest {
     trackers.add(lifecycleTracker2)
     trackers.add(lifecycleTracker3)
     val root = getPartiallyVisibleRootWithAnimatingComponents(trackers)
-    legacyLithoTestRule.setRoot(root).setSizeSpecs(exactly(1_040), exactly(60))
-    legacyLithoTestRule.attachToWindow().measure().layout()
+    val testLithoView =
+        lithoTestRule.render(widthSpec = exactly(1040), heightSpec = exactly(60)) { root }
     val lithoViews: List<LithoView> = ArrayList()
-    val sectionsRecyclerView = legacyLithoTestRule.lithoView.getChildAt(0) as SectionsRecyclerView
+    val sectionsRecyclerView = testLithoView.lithoView.getChildAt(0) as SectionsRecyclerView
     sectionsRecyclerView.obtainLithoViewChildren(lithoViews)
 
     // grab the 2nd litho-view in the list (0 = sticky header, 1 = 1st litho view)
     val animatingLithoView = lithoViews[2]
     animatingLithoView.onAttachedToWindowForTest()
     stateCaller.update()
-    legacyLithoTestRule.idle()
+    lithoTestRule.idle()
     assertThat(lifecycleTracker1.steps).contains(LifecycleStep.ON_MOUNT)
     assertThat(lifecycleTracker2.steps).contains(LifecycleStep.ON_MOUNT)
     assertThat(lifecycleTracker3.steps).contains(LifecycleStep.ON_MOUNT)
@@ -99,19 +99,19 @@ class MountStateIncrementalMountWithTransitionsTest {
     val lifecycleTracker0 = LifecycleTracker()
     val lifecycleTracker1 = LifecycleTracker()
     val component0 =
-        MountSpecLifecycleTester.create(legacyLithoTestRule.context)
+        MountSpecLifecycleTester.create(lithoTestRule.context)
             .lifecycleTracker(lifecycleTracker0)
             .intrinsicSize(Size(10, 40))
             .build()
     val animatingComponents: MutableList<Component> = ArrayList()
     animatingComponents.add(
-        MountSpecLifecycleTester.create(legacyLithoTestRule.context)
+        MountSpecLifecycleTester.create(lithoTestRule.context)
             .lifecycleTracker(lifecycleTracker1)
             .intrinsicSize(Size(40, 40))
             .widthPx(40)
             .heightPx(40)
             .build())
-    val sectionContext = SectionContext(legacyLithoTestRule.context)
+    val sectionContext = SectionContext(lithoTestRule.context)
     val binderConfig =
         RecyclerBinderConfiguration.create()
             .recyclerBinderConfig(
@@ -123,7 +123,7 @@ class MountStateIncrementalMountWithTransitionsTest {
             .recyclerBinderConfiguration(binderConfig)
             .build()
     val childOfAnimatingComponent =
-        RecyclerCollectionComponent.create(legacyLithoTestRule.context)
+        RecyclerCollectionComponent.create(lithoTestRule.context)
             .widthPx(40)
             .heightPx(40)
             .section(
@@ -167,12 +167,11 @@ class MountStateIncrementalMountWithTransitionsTest {
                     .animate(AnimatedProperties.X))) { state ->
               requireNotNull(partiallyVisibleAnimatingComponent.getComponent(context, state))
             }
-    legacyLithoTestRule.setRoot(root).setSizeSpecs(exactly(40), exactly(80))
-    legacyLithoTestRule.attachToWindow().measure().layout()
+    lithoTestRule.render(widthSpec = exactly(40), heightSpec = exactly(80)) { root }
     assertThat(lifecycleTracker0.isMounted).isTrue
     assertThat(lifecycleTracker1.isMounted).isFalse
     stateCaller.update()
-    legacyLithoTestRule.idle()
+    lithoTestRule.idle()
     assertThat(lifecycleTracker1.isMounted).isTrue
   }
 
@@ -182,7 +181,7 @@ class MountStateIncrementalMountWithTransitionsTest {
     val animatingComponents: MutableList<Component> = ArrayList()
     for (tracker in animatingComponentTrackers) {
       animatingComponents.add(
-          MountSpecLifecycleTester.create(legacyLithoTestRule.context)
+          MountSpecLifecycleTester.create(lithoTestRule.context)
               .lifecycleTracker(tracker)
               .intrinsicSize(Size(40, 40))
               .build())
@@ -222,13 +221,13 @@ class MountStateIncrementalMountWithTransitionsTest {
         }
     val data: MutableList<Component> = ArrayList()
     data.add(
-        Row.create(legacyLithoTestRule.context)
+        Row.create(lithoTestRule.context)
             .heightDip(40f)
             .widthDip(40f)
             .backgroundColor(Color.parseColor("#ee1111"))
             .build())
     data.add(component)
-    val sectionContext = SectionContext(legacyLithoTestRule.context)
+    val sectionContext = SectionContext(lithoTestRule.context)
     val binderConfig =
         RecyclerBinderConfiguration.create()
             .recyclerBinderConfig(
@@ -237,7 +236,7 @@ class MountStateIncrementalMountWithTransitionsTest {
     val config =
         ListRecyclerConfiguration.create().recyclerBinderConfiguration(binderConfig).build()
     val root =
-        RecyclerCollectionComponent.create(legacyLithoTestRule.context)
+        RecyclerCollectionComponent.create(lithoTestRule.context)
             .section(TestSingleComponentListSection.create(sectionContext).data(data).build())
             .recyclerConfiguration(config)
             .build()
