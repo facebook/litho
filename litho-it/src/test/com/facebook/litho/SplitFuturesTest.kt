@@ -19,12 +19,13 @@ package com.facebook.litho
 import android.graphics.Color
 import com.facebook.litho.TreeFuture.FutureExecutionListener
 import com.facebook.litho.TreeFuture.FutureExecutionType
-import com.facebook.litho.testing.LegacyLithoTestRule
 import com.facebook.litho.testing.LithoStatsRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.ThreadTestingUtils
 import com.facebook.litho.testing.TimeOutSemaphore
 import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.testrunner.LithoTestRunner
+import com.facebook.litho.testing.unspecified
 import com.facebook.litho.widget.MountSpecPureRenderLifecycleTester
 import com.facebook.litho.widget.RenderAndLayoutCountingTester
 import com.facebook.litho.widget.RenderAndLayoutCountingTesterSpec
@@ -43,7 +44,7 @@ import org.robolectric.annotation.LooperMode
 @RunWith(LithoTestRunner::class)
 class SplitFuturesTest {
 
-  @JvmField @Rule val legacyLithoTestRule: LegacyLithoTestRule = LegacyLithoTestRule()
+  @JvmField @Rule val lithoTestRule: LithoTestRule = LithoTestRule()
 
   @JvmField @Rule val lithoStatsRule: LithoStatsRule = LithoStatsRule()
 
@@ -57,7 +58,7 @@ class SplitFuturesTest {
    */
   @Test
   fun testSyncRendersAndMeasures() {
-    val c = legacyLithoTestRule.context
+    val c = lithoTestRule.context
     val tracker = LifecycleTracker()
     val component1 =
         Column.create(c)
@@ -65,7 +66,10 @@ class SplitFuturesTest {
             .build()
 
     // Setting root, only render steps should occur
-    legacyLithoTestRule.setRoot(component1).idle()
+    val testLithoView = lithoTestRule.createTestLithoView()
+    testLithoView.lithoView.setComponent(component1)
+    lithoTestRule.idle()
+
     assertThat(tracker.steps)
         .describedAs("Only render-phase steps are present")
         .containsExactly(
@@ -80,7 +84,7 @@ class SplitFuturesTest {
     val heightSpec1 = exactly(100)
 
     // Set sizespecs, and trigger measure and layout. Only measure steps should occur
-    legacyLithoTestRule.setSizeSpecs(widthSpec1, heightSpec1).measure().layout()
+    testLithoView.setSizeSpecs(widthSpec1, heightSpec1).measure().layout()
     assertThat(tracker.steps)
         .describedAs("Only measure-phase steps are present")
         .containsExactly(
@@ -95,7 +99,7 @@ class SplitFuturesTest {
     tracker.reset()
 
     // Measure and layout again with no change to specs. No new lifecycle steps should occur
-    legacyLithoTestRule.measure().layout().idle()
+    testLithoView.measure().layout()
     assertThat(tracker.steps).describedAs("no change means no new lifecycle steps").isEmpty()
 
     // Reset the tracker
@@ -104,7 +108,7 @@ class SplitFuturesTest {
     val heightSpec2 = exactly(150)
 
     // Set new size specs. Only measure steps should occur
-    legacyLithoTestRule.setSizeSpecs(widthSpec2, heightSpec2).measure().layout()
+    testLithoView.setSizeSpecs(widthSpec2, heightSpec2).measure().layout()
     // SHOULD_UPDATE happens after ON_MEASURE with layout caching
     assertThat(tracker.steps)
         .describedAs("Changing width and height triggers only re-measure steps")
@@ -122,7 +126,7 @@ class SplitFuturesTest {
             .build()
 
     // Set a new root. Since measure already happened, we expect render and measure steps to occur
-    legacyLithoTestRule.setRoot(component2)
+    testLithoView.setRoot(component2)
     assertThat(tracker.steps)
         .describedAs("Setting new root after measure should render and measure")
         .containsExactly(
@@ -136,7 +140,7 @@ class SplitFuturesTest {
   /** Test multiple set-root async. */
   @Test
   fun testAsyncSetRootWitNoMeasures() {
-    val c = legacyLithoTestRule.context
+    val c = lithoTestRule.context
     val counter = RenderAndMeasureCounter()
     val component1 =
         Column.create(c)
@@ -144,14 +148,15 @@ class SplitFuturesTest {
             .build()
 
     // Set root async
-    legacyLithoTestRule.setRootAsync(component1)
+    val testLithoView = lithoTestRule.createTestLithoView()
+    testLithoView.componentTree.setRootAsync(component1)
 
     // Render should not have happened yet
     assertThat(counter.renderCount).isEqualTo(0)
     assertThat(lithoStatsRule.resolveCount).isEqualTo(0)
 
     // Wait for tasks to finish
-    legacyLithoTestRule.idle()
+    lithoTestRule.idle()
 
     // Now render should have happened once.
     assertThat(counter.renderCount).isEqualTo(1)
@@ -172,11 +177,11 @@ class SplitFuturesTest {
     lithoStatsRule.resetAllCounters()
 
     // Queue 2 set-root-asyncs. Only 1 should actually happen
-    legacyLithoTestRule.setRootAsync(component2)
-    legacyLithoTestRule.setRootAsync(component3)
+    testLithoView.componentTree.setRootAsync(component2)
+    testLithoView.componentTree.setRootAsync(component3)
 
     // Run to end of tasks
-    legacyLithoTestRule.idle()
+    lithoTestRule.idle()
 
     // Multiple queued async set roots will only end up running the latest one.
     assertThat(counter.renderCount).isEqualTo(1)
@@ -203,7 +208,8 @@ class SplitFuturesTest {
    */
   @Test
   fun testBackgroundSyncMeasures_layoutTreeFutureIsReused() {
-    val c = legacyLithoTestRule.context
+    val testLithoView = lithoTestRule.createTestLithoView()
+    val c = testLithoView.componentTree.context
     val counter = RenderAndMeasureCounter()
 
     // Latch that waits for the 1st measure to start
@@ -236,8 +242,8 @@ class SplitFuturesTest {
             .build()
 
     // Set root without measuring
-    legacyLithoTestRule.setRoot(component)
-    val componentTree = legacyLithoTestRule.componentTree
+    testLithoView.componentTree.root = component
+    val componentTree = testLithoView.componentTree
     val widthSpec = exactly(100)
     val heightSpec = exactly(150)
     val output1 = Size()
@@ -310,7 +316,8 @@ class SplitFuturesTest {
    */
   @Test
   fun testOlderRootIsNotCommitted() {
-    val c = legacyLithoTestRule.context
+    val testLithoView = lithoTestRule.createTestLithoView()
+    val c = testLithoView.componentTree.context
     val counter1 = RenderAndMeasureCounter()
     val counter2 = RenderAndMeasureCounter()
 
@@ -355,10 +362,10 @@ class SplitFuturesTest {
     val bgThreadLatch = TimeOutSemaphore(-1)
 
     // Set size specs so setRoot happens sync
-    legacyLithoTestRule.componentTree.setSizeSpec(exactly(100), exactly(100))
+    testLithoView.componentTree.setSizeSpec(exactly(100), exactly(100))
     lithoStatsRule.resetAllCounters()
     ThreadTestingUtils.runOnBackgroundThread(bgThreadLatch) { // Set root1 1st.
-      legacyLithoTestRule.setRoot(component1)
+      testLithoView.componentTree.root = component1
     }
     ThreadTestingUtils.runOnBackgroundThread(
         bgThreadLatch) { // Wait for the 1st setRoot to be called
@@ -366,7 +373,7 @@ class SplitFuturesTest {
 
           // Call the 2nd setRoot, will be called after comp1 is set as root, thereby making
           // comp2 the latest.
-          legacyLithoTestRule.setRoot(component2)
+          testLithoView.componentTree.root = component2
 
           // inform comp2 has finished render
           waitForSecondSetRootToFinishLatch.release()
@@ -392,7 +399,7 @@ class SplitFuturesTest {
 
     // Now do layout to trigger a measure with the committed resolution result. We expect only the
     // 2nd component to get measured here.
-    legacyLithoTestRule.setSizeSpecs(exactly(100), exactly(100)).measure().layout().idle()
+    testLithoView.setSizeSpecs(exactly(100), exactly(100)).measure().layout()
 
     // Ensure no new renders
     assertThat(counter1.renderCount).isEqualTo(0)
@@ -405,13 +412,14 @@ class SplitFuturesTest {
     assertThat(lithoStatsRule.resolveCount).isEqualTo(0)
 
     // Ensure we can find Comp2's Text mounted.
-    assertThat(legacyLithoTestRule.findViewWithText("Comp2")).isNotNull
+    assertThat(testLithoView.findViewWithText("Comp2")).isNotNull
   }
 
   @Test
   fun ifSyncResolveIsInProgress_thenAsyncResolveShouldWaitForInProgressResolve() {
     val isFirstHolder = booleanArrayOf(false)
-    val c = legacyLithoTestRule.context
+    val testLithoView = lithoTestRule.createTestLithoView()
+    val c = testLithoView.componentTree.context
     val counter = RenderAndMeasureCounter()
     // Latch to wait for the 1st setRoot to get called to avoid calling the 2nd setRoot 1st.
     val latch = TimeOutSemaphore(0)
@@ -426,7 +434,7 @@ class SplitFuturesTest {
               }
             }
             if (isFirst) {
-              legacyLithoTestRule.componentTree.setFutureExecutionListener(
+              testLithoView.componentTree.setFutureExecutionListener(
                   object : FutureExecutionListener {
                     override fun onPreExecution(
                         version: Int,
@@ -442,8 +450,8 @@ class SplitFuturesTest {
                         attribution: String
                     ) = Unit
                   })
-              legacyLithoTestRule.setRootAsync(legacyLithoTestRule.componentTree.getRoot())
-              ThreadTestingUtils.runOnBackgroundThread { legacyLithoTestRule.idle() }
+              testLithoView.componentTree.setRootAsync(testLithoView.componentTree.root)
+              ThreadTestingUtils.runOnBackgroundThread { lithoTestRule.idle() }
               latch.acquire() // wait for async set root to release latch
             }
           }
@@ -462,10 +470,10 @@ class SplitFuturesTest {
             .build()
 
     // required to trigger async set roots
-    legacyLithoTestRule.componentTree.setSizeSpec(exactly(100), exactly(100))
+    testLithoView.componentTree.setSizeSpec(exactly(100), exactly(100))
 
     // first set root
-    legacyLithoTestRule.setRoot(component)
+    testLithoView.componentTree.root = component
 
     // The second resolve should be skipped
     assertThat(counter.renderCount).isEqualTo(1)
@@ -482,7 +490,8 @@ class SplitFuturesTest {
    */
   @Test
   fun testOlderLayoutIsNotCommitted() {
-    val c = legacyLithoTestRule.context
+    val testLithoView = lithoTestRule.createTestLithoView()
+    val c = testLithoView.componentTree.context
     val counter = RenderAndMeasureCounter()
 
     // Boolean holder to check if the 1st measurement has happened yet. We want to force the 1st
@@ -526,7 +535,7 @@ class SplitFuturesTest {
             .build()
 
     // Set the root component once (sync)
-    legacyLithoTestRule.setRoot(component)
+    testLithoView.componentTree.root = component
     lithoStatsRule.resetAllCounters()
 
     // "Old" size-specs to be set first, but finish last
@@ -536,7 +545,7 @@ class SplitFuturesTest {
     // "New" size-specs to be set second, but finish 1st
     val newWidthSpec = exactly(150)
     val newHeightSpec = exactly(150)
-    val componentTree = legacyLithoTestRule.componentTree
+    val componentTree = testLithoView.componentTree
 
     // Background thread latch with -1 permits to ensure both bg tasks finish
     val bgThreadLatch = TimeOutSemaphore(-1)
@@ -606,7 +615,8 @@ class SplitFuturesTest {
    */
   @Test
   fun testAsyncLayoutIsSkippedWhenEquivalentSyncLayoutInProgress() {
-    val c = legacyLithoTestRule.context
+    val testLithoView = lithoTestRule.createTestLithoView()
+    val c = testLithoView.componentTree.context
     val counter = RenderAndMeasureCounter()
     val syncMeasureStartedLatch = TimeOutSemaphore(0)
     val asyncMeasureTriggeredLatch = TimeOutSemaphore(0)
@@ -631,11 +641,11 @@ class SplitFuturesTest {
             .build()
 
     // Set the root component once (sync)
-    legacyLithoTestRule.setRoot(component)
+    testLithoView.componentTree.root = component
     lithoStatsRule.resetAllCounters()
     val widthSpec = exactly(100)
     val heightSpec = exactly(100)
-    val componentTree = legacyLithoTestRule.componentTree
+    val componentTree = testLithoView.componentTree
     componentTree.setSizeSpecAsync(widthSpec, heightSpec)
     val output = Size()
     val bgLatch: TimeOutSemaphore =
@@ -647,7 +657,7 @@ class SplitFuturesTest {
     syncMeasureStartedLatch.acquire()
 
     // Force async tasks to run
-    legacyLithoTestRule.idle()
+    lithoTestRule.idle()
 
     // Inform async tasks have been drained
     asyncMeasureTriggeredLatch.release()
@@ -670,7 +680,8 @@ class SplitFuturesTest {
    */
   @Test
   fun testSyncRenderContinuesAsyncOnMainThread() {
-    val c = legacyLithoTestRule.context
+    val c = lithoTestRule.context
+    val testLithoView = lithoTestRule.createTestLithoView()
     val counter = RenderAndMeasureCounter()
 
     // latch to wait for the main thread layout
@@ -679,7 +690,7 @@ class SplitFuturesTest {
         Column.create(c)
             .child(RenderAndLayoutCountingTester.create(c).renderAndMeasureCounter(counter))
             .build()
-    val componentTree = legacyLithoTestRule.componentTree
+    val componentTree = testLithoView.componentTree
 
     // wait in prepare
     onPrepareLatch.release()
@@ -712,8 +723,8 @@ class SplitFuturesTest {
     assertThat(lithoStatsRule.layoutCount).isEqualTo(1)
 
     // verify that the layout is measured against the new size
-    assertThat(legacyLithoTestRule.committedLayoutState?.width).isEqualTo(200)
-    assertThat(legacyLithoTestRule.committedLayoutState?.height).isEqualTo(200)
+    assertThat(testLithoView.committedLayoutState?.width).isEqualTo(200)
+    assertThat(testLithoView.committedLayoutState?.height).isEqualTo(200)
   }
 
   /**
@@ -727,7 +738,8 @@ class SplitFuturesTest {
    */
   @Test
   fun testSyncLayoutContinuesAsyncOnMainThread() {
-    val c = legacyLithoTestRule.context
+    val testLithoView = lithoTestRule.createTestLithoView()
+    val c = testLithoView.componentTree.context
     val counter = RenderAndMeasureCounter()
 
     // Latch to wait for async measure to begin before sync render
@@ -756,14 +768,14 @@ class SplitFuturesTest {
             .build()
     val widthSpec = exactly(100)
     val heightSpec = exactly(100)
-    val componentTree = legacyLithoTestRule.componentTree
+    val componentTree = testLithoView.componentTree
 
     // Set root and size-spec async
     componentTree.setRootAndSizeSpecAsync(component, widthSpec, heightSpec)
 
     // run to end of tasks on background to avoid blocking here
     val bgThreadLatch: TimeOutSemaphore =
-        ThreadTestingUtils.runOnBackgroundThread { legacyLithoTestRule.runToEndOfBackgroundTasks() }
+        ThreadTestingUtils.runOnBackgroundThread { lithoTestRule.finishAsyncUpdates() }
 
     // Wait for async measure to start
     waitForAsyncMeasureToStartLatch.acquire()
@@ -814,15 +826,17 @@ class SplitFuturesTest {
    */
   @Test
   fun testSetRootWithNoSizeSpecsHappensAsync() {
-    val c = legacyLithoTestRule.context
+    val c = lithoTestRule.context
     val counter = RenderAndMeasureCounter()
     val component =
         Column.create(c)
             .child(RenderAndLayoutCountingTester.create(c).renderAndMeasureCounter(counter))
             .build()
 
+    val testLithoView =
+        lithoTestRule.createTestLithoView(widthSpec = unspecified(), heightSpec = unspecified())
     // Set root here should force the operation to become async
-    legacyLithoTestRule.setRoot(component)
+    testLithoView.componentTree.root = component
     lithoStatsRule.resetAllCounters()
 
     // Setting root without size-specs should force the operation to become async, so we verify
@@ -833,7 +847,7 @@ class SplitFuturesTest {
     assertThat(lithoStatsRule.layoutCount).isEqualTo(0)
 
     // Run to end of tasks, forcing async task to complete
-    legacyLithoTestRule.idle()
+    lithoTestRule.idle()
 
     // Now that we've run to end of tasks, we can expect render to have happened (tho no measure)
     assertThat(counter.renderCount).isEqualTo(1)
@@ -852,7 +866,7 @@ class SplitFuturesTest {
    */
   @Test
   fun testNoChangeToTreeProps_renderStillHappensOnce() {
-    val c = legacyLithoTestRule.context
+    val c = lithoTestRule.context
     val counter = RenderAndMeasureCounter()
     val component =
         Column.create(c)
@@ -860,9 +874,10 @@ class SplitFuturesTest {
             .build()
     val output = Size()
 
+    val testLithoView = lithoTestRule.createTestLithoView()
     // Define tree-props on the CT
     val treePropContainer = TreePropContainer()
-    legacyLithoTestRule.componentTree.setRootAndSizeSpecSync(
+    testLithoView.componentTree.setRootAndSizeSpecSync(
         component, exactly(100), exactly(100), output, treePropContainer) // Set new tree props.
 
     // Ensure render and measure happened once, and the output is set correctly
@@ -874,7 +889,7 @@ class SplitFuturesTest {
     assertThat(output.height).isEqualTo(100)
 
     // Set the same root again, with the same tree-props, but different size-specs
-    legacyLithoTestRule.componentTree.setRootAndSizeSpecSync(
+    testLithoView.componentTree.setRootAndSizeSpecSync(
         component, exactly(150), exactly(150), output, treePropContainer) // Use the same tree props
 
     // Same component, so render count should still be 1.
