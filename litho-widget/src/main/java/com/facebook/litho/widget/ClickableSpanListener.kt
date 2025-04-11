@@ -14,28 +14,27 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget;
+package com.facebook.litho.widget
 
-import android.text.style.ClickableSpan;
-import android.view.View;
+import android.text.style.ClickableSpan
+import android.view.View
 
 /**
  * A listener that reacts to click and long click events on a clickable span. A listener such as
  * this should be used when the click/long click action needs to access heavyweight objects such as
  * fragments or activities. Using such objects within the spannable can cause memory leaks as
- * spannables are cached in {@link android.text.TextLine#sCached} which is static.
+ * spannables are cached in [android.text.TextLine.sCached] which is static.
  */
-public interface ClickableSpanListener {
+interface ClickableSpanListener {
+  /**
+   * @return true if click action needs to be handled here instead of delegating it to
+   *   [ClickableSpan.onClick].
+   */
+  fun onClick(span: ClickableSpan, view: View): Boolean
 
   /**
-   * @return true if click action needs to be handled here instead of delegating it to {@link
-   *     ClickableSpan#onClick(View)}.
+   * @return true if long click action needs to be handled here instead of delegating to
+   *   [LongClickableSpan.onLongClick].
    */
-  boolean onClick(ClickableSpan span, View view);
-
-  /**
-   * @return true if long click action needs to be handled here instead of delegating to {@link
-   *     LongClickableSpan#onLongClick(View)}.
-   */
-  boolean onLongClick(LongClickableSpan span, View view);
+  fun onLongClick(span: LongClickableSpan, view: View): Boolean
 }
