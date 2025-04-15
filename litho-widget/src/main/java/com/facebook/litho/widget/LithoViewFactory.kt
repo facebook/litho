@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget;
+package com.facebook.litho.widget
 
-import com.facebook.litho.ComponentContext;
-import com.facebook.litho.LithoView;
+import com.facebook.litho.ComponentContext
+import com.facebook.litho.LithoView
 
-/** A factory used to create {@link LithoView}s in {@link RecyclerBinder}. */
-public interface LithoViewFactory {
+/** A factory used to create [LithoView]s in [RecyclerBinder]. */
+fun interface LithoViewFactory {
 
-  /**
-   * @return a new {@link LithoView} that will be used to host children of the {@link Recycler}.
-   */
-  LithoView createLithoView(ComponentContext context);
+  /** @return a new [LithoView] that will be used to host children of the [Recycler]. */
+  fun createLithoView(context: ComponentContext): LithoView
 }
