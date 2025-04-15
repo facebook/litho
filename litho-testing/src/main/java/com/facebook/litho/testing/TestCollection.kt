@@ -55,7 +55,7 @@ class TestCollection {
    * that are displayed.
    */
   val itemCount: Int
-    get() = recyclerBinder.itemCount
+    get() = recyclerBinder.getItemCount()
 
   /** All items in the lazy collection */
   val items: List<TestCollectionItem>

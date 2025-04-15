@@ -130,7 +130,7 @@ class CollectionRecyclerComponent(
                       viewportChangedCallback(
                           firstVisibleIndex,
                           lastVisibleIndex,
-                          itemCount,
+                          getItemCount(),
                           firstFullyVisibleIndex,
                           lastFullyVisibleIndex)
                     }
