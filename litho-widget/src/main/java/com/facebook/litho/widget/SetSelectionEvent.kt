@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget;
+package com.facebook.litho.widget
 
-import com.facebook.litho.annotations.Event;
+import com.facebook.litho.annotations.Event
 
 /** Use this with TextInput to set the field's current selection. */
 @Event
-public class SetSelectionEvent {
-  public int start;
-  public int end;
+class SetSelectionEvent {
+  @JvmField var start: Int = 0
+  @JvmField var end: Int = 0
 }
