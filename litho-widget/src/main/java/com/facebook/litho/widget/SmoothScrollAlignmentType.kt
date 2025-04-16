@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget;
+package com.facebook.litho.widget
 
-import androidx.recyclerview.widget.LinearSmoothScroller;
+import androidx.recyclerview.widget.LinearSmoothScroller
 
-public enum SmoothScrollAlignmentType {
+enum class SmoothScrollAlignmentType(val value: Int) {
+
   /**
    * Use the layout manager's default smooth scrolling, needed for backwards compatibility because
    * certain layout managers implement their own smooth scrolling
@@ -42,16 +43,5 @@ public enum SmoothScrollAlignmentType {
   SNAP_TO_END(LinearSmoothScroller.SNAP_TO_END),
 
   /** Scroll the selected position to the center of the RecyclerView. */
-  SNAP_TO_CENTER(-6);
-
-  private int value;
-
-  public int getValue() {
-    return this.value;
-  }
-
-  // enum constructor - cannot be public or protected
-  private SmoothScrollAlignmentType(int value) {
-    this.value = value;
-  }
+  SNAP_TO_CENTER(-6)
 }
