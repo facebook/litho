@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget;
+package com.facebook.litho.widget
 
-public interface StickyHeaderControllerFactory {
+fun interface StickyHeaderControllerFactory {
   /**
    * @param hasStickyHeader component binder which implements HasStickyHeader interface
    * @return a new instance of a sticky header controller
    */
-  StickyHeaderController getController(HasStickyHeader hasStickyHeader);
+  fun getController(hasStickyHeader: HasStickyHeader): StickyHeaderController
 }
