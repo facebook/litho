@@ -14,18 +14,12 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget;
+package com.facebook.litho.widget
 
-import com.facebook.litho.AttributeKey;
-import java.util.List;
+import com.facebook.litho.AttributeKey
 
-/** Collection of the {@link AttributeKey} that are used across Litho's widgets. */
-public class WidgetAttributes {
-
-  private WidgetAttributes() {
-    // do nothing
-  }
-
-  /** Key used to identify real text set by the developer in the {@link TextSpec}. */
-  public static final AttributeKey<List<CharSequence>> Text = new AttributeKey<>("text");
+/** Collection of the [AttributeKey] that are used across Litho's widgets. */
+object WidgetAttributes {
+  /** Key used to identify real text set by the developer in the [TextSpec]. */
+  @JvmField val Text: AttributeKey<List<CharSequence>> = AttributeKey("text")
 }
