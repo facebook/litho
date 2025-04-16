@@ -107,7 +107,7 @@ public class ComponentWarmerTest {
     final RecyclerBinder binder = new RecyclerBinder.Builder().build(mContext);
 
     final ComponentWarmer warmer = new ComponentWarmer(binder);
-    ComponentWarmer.Cache cache = Whitebox.getInternalState(warmer, "mCache");
+    ComponentWarmer.Cache cache = warmer.getCache();
 
     warmer.prepare("tag1", mPrepareComponentRenderInfo, null);
 
@@ -123,7 +123,7 @@ public class ComponentWarmerTest {
     final RecyclerBinder binder = new RecyclerBinder.Builder().build(mContext);
 
     final ComponentWarmer warmer = new ComponentWarmer(binder);
-    ComponentWarmer.Cache cache = Whitebox.getInternalState(warmer, "mCache");
+    ComponentWarmer.Cache cache = warmer.getCache();
 
     warmer.prepareAsync("tag1", mPrepareComponentRenderInfo);
 
