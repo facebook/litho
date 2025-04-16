@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget;
+package com.facebook.litho.widget
 
-import android.view.View;
+import android.view.View
 
 /** Scroll change listener invoked when the scroll position changes. */
-public interface ScrollStateListener {
+fun interface ScrollStateListener {
 
-  int SCROLL_STARTED = 0;
-  int SCROLL_STOPPED = 1;
+  fun onScrollStateChanged(v: View, scrollStatus: Int)
 
-  void onScrollStateChanged(View v, int scrollStatus);
+  companion object {
+    const val SCROLL_STARTED: Int = 0
+    const val SCROLL_STOPPED: Int = 1
+  }
 }
