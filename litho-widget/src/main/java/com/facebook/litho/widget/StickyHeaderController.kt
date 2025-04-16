@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget;
+package com.facebook.litho.widget
 
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView
 
-public interface StickyHeaderController {
+interface StickyHeaderController {
 
   /** Called by the SectionsRecyclerView onScrolled event */
-  void onScrolled(RecyclerView recyclerView, int dx, int dy);
+  fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int)
 
   /** Bind the onScroll listener to the SectionsRecyclerView param */
-  void init(SectionsRecyclerView SectionsRecyclerView);
+  fun init(sectionsRecyclerView: SectionsRecyclerView)
 
   /** Reset the controller */
-  void reset();
+  fun reset()
 }

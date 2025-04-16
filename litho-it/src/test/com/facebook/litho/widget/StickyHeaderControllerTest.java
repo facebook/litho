@@ -102,7 +102,7 @@ public class StickyHeaderControllerTest {
     LithoView lithoView = mock(LithoView.class);
     when(componentTree.getLithoView()).thenReturn(lithoView);
 
-    mStickyHeaderController.onScrolled(null, 0, 0);
+    mStickyHeaderController.onScrolled(recyclerView, 0, 0);
 
     verify(lithoView).setTranslationY(anyFloat());
     verify(recycler, times(2)).hideStickyHeader();
@@ -122,7 +122,7 @@ public class StickyHeaderControllerTest {
     when(mHasStickyHeader.getComponentForStickyHeaderAt(2)).thenReturn(mock(ComponentTree.class));
     when(mHasStickyHeader.getComponentForStickyHeaderAt(6)).thenReturn(mock(ComponentTree.class));
 
-    mStickyHeaderController.onScrolled(null, 0, 0);
+    mStickyHeaderController.onScrolled(recyclerView, 0, 0);
 
     verify(recycler).setStickyHeaderVerticalOffset(nullable(Integer.class));
   }
@@ -145,7 +145,7 @@ public class StickyHeaderControllerTest {
     LithoView lithoView = mock(LithoView.class);
     when(componentTree.getLithoView()).thenReturn(lithoView);
 
-    mStickyHeaderController.onScrolled(null, 0, 0);
+    mStickyHeaderController.onScrolled(recyclerView, 0, 0);
 
     verify(lithoView, never()).setTranslationY(nullable(Integer.class));
     verify(recycler, times(2)).hideStickyHeader();
