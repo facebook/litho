@@ -62,24 +62,24 @@
   <div class="breadcrumbs"><a href="../../index.html">litho-widget</a><span class="delimiter">/</span><a href="../index.html">com.facebook.litho.widget</a><span class="delimiter">/</span><span class="current">ComponentWarmer</span></div>
   <div class="cover ">
     <h1 class="cover"><span>Component</span><wbr><span><span>Warmer</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="index.html">ComponentWarmer</a></div><p class="paragraph">Pool for pre-computing and storing ComponentTrees. Can be used to pre-compute and store ComponentTrees before they are inserted in a RecyclerBinder. The RecyclerBinder will fetch the precomputed ComponentTree from the pool if it's available instead of computing a layout calculation when the item needs to be computed.</p></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">ComponentWarmer</a></div><p class="paragraph">Pool for pre-computing and storing ComponentTrees. Can be used to pre-compute and store ComponentTrees before they are inserted in a RecyclerBinder. The RecyclerBinder will fetch the precomputed ComponentTree from the pool if it's available instead of computing a layout calculation when the item needs to be computed.</p></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
     <div class="tabs-section-body">
       <div data-togglable="CONSTRUCTOR">
         <h2 class="">Constructors</h2>
-        <div class="table"><a data-name="1863227859%2FConstructors%2F-534206624" anchor-label="ComponentWarmer" id="1863227859%2FConstructors%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
+        <div class="table"><a data-name="-553352714%2FConstructors%2F-534206624" anchor-label="ComponentWarmer" id="-553352714%2FConstructors%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
           <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":litho-widget:dokkaHtmlPartial/release" data-filterable-set=":litho-widget:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="-component-warmer.html"><span>Component</span><wbr><span><span>Warmer</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1863227859%2FConstructors%2F-534206624"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-553352714%2FConstructors%2F-534206624"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">c<span class="token operator">: </span><a href="../../../litho-core/com.facebook.litho/-component-context/index.html">ComponentContext</a><span class="token punctuation">, </span></span><span class="parameter ">widthSpec<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">heightSpec<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div><div class="brief ">Sets up a <a href="-component-tree-holder-preparer-with-size-impl/index.html">ComponentTreeHolderPreparerWithSizeImpl</a> as the  of this instance.</div><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief ">Creates a ComponentWarmer instance which is not ready to prepare items yet.</div><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">cache<span class="token operator">: </span><a href="-cache/index.html">ComponentWarmer.Cache</a></span></span><span class="token punctuation">)</span></div><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">recyclerBinder<span class="token operator">: </span><a href="../-recycler-binder/index.html">RecyclerBinder</a></span></span><span class="token punctuation">)</span></div><div class="brief ">Creates a ComponentWarmer for this RecyclerBinder.</div><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">recyclerBinder<span class="token operator">: </span><a href="../-recycler-binder/index.html">RecyclerBinder</a><span class="token punctuation">, </span></span><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://docs.oracle.com/javase/8/docs/api/javax/annotation/Nullable.html"><span class="token annotation builtin">Nullable</span></a>&nbsp;</span>cache<span class="token operator">: </span><a href="-cache/index.html">ComponentWarmer.Cache</a></span></span><span class="token punctuation">)</span></div><div class="brief ">Same as <a href="-component-warmer.html">ComponentWarmer</a> but uses the passed in Cache instance to manage the internal cache.</div><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">factory<span class="token operator">: </span><a href="-component-tree-holder-preparer/index.html">ComponentWarmer.ComponentTreeHolderPreparer</a></span></span><span class="token punctuation">)</span></div><div class="brief ">Creates a ComponentWarmer which will use the provided ComponentTreeHolderPreparer instance to create ComponentTreeHolder instances for preparing and caching items.</div><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">factory<span class="token operator">: </span><a href="-component-tree-holder-preparer/index.html">ComponentWarmer.ComponentTreeHolderPreparer</a><span class="token punctuation">, </span></span><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://docs.oracle.com/javase/8/docs/api/javax/annotation/Nullable.html"><span class="token annotation builtin">Nullable</span></a>&nbsp;</span>cache<span class="token operator">: </span><a href="-cache/index.html">ComponentWarmer.Cache</a></span></span><span class="token punctuation">)</span></div><div class="brief ">Same as <a href="-component-warmer.html">ComponentWarmer</a> but uses the passed in Cache instance to manage the internal cache.</div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">c<span class="token operator">: </span><a href="../../../litho-core/com.facebook.litho/-component-context/index.html">ComponentContext</a><span class="token punctuation">, </span></span><span class="parameter ">widthSpec<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">heightSpec<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Sets up a <a href="-component-tree-holder-preparer-with-size-impl/index.html">ComponentTreeHolderPreparerWithSizeImpl</a> as the <a href="-component-tree-holder-preparer/index.html">ComponentTreeHolderPreparer</a> of this instance. All prepare calls will use the provided width and height specs for preparing, until this instance is configured on a RecyclerBinder and a new <a href="-component-tree-holder-preparer/index.html">ComponentTreeHolderPreparer</a> created by the RecyclerBinder is used, which uses the RecyclerBinder's measurements.</p></div><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Creates a ComponentWarmer instance which is not ready to prepare items yet. If trying to prepare an item before the ComponentWarmer is ready, the requests will be enqueued and will only be executed once this instance is bound to a ComponentTreeHolderPreparer.</p></div><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">cache<span class="token operator">: </span><a href="-cache/index.html">ComponentWarmer.Cache</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.jvm/-jvm-overloads/index.html"><span class="token annotation builtin">JvmOverloads</span></a></div></div><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">recyclerBinder<span class="token operator">: </span><a href="../-recycler-binder/index.html">RecyclerBinder</a><span class="token punctuation">, </span></span><span class="parameter ">cache<span class="token operator">: </span><a href="-cache/index.html">ComponentWarmer.Cache</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Creates a ComponentWarmer for this RecyclerBinder. This ComponentWarmer instance will use the same ComponentTree factory as the RecyclerBinder. The RecyclerBinder will query the ComponentWarmer for cached items before creating new ComponentTrees. Uses a <a href="https://developer.android.com/reference/kotlin/androidx/collection/LruCache.html">LruCache</a> to manage the internal cache.</p></div><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.jvm/-jvm-overloads/index.html"><span class="token annotation builtin">JvmOverloads</span></a></div></div><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">factory<span class="token operator">: </span><a href="-component-tree-holder-preparer/index.html">ComponentWarmer.ComponentTreeHolderPreparer</a><span class="token punctuation">, </span></span><span class="parameter ">cache<span class="token operator">: </span><a href="-cache/index.html">ComponentWarmer.Cache</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Creates a ComponentWarmer which will use the provided ComponentTreeHolderPreparer instance to create ComponentTreeHolder instances for preparing and caching items. Uses a <a href="https://developer.android.com/reference/kotlin/androidx/collection/LruCache.html">LruCache</a> to manage the internal cache.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -113,7 +113,22 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-cache-listener/index.html">CacheListener</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><span class="token keyword">interface </span><a href="-cache-listener/index.html">CacheListener</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-432111068%2FClasslikes%2F-534206624" anchor-label="Companion" id="-432111068%2FClasslikes%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-widget:dokkaHtmlPartial/release" data-filterable-set=":litho-widget:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-companion/index.html"><span><span>Companion</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-432111068%2FClasslikes%2F-534206624"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-companion/index.html">Companion</a></div></div></div>
                 </div>
               </div>
             </div>
@@ -143,7 +158,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">inner </span><span class="token keyword">class </span><a href="-component-tree-holder-preparer-with-size-impl/index.html">ComponentTreeHolderPreparerWithSizeImpl</a> : <a href="-component-tree-holder-preparer/index.html">ComponentWarmer.ComponentTreeHolderPreparer</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inner </span><span class="token keyword">class </span><a href="-component-tree-holder-preparer-with-size-impl/index.html">ComponentTreeHolderPreparerWithSizeImpl</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">componentContext<span class="token operator">: </span><a href="../../../litho-core/com.facebook.litho/-component-context/index.html">ComponentContext</a><span class="token punctuation">, </span></span><span class="parameter ">widthSpec<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">heightSpec<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span> : <a href="-component-tree-holder-preparer/index.html">ComponentWarmer.ComponentTreeHolderPreparer</a></div></div></div>
                 </div>
               </div>
             </div>
@@ -158,7 +173,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-component-warmer-ready-listener/index.html">ComponentWarmerReadyListener</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><span class="token keyword">interface </span><a href="-component-warmer-ready-listener/index.html">ComponentWarmerReadyListener</a></div></div></div>
                 </div>
               </div>
             </div>
@@ -167,47 +182,77 @@
       </div>
       <div data-togglable="PROPERTY">
         <h2 class="">Properties</h2>
-        <div class="table"><a data-name="598871894%2FProperties%2F-534206624" anchor-label="COMPONENT_WARMER_PREPARE_HANDLER" id="598871894%2FProperties%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
+        <div class="table"><a data-name="748922779%2FProperties%2F-534206624" anchor-label="cache" id="748922779%2FProperties%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
           <div class="table-row" data-filterable-current=":litho-widget:dokkaHtmlPartial/release" data-filterable-set=":litho-widget:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="-c-o-m-p-o-n-e-n-t_-w-a-r-m-e-r_-p-r-e-p-a-r-e_-h-a-n-d-l-e-r.html"><span><span>COMPONENT_WARMER_PREPARE_HANDLER</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="598871894%2FProperties%2F-534206624"></span>
+                  <div><a href="cache.html"><span><span>cache</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="748922779%2FProperties%2F-534206624"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-c-o-m-p-o-n-e-n-t_-w-a-r-m-e-r_-p-r-e-p-a-r-e_-h-a-n-d-l-e-r.html">COMPONENT_WARMER_PREPARE_HANDLER</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a><span class="token operator"> = </span><span class="token string">"component_warmer_prepare_handler"</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@get:</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/VisibleForTesting.html"><span class="token annotation builtin">VisibleForTesting</span></a></div></div><span class="token keyword">lateinit </span><span class="token keyword">var </span><a href="cache.html">cache</a><span class="token operator">: </span><a href="-cache/index.html">ComponentWarmer.Cache</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-325276370%2FProperties%2F-534206624" anchor-label="COMPONENT_WARMER_TAG" id="-325276370%2FProperties%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
+<a data-name="-153837%2FProperties%2F-534206624" anchor-label="factory" id="-153837%2FProperties%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
           <div class="table-row" data-filterable-current=":litho-widget:dokkaHtmlPartial/release" data-filterable-set=":litho-widget:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="-c-o-m-p-o-n-e-n-t_-w-a-r-m-e-r_-t-a-g.html"><span><span>COMPONENT_WARMER_TAG</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-325276370%2FProperties%2F-534206624"></span>
+                  <div><a href="factory.html"><span><span>factory</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-153837%2FProperties%2F-534206624"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-c-o-m-p-o-n-e-n-t_-w-a-r-m-e-r_-t-a-g.html">COMPONENT_WARMER_TAG</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a><span class="token operator"> = </span><span class="token string">"component_warmer_tag"</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@get:</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/VisibleForTesting.html"><span class="token annotation builtin">VisibleForTesting</span></a></div></div><span class="token keyword">var </span><a href="factory.html">factory</a><span class="token operator">: </span><a href="-component-tree-holder-preparer/index.html">ComponentWarmer.ComponentTreeHolderPreparer</a><span class="token operator">?</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="70105443%2FProperties%2F-534206624" anchor-label="DEFAULT_MAX_SIZE" id="70105443%2FProperties%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
+<a data-name="1273585764%2FProperties%2F-534206624" anchor-label="isReady" id="1273585764%2FProperties%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
           <div class="table-row" data-filterable-current=":litho-widget:dokkaHtmlPartial/release" data-filterable-set=":litho-widget:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="-d-e-f-a-u-l-t_-m-a-x_-s-i-z-e.html"><span><span>DEFAULT_MAX_SIZE</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="70105443%2FProperties%2F-534206624"></span>
+                  <div><a href="is-ready.html"><span>is</span><wbr><span><span>Ready</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1273585764%2FProperties%2F-534206624"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-d-e-f-a-u-l-t_-m-a-x_-s-i-z-e.html">DEFAULT_MAX_SIZE</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span><span class="token constant">10</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@get:</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.jvm/-synchronized/index.html"><span class="token annotation builtin">Synchronized</span></a></div></div><span class="token keyword">var </span><a href="is-ready.html">isReady</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1820202790%2FProperties%2F-534206624" anchor-label="pending" id="1820202790%2FProperties%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-widget:dokkaHtmlPartial/release" data-filterable-set=":litho-widget:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="pending.html"><span><span>pending</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1820202790%2FProperties%2F-534206624"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@get:</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/VisibleForTesting.html"><span class="token annotation builtin">VisibleForTesting</span></a></div></div><span class="token keyword">val </span><a href="pending.html">pending</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/concurrent/BlockingQueue.html">BlockingQueue</a><span class="token operator">&lt;</span><a href="../-component-render-info/index.html">ComponentRenderInfo</a><span class="token operator">&gt;</span><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="965435126%2FProperties%2F-534206624" anchor-label="prepareImpl" id="965435126%2FProperties%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-widget:dokkaHtmlPartial/release" data-filterable-set=":litho-widget:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="prepare-impl.html"><span>prepare</span><wbr><span><span>Impl</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="965435126%2FProperties%2F-534206624"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@get:</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/VisibleForTesting.html"><span class="token annotation builtin">VisibleForTesting</span></a></div></div><span class="token keyword">val </span><a href="prepare-impl.html">prepareImpl</a><span class="token operator">: </span><a href="-component-tree-holder-preparer/index.html">ComponentWarmer.ComponentTreeHolderPreparer</a><span class="token operator">?</span></div></div></div>
                 </div>
               </div>
             </div>
@@ -216,32 +261,32 @@
       </div>
       <div data-togglable="FUNCTION">
         <h2 class="">Functions</h2>
-        <div class="table"><a data-name="1964756555%2FFunctions%2F-534206624" anchor-label="cancelPrepare" id="1964756555%2FFunctions%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
+        <div class="table"><a data-name="-788148556%2FFunctions%2F-534206624" anchor-label="cancelPrepare" id="-788148556%2FFunctions%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
           <div class="table-row" data-filterable-current=":litho-widget:dokkaHtmlPartial/release" data-filterable-set=":litho-widget:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="cancel-prepare.html"><span>cancel</span><wbr><span><span>Prepare</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1964756555%2FFunctions%2F-534206624"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-788148556%2FFunctions%2F-534206624"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="cancel-prepare.html"><span class="token function">cancelPrepare</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">tag<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a></span></span><span class="token punctuation">)</span></div><div class="brief ">Cancels the prepare execution for the item with the given tag if it's currently running and it removes the item from the cache.</div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="cancel-prepare.html"><span class="token function">cancelPrepare</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">tag<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Cancels the prepare execution for the item with the given tag if it's currently running and it removes the item from the cache.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-536774564%2FFunctions%2F-534206624" anchor-label="consume" id="-536774564%2FFunctions%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
+<a data-name="1003079235%2FFunctions%2F-534206624" anchor-label="consume" id="1003079235%2FFunctions%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
           <div class="table-row" data-filterable-current=":litho-widget:dokkaHtmlPartial/release" data-filterable-set=":litho-widget:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="consume.html"><span><span>consume</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-536774564%2FFunctions%2F-534206624"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1003079235%2FFunctions%2F-534206624"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://docs.oracle.com/javase/8/docs/api/javax/annotation/Nullable.html"><span class="token annotation builtin">Nullable</span></a></div></div><span class="token keyword">open </span><span class="token keyword">fun </span><a href="consume.html"><span class="token function">consume</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">tag<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-component-tree-holder/index.html">ComponentTreeHolder</a></div><div class="brief ">If it exists, it returns the cached ComponentTreeHolder for this tag and removes it from cache.</div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="consume.html"><span class="token function">consume</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">tag<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-component-tree-holder/index.html">ComponentTreeHolder</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">If it exists, it returns the cached ComponentTreeHolder for this tag and removes it from cache.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -256,97 +301,97 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="evict-all.html"><span class="token function">evictAll</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="evict-all.html"><span class="token function">evictAll</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="1273585764%2FFunctions%2F-534206624" anchor-label="isReady" id="1273585764%2FFunctions%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-filterable-current=":litho-widget:dokkaHtmlPartial/release" data-filterable-set=":litho-widget:dokkaHtmlPartial/release">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="is-ready.html"><span>is</span><wbr><span><span>Ready</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1273585764%2FFunctions%2F-534206624"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="is-ready.html"><span class="token function">isReady</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="-1527393926%2FFunctions%2F-534206624" anchor-label="prepare" id="-1527393926%2FFunctions%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
+<a data-name="-1618080942%2FFunctions%2F-534206624" anchor-label="prepare" id="-1618080942%2FFunctions%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
           <div class="table-row" data-filterable-current=":litho-widget:dokkaHtmlPartial/release" data-filterable-set=":litho-widget:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="prepare.html"><span><span>prepare</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1527393926%2FFunctions%2F-534206624"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1618080942%2FFunctions%2F-534206624"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="prepare.html"><span class="token function">prepare</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">tag<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">componentRenderInfo<span class="token operator">: </span><a href="../-component-render-info/index.html">ComponentRenderInfo</a><span class="token punctuation">, </span></span><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://docs.oracle.com/javase/8/docs/api/javax/annotation/Nullable.html"><span class="token annotation builtin">Nullable</span></a>&nbsp;</span>size<span class="token operator">: </span><a href="../../../litho-core/com.facebook.litho/-size/index.html">Size</a></span></span><span class="token punctuation">)</span></div><div class="brief ">Synchronously prepare the ComponentTree for the given ComponentRenderInfo.</div><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="prepare.html"><span class="token function">prepare</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">tag<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">componentRenderInfo<span class="token operator">: </span><a href="../-component-render-info/index.html">ComponentRenderInfo</a><span class="token punctuation">, </span></span><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://docs.oracle.com/javase/8/docs/api/javax/annotation/Nullable.html"><span class="token annotation builtin">Nullable</span></a>&nbsp;</span>size<span class="token operator">: </span><a href="../../../litho-core/com.facebook.litho/-size/index.html">Size</a><span class="token punctuation">, </span></span><span class="parameter ">handler<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/RunnableHandler///PointingToDeclaration/">RunnableHandler</span></span></span><span class="token punctuation">)</span></div><div class="brief ">Synchronously post preparing the ComponentTree for the given ComponentRenderInfo to the handler.</div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.jvm/-jvm-overloads/index.html"><span class="token annotation builtin">JvmOverloads</span></a></div></div><span class="token keyword">fun </span><a href="prepare.html"><span class="token function">prepare</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">tag<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">componentRenderInfo<span class="token operator">: </span><a href="../-component-render-info/index.html">ComponentRenderInfo</a><span class="token punctuation">, </span></span><span class="parameter ">size<span class="token operator">: </span><a href="../../../litho-core/com.facebook.litho/-size/index.html">Size</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">handler<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/RunnableHandler///PointingToDeclaration/">RunnableHandler</span><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Synchronously prepare the ComponentTree for the given ComponentRenderInfo.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-2012738588%2FFunctions%2F-534206624" anchor-label="prepareAsync" id="-2012738588%2FFunctions%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
+<a data-name="-469014755%2FFunctions%2F-534206624" anchor-label="prepareAsync" id="-469014755%2FFunctions%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
           <div class="table-row" data-filterable-current=":litho-widget:dokkaHtmlPartial/release" data-filterable-set=":litho-widget:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="prepare-async.html"><span>prepare</span><wbr><span><span>Async</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2012738588%2FFunctions%2F-534206624"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-469014755%2FFunctions%2F-534206624"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="prepare-async.html"><span class="token function">prepareAsync</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">tag<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">componentRenderInfo<span class="token operator">: </span><a href="../-component-render-info/index.html">ComponentRenderInfo</a></span></span><span class="token punctuation">)</span></div><div class="brief ">Asynchronously prepare the ComponentTree for the given ComponentRenderInfo.</div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="prepare-async.html"><span class="token function">prepareAsync</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">tag<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">componentRenderInfo<span class="token operator">: </span><a href="../-component-render-info/index.html">ComponentRenderInfo</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Asynchronously prepare the ComponentTree for the given ComponentRenderInfo.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-1259542892%2FFunctions%2F-534206624" anchor-label="remove" id="-1259542892%2FFunctions%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
+<a data-name="-794311925%2FFunctions%2F-534206624" anchor-label="remove" id="-794311925%2FFunctions%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
           <div class="table-row" data-filterable-current=":litho-widget:dokkaHtmlPartial/release" data-filterable-set=":litho-widget:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="remove.html"><span><span>remove</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1259542892%2FFunctions%2F-534206624"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-794311925%2FFunctions%2F-534206624"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="remove.html"><span class="token function">remove</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">tag<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="remove.html"><span class="token function">remove</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">tag<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="213725005%2FFunctions%2F-534206624" anchor-label="setComponentWarmerReadyListener" id="213725005%2FFunctions%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
+<a data-name="470541206%2FFunctions%2F-534206624" anchor-label="setComponentTreeHolderFactory" id="470541206%2FFunctions%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-widget:dokkaHtmlPartial/release" data-filterable-set=":litho-widget:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-component-tree-holder-factory.html"><span>set</span><wbr><span>Component</span><wbr><span>Tree</span><wbr><span>Holder</span><wbr><span><span>Factory</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="470541206%2FFunctions%2F-534206624"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="set-component-tree-holder-factory.html"><span class="token function">setComponentTreeHolderFactory</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">factory<span class="token operator">: </span><a href="-component-tree-holder-preparer/index.html">ComponentWarmer.ComponentTreeHolderPreparer</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-932064970%2FFunctions%2F-534206624" anchor-label="setComponentWarmerReadyListener" id="-932064970%2FFunctions%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
           <div class="table-row" data-filterable-current=":litho-widget:dokkaHtmlPartial/release" data-filterable-set=":litho-widget:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="set-component-warmer-ready-listener.html"><span>set</span><wbr><span>Component</span><wbr><span>Warmer</span><wbr><span>Ready</span><wbr><span><span>Listener</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="213725005%2FFunctions%2F-534206624"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-932064970%2FFunctions%2F-534206624"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="set-component-warmer-ready-listener.html"><span class="token function">setComponentWarmerReadyListener</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">listener<span class="token operator">: </span><a href="-component-warmer-ready-listener/index.html">ComponentWarmer.ComponentWarmerReadyListener</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="set-component-warmer-ready-listener.html"><span class="token function">setComponentWarmerReadyListener</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">listener<span class="token operator">: </span><a href="-component-warmer-ready-listener/index.html">ComponentWarmer.ComponentWarmerReadyListener</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="874744906%2FFunctions%2F-534206624" anchor-label="setReleaseEvictedEntries" id="874744906%2FFunctions%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
+<a data-name="65872149%2FFunctions%2F-534206624" anchor-label="setReleaseEvictedEntries" id="65872149%2FFunctions%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
           <div class="table-row" data-filterable-current=":litho-widget:dokkaHtmlPartial/release" data-filterable-set=":litho-widget:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="set-release-evicted-entries.html"><span>set</span><wbr><span>Release</span><wbr><span>Evicted</span><wbr><span><span>Entries</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="874744906%2FFunctions%2F-534206624"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="65872149%2FFunctions%2F-534206624"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="set-release-evicted-entries.html"><span class="token function">setReleaseEvictedEntries</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">releaseEvictedEntries<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="set-release-evicted-entries.html"><span class="token function">setReleaseEvictedEntries</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">releaseEvictedEntries<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
