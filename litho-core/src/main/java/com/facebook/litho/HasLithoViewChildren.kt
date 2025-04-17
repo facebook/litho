@@ -24,5 +24,5 @@ package com.facebook.litho
 @JvmSuppressWildcards
 fun interface HasLithoViewChildren {
 
-  fun obtainLithoViewChildren(lithoViews: List<BaseMountingView>)
+  fun obtainLithoViewChildren(lithoViews: MutableList<BaseMountingView>)
 }

@@ -61,12 +61,12 @@ class MountStateIncrementalMountWithTransitionsTest {
     val root = getPartiallyVisibleRootWithAnimatingComponents(trackers)
     val testLithoView =
         lithoTestRule.render(widthSpec = exactly(1040), heightSpec = exactly(60)) { root }
-    val lithoViews: List<LithoView> = ArrayList()
+    val lithoViews = arrayListOf<BaseMountingView>()
     val sectionsRecyclerView = testLithoView.lithoView.getChildAt(0) as SectionsRecyclerView
     sectionsRecyclerView.obtainLithoViewChildren(lithoViews)
 
     // grab the 2nd litho-view in the list (0 = sticky header, 1 = 1st litho view)
-    val animatingLithoView = lithoViews[2]
+    val animatingLithoView = lithoViews[2] as LithoView
     animatingLithoView.onAttachedToWindowForTest()
     stateCaller.update()
     lithoTestRule.idle()
