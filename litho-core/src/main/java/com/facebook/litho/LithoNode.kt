@@ -70,7 +70,6 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
   // region private properties
   private var _transitionId: TransitionId? = null
   private var _attachables: MutableList<Attachable>? = null
-  private var debugComponents: MutableSet<DebugComponent>? = null
   private var _unresolvedComponents: MutableList<Component>? = null
   private var frozen: Boolean = false
   private var nodeInfoWasWritten: Boolean = false
@@ -754,13 +753,6 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
     this.justifyContent = justifyContent
   }
 
-  fun registerDebugComponent(debugComponent: DebugComponent) {
-    if (debugComponents == null) {
-      debugComponents = HashSet()
-    }
-    debugComponents?.add(debugComponent)
-  }
-
   fun setMeasureFunction(measureFunction: YogaMeasureFunction) {
     yogaMeasureFunction = measureFunction
   }
@@ -882,10 +874,6 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
 
   fun setNestedTreeHolder(holder: NestedTreeHolder?) {
     nestedTreeHolder = holder
-  }
-
-  fun resetDebugInfo() {
-    debugComponents = null
   }
 
   private fun shouldApplyTouchExpansion(): Boolean =

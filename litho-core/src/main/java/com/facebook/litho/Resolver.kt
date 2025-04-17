@@ -576,7 +576,6 @@ object Resolver {
     // 2. Shallow copy this layout.
     val layout: LithoNode = current.clone()
     layout.children = ArrayList(current.childCount)
-    layout.resetDebugInfo()
     commitToLayoutState(resolveContext.treeState, current)
 
     // 3. Iterate over children.

@@ -359,16 +359,15 @@ private constructor(
       }
       val componentKey = node.getGlobalKeyAt(componentIndex)
       return DebugComponent(
-              globalKey = generateGlobalKey(context, componentKey),
-              result = result,
-              node = result.node,
-              componentIndex = componentIndex,
-              x = x,
-              y = y,
-              xOffset = xOffset,
-              yOffset = yOffset,
-          )
-          .also { node.registerDebugComponent(it) }
+          globalKey = generateGlobalKey(context, componentKey),
+          result = result,
+          node = result.node,
+          componentIndex = componentIndex,
+          x = x,
+          y = y,
+          xOffset = xOffset,
+          yOffset = yOffset,
+      )
     }
 
     @JvmStatic
