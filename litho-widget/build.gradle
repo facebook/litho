@@ -44,6 +44,7 @@ dependencies {
     implementation project(':litho-core')
     implementation deps.supportRecyclerView
     implementation deps.supportSwipeRefresh
+    implementation deps.supportCore
     kapt project(':litho-processor')
     implementation project(':litho-rendercore-text')
 
