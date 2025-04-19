@@ -47,6 +47,7 @@ litho_android_library(
     incremental = True,
     k2 = False,
     labels = [],
+    nullchecker_mode = "log",
     provided_deps = [
         LITHO_JSR_TARGET,
         LITHO_PROGUARD_ANNOTATIONS_TARGET,
