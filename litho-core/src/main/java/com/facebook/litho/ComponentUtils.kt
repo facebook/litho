@@ -498,7 +498,7 @@ object ComponentUtils {
   fun wrapWithMetadata(c: ComponentContext?, e: Exception): LithoMetadataExceptionWrapper =
       when (e) {
         is LithoMetadataExceptionWrapper -> e
-        else -> LithoMetadataExceptionWrapper(c, e)
+        else -> LithoMetadataExceptionWrapper(c, cause = e)
       }
 
   /**
@@ -510,7 +510,7 @@ object ComponentUtils {
       when (view) {
         is LithoView -> wrapWithMetadata(view.componentTree, e)
         // TODO T149859358 support other implementations of BaseMountingView
-        else -> LithoMetadataExceptionWrapper(e)
+        else -> LithoMetadataExceptionWrapper(cause = e)
       }
 
   /**

@@ -17,7 +17,6 @@
 package com.facebook.litho.widget
 
 import android.view.MotionEvent
-import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.ColorInt
 import androidx.core.widget.NestedScrollView
@@ -62,7 +61,7 @@ class ExperimentalVerticalScroll(
     val eventsController: VerticalScrollEventsController?,
     val onScrollChange: ((NestedScrollView, scrollY: Int, oldScrollY: Int) -> Unit)?,
     val onInterceptTouch: ((NestedScrollView, event: MotionEvent) -> Boolean)?,
-    val onScrollStateChange: ((View, Int) -> Unit)?,
+    val onScrollStateChange: ScrollStateListener?,
     val incrementalMountEnabled: Boolean = true,
     val child: Component,
     val style: Style?,
@@ -203,7 +202,7 @@ internal class VerticalScrollLayoutBehavior(
             val height = min(sizeConstraints.MaxPossibleHeightValue, sizeConstraints.maxHeight)
             if (height != sizeConstraints.maxHeight) {
               DebugInfoReporter.report(category = "SizeConstraintViolation") {
-                this["component"] = resolveResult.component.getSimpleName()
+                this["component"] = resolveResult.component.simpleName
                 this["sizeConstraints"] = sizeConstraints.toString()
                 this["MaxPossibleHeightValue"] = sizeConstraints.MaxPossibleHeightValue
               }

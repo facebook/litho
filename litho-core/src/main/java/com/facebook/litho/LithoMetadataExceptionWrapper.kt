@@ -19,8 +19,7 @@ package com.facebook.litho
 import android.annotation.SuppressLint
 
 /** Exception class used to add additional Litho metadata to a crash. */
-class LithoMetadataExceptionWrapper
-internal constructor(
+class LithoMetadataExceptionWrapper(
     private val componentContext: ComponentContext? = null,
     private val root: String? = null,
     private val logTag: String? = null,
@@ -34,25 +33,6 @@ internal constructor(
     initCause(cause)
     stackTrace = emptyArray()
   }
-
-  internal constructor(
-      cause: Throwable
-  ) : this(
-      null,
-      null,
-      null,
-      cause,
-  )
-
-  internal constructor(
-      componentContext: ComponentContext?,
-      cause: Throwable,
-  ) : this(
-      componentContext,
-      null,
-      null,
-      cause,
-  )
 
   constructor(
       componentTree: ComponentTree?,
