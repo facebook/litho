@@ -16,7 +16,7 @@ For more information on Kotlin events, see [Event Handling](/docs/kotlin/event-h
 
 </FbInternalOnly>
 
-```java file=sample/src/main/java/com/facebook/samples/litho/java/communicating/ParentComponentReceivesEventFromChildSpec.java start=start_demo end=end_demo
+```java file=sample/src/main/java/com/facebook/samples/litho/java/communicating/ParentComponentReceivesEventFromChildKComponent.kt start=start_demo end=end_demo
 ```
 
 The child component can invoke the event handler received from the parent to inform the parent that a certain action took place, such as when the child component receives a click event or, in a visibility handler, when it becomes visible.  The following code provides an example.

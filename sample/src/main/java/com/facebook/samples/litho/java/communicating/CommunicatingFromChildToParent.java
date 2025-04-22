@@ -33,19 +33,13 @@ public class CommunicatingFromChildToParent extends NavigatableDemoActivity {
     setContentView(
         LithoView.create(
             c,
-            ParentComponentReceivesEventFromChild.create(c)
-                .observer(
-                    new ComponentEventObserver() {
-                      @Override
-                      public void onComponentClicked() {
-                        Toast.makeText(
-                                c.getAndroidContext(),
-                                "Activity received event from child",
-                                Toast.LENGTH_SHORT)
-                            .show();
-                      }
-                    })
-                .build()));
+            new ParentComponentReceivesEventFromChildKComponent(
+                () ->
+                    Toast.makeText(
+                            c.getAndroidContext(),
+                            "Activity received event from child",
+                            Toast.LENGTH_SHORT)
+                        .show())));
   }
 
   public interface ComponentEventObserver {
