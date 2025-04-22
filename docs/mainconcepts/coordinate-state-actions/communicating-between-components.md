@@ -31,29 +31,16 @@ When the data is updated as a result of an action controlled by the parent compo
 
 The following code illustrates this concept with a click event on the parent component.
 
-```java file=sample/src/main/java/com/facebook/samples/litho/java/communicating/ParentComponentSendsEventToChildSpec.java start=start_update_prop end=end_update_prop
+```java file=sample/src/main/java/com/facebook/samples/litho/java/communicating/ParentComponentSendsEventToChildKComponent.kt start=start_update_prop end=end_update_prop
 ```
 
 ### Triggering an Action on a child from a parent
 
-There are cases when a parent needs to trigger an action on a child instead of just passing new data. To do this, the parent needs to keep a reference to the child and trigger an action on it using that reference.
+There are cases when a parent needs to trigger an action on a child instead of just passing new data. To do this, the parent can interact with the child using controllers (see [Controllers Pattern](/docs/mainconcepts/primitivecomponents/primitive-controllers/)),
+which the parent creates and passes to the child component as a prop:
 
-The reference to the child is maintained through a `Handle` instance, which the parent creates and passes to the child component as a prop:
-
-```java file=sample/src/main/java/com/facebook/samples/litho/java/communicating/ParentComponentSendsEventToChildSpec.java start=start_define_handle end=end_define_handle
+```java file=sample/src/main/java/com/facebook/samples/litho/java/communicating/ParentComponentSendsEventToChildKComponent.kt start=start_define_controller end=end_define_controller
 ```
-
-The parent uses the Handle reference to trigger an action on the child component:
-
-```java file=sample/src/main/java/com/facebook/samples/litho/java/communicating/ParentComponentSendsEventToChildSpec.java start=start_trigger end=end_trigger
-```
-
-The action is defined on the child component using the `@OnTrigger` annotation in Java:
-
-```java file=sample/src/main/java/com/facebook/samples/litho/java/communicating/ChildComponentReceivesEventFromParentSpec.java start=start_define_trigger end=end_define_trigger
-```
-
-Defining triggers in `KComponents` is not supported yet, but they can invoke triggers as with Java Components.
 
 ### Communicating between siblings
 
