@@ -16,35 +16,35 @@
 
 package com.facebook.samples.litho.java.communicating
 
-import android.widget.Toast
 import com.facebook.litho.Column
 import com.facebook.litho.Component
-import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
+import com.facebook.litho.Style
+import com.facebook.litho.core.padding
 import com.facebook.litho.kotlin.widget.Text
-import com.facebook.litho.onCleanup
-import com.facebook.litho.useEffect
+import com.facebook.litho.useState
 import com.facebook.rendercore.dp
 
-class ChildComponentReceivesEventFromParentKComponent(
-    private val controller: ParentToChildEventController,
-    private val textFromParent: String,
-) : KComponent() {
-
+// start_parent_mediator
+class ParentComponentMediatorComponent : KComponent() {
   override fun ComponentScope.render(): Component? {
-    useEffect(controller) {
-      controller.setTriggerShowToastListener { triggerShowToast(context, it) }
-      onCleanup { controller.reset() }
-    }
 
-    return Column {
-      child(Text(text = "ChildComponent", textSize = 20.dp))
-      child(Text(text = "Text received from parent: $textFromParent", textSize = 15.dp))
-    }
-  }
+    val selectedPosition = useState { 0 }
 
-  private fun triggerShowToast(c: ComponentContext, message: String) {
-    Toast.makeText(c.androidContext, message, Toast.LENGTH_SHORT).show()
+    return Column(style = Style.padding(all = 30.dp)) {
+      child(Text(text = "ChildComponent", textSize = 30.dp))
+      child(
+          ChildComponentSiblingCommunicationComponent(
+              id = 0,
+              isSelected = selectedPosition.value == 0,
+              onSelected = { selectedPosition.update(0) }))
+      child(
+          ChildComponentSiblingCommunicationComponent(
+              id = 1,
+              isSelected = selectedPosition.value == 1,
+              onSelected = { selectedPosition.update(1) }))
+    }
   }
 }
+// end_parent_mediator

@@ -17,54 +17,45 @@
 package com.facebook.samples.litho.java.communicating
 
 import android.graphics.Color
-import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
+import com.facebook.litho.Row
 import com.facebook.litho.Style
+import com.facebook.litho.core.height
 import com.facebook.litho.core.margin
-import com.facebook.litho.core.padding
+import com.facebook.litho.core.width
 import com.facebook.litho.flexbox.border
 import com.facebook.litho.kotlin.widget.Border
 import com.facebook.litho.kotlin.widget.BorderEdge
 import com.facebook.litho.kotlin.widget.BorderRadius
+import com.facebook.litho.kotlin.widget.SolidColor
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.view.onClick
 import com.facebook.rendercore.dp
-import com.facebook.rendercore.sp
-import com.facebook.samples.litho.java.communicating.CommunicatingFromChildToParent.ComponentEventObserver
 
-// start_demo
-class ChildComponentSendsEventToParentKComponent(
-    private val observer: ComponentEventObserver,
-    private val onChildClickEvent: () -> Unit,
+// start_dispatch_to_parent
+class ChildComponentSiblingCommunicationComponent(
+    private val id: Int,
+    private val isSelected: Boolean,
+    private val onSelected: (Int) -> Unit,
 ) : KComponent() {
+
   override fun ComponentScope.render(): Component? {
-    return Column(style = Style.margin(all = 30.dp)) {
-      child(Text(text = "ChildComponent", textSize = 20f.sp))
+    return Row(style = Style.onClick { onSelected(id) }.margin(all = 30.dp)) {
       child(
-          Text(
-              text = "Click to send event to parent!",
-              textSize = 15f.sp,
+          SolidColor(
+              color = if (isSelected) Color.BLUE else Color.WHITE,
               style =
-                  Style.padding(all = 5.dp)
+                  Style.width(20.dp)
+                      .height(20.dp)
+                      .margin(top = 10.dp, end = 30.dp)
                       .border(
                           Border(
-                              edgeAll = BorderEdge(color = Color.BLACK, width = 1.dp),
-                              radius = BorderRadius(all = 2.dp)))
-                      .onClick { onChildClickEvent() }))
-      child(
-          Text(
-              text = "Click to send event to Activity!",
-              textSize = 15f.sp,
-              style =
-                  Style.padding(all = 5.dp)
-                      .border(
-                          Border(
-                              edgeAll = BorderEdge(color = Color.BLACK, width = 1.dp),
-                              radius = BorderRadius(all = 2.dp)))
-                      .onClick { observer?.onComponentClicked() }))
+                              edgeAll = BorderEdge(color = Color.BLUE, width = 1.dp),
+                              radius = BorderRadius(all = 2.dp)))))
+      child(Text(text = "ChildComponent $id", textSize = 20.dp))
     }
   }
 }
-// end_demo
+// end_dispatch_to_parent

@@ -33,7 +33,7 @@ public class CommunicatingFromChildToParent extends NavigatableDemoActivity {
     setContentView(
         LithoView.create(
             c,
-            new ParentComponentReceivesEventFromChildKComponent(
+            new ParentComponentReceivesEventFromChildComponent(
                 () ->
                     Toast.makeText(
                             c.getAndroidContext(),

@@ -34,7 +34,7 @@ import com.facebook.litho.useState
 import com.facebook.litho.view.onClick
 import com.facebook.rendercore.dp
 
-class ParentComponentSendsEventToChildKComponent : KComponent() {
+class ParentComponentSendsEventToChildComponent : KComponent() {
 
   // start_define_controller
   override fun ComponentScope.render(): Component? {
@@ -57,7 +57,7 @@ class ParentComponentSendsEventToChildKComponent : KComponent() {
                               radius = BorderRadius(all = 2.dp)))
                       .onClick { controller.trigger("Message from parent") }))
       child(
-          ChildComponentReceivesEventFromParentKComponent(
+          ChildComponentReceivesEventFromParentComponent(
               controller = controller, textFromParent = "Child with controller"))
       // end_define_controller
       // start_update_prop
@@ -74,7 +74,7 @@ class ParentComponentSendsEventToChildKComponent : KComponent() {
                               radius = BorderRadius(all = 2.dp)))
                       .onClick { version.update { it + 1 } }))
       child(
-          ChildComponentReceivesEventFromParentKComponent(
+          ChildComponentReceivesEventFromParentComponent(
               controller = controller, textFromParent = "Version ${version.value}"))
       // end_update_prop
     }

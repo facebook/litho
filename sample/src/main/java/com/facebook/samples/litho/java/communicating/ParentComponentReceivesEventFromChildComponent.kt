@@ -29,9 +29,8 @@ import com.facebook.rendercore.dp
 import com.facebook.samples.litho.java.communicating.CommunicatingFromChildToParent.ComponentEventObserver
 
 // start_demo
-class ParentComponentReceivesEventFromChildKComponent(
-    private val observer: ComponentEventObserver
-) : KComponent() {
+class ParentComponentReceivesEventFromChildComponent(private val observer: ComponentEventObserver) :
+    KComponent() {
 
   override fun ComponentScope.render(): Component {
     val infoText = useState { "No event received from ChildComponent" }
@@ -39,7 +38,7 @@ class ParentComponentReceivesEventFromChildKComponent(
       child(Text(text = "ParentComponent", textSize = 30.dp))
       child(Text(text = infoText.value, textSize = 15.dp))
       child(
-          ChildComponentSendsEventToParentKComponent(
+          ChildComponentSendsEventToParentComponent(
               observer = observer, onChildClickEvent = { onNotifyParentEvent(infoText) }))
     }
   }
