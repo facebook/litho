@@ -272,14 +272,6 @@ internal constructor(
 
   fun getHeightSpec(): Int = getHeightSpec(sizeConstraints)
 
-  // If the layout root is a nested tree holder node, it gets skipped immediately while
-  // collecting the LayoutOutputs. The nested tree itself effectively becomes the layout
-  // root in this case.
-  fun isLayoutRoot(result: LithoLayoutResult): Boolean =
-      if (rootLayoutResult is NestedTreeHolderResult)
-          result === (rootLayoutResult as NestedTreeHolderResult).nestedResult
-      else result === rootLayoutResult
-
   /**
    * @return the position of the [LithoRenderUnit] with id layoutOutputId in the [LayoutState] list
    *   of outputs or -1 if no [LithoRenderUnit] with that id exists in the [LayoutState]
