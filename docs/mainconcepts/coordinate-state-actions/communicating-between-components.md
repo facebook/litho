@@ -61,7 +61,7 @@ Two sibling components (two child components of the same parent) cannot communic
 
 A child component that needs to send a signal to a sibling component will dispatch an event to the common parent component:
 
-```java file=sample/src/main/java/com/facebook/samples/litho/java/communicating/ChildComponentSiblingCommunicationSpec.java start=start_dispatch_to_parent end=end_dispatch_to_parent
+```java file=sample/src/main/java/com/facebook/samples/litho/java/communicating/ChildComponentSiblingCommunicationKComponent.kt start=start_dispatch_to_parent end=end_dispatch_to_parent
 ```
 
 As shown in the following code, the parent component can:
@@ -69,7 +69,7 @@ As shown in the following code, the parent component can:
 * Perform a state update to recreate the sibling with new data (@OnUpdateState)
 * Trigger an event on the sibling using a reference (@OnEvent).
 
-```java file=sample/src/main/java/com/facebook/samples/litho/java/communicating/ParentComponentMediatorSpec.java start=start_parent_mediator end=end_parent_mediator
+```java file=sample/src/main/java/com/facebook/samples/litho/java/communicating/ParentComponentMediatorKComponent.kt start=start_parent_mediator end=end_parent_mediator
 ```
 
 ### Communicating externally to a component
