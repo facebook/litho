@@ -16,12 +16,12 @@ For more information on Kotlin events, see [Event Handling](/docs/kotlin/event-h
 
 </FbInternalOnly>
 
-```java file=sample/src/main/java/com/facebook/samples/litho/java/communicating/ParentComponentReceivesEventFromChildSpec.java start=start_demo end=end_demo
+```java file=sample/src/main/java/com/facebook/samples/litho/java/communicating/ParentComponentReceivesEventFromChildComponent.kt start=start_demo end=end_demo
 ```
 
-The child component can invoke the event handler received from the parent to inform the parent that a certain action took place, such as when the child component receives a click event or, in a visibility handler, when it becomes visible.  The following code provides an example.
+The child component can invoke the lambda received from the parent to inform the parent that a certain action took place, such as when the child component receives a click event or, in a visibility handler, when it becomes visible.  The following code provides an example.
 
-```java file=sample/src/main/java/com/facebook/samples/litho/java/communicating/ChildComponentSendsEventToParentSpec.java start=start_demo end=end_demo
+```java file=sample/src/main/java/com/facebook/samples/litho/java/communicating/ChildComponentSendsEventToParentComponent.kt start=start_demo end=end_demo
 ```
 
 ### Passing new Props from a parent to a child
@@ -31,29 +31,16 @@ When the data is updated as a result of an action controlled by the parent compo
 
 The following code illustrates this concept with a click event on the parent component.
 
-```java file=sample/src/main/java/com/facebook/samples/litho/java/communicating/ParentComponentSendsEventToChildSpec.java start=start_update_prop end=end_update_prop
+```java file=sample/src/main/java/com/facebook/samples/litho/java/communicating/ParentComponentSendsEventToChildComponent.kt start=start_update_prop end=end_update_prop
 ```
 
 ### Triggering an Action on a child from a parent
 
-There are cases when a parent needs to trigger an action on a child instead of just passing new data. To do this, the parent needs to keep a reference to the child and trigger an action on it using that reference.
+There are cases when a parent needs to trigger an action on a child instead of just passing new data. To do this, the parent can interact with the child using controllers (see [Controllers Pattern](/docs/mainconcepts/primitivecomponents/primitive-controllers/)),
+which the parent creates and passes to the child component as a prop:
 
-The reference to the child is maintained through a `Handle` instance, which the parent creates and passes to the child component as a prop:
-
-```java file=sample/src/main/java/com/facebook/samples/litho/java/communicating/ParentComponentSendsEventToChildSpec.java start=start_define_handle end=end_define_handle
+```java file=sample/src/main/java/com/facebook/samples/litho/java/communicating/ParentComponentSendsEventToChildComponent.kt start=start_define_controller end=end_define_controller
 ```
-
-The parent uses the Handle reference to trigger an action on the child component:
-
-```java file=sample/src/main/java/com/facebook/samples/litho/java/communicating/ParentComponentSendsEventToChildSpec.java start=start_trigger end=end_trigger
-```
-
-The action is defined on the child component using the `@OnTrigger` annotation in Java:
-
-```java file=sample/src/main/java/com/facebook/samples/litho/java/communicating/ChildComponentReceivesEventFromParentSpec.java start=start_define_trigger end=end_define_trigger
-```
-
-Defining triggers in `KComponents` is not supported yet, but they can invoke triggers as with Java Components.
 
 ### Communicating between siblings
 
@@ -61,15 +48,15 @@ Two sibling components (two child components of the same parent) cannot communic
 
 A child component that needs to send a signal to a sibling component will dispatch an event to the common parent component:
 
-```java file=sample/src/main/java/com/facebook/samples/litho/java/communicating/ChildComponentSiblingCommunicationSpec.java start=start_dispatch_to_parent end=end_dispatch_to_parent
+```java file=sample/src/main/java/com/facebook/samples/litho/java/communicating/ChildComponentSiblingCommunicationComponent.kt start=start_dispatch_to_parent end=end_dispatch_to_parent
 ```
 
 As shown in the following code, the parent component can:
 
-* Perform a state update to recreate the sibling with new data (@OnUpdateState)
-* Trigger an event on the sibling using a reference (@OnEvent).
+* Perform a state update to recreate the sibling with new data.
+* Trigger an event on the sibling using a reference.
 
-```java file=sample/src/main/java/com/facebook/samples/litho/java/communicating/ParentComponentMediatorSpec.java start=start_parent_mediator end=end_parent_mediator
+```java file=sample/src/main/java/com/facebook/samples/litho/java/communicating/ParentComponentMediatorComponent.kt start=start_parent_mediator end=end_parent_mediator
 ```
 
 ### Communicating externally to a component
