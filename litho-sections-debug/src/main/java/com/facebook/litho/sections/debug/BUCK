@@ -20,6 +20,7 @@ litho_android_library(
     feature = FBApp_UIFrameworks_Litho_Litho,
     labels = [],
     language = "JAVA",
+    nullchecker_mode = "log",
     required_for_source_only_abi = True,
     visibility = [
         "PUBLIC",

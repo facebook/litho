@@ -56,6 +56,7 @@ litho_android_library(
     ],
     feature = FBApp_UIFrameworks_Litho_Litho,
     labels = [],
+    nullchecker_mode = "log",
     plugins = [
         LITHO_PROCESSOR_TARGET,
     ],
@@ -75,14 +76,13 @@ litho_android_library(
     visibility = [
         "PUBLIC",
     ],
-    deps =
-        LITHO_TEXTLAYOUTBUILDER_UTILS_TARGET + [
-            LITHO_RES_TARGET,
-            LITHO_WIDGET_RES_TARGET,
-            LITHO_WIDGET_ACCESSIBILITIES_TARGET,
-            LITHO_PERF_LOGGER,
-            LITHO_RENDERCORE_RES_TARGET,
-        ],
+    deps = LITHO_TEXTLAYOUTBUILDER_UTILS_TARGET + [
+        LITHO_RES_TARGET,
+        LITHO_WIDGET_RES_TARGET,
+        LITHO_WIDGET_ACCESSIBILITIES_TARGET,
+        LITHO_PERF_LOGGER,
+        LITHO_RENDERCORE_RES_TARGET,
+    ],
     exported_deps = [
         LITHO_RENDERCORE_TARGET,
         LITHO_RENDERCORE_TEXT_TARGET,
