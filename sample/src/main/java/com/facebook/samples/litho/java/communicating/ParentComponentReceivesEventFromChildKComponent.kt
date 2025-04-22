@@ -23,7 +23,6 @@ import com.facebook.litho.KComponent
 import com.facebook.litho.State
 import com.facebook.litho.Style
 import com.facebook.litho.core.padding
-import com.facebook.litho.eventHandler
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.useState
 import com.facebook.rendercore.dp
@@ -31,7 +30,7 @@ import com.facebook.samples.litho.java.communicating.CommunicatingFromChildToPar
 
 // start_demo
 class ParentComponentReceivesEventFromChildKComponent(
-    private val observer: ComponentEventObserver?
+    private val observer: ComponentEventObserver
 ) : KComponent() {
 
   override fun ComponentScope.render(): Component {
@@ -40,10 +39,8 @@ class ParentComponentReceivesEventFromChildKComponent(
       child(Text(text = "ParentComponent", textSize = 30.dp))
       child(Text(text = infoText.value, textSize = 15.dp))
       child(
-          ChildComponentSendsEventToParent.create(context)
-              .observer(observer)
-              .notifyParentEventHandler(eventHandler { onNotifyParentEvent(infoText) })
-              .build())
+          ChildComponentSendsEventToParentKComponent(
+              observer = observer, onChildClickEvent = { onNotifyParentEvent(infoText) }))
     }
   }
 

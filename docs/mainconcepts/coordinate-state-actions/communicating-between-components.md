@@ -21,7 +21,7 @@ For more information on Kotlin events, see [Event Handling](/docs/kotlin/event-h
 
 The child component can invoke the event handler received from the parent to inform the parent that a certain action took place, such as when the child component receives a click event or, in a visibility handler, when it becomes visible.  The following code provides an example.
 
-```java file=sample/src/main/java/com/facebook/samples/litho/java/communicating/ChildComponentSendsEventToParentSpec.java start=start_demo end=end_demo
+```java file=sample/src/main/java/com/facebook/samples/litho/java/communicating/ChildComponentSendsEventToParentKComponent.kt start=start_demo end=end_demo
 ```
 
 ### Passing new Props from a parent to a child
