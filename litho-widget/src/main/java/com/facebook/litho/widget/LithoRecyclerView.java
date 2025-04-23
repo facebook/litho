@@ -19,9 +19,11 @@ package com.facebook.litho.widget;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
+import com.facebook.litho.widget.collection.RecyclerKeyboardEventsHelper;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -109,6 +111,16 @@ public class LithoRecyclerView extends RecyclerView implements HasPostDispatchDr
       default:
         throw new IllegalArgumentException("Unknown TouchInterceptor.Result: " + result);
     }
+  }
+
+  @Override
+  public boolean dispatchKeyEvent(KeyEvent event) {
+    // Let child to dispatch first, then handle ours if child didn't do it.
+    if (super.dispatchKeyEvent(event)) {
+      return true;
+    }
+
+    return RecyclerKeyboardEventsHelper.dispatchKeyEvent(this, event);
   }
 
   @Override
