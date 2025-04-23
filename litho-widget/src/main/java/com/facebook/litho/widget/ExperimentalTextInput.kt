@@ -49,6 +49,7 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.annotation.GravityInt
+import androidx.core.text.toSpanned
 import androidx.core.util.ObjectsCompat
 import androidx.core.view.ViewCompat
 import com.facebook.litho.ComponentContext
@@ -587,7 +588,7 @@ fun createAndMeasureEditText(
   val forMeasure = ForMeasureEditText(context)
   // If text contains Spans, we don't want it to be mutable for the measurement case
   if (textToMeasure is Spannable) {
-    textToMeasure = textToMeasure.toString()
+    textToMeasure = textToMeasure.toSpanned()
   }
   setParams(
       forMeasure,
