@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget;
+package com.facebook.litho.widget
 
-import android.view.KeyEvent;
-import com.facebook.litho.annotations.Event;
+import android.view.KeyEvent
+import com.facebook.litho.annotations.Event
 
 @Event
-public final class DispatchKeyEvent {
-  public KeyEvent keyEvent;
+class DispatchKeyEvent {
+  lateinit var keyEvent: KeyEvent
 }
