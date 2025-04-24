@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget;
+package com.facebook.litho.widget
 
-import android.view.KeyEvent;
-import android.widget.TextView;
-import com.facebook.litho.annotations.Event;
+import android.view.KeyEvent
+import android.widget.TextView
+import com.facebook.litho.annotations.Event
 
 /**
  * Event sent by EditText when the return key is pressed or the IME signals an 'action'. Return true
  * if the handler consumed the event.
  */
-@Event(returnType = boolean.class)
-public class EditorActionEvent {
-  public TextView view;
-  public int actionId;
-  public KeyEvent event;
+@Event(returnType = Boolean::class)
+class EditorActionEvent {
+  lateinit var view: TextView
+  @JvmField var actionId: Int = 0
+  @JvmField var event: KeyEvent? = null
 }
