@@ -165,6 +165,9 @@ internal constructor(
      * their IDs may be different
      */
     @JvmField val checkComponentEquivalenceInSetRoot: Boolean = false,
+
+    /** This flag enables child clipping by default */
+    @JvmField val enableChildClipping: Boolean = true,
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =

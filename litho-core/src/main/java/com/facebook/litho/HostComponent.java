@@ -75,6 +75,10 @@ class HostComponent extends SpecGeneratedComponent {
     final ComponentHost host = (ComponentHost) convertContent;
 
     host.setImplementsVirtualViews(mImplementsVirtualViews);
+    if (c != null) {
+      ComponentsConfiguration componentsConfiguration = c.getLithoConfiguration().componentsConfig;
+      host.setClipChildren(componentsConfiguration.enableChildClipping);
+    }
   }
 
   @Override
@@ -92,6 +96,8 @@ class HostComponent extends SpecGeneratedComponent {
     if (host.isPressed()) {
       host.setPressed(false);
     }
+
+    host.setClipChildren(true);
 
     host.setImplementsVirtualViews(false);
   }
