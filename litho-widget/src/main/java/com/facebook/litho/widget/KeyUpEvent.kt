@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget;
+package com.facebook.litho.widget
 
-import android.view.KeyEvent;
-import com.facebook.litho.annotations.Event;
+import android.view.KeyEvent
+import com.facebook.litho.annotations.Event
 
 /**
  * Event that corresponds to an underlying android.widget.EditText#onKeyUp(). If you handled the
  * event, return true. If you want to allow the event to be handled by the next receiver, return
  * false.
  */
-@Event(returnType = boolean.class)
-public class KeyUpEvent {
-  public int keyCode;
-  public KeyEvent keyEvent;
+@Event(returnType = Boolean::class)
+class KeyUpEvent {
+  @JvmField var keyCode: Int = 0
+  lateinit var keyEvent: KeyEvent
 }
