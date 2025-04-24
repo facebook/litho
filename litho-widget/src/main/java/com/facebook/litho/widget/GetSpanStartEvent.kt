@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget;
+package com.facebook.litho.widget
 
-import com.facebook.litho.annotations.Event;
+import com.facebook.litho.annotations.Event
 
 /** Return the beginning of the range of text to which the specified markup object is attached. */
-@Event(returnType = Integer.class)
-public class GetSpanStartEvent {
-  public Object what;
+@Event(returnType = Int::class)
+class GetSpanStartEvent {
+  lateinit var what: Any
 }
