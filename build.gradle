@@ -56,7 +56,7 @@ allprojects {
         // build.
         if (project.name != "sample-barebones") {
             // These are to prevent upgrade problems where second-party dependencies like Fresco may be
-            // dependencing on a specific, older version of Litho causing dex merging conflicts.
+            // depending on a specific, older version of Litho causing dex merging conflicts.
             resolutionStrategy.dependencySubstitution {
                 substitute module('com.facebook.litho:litho-annotations') using project(':litho-annotations')
                 substitute module('com.facebook.litho:litho-widget') using project(':litho-widget')
@@ -151,7 +151,6 @@ ext.deps = [
         supportTestRunner  : 'androidx.test:runner:1.1.1',
         supportTestRules   : 'androidx.test:rules:1.1.1',
         supportTestJunit   : 'androidx.test.ext:junit:1.1.2',
-        supportMultidex    : 'androidx.multidex:multidex:2.0.0',
         supportViewPager   : 'androidx.viewpager:viewpager:1.0.0',
         supportViewPager2  : 'androidx.viewpager2:viewpager2:1.1.0',
         supportMaterial    : 'com.google.android.material:material:1.2.0',
