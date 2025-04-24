@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget;
+package com.facebook.litho.widget
 
-import com.facebook.litho.annotations.Event;
+import com.facebook.litho.annotations.Event
 
 /** Event sent by EditText when the input focus changed by user */
 @Event
-public class InputFocusChangedEvent {
-  public boolean focused;
+class InputFocusChangedEvent {
+  @JvmField var focused: Boolean = false
 }
