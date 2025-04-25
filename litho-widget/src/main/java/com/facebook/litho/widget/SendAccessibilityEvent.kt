@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget;
+package com.facebook.litho.widget
 
-import com.facebook.litho.annotations.Event;
+import com.facebook.litho.annotations.Event
 
 /** Event sent to TextEdit to send accessibility event. */
 @Event
-public class SendAccessibilityEvent {
-  public int accessibilityEvent;
+class SendAccessibilityEvent {
+  @JvmField var accessibilityEvent: Int = 0
 }
