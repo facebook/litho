@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget;
+package com.facebook.litho.widget
 
-import android.widget.EditText;
-import com.facebook.litho.annotations.Event;
+import android.widget.EditText
+import com.facebook.litho.annotations.Event
 
 /** Event sent by EditText when the text entered by the user changes. */
 @Event
-public class TextChangedEvent {
-
-  public EditText view;
-  public String text;
+class TextChangedEvent {
+  lateinit var view: EditText
+  lateinit var text: String
 }
