@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget;
+package com.facebook.litho.widget
 
-import com.facebook.litho.annotations.Event;
+import com.facebook.litho.annotations.Event
 
 /** Replaces the text input text from startIndex to endIndex with the given text. */
 @Event
-public class ReplaceTextEvent {
-  public CharSequence text;
-  public int startIndex;
-  public int endIndex;
+class ReplaceTextEvent {
+  lateinit var text: CharSequence
+  @JvmField var startIndex: Int = 0
+  @JvmField var endIndex: Int = 0
 
-  public boolean skipSelection;
+  @JvmField var skipSelection: Boolean = false
 }
