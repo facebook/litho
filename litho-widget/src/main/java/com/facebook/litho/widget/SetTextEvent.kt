@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget;
+package com.facebook.litho.widget
 
-import com.facebook.litho.annotations.Event;
+import com.facebook.litho.annotations.Event
 
 /** Use this with TextInput to set the field's current text. */
 @Event
-public class SetTextEvent {
-  public CharSequence text;
+class SetTextEvent {
+  lateinit var text: CharSequence
 }
