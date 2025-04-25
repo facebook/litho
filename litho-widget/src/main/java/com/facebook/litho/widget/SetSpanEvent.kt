@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget;
+package com.facebook.litho.widget
 
-import com.facebook.litho.annotations.Event;
+import com.facebook.litho.annotations.Event
 
 /**
  * Attach the specified markup object to the range (start, end) of the text, or move the object to
  * that range if it was already attached elsewhere.
  */
 @Event
-public class SetSpanEvent {
-  public Object what;
-  public int start;
-  public int end;
-  public int flags;
+class SetSpanEvent {
+  lateinit var what: Any
+  @JvmField var start: Int = 0
+  @JvmField var end: Int = 0
+  @JvmField var flags: Int = 0
 }
