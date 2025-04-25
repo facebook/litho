@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget;
+package com.facebook.litho.widget
 
-import com.facebook.litho.annotations.Event;
+import com.facebook.litho.annotations.Event
 
 /**
  * Event sent by EditText when the selection (particular case: cursor position) gets changed by user
  */
 @Event
-public class SelectionChangedEvent {
-  public int start;
-  public int end;
+class SelectionChangedEvent {
+  @JvmField var start: Int = 0
+  @JvmField var end: Int = 0
 }
