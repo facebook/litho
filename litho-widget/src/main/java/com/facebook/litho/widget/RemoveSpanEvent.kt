@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget;
+package com.facebook.litho.widget
 
-import com.facebook.litho.annotations.Event;
+import com.facebook.litho.annotations.Event
 
 /** Remove the specified object from the range of text to which it was attached. */
 @Event
-public class RemoveSpanEvent {
-  public Object what;
+class RemoveSpanEvent {
+  lateinit var what: Any
 }
