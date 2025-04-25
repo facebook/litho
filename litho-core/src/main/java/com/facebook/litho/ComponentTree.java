@@ -649,7 +649,7 @@ public class ComponentTree
     // We defer until measure if we don't yet have a width/height
     final int viewWidth = mLithoView.getMeasuredWidth();
     final int viewHeight = mLithoView.getMeasuredHeight();
-    if (viewWidth == 0 && viewHeight == 0) {
+    if (!mLithoView.hasMeasuredAtLeastOnce()) {
       if (DEBUG_LOGS) {
         debugLog("backgroundLayoutStateUpdated", "Abort: Host view was not measured yet");
       }
@@ -720,7 +720,7 @@ public class ComponentTree
       // We defer until measure if we don't yet have a width/height
       final int viewWidth = mLithoView.getMeasuredWidth();
       final int viewHeight = mLithoView.getMeasuredHeight();
-      if (viewWidth == 0 && viewHeight == 0) {
+      if (!mLithoView.hasMeasuredAtLeastOnce()) {
         // The host view has not been measured yet.
         return;
       }

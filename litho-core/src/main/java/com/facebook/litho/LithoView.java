@@ -51,6 +51,7 @@ public class LithoView extends BaseMountingView {
   private boolean mForceLayout;
   private boolean mSuppressMeasureComponentTree;
   private boolean mIsMeasuring = false;
+  private boolean mWasMeasured = false;
   private boolean mHasNewComponentTree = false;
   private @Nullable OnPostDrawListener mOnPostDrawListener = null;
 
@@ -213,6 +214,7 @@ public class LithoView extends BaseMountingView {
         ComponentsSystrace.beginSection("LithoView.onMeasure");
       }
       onMeasureInternal(widthMeasureSpec, heightMeasureSpec);
+      mWasMeasured = true;
     } finally {
       if (isTracing) {
         ComponentsSystrace.endSection();
@@ -315,6 +317,10 @@ public class LithoView extends BaseMountingView {
 
     mHasNewComponentTree = false;
     mIsMeasuring = false;
+  }
+
+  boolean hasMeasuredAtLeastOnce() {
+    return mWasMeasured || getMeasuredHeight() != 0 || getMeasuredWidth() != 0;
   }
 
   @Override
@@ -697,6 +703,7 @@ public class LithoView extends BaseMountingView {
       clearDebugOverlay(this);
       mComponentTree = null;
     }
+    mWasMeasured = false;
   }
 
   @Nullable
