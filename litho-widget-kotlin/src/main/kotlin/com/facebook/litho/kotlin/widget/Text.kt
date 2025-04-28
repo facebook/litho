@@ -76,6 +76,7 @@ inline fun ResourcesScope.Text(
     @StyleRes defStyleRes: Int = 0,
     dynamicTextColor: DynamicValue<Int>? = null,
     testKey: String? = null,
+    minimallyWide: Boolean = false,
     @ColorInt outlineColor: Int? = null,
     outlineWidth: Dimen = 0.dp,
 ): Text {
@@ -105,6 +106,7 @@ inline fun ResourcesScope.Text(
           .letterSpacing(letterSpacing)
           .shouldIncludeFontPadding(includeFontPadding)
           .accessibleClickableSpans(accessibleClickableSpans)
+          .minimallyWide(minimallyWide)
           .clipToBounds(clipToBounds)
           .apply { customEllipsisText?.let { customEllipsisText(customEllipsisText) } }
           .apply { ellipsize?.let { ellipsize(it) } }
