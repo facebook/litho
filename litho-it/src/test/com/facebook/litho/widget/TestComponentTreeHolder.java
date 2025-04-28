@@ -66,16 +66,10 @@ public class TestComponentTreeHolder extends ComponentTreeHolder {
   }
 
   @Override
-  protected synchronized void invalidateTree() {
+  public synchronized void invalidateTree() {
     mTreeValid = false;
     mLayoutAsyncCalled = false;
     mLayoutSyncCalled = false;
-  }
-
-  @Override
-  public synchronized void computeLayoutAsync(
-      ComponentContext context, int widthSpec, int heightSpec) {
-    computeLayoutAsync(context, widthSpec, heightSpec, null);
   }
 
   @Override
@@ -141,7 +135,7 @@ public class TestComponentTreeHolder extends ComponentTreeHolder {
   }
 
   @Override
-  synchronized void checkWorkingRangeAndDispatch(
+  public synchronized void checkWorkingRangeAndDispatch(
       int position,
       int firstVisibleIndex,
       int lastVisibleIndex,
