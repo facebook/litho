@@ -15,6 +15,7 @@ oncall("litho_components_for_android")
 
 litho_android_library(
     name = "accessibility",
+    abi_generation_mode = "source_only",
     feature = FBApp_UIFrameworks_Litho_Litho,
     labels = [],
     provided_deps = [
