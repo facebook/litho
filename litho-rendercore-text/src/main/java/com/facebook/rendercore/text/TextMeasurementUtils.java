@@ -242,11 +242,7 @@ public class TextMeasurementUtils {
               context, textStyle, widthSpec, heightSpec, processedText);
     }
 
-    final int layoutWidth =
-        View.resolveSize(
-            layout.getWidth()
-                + Math.round(textStyle.extraSpacingLeft + textStyle.extraSpacingRight),
-            widthSpec);
+    final int layoutWidth = resolveWidth(widthSpec, layout, textStyle);
 
     // Handle custom text truncation:
     if (textStyle.customEllipsisText != null && !textStyle.customEllipsisText.equals("")) {
@@ -343,6 +339,31 @@ public class TextMeasurementUtils {
     }
 
     return new Pair<>(new Rect(0, 0, layoutWidth, layoutHeight), textLayout);
+  }
+
+  private static int resolveWidth(int widthSpec, Layout layout, TextStyle textStyle) {
+    int fullWidth =
+        View.resolveSize(
+            layout.getWidth()
+                + Math.round(textStyle.extraSpacingLeft + textStyle.extraSpacingRight),
+            widthSpec);
+    if (textStyle.minimallyWide && layout.getLineCount() > 1) {
+      float leftMost = fullWidth;
+      float rightMost = 0;
+      for (int i = 0, count = layout.getLineCount(); i < count; i++) {
+        leftMost = Math.min(leftMost, layout.getLineLeft(i));
+        rightMost = Math.max(rightMost, layout.getLineRight(i));
+      }
+      // To determine the width of the longest line, which is also the minimum width we desire,
+      // without leading and trailing whitespaces.
+      final int minimalWidth = View.resolveSize((int) (rightMost - leftMost), widthSpec);
+
+      if (fullWidth - minimalWidth > textStyle.minimallyWideThreshold) {
+        return minimalWidth;
+      }
+    }
+
+    return fullWidth;
   }
 
   static Layout createTextLayout(

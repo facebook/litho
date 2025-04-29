@@ -72,6 +72,8 @@ public class TextStyle implements Cloneable {
   int highlightEndOffset = UNSET;
   int highlightCornerRadius = 0;
   boolean shouldLayoutEmptyText = false;
+  boolean minimallyWide;
+  int minimallyWideThreshold = 0;
 
   boolean shouldTruncateTextUsingConstraints = false;
   int manualBaselineSpacing = Integer.MIN_VALUE;
@@ -361,5 +363,14 @@ public class TextStyle implements Cloneable {
       this.cornerRadius = cornerRadius;
       this.backgroundColor = backgroundColor;
     }
+  }
+
+  public void setMinimallyWide(boolean minimallyWide, int minimallyWideThreshold) {
+    this.minimallyWide = minimallyWide;
+    this.minimallyWideThreshold = minimallyWideThreshold;
+  }
+
+  public void setMinimallyWide(boolean minimallyWide) {
+    this.minimallyWide = minimallyWide;
   }
 }
