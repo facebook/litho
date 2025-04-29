@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget;
+package com.facebook.litho.widget
 
-import android.widget.EditText;
-import com.facebook.litho.annotations.Event;
-import com.facebook.litho.annotations.EventHandlerRebindMode;
+import android.widget.EditText
+import com.facebook.litho.annotations.Event
+import com.facebook.litho.annotations.EventHandlerRebindMode
 
 /** Event sent by EditText when the text entered is pasted from clipboard. */
 @Event(mode = EventHandlerRebindMode.NONE)
-public class TextPastedEvent {
-  public EditText view;
-  public String text;
+class TextPastedEvent {
+  lateinit var view: EditText
+  lateinit var text: String
 }
