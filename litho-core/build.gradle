@@ -107,7 +107,6 @@ dependencies {
     testImplementation deps.junit
     testImplementation deps.robolectric
     testImplementation deps.mockitokotlin
-    testImplementation deps.robolectric
     testImplementation deps.supportRecyclerView
     testImplementation deps.supportTestJunit
     testImplementation project(':litho-rendercore-testing')
