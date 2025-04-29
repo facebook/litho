@@ -83,12 +83,14 @@ public class RCTextView extends View {
   @Nullable private ColorStateList mColorStateList;
   private int mLinkColor;
   private int mHighlightColor;
+  private int mKeyboardHighlightColor;
   private int mHighlightCornerRadius;
   private boolean mIsExplicitlyTruncated;
   // NULLSAFE_FIXME[Field Not Initialized]
   private ImageSpan[] mImageSpans;
   private int mSelectionStart;
   private int mSelectionEnd;
+  private int mSelectionColor;
   // NULLSAFE_FIXME[Field Not Initialized]
   private Path mSelectionPath;
   private boolean mSelectionPathNeedsUpdate;
@@ -213,6 +215,7 @@ public class RCTextView extends View {
     mLayoutTranslationX = textLayout.textLayoutTranslationX;
     mLayoutTranslationY = textLayout.textLayoutTranslationY;
     mHighlightColor = textLayout.textStyle.highlightColor;
+    mKeyboardHighlightColor = textLayout.textStyle.keyboardHighlightColor;
     mHighlightCornerRadius = textLayout.textStyle.highlightCornerRadius;
     mIsExplicitlyTruncated = textLayout.isExplicitlyTruncated;
     if (textLayout.textStyle.textColor != 0) {
@@ -235,7 +238,9 @@ public class RCTextView extends View {
         textLayout.textStyle.highlightStartOffset,
         textLayout.textStyle.highlightEndOffset)) {
       setSelection(
-          textLayout.textStyle.highlightStartOffset, textLayout.textStyle.highlightEndOffset);
+          textLayout.textStyle.highlightStartOffset,
+          textLayout.textStyle.highlightEndOffset,
+          mHighlightColor);
     } else {
       clearSelection();
     }
@@ -254,7 +259,9 @@ public class RCTextView extends View {
     mClickableSpans = textLayout.clickableSpans;
     mShouldHandleTouch = mClickableSpans != null && mClickableSpans.length > 0;
     mShouldHandleKeyEvents =
-        mClickableSpans != null && mClickableSpans.length > 0 && Color.alpha(mHighlightColor) != 0;
+        mClickableSpans != null
+            && mClickableSpans.length > 0
+            && Color.alpha(mKeyboardHighlightColor) != 0;
     if (mShouldHandleKeyEvents) {
       // View needs to be focusable in order to receive key events
       // Capture focusable state to restore it on unmount
@@ -292,6 +299,7 @@ public class RCTextView extends View {
     mLayoutTranslationX = 0;
     mLayoutTranslationY = 0;
     mHighlightColor = 0;
+    mKeyboardHighlightColor = 0;
     mHighlightCornerRadius = 0;
     mColorStateList = null;
     mLinkColor = 0;
@@ -338,7 +346,7 @@ public class RCTextView extends View {
       return null;
     }
 
-    if (Color.alpha(mHighlightColor) == 0) {
+    if (Color.alpha(mSelectionColor) == 0) {
       return null;
     }
 
@@ -354,25 +362,29 @@ public class RCTextView extends View {
     return mSelectionPath;
   }
 
-  private void setSelection(ClickableSpan span) {
+  private void setSelection(ClickableSpan span, boolean isTouch) {
     final Spanned text = (Spanned) mText;
-    setSelection(text.getSpanStart(span), text.getSpanEnd(span));
+    setSelection(
+        text.getSpanStart(span),
+        text.getSpanEnd(span),
+        isTouch ? mHighlightColor : mKeyboardHighlightColor);
   }
 
   /** Updates selection to [selectionStart, selectionEnd] range. */
-  private void setSelection(int selectionStart, int selectionEnd) {
-    if (Color.alpha(mHighlightColor) == 0
+  private void setSelection(int selectionStart, int selectionEnd, int color) {
+    if (Color.alpha(color) == 0
         || (mSelectionStart == selectionStart && mSelectionEnd == selectionEnd)) {
       return;
     }
 
     mSelectionStart = selectionStart;
     mSelectionEnd = selectionEnd;
+    mSelectionColor = color;
 
     if (mHighlightPaint == null) {
       mHighlightPaint = new Paint();
     }
-    mHighlightPaint.setColor(mHighlightColor);
+    mHighlightPaint.setColor(mSelectionColor);
 
     if (mHighlightCornerRadius != 0) {
       mHighlightPaint.setPathEffect(new CornerPathEffect(mHighlightCornerRadius));
@@ -385,7 +397,7 @@ public class RCTextView extends View {
   }
 
   private void clearSelection() {
-    setSelection(0, 0);
+    setSelection(0, 0, mSelectionColor);
   }
 
   private CharSequence getTextForAccessibility() {
@@ -426,7 +438,7 @@ public class RCTextView extends View {
       clearSelection();
       clickedSpan.onClick(this);
     } else if (action == ACTION_DOWN) {
-      setSelection(clickedSpan);
+      setSelection(clickedSpan, true);
     }
 
     return true;
@@ -602,7 +614,7 @@ public class RCTextView extends View {
         if (targetSpan instanceof RCAccessibleClickableSpan) {
           ((RCAccessibleClickableSpan) targetSpan).setKeyboardSelected(true);
         }
-        setSelection(targetSpan);
+        setSelection(targetSpan, false);
         return true;
       }
     }
@@ -639,7 +651,7 @@ public class RCTextView extends View {
           if (targetSpan instanceof RCAccessibleClickableSpan) {
             ((RCAccessibleClickableSpan) targetSpan).setKeyboardSelected(true);
           }
-          setSelection(targetSpan);
+          setSelection(targetSpan, false);
           return true;
         }
       }

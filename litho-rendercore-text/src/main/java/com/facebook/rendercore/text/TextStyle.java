@@ -67,6 +67,7 @@ public class TextStyle implements Cloneable {
   boolean clipToBounds = true;
   VerticalGravity verticalGravity = VerticalGravity.TOP;
   int highlightColor = Color.TRANSPARENT;
+  int keyboardHighlightColor = Color.TRANSPARENT;
   int highlightStartOffset = UNSET;
   int highlightEndOffset = UNSET;
   int highlightCornerRadius = 0;
@@ -273,6 +274,10 @@ public class TextStyle implements Cloneable {
 
   public void setHighlightColor(int color) {
     this.highlightColor = color;
+  }
+
+  public void setKeyboardHighlightColor(int color) {
+    this.keyboardHighlightColor = color;
   }
 
   public void setHighlightCornerRadius(int radius) {
