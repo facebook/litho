@@ -18,6 +18,7 @@ package com.facebook.litho.widget
 
 import android.R
 import android.content.Context
+import android.content.ContextWrapper
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.Rect
@@ -483,9 +484,15 @@ internal class TextInputLayoutBehavior(
     private val measureSeqNumber: Int,
 ) : LayoutBehavior {
   override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
+    val context =
+        if (ComponentsConfiguration.useCustomContextForTextInputMeasurement) {
+          MeasureContext(androidContext)
+        } else {
+          androidContext
+        }
     val forMeasure =
         createAndMeasureEditText(
-            androidContext,
+            context,
             sizeConstraints,
             hint,
             inputBackground,
@@ -1406,4 +1413,26 @@ private class InputFiltersComparator(
   override fun hashCode(): Int {
     return inputFilters?.hashCode() ?: 0
   }
+}
+
+/**
+ * A custom context that is used only during TextInput component measurement.
+ *
+ * This is done to fix a crash during TextInput measurement. It seems like it happens when
+ * setInputTypeAndKeyListenerIfChanged method is called which tries to hide the keyboard and this
+ * affects the window size which results in scheduling a layout pass, but before that happens there
+ * is a main thread assertion but the measurement happens on background thread.
+ *
+ * With this custom Context subclass, we're overriding getSystemServiceName method so that it
+ * returns null if someone requests an InputMethodManager. With this we hope to fail this check:
+ * https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/core/java/android/widget/TextView.java;l=7817?q=setInputType
+ * and avoid keyboard hide during measurement.
+ */
+private class MeasureContext(ctx: Context) : ContextWrapper(ctx) {
+  override fun getSystemServiceName(serviceClass: Class<*>): String? =
+      if (serviceClass == InputMethodManager::class.java) {
+        null
+      } else {
+        super.getSystemServiceName(serviceClass)
+      }
 }
