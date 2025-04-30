@@ -152,19 +152,22 @@ object NestedLithoTree {
 }
 
 // region NestedStateUpdater
-class NestedStateUpdater(
-    private val state: TreeState,
+class NestedStateUpdater
+internal constructor(
+    private val getState: () -> TreeState?,
     private val updater: StateUpdateRequester,
 ) : StateUpdater, TreeStateProvider {
 
+  constructor(state: TreeState, updater: StateUpdateRequester) : this({ state }, updater)
+
   override var isFirstMount: Boolean
-    get() = state.mountInfo.isFirstMount
+    get() = treeState?.mountInfo?.isFirstMount ?: false
     set(value) {
-      state.mountInfo.isFirstMount = value
+      treeState?.mountInfo?.isFirstMount = value
     }
 
-  override val treeState: TreeState
-    get() = state
+  override val treeState: TreeState?
+    get() = getState()
 
   override fun updateHookStateAsync(
       globalKey: String,
@@ -250,7 +253,8 @@ class NestedStateUpdater(
       container: StateContainer,
       isLayoutState: Boolean
   ): StateContainer {
-    return state.applyLazyStateUpdatesForContainer(globalKey, container, isLayoutState)
+    return treeState?.applyLazyStateUpdatesForContainer(globalKey, container, isLayoutState)
+        ?: container
   }
 
   override fun <T> canSkipStateUpdate(
@@ -259,7 +263,8 @@ class NestedStateUpdater(
       newValue: T?,
       isLayoutState: Boolean
   ): Boolean {
-    return state.canSkipStateUpdate(globalKey, hookStateIndex, newValue, isLayoutState)
+    return treeState?.canSkipStateUpdate(globalKey, hookStateIndex, newValue, isLayoutState)
+        ?: false
   }
 
   override fun <T> canSkipStateUpdate(
@@ -268,12 +273,12 @@ class NestedStateUpdater(
       hookStateIndex: Int,
       isLayoutState: Boolean
   ): Boolean {
-    return state.canSkipStateUpdate(
+    return treeState?.canSkipStateUpdate(
         newValueFunction,
         globalKey,
         hookStateIndex,
         isLayoutState,
-    )
+    ) ?: false
   }
 
   override fun removePendingStateUpdate(key: String, isLayoutState: Boolean) {
@@ -289,7 +294,7 @@ class NestedStateUpdater(
       cachedValueInputs: Any,
       isLayoutState: Boolean
   ): Any? {
-    return state.getCachedValue(globalKey, index, cachedValueInputs, isLayoutState)
+    return treeState?.getCachedValue(globalKey, index, cachedValueInputs, isLayoutState)
   }
 
   override fun putCachedValue(
@@ -299,15 +304,15 @@ class NestedStateUpdater(
       cachedValue: Any?,
       isLayoutState: Boolean
   ) {
-    state.putCachedValue(globalKey, index, cachedValueInputs, cachedValue, isLayoutState)
+    treeState?.putCachedValue(globalKey, index, cachedValueInputs, cachedValue, isLayoutState)
   }
 
   override fun getEventTrigger(key: String): EventTrigger<*>? {
-    return state.getEventTrigger(triggerKey = key)
+    return treeState?.getEventTrigger(triggerKey = key)
   }
 
   override fun getEventTrigger(handle: Handle, id: Int): EventTrigger<*>? {
-    return state.getEventTrigger(handle = handle, methodId = id)
+    return treeState?.getEventTrigger(handle = handle, methodId = id)
   }
 }
 

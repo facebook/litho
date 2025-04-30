@@ -251,7 +251,7 @@ fun PrimitiveComponentScope.useNestedTree(
   // requested, and not skipped due to duplicate checks.
   val stateForSync = useState { Any() }
 
-  val nestedTreeState = useCached(Unit) { NestedLithoTreeState(currentState = TreeState()) }
+  val nestedTreeState = useCached(Unit) { NestedLithoTreeState(treeState = TreeState()) }
   val lithoConfig =
       useCached(config) {
         buildDefaultLithoConfiguration(
@@ -262,7 +262,6 @@ fun PrimitiveComponentScope.useNestedTree(
       }
 
   val currentResolveResult = nestedTreeState.currentResolveResult
-  val newState = nestedTreeState.getUpdatedState()
 
   val onStateUpdate = { update: PendingStateUpdate ->
     nestedTreeState.enqueue(update)
@@ -280,7 +279,8 @@ fun PrimitiveComponentScope.useNestedTree(
   }
 
   val errorComponentRef = useState { AtomicReference<Component?>(null) }
-  val stateUpdater = NestedStateUpdater(state = newState, updater = onStateUpdate)
+  val stateUpdater =
+      NestedStateUpdater(getState = nestedTreeState::treeState, updater = onStateUpdate)
   val componentContext =
       ComponentContext(
           androidContext,
@@ -308,7 +308,7 @@ fun PrimitiveComponentScope.useNestedTree(
           componentContext,
           errorComponent ?: root,
           treeProps,
-          newState,
+          nestedTreeState.getUpdatedState(),
           currentResolveResult,
       )
 
@@ -318,33 +318,28 @@ fun PrimitiveComponentScope.useNestedTree(
 @DataClassGenerate(toString = Mode.OMIT, equalsHashCode = Mode.KEEP)
 data class NestedLithoTreeState(
     val id: Int = LithoTree.generateComponentTreeId(),
-    @Volatile var currentState: TreeState?,
+    @Volatile var treeState: TreeState?,
     @Volatile var currentResolveResult: ResolveResult? = null,
     @Volatile var currentLayoutState: LayoutState? = null,
-    val pendingStateUpdates: MutableList<PendingStateUpdate> = ArrayList(),
 ) {
 
   val mountedViewReference: NestedMountedViewReference = NestedMountedViewReference()
   val treeLifecycleProvider: NestedLithoTreeLifecycleProvider = NestedLithoTreeLifecycleProvider()
 
   fun enqueue(update: PendingStateUpdate) {
-    synchronized(pendingStateUpdates) { pendingStateUpdates.add(update) }
+    treeState?.enqueue(update)
   }
 
   fun getUpdatedState(): TreeState {
-    return synchronized(this) { TreeState(currentState).enqueue(ArrayList(pendingStateUpdates)) }
+    return synchronized(this) { TreeState(treeState) }
   }
 
   fun commit(layoutState: LayoutState) {
     synchronized(this) {
-
-      // remove applied state updates
-      if (pendingStateUpdates.isNotEmpty()) {
-        val appliedUpdates = layoutState.treeState.keysForAppliedStateUpdates
-        pendingStateUpdates.removeAll { e -> appliedUpdates.contains(e.key) }
+      treeState?.apply {
+        commitResolveState(layoutState.resolveResult.treeState)
+        commitLayoutState(layoutState.treeState)
       }
-
-      currentState = layoutState.treeState
       currentResolveResult = layoutState.resolveResult
       currentLayoutState = layoutState
 
@@ -355,9 +350,9 @@ data class NestedLithoTreeState(
 
   fun cleanup() {
     synchronized(this) {
-      currentState?.effectsHandler?.onDetached()
+      treeState?.effectsHandler?.onDetached()
       treeLifecycleProvider.release()
-      currentState = null
+      treeState = null
       currentResolveResult = null
       currentLayoutState = null
     }
