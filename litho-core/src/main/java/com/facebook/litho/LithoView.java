@@ -486,7 +486,7 @@ public class LithoView extends BaseMountingView {
    * {@link LithoView} doesn't have a ComponentTree initialized, the root will be computed
    * synchronously.
    */
-  public void setComponentAsync(Component component) {
+  public void setComponentAsync(@Nullable Component component) {
     if (mComponentTree == null) {
       setComponentTree(ComponentTree.create(getComponentContext(), component).build());
     } else {
