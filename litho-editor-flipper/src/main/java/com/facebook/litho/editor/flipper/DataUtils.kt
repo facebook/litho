@@ -150,7 +150,7 @@ object DataUtils {
     if (stateContainer is KStateContainer) {
       val states = stateContainer.state
       hasState = states.isNotEmpty() == true
-      states?.let {
+      states.let {
         it.forEachIndexed { index, item ->
           // TODO(T131825073): Replace with Flipper Field to allow editing state
           state.put(index.toString(), item)
