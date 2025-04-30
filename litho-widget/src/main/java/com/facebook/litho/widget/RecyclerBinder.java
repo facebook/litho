@@ -424,12 +424,12 @@ public class RecyclerBinder
     }
   }
 
-  interface ComponentTreeHolderFactory {
+  public interface ComponentTreeHolderFactory {
 
     ComponentTreeHolder create(
         RenderInfo renderInfo,
         @Nullable RunnableHandler layoutHandler,
-        ComponentTreeMeasureListenerFactory measureListenerFactory,
+        @Nullable ComponentTreeMeasureListenerFactory measureListenerFactory,
         ComponentsConfiguration componentsConfiguration,
         @Nullable LithoVisibilityEventsController lifecycleProvider);
   }
