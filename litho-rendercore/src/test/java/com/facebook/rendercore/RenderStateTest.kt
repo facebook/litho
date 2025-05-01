@@ -35,6 +35,7 @@ import org.robolectric.Shadows
 import org.robolectric.annotation.LooperMode
 
 @RunWith(RobolectricTestRunner::class)
+@LooperMode(LooperMode.Mode.PAUSED)
 class RenderStateTest {
   private val emptyDelegate: RenderState.Delegate<Any?> =
       object : RenderState.Delegate<Any?> {
@@ -49,7 +50,6 @@ class RenderStateTest {
         override fun commitToUI(tree: RenderTree?, state: Any?, frameId: Int) = Unit
       }
 
-  @LooperMode(LooperMode.Mode.PAUSED)
   @Test
   fun testSettingTreeAsyncResolvesOnTheExecutor() {
     val wasExecuteCalled = AtomicBoolean()
@@ -365,11 +365,11 @@ class RenderStateTest {
     }
     assertThat(resolveCount.toInt()).isEqualTo(1)
     renderState.enqueueStateUpdateSync(TestStateUpdate())
+    Shadows.shadowOf(Looper.getMainLooper()).idle()
     assertThat(resolveCount.toInt()).isEqualTo(2)
     assertThat(appliedStateUpdates.get()).hasSize(1)
   }
 
-  @LooperMode(LooperMode.Mode.PAUSED)
   @Test
   fun `only applied state updates are cleared after commit`() {
     val pendingUpdates = AtomicReference<List<TestStateUpdate>>()
@@ -423,7 +423,6 @@ class RenderStateTest {
     assertThat(appliedStateUpdates.get()).hasSize(1)
   }
 
-  @LooperMode(LooperMode.Mode.PAUSED)
   @Test
   fun enqueueStateUpdate_whenTriggeredManyTimesInARow_areBatchedAndResolveOnce() {
     val resolveCount = AtomicInteger(0)
@@ -450,7 +449,6 @@ class RenderStateTest {
     assertThat(appliedStateUpdates.get()).hasSize(2)
   }
 
-  @LooperMode(LooperMode.Mode.PAUSED)
   @Test
   fun enqueueStateUpdate_whenSetTreeExecutesBeforeFlushStateUpdate_flushDoesNothing() {
     val resolveCount = AtomicInteger(0)
@@ -488,7 +486,6 @@ class RenderStateTest {
     assertThat(resolveCount.toInt()).isEqualTo(2)
   }
 
-  @LooperMode(LooperMode.Mode.PAUSED)
   @Test
   fun setTreeAsync_resolvesOnResolveExecutor() {
     val resolveCount = AtomicInteger(0)
@@ -516,7 +513,6 @@ class RenderStateTest {
     assertThat(resolvedAsync.get()).isEqualTo(true)
   }
 
-  @LooperMode(LooperMode.Mode.PAUSED)
   @Test
   fun enqueueStateUpdateAsync_resolvesOnResolveExecutor() {
     val resolveCount = AtomicInteger(0)
@@ -550,7 +546,6 @@ class RenderStateTest {
     assertThat(resolvedAsync.get()).isEqualTo(true)
   }
 
-  @LooperMode(LooperMode.Mode.PAUSED)
   @Test
   fun testSyncAsyncStateUpdateSequence() {
     val resolveCount = AtomicInteger(0)
