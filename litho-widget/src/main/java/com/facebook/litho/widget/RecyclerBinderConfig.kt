@@ -102,7 +102,9 @@ data class RecyclerBinderConfig(
      * item cannot be relied on to estimate the viewport count. It should not be used in the common
      * case, use with caution.
      */
-    @JvmField val estimatedViewportCount: Int? = null,
+    @Deprecated("This is only used for migration")
+    @JvmField
+    val estimatedViewportCount: Int? = null,
     /**
      * The [RecyclerBinder] will use this [LayoutHandlerFactory] when creating
      * [com.facebook.litho.ComponentTree] in order to specify on which thread layout calculation

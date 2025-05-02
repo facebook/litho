@@ -37,15 +37,16 @@ import com.facebook.litho.widget.SnapUtil
  * Provide layout configuration options to a [Collection]
  *
  * @param orientation @see [RecyclerView.Orientation]
- * @param snapMode How contents snaps to position after a scroll @see [SnapUtil.SnapMode]
  * @param reverse Reverse item traversal and layout
  *   order @see [LinearLayoutManager#setReverseLayout]
+ * @param rangeRatio @see [RecyclerBinderConfig.rangeRatio]
  */
 abstract class CollectionLayout(
     componentContext: ComponentContext,
     @RecyclerView.Orientation orientation: Int,
     reverse: Boolean,
     rangeRatio: Float? = null,
+    estimatedViewportCount: Int? = null,
     useBackgroundChangeSets: Boolean = false,
     isIncrementalMountEnabled: Boolean =
         componentContext.lithoConfiguration.componentsConfig.incrementalMountEnabled,
@@ -70,6 +71,7 @@ abstract class CollectionLayout(
                                   preAllocationHandler = preAllocationHandler,
                                   incrementalMountEnabled = isIncrementalMountEnabled),
                           rangeRatio = rangeRatio ?: RecyclerBinderConfig.DEFAULT_RANGE_RATIO,
+                          estimatedViewportCount = estimatedViewportCount,
                           wrapContent = mainAxisWrapContent,
                           crossAxisWrapMode = crossAxisWrapMode,
                           isCircular = isCircular,
@@ -93,6 +95,9 @@ internal object CollectionLayouts {
    * @param snapToStartOffset Attempt to offset the child by this number of pixels from the start of
    *   the Collection when snapMode = SNAP_TO_START.
    * @param reverse @see CollectionLayout
+   * @param rangeRatio @see [RecyclerBinderConfig.rangeRatio]
+   * @param estimatedViewportCount @see [RecyclerBinderConfig.estimatedViewportCount], it's
+   *   deprecated and only used for migration purpose.
    * @param crossAxisWrapMode Specify how the [Collection] will wrap its contents across the main
    *   axis.
    * @param mainAxisWrapContent If set, the size of the [Collection] along the main axis will match
@@ -108,6 +113,7 @@ internal object CollectionLayouts {
       @Px snapToStartOffset: Int = 0,
       reverse: Boolean = false,
       rangeRatio: Float? = null,
+      estimatedViewportCount: Int? = null,
       useBackgroundChangeSets: Boolean = false,
       crossAxisWrapMode: CrossAxisWrapMode = CrossAxisWrapMode.NoWrap,
       mainAxisWrapContent: Boolean = false,
@@ -123,6 +129,7 @@ internal object CollectionLayouts {
               orientation = orientation,
               reverse = reverse,
               rangeRatio = rangeRatio,
+              estimatedViewportCount = estimatedViewportCount,
               useBackgroundChangeSets = useBackgroundChangeSets,
               mainAxisWrapContent = mainAxisWrapContent,
               crossAxisWrapMode = crossAxisWrapMode,
@@ -147,6 +154,9 @@ internal object CollectionLayouts {
    * @param orientation @see CollectionLayout
    * @param snapMode @see CollectionLayout
    * @param reverse @see CollectionLayout
+   * @param rangeRatio @see [RecyclerBinderConfig.rangeRatio]
+   * @param estimatedViewportCount @see [RecyclerBinderConfig.estimatedViewportCount], it's
+   *   deprecated and only used for migration purpose.
    * @param columns Number of columns in the grid
    * @param preAllocationHandler - if set, it will attempt to preallocate the mount content after
    *   the hierarchy is resolved. It will only do it if the root ComponentTree has set a
@@ -159,6 +169,7 @@ internal object CollectionLayouts {
       @Px snapToStartOffset: Int = 0,
       reverse: Boolean = false,
       rangeRatio: Float? = null,
+      estimatedViewportCount: Int? = null,
       useBackgroundChangeSets: Boolean = false,
       columns: Int = 2,
       preAllocationHandler: PreAllocationHandler?,
@@ -172,6 +183,7 @@ internal object CollectionLayouts {
               orientation = orientation,
               reverse = reverse,
               rangeRatio = rangeRatio,
+              estimatedViewportCount = estimatedViewportCount,
               useBackgroundChangeSets = useBackgroundChangeSets,
               preAllocationHandler = preAllocationHandler,
               isCircular = false,
@@ -192,6 +204,9 @@ internal object CollectionLayouts {
    * @param orientation @see CollectionLayout
    * @param snapMode @see CollectionLayout
    * @param reverse @see CollectionLayout
+   * @param rangeRatio @see [RecyclerBinderConfig.rangeRatio]
+   * @param estimatedViewportCount @see [RecyclerBinderConfig.estimatedViewportCount], it's
+   *   deprecated and only used for migration purpose.
    * @param spans Number of spans in the grid
    * @param gapStrategy @see [StaggeredGridLayoutManager#setGapStrategy]
    * @param preAllocationHandler - if set, it will attempt to preallocate the mount content after
@@ -203,6 +218,7 @@ internal object CollectionLayouts {
       @RecyclerView.Orientation orientation: Int = RecyclerView.VERTICAL,
       reverse: Boolean = false,
       rangeRatio: Float? = null,
+      estimatedViewportCount: Int? = null,
       useBackgroundChangeSets: Boolean = false,
       isIncrementalMountEnabled: Boolean = true,
       spans: Int = 2,
@@ -217,6 +233,7 @@ internal object CollectionLayouts {
               orientation = orientation,
               reverse = reverse,
               rangeRatio = rangeRatio,
+              estimatedViewportCount = estimatedViewportCount,
               useBackgroundChangeSets = useBackgroundChangeSets,
               isIncrementalMountEnabled = isIncrementalMountEnabled,
               preAllocationHandler = preAllocationHandler,
