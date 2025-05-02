@@ -49,6 +49,7 @@ import com.facebook.fbui.textlayoutbuilder.util.LayoutMeasureUtil;
 import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.TextContent;
 import com.facebook.litho.Touchable;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.utils.VersionedAndroidApis;
 import java.util.Collections;
 import java.util.List;
@@ -90,6 +91,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
   private @Nullable ClickableSpanListener mSpanListener;
   private @Nullable TouchableSpanListener mTouchableSpanListener;
   private @Nullable String mContextLogTag;
+  private @Nullable ClickableSpan mCurrentlyTouchedSpan;
 
   /**
    * This should be lazy loaded so that it is only created whenever it is needed. In most cases we
@@ -209,7 +211,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
   @Override
   public boolean onTouchEvent(MotionEvent event, View view) {
     if ((shouldHandleTouchForClickableSpan(event) || shouldHandleTouchForLongClickableSpan(event))
-        && handleTouchForSpans(event, view)) {
+        && handleOnTouchForSpans(event, view)) {
       return true;
     }
 
@@ -220,6 +222,55 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
     }
 
     return false;
+  }
+
+  private boolean handleOnTouchForSpans(MotionEvent event, View view) {
+    if (!ComponentsConfiguration.enableNewHandleTouchForSpansMethod) {
+      return handleTouchForSpans(event, view);
+    }
+    final int action = event.getActionMasked();
+    if (action == ACTION_MOVE && !mLongClickActivated && mLongClickRunnable != null) {
+      trackLongClickBoundaryOnMove(event);
+    }
+    final boolean clickActivationAllowed = !mLongClickActivated;
+    if (action == ACTION_UP) {
+      resetLongClick();
+    }
+    final Rect bounds = getBounds();
+    if (!isWithinBounds(bounds, event)) {
+      if (action == ACTION_CANCEL) {
+        handleNoSpanOrOutOfBoundsCancelEvent(mCurrentlyTouchedSpan, event, view);
+      }
+      mCurrentlyTouchedSpan = null;
+      return false;
+    }
+    ClickableSpan currentSpan = mCurrentlyTouchedSpan;
+    if (action == ACTION_UP) {
+      clearSelection();
+      if (clickActivationAllowed
+          && currentSpan != null
+          && (mSpanListener == null || !mSpanListener.onClick(currentSpan, view))) {
+        currentSpan.onClick(view);
+      }
+      mCurrentlyTouchedSpan = null;
+    } else if (action == ACTION_DOWN) {
+      final int x = (int) event.getX() - bounds.left;
+      final int y = (int) event.getY() - bounds.top;
+      currentSpan = findClickableSpanAtCoordinates(x, y);
+      if (currentSpan instanceof LongClickableSpan) {
+        registerForLongClick((LongClickableSpan) currentSpan, view);
+      }
+      setSelection(currentSpan);
+      mCurrentlyTouchedSpan = currentSpan;
+    } else if (action == ACTION_CANCEL) {
+      clearSelection();
+      resetLongClick();
+      mCurrentlyTouchedSpan = null;
+    }
+    if (mTouchableSpanListener != null) {
+      return mTouchableSpanListener.onTouch(currentSpan, event, view);
+    }
+    return true;
   }
 
   private boolean handleTouchForSpans(MotionEvent event, View view) {
@@ -277,6 +328,26 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       mTouchableSpanListener.onTouch(clickedSpan, event, view);
     }
     return true;
+  }
+
+  @Nullable
+  private ClickableSpan findClickableSpanAtCoordinates(int x, int y) {
+    ClickableSpan clickedSpan = getClickableSpanInCoords(x, y);
+
+    if (clickedSpan == null && mClickableSpanExpandedOffset > 0) {
+      clickedSpan = getClickableSpanInProximityToClick(x, y, mClickableSpanExpandedOffset);
+    }
+
+    return clickedSpan;
+  }
+
+  private void handleNoSpanOrOutOfBoundsCancelEvent(
+      @Nullable ClickableSpan currentlyTouchedSpan, MotionEvent event, View view) {
+    clearSelection();
+    resetLongClick();
+    if (mTouchableSpanListener != null) {
+      mTouchableSpanListener.onTouch(currentlyTouchedSpan, event, view);
+    }
   }
 
   private void resetLongClick() {
@@ -533,6 +604,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
     mHighlightColor = 0;
     mSpanListener = null;
     mTextOffsetOnTouchListener = null;
+    mCurrentlyTouchedSpan = null;
     mColorStateList = null;
     mUserColor = 0;
     if (mImageSpans != null) {
@@ -598,11 +670,13 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
     if (offset < 0) {
       return null;
     }
-    final ClickableSpan[] clickableSpans =
-        ((Spanned) mText).getSpans(offset, offset, ClickableSpan.class);
+    if (mText instanceof Spanned) {
+      final ClickableSpan[] clickableSpans =
+          ((Spanned) mText).getSpans(offset, offset, ClickableSpan.class);
 
-    if (clickableSpans != null && clickableSpans.length > 0) {
-      return clickableSpans[0];
+      if (clickableSpans != null && clickableSpans.length > 0) {
+        return clickableSpans[0];
+      }
     }
 
     return null;

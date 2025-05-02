@@ -34,16 +34,19 @@ import android.text.TextUtils.TruncateAt;
 import android.text.style.ClickableSpan;
 import android.view.MotionEvent;
 import android.view.View;
+import androidx.annotation.NonNull;
 import androidx.core.text.TextDirectionHeuristicCompat;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.DynamicValue;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LithoView;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.LithoTestRule;
 import com.facebook.litho.testing.eventhandler.EventHandlerTestHelper;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.yoga.YogaDirection;
+import java.util.ArrayList;
 import javax.annotation.Nullable;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -129,6 +132,275 @@ public class TextSpecTest {
 
     TextDrawable drawable = getMountedDrawableForText(clickableText);
     assertThat(drawable.getClickableSpans()).isNotNull().hasSize(1);
+  }
+
+  @Test
+  public void testSpannableWithClickableSpansGettingCancelEvent() {
+    ComponentsConfiguration.enableNewHandleTouchForSpansMethod = true;
+    testCancelEventHandling(0, 0, false, false, true);
+  }
+
+  @Test
+  public void testSpannableWithClickableSpansGettingCancelEventOutsideOfBoundsWithNullSpan() {
+    ComponentsConfiguration.enableNewHandleTouchForSpansMethod = true;
+    testCancelEventHandling(90000, 900000, false, false, true);
+  }
+
+  @Test
+  public void testSpannableWithClickableSpansGettingCancelEventWithinBoundsWithNullSpan() {
+    ComponentsConfiguration.enableNewHandleTouchForSpansMethod = true;
+    testCancelEventHandling(50, 50, false, false, true);
+  }
+
+  @Test
+  public void
+      testSpannableWithClickableSpansGettingCancelEventWithinBoundsWithoutPreviouslyTouchedSpanWillReturnNullSpan() {
+    ComponentsConfiguration.enableNewHandleTouchForSpansMethod = true;
+    testCancelEventHandling(0, 0, true, true, true);
+  }
+
+  private LithoView setupClickableSpanTest(
+      String text, ArrayList<Integer> eventsFired, TouchableSpanListener touchableSpanListener) {
+
+    Spannable clickableText = Spannable.Factory.getInstance().newSpannable(text);
+    ClickableSpan clickableSpan =
+        new ClickableSpan() {
+          @Override
+          public void onClick(@NonNull View widget) {
+            // No action
+          }
+        };
+    clickableText.setSpan(clickableSpan, 0, 1, 0);
+
+    LithoView lithoView =
+        ComponentTestHelper.mountComponent(
+            mContext,
+            Text.create(mContext)
+                .text(clickableText)
+                .touchableSpanListener(touchableSpanListener)
+                .build());
+
+    return lithoView;
+  }
+
+  @Test
+  public void testSpannableWithClickableSpansGettingUpEventAfterClickingOnSpanAndMovingAway() {
+    ComponentsConfiguration.enableNewHandleTouchForSpansMethod = true;
+    final ArrayList<Integer> eventsFired = new ArrayList<>();
+
+    TouchableSpanListener touchableSpanListener =
+        (span, motionEvent, view) -> {
+          eventsFired.add(motionEvent.getAction());
+          assertThat(span).isNotNull();
+          return true;
+        };
+
+    LithoView lithoView = setupClickableSpanTest("Some text.", eventsFired, touchableSpanListener);
+
+    TextDrawable textDrawable = (TextDrawable) (lithoView.getDrawables().get(0));
+    // click on the span
+    MotionEvent downEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0);
+    assertThat(textDrawable.onTouchEvent(downEvent, lithoView)).isEqualTo(true);
+    assertThat(eventsFired.size()).isEqualTo(1);
+    assertThat(eventsFired).contains(MotionEvent.ACTION_DOWN);
+    eventsFired.clear();
+    // action up outside of the bounds
+    MotionEvent upEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 90000, 90000, 0);
+    assertThat(textDrawable.onTouchEvent(upEvent, lithoView)).isEqualTo(false);
+    assertThat(eventsFired.size()).isEqualTo(0);
+  }
+
+  @Test
+  public void
+      testSpannableWithClickableSpansGettingUpEventAfterClickingOnSpanAndMovingWithinBounds() {
+    ComponentsConfiguration.enableNewHandleTouchForSpansMethod = true;
+    final ArrayList<Integer> eventsFired = new ArrayList<>();
+
+    TouchableSpanListener touchableSpanListener =
+        (span, motionEvent, view) -> {
+          eventsFired.add(motionEvent.getAction());
+          assertThat(span).isNotNull();
+          return true;
+        };
+
+    LithoView lithoView =
+        setupClickableSpanTest(
+            "Some text that is really long and has two spans.", eventsFired, touchableSpanListener);
+
+    TextDrawable textDrawable = (TextDrawable) (lithoView.getDrawables().get(0));
+    // click on the span
+    MotionEvent downEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0);
+    assertThat(textDrawable.onTouchEvent(downEvent, lithoView)).isEqualTo(true);
+    assertThat(eventsFired.size()).isEqualTo(1);
+    assertThat(eventsFired).contains(MotionEvent.ACTION_DOWN);
+    eventsFired.clear();
+    // action up within the bounds but on different span
+    MotionEvent upEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 0, 50, 0);
+    assertThat(textDrawable.onTouchEvent(upEvent, lithoView)).isEqualTo(true);
+    assertThat(eventsFired.size()).isEqualTo(1);
+    assertThat(eventsFired).contains(MotionEvent.ACTION_UP);
+  }
+
+  @Test
+  public void
+      testSpannableWithClickableSpansGettingUpEventAfterClickingOnSpanAndMovingToOtherSpan() {
+    ComponentsConfiguration.enableNewHandleTouchForSpansMethod = true;
+    final ArrayList<Integer> eventsFired = new ArrayList<>();
+
+    Spannable clickableText = Spannable.Factory.getInstance().newSpannable("Some text.");
+    ClickableSpan clickableSpan =
+        new ClickableSpan() {
+          @Override
+          public void onClick(@NonNull View widget) {
+            // No action
+          }
+        };
+    ClickableSpan clickableSpan2 =
+        new ClickableSpan() {
+          @Override
+          public void onClick(@NonNull View widget) {
+            // No action
+          }
+        };
+
+    clickableText.setSpan(clickableSpan, 0, 1, 0);
+    clickableText.setSpan(clickableSpan2, 2, clickableText.length(), 0);
+
+    TouchableSpanListener touchableSpanListener =
+        (span, motionEvent, view) -> {
+          eventsFired.add(motionEvent.getAction());
+          assertThat(span).isEqualTo(clickableSpan);
+          return true;
+        };
+
+    LithoView lithoView =
+        ComponentTestHelper.mountComponent(
+            mContext,
+            Text.create(mContext)
+                .text(clickableText)
+                .touchableSpanListener(touchableSpanListener)
+                .build());
+
+    TextDrawable textDrawable = (TextDrawable) (lithoView.getDrawables().get(0));
+    // click on the span
+    MotionEvent downEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0);
+    assertThat(textDrawable.onTouchEvent(downEvent, lithoView)).isEqualTo(true);
+    assertThat(eventsFired.size()).isEqualTo(1);
+    assertThat(eventsFired).contains(MotionEvent.ACTION_DOWN);
+    eventsFired.clear();
+    // action up within of the bounds
+    MotionEvent upEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 0, 0, 0);
+    assertThat(textDrawable.onTouchEvent(upEvent, lithoView)).isEqualTo(true);
+    assertThat(eventsFired.size()).isEqualTo(1);
+    assertThat(eventsFired).contains(MotionEvent.ACTION_UP);
+  }
+
+  @Test
+  public void
+      testSpannableWithClickableSpansGettingCancelEventAfterClickingOnSpanAndMovingWithinBounds() {
+    ComponentsConfiguration.enableNewHandleTouchForSpansMethod = true;
+    final ArrayList<Integer> eventsFired = new ArrayList<>();
+
+    TouchableSpanListener touchableSpanListener =
+        (span, motionEvent, view) -> {
+          eventsFired.add(motionEvent.getAction());
+          assertThat(span).isNotNull();
+          return true;
+        };
+
+    LithoView lithoView =
+        setupClickableSpanTest(
+            "Some text that is really long and has two spans.", eventsFired, touchableSpanListener);
+
+    TextDrawable textDrawable = (TextDrawable) (lithoView.getDrawables().get(0));
+    // click on the span
+    MotionEvent downEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0);
+    assertThat(textDrawable.onTouchEvent(downEvent, lithoView)).isEqualTo(true);
+    assertThat(eventsFired.size()).isEqualTo(1);
+    assertThat(eventsFired).contains(MotionEvent.ACTION_DOWN);
+    eventsFired.clear();
+    // action cancel within the bounds but on different span
+    MotionEvent cancelEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_CANCEL, 0, 50, 0);
+    assertThat(textDrawable.onTouchEvent(cancelEvent, lithoView)).isEqualTo(true);
+    assertThat(eventsFired.size()).isEqualTo(1);
+    assertThat(eventsFired).contains(MotionEvent.ACTION_CANCEL);
+  }
+
+  @Test
+  public void
+      testSpannableWithClickableSpansGettingCancelEventAfterClickingOnSpanAndMovingOutsideOfBounds() {
+    ComponentsConfiguration.enableNewHandleTouchForSpansMethod = true;
+    final ArrayList<Integer> eventsFired = new ArrayList<>();
+
+    TouchableSpanListener touchableSpanListener =
+        (span, motionEvent, view) -> {
+          eventsFired.add(motionEvent.getAction());
+          assertThat(span).isNotNull();
+          return true;
+        };
+
+    LithoView lithoView =
+        setupClickableSpanTest(
+            "Some text that is really long and has two spans.", eventsFired, touchableSpanListener);
+
+    TextDrawable textDrawable = (TextDrawable) (lithoView.getDrawables().get(0));
+    // click on the span
+    MotionEvent downEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0);
+    assertThat(textDrawable.onTouchEvent(downEvent, lithoView)).isEqualTo(true);
+    assertThat(eventsFired.size()).isEqualTo(1);
+    assertThat(eventsFired).contains(MotionEvent.ACTION_DOWN);
+    eventsFired.clear();
+    // action cancel outside of bounds
+    MotionEvent cancelEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_CANCEL, 90000, 90000, 0);
+    assertThat(textDrawable.onTouchEvent(cancelEvent, lithoView)).isEqualTo(false);
+    assertThat(eventsFired.size()).isEqualTo(1);
+    assertThat(eventsFired).contains(MotionEvent.ACTION_CANCEL);
+  }
+
+  private void testCancelEventHandling(
+      float x,
+      float y,
+      boolean expectedHandled,
+      boolean expectedReturnValue,
+      boolean spanShouldBeNull) {
+
+    final boolean[] cancelEventFired = new boolean[] {false};
+
+    Spannable clickableText = Spannable.Factory.getInstance().newSpannable("Some text.");
+    ClickableSpan clickableSpan =
+        new ClickableSpan() {
+          @Override
+          public void onClick(@NonNull View widget) {
+            // No action
+          }
+        };
+    clickableText.setSpan(clickableSpan, 0, 1, 0);
+
+    TouchableSpanListener touchableSpanListener =
+        (span, motionEvent, view) -> {
+          if (motionEvent.getAction() == MotionEvent.ACTION_CANCEL) {
+            cancelEventFired[0] = true;
+            if (spanShouldBeNull) {
+              assertThat(span).isNull();
+            } else {
+              assertThat(span).isNotNull();
+            }
+          }
+          return expectedHandled;
+        };
+
+    LithoView lithoView =
+        ComponentTestHelper.mountComponent(
+            mContext,
+            Text.create(mContext)
+                .text(clickableText)
+                .touchableSpanListener(touchableSpanListener)
+                .build());
+
+    TextDrawable textDrawable = (TextDrawable) (lithoView.getDrawables().get(0));
+    MotionEvent cancelEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_CANCEL, x, y, 0);
+    assertThat(textDrawable.onTouchEvent(cancelEvent, lithoView)).isEqualTo(expectedReturnValue);
+    assertThat(cancelEventFired[0]).isTrue();
   }
 
   @Test(expected = IllegalStateException.class)
