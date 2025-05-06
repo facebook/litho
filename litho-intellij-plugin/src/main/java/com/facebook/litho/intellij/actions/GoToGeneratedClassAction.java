@@ -21,6 +21,7 @@ import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.PsiSearchUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
@@ -40,6 +41,11 @@ public class GoToGeneratedClassAction extends AnAction {
   public void update(AnActionEvent e) {
     Optional<PsiClass> component = getNavigatableComponent(e);
     e.getPresentation().setEnabledAndVisible(component.isPresent());
+  }
+
+  @Override
+  public ActionUpdateThread getActionUpdateThread() {
+    return ActionUpdateThread.BGT;
   }
 
   private static Optional<PsiClass> getNavigatableComponent(AnActionEvent e) {
