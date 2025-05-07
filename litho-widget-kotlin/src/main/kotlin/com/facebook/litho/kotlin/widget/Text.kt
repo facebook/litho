@@ -30,6 +30,7 @@ import com.facebook.litho.Handle
 import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Style
 import com.facebook.litho.kotlinStyle
+import com.facebook.litho.widget.ClickableSpanListener
 import com.facebook.litho.widget.Text
 import com.facebook.litho.widget.TextAlignment
 import com.facebook.litho.widget.TouchableSpanListener
@@ -80,7 +81,8 @@ inline fun ResourcesScope.Text(
     minimallyWide: Boolean = false,
     @ColorInt outlineColor: Int? = null,
     outlineWidth: Dimen = 0.dp,
-    touchableSpanListener: TouchableSpanListener? = null
+    touchableSpanListener: TouchableSpanListener? = null,
+    spanListener: ClickableSpanListener? = null
 ): Text {
   val builder =
       Text.create(context, defStyleAttr, defStyleRes)
@@ -104,6 +106,7 @@ inline fun ResourcesScope.Text(
           .minLines(minLines)
           .maxLines(maxLines)
           .touchableSpanListener(touchableSpanListener)
+          .spanListener(spanListener)
           .apply { lineHeight?.let { lineHeightPx(it.toPixels().toFloat()) } }
           .apply { extraSpacing?.let { extraSpacingPx(it.toPixels().toFloat()) } }
           .letterSpacing(letterSpacing)
