@@ -597,47 +597,93 @@ fun createAndMeasureEditText(
   if (textToMeasure is Spannable) {
     textToMeasure = textToMeasure.toSpanned()
   }
-  setParams(
-      forMeasure,
-      hint,
-      getBackgroundOrDefault(
-          context,
-          if (inputBackground === UNSET_DRAWABLE) {
-            forMeasure.background
-          } else {
-            inputBackground
-          }),
-      shadowRadius,
-      shadowDx,
-      shadowDy,
-      shadowColor,
-      textColorStateList,
-      hintColorStateList,
-      highlightColor,
-      textSize,
-      typeface,
-      textAlignment,
-      gravity,
-      editable,
-      cursorVisible,
-      inputType,
-      rawInputType,
-      keyListener,
-      imeOptions,
-      privateImeOptions,
-      inputFilters,
-      multiline,
-      ellipsize,
-      minLines,
-      maxLines,
-      cursorDrawableRes,
-      forMeasure.movementMethod,
-      textToMeasure,
-      error,
-      errorDrawable,
-      true,
-      importantForAutofill,
-      autofillHints)
+  if (context is MeasureContext) {
+    context.withInputMethodManagerDisabled {
+      setParams(
+          forMeasure,
+          hint,
+          getBackgroundOrDefault(
+              context,
+              if (inputBackground === UNSET_DRAWABLE) {
+                forMeasure.background
+              } else {
+                inputBackground
+              }),
+          shadowRadius,
+          shadowDx,
+          shadowDy,
+          shadowColor,
+          textColorStateList,
+          hintColorStateList,
+          highlightColor,
+          textSize,
+          typeface,
+          textAlignment,
+          gravity,
+          editable,
+          cursorVisible,
+          inputType,
+          rawInputType,
+          keyListener,
+          imeOptions,
+          privateImeOptions,
+          inputFilters,
+          multiline,
+          ellipsize,
+          minLines,
+          maxLines,
+          cursorDrawableRes,
+          forMeasure.movementMethod,
+          textToMeasure,
+          error,
+          errorDrawable,
+          true,
+          importantForAutofill,
+          autofillHints)
+    }
+  } else {
+    setParams(
+        forMeasure,
+        hint,
+        getBackgroundOrDefault(
+            context,
+            if (inputBackground === UNSET_DRAWABLE) {
+              forMeasure.background
+            } else {
+              inputBackground
+            }),
+        shadowRadius,
+        shadowDx,
+        shadowDy,
+        shadowColor,
+        textColorStateList,
+        hintColorStateList,
+        highlightColor,
+        textSize,
+        typeface,
+        textAlignment,
+        gravity,
+        editable,
+        cursorVisible,
+        inputType,
+        rawInputType,
+        keyListener,
+        imeOptions,
+        privateImeOptions,
+        inputFilters,
+        multiline,
+        ellipsize,
+        minLines,
+        maxLines,
+        cursorDrawableRes,
+        forMeasure.movementMethod,
+        textToMeasure,
+        error,
+        errorDrawable,
+        true,
+        importantForAutofill,
+        autofillHints)
+  }
   forMeasure.setDisableAutofill(disableAutofill)
   forMeasure.measure(sizeConstraints.toWidthSpec(), sizeConstraints.toHeightSpec())
   return forMeasure
@@ -1423,16 +1469,28 @@ private class InputFiltersComparator(
  * affects the window size which results in scheduling a layout pass, but before that happens there
  * is a main thread assertion but the measurement happens on background thread.
  *
- * With this custom Context subclass, we're overriding getSystemServiceName method so that it
- * returns null if someone requests an InputMethodManager. With this we hope to fail this check:
+ * With this custom Context subclass, we're allowing to disable returning InputMethodManager for a
+ * given block of code. With this we hope to fail this check:
  * https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/core/java/android/widget/TextView.java;l=7817?q=setInputType
  * and avoid keyboard hide during measurement.
  */
 private class MeasureContext(ctx: Context) : ContextWrapper(ctx) {
+
+  private var inputMethodManagerDisabled: Boolean = false
+
   override fun getSystemServiceName(serviceClass: Class<*>): String? =
-      if (serviceClass == InputMethodManager::class.java) {
+      if (inputMethodManagerDisabled && serviceClass == InputMethodManager::class.java) {
         null
       } else {
         super.getSystemServiceName(serviceClass)
       }
+
+  inline fun withInputMethodManagerDisabled(block: () -> Unit) {
+    try {
+      inputMethodManagerDisabled = true
+      block()
+    } finally {
+      inputMethodManagerDisabled = false
+    }
+  }
 }
