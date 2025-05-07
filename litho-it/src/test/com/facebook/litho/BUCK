@@ -67,6 +67,9 @@ litho_robolectric4_test(
     source = "8",
     target = "8",
     target_sdk_levels = ["33"],
+    vm_args = [
+        "-Drobolectric.looperMode=LEGACY",
+    ],
     deps = [
         LITHO_GUAVA_TARGET,
         LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
