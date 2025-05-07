@@ -39,8 +39,8 @@ fb_kotlin_test(
     deps = [
         ":litho-compiler",
         "//fbandroid/libraries/components/litho-core/src/main/java/com/facebook/litho:litho",
-        "//fbandroid/third-party/java/assertj:assertj-core",
         "//fbandroid/third-party/java/junit:junit",
+        "//third-party/java/org/assertj/assertj-core:assertj-core",
         "//third-party/kotlin:kotlin",
         "//third-party/kotlin:kotlin-compiler",
         "//third-party/kotlin:kotlin-reflect",
