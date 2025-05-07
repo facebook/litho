@@ -16,6 +16,7 @@
 
 package com.facebook.litho
 
+import android.graphics.Rect
 import android.graphics.Typeface
 import com.facebook.proguard.annotations.DoNotStrip
 
@@ -52,5 +53,17 @@ interface TextContent {
     val color: Int
 
     val linesCount: Int
+
+    val spannables: List<SpannableItem>
+  }
+
+  interface SpannableItem {
+    val className: String
+
+    val hash: String
+
+    val text: String
+
+    val bounds: Rect
   }
 }

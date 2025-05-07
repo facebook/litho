@@ -51,6 +51,7 @@ import com.facebook.litho.TextContent;
 import com.facebook.litho.Touchable;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.utils.VersionedAndroidApis;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -940,6 +941,83 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
             @Override
             public int getLinesCount() {
               return linesCount;
+            }
+
+            @Override
+            public List<TextContent.SpannableItem> getSpannables() {
+              List<TextContent.SpannableItem> result = new ArrayList<>();
+              if (text instanceof Spanned) {
+                final Spanned spanned = (Spanned) text;
+                final Object[] spans = spanned.getSpans(0, text.length(), Object.class);
+                for (final Object span : spans) {
+                  final int start = spanned.getSpanStart(span);
+                  final int end = spanned.getSpanEnd(span);
+                  if (start != -1 && end != -1 && start != end) {
+                    result.add(
+                        new TextContent.SpannableItem() {
+                          @Override
+                          public String getClassName() {
+                            return span.getClass().getName();
+                          }
+
+                          @Override
+                          public String getHash() {
+                            return Integer.toHexString(span.hashCode());
+                          }
+
+                          @Override
+                          public String getText() {
+                            return text.subSequence(start, end).toString();
+                          }
+
+                          @Override
+                          public Rect getBounds() {
+                            if (mLayout == null) {
+                              return new Rect(0, 0, 0, 0);
+                            }
+                            try {
+                              final int startLine = mLayout.getLineForOffset(start);
+                              final int endLine = mLayout.getLineForOffset(end);
+
+                              final int startX = (int) mLayout.getPrimaryHorizontal(start);
+                              final int startY = mLayout.getLineTop(startLine);
+
+                              final int endX;
+                              final int endY;
+                              if (startLine == endLine) {
+                                // Spannable fits into a single line, using regular bounds
+                                endX = (int) mLayout.getPrimaryHorizontal(end);
+                                endY = mLayout.getLineBottom(endLine);
+                              } else {
+                                // Spannable does not fit into a single line and it may have a
+                                // non-rectangular shape.
+                                // Using bounds of the spannable object from the starting line to
+                                // guarantee that all
+                                // the coordinates within these bounds belong to the spannable
+                                endX =
+                                    (int)
+                                        mLayout.getPrimaryHorizontal(
+                                            mLayout.getLineEnd(startLine) - 1);
+                                endY = mLayout.getLineBottom(startLine);
+                              }
+
+                              final int absoluteStartX = startX;
+                              final int absoluteStartY = startY;
+                              final int absoluteEndX = endX;
+                              final int absoluteEndY = endY;
+
+                              return new Rect(
+                                  absoluteStartX, absoluteStartY, absoluteEndX, absoluteEndY);
+
+                            } catch (IndexOutOfBoundsException e) {
+                              return new Rect(0, 0, 0, 0);
+                            }
+                          }
+                        });
+                  }
+                }
+              }
+              return result;
             }
           };
     }

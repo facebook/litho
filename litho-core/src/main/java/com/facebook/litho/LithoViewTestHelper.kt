@@ -161,6 +161,15 @@ object LithoViewTestHelper {
     DebugComponentDescriptionHelper.addViewDescription(
         component, sb, leftOffset, topOffset, embedded, withProps, extraDescription)
     sb.append("\n")
+
+    val spannedTextContent = DebugComponentDescriptionHelper.getSyntheticViewDescriptions(component)
+    // for each line of text, we need to add an extra indent
+    spannedTextContent.forEach { line ->
+      writeIndentByDepth(sb, depth + 1)
+      sb.append(line)
+      sb.append("\n")
+    }
+
     val bounds = component.boundsInLithoView
     for (child in component.childComponents) {
       viewToString(

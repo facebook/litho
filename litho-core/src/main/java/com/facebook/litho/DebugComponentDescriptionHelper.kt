@@ -18,6 +18,7 @@ package com.facebook.litho
 
 import android.view.View
 import com.facebook.litho.DebugComponentDescriptionHelper.ExtraDescription
+import com.facebook.litho.LithoRenderUnit.Companion.getRenderUnit
 import com.facebook.litho.annotations.Prop
 import com.facebook.litho.annotations.ResType
 import java.lang.Exception
@@ -66,6 +67,22 @@ object DebugComponentDescriptionHelper {
     addViewDescription(debugComponent, sb, leftOffset, topOffset, embedded, withProps, null)
   }
 
+  private fun writeViewFlags(
+      sb: StringBuilder,
+      layout: DebugLayoutNode?,
+      lithoView: BaseMountingView?
+  ) {
+    sb.append(" ")
+    sb.append(if (lithoView != null && lithoView.visibility == View.VISIBLE) "V" else ".")
+    sb.append(if (layout != null && layout.focusable) "F" else ".")
+    sb.append(if (lithoView != null && lithoView.isEnabled) "E" else ".")
+    sb.append(".")
+    sb.append(if (lithoView != null && lithoView.isHorizontalScrollBarEnabled) "H" else ".")
+    sb.append(if (lithoView != null && lithoView.isVerticalScrollBarEnabled) "V" else ".")
+    sb.append(if (layout?.clickHandler != null) "C" else ".")
+    sb.append(". ..")
+  }
+
   /**
    * Appends a compact description of a [DebugComponent] for debugging purposes.
    *
@@ -100,17 +117,10 @@ object DebugComponentDescriptionHelper {
     sb.append(debugComponent.component.simpleName)
     sb.append('{')
     sb.append(Integer.toHexString(debugComponent.hashCode()))
-    sb.append(' ')
     val lithoView = debugComponent.lithoView
     val layout = debugComponent.layoutNode
-    sb.append(if (lithoView != null && lithoView.visibility == View.VISIBLE) "V" else ".")
-    sb.append(if (layout != null && layout.focusable) "F" else ".")
-    sb.append(if (lithoView != null && lithoView.isEnabled) "E" else ".")
-    sb.append(".")
-    sb.append(if (lithoView != null && lithoView.isHorizontalScrollBarEnabled) "H" else ".")
-    sb.append(if (lithoView != null && lithoView.isVerticalScrollBarEnabled) "V" else ".")
-    sb.append(if (layout?.clickHandler != null) "C" else ".")
-    sb.append(". .. ")
+    writeViewFlags(sb, layout, lithoView)
+    sb.append(' ')
     // using position relative to litho view host to handle relative position issues
     // the offset is for the parent component to create proper relative coordinates
     val bounds = debugComponent.boundsInLithoView
@@ -137,6 +147,41 @@ object DebugComponentDescriptionHelper {
       sb.append(" [clickable]")
     }
     sb.append('}')
+  }
+
+  fun getSyntheticViewDescriptions(debugComponent: DebugComponent): List<String> {
+    val lithoView = debugComponent.lithoView ?: return emptyList()
+    val result = mutableListOf<String>()
+    val mountDelegateTarget = lithoView.mountDelegateTarget
+    for (i in 0 until mountDelegateTarget.getMountItemCount()) {
+      val mountItem = mountDelegateTarget.getMountItemAt(i)
+      val mountItemComponent = mountItem?.let { getRenderUnit(it).component }
+      if (mountItemComponent?.id == debugComponent.component.id) {
+        val content = mountItem.content
+        if (content is TextContent) {
+          for (item in content.items) {
+            for (spannable in item.spannables) {
+              result.add(
+                  buildString {
+                    append(spannable.className)
+                    append("{")
+                    append(spannable.hash)
+                    writeViewFlags(this, debugComponent.layoutNode, lithoView)
+                    val spanBounds = spannable.bounds
+                    append(
+                        " ${spanBounds.left},${spanBounds.top}-${spanBounds.right},${spanBounds.bottom}")
+                    append(" text=\"")
+                    append(spannable.text)
+                    append("\"")
+                    append(" synthetic=\"true\"")
+                    append("}")
+                  })
+            }
+          }
+        }
+      }
+    }
+    return result
   }
 
   private fun addExtraProps(node: Any, sb: StringBuilder) {
