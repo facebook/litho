@@ -173,7 +173,7 @@ object DebugComponentDescriptionHelper {
                     append(" text=\"")
                     append(spannable.text)
                     append("\"")
-                    append(" synthetic=\"true\"")
+                    append(" props=\"{\"synthetic\":true}\"")
                     append("}")
                   })
             }
