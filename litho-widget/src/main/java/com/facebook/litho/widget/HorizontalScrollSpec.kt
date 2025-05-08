@@ -24,7 +24,6 @@ import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateLayout
 import com.facebook.litho.annotations.Prop
 import com.facebook.litho.annotations.Reason
-import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.rendercore.px
 
 @ExcuseMySpec(reason = Reason.J2K_CONVERSION)
@@ -50,36 +49,19 @@ object HorizontalScrollSpec {
       @Prop(optional = true) fadingEdgeLength: Int,
   ): Component? {
     requireNotNull(contentProps)
-    return if (ComponentsConfiguration.usePrimitiveHorizontalScroll) {
-      ExperimentalHorizontalScroll(
-          wrapContent = wrapContent,
-          fillViewport = fillViewport,
-          scrollbarEnabled = scrollbarEnabled,
-          eventsController = eventsController,
-          onScrollChangeListener = onScrollChangeListener,
-          scrollStateListener = scrollStateListener,
-          overScrollMode = overScrollMode,
-          horizontalFadingEdgeEnabled = horizontalFadingEdgeEnabled,
-          fadingEdgeLength = fadingEdgeLength.px,
-          incrementalMountEnabled = incrementalMountEnabled,
-          initialScrollPosition = initialScrollPosition.px,
-          child = contentProps,
-          style = null)
-    } else {
-      return HorizontalScrollComponent.create(context)
-          .contentProps(contentProps)
-          .initialScrollPosition(initialScrollPosition)
-          .scrollbarEnabled(scrollbarEnabled)
-          .wrapContent(wrapContent)
-          .fillViewport(fillViewport)
-          .eventsController(eventsController)
-          .onScrollChangeListener(onScrollChangeListener)
-          .scrollStateListener(scrollStateListener)
-          .overScrollMode(overScrollMode)
-          .incrementalMountEnabled(incrementalMountEnabled)
-          .horizontalFadingEdgeEnabled(horizontalFadingEdgeEnabled)
-          .fadingEdgeLength(fadingEdgeLength)
-          .build()
-    }
+    return ExperimentalHorizontalScroll(
+        wrapContent = wrapContent,
+        fillViewport = fillViewport,
+        scrollbarEnabled = scrollbarEnabled,
+        eventsController = eventsController,
+        onScrollChangeListener = onScrollChangeListener,
+        scrollStateListener = scrollStateListener,
+        overScrollMode = overScrollMode,
+        horizontalFadingEdgeEnabled = horizontalFadingEdgeEnabled,
+        fadingEdgeLength = fadingEdgeLength.px,
+        incrementalMountEnabled = incrementalMountEnabled,
+        initialScrollPosition = initialScrollPosition.px,
+        child = contentProps,
+        style = null)
   }
 }

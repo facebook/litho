@@ -20,10 +20,7 @@ import android.view.View
 import com.facebook.litho.Component
 import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Style
-import com.facebook.litho.config.ComponentsConfiguration
-import com.facebook.litho.kotlinStyle
 import com.facebook.litho.widget.ExperimentalHorizontalScroll
-import com.facebook.litho.widget.HorizontalScroll
 import com.facebook.litho.widget.HorizontalScrollEventsController
 import com.facebook.litho.widget.ScrollStateListener
 import com.facebook.rendercore.Dimen
@@ -46,36 +43,18 @@ inline fun ResourcesScope.HorizontalScroll(
     style: Style? = null,
     crossinline child: ResourcesScope.() -> Component
 ): Component {
-  return if (ComponentsConfiguration.usePrimitiveHorizontalScroll) {
-    ExperimentalHorizontalScroll(
-        wrapContent = wrapContent,
-        fillViewport = fillViewport,
-        scrollbarEnabled = scrollbarEnabled,
-        eventsController = eventsController,
-        onScrollChangeListener = onScrollChange,
-        scrollStateListener = scrollStateListener,
-        overScrollMode = overScrollMode,
-        horizontalFadingEdgeEnabled = horizontalFadingEdgeEnabled,
-        fadingEdgeLength = fadingEdgeLength.dp,
-        incrementalMountEnabled = incrementalMountEnabled,
-        initialScrollPosition = initialScrollPosition,
-        child = child(),
-        style = style)
-  } else {
-    HorizontalScroll.create(context)
-        .contentProps(child())
-        .initialScrollPosition(initialScrollPosition.toPixels())
-        .scrollbarEnabled(scrollbarEnabled)
-        .wrapContent(wrapContent)
-        .scrollStateListener(scrollStateListener)
-        .incrementalMountEnabled(incrementalMountEnabled)
-        .overScrollMode(overScrollMode)
-        .fillViewport(fillViewport)
-        .eventsController(eventsController)
-        .onScrollChangeListener(onScrollChange)
-        .horizontalFadingEdgeEnabled(horizontalFadingEdgeEnabled)
-        .fadingEdgeLength(fadingEdgeLength)
-        .kotlinStyle(style)
-        .build()
-  }
+  return ExperimentalHorizontalScroll(
+      wrapContent = wrapContent,
+      fillViewport = fillViewport,
+      scrollbarEnabled = scrollbarEnabled,
+      eventsController = eventsController,
+      onScrollChangeListener = onScrollChange,
+      scrollStateListener = scrollStateListener,
+      overScrollMode = overScrollMode,
+      horizontalFadingEdgeEnabled = horizontalFadingEdgeEnabled,
+      fadingEdgeLength = fadingEdgeLength.dp,
+      incrementalMountEnabled = incrementalMountEnabled,
+      initialScrollPosition = initialScrollPosition,
+      child = child(),
+      style = style)
 }
