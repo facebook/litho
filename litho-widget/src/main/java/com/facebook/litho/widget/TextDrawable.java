@@ -271,6 +271,9 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
     if (mTouchableSpanListener != null) {
       return mTouchableSpanListener.onTouch(currentSpan, event, view);
     }
+    if (currentSpan == null) {
+      return false;
+    }
     return true;
   }
 
