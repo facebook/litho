@@ -82,7 +82,8 @@ inline fun ResourcesScope.Text(
     @ColorInt outlineColor: Int? = null,
     outlineWidth: Dimen = 0.dp,
     touchableSpanListener: TouchableSpanListener? = null,
-    spanListener: ClickableSpanListener? = null
+    spanListener: ClickableSpanListener? = null,
+    clickableSpanExpandedOffset: Dimen = 0.dp,
 ): Text {
   val builder =
       Text.create(context, defStyleAttr, defStyleRes)
@@ -107,6 +108,7 @@ inline fun ResourcesScope.Text(
           .maxLines(maxLines)
           .touchableSpanListener(touchableSpanListener)
           .spanListener(spanListener)
+          .clickableSpanExpandedOffsetPx(clickableSpanExpandedOffset.toPixels().toFloat())
           .apply { lineHeight?.let { lineHeightPx(it.toPixels().toFloat()) } }
           .apply { extraSpacing?.let { extraSpacingPx(it.toPixels().toFloat()) } }
           .letterSpacing(letterSpacing)
