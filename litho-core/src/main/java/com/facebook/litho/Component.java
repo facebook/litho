@@ -1064,6 +1064,20 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       return accessibilityRoleDescription(mContext.getResources().getString(stringId, formatArgs));
     }
 
+    public T stateDescription(@Nullable CharSequence stateDescription) {
+      mComponent.getOrCreateCommonProps().stateDescription(stateDescription);
+      return getThis();
+    }
+
+    public T stateDescription(@StringRes int stringId) {
+
+      return stateDescription(mResourceResolver.resolveStringRes(stringId));
+    }
+
+    public T stateDescription(@StringRes int stringId, Object... formatArgs) {
+      return stateDescription(mResourceResolver.resolveStringRes(stringId, formatArgs));
+    }
+
     /**
      * Controls how a child aligns in the cross direction, overriding the alignItems of the parent.
      * See <a
