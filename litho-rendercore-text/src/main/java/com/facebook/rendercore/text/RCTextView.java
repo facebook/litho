@@ -102,6 +102,7 @@ public class RCTextView extends View {
   @Nullable private Integer mWasFocusable;
   @Nullable private TouchableSpanListener mTouchableSpanListener;
   @Nullable private ClickableSpan mCurrentlyTouchedSpan;
+  @Nullable private ClickableSpanListener mClickableSpanListener;
 
   public RCTextView(Context context) {
     super(context);
@@ -280,6 +281,9 @@ public class RCTextView extends View {
     if (textLayout.textStyle.touchableSpanListener != null) {
       mTouchableSpanListener = textLayout.textStyle.touchableSpanListener;
     }
+    if (textLayout.textStyle.clickableSpanListener != null) {
+      mClickableSpanListener = textLayout.textStyle.clickableSpanListener;
+    }
 
     final MountableSpan[] mountableSpans = getMountableSpans();
     for (MountableSpan mountableSpan : mountableSpans) {
@@ -325,6 +329,8 @@ public class RCTextView extends View {
     mShouldHandleKeyEvents = false;
     mTouchableSpanListener = null;
     mCurrentlyTouchedSpan = null;
+    mClickableSpanListener = null;
+
     // Restore original focusable state if it was overridden
     if (mWasFocusable != null) {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -429,8 +435,11 @@ public class RCTextView extends View {
     ClickableSpan currentSpan = mCurrentlyTouchedSpan;
     if (action == ACTION_UP) {
       clearSelection();
-      if (mCurrentlyTouchedSpan != null) {
-        mCurrentlyTouchedSpan.onClick(this);
+      if (currentSpan != null) {
+        sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_CLICKED);
+        if (mClickableSpanListener == null || !mClickableSpanListener.onClick(currentSpan, this)) {
+          currentSpan.onClick(this);
+        }
       }
     } else if (action == ACTION_DOWN) {
       final int x = (int) event.getX();
