@@ -18,6 +18,7 @@ package com.facebook.rendercore.text;
 
 import static android.view.MotionEvent.ACTION_CANCEL;
 import static android.view.MotionEvent.ACTION_DOWN;
+import static android.view.MotionEvent.ACTION_MOVE;
 import static android.view.MotionEvent.ACTION_UP;
 import static com.facebook.rendercore.text.accessibility.AccessibilityUtils.ACCESSIBILITY_ROLE_LINK;
 
@@ -33,6 +34,8 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.Layout;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -41,6 +44,7 @@ import android.text.style.ImageSpan;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -97,12 +101,16 @@ public class RCTextView extends View {
   // NULLSAFE_FIXME[Field Not Initialized]
   private Paint mHighlightPaint;
   private boolean mIsSettingDefaultAccessibilityDelegate = false;
+  private Rect mBounds = new Rect();
   private boolean mShouldHandleTouch;
   private boolean mShouldHandleKeyEvents;
+  private boolean mLongClickActivated;
   @Nullable private Integer mWasFocusable;
   @Nullable private TouchableSpanListener mTouchableSpanListener;
   @Nullable private ClickableSpan mCurrentlyTouchedSpan;
   @Nullable private ClickableSpanListener mClickableSpanListener;
+  @Nullable private Handler mLongClickHandler;
+  @Nullable private LongClickRunnable mLongClickRunnable;
 
   public RCTextView(Context context) {
     super(context);
@@ -285,6 +293,10 @@ public class RCTextView extends View {
       mClickableSpanListener = textLayout.textStyle.clickableSpanListener;
     }
 
+    if (mLongClickHandler == null && containsLongClickableSpan(mClickableSpans)) {
+      mLongClickHandler = new Handler(Looper.getMainLooper());
+    }
+
     final MountableSpan[] mountableSpans = getMountableSpans();
     for (MountableSpan mountableSpan : mountableSpans) {
       mountableSpan.onMount(this);
@@ -330,7 +342,8 @@ public class RCTextView extends View {
     mTouchableSpanListener = null;
     mCurrentlyTouchedSpan = null;
     mClickableSpanListener = null;
-
+    mBounds.setEmpty();
+    resetLongClick();
     // Restore original focusable state if it was overridden
     if (mWasFocusable != null) {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -432,15 +445,24 @@ public class RCTextView extends View {
     }
 
     final int action = event.getActionMasked();
+
+    if (action == ACTION_MOVE && !mLongClickActivated && mLongClickRunnable != null) {
+      trackLongClickBoundaryOnMove(event);
+    }
+
+    final boolean clickActivationAllowed = !mLongClickActivated;
+
     ClickableSpan currentSpan = mCurrentlyTouchedSpan;
     if (action == ACTION_UP) {
+      resetLongClick();
       clearSelection();
-      if (currentSpan != null) {
+      if (clickActivationAllowed && currentSpan != null) {
         sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_CLICKED);
         if (mClickableSpanListener == null || !mClickableSpanListener.onClick(currentSpan, this)) {
           currentSpan.onClick(this);
         }
       }
+      mCurrentlyTouchedSpan = null;
     } else if (action == ACTION_DOWN) {
       final int x = (int) event.getX();
       final int y = (int) event.getY();
@@ -448,10 +470,14 @@ public class RCTextView extends View {
       if (mCurrentlyTouchedSpan == null) {
         return super.onTouchEvent(event);
       }
-      currentSpan = mCurrentlyTouchedSpan;
+      if (mCurrentlyTouchedSpan instanceof LongClickableSpan) {
+        registerForLongClick((LongClickableSpan) mCurrentlyTouchedSpan);
+      }
       setSelection(mCurrentlyTouchedSpan, true);
+      currentSpan = mCurrentlyTouchedSpan;
     } else if (action == ACTION_CANCEL) {
       clearSelection();
+      resetLongClick();
       mCurrentlyTouchedSpan = null;
     }
     if (mTouchableSpanListener != null) {
@@ -541,6 +567,57 @@ public class RCTextView extends View {
       // https://android.googlesource.com/platform/frameworks/base/+/821e9bd5cc2be4b3210cb0226e40ba0f42b51aed
       return -1;
     }
+  }
+
+  private void resetLongClick() {
+    if (mLongClickHandler != null && mLongClickRunnable != null) {
+      mLongClickHandler.removeCallbacks(mLongClickRunnable);
+      mLongClickRunnable = null;
+    }
+    mLongClickActivated = false;
+  }
+
+  private void registerForLongClick(@Nullable LongClickableSpan longClickableSpan) {
+    if (longClickableSpan == null || mLongClickHandler == null) {
+      return;
+    }
+    mLongClickRunnable = new LongClickRunnable(longClickableSpan, this);
+    mLongClickHandler.postDelayed(mLongClickRunnable, ViewConfiguration.getLongPressTimeout());
+  }
+
+  private void trackLongClickBoundaryOnMove(MotionEvent event) {
+    mBounds.setEmpty();
+    this.getHitRect(mBounds);
+    if (!isWithinBounds(mBounds, event)) {
+      resetLongClick();
+      return;
+    }
+
+    final ClickableSpan clickableSpan =
+        getClickableSpanInCoords(
+            (int) event.getX() - mBounds.left, (int) event.getY() - mBounds.top);
+    if (mLongClickRunnable != null && mLongClickRunnable.longClickableSpan != clickableSpan) {
+      // we are out of span area, reset longClick
+      resetLongClick();
+    }
+  }
+
+  private static boolean isWithinBounds(Rect bounds, MotionEvent event) {
+    return bounds.contains((int) event.getX(), (int) event.getY());
+  }
+
+  private static boolean containsLongClickableSpan(@Nullable ClickableSpan[] clickableSpans) {
+    if (clickableSpans == null) {
+      return false;
+    }
+
+    for (ClickableSpan span : clickableSpans) {
+      if (span instanceof LongClickableSpan) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   private void setDefaultAccessibilityDelegate() {
@@ -938,6 +1015,26 @@ public class RCTextView extends View {
         }
       }
       layout.draw(canvas, highlightPaths, highlightPaints, selectionPath, selectionPaint, 0);
+    }
+  }
+
+  private class LongClickRunnable implements Runnable {
+
+    private LongClickableSpan longClickableSpan;
+    private View longClickableSpanView;
+
+    LongClickRunnable(LongClickableSpan span, View view) {
+      longClickableSpan = span;
+      longClickableSpanView = view;
+    }
+
+    @Override
+    public void run() {
+      mLongClickActivated =
+          (mClickableSpanListener != null
+                  && mClickableSpanListener.onLongClick(longClickableSpan, longClickableSpanView))
+              || longClickableSpan.onLongClick(longClickableSpanView);
+      sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_LONG_CLICKED);
     }
   }
 }

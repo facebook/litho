@@ -71,6 +71,57 @@ class RCTextViewTest {
     return Pair(eventsFired, textView)
   }
 
+  private fun setupClickableSpanListenerTest(
+      shouldSpanBeNull: Boolean = false
+  ): Pair<ArrayList<String>, RCTextView> {
+    val eventsFired = ArrayList<String>()
+
+    val clickableSpanListener =
+        object : ClickableSpanListener {
+          override fun onClick(span: ClickableSpan, view: View): Boolean {
+            eventsFired.add("onClick")
+            if (shouldSpanBeNull) {
+              assertThat(span).isNull()
+            } else {
+              assertThat(span).isNotNull()
+            }
+            return true
+          }
+
+          override fun onLongClick(span: LongClickableSpan, view: View): Boolean {
+            eventsFired.add("onLongClick")
+            if (shouldSpanBeNull) {
+              assertThat(span).isNull()
+            } else {
+              assertThat(span).isNotNull()
+            }
+            return true
+          }
+        }
+
+    val textRenderUnit = TextRenderUnit(1)
+    val textStyle = TextStyle()
+    textStyle.setTextSize(20)
+    textStyle.setClickableSpanListener(clickableSpanListener)
+
+    val clickableText = Spannable.Factory.getInstance().newSpannable("Some text.")
+    val clickableSpan =
+        object : LongClickableSpan() {
+          override fun onLongClick(view: View): Boolean = false
+
+          override fun onClick(widget: View) = Unit
+        }
+    clickableText.setSpan(clickableSpan, 0, 1, 0)
+
+    val root: DefaultNode = DefaultTextNode(YogaProps(), clickableText, textRenderUnit, textStyle)
+    renderCoreTestRule.useRootNode(root).setSizePx(100, 100).render()
+    val host = renderCoreTestRule.rootHost as HostView
+
+    val textView = host.getChildAt(0) as RCTextView
+
+    return Pair(eventsFired, textView)
+  }
+
   private fun performActionDownOnSpan(eventsFired: ArrayList<Int>, textView: RCTextView) {
     // click on the span
     val downEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0f, 0f, 0)
@@ -137,5 +188,52 @@ class RCTextViewTest {
     assertThat(textView.onTouchEvent(upEvent)).isEqualTo(true)
     assertThat(eventsFired.size).isEqualTo(1)
     assertThat(eventsFired).contains(MotionEvent.ACTION_UP)
+  }
+
+  @Test
+  fun testClickableSpanClickEventHandlingForActionDownAndUpWithinSpan() {
+    val (eventsFired, textView) = setupClickableSpanListenerTest(shouldSpanBeNull = false)
+
+    // click on the span
+    val downEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0f, 0f, 0)
+    assertThat(textView.onTouchEvent(downEvent)).isEqualTo(true)
+    assertThat(eventsFired.size).isEqualTo(0)
+
+    // action up within the bounds
+    val upEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 0f, 0f, 0)
+    assertThat(textView.onTouchEvent(upEvent)).isEqualTo(true)
+    assertThat(eventsFired.size).isEqualTo(1)
+    assertThat(eventsFired).contains("onClick")
+  }
+
+  @Test
+  fun testClickableSpanClickEventHandlingForActionDownAndUpOutsideOfSpan() {
+    val (eventsFired, textView) = setupClickableSpanListenerTest(shouldSpanBeNull = false)
+
+    // click on the span
+    val downEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0f, 0f, 0)
+    assertThat(textView.onTouchEvent(downEvent)).isEqualTo(true)
+    assertThat(eventsFired.size).isEqualTo(0)
+
+    // action up outside of the bounds
+    val upEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 9000f, 9000f, 0)
+    assertThat(textView.onTouchEvent(upEvent)).isEqualTo(true)
+    assertThat(eventsFired.size).isEqualTo(1)
+    assertThat(eventsFired).contains("onClick")
+  }
+
+  @Test
+  fun testClickableSpanClickEventHandlingForActionDownAndUpBothOutsideOfSpan() {
+    val (eventsFired, textView) = setupClickableSpanListenerTest(shouldSpanBeNull = true)
+
+    // click on the span
+    val downEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 9000f, 9000f, 0)
+    assertThat(textView.onTouchEvent(downEvent)).isEqualTo(false)
+    assertThat(eventsFired.size).isEqualTo(0)
+
+    // action up outside of the bounds
+    val upEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 9000f, 9000f, 0)
+    assertThat(textView.onTouchEvent(upEvent)).isEqualTo(false)
+    assertThat(eventsFired.size).isEqualTo(0)
   }
 }
