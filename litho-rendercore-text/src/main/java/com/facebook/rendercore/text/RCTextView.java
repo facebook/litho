@@ -100,6 +100,8 @@ public class RCTextView extends View {
   private boolean mShouldHandleTouch;
   private boolean mShouldHandleKeyEvents;
   @Nullable private Integer mWasFocusable;
+  @Nullable private TouchableSpanListener mTouchableSpanListener;
+  @Nullable private ClickableSpan mCurrentlyTouchedSpan;
 
   public RCTextView(Context context) {
     super(context);
@@ -275,6 +277,9 @@ public class RCTextView extends View {
     if (textLayout.textStyle.accessibilityLabel != null) {
       setContentDescription(textLayout.textStyle.accessibilityLabel);
     }
+    if (textLayout.textStyle.touchableSpanListener != null) {
+      mTouchableSpanListener = textLayout.textStyle.touchableSpanListener;
+    }
 
     final MountableSpan[] mountableSpans = getMountableSpans();
     for (MountableSpan mountableSpan : mountableSpans) {
@@ -318,6 +323,8 @@ public class RCTextView extends View {
     mClickableSpans = null;
     mShouldHandleTouch = false;
     mShouldHandleKeyEvents = false;
+    mTouchableSpanListener = null;
+    mCurrentlyTouchedSpan = null;
     // Restore original focusable state if it was overridden
     if (mWasFocusable != null) {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -419,26 +426,30 @@ public class RCTextView extends View {
     }
 
     final int action = event.getActionMasked();
-    if (action == ACTION_CANCEL) {
-      clearSelection();
-      return false;
-    }
-
-    final int x = (int) event.getX();
-    final int y = (int) event.getY();
-
-    ClickableSpan clickedSpan = getClickableSpanInCoords(x, y);
-
-    if (clickedSpan == null) {
-      clearSelection();
-      return super.onTouchEvent(event);
-    }
-
+    ClickableSpan currentSpan = mCurrentlyTouchedSpan;
     if (action == ACTION_UP) {
       clearSelection();
-      clickedSpan.onClick(this);
+      if (mCurrentlyTouchedSpan != null) {
+        mCurrentlyTouchedSpan.onClick(this);
+      }
     } else if (action == ACTION_DOWN) {
-      setSelection(clickedSpan, true);
+      final int x = (int) event.getX();
+      final int y = (int) event.getY();
+      mCurrentlyTouchedSpan = getClickableSpanInCoords(x, y);
+      if (mCurrentlyTouchedSpan == null) {
+        return super.onTouchEvent(event);
+      }
+      currentSpan = mCurrentlyTouchedSpan;
+      setSelection(mCurrentlyTouchedSpan, true);
+    } else if (action == ACTION_CANCEL) {
+      clearSelection();
+      mCurrentlyTouchedSpan = null;
+    }
+    if (mTouchableSpanListener != null) {
+      return mTouchableSpanListener.onTouch(currentSpan, event, this);
+    }
+    if (currentSpan == null) {
+      return super.onTouchEvent(event);
     }
 
     return true;

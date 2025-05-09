@@ -82,6 +82,7 @@ public class TextStyle implements Cloneable {
   float extraSpacingRight = 0;
   @Nullable RoundedBackgroundProps roundedBackgroundProps = null;
   @Nullable String accessibilityLabel;
+  @Nullable TouchableSpanListener touchableSpanListener = null;
 
   public void setAccessibilityLabel(String accessibilityLabel) {
     this.accessibilityLabel = accessibilityLabel;
@@ -346,6 +347,10 @@ public class TextStyle implements Cloneable {
 
   public void setLetterSpacing(float letterSpacing) {
     this.letterSpacing = letterSpacing;
+  }
+
+  public void setTouchableSpanListener(TouchableSpanListener touchableSpanListener) {
+    this.touchableSpanListener = touchableSpanListener;
   }
 
   public static void addThemedTextStyleForContextToCache(Context context) {

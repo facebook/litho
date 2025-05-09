@@ -10,12 +10,12 @@ import com.facebook.rendercore.text.TextStyle;
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class DefaultTextNode extends DefaultNode {
 
-  private final String mText;
+  private final CharSequence mText;
   private final TextStyle mTextStyle;
   private final RenderUnit mRenderUnit;
 
   public DefaultTextNode(
-      YogaProps props, String text, TextRenderUnit textRenderUnit, TextStyle textStyle) {
+      YogaProps props, CharSequence text, TextRenderUnit textRenderUnit, TextStyle textStyle) {
     super(props);
     mText = text;
     mTextStyle = textStyle;
