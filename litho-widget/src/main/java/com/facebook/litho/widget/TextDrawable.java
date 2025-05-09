@@ -51,6 +51,8 @@ import com.facebook.litho.TextContent;
 import com.facebook.litho.Touchable;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.utils.VersionedAndroidApis;
+import com.facebook.rendercore.text.ClickableSpanListener;
+import com.facebook.rendercore.text.LongClickableSpan;
 import com.facebook.rendercore.text.TouchableSpanListener;
 import java.util.ArrayList;
 import java.util.Collections;
