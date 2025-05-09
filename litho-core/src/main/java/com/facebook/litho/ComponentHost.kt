@@ -79,7 +79,6 @@ open class ComponentHost(
     attrs: AttributeSet?,
     private val unsafeModificationPolicy: UnsafeModificationPolicy?
 ) : Host(context, attrs), DisappearingHost, SupportsPivotTransform {
-
   private val mountItems: SparseArrayCompat<MountItem> = SparseArrayCompat()
   private var scrapMountItemsArray: SparseArrayCompat<MountItem>? = null
   private val viewMountItems = SparseArrayCompat<MountItem>()
@@ -609,10 +608,21 @@ open class ComponentHost(
   }
 
   private fun registerAccessibilityDelegateOnView(view: View, nodeInfo: NodeInfo) {
+    val originalFocusable =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+          view.focusable
+        } else {
+          if (view.isFocusable) {
+            VIEW_FOCUSABLE
+          } else {
+            VIEW_NOT_FOCUSABLE
+          }
+        }
+
     ViewCompat.setAccessibilityDelegate(
         view,
         ComponentAccessibilityDelegate(
-            view, nodeInfo, view.isFocusable, ViewCompat.getImportantForAccessibility(view)))
+            view, nodeInfo, originalFocusable, ViewCompat.getImportantForAccessibility(view)))
   }
 
   /**
@@ -902,9 +912,20 @@ open class ComponentHost(
     }
     if (isAccessibilityEnabled && componentAccessibilityDelegate == null) {
       val nodeInfo = getTag(COMPONENT_NODE_INFO_ID) as? NodeInfo
+
+      val originalFocusable =
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            this.focusable
+          } else {
+            if (this.isFocusable) {
+              VIEW_FOCUSABLE
+            } else {
+              VIEW_NOT_FOCUSABLE
+            }
+          }
       componentAccessibilityDelegate =
           ComponentAccessibilityDelegate(
-              this, nodeInfo, this.isFocusable, ViewCompat.getImportantForAccessibility(this))
+              this, nodeInfo, originalFocusable, ViewCompat.getImportantForAccessibility(this))
     }
     ViewCompat.setAccessibilityDelegate(
         this, if (isAccessibilityEnabled) componentAccessibilityDelegate else null)
@@ -1423,6 +1444,10 @@ open class ComponentHost(
     private const val SCRAP_ARRAY_INITIAL_SIZE = 4
     private var HAS_WARNED_ABOUT_PARTIAL_ALPHA: Boolean = false
     private const val UNSET: Float = Float.MIN_VALUE
+    // Maps to the private View.FOCUSABLE
+    private const val VIEW_FOCUSABLE: Int = 1
+    // Maps to the private View.NOT_FOCUSABLE
+    private const val VIEW_NOT_FOCUSABLE: Int = 0
 
     private fun getMountItemName(mountItem: MountItem): String {
       return getRenderUnit(mountItem).component.simpleName

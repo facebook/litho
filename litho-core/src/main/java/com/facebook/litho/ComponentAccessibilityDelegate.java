@@ -21,6 +21,7 @@ import static com.facebook.litho.LithoRenderUnit.getRenderUnit;
 
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,6 +44,8 @@ import javax.annotation.Nullable;
 @Nullsafe(Nullsafe.Mode.LOCAL)
 class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
   private static final String TAG = "ComponentAccessibility";
+  // Maps to the private View.FOCUSABLE
+  private static final int VIEW_FOCUSABLE = 1;
 
   private final View mView;
   private @Nullable NodeInfo mNodeInfo;
@@ -52,7 +55,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
   ComponentAccessibilityDelegate(
       View view,
       @Nullable NodeInfo nodeInfo,
-      boolean originalFocus,
+      int originalFocus,
       int originalImportantForAccessibility) {
     super(view);
     mView = view;
@@ -63,12 +66,17 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
     // importantForAccessibility to "Yes" (if it is Auto). If we don't reset these it would force
     // every element that has this delegate attached to be focusable, and not allow for
     // announcement coalescing.
-    mView.setFocusable(originalFocus);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      mView.setFocusable(originalFocus);
+    } else {
+      // In APIs prior to 26, the View.FOCUSABLE int was private, so check against its value.
+      mView.setFocusable(originalFocus == VIEW_FOCUSABLE);
+    }
     ViewCompat.setImportantForAccessibility(mView, originalImportantForAccessibility);
   }
 
   ComponentAccessibilityDelegate(
-      View view, boolean originalFocus, int originalImportantForAccessibility) {
+      View view, int originalFocus, int originalImportantForAccessibility) {
     this(view, null, originalFocus, originalImportantForAccessibility);
   }
 

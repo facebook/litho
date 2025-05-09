@@ -16,7 +16,9 @@
 
 package com.facebook.litho
 
+import android.os.Build
 import android.view.View
+import androidx.annotation.RequiresApi
 import androidx.core.view.ViewCompat
 import com.facebook.rendercore.MountItem
 import java.lang.IllegalArgumentException
@@ -37,13 +39,15 @@ class LithoMountData(content: Any?) {
     private const val FLAG_VIEW_CLICKABLE = 1 shl 0
     private const val FLAG_VIEW_LONG_CLICKABLE = 1 shl 1
     private const val FLAG_VIEW_FOCUSABLE = 1 shl 2
-    private const val FLAG_VIEW_ENABLED = 1 shl 3
-    private const val FLAG_VIEW_SELECTED = 1 shl 4
-    private const val FLAG_VIEW_LAYER_TYPE_0 = 1 shl 5
-    private const val FLAG_VIEW_LAYER_TYPE_1 = 1 shl 6
-    private const val FLAG_VIEW_KEYBOARD_NAVIGATION_CLUSTER = 1 shl 7
-    private const val FLAG_VIEW_VISIBILITY_1 = 1 shl 8
-    private const val FLAG_VIEW_VISIBILITY_2 = 1 shl 9
+    private const val FLAG_VIEW_NOT_FOCUSABLE = 1 shl 3
+    private const val FLAG_VIEW_FOCUSABLE_AUTO = 1 shl 4
+    private const val FLAG_VIEW_ENABLED = 1 shl 5
+    private const val FLAG_VIEW_SELECTED = 1 shl 6
+    private const val FLAG_VIEW_LAYER_TYPE_0 = 1 shl 7
+    private const val FLAG_VIEW_LAYER_TYPE_1 = 1 shl 8
+    private const val FLAG_VIEW_KEYBOARD_NAVIGATION_CLUSTER = 1 shl 9
+    private const val FLAG_VIEW_VISIBILITY_1 = 1 shl 10
+    private const val FLAG_VIEW_VISIBILITY_2 = 1 shl 11
 
     /** @return Whether the view associated with this MountItem is clickable. */
     @JvmStatic
@@ -53,6 +57,19 @@ class LithoMountData(content: Any?) {
     @JvmStatic
     fun isViewLongClickable(flags: Int): Boolean =
         flags and FLAG_VIEW_LONG_CLICKABLE == FLAG_VIEW_LONG_CLICKABLE
+
+    /** @return Whether the view associated with this MountItem is setFocusable. */
+    @RequiresApi(Build.VERSION_CODES.O)
+    @JvmStatic
+    fun getViewFocusable(flags: Int): Int =
+        if (flags and FLAG_VIEW_FOCUSABLE == FLAG_VIEW_FOCUSABLE) {
+          View.FOCUSABLE
+        } else if (flags and FLAG_VIEW_NOT_FOCUSABLE == FLAG_VIEW_NOT_FOCUSABLE) {
+          View.NOT_FOCUSABLE
+        } else {
+          // This is the default value since API 26.
+          View.FOCUSABLE_AUTO
+        }
 
     /** @return Whether the view associated with this MountItem is setFocusable. */
     @JvmStatic
@@ -107,8 +124,16 @@ class LithoMountData(content: Any?) {
         if (content.isLongClickable) {
           flags = flags or FLAG_VIEW_LONG_CLICKABLE
         }
-        if (content.isFocusable) {
-          flags = flags or FLAG_VIEW_FOCUSABLE
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+          when (content.focusable) {
+            View.FOCUSABLE -> flags = flags or FLAG_VIEW_FOCUSABLE
+            View.NOT_FOCUSABLE -> flags = flags or FLAG_VIEW_NOT_FOCUSABLE
+            View.FOCUSABLE_AUTO -> flags = flags or FLAG_VIEW_FOCUSABLE_AUTO
+          }
+        } else {
+          if (content.isFocusable) {
+            flags = flags or FLAG_VIEW_FOCUSABLE
+          }
         }
         if (content.isEnabled) {
           flags = flags or FLAG_VIEW_ENABLED

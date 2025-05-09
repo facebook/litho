@@ -946,7 +946,11 @@ class ViewAttributes {
     }
 
     fun unsetFocusable(view: View, flags: Int) {
-      view.isFocusable = LithoMountData.isViewFocusable(flags)
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        view.focusable = LithoMountData.getViewFocusable(flags)
+      } else {
+        view.isFocusable = LithoMountData.isViewFocusable(flags)
+      }
     }
 
     private fun setTransitionName(view: View, transitionName: String?) {
