@@ -88,6 +88,7 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.utils.VersionedAndroidApis;
+import com.facebook.rendercore.text.TouchableSpanListener;
 import com.facebook.widget.accessibility.delegates.AccessibleClickableSpan;
 import com.facebook.widget.accessibility.delegates.ContentDescriptionSpan;
 import com.facebook.yoga.YogaDirection;

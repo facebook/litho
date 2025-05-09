@@ -45,6 +45,7 @@ import com.facebook.litho.testing.LithoTestRule;
 import com.facebook.litho.testing.eventhandler.EventHandlerTestHelper;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.rendercore.text.TouchableSpanListener;
 import com.facebook.yoga.YogaDirection;
 import java.util.ArrayList;
 import javax.annotation.Nullable;

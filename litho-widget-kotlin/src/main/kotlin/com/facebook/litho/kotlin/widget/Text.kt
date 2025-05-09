@@ -33,11 +33,11 @@ import com.facebook.litho.kotlinStyle
 import com.facebook.litho.widget.ClickableSpanListener
 import com.facebook.litho.widget.Text
 import com.facebook.litho.widget.TextAlignment
-import com.facebook.litho.widget.TouchableSpanListener
 import com.facebook.litho.widget.VerticalGravity
 import com.facebook.rendercore.Dimen
 import com.facebook.rendercore.dp
 import com.facebook.rendercore.sp
+import com.facebook.rendercore.text.TouchableSpanListener
 
 /**
  * Temporary builder function for creating [TextSpec] components. In the future it will either be
