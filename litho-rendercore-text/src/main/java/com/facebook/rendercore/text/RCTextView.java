@@ -31,6 +31,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.Region;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -76,6 +77,8 @@ public class RCTextView extends View {
   private static final int SAFE_PARCELABLE_SIZE = 1000000;
   @Nullable private final RCTextAccessibilityDelegate mRCTextAccessibilityDelegate;
   @Nullable private final AccessibilityManager mAccessibilityManager;
+  private final Region mClickableSpanAreaRegion = new Region();
+  private final Path mClickableSpanAreaPath = new Path();
   // NULLSAFE_FIXME[Field Not Initialized]
   private CharSequence mText;
   // NULLSAFE_FIXME[Field Not Initialized]
@@ -105,6 +108,8 @@ public class RCTextView extends View {
   private boolean mShouldHandleTouch;
   private boolean mShouldHandleKeyEvents;
   private boolean mLongClickActivated;
+  private float mClickableSpanExpandedOffset;
+  @Nullable private Path mTouchAreaPath;
   @Nullable private Integer mWasFocusable;
   @Nullable private TouchableSpanListener mTouchableSpanListener;
   @Nullable private ClickableSpan mCurrentlyTouchedSpan;
@@ -229,6 +234,7 @@ public class RCTextView extends View {
     mKeyboardHighlightColor = textLayout.textStyle.keyboardHighlightColor;
     mHighlightCornerRadius = textLayout.textStyle.highlightCornerRadius;
     mIsExplicitlyTruncated = textLayout.isExplicitlyTruncated;
+    mClickableSpanExpandedOffset = textLayout.textStyle.clickableSpanExpandedOffset;
     if (textLayout.textStyle.textColor != 0) {
       mColorStateList = null;
       mLinkColor = textLayout.textStyle.textColor;
@@ -343,6 +349,8 @@ public class RCTextView extends View {
     mCurrentlyTouchedSpan = null;
     mClickableSpanListener = null;
     mBounds.setEmpty();
+    mClickableSpanAreaRegion.setEmpty();
+    mClickableSpanAreaPath.reset();
     resetLongClick();
     // Restore original focusable state if it was overridden
     if (mWasFocusable != null) {
@@ -520,6 +528,9 @@ public class RCTextView extends View {
       return clickableSpans[0];
     }
 
+    if (mClickableSpanExpandedOffset > 0) {
+      return getClickableSpanInProximityToClick(x, y);
+    }
     return null;
   }
 
@@ -567,6 +578,63 @@ public class RCTextView extends View {
       // https://android.googlesource.com/platform/frameworks/base/+/821e9bd5cc2be4b3210cb0226e40ba0f42b51aed
       return -1;
     }
+  }
+
+  /**
+   * Get the clickable span that's close to where the view was clicked.
+   *
+   * @param x x-position of the click
+   * @param y y-position of the click
+   * @return a clickable span that's close the click position, or: {@code null} if no clickable span
+   *     was close to the click, or if a link was directly clicked or if more than one clickable
+   *     span was in proximity to the click.
+   */
+  @Nullable
+  private ClickableSpan getClickableSpanInProximityToClick(float x, float y) {
+    final Region touchAreaRegion = new Region();
+    final Region clipBoundsRegion = new Region();
+
+    if (mTouchAreaPath == null) {
+      mTouchAreaPath = new Path();
+    }
+
+    clipBoundsRegion.set(
+        0, 0, TextMeasurementUtils.getWidth(mLayout), TextMeasurementUtils.getHeight(mLayout));
+    mTouchAreaPath.reset();
+    mTouchAreaPath.addCircle(x, y, mClickableSpanExpandedOffset, Path.Direction.CW);
+    touchAreaRegion.setPath(mTouchAreaPath, clipBoundsRegion);
+
+    ClickableSpan result = null;
+    for (ClickableSpan span : mClickableSpans) {
+      if (!isClickCloseToSpan(span, (Spanned) mText, mLayout, touchAreaRegion, clipBoundsRegion)) {
+        continue;
+      }
+
+      if (result != null) {
+        // This is the second span that's close to the tap, so we don't have a definitive answer
+        return null;
+      }
+
+      result = span;
+    }
+
+    return result;
+  }
+
+  private boolean isClickCloseToSpan(
+      ClickableSpan span,
+      Spanned buffer,
+      Layout layout,
+      Region touchAreaRegion,
+      Region clipBoundsRegion) {
+    mClickableSpanAreaRegion.setEmpty();
+    mClickableSpanAreaPath.reset();
+
+    layout.getSelectionPath(
+        buffer.getSpanStart(span), buffer.getSpanEnd(span), mClickableSpanAreaPath);
+    mClickableSpanAreaRegion.setPath(mClickableSpanAreaPath, clipBoundsRegion);
+
+    return mClickableSpanAreaRegion.op(touchAreaRegion, Region.Op.INTERSECT);
   }
 
   private void resetLongClick() {

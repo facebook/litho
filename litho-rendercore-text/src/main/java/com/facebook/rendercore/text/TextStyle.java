@@ -74,6 +74,7 @@ public class TextStyle implements Cloneable {
   boolean shouldLayoutEmptyText = false;
   boolean minimallyWide;
   int minimallyWideThreshold = 0;
+  float clickableSpanExpandedOffset = 0f;
 
   boolean shouldTruncateTextUsingConstraints = false;
   int manualBaselineSpacing = Integer.MIN_VALUE;
@@ -356,6 +357,15 @@ public class TextStyle implements Cloneable {
 
   public void setClickableSpanListener(ClickableSpanListener clickableSpanListener) {
     this.clickableSpanListener = clickableSpanListener;
+  }
+
+  /**
+   * Click offset amount to determine how far off the ClickableSpan bounds user can click to be able
+   * to trigger ClickableSpan's click action. This could be useful in a densely lined text with
+   * links like 'Continue reading ...' in NewsFeed to be able to click that easily.
+   */
+  public void setClickableSpanExpandedOffset(float clickableSpanExpandedOffset) {
+    this.clickableSpanExpandedOffset = clickableSpanExpandedOffset;
   }
 
   public static void addThemedTextStyleForContextToCache(Context context) {
