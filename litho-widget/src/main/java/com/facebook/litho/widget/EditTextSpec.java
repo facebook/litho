@@ -282,7 +282,7 @@ class EditTextSpec {
       int widthSpec,
       int heightSpec,
       Size size,
-      @Prop(optional = true, resType = ResType.STRING) CharSequence text,
+      @Prop(optional = true, resType = ResType.STRING) @Nullable CharSequence text,
       @Prop(optional = true, resType = ResType.STRING) CharSequence initialText,
       @Prop(optional = true, resType = ResType.STRING) CharSequence hint,
       @Prop(optional = true) TextUtils.TruncateAt ellipsize,
@@ -562,7 +562,7 @@ class EditTextSpec {
 
   private static void initEditText(
       EditText editText,
-      CharSequence text,
+      @Nullable CharSequence text,
       CharSequence initialText,
       CharSequence hint,
       TextUtils.TruncateAt ellipsize,
