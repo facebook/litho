@@ -50,7 +50,6 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.annotation.GravityInt
-import androidx.core.text.toSpanned
 import androidx.core.util.ObjectsCompat
 import androidx.core.view.ViewCompat
 import com.facebook.litho.ComponentContext
@@ -58,6 +57,7 @@ import com.facebook.litho.ComponentScope
 import com.facebook.litho.LithoPrimitive
 import com.facebook.litho.PrimitiveComponent
 import com.facebook.litho.PrimitiveComponentScope
+import com.facebook.litho.State
 import com.facebook.litho.Style
 import com.facebook.litho.ThreadUtils.assertMainThread
 import com.facebook.litho.annotations.Hook
@@ -237,7 +237,20 @@ class ExperimentalTextInput(
   override fun PrimitiveComponentScope.render(): LithoPrimitive {
     val mountedView = useState { AtomicReference<EditTextWithEventHandlers?>() }
     val savedText = useState { AtomicReference(initialText) }
+    val copyInitialTextInTextInputRender =
+        useState { ComponentsConfiguration.copyInitialTextInTextInputRender }.value
+
+    // control
     val measureSeqNumber = useState { 0 }
+    // test
+    val textForMeasure =
+        useState<CharSequence> {
+          if (copyInitialTextInTextInputRender) {
+            initialText.toString()
+          } else {
+            initialText
+          }
+        }
 
     val resolvedHighlightColor = useCached {
       if (highlightColor != null) {
@@ -289,6 +302,8 @@ class ExperimentalTextInput(
                 movementMethod = movementMethod,
                 savedText = savedText.value,
                 measureSeqNumber = measureSeqNumber.value,
+                copyInitialTextInTextInputRender = copyInitialTextInTextInputRender,
+                textForMeasure = textForMeasure,
             ),
         mountBehavior =
             MountBehavior(
@@ -304,10 +319,20 @@ class ExperimentalTextInput(
 
                   // Controller
                   withDescription("text-input-controller") {
-                    bind(textInputController, savedText.value, measureSeqNumber) { editText ->
-                      textInputController?.bind(editText, savedText.value, measureSeqNumber)
-                      onUnbind { textInputController?.unbind() }
-                    }
+                    bind(
+                        textInputController,
+                        savedText.value,
+                        measureSeqNumber,
+                        copyInitialTextInTextInputRender,
+                        textForMeasure) { editText ->
+                          textInputController?.bind(
+                              editText,
+                              savedText.value,
+                              measureSeqNumber,
+                              copyInitialTextInTextInputRender,
+                              textForMeasure)
+                          onUnbind { textInputController?.unbind() }
+                        }
                   }
                   // OnMount
                   withDescription("text-input-equivalent-mount") {
@@ -423,6 +448,8 @@ class ExperimentalTextInput(
                       editText.onInputConnection = onInputConnection
                       editText.onTextPasted = onTextPasted
                       editText.measureSeqNumber = measureSeqNumber
+                      editText.copyInitialTextInTextInputRender = copyInitialTextInTextInputRender
+                      editText.textForMeasure = textForMeasure
 
                       onUnbind {
                         editText.detachWatchers()
@@ -438,6 +465,8 @@ class ExperimentalTextInput(
                         editText.customInsertionActionModeCallback = null
                         editText.onTextPasted = null
                         editText.measureSeqNumber = null
+                        editText.copyInitialTextInTextInputRender = false
+                        editText.textForMeasure = null
                       }
                     }
                   }
@@ -482,6 +511,8 @@ internal class TextInputLayoutBehavior(
     private val savedText: AtomicReference<CharSequence?>,
     // we're only reading it here in order to force remeasure if it gets updated
     private val measureSeqNumber: Int,
+    private val copyInitialTextInTextInputRender: Boolean,
+    private val textForMeasure: State<CharSequence>,
 ) : LayoutBehavior {
   override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
     val context =
@@ -528,7 +559,9 @@ internal class TextInputLayoutBehavior(
             // onMeasure happens:
             // 1. After initState before onMount: savedText = initText.
             // 2. After onMount before onUnmount: savedText preserved from underlying editText.
-            savedText.get())
+            savedText.get(),
+            copyInitialTextInTextInputRender,
+            textForMeasure)
 
     return PrimitiveLayoutResult(
         height = forMeasure.measuredHeight,
@@ -588,14 +621,18 @@ fun createAndMeasureEditText(
     importantForAutofill: Int,
     autofillHints: Array<String?>?,
     disableAutofill: Boolean,
-    text: CharSequence?
+    text: CharSequence?,
+    copyInitialTextInTextInputRender: Boolean,
+    textForMeasure: State<CharSequence>,
 ): EditText {
   // The height should be the measured height of EditText with relevant params
   var textToMeasure = text
   val forMeasure = ForMeasureEditText(context)
   // If text contains Spans, we don't want it to be mutable for the measurement case
-  if (textToMeasure is Spannable) {
-    textToMeasure = textToMeasure.toSpanned()
+  if (copyInitialTextInTextInputRender) {
+    textToMeasure = textForMeasure.value
+  } else if (textToMeasure is Spannable) {
+    textToMeasure = textToMeasure.toString()
   }
   if (context is MeasureContext) {
     context.withInputMethodManagerDisabled {
@@ -868,6 +905,8 @@ internal class EditTextWithEventHandlers(context: Context?) :
   var onInputConnection: ((InputConnection?, EditorInfo) -> InputConnection)? = null
   var componentContext: ComponentContext? = null
   var measureSeqNumber: com.facebook.litho.State<Int>? = null
+  var copyInitialTextInTextInputRender: Boolean = false
+  var textForMeasure: com.facebook.litho.State<CharSequence>? = null
   private var textState: AtomicReference<CharSequence?>? = null
   private var textLineCount = UNMEASURED_LINE_COUNT
   private var textWatcher: TextWatcher? = null
@@ -898,7 +937,11 @@ internal class EditTextWithEventHandlers(context: Context?) :
     if (this.textLineCount != UNMEASURED_LINE_COUNT &&
         (this.textLineCount != lineCount) &&
         (componentContext != null)) {
-      measureSeqNumber?.update { it + 1 }
+      if (copyInitialTextInTextInputRender) {
+        textForMeasure?.update(text.toString())
+      } else {
+        measureSeqNumber?.update { it + 1 }
+      }
     }
   }
 
@@ -1189,15 +1232,21 @@ class TextInputController internal constructor() {
   private var editText: EditTextWithEventHandlers? = null
   private var savedText: AtomicReference<CharSequence?>? = null
   private var measureSeqNumber: com.facebook.litho.State<Int>? = null
+  private var copyInitialTextInTextInputRender: Boolean = false
+  private var textForMeasure: com.facebook.litho.State<CharSequence>? = null
 
   internal fun bind(
       editText: EditTextWithEventHandlers,
       savedText: AtomicReference<CharSequence?>,
       measureSeqNumber: com.facebook.litho.State<Int>?,
+      copyInitialTextInTextInputRender: Boolean,
+      textForMeasure: com.facebook.litho.State<CharSequence>?,
   ) {
     this.editText = editText
     this.savedText = savedText
     this.measureSeqNumber = measureSeqNumber
+    this.copyInitialTextInTextInputRender = copyInitialTextInTextInputRender
+    this.textForMeasure = textForMeasure
   }
 
   internal fun unbind() {
@@ -1335,7 +1384,11 @@ class TextInputController internal constructor() {
   }
 
   private fun remeasureForUpdatedTextSync() {
-    measureSeqNumber?.updateSync { it + 1 }
+    if (copyInitialTextInTextInputRender) {
+      textForMeasure?.updateSync(savedText?.get().toString())
+    } else {
+      measureSeqNumber?.updateSync { it + 1 }
+    }
   }
 }
 
