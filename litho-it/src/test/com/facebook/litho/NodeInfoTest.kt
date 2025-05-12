@@ -16,6 +16,7 @@
 
 package com.facebook.litho
 
+import android.graphics.Shader
 import android.util.SparseArray
 import com.facebook.litho.AccessibilityRole.AccessibilityRoleType
 import com.facebook.litho.testing.Whitebox
@@ -240,6 +241,12 @@ class NodeInfoTest {
   fun testTooltipTextFlag() {
     nodeInfo.tooltipText = "test"
     testFlagIsSetThenClear(nodeInfo, "PFLAG_TOOLTIP_TEXT_IS_SET")
+  }
+
+  @Test
+  fun testRenderEffectFlag() {
+    nodeInfo.renderEffect = LithoRenderEffect.Blur(1f, 1f, Shader.TileMode.CLAMP)
+    testFlagIsSetThenClear(nodeInfo, "PFLAG_RENDER_EFFECT_IS_SET")
   }
 
   @Test

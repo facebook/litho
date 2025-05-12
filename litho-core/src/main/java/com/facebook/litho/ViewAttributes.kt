@@ -66,6 +66,7 @@ class ViewAttributes {
 
   var transitionName: String? = null
   var outlineProvider: ViewOutlineProvider? = null
+  var renderEffect: LithoRenderEffect? = null
   var clickHandler: EventHandler<ClickEvent>? = null
   var longClickHandler: EventHandler<LongClickEvent>? = null
   var focusChangeHandler: EventHandler<FocusChangedEvent>? = null
@@ -266,6 +267,7 @@ class ViewAttributes {
     if (!isEquivalentTo(interceptTouchHandler, other.interceptTouchHandler)) return false
     if (!isEquivalentTo(longClickHandler, other.longClickHandler)) return false
     if (!equals(outlineProvider, other.outlineProvider)) return false
+    if (!equals(renderEffect, other.renderEffect)) return false
     if (rotation != other.rotation) return false
     if (rotationX != other.rotationX) return false
     if (rotationY != other.rotationY) return false
@@ -308,6 +310,7 @@ class ViewAttributes {
     result = 31 * result + (transitionName?.hashCode() ?: 0)
     result = 31 * result + (viewTags?.hashCode() ?: 0)
     result = 31 * result + (outlineProvider?.hashCode() ?: 0)
+    result = 31 * result + (renderEffect?.hashCode() ?: 0)
     result = 31 * result + (clickHandler?.hashCode() ?: 0)
     result = 31 * result + (longClickHandler?.hashCode() ?: 0)
     result = 31 * result + (focusChangeHandler?.hashCode() ?: 0)
@@ -355,6 +358,7 @@ class ViewAttributes {
     transitionName?.let { target.transitionName = it }
     viewTags?.let { target.viewTags = it }
     outlineProvider?.let { target.outlineProvider = it }
+    renderEffect?.let { target.renderEffect = it }
     clickHandler?.let { target.clickHandler = it }
     longClickHandler?.let { target.longClickHandler = it }
     focusChangeHandler?.let { target.focusChangeHandler = it }
@@ -445,6 +449,7 @@ class ViewAttributes {
       setAmbientShadowColor(content, attributes.ambientShadowColor)
       setSpotShadowColor(content, attributes.spotShadowColor)
       setOutlineProvider(content, attributes.outlineProvider)
+      setRenderEffect(content, attributes.renderEffect)
       setClipToOutline(content, attributes.clipToOutline)
       setClipChildren(content, attributes)
       setContentDescription(content, attributes.contentDescription)
@@ -549,6 +554,7 @@ class ViewAttributes {
       unsetAmbientShadowColor(content, attributes.ambientShadowColor)
       unsetSpotShadowColor(content, attributes.spotShadowColor)
       unsetOutlineProvider(content, attributes.outlineProvider)
+      unsetRenderEffect(content, attributes.renderEffect)
       unsetClipToOutline(content, attributes.clipToOutline)
       unsetClipChildren(content, attributes.clipChildren)
       if (!attributes.contentDescription.isNullOrEmpty()) {
@@ -865,6 +871,22 @@ class ViewAttributes {
     private fun unsetOutlineProvider(view: View, outlineProvider: ViewOutlineProvider?) {
       if (outlineProvider != null) {
         view.outlineProvider = ViewOutlineProvider.BACKGROUND
+      }
+    }
+
+    private fun setRenderEffect(view: View, renderEffect: LithoRenderEffect?) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        if (renderEffect != null) {
+          view.setRenderEffect(renderEffect.toRenderEffect())
+        }
+      }
+    }
+
+    private fun unsetRenderEffect(view: View, renderEffect: LithoRenderEffect?) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        if (renderEffect != null) {
+          view.setRenderEffect(null)
+        }
       }
     }
 

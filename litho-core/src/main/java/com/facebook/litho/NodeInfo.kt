@@ -85,6 +85,7 @@ class NodeInfo : Equivalence<NodeInfo> {
   @ColorInt private var _ambientShadowColor = Color.BLACK
   @ColorInt private var _spotShadowColor = Color.BLACK
   private var _outlineProvider: ViewOutlineProvider? = null
+  private var _renderEffect: LithoRenderEffect? = null
   private var _clipToOutline = false
 
   // Default value for ViewGroup
@@ -244,6 +245,13 @@ class NodeInfo : Equivalence<NodeInfo> {
     set(outlineProvider) {
       flags = flags or PFLAG_OUTINE_PROVIDER_IS_SET
       _outlineProvider = outlineProvider
+    }
+
+  var renderEffect: LithoRenderEffect?
+    get() = _renderEffect
+    set(renderEffect) {
+      flags = flags or PFLAG_RENDER_EFFECT_IS_SET
+      _renderEffect = renderEffect
     }
 
   var clipToOutline: Boolean
@@ -693,6 +701,9 @@ class NodeInfo : Equivalence<NodeInfo> {
     if (!equals(this.outlineProvider, other.outlineProvider)) {
       return false
     }
+    if (!equals(this.renderEffect, other.renderEffect)) {
+      return false
+    }
     if (!isEquivalentTo(
         this.performAccessibilityActionHandler, other.performAccessibilityActionHandler)) {
       return false
@@ -849,6 +860,9 @@ class NodeInfo : Equivalence<NodeInfo> {
     if (flags and PFLAG_OUTINE_PROVIDER_IS_SET != 0L) {
       target.outlineProvider = _outlineProvider
     }
+    if (flags and PFLAG_RENDER_EFFECT_IS_SET != 0L) {
+      target.renderEffect = _renderEffect
+    }
     if (flags and PFLAG_CLIP_TO_OUTLINE_IS_SET != 0L) {
       target.clipToOutline = _clipToOutline
     }
@@ -963,6 +977,9 @@ class NodeInfo : Equivalence<NodeInfo> {
     }
     if (flags and PFLAG_OUTINE_PROVIDER_IS_SET != 0L) {
       target.outlineProvider = _outlineProvider
+    }
+    if (flags and PFLAG_RENDER_EFFECT_IS_SET != 0L) {
+      target.renderEffect = _renderEffect
     }
     if (flags and PFLAG_CLIP_TO_OUTLINE_IS_SET != 0L) {
       target.clipToOutline = _clipToOutline
@@ -1158,5 +1175,8 @@ class NodeInfo : Equivalence<NodeInfo> {
 
     // When this flag is set, AccessibilityNodeInfo.mContainerTitle was explicitly set on this node.
     private const val PFLAG_CONTAINER_TITLE_IS_SET = 1L shl 42
+
+    // When this flag is set, renderEffect was explicitly set on this node.
+    private const val PFLAG_RENDER_EFFECT_IS_SET = 1L shl 43
   }
 }

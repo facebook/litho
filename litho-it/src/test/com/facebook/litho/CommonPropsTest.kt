@@ -19,6 +19,7 @@ package com.facebook.litho
 import android.animation.StateListAnimator
 import android.content.Context
 import android.graphics.Color
+import android.graphics.Shader
 import android.util.SparseArray
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_AUTO
@@ -112,6 +113,7 @@ class CommonPropsTest {
     commonProps.enabled(false)
     commonProps.keyboardNavigationCluster(true)
     commonProps.tooltipText("test")
+    commonProps.renderEffect(LithoRenderEffect.Blur(1f, 1f, Shader.TileMode.CLAMP))
     commonProps.visibleHeightRatio(55f)
     commonProps.visibleWidthRatio(56f)
     commonProps.accessibilityHeading(false)
@@ -435,6 +437,7 @@ class CommonPropsTest {
     commonProps.visibleWidthRatio(56f)
     commonProps.accessibilityHeading(false)
     commonProps.tooltipText("test")
+    commonProps.renderEffect(LithoRenderEffect.Blur(1f, 1f, Shader.TileMode.CLAMP))
     commonProps.screenReaderFocusable(true)
     val visibleHandler = EventHandlerTestUtil.create<VisibleEvent>(3, content)
     val focusedHandler = EventHandlerTestUtil.create<FocusedVisibleEvent>(3, content)

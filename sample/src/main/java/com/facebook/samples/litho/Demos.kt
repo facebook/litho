@@ -85,6 +85,7 @@ import com.facebook.samples.litho.kotlin.animations.animatedapi.AnimatedComponen
 import com.facebook.samples.litho.kotlin.animations.animatedbadge.AnimatedBadgeKotlin
 import com.facebook.samples.litho.kotlin.animations.animatedcounter.AnimatingCounterRootComponent
 import com.facebook.samples.litho.kotlin.animations.animationcomposition.ComposedAnimationsComponentKotlin
+import com.facebook.samples.litho.kotlin.animations.blur.BlurKComponent
 import com.facebook.samples.litho.kotlin.animations.bounds.BoundsAnimationComponent
 import com.facebook.samples.litho.kotlin.animations.dynamicprops.AllCommonDynamicPropsKComponent
 import com.facebook.samples.litho.kotlin.animations.dynamicprops.AnimateDynamicPropsComponent
@@ -194,6 +195,7 @@ class Demos {
                         listOf(
                             SingleDemo(name = "Animated API Demo", component = AnimatedComponent()),
                             SingleDemo(name = "Animated Badge", component = AnimatedBadgeKotlin()),
+                            SingleDemo(name = "Blur Animation", component = BlurKComponent()),
                             SingleDemo(
                                 name = "Bounds Animation", component = BoundsAnimationComponent()),
                             SingleDemo(

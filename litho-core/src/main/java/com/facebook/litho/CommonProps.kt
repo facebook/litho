@@ -20,6 +20,7 @@ import android.animation.StateListAnimator
 import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.util.SparseArray
 import android.view.ViewOutlineProvider
 import androidx.annotation.AttrRes
@@ -472,6 +473,23 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
 
   fun outlineProvider(outlineProvider: ViewOutlineProvider?) {
     getOrCreateNodeInfo().outlineProvider = outlineProvider
+  }
+
+  fun renderEffect(renderEffect: LithoRenderEffect?) {
+    if (renderEffect != null) {
+      wrapInView()
+      val existingRenderEffect = getOrCreateNodeInfo().renderEffect
+      if (existingRenderEffect == null) {
+        // there is no other effect, only the one we're adding now - set it directly
+        getOrCreateNodeInfo().renderEffect = renderEffect
+      } else {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+          // there is an effect already set, chain it with the new one
+          getOrCreateNodeInfo().renderEffect =
+              LithoRenderEffect.Chain(renderEffect, existingRenderEffect)
+        }
+      }
+    }
   }
 
   fun clipToOutline(clipToOutline: Boolean) {

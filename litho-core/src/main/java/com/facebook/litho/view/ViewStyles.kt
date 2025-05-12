@@ -20,7 +20,10 @@ import android.animation.StateListAnimator
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
+import android.graphics.RenderEffect
+import android.graphics.Shader
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.util.SparseArray
 import android.view.MotionEvent
 import android.view.View
@@ -36,6 +39,7 @@ import com.facebook.litho.ComponentContext
 import com.facebook.litho.FocusChangedEvent
 import com.facebook.litho.InterceptTouchEvent
 import com.facebook.litho.LayerType
+import com.facebook.litho.LithoRenderEffect
 import com.facebook.litho.LongClickEvent
 import com.facebook.litho.Style
 import com.facebook.litho.StyleItem
@@ -84,6 +88,7 @@ internal enum class ObjectField : StyleItemField {
   ADD_TOUCH_EXCLUSION_ZONE,
   TOOLTIP_TEXT,
   LAYER_TYPE,
+  RENDER_EFFECT,
 }
 
 /** Enums for [FloatStyleItem]. */
@@ -171,6 +176,7 @@ internal data class ObjectStyleItem(override val field: ObjectField, override va
         val (layerType, paint) = value as Pair<Int, Paint?>
         commonProps.layerType(layerType, paint)
       }
+      ObjectField.RENDER_EFFECT -> commonProps.renderEffect(value as LithoRenderEffect?)
     }
   }
 }
@@ -752,3 +758,36 @@ inline fun Style.tooltipText(tooltipText: String?): Style =
  */
 inline fun Style.layerType(@LayerType layerType: Int, paint: Paint? = null): Style =
     this + ObjectStyleItem(ObjectField.LAYER_TYPE, Pair(layerType, paint))
+
+/**
+ * Creates a Blur [LithoRenderEffect] with the specified radius along the x and y axis and applies
+ * it to the component.
+ *
+ * **This style is only supported on Android 12 and above. Usage of this Style on older Android
+ * versions will be ignored.**
+ *
+ * @param radiusX Radius of blur along the X axis in pixels.
+ * @param radiusY Radius of blur along the Y axis in pixels.
+ * @param edgeTreatment Policy for how to blur content near edges.
+ *
+ * See [android.view.View.setRenderEffect] and [RenderEffect.createBlurEffect]
+ */
+inline fun Style.blur(
+    radiusX: Float,
+    radiusY: Float,
+    edgeTreatment: Shader.TileMode = Shader.TileMode.CLAMP
+): Style {
+  return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+    val blurEffect =
+        if (radiusX == 0f && radiusY == 0f) {
+          // Creating a blur effect with radiusX and radiusY set to 0f throws an exception.
+          null
+        } else {
+          LithoRenderEffect.Blur(radiusX, radiusY, edgeTreatment)
+        }
+
+    this + ObjectStyleItem(ObjectField.RENDER_EFFECT, blurEffect)
+  } else {
+    this
+  }
+}
