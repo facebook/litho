@@ -176,6 +176,16 @@ class ViewStylesTest {
   }
 
   @Test
+  fun focusable_whenNotSet_isDefault() {
+    val testLithoView =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) {
+          Row(style = Style.width(100.px).height(100.px))
+        }
+
+    assertThat(testLithoView.lithoView.getFocusable()).isEqualTo(View.FOCUSABLE_AUTO)
+  }
+
+  @Test
   fun foreground_whenSet_isRespected() {
     val testLithoView =
         lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) {
