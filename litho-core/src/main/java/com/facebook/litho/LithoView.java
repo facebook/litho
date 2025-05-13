@@ -256,9 +256,6 @@ public class LithoView extends BaseMountingView {
       }
     }
 
-    int width = MeasureSpec.getSize(widthMeasureSpec);
-    int height = MeasureSpec.getSize(heightMeasureSpec);
-
     if (mTemporaryDetachedComponentTree != null && mComponentTree == null) {
       setComponentTree(mTemporaryDetachedComponentTree);
       mTemporaryDetachedComponentTree = null;
@@ -271,12 +268,13 @@ public class LithoView extends BaseMountingView {
       // This is part of the fix for android's double measure bug. Doing this means that if we get
       // remeasured with different exact measurements, we don't compute two layouts.
       mDoMeasureInLayout = true;
-      setMeasuredDimension(width, height);
+      setMeasuredDimension(
+          MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.getSize(heightMeasureSpec));
       return;
     }
 
     mIsMeasuring = true;
-
+    int width, height;
     if (mComponentTree != null && !mSuppressMeasureComponentTree) {
       boolean forceRelayout = mForceLayout;
       mForceLayout = false;
@@ -289,6 +287,15 @@ public class LithoView extends BaseMountingView {
       width = sLayoutSize[0];
       height = sLayoutSize[1];
       mDoMeasureInLayout = false;
+    } else {
+      width =
+          MeasureSpec.getMode(widthMeasureSpec) == MeasureSpec.EXACTLY
+              ? MeasureSpec.getSize(widthMeasureSpec)
+              : 0;
+      height =
+          MeasureSpec.getMode(heightMeasureSpec) == MeasureSpec.EXACTLY
+              ? MeasureSpec.getSize(heightMeasureSpec)
+              : 0;
     }
 
     final boolean canAnimateRootBounds =

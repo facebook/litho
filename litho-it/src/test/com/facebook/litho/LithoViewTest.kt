@@ -194,6 +194,35 @@ class LithoViewTest {
   }
 
   @Test
+  fun testMeasureWithoutComponentTreeTakesMinimumSize() {
+    lithoView = LithoView(getApplicationContext<Context>())
+
+    lithoView.measure(unspecified(), unspecified())
+    assertThat(lithoView.measuredWidth).isEqualTo(0)
+    assertThat(lithoView.measuredHeight).isEqualTo(0)
+
+    lithoView.measure(atMost(100), unspecified())
+    assertThat(lithoView.measuredWidth).isEqualTo(0)
+    assertThat(lithoView.measuredHeight).isEqualTo(0)
+
+    lithoView.measure(unspecified(), atMost(200))
+    assertThat(lithoView.measuredWidth).isEqualTo(0)
+    assertThat(lithoView.measuredHeight).isEqualTo(0)
+
+    lithoView.measure(atMost(300), exactly(400))
+    assertThat(lithoView.measuredWidth).isEqualTo(0)
+    assertThat(lithoView.measuredHeight).isEqualTo(400)
+
+    lithoView.measure(exactly(500), atMost(600))
+    assertThat(lithoView.measuredWidth).isEqualTo(500)
+    assertThat(lithoView.measuredHeight).isEqualTo(0)
+
+    lithoView.measure(exactly(700), exactly(800))
+    assertThat(lithoView.measuredWidth).isEqualTo(700)
+    assertThat(lithoView.measuredHeight).isEqualTo(800)
+  }
+
+  @Test
   fun forceLayout_whenForceLayoutIsSet_recomputesLayout() {
     lithoView.measure(exactly(100), atMost(100))
     lithoView.forceRelayout()
