@@ -42,7 +42,7 @@ import org.junit.runner.RunWith
 import org.robolectric.annotation.LooperMode
 
 @RunWith(LithoTestRunner::class)
-@LooperMode(LooperMode.Mode.LEGACY)
+@LooperMode(LooperMode.Mode.PAUSED)
 class NestedTreeResolutionTest {
 
   @JvmField @Rule val lithoTestRule = LithoTestRule()

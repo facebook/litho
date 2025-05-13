@@ -27,7 +27,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.annotation.LooperMode
 
-@LooperMode(LooperMode.Mode.LEGACY)
+@LooperMode(LooperMode.Mode.PAUSED)
 @RunWith(LithoTestRunner::class)
 class ComponentTreePropWithReconciliationTest {
 

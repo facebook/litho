@@ -148,45 +148,38 @@ internal constructor(
 
   /** Sets the new root [Component] to render. */
   fun setRoot(component: Component?): TestLithoView {
-    componentTree.setRoot(component)
-    resizeIfRequired()
+    if (resizeMode == LithoTestRuleResizeMode.AUTO) {
+      // Explicitly passing size spec here to ensure setRoot isn't converted to async inside the CT
+      componentTree.setRootAndSizeSpecSync(component, widthSpec, heightSpec)
+      measure()
+      layout()
+    } else {
+      componentTree.setRoot(component)
+    }
     return this
   }
 
   /** Sets the new root [Component.Builder] to render. */
   fun setRoot(builder: Component.Builder<*>): TestLithoView {
-    componentTree.setRoot(builder.build())
-    resizeIfRequired()
-    return this
+    return setRoot(builder.build())
   }
 
   /** Sets the new root [Component] to render asynchronously. */
   fun setRootAsync(component: Component?): TestLithoView {
-    componentTree.setRootAsync(component)
-    idleAndResizeIfRequired()
+    if (resizeMode == LithoTestRuleResizeMode.AUTO) {
+      componentTree.setRootAndSizeSpecAsync(component, widthSpec, heightSpec)
+      idleTask()
+      measure()
+      layout()
+    } else {
+      componentTree.setRootAsync(component)
+    }
     return this
   }
 
   /** Sets the new root [Component.Builder] to render asynchronously. */
   fun setRootAsync(builder: Component.Builder<*>): TestLithoView {
-    componentTree.setRootAsync(builder.build())
-    idleAndResizeIfRequired()
-    return this
-  }
-
-  private fun resizeIfRequired() {
-    if (resizeMode == LithoTestRuleResizeMode.AUTO) {
-      measure()
-      layout()
-    }
-  }
-
-  private fun idleAndResizeIfRequired() {
-    if (resizeMode == LithoTestRuleResizeMode.AUTO) {
-      idleTask()
-      measure()
-      layout()
-    }
+    return setRootAsync(builder.build())
   }
 
   /** Sets the new root [Component] with new size spec to render. */
