@@ -36,6 +36,7 @@ open class ComponentScope(override val context: ComponentContext) : ResourcesSco
   private val isReadTrackingEnabled: Boolean
     get() = context.lithoTree?.isReadTrackingEnabled == true
 
+  private var isPristine: Boolean = true
   private var _resolveContext: ResolveContext? = null
 
   internal val resolveContext: ResolveContext
@@ -56,6 +57,10 @@ open class ComponentScope(override val context: ComponentContext) : ResourcesSco
       resolveContext: ResolveContext,
       crossinline block: ComponentScope.() -> T
   ): T {
+    check(isPristine) {
+      "This ComponentScope already executed withResolveContext and cannot be reused"
+    }
+    isPristine = false
     try {
       _resolveContext = resolveContext
       var result: T? = null
