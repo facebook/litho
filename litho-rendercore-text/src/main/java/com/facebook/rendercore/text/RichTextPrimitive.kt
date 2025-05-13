@@ -18,6 +18,7 @@ package com.facebook.rendercore.text
 
 import androidx.core.util.component1
 import androidx.core.util.component2
+import com.facebook.rendercore.RenderCoreConfig
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.primitives.LayoutBehavior
 import com.facebook.rendercore.primitives.LayoutScope
@@ -31,9 +32,14 @@ import com.facebook.rendercore.toHeightSpec
 import com.facebook.rendercore.toWidthSpec
 import java.lang.Integer.max
 
-fun RichTextPrimitive(id: Long, text: CharSequence, style: TextStyle): Primitive {
+fun RichTextPrimitive(
+    id: Long,
+    text: CharSequence,
+    style: TextStyle,
+    usePerformantTruncation: Boolean = RenderCoreConfig.usePerformantTruncation
+): Primitive {
   return Primitive(
-      layoutBehavior = RichTextLayoutBehavior(text, style),
+      layoutBehavior = RichTextLayoutBehavior(text, style, usePerformantTruncation),
       mountBehavior =
           MountBehavior(
               id = id,
@@ -51,8 +57,11 @@ fun RichTextPrimitive(id: Long, text: CharSequence, style: TextStyle): Primitive
               })
 }
 
-private class RichTextLayoutBehavior(val text: CharSequence, val style: TextStyle) :
-    LayoutBehavior {
+private class RichTextLayoutBehavior(
+    val text: CharSequence,
+    val style: TextStyle,
+    val usePerformantTruncation: Boolean
+) : LayoutBehavior {
   override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
     val (size, textLayout) =
         layout(
@@ -60,7 +69,8 @@ private class RichTextLayoutBehavior(val text: CharSequence, val style: TextStyl
             sizeConstraints.toWidthSpec(),
             sizeConstraints.toHeightSpec(),
             text,
-            style)
+            style,
+            usePerformantTruncation)
 
     return PrimitiveLayoutResult(
         width = max(size.width(), sizeConstraints.minWidth),

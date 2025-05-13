@@ -47,4 +47,7 @@ object RenderCoreConfig {
 
   /** This flag is used to enable automatic removal of View listeners from ComponentHost. */
   @JvmField var removeComponentHostListeners: Boolean = false
+
+  /** Flag to use getOffsetForAdvance in TextMeasurementUtils to prevent ANRs. */
+  @JvmField var usePerformantTruncation: Boolean = false
 }

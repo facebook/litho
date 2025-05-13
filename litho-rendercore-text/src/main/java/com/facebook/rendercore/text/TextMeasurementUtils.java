@@ -43,6 +43,7 @@ import com.facebook.fbui.textlayoutbuilder.TextLayoutBuilder;
 import com.facebook.fbui.textlayoutbuilder.util.LayoutMeasureUtil;
 import com.facebook.rendercore.LayoutContext;
 import com.facebook.rendercore.MountableLayoutResult;
+import com.facebook.rendercore.RenderCoreConfig;
 import com.facebook.rendercore.utils.LayoutUtils;
 
 public class TextMeasurementUtils {
@@ -201,6 +202,17 @@ public class TextMeasurementUtils {
 
   public static Pair<Rect, TextLayout> layout(
       Context context, int widthSpec, int heightSpec, CharSequence text, TextStyle textStyle) {
+    return layout(
+        context, widthSpec, heightSpec, text, textStyle, RenderCoreConfig.usePerformantTruncation);
+  }
+
+  public static Pair<Rect, TextLayout> layout(
+      Context context,
+      int widthSpec,
+      int heightSpec,
+      CharSequence text,
+      TextStyle textStyle,
+      boolean usePerformantTruncation) {
     CharSequence processedText = text;
     final TextLayout textLayout = new TextLayout();
     textLayout.textStyle = textStyle;
@@ -256,7 +268,8 @@ public class TextMeasurementUtils {
                 textStyle.customEllipsisText,
                 layout,
                 ellipsizedLineNumber,
-                layoutWidth - textStyle.extraSpacingLeft - textStyle.extraSpacingRight);
+                layoutWidth - textStyle.extraSpacingLeft - textStyle.extraSpacingRight,
+                usePerformantTruncation);
 
         Layout newLayout =
             TextMeasurementUtils.createTextLayout(
@@ -534,7 +547,8 @@ public class TextMeasurementUtils {
       CharSequence customEllipsisText,
       Layout newLayout,
       int ellipsizedLineNumber,
-      float layoutWidth) {
+      float layoutWidth,
+      boolean usePerformantTruncation) {
     // Identify the X position at which to truncate the final line:
     // Note: The left position of the line is needed for the case of RTL text.
     final float ellipsisTextWidth =
@@ -542,12 +556,47 @@ public class TextMeasurementUtils {
             customEllipsisText, 0, customEllipsisText.length(), newLayout.getPaint());
     final boolean isRTL =
         newLayout.getParagraphDirection(ellipsizedLineNumber) == Layout.DIR_RIGHT_TO_LEFT;
-    final float ellipsisTarget =
-        isRTL
-            ? ellipsisTextWidth
-            : layoutWidth - ellipsisTextWidth + newLayout.getLineLeft(ellipsizedLineNumber);
+
+    // From local tests, correct truncation with getOffsetForAdvance doesn't depend on
+    // newLayout.getLineLeft(ellipsizedLineNumber) and including it can cause incorrect rendering.
+    // I suspect it was also incorrect for the previous getOffsetForAdvance. Regardless, we want to
+    // test it so are putting it behind the same flag.
+    final float ellipsisTarget;
+    if (usePerformantTruncation) {
+      ellipsisTarget =
+          isRTL
+              ? ellipsisTextWidth
+              : layoutWidth
+                  - ellipsisTextWidth
+                  - newLayout.getLineLeft(ellipsizedLineNumber)
+                  - newLayout.getParagraphLeft(ellipsizedLineNumber);
+    } else {
+      ellipsisTarget =
+          isRTL
+              ? ellipsisTextWidth
+              : layoutWidth - ellipsisTextWidth + newLayout.getLineLeft(ellipsizedLineNumber);
+    }
+
     // Get character offset number corresponding to that X position:
-    int ellipsisOffset = newLayout.getOffsetForHorizontal(ellipsizedLineNumber, ellipsisTarget);
+    int ellipsisOffset;
+    if (usePerformantTruncation && Build.VERSION.SDK_INT >= 23) {
+      int lineTextStart = newLayout.getLineStart(ellipsizedLineNumber);
+      int lineTextEnd = newLayout.getLineEnd(ellipsizedLineNumber);
+      ellipsisOffset =
+          newLayout
+              .getPaint()
+              .getOffsetForAdvance(
+                  text,
+                  lineTextStart,
+                  lineTextEnd,
+                  lineTextStart,
+                  lineTextEnd,
+                  isRTL,
+                  ellipsisTarget);
+    } else {
+      ellipsisOffset = newLayout.getOffsetForHorizontal(ellipsizedLineNumber, ellipsisTarget);
+    }
+
     if (ellipsisOffset > 0) {
       // getOffsetForHorizontal returns the closest character, but we need to guarantee no
       // truncation, so subtract 1 from the result:

@@ -21,6 +21,7 @@ import com.facebook.litho.PrimitiveComponent
 import com.facebook.litho.PrimitiveComponentScope
 import com.facebook.litho.Style
 import com.facebook.litho.useCached
+import com.facebook.rendercore.RenderCoreConfig
 import com.facebook.rendercore.text.RichTextPrimitive
 import com.facebook.rendercore.text.TextStyle
 
@@ -28,6 +29,7 @@ class RichText(
     val text: CharSequence,
     val textStyle: TextStyle? = null,
     private val style: Style? = null,
+    private val usePerformantTruncation: Boolean = RenderCoreConfig.usePerformantTruncation
 ) : PrimitiveComponent() {
   override fun PrimitiveComponentScope.render(): LithoPrimitive {
     val resolvedTextStyle =
@@ -35,6 +37,7 @@ class RichText(
           textStyle ?: TextStyle.createDefaultConfiguredTextStyle(androidContext)
         }
     return LithoPrimitive(
-        RichTextPrimitive(createPrimitiveId(), text, resolvedTextStyle), style = style)
+        RichTextPrimitive(createPrimitiveId(), text, resolvedTextStyle, usePerformantTruncation),
+        style = style)
   }
 }
