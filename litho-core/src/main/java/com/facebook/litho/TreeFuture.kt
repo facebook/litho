@@ -23,6 +23,7 @@ import com.facebook.litho.ComponentsSystrace.endSection
 import com.facebook.litho.LayoutState.Companion.isFromSyncLayout
 import com.facebook.litho.ThreadUtils.isMainThread
 import com.facebook.litho.ThreadUtils.tryRaiseThreadPriority
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.debug.LithoDebugEvents.TreeFuture.get
 import com.facebook.litho.debug.LithoDebugEvents.TreeFuture.getPartial
 import com.facebook.litho.debug.LithoDebugEvents.TreeFuture.interrupt
@@ -38,6 +39,7 @@ import java.util.concurrent.FutureTask
 import java.util.concurrent.RunnableFuture
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.concurrent.Volatile
+import kotlin.math.min
 
 /** Base class that wraps a [FutureTask] to allow calculating the same result across threads. */
 abstract class TreeFuture<T : PotentiallyPartialResult>(
@@ -287,8 +289,14 @@ abstract class TreeFuture<T : PotentiallyPartialResult>(
           interruptToken = WorkContinuationInstrumenter.onAskForWorkToContinue("interruptCalculate")
         }
       }
-      originalThreadPriority =
-          tryRaiseThreadPriority(runningThreadId, Process.THREAD_PRIORITY_DISPLAY)
+      val desiredPriority =
+          if (ComponentsConfiguration.enableRaisePriorityToMain) {
+            min(Process.getThreadPriority(myTid), Process.THREAD_PRIORITY_DISPLAY)
+          } else {
+            Process.THREAD_PRIORITY_DISPLAY
+          }
+
+      originalThreadPriority = tryRaiseThreadPriority(runningThreadId, desiredPriority)
       didRaiseThreadPriority = true
     } else {
       originalThreadPriority = Process.THREAD_PRIORITY_DEFAULT

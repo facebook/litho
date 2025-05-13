@@ -283,6 +283,12 @@ internal constructor(
     /** This flag is used to enable a fix for the ANR issue with sticky header RecyclerView. */
     @JvmField var enableFixForStickyHeader: Boolean = false
 
+    /**
+     * This flag enables the use of the main thread priority when raising the priority of a blocking
+     * thread on main
+     */
+    @JvmField var enableRaisePriorityToMain: Boolean = false
+
     /** This config will enable logging of interactable components with 0 alpha */
     @JvmField var isZeroAlphaLoggingEnabled: Boolean = false
 
