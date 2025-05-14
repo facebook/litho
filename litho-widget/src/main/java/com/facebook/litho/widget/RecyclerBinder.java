@@ -3151,7 +3151,8 @@ public class RecyclerBinder
       mCurrentFirstVisiblePosition = position;
       return;
     }
-    mMountedView.scrollToPosition(position);
+    int target = mIsCircular ? getClosestIndexInCircularList(mMountedView, position) : position;
+    mMountedView.scrollToPosition(target);
   }
 
   @UiThread
@@ -3171,9 +3172,10 @@ public class RecyclerBinder
       return;
     }
 
+    int target = mIsCircular ? getClosestIndexInCircularList(mMountedView, position) : position;
     final RecyclerView.SmoothScroller smoothScroller =
         SnapUtil.getSmoothScrollerWithOffset(mComponentContext.getAndroidContext(), offset, type);
-    smoothScroller.setTargetPosition(position);
+    smoothScroller.setTargetPosition(target);
     mMountedView.getLayoutManager().startSmoothScroll(smoothScroller);
   }
 
@@ -3212,7 +3214,26 @@ public class RecyclerBinder
       return;
     }
 
-    mLayoutInfo.scrollToPositionWithOffset(position, offset);
+    int target = mIsCircular ? getClosestIndexInCircularList(mMountedView, position) : position;
+    mLayoutInfo.scrollToPositionWithOffset(target, offset);
+  }
+
+  @UiThread
+  private int getClosestIndexInCircularList(RecyclerView recyclerView, int target) {
+    // Since circular lists position us in the middle of 0->MAX_INT, scrolling to a specific
+    // index interacts poorly. We either jump immediately to the beginning of the list (and ruin the
+    // "circular illusion") or send the RV on a mission to do an animated scroll from index
+    // MAX_INT/2 to some small number, animating forever effectively. This logic instead tries to
+    // find the closest item corresponding to the given index within a circular list.
+    View firstChild = recyclerView.getChildAt(0);
+    LayoutManager layoutManager = recyclerView.getLayoutManager();
+    if (firstChild == null || layoutManager == null) {
+      return target;
+    }
+    int numChildren = mComponentTreeHolders.size();
+    int firstVisibleIndex = layoutManager.getPosition(firstChild);
+    return firstVisibleIndex
+        + (target - firstVisibleIndex % numChildren + numChildren) % numChildren;
   }
 
   @GuardedBy("this")
