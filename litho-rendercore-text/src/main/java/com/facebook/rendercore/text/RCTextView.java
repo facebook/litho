@@ -109,6 +109,8 @@ public class RCTextView extends View {
   private boolean mShouldHandleKeyEvents;
   private boolean mLongClickActivated;
   private float mClickableSpanExpandedOffset;
+  private float mOutlineWidth;
+  private int mOutlineColor;
   @Nullable private Path mTouchAreaPath;
   @Nullable private Integer mWasFocusable;
   @Nullable private TouchableSpanListener mTouchableSpanListener;
@@ -202,11 +204,45 @@ public class RCTextView extends View {
   }
 
   private void drawLayout(Canvas canvas) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      maybeDrawOutline(canvas);
+    }
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
       Api34Utils.draw(mLayout, canvas, getSelectionPath(), mHighlightPaint);
     } else {
       // NULLSAFE_FIXME[Parameter Not Nullable]
       mLayout.draw(canvas, getSelectionPath(), mHighlightPaint, 0);
+    }
+  }
+
+  /**
+   * All texts drawn on top of images and videos need contrast outlines and shadows to be more
+   * visible against busy backgrounds. Standard Android shadows do not produce the separation of
+   * intensity needed, so the RCTextView provides a special outline attribute that draws contrast
+   * outlines usually combined with shadows. These outlines are drawn outside the contours to avoid
+   * reducing the visible surface of character glyphs. However, since Android has no mode for
+   * drawing outside strokes, they need to be drawn twice: the first pass draws strokes, and the
+   * second pass draws inner filled shapes. This method performs the first outlining pass if needed.
+   *
+   * @param canvas - A canvas to draw on.
+   */
+  @RequiresApi(Build.VERSION_CODES.Q)
+  private void maybeDrawOutline(Canvas canvas) {
+    if (mOutlineWidth > 0f) {
+      Paint p = mLayout.getPaint();
+      int savedColor = p.getColor();
+      Paint.Style savedStyle = p.getStyle();
+      float savedStrokeWidth = p.getStrokeWidth();
+      Paint.Join savedJoin = p.getStrokeJoin();
+      p.setStrokeJoin(Paint.Join.ROUND);
+      p.setColor(mOutlineColor != 0 ? mOutlineColor : p.getShadowLayerColor());
+      p.setStyle(Paint.Style.STROKE);
+      p.setStrokeWidth(mOutlineWidth);
+      mLayout.draw(canvas);
+      p.setStrokeWidth(savedStrokeWidth);
+      p.setStyle(savedStyle);
+      p.setColor(savedColor);
+      p.setStrokeJoin(savedJoin);
     }
   }
 
@@ -260,6 +296,10 @@ public class RCTextView extends View {
           mHighlightColor);
     } else {
       clearSelection();
+    }
+    if (textLayout.textStyle.outlineWidth > 0f) {
+      mOutlineWidth = textLayout.textStyle.outlineWidth;
+      mOutlineColor = textLayout.textStyle.outlineColor;
     }
 
     if (textLayout.imageSpans != null) {

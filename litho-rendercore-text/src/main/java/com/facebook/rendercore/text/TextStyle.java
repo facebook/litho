@@ -81,6 +81,8 @@ public class TextStyle implements Cloneable {
   int manualCapSpacing = Integer.MIN_VALUE;
   float extraSpacingLeft = 0;
   float extraSpacingRight = 0;
+  float outlineWidth = 0f;
+  int outlineColor = 0;
   @Nullable RoundedBackgroundProps roundedBackgroundProps = null;
   @Nullable String accessibilityLabel;
   @Nullable TouchableSpanListener touchableSpanListener = null;
@@ -357,6 +359,14 @@ public class TextStyle implements Cloneable {
 
   public void setClickableSpanListener(ClickableSpanListener clickableSpanListener) {
     this.clickableSpanListener = clickableSpanListener;
+  }
+
+  public void setOutlineWidth(float outlineWidth) {
+    this.outlineWidth = outlineWidth;
+  }
+
+  public void setOutlineColor(int outlineColor) {
+    this.outlineColor = outlineColor;
   }
 
   /**
