@@ -515,8 +515,19 @@ internal class TextInputLayoutBehavior(
     private val textForMeasure: State<CharSequence>,
 ) : LayoutBehavior {
   override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
+    var inputTypeForMeasure = inputType
+    var rawInputTypeForMeasure = rawInputType
     val context =
         if (ComponentsConfiguration.useCustomContextForTextInputMeasurement) {
+          // When input type has NO_SUGGESTIONS flag set then suggestion spans are removed when
+          // setText is called. This causes that SpanWatcher is invoked and TextView listens to
+          // those span changes. It caused a crash like T223197933. Here, we're removing
+          // NO_SUGGESTIONS flag if it exists to prevent TextView from removing them and dispatching
+          // SpanWatcher listeners. NO_SUGGESTIONS flag shouldn't affect measurement since
+          // suggestions are displayed in a separate window.
+          inputTypeForMeasure = removeNoSuggestionsFlagIfExists(inputTypeForMeasure)
+          rawInputTypeForMeasure = removeNoSuggestionsFlagIfExists(rawInputTypeForMeasure)
+
           MeasureContext(androidContext)
         } else {
           androidContext
@@ -540,8 +551,8 @@ internal class TextInputLayoutBehavior(
             gravity,
             editable,
             cursorVisible,
-            inputType,
-            rawInputType,
+            inputTypeForMeasure,
+            rawInputTypeForMeasure,
             keyListener,
             imeOptions,
             privateImeOptions,
@@ -572,6 +583,14 @@ internal class TextInputLayoutBehavior(
             } else {
               min(sizeConstraints.maxWidth, forMeasure.measuredWidth)
             })
+  }
+}
+
+private fun removeNoSuggestionsFlagIfExists(inputType: Int): Int {
+  return if (inputType and EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS > 0) {
+    inputType and EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS.inv()
+  } else {
+    inputType
   }
 }
 
