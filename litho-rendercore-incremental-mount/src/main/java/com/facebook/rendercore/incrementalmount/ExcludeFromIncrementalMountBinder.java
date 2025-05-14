@@ -26,7 +26,7 @@ import com.facebook.rendercore.RenderUnit.Binder;
  * This Binder is only used to hold the information indicating whether the Mountable Component skips
  * Incremental Mount. If this is true then the Component will not be involved in Incremental Mount.
  */
-@Nullsafe(Nullsafe.Mode.LOCAL)
+@Nullsafe(Nullsafe.Mode.RUNTIME)
 public class ExcludeFromIncrementalMountBinder implements Binder<RenderUnit<?>, Object, Object> {
 
   public static final ExcludeFromIncrementalMountBinder INSTANCE =
