@@ -268,8 +268,9 @@ public class TextMeasurementUtils {
                 textStyle.customEllipsisText,
                 layout,
                 ellipsizedLineNumber,
-                layoutWidth - textStyle.extraSpacingLeft - textStyle.extraSpacingRight,
-                usePerformantTruncation);
+                layoutWidth,
+                usePerformantTruncation,
+                textStyle);
 
         Layout newLayout =
             TextMeasurementUtils.createTextLayout(
@@ -530,6 +531,16 @@ public class TextMeasurementUtils {
         && textStyle.manualBaselineSpacing != Integer.MIN_VALUE;
   }
 
+  private static boolean hasNoWordsOrNumbers(CharSequence line) {
+    for (int i = 0; i < line.length(); ++i) {
+      char character = line.charAt(i);
+      if (Character.isAlphabetic(character) || Character.isDigit(character)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   /**
    * Truncates text which is too long and appends the given custom ellipsis CharSequence to the end
    * of the visible text.
@@ -539,6 +550,12 @@ public class TextMeasurementUtils {
    * @param newLayout A Layout object populated with measurement information for this text
    * @param ellipsizedLineNumber The line number within the text at which truncation occurs (i.e.
    *     the last visible line).
+   * @param fullLayoutWidth The width of the text from the WidthSpec before subtracting extra
+   *     spacing
+   * @param usePerformantTruncation Whether to use getOffsetForAdvance rather than
+   *     getOffsetForHorizontal to prevent ANRs
+   * @param textStyle A TextStyle object that is used to determine extra spacing and the truncation
+   *     style
    * @return The provided text truncated in such a way that the 'customEllipsisText' can appear at
    *     the end.
    */
@@ -547,10 +564,13 @@ public class TextMeasurementUtils {
       CharSequence customEllipsisText,
       Layout newLayout,
       int ellipsizedLineNumber,
-      float layoutWidth,
-      boolean usePerformantTruncation) {
+      float fullLayoutWidth,
+      boolean usePerformantTruncation,
+      TextStyle textStyle) {
     // Identify the X position at which to truncate the final line:
     // Note: The left position of the line is needed for the case of RTL text.
+    final float layoutWidth =
+        fullLayoutWidth - textStyle.extraSpacingLeft - textStyle.extraSpacingRight;
     final float ellipsisTextWidth =
         BoringLayout.getDesiredWidth(
             customEllipsisText, 0, customEllipsisText.length(), newLayout.getPaint());
@@ -616,7 +636,22 @@ public class TextMeasurementUtils {
         }
       }
       if (ellipsisOffset >= 0 && ellipsisOffset < text.length()) {
-        return TextUtils.concat(text.subSequence(0, ellipsisOffset), customEllipsisText);
+        CharSequence trimmedLine =
+            text.subSequence(newLayout.getLineStart(ellipsizedLineNumber), ellipsisOffset);
+        if ((textStyle.truncationStyle == TruncationStyle.FORCE_INLINE_TRUNCATION)
+            && hasNoWordsOrNumbers(trimmedLine)
+            && ellipsizedLineNumber - 1 >= 0) {
+          return truncateText(
+              text,
+              customEllipsisText,
+              newLayout,
+              ellipsizedLineNumber - 1,
+              fullLayoutWidth,
+              usePerformantTruncation,
+              textStyle);
+        } else {
+          return TextUtils.concat(text.subSequence(0, ellipsisOffset), customEllipsisText);
+        }
       } else {
         return text;
       }

@@ -87,6 +87,7 @@ public class TextStyle implements Cloneable {
   @Nullable String accessibilityLabel;
   @Nullable TouchableSpanListener touchableSpanListener = null;
   @Nullable ClickableSpanListener clickableSpanListener = null;
+  TruncationStyle truncationStyle = TruncationStyle.USE_MAX_LINES;
 
   public void setAccessibilityLabel(String accessibilityLabel) {
     this.accessibilityLabel = accessibilityLabel;
@@ -376,6 +377,10 @@ public class TextStyle implements Cloneable {
    */
   public void setClickableSpanExpandedOffset(float clickableSpanExpandedOffset) {
     this.clickableSpanExpandedOffset = clickableSpanExpandedOffset;
+  }
+
+  public void setTruncationStyle(TruncationStyle truncationStyle) {
+    this.truncationStyle = truncationStyle;
   }
 
   public static void addThemedTextStyleForContextToCache(Context context) {
