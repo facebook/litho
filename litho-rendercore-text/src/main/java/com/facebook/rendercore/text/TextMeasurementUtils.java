@@ -553,6 +553,14 @@ public class TextMeasurementUtils {
     return true;
   }
 
+  private static boolean shouldBeForcedInline(
+      Layout newLayout, int ellipsizedLineNumber, int ellipsisOffset, CharSequence text) {
+    int ellipsizedLineStart = newLayout.getLineStart(ellipsizedLineNumber);
+    CharSequence trimmedLine =
+        text.subSequence(ellipsizedLineStart, Math.max(ellipsisOffset, ellipsizedLineStart));
+    return hasNoWordsOrNumbers(trimmedLine) && ellipsizedLineNumber - 1 >= 0;
+  }
+
   /**
    * Truncates text which is too long and appends the given custom ellipsis CharSequence to the end
    * of the visible text.
@@ -648,11 +656,8 @@ public class TextMeasurementUtils {
         }
       }
       if (ellipsisOffset >= 0 && ellipsisOffset < text.length()) {
-        CharSequence trimmedLine =
-            text.subSequence(newLayout.getLineStart(ellipsizedLineNumber), ellipsisOffset);
-        if ((textStyle.truncationStyle == TruncationStyle.FORCE_INLINE_TRUNCATION)
-            && hasNoWordsOrNumbers(trimmedLine)
-            && ellipsizedLineNumber - 1 >= 0) {
+        if (textStyle.truncationStyle == TruncationStyle.FORCE_INLINE_TRUNCATION
+            && shouldBeForcedInline(newLayout, ellipsizedLineNumber, ellipsisOffset, text)) {
           return truncateText(
               text,
               customEllipsisText,
