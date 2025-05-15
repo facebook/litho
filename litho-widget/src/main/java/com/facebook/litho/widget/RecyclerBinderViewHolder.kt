@@ -14,35 +14,28 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget;
+package com.facebook.litho.widget
 
-import android.view.View;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView;
-import com.facebook.infer.annotation.OkToExtend;
-import com.facebook.litho.LithoView;
+import android.view.View
+import androidx.recyclerview.widget.RecyclerView
+import com.facebook.litho.LithoView
 
-/** The ViewHolder that hosts LithoView used by {@link RecyclerBinder} */
-@OkToExtend
-public abstract class RecyclerBinderViewHolder extends RecyclerView.ViewHolder {
-
-  public RecyclerBinderViewHolder(View itemView) {
-    super(itemView);
-  }
+/** The ViewHolder that hosts LithoView used by [RecyclerBinder] */
+abstract class RecyclerBinderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
   /** Return the LithoView, which will be used to bind Components. */
-  @Nullable
-  public abstract LithoView getLithoView();
+  abstract val lithoView: LithoView?
 
   /**
    * Overwrite the LayoutPrams of the LithoView, which is an optional step if there is no need to do
    * so.
    */
-  public abstract void setLithoViewLayoutParams(
-      LithoView lithoView,
-      int width,
-      int height,
-      int widthSpec,
-      int heightSpec,
-      boolean isFullSpan);
+  abstract fun setLithoViewLayoutParams(
+      lithoView: LithoView?,
+      width: Int,
+      height: Int,
+      widthSpec: Int,
+      heightSpec: Int,
+      isFullSpan: Boolean
+  )
 }
