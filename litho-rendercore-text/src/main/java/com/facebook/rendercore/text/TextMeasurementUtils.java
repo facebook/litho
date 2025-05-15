@@ -88,13 +88,25 @@ public class TextMeasurementUtils {
       CharSequence text,
       TextRenderUnit renderUnit,
       TextStyle textStyle) {
+    return layout(context, widthSpec, heightSpec, text, renderUnit, textStyle, false);
+  }
+
+  public static MountableLayoutResult layout(
+      LayoutContext context,
+      int widthSpec,
+      int heightSpec,
+      CharSequence text,
+      TextRenderUnit renderUnit,
+      TextStyle textStyle,
+      boolean usePerformantTruncation) {
     final DebugMeasureListener debugListener = sDebugMeasureListener;
     final Context androidContext = context.getAndroidContext();
     if (debugListener != null) {
       debugListener.onTextMeasured(renderUnit, text, widthSpec, heightSpec);
     }
 
-    Pair<Rect, TextLayout> result = layout(androidContext, widthSpec, heightSpec, text, textStyle);
+    Pair<Rect, TextLayout> result =
+        layout(androidContext, widthSpec, heightSpec, text, textStyle, usePerformantTruncation);
     if (textStyle.roundedBackgroundProps != null && text instanceof Spannable) {
       result =
           calculateLayoutWithBackgroundSpan(
