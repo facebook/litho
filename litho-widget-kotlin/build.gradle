@@ -50,6 +50,7 @@ dependencies {
     api project(':litho-sections-widget')
     implementation project(':litho-primitive-canvas')
     api project(':litho-primitive-utils')
+    implementation project(':litho-rendercore-text')
 
     compileOnly project(':litho-annotations')
     compileOnly project(':litho-sections-annotations')
