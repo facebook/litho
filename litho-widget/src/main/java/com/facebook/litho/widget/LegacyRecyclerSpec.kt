@@ -170,7 +170,7 @@ internal object LegacyRecyclerSpec {
 
   @OnCreateMountContent
   fun onCreateMountContent(c: Context?): SectionsRecyclerView {
-    val sectionsRecyclerView = SectionsRecyclerView(c, LithoRecyclerView(c))
+    val sectionsRecyclerView = SectionsRecyclerView(requireNotNull(c), LithoRecyclerView(c))
     sectionsRecyclerView.id = R.id.recycler_view_container_id
     return sectionsRecyclerView
   }

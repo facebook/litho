@@ -21,7 +21,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
 
 /** A test [SectionsRecyclerView] class used for unit testing. */
-class TestSectionsRecyclerView(context: Context, view: RecyclerView?) :
+class TestSectionsRecyclerView(context: Context, view: RecyclerView) :
     SectionsRecyclerView(context, view) {
 
   private var listener: OnRefreshListener? = null

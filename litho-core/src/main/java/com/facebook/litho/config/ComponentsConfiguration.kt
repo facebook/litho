@@ -116,7 +116,7 @@ internal constructor(
      */
     @JvmField val enableFixForIM: Boolean = false,
     @JvmField val visibilityBoundsTransformer: VisibilityBoundsTransformer? = null,
-    @JvmField val sectionsRecyclerViewOnCreateHandler: ((Object) -> Unit)? = null,
+    @JvmField val sectionsRecyclerViewOnCreateHandler: ((Any) -> Unit)? = null,
     /**
      * Determines whether we should enable stable ids by default in the
      * [com.facebook.litho.widget.RecyclerBinder]
@@ -362,7 +362,7 @@ internal constructor(
     private var primitiveRecyclerBinderStrategy = baseConfig.primitiveRecyclerBinderStrategy
     private var enableFixForIM = baseConfig.enableFixForIM
     private var visibilityBoundsTransformer = baseConfig.visibilityBoundsTransformer
-    private var sectionsRecyclerViewOnCreateHandler: ((Object) -> Unit)? =
+    private var sectionsRecyclerViewOnCreateHandler: ((Any) -> Unit)? =
         baseConfig.sectionsRecyclerViewOnCreateHandler
     private var useStableIdsInRecyclerBinder = baseConfig.useStableIdsInRecyclerBinder
     private var enableResolveWithoutSizeSpec = baseConfig.enableResolveWithoutSizeSpec
@@ -451,7 +451,7 @@ internal constructor(
       visibilityBoundsTransformer = transformer
     }
 
-    fun sectionsRecyclerViewOnCreateHandler(handler: ((Object) -> Unit)?): Builder = also {
+    fun sectionsRecyclerViewOnCreateHandler(handler: ((Any) -> Unit)?): Builder = also {
       sectionsRecyclerViewOnCreateHandler = handler
     }
 
