@@ -47,7 +47,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-@Nullsafe(Nullsafe.Mode.RUNTIME)
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
     extends MountExtension<Input, VisibilityMountExtension.VisibilityMountExtensionState>
     implements VisibleBoundsCallbacks<VisibilityMountExtension.VisibilityMountExtensionState> {
