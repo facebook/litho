@@ -200,6 +200,10 @@ public class TextStyle implements Cloneable {
     this.typeface = typeface;
   }
 
+  public void createTypeface(String fontFamily) {
+    this.typeface = Typeface.create(fontFamily, this.textStyle);
+  }
+
   public void setShouldAddSpacingExtraToFirstLine(boolean shouldAddSpacingExtraToFirstLine) {
     this.shouldAddSpacingExtraToFirstLine = shouldAddSpacingExtraToFirstLine;
   }
