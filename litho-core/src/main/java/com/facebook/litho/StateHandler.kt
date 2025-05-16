@@ -49,7 +49,7 @@ class StateHandler {
       )
       copyCurrentState(stateHandler.state)
       copyPendingStateTransitions(stateHandler.pendingStateUpdateTransitions)
-      stateHandler.cachedValues?.let { cachedValues = HashMap(it) }
+      stateHandler.cachedValues?.let { synchronized(stateHandler) { cachedValues = HashMap(it) } }
     }
   }
 
