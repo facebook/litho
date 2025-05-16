@@ -23,8 +23,8 @@ import androidx.recyclerview.widget.OrientationHelper
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.LithoView
 import com.facebook.litho.widget.ComponentRenderInfo
-import com.facebook.litho.widget.LegacyRecycler
 import com.facebook.litho.widget.LinearLayoutInfo
+import com.facebook.litho.widget.Recycler
 import com.facebook.litho.widget.RecyclerBinder
 
 class SampleActivity : Activity() {
@@ -38,7 +38,7 @@ class SampleActivity : Activity() {
             .layoutInfo(LinearLayoutInfo(this, OrientationHelper.VERTICAL, false))
             .build(context)
 
-    val component = LegacyRecycler.create(context).binder(recyclerBinder).build()
+    val component = Recycler(binder = recyclerBinder)
 
     addContent(recyclerBinder, context)
 
