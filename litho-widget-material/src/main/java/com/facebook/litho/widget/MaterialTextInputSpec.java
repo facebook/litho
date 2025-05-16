@@ -71,7 +71,7 @@ import javax.annotation.Nullable;
  *
  * @see {@link TextInput} for usage instructions
  */
-@Nullsafe(Nullsafe.Mode.RUNTIME)
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @MountSpec(
     isPureRender = true,
     events = {
@@ -204,6 +204,7 @@ class MaterialTextInputSpec {
             widthSpec,
             heightSpec,
             size,
+            // NULLSAFE_FIXME[Parameter Not Nullable]
             null,
             inputBackground,
             shadowRadius,
@@ -235,6 +236,7 @@ class MaterialTextInputSpec {
             importantForAutofill,
             autofillHints,
             disableAutofill,
+            // NULLSAFE_FIXME[Parameter Not Nullable]
             savedText.get());
     MountableTextInputLayout textInputLayout = new MountableTextInputLayout(c.getAndroidContext());
     setParams(
@@ -530,13 +532,21 @@ class MaterialTextInputSpec {
         textWatchers,
         selectionActionModeCallback,
         insertionActionModeCallback,
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         MaterialTextInput.getTextChangedEventHandler(c),
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         MaterialTextInput.getSelectionChangedEventHandler(c),
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         MaterialTextInput.getInputFocusChangedEventHandler(c),
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         MaterialTextInput.getKeyUpEventHandler(c),
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         MaterialTextInput.getKeyPreImeEventHandler(c),
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         MaterialTextInput.getEditorActionEventHandler(c),
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         MaterialTextInput.getInputConnectionEventHandler(c),
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         MaterialTextInput.getTextPastedEventHandler(c));
   }
 

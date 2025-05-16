@@ -19,10 +19,8 @@ package com.google.android.material.textfield;
 
 import android.content.Context;
 import android.view.View;
-import com.facebook.infer.annotation.Nullsafe;
 import javax.annotation.Nullable;
 
-@Nullsafe(Nullsafe.Mode.RUNTIME)
 public class MountableTextInputLayout extends TextInputLayout {
 
   @Nullable private View.OnFocusChangeListener onFocusChangeListener = null;

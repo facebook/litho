@@ -26,7 +26,7 @@ import java.util.Arrays;
  * A {@link ColorStateList} for {@link EditText} properties that provides an {@code equals(..)}
  * method so that it can be used {@code MaterialTextInput.textColorStateList(..)}.
  */
-@Nullsafe(Nullsafe.Mode.RUNTIME)
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class MaterialTextInputColorStateList extends ColorStateList {
 
   private static final int[][] STATES =
