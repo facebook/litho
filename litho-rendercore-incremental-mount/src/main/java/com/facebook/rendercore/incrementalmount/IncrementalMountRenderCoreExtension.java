@@ -18,7 +18,6 @@ package com.facebook.rendercore.incrementalmount;
 
 import android.graphics.Rect;
 import androidx.annotation.Nullable;
-import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.BinderKey;
 import com.facebook.rendercore.ClassBinderKey;
 import com.facebook.rendercore.LayoutResult;
@@ -39,7 +38,6 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-@Nullsafe(Nullsafe.Mode.RUNTIME)
 public class IncrementalMountRenderCoreExtension
     extends RenderCoreExtension<IncrementalMountExtensionInput, IncrementalMountExtensionState> {
 
@@ -127,14 +125,12 @@ public class IncrementalMountRenderCoreExtension
     @Override
     public List<IncrementalMountOutput> getOutputsOrderedByTopBounds() {
       maybeInitializeList();
-      // NULLSAFE_FIXME[Return Not Nullable]
       return outputsOrderedByTopBoundsList;
     }
 
     @Override
     public List<IncrementalMountOutput> getOutputsOrderedByBottomBounds() {
       maybeInitializeList();
-      // NULLSAFE_FIXME[Return Not Nullable]
       return outputsOrderedByBottomBoundsList;
     }
 
@@ -206,7 +202,6 @@ public class IncrementalMountRenderCoreExtension
     }
 
     @Override
-    // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
     public void visit(
         final @Nullable RenderTreeNode parent,
         final LayoutResult result,

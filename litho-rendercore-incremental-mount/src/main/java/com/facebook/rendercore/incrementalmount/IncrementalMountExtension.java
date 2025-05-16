@@ -50,7 +50,7 @@ import kotlin.Unit;
 import org.jetbrains.annotations.NotNull;
 
 /** Extension for performing incremental mount. */
-@Nullsafe(Nullsafe.Mode.RUNTIME)
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class IncrementalMountExtension
     extends MountExtension<IncrementalMountExtensionInput, IncrementalMountExtensionState>
     implements VisibleBoundsCallbacks<IncrementalMountExtensionState>,

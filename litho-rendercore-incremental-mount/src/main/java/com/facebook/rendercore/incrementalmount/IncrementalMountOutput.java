@@ -21,7 +21,7 @@ import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 
 /** The output object for incremental mount extension */
-@Nullsafe(Nullsafe.Mode.RUNTIME)
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class IncrementalMountOutput {
   private final int index;
   private @Nullable Rect originalBounds;

@@ -17,11 +17,9 @@
 package com.facebook.rendercore.incrementalmount;
 
 import androidx.annotation.Nullable;
-import com.facebook.infer.annotation.Nullsafe;
 import java.util.Collection;
 import java.util.List;
 
-@Nullsafe(Nullsafe.Mode.RUNTIME)
 public interface IncrementalMountExtensionInput {
 
   List<IncrementalMountOutput> getOutputsOrderedByTopBounds();

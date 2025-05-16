@@ -16,15 +16,12 @@
 
 package com.facebook.rendercore.incrementalmount;
 
-import com.facebook.infer.annotation.Nullsafe;
-
 /**
  * This class contains mainly flags for features that are either used for development, or are not
  * ready for public consumption, or for use in experiments.
  *
  * <p>The current values are safe defaults and should not require manual changes.
  */
-@Nullsafe(Nullsafe.Mode.RUNTIME)
 public class IncrementalMountExtensionConfigs {
 
   public static final String DEBUG_TAG = "IncrementalMount";
