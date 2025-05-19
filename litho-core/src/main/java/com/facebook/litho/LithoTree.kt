@@ -34,12 +34,11 @@ internal constructor(
     val lithoTreeLifecycleProvider: LithoTreeLifecycleProvider,
     val id: Int
 ) {
+  @field:ThreadConfined(ThreadConfined.ANY)
+  val stateProvider: StateProvider = StateProviderImpl(id, treeStateProvider)
 
   val isReadTrackingEnabled: Boolean =
       ComponentsConfiguration.defaultInstance.enableStateReadTracking
-
-  @field:ThreadConfined(ThreadConfined.ANY)
-  val stateProvider: StateProvider = StateProviderImpl(id, isReadTrackingEnabled, treeStateProvider)
 
   // Used to lazily store a CoroutineScope, if coroutine helper methods are used.
   @JvmField val internalScopeRef: AtomicReference<Any> = AtomicReference<Any>()
