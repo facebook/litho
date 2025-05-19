@@ -488,9 +488,11 @@ object Resolver {
       // collect transitions
       node.transitionData?.let { transitionData -> collectedTransitionData.add(transitionData) }
     }
-    for (info in node.scopedComponentInfos) {
-      info.stateReads?.forEach { s ->
-        collectedStateReads.getOrPut(s) { mutableScatterSetOf() }.add(info.context.globalKey)
+    if (c.isReadTrackingEnabled) {
+      for (info in node.scopedComponentInfos) {
+        info.stateReads?.forEach { s ->
+          collectedStateReads.getOrPut(s) { mutableScatterSetOf() }.add(info.context.globalKey)
+        }
       }
     }
   }

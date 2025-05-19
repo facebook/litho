@@ -80,17 +80,20 @@ internal interface TreeStateProvider {
 
 internal class StateProviderImpl(
     override val treeId: Int,
+    private val isReadTrackingEnabled: Boolean,
     private val treeStateProvider: TreeStateProvider
 ) : StateProvider {
 
   private val currentSource = LithoThreadLocal<TreeState>()
 
   override fun enterScope(source: TreeState) {
+    if (!isReadTrackingEnabled) return // Noop if read tracking is disabled
     check(currentSource.get() == null)
     currentSource.set(source)
   }
 
   override fun exitScope(source: TreeState) {
+    if (!isReadTrackingEnabled) return // Noop if read tracking is disabled
     check(source === currentSource.get())
     currentSource.set(null)
   }
