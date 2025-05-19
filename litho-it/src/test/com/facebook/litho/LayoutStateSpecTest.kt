@@ -33,15 +33,13 @@ class LayoutStateSpecTest {
   private var widthSpec = 0
   private var heightSpec = 0
   private lateinit var layoutState: LayoutState
-  private lateinit var component: Component
-  private lateinit var context: ComponentContext
 
   @Before
   fun setup() {
-    context = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
+    val context = newComponentTreeContext()
     widthSpec = makeSizeSpec(39, SizeSpec.EXACTLY)
     heightSpec = makeSizeSpec(41, SizeSpec.EXACTLY)
-    component = TestLayoutComponent.create(context).build()
+    val component = TestLayoutComponent.create(context).build()
     Whitebox.setInternalState(component, "mId", COMPONENT_ID)
     val result =
         ResolveTreeFuture.resolve(context, component, TreeState(), 1, 1, null, null, null, null)
@@ -77,5 +75,10 @@ class LayoutStateSpecTest {
 
   companion object {
     private const val COMPONENT_ID = 37
+
+    fun newComponentTreeContext(): ComponentContext {
+      val baseContext = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
+      return ComponentTree.create(baseContext).build().context
+    }
   }
 }

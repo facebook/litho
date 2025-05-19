@@ -17,7 +17,9 @@
 package com.facebook.litho
 
 import android.util.SparseIntArray
+import androidx.collection.ScatterSet
 import com.facebook.litho.state.ComponentState
+import com.facebook.litho.state.StateId
 import com.facebook.proguard.annotations.DoNotStrip
 import java.util.ArrayList
 import kotlin.collections.HashMap
@@ -29,6 +31,8 @@ class ScopedComponentInfo(
 ) : Cloneable {
 
   var state: ComponentState<out StateContainer>? = null
+  var stateReads: ScatterSet<StateId>? = null
+
   val prepareInterStagePropsContainer: PrepareInterStagePropsContainer? =
       if (component is SpecGeneratedComponent) component.createPrepareInterStagePropsContainer()
       else null
