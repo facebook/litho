@@ -87,6 +87,7 @@ import com.facebook.litho.annotations.OnVirtualViewKeyboardFocusChanged;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.utils.VersionedAndroidApis;
 import com.facebook.rendercore.text.ClickableSpanListener;
 import com.facebook.rendercore.text.TouchableSpanListener;
@@ -856,9 +857,15 @@ public class TextSpec {
             text, lineStart, lineEnd, lineStart, lineEnd, isRtl, ellipsisTarget);
 
     if (ellipsisOffset > 0) {
-      // getOffsetForHorizontal returns the closest character, but we need to guarantee no
-      // truncation, so subtract 1 from the result:
-      ellipsisOffset -= 1;
+
+      // Since the offset adjustment was for the original implementation with
+      // [Layout.getOffsetForHorizontal], now we've moved to using [Paint.getOffsetForAdvance] which
+      // returns different value from the previous one, so we don't need it anymore.
+      if (!ComponentsConfiguration.enableFixForTextEllipsisOffset) {
+        // getOffsetForHorizontal returns the closest character, but we need to guarantee no
+        // truncation, so subtract 1 from the result:
+        ellipsisOffset -= 1;
+      }
 
       // Ensure that we haven't chosen an ellipsisOffset that's past the end of the ellipsis start.
       // This can occur in several cases, including when the width of the customEllipsisText is less

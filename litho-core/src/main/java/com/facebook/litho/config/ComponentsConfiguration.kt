@@ -313,6 +313,12 @@ internal constructor(
      */
     @JvmField var skipA11YValidationForKeyboard: Boolean = false
 
+    /**
+     * This flag is used to enable a fix for the issue where the text is not truncated correctly
+     * when customEllipsisText is set.
+     */
+    @JvmField var enableFixForTextEllipsisOffset: Boolean = true
+
     /** This flag is used clear MovementMethod on TextInput to avoid a potential crash. */
     @JvmField var clearMovementMethod: Boolean = true
 
