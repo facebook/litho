@@ -31,7 +31,7 @@ fb_java_library(
     visibility = ["PUBLIC"],
     deps = [
         "//fbandroid/third-party/java/infer-annotations:infer-annotations",
-        "//fbandroid/third-party/java/jsr-305:jsr-305",
+        "//third-party/java/com/google/code/findbugs/jsr305:jsr305",
         LITHO_ANNOTATIONS_TARGET,
         LITHO_JAVAPOET_TARGET,
         LITHO_SECTIONS_ANNOTATIONS_TARGET,

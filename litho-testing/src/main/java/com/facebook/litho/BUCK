@@ -45,7 +45,7 @@ litho_android_library(
     ],
     deps = [
         "//fbandroid/third-party/java/infer-annotations:infer-annotations",
-        "//fbandroid/third-party/java/jsr-305:jsr-305",
+        "//third-party/java/com/google/code/findbugs/jsr305:jsr305",
         LITHO_ASSERTJ_TARGET,
         LITHO_HAMCREST_TARGET,
         LITHO_INFERANNOTATIONS_TARGET,

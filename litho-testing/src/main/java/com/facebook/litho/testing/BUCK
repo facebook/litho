@@ -68,7 +68,7 @@ litho_android_test_library(
     deps = [
         "//fbandroid/third-party/java/guava:guava",
         "//fbandroid/third-party/java/infer-annotations:infer-annotations",
-        "//fbandroid/third-party/java/jsr-305:jsr-305",
+        "//third-party/java/com/google/code/findbugs/jsr305:jsr305",
         LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
         LITHO_ANDROIDSUPPORT_TESTING_CORE_TARGET,
         LITHO_ANDROIDSUPPORT_TESTING_TARGET,
