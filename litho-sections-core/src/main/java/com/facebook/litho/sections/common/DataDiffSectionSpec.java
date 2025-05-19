@@ -263,17 +263,22 @@ public class DataDiffSectionSpec<T> {
       for (int i = 0, size = operations.size(); i < size; i++) {
         final Operation operation = operations.get(i);
         final List<ComponentContainer> components = operation.getComponentContainers();
-        final List<Diff> dataHolders = operation.getDataContainers();
+        final List<Diff<?>> dataHolders = operation.getDataContainers();
         final int opSize = components == null ? 1 : components.size();
         switch (operation.getType()) {
           case Operation.INSERT:
             if (opSize == 1) {
-              mChangeSet.insert(
-                  operation.getIndex(),
-                  // NULLSAFE_FIXME[Nullable Dereference]
-                  components.get(0).getRenderInfo(),
-                  c.getTreePropContainerCopy(),
-                  dataHolders.get(0).getNext());
+              final RenderInfo renderInfo =
+                  (components != null && !components.isEmpty())
+                      ? components.get(0).getRenderInfo()
+                      : null;
+              if (renderInfo != null) {
+                mChangeSet.insert(
+                    operation.getIndex(),
+                    renderInfo,
+                    c.getTreePropContainerCopy(),
+                    dataHolders.get(0).getNext());
+              }
             } else {
               // NULLSAFE_FIXME[Parameter Not Nullable]
               final List<RenderInfo> renderInfos = extractComponentInfos(opSize, components);
@@ -303,13 +308,18 @@ public class DataDiffSectionSpec<T> {
 
           case Operation.UPDATE:
             if (opSize == 1) {
-              mChangeSet.update(
-                  operation.getIndex(),
-                  // NULLSAFE_FIXME[Nullable Dereference]
-                  components.get(0).getRenderInfo(),
-                  c.getTreePropContainerCopy(),
-                  dataHolders.get(0).getPrevious(),
-                  dataHolders.get(0).getNext());
+              final RenderInfo renderInfo =
+                  (components != null && !components.isEmpty())
+                      ? components.get(0).getRenderInfo()
+                      : null;
+              if (renderInfo != null) {
+                mChangeSet.update(
+                    operation.getIndex(),
+                    renderInfo,
+                    c.getTreePropContainerCopy(),
+                    dataHolders.get(0).getPrevious(),
+                    dataHolders.get(0).getNext());
+              }
             } else {
               // NULLSAFE_FIXME[Parameter Not Nullable]
               final List<RenderInfo> renderInfos = extractComponentInfos(opSize, components);
@@ -339,7 +349,7 @@ public class DataDiffSectionSpec<T> {
       return renderInfos;
     }
 
-    private static List<Object> extractPrevData(List<Diff> dataHolders) {
+    private static List<Object> extractPrevData(List<Diff<?>> dataHolders) {
       final List<Object> data = new ArrayList<>(dataHolders.size());
       for (Diff diff : dataHolders) {
         data.add(diff.getPrevious());
@@ -347,7 +357,7 @@ public class DataDiffSectionSpec<T> {
       return data;
     }
 
-    private static List<Object> extractNextData(List<Diff> dataHolders) {
+    private static List<Object> extractNextData(List<Diff<?>> dataHolders) {
       final List<Object> data = new ArrayList<>(dataHolders.size());
       for (Diff diff : dataHolders) {
         data.add(diff.getNext());
