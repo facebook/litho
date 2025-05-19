@@ -62,24 +62,24 @@
   <div class="breadcrumbs"><a href="../../index.html">litho-widget</a><span class="delimiter">/</span><a href="../index.html">com.facebook.litho.widget</a><span class="delimiter">/</span><span class="current">RecyclerBinderUpdateCallback</span></div>
   <div class="cover ">
     <h1 class="cover"><span>Recycler</span><wbr><span>Binder</span><wbr><span>Update</span><wbr><span><span>Callback</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="index.html">RecyclerBinderUpdateCallback</a><span class="token operator">&lt;</span><a href="index.html">T</a><span class="token operator">&gt;</span> : <a href="https://developer.android.com/reference/kotlin/androidx/recyclerview/widget/ListUpdateCallback.html">ListUpdateCallback</a></div><p class="paragraph">An implementation of <a href="https://developer.android.com/reference/kotlin/androidx/recyclerview/widget/ListUpdateCallback.html">ListUpdateCallback</a> that generates the relevant <a href="../../../litho-core/com.facebook.litho/-component/index.html">Component</a>s when an item is inserted/updated. </p><p class="paragraph">The user of this API is expected to provide a ComponentRenderer implementation to build a Component from a generic model object.</p></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">RecyclerBinderUpdateCallback</a><span class="token operator">&lt;</span><a href="index.html">T</a><span class="token operator">&gt;</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">prevData<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="index.html">T</a><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">nextData<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="index.html">T</a><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">componentRenderer<span class="token operator">: </span><a href="-component-renderer/index.html">RecyclerBinderUpdateCallback.ComponentRenderer</a><span class="token operator">&lt;</span><a href="index.html">T</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">operationExecutor<span class="token operator">: </span><a href="-operation-executor/index.html">RecyclerBinderUpdateCallback.OperationExecutor</a></span></span><span class="token punctuation">)</span> : <a href="https://developer.android.com/reference/kotlin/androidx/recyclerview/widget/ListUpdateCallback.html">ListUpdateCallback</a></div><p class="paragraph">An implementation of <a href="https://developer.android.com/reference/kotlin/androidx/recyclerview/widget/ListUpdateCallback.html">ListUpdateCallback</a> that generates the relevant <a href="../../../litho-core/com.facebook.litho/-component/index.html">com.facebook.litho.Component</a>s when an item is inserted/updated.</p><p class="paragraph">The user of this API is expected to provide a ComponentRenderer implementation to build a Component from a generic model object.</p></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
     <div class="tabs-section-body">
       <div data-togglable="CONSTRUCTOR">
         <h2 class="">Constructors</h2>
-        <div class="table"><a data-name="1607206544%2FConstructors%2F-534206624" anchor-label="RecyclerBinderUpdateCallback" id="1607206544%2FConstructors%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
+        <div class="table"><a data-name="-1678759832%2FConstructors%2F-534206624" anchor-label="RecyclerBinderUpdateCallback" id="-1678759832%2FConstructors%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
           <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":litho-widget:dokkaHtmlPartial/release" data-filterable-set=":litho-widget:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="-recycler-binder-update-callback.html"><span>Recycler</span><wbr><span>Binder</span><wbr><span>Update</span><wbr><span><span>Callback</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1607206544%2FConstructors%2F-534206624"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1678759832%2FConstructors%2F-534206624"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">prevData<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/List.html">List</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="index.html">T</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">nextData<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/List.html">List</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="index.html">T</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">componentRenderer<span class="token operator">: </span><a href="-component-renderer/index.html">RecyclerBinderUpdateCallback.ComponentRenderer</a><span class="token operator">&lt;</span><a href="index.html">T</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">recyclerBinder<span class="token operator">: </span><a href="../-recycler-binder/index.html">RecyclerBinder</a></span></span><span class="token punctuation">)</span></div><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/Nullable.html"><span class="token annotation builtin">Nullable</span></a>&nbsp;</span>prevData<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/List.html">List</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="index.html">T</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">nextData<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/List.html">List</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="index.html">T</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">componentRenderer<span class="token operator">: </span><a href="-component-renderer/index.html">RecyclerBinderUpdateCallback.ComponentRenderer</a><span class="token operator">&lt;</span><a href="index.html">T</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">operationExecutor<span class="token operator">: </span><a href="-operation-executor/index.html">RecyclerBinderUpdateCallback.OperationExecutor</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">prevData<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="index.html">T</a><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">nextData<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="index.html">T</a><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">componentRenderer<span class="token operator">: </span><a href="-component-renderer/index.html">RecyclerBinderUpdateCallback.ComponentRenderer</a><span class="token operator">&lt;</span><a href="index.html">T</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">recyclerBinder<span class="token operator">: </span><a href="../-recycler-binder/index.html">RecyclerBinder</a></span></span><span class="token punctuation">)</span></div><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">prevData<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="index.html">T</a><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">nextData<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="index.html">T</a><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">componentRenderer<span class="token operator">: </span><a href="-component-renderer/index.html">RecyclerBinderUpdateCallback.ComponentRenderer</a><span class="token operator">&lt;</span><a href="index.html">T</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">operationExecutor<span class="token operator">: </span><a href="-operation-executor/index.html">RecyclerBinderUpdateCallback.OperationExecutor</a></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
@@ -88,7 +88,22 @@
       </div>
       <div data-togglable="TYPE">
         <h2 class="">Types</h2>
-        <div class="table"><a data-name="811237078%2FClasslikes%2F-534206624" anchor-label="ComponentContainer" id="811237078%2FClasslikes%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
+        <div class="table"><a data-name="1575960156%2FClasslikes%2F-534206624" anchor-label="Companion" id="1575960156%2FClasslikes%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-widget:dokkaHtmlPartial/release" data-filterable-set=":litho-widget:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-companion/index.html"><span><span>Companion</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1575960156%2FClasslikes%2F-534206624"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-companion/index.html">Companion</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="811237078%2FClasslikes%2F-534206624" anchor-label="ComponentContainer" id="811237078%2FClasslikes%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
           <div class="table-row" data-filterable-current=":litho-widget:dokkaHtmlPartial/release" data-filterable-set=":litho-widget:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
@@ -98,7 +113,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-component-container/index.html">ComponentContainer</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-component-container/index.html">ComponentContainer</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">var </span>needsComputation<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
@@ -113,7 +128,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-component-renderer/index.html">ComponentRenderer</a><span class="token operator">&lt;</span><a href="-component-renderer/index.html">T</a><span class="token operator">&gt;</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><span class="token keyword">interface </span><a href="-component-renderer/index.html">ComponentRenderer</a><span class="token operator">&lt;</span><a href="-component-renderer/index.html">T</a><span class="token operator">&gt;</span></div></div></div>
                 </div>
               </div>
             </div>
@@ -128,7 +143,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-operation/index.html">Operation</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-operation/index.html">Operation</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>type<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>index<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>toIndex<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>componentContainers<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="-component-container/index.html">RecyclerBinderUpdateCallback.ComponentContainer</a><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>dataContainers<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../../litho-core/com.facebook.litho/-diff/index.html">Diff</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
@@ -143,7 +158,26 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-operation-executor/index.html">OperationExecutor</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><span class="token keyword">interface </span><a href="-operation-executor/index.html">OperationExecutor</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="">Properties</h2>
+        <div class="table"><a data-name="257863417%2FProperties%2F-534206624" anchor-label="operations" id="257863417%2FProperties%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-widget:dokkaHtmlPartial/release" data-filterable-set=":litho-widget:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="operations.html"><span><span>operations</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="257863417%2FProperties%2F-534206624"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@get:</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/VisibleForTesting.html"><span class="token annotation builtin">VisibleForTesting</span></a></div></div><span class="token keyword">val </span><a href="operations.html">operations</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="-operation/index.html">RecyclerBinderUpdateCallback.Operation</a><span class="token operator">&gt;</span></div></div></div>
                 </div>
               </div>
             </div>
@@ -162,67 +196,67 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="apply-changeset.html"><span class="token function">applyChangeset</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">c<span class="token operator">: </span><a href="../../../litho-core/com.facebook.litho/-component-context/index.html">ComponentContext</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="apply-changeset.html"><span class="token function">applyChangeset</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">c<span class="token operator">: </span><a href="../../../litho-core/com.facebook.litho/-component-context/index.html">ComponentContext</a></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="1690175429%2FFunctions%2F-534206624" anchor-label="onChanged" id="1690175429%2FFunctions%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
+<a data-name="-2096039998%2FFunctions%2F-534206624" anchor-label="onChanged" id="-2096039998%2FFunctions%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
           <div class="table-row" data-filterable-current=":litho-widget:dokkaHtmlPartial/release" data-filterable-set=":litho-widget:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="on-changed.html"><span>on</span><wbr><span><span>Changed</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1690175429%2FFunctions%2F-534206624"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2096039998%2FFunctions%2F-534206624"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="on-changed.html"><span class="token function">onChanged</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">position<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">count<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/Nullable.html"><span class="token annotation builtin">Nullable</span></a>&nbsp;</span>payload<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-any/index.html">Any</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="on-changed.html"><span class="token function">onChanged</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">position<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">count<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">payload<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="577581209%2FFunctions%2F-534206624" anchor-label="onInserted" id="577581209%2FFunctions%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
+<a data-name="-1115723631%2FFunctions%2F-534206624" anchor-label="onInserted" id="-1115723631%2FFunctions%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
           <div class="table-row" data-filterable-current=":litho-widget:dokkaHtmlPartial/release" data-filterable-set=":litho-widget:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="on-inserted.html"><span>on</span><wbr><span><span>Inserted</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="577581209%2FFunctions%2F-534206624"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1115723631%2FFunctions%2F-534206624"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="on-inserted.html"><span class="token function">onInserted</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">position<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">count<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="on-inserted.html"><span class="token function">onInserted</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">position<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">count<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-1989655322%2FFunctions%2F-534206624" anchor-label="onMoved" id="-1989655322%2FFunctions%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
+<a data-name="-58297826%2FFunctions%2F-534206624" anchor-label="onMoved" id="-58297826%2FFunctions%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
           <div class="table-row" data-filterable-current=":litho-widget:dokkaHtmlPartial/release" data-filterable-set=":litho-widget:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="on-moved.html"><span>on</span><wbr><span><span>Moved</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1989655322%2FFunctions%2F-534206624"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-58297826%2FFunctions%2F-534206624"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="on-moved.html"><span class="token function">onMoved</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">fromPosition<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">toPosition<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="on-moved.html"><span class="token function">onMoved</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">fromPosition<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">toPosition<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-1852666797%2FFunctions%2F-534206624" anchor-label="onRemoved" id="-1852666797%2FFunctions%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
+<a data-name="-1877690677%2FFunctions%2F-534206624" anchor-label="onRemoved" id="-1877690677%2FFunctions%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
           <div class="table-row" data-filterable-current=":litho-widget:dokkaHtmlPartial/release" data-filterable-set=":litho-widget:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="on-removed.html"><span>on</span><wbr><span><span>Removed</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1852666797%2FFunctions%2F-534206624"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1877690677%2FFunctions%2F-534206624"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="on-removed.html"><span class="token function">onRemoved</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">position<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">count<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="on-removed.html"><span class="token function">onRemoved</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">position<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">count<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
