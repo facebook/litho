@@ -50,6 +50,18 @@ dependencies {
     implementation deps.supportCore
     implementation deps.supportCustomView
     implementation deps.textlayoutbuilder
+
+    // Test project dependencies
+    testImplementation project(':litho-rendercore-testing')
+    testImplementation project(':litho-rendercore-default-node')
+    testImplementation project(':litho-rendercore-default-text-node')
+
+    // Testing deps
+    testImplementation deps.assertjCore
+    testImplementation deps.junit
+    testImplementation deps.mockitoCore
+    testImplementation deps.robolectric
+    testImplementation deps.supportTestCore
 }
 
 apply plugin: "com.vanniktech.maven.publish"
