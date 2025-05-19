@@ -18,14 +18,10 @@ package com.facebook.litho
 
 import androidx.annotation.IntDef
 import androidx.annotation.VisibleForTesting
-import androidx.collection.MutableScatterSet
-import androidx.collection.ScatterSet
-import androidx.collection.mutableScatterSetOf
 import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.debug.LithoDebugEvent
 import com.facebook.litho.debug.LithoDebugEventAttributes
 import com.facebook.litho.layout.LayoutDirection
-import com.facebook.litho.state.StateId
 import com.facebook.litho.transition.MutableTransitionData
 import com.facebook.litho.transition.TransitionData
 import com.facebook.rendercore.debug.DebugEventAttribute
@@ -456,28 +452,23 @@ object Resolver {
     }
     val collectedAttachables: MutableList<Attachable> = ArrayList()
     val collectedTransitionData = MutableTransitionData()
-    val collectedStateReads = mutableMapOf<StateId, MutableScatterSet<String>>()
-    collectOutputs(node, collectedAttachables, collectedTransitionData, collectedStateReads)
-    return if (collectedAttachables.isEmpty() &&
-        collectedTransitionData.isEmpty() &&
-        collectedStateReads.isEmpty()) {
+    collectOutputs(node, collectedAttachables, collectedTransitionData)
+    return if (collectedAttachables.isEmpty() && collectedTransitionData.isEmpty()) {
       null
     } else {
-      Outputs(collectedAttachables, collectedTransitionData, collectedStateReads)
+      Outputs(collectedAttachables, collectedTransitionData)
     }
   }
 
   private fun collectOutputs(
       node: LithoNode,
       collectedAttachables: MutableList<Attachable>,
-      collectedTransitionData: MutableTransitionData,
-      collectedStateReads: MutableMap<StateId, MutableScatterSet<String>>,
+      collectedTransitionData: MutableTransitionData
   ) {
 
     // TODO(T143986616): optimise traversal for reused nodes
     for (i in 0 until node.childCount) {
-      collectOutputs(
-          node.getChildAt(i), collectedAttachables, collectedTransitionData, collectedStateReads)
+      collectOutputs(node.getChildAt(i), collectedAttachables, collectedTransitionData)
     }
 
     // We'll deduplicate attachable in [AttachDetachHandler]
@@ -487,11 +478,6 @@ object Resolver {
     if (c.areTransitionsEnabled() && node !is NestedTreeHolder) {
       // collect transitions
       node.transitionData?.let { transitionData -> collectedTransitionData.add(transitionData) }
-    }
-    for (info in node.scopedComponentInfos) {
-      info.stateReads?.forEach { s ->
-        collectedStateReads.getOrPut(s) { mutableScatterSetOf() }.add(info.context.globalKey)
-      }
     }
   }
 
@@ -682,7 +668,6 @@ object Resolver {
   class Outputs
   internal constructor(
       @JvmField val attachables: List<Attachable>,
-      @JvmField internal val transitionData: TransitionData,
-      @JvmField internal val stateReads: Map<StateId, ScatterSet<String>>,
+      @JvmField internal val transitionData: TransitionData?
   )
 }

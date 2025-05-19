@@ -31,11 +31,13 @@ import org.junit.runner.RunWith
 class LayoutStateSizeTest {
 
   private lateinit var layoutState: LayoutState
+  private lateinit var component: Component
+  private lateinit var context: ComponentContext
 
   @Before
   fun setup() {
-    val context = newComponentTreeContext()
-    val component = TestLayoutComponent.create(context).build()
+    context = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
+    component = TestLayoutComponent.create(context).build()
     Whitebox.setInternalState(component, "mId", COMPONENT_ID)
     val result =
         ResolveTreeFuture.resolve(context, component, TreeState(), 1, 1, null, null, null, null)
@@ -71,10 +73,5 @@ class LayoutStateSizeTest {
     private const val COMPONENT_ID = 37
     private const val WIDTH = 49
     private const val HEIGHT = 51
-
-    fun newComponentTreeContext(): ComponentContext {
-      val baseContext = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-      return ComponentTree.create(baseContext).build().context
-    }
   }
 }

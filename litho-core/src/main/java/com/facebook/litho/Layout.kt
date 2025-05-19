@@ -157,7 +157,7 @@ internal object Layout {
 
         reductionState.transitionData
             .getOrCreate { MutableTransitionData().also { reductionState.transitionData = it } }
-            .add(outputs.transitionData)
+            .apply { outputs.transitionData?.let { add(it) } }
       }
 
       try {

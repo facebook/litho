@@ -17,6 +17,9 @@
 package com.facebook.litho
 
 import android.view.View
+import androidx.collection.ScatterSet
+import com.facebook.litho.state.StateId
+import com.facebook.litho.state.StateReadRecorder
 import com.facebook.litho.transition.MutableTransitionData
 
 /**
@@ -29,6 +32,9 @@ open class ComponentScope(override val context: ComponentContext) : ResourcesSco
   constructor(context: ComponentContext, resolveContext: ResolveContext?) : this(context) {
     _resolveContext = resolveContext
   }
+
+  private val isReadTrackingEnabled: Boolean
+    get() = context.lithoTree?.isReadTrackingEnabled == true
 
   private var isPristine: Boolean = true
   private var _resolveContext: ResolveContext? = null
@@ -44,6 +50,7 @@ open class ComponentScope(override val context: ComponentContext) : ResourcesSco
   internal var useCachedIndex: Int = 0
   internal var transitionData: MutableTransitionData? = null
   internal var useEffectEntries: MutableList<Attachable>? = null
+  internal var stateReads: ScatterSet<StateId>? = null
 
   @Suppress("UNCHECKED_CAST")
   internal inline fun <T> withResolveContext(
@@ -56,7 +63,14 @@ open class ComponentScope(override val context: ComponentContext) : ResourcesSco
     isPristine = false
     try {
       _resolveContext = resolveContext
-      return block()
+      var result: T? = null
+      if (isReadTrackingEnabled) {
+        val readSet = StateReadRecorder.record(resolveContext.treeId) { result = block() }
+        if (readSet.isNotEmpty()) stateReads = readSet
+      } else {
+        result = block()
+      }
+      return result as T
     } finally {
       _resolveContext = null
     }

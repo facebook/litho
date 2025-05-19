@@ -210,14 +210,11 @@ constructor(
                 context.logger,
                 false)
         val previousStateContext = context.calculationStateContext
-        val stateProvider = context.stateProvider ?: error("State provider is null in resolve")
         val node: LithoNode?
         try {
           context.renderStateContext = rsc
-          stateProvider.enterScope(state)
           node = Resolver.resolveTree(rsc, context, component)
         } finally {
-          stateProvider.exitScope(state)
           context.calculationStateContext = previousStateContext
         }
         val outputs: Resolver.Outputs?
@@ -273,14 +270,11 @@ constructor(
         }
         partialResult.treeState.registerResolveState()
         val previousStateContext = context.calculationStateContext
-        val stateProvider = context.stateProvider ?: error("State provider is null in resolve")
         val node: LithoNode
         try {
           context.renderStateContext = partialResult.contextForResuming
-          stateProvider.enterScope(partialResult.treeState)
           node = Resolver.resumeResolvingTree(partialResult.contextForResuming, partialResult.node)
         } finally {
-          stateProvider.exitScope(partialResult.treeState)
           context.calculationStateContext = previousStateContext
         }
         val outputs = Resolver.collectOutputs(node)

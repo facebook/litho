@@ -298,11 +298,7 @@ public abstract class SpecGeneratedComponent extends Component
       }
 
       try {
-        renderResult =
-            ComponentRenderer.runInRecorderScope(
-                scopedComponentInfo,
-                resolveContext,
-                () -> render(resolveContext, c, parentWidthSpec, parentHeightSpec));
+        renderResult = render(resolveContext, c, parentWidthSpec, parentHeightSpec);
       } finally {
         if (isTracing) {
           // end of prepare

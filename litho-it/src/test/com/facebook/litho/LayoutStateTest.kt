@@ -32,8 +32,7 @@ class LayoutStateTest {
 
   @Test
   fun toRenderTree_emptyMountableOutputs_hasPositionForRoot() {
-    val baseContext = lithoTestRule.context
-    val context = ComponentTree.create(baseContext).build().context
+    val context = lithoTestRule.context
     val result =
         ResolveTreeFuture.resolve(
             context,

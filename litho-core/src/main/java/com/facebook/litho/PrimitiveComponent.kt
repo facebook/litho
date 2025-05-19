@@ -63,18 +63,16 @@ abstract class PrimitiveComponent : Component() {
             },
         ) {
           ComponentsSystrace.trace("render:$simpleName") {
-            scopedComponentInfo.runInRecorderScope(resolveContext) {
-              val scope = PrimitiveComponentScope(c)
-              val result = scope.withResolveContext(resolveContext) { scope.render() }
-              if (scope.shouldExcludeFromIncrementalMount) {
-                result.primitive.renderUnit.addAttachBinder(
-                    RenderUnit.DelegateBinder.createDelegateBinder(
-                        result.primitive.renderUnit,
-                        ExcludeFromIncrementalMountBinder.INSTANCE,
-                    ))
-              }
-              RenderResult(result, scope.transitionData, scope.useEffectEntries)
+            val scope = PrimitiveComponentScope(c)
+            val result = scope.withResolveContext(resolveContext) { scope.render() }
+            if (scope.shouldExcludeFromIncrementalMount) {
+              result.primitive.renderUnit.addAttachBinder(
+                  RenderUnit.DelegateBinder.createDelegateBinder(
+                      result.primitive.renderUnit,
+                      ExcludeFromIncrementalMountBinder.INSTANCE,
+                  ))
             }
+            RenderResult(result, scope.transitionData, scope.useEffectEntries)
           }
         }
     val lithoPrimitive = renderResult.value

@@ -38,7 +38,6 @@ import com.facebook.litho.annotations.EventHandlerRebindMode;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.debug.DebugInfoReporter;
 import com.facebook.litho.state.ComponentState;
-import com.facebook.litho.state.StateProvider;
 import com.facebook.rendercore.LayoutCache;
 import com.facebook.rendercore.ResourceCache;
 import com.facebook.rendercore.ResourceResolver;
@@ -738,11 +737,6 @@ public class ComponentContext {
   @Nullable
   StateUpdater getStateUpdater() {
     return mLithoTree != null ? mLithoTree.getStateUpdater() : null;
-  }
-
-  @Nullable
-  StateProvider getStateProvider() {
-    return mLithoTree != null ? mLithoTree.getStateProvider() : null;
   }
 
   /**
