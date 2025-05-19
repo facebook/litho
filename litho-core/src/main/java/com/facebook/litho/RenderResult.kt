@@ -23,11 +23,11 @@ import com.facebook.litho.transition.TransitionData
  * potentially as well as other non-Component metadata that resulted from that call, such as
  * transitions that should be applied.
  */
-class RenderResult
+class RenderResult<T>
 internal constructor(
-    @JvmField internal val component: Component?,
+    @JvmField internal val value: T,
     @JvmField internal val transitionData: TransitionData?,
     @JvmField internal val useEffectEntries: List<Attachable>?
 ) {
-  constructor(component: Component?) : this(component, null, null)
+  constructor(value: T) : this(value, null, null)
 }

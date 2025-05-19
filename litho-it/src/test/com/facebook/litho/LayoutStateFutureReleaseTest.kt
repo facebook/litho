@@ -138,7 +138,7 @@ class LayoutStateFutureReleaseTest {
         c: ComponentContext,
         widthSpec: Int,
         heightSpec: Int
-    ): RenderResult {
+    ): RenderResult<Component> {
       waitActions?.unblock(c.layoutStateFuture)
       if (wait != null) {
         ThreadTestingUtils.failSilentlyIfInterrupted { wait.await(5000, TimeUnit.MILLISECONDS) }

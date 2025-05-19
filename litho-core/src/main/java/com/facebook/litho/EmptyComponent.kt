@@ -19,13 +19,6 @@ package com.facebook.litho
 /** A component which renders nothing. */
 class EmptyComponent : Component() {
 
-  override fun render(
-      resolveContext: ResolveContext,
-      c: ComponentContext,
-      widthSpec: Int,
-      heightSpec: Int
-  ): RenderResult = RenderResult(null)
-
   override fun resolve(
       resolveContext: ResolveContext,
       scopedComponentInfo: ScopedComponentInfo,

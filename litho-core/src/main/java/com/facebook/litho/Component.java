@@ -213,19 +213,6 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
   }
 
   /**
-   * Invokes the Component-specific render implementation, returning a RenderResult. The
-   * RenderResult will have the Component this Component rendered to (which will then need to be
-   * render()'ed or {@link #resolve(LithoLayoutContext, ComponentContext)}'ed), as well as other
-   * metadata from that render call such as transitions that should be applied.
-   */
-  protected RenderResult render(
-      ResolveContext resolveContext, ComponentContext c, int widthSpec, int heightSpec) {
-    throw new RuntimeException(
-        "Render should not be called on a component which hasn't implemented render! "
-            + getSimpleName());
-  }
-
-  /**
    * Create the object that will be mounted in the {@link LithoView}.
    *
    * @param context The {@link Context} to be used to create the content.

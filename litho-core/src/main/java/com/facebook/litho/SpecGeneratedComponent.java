@@ -223,13 +223,12 @@ public abstract class SpecGeneratedComponent extends Component
     return false;
   }
 
-  @Override
-  protected RenderResult render(
+  protected RenderResult<Component> render(
       ResolveContext resolveContext, ComponentContext c, int widthSpec, int heightSpec) {
     if (Component.isLayoutSpecWithSizeSpec(this)) {
-      return new RenderResult(onCreateLayoutWithSizeSpec(c, widthSpec, heightSpec));
+      return new RenderResult<>(onCreateLayoutWithSizeSpec(c, widthSpec, heightSpec));
     } else {
-      return new RenderResult(onCreateLayout(c));
+      return new RenderResult<>(onCreateLayout(c));
     }
   }
 
@@ -292,7 +291,7 @@ public abstract class SpecGeneratedComponent extends Component
             attributes);
       }
 
-      final RenderResult renderResult;
+      final RenderResult<Component> renderResult;
 
       if (isTracing) {
         ComponentsSystrace.beginSection("render:" + getSimpleName());
@@ -310,7 +309,7 @@ public abstract class SpecGeneratedComponent extends Component
         }
       }
 
-      final Component root = renderResult.component;
+      final Component root = renderResult.value;
 
       if (root != null) {
         node = Resolver.resolve(resolveContext, c, root);

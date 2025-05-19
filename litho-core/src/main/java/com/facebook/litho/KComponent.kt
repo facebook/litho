@@ -35,18 +35,6 @@ abstract class KComponent : Component() {
         }
   }
 
-  final override fun render(
-      resolveContext: ResolveContext,
-      c: ComponentContext,
-      widthSpec: Int,
-      heightSpec: Int
-  ): RenderResult {
-    val componentScope = ComponentScope(c)
-    val componentResult = componentScope.withResolveContext(resolveContext) { render() }
-    return RenderResult(
-        componentResult, componentScope.transitionData, componentScope.useEffectEntries)
-  }
-
   final override fun resolve(
       resolveContext: ResolveContext,
       scopedComponentInfo: ScopedComponentInfo,
@@ -56,7 +44,7 @@ abstract class KComponent : Component() {
   ): ComponentResolveResult {
 
     val c: ComponentContext = scopedComponentInfo.context
-    val renderResult: RenderResult =
+    val renderResult: RenderResult<Component?> =
         trace(
             type = ComponentRendered,
             renderStateId = { resolveContext.treeId.toString() },
@@ -66,11 +54,13 @@ abstract class KComponent : Component() {
             },
         ) {
           ComponentsSystrace.trace("render:$simpleName") {
-            render(resolveContext, c, parentWidthSpec, parentHeightSpec)
+            val scope = ComponentScope(c)
+            val result = scope.withResolveContext(resolveContext) { render() }
+            RenderResult(result, scope.transitionData, scope.useEffectEntries)
           }
         }
 
-    val root = renderResult.component
+    val root = renderResult.value
     val node: LithoNode? =
         if (root != null) {
           Resolver.resolve(resolveContext, c, root)

@@ -157,6 +157,23 @@ object TestLayoutState {
     return node
   }
 
+  private fun Component.render(
+      resolveContext: ResolveContext,
+      c: ComponentContext,
+      widthSpec: Int,
+      heightSpec: Int
+  ): RenderResult<Component?> {
+    return when (this) {
+      is KComponent -> {
+        val scope = ComponentScope(c)
+        val root = scope.withResolveContext(resolveContext) { render() }
+        RenderResult(root, scope.transitionData, scope.useEffectEntries)
+      }
+      is SpecGeneratedComponent -> render(resolveContext, c, widthSpec, heightSpec)
+      else -> error("Invalid component: $this")
+    }
+  }
+
   private fun createImmediateLayout(
       resolveContext: ResolveContext,
       c: ComponentContext,
@@ -200,7 +217,7 @@ object TestLayoutState {
       Component.isMountSpec(component) -> node = createInternalNode()
       else -> {
         val renderResult = component.render(resolveContext, c, widthSpec, heightSpec)
-        val root = renderResult.component
+        val root = renderResult.value
         node =
             if (root == null || root.id <= 0) {
               null
@@ -329,7 +346,7 @@ object TestLayoutState {
         }
         Component.isLayoutSpec(component) -> {
           val renderResult = component.render(resolveContext, c, widthSpec, heightSpec)
-          val root = renderResult.component
+          val root = renderResult.value
           node =
               if (root != null) {
                 create(resolveContext, c, widthSpec, heightSpec, root)

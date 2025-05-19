@@ -197,7 +197,7 @@ class ResolveTreeFutureTest {
         c: ComponentContext,
         widthSpec: Int,
         heightSpec: Int
-    ): RenderResult {
+    ): RenderResult<Component> {
       // Hang until the can-render-boolean is set to true
       waitForMilestone(canRenderBoolean, 0, "Timeout while BlockedRenderComponent blocked render")
 
