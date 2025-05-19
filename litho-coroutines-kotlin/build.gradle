@@ -86,6 +86,7 @@ dependencies {
     testImplementation deps.supportRecyclerView
     testImplementation deps.supportTestJunit
     testImplementation project(':litho-rendercore-testing')
+    testImplementation project(':litho-rendercore-text')
     testImplementation project(':litho-testing')
     testImplementation project(':litho-widget-kotlin')
 }
