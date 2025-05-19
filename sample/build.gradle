@@ -55,6 +55,7 @@ dependencies {
     implementation project(':litho-sections-widget')
     implementation project(':litho-widget')
     implementation project(':litho-widget-kotlin')
+    implementation project(':litho-rendercore-text')
 
     kapt project(':litho-processor')
     kapt project(':litho-sections-processor')
