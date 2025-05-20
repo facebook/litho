@@ -186,18 +186,18 @@ import java.util.Objects;
     poolSize = 30,
     canPreallocate = true,
     events = {TextOffsetOnTouchEvent.class})
-public class TextSpec {
+public class TextComponentSpec {
 
   public static final @Dimension(unit = Dimension.SP) int DEFAULT_TEXT_SIZE_SP = 14;
   public static final int UNSET = -1;
 
-  private static final Typeface DEFAULT_TYPEFACE = Typeface.DEFAULT;
-  private static final int DEFAULT_COLOR = 0;
-  private static final String TAG = "TextSpec";
-  private static final String WRONG_TEXT_SIZE = "TextSpec:WrongTextSize";
+  public static final Typeface DEFAULT_TYPEFACE = Typeface.DEFAULT;
+  public static final int DEFAULT_COLOR = 0;
+  private static final String TAG = "TextComponentSpec";
+  private static final String WRONG_TEXT_SIZE = "TextComponentSpec:WrongTextSize";
 
-  private static final int[][] DEFAULT_TEXT_COLOR_STATE_LIST_STATES = {{0}};
-  private static final int[] DEFAULT_TEXT_COLOR_STATE_LIST_COLORS = {Color.BLACK};
+  public static final int[][] DEFAULT_TEXT_COLOR_STATE_LIST_STATES = {{0}};
+  public static final int[] DEFAULT_TEXT_COLOR_STATE_LIST_COLORS = {Color.BLACK};
 
   @PropDefault protected static final int minLines = Integer.MIN_VALUE;
   @PropDefault protected static final int maxLines = Integer.MAX_VALUE;
@@ -550,7 +550,7 @@ public class TextSpec {
       layoutBuilder.setMaxWidth(maxTextWidth);
     }
 
-    if (textColor != 0) {
+    if (textColor != TextComponentSpec.DEFAULT_COLOR) {
       layoutBuilder.setTextColor(textColor);
     } else {
       layoutBuilder.setTextColor(textColorStateList);
@@ -957,7 +957,7 @@ public class TextSpec {
           new TextDrawable.TextOffsetOnTouchListener() {
             @Override
             public void textOffsetOnTouch(int textOffset) {
-              Text.dispatchTextOffsetOnTouchEvent(
+              TextComponent.dispatchTextOffsetOnTouchEvent(
                   textOffsetOnTouchHandler, processedText, textOffset);
             }
           };
@@ -1005,7 +1005,6 @@ public class TextSpec {
       ComponentContext c,
       View host,
       AccessibilityNodeInfoCompat node,
-      @Prop(optional = true, dynamic = true) Integer dynamicTextColor,
       @Prop(resType = ResType.STRING) CharSequence text,
       @Prop(optional = true, resType = ResType.BOOL) boolean isSingleLine) {
     if (ViewCompat.getImportantForAccessibility(host)
@@ -1222,7 +1221,7 @@ public class TextSpec {
     }
   }
 
-  private static TextAlignment getTextAlignment(
+  static TextAlignment getTextAlignment(
       @Nullable Alignment alignment, @Nullable TextAlignment textAlignment) {
     if (textAlignment != null) {
       return textAlignment;

@@ -68,10 +68,13 @@ class LithoViewComponentsTraverserTest : RunWithDebugInfoTest() {
               component[type=RootComponent]
               component[type=Column]  parent[type=RootComponent]
               component[type=Text, testKey=hello]  parent[type=Column]
+              component[type=TextComponent]  parent[type=Text, testKey=hello]
               component[type=Header]  parent[type=Column]
               component[type=Row]  parent[type=Header]
               component[type=Text, testKey=first-name]  parent[type=Row]
+              component[type=TextComponent]  parent[type=Text, testKey=first-name]
               component[type=Text, testKey=last-name]  parent[type=Row]
+              component[type=TextComponent]  parent[type=Text, testKey=last-name]
 
               """
             .trimIndent()
@@ -101,25 +104,39 @@ class LithoViewComponentsTraverserTest : RunWithDebugInfoTest() {
           component[type=CollectionRootComponent]
           component[type=Column]  parent[type=CollectionRootComponent]
           component[type=Text, testKey=hello]  parent[type=Column]
+          component[type=TextComponent]  parent[type=Text, testKey=hello]
           component[type=Header]  parent[type=Column]
           component[type=Row]  parent[type=Header]
           component[type=Text, testKey=first-name]  parent[type=Row]
+          component[type=TextComponent]  parent[type=Text, testKey=first-name]
           component[type=Text, testKey=last-name]  parent[type=Row]
+          component[type=TextComponent]  parent[type=Text, testKey=last-name]
           component[type=CollectionComponent]  parent[type=Column]
           component[type=LazyCollection]  parent[type=CollectionComponent]
           component[type=CollectionRecycler]  parent[type=LazyCollection]
-          component[type=$recyclerComponentName]  parent[type=CollectionRecycler]
-          component[type=Text, testKey=item-#0]  parent[type=$recyclerComponentName]
-          component[type=Text, testKey=item-#1]  parent[type=$recyclerComponentName]
-          component[type=Text, testKey=item-#2]  parent[type=$recyclerComponentName]
-          component[type=Text, testKey=item-#3]  parent[type=$recyclerComponentName]
-          component[type=Text, testKey=item-#4]  parent[type=$recyclerComponentName]
-          component[type=Text, testKey=item-#5]  parent[type=$recyclerComponentName]
-          component[type=Text, testKey=item-#6]  parent[type=$recyclerComponentName]
-          component[type=Text, testKey=item-#7]  parent[type=$recyclerComponentName]
-          component[type=Text, testKey=item-#8]  parent[type=$recyclerComponentName]
-          component[type=Text, testKey=item-#9]  parent[type=$recyclerComponentName]
-          component[type=Text, testKey=item-#10]  parent[type=$recyclerComponentName]
+          component[type=Recycler]  parent[type=CollectionRecycler]
+          component[type=Text, testKey=item-#0]  parent[type=Recycler]
+          component[type=TextComponent]  parent[type=Text, testKey=item-#0]
+          component[type=Text, testKey=item-#1]  parent[type=Recycler]
+          component[type=TextComponent]  parent[type=Text, testKey=item-#1]
+          component[type=Text, testKey=item-#2]  parent[type=Recycler]
+          component[type=TextComponent]  parent[type=Text, testKey=item-#2]
+          component[type=Text, testKey=item-#3]  parent[type=Recycler]
+          component[type=TextComponent]  parent[type=Text, testKey=item-#3]
+          component[type=Text, testKey=item-#4]  parent[type=Recycler]
+          component[type=TextComponent]  parent[type=Text, testKey=item-#4]
+          component[type=Text, testKey=item-#5]  parent[type=Recycler]
+          component[type=TextComponent]  parent[type=Text, testKey=item-#5]
+          component[type=Text, testKey=item-#6]  parent[type=Recycler]
+          component[type=TextComponent]  parent[type=Text, testKey=item-#6]
+          component[type=Text, testKey=item-#7]  parent[type=Recycler]
+          component[type=TextComponent]  parent[type=Text, testKey=item-#7]
+          component[type=Text, testKey=item-#8]  parent[type=Recycler]
+          component[type=TextComponent]  parent[type=Text, testKey=item-#8]
+          component[type=Text, testKey=item-#9]  parent[type=Recycler]
+          component[type=TextComponent]  parent[type=Text, testKey=item-#9]
+          component[type=Text, testKey=item-#10]  parent[type=Recycler]
+          component[type=TextComponent]  parent[type=Text, testKey=item-#10]
 
           """
             .trimIndent()
@@ -145,17 +162,20 @@ class LithoViewComponentsTraverserTest : RunWithDebugInfoTest() {
     val actual = result.toString()
     val expected =
         """
-          component[type=ComponentWithLayoutWithSizeSpecs]
-          component[type=Column]  parent[type=ComponentWithLayoutWithSizeSpecs]
-          component[type=Text, testKey=header]  parent[type=Column]
-          component[type=Row]  parent[type=Column]
-          component[type=LayoutWithSizeSpecs]  parent[type=Row]
-          component[type=Row]  parent[type=LayoutWithSizeSpecs]
-          component[type=Text, testKey=text-with-size-specs]  parent[type=Row]
-          component[type=Text, testKey=row-text]  parent[type=Row]
-          component[type=Text, testKey=footer]  parent[type=Column]
-          
-          """
+      component[type=ComponentWithLayoutWithSizeSpecs]
+      component[type=Column]  parent[type=ComponentWithLayoutWithSizeSpecs]
+      component[type=Text, testKey=header]  parent[type=Column]
+      component[type=TextComponent]  parent[type=Text, testKey=header]
+      component[type=Row]  parent[type=Column]
+      component[type=LayoutWithSizeSpecs]  parent[type=Row]
+      component[type=Row]  parent[type=LayoutWithSizeSpecs]
+      component[type=Text, testKey=text-with-size-specs]  parent[type=Row]
+      component[type=Text, testKey=row-text]  parent[type=Row]
+      component[type=TextComponent]  parent[type=Text, testKey=row-text]
+      component[type=Text, testKey=footer]  parent[type=Column]
+      component[type=TextComponent]  parent[type=Text, testKey=footer]
+
+        """
             .trimIndent()
 
     Assertions.assertThat(actual).isEqualTo(expected)
@@ -182,13 +202,16 @@ class LithoViewComponentsTraverserTest : RunWithDebugInfoTest() {
           component[type=ComponentWithSimpleLayoutWithSizeSpecs]
           component[type=Column]  parent[type=ComponentWithSimpleLayoutWithSizeSpecs]
           component[type=Text, testKey=header]  parent[type=Column]
+          component[type=TextComponent]  parent[type=Text, testKey=header]
           component[type=Row]  parent[type=Column]
           component[type=SimpleLayoutWithSizeSpecs]  parent[type=Row]
           component[type=Text, testKey=text-with-size-specs]  parent[type=SimpleLayoutWithSizeSpecs]
           component[type=Text, testKey=row-text]  parent[type=Row]
+          component[type=TextComponent]  parent[type=Text, testKey=row-text]
           component[type=Text, testKey=footer]  parent[type=Column]
-          
-          """
+          component[type=TextComponent]  parent[type=Text, testKey=footer]
+
+        """
             .trimIndent()
 
     Assertions.assertThat(actual).isEqualTo(expected)
@@ -218,15 +241,20 @@ class LithoViewComponentsTraverserTest : RunWithDebugInfoTest() {
         component[type=Header]  parent[type=Column]
         component[type=Row]  parent[type=Header]
         component[type=Text, testKey=first-name]  parent[type=Row]
+        component[type=TextComponent]  parent[type=Text, testKey=first-name]
         component[type=Text, testKey=last-name]  parent[type=Row]
+        component[type=TextComponent]  parent[type=Text, testKey=last-name]
         component[type=RootComponent]  parent[type=Column]
         component[type=Column]  parent[type=RootComponent]
         component[type=Text, testKey=hello]  parent[type=Column]
+        component[type=TextComponent]  parent[type=Text, testKey=hello]
         component[type=Header]  parent[type=Column]
         component[type=Row]  parent[type=Header]
         component[type=Text, testKey=first-name]  parent[type=Row]
+        component[type=TextComponent]  parent[type=Text, testKey=first-name]
         component[type=Text, testKey=last-name]  parent[type=Row]
-    
+        component[type=TextComponent]  parent[type=Text, testKey=last-name]
+
         """
             .trimIndent()
 

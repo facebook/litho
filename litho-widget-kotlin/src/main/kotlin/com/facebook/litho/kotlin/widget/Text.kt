@@ -32,6 +32,7 @@ import com.facebook.litho.Style
 import com.facebook.litho.kotlinStyle
 import com.facebook.litho.widget.Text
 import com.facebook.litho.widget.TextAlignment
+import com.facebook.litho.widget.TextStylesHelper
 import com.facebook.litho.widget.VerticalGravity
 import com.facebook.rendercore.Dimen
 import com.facebook.rendercore.dp
@@ -55,8 +56,8 @@ inline fun ResourcesScope.Text(
     shadowRadius: Dimen = 0.dp,
     shadowDx: Dimen = 0.dp,
     shadowDy: Dimen = 0.dp,
-    alignment: TextAlignment = TextAlignment.TEXT_START,
-    breakStrategy: Int = 0,
+    alignment: TextAlignment? = null,
+    breakStrategy: Int = TextStylesHelper.DEFAULT_BREAK_STRATEGY,
     verticalGravity: VerticalGravity = VerticalGravity.TOP,
     isSingleLine: Boolean = false,
     ellipsize: TextUtils.TruncateAt? = null,

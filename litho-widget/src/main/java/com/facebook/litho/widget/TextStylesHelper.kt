@@ -295,7 +295,7 @@ object TextStylesHelper {
       Gravity.TOP -> VerticalGravity.TOP
       Gravity.CENTER_VERTICAL -> VerticalGravity.CENTER
       Gravity.BOTTOM -> VerticalGravity.BOTTOM
-      else -> TextSpec.verticalGravity
+      else -> TextComponentSpec.verticalGravity
     }
   }
 }

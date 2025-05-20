@@ -346,7 +346,7 @@ class DynamicPropsTest {
       val mountItem = mountDelegateTarget.getMountItemAt(i)
       if (mountItem != null) {
         val unit = LithoRenderUnit.getRenderUnit(mountItem)
-        if (unit.component.simpleName == "Text") {
+        if (unit.component.simpleName == "TextComponent") {
           val hostMarker = if (i != 0) mountItem.renderTreeNode.parent?.renderUnit?.id ?: -1 else -1
           if (text1HostId == -1L) {
             text1HostId = hostMarker

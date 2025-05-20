@@ -202,7 +202,7 @@ internal object TextInputComponentSpec {
   @JvmField @PropDefault val hint: CharSequence = ""
   @JvmField @PropDefault val initialText: CharSequence = ""
   @JvmField @PropDefault val shadowColor: Int = Color.GRAY
-  @JvmField @PropDefault val textSize: Int = TextSpec.UNSET
+  @JvmField @PropDefault val textSize: Int = TextComponentSpec.UNSET
   @JvmField @PropDefault val inputBackground: Drawable = UNSET_DRAWABLE
   @JvmField @PropDefault val typeface: Typeface = Typeface.DEFAULT
   @JvmField @PropDefault val textAlignment: Int = View.TEXT_ALIGNMENT_GRAVITY
@@ -482,8 +482,9 @@ internal object TextInputComponentSpec {
       autofillHints: Array<String?>?
   ) {
     var inputTypeToSet = inputType
-    if (textSize == TextSpec.UNSET) {
-      editText.setTextSize(TypedValue.COMPLEX_UNIT_SP, TextSpec.DEFAULT_TEXT_SIZE_SP.toFloat())
+    if (textSize == TextComponentSpec.UNSET) {
+      editText.setTextSize(
+          TypedValue.COMPLEX_UNIT_SP, TextComponentSpec.DEFAULT_TEXT_SIZE_SP.toFloat())
     } else {
       editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize.toFloat())
     }

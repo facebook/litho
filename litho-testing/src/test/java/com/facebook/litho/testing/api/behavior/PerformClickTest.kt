@@ -23,11 +23,13 @@ import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.api.LithoRule
+import com.facebook.litho.testing.api.hasTestKey
 import com.facebook.litho.testing.api.hasText
 import com.facebook.litho.testing.api.performClick
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.useState
 import com.facebook.litho.view.onClick
+import com.facebook.litho.view.testKey
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Rule
 import org.junit.Test
@@ -44,7 +46,7 @@ class PerformClickTest {
   fun `performs click if the test node selection is valid`() {
     rule.render { DummyComponent() }
     rule.selectNode(hasText("Number of clicks: 0")).assertExists()
-    rule.selectNode(hasText("Increment")).performClick()
+    rule.selectNode(hasTestKey("increment")).performClick()
     rule.selectNode(hasText("Number of clicks: 1")).assertExists()
   }
 
@@ -71,7 +73,7 @@ class PerformClickTest {
 
       return Column {
         child(Text("Number of clicks: ${numClicks.value}"))
-        child(Text("Increment", Style.onClick { numClicks.update { it + 1 } }))
+        child(Text("Increment", Style.testKey("increment").onClick { numClicks.update { it + 1 } }))
         child(Text("* 10", Style.onClick { numClicks.update { it * 10 } }))
       }
     }

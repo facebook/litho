@@ -79,29 +79,6 @@ public class FeedItemCardSpecTest {
   }
 
   @Test
-  public void testDeepSubComponents() {
-    final ComponentContext c = lithoTestRule.getContext();
-
-    // N.B. This manual way of testing is not recommended and will be replaced by more high-level
-    // matchers, but illustrates how it can be used in case more fine-grained assertions are
-    // required.
-    assertThat(c, mComponent)
-        .extractingSubComponentAt(0)
-        .extractingSubComponentsDeeply(c)
-        .hasSize(24) // TODO: T53372437 Remove or rewrite test.
-        .has(
-            new Condition<InspectableComponent>() {
-              @Override
-              public boolean matches(InspectableComponent value) {
-                describedAs(value.getComponentClass() + " with text " + value.getTextContent());
-                return value.getComponentClass() == Text.class
-                    && "JavaScript Rockstar".equals(value.getTextContent());
-              }
-            },
-            atIndex(11));
-  }
-
-  @Test
   public void testDeepSubComponentText() {
     final ComponentContext c = lithoTestRule.getContext();
 

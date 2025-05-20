@@ -116,8 +116,9 @@ class LithoViewTestHelperTest {
             """
               litho.InlineLayout\{\w+ V.E..... .. 0,0-100,200\}
                 litho.Column\{\w+ V.E..... .. 0,0-100,200\}
-                  litho.SimpleMountSpecTester\{\w+ V.E..... .. 0,0-100,100 litho:id/test-drawable\}
-                  litho.Text\{\w+ V.E..... .. 0,100-100,200 text="Hello, World"\}
+                  litho.SimpleMountSpecTester\{\w+ V.E..... .. 0,0-100,100 litho:id/test-drawable}
+                  litho.Text\{\w+ V.E..... .. 0,100-100,200}
+                    litho.TextComponent\{\w+ V.E..... .. 0,0-100,100 text="Hello, World"}
                 """
                 .trimIndent())
   }
@@ -142,7 +143,9 @@ class LithoViewTestHelperTest {
             """
               litho.Column\{\w+ V.E..... .. 0,0-1080,200, key=column}
                 litho.SimpleMountSpecTester\{\w+ V.E..... .. 0,0-100,100, key=simple}
-                litho.Text\{\w+ V.E..... .. 0,100-100,200 text="Hello, World", key=text}
+                litho.Text\{\w+ V.E..... .. 0,100-100,200, key=text}
+                  litho.TextComponent\{\w+ V.E..... .. 0,0-100,100 text="Hello, World", key=null}
+              
                 """
                 .trimIndent())
   }
@@ -173,9 +176,11 @@ class LithoViewTestHelperTest {
               litho.ComponentContainerWithSize\{\w+ V.E..... .. 0,0-1080,82, key=null}
                 litho.Column\{\w+ V.E..... .. 0,0-1080,82, key=null}
                   litho.TextHolderComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
-                    litho.Text\{\w+ V.E..... .. 0,0-1080,41 litho:id/test-key text="hello", key=null}
+                    litho.Text\{\w+ V.E..... .. 0,0-1080,41, key=null}
+                      litho.TextComponent\{\w+ V.E..... .. 0,0-1080,41 litho:id/test-key text="hello", key=null}
                   litho.TextHolderComponent\{\w+ V.E..... .. 0,41-1080,82, key=null}
-                    litho.Text\{\w+ V.E..... .. 0,0-1080,41 litho:id/test-key text="hello", key=null}
+                    litho.Text\{\w+ V.E..... .. 0,0-1080,41, key=null}
+                      litho.TextComponent\{\w+ V.E..... .. 0,0-1080,41 litho:id/test-key text="hello", key=null}
                     """
                 .trimIndent())
   }
@@ -209,9 +214,12 @@ class LithoViewTestHelperTest {
                 litho.DelegatingComponent\{\w+ V.E..... .. 0,0-1080,82, key=null}
                   litho.Column\{\w+ V.E..... .. 0,0-1080,82, key=null}
                     litho.TextHolderComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
-                      litho.Text\{\w+ V.E..... .. 0,0-1080,41 litho:id/test-key text="hello", key=null}
+                      litho.Text\{\w+ V.E..... .. 0,0-1080,41, key=null}
+                        litho.TextComponent\{\w+ V.E..... .. 0,0-1080,41 litho:id/test-key text="hello", key=null}
                     litho.TextHolderComponent\{\w+ V.E..... .. 0,41-1080,82, key=null}
-                      litho.Text\{\w+ V.E..... .. 0,0-1080,41 litho:id/test-key text="hello", key=null}
+                      litho.Text\{\w+ V.E..... .. 0,0-1080,41, key=null}
+                        litho.TextComponent\{\w+ V.E..... .. 0,0-1080,41 litho:id/test-key text="hello", key=null}
+              
                       """
                 .trimIndent())
   }
@@ -236,7 +244,8 @@ class LithoViewTestHelperTest {
               litho.ComponentContainerWithSize\{\w+ V.E..... .. 0,0-1080,41, key=null}
                 litho.ParentComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
                   litho.TextHolderComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
-                    litho.Text\{\w+ V.E..... .. 0,0-1080,41 litho:id/test-key text="hello", key=null}
+                    litho.Text\{\w+ V.E..... .. 0,0-1080,41, key=null}
+                      litho.TextComponent\{\w+ V.E..... .. 0,0-1080,41 litho:id/test-key text="hello", key=null}
                     """
                 .trimIndent())
   }
@@ -265,7 +274,8 @@ class LithoViewTestHelperTest {
                 litho.ComponentContainerWithSize\{\w+ V.E..... .. 0,0-1080,41, key=null}
                   litho.ParentComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
                     litho.TextHolderComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
-                      litho.Text\{\w+ V.E..... .. 0,0-1080,41 litho:id/test-key text="hello", key=null}
+                      litho.Text\{\w+ V.E..... .. 0,0-1080,41, key=null}
+                        litho.TextComponent\{\w+ V.E..... .. 0,0-1080,41 litho:id/test-key text="hello", key=null}
                       """
                 .trimIndent())
   }
@@ -295,7 +305,8 @@ class LithoViewTestHelperTest {
                 litho.ComponentContainerWithSize\{\w+ V.E..... .. 0,0-1080,41, key=null}
                   litho.ParentComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
                     litho.TextHolderComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
-                      litho.Text\{\w+ V.E..... .. 0,0-1080,41 litho:id/test-key text="hello", key=null}
+                      litho.Text\{\w+ V.E..... .. 0,0-1080,41, key=null}
+                        litho.TextComponent\{\w+ V.E..... .. 0,0-1080,41 litho:id/test-key text="hello", key=null}
                       """
                 .trimIndent())
   }
@@ -329,7 +340,8 @@ class LithoViewTestHelperTest {
                   litho.ComponentContainerWithSize\{\w+ V.E..... .. 0,0-1080,41, key=null}
                     litho.ParentComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
                       litho.TextHolderComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
-                        litho.Text\{\w+ V.E..... .. 0,0-1080,41 litho:id/test-key text="hello", key=null}
+                        litho.Text\{\w+ V.E..... .. 0,0-1080,41, key=null}
+                          litho.TextComponent\{\w+ V.E..... .. 0,0-1080,41 litho:id/test-key text="hello", key=null}
                         """
                 .trimIndent())
   }
@@ -353,8 +365,10 @@ class LithoViewTestHelperTest {
         .containsPattern(
             """
               litho.MeasuringComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
-                litho.Text\{\w+ V.E..... .. 0,0-1080,41 litho:id/test-key text="hello", key=null}
-                """
+                litho.Text\{\w+ V.E..... .. 0,0-1080,41 litho:id/test-key, key=null}
+                  litho.TextComponent\{\w+ V.E..... .. 0,0-1080,41 litho:id/test-key text="hello", key=null}
+            
+            """
                 .trimIndent())
   }
 
@@ -380,7 +394,8 @@ class LithoViewTestHelperTest {
             """
               litho.MeasuringComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
                 litho.DelegatingComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
-                  litho.Text\{\w+ V.E..... .. 0,0-1080,41 litho:id/test-key text="hello", key=null}
+                  litho.Text\{\w+ V.E..... .. 0,0-1080,41, key=null}
+                    litho.TextComponent\{\w+ V.E..... .. 0,0-1080,41 litho:id/test-key text="hello", key=null}
                """
                 .trimIndent())
   }
@@ -405,7 +420,8 @@ class LithoViewTestHelperTest {
               litho.DelegatingComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
                 litho.MeasuringComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
                   litho.TextHolderComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
-                    litho.Text\{\w+ V.E..... .. 0,0-1080,41 litho:id/test-key text="hello", key=null}
+                    litho.Text\{\w+ V.E..... .. 0,0-1080,41, key=null}
+                      litho.TextComponent\{\w+ V.E..... .. 0,0-1080,41 litho:id/test-key text="hello", key=null}
                     """
                 .trimIndent())
   }
@@ -442,7 +458,8 @@ class LithoViewTestHelperTest {
                 litho.DelegatingComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
                   litho.MeasuringComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
                     litho.DelegatingComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
-                      litho.Text\{\w+ V.E..... .. 0,0-1080,41 litho:id/test-key text="hello", key=null}
+                      litho.Text\{\w+ V.E..... .. 0,0-1080,41, key=null}
+                        litho.TextComponent\{\w+ V.E..... .. 0,0-1080,41 litho:id/test-key text="hello", key=null}
                """
                 .trimIndent())
   }

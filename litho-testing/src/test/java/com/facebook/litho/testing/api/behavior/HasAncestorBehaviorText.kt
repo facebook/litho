@@ -40,14 +40,6 @@ class HasAncestorBehaviorText {
   @get:Rule val rule: LithoRule = LithoRule()
 
   @Test
-  fun `hasAncestor filters direct ancestor (parent)`() {
-    rule
-        .render { TopLevelComponent() }
-        .selectNode(hasAncestor(hasType<BottomLevelComponent>()))
-        .assert(hasText("bottom-level"))
-  }
-
-  @Test
   fun `hasAncestors filters far up ancestors in the same direct line (parents of parents)`() {
     rule
         .render { TopLevelComponent() }

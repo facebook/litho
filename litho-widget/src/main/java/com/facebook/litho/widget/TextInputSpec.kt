@@ -163,7 +163,7 @@ internal object TextInputSpec {
   @JvmField @PropDefault val hint: CharSequence = ""
   @JvmField @PropDefault val initialText: CharSequence = ""
   @JvmField @PropDefault val shadowColor: Int = Color.GRAY
-  @JvmField @PropDefault val textSize: Int = TextSpec.UNSET
+  @JvmField @PropDefault val textSize: Int = TextComponentSpec.UNSET
   @JvmField @PropDefault val inputBackground: Drawable = TextInputComponentSpec.UNSET_DRAWABLE
   @JvmField @PropDefault val typeface: Typeface = Typeface.DEFAULT
   @JvmField @PropDefault val textAlignment: Int = View.TEXT_ALIGNMENT_GRAVITY

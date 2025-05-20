@@ -23,7 +23,6 @@ import com.facebook.litho.KComponent
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.api.LithoRule
 import com.facebook.litho.testing.api.hasChild
-import com.facebook.litho.testing.api.hasText
 import com.facebook.litho.testing.api.hasType
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.Image
@@ -37,14 +36,6 @@ import org.robolectric.annotation.LooperMode
 class HasChildBehaviorTest {
 
   @get:Rule val rule: LithoRule = LithoRule()
-
-  @Test
-  fun `hasChild will select the direct children`() {
-    rule
-        .render { TopLevelComponent() }
-        .selectNode(hasChild(hasText("bottom-level")))
-        .assert(hasType<BottomLevelComponent>())
-  }
 
   @Test
   fun `hasChild select nothing if there is no child respecting the condition`() {

@@ -166,7 +166,7 @@ internal object EditTextSpec {
       ColorStateList(DEFAULT_HINT_COLOR_STATE_LIST_STATES, DEFAULT_HINT_COLOR_STATE_LIST_COLORS)
 
   @JvmField @PropDefault val linkColor: Int = DEFAULT_COLOR
-  @JvmField @PropDefault val textSize: Int = TextSpec.UNSET
+  @JvmField @PropDefault val textSize: Int = TextComponentSpec.UNSET
   @JvmField @PropDefault val textStyle: Int = DEFAULT_TYPEFACE.style
   @JvmField @PropDefault val typeface: Typeface = DEFAULT_TYPEFACE
   @JvmField @PropDefault val spacingMultiplier: Float = 1.0f
@@ -600,8 +600,9 @@ internal object EditTextSpec {
   ) {
     var inputFiltersToUse = inputFilters
     var inputTypeToUse = inputType
-    if (textSize == TextSpec.UNSET) {
-      editText.setTextSize(TypedValue.COMPLEX_UNIT_SP, TextSpec.DEFAULT_TEXT_SIZE_SP.toFloat())
+    if (textSize == TextComponentSpec.UNSET) {
+      editText.setTextSize(
+          TypedValue.COMPLEX_UNIT_SP, TextComponentSpec.DEFAULT_TEXT_SIZE_SP.toFloat())
     } else {
       editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize.toFloat())
     }

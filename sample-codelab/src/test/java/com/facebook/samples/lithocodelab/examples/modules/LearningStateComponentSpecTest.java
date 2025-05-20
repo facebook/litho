@@ -27,7 +27,7 @@ import com.facebook.litho.testing.TestLithoView;
 import com.facebook.litho.testing.assertj.LithoAssertions;
 import com.facebook.litho.testing.subcomponents.InspectableComponent;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
-import com.facebook.litho.widget.Text;
+import com.facebook.litho.widget.TextComponent;
 import org.assertj.core.api.Condition;
 import org.junit.Before;
 import org.junit.Rule;
@@ -59,7 +59,8 @@ public class LearningStateComponentSpecTest {
 
               @Override
               public boolean matches(InspectableComponent value) {
-                return value.getComponentClass() == Text.class && value.getClickHandler() != null;
+                return value.getComponentClass() == TextComponent.class
+                    && value.getClickHandler() != null;
               }
             });
   }
@@ -77,7 +78,8 @@ public class LearningStateComponentSpecTest {
 
               @Override
               public boolean matches(InspectableComponent value) {
-                return value.getComponentClass() == Text.class && value.getClickHandler() == null;
+                return value.getComponentClass() == TextComponent.class
+                    && value.getClickHandler() == null;
               }
             });
   }

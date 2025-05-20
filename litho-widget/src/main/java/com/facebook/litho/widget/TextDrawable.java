@@ -63,7 +63,7 @@ import javax.annotation.Nullable;
  * A {@link Drawable} for mounting text content from a {@link Component}.
  *
  * @see Component
- * @see TextSpec
+ * @see TextComponentSpec
  */
 public class TextDrawable extends Drawable implements Touchable, TextContent, Drawable.Callback {
 
@@ -541,7 +541,8 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       mColorStateList = null;
       mUserColor = userColor;
     } else {
-      mColorStateList = colorStateList != null ? colorStateList : TextSpec.textColorStateList;
+      mColorStateList =
+          colorStateList != null ? colorStateList : TextComponentSpec.textColorStateList;
       mUserColor = mColorStateList.getDefaultColor();
       if (mLayout != null) {
         mLayout.getPaint().setColor(mColorStateList.getColorForState(getState(), mUserColor));

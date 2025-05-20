@@ -196,7 +196,7 @@ class ExperimentalTextInput(
     private val textColorStateList: ColorStateList = ColorStateList.valueOf(Color.BLACK),
     private val hintColorStateList: ColorStateList = ColorStateList.valueOf(Color.LTGRAY),
     @ColorInt private val highlightColor: Int? = null,
-    private val textSize: Int = TextSpec.UNSET,
+    private val textSize: Int = TextComponentSpec.UNSET,
     private val typeface: Typeface = Typeface.DEFAULT,
     private val textAlignment: Int = View.TEXT_ALIGNMENT_GRAVITY,
     @GravityInt private val gravity: Int = Gravity.CENTER_VERTICAL or Gravity.START,
@@ -794,8 +794,9 @@ fun setParams(
     autofillHints: Array<String?>?
 ) {
   var inputTypeToSet = inputType
-  if (textSize == TextSpec.UNSET) {
-    editText.setTextSize(TypedValue.COMPLEX_UNIT_SP, TextSpec.DEFAULT_TEXT_SIZE_SP.toFloat())
+  if (textSize == TextComponentSpec.UNSET) {
+    editText.setTextSize(
+        TypedValue.COMPLEX_UNIT_SP, TextComponentSpec.DEFAULT_TEXT_SIZE_SP.toFloat())
   } else {
     editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize.toFloat())
   }

@@ -44,6 +44,8 @@ class HasParentBehaviorTest {
     rule
         .render { TopLevelComponent() }
         .selectNode(hasParent(hasType<BottomLevelComponent>()))
+        .selectChildren()
+        .selectFirst()
         .assert(hasText("bottom-level"))
   }
 

@@ -18,11 +18,7 @@
 
 package com.facebook.samples.litho.java.lithography;
 
-import static com.facebook.litho.testing.assertj.ComponentConditions.text;
-import static com.facebook.litho.testing.assertj.ComponentConditions.textEquals;
 import static com.facebook.litho.testing.assertj.LegacyLithoAssertions.assertThat;
-import static com.facebook.litho.testing.assertj.SubComponentExtractor.subComponentWith;
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assume.assumeThat;
 
@@ -30,6 +26,8 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.config.LithoDebugConfigurations;
 import com.facebook.litho.testing.LithoTestRule;
+import com.facebook.litho.testing.TestLithoView;
+import com.facebook.litho.testing.assertj.LithoAssertions;
 import com.facebook.litho.testing.subcomponents.InspectableComponent;
 import com.facebook.litho.testing.subcomponents.SubComponent;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
@@ -88,11 +86,10 @@ public class DecadeSeparatorSpecTest {
   @Test
   public void subComponentWithText() {
     final ComponentContext c = lithoTestRule.getContext();
-    assertThat(c, mComponent)
-        .extractingSubComponentAt(0)
-        .has(subComponentWith(c, textEquals("2010")))
-        // Silly things to test for, but left here to demonstrate the API.
-        .has(subComponentWith(c, text(containsString("10"))))
-        .doesNotHave(subComponentWith(c, textEquals("2011")));
+    TestLithoView testLithoView = lithoTestRule.render(componentScope -> mComponent);
+    LithoAssertions.assertThat(testLithoView)
+        .hasVisibleText("2010")
+        .doesNotHaveVisibleText("2011")
+        .hasVisibleTextMatching("10");
   }
 }

@@ -21,7 +21,7 @@ import android.view.View
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.testrunner.LithoTestRunner
-import com.facebook.litho.widget.Text
+import com.facebook.litho.widget.TextComponent
 import com.facebook.litho.widget.layoutstate.withoutdrawableoutput.RootComponent
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -63,13 +63,13 @@ class LayoutStateCalculationWithoutDrawableOutputsTest {
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(1)) // background 1
     assertThat(output.component).isOfAnyClassIn(DrawableComponent::class.java)
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(2)) // text 1
-    assertThat(output.component).isOfAnyClassIn(Text::class.java)
+    assertThat(output.component).isOfAnyClassIn(TextComponent::class.java)
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(3)) // foreground 1
     assertThat(output.component).isOfAnyClassIn(DrawableComponent::class.java)
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(4)) // background 2
     assertThat(output.component).isOfAnyClassIn(DrawableComponent::class.java)
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(5)) // text 2
-    assertThat(output.component).isOfAnyClassIn(Text::class.java)
+    assertThat(output.component).isOfAnyClassIn(TextComponent::class.java)
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(6)) // foreground 2
     assertThat(output.component).isOfAnyClassIn(DrawableComponent::class.java)
   }
@@ -96,7 +96,7 @@ class LayoutStateCalculationWithoutDrawableOutputsTest {
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(2)) // background 1
     assertThat(output.component).isOfAnyClassIn(DrawableComponent::class.java)
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(3)) // text 1
-    assertThat(output.component).isOfAnyClassIn(Text::class.java)
+    assertThat(output.component).isOfAnyClassIn(TextComponent::class.java)
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(4)) // foreground 1
     assertThat(output.component).isOfAnyClassIn(DrawableComponent::class.java)
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(5)) // host view 2
@@ -104,7 +104,7 @@ class LayoutStateCalculationWithoutDrawableOutputsTest {
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(6)) // background 2
     assertThat(output.component).isOfAnyClassIn(DrawableComponent::class.java)
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(7)) // text 2
-    assertThat(output.component).isOfAnyClassIn(Text::class.java)
+    assertThat(output.component).isOfAnyClassIn(TextComponent::class.java)
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(8)) // foreground 2
     assertThat(output.component).isOfAnyClassIn(DrawableComponent::class.java)
   }
@@ -128,11 +128,11 @@ class LayoutStateCalculationWithoutDrawableOutputsTest {
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(1))
     assertThat(output.component).isOfAnyClassIn(HostComponent::class.java)
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(2))
-    assertThat(output.component).isOfAnyClassIn(Text::class.java)
+    assertThat(output.component).isOfAnyClassIn(TextComponent::class.java)
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(3))
     assertThat(output.component).isOfAnyClassIn(HostComponent::class.java)
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(4))
-    assertThat(output.component).isOfAnyClassIn(Text::class.java)
+    assertThat(output.component).isOfAnyClassIn(TextComponent::class.java)
   }
 
   @Test
@@ -154,11 +154,11 @@ class LayoutStateCalculationWithoutDrawableOutputsTest {
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(1))
     assertThat(output.component).isOfAnyClassIn(HostComponent::class.java)
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(2))
-    assertThat(output.component).isOfAnyClassIn(Text::class.java)
+    assertThat(output.component).isOfAnyClassIn(TextComponent::class.java)
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(3))
     assertThat(output.component).isOfAnyClassIn(HostComponent::class.java)
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(4))
-    assertThat(output.component).isOfAnyClassIn(Text::class.java)
+    assertThat(output.component).isOfAnyClassIn(TextComponent::class.java)
   }
 
   private fun attach() {

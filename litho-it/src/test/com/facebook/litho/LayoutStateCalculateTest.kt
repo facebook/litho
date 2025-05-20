@@ -47,6 +47,7 @@ import com.facebook.litho.widget.MountSpecLifecycleTester
 import com.facebook.litho.widget.SolidColor
 import com.facebook.litho.widget.TestNullLayoutComponent
 import com.facebook.litho.widget.Text
+import com.facebook.litho.widget.TextComponent
 import com.facebook.rendercore.Function
 import com.facebook.rendercore.RenderTreeNode
 import com.facebook.rendercore.utils.MeasureSpecUtils
@@ -392,10 +393,10 @@ class LayoutStateCalculateTest {
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue
     assertThat(isHostComponent(getComponentAt(layoutState, 1))).isTrue
     assertThat(isHostComponent(getComponentAt(layoutState, 2))).isTrue
-    assertThat(getComponentAt(layoutState, 3)).isInstanceOf(Text::class.java)
-    assertThat(getComponentAt(layoutState, 4)).isInstanceOf(Text::class.java)
+    assertThat(getComponentAt(layoutState, 3)).isInstanceOf(TextComponent::class.java)
+    assertThat(getComponentAt(layoutState, 4)).isInstanceOf(TextComponent::class.java)
     assertThat(isHostComponent(getComponentAt(layoutState, 5))).isTrue
-    assertThat(getComponentAt(layoutState, 6)).isInstanceOf(Text::class.java)
+    assertThat(getComponentAt(layoutState, 6)).isInstanceOf(TextComponent::class.java)
     assertThat(getComponentAt(layoutState, 7)).isInstanceOf(TestViewComponent::class.java)
 
     // Check the text within the TextComponents.
@@ -516,10 +517,10 @@ class LayoutStateCalculateTest {
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue
     assertThat(isHostComponent(getComponentAt(layoutState, 1))).isTrue
     assertThat(isHostComponent(getComponentAt(layoutState, 2))).isTrue
-    assertThat(getComponentAt(layoutState, 3)).isInstanceOf(Text::class.java)
-    assertThat(getComponentAt(layoutState, 4)).isInstanceOf(Text::class.java)
+    assertThat(getComponentAt(layoutState, 3)).isInstanceOf(TextComponent::class.java)
+    assertThat(getComponentAt(layoutState, 4)).isInstanceOf(TextComponent::class.java)
     assertThat(isHostComponent(getComponentAt(layoutState, 5))).isTrue
-    assertThat(getComponentAt(layoutState, 6)).isInstanceOf(Text::class.java)
+    assertThat(getComponentAt(layoutState, 6)).isInstanceOf(TextComponent::class.java)
     assertThat(getComponentAt(layoutState, 7)).isInstanceOf(TestViewComponent::class.java)
 
     // Check the text within the TextComponents.

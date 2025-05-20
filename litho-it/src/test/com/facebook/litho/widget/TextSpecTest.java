@@ -546,7 +546,7 @@ public class TextSpecTest {
     final Layout layout = setupWidthTestTextLayout();
 
     final int resolvedWidth =
-        TextSpec.resolveWidth(
+        TextComponentSpec.resolveWidth(
             unspecified(), layout, false /* minimallyWide */, 0 /* minimallyWideThreshold */);
 
     assertEquals(resolvedWidth, FULL_TEXT_WIDTH);
@@ -557,7 +557,7 @@ public class TextSpecTest {
     final Layout layout = setupWidthTestTextLayout();
 
     final int resolvedWidth =
-        TextSpec.resolveWidth(
+        TextComponentSpec.resolveWidth(
             unspecified(),
             layout,
             true /* minimallyWide */,
@@ -571,7 +571,7 @@ public class TextSpecTest {
     final Layout layout = setupWidthTestTextLayout();
 
     final int resolvedWidth =
-        TextSpec.resolveWidth(
+        TextComponentSpec.resolveWidth(
             unspecified(),
             layout,
             true /* minimallyWide */,

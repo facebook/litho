@@ -29,6 +29,7 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.testKey
 import com.facebook.litho.widget.Image
 import com.facebook.litho.widget.Text
+import com.facebook.litho.widget.TextComponent
 import com.facebook.litho.widget.collection.LazyList
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Rule
@@ -76,7 +77,7 @@ class MultiTestNodeSelectionTest : RunWithDebugInfoTest() {
   fun `should be able to select an item of a collection`() {
     rule.render { CollectionComponent() }
 
-    rule.selectNodes(hasType<Text>()).selectAtIndex(2).assert(hasText("Item #1"))
+    rule.selectNodes(hasType<TextComponent>()).selectAtIndex(2).assert(hasText("Item #1"))
   }
 
   @Test
@@ -98,7 +99,7 @@ class MultiTestNodeSelectionTest : RunWithDebugInfoTest() {
   fun `should assert that all selected nodes match a condition`() {
     rule.render { CollectionComponent() }
 
-    rule.selectNodes(hasTextContaining("Item")).assertAll(hasType<Text>())
+    rule.selectNodes(hasTextContaining("Item")).assertAll(hasType<TextComponent>())
   }
 
   @Test
@@ -116,7 +117,7 @@ class MultiTestNodeSelectionTest : RunWithDebugInfoTest() {
   fun `should assert that any of the selected nodes match a condition`() {
     rule.render { CollectionComponent() }
 
-    rule.selectNodes(hasType<Text>()).assertAny(hasText("Hello world"))
+    rule.selectNodes(hasType<TextComponent>()).assertAny(hasText("Hello world"))
   }
 
   @Test
@@ -124,7 +125,7 @@ class MultiTestNodeSelectionTest : RunWithDebugInfoTest() {
     rule.render { CollectionComponent() }
 
     assertThatThrownBy {
-          rule.selectNodes(hasType<Text>()).assertAny(hasTextContaining("Goodbye world"))
+          rule.selectNodes(hasType<TextComponent>()).assertAny(hasTextContaining("Goodbye world"))
         }
         .isInstanceOf(AssertionError::class.java)
         .hasMessageStartingWith("Failed: assertAny")

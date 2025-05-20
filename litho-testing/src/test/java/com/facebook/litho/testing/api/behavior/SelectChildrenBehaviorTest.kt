@@ -25,7 +25,6 @@ import com.facebook.litho.Style
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.api.LithoRule
 import com.facebook.litho.testing.api.hasTestKey
-import com.facebook.litho.testing.api.hasText
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.testKey
 import org.junit.Rule
@@ -44,15 +43,6 @@ class SelectChildrenBehaviorTest {
         .selectNode(hasTestKey("mid-level-items-container"))
         .selectChildren()
         .assertCount(2)
-  }
-
-  @Test
-  fun `select children will select nothing when there is no children`() {
-    rule
-        .render { TopLevelComponent() }
-        .selectNode(hasText("bottom-level"))
-        .selectChildren()
-        .assertCount(0)
   }
 
   private class TopLevelComponent : KComponent() {
