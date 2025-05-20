@@ -35,7 +35,9 @@ import com.facebook.litho.annotations.Prop
 import com.facebook.litho.annotations.PropDefault
 import com.facebook.litho.annotations.Reason
 import com.facebook.litho.annotations.ResType
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.rendercore.text.ClickableSpanListener
+import com.facebook.rendercore.text.TextStyle
 import com.facebook.rendercore.text.TouchableSpanListener
 import java.lang.Deprecated
 
@@ -132,55 +134,172 @@ object TextSpec {
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) minimallyWideThreshold: Int,
       @Prop(optional = true, resType = ResType.DIMEN_TEXT) lineHeight: Float,
   ): Component {
-    return TextComponent.create(c)
-        .text(text)
-        .ellipsize(ellipsize)
-        .shouldIncludeFontPadding(shouldIncludeFontPadding)
-        .maxLines(maxLines)
-        .minLines(minLines)
-        .minEms(minEms)
-        .maxEms(maxEms)
-        .minTextWidthPx(minTextWidth)
-        .maxTextWidthPx(maxTextWidth)
-        .shadowRadiusPx(shadowRadius)
-        .shadowDxPx(shadowDx)
-        .shadowDyPx(shadowDy)
-        .shadowColor(shadowColor)
-        .isSingleLine(isSingleLine)
-        .textColor(textColor)
-        .textColorStateList(textColorStateList)
-        .linkColor(linkColor)
-        .textSizePx(textSize)
-        .highlightColor(highlightColor)
-        .extraSpacingPx(extraSpacing)
-        .spacingMultiplier(spacingMultiplier)
-        .letterSpacing(letterSpacing)
-        .verticalGravity(verticalGravity)
-        .textStyle(textStyle)
-        .typeface(typeface)
-        .textAlignment(textAlignment)
-        .outlineColor(outlineColor)
-        .outlineWidthPx(outlineWidth)
-        .alignment(alignment)
-        .dynamicTextColor(dynamicTextColor)
-        .breakStrategy(breakStrategy)
-        .hyphenationFrequency(hyphenationFrequency)
-        .glyphWarming(glyphWarming)
-        .textDirection(textDirection)
-        .customEllipsisText(customEllipsisText)
-        .lineHeightPx(lineHeight)
-        .minimallyWide(minimallyWide)
-        .minimallyWideThresholdPx(minimallyWideThreshold)
-        .highlightStartOffset(highlightStartOffset)
-        .highlightEndOffset(highlightEndOffset)
-        .justificationMode(justificationMode)
-        .clickableSpanExpandedOffsetPx(clickableSpanExpandedOffset)
-        .spanListener(spanListener)
-        .touchableSpanListener(touchableSpanListener)
-        .clipToBounds(clipToBounds)
-        .textOffsetOnTouchHandler(textOffsetOnTouchHandler)
-        .accessibleClickableSpans(accessibleClickableSpans)
-        .build()
+    if (ComponentsConfiguration.usePrimitiveText) {
+      checkNotNull(text)
+      val richTextStyle = TextStyle()
+      ellipsize?.let { richTextStyle.setEllipsize(it) }
+      if (highlightColor != 0) {
+        richTextStyle.setHighlightColor(highlightColor)
+      }
+      if (maxLines != Int.MAX_VALUE) {
+        richTextStyle.setMaxLines(maxLines)
+      }
+      if (minLines != Int.MIN_VALUE) {
+        richTextStyle.setMinLines(minLines)
+      }
+      if (minEms != TextStylesHelper.DEFAULT_EMS) {
+        richTextStyle.setMinEms(minEms)
+      }
+      if (maxEms != TextStylesHelper.DEFAULT_EMS) {
+        richTextStyle.setMaxEms(maxEms)
+      }
+      if (minTextWidth != TextStylesHelper.DEFAULT_MIN_WIDTH) {
+        richTextStyle.setMinTextWidth(minTextWidth)
+      }
+      if (maxTextWidth != TextStylesHelper.DEFAULT_MAX_WIDTH) {
+        richTextStyle.setMaxTextWidth(maxTextWidth)
+      }
+      if (shadowRadius != 0f) {
+        richTextStyle.setShadowRadius(shadowRadius)
+      }
+      if (shadowDx != 0f) {
+        richTextStyle.setShadowDx(shadowDx)
+      }
+      if (shadowDy != 0f) {
+        richTextStyle.setShadowDy(shadowDy)
+      }
+      if (shadowColor != Color.GRAY) {
+        richTextStyle.setShadowColor(shadowColor)
+      }
+      if (isSingleLine) {
+        richTextStyle.setSingleLine(isSingleLine)
+      }
+      if (!shouldIncludeFontPadding) {
+        richTextStyle.setIncludeFontPadding(shouldIncludeFontPadding)
+      }
+      if (textColor != TextComponentSpec.DEFAULT_COLOR) {
+        richTextStyle.setTextColor(textColor)
+      }
+      if (textColorStateList != null) {
+        richTextStyle.setTextColorStateList(textColorStateList)
+      }
+      if (linkColor != Color.BLUE) {
+        richTextStyle.setLinkColor(linkColor)
+      }
+      if (textSize != TextComponentSpec.UNSET) {
+        richTextStyle.setTextSize(textSize)
+      }
+      if (extraSpacing != 0f) {
+        richTextStyle.setExtraSpacingRight(extraSpacing)
+      }
+      if (spacingMultiplier != 1.0f) {
+        richTextStyle.setLineHeightMultiplier(spacingMultiplier)
+      }
+      if (letterSpacing != 0f) {
+        richTextStyle.setLetterSpacing(letterSpacing)
+      }
+      if (outlineColor != 0) {
+        richTextStyle.setOutlineColor(outlineColor)
+      }
+      if (outlineWidth != 0f) {
+        richTextStyle.setOutlineWidth(outlineWidth)
+      }
+      customEllipsisText?.let { richTextStyle.setCustomEllipsisText(it) }
+      richTextStyle.setClickableSpanExpandedOffset(clickableSpanExpandedOffset)
+      spanListener?.let { richTextStyle.setClickableSpanListener(spanListener) }
+      touchableSpanListener?.let { richTextStyle.setTouchableSpanListener(touchableSpanListener) }
+      if (!clipToBounds) {
+        richTextStyle.setClipToBounds(clipToBounds)
+      }
+      if (highlightStartOffset != -1) {
+        richTextStyle.setHighlightStartOffset(highlightStartOffset)
+      }
+      if (highlightEndOffset != -1) {
+        richTextStyle.setHighlightEndOffset(highlightEndOffset)
+      }
+      if (verticalGravity != VerticalGravity.TOP) {
+        richTextStyle.setVerticalGravity(getRCVerticalGravity(verticalGravity))
+      }
+      if (textStyle != TextComponentSpec.DEFAULT_TYPEFACE.style) {
+        richTextStyle.setTextStyle(textStyle)
+      }
+      if (typeface != TextComponentSpec.DEFAULT_TYPEFACE && typeface != null) {
+        richTextStyle.setTypeface(typeface)
+      }
+      textAlignment?.let {
+        val resolvedTextAlignment = TextComponentSpec.getTextAlignment(textAlignment, alignment)
+        richTextStyle.setAlignment(getAlignment(resolvedTextAlignment))
+      }
+
+      alignment?.let { richTextStyle.setAlignment(getAlignment(alignment)) }
+      if (breakStrategy != TextStylesHelper.DEFAULT_BREAK_STRATEGY) {
+        richTextStyle.setBreakStrategy(breakStrategy)
+      }
+      if (hyphenationFrequency != TextStylesHelper.DEFAULT_HYPHENATION_FREQUENCY) {
+        richTextStyle.setHyphenationFrequency(hyphenationFrequency)
+      }
+      if (justificationMode != TextStylesHelper.DEFAULT_JUSTIFICATION_MODE) {
+        richTextStyle.setJustificationMode(justificationMode)
+      }
+      textDirection?.let { richTextStyle.setTextDirection(it) }
+      if (minimallyWideThreshold != 0) {
+        richTextStyle.setMinimallyWide(minimallyWide, minimallyWideThreshold)
+      }
+      if (lineHeight != Float.MAX_VALUE) {
+        richTextStyle.setLineHeight(lineHeight)
+      }
+      return RichText(text, richTextStyle)
+    } else {
+      return TextComponent.create(c)
+          .text(text)
+          .ellipsize(ellipsize)
+          .shouldIncludeFontPadding(shouldIncludeFontPadding)
+          .maxLines(maxLines)
+          .minLines(minLines)
+          .minEms(minEms)
+          .maxEms(maxEms)
+          .minTextWidthPx(minTextWidth)
+          .maxTextWidthPx(maxTextWidth)
+          .shadowRadiusPx(shadowRadius)
+          .shadowDxPx(shadowDx)
+          .shadowDyPx(shadowDy)
+          .shadowColor(shadowColor)
+          .isSingleLine(isSingleLine)
+          .textColor(textColor)
+          .textColorStateList(textColorStateList)
+          .linkColor(linkColor)
+          .textSizePx(textSize)
+          .highlightColor(highlightColor)
+          .extraSpacingPx(extraSpacing)
+          .spacingMultiplier(spacingMultiplier)
+          .letterSpacing(letterSpacing)
+          .verticalGravity(verticalGravity)
+          .textStyle(textStyle)
+          .typeface(typeface)
+          .textAlignment(textAlignment)
+          .outlineColor(outlineColor)
+          .outlineWidthPx(outlineWidth)
+          .alignment(alignment)
+          .dynamicTextColor(dynamicTextColor)
+          .breakStrategy(breakStrategy)
+          .hyphenationFrequency(hyphenationFrequency)
+          .glyphWarming(glyphWarming)
+          .textDirection(textDirection)
+          .customEllipsisText(customEllipsisText)
+          .lineHeightPx(lineHeight)
+          .minimallyWide(minimallyWide)
+          .minimallyWideThresholdPx(minimallyWideThreshold)
+          .highlightStartOffset(highlightStartOffset)
+          .highlightEndOffset(highlightEndOffset)
+          .justificationMode(justificationMode)
+          .clickableSpanExpandedOffsetPx(clickableSpanExpandedOffset)
+          .spanListener(spanListener)
+          .touchableSpanListener(touchableSpanListener)
+          .clipToBounds(clipToBounds)
+          .textOffsetOnTouchHandler(textOffsetOnTouchHandler)
+          .accessibleClickableSpans(accessibleClickableSpans)
+          .build()
+    }
   }
 
   @OnLoadStyle
@@ -243,5 +362,27 @@ object TextSpec {
         shadowColor,
         verticalGravity,
         typeface)
+  }
+
+  private fun getRCVerticalGravity(
+      verticalGravity: VerticalGravity
+  ): com.facebook.rendercore.text.VerticalGravity {
+    return when (verticalGravity) {
+      VerticalGravity.TOP -> com.facebook.rendercore.text.VerticalGravity.TOP
+      VerticalGravity.CENTER -> com.facebook.rendercore.text.VerticalGravity.CENTER
+      VerticalGravity.BOTTOM -> com.facebook.rendercore.text.VerticalGravity.BOTTOM
+    }
+  }
+
+  private fun getAlignment(alignment: TextAlignment): com.facebook.rendercore.text.TextAlignment {
+    return when (alignment) {
+      TextAlignment.TEXT_START -> com.facebook.rendercore.text.TextAlignment.TEXT_START
+      TextAlignment.TEXT_END -> com.facebook.rendercore.text.TextAlignment.TEXT_END
+      TextAlignment.CENTER -> com.facebook.rendercore.text.TextAlignment.CENTER
+      TextAlignment.LAYOUT_START -> com.facebook.rendercore.text.TextAlignment.LAYOUT_START
+      TextAlignment.LAYOUT_END -> com.facebook.rendercore.text.TextAlignment.LAYOUT_END
+      TextAlignment.LEFT -> com.facebook.rendercore.text.TextAlignment.LEFT
+      TextAlignment.RIGHT -> com.facebook.rendercore.text.TextAlignment.RIGHT
+    }
   }
 }
