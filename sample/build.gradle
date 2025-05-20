@@ -32,11 +32,10 @@ android {
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     namespace 'com.facebook.samples.litho'
+    // TODO(#62): Re-enable abort on error.
     lint {
         abortOnError false
     }
-
-    // TODO(#62): Re-enable abort on error.
 }
 
 dependencies {

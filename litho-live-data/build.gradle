@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'com.facebook.kotlin.compilerplugins.dataclassgenerate'
@@ -27,23 +29,21 @@ android {
     }
 
     testOptions {
-        unitTests {
-            includeAndroidResources = true
+        unitTests.includeAndroidResources = true
 
-            all {
-                // Because of native libraries loading (Yoga), we can never reuse a class loader and
-                // need to fork a new process per class.
-                forkEvery = 1
-                maxParallelForks = 2
+        unitTests.all {
+            // Because of native libraries loading (Yoga), we can never reuse a class loader and
+            // need to fork a new process per class.
+            forkEvery = 1
+            maxParallelForks = 2
 
-                testLogging {
-                    events 'skipped', 'failed', 'standardOut', 'standardError'
-                    showCauses = true
-                    showExceptions = true
-                    showStackTraces = true
-                    exceptionFormat = 'full'
-                    stackTraceFilters = []
-                }
+            testLogging {
+                events 'skipped', 'failed', 'standardOut', 'standardError'
+                showCauses = true
+                showExceptions = true
+                showStackTraces = true
+                exceptionFormat = 'full'
+                stackTraceFilters = []
             }
         }
     }
@@ -55,7 +55,7 @@ android {
     namespace 'com.facebook.litho.livedata'
 }
 
-tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+tasks.withType(KotlinCompile).configureEach {
     kotlinOptions {
         freeCompilerArgs = ["-XXLanguage:+InlineClasses"]
     }

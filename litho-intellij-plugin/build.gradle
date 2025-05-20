@@ -29,6 +29,7 @@ apply plugin: "org.jetbrains.intellij"
 group 'com.facebook.litho.intellij'
 
 sourceCompatibility = rootProject.sourceCompatibilityVersion
+targetCompatibility = rootProject.targetCompatibilityVersion
 
 compileKotlin {
     kotlinOptions.jvmTarget = rootProject.targetCompatibilityVersion
@@ -67,7 +68,7 @@ intellij {
     plugins = ['java', 'org.jetbrains.kotlin',]
 }
 
-task merge {
+tasks.register('merge') {
     doLast {
         def output = new File(project.buildDir, "patchedPluginXmlFiles/plugin.xml")
 

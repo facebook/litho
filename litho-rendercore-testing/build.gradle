@@ -31,10 +31,10 @@ android {
         targetCompatibility rootProject.targetCompatibilityVersion
     }
     namespace 'com.facebook.rendercore.testing'
+    // TODO(#62): Re-enable abort on error.
     lint {
         abortOnError false
     }
-    // TODO(#62): Re-enable abort on error.
 }
 
 dependencies {
