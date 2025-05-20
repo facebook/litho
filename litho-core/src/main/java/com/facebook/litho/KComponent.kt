@@ -54,9 +54,11 @@ abstract class KComponent : Component() {
             },
         ) {
           ComponentsSystrace.trace("render:$simpleName") {
-            val scope = ComponentScope(c)
-            val result = scope.withResolveContext(resolveContext) { render() }
-            RenderResult(result, scope.transitionData, scope.useEffectEntries)
+            scopedComponentInfo.runInRecorderScope(resolveContext) {
+              val scope = ComponentScope(c)
+              val result = scope.withResolveContext(resolveContext) { render() }
+              RenderResult(result, scope.transitionData, scope.useEffectEntries)
+            }
           }
         }
 
