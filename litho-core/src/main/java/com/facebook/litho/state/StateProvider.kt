@@ -16,6 +16,7 @@
 
 package com.facebook.litho.state
 
+import com.facebook.litho.KStateContainer
 import com.facebook.litho.State
 import com.facebook.litho.TreeState
 import com.facebook.litho.utils.LithoThreadLocal
@@ -98,12 +99,25 @@ internal class StateProviderImpl(
     currentSource.set(null)
   }
 
+  @Suppress("UNCHECKED_CAST")
   override fun <T> getValue(state: State<T>): T {
     val stateId = state.stateId
     require(stateId.treeId == treeId) {
       "State tree (id=${stateId.treeId}) does not match StateProvider tree (id=$treeId)"
     }
-    val source = currentSource.get() ?: treeStateProvider.treeState ?: return state.fallback
-    return source.getHookStateValue(stateId.globalKey, stateId.index, state.isNestedTreeContext)
+    val componentState =
+        when (val source = currentSource.get()) {
+          null ->
+              // The component state for a given key may not exist on the main tree state which
+              // may imply that the corresponding component was removed from the tree
+              treeStateProvider.treeState?.getState(stateId.globalKey, state.isNestedTreeContext)
+                  ?: return state.fallback
+          else ->
+              // The component state must be present when accessing the overridden tree state
+              // since access requires prior creation
+              checkNotNull(source.getState(stateId.globalKey, state.isNestedTreeContext))
+        }
+    check(componentState.value is KStateContainer)
+    return componentState.value.states[stateId.index] as T
   }
 }

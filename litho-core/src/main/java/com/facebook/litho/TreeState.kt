@@ -268,16 +268,6 @@ class TreeState {
     return false
   }
 
-  @Suppress("UNCHECKED_CAST")
-  internal fun <T> getHookStateValue(
-      globalKey: String,
-      hookStateIndex: Int,
-      isNestedTree: Boolean
-  ): T {
-    val stateContainer = getState(globalKey, isNestedTree)?.value as KStateContainer
-    return stateContainer.states[hookStateIndex] as T
-  }
-
   val pendingStateUpdateTransitions: List<Transition>
     get() {
       val updateStateTransitions: MutableList<Transition> = ArrayList()
