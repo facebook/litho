@@ -164,7 +164,7 @@ public class TransitionsExtension
 
     @Override
     public void onAnimationUnitComplete(
-        PropertyHandle propertyHandle, Function transitionEndHandler) {
+        PropertyHandle propertyHandle, @Nullable Function transitionEndHandler) {
       if (transitionEndHandler != null) {
         transitionEndHandler.call(
             new TransitionEndEvent(

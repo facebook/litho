@@ -89,7 +89,8 @@ public class AnimatedPropertyNode extends ValueNode {
     this.mUsingRenderThread = usingRenderThread;
   }
 
-  private void setMountContentGroupInner(OutputUnitsAffinityGroup<Object> mountContentGroup) {
+  private void setMountContentGroupInner(
+      @Nullable OutputUnitsAffinityGroup<Object> mountContentGroup) {
     mMountContentGroup.clean();
     if (mountContentGroup == null) {
       return;
