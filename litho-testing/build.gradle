@@ -77,7 +77,7 @@ dependencies {
     testImplementation deps.supportTestJunit
 }
 
-tasks.withType(Javadoc).all {
+tasks.withType(Javadoc).configureEach {
     enabled = false
 }
 

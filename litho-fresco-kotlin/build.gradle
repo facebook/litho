@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'com.facebook.kotlin.compilerplugins.dataclassgenerate'
@@ -33,7 +35,7 @@ android {
     namespace 'com.facebook.litho.fresco.kotlin'
 }
 
-tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+tasks.withType(KotlinCompile).configureEach {
     kotlinOptions {
         freeCompilerArgs = ["-XXLanguage:+InlineClasses"]
     }

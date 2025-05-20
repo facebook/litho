@@ -28,41 +28,8 @@ android {
         targetSdkVersion rootProject.targetSdkVersion
     }
 
-    // TODO(#62): Re-enable abort on error.
-
-    dependencies {
-        kapt project(':litho-processor')
-        kapt project(':litho-sections-processor')
-
-        implementation deps.kotlinStandardLib
-        implementation project(':litho-core')
-        implementation project(':litho-widget')
-        implementation project(':litho-editor-core')
-        implementation project(':litho-sections-core')
-        implementation project(':litho-sections-debug')
-        implementation deps.flipper
-        implementation deps.supportAppCompat
-        implementation deps.guava
-        compileOnly deps.jsr305
-        compileOnly deps.proguardAnnotations
-        compileOnly project(':litho-annotations')
-        compileOnly deps.inferAnnotations
-
-        testImplementation deps.junit
-        testImplementation deps.robolectric
-        testImplementation project(':litho-rendercore-testing')
-        testImplementation project(':litho-testing')
-        testImplementation project(':litho-widget-kotlin')
-        testAnnotationProcessor project(':litho-processor')
-        testImplementation deps.assertjCore
-        testImplementation deps.supportRecyclerView
-        testImplementation deps.supportTestJunit
-        testImplementation deps.mockitokotlin
-        testImplementation deps.supportTestCore
-
-        kaptTest project(':litho-processor')
-    }
     namespace 'com.facebook.litho.editor.flipper'
+    // TODO(#62): Re-enable abort on error.
     lint {
         abortOnError false
     }
@@ -70,6 +37,39 @@ android {
 
 kotlin {
     jvmToolchain(17)
+}
+
+dependencies {
+    kapt project(':litho-processor')
+    kapt project(':litho-sections-processor')
+
+    implementation deps.kotlinStandardLib
+    implementation project(':litho-core')
+    implementation project(':litho-widget')
+    implementation project(':litho-editor-core')
+    implementation project(':litho-sections-core')
+    implementation project(':litho-sections-debug')
+    implementation deps.flipper
+    implementation deps.supportAppCompat
+    implementation deps.guava
+    compileOnly deps.jsr305
+    compileOnly deps.proguardAnnotations
+    compileOnly project(':litho-annotations')
+    compileOnly deps.inferAnnotations
+
+    testImplementation deps.junit
+    testImplementation deps.robolectric
+    testImplementation project(':litho-rendercore-testing')
+    testImplementation project(':litho-testing')
+    testImplementation project(':litho-widget-kotlin')
+    testAnnotationProcessor project(':litho-processor')
+    testImplementation deps.assertjCore
+    testImplementation deps.supportRecyclerView
+    testImplementation deps.supportTestJunit
+    testImplementation deps.mockitokotlin
+    testImplementation deps.supportTestCore
+
+    kaptTest project(':litho-processor')
 }
 
 apply plugin: "com.vanniktech.maven.publish"

@@ -41,11 +41,10 @@ android {
         }
     }
     namespace 'com.facebook.rendercore.primitives'
+    // TODO(#62): Re-enable abort on error.
     lint {
         abortOnError false
     }
-
-    // TODO(#62): Re-enable abort on error.
 }
 
 dependencies {

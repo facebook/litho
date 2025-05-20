@@ -28,10 +28,10 @@ android {
             version '3.18.1'
         }
     }
+}
 
-    dependencies {
-        // We want to export the Java APIs
-        api project(':yoga')
-        compileOnly deps.inferAnnotations
-    }
+dependencies {
+    // We want to export the Java APIs
+    api project(':yoga')
+    compileOnly deps.inferAnnotations
 }
