@@ -137,6 +137,7 @@ object TextSpec {
     if (ComponentsConfiguration.usePrimitiveText) {
       checkNotNull(text)
       val richTextStyle = TextStyle()
+      richTextStyle.setBreakStrategy(TextStylesHelper.DEFAULT_BREAK_STRATEGY)
       ellipsize?.let { richTextStyle.setEllipsize(it) }
       if (highlightColor != 0) {
         richTextStyle.setHighlightColor(highlightColor)
