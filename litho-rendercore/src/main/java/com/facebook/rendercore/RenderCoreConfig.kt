@@ -50,4 +50,7 @@ object RenderCoreConfig {
 
   /** Flag to use getOffsetForAdvance in TextMeasurementUtils to prevent ANRs. */
   @JvmField var usePerformantTruncation: Boolean = false
+
+  /** Flag to re-use compatible TextLayouts in truncation scenarios. */
+  @JvmField var useTruncationCaching: Boolean = false
 }

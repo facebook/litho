@@ -29,7 +29,8 @@ class RichText(
     val text: CharSequence,
     val textStyle: TextStyle? = null,
     private val style: Style? = null,
-    private val usePerformantTruncation: Boolean = RenderCoreConfig.usePerformantTruncation
+    private val usePerformantTruncation: Boolean = RenderCoreConfig.usePerformantTruncation,
+    private val useTruncationCaching: Boolean = RenderCoreConfig.useTruncationCaching
 ) : PrimitiveComponent() {
   override fun PrimitiveComponentScope.render(): LithoPrimitive {
     val resolvedTextStyle =
@@ -37,7 +38,12 @@ class RichText(
           textStyle ?: TextStyle.createDefaultConfiguredTextStyle(androidContext)
         }
     return LithoPrimitive(
-        RichTextPrimitive(createPrimitiveId(), text, resolvedTextStyle, usePerformantTruncation),
+        RichTextPrimitive(
+            createPrimitiveId(),
+            text,
+            resolvedTextStyle,
+            usePerformantTruncation,
+            useTruncationCaching),
         style = style)
   }
 }
