@@ -335,7 +335,7 @@ internal object TextInputSpec {
                   val event = InputConnectionEvent()
                   event.inputConnection = inputConnection
                   event.editorInfo = editorInfo
-                  handler.dispatchEvent(event) as InputConnection
+                  handler.dispatchEvent(event) as? InputConnection
                 }
               },
           style = null,

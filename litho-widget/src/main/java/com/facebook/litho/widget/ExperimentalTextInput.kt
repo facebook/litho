@@ -231,7 +231,7 @@ class ExperimentalTextInput(
     private val onKeyUp: ((KeyEvent, Int) -> Boolean)? = null,
     private val onKeyPreImeEvent: ((KeyEvent, Int) -> Boolean)? = null,
     private val onEditorAction: ((TextView, KeyEvent?, Int) -> Boolean)? = null,
-    private val onInputConnection: ((InputConnection?, EditorInfo) -> InputConnection)? = null,
+    private val onInputConnection: ((InputConnection?, EditorInfo) -> InputConnection?)? = null,
     private val style: Style? = null,
 ) : PrimitiveComponent() {
   override fun PrimitiveComponentScope.render(): LithoPrimitive {
@@ -922,7 +922,7 @@ internal class EditTextWithEventHandlers(context: Context?) :
   var onKeyUp: ((KeyEvent, Int) -> Boolean)? = null
   var onKeyPreImeEvent: ((KeyEvent, Int) -> Boolean)? = null
   var onEditorAction: ((TextView, KeyEvent?, Int) -> Boolean)? = null
-  var onInputConnection: ((InputConnection?, EditorInfo) -> InputConnection)? = null
+  var onInputConnection: ((InputConnection?, EditorInfo) -> InputConnection?)? = null
   var componentContext: ComponentContext? = null
   var measureSeqNumber: com.facebook.litho.State<Int>? = null
   var copyInitialTextInTextInputRender: Boolean = false
