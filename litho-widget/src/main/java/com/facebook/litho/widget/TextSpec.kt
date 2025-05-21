@@ -85,7 +85,7 @@ object TextSpec {
   @JvmStatic
   @OnCreateLayout
   fun onCreateLayout(
-      c: ComponentContext?,
+      c: ComponentContext,
       @Prop(resType = ResType.STRING) text: CharSequence?,
       @Prop(optional = true, resType = ResType.COLOR) highlightColor: Int,
       @Prop(optional = true) ellipsize: TextUtils.TruncateAt?,
@@ -149,15 +149,18 @@ object TextSpec {
       }
       if (minEms != TextStylesHelper.DEFAULT_EMS) {
         richTextStyle.setMinEms(minEms)
+      } else {
+        richTextStyle.setMinTextWidth(minTextWidth)
       }
       if (maxEms != TextStylesHelper.DEFAULT_EMS) {
         richTextStyle.setMaxEms(maxEms)
-      }
-      if (minTextWidth != TextStylesHelper.DEFAULT_MIN_WIDTH) {
-        richTextStyle.setMinTextWidth(minTextWidth)
-      }
-      if (maxTextWidth != TextStylesHelper.DEFAULT_MAX_WIDTH) {
+      } else {
         richTextStyle.setMaxTextWidth(maxTextWidth)
+      }
+      if (typeface != TextComponentSpec.DEFAULT_TYPEFACE && typeface != null) {
+        richTextStyle.setTypeface(typeface)
+      } else {
+        richTextStyle.setTextStyle(textStyle)
       }
       if (shadowRadius != 0f) {
         richTextStyle.setShadowRadius(shadowRadius)
@@ -179,15 +182,19 @@ object TextSpec {
       }
       if (textColor != TextComponentSpec.DEFAULT_COLOR) {
         richTextStyle.setTextColor(textColor)
-      }
-      if (textColorStateList != null) {
+      } else if (textColorStateList != null) {
         richTextStyle.setTextColorStateList(textColorStateList)
       }
       if (linkColor != Color.BLUE) {
         richTextStyle.setLinkColor(linkColor)
       }
+      // text size must be set before the line hight
       if (textSize != TextComponentSpec.UNSET) {
         richTextStyle.setTextSize(textSize)
+      } else {
+        val defaultTextSize: Int =
+            c.resourceResolver.sipsToPixels(TextComponentSpec.DEFAULT_TEXT_SIZE_SP.toFloat())
+        richTextStyle.setTextSize(defaultTextSize)
       }
       if (extraSpacing != 0f) {
         richTextStyle.setExtraSpacingRight(extraSpacing)
@@ -219,12 +226,6 @@ object TextSpec {
       }
       if (verticalGravity != VerticalGravity.TOP) {
         richTextStyle.setVerticalGravity(getRCVerticalGravity(verticalGravity))
-      }
-      if (textStyle != TextComponentSpec.DEFAULT_TYPEFACE.style) {
-        richTextStyle.setTextStyle(textStyle)
-      }
-      if (typeface != TextComponentSpec.DEFAULT_TYPEFACE && typeface != null) {
-        richTextStyle.setTypeface(typeface)
       }
       textAlignment?.let {
         val resolvedTextAlignment = TextComponentSpec.getTextAlignment(textAlignment, alignment)
