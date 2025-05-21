@@ -76,6 +76,7 @@ dependencies {
     // Android Support Library
     compileOnly deps.supportAnnotations
 
+    testImplementation project(':litho-rendercore-text')
     testImplementation project(':litho-rendercore-testing')
     testImplementation project(':litho-testing')
     testImplementation project(':litho-widget-kotlin')
