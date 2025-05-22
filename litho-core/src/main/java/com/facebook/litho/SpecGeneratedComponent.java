@@ -228,6 +228,7 @@ public abstract class SpecGeneratedComponent extends Component
     if (Component.isLayoutSpecWithSizeSpec(this)) {
       return new RenderResult<>(onCreateLayoutWithSizeSpec(c, widthSpec, heightSpec));
     } else {
+      // NULLSAFE_FIXME[Parameter Not Nullable]
       return new RenderResult<>(onCreateLayout(c));
     }
   }
