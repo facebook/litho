@@ -56,7 +56,6 @@ litho_android_library(
     ],
     feature = FBApp_UIFrameworks_Litho_Litho,
     labels = [],
-    nullchecker_mode = "log",
     plugins = [
         LITHO_PROCESSOR_TARGET,
     ],

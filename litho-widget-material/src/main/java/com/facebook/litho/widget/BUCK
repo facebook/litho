@@ -24,7 +24,6 @@ litho_android_library(
     ],
     labels = [],
     language = "JAVA",
-    nullchecker_mode = "log",
     plugins = [
         LITHO_PROCESSOR_TARGET,
     ],
