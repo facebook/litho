@@ -19,7 +19,6 @@ litho_android_library(
     feature = FBApp_UIFrameworks_Litho_Litho,
     k2 = True,
     labels = [],
-    nullchecker_mode = "log",
     pure_kotlin = False,
     visibility = [
         "PUBLIC",

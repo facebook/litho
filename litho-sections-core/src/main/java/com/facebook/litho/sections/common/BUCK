@@ -25,7 +25,6 @@ litho_android_library(
     feature = FBApp_UIFrameworks_Litho_Litho,
     labels = [],
     language = "JAVA",
-    nullchecker_mode = "log",
     plugins = [
         LITHO_SECTIONS_PROCESSOR_TARGET,
     ],
