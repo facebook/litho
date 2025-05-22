@@ -17,6 +17,7 @@
 package com.facebook.litho
 
 import android.content.Context
+import androidx.collection.mutableScatterSetOf
 import com.facebook.litho.transition.MutableTransitionData
 import com.facebook.rendercore.LayoutCache
 import com.facebook.rendercore.LayoutContext
@@ -158,6 +159,9 @@ internal object Layout {
         reductionState.transitionData
             .getOrCreate { MutableTransitionData().also { reductionState.transitionData = it } }
             .add(outputs.transitionData)
+        for ((state, readers) in outputs.stateReads) reductionState.stateReads
+            .getOrPut(state) { mutableScatterSetOf() }
+            .addAll(readers)
       }
 
       try {

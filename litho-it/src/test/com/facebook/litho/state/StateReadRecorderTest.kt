@@ -36,11 +36,27 @@ class StateReadRecorderTest {
   }
 
   @Test
-  fun throwsOnReentrantStateReads() {
-    assertThatThrownBy {
-          StateReadRecorder.record(TREE_ID) { StateReadRecorder.record(TREE_ID) {} }
+  fun supportsReentrantStateRecordsFromSameTree() {
+    val state1 = newState(1)
+    val state2 = newState(2)
+    val state3 = newState(3)
+    val reads =
+        StateReadRecorder.record(TREE_ID) {
+          StateReadRecorder.read(state1)
+          StateReadRecorder.record(TREE_ID) {
+            StateReadRecorder.read(state2)
+            StateReadRecorder.read(state3)
+          }
         }
-        .isInstanceOf(IllegalStateException::class.java)
+    assertThat(reads.asSet()).containsOnly(state1, state2, state3)
+  }
+
+  @Test
+  fun supportsNestedStateRecordsFromDifferentTree() {
+    val throwable = catchThrowable {
+      StateReadRecorder.record(TREE_ID) { StateReadRecorder.record(TREE_ID + 1) {} }
+    }
+    assertThat(throwable).isNull()
   }
 
   @Test
@@ -60,14 +76,6 @@ class StateReadRecorderTest {
   fun canReadStateWithoutRecorder() {
     val state1 = newState(1)
     assertThat(catchThrowable { StateReadRecorder.read(state1) }).isNull()
-  }
-
-  @Test
-  fun throwsWhenNestedRecordFromDifferentTree() {
-    assertThatThrownBy {
-          StateReadRecorder.record(TREE_ID) { StateReadRecorder.record(TREE_ID + 1) {} }
-        }
-        .isInstanceOf(IllegalStateException::class.java)
   }
 
   @Test

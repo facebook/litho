@@ -20,10 +20,12 @@ import android.graphics.Rect
 import android.util.Pair
 import androidx.annotation.VisibleForTesting
 import androidx.collection.LongSparseArray
+import androidx.collection.ScatterSet
 import com.facebook.litho.EndToEndTestingExtension.EndToEndTestingExtensionInput
 import com.facebook.litho.Transition.RootBoundsTransition
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.config.LithoDebugConfigurations
+import com.facebook.litho.state.StateId
 import com.facebook.litho.transition.TransitionData
 import com.facebook.rendercore.LayoutResult
 import com.facebook.rendercore.MountState
@@ -84,6 +86,7 @@ internal constructor(
   private val workingRangeContainer: WorkingRangeContainer? = reductionState.workingRangeContainer
 
   internal val transitionData: TransitionData? = reductionState.transitionData
+  internal val stateReads: Map<StateId, ScatterSet<String>> = reductionState.stateReads
 
   val root: LithoNode? = reductionState.rootNode
   val diffTree: DiffNode? = reductionState.diffTreeRoot

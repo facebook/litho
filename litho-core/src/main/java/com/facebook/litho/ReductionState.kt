@@ -18,9 +18,11 @@ package com.facebook.litho
 
 import android.graphics.Rect
 import androidx.collection.LongSparseArray
+import androidx.collection.MutableScatterSet
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
 import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.state.StateId
 import com.facebook.litho.transition.MutableTransitionData
 import com.facebook.rendercore.LayoutResult
 import com.facebook.rendercore.RenderTreeNode
@@ -77,4 +79,5 @@ internal data class ReductionState(
     var attachables: MutableList<Attachable>? = null,
     var transitionData: MutableTransitionData? = null,
     var workingRangeContainer: WorkingRangeContainer? = null,
+    val stateReads: MutableMap<StateId, MutableScatterSet<String>> = mutableMapOf(),
 )

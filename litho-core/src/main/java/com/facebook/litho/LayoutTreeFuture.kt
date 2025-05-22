@@ -144,10 +144,12 @@ class LayoutTreeFuture(
         }
 
         val prevContext = c.calculationStateContext
+        val stateProvider = c.stateProvider ?: error("State provider is null in layout")
 
         try {
 
           c.setLithoLayoutContext(lsc)
+          stateProvider.enterScope(treeState)
           val root = measureTree(lsc, c.androidContext, node, sizeConstraints, perfEvent)
 
           val reductionState =
@@ -182,6 +184,7 @@ class LayoutTreeFuture(
 
           return layoutState
         } finally {
+          stateProvider.exitScope(treeState)
           c.calculationStateContext = prevContext
           lsc.release()
 

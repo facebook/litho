@@ -18,6 +18,7 @@ package com.facebook.litho
 
 import android.graphics.Rect
 import androidx.collection.LongSparseArray
+import androidx.collection.mutableScatterSetOf
 import androidx.core.view.ViewCompat
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.config.LithoDebugConfigurations
@@ -479,6 +480,11 @@ internal object LithoReducer {
 
     reductionState.currentLayoutOutputAffinityGroup =
         if (reductionState.currentTransitionId != null) OutputUnitsAffinityGroup() else null
+
+    // Add state reads from layout result to reduction state
+    result.layoutOutput._stateReads?.forEach { state ->
+      reductionState.stateReads.getOrPut(state) { mutableScatterSetOf() }.add(context.globalKey)
+    }
 
     // create bounds
     val l: Int = x

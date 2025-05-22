@@ -18,6 +18,7 @@ package com.facebook.litho.state
 
 import androidx.collection.MutableScatterSet
 import androidx.collection.ScatterSet
+import androidx.collection.emptyScatterSet
 import androidx.collection.mutableScatterSetOf
 import com.facebook.infer.annotation.ThreadSafe
 import com.facebook.litho.utils.LithoThreadLocal
@@ -36,22 +37,26 @@ internal class StateReadRecorder private constructor() {
    * @param treeId The id of the current tree
    * @param scope The scope to execute
    * @return A set of all state ids that were read during the execution of the scope.
-   * @throws IllegalStateException If a nested record call is detected
    */
   private fun record(treeId: Int, scope: () -> Unit): ScatterSet<StateId> {
-    check(currentId == NO_ID || treeId == currentId) {
-      "State recording in nested component trees not allowed"
-    }
-    check(readSet == null) { "Re-entrant record is currently not allowed" }
-
-    return mutableScatterSetOf<StateId>().also {
-      try {
-        readSet = it
-        currentId = treeId
-        scope()
-      } finally {
-        currentId = NO_ID
-        readSet = null
+    return if (treeId == currentId) {
+      // Re-entrant call. Simply run the scope and return an empty set
+      // The full read set will be delivered to the parent recorder at the end.
+      check(readSet != null)
+      scope()
+      emptyScatterSet()
+    } else {
+      mutableScatterSetOf<StateId>().also { newSet ->
+        val previousReadSet = readSet
+        val previousTreeId = currentId
+        try {
+          readSet = newSet
+          currentId = treeId
+          scope()
+        } finally {
+          currentId = previousTreeId
+          readSet = previousReadSet
+        }
       }
     }
   }
@@ -69,13 +74,13 @@ internal class StateReadRecorder private constructor() {
    */
   private fun read(state: StateId) {
     check(currentId == NO_ID || state.treeId == currentId) {
-      "State can only be read in the same tree it was created"
+      "State can only be read in the same tree where it was created. State tree: ${state.treeId}, Current tree: $currentId"
     }
     readSet?.add(state)
   }
 
   companion object {
-    private const val NO_ID = -1
+    private const val NO_ID = Int.MIN_VALUE
     private val recorder = LithoThreadLocal<StateReadRecorder>()
 
     private val current: StateReadRecorder

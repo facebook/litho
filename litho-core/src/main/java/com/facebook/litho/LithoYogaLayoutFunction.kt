@@ -19,6 +19,7 @@ package com.facebook.litho
 import android.graphics.Point
 import android.graphics.Rect
 import android.util.Pair
+import androidx.collection.ScatterSet
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
 import com.facebook.litho.LithoNode.Companion.applyBorderWidth
@@ -28,6 +29,8 @@ import com.facebook.litho.YogaLayoutOutput.Companion.getYogaNode
 import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.drawable.BorderColorDrawable
 import com.facebook.litho.layout.LayoutDirection
+import com.facebook.litho.state.StateId
+import com.facebook.litho.state.StateReadRecorder
 import com.facebook.rendercore.FastMath
 import com.facebook.rendercore.LayoutCache
 import com.facebook.rendercore.LayoutContext
@@ -430,7 +433,17 @@ internal object LithoYogaLayoutFunction {
             if (layoutResult is NestedTreeHolderResult) {
               measureNestedTreeHolder(context, widthSpec, heightSpec, layoutResult)
             } else {
-              measureLithoNode(context, widthSpec, heightSpec, layoutResult)
+              if (layoutResult.node.tailComponentContext.isReadTrackingEnabled) {
+                var result: MeasureResult? = null
+                val stateReads =
+                    StateReadRecorder.record(renderContext.treeId) {
+                      result = measureLithoNode(context, widthSpec, heightSpec, layoutResult)
+                    }
+                yogaOutput._stateReads = stateReads
+                requireNotNull(result)
+              } else {
+                measureLithoNode(context, widthSpec, heightSpec, layoutResult)
+              }
             }
 
         check(!(size.width < 0 || size.height < 0)) {
@@ -984,6 +997,7 @@ data class YogaLayoutOutput(
     internal var _delegate: LayoutResult? = null,
     internal var _nestedResult: LithoLayoutResult? = null,
     internal val _adjustedBounds: Rect = Rect(),
+    internal var _stateReads: ScatterSet<StateId>? = null,
 ) : LithoLayoutOutput {
 
   override val x: Int
