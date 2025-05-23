@@ -49,7 +49,7 @@ class UseCallbackTest {
       override fun ComponentScope.render(): Component? {
         val selected = useState { listOf<Int>() }
 
-        useEffect(selected) {
+        useEffect(selected.value) {
           onSelectedChanged(selected.value)
           null
         }
@@ -169,7 +169,7 @@ class UseCallbackTest {
       override fun ComponentScope.render(): Component? {
         val selected = useState { listOf<Int>() }
 
-        useEffect(selected) {
+        useEffect(selected.value) {
           onSelectedChanged(selected.value)
           null
         }

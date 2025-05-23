@@ -17,6 +17,7 @@
 package com.facebook.litho
 
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import java.util.concurrent.atomic.AtomicReference
@@ -67,6 +68,9 @@ class StateEqualityTest {
 
   @Test
   fun `same state with different values is not equal`() {
+    // Same state in similar condition will always have the same value when read tracking is enabled
+    if (ComponentsConfiguration.defaultInstance.enableStateReadTracking) return
+
     val stateBox = AtomicReference<State<Int>>()
     mLithoTestRule.render {
       StateBoxComponent(initialState1 = 1, initialState2 = 1, stateBox1 = stateBox)
