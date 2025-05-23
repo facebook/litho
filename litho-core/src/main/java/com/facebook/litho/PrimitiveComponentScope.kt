@@ -250,8 +250,29 @@ fun PrimitiveComponentScope.useNestedTree(
   // Any() is used ensure state updates are always
   // requested, and not skipped due to duplicate checks.
   val stateForSync = useState { Any() }
+  val errorComponentRef = useState { AtomicReference<Component?>(null) }
 
   val nestedTreeState = useCached(Unit) { NestedLithoTreeState(treeState = TreeState()) }
+  val lithoTree =
+      useCached(nestedTreeState.id) {
+        val stateUpdater =
+            NestedStateUpdater(nestedTreeState::treeState) { update: PendingStateUpdate ->
+              nestedTreeState.enqueue(update)
+              when {
+                update.isLazy -> {} // No-Op
+                !update.isAsync -> stateForSync.updateSync(Any())
+                else -> stateForSync.update(Any())
+              }
+            }
+        LithoTree(
+            treeStateProvider = stateUpdater,
+            stateUpdater = stateUpdater,
+            mountedViewReference = nestedTreeState.mountedViewReference,
+            errorComponentReceiver = { errorComponentRef.update(AtomicReference(it)) },
+            lithoTreeLifecycleProvider = nestedTreeState.treeLifecycleProvider,
+            nestedTreeState.id,
+        )
+      }
   val lithoConfig =
       useCached(config) {
         buildDefaultLithoConfiguration(
@@ -261,39 +282,12 @@ fun PrimitiveComponentScope.useNestedTree(
         )
       }
 
-  val currentResolveResult = nestedTreeState.currentResolveResult
-
-  val onStateUpdate = { update: PendingStateUpdate ->
-    nestedTreeState.enqueue(update)
-    when {
-      update.isLazy -> {
-        // No-Op
-      }
-      !update.isAsync -> {
-        stateForSync.updateSync(Any())
-      }
-      else -> {
-        stateForSync.update(Any())
-      }
-    }
-  }
-
-  val errorComponentRef = useState { AtomicReference<Component?>(null) }
-  val stateUpdater =
-      NestedStateUpdater(getState = nestedTreeState::treeState, updater = onStateUpdate)
   val componentContext =
       ComponentContext(
           androidContext,
           treeProps,
           lithoConfig,
-          LithoTree(
-              treeStateProvider = stateUpdater,
-              stateUpdater = stateUpdater,
-              mountedViewReference = nestedTreeState.mountedViewReference,
-              errorComponentReceiver = { errorComponentRef.update(AtomicReference(it)) },
-              lithoTreeLifecycleProvider = nestedTreeState.treeLifecycleProvider,
-              nestedTreeState.id,
-          ),
+          lithoTree,
           "nested-tree-root",
           context.lithoVisibilityEventsController,
           null,
@@ -301,6 +295,7 @@ fun PrimitiveComponentScope.useNestedTree(
       )
 
   val errorComponent = errorComponentRef.value.getAndSet(null)
+  val currentResolveResult = nestedTreeState.currentResolveResult
 
   val result =
       NestedLithoTree.resolve(
