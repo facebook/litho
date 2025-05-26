@@ -10,6 +10,6 @@ litho_android_test_library(
     deps = [
         "//fbandroid/java/com/facebook/testing/uitest:uitest",
         "//fbandroid/java/com/facebook/testing/uitest/screenshot:screenshot",
-        "//fbandroid/third-party/java/junit:junit",
+        "//third-party/java/junit/junit:junit",
     ],
 )
