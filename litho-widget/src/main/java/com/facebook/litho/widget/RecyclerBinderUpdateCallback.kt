@@ -169,7 +169,7 @@ class RecyclerBinderUpdateCallback<T>(
           if (isTracing) {
             beginSection("renderInfo:" + getModelName(model))
           }
-          placeholders[i].renderInfo = componentRenderer.render(requireNotNull(model), i)
+          placeholders[i].renderInfo = model?.let { componentRenderer.render(model, i) }
           if (isTracing) {
             endSection()
           }
@@ -244,20 +244,7 @@ class RecyclerBinderUpdateCallback<T>(
     }
   }
 
-  class ComponentContainer(var needsComputation: Boolean) {
-
-    private var _renderInfo: RenderInfo? = null
-
-    var renderInfo: RenderInfo
-      get() = _renderInfo ?: ComponentRenderInfo.createEmpty().also { _renderInfo = it }
-      set(value) {
-        _renderInfo = value
-      }
-
-    constructor(renderInfo: RenderInfo?, needsComputation: Boolean) : this(needsComputation) {
-      this._renderInfo = renderInfo
-    }
-  }
+  class ComponentContainer(var renderInfo: RenderInfo?, var needsComputation: Boolean)
 
   companion object {
     private const val INCONSISTENT_SIZE = "RecyclerBinderUpdateCallback:InconsistentSize"

@@ -40,7 +40,7 @@ class RecyclerBinderOperationExecutor(
     for (operation in operations) {
       val components: List<RecyclerBinderUpdateCallback.ComponentContainer>? =
           operation.componentContainers
-      var renderInfos: MutableList<RenderInfo>? = null
+      var renderInfos: MutableList<RenderInfo?>? = null
       if (components != null && components.size > 1) {
         renderInfos = ArrayList()
         for (component in components) {
@@ -80,7 +80,7 @@ class RecyclerBinderOperationExecutor(
 
   private fun applyChangeSetSetSync(
       operation: RecyclerBinderUpdateCallback.Operation,
-      renderInfos: MutableList<RenderInfo>?
+      renderInfos: MutableList<RenderInfo?>?
   ) {
     when (operation.type) {
       RecyclerBinderUpdateCallback.Operation.INSERT ->
@@ -106,7 +106,7 @@ class RecyclerBinderOperationExecutor(
 
   private fun applyChangeSetSetAsync(
       operation: RecyclerBinderUpdateCallback.Operation,
-      renderInfos: MutableList<RenderInfo>?
+      renderInfos: MutableList<RenderInfo?>?
   ) {
     when (operation.type) {
       RecyclerBinderUpdateCallback.Operation.INSERT ->
