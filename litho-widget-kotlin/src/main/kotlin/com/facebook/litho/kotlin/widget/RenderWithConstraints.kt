@@ -67,6 +67,14 @@ fun ResourcesScope.RenderWithConstraints(
   return RenderWithConstraints.create(context).content(content).kotlinStyle(style).build()
 }
 
+fun RenderWithConstraints(
+    context: ComponentContext,
+    style: Style? = null,
+    content: ComponentScope.(SizeConstraints) -> Component
+): Component {
+  return RenderWithConstraints.create(context).content(content).kotlinStyle(style).build()
+}
+
 @ExcuseMySpec(reason = Reason.J2K_CONVERSION)
 @LayoutSpec
 private object RenderWithConstraintsSpec {
