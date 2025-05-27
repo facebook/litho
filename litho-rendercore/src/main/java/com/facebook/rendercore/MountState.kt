@@ -404,10 +404,14 @@ constructor(
     }
   }
 
+  fun willRemountWith(renderTree: RenderTree): Boolean {
+    return this.renderTree != renderTree || _needsRemount
+  }
+
   /** Updates the extensions of this [MountState] from the new [RenderTree]. */
   private fun updateRenderTree(renderTree: RenderTree): Boolean {
     // If the trees are same or if no remount is required, then no update is required.
-    if (renderTree == this.renderTree && !_needsRemount) {
+    if (!willRemountWith(renderTree)) {
       return false
     }
 

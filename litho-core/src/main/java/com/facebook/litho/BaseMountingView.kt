@@ -499,7 +499,9 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
       val renderTree = layoutState.toRenderTree()
       setupMountExtensions()
       val coordinator = requireNotNull(lithoHostListenerCoordinator)
-      coordinator.beforeMount(layoutState, visibleRect)
+      if (mountState.willRemountWith(renderTree)) {
+        coordinator.beforeMount(layoutState, visibleRect)
+      }
       mountState.mount(renderTree)
       incrementComponentMountCount()
       drawDebugOverlay(this, layoutState.componentTreeId)
