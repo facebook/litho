@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget;
+package com.facebook.litho.widget
 
-import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputConnection;
-import com.facebook.litho.annotations.Event;
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputConnection
+import com.facebook.litho.annotations.Event
 
 /**
  * Event that corresponds to an underlying
@@ -26,8 +26,8 @@ import com.facebook.litho.annotations.Event;
  * return either the input connection passed through the parameter or a Wrapper using
  * androidx.core.view.inputmethod.InputConnectionCompat#createWrapper.
  */
-@Event(returnType = InputConnection.class)
-public class InputConnectionEvent {
-  public InputConnection inputConnection;
-  public EditorInfo editorInfo;
+@Event(returnType = InputConnection::class)
+class InputConnectionEvent {
+  @JvmField var inputConnection: InputConnection? = null
+  lateinit var editorInfo: EditorInfo
 }
