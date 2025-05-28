@@ -28,11 +28,9 @@ import com.facebook.litho.LithoVisibilityEventsController
 import com.facebook.litho.LithoVisibilityEventsController.LithoVisibilityState
 import com.facebook.litho.LithoVisibilityEventsControllerDelegate
 import com.facebook.litho.Style
-import com.facebook.litho.core.width
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.visibility.onInvisible
 import com.facebook.litho.visibility.onVisible
-import com.facebook.rendercore.dp
 import com.facebook.samples.litho.NavigatableDemoActivity
 
 class LithoVisibilityEventsControllerActivity : NavigatableDemoActivity() {
@@ -64,10 +62,8 @@ class LithoVisibilityEventsControllerActivity : NavigatableDemoActivity() {
     override fun ComponentScope.render(): Component? {
       return Column(
           style =
-              Style.width(200.dp)
-                  .width(200.dp)
-                  .onVisible { Log.d("VisibilityComponent", "onVisible") }
-                  .onInvisible { Log.d("VisibilityComponent", "onInvisible") }) {
+              Style.onVisible { Log.d("VisibilityComponentLog", "onVisible") }
+                  .onInvisible { Log.d("VisibilityComponentLog", "onInvisible") }) {
             child(Text("Hello World"))
           }
     }

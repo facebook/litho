@@ -144,6 +144,7 @@ import com.facebook.samples.litho.kotlin.triggers.TooltipTriggerExampleKComponen
 import com.facebook.samples.litho.kotlin.visibility.AOSPLithoVisibilityEventsControllerActivity
 import com.facebook.samples.litho.kotlin.visibility.LithoVisibilityEventsControllerActivity
 import com.facebook.samples.litho.kotlin.visibility.SetVisibilityActivity
+import com.facebook.samples.litho.kotlin.visibility.VisibilityBoundsTransformerActivity
 import com.facebook.samples.litho.onboarding.FirstComponentActivity
 import com.facebook.samples.litho.onboarding.HelloWorldActivity
 import com.facebook.samples.litho.onboarding.PostStyledKComponent
@@ -375,6 +376,9 @@ class Demos {
                             SingleDemo(
                                 name = "AOSPLithoVisibilityEventsController",
                                 klass = AOSPLithoVisibilityEventsControllerActivity::class.java),
+                            SingleDemo(
+                                name = "VisibilityBoundsTransformer (occlusion)",
+                                klass = VisibilityBoundsTransformerActivity::class.java),
                         )),
                 )),
             DemoList(

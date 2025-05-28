@@ -163,6 +163,9 @@
         <activity
             android:name=".kotlin.visibility.AOSPLithoVisibilityEventsControllerActivity"
             android:exported="true" />
+        <activity
+            android:name=".kotlin.visibility.VisibilityBoundsTransformerActivity"
+            android:exported="true" />
 
     </application>
     <uses-permission android:name="android.permission.INTERNET" />
