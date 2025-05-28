@@ -125,8 +125,19 @@ object ComponentsSystrace {
    */
   @JvmStatic
   inline fun <T> trace(name: String, tracingBlock: () -> T): T {
+    return trace({ name }, tracingBlock)
+  }
+
+  /**
+   * A convenience Kotlin API that can be used instead of manually calling
+   * [ComponentsSystrace.beginSection] and [ComponentsSystrace.endSection].
+   *
+   * Starts the tracing section, executes the given [tracingBlock] and ends the tracing section.
+   */
+  @JvmStatic
+  inline fun <T> trace(name: () -> String, tracingBlock: () -> T): T {
     try {
-      if (isTracing) beginSection(name)
+      if (isTracing) beginSection(name())
       return tracingBlock()
     } finally {
       if (isTracing) endSection()
