@@ -85,8 +85,6 @@ public class TextStyle implements Cloneable {
   int outlineColor = 0;
   @Nullable RoundedBackgroundProps roundedBackgroundProps = null;
   @Nullable String accessibilityLabel;
-  @Nullable TouchableSpanListener touchableSpanListener = null;
-  @Nullable ClickableSpanListener clickableSpanListener = null;
   TruncationStyle truncationStyle = TruncationStyle.USE_MAX_LINES;
 
   public void setAccessibilityLabel(String accessibilityLabel) {
@@ -356,14 +354,6 @@ public class TextStyle implements Cloneable {
 
   public void setLetterSpacing(float letterSpacing) {
     this.letterSpacing = letterSpacing;
-  }
-
-  public void setTouchableSpanListener(TouchableSpanListener touchableSpanListener) {
-    this.touchableSpanListener = touchableSpanListener;
-  }
-
-  public void setClickableSpanListener(ClickableSpanListener clickableSpanListener) {
-    this.clickableSpanListener = clickableSpanListener;
   }
 
   public void setOutlineWidth(float outlineWidth) {

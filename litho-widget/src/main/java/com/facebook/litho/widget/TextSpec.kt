@@ -214,8 +214,6 @@ object TextSpec {
       }
       customEllipsisText?.let { richTextStyle.setCustomEllipsisText(it) }
       richTextStyle.setClickableSpanExpandedOffset(clickableSpanExpandedOffset)
-      spanListener?.let { richTextStyle.setClickableSpanListener(spanListener) }
-      touchableSpanListener?.let { richTextStyle.setTouchableSpanListener(touchableSpanListener) }
       if (!clipToBounds) {
         richTextStyle.setClipToBounds(clipToBounds)
       }
@@ -250,7 +248,11 @@ object TextSpec {
       if (lineHeight != Float.MAX_VALUE) {
         richTextStyle.setLineHeight(lineHeight)
       }
-      return RichText(text, richTextStyle)
+      return RichText(
+          text = text,
+          textStyle = richTextStyle,
+          touchableSpanListener = touchableSpanListener,
+          clickableSpanListener = spanListener)
     } else {
       return TextComponent.create(c)
           .text(text)

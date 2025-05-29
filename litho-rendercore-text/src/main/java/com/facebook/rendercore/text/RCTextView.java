@@ -332,12 +332,6 @@ public class RCTextView extends View {
     if (textLayout.textStyle.accessibilityLabel != null) {
       setContentDescription(textLayout.textStyle.accessibilityLabel);
     }
-    if (textLayout.textStyle.touchableSpanListener != null) {
-      mTouchableSpanListener = textLayout.textStyle.touchableSpanListener;
-    }
-    if (textLayout.textStyle.clickableSpanListener != null) {
-      mClickableSpanListener = textLayout.textStyle.clickableSpanListener;
-    }
 
     if (mLongClickHandler == null && containsLongClickableSpan(mClickableSpans)) {
       mLongClickHandler = new Handler(Looper.getMainLooper());
@@ -348,6 +342,14 @@ public class RCTextView extends View {
       mountableSpan.onMount(this);
     }
     invalidate();
+  }
+
+  public void setTouchableSpanListener(@Nullable TouchableSpanListener touchableSpanListener) {
+    mTouchableSpanListener = touchableSpanListener;
+  }
+
+  public void setClickableSpanListener(@Nullable ClickableSpanListener clickableSpanListener) {
+    mClickableSpanListener = clickableSpanListener;
   }
 
   public boolean isTextTruncated() {

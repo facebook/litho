@@ -22,13 +22,17 @@ import com.facebook.litho.PrimitiveComponentScope
 import com.facebook.litho.Style
 import com.facebook.litho.useCached
 import com.facebook.rendercore.RenderCoreConfig
+import com.facebook.rendercore.text.ClickableSpanListener
 import com.facebook.rendercore.text.RichTextPrimitive
 import com.facebook.rendercore.text.TextStyle
+import com.facebook.rendercore.text.TouchableSpanListener
 
 class RichText(
-    val text: CharSequence,
-    val textStyle: TextStyle? = null,
+    private val text: CharSequence,
+    private val textStyle: TextStyle? = null,
     private val style: Style? = null,
+    private val touchableSpanListener: TouchableSpanListener? = null,
+    private val clickableSpanListener: ClickableSpanListener? = null,
     private val usePerformantTruncation: Boolean = RenderCoreConfig.usePerformantTruncation,
     private val useTruncationCaching: Boolean = RenderCoreConfig.useTruncationCaching
 ) : PrimitiveComponent() {
@@ -39,11 +43,13 @@ class RichText(
         }
     return LithoPrimitive(
         RichTextPrimitive(
-            createPrimitiveId(),
-            text,
-            resolvedTextStyle,
-            usePerformantTruncation,
-            useTruncationCaching),
+            id = createPrimitiveId(),
+            text = text,
+            style = resolvedTextStyle,
+            touchableSpanListener = touchableSpanListener,
+            clickableSpanListener = clickableSpanListener,
+            usePerformantTruncation = usePerformantTruncation,
+            useTruncationCaching = useTruncationCaching),
         style = style)
   }
 }

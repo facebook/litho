@@ -20,10 +20,7 @@ import android.text.Spannable
 import android.text.style.ClickableSpan
 import android.view.MotionEvent
 import android.view.View
-import com.facebook.rendercore.DefaultNode
-import com.facebook.rendercore.DefaultTextNode
 import com.facebook.rendercore.HostView
-import com.facebook.rendercore.YogaProps
 import com.facebook.rendercore.testing.RenderCoreTestRule
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
@@ -41,18 +38,8 @@ class RCTextViewTest {
   ): Pair<ArrayList<Int>, RCTextView> {
     val eventsFired = ArrayList<Int>()
 
-    val textRenderUnit = TextRenderUnit(1)
     val textStyle = TextStyle()
     textStyle.setTextSize(20)
-    textStyle.setTouchableSpanListener { span, motionEvent, _ ->
-      eventsFired.add(motionEvent.action)
-      if (shouldSpanBeNull) {
-        assertThat(span).isNull()
-      } else {
-        assertThat(span).isNotNull()
-      }
-      true
-    }
     val clickableText = Spannable.Factory.getInstance().newSpannable("Some text.")
     val clickableSpan: ClickableSpan =
         object : ClickableSpan() {
@@ -62,7 +49,20 @@ class RCTextViewTest {
         }
     clickableText.setSpan(clickableSpan, 0, 1, 0)
 
-    val root: DefaultNode = DefaultTextNode(YogaProps(), clickableText, textRenderUnit, textStyle)
+    val root =
+        RichTextPrimitive(
+            id = 1,
+            text = clickableText,
+            style = textStyle,
+            touchableSpanListener = { span, motionEvent, _ ->
+              eventsFired.add(motionEvent.action)
+              if (shouldSpanBeNull) {
+                assertThat(span).isNull()
+              } else {
+                assertThat(span).isNotNull()
+              }
+              true
+            })
     renderCoreTestRule.useRootNode(root).setSizePx(100, 100).render()
     val host = renderCoreTestRule.rootHost as HostView
 
@@ -99,10 +99,8 @@ class RCTextViewTest {
           }
         }
 
-    val textRenderUnit = TextRenderUnit(1)
     val textStyle = TextStyle()
     textStyle.setTextSize(20)
-    textStyle.setClickableSpanListener(clickableSpanListener)
 
     val clickableText = Spannable.Factory.getInstance().newSpannable("Some text.")
     val clickableSpan =
@@ -113,7 +111,12 @@ class RCTextViewTest {
         }
     clickableText.setSpan(clickableSpan, 0, 1, 0)
 
-    val root: DefaultNode = DefaultTextNode(YogaProps(), clickableText, textRenderUnit, textStyle)
+    val root =
+        RichTextPrimitive(
+            id = 1,
+            text = clickableText,
+            style = textStyle,
+            clickableSpanListener = clickableSpanListener)
     renderCoreTestRule.useRootNode(root).setSizePx(100, 100).render()
     val host = renderCoreTestRule.rootHost as HostView
 

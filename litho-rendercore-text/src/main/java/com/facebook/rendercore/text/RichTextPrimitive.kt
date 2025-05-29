@@ -37,6 +37,8 @@ fun RichTextPrimitive(
     id: Long,
     text: CharSequence,
     style: TextStyle,
+    touchableSpanListener: TouchableSpanListener? = null,
+    clickableSpanListener: ClickableSpanListener? = null,
     usePerformantTruncation: Boolean = RenderCoreConfig.usePerformantTruncation,
     useTruncationCaching: Boolean = RenderCoreConfig.useTruncationCaching,
 ): Primitive {
@@ -57,6 +59,8 @@ fun RichTextPrimitive(
                   content.mount(layoutData.textLayout)
                   onUnbind { content.unmount() }
                 }
+                touchableSpanListener.bindTo(RCTextView::setTouchableSpanListener)
+                clickableSpanListener.bindTo(RCTextView::setClickableSpanListener)
               })
 }
 
