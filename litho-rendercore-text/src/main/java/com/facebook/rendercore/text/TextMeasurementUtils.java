@@ -272,6 +272,21 @@ public class TextMeasurementUtils {
 
     // Handle custom text truncation:
     if (textStyle.customEllipsisText != null && !textStyle.customEllipsisText.equals("")) {
+      if (textStyle.truncationStyle == TruncationStyle.FORCE_INLINE_TRUNCATION) {
+        int maxLines = getEllipsizedLineNumber(layout);
+        if (maxLines != -1) {
+          int lastLineWithWordsOrNumbers =
+              lastLineWithWordsOrNumbers(layout, maxLines, processedText);
+          layout =
+              TextMeasurementUtils.createTextLayout(
+                  context,
+                  textStyle,
+                  widthSpec,
+                  heightSpec,
+                  processedText,
+                  lastLineWithWordsOrNumbers);
+        }
+      }
       final int ellipsizedLineNumber = getEllipsizedLineNumber(layout);
       if (ellipsizedLineNumber != -1) {
         final CharSequence truncated =
@@ -396,6 +411,16 @@ public class TextMeasurementUtils {
 
   static Layout createTextLayout(
       Context context, TextStyle textStyle, int widthSpec, int heightSpec, CharSequence text) {
+    return createTextLayout(context, textStyle, widthSpec, heightSpec, text, textStyle.maxLines);
+  }
+
+  static Layout createTextLayout(
+      Context context,
+      TextStyle textStyle,
+      int widthSpec,
+      int heightSpec,
+      CharSequence text,
+      int maxLines) {
     TextLayoutBuilder layoutBuilder = new TextLayoutBuilder();
     layoutBuilder.setShouldCacheLayout(false);
 
@@ -430,7 +455,7 @@ public class TextMeasurementUtils {
     layoutBuilder
         .setDensity(context.getResources().getDisplayMetrics().density)
         .setEllipsize(actualEllipsize)
-        .setMaxLines(textStyle.maxLines)
+        .setMaxLines(maxLines)
         .setShadowLayer(
             textStyle.shadowRadius, textStyle.shadowDx, textStyle.shadowDy, textStyle.shadowColor)
         .setSingleLine(textStyle.isSingleLine)
@@ -553,12 +578,15 @@ public class TextMeasurementUtils {
     return true;
   }
 
-  private static boolean shouldBeForcedInline(
-      Layout newLayout, int ellipsizedLineNumber, int ellipsisOffset, CharSequence text) {
-    int ellipsizedLineStart = newLayout.getLineStart(ellipsizedLineNumber);
-    CharSequence trimmedLine =
-        text.subSequence(ellipsizedLineStart, Math.max(ellipsisOffset, ellipsizedLineStart));
-    return hasNoWordsOrNumbers(trimmedLine) && ellipsizedLineNumber - 1 >= 0;
+  private static int lastLineWithWordsOrNumbers(
+      Layout newLayout, int ellipsizedLineNumber, CharSequence text) {
+    for (int i = ellipsizedLineNumber; i > 0; --i) {
+      if (!hasNoWordsOrNumbers(
+          text.subSequence(newLayout.getLineStart(i), newLayout.getLineVisibleEnd(i)))) {
+        return i + 1;
+      }
+    }
+    return 1;
   }
 
   /**
@@ -656,19 +684,7 @@ public class TextMeasurementUtils {
         }
       }
       if (ellipsisOffset >= 0 && ellipsisOffset < text.length()) {
-        if (textStyle.truncationStyle == TruncationStyle.FORCE_INLINE_TRUNCATION
-            && shouldBeForcedInline(newLayout, ellipsizedLineNumber, ellipsisOffset, text)) {
-          return truncateText(
-              text,
-              customEllipsisText,
-              newLayout,
-              ellipsizedLineNumber - 1,
-              fullLayoutWidth,
-              usePerformantTruncation,
-              textStyle);
-        } else {
-          return TextUtils.concat(text.subSequence(0, ellipsisOffset), customEllipsisText);
-        }
+        return TextUtils.concat(text.subSequence(0, ellipsisOffset), customEllipsisText);
       } else {
         return text;
       }
