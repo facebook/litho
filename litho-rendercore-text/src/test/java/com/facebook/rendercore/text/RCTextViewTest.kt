@@ -239,4 +239,28 @@ class RCTextViewTest {
     assertThat(textView.onTouchEvent(upEvent)).isEqualTo(false)
     assertThat(eventsFired.size).isEqualTo(0)
   }
+
+  @Test
+  fun testTextTruncationForTextExceedingMaxLines() {
+    val textStyle = TextStyle()
+    textStyle.setMaxLines(3)
+    textStyle.setCustomEllipsisText("...See more")
+    textStyle.setTruncationStyle(TruncationStyle.USE_MAX_LINES)
+
+    val clickableText =
+        Spannable.Factory.getInstance()
+            .newSpannable(
+                "This is a very long text with a bullet list of empty items: \n * \n * \n * \n * \n * \n * \n This is the last line")
+
+    val root =
+        RichTextPrimitive(
+            id = 1, text = clickableText, style = textStyle, clickableSpanListener = null)
+    renderCoreTestRule.useRootNode(root).setSizePx(100, 100).render()
+    val host = renderCoreTestRule.rootHost as HostView
+    val textView = host.getChildAt(0) as RCTextView
+    assertThat(textView.isTextTruncated()).isEqualTo(true)
+    assertThat(textView.text.toString())
+        .isEqualTo(
+            "This is a very long text with a bullet list of empty items: \n * \n * ...See more")
+  }
 }
