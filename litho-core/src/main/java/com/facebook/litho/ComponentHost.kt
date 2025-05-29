@@ -267,7 +267,7 @@ open class ComponentHost(
       mountDrawable(index, mountItem, bounds)
     } else if (content is View) {
       viewMountItems.put(index, mountItem)
-      mountView(content, renderUnit.flags)
+      mountView(content, renderUnit.flags, renderUnit.componentContext)
       maybeRegisterTouchExpansion(index, mountItem)
       maybeRegisterViewForAccessibility(renderUnit, content)
     }
@@ -700,14 +700,18 @@ open class ComponentHost(
       return contentDescriptions
     }
 
-  private fun mountView(view: View, flags: Int) {
+  private fun mountView(view: View, flags: Int, componentContext: ComponentContext) {
     val childShouldDuplicateParentState = isDuplicateParentState(flags)
     if (childShouldDuplicateParentState) {
       view.isDuplicateParentStateEnabled = true
       hadChildWithDuplicateParentState = true
     }
     if (view is ComponentHost && isDuplicateChildrenStates(flags)) {
-      view.setAddStatesFromChildren(true)
+      try {
+        view.setAddStatesFromChildren(true)
+      } catch (e: IllegalStateException) {
+        ComponentUtils.handle(componentContext, e)
+      }
     }
     isChildDrawingOrderDirty = true
     var lp = view.layoutParams
