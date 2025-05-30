@@ -126,6 +126,14 @@ object LithoNodeUtils {
 
     val id: Long = context.calculateLayoutOutputId(node.tailComponentKey, OutputUnitType.HOST)
 
+    val additionalBinders =
+        node.customHostViewBinders +
+            if (node.needsHostView()) {
+              node.customViewBindersForMountSpec
+            } else {
+              null
+            }
+
     return createRenderUnit(
         id = id,
         component = hostComponent,
@@ -137,8 +145,7 @@ object LithoNodeUtils {
         duplicateParentState = node.isHostDuplicateParentStateEnabled,
         duplicateChildrenStates = node.isDuplicateChildrenStatesEnabled,
         isMountViewSpec = true,
-        customDelegateBindersForMountSpec =
-            if (node.needsHostView()) node.customViewBindersForMountSpec else null,
+        customDelegateBindersForMountSpec = additionalBinders,
         debugKey = getLithoNodeDebugKey(node, OutputUnitType.HOST),
         viewAttributes =
             createViewAttributesForBinder(

@@ -160,6 +160,73 @@ inline fun Style.onBindView(func: BindFunc<View>): Style =
     throw IllegalArgumentException(ON_BIND_NO_DEPS_ERROR)
 
 /**
+ * Use this [Style] instead of [onBind] to force the binder to be applied on a wrapped [HostView].
+ *
+ * This [Style] adds a mount callbacks. The [BindFunc] is invoked when the [HostView] is mounted,
+ * and it receives a [BindScope] and the [HostView] this [Component] rendered to. The [BindFunc]
+ * must return an [UnbindFunc] and it must undo any mutations made to the [View] in the [BindFunc].
+ * This API can be used to create higher-order Styles.
+ *
+ * Even if the [Component] renders a view this [Style] will force wrap the content into a
+ * [HostView]. The callbacks are guaranteed to be called on the main thread.
+ *
+ * The previous and new values of the [deps] are compared to check if the callbacks should be
+ * invoked again. If the [deps] are equivalent then the callbacks are not invoked again; if they are
+ * not equivalent then [UnbindFunc] is invoked followed by [BindFunc]. To invoke the callbacks only
+ * once use [Unit] as [deps].
+ *
+ * @param deps the dependencies that will be compared to check if the binder should be rerun.
+ * @param func the [RenderUnit.Binder] to be used to bind the model to the View content.
+ * @param name the name of the binder. This is used for debugging purposes.
+ */
+inline fun Style.onBindHostViewWithDescription(
+    noinline description: () -> String,
+    vararg deps: Any?,
+    func: BindFunc<View>,
+): Style =
+    this +
+        ObjectStyleItem(
+            BinderObjectField.HOST_VIEW_MOUNT_BINDER,
+            binder(description = description, dep = deps, func = func),
+        )
+
+/**
+ * Use this [Style] instead of [onBind] to force the binder to be applied on a wrapped [HostView].
+ *
+ * This [Style] adds a mount callbacks. The [BindFunc] is invoked when the [HostView] is mounted,
+ * and it receives a [BindScope] and the [HostView] this [Component] rendered to. The [BindFunc]
+ * must return an [UnbindFunc] and it must undo any mutations made to the [View] in the [BindFunc].
+ * This API can be used to create higher-order Styles.
+ *
+ * Even if the [Component] renders a view this [Style] will force wrap the content into a
+ * [HostView]. The callbacks are guaranteed to be called on the main thread.
+ *
+ * The previous and new values of the [deps] are compared to check if the callbacks should be
+ * invoked again. If the [deps] are equivalent then the callbacks are not invoked again; if they are
+ * not equivalent then [UnbindFunc] is invoked followed by [BindFunc]. To invoke the callbacks only
+ * once use [Unit] as [deps].
+ *
+ * @param deps the dependencies that will be compared to check if the binder should be rerun.
+ * @param func the [RenderUnit.Binder] to be used to bind the model to the View content.
+ */
+inline fun Style.onBindHostView(vararg deps: Any?, func: BindFunc<View>): Style =
+    this +
+        ObjectStyleItem(
+            BinderObjectField.HOST_VIEW_MOUNT_BINDER,
+            binder(dep = deps, func = func),
+        )
+
+@Deprecated(ON_BIND_NO_DEPS_ERROR, level = DeprecationLevel.ERROR)
+@Suppress("unused", "UNUSED_PARAMETER")
+inline fun Style.onBindHostViewWithDescription(name: String, func: BindFunc<View>): Style =
+    throw IllegalArgumentException(ON_BIND_NO_DEPS_ERROR)
+
+@Deprecated(ON_BIND_NO_DEPS_ERROR, level = DeprecationLevel.ERROR)
+@Suppress("unused", "UNUSED_PARAMETER")
+inline fun Style.onBindHostView(func: BindFunc<View>): Style =
+    throw IllegalArgumentException(ON_BIND_NO_DEPS_ERROR)
+
+/**
  * Creates a [Style] which will apply the given [RenderUnit.Binder] to the [View] rendered by the
  * Component the Style is added to. This abstraction can be used to create higher-level Styles which
  * can apply some property generically to any type of Component.
@@ -208,8 +275,9 @@ fun Style.viewBinder(binder: DelegateBinder<*, View, Any>): Style =
 
 @PublishedApi
 internal enum class BinderObjectField : StyleItemField {
-  VIEW_MOUNT_BINDER,
   MOUNT_BINDER,
+  VIEW_MOUNT_BINDER,
+  HOST_VIEW_MOUNT_BINDER,
 }
 
 @PublishedApi
@@ -224,6 +292,8 @@ internal data class ObjectStyleItem(
           commonProps.mountBinder(value as DelegateBinder<Any, Any, Any>)
       BinderObjectField.VIEW_MOUNT_BINDER ->
           commonProps.delegateMountViewBinder(value as DelegateBinder<Any, Any, Any>)
+      BinderObjectField.HOST_VIEW_MOUNT_BINDER ->
+          commonProps.delegateHostViewMountBinder(value as DelegateBinder<Any, Any, Any>)
     }
   }
 }

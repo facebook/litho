@@ -314,6 +314,7 @@ object Resolver {
               if (commonProps != null) {
                 node.addViewCustomBinders(commonProps.viewBinders)
                 node.addCustomBinders(commonProps.mountBinders)
+                node.addHostViewCustomBinder(commonProps.hostViewBinders)
               }
 
               if (isTracing) {

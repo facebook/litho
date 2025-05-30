@@ -659,6 +659,11 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
     return _otherProps?.getTransitionKey()
   }
 
+  fun delegateHostViewMountBinder(binder: DelegateBinder<Any, Any, Any>) {
+    wrapInView()
+    otherProps.delegateHostViewMountBinder(binder)
+  }
+
   fun delegateMountViewBinder(binder: DelegateBinder<Any, Any, Any>) {
     otherProps.delegateMountViewBinder(binder)
   }
@@ -666,6 +671,9 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
   fun mountBinder(binder: DelegateBinder<Any, Any, Any>) {
     otherProps.mountBinder(binder)
   }
+
+  val hostViewBinders: Map<BinderKey, DelegateBinder<Any, Any, Any>>?
+    get() = _otherProps?.typeToHostViewMountBinders
 
   val viewBinders: Map<BinderKey, DelegateBinder<Any, Any, Any>>?
     get() = _otherProps?.typeToViewBinders
@@ -748,6 +756,7 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
     private var fullImpressionHandler: EventHandler<FullImpressionVisibleEvent>? = null
     private var invisibleHandler: EventHandler<InvisibleEvent>? = null
     private var visibilityChangedHandler: EventHandler<VisibilityChangedEvent>? = null
+    var typeToHostViewMountBinders: MutableMap<BinderKey, DelegateBinder<Any, Any, Any>>? = null
     var typeToViewBinders: MutableMap<BinderKey, DelegateBinder<Any, Any, Any>>? = null
     var typeToMountBinders: MutableMap<BinderKey, DelegateBinder<Any, Any, Any>>? = null
     private var importantForAccessibility: Int = 0
@@ -767,6 +776,11 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
     private var visibilityOutputTag: String? = null
 
     private var systemGestureExclusionZones: MutableList<(Rect) -> Rect>? = null
+
+    fun delegateHostViewMountBinder(binder: DelegateBinder<Any, Any, Any>) {
+      typeToHostViewMountBinders =
+          (typeToHostViewMountBinders ?: LinkedHashMap()).apply { this[binder.type] = binder }
+    }
 
     fun delegateMountViewBinder(binder: DelegateBinder<Any, Any, Any>) {
       typeToViewBinders =

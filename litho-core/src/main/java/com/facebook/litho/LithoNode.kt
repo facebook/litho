@@ -220,6 +220,15 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
   var customViewBindersForMountSpec: MutableMap<BinderKey, DelegateBinder<Any, Any, Any>>? = null
     internal set
 
+  /**
+   * Returns a nullable map of [RenderUnit.DelegateBinder] that is aimed to be used to set the
+   * optional mount binders on the Host View of this [LithoNode].
+   *
+   * @see LithoNodeUtils.createHostRenderUnit
+   */
+  var customHostViewBinders: MutableMap<BinderKey, DelegateBinder<Any, Any, Any>>? = null
+    internal set
+
   var customBindersForMountSpec: MutableMap<BinderKey, DelegateBinder<Any, Any, Any>>? = null
     internal set
 
@@ -621,6 +630,20 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
           }
           .putAll(binders)
     }
+  }
+
+  fun addHostViewCustomBinder(binders: Map<BinderKey, DelegateBinder<Any, Any, Any>>?) {
+    if (binders.isNullOrEmpty()) {
+      return
+    }
+
+    customHostViewBinders
+        .getOrCreate {
+          LinkedHashMap<BinderKey, DelegateBinder<Any, Any, Any>>().also {
+            customHostViewBinders = it
+          }
+        }
+        .putAll(binders)
   }
 
   fun child(resolveContext: ResolveContext, c: ComponentContext, child: Component?) {
