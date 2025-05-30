@@ -26,6 +26,7 @@ import android.view.Gravity
 import androidx.annotation.ColorInt
 import androidx.core.text.TextDirectionHeuristicCompat
 import androidx.core.text.TextDirectionHeuristicsCompat
+import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import kotlin.jvm.JvmField
 
 class TextStyle : Cloneable {
@@ -111,7 +112,8 @@ class TextStyle : Cloneable {
     }
   }
 
-  class RoundedBackgroundProps(
+  @DataClassGenerate
+  data class RoundedBackgroundProps(
       @JvmField val padding: RectF,
       @JvmField val cornerRadius: Float,
       @field:ColorInt @JvmField val backgroundColor: Int
