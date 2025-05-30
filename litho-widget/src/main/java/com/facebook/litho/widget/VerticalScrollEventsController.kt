@@ -35,7 +35,9 @@ class VerticalScrollEventsController {
   }
 
   fun smoothScrollTo(y: Int) {
-    scrollView?.let { scrollView -> scrollView.smoothScrollTo(scrollView.scrollX, y) }
+    scrollView?.let { scrollView ->
+      scrollView.smoothScrollTo(scrollView.scrollX, scrollView.scrollY + y)
+    }
   }
 
   fun scrollToTop() {
