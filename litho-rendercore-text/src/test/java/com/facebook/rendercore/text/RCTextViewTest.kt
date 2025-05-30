@@ -39,7 +39,7 @@ class RCTextViewTest {
     val eventsFired = ArrayList<Int>()
 
     val textStyle = TextStyle()
-    textStyle.setTextSize(20)
+    textStyle.textSize = 20
     val clickableText = Spannable.Factory.getInstance().newSpannable("Some text.")
     val clickableSpan: ClickableSpan =
         object : ClickableSpan() {
@@ -100,7 +100,7 @@ class RCTextViewTest {
         }
 
     val textStyle = TextStyle()
-    textStyle.setTextSize(20)
+    textStyle.textSize = 20
 
     val clickableText = Spannable.Factory.getInstance().newSpannable("Some text.")
     val clickableSpan =
@@ -243,9 +243,9 @@ class RCTextViewTest {
   @Test
   fun testTextTruncationForTextExceedingMaxLines() {
     val textStyle = TextStyle()
-    textStyle.setMaxLines(3)
-    textStyle.setCustomEllipsisText("...See more")
-    textStyle.setTruncationStyle(TruncationStyle.USE_MAX_LINES)
+    textStyle.maxLines = 3
+    textStyle.customEllipsisText = "...See more"
+    textStyle.truncationStyle = TruncationStyle.USE_MAX_LINES
 
     val clickableText =
         Spannable.Factory.getInstance()
@@ -267,9 +267,9 @@ class RCTextViewTest {
   @Test
   fun testForceInlineTruncatedTextFirstLine() {
     val textStyle = TextStyle()
-    textStyle.setMaxLines(3)
-    textStyle.setCustomEllipsisText("...See more")
-    textStyle.setTruncationStyle(TruncationStyle.FORCE_INLINE_TRUNCATION)
+    textStyle.maxLines = 3
+    textStyle.customEllipsisText = "...See more"
+    textStyle.truncationStyle = TruncationStyle.FORCE_INLINE_TRUNCATION
 
     val clickableText =
         Spannable.Factory.getInstance()
@@ -290,9 +290,9 @@ class RCTextViewTest {
   @Test
   fun testForceInlineTruncatedTextSecondLine() {
     val textStyle = TextStyle()
-    textStyle.setMaxLines(3)
-    textStyle.setCustomEllipsisText("...See more")
-    textStyle.setTruncationStyle(TruncationStyle.FORCE_INLINE_TRUNCATION)
+    textStyle.maxLines = 3
+    textStyle.customEllipsisText = "...See more"
+    textStyle.truncationStyle = TruncationStyle.FORCE_INLINE_TRUNCATION
 
     val clickableText =
         Spannable.Factory.getInstance()

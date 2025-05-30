@@ -50,7 +50,6 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
 import android.view.accessibility.AccessibilityNodeInfo;
 import androidx.annotation.DoNotInline;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.view.AccessibilityDelegateCompat;
@@ -174,7 +173,7 @@ public class RCTextView extends View {
     OnPrePostDrawSpan.Command currentDrawAction =
         new OnPrePostDrawSpan.Command() {
           @Override
-          public void draw(@NonNull Canvas canvas) {
+          public void draw(Canvas canvas) {
             drawLayout(canvas);
           }
         };
@@ -195,7 +194,7 @@ public class RCTextView extends View {
       currentDrawAction =
           new OnPrePostDrawSpan.Command() {
             @Override
-            public void draw(@NonNull Canvas canvas) {
+            public void draw(Canvas canvas) {
               onDraw.draw(canvas, mText, spanStart, spanEnd, mLayout, previousAction);
             }
           };
@@ -261,7 +260,7 @@ public class RCTextView extends View {
   }
 
   public void mount(TextLayout textLayout) {
-    final ColorStateList colorStateList = textLayout.textStyle.textColorStateList;
+    final ColorStateList colorStateList = textLayout.textStyle.getTextColorStateList();
     mText = textLayout.processedText;
     mLayout = textLayout.layout;
     mLayoutTranslationX = textLayout.textLayoutTranslationX;
@@ -271,9 +270,9 @@ public class RCTextView extends View {
     mHighlightCornerRadius = textLayout.textStyle.highlightCornerRadius;
     mIsExplicitlyTruncated = textLayout.isExplicitlyTruncated;
     mClickableSpanExpandedOffset = textLayout.textStyle.clickableSpanExpandedOffset;
-    if (textLayout.textStyle.textColor != 0) {
+    if (textLayout.textStyle.getTextColor() != 0) {
       mColorStateList = null;
-      mLinkColor = textLayout.textStyle.textColor;
+      mLinkColor = textLayout.textStyle.getTextColor();
     } else {
       mColorStateList = colorStateList;
       // NULLSAFE_FIXME[Nullable Dereference]

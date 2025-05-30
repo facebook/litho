@@ -116,9 +116,9 @@ internal object TextAdapter {
     val style = TextStyle()
     this.entrySet().forEach {
       when (it.key) {
-        "textSize" -> style.setTextSize(it.value.asInt)
+        "textSize" -> style.textSize = it.value.asInt
         "textColor" -> style.setTextColor(Color.parseColor(it.value.asString))
-        "textAlign" -> style.setAlignment(it.value.getTextAlignment())
+        "textAlign" -> style.alignment = it.value.getTextAlignment()
       }
     }
 

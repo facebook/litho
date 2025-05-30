@@ -137,116 +137,117 @@ object TextSpec {
     if (ComponentsConfiguration.usePrimitiveText) {
       checkNotNull(text)
       val richTextStyle = TextStyle()
-      richTextStyle.setBreakStrategy(TextStylesHelper.DEFAULT_BREAK_STRATEGY)
-      ellipsize?.let { richTextStyle.setEllipsize(it) }
+      richTextStyle.breakStrategy = TextStylesHelper.DEFAULT_BREAK_STRATEGY
+      ellipsize?.let { richTextStyle.ellipsize = it }
       if (highlightColor != 0) {
-        richTextStyle.setHighlightColor(highlightColor)
+        richTextStyle.highlightColor = highlightColor
       }
       if (maxLines != Int.MAX_VALUE) {
-        richTextStyle.setMaxLines(maxLines)
+        richTextStyle.maxLines = maxLines
       }
       if (minLines != Int.MIN_VALUE) {
-        richTextStyle.setMinLines(minLines)
+        richTextStyle.minLines = minLines
       }
       if (minEms != TextStylesHelper.DEFAULT_EMS) {
-        richTextStyle.setMinEms(minEms)
+        richTextStyle.minEms = minEms
       } else {
-        richTextStyle.setMinTextWidth(minTextWidth)
+        richTextStyle.minTextWidth = minTextWidth
       }
       if (maxEms != TextStylesHelper.DEFAULT_EMS) {
-        richTextStyle.setMaxEms(maxEms)
+        richTextStyle.maxEms = maxEms
       } else {
-        richTextStyle.setMaxTextWidth(maxTextWidth)
+        richTextStyle.maxTextWidth = maxTextWidth
       }
       if (typeface != TextComponentSpec.DEFAULT_TYPEFACE && typeface != null) {
-        richTextStyle.setTypeface(typeface)
+        richTextStyle.typeface = typeface
       } else {
-        richTextStyle.setTextStyle(textStyle)
+        richTextStyle.textStyle = textStyle
       }
       if (shadowRadius != 0f) {
-        richTextStyle.setShadowRadius(shadowRadius)
+        richTextStyle.shadowRadius = shadowRadius
       }
       if (shadowDx != 0f) {
-        richTextStyle.setShadowDx(shadowDx)
+        richTextStyle.shadowDx = shadowDx
       }
       if (shadowDy != 0f) {
-        richTextStyle.setShadowDy(shadowDy)
+        richTextStyle.shadowDy = shadowDy
       }
       if (shadowColor != Color.GRAY) {
-        richTextStyle.setShadowColor(shadowColor)
+        richTextStyle.shadowColor = shadowColor
       }
       if (isSingleLine) {
-        richTextStyle.setSingleLine(isSingleLine)
+        richTextStyle.isSingleLine = isSingleLine
       }
       if (!shouldIncludeFontPadding) {
-        richTextStyle.setIncludeFontPadding(shouldIncludeFontPadding)
+        richTextStyle.includeFontPadding = shouldIncludeFontPadding
       }
       if (textColor != TextComponentSpec.DEFAULT_COLOR) {
-        richTextStyle.setTextColor(textColor)
+        richTextStyle.textColor = textColor
       } else if (textColorStateList != null) {
-        richTextStyle.setTextColorStateList(textColorStateList)
+        richTextStyle.textColorStateList = textColorStateList
       }
       if (linkColor != Color.BLUE) {
-        richTextStyle.setLinkColor(linkColor)
+        richTextStyle.linkColor = linkColor
       }
       // text size must be set before the line hight
       if (textSize != TextComponentSpec.UNSET) {
-        richTextStyle.setTextSize(textSize)
+        richTextStyle.textSize = textSize
       } else {
         val defaultTextSize: Int =
             c.resourceResolver.sipsToPixels(TextComponentSpec.DEFAULT_TEXT_SIZE_SP.toFloat())
-        richTextStyle.setTextSize(defaultTextSize)
+        richTextStyle.textSize = defaultTextSize
       }
       if (extraSpacing != 0f) {
-        richTextStyle.setExtraSpacingRight(extraSpacing)
+        richTextStyle.extraSpacingRight = extraSpacing
       }
       if (spacingMultiplier != 1.0f) {
-        richTextStyle.setLineHeightMultiplier(spacingMultiplier)
+        richTextStyle.lineHeightMultiplier = spacingMultiplier
       }
       if (letterSpacing != 0f) {
-        richTextStyle.setLetterSpacing(letterSpacing)
+        richTextStyle.letterSpacing = letterSpacing
       }
       if (outlineColor != 0) {
-        richTextStyle.setOutlineColor(outlineColor)
+        richTextStyle.outlineColor = outlineColor
       }
       if (outlineWidth != 0f) {
-        richTextStyle.setOutlineWidth(outlineWidth)
+        richTextStyle.outlineWidth = outlineWidth
       }
-      customEllipsisText?.let { richTextStyle.setCustomEllipsisText(it) }
-      richTextStyle.setClickableSpanExpandedOffset(clickableSpanExpandedOffset)
+      customEllipsisText?.let { richTextStyle.customEllipsisText = it }
+      richTextStyle.clickableSpanExpandedOffset = clickableSpanExpandedOffset
       if (!clipToBounds) {
-        richTextStyle.setClipToBounds(clipToBounds)
+        richTextStyle.clipToBounds = clipToBounds
       }
       if (highlightStartOffset != -1) {
-        richTextStyle.setHighlightStartOffset(highlightStartOffset)
+        richTextStyle.highlightStartOffset = highlightStartOffset
       }
       if (highlightEndOffset != -1) {
-        richTextStyle.setHighlightEndOffset(highlightEndOffset)
+        richTextStyle.highlightEndOffset = highlightEndOffset
       }
       if (verticalGravity != VerticalGravity.TOP) {
-        richTextStyle.setVerticalGravity(getRCVerticalGravity(verticalGravity))
+        richTextStyle.verticalGravity = getRCVerticalGravity(verticalGravity)
       }
       textAlignment?.let {
         val resolvedTextAlignment = TextComponentSpec.getTextAlignment(textAlignment, alignment)
-        richTextStyle.setAlignment(getAlignment(resolvedTextAlignment))
+        richTextStyle.alignment = getAlignment(resolvedTextAlignment)
       }
 
-      alignment?.let { richTextStyle.setAlignment(getAlignment(alignment)) }
+      alignment?.let { richTextStyle.alignment = getAlignment(alignment) }
       if (breakStrategy != TextStylesHelper.DEFAULT_BREAK_STRATEGY) {
-        richTextStyle.setBreakStrategy(breakStrategy)
+        richTextStyle.breakStrategy = breakStrategy
       }
       if (hyphenationFrequency != TextStylesHelper.DEFAULT_HYPHENATION_FREQUENCY) {
-        richTextStyle.setHyphenationFrequency(hyphenationFrequency)
+        richTextStyle.hyphenationFrequency = hyphenationFrequency
       }
       if (justificationMode != TextStylesHelper.DEFAULT_JUSTIFICATION_MODE) {
-        richTextStyle.setJustificationMode(justificationMode)
+        richTextStyle.justificationMode = justificationMode
       }
-      textDirection?.let { richTextStyle.setTextDirection(it) }
+      textDirection?.let { richTextStyle.textDirection = it }
       if (minimallyWideThreshold != 0) {
-        richTextStyle.setMinimallyWide(minimallyWide, minimallyWideThreshold)
+        richTextStyle.minimallyWide = minimallyWide
+        richTextStyle.minimallyWideThreshold = minimallyWideThreshold
       }
       if (lineHeight != Float.MAX_VALUE) {
-        richTextStyle.setLineHeight(lineHeight)
+        richTextStyle.lineHeight = lineHeight
       }
       return RichText(
           text = text,

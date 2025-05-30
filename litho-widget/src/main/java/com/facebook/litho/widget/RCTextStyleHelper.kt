@@ -17,6 +17,7 @@
 package com.facebook.litho.widget
 
 import android.content.res.TypedArray
+import android.graphics.Typeface
 import android.text.TextUtils
 import android.view.Gravity
 import android.view.View
@@ -85,66 +86,66 @@ object RCTextStyleHelper {
       if (attr == R.styleable.Text_android_textColor) {
         val colorStateList = a.getColorStateList(attr)
         if (colorStateList != null) {
-          style.setTextColorStateList(colorStateList)
+          style.textColorStateList = colorStateList
         }
       } else if (attr == R.styleable.Text_android_textSize) {
-        style.setTextSize(a.getDimensionPixelSize(attr, 0))
+        style.textSize = a.getDimensionPixelSize(attr, 0)
       } else if (attr == R.styleable.Text_android_ellipsize) {
         val index = a.getInteger(attr, 0)
         if (index > 0) {
-          style.setEllipsize(TRUNCATE_AT[index - 1])
+          style.ellipsize = TRUNCATE_AT[index - 1]
         }
       } else if (attr == R.styleable.Text_android_textAlignment) {
         viewTextAlignment = a.getInt(attr, -1)
-        style.setAlignment(getTextAlignment(viewTextAlignment, gravity))
+        style.alignment = getTextAlignment(viewTextAlignment, gravity)
       } else if (attr == R.styleable.Text_android_gravity) {
         gravity = a.getInt(attr, -1)
-        getVerticalGravity(gravity)?.let { style.setVerticalGravity(it) }
+        getVerticalGravity(gravity)?.let { style.verticalGravity = it }
       } else if (attr == R.styleable.Text_android_includeFontPadding) {
-        style.setIncludeFontPadding(a.getBoolean(attr, false))
+        style.includeFontPadding = a.getBoolean(attr, false)
       } else if (attr == R.styleable.Text_android_minLines) {
-        style.setMinLines(a.getInteger(attr, -1))
+        style.minLines = a.getInteger(attr, -1)
       } else if (attr == R.styleable.Text_android_maxLines) {
-        style.setMaxLines(a.getInteger(attr, -1))
+        style.maxLines = a.getInteger(attr, -1)
       } else if (attr == R.styleable.Text_android_singleLine) {
-        style.setSingleLine(a.getBoolean(attr, false))
+        style.isSingleLine = a.getBoolean(attr, false)
       } else if (attr == R.styleable.Text_android_textColorLink) {
-        style.setLinkColor(a.getColor(attr, 0))
+        style.linkColor = a.getColor(attr, 0)
       } else if (attr == R.styleable.Text_android_textColorHighlight) {
-        style.setHighlightColor(a.getColor(attr, 0))
+        style.highlightColor = a.getColor(attr, 0)
       } else if (attr == R.styleable.Text_android_textStyle) {
-        style.setTextStyle(a.getInteger(attr, 0))
+        style.textStyle = a.getInteger(attr, 0)
       } else if (attr == R.styleable.Text_android_lineSpacingExtra) {
-        style.setLineSpacingExtra(a.getDimensionPixelOffset(attr, 0).toFloat())
+        style.lineSpacingExtra = a.getDimensionPixelOffset(attr, 0).toFloat()
       } else if (attr == R.styleable.Text_android_lineSpacingMultiplier) {
-        style.setLineHeightMultiplier(a.getFloat(attr, 0f))
+        style.lineHeightMultiplier = a.getFloat(attr, 0f)
       } else if (attr == R.styleable.Text_android_shadowDx) {
-        style.setShadowDx(a.getFloat(attr, 0f))
+        style.shadowDx = a.getFloat(attr, 0f)
       } else if (attr == R.styleable.Text_android_shadowDy) {
-        style.setShadowDy(a.getFloat(attr, 0f))
+        style.shadowDy = a.getFloat(attr, 0f)
       } else if (attr == R.styleable.Text_android_shadowRadius) {
-        style.setShadowRadius(a.getFloat(attr, 0f))
+        style.shadowRadius = a.getFloat(attr, 0f)
       } else if (attr == R.styleable.Text_android_shadowColor) {
-        style.setShadowColor(a.getColor(attr, 0))
+        style.shadowColor = a.getColor(attr, 0)
       } else if (attr == R.styleable.Text_android_minEms) {
-        style.setMinEms(a.getInteger(attr, DEFAULT_EMS))
+        style.minEms = a.getInteger(attr, DEFAULT_EMS)
       } else if (attr == R.styleable.Text_android_maxEms) {
-        style.setMaxEms(a.getInteger(attr, DEFAULT_EMS))
+        style.maxEms = a.getInteger(attr, DEFAULT_EMS)
       } else if (attr == R.styleable.Text_android_minWidth) {
-        style.setMinTextWidth(a.getDimensionPixelSize(attr, DEFAULT_MIN_WIDTH))
+        style.minTextWidth = a.getDimensionPixelSize(attr, DEFAULT_MIN_WIDTH)
       } else if (attr == R.styleable.Text_android_maxWidth) {
-        style.setMaxTextWidth(a.getDimensionPixelSize(attr, DEFAULT_MAX_WIDTH))
+        style.maxTextWidth = a.getDimensionPixelSize(attr, DEFAULT_MAX_WIDTH)
       } else if (attr == R.styleable.Text_android_fontFamily) {
         fontFamily = a.getString(attr)
         if (fontFamily != null) {
-          style.createTypeface(fontFamily)
+          style.typeface = Typeface.create(fontFamily, style.textStyle)
         }
       } else if (attr == R.styleable.Text_android_breakStrategy) {
-        style.setBreakStrategy(a.getInt(attr, DEFAULT_BREAK_STRATEGY))
+        style.breakStrategy = a.getInt(attr, DEFAULT_BREAK_STRATEGY)
       } else if (attr == R.styleable.Text_android_hyphenationFrequency) {
-        style.setHyphenationFrequency(a.getInt(attr, DEFAULT_HYPHENATION_FREQUENCY))
+        style.hyphenationFrequency = a.getInt(attr, DEFAULT_HYPHENATION_FREQUENCY)
       } else if (attr == R.styleable.Text_android_justificationMode) {
-        style.setJustificationMode(a.getInt(attr, DEFAULT_JUSTIFICATION_MODE))
+        style.justificationMode = a.getInt(attr, DEFAULT_JUSTIFICATION_MODE)
       }
       i++
     }

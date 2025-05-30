@@ -176,8 +176,8 @@ public class TextMeasurementUtils {
             bottomPadding,
             cornerRadius);
     text.setSpan(span, 0, text.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-    textStyle.setExtraSpacingLeft(startPadding);
-    textStyle.setExtraSpacingRight(endPadding);
+    textStyle.extraSpacingLeft = startPadding;
+    textStyle.extraSpacingRight = endPadding;
 
     // run layout to ensure that spacing and spans are applied to processed text
     final Pair<Rect, TextLayout> intermediateResult =
@@ -262,7 +262,7 @@ public class TextMeasurementUtils {
 
     if (linesWithinConstrainedBounds != -1) {
       // we have constrained the number of lines that can fit, so truncate the layout
-      textStyle.setMaxLines(linesWithinConstrainedBounds);
+      textStyle.maxLines = linesWithinConstrainedBounds;
       layout =
           TextMeasurementUtils.createTextLayout(
               context, textStyle, widthSpec, heightSpec, processedText);
@@ -491,10 +491,10 @@ public class TextMeasurementUtils {
       layoutBuilder.setMaxWidth(textStyle.maxTextWidth);
     }
 
-    if (textStyle.textColor != 0) {
-      layoutBuilder.setTextColor(textStyle.textColor);
+    if (textStyle.getTextColor() != 0) {
+      layoutBuilder.setTextColor(textStyle.getTextColor());
     } else {
-      layoutBuilder.setTextColor(textStyle.textColorStateList);
+      layoutBuilder.setTextColor(textStyle.getTextColorStateList());
     }
 
     if (textStyle.typeface != null) {
