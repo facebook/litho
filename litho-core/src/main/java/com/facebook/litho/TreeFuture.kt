@@ -337,9 +337,11 @@ abstract class TreeFuture<T : PotentiallyPartialResult>(
         try {
           Process.setThreadPriority(runningThreadId, originalThreadPriority)
         } catch (ignored: IllegalArgumentException) {
-          // Ignored.
+          ComponentsConfiguration.softErrorHandler?.handleSoftError(
+              "IllegalArgumentException while resetting thread priority", "TreeFuture", ignored)
         } catch (ignored: SecurityException) {
-          // Ignored.
+          ComponentsConfiguration.softErrorHandler?.handleSoftError(
+              "SecurityException while resetting thread priority", "TreeFuture", ignored)
         }
       }
       if (interruptState.get() == INTERRUPTED && isPartialResult) {
