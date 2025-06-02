@@ -23,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.ComponentHost;
+import com.facebook.rendercore.text.RCTextView;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
@@ -49,6 +50,8 @@ public final class ViewExtractors {
             }
           } else if (input instanceof TextView) {
             text = ((TextView) input).getText();
+          } else if (input instanceof RCTextView) {
+            text = ((RCTextView) input).getText();
           }
           if (text == null) {
             return String.format(

@@ -21,6 +21,7 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.TextView;
 import com.facebook.litho.ComponentHost;
+import com.facebook.rendercore.text.RCTextView;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import java.lang.reflect.InvocationTargetException;
@@ -151,11 +152,12 @@ public final class ViewPredicates {
   }
 
   private static String extractString(final View view) {
-    if (!(view instanceof TextView)) {
-      return "";
+    CharSequence text = null;
+    if (view instanceof TextView) {
+      text = ((TextView) view).getText();
+    } else if (view instanceof RCTextView) {
+      text = ((RCTextView) view).getText();
     }
-
-    final CharSequence text = ((TextView) view).getText();
     return text != null ? text.toString() : "";
   }
 
