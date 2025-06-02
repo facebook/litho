@@ -16,6 +16,7 @@
 
 package com.facebook.rendercore.text
 
+import android.text.Layout
 import android.text.Spannable
 import android.text.style.ClickableSpan
 import android.view.MotionEvent
@@ -23,15 +24,23 @@ import android.view.View
 import com.facebook.rendercore.HostView
 import com.facebook.rendercore.testing.RenderCoreTestRule
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Matchers.anyInt
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class RCTextViewTest {
 
   @Rule @JvmField val renderCoreTestRule = RenderCoreTestRule()
+  private val FULL_TEXT_WIDTH: Int = 100
+  private val MINIMAL_TEXT_WIDTH: Int = 95
+  private val UNSPECIFIED_WIDTH_SPEC =
+      View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
 
   private fun setupClickableSpanTest(
       shouldSpanBeNull: Boolean = false
@@ -310,5 +319,44 @@ class RCTextViewTest {
     assertThat(textView.text.toString())
         .isEqualTo(
             "This is a very long text with a bullet list of empty items: \n * i have text ...See more")
+  }
+
+  @Test
+  fun testMinimallyWideText() {
+    val textStyle = TextStyle()
+    textStyle.minimallyWide = true
+    textStyle.minimallyWideThreshold = FULL_TEXT_WIDTH - MINIMAL_TEXT_WIDTH - 1
+    val layout = setupWidthTestTextLayout()
+    val resolvedWidth = TextMeasurementUtils.resolveWidth(UNSPECIFIED_WIDTH_SPEC, layout, textStyle)
+    val layoutWidth = resolvedWidth.first
+    val recalculateLayoutForMinimalWidth = resolvedWidth.second
+
+    assertEquals(layoutWidth, MINIMAL_TEXT_WIDTH)
+    assertEquals(recalculateLayoutForMinimalWidth, true)
+  }
+
+  @Test
+  fun testMinimallyWideThresholdText() {
+    val textStyle = TextStyle()
+    textStyle.minimallyWide = true
+    textStyle.minimallyWideThreshold = FULL_TEXT_WIDTH - MINIMAL_TEXT_WIDTH
+    val layout = setupWidthTestTextLayout()
+    val resolvedWidth = TextMeasurementUtils.resolveWidth(UNSPECIFIED_WIDTH_SPEC, layout, textStyle)
+    val layoutWidth = resolvedWidth.first
+    val recalculateLayoutForMinimalWidth = resolvedWidth.second
+
+    assertEquals(layoutWidth, FULL_TEXT_WIDTH)
+    assertEquals(recalculateLayoutForMinimalWidth, false)
+  }
+
+  private fun setupWidthTestTextLayout(): Layout {
+    val layout: Layout = mock()
+
+    whenever(layout.lineCount).thenReturn(2)
+    whenever(layout.width).thenReturn(FULL_TEXT_WIDTH)
+    whenever(layout.getLineRight(anyInt())).thenReturn(MINIMAL_TEXT_WIDTH.toFloat())
+    whenever(layout.getLineLeft(anyInt())).thenReturn(0.0f)
+
+    return layout
   }
 }

@@ -392,7 +392,8 @@ public class TextMeasurementUtils {
     return new Pair<>(new Rect(0, 0, layoutWidth, layoutHeight), textLayout);
   }
 
-  private static Pair<Integer, Boolean> resolveWidth(
+  @VisibleForTesting
+  protected static Pair<Integer, Boolean> resolveWidth(
       int widthSpec, Layout layout, TextStyle textStyle) {
     int fullWidth =
         View.resolveSize(
