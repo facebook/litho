@@ -268,47 +268,55 @@ public class TextMeasurementUtils {
               context, textStyle, widthSpec, heightSpec, processedText);
     }
 
-    final int layoutWidth = resolveWidth(widthSpec, layout, textStyle);
+    final Pair<Integer, Boolean> resolvedWidth = resolveWidth(widthSpec, layout, textStyle);
+    final int layoutWidth = resolvedWidth.first;
+    final boolean recalculateLayoutForMinimalWidth = resolvedWidth.second;
 
-    // Handle custom text truncation:
-    if (textStyle.customEllipsisText != null && !textStyle.customEllipsisText.equals("")) {
-      if (textStyle.truncationStyle == TruncationStyle.FORCE_INLINE_TRUNCATION) {
-        int maxLines = getEllipsizedLineNumber(layout);
-        if (maxLines != -1) {
-          int lastLineWithWordsOrNumbers =
-              lastLineWithWordsOrNumbers(layout, maxLines, processedText);
-          layout =
-              TextMeasurementUtils.createTextLayout(
-                  context,
-                  textStyle,
-                  widthSpec,
-                  heightSpec,
+    // Handle custom text truncation or minimallyWide setting:
+    boolean hasCustomEllipsisText =
+        textStyle.customEllipsisText != null && !textStyle.customEllipsisText.equals("");
+    if (hasCustomEllipsisText || recalculateLayoutForMinimalWidth) {
+      CharSequence maybeTruncated = processedText;
+      boolean isTruncated = false;
+      if (hasCustomEllipsisText) {
+        if (textStyle.truncationStyle == TruncationStyle.FORCE_INLINE_TRUNCATION) {
+          int maxLines = getEllipsizedLineNumber(layout);
+          if (maxLines != -1) {
+            int lastLineWithWordsOrNumbers =
+                lastLineWithWordsOrNumbers(layout, maxLines, processedText);
+            layout =
+                TextMeasurementUtils.createTextLayout(
+                    context,
+                    textStyle,
+                    widthSpec,
+                    heightSpec,
+                    processedText,
+                    lastLineWithWordsOrNumbers);
+          }
+        }
+        final int ellipsizedLineNumber = getEllipsizedLineNumber(layout);
+        if (ellipsizedLineNumber != -1) {
+          maybeTruncated =
+              truncateText(
                   processedText,
-                  lastLineWithWordsOrNumbers);
+                  textStyle.customEllipsisText,
+                  layout,
+                  ellipsizedLineNumber,
+                  layoutWidth,
+                  usePerformantTruncation,
+                  textStyle);
+          isTruncated = true;
         }
       }
-      final int ellipsizedLineNumber = getEllipsizedLineNumber(layout);
-      if (ellipsizedLineNumber != -1) {
-        final CharSequence truncated =
-            truncateText(
-                processedText,
-                textStyle.customEllipsisText,
-                layout,
-                ellipsizedLineNumber,
-                layoutWidth,
-                usePerformantTruncation,
-                textStyle);
-
-        Layout newLayout =
-            TextMeasurementUtils.createTextLayout(
-                context,
-                textStyle,
-                View.MeasureSpec.makeMeasureSpec(layoutWidth, View.MeasureSpec.EXACTLY),
-                heightSpec,
-                truncated);
-
-        processedText = truncated;
-        layout = newLayout;
+      layout =
+          TextMeasurementUtils.createTextLayout(
+              context,
+              textStyle,
+              View.MeasureSpec.makeMeasureSpec(layoutWidth, View.MeasureSpec.EXACTLY),
+              heightSpec,
+              maybeTruncated);
+      processedText = maybeTruncated;
+      if (isTruncated) {
         textLayout.isExplicitlyTruncated = true;
       }
     }
@@ -384,7 +392,8 @@ public class TextMeasurementUtils {
     return new Pair<>(new Rect(0, 0, layoutWidth, layoutHeight), textLayout);
   }
 
-  private static int resolveWidth(int widthSpec, Layout layout, TextStyle textStyle) {
+  private static Pair<Integer, Boolean> resolveWidth(
+      int widthSpec, Layout layout, TextStyle textStyle) {
     int fullWidth =
         View.resolveSize(
             layout.getWidth()
@@ -402,11 +411,11 @@ public class TextMeasurementUtils {
       final int minimalWidth = View.resolveSize((int) (rightMost - leftMost), widthSpec);
 
       if (fullWidth - minimalWidth > textStyle.minimallyWideThreshold) {
-        return minimalWidth;
+        return new Pair<>(minimalWidth, true);
       }
     }
 
-    return fullWidth;
+    return new Pair<>(fullWidth, false);
   }
 
   static Layout createTextLayout(

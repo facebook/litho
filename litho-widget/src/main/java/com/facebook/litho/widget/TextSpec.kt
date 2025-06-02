@@ -242,10 +242,8 @@ object TextSpec {
         richTextStyle.justificationMode = justificationMode
       }
       textDirection?.let { richTextStyle.textDirection = it }
-      if (minimallyWideThreshold != 0) {
-        richTextStyle.minimallyWide = minimallyWide
-        richTextStyle.minimallyWideThreshold = minimallyWideThreshold
-      }
+      richTextStyle.minimallyWide = minimallyWide
+      richTextStyle.minimallyWideThreshold = minimallyWideThreshold
       if (lineHeight != Float.MAX_VALUE) {
         richTextStyle.lineHeight = lineHeight
       }
