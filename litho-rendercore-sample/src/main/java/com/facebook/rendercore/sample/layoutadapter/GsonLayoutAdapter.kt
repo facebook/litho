@@ -117,7 +117,7 @@ internal object TextAdapter {
     this.entrySet().forEach {
       when (it.key) {
         "textSize" -> style.textSize = it.value.asInt
-        "textColor" -> style.setTextColor(Color.parseColor(it.value.asString))
+        "textColor" -> style.textColor = Color.parseColor(it.value.asString)
         "textAlign" -> style.alignment = it.value.getTextAlignment()
       }
     }
