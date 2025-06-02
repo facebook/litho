@@ -141,6 +141,8 @@ open class ComponentHost(
   var touchExpansionDelegate: TouchExpansionDelegate? = null
     private set
 
+  var drawBehind: ((Canvas) -> Unit)? = null
+
   /**
    * Hosts are guaranteed to have only one accessible component in them due to the way the view
    * hierarchy is constructed in [LayoutState]. There might be other non-accessible components in
@@ -741,43 +743,48 @@ open class ComponentHost(
   }
 
   public override fun dispatchDraw(canvas: Canvas) {
-    dispatchDraw.start(canvas)
-    try {
-      super.dispatchDraw(canvas)
-    } catch (e: LithoMetadataExceptionWrapper) {
-      val mountItemCount = mountItemCount
-      val componentNames = StringBuilder("[")
-      for (i in 0 until mountItemCount) {
-        val item = mountItems[i]
-        componentNames.append(
-            if (item != null) getRenderUnit(item).component.simpleName else "null")
-        if (i < mountItemCount - 1) {
-          componentNames.append(", ")
-        } else {
-          componentNames.append("]")
+    ComponentsSystrace.trace({ "ComponentHost:dispatchDraw" }) {
+      try {
+        drawBehind?.let { it ->
+          ComponentsSystrace.trace({ "ComponentHost:drawBehind" }) { it.invoke(canvas) }
         }
+        dispatchDraw.start(canvas)
+        super.dispatchDraw(canvas)
+      } catch (e: LithoMetadataExceptionWrapper) {
+        val mountItemCount = mountItemCount
+        val componentNames = StringBuilder("[")
+        for (i in 0 until mountItemCount) {
+          val item = mountItems[i]
+          componentNames.append(
+              if (item != null) getRenderUnit(item).component.simpleName else "null")
+          if (i < mountItemCount - 1) {
+            componentNames.append(", ")
+          } else {
+            componentNames.append("]")
+          }
+        }
+        e.addCustomMetadata("component_names_from_mount_items", componentNames.toString())
+        throw e
       }
-      e.addCustomMetadata("component_names_from_mount_items", componentNames.toString())
-      throw e
-    }
 
-    // Cover the case where the host has no child views, in which case
-    // getChildDrawingOrder() will not be called and the draw index will not
-    // be incremented. This will also cover the case where drawables must be
-    // painted after the last child view in the host.
-    if (dispatchDraw.isRunning) {
-      dispatchDraw.drawNext()
-    }
-    dispatchDraw.end()
+      // Cover the case where the host has no child views, in which case
+      // getChildDrawingOrder() will not be called and the draw index will not
+      // be incremented. This will also cover the case where drawables must be
+      // painted after the last child view in the host.
+      if (dispatchDraw.isRunning) {
+        dispatchDraw.drawNext()
+      }
+      dispatchDraw.end()
 
-    // Everything from mMountItems was drawn at this point. Then ViewGroup took care of drawing
-    // disappearing views, as they still added as children. Thus the only thing left to draw is
-    // disappearing drawables
-    val size = if (disappearingItems == null) 0 else requireDisappearingItems().size
-    for (index in 0 until size) {
-      val content = requireDisappearingItems()[index]?.content
-      if (content is Drawable) {
-        content.draw(canvas)
+      // Everything from mMountItems was drawn at this point. Then ViewGroup took care of drawing
+      // disappearing views, as they still added as children. Thus the only thing left to draw is
+      // disappearing drawables
+      val size = if (disappearingItems == null) 0 else requireDisappearingItems().size
+      for (index in 0 until size) {
+        val content = requireDisappearingItems()[index]?.content
+        if (content is Drawable) {
+          content.draw(canvas)
+        }
       }
     }
     DebugDraw.draw(this, canvas)
