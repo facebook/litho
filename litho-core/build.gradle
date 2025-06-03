@@ -74,6 +74,7 @@ dependencies {
     api project(':litho-rendercore')
     api project(':litho-rendercore-incremental-mount')
     api project(':litho-rendercore-primitives')
+    api project(':litho-rendercore-text')
     api project(':litho-rendercore-transitions')
     api project(':litho-rendercore-visibility')
 
