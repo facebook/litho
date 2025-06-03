@@ -16,11 +16,13 @@
 
 package com.facebook.litho
 
+import android.graphics.Rect
 import android.view.View
 import com.facebook.litho.DebugComponentDescriptionHelper.ExtraDescription
 import com.facebook.litho.LithoRenderUnit.Companion.getRenderUnit
 import com.facebook.litho.annotations.Prop
 import com.facebook.litho.annotations.ResType
+import com.facebook.rendercore.text.RCTextView
 import java.lang.Exception
 import java.lang.StringBuilder
 import java.util.HashSet
@@ -178,6 +180,21 @@ object DebugComponentDescriptionHelper {
                   })
             }
           }
+        } else if (content is RCTextView) {
+          result.add(
+              buildString {
+                append(content::class.java.simpleName)
+                append("{")
+                append(content.hashCode())
+                writeViewFlags(this, debugComponent.layoutNode, lithoView)
+                val rect = Rect()
+                content.getGlobalVisibleRect(rect)
+                append(" ${rect.left},${rect.top}-${rect.right},${rect.bottom}")
+                append(" text=\"")
+                append(content.text)
+                append("\"")
+                append("}")
+              })
         }
       }
     }
