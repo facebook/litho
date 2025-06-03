@@ -32,3 +32,6 @@ object ComponentContextUtils {
         renderUnitIdGenerator = renderUnitIdGenerator)
   }
 }
+
+val ComponentContext.componentsConfig: ComponentsConfiguration
+  get() = lithoConfiguration.componentsConfig
