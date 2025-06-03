@@ -22,6 +22,7 @@ import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.testing.viewtree.ViewPredicates
+import com.facebook.litho.view.onClick
 import com.facebook.litho.widget.LayoutWithSizeSpecWithCachedValue
 import com.facebook.litho.widget.LayoutWithSizeSpecWithCachedValueSpec
 import com.facebook.rendercore.px
@@ -46,14 +47,17 @@ class CachedValueTest {
 
     val repeatNum = AtomicInteger(100)
     class TestComponent : KComponent() {
-      override fun ComponentScope.render(): Component? {
-        val expensiveString =
+      override fun ComponentScope.render(): Component {
+        val count = useState { 0 }
+        val string =
             useCached("count" + repeatNum.get()) {
               initCounter.incrementAndGet()
               expensiveRepeatFunc("count" + repeatNum.get())
+              "increment"
             }
         return Column(style = Style.width(200.px).height(200.px)) {
-          child(Text(text = expensiveString))
+          child(Text(text = string, style = Style.onClick { count.update { i -> i + 1 } }))
+          child(Text(text = "count: ${count.value}"))
           child(
               LayoutWithSizeSpecWithCachedValue.create(context)
                   .number(repeatNum.get())
@@ -63,24 +67,22 @@ class CachedValueTest {
       }
     }
 
-    val testLithoView = mLithoTestRule.render { TestComponent() }
+    val handle = mLithoTestRule.render { TestComponent() }
 
     // Cached value was calculated for main tree
     Assertions.assertThat(initCounter.get()).isEqualTo(1)
     Assertions.assertThat(nestedTreeInitCounter.get()).isEqualTo(1)
 
     // Check cached value updated in nested tree as well
-    mLithoTestRule.act(testLithoView) { ViewPredicates.hasVisibleText("ExpensiveCachedValue: 100") }
+    handle.findViewWithText("ExpensiveCachedValue: 100")
+    handle.findViewWithText("count: 0")
 
-    // Clear root component from ComponentTree.
-    mLithoTestRule.render(testLithoView.lithoView) { EmptyComponent() }
-
-    // Re-set root component with same inputs
-    mLithoTestRule.render(testLithoView.lithoView) { TestComponent() }
+    mLithoTestRule.act(handle) { clickOnText("increment") }
+    handle.findViewWithText("count: 1")
 
     Assertions.assertThat(initCounter.get()).isEqualTo(1)
     Assertions.assertThat(nestedTreeInitCounter.get()).isEqualTo(1)
-    mLithoTestRule.act(testLithoView) { ViewPredicates.hasVisibleText("ExpensiveCachedValue: 100") }
+    mLithoTestRule.act(handle) { ViewPredicates.hasVisibleText("ExpensiveCachedValue: 100") }
   }
 
   @Test

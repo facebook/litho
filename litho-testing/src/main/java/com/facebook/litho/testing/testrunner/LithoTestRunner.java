@@ -79,7 +79,8 @@ public class LithoTestRunner extends RobolectricTestRunner {
     return Arrays.asList(
         EventHandlerRedesignTestConfig.class,
         IncrementalMountConfiguration.class,
-        StateReadTrackingConfiguration.class);
+        StateReadTrackingConfiguration.class,
+        CachedValueFromStateConfiguration.class);
   }
 
   @Override
