@@ -109,6 +109,16 @@ public final class EditorRegistry {
 
       return new EditorString(fallback);
     }
+
+    // this check is needed because the editor is not aware of the field is parsed or not
+    if (f == TransientField.CONTENT_FIELD) {
+      Object value = Reflection.INSTANCE.getValueUNSAFE(f, node);
+      // we can't parse the content of filed return the value as string
+      if (value instanceof Field) {
+        return new EditorString(value.toString());
+      }
+    }
+
     return editor.read(f, node);
   }
 
