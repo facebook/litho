@@ -21,7 +21,61 @@ import com.facebook.litho.state.ComponentState
 import com.facebook.litho.state.StateId
 import com.facebook.litho.state.StateProvider
 import com.facebook.litho.state.StateReadRecorder
+import com.facebook.rendercore.utils.NoDeps
+import com.facebook.rendercore.utils.areObjectsEquivalent
 import java.util.Objects
+
+internal fun <T> ComponentScope.getUpdatedState(
+    vararg deps: Any? = NoDeps,
+    initializer: () -> T
+): T {
+  val key = context.globalKey
+  val index = useStateIndex++
+  val treeState: TreeState = resolveContext.treeState
+  val isLayoutState = context.isNestedTreeContext
+  val existing = treeState.getState(key, isLayoutState) as ComponentState<KStateContainer>?
+  val deps: Array<Any?> = deps as Array<Any?> /* TODO: Can this cast be avoided? */
+
+  val current: ComponentState<KStateContainer> =
+      if (existing == null || existing.value.states.size <= index) {
+        // Create the initial state for index since it hasn't been computed yet
+        treeState
+            .createOrGetInitialHookState(
+                key,
+                index,
+                deps,
+                initializer,
+                isLayoutState,
+                context.scopedComponentInfo.component.simpleName,
+            )
+            .apply {
+              // Put it in the current tree state from the InitialState
+              treeState.addState(key, this, isLayoutState)
+            }
+      } else {
+        existing
+      }
+
+  val updated: ComponentState<KStateContainer> =
+      if (areObjectsEquivalent(current.value.states[index].deps, deps)) {
+        current
+      } else {
+        current.copy(value = current.value.copyAndMutate(index, initializer(), deps)).apply {
+          // Put the updated state in the current tree state
+          treeState.addState(key, this, isLayoutState)
+        }
+      }
+
+  context.scopedComponentInfo.state = updated
+
+  // Only need to mark this global key as seen once
+  if (index == 0) {
+    treeState.markStateInUse(key, isLayoutState)
+  }
+
+  @Suppress("UNCHECKED_CAST")
+  return updated.value.states[index].value as T
+}
 
 /**
  * Declares a state variable within a Component. The initializer will provide the initial value if
@@ -47,6 +101,7 @@ fun <T> ComponentScope.useState(initializer: () -> T): State<T> {
         treeState.createOrGetInitialHookState(
             globalKey,
             hookIndex,
+            NoDeps,
             initializer,
             isNestedTreeContext,
             context.scopedComponentInfo.component.simpleName)
@@ -62,7 +117,7 @@ fun <T> ComponentScope.useState(initializer: () -> T): State<T> {
         isNestedTreeContext,
         context.componentScope,
         lithoTree.isReadTrackingEnabled,
-        state.value.states[hookIndex] as T)
+        state.value.states[hookIndex].value as T)
   } else {
     context.scopedComponentInfo.state = kState
   }
@@ -80,7 +135,7 @@ fun <T> ComponentScope.useState(initializer: () -> T): State<T> {
       isNestedTreeContext,
       context.componentScope,
       lithoTree.isReadTrackingEnabled,
-      kState.value.states[hookIndex] as T)
+      kState.value.states[hookIndex].value as T)
 }
 
 /** Interface with which a component gets the value from a state or updates it. */
@@ -203,7 +258,9 @@ internal constructor(
   inner class HookUpdaterLambda(val newValueFunction: (T) -> T) : HookUpdater {
     override fun getUpdatedStateContainer(currentState: KStateContainer): KStateContainer {
       return currentState.copyAndMutate(
-          hookStateIndex, newValueFunction(currentState.states[hookStateIndex] as T))
+          hookStateIndex,
+          newValueFunction(currentState.states[hookStateIndex].value as T),
+      )
     }
   }
 

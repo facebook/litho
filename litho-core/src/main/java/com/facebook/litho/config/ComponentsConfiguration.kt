@@ -168,6 +168,9 @@ internal constructor(
 
     /** This flag enables child clipping by default */
     @JvmField val enableChildClipping: Boolean = true,
+
+    /** This flag enables the use of Component State for cached values */
+    @JvmField val useStateForCachedValues: Boolean = false,
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =

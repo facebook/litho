@@ -255,8 +255,9 @@ class TreeState {
     if (committedState != null) {
       val committedStateWithUpdatesApplied = stateHandler.getKStateWithUpdates(globalKey)
       if (committedStateWithUpdatesApplied != null) {
-        val committedUpdatedValue: T =
-            committedStateWithUpdatesApplied.states.getOrNull(hookStateIndex) as T
+        val committedUpdatedCachedValue =
+            committedStateWithUpdatesApplied.states.getOrNull(hookStateIndex)
+        val committedUpdatedValue: T = committedUpdatedCachedValue?.value as T
         val newValueAfterUpdate = updater.invoke(committedUpdatedValue)
         return if (committedUpdatedValue == null && newValueAfterUpdate == null) {
           true
@@ -304,6 +305,7 @@ class TreeState {
   fun <T> createOrGetInitialHookState(
       key: String,
       kStateIndex: Int,
+      deps: Array<*>,
       initializer: HookInitializer<T>,
       isNestedTree: Boolean,
       componentName: String
@@ -314,6 +316,7 @@ class TreeState {
         .getOrCreateInitialKState(
             key,
             kStateIndex,
+            deps,
             initializer,
             componentName,
         )

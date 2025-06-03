@@ -118,6 +118,6 @@ internal class StateProviderImpl(
               checkNotNull(source.getState(stateId.globalKey, state.isNestedTreeContext))
         }
     check(componentState.value is KStateContainer)
-    return componentState.value.states[stateId.index] as T
+    return componentState.value.states[stateId.index].value as T
   }
 }

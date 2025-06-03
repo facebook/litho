@@ -19,12 +19,14 @@ package com.facebook.litho.editor;
 import android.graphics.drawable.ColorDrawable;
 import android.util.Pair;
 import com.facebook.infer.annotation.Nullsafe;
+import com.facebook.litho.CachedValue;
 import com.facebook.litho.Style;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.editor.instances.AtomicBooleanEditorInstance;
 import com.facebook.litho.editor.instances.AtomicIntegerEditorInstance;
 import com.facebook.litho.editor.instances.AtomicReferenceEditorInstance;
 import com.facebook.litho.editor.instances.BoolEditorInstance;
+import com.facebook.litho.editor.instances.CachedValueEditorInstance;
 import com.facebook.litho.editor.instances.ColorDrawableEditorInstance;
 import com.facebook.litho.editor.instances.ComparableColorDrawableEditorInstance;
 import com.facebook.litho.editor.instances.GenericEditorInstance;
@@ -225,5 +227,6 @@ public final class EditorRegistry {
 
     registerEditor(ColorDrawable.class, new ColorDrawableEditorInstance());
     registerEditor(ComparableColorDrawable.class, new ComparableColorDrawableEditorInstance());
+    registerEditor(CachedValue.class, new CachedValueEditorInstance());
   }
 }

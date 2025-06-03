@@ -22,7 +22,7 @@ import com.facebook.litho.config.LithoDebugConfigurations
 val KStateContainer.state: List<Any?>
   get() =
       if (LithoDebugConfigurations.isDebugModeEnabled) {
-        states
+        states.map { it.value }
       } else {
         error("State should only be read by debugging utilities.")
       }

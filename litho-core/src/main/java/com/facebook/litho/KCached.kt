@@ -26,15 +26,20 @@ import com.facebook.rendercore.utils.areObjectsEquivalent
  */
 @Hook
 fun <T> ComponentScope.useCached(vararg inputs: Any?, calculator: () -> T): T {
-  val globalKey = context.globalKey
-  val hookIndex = useCachedIndex++
-  val cacheInputs = CachedInputs(inputs)
-  val result =
-      context.getCachedValue(globalKey, hookIndex, cacheInputs)
-          ?: calculator().also { context.putCachedValue(globalKey, hookIndex, cacheInputs, it) }
 
-  @Suppress("UNCHECKED_CAST")
-  return result as T
+  if (context.lithoConfiguration.componentsConfig.useStateForCachedValues) {
+    return getUpdatedState(deps = inputs, initializer = calculator)
+  } else {
+    val globalKey = context.globalKey
+    val hookIndex = useCachedIndex++
+    val cacheInputs = CachedInputs(inputs)
+    val result =
+        context.getCachedValue(globalKey, hookIndex, cacheInputs)
+            ?: calculator().also { context.putCachedValue(globalKey, hookIndex, cacheInputs, it) }
+
+    @Suppress("UNCHECKED_CAST")
+    return result as T
+  }
 }
 
 /**

@@ -115,6 +115,7 @@ class InitialState {
   fun <T> getOrCreateInitialKState(
       key: String,
       hookIndex: Int,
+      deps: Array<*>,
       initializer: HookInitializer<T>,
       componentName: String,
   ): ComponentState<KStateContainer> {
@@ -142,7 +143,7 @@ class InitialState {
       // If the state needed to be initialised it should be guaranteed that it needs to be added at
       // the end of the list. We create a new KStateContainer to guarantee immutability of state
       // containers.
-      val hookStates = KStateContainer.withNewState(initialHookStates, initialState)
+      val hookStates = KStateContainer.withNewState(initialHookStates, initialState, deps)
       check(hookIndex < hookStates.states.size) {
         ("Unexpected useState hook sequence encountered: $hookIndex (states size: ${hookStates.states.size}). This usually indicates that the useState hook is being called from within a conditional, loop, or after an early-exit condition. See https://fblitho.com/docs/mainconcepts/hooks-intro/#rules-for-hooks for more information on the Rules of Hooks.")
       }

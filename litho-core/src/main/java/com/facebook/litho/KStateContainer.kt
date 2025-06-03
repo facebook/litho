@@ -16,6 +16,7 @@
 
 package com.facebook.litho
 
+import com.facebook.rendercore.utils.NoDeps
 import java.lang.UnsupportedOperationException
 import java.util.ArrayList
 import java.util.Collections
@@ -28,23 +29,28 @@ import java.util.Collections
  */
 class KStateContainer : StateContainer {
 
-  val states: List<Any?>
+  val states: List<CachedValue>
 
-  private constructor(kStateContainer: KStateContainer?, state: Any?) {
-    val states: MutableList<Any?>
+  private constructor(kStateContainer: KStateContainer?, value: Any?, deps: Array<*> = NoDeps) {
+    val states: MutableList<CachedValue>
     if (kStateContainer != null) {
       states = ArrayList(kStateContainer.states.size + 1)
       states.addAll(kStateContainer.states)
     } else {
       states = ArrayList()
     }
-    states.add(state)
+    states.add(CachedValue(deps, value))
     this.states = Collections.unmodifiableList(states)
   }
 
-  private constructor(kStateContainer: KStateContainer, index: Int, newValue: Any?) {
+  private constructor(
+      kStateContainer: KStateContainer,
+      index: Int,
+      newValue: Any?,
+      deps: Array<*> = NoDeps,
+  ) {
     val states = ArrayList(kStateContainer.states)
-    states[index] = newValue
+    states[index] = CachedValue(deps, newValue)
     this.states = Collections.unmodifiableList(states)
   }
 
@@ -54,12 +60,23 @@ class KStateContainer : StateContainer {
   }
 
   fun copyAndMutate(index: Int, newValue: Any?): KStateContainer {
-    return KStateContainer(this, index, newValue)
+    return KStateContainer(this, index, newValue, this.states[index].deps)
+  }
+
+  fun copyAndMutate(index: Int, newValue: Any?, deps: Array<*>): KStateContainer {
+    return KStateContainer(this, index, newValue, deps)
   }
 
   companion object {
     @JvmStatic
-    fun withNewState(kStateContainer: KStateContainer?, state: Any?): KStateContainer =
-        KStateContainer(kStateContainer, state)
+    fun withNewState(
+        kStateContainer: KStateContainer?,
+        value: Any?,
+        deps: Array<*> = NoDeps,
+    ): KStateContainer = KStateContainer(kStateContainer, value, deps)
   }
+}
+
+class CachedValue constructor(val deps: Array<*>, val value: Any?) {
+  val depsHashcode: Int = deps.contentHashCode()
 }

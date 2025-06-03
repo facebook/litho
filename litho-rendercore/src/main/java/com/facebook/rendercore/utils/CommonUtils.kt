@@ -16,6 +16,8 @@
 
 package com.facebook.rendercore.utils
 
+val NoDeps = emptyArray<Any?>()
+
 object CommonUtils {
 
   /**
