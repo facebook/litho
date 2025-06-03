@@ -304,12 +304,6 @@ internal constructor(
     /** This flag is to enable usage of Primitive TextInput */
     @JvmField var usePrimitiveTextInput: Boolean = false
 
-    /** This flag is to enable custom Context for TextInput measurement */
-    @JvmField var useCustomContextForTextInputMeasurement: Boolean = false
-
-    /** This flag is to enable making a copy of the text in TextInput component */
-    @JvmField var copyInitialTextInTextInputRender: Boolean = false
-
     /**
      * This flag is used to enable A11Y support for keyboard navigation, which was disabled due to
      * Litho's A11Y sanity check.
