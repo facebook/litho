@@ -16,6 +16,7 @@
 
 package com.facebook.litho
 
+import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.annotations.Hook
 import com.facebook.litho.state.ComponentState
 import com.facebook.litho.state.StateId
@@ -78,54 +79,30 @@ internal fun <T> ComponentScope.getUpdatedState(
 }
 
 /**
- * Declares a state variable within a Component. The initializer will provide the initial value if
- * it hasn't already been initialized in a previous render of the Component.
+ * Declares a state within a Component. The [initializer] will be invoked to provide the initial
+ * value of state. The initializer will be invoked again if the [deps] change when the Component is
+ * rendered again.
  *
- * Assignments to the state variables are allowed only in [updateState] block to batch updates and
- * trigger a UI layout only once per batch.
+ * Note: The component does not re-render if the [initializer] is invoked. The updated value of the
+ * state is visible to currently rendering component.
+ *
+ * The [initializer] must be free from side effects because it can invoked multiple times from any
+ * Thread during the lifecycle of the Component.
+ *
+ * @see [State]
  */
+@ExperimentalLithoApi
 @Hook
-fun <T> ComponentScope.useState(initializer: () -> T): State<T> {
+fun <T> ComponentScope.useStateWithDeps(
+    vararg deps: Any? = NoDeps,
+    initializer: () -> T
+): State<T> {
   val globalKey = context.globalKey
-  val hookIndex = useStateIndex++
-  val treeState: TreeState = resolveContext.treeState
+  val hookIndex = useStateIndex
   val lithoTree = context.lithoTree ?: error("LithoTree is null")
-
   val isNestedTreeContext = context.isNestedTreeContext
-  val kState =
-      treeState.getState(globalKey, isNestedTreeContext) as ComponentState<KStateContainer>?
 
-  if (kState == null || kState.value.states.size <= hookIndex) {
-    // The initial state was not computed yet. let's create it and put it in the state
-    val state =
-        treeState.createOrGetInitialHookState(
-            globalKey,
-            hookIndex,
-            NoDeps,
-            initializer,
-            isNestedTreeContext,
-            context.scopedComponentInfo.component.simpleName)
-    treeState.addState(globalKey, state, isNestedTreeContext)
-
-    context.scopedComponentInfo.state = state
-
-    return State(
-        lithoTree.stateProvider,
-        lithoTree.stateUpdater,
-        hookIndex,
-        globalKey,
-        isNestedTreeContext,
-        context.componentScope,
-        lithoTree.isReadTrackingEnabled,
-        state.value.states[hookIndex].value as T)
-  } else {
-    context.scopedComponentInfo.state = kState
-  }
-
-  // Only need to mark this global key as seen once
-  if (hookIndex == 0) {
-    treeState.markStateInUse(globalKey, isNestedTreeContext)
-  }
+  val result = getUpdatedState(deps = deps, initializer = initializer)
 
   return State(
       lithoTree.stateProvider,
@@ -135,8 +112,20 @@ fun <T> ComponentScope.useState(initializer: () -> T): State<T> {
       isNestedTreeContext,
       context.componentScope,
       lithoTree.isReadTrackingEnabled,
-      kState.value.states[hookIndex].value as T)
+      result,
+  )
 }
+
+/**
+ * Declares a state variable within a Component. The initializer will provide the initial value if
+ * it hasn't already been initialized in a previous render of the Component.
+ *
+ * Assignments to the state variables are allowed only in [updateState] block to batch updates and
+ * trigger a UI layout only once per batch.
+ */
+@Hook
+fun <T> ComponentScope.useState(initializer: () -> T): State<T> =
+    useStateWithDeps(deps = NoDeps, initializer = initializer)
 
 /** Interface with which a component gets the value from a state or updates it. */
 class State<T>
