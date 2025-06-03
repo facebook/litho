@@ -16,15 +16,14 @@
 
 package com.facebook.litho
 
-import android.content.Context
 import android.util.SparseArray
 import androidx.annotation.IdRes
 import com.facebook.rendercore.BindData
 import com.facebook.rendercore.BinderKey
 import com.facebook.rendercore.ContentAllocator
+import com.facebook.rendercore.MountContext
 import com.facebook.rendercore.MountDelegate
 import com.facebook.rendercore.RenderUnit
-import com.facebook.rendercore.Systracer
 import com.facebook.rendercore.primitives.PrimitiveRenderUnit
 
 class PrimitiveLithoRenderUnit
@@ -60,59 +59,54 @@ private constructor(
   }
 
   override fun mountBinders(
-      context: Context,
+      context: MountContext,
       content: Any,
       layoutData: Any?,
-      bindData: BindData,
-      tracer: Systracer
+      bindData: BindData
   ) {
     primitiveRenderUnit.mountBinders(
-        context, content, (layoutData as? LithoLayoutData)?.layoutData, bindData, tracer)
+        context, content, (layoutData as? LithoLayoutData)?.layoutData, bindData)
   }
 
   override fun unmountBinders(
-      context: Context,
+      context: MountContext,
       content: Any,
       layoutData: Any?,
-      bindData: BindData,
-      tracer: Systracer
+      bindData: BindData
   ) {
     primitiveRenderUnit.unmountBinders(
-        context, content, (layoutData as? LithoLayoutData)?.layoutData, bindData, tracer)
+        context, content, (layoutData as? LithoLayoutData)?.layoutData, bindData)
   }
 
   override fun attachBinders(
-      context: Context,
+      context: MountContext,
       content: Any,
       layoutData: Any?,
-      bindData: BindData,
-      tracer: Systracer
+      bindData: BindData
   ) {
     primitiveRenderUnit.attachBinders(
-        context, content, (layoutData as? LithoLayoutData)?.layoutData, bindData, tracer)
+        context, content, (layoutData as? LithoLayoutData)?.layoutData, bindData)
   }
 
   override fun detachBinders(
-      context: Context,
+      context: MountContext,
       content: Any,
       layoutData: Any?,
-      bindData: BindData,
-      tracer: Systracer
+      bindData: BindData
   ) {
     primitiveRenderUnit.detachBinders(
-        context, content, (layoutData as? LithoLayoutData)?.layoutData, bindData, tracer)
+        context, content, (layoutData as? LithoLayoutData)?.layoutData, bindData)
   }
 
   override fun updateBinders(
-      context: Context,
+      context: MountContext,
       content: Any,
       currentRenderUnit: RenderUnit<Any>,
       currentLayoutData: Any?,
       newLayoutData: Any?,
       mountDelegate: MountDelegate?,
       bindData: BindData,
-      isAttached: Boolean,
-      tracer: Systracer,
+      isAttached: Boolean
   ) {
     primitiveRenderUnit.updateBinders(
         context,
@@ -122,8 +116,7 @@ private constructor(
         (newLayoutData as? LithoLayoutData)?.layoutData,
         mountDelegate,
         bindData,
-        isAttached,
-        tracer)
+        isAttached)
   }
 
   override fun <T : Binder<*, *, *>?> findAttachBinderByKey(key: BinderKey): T? {

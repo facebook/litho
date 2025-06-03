@@ -16,7 +16,6 @@
 
 package com.facebook.rendercore
 
-import android.content.Context
 import android.view.View
 import androidx.core.util.Pair
 import com.facebook.rendercore.RenderUnit.DelegateBinder.Companion.createDelegateBinder
@@ -40,9 +39,9 @@ class WrapperRenderUnitTest {
 
   private val bindOrder: MutableList<Any?> = ArrayList()
   private val unbindOrder: MutableList<Any?> = ArrayList()
-  private val context: Context = RuntimeEnvironment.getApplication()
-  private val content = View(context)
-  private val tracer = RenderCoreSystrace.getInstance()
+  private val context: MountContext =
+      MountContext(RuntimeEnvironment.getApplication(), RenderCoreSystrace.getInstance())
+  private val content = View(context.androidContext)
   private val bindData = BindData()
 
   @Before
@@ -60,9 +59,9 @@ class WrapperRenderUnitTest {
     val wrapperRenderUnit = WrapperRenderUnit(originalRenderUnit)
     wrapperRenderUnit.addOptionalMountBinder(
         createDelegateBinder(TestRenderUnit(), wrapperMountBinder))
-    wrapperRenderUnit.mountBinders(context, content, null, bindData, tracer)
+    wrapperRenderUnit.mountBinders(context, content, null, bindData)
     assertThat(bindOrder).containsExactly(originalMountBinder, wrapperMountBinder)
-    wrapperRenderUnit.unmountBinders(context, content, null, bindData, tracer)
+    wrapperRenderUnit.unmountBinders(context, content, null, bindData)
     assertThat(unbindOrder).containsExactly(wrapperMountBinder, originalMountBinder)
   }
 
@@ -77,9 +76,9 @@ class WrapperRenderUnitTest {
     val wrapperAttachBinder = TestBinder2(bindOrder, unbindOrder)
     val wrapperRenderUnit = WrapperRenderUnit(originalRenderUnit)
     wrapperRenderUnit.addAttachBinder(createDelegateBinder(TestRenderUnit(), wrapperAttachBinder))
-    wrapperRenderUnit.attachBinders(context, content, null, bindData, tracer)
+    wrapperRenderUnit.attachBinders(context, content, null, bindData)
     assertThat(bindOrder).containsExactly(originalAttachBinder, wrapperAttachBinder)
-    wrapperRenderUnit.detachBinders(context, content, null, bindData, tracer)
+    wrapperRenderUnit.detachBinders(context, content, null, bindData)
     assertThat(unbindOrder).containsExactly(wrapperAttachBinder, originalAttachBinder)
   }
 
@@ -131,7 +130,7 @@ class WrapperRenderUnitTest {
         createDelegateBinder(TestRenderUnit(), wrapperMountBinder1),
         createDelegateBinder(TestRenderUnit(), wrapperMountBinder2))
     val wrapperBindData = BindData()
-    wrapperRenderUnit.mountBinders(context, content, null, wrapperBindData, tracer)
+    wrapperRenderUnit.mountBinders(context, content, null, wrapperBindData)
 
     // assert fixed binders bind data is correct
     assertThat(wrapperBindData.fixedBindersBindData).hasSize(2)
@@ -164,7 +163,7 @@ class WrapperRenderUnitTest {
         createDelegateBinder(TestRenderUnit(), wrapperAttachBinder1),
         createDelegateBinder(TestRenderUnit(), wrapperAttachBinder2))
     val wrapperBindData = BindData()
-    wrapperRenderUnit.attachBinders(context, content, null, wrapperBindData, tracer)
+    wrapperRenderUnit.attachBinders(context, content, null, wrapperBindData)
 
     // assert no fixed mount binders bind data is present when calling attachBinders
     assertThat(wrapperBindData.fixedBindersBindData).isNull()
@@ -213,7 +212,7 @@ class WrapperRenderUnitTest {
                 Pair(wrapperMountBinder1.type, 7),
                 Pair(wrapperMountBinder2.type, 8)),
             null)
-    wrapperRenderUnit.unmountBinders(context, content, null, bindData, tracer)
+    wrapperRenderUnit.unmountBinders(context, content, null, bindData)
 
     // assert that unbind was called on original RU in correct order and with correct bind data
     assertThat(originalUnbindOrder).hasSize(4)
@@ -256,7 +255,7 @@ class WrapperRenderUnitTest {
                 Pair(originalAttachBinder2.type, 2),
                 Pair(wrapperAttachBinder1.type, 3),
                 Pair(wrapperAttachBinder2.type, 4)))
-    wrapperRenderUnit.detachBinders(context, content, null, bindData, tracer)
+    wrapperRenderUnit.detachBinders(context, content, null, bindData)
 
     // assert that unbind was called on original RU in correct order and with correct bind data
     assertThat(originalUnbindOrder).hasSize(2)
@@ -335,7 +334,7 @@ class WrapperRenderUnitTest {
                 Pair(wrapperAttachBinder1.type, 11),
                 Pair(wrapperAttachBinder2.type, 12)))
     nextWrapperRU.updateBinders(
-        context, content, currentWrapperRU, null, Any(), null, bindData, true, tracer)
+        context, content, currentWrapperRU, null, Any(), null, bindData, true)
 
     // assert that unbind was called on original RU in correct order and with correct bind data
     assertThat(originalUnbindOrder).hasSize(6)

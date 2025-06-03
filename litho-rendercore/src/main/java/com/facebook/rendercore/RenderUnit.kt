@@ -192,14 +192,25 @@ constructor(
     return false
   }
 
-  /** Bind all fixed mountUnmount binder functions. */
-  private fun mountFixedBinders(
-      context: Context,
+  /** Bind all mountUnmount binder functions. */
+  open fun mountBinders(
+      context: MountContext,
       content: MOUNT_CONTENT,
       layoutData: Any?,
-      bindData: BindData,
-      tracer: Systracer
+      bindData: BindData
   ) {
+    mountFixedBinders(context, content, layoutData, bindData)
+    mountOptionalBinders(context, content, layoutData, bindData)
+  }
+
+  /** Bind all fixed mountUnmount binder functions. */
+  private fun mountFixedBinders(
+      context: MountContext,
+      content: MOUNT_CONTENT,
+      layoutData: Any?,
+      bindData: BindData
+  ) {
+    val tracer = context.tracer
     val isTracing = tracer.isTracing()
     val fixedMountBindersSize = fixedMountBinders?.size ?: return
     if (isTracing) {
@@ -231,15 +242,13 @@ constructor(
     }
   }
 
-  /** Bind all mountUnmount binder functions. */
-  open fun mountBinders(
-      context: Context,
+  private fun mountOptionalBinders(
+      context: MountContext,
       content: MOUNT_CONTENT,
       layoutData: Any?,
-      bindData: BindData,
-      tracer: Systracer
+      bindData: BindData
   ) {
-    mountFixedBinders(context, content, layoutData, bindData, tracer)
+    val tracer = context.tracer
     val optionalMountBinders = optionalMountBinders
     val isTracing = tracer.isTracing()
     val optionalMountBindersSize = optionalMountBinders?.size ?: return
@@ -272,50 +281,24 @@ constructor(
     }
   }
 
-  /** Unbind all fixed mountUnmount binder functions. */
-  private fun unmountFixedBinders(
-      context: Context,
-      content: MOUNT_CONTENT,
-      layoutData: Any?,
-      bindData: BindData,
-      tracer: Systracer
-  ) {
-    val isTracing = tracer.isTracing()
-    fixedMountBinders ?: return
-    if (isTracing) {
-      tracer.beginSection(sectionName("$description:unmount-fixed"))
-    }
-    for (i in fixedMountBinders.indices.reversed()) {
-      val binder = fixedMountBinders[i] as DelegateBinder<*, in MOUNT_CONTENT, Any>
-      if (isTracing) {
-        tracer.beginSection(sectionName(binder.description))
-      }
-      try {
-        binder.unbind(context, content, layoutData, bindData.removeFixedBinderBindData(i))
-      } catch (exception: Exception) {
-        throw RenderUnitOperationException(
-            renderUnit = this,
-            message = "Exception while unmounting fixed binder: ${binder.description}",
-            cause = exception)
-      } finally {
-        if (isTracing) {
-          tracer.endSection()
-        }
-      }
-    }
-    if (isTracing) {
-      tracer.endSection()
-    }
-  }
-
   /** Unbind all mountUnmount binder functions. */
   open fun unmountBinders(
-      context: Context,
+      context: MountContext,
       content: MOUNT_CONTENT,
       layoutData: Any?,
-      bindData: BindData,
-      tracer: Systracer
+      bindData: BindData
   ) {
+    unmountOptionalBinders(context, content, layoutData, bindData)
+    unmountFixedBinders(context, content, layoutData, bindData)
+  }
+
+  private fun unmountOptionalBinders(
+      context: MountContext,
+      content: MOUNT_CONTENT,
+      layoutData: Any?,
+      bindData: BindData
+  ) {
+    val tracer = context.tracer
     optionalMountBinders?.let { optionalMountBinders ->
       val isTracing = tracer.isTracing()
       if (isTracing) {
@@ -349,17 +332,52 @@ constructor(
         tracer.endSection()
       }
     }
-    unmountFixedBinders(context, content, layoutData, bindData, tracer)
+  }
+
+  /** Unbind all fixed mountUnmount binder functions. */
+  private fun unmountFixedBinders(
+      context: MountContext,
+      content: MOUNT_CONTENT,
+      layoutData: Any?,
+      bindData: BindData
+  ) {
+    val tracer = context.tracer
+    val isTracing = tracer.isTracing()
+    fixedMountBinders ?: return
+    if (isTracing) {
+      tracer.beginSection(sectionName("$description:unmount-fixed"))
+    }
+    for (i in fixedMountBinders.indices.reversed()) {
+      val binder = fixedMountBinders[i] as DelegateBinder<*, in MOUNT_CONTENT, Any>
+      if (isTracing) {
+        tracer.beginSection(sectionName(binder.description))
+      }
+      try {
+        binder.unbind(context, content, layoutData, bindData.removeFixedBinderBindData(i))
+      } catch (exception: Exception) {
+        throw RenderUnitOperationException(
+            renderUnit = this,
+            message = "Exception while unmounting fixed binder: ${binder.description}",
+            cause = exception)
+      } finally {
+        if (isTracing) {
+          tracer.endSection()
+        }
+      }
+    }
+    if (isTracing) {
+      tracer.endSection()
+    }
   }
 
   /** Bind all attachDetach binder functions. */
   open fun attachBinders(
-      context: Context,
+      context: MountContext,
       content: MOUNT_CONTENT,
       layoutData: Any?,
-      bindData: BindData,
-      tracer: Systracer
+      bindData: BindData
   ) {
+    val tracer = context.tracer
     val attachBinders = attachBinders ?: return
     val isTracing = tracer.isTracing()
     val attachBindersSize = attachBinders.size
@@ -384,12 +402,12 @@ constructor(
 
   /** Unbind all attachDetach binder functions. */
   open fun detachBinders(
-      context: Context,
+      context: MountContext,
       content: MOUNT_CONTENT,
       layoutData: Any?,
-      bindData: BindData,
-      tracer: Systracer
+      bindData: BindData
   ) {
+    val tracer = context.tracer
     val attachBinders = attachBinders ?: return
     val isTracing = tracer.isTracing()
     if (isTracing) {
@@ -416,16 +434,16 @@ constructor(
    * RenderUnit.
    */
   open fun updateBinders(
-      context: Context,
+      context: MountContext,
       content: MOUNT_CONTENT,
       currentRenderUnit: RenderUnit<MOUNT_CONTENT>,
       currentLayoutData: Any?,
       newLayoutData: Any?,
       mountDelegate: MountDelegate?,
       bindData: BindData,
-      isAttached: Boolean,
-      tracer: Systracer
+      isAttached: Boolean
   ) {
+    val tracer = context.tracer
     val isTracing = tracer.isTracing()
     val attachBindersForBind: MutableList<DelegateBinder<*, in MOUNT_CONTENT, *>> =
         ArrayList(sizeOrZero(attachBinders))
@@ -679,8 +697,16 @@ constructor(
       return binder.shouldUpdate(previous.model, model, currentLayoutData, nextLayoutData)
     }
 
+    fun bind(context: MountContext, content: CONTENT, layoutData: Any?): BIND_DATA? {
+      return bind(context.androidContext, content, layoutData)
+    }
+
     fun bind(context: Context, content: CONTENT, layoutData: Any?): BIND_DATA? {
       return binder.bind(context, content, model, layoutData)
+    }
+
+    fun unbind(context: MountContext, content: CONTENT, layoutData: Any?, bindData: BIND_DATA?) {
+      unbind(context.androidContext, content, layoutData, bindData)
     }
 
     fun unbind(context: Context, content: CONTENT, layoutData: Any?, bindData: BIND_DATA?) {

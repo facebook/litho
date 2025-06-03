@@ -16,7 +16,6 @@
 
 package com.facebook.rendercore
 
-import android.content.Context
 import androidx.annotation.IdRes
 
 /**
@@ -44,7 +43,7 @@ constructor(private val renderUnit: RenderUnit<ContentType>, idOverride: Long = 
   override fun addOptionalMountBinder(binder: DelegateBinder<*, in ContentType, *>) {
     if (renderUnit.containsOptionalMountBinder(binder)) {
       throw IllegalArgumentException(
-          "Binder ${binder.description} already exists in the wrapped ${renderUnit.description}")
+          "Binder ${binder.binder.description} already exists in the wrapped ${renderUnit.description}")
     }
     super.addOptionalMountBinder(binder)
   }
@@ -52,7 +51,7 @@ constructor(private val renderUnit: RenderUnit<ContentType>, idOverride: Long = 
   override fun addAttachBinder(binder: DelegateBinder<*, in ContentType, *>) {
     if (renderUnit.containsAttachBinder(binder)) {
       throw IllegalArgumentException(
-          "Binder ${binder.description} already exists in the wrapped ${renderUnit.description}")
+          "Binder ${binder.binder.description} already exists in the wrapped ${renderUnit.description}")
     }
     super.addAttachBinder(binder)
   }
@@ -61,59 +60,54 @@ constructor(private val renderUnit: RenderUnit<ContentType>, idOverride: Long = 
       renderUnit.findAttachBinderByKey(key) ?: super.findAttachBinderByKey(key)
 
   override fun mountBinders(
-      context: Context,
+      context: MountContext,
       content: ContentType,
       layoutData: Any?,
-      bindData: BindData,
-      tracer: Systracer
+      bindData: BindData
   ) {
-    renderUnit.mountBinders(context, content, layoutData, bindData, tracer)
-    super.mountBinders(context, content, layoutData, bindData, tracer)
+    renderUnit.mountBinders(context, content, layoutData, bindData)
+    super.mountBinders(context, content, layoutData, bindData)
   }
 
   override fun unmountBinders(
-      context: Context,
+      context: MountContext,
       content: ContentType,
       layoutData: Any?,
-      bindData: BindData,
-      tracer: Systracer
+      bindData: BindData
   ) {
-    super.unmountBinders(context, content, layoutData, bindData, tracer)
-    renderUnit.unmountBinders(context, content, layoutData, bindData, tracer)
+    super.unmountBinders(context, content, layoutData, bindData)
+    renderUnit.unmountBinders(context, content, layoutData, bindData)
   }
 
   override fun attachBinders(
-      context: Context,
+      context: MountContext,
       content: ContentType,
       layoutData: Any?,
-      bindData: BindData,
-      tracer: Systracer
+      bindData: BindData
   ) {
-    renderUnit.attachBinders(context, content, layoutData, bindData, tracer)
-    super.attachBinders(context, content, layoutData, bindData, tracer)
+    renderUnit.attachBinders(context, content, layoutData, bindData)
+    super.attachBinders(context, content, layoutData, bindData)
   }
 
   override fun detachBinders(
-      context: Context,
+      context: MountContext,
       content: ContentType,
       layoutData: Any?,
-      bindData: BindData,
-      tracer: Systracer
+      bindData: BindData
   ) {
-    super.detachBinders(context, content, layoutData, bindData, tracer)
-    renderUnit.detachBinders(context, content, layoutData, bindData, tracer)
+    super.detachBinders(context, content, layoutData, bindData)
+    renderUnit.detachBinders(context, content, layoutData, bindData)
   }
 
   override fun updateBinders(
-      context: Context,
+      context: MountContext,
       content: ContentType,
       currentRenderUnit: RenderUnit<ContentType>,
       currentLayoutData: Any?,
       newLayoutData: Any?,
       mountDelegate: MountDelegate?,
       bindData: BindData,
-      isAttached: Boolean,
-      tracer: Systracer,
+      isAttached: Boolean
   ) {
     renderUnit.updateBinders(
         context,
@@ -124,7 +118,6 @@ constructor(private val renderUnit: RenderUnit<ContentType>, idOverride: Long = 
         mountDelegate,
         bindData,
         isAttached,
-        tracer,
     )
     super.updateBinders(
         context,
@@ -135,7 +128,6 @@ constructor(private val renderUnit: RenderUnit<ContentType>, idOverride: Long = 
         mountDelegate,
         bindData,
         isAttached,
-        tracer,
     )
   }
 }

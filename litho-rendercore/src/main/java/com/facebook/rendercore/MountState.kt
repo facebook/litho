@@ -16,7 +16,6 @@
 
 package com.facebook.rendercore
 
-import android.content.Context
 import android.util.Pair
 import android.view.View
 import androidx.collection.LongSparseArray
@@ -44,11 +43,12 @@ open class MountState
 @JvmOverloads
 constructor(
     private val _rootHost: Host,
-    private val tracer: Systracer = RenderCoreSystrace.getInstance()
+    private val tracer: Systracer = RenderCoreSystrace.getInstance(),
+    binderObserver: BinderObserver = BinderObserver.Default
 ) : MountDelegateTarget {
 
   protected val idToMountedItemMap: LongSparseArray<MountItem?> = LongSparseArray()
-  private val context: Context = _rootHost.context
+  private val mountContext = MountContext(_rootHost.context, tracer, binderObserver)
   private var isMounting = false
   private var _needsRemount = false
   var renderTree: RenderTree? = null
@@ -569,7 +569,9 @@ constructor(
       if (isTracing) {
         tracer.beginSection("MountItem:acquire-content ${renderUnit.description}")
       }
-      val content = renderUnit.contentAllocator.acquireContent(context, renderTreeNode.poolScope)
+      val content =
+          renderUnit.contentAllocator.acquireContent(
+              mountContext.androidContext, renderTreeNode.poolScope)
       if (isTracing) {
         tracer.endSection()
       }
@@ -721,7 +723,7 @@ constructor(
       if (isTracing) {
         tracer.endSection()
       }
-      item.releaseMountContent(context)
+      item.releaseMountContent(mountContext.androidContext)
     }
     if (isTracing) {
       tracer.endSection()
@@ -777,7 +779,7 @@ constructor(
         mountItem.renderTreeNode.renderUnit as RenderUnit<Any>,
         content,
         mountItem.bindData)
-    mountItem.releaseMountContent(context)
+    mountItem.releaseMountContent(mountContext.androidContext)
   }
 
   fun setRenderTreeUpdateListener(listener: RenderTreeUpdateListener?) {
@@ -821,7 +823,7 @@ constructor(
           checkNotNull(renderTree).renderStateId.toString(),
           attributes)
     }
-    unit.mountBinders(context, content, node.layoutData, bindData, tracer)
+    unit.mountBinders(mountContext, content, node.layoutData, bindData)
     _mountDelegate?.onMountItem(unit, content, node.layoutData, tracer)
     traceIdentifier?.let { DebugEventDispatcher.endTrace(it) }
   }
@@ -833,14 +835,14 @@ constructor(
       bindData: BindData
   ) {
     _mountDelegate?.onUnmountItem(unit, content, node.layoutData, tracer)
-    unit.unmountBinders(context, content, node.layoutData, bindData, tracer)
+    unit.unmountBinders(mountContext, content, node.layoutData, bindData)
   }
 
   protected fun bindRenderUnitToContent(item: MountItem) {
     val renderUnit = item.renderUnit as RenderUnit<Any>
     val content = item.content
     val layoutData = item.renderTreeNode.layoutData
-    renderUnit.attachBinders(context, content, layoutData, item.bindData, tracer)
+    renderUnit.attachBinders(mountContext, content, layoutData, item.bindData)
     _mountDelegate?.onBindItem(renderUnit, content, layoutData, tracer)
     item.isBound = true
   }
@@ -850,7 +852,7 @@ constructor(
     val content = item.content
     val layoutData = item.renderTreeNode.layoutData
     _mountDelegate?.onUnbindItem(renderUnit, content, layoutData, tracer)
-    renderUnit.detachBinders(context, content, layoutData, item.bindData, tracer)
+    renderUnit.detachBinders(mountContext, content, layoutData, item.bindData)
     item.isBound = false
   }
 
@@ -936,15 +938,14 @@ constructor(
       currentMountItem: MountItem,
   ) {
     renderUnit.updateBinders(
-        context,
+        mountContext,
         content,
         currentRenderUnit,
         currentLayoutData,
         newLayoutData,
         _mountDelegate,
         currentMountItem.bindData,
-        currentMountItem.isBound,
-        tracer)
+        currentMountItem.isBound)
   }
 
   private fun maybeEnsureParentIsMounted(node: RenderTreeNode, parent: RenderUnit<*>) {

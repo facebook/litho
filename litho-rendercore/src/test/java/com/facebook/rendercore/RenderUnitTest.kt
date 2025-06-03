@@ -45,9 +45,9 @@ class RenderUnitTest {
 
   private val bindOrder: MutableList<Any?> = ArrayList()
   private val unbindOrder: MutableList<Any?> = ArrayList()
-  private val context: Context = RuntimeEnvironment.getApplication()
-  private val content = View(context)
-  private val tracer = RenderCoreSystrace.getInstance()
+  private val context: MountContext =
+      MountContext(RuntimeEnvironment.getApplication(), RenderCoreSystrace.getInstance())
+  private val content = View(context.androidContext)
   private val bindData = BindData()
 
   @Before
@@ -66,7 +66,7 @@ class RenderUnitTest {
         createDelegateBinder(renderUnit, mountBinder1),
         createDelegateBinder(renderUnit, mountBinder2),
         createDelegateBinder(renderUnit, mountBinder3sameTypeAs1))
-    renderUnit.mountBinders(context, content, null, bindData, tracer)
+    renderUnit.mountBinders(context, content, null, bindData)
     Java6Assertions.assertThat(bindOrder).containsExactly(mountBinder2, mountBinder3sameTypeAs1)
     Java6Assertions.assertThat(unbindOrder).isEmpty()
   }
@@ -84,7 +84,7 @@ class RenderUnitTest {
     renderUnit.addOptionalMountBinders(
         createDelegateBinder(renderUnit, mountBinder1),
         createDelegateBinder(renderUnit, mountBinder2))
-    renderUnit.mountBinders(context, content, null, bindData, tracer)
+    renderUnit.mountBinders(context, content, null, bindData)
     Java6Assertions.assertThat(bindOrder).containsExactly(mountBinder1, mountBinder2)
     Java6Assertions.assertThat(unbindOrder).isEmpty()
   }
@@ -102,7 +102,7 @@ class RenderUnitTest {
     renderUnit.addOptionalMountBinders(
         createDelegateBinder(renderUnit, mountBinder1),
         createDelegateBinder(renderUnit, mountBinder2))
-    renderUnit.unmountBinders(context, content, null, bindData, tracer)
+    renderUnit.unmountBinders(context, content, null, bindData)
     Java6Assertions.assertThat(bindOrder).isEmpty()
     Java6Assertions.assertThat(unbindOrder).containsExactly(mountBinder2, mountBinder1)
   }
@@ -120,7 +120,7 @@ class RenderUnitTest {
     renderUnit.addOptionalMountBinders(
         createDelegateBinder(renderUnit, mountBinder1),
         createDelegateBinder(renderUnit, mountBinder2))
-    renderUnit.attachBinders(context, content, null, bindData, tracer)
+    renderUnit.attachBinders(context, content, null, bindData)
     Java6Assertions.assertThat(bindOrder).containsExactly(attachBinder1, attachBinder2)
     Java6Assertions.assertThat(unbindOrder).isEmpty()
   }
@@ -138,7 +138,7 @@ class RenderUnitTest {
     renderUnit.addOptionalMountBinders(
         createDelegateBinder(renderUnit, mountBinder1),
         createDelegateBinder(renderUnit, mountBinder2))
-    renderUnit.detachBinders(context, content, null, bindData, tracer)
+    renderUnit.detachBinders(context, content, null, bindData)
     Java6Assertions.assertThat(bindOrder).isEmpty()
     Java6Assertions.assertThat(unbindOrder).containsExactly(attachBinder2, attachBinder1)
   }
@@ -154,7 +154,7 @@ class RenderUnitTest {
                 createDelegateBinder(TestRenderUnit(), fixedMountBinder1),
                 createDelegateBinder(TestRenderUnit(), fixedMountBinder2),
                 createDelegateBinder(TestRenderUnit(), fixedMountBinder3sameTypeAs1)))
-    renderUnit.mountBinders(context, content, null, bindData, tracer)
+    renderUnit.mountBinders(context, content, null, bindData)
     Java6Assertions.assertThat(bindOrder)
         .containsExactly(fixedMountBinder1, fixedMountBinder2, fixedMountBinder3sameTypeAs1)
     Java6Assertions.assertThat(unbindOrder).isEmpty()
@@ -173,8 +173,8 @@ class RenderUnitTest {
                 createDelegateBinder(TestRenderUnit(), fixedMountBinder2)))
     renderUnit.addOptionalMountBinder(createDelegateBinder(renderUnit, mountBinder1))
     renderUnit.addOptionalMountBinder(createDelegateBinder(renderUnit, mountBinder2))
-    renderUnit.mountBinders(context, content, null, bindData, tracer)
-    renderUnit.unmountBinders(context, content, null, bindData, tracer)
+    renderUnit.mountBinders(context, content, null, bindData)
+    renderUnit.unmountBinders(context, content, null, bindData)
     Java6Assertions.assertThat(bindOrder)
         .containsExactly(fixedMountBinder1, fixedMountBinder2, mountBinder1, mountBinder2)
     Java6Assertions.assertThat(unbindOrder)
@@ -192,7 +192,7 @@ class RenderUnitTest {
     }
     val currentRU = TestRenderUnit(fixedMountBinders)
     val nextRU = TestRenderUnit(fixedMountBinders)
-    nextRU.updateBinders(context, content, currentRU, null, Any(), null, bindData, true, tracer)
+    nextRU.updateBinders(context, content, currentRU, null, Any(), null, bindData, true)
     Java6Assertions.assertThat(bindOrder).containsExactlyElementsOf(binders)
     Java6Assertions.assertThat(unbindOrder).containsExactlyElementsOf(binders.reversed())
   }
@@ -223,7 +223,7 @@ class RenderUnitTest {
     nextRU.addOptionalMountBinders(createDelegateBinder(nextRU, mountBinder2))
     nextRU.addAttachBinder(createDelegateBinder(nextRU, attachBinder1))
     nextRU.addAttachBinder(createDelegateBinder(nextRU, attachBinder2))
-    nextRU.updateBinders(context, content, currentRU, null, Any(), null, bindData, true, tracer)
+    nextRU.updateBinders(context, content, currentRU, null, Any(), null, bindData, true)
     Java6Assertions.assertThat(unbindOrder)
         .containsExactly(
             attachBinder2,
@@ -255,8 +255,7 @@ class RenderUnitTest {
 
     val throwable =
         Java6Assertions.catchThrowable {
-          nextRU.updateBinders(
-              context, content, currentRU, null, Any(), null, bindData, true, tracer)
+          nextRU.updateBinders(context, content, currentRU, null, Any(), null, bindData, true)
         }
     Java6Assertions.assertThat(throwable.message)
         .isEqualTo("[TestRenderUnit] Exception resolving fixed mount binders to update")
@@ -269,8 +268,7 @@ class RenderUnitTest {
     val nextRU = TestRenderUnit()
     val throwable =
         Java6Assertions.catchThrowable {
-          nextRU.updateBinders(
-              context, content, currentRU, null, Any(), null, bindData, true, tracer)
+          nextRU.updateBinders(context, content, currentRU, null, Any(), null, bindData, true)
         }
     Java6Assertions.assertThat(throwable.message)
         .isEqualTo("[TestRenderUnit] Exception resolving fixed mount binders to update")
@@ -284,7 +282,7 @@ class RenderUnitTest {
     val currentRU =
         TestRenderUnit(listOf(createDelegateBinder(drawable1, fixedDrawableMountBinder)))
     val nextRU = TestRenderUnit(listOf(createDelegateBinder(drawable2, fixedDrawableMountBinder)))
-    nextRU.updateBinders(context, content, currentRU, null, Any(), null, bindData, true, tracer)
+    nextRU.updateBinders(context, content, currentRU, null, Any(), null, bindData, true)
     Java6Assertions.assertThat(bindOrder).containsExactly(fixedDrawableMountBinder)
     Java6Assertions.assertThat(unbindOrder).containsExactly(fixedDrawableMountBinder)
   }
@@ -315,7 +313,7 @@ class RenderUnitTest {
     val mountBinder = TestBinder1(bindOrder, unbindOrder)
     currentRU.addOptionalMountBinder(createDelegateBinder(currentRU, mountBinder))
     nextRU.addAttachBinder(createDelegateBinder(nextRU, attachBinder))
-    nextRU.updateBinders(context, content, currentRU, null, Any(), null, bindData, true, tracer)
+    nextRU.updateBinders(context, content, currentRU, null, Any(), null, bindData, true)
     Java6Assertions.assertThat(unbindOrder).containsExactly(mountBinder)
     Java6Assertions.assertThat(bindOrder).containsExactly(attachBinder)
   }
@@ -329,7 +327,7 @@ class RenderUnitTest {
     nextRU.addAttachBinder(createDelegateBinder(nextRU, attachBinder))
 
     // Pass false to isAttached, indicating currentRU is already unbound
-    nextRU.updateBinders(context, content, currentRU, null, Any(), null, bindData, false, tracer)
+    nextRU.updateBinders(context, content, currentRU, null, Any(), null, bindData, false)
 
     // unbind should not happen, so unbind-order should be empty.
     Java6Assertions.assertThat(unbindOrder).isEmpty()
@@ -353,7 +351,7 @@ class RenderUnitTest {
     currentRU.addOptionalMountBinders(createDelegateBinder(currentRU, currentMountBinder1))
     nextRU.addAttachBinders(createDelegateBinder(nextRU, nextAttachBinder2))
     nextRU.addOptionalMountBinders(createDelegateBinder(nextRU, nextMountBinder2))
-    nextRU.updateBinders(context, content, currentRU, null, Any(), null, bindData, true, tracer)
+    nextRU.updateBinders(context, content, currentRU, null, Any(), null, bindData, true)
     Java6Assertions.assertThat(unbindOrder)
         .containsExactly(currentAttachBinder2, currentAttachBinder1, currentMountBinder1)
     Java6Assertions.assertThat(bindOrder).containsExactly(nextMountBinder2, nextAttachBinder2)
@@ -374,7 +372,7 @@ class RenderUnitTest {
     currentRU.addOptionalMountBinders(createDelegateBinder(currentRU, currentMountBinder1))
     nextRU.addAttachBinders(createDelegateBinder(nextRU, nextAttachBinder2))
     nextRU.addOptionalMountBinders(createDelegateBinder(nextRU, nextMountBinder2))
-    nextRU.updateBinders(context, content, currentRU, null, null, null, bindData, true, tracer)
+    nextRU.updateBinders(context, content, currentRU, null, null, null, bindData, true)
     Java6Assertions.assertThat(unbindOrder)
         .containsExactly(currentAttachBinder1, currentMountBinder1)
     Java6Assertions.assertThat(bindOrder).containsExactly(nextMountBinder2)
@@ -389,7 +387,7 @@ class RenderUnitTest {
     val drawable2 = GradientDrawable()
     currentRU.addOptionalMountBinders(createDelegateBinder(drawable1, drawableMountBinder))
     nextRU.addOptionalMountBinders(createDelegateBinder(drawable2, drawableMountBinder))
-    nextRU.updateBinders(context, content, currentRU, null, Any(), null, bindData, true, tracer)
+    nextRU.updateBinders(context, content, currentRU, null, Any(), null, bindData, true)
     Java6Assertions.assertThat(bindOrder).containsExactly(drawableMountBinder)
     Java6Assertions.assertThat(unbindOrder).containsExactly(drawableMountBinder)
   }
@@ -409,7 +407,7 @@ class RenderUnitTest {
         createDelegateBinder(renderUnit, mountBinder1),
         createDelegateBinder(renderUnit, mountBinder2))
     val bindData = createBindData(null, null, null)
-    renderUnit.mountBinders(context, content, null, bindData, tracer)
+    renderUnit.mountBinders(context, content, null, bindData)
 
     // assert fixed binders bind data is correct
     Java6Assertions.assertThat(bindData.fixedBindersBindData).containsExactly(1, 2)
@@ -434,7 +432,7 @@ class RenderUnitTest {
         createDelegateBinder(renderUnit, attachBinder1),
         createDelegateBinder(renderUnit, attachBinder2))
     val bindData = createBindData(null, null, null)
-    renderUnit.attachBinders(context, content, null, bindData, tracer)
+    renderUnit.attachBinders(context, content, null, bindData)
 
     // assert no fixed binders bind data is present when calling attachBinders
     Java6Assertions.assertThat(bindData.fixedBindersBindData).isNull()
@@ -470,7 +468,7 @@ class RenderUnitTest {
             mutableListOf<Any>(1, 2),
             listOf(Pair(mountBinder1.type, 3), Pair(mountBinder2.type, 4)),
             null)
-    renderUnit.unmountBinders(context, content, null, bindData, tracer)
+    renderUnit.unmountBinders(context, content, null, bindData)
 
     // assert that unbind was called in correct order and correct bind data was passed
     Java6Assertions.assertThat(unbindOrder).hasSize(4)
@@ -494,7 +492,7 @@ class RenderUnitTest {
     val bindData =
         createBindData(
             null, null, Arrays.asList(Pair(attachBinder1.type, 1), Pair(attachBinder2.type, 2)))
-    renderUnit.detachBinders(context, content, null, bindData, tracer)
+    renderUnit.detachBinders(context, content, null, bindData)
 
     // assert that unbind was called in correct order and correct bind data was passed
     Java6Assertions.assertThat(unbindOrder).hasSize(2)
@@ -536,7 +534,7 @@ class RenderUnitTest {
             mutableListOf<Any>(1, 2),
             Arrays.asList(Pair(mountBinder1.type, 3), Pair(mountBinder2.type, 4)),
             Arrays.asList(Pair(attachBinder1.type, 5), Pair(attachBinder2.type, 6)))
-    nextRU.updateBinders(context, content, currentRU, null, Any(), null, bindData, true, tracer)
+    nextRU.updateBinders(context, content, currentRU, null, Any(), null, bindData, true)
 
     // assert that unbind was called in correct order and correct bind data was passed
     Java6Assertions.assertThat(unbindOrder).hasSize(6)
@@ -597,7 +595,7 @@ class RenderUnitTest {
             mutableListOf<Any>(1, 2),
             Arrays.asList(Pair(mountBinder1.type, 3), Pair(mountBinder2.type, 4)),
             Arrays.asList(Pair(attachBinder1.type, 5), Pair(attachBinder2.type, 6)))
-    nextRU.updateBinders(context, content, currentRU, null, Any(), null, bindData, true, tracer)
+    nextRU.updateBinders(context, content, currentRU, null, Any(), null, bindData, true)
 
     // assert that unbind was called in correct order and correct bind data was passed
     Java6Assertions.assertThat(unbindOrder).hasSize(6)
@@ -698,7 +696,7 @@ class RenderUnitTest {
         createBindData(null, listOf(Pair(mountBinder1.type, 1), Pair(mountBinder2.type, 2)), null)
 
     // Call update -  only first binder should update
-    nextRU.updateBinders(context, content, currentRU, null, Any(), null, bindData, true, tracer)
+    nextRU.updateBinders(context, content, currentRU, null, Any(), null, bindData, true)
 
     // assert that unbind was called in correct order and correct bind data was passed
     Java6Assertions.assertThat(unbindOrder).hasSize(1)
@@ -721,7 +719,7 @@ class RenderUnitTest {
     unbindOrder.clear()
     binderShouldUpdate[0] = false
     binderShouldUpdate[1] = true
-    nextRU.updateBinders(context, content, currentRU, null, Any(), null, bindData, true, tracer)
+    nextRU.updateBinders(context, content, currentRU, null, Any(), null, bindData, true)
 
     // assert that unbind was called in correct order and correct bind data was passed
     Java6Assertions.assertThat(unbindOrder).hasSize(1)
@@ -744,7 +742,7 @@ class RenderUnitTest {
     unbindOrder.clear()
     binderShouldUpdate[0] = true
     binderShouldUpdate[1] = true
-    nextRU.updateBinders(context, content, currentRU, null, Any(), null, bindData, true, tracer)
+    nextRU.updateBinders(context, content, currentRU, null, Any(), null, bindData, true)
 
     // assert that unbind was called in correct order and correct bind data was passed
     Java6Assertions.assertThat(unbindOrder).hasSize(2)
@@ -789,7 +787,7 @@ class RenderUnitTest {
 
     val throwable =
         Java6Assertions.catchThrowable {
-          testRenderUnit.mountBinders(context, content, null, bindData, tracer)
+          testRenderUnit.mountBinders(context, content, null, bindData)
         }
     Java6Assertions.assertThat(throwable.message)
         .isEqualTo("[TestRenderUnit] Exception binding fixed mount binder: my-crashing-binder")
