@@ -37,6 +37,38 @@ class KCachedTest {
   @JvmField @Rule val lithoViewRule = LithoTestRule()
 
   @Test
+  fun `when component is removed then cached value should be cleared`() {
+    val initCounter = AtomicInteger(0)
+    class TestComponent : KComponent() {
+      override fun ComponentScope.render(): Component {
+        val expensiveString =
+            useCached("hello") {
+              initCounter.incrementAndGet()
+              expensiveRepeatFunc("hello")
+            }
+        val count = useState { 0 }
+        return Column {
+          child(Text(text = expensiveString))
+          child(Text("increment", style = Style.onClick { count.update { it + 1 } }))
+          child(Text("count: ${count.value}"))
+        }
+      }
+    }
+
+    val handle = lithoViewRule.render { TestComponent() }
+    assertThat(initCounter.get()).isEqualTo(1)
+
+    lithoViewRule.render(lithoView = handle.lithoView) { EmptyComponent() }
+    lithoViewRule.render(lithoView = handle.lithoView) { TestComponent() }
+
+    if (lithoViewRule.context.componentsConfig.useStateForCachedValues) {
+      assertThat(initCounter.get()).isEqualTo(2)
+    } else {
+      assertThat(initCounter.get()).isEqualTo(1)
+    }
+  }
+
+  @Test
   fun cachedValueIsCalculatedOnlyOnceWhenOneInputStayTheSame() {
     val initCounter = AtomicInteger(0)
     class TestComponent : KComponent() {
