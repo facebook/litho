@@ -2,6 +2,8 @@
 
 package com.facebook.rendercore
 
+import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
+
 /**
  * Unique key for a [RenderUnit.Binder]. This must implement [Object.equals] and [Object.hashCode]
  * to ensure that it can be differentiated from other [BinderKey]s
@@ -13,8 +15,8 @@ interface BinderKey {
 }
 
 /** Default [BinderKey] backed by the class of the [RenderUnit.Binder] */
-class ClassBinderKey(private val clazz: Class<*>) : BinderKey {
-  override fun equals(other: Any?): Boolean = other is ClassBinderKey && other.clazz == clazz
+@DataClassGenerate data class ClassBinderKey(private val clazz: Class<*>) : BinderKey
 
-  override fun hashCode(): Int = clazz.hashCode()
-}
+@DataClassGenerate
+/** [BinderKey] backed by an index typically used by fixed [RenderUnit.Binder]s */
+internal data class IndexedBinderKey(private val index: Int) : BinderKey

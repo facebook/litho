@@ -779,17 +779,19 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
 
     fun delegateHostViewMountBinder(binder: DelegateBinder<Any, Any, Any>) {
       typeToHostViewMountBinders =
-          (typeToHostViewMountBinders ?: LinkedHashMap()).apply { this[binder.type] = binder }
+          (typeToHostViewMountBinders ?: LinkedHashMap()).apply {
+            this[binder.binder.type] = binder
+          }
     }
 
     fun delegateMountViewBinder(binder: DelegateBinder<Any, Any, Any>) {
       typeToViewBinders =
-          (typeToViewBinders ?: LinkedHashMap()).apply { this[binder.type] = binder }
+          (typeToViewBinders ?: LinkedHashMap()).apply { this[binder.binder.type] = binder }
     }
 
     fun mountBinder(binder: DelegateBinder<Any, Any, Any>) {
       typeToMountBinders =
-          (typeToMountBinders ?: LinkedHashMap()).apply { this[binder.type] = binder }
+          (typeToMountBinders ?: LinkedHashMap()).apply { this[binder.binder.type] = binder }
     }
 
     fun importantForAccessibility(importantForAccessibility: Int) {

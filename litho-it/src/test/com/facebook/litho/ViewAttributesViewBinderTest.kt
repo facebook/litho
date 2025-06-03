@@ -42,10 +42,8 @@ class ViewAttributesViewBinderTest {
             cloneStateListAnimators = false,
             isEventHandlerRedesignEnabled = true)
 
-    val binder = ViewAttributesViewBinder.create(model)
-
     val view = ComponentHost(context, null)
-    binder.bind(context, view, null)
+    ViewAttributesViewBinder.bind(context, view, model, null)
     Assertions.assertThat(view.contentDescription).isEqualTo("my-content-description")
   }
 
@@ -62,41 +60,40 @@ class ViewAttributesViewBinderTest {
             cloneStateListAnimators = false,
             isEventHandlerRedesignEnabled = true)
 
-    val binder = ViewAttributesViewBinder.create(model)
-
     val view = ComponentHost(context, null)
-    val bindData = binder.bind(context, view, null)
+    val bindData = ViewAttributesViewBinder.bind(context, view, model, null)
     Assertions.assertThat(view.contentDescription).isEqualTo("my-content-description")
 
-    binder.unbind(context, view, null, bindData)
+    ViewAttributesViewBinder.unbind(context, view, model, null, bindData)
     Assertions.assertThat(view.contentDescription).isNull()
   }
 
   @Test
   fun `should update if view attributes are different`() {
-    val firstBinder =
-        ViewAttributesViewBinder.create(
-            ViewAttributesViewBinder.Model(
-                renderUnit = DummyRenderUnit(id = 1L),
-                viewAttributes =
-                    ViewAttributes().apply { contentDescription = "my-content-description" },
-                isRootHost = false,
-                cloneStateListAnimators = false,
-                isEventHandlerRedesignEnabled = true))
+    val firstModel =
+        ViewAttributesViewBinder.Model(
+            renderUnit = DummyRenderUnit(id = 1L),
+            viewAttributes =
+                ViewAttributes().apply { contentDescription = "my-content-description" },
+            isRootHost = false,
+            cloneStateListAnimators = false,
+            isEventHandlerRedesignEnabled = true)
 
-    Assertions.assertThat(firstBinder.shouldUpdate(firstBinder, null, null)).isFalse()
+    Assertions.assertThat(ViewAttributesViewBinder.shouldUpdate(firstModel, firstModel, null, null))
+        .isFalse()
 
-    val secondBinder =
-        ViewAttributesViewBinder.create(
-            ViewAttributesViewBinder.Model(
-                renderUnit = DummyRenderUnit(id = 1L),
-                viewAttributes =
-                    ViewAttributes().apply { contentDescription = "my-different-description" },
-                isRootHost = false,
-                cloneStateListAnimators = false,
-                isEventHandlerRedesignEnabled = true))
+    val secondModel =
+        ViewAttributesViewBinder.Model(
+            renderUnit = DummyRenderUnit(id = 1L),
+            viewAttributes =
+                ViewAttributes().apply { contentDescription = "my-different-description" },
+            isRootHost = false,
+            cloneStateListAnimators = false,
+            isEventHandlerRedesignEnabled = true)
 
-    Assertions.assertThat(secondBinder.shouldUpdate(previous = firstBinder, null, null)).isTrue()
+    Assertions.assertThat(
+            ViewAttributesViewBinder.shouldUpdate(firstModel, secondModel, null, null))
+        .isTrue()
   }
 
   private class DummyRenderUnit(override val id: Long) :
