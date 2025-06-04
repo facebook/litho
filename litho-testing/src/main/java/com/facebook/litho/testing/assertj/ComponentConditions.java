@@ -23,9 +23,11 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.testing.subcomponents.InspectableComponent;
 import kotlin.jvm.JvmClassMappingKt;
 import kotlin.reflect.KClass;
+import kotlin.reflect.KProperty1;
 import org.assertj.core.api.Condition;
 import org.assertj.core.description.TextDescription;
 import org.hamcrest.Matcher;
+import org.hamcrest.core.IsEqual;
 
 /**
  * Various helpers to match against {@link InspectableComponent}s. This is to be used with {@link
@@ -102,6 +104,37 @@ public final class ComponentConditions {
         Class componentClass = value.getClass();
         return componentClass != null
             && componentClass.equals(JvmClassMappingKt.getJavaClass(clazz));
+      }
+    };
+  }
+
+  /**
+   * Matcher that succeeds if the class of an {@link Component} has a property with the given value.
+   *
+   * <p><em>This will throw an exception if used on a component other then the one the property is
+   * defined on. So its best to chain this with {@link #inspectedTypeIs}.</em>
+   *
+   * <h2>Example Use</h2>
+   *
+   * <pre><code>
+   * assertThat(c, mComponent)
+   *   .has(
+   *     deepSubComponentWith(
+   *       c,
+   *       allOf(
+   *          inspectedTypeIs(Favicon.class),
+   *          hasProp(Favicon::uri, FAVICON_URI))));
+   * </code></pre>
+   */
+  public static <TComponent, TValue> Condition<InspectableComponent> hasProps(
+      KProperty1<TComponent, TValue> property, TValue expectedValue) {
+    return new Condition<InspectableComponent>(
+        new TextDescription("Component with prop %s = %s", property.getName(), expectedValue)) {
+
+      @Override
+      public boolean matches(InspectableComponent value) {
+        final TValue propValue = property.get((TComponent) value.getComponent());
+        return IsEqual.equalTo(propValue).matches(expectedValue);
       }
     };
   }
