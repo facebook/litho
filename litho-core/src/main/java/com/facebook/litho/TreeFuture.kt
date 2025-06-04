@@ -273,6 +273,7 @@ abstract class TreeFuture<T : PotentiallyPartialResult>(
     val notRunningOnMyThread = runningThreadId != myTid
     val originalThreadPriority: Int
     val didRaiseThreadPriority: Boolean
+    val raisedThreadPriority: Int
     val shouldWaitForResult = !futureTask.isDone && notRunningOnMyThread
     if (shouldWaitForResult && !isMainThread && !isFromSyncLayout(source)) {
       return TreeFutureResult.interruptWithMessage(
@@ -296,10 +297,13 @@ abstract class TreeFuture<T : PotentiallyPartialResult>(
             Process.THREAD_PRIORITY_DISPLAY
           }
 
-      originalThreadPriority = tryRaiseThreadPriority(runningThreadId, desiredPriority)
+      val threadPriorityPair = tryRaiseThreadPriority(runningThreadId, desiredPriority)
+      originalThreadPriority = threadPriorityPair.first
+      raisedThreadPriority = threadPriorityPair.second
       didRaiseThreadPriority = true
     } else {
       originalThreadPriority = Process.THREAD_PRIORITY_DEFAULT
+      raisedThreadPriority = Process.THREAD_PRIORITY_DEFAULT
       didRaiseThreadPriority = false
     }
     var treeFutureResult: TreeFutureResult<T>
@@ -333,6 +337,16 @@ abstract class TreeFuture<T : PotentiallyPartialResult>(
       }
       onWaitEnd(shouldTrace, false)
       if (didRaiseThreadPriority) {
+        // Log the scenario where the running thread's priority was raised, but between running the
+        // thread and resetting the priority, the running thread's priority was changed again.
+        val currentThreadPriority = Process.getThreadPriority(runningThreadId)
+        if (currentThreadPriority != raisedThreadPriority) {
+          ComponentsConfiguration.softErrorHandler?.handleSoftError(
+              "Thread priority modified before resetting: expected $raisedThreadPriority but was $currentThreadPriority",
+              "TreeFuture",
+              null)
+        }
+
         // Reset the running thread's priority after we're unblocked.
         try {
           Process.setThreadPriority(runningThreadId, originalThreadPriority)

@@ -85,10 +85,11 @@ object ThreadUtils {
   /**
    * Try to raise the priority of {@param threadId} to {@param targetThreadPriority}.
    *
-   * @return the original thread priority of the target thread.
+   * @return a Pair containing the original thread priority and the final thread priority that was
+   *   set.
    */
   @JvmStatic
-  fun tryRaiseThreadPriority(threadId: Int, targetThreadPriority: Int): Int {
+  fun tryRaiseThreadPriority(threadId: Int, targetThreadPriority: Int): Pair<Int, Int> {
     // Main thread is about to be blocked, raise the running thread priority.
     var threadPriority = targetThreadPriority
     val originalThreadPriority = Process.getThreadPriority(threadId)
@@ -107,7 +108,7 @@ object ThreadUtils {
         threadPriority += Process.THREAD_PRIORITY_LESS_FAVORABLE
       }
     }
-    return originalThreadPriority
+    return Pair(originalThreadPriority, threadPriority)
   }
 
   @IntDef(OVERRIDE_DISABLED, OVERRIDE_MAIN_THREAD_FALSE, OVERRIDE_MAIN_THREAD_TRUE)
