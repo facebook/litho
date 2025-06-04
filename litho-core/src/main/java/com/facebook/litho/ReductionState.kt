@@ -43,7 +43,7 @@ internal data class ReductionState(
     val currentLayoutState: LayoutState?,
     val rootX: Int,
     val rootY: Int,
-    val root: LayoutResult? = null,
+    val rootLayoutResult: LayoutResult? = null,
     val id: Int = LayoutState.idGenerator.getAndIncrement(),
     val previousLayoutStateId: Int =
         currentLayoutState?.id ?: LayoutState.NO_PREVIOUS_LAYOUT_STATE_ID,
@@ -67,7 +67,6 @@ internal data class ReductionState(
     val dynamicValueOutputs: MutableMap<Long, DynamicValueOutput> = LinkedHashMap(8),
     val animatableItems: LongSparseArray<AnimatableItem> = LongSparseArray(8),
     val outputsIdToPositionMap: LongSparseArray<Int> = LongSparseArray(8),
-    var layoutResult: LayoutResult? = root,
     var width: Int = 0,
     var height: Int = 0,
     var rootNode: LithoNode? = null,

@@ -184,7 +184,7 @@ internal constructor(
   private var componentScopes: List<ScopedComponentInfo>? = reductionState.componentScopes
 
   // needed to be var as a previously evaluated reference is set(restored) in LithoViewTestHelper
-  var rootLayoutResult: LayoutResult? = reductionState.layoutResult
+  var rootLayoutResult: LayoutResult? = reductionState.rootLayoutResult
     internal set
 
   // needed to be var as it's being updated in setInitialRootBoundsForAnimation

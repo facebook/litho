@@ -157,7 +157,7 @@ class LayoutTreeFuture(
                   componentContext = c,
                   sizeConstraints = sizeConstraints,
                   currentLayoutState = currentLayoutState,
-                  root = root,
+                  rootLayoutResult = root,
                   rootX = lsc.rootOffset.x,
                   rootY = lsc.rootOffset.y,
                   attachables = resolveResult.outputs?.let { ArrayList(it.attachables) },

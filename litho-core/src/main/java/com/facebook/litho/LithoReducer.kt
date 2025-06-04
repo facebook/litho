@@ -20,7 +20,6 @@ import android.graphics.Rect
 import androidx.collection.LongSparseArray
 import androidx.collection.mutableScatterSetOf
 import androidx.core.view.ViewCompat
-import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.rendercore.ClassBinderKey
 import com.facebook.rendercore.LayoutCache
@@ -81,7 +80,7 @@ internal object LithoReducer {
     val isTracing: Boolean = ComponentsSystrace.isTracing
     val widthSpec: Int = reductionState.widthSpec
     val heightSpec: Int = reductionState.heightSpec
-    val root: LayoutResult? = reductionState.layoutResult
+    val root: LayoutResult? = reductionState.rootLayoutResult
     val rootWidth: Int = root?.width ?: 0
     val rootHeight: Int = root?.height ?: 0
 
@@ -141,25 +140,6 @@ internal object LithoReducer {
 
     if (isTracing) {
       ComponentsSystrace.endSection()
-    }
-
-    val nodeForSaving: LithoNode? = reductionState.rootNode
-    val layoutResultForSaving: LayoutResult? = reductionState.layoutResult
-
-    // clean it up for sanity
-    reductionState.rootNode = null
-    reductionState.layoutResult = null
-
-    // enabled for debugging and end to end tests
-    if (ComponentsConfiguration.isDebugModeEnabled || ComponentsConfiguration.isEndToEndTestRun) {
-      reductionState.rootNode = nodeForSaving
-      reductionState.layoutResult = layoutResultForSaving
-      return
-    }
-
-    // override used by analytics teams
-    if (ComponentsConfiguration.keepLayoutResults) {
-      reductionState.layoutResult = layoutResultForSaving
     }
   }
 
@@ -780,7 +760,7 @@ internal object LithoReducer {
   }
 
   private fun isLayoutRoot(reductionState: ReductionState, result: LithoLayoutResult): Boolean {
-    val layoutResult = reductionState.layoutResult
+    val layoutResult = reductionState.rootLayoutResult
     return if (layoutResult is NestedTreeHolderResult) {
       result == layoutResult.nestedResult
     } else {

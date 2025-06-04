@@ -252,9 +252,6 @@ internal constructor(
      */
     @JvmField var computeRangeOnSyncLayout: Boolean = false
 
-    /** Keeps the litho layout result tree in the LayoutState. This will increase memory use. */
-    @JvmField var keepLayoutResults: Boolean = false
-
     @JvmField var overlappingRenderingViewSizeLimit: Int = Int.MAX_VALUE
     @JvmField var partialAlphaWarningSizeThresold: Int = Int.MAX_VALUE
 
