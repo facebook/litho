@@ -18,9 +18,11 @@ package com.facebook.litho.animated
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
+import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.Interpolator
+import androidx.annotation.ColorInt
 import androidx.dynamicanimation.animation.FloatValueHolder
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
@@ -47,6 +49,37 @@ object Animated {
     animator.interpolator = easing
     animator.addUpdateListener { animation ->
       val animatedValue = animation.animatedValue as Float
+      target.set(animatedValue)
+      onUpdate?.invoke(animatedValue)
+    }
+    val animatorAnimation = AnimatorAnimation(animator)
+    if (animationFinishListener != null) {
+      animatorAnimation.addListener(animationFinishListener)
+    }
+    return animatorAnimation
+  }
+
+  /**
+   * Returns an [AnimatedAnimation] ready for running timing animation that calculate animated color
+   * values and set them on target param.
+   *
+   * By default it uses [AccelerateDecelerateInterpolator] and duration of 300 milliseconds.
+   */
+  fun timingArgb(
+      target: DynamicValue<Int>,
+      @ColorInt to: Int,
+      duration: Long = 300,
+      easing: Interpolator = Easing.accelerateDecelerate(),
+      animationFinishListener: AnimationFinishListener? = null,
+      onUpdate: ((Int) -> Unit)? = null,
+  ): AnimatedAnimation {
+    val animator = ValueAnimator.ofFloat(0f, 1f)
+    animator.duration = duration
+    animator.interpolator = easing
+    val evaluator: ArgbEvaluator = ArgbEvaluator()
+    animator.addUpdateListener { animation ->
+      val fraction = animation.animatedValue as Float
+      val animatedValue = evaluator.evaluate(fraction, target.get(), to) as Int
       target.set(animatedValue)
       onUpdate?.invoke(animatedValue)
     }
