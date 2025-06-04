@@ -322,7 +322,7 @@ data class NestedLithoTreeState(
   val treeLifecycleProvider: NestedLithoTreeLifecycleProvider = NestedLithoTreeLifecycleProvider()
 
   fun enqueue(update: PendingStateUpdate) {
-    treeState?.enqueue(update)
+    synchronized(this) { treeState?.enqueue(update) }
   }
 
   fun getUpdatedState(): TreeState {
