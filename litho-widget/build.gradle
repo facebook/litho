@@ -46,7 +46,7 @@ dependencies {
     implementation deps.supportSwipeRefresh
     implementation deps.supportCore
     kapt project(':litho-processor')
-    implementation project(':litho-rendercore-text')
+    api project(':litho-rendercore-text')
 
     // Annotations
     compileOnly deps.jsr305
