@@ -347,6 +347,12 @@ abstract class TreeFuture<T : PotentiallyPartialResult>(
               null)
         }
 
+        // Log the scenario where the thread priority wasn't actually changed
+        if (raisedThreadPriority == originalThreadPriority) {
+          ComponentsConfiguration.softErrorHandler?.handleSoftError(
+              "Thread priority not changed but it is still being reset", "TreeFuture", null)
+        }
+
         // Reset the running thread's priority after we're unblocked.
         try {
           Process.setThreadPriority(runningThreadId, originalThreadPriority)
