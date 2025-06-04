@@ -32,6 +32,9 @@ litho_robolectric4_test(
         exclude = glob(["processor/**/*.java"]),
     ),
     contacts = ["oncall+litho_components_for_android@xmail.facebook.com"],
+    provided_deps = [
+        "//xplat/third-party/java/jdk8:rt-stub-prebuilt-jar",
+    ],
     source = "11",
     target = "11",
     target_sdk_levels = ["33"],
