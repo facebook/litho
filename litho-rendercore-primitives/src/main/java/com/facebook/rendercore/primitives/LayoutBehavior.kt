@@ -35,7 +35,7 @@ import com.facebook.rendercore.utils.withEqualDimensions
  * LayoutBehaviors are considered equivalent via field-wise comparison (i.e. are all fields also
  * equivalent?). This will be used to determine whether re-layouts need to happen.
  */
-interface LayoutBehavior : Equivalence<LayoutBehavior> {
+fun interface LayoutBehavior : Equivalence<LayoutBehavior> {
   fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult
 
   // By default, LayoutBehavior have field-wise equivalence, like Components
