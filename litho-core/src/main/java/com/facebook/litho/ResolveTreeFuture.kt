@@ -221,7 +221,7 @@ constructor(
           context.calculationStateContext = previousStateContext
         }
         val outputs: Resolver.Outputs?
-        if (rsc.isLayoutInterrupted) {
+        if (rsc.isResolveInterrupted) {
           outputs = null
         } else {
           outputs = Resolver.collectOutputs(node)
@@ -236,11 +236,11 @@ constructor(
             component,
             rsc.cache,
             state,
-            rsc.isLayoutInterrupted,
+            rsc.isResolveInterrupted,
             version,
             rsc.eventHandlers,
             outputs,
-            if (rsc.isLayoutInterrupted) rsc else null)
+            if (rsc.isResolveInterrupted) rsc else null)
       } finally {
         state.unregisterResolveInitialState()
         if (isTracing) {

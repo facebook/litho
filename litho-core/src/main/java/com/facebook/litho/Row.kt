@@ -65,7 +65,7 @@ private constructor(
         if (resolveContext.isFutureReleased) {
           return null
         }
-        if (resolveContext.isLayoutInterrupted) {
+        if (resolveContext.isResolveInterrupted) {
           node.appendUnresolvedComponent(child)
         } else {
           node.child(resolveContext, c, child)

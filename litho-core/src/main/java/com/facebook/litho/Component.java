@@ -533,7 +533,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
           node = Resolver.resolveTree(nestedRsc, c, this);
         }
 
-        if (mainRsc != null && mainRsc.isLayoutInterrupted() && node != null) {
+        if (mainRsc != null && mainRsc.isResolveInterrupted() && node != null) {
           outputSize.width = 0;
           outputSize.height = 0;
           return;

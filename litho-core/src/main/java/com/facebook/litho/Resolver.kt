@@ -66,13 +66,13 @@ object Resolver {
     val node: LithoNode?
     if (!isReconcilable) {
       node = resolve(resolveContext, c, component)
-      if (node != null && !resolveContext.isLayoutInterrupted) {
+      if (node != null && !resolveContext.isResolveInterrupted) {
         node.applyParentDependentCommonProps(
             resolveContext, LayoutDirection.fromContext(c.androidContext))
       }
 
       // This needs to finish layout on the UI thread.
-      if (node != null && resolveContext.isLayoutInterrupted) {
+      if (node != null && resolveContext.isResolveInterrupted) {
         layoutStatePerfEvent?.markerPoint(EVENT_END_CREATE_LAYOUT)
         return node
       } else {

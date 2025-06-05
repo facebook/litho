@@ -74,7 +74,7 @@ constructor(
     _isInterruptible = false
   }
 
-  val isLayoutInterrupted: Boolean
+  val isResolveInterrupted: Boolean
     get() {
       val isInterruptible = _isInterruptible
       return if (!isInterruptible || ThreadUtils.isMainThread) {

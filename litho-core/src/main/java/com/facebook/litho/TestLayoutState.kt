@@ -52,7 +52,7 @@ object TestLayoutState {
             null)
     val root = createImmediateLayout(resolveContext, c, widthSpec, heightSpec, component)
     c.clearCalculationStateContext()
-    if (root == null || resolveContext.isLayoutInterrupted) {
+    if (root == null || resolveContext.isResolveInterrupted) {
       return root
     }
     val lsc =
@@ -145,7 +145,7 @@ object TestLayoutState {
         if (resolveContext.isFutureReleased) {
           return null
         }
-        if (resolveContext.isLayoutInterrupted) {
+        if (resolveContext.isResolveInterrupted) {
           node.appendUnresolvedComponent(child)
         } else {
           if (child != null) {
