@@ -28,4 +28,7 @@ import androidx.recyclerview.widget.RecyclerView
  * @param viewAllocator A function that creates a View given a Context
  */
 internal class PrimitiveRecyclerViewHolder(context: Context, viewAllocator: (Context) -> View) :
-    RecyclerView.ViewHolder(viewAllocator(context))
+    RecyclerView.ViewHolder(viewAllocator(context)) {
+  /** The data supports the view holder. */
+  var data: Any? = null
+}
