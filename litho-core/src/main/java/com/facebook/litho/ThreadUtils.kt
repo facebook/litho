@@ -108,6 +108,17 @@ object ThreadUtils {
         threadPriority += Process.THREAD_PRIORITY_LESS_FAVORABLE
       }
     }
+    if (threadPriority == originalThreadPriority) {
+      // We were unable to raise the priority of the thread at all.
+      ComponentsConfiguration.softErrorHandler?.handleSoftError(
+          "Unable to raise priority to $targetThreadPriority from $originalThreadPriority",
+          "ThreadUtils")
+    } else if (threadPriority > targetThreadPriority) {
+      // We were able to raise the priority but not at the desired level.
+      ComponentsConfiguration.softErrorHandler?.handleSoftError(
+          "ThreadUtils",
+          "Encountered an error raising priority to $targetThreadPriority from $originalThreadPriority but succeeded at $threadPriority")
+    }
     return Pair(originalThreadPriority, threadPriority)
   }
 
