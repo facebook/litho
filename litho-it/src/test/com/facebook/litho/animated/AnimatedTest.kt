@@ -16,6 +16,8 @@
 
 package com.facebook.litho.animated
 
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Looper.getMainLooper
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
@@ -69,6 +71,29 @@ class AnimatedTest {
     shadowOf(getMainLooper()).idle()
   }
 
+  @Test(expected = IllegalStateException::class)
+  fun startArgbAnimation_called_twice_expect_IllegalStateException() {
+    listener = mock()
+    listener2 = mock()
+    val backgroundColorProgress = DynamicValue(Color.TRANSPARENT)
+    val animation =
+        Animated.timingArgb(
+            target = backgroundColorProgress,
+            to = Color.RED,
+            duration = 2000,
+            animationFinishListener = listener)
+    val animation2 =
+        Animated.timingArgb(
+            target = backgroundColorProgress,
+            to = Color.RED,
+            duration = 2000,
+            animationFinishListener = listener2)
+    val sequence = Animated.sequence(animation, animation2)
+    sequence.start()
+    sequence.start()
+    shadowOf(getMainLooper()).idle()
+  }
+
   @Test
   fun cancelAnimation_called_twice_expect_one_cancel_call_behaviour() {
     listener = mock()
@@ -106,6 +131,49 @@ class AnimatedTest {
   }
 
   @Test
+  fun cancelArgbAnimation_called_twice_expect_one_cancel_call_behaviour() {
+    listener = mock()
+    listener2 = mock()
+    listener3 = mock()
+    val backgroundColorProgress = DynamicValue(Color.TRANSPARENT)
+    val animation =
+        Animated.timingArgb(
+            target = backgroundColorProgress,
+            to = Color.RED,
+            duration = 2000,
+            animationFinishListener = listener)
+    val animation2 =
+        Animated.timingArgb(
+            target = backgroundColorProgress,
+            to = Color.RED,
+            duration = 2000,
+            animationFinishListener = listener2)
+    val sequence = Animated.sequence(animation, animation2)
+    sequence.addListener(listener3)
+    sequence.start()
+    sequence.cancel()
+    sequence.cancel()
+    shadowOf(getMainLooper()).idle()
+    verify(
+            listener,
+            times(1).description("timingArgb animation listener called onFinish(cancelled = true)"))
+        .onFinish(true)
+    verify(
+            listener,
+            never()
+                .description(
+                    "timingArgb animation listener didn't call onFinish(cancelled = false) as it was cancelled"))
+        .onFinish(false)
+    verify(
+            listener3,
+            times(1)
+                .description("main sequence animation listener called onFinish(cancelled = true)"))
+        .onFinish(true)
+    verify(listener2, never().description("timingArgb2 animation listener not invoked"))
+        .onFinish(any())
+  }
+
+  @Test
   fun timingAnimation_whenAnimationFinish_alphaValueChange() {
     val alphaProgress = DynamicValue(0f)
     val animation = Animated.timing(target = alphaProgress, to = 1f, duration = 1000)
@@ -116,6 +184,25 @@ class AnimatedTest {
     animation.start()
     shadowOf(getMainLooper()).idle()
     assertThat(view.alpha).isEqualTo(1f).describedAs("value after animation")
+  }
+
+  @Test
+  fun timingArgbAnimation_whenAnimationFinish_backgroundColorChange() {
+    val backgroundColorProgress = DynamicValue(Color.TRANSPARENT)
+    val animation =
+        Animated.timingArgb(target = backgroundColorProgress, to = Color.RED, duration = 1000)
+    val testLithoview =
+        mLithoTestRule.render { TestComponent(backgroundColorProgress = backgroundColorProgress) }
+
+    val view = testLithoview.lithoView
+    assertThat((view.background as ColorDrawable).color)
+        .isEqualTo(ColorDrawable(Color.TRANSPARENT).color)
+        .describedAs("initial value")
+    animation.start()
+    shadowOf(getMainLooper()).idle()
+    assertThat((view.background as ColorDrawable).color)
+        .isEqualTo(ColorDrawable(Color.RED).color)
+        .describedAs("value after animation")
   }
 
   @Test
@@ -135,6 +222,35 @@ class AnimatedTest {
             listener,
             never()
                 .description("timing animation listener shouldnt call onFinish(cancelled = true)"))
+        .onFinish(true)
+    verify(listener2, times(1).description("main animation listener should finish")).onFinish(false)
+    verify(
+            listener2,
+            never().description("main animation listener shouldnt call onFinish(cancelled = true)"))
+        .onFinish(true)
+  }
+
+  @Test
+  fun timingArgbAnimation_whenAnimationFinish_onFinishCallbackCalled() {
+    listener = mock()
+    listener2 = mock()
+    val backgroundColorProgress = DynamicValue(Color.TRANSPARENT)
+    val animation =
+        Animated.timingArgb(
+            target = backgroundColorProgress,
+            to = Color.RED,
+            duration = 1000,
+            animationFinishListener = listener)
+    animation.addListener(listener2)
+    animation.start()
+    shadowOf(getMainLooper()).idle()
+    verify(listener, times(1).description("timingArgb animation listener should finish"))
+        .onFinish(false)
+    verify(
+            listener,
+            never()
+                .description(
+                    "timinArgbg animation listener shouldnt call onFinish(cancelled = true)"))
         .onFinish(true)
     verify(listener2, times(1).description("main animation listener should finish")).onFinish(false)
     verify(
@@ -209,6 +325,50 @@ class AnimatedTest {
   }
 
   @Test
+  fun sequenceWithArgbAnimation_whenMainAnimationCancelledImmediately_onCancelCallbackCalled() {
+    listener = mock()
+    listener2 = mock()
+    listener3 = mock()
+    val backgroundColorProgress = DynamicValue(Color.TRANSPARENT)
+    val animation =
+        Animated.timingArgb(
+            target = backgroundColorProgress,
+            to = Color.RED,
+            duration = 2000,
+            animationFinishListener = listener)
+    val animation2 =
+        Animated.timingArgb(
+            target = backgroundColorProgress,
+            to = Color.RED,
+            duration = 2000,
+            animationFinishListener = listener2)
+    val sequence = Animated.sequence(animation, animation2)
+    sequence.addListener(listener3)
+    sequence.start()
+    sequence.cancel()
+    shadowOf(getMainLooper()).idle()
+    // verify that if we cancel main animation straight away the first animation and the main
+    // animation onCancel listeners will be invoked
+    verify(
+            listener,
+            times(1).description("timingArgb animation listener called onFinish(cancelled = true)"))
+        .onFinish(true)
+    verify(
+            listener,
+            never()
+                .description(
+                    "timingArgb animation listener didn't call onFinish(cancelled = false) as it was cancelled"))
+        .onFinish(false)
+    verify(
+            listener3,
+            times(1)
+                .description("main sequence animation listener called onFinish(cancelled = true)"))
+        .onFinish(true)
+    verify(listener2, never().description("timingArgb2 animation listener not invoked"))
+        .onFinish(any())
+  }
+
+  @Test
   fun sequenceAnimation_whenAnimationCancelledImmediately_onCancelCallbackCalled() {
     listener = mock()
     listener2 = mock()
@@ -243,6 +403,50 @@ class AnimatedTest {
                 .description("main sequence animation listener called onFinish(cancelled = true)"))
         .onFinish(true)
     verify(listener2, never().description("timing2 animation listener not invoked")).onFinish(any())
+  }
+
+  @Test
+  fun sequenceWithArgbAnimation_whenAnimationCancelledImmediately_onCancelCallbackCalled() {
+    listener = mock()
+    listener2 = mock()
+    listener3 = mock()
+    val backgroundColorProgress = DynamicValue(Color.TRANSPARENT)
+    val animation =
+        Animated.timingArgb(
+            target = backgroundColorProgress,
+            to = Color.RED,
+            duration = 2000,
+            animationFinishListener = listener)
+    val animation2 =
+        Animated.timingArgb(
+            target = backgroundColorProgress,
+            to = Color.RED,
+            duration = 2000,
+            animationFinishListener = listener2)
+    val sequence = Animated.sequence(animation, animation2)
+    sequence.addListener(listener3)
+    sequence.start()
+    animation.cancel()
+    shadowOf(getMainLooper()).idle()
+    // verify that if we cancel first animation straight away the first animation and the main
+    // animation onCancel listeners will be invoked
+    verify(
+            listener,
+            times(1).description("timingArgb animation listener called onFinish(cancelled = true)"))
+        .onFinish(true)
+    verify(
+            listener,
+            never()
+                .description(
+                    "timingArgb animation listener didn't onFinish(cancelled = false) as it was cancelled"))
+        .onFinish(false)
+    verify(
+            listener3,
+            times(1)
+                .description("main sequence animation listener called onFinish(cancelled = true)"))
+        .onFinish(true)
+    verify(listener2, never().description("timingArgb2 animation listener not invoked"))
+        .onFinish(any())
   }
 
   @Test
@@ -344,7 +548,60 @@ class AnimatedTest {
   }
 
   @Test
-  fun parralelAnimation_whenAnimationCancelledFromSecondAnimation_onCancelCallbackCalled() {
+  fun sequenceWithArgbAnimation_whenAnimationCancelledFromSecondAnimation_onCancelCallbackCalled() {
+    listener = mock()
+    listener2 = mock()
+    listener3 = mock()
+    val backgroundColorProgress = DynamicValue(Color.TRANSPARENT)
+    var animation2: AnimatedAnimation? = null
+    val animation =
+        Animated.timingArgb(
+            target = backgroundColorProgress,
+            to = Color.RED,
+            duration = 2000,
+            animationFinishListener = listener)
+    animation2 =
+        Animated.timingArgb(
+            target = backgroundColorProgress,
+            to = Color.RED,
+            duration = 2000,
+            animationFinishListener = listener2,
+            onUpdate = { animation2?.cancel() })
+    val sequence = Animated.sequence(animation, animation2)
+    sequence.addListener(listener3)
+    sequence.start()
+    shadowOf(getMainLooper()).idle()
+    // verify that if we cancel second animation after it started the first animation onFinish
+    // listener will be invoked, the second animation OnCancel listener will be
+    // invoked and the main animation onCancel listener will be invoked
+    verify(
+            listener,
+            times(1)
+                .description(
+                    "timingArgb animation listener called onFinish(false) as it was finished"))
+        .onFinish(false)
+    verify(
+            listener2,
+            times(1)
+                .description(
+                    "timingArgb 2 animation listener called onFinish(true) as it was cancelled"))
+        .onFinish(true)
+    verify(
+            listener2,
+            never()
+                .description(
+                    "timingArgb 2 animation listener didnt called onFinish(cancelled = false) as it was cancelled"))
+        .onFinish(false)
+    verify(
+            listener3,
+            times(1)
+                .description(
+                    "main sequence animation listener called onFinish(true) as it was cancelled"))
+        .onFinish(true)
+  }
+
+  @Test
+  fun parallelAnimation_whenAnimationCancelledFromSecondAnimation_onCancelCallbackCalled() {
     listener = mock()
     listener2 = mock()
     listener3 = mock()
@@ -399,6 +656,65 @@ class AnimatedTest {
   }
 
   @Test
+  fun parallelWithArgbAnimation_whenAnimationCancelledFromSecondAnimation_onCancelCallbackCalled() {
+    listener = mock()
+    listener2 = mock()
+    listener3 = mock()
+    val backgroundColorProgress = DynamicValue(Color.TRANSPARENT)
+    var animation2: AnimatedAnimation? = null
+    val animation =
+        Animated.timingArgb(
+            target = backgroundColorProgress,
+            to = Color.RED,
+            duration = 2000,
+            animationFinishListener = listener)
+    animation2 =
+        Animated.timingArgb(
+            target = backgroundColorProgress,
+            to = Color.RED,
+            duration = 2000,
+            animationFinishListener = listener2,
+            onUpdate = { animation2?.cancel() })
+    val parallel = Animated.parallel(animation, animation2)
+    parallel.addListener(listener3)
+    parallel.start()
+    shadowOf(getMainLooper()).idle()
+    // verify that if we cancel second animation after it started the first animation onFinish
+    // listener will be invoked, the second animation OnCancel and OnFInish listeners will be
+    // invoked and the main animation onCancel listener will be invoked
+    verify(
+            listener,
+            times(1)
+                .description(
+                    "timingArgb animation listener called onFinish(true) as it was cancelled"))
+        .onFinish(true)
+    verify(
+            listener,
+            never()
+                .description(
+                    "timingArgb animation listener didnt called onFinish(cancelled = false) as it was cancelled"))
+        .onFinish(false)
+    verify(
+            listener2,
+            times(1)
+                .description(
+                    "timingArgb 2 animation listener called onFinish(true) as it was cancelled"))
+        .onFinish(true)
+    verify(
+            listener2,
+            never()
+                .description(
+                    "timingArgb 2 animation listenerdidnt called onFinish(cancelled = false) as it was cancelled"))
+        .onFinish(false)
+    verify(
+            listener3,
+            times(1)
+                .description(
+                    "main sequence animation listener called onFinish(true) as it was cancelled"))
+        .onFinish(true)
+  }
+
+  @Test
   fun sequenceAnimation_whenAnimationFinish_alphaAndXValueChange() {
     val alphaProgress = DynamicValue(0f)
     val xProgress = DynamicValue(100f)
@@ -417,6 +733,33 @@ class AnimatedTest {
     shadowOf(getMainLooper()).idle()
     assertThat(view.alpha).isEqualTo(1f).describedAs("alpha value after animation")
     assertThat(view.translationX).isEqualTo(200f).describedAs("translationX value after animation")
+  }
+
+  @Test
+  fun sequenceWithArgbAnimation_whenAnimationFinish_alphaAndBackgroundColorValueChange() {
+    val alphaProgress = DynamicValue(0f)
+    val backgroundColorProgress = DynamicValue(Color.TRANSPARENT)
+    val animation1 = Animated.timing(target = alphaProgress, to = 1f, duration = 1000)
+    val animation2 =
+        Animated.timingArgb(target = backgroundColorProgress, to = Color.RED, duration = 1000)
+    val testLithoview =
+        mLithoTestRule.render {
+          TestComponent(
+              alphaProgress = alphaProgress, backgroundColorProgress = backgroundColorProgress)
+        }
+
+    val view = testLithoview.lithoView
+    assertThat(view.alpha).isEqualTo(0f).describedAs("alpha initial value")
+    assertThat((view.background as ColorDrawable).color)
+        .isEqualTo(ColorDrawable(Color.TRANSPARENT).color)
+        .describedAs("background color initial value")
+    val sequence = Animated.sequence(animation1, animation2)
+    sequence.start()
+    shadowOf(getMainLooper()).idle()
+    assertThat(view.alpha).isEqualTo(1f).describedAs("alpha value after animation")
+    assertThat((view.background as ColorDrawable).color)
+        .isEqualTo(ColorDrawable(Color.RED).color)
+        .describedAs("background color value after animation")
   }
 
   @Test
@@ -448,6 +791,37 @@ class AnimatedTest {
   }
 
   @Test
+  fun sequenceWithArgbAnimation_whenAnimationFinish_onFinishCallbackCalled() {
+    listener = mock()
+    listener2 = mock()
+    listener3 = mock()
+
+    val alphaProgress = DynamicValue(0f)
+    val backgroundColorProgress = DynamicValue(Color.TRANSPARENT)
+    val animation1 =
+        Animated.timing(
+            target = alphaProgress, to = 1f, duration = 1000, animationFinishListener = listener2)
+    val animation2 =
+        Animated.timingArgb(
+            target = backgroundColorProgress,
+            to = Color.RED,
+            duration = 1000,
+            animationFinishListener = listener3)
+
+    val sequence = Animated.sequence(animation1, animation2)
+    sequence.addListener(listener)
+    sequence.start()
+    shadowOf(getMainLooper()).idle()
+
+    verify(listener, times(1).description("sequence animation listener should finish"))
+        .onFinish(false)
+    verify(listener2, times(1).description("first timing animation listener should finish"))
+        .onFinish(false)
+    verify(listener3, times(1).description("second timingArgb animation listener should finish"))
+        .onFinish(false)
+  }
+
+  @Test
   fun loopAnimation_whenAnimationFinish_alphaAndXValueChange() {
     val alphaProgress = DynamicValue(0f)
     val xProgress = DynamicValue(100f)
@@ -466,6 +840,33 @@ class AnimatedTest {
     shadowOf(getMainLooper()).idle()
     assertThat(view.alpha).isEqualTo(1f).describedAs("alpha value after animation")
     assertThat(view.translationX).isEqualTo(200f).describedAs("translationX value after animation")
+  }
+
+  @Test
+  fun loopWithArgbAnimation_whenAnimationFinish_alphaAndBackgroundValueChange() {
+    val alphaProgress = DynamicValue(0f)
+    val backgroundColorProgress = DynamicValue(Color.TRANSPARENT)
+    val animation1 = Animated.timing(target = alphaProgress, to = 1f, duration = 1000)
+    val animation2 =
+        Animated.timingArgb(target = backgroundColorProgress, to = Color.RED, duration = 1000)
+    val testLithoview =
+        mLithoTestRule.render {
+          TestComponent(
+              alphaProgress = alphaProgress, backgroundColorProgress = backgroundColorProgress)
+        }
+
+    val view = testLithoview.lithoView
+    assertThat(view.alpha).isEqualTo(0f).describedAs("alpha initial value")
+    assertThat((view.background as ColorDrawable).color)
+        .isEqualTo(ColorDrawable(Color.TRANSPARENT).color)
+        .describedAs("background color initial value")
+    val loop = Animated.loop(Animated.sequence(animation1, animation2), 2)
+    loop.start()
+    shadowOf(getMainLooper()).idle()
+    assertThat(view.alpha).isEqualTo(1f).describedAs("alpha value after animation")
+    assertThat((view.background as ColorDrawable).color)
+        .isEqualTo(ColorDrawable(Color.RED).color)
+        .describedAs("background color value after animation")
   }
 
   @Test
@@ -494,13 +895,50 @@ class AnimatedTest {
         .onFinish(false)
   }
 
+  @Test
+  fun loopWithArgbAnimation_whenAnimationFinish_onFinishCallbackCalled() {
+    listener = mock()
+    listener2 = mock()
+    listener3 = mock()
+    val alphaProgress = DynamicValue(0f)
+    val backgroundColorProgress = DynamicValue(Color.TRANSPARENT)
+    val animation1 =
+        Animated.timing(
+            target = alphaProgress, to = 1f, duration = 1000, animationFinishListener = listener2)
+    val animation2 =
+        Animated.timingArgb(
+            target = backgroundColorProgress,
+            to = Color.RED,
+            duration = 1000,
+            animationFinishListener = listener3)
+
+    val loop = Animated.loop(Animated.sequence(animation1, animation2), 2)
+    loop.addListener(listener)
+    loop.start()
+    shadowOf(getMainLooper()).idle()
+    verify(listener, times(1).description("loop animation listener should finish once"))
+        .onFinish(false)
+    verify(listener2, times(2).description("first timing animation listener should finish twice"))
+        .onFinish(false)
+    verify(
+            listener3,
+            times(2).description("second timingArgb animation listener should finish twice"))
+        .onFinish(false)
+  }
+
   private class TestComponent(
-      private val alphaProgress: DynamicValue<Float> = DynamicValue<Float>(0f),
-      private val xProgress: DynamicValue<Float> = DynamicValue<Float>(100f)
+      private val alphaProgress: DynamicValue<Float> = DynamicValue(0f),
+      private val xProgress: DynamicValue<Float> = DynamicValue(100f),
+      private val backgroundColorProgress: DynamicValue<Int> = DynamicValue(Color.RED)
   ) : KComponent() {
     override fun ComponentScope.render(): Component? {
       return Row(
-          style = Style.width(100.px).height(100.px).alpha(alphaProgress).translationX(xProgress))
+          style =
+              Style.width(100.px)
+                  .height(100.px)
+                  .alpha(alphaProgress)
+                  .translationX(xProgress)
+                  .backgroundColor(backgroundColorProgress))
     }
   }
 }
