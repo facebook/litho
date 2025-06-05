@@ -20,5 +20,5 @@ package com.facebook.litho.config
 interface SoftErrorHandler {
 
   /** This method is called when a soft error is reported. */
-  fun handleSoftError(message: String, source: String, cause: Throwable?)
+  fun handleSoftError(message: String, source: String, cause: Throwable? = null)
 }
