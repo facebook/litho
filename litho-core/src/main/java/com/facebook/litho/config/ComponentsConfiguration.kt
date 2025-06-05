@@ -289,6 +289,12 @@ internal constructor(
      */
     @JvmField var enableRaisePriorityToMain: Boolean = false
 
+    /**
+     * This flag will prevent attempting to reset thread priority when the original priority raising
+     * failed to succeed.
+     */
+    @JvmField var enablePreventPriorityResetOnRaiseFailure: Boolean = false
+
     /** This config will enable logging of interactable components with 0 alpha */
     @JvmField var isZeroAlphaLoggingEnabled: Boolean = false
 

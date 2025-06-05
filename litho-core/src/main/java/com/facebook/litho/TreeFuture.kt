@@ -300,7 +300,9 @@ abstract class TreeFuture<T : PotentiallyPartialResult>(
       val threadPriorityPair = tryRaiseThreadPriority(runningThreadId, desiredPriority)
       originalThreadPriority = threadPriorityPair.first
       raisedThreadPriority = threadPriorityPair.second
-      didRaiseThreadPriority = true
+      didRaiseThreadPriority =
+          originalThreadPriority != raisedThreadPriority ||
+              !ComponentsConfiguration.enablePreventPriorityResetOnRaiseFailure
     } else {
       originalThreadPriority = Process.THREAD_PRIORITY_DEFAULT
       raisedThreadPriority = Process.THREAD_PRIORITY_DEFAULT
