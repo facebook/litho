@@ -36,9 +36,10 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.spy
 import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 import org.robolectric.annotation.LooperMode
 
 @LooperMode(LooperMode.Mode.LEGACY)
@@ -80,7 +81,7 @@ class LazyCollectionControllerTest {
   fun `test showRefreshing delegates to RecyclerEventsController`() {
     val lazyCollectionController = LazyCollectionController()
 
-    val recyclerEventsController = mock<RecyclerEventsController>()
+    val recyclerEventsController = spy<RecyclerEventsController>()
     lazyCollectionController.recyclerEventsController = recyclerEventsController
 
     lazyCollectionController.setRefreshing(true)
@@ -91,7 +92,7 @@ class LazyCollectionControllerTest {
   fun `test clearRefreshing delegates to RecyclerEventsController`() {
     val lazyCollectionController = LazyCollectionController()
 
-    val recyclerEventsController = mock<RecyclerEventsController>()
+    val recyclerEventsController = spy<RecyclerEventsController>()
     lazyCollectionController.recyclerEventsController = recyclerEventsController
 
     lazyCollectionController.setRefreshing(false)
@@ -103,8 +104,8 @@ class LazyCollectionControllerTest {
     val lazyCollectionController = LazyCollectionController()
 
     val mockRecyclerView = mock<RecyclerView>()
-    val recyclerEventsController = mock<RecyclerEventsController>()
-    whenever(recyclerEventsController.recyclerView).thenReturn(mockRecyclerView)
+    val recyclerEventsController =
+        mock<RecyclerEventsController> { on { recyclerView } doReturn mockRecyclerView }
     lazyCollectionController.recyclerEventsController = recyclerEventsController
 
     lazyCollectionController.scrollBy(10, 20)
@@ -119,8 +120,8 @@ class LazyCollectionControllerTest {
     val lazyCollectionController = LazyCollectionController()
 
     val mockRecyclerView = mock<RecyclerView>()
-    val recyclerEventsController = mock<RecyclerEventsController>()
-    whenever(recyclerEventsController.recyclerView).thenReturn(mockRecyclerView)
+    val recyclerEventsController =
+        mock<RecyclerEventsController> { on { recyclerView } doReturn mockRecyclerView }
     lazyCollectionController.recyclerEventsController = recyclerEventsController
 
     lazyCollectionController.smoothScrollBy(10, 20)
