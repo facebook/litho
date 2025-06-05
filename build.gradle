@@ -185,10 +185,10 @@ ext.deps = [
         powermockMockito   : 'org.powermock:powermock-api-mockito2:2.0.7',
         powermockJunit     : 'org.powermock:powermock-module-junit4-rule:2.0.7',
         powermockXstream   : 'org.powermock:powermock-classloading-xstream:2.0.7',
-        mockitoCore        : 'org.mockito:mockito-core:2.26.0',
+        mockitoCore        : 'org.mockito:mockito-core:4.11.0',
         assertjCore        : 'org.assertj:assertj-core:2.9.0',
         compileTesting     : 'com.google.testing.compile:compile-testing:0.14',
-        mockitokotlin      : 'org.mockito.kotlin:mockito-kotlin:2.2.11',
+        mockitokotlin      : 'org.mockito.kotlin:mockito-kotlin:4.1.0',
         // Proguard annotations (published through Yoga)
         proguardAnnotations: 'com.facebook.yoga:proguard-annotations:1.14.1',
         // Processor

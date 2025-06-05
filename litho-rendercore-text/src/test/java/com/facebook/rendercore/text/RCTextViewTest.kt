@@ -28,7 +28,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Matchers.anyInt
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
@@ -354,8 +354,8 @@ class RCTextViewTest {
 
     whenever(layout.lineCount).thenReturn(2)
     whenever(layout.width).thenReturn(FULL_TEXT_WIDTH)
-    whenever(layout.getLineRight(anyInt())).thenReturn(MINIMAL_TEXT_WIDTH.toFloat())
-    whenever(layout.getLineLeft(anyInt())).thenReturn(0.0f)
+    whenever(layout.getLineRight(any())).thenReturn(MINIMAL_TEXT_WIDTH.toFloat())
+    whenever(layout.getLineLeft(any())).thenReturn(0.0f)
 
     return layout
   }
