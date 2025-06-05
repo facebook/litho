@@ -347,16 +347,20 @@ abstract class TreeFuture<T : PotentiallyPartialResult>(
 
         // Reset the running thread's priority after we're unblocked.
         try {
-          // Log the scenario where the running thread's priority was raised, but between running
-          // the thread and resetting the priority, the running thread's priority was changed again.
           val currentThreadPriority = Process.getThreadPriority(runningThreadId)
-          if (currentThreadPriority != raisedThreadPriority) {
-            ComponentsConfiguration.softErrorHandler?.handleSoftError(
-                "Thread priority modified before resetting: expected $raisedThreadPriority but was $currentThreadPriority setting to $originalThreadPriority",
-                "TreeFuture")
-          }
+          if (currentThreadPriority == raisedThreadPriority ||
+              !ComponentsConfiguration.enablePreventPriorityResetWhenExternallyModified) {
+            Process.setThreadPriority(runningThreadId, originalThreadPriority)
 
-          Process.setThreadPriority(runningThreadId, originalThreadPriority)
+            // Log the scenario where the running thread's priority was raised, but between running
+            // the thread and resetting the priority, the running thread's priority was changed
+            // again.
+            if (currentThreadPriority != raisedThreadPriority) {
+              ComponentsConfiguration.softErrorHandler?.handleSoftError(
+                  "Thread priority modified before resetting: expected $raisedThreadPriority but was $currentThreadPriority setting to $originalThreadPriority",
+                  "TreeFuture")
+            }
+          }
         } catch (ignored: IllegalArgumentException) {
           ComponentsConfiguration.softErrorHandler?.handleSoftError(
               "IllegalArgumentException while resetting thread priority", "TreeFuture", ignored)
