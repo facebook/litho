@@ -85,10 +85,12 @@ public class LinearLayoutInfoTest {
         new LinearLayoutInfo(getApplicationContext(), VERTICAL, false);
     final int sizeSpec = makeSizeSpec(200, EXACTLY);
 
-    final int heightSpec = linearLayoutInfo.getChildHeightSpec(sizeSpec, null);
+    final int heightSpec =
+        linearLayoutInfo.getChildHeightSpec(sizeSpec, ComponentRenderInfo.createEmpty());
     assertThat(makeSizeSpec(0, UNSPECIFIED)).isEqualTo(heightSpec);
 
-    final int widthSpec = linearLayoutInfo.getChildWidthSpec(sizeSpec, null);
+    final int widthSpec =
+        linearLayoutInfo.getChildWidthSpec(sizeSpec, ComponentRenderInfo.createEmpty());
     assertThat(sizeSpec).isEqualTo(widthSpec);
   }
 
@@ -98,10 +100,12 @@ public class LinearLayoutInfoTest {
         new LinearLayoutInfo(getApplicationContext(), HORIZONTAL, false);
     final int sizeSpec = makeSizeSpec(200, EXACTLY);
 
-    final int heightSpec = linearLayoutInfo.getChildHeightSpec(sizeSpec, null);
+    final int heightSpec =
+        linearLayoutInfo.getChildHeightSpec(sizeSpec, ComponentRenderInfo.createEmpty());
     assertThat(sizeSpec).isEqualTo(heightSpec);
 
-    final int widthSpec = linearLayoutInfo.getChildWidthSpec(sizeSpec, null);
+    final int widthSpec =
+        linearLayoutInfo.getChildWidthSpec(sizeSpec, ComponentRenderInfo.createEmpty());
     assertThat(makeSizeSpec(0, UNSPECIFIED)).isEqualTo(widthSpec);
   }
 
