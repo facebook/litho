@@ -73,13 +73,10 @@ import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.LithoVisibilityEventsController.LithoVisibilityState;
 import com.facebook.litho.annotations.ExperimentalLithoApi;
-import com.facebook.litho.choreographercompat.ChoreographerCompat;
-import com.facebook.litho.choreographercompat.ChoreographerCompatImpl;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.LithoDebugConfigurations;
 import com.facebook.litho.config.PreAllocationHandler;
 import com.facebook.litho.debug.AttributionUtils;
-import com.facebook.litho.debug.DebugInfoReporter;
 import com.facebook.litho.debug.DebugOverlay;
 import com.facebook.litho.debug.LithoDebugEvent;
 import com.facebook.litho.debug.LithoDebugEventAttributes;
@@ -1973,14 +1970,12 @@ public class ComponentTree
     final @Nullable ResolveResult resolveResult = resolveResultHolder.result;
 
     if (resolveResult == null) {
-      final boolean isLoggingEnabled =
-          getLithoConfiguration().componentsConfig.enableLoggingForRenderInFlight;
       final boolean enableResolveWithoutSizeSpec =
           getLithoConfiguration().componentsConfig.enableResolveWithoutSizeSpec;
       final boolean enableFixForResolveWithoutSizeSpec =
           getLithoConfiguration().componentsConfig.enableFixForResolveWithoutSizeSpec;
 
-      if (isLoggingEnabled || enableResolveWithoutSizeSpec || enableFixForResolveWithoutSizeSpec) {
+      if (enableResolveWithoutSizeSpec || enableFixForResolveWithoutSizeSpec) {
         final boolean isWaitingButInterrupted =
             TreeFuture.FutureState.WAITING == resolveResultHolder.state;
         final boolean isLatestRequest;
@@ -2005,22 +2000,6 @@ public class ComponentTree
                 root,
                 treePropContainer);
           }
-          DebugInfoReporter.report(
-              "RenderInFlight v3:Null Result",
-              LogLevel.ERROR,
-              mId,
-              attributes -> {
-                attributes.put(DebugEventAttribute.Version, localResolveVersion);
-                attributes.put(DebugEventAttribute.Source, layoutSourceToString(source));
-                attributes.put("Root", root.getSimpleName());
-                attributes.put(DebugEventAttribute.Width, SizeSpec.toSimpleString(widthSpec));
-                attributes.put(DebugEventAttribute.Height, SizeSpec.toSimpleString(heightSpec));
-                attributes.put("withoutSizeSpec", enableResolveWithoutSizeSpec);
-                attributes.put("fix", enableFixForResolveWithoutSizeSpec);
-                attributes.put("FutureExecutionType", resolveResultHolder.type);
-                attributes.put("FutureState", resolveResultHolder.state);
-                return Unit.INSTANCE;
-              });
         }
       }
     } else {
@@ -2207,67 +2186,6 @@ public class ComponentTree
     mFutureExecutionListener = futureExecutionListener;
   }
 
-  /** Helper to log render in flight in the next frame. */
-  class RenderInFlightLogging extends ChoreographerCompat.FrameCallback {
-
-    private final LayoutState mLayoutState;
-    private final int mLayoutVersion;
-    private final @RenderSource int mSource;
-    private final Component mRootComponent;
-
-    public RenderInFlightLogging(
-        final LayoutState layoutState,
-        final int layoutVersion,
-        final @RenderSource int source,
-        final Component rootComponent) {
-      mLayoutState = layoutState;
-      mLayoutVersion = layoutVersion;
-      mSource = source;
-      mRootComponent = rootComponent;
-    }
-
-    @Override
-    public void doFrame(long frameTimeNanos) {
-      final boolean isRootNotCompatibleAndWithoutResolveFuture;
-      final boolean isSizeNotCompatibleAndWithoutLayoutFuture;
-      synchronized (ComponentTree.this) {
-        final int resolvedRootId = mRoot != null ? mRoot.getId() : INVALID_ID;
-        isRootNotCompatibleAndWithoutResolveFuture =
-            mLayoutState.getResolveResult().component.getId() != resolvedRootId
-                && mResolveResultFutures.isEmpty();
-        isSizeNotCompatibleAndWithoutLayoutFuture =
-            !isCompatibleSpec(mLayoutState, mWidthSpec, mHeightSpec)
-                && mLayoutTreeFutures.isEmpty();
-      }
-      if (isRootNotCompatibleAndWithoutResolveFuture || isSizeNotCompatibleAndWithoutLayoutFuture) {
-        DebugInfoReporter.report(
-            "RenderInFlight v3",
-            LogLevel.ERROR,
-            mId,
-            attributes -> {
-              attributes.put(DebugEventAttribute.Version, mLayoutVersion);
-              attributes.put(DebugEventAttribute.Source, layoutSourceToString(mSource));
-              attributes.put("Root", mRootComponent.getSimpleName());
-              attributes.put(DebugEventAttribute.Width, mLayoutState.getWidth());
-              attributes.put(DebugEventAttribute.Height, mLayoutState.getHeight());
-              attributes.put(
-                  "withoutSizeSpec",
-                  getLithoConfiguration().componentsConfig.enableResolveWithoutSizeSpec);
-              attributes.put(
-                  "fix",
-                  getLithoConfiguration().componentsConfig.enableFixForResolveWithoutSizeSpec);
-              attributes.put(
-                  "isRootNotCompatibleAndWithoutResolveFuture",
-                  isRootNotCompatibleAndWithoutResolveFuture);
-              attributes.put(
-                  "isSizeNotCompatibleAndWithoutLayoutFuture",
-                  isSizeNotCompatibleAndWithoutLayoutFuture);
-              return Unit.INSTANCE;
-            });
-      }
-    }
-  }
-
   private void commitLayoutState(
       final LayoutState layoutState,
       final int layoutVersion,
@@ -2304,10 +2222,6 @@ public class ComponentTree
               attributes.put(DebugEventAttribute.Height, layoutState.getHeight());
               return Unit.INSTANCE;
             });
-      } else if (getLithoConfiguration().componentsConfig.enableLoggingForRenderInFlight) {
-        ChoreographerCompatImpl.getInstance()
-            .postFrameCallback(
-                new RenderInFlightLogging(layoutState, layoutVersion, source, rootComponent));
       }
 
       if (DEBUG_LOGS) {
