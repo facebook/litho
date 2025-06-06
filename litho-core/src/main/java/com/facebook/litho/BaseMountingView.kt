@@ -43,6 +43,7 @@ import com.facebook.litho.animation.AnimatedProperty
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.debug.DebugOverlay
 import com.facebook.litho.debug.DebugOverlay.Companion.getDebugOverlay
+import com.facebook.litho.state.UiStateReadRecords
 import com.facebook.litho.stats.LithoStats.incrementComponentMountCount
 import com.facebook.rendercore.MountDelegateTarget
 import com.facebook.rendercore.MountState
@@ -66,7 +67,8 @@ abstract class BaseMountingView
 constructor(context: ComponentContext, attrs: AttributeSet? = null) :
     ComponentHost(context.androidContext, attrs, unsafeModificationPolicy = null),
     RenderCoreExtensionHost,
-    AnimatedRootHost {
+    AnimatedRootHost,
+    UiStateReadRecords.Config {
 
   abstract val configuration: ComponentsConfiguration?
 
@@ -129,9 +131,14 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
       return layoutState?.rootName ?: ""
     }
 
+  override val isReadTrackingEnabled: Boolean
+    get() = configuration?.enableStateReadTracking == true
+
   private var onDirtyMountListener: OnDirtyMountListener? = null
 
-  private val mountState = MountState(this, systrace)
+  private val uiStateReadRecords = UiStateReadRecords(this)
+
+  private val mountState = MountState(this, systrace, uiStateReadRecords)
 
   private var reentrantMounts: Deque<ReentrantMount>? = null
 
@@ -159,6 +166,8 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
     mountState.setEnsureParentMounted(true)
     viewAttributeFlags = getViewAttributeFlags(this)
   }
+
+  override fun currentTreeId(): Int = currentLayoutState?.treeId ?: ComponentTree.INVALID_ID
 
   /**
    * Sets the width that the BaseMountingView should take on the next measure pass and then requests
