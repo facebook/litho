@@ -17,7 +17,6 @@
 package com.facebook.litho;
 
 import static android.content.Context.ACCESSIBILITY_SERVICE;
-import static com.facebook.litho.AccessibilityUtils.isAccessibilityEnabled;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 
 import android.content.Context;
@@ -557,9 +556,7 @@ public class LithoView extends BaseMountingView {
       mComponentTree.attach();
     }
 
-    refreshAccessibilityDelegatesIfNeeded(
-        ComponentsConfiguration.skipA11YValidationForKeyboard
-            || isAccessibilityEnabled(getContext()));
+    refreshAccessibilityDelegatesIfNeeded(true);
 
     AccessibilityManagerCompat.addAccessibilityStateChangeListener(
         mAccessibilityManager, mAccessibilityStateChangeListener);

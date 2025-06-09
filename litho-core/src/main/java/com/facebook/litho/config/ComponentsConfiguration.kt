@@ -309,12 +309,6 @@ internal constructor(
     @JvmField var usePrimitiveText: Boolean = false
 
     /**
-     * This flag is used to enable A11Y support for keyboard navigation, which was disabled due to
-     * Litho's A11Y sanity check.
-     */
-    @JvmField var skipA11YValidationForKeyboard: Boolean = false
-
-    /**
      * This flag is used to enable a fix for the issue where the text is not truncated correctly
      * when customEllipsisText is set.
      */
