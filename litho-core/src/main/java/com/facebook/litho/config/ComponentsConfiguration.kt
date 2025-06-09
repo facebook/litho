@@ -308,9 +308,6 @@ internal constructor(
     /** This flag is to enable usage of Primitive Text */
     @JvmField var usePrimitiveText: Boolean = false
 
-    /** This flag is to enable usage of Primitive TextInput */
-    @JvmField var usePrimitiveTextInput: Boolean = false
-
     /**
      * This flag is used to enable A11Y support for keyboard navigation, which was disabled due to
      * Litho's A11Y sanity check.
@@ -322,9 +319,6 @@ internal constructor(
      * when customEllipsisText is set.
      */
     @JvmField var enableFixForTextEllipsisOffset: Boolean = true
-
-    /** This flag is used clear MovementMethod on TextInput to avoid a potential crash. */
-    @JvmField var clearMovementMethod: Boolean = true
 
     /** This flag is used to enable keyboard navigation for h-scroll list. */
     @JvmField var enableKeyboardNavigationForHScroll: Boolean = false

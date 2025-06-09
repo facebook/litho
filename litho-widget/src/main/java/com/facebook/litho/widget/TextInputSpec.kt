@@ -50,7 +50,6 @@ import com.facebook.litho.annotations.PropDefault
 import com.facebook.litho.annotations.Reason
 import com.facebook.litho.annotations.ResType
 import com.facebook.litho.annotations.State
-import com.facebook.litho.config.ComponentsConfiguration
 
 /**
  * Component that renders an editable text input using an android [EditText]. It is measured based
@@ -226,171 +225,119 @@ internal object TextInputSpec {
       @State textInputHandle: Handle,
       @CachedValue textInputController: TextInputController?,
   ): Component {
-    return if (ComponentsConfiguration.usePrimitiveTextInput) {
-      ExperimentalTextInput(
-          initialText = initialText ?: "",
-          hint = hint ?: "",
-          inputBackground = inputBackground,
-          shadowRadius = shadowRadius,
-          shadowDx = shadowDx,
-          shadowDy = shadowDy,
-          shadowColor = shadowColor,
-          textColorStateList = textColorStateList,
-          hintColorStateList = hintColorStateList,
-          highlightColor = highlightColor,
-          textSize = textSize,
-          typeface = typeface ?: Typeface.DEFAULT,
-          textAlignment = textAlignment,
-          gravity = gravity,
-          editable = editable,
-          cursorVisible = cursorVisible,
-          inputType = inputType,
-          rawInputType = rawInputType,
-          imeOptions = imeOptions,
-          privateImeOptions = privateImeOptions,
-          inputFilters = inputFilters,
-          multiline = multiline,
-          ellipsize = ellipsize,
-          minLines = minLines,
-          maxLines = maxLines,
-          cursorDrawableRes = cursorDrawableRes,
-          error = error,
-          errorDrawable = errorDrawable,
-          keyListener = keyListener,
-          importantForAutofill = importantForAutofill,
-          autofillHints = autofillHints,
-          disableAutofill = disableAutofill,
-          movementMethod = movementMethod,
-          textWatchers = textWatchers,
-          selectionActionModeCallback = selectionActionModeCallback,
-          insertionActionModeCallback = insertionActionModeCallback,
-          excludeFromIncrementalMount = shouldExcludeFromIncrementalMount,
-          textInputController = textInputController,
-          onTextChanged =
-              TextInput.getTextChangedEventHandler(c)?.let { handler ->
-                { editText, text ->
-                  val event = TextChangedEvent()
-                  event.view = editText
-                  event.text = text
-                  handler.dispatchEvent(event)
-                }
-              },
-          onTextPasted =
-              TextInput.getTextPastedEventHandler(c)?.let { handler ->
-                { editText, text ->
-                  val event = TextPastedEvent()
-                  event.view = editText
-                  event.text = text
-                  handler.dispatchEvent(event)
-                }
-              },
-          onSelectionChanged =
-              TextInput.getSelectionChangedEventHandler(c)?.let { handler ->
-                { start, end ->
-                  val event = SelectionChangedEvent()
-                  event.start = start
-                  event.end = end
-                  handler.dispatchEvent(event)
-                }
-              },
-          onInputFocusChanged =
-              TextInput.getInputFocusChangedEventHandler(c)?.let { handler ->
-                { focused ->
-                  val event = InputFocusChangedEvent()
-                  event.focused = focused
-                  handler.dispatchEvent(event)
-                }
-              },
-          onKeyUp =
-              TextInput.getKeyUpEventHandler(c)?.let { handler ->
-                { keyEvent, keyCode ->
-                  val event = KeyUpEvent()
-                  event.keyEvent = keyEvent
-                  event.keyCode = keyCode
-                  handler.dispatchEvent(event) as Boolean
-                }
-              },
-          onKeyPreImeEvent =
-              TextInput.getKeyPreImeEventHandler(c)?.let { handler ->
-                { keyEvent, keyCode ->
-                  val event = KeyPreImeEvent()
-                  event.keyEvent = keyEvent
-                  event.keyCode = keyCode
-                  handler.dispatchEvent(event) as Boolean
-                }
-              },
-          onEditorAction =
-              TextInput.getEditorActionEventHandler(c)?.let { handler ->
-                { textView, keyEvent, actionId ->
-                  val event = EditorActionEvent()
-                  event.view = textView
-                  event.event = keyEvent
-                  event.actionId = actionId
-                  handler.dispatchEvent(event) as Boolean
-                }
-              },
-          onInputConnection =
-              TextInput.getInputConnectionEventHandler(c)?.let { handler ->
-                { inputConnection, editorInfo ->
-                  val event = InputConnectionEvent()
-                  event.inputConnection = inputConnection
-                  event.editorInfo = editorInfo
-                  handler.dispatchEvent(event) as? InputConnection
-                }
-              },
-          style = null,
-      )
-    } else {
-      TextInputComponent.create(c)
-          .initialText(initialText)
-          .hint(hint)
-          .inputBackground(inputBackground)
-          .shadowRadiusPx(shadowRadius)
-          .shadowDxPx(shadowDx)
-          .shadowDyPx(shadowDy)
-          .shadowColor(shadowColor)
-          .textColorStateList(textColorStateList)
-          .hintColorStateList(hintColorStateList)
-          .highlightColor(highlightColor)
-          .textSizePx(textSize)
-          .typeface(typeface)
-          .textAlignment(textAlignment)
-          .gravity(gravity)
-          .editable(editable)
-          .cursorVisible(cursorVisible)
-          .inputType(inputType)
-          .rawInputType(rawInputType)
-          .imeOptions(imeOptions)
-          .privateImeOptions(privateImeOptions)
-          .inputFilters(inputFilters)
-          .multiline(multiline)
-          .ellipsize(ellipsize)
-          .minLines(minLines)
-          .maxLines(maxLines)
-          .cursorDrawableRes(cursorDrawableRes)
-          .error(error)
-          .errorDrawable(errorDrawable)
-          .keyListener(keyListener)
-          .importantForAutofill(importantForAutofill)
-          .autofillHints(autofillHints)
-          .disableAutofill(disableAutofill)
-          .movementMethod(movementMethod)
-          .textWatchers(textWatchers)
-          .selectionActionModeCallback(selectionActionModeCallback)
-          .insertionActionModeCallback(insertionActionModeCallback)
-          .shouldExcludeFromIncrementalMount(shouldExcludeFromIncrementalMount)
-          .handle(textInputHandle)
-          .selectionChangedEventHandler(TextInput.getSelectionChangedEventHandler(c))
-          .inputFocusChangedEventHandler(TextInput.getInputFocusChangedEventHandler(c))
-          .keyUpEventHandler(TextInput.getKeyUpEventHandler(c))
-          .keyPreImeEventHandler(TextInput.getKeyPreImeEventHandler(c))
-          .editorActionEventHandler(TextInput.getEditorActionEventHandler(c))
-          .setTextEventHandler(TextInput.getSetTextEventHandler(c))
-          .inputConnectionEventHandler(TextInput.getInputConnectionEventHandler(c))
-          .textPastedEventHandler(TextInput.getTextPastedEventHandler(c))
-          .textChangedEventHandler(TextInput.getTextChangedEventHandler(c))
-          .build()
-    }
+    return ExperimentalTextInput(
+        initialText = initialText ?: "",
+        hint = hint ?: "",
+        inputBackground = inputBackground,
+        shadowRadius = shadowRadius,
+        shadowDx = shadowDx,
+        shadowDy = shadowDy,
+        shadowColor = shadowColor,
+        textColorStateList = textColorStateList,
+        hintColorStateList = hintColorStateList,
+        highlightColor = highlightColor,
+        textSize = textSize,
+        typeface = typeface ?: Typeface.DEFAULT,
+        textAlignment = textAlignment,
+        gravity = gravity,
+        editable = editable,
+        cursorVisible = cursorVisible,
+        inputType = inputType,
+        rawInputType = rawInputType,
+        imeOptions = imeOptions,
+        privateImeOptions = privateImeOptions,
+        inputFilters = inputFilters,
+        multiline = multiline,
+        ellipsize = ellipsize,
+        minLines = minLines,
+        maxLines = maxLines,
+        cursorDrawableRes = cursorDrawableRes,
+        error = error,
+        errorDrawable = errorDrawable,
+        keyListener = keyListener,
+        importantForAutofill = importantForAutofill,
+        autofillHints = autofillHints,
+        disableAutofill = disableAutofill,
+        movementMethod = movementMethod,
+        textWatchers = textWatchers,
+        selectionActionModeCallback = selectionActionModeCallback,
+        insertionActionModeCallback = insertionActionModeCallback,
+        excludeFromIncrementalMount = shouldExcludeFromIncrementalMount,
+        textInputController = textInputController,
+        onTextChanged =
+            TextInput.getTextChangedEventHandler(c)?.let { handler ->
+              { editText, text ->
+                val event = TextChangedEvent()
+                event.view = editText
+                event.text = text
+                handler.dispatchEvent(event)
+              }
+            },
+        onTextPasted =
+            TextInput.getTextPastedEventHandler(c)?.let { handler ->
+              { editText, text ->
+                val event = TextPastedEvent()
+                event.view = editText
+                event.text = text
+                handler.dispatchEvent(event)
+              }
+            },
+        onSelectionChanged =
+            TextInput.getSelectionChangedEventHandler(c)?.let { handler ->
+              { start, end ->
+                val event = SelectionChangedEvent()
+                event.start = start
+                event.end = end
+                handler.dispatchEvent(event)
+              }
+            },
+        onInputFocusChanged =
+            TextInput.getInputFocusChangedEventHandler(c)?.let { handler ->
+              { focused ->
+                val event = InputFocusChangedEvent()
+                event.focused = focused
+                handler.dispatchEvent(event)
+              }
+            },
+        onKeyUp =
+            TextInput.getKeyUpEventHandler(c)?.let { handler ->
+              { keyEvent, keyCode ->
+                val event = KeyUpEvent()
+                event.keyEvent = keyEvent
+                event.keyCode = keyCode
+                handler.dispatchEvent(event) as Boolean
+              }
+            },
+        onKeyPreImeEvent =
+            TextInput.getKeyPreImeEventHandler(c)?.let { handler ->
+              { keyEvent, keyCode ->
+                val event = KeyPreImeEvent()
+                event.keyEvent = keyEvent
+                event.keyCode = keyCode
+                handler.dispatchEvent(event) as Boolean
+              }
+            },
+        onEditorAction =
+            TextInput.getEditorActionEventHandler(c)?.let { handler ->
+              { textView, keyEvent, actionId ->
+                val event = EditorActionEvent()
+                event.view = textView
+                event.event = keyEvent
+                event.actionId = actionId
+                handler.dispatchEvent(event) as Boolean
+              }
+            },
+        onInputConnection =
+            TextInput.getInputConnectionEventHandler(c)?.let { handler ->
+              { inputConnection, editorInfo ->
+                val event = InputConnectionEvent()
+                event.inputConnection = inputConnection
+                event.editorInfo = editorInfo
+                handler.dispatchEvent(event) as? InputConnection
+              }
+            },
+        style = null,
+    )
   }
 
   @OnCreateInitialState
@@ -403,11 +350,7 @@ internal object TextInputSpec {
   internal fun onCalculateTextInputController(
       c: ComponentContext,
   ): TextInputController? {
-    return if (ComponentsConfiguration.usePrimitiveTextInput) {
-      TextInputController()
-    } else {
-      null
-    }
+    return TextInputController()
   }
 
   @JvmStatic
@@ -417,11 +360,7 @@ internal object TextInputSpec {
       @State textInputHandle: Handle,
       @CachedValue textInputController: TextInputController?,
   ) {
-    if (ComponentsConfiguration.usePrimitiveTextInput) {
-      textInputController?.requestFocus()
-    } else {
-      TextInputComponent.requestFocus(c, textInputHandle)
-    }
+    textInputController?.requestFocus()
   }
 
   @JvmStatic
@@ -431,11 +370,7 @@ internal object TextInputSpec {
       @State textInputHandle: Handle,
       @CachedValue textInputController: TextInputController?,
   ) {
-    if (ComponentsConfiguration.usePrimitiveTextInput) {
-      textInputController?.clearFocus()
-    } else {
-      TextInputComponent.clearFocus(c, textInputHandle)
-    }
+    textInputController?.clearFocus()
   }
 
   @OnTrigger(ShowCursorEvent::class)
@@ -444,11 +379,7 @@ internal object TextInputSpec {
       @State textInputHandle: Handle,
       @CachedValue textInputController: TextInputController?,
   ) {
-    if (ComponentsConfiguration.usePrimitiveTextInput) {
-      textInputController?.showCursor()
-    } else {
-      TextInputComponent.showCursor(c, textInputHandle)
-    }
+    textInputController?.showCursor()
   }
 
   @OnTrigger(HideCursorEvent::class)
@@ -457,11 +388,7 @@ internal object TextInputSpec {
       @State textInputHandle: Handle,
       @CachedValue textInputController: TextInputController?,
   ) {
-    if (ComponentsConfiguration.usePrimitiveTextInput) {
-      textInputController?.hideCursor()
-    } else {
-      TextInputComponent.hideCursor(c, textInputHandle)
-    }
+    textInputController?.hideCursor()
   }
 
   @JvmStatic
@@ -471,11 +398,7 @@ internal object TextInputSpec {
       @State textInputHandle: Handle,
       @CachedValue textInputController: TextInputController?,
   ): CharSequence? {
-    return if (ComponentsConfiguration.usePrimitiveTextInput) {
-      textInputController?.getText()
-    } else {
-      TextInputComponent.getText(c, textInputHandle)
-    }
+    return textInputController?.getText()
   }
 
   @JvmStatic
@@ -485,11 +408,7 @@ internal object TextInputSpec {
       @State textInputHandle: Handle,
       @CachedValue textInputController: TextInputController?,
   ): Int? {
-    return if (ComponentsConfiguration.usePrimitiveTextInput) {
-      textInputController?.getLineCount()
-    } else {
-      TextInputComponent.getLineCount(c, textInputHandle)
-    }
+    return textInputController?.getLineCount()
   }
 
   @OnTrigger(SetTextEvent::class)
@@ -499,11 +418,7 @@ internal object TextInputSpec {
       @State textInputHandle: Handle,
       @CachedValue textInputController: TextInputController?,
   ) {
-    if (ComponentsConfiguration.usePrimitiveTextInput) {
-      textInputController?.setText(text)
-    } else {
-      TextInputComponent.setText(c, textInputHandle, text)
-    }
+    textInputController?.setText(text)
   }
 
   @OnTrigger(ReplaceTextEvent::class)
@@ -516,11 +431,7 @@ internal object TextInputSpec {
       @State textInputHandle: Handle,
       @CachedValue textInputController: TextInputController?,
   ) {
-    if (ComponentsConfiguration.usePrimitiveTextInput) {
-      textInputController?.replaceText(text, startIndex, endIndex, skipSelection)
-    } else {
-      TextInputComponent.replaceText(c, textInputHandle, text, startIndex, endIndex, skipSelection)
-    }
+    textInputController?.replaceText(text, startIndex, endIndex, skipSelection)
   }
 
   @JvmStatic
@@ -531,11 +442,7 @@ internal object TextInputSpec {
       @State textInputHandle: Handle,
       @CachedValue textInputController: TextInputController?,
   ) {
-    if (ComponentsConfiguration.usePrimitiveTextInput) {
-      textInputController?.dispatchKey(keyEvent)
-    } else {
-      TextInputComponent.dispatchKey(c, textInputHandle, keyEvent)
-    }
+    textInputController?.dispatchKey(keyEvent)
   }
 
   @JvmStatic
@@ -547,11 +454,7 @@ internal object TextInputSpec {
       @State textInputHandle: Handle,
       @CachedValue textInputController: TextInputController?,
   ) {
-    if (ComponentsConfiguration.usePrimitiveTextInput) {
-      textInputController?.setSelection(start, end)
-    } else {
-      TextInputComponent.setSelection(c, textInputHandle, start, end)
-    }
+    textInputController?.setSelection(start, end)
   }
 
   @OnTrigger(SetSpanEvent::class)
@@ -564,11 +467,7 @@ internal object TextInputSpec {
       @State textInputHandle: Handle,
       @CachedValue textInputController: TextInputController?,
   ) {
-    if (ComponentsConfiguration.usePrimitiveTextInput) {
-      textInputController?.setSpan(what, start, end, flags)
-    } else {
-      TextInputComponent.setSpan(c, textInputHandle, what, start, end, flags)
-    }
+    textInputController?.setSpan(what, start, end, flags)
   }
 
   @OnTrigger(RemoveSpanEvent::class)
@@ -578,11 +477,7 @@ internal object TextInputSpec {
       @State textInputHandle: Handle,
       @CachedValue textInputController: TextInputController?,
   ) {
-    if (ComponentsConfiguration.usePrimitiveTextInput) {
-      textInputController?.removeSpan(what)
-    } else {
-      TextInputComponent.removeSpan(c, textInputHandle, what)
-    }
+    textInputController?.removeSpan(what)
   }
 
   @OnTrigger(GetSpanStartEvent::class)
@@ -592,10 +487,6 @@ internal object TextInputSpec {
       @State textInputHandle: Handle,
       @CachedValue textInputController: TextInputController?,
   ): Int {
-    return if (ComponentsConfiguration.usePrimitiveTextInput) {
-      textInputController?.getSpanStart(what) ?: -1
-    } else {
-      TextInputComponent.getSpanStart(c, textInputHandle, what)
-    }
+    return textInputController?.getSpanStart(what) ?: -1
   }
 }

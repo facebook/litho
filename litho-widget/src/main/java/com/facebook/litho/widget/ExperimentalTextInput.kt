@@ -394,9 +394,7 @@ class ExperimentalTextInput(
                           editText.inputType =
                               TextInputSpec.inputType // Set the input type back to default.
                         }
-                        if (ComponentsConfiguration.clearMovementMethod) {
-                          editText.movementMethod = null
-                        }
+                        editText.movementMethod = null
                         editText.setTextState(null)
                         editText.removeOnWindowFocusChangeListener()
                         editText.privateImeOptions = null
