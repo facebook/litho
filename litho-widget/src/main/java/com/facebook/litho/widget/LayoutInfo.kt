@@ -31,7 +31,7 @@ interface LayoutInfo : ViewportInfo {
   fun getScrollDirection(): Int
 
   /** @return The [RecyclerView.LayoutManager] to be used with the [RecyclerView]. */
-  fun getLayoutManager(): RecyclerView.LayoutManager?
+  fun getLayoutManager(): RecyclerView.LayoutManager
 
   /** @param renderInfoCollection */
   fun setRenderInfoCollection(renderInfoCollection: RenderInfoCollection?)
@@ -95,10 +95,7 @@ interface LayoutInfo : ViewportInfo {
    * @param componentTreeHolders the list of [ComponentTreeHolder] in this [RecyclerBinder].
    * @return the measured height of this [RecyclerBinder].
    */
-  fun computeWrappedHeight(
-      maxHeight: Int,
-      componentTreeHolders: MutableList<ComponentTreeHolder>
-  ): Int
+  fun computeWrappedHeight(maxHeight: Int, componentTreeHolders: List<ComponentTreeHolder>): Int
 
   interface RenderInfoCollection {
     fun getRenderInfoAt(position: Int): RenderInfo

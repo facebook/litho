@@ -161,7 +161,7 @@ constructor(
 
   override fun computeWrappedHeight(
       maxHeight: Int,
-      componentTreeHolders: MutableList<ComponentTreeHolder>
+      componentTreeHolders: List<ComponentTreeHolder>
   ): Int {
     val itemCount = componentTreeHolders.size
     val spanCount = staggeredGridLayoutManager.spanCount

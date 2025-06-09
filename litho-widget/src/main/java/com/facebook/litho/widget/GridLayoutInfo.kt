@@ -157,7 +157,7 @@ class GridLayoutInfo(private val gridLayoutManager: GridLayoutManager) : LayoutI
 
   override fun computeWrappedHeight(
       maxHeight: Int,
-      componentTreeHolders: MutableList<ComponentTreeHolder>
+      componentTreeHolders: List<ComponentTreeHolder>
   ): Int {
     val itemCount = componentTreeHolders.size
     val spanCount = gridLayoutManager.spanCount

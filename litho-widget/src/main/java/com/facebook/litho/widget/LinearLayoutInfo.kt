@@ -123,7 +123,7 @@ open class LinearLayoutInfo(private val linearLayoutManager: LinearLayoutManager
 
   override fun computeWrappedHeight(
       maxHeight: Int,
-      componentTreeHolders: MutableList<ComponentTreeHolder>
+      componentTreeHolders: List<ComponentTreeHolder>
   ): Int =
       LayoutInfoUtils.computeLinearLayoutWrappedHeight(
           linearLayoutManager, maxHeight, componentTreeHolders)
