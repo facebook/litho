@@ -22,6 +22,7 @@ import androidx.annotation.IntDef
 import androidx.annotation.VisibleForTesting
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.config.LithoDebugConfigurations
+import com.facebook.litho.debug.DebugInfoReporter
 
 /** Thread assertion utilities. */
 object ThreadUtils {
@@ -110,14 +111,19 @@ object ThreadUtils {
     }
     if (threadPriority == originalThreadPriority) {
       // We were unable to raise the priority of the thread at all.
-      ComponentsConfiguration.softErrorHandler?.handleSoftError(
-          "Unable to raise priority to $targetThreadPriority from $originalThreadPriority",
-          "ThreadUtils")
+      DebugInfoReporter.report(category = "ThreadUtilsPriorityInversion") {
+        this["type"] = "UnableToRaise"
+        this["originalThreadPriority"] = "$originalThreadPriority"
+        this["targetThreadPriority"] = "$targetThreadPriority"
+      }
     } else if (threadPriority > targetThreadPriority) {
       // We were able to raise the priority but not at the desired level.
-      ComponentsConfiguration.softErrorHandler?.handleSoftError(
-          "ThreadUtils",
-          "Encountered an error raising priority to $targetThreadPriority from $originalThreadPriority but succeeded at $threadPriority")
+      DebugInfoReporter.report(category = "ThreadUtilsPriorityInversion") {
+        this["type"] = "RaisedButNotAtDesiredLevel"
+        this["originalThreadPriority"] = "$originalThreadPriority"
+        this["targetThreadPriority"] = "$targetThreadPriority"
+        this["threadPriority"] = "$threadPriority"
+      }
     }
     return Pair(originalThreadPriority, threadPriority)
   }

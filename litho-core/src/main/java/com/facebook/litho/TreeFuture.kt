@@ -24,6 +24,7 @@ import com.facebook.litho.LayoutState.Companion.isFromSyncLayout
 import com.facebook.litho.ThreadUtils.isMainThread
 import com.facebook.litho.ThreadUtils.tryRaiseThreadPriority
 import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.debug.DebugInfoReporter
 import com.facebook.litho.debug.LithoDebugEvents.TreeFuture.get
 import com.facebook.litho.debug.LithoDebugEvents.TreeFuture.getPartial
 import com.facebook.litho.debug.LithoDebugEvents.TreeFuture.interrupt
@@ -341,8 +342,9 @@ abstract class TreeFuture<T : PotentiallyPartialResult>(
       if (didRaiseThreadPriority) {
         // Log the scenario where the thread priority wasn't actually changed
         if (raisedThreadPriority == originalThreadPriority) {
-          ComponentsConfiguration.softErrorHandler?.handleSoftError(
-              "Thread priority not changed but it is still being reset", "TreeFuture")
+          DebugInfoReporter.report(category = "TreeFuturePriorityInversion") {
+            this["type"] = "UnnecessaryResetting"
+          }
         }
 
         // Reset the running thread's priority after we're unblocked.
@@ -356,17 +358,22 @@ abstract class TreeFuture<T : PotentiallyPartialResult>(
             // the thread and resetting the priority, the running thread's priority was changed
             // again.
             if (currentThreadPriority != raisedThreadPriority) {
-              ComponentsConfiguration.softErrorHandler?.handleSoftError(
-                  "Thread priority modified before resetting: expected $raisedThreadPriority but was $currentThreadPriority setting to $originalThreadPriority",
-                  "TreeFuture")
+              DebugInfoReporter.report(category = "TreeFuturePriorityInversion") {
+                this["type"] = "ResettingAfterExternalModification"
+                this["originalThreadPriority"] = "$originalThreadPriority"
+                this["raisedThreadPriority"] = "$raisedThreadPriority"
+                this["currentThreadPriority"] = "$currentThreadPriority"
+              }
             }
           }
         } catch (ignored: IllegalArgumentException) {
-          ComponentsConfiguration.softErrorHandler?.handleSoftError(
-              "IllegalArgumentException while resetting thread priority", "TreeFuture", ignored)
+          DebugInfoReporter.report(category = "TreeFuturePriorityInversion") {
+            this["type"] = "IllegalArgumentExceptionWhenResetting"
+          }
         } catch (ignored: SecurityException) {
-          ComponentsConfiguration.softErrorHandler?.handleSoftError(
-              "SecurityException while resetting thread priority", "TreeFuture", ignored)
+          DebugInfoReporter.report(category = "TreeFuturePriorityInversion") {
+            this["type"] = "SecurityExceptionWhenResetting"
+          }
         }
       }
       if (interruptState.get() == INTERRUPTED && isPartialResult) {

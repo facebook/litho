@@ -320,9 +320,6 @@ internal constructor(
     /** This flag is to enable usage of new onTouch behaviour within TextSpec touchableSpan */
     @JvmField var enableNewHandleTouchForSpansMethod: Boolean = false
 
-    /** Handle for soft errors that should be logged */
-    @JvmField var softErrorHandler: SoftErrorHandler? = null
-
     /**
      * This method is only used so that Java clients can have a builder like approach to override a
      * configuration.
