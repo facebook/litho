@@ -42,6 +42,7 @@ internal object LithoReducer {
   fun reduce(
       lsc: LithoLayoutContext,
       resolveResult: ResolveResult,
+      version: Int,
       treeId: Int,
       layoutCache: LayoutCache,
       reductionState: ReductionState,
@@ -55,6 +56,7 @@ internal object LithoReducer {
 
     return LayoutState(
         resolveResult,
+        version,
         reductionState.sizeConstraints,
         treeId,
         lsc.isAccessibilityEnabled,

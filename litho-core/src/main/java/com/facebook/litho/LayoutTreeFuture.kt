@@ -177,7 +177,7 @@ class LayoutTreeFuture(
 
           perfEvent?.markerPoint("start_reduce")
           val layoutState =
-              LithoReducer.reduce(lsc, resolveResult, treeId, layoutCache, reductionState)
+              LithoReducer.reduce(lsc, resolveResult, version, treeId, layoutCache, reductionState)
           perfEvent?.markerPoint("end_reduce")
 
           root?.releaseLayoutPhaseData()

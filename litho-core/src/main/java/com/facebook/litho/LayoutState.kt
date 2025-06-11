@@ -58,6 +58,7 @@ import javax.annotation.CheckReturnValue
 class LayoutState
 internal constructor(
     val resolveResult: ResolveResult,
+    val version: Int,
     val sizeConstraints: SizeConstraints,
     val componentTreeId: Int,
     val isAccessibilityEnabled: Boolean,
