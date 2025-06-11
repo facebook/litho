@@ -44,7 +44,7 @@ open class MountState
 constructor(
     private val _rootHost: Host,
     private val tracer: Systracer = RenderCoreSystrace.getInstance(),
-    binderObserver: BinderObserver = BinderObserver.Default
+    binderObserver: BinderObserver? = null
 ) : MountDelegateTarget {
 
   protected val idToMountedItemMap: LongSparseArray<MountItem?> = LongSparseArray()

@@ -33,5 +33,5 @@ class MountContext
 internal constructor(
     val androidContext: Context,
     val tracer: Systracer,
-    val binderObserver: BinderObserver = BinderObserver.Default
+    val binderObserver: BinderObserver? = null
 )

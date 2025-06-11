@@ -920,7 +920,12 @@ private class BinderHolder(
   @Suppress("UNCHECKED_CAST")
   fun bind(context: MountContext, content: Any, layoutData: Any?): Any? {
     var binderData: Any? = null
-    context.binderObserver.observeBind(binderId) {
+    if (context.binderObserver != null) {
+      context.binderObserver.observeBind(binderId) {
+        val binder = binder as RenderUnit.Binder<Any?, Any, Any>
+        binderData = binder.bind(context.androidContext, content, model, layoutData)
+      }
+    } else {
       val binder = binder as RenderUnit.Binder<Any?, Any, Any>
       binderData = binder.bind(context.androidContext, content, model, layoutData)
     }
@@ -929,7 +934,12 @@ private class BinderHolder(
 
   @Suppress("UNCHECKED_CAST")
   fun unbind(context: MountContext, content: Any, layoutData: Any?, bindData: Any?) {
-    context.binderObserver.observeUnbind(binderId) {
+    if (context.binderObserver != null) {
+      context.binderObserver.observeBind(binderId) {
+        val binder = binder as RenderUnit.Binder<Any?, Any, Any>
+        binder.unbind(context.androidContext, content, model, layoutData, bindData)
+      }
+    } else {
       val binder = binder as RenderUnit.Binder<Any?, Any, Any>
       binder.unbind(context.androidContext, content, model, layoutData, bindData)
     }

@@ -86,16 +86,4 @@ abstract class BinderObserver {
    * @param func logic that executes the [RenderUnit.Binder.unbind] of the associated binder
    */
   protected abstract fun onUnbind(binderId: BinderId, func: () -> Unit)
-
-  /**
-   * The default BinderObserver implementation.
-   *
-   * This implementation simply executes the given func during [observeBind] and [observeUnbind]
-   */
-  internal object Default : BinderObserver() {
-
-    override fun onBind(binderId: BinderId, func: () -> Unit): Unit = func()
-
-    override fun onUnbind(binderId: BinderId, func: () -> Unit): Unit = func()
-  }
 }
