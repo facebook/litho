@@ -116,7 +116,7 @@ internal class KBinder<Model, Content>(
   override val description: String
     get() = "binder:${describe()}"
 
-  override val type: BinderKey = ClassBinderKey(bindFunc.javaClass)
+  override val key: BinderKey = ClassBinderKey(bindFunc.javaClass)
 
   override fun shouldUpdate(
       currentModel: Model,

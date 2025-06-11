@@ -666,11 +666,11 @@ constructor(
   }
 
   open fun containsAttachBinder(delegateBinder: DelegateBinder<*, *, *>): Boolean {
-    return attachBinderKeyToDelegateMap?.containsKey(delegateBinder.binder.type) ?: false
+    return attachBinderKeyToDelegateMap?.containsKey(delegateBinder.binder.key) ?: false
   }
 
   open fun containsOptionalMountBinder(delegateBinder: DelegateBinder<*, *, *>): Boolean {
-    return optionalMountBinderKeyToDelegateMap?.containsKey(delegateBinder.binder.type) ?: false
+    return optionalMountBinderKeyToDelegateMap?.containsKey(delegateBinder.binder.key) ?: false
   }
 
   /**
@@ -728,7 +728,7 @@ constructor(
     val description: String
       get() = getSectionNameForTracing(javaClass)
 
-    val type: BinderKey
+    val key: BinderKey
       get() = ClassBinderKey(javaClass)
   }
 
@@ -762,7 +762,7 @@ constructor(
         renderUnitId: Long,
         type: BinderType
     ) {
-      val binderId = BinderId(renderUnitId, type, key = delegate.binder.type)
+      val binderId = BinderId(renderUnitId, type, key = delegate.binder.key)
       val binderHolder = BinderHolder(binderId, delegate.binder, delegate.model)
       val prevBinder = binderKeyToBinderMap.put(binderId.key, binderHolder)
       if (prevBinder != null) {

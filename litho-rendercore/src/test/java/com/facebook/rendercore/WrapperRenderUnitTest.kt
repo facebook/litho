@@ -138,13 +138,13 @@ class WrapperRenderUnitTest {
 
     // assert optional mount binders bind data is correct
     assertThat(wrapperBindData.optionalMountBindersBindData).hasSize(4)
-    assertThat(wrapperBindData.optionalMountBindersBindData?.get(originalMountBinder1.type))
+    assertThat(wrapperBindData.optionalMountBindersBindData?.get(originalMountBinder1.key))
         .isEqualTo(3)
-    assertThat(wrapperBindData.optionalMountBindersBindData?.get(originalMountBinder2.type))
+    assertThat(wrapperBindData.optionalMountBindersBindData?.get(originalMountBinder2.key))
         .isEqualTo(4)
-    assertThat(wrapperBindData.optionalMountBindersBindData?.get(wrapperMountBinder1.type))
+    assertThat(wrapperBindData.optionalMountBindersBindData?.get(wrapperMountBinder1.key))
         .isEqualTo(5)
-    assertThat(wrapperBindData.optionalMountBindersBindData?.get(wrapperMountBinder2.type))
+    assertThat(wrapperBindData.optionalMountBindersBindData?.get(wrapperMountBinder2.key))
         .isEqualTo(6)
   }
 
@@ -173,10 +173,10 @@ class WrapperRenderUnitTest {
 
     // assert attach binders bind data is correct
     assertThat(wrapperBindData.attachBindersBindData).hasSize(4)
-    assertThat(wrapperBindData.attachBindersBindData?.get(originalAttachBinder1.type)).isEqualTo(1)
-    assertThat(wrapperBindData.attachBindersBindData?.get(originalAttachBinder2.type)).isEqualTo(2)
-    assertThat(wrapperBindData.attachBindersBindData?.get(wrapperAttachBinder1.type)).isEqualTo(3)
-    assertThat(wrapperBindData.attachBindersBindData?.get(wrapperAttachBinder2.type)).isEqualTo(4)
+    assertThat(wrapperBindData.attachBindersBindData?.get(originalAttachBinder1.key)).isEqualTo(1)
+    assertThat(wrapperBindData.attachBindersBindData?.get(originalAttachBinder2.key)).isEqualTo(2)
+    assertThat(wrapperBindData.attachBindersBindData?.get(wrapperAttachBinder1.key)).isEqualTo(3)
+    assertThat(wrapperBindData.attachBindersBindData?.get(wrapperAttachBinder2.key)).isEqualTo(4)
   }
 
   @Test
@@ -207,10 +207,10 @@ class WrapperRenderUnitTest {
         RenderUnitTest.createBindData(
             mutableListOf<Any>(1, 2),
             Arrays.asList(
-                Pair(originalMountBinder1.type, 3),
-                Pair(originalMountBinder2.type, 4),
-                Pair(wrapperMountBinder1.type, 7),
-                Pair(wrapperMountBinder2.type, 8)),
+                Pair(originalMountBinder1.key, 3),
+                Pair(originalMountBinder2.key, 4),
+                Pair(wrapperMountBinder1.key, 7),
+                Pair(wrapperMountBinder2.key, 8)),
             null)
     wrapperRenderUnit.unmountBinders(context, content, null, bindData)
 
@@ -251,10 +251,10 @@ class WrapperRenderUnitTest {
             null,
             null,
             listOf(
-                Pair(originalAttachBinder1.type, 1),
-                Pair(originalAttachBinder2.type, 2),
-                Pair(wrapperAttachBinder1.type, 3),
-                Pair(wrapperAttachBinder2.type, 4)))
+                Pair(originalAttachBinder1.key, 1),
+                Pair(originalAttachBinder2.key, 2),
+                Pair(wrapperAttachBinder1.key, 3),
+                Pair(wrapperAttachBinder2.key, 4)))
     wrapperRenderUnit.detachBinders(context, content, null, bindData)
 
     // assert that unbind was called on original RU in correct order and with correct bind data
@@ -324,15 +324,15 @@ class WrapperRenderUnitTest {
         RenderUnitTest.createBindData(
             mutableListOf<Any>(1, 2),
             Arrays.asList(
-                Pair(originalMountBinder1.type, 5),
-                Pair(originalMountBinder2.type, 6),
-                Pair(wrapperMountBinder1.type, 7),
-                Pair(wrapperMountBinder2.type, 8)),
+                Pair(originalMountBinder1.key, 5),
+                Pair(originalMountBinder2.key, 6),
+                Pair(wrapperMountBinder1.key, 7),
+                Pair(wrapperMountBinder2.key, 8)),
             Arrays.asList(
-                Pair(originalAttachBinder1.type, 9),
-                Pair(originalAttachBinder2.type, 10),
-                Pair(wrapperAttachBinder1.type, 11),
-                Pair(wrapperAttachBinder2.type, 12)))
+                Pair(originalAttachBinder1.key, 9),
+                Pair(originalAttachBinder2.key, 10),
+                Pair(wrapperAttachBinder1.key, 11),
+                Pair(wrapperAttachBinder2.key, 12)))
     nextWrapperRU.updateBinders(
         context, content, currentWrapperRU, null, Any(), null, bindData, true)
 
@@ -357,16 +357,16 @@ class WrapperRenderUnitTest {
 
     // assert optional mount binders bind data is correct
     assertThat(bindData.optionalMountBindersBindData).hasSize(4)
-    assertThat(bindData.optionalMountBindersBindData?.get(originalMountBinder1.type)).isEqualTo(300)
-    assertThat(bindData.optionalMountBindersBindData?.get(originalMountBinder2.type)).isEqualTo(400)
-    assertThat(bindData.optionalMountBindersBindData?.get(wrapperMountBinder1.type)).isEqualTo(900)
-    assertThat(bindData.optionalMountBindersBindData?.get(wrapperMountBinder2.type)).isEqualTo(1000)
+    assertThat(bindData.optionalMountBindersBindData?.get(originalMountBinder1.key)).isEqualTo(300)
+    assertThat(bindData.optionalMountBindersBindData?.get(originalMountBinder2.key)).isEqualTo(400)
+    assertThat(bindData.optionalMountBindersBindData?.get(wrapperMountBinder1.key)).isEqualTo(900)
+    assertThat(bindData.optionalMountBindersBindData?.get(wrapperMountBinder2.key)).isEqualTo(1000)
 
     // assert attach binders bind data is correct
     assertThat(bindData.attachBindersBindData).hasSize(4)
-    assertThat(bindData.attachBindersBindData?.get(originalAttachBinder1.type)).isEqualTo(100)
-    assertThat(bindData.attachBindersBindData?.get(originalAttachBinder2.type)).isEqualTo(200)
-    assertThat(bindData.attachBindersBindData?.get(wrapperAttachBinder1.type)).isEqualTo(700)
-    assertThat(bindData.attachBindersBindData?.get(wrapperAttachBinder2.type)).isEqualTo(800)
+    assertThat(bindData.attachBindersBindData?.get(originalAttachBinder1.key)).isEqualTo(100)
+    assertThat(bindData.attachBindersBindData?.get(originalAttachBinder2.key)).isEqualTo(200)
+    assertThat(bindData.attachBindersBindData?.get(wrapperAttachBinder1.key)).isEqualTo(700)
+    assertThat(bindData.attachBindersBindData?.get(wrapperAttachBinder2.key)).isEqualTo(800)
   }
 }
