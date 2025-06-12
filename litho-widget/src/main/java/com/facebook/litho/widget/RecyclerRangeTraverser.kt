@@ -37,7 +37,7 @@ interface RecyclerRangeTraverser {
       processor: Processor
   )
 
-  interface Processor {
+  fun interface Processor {
 
     /** @return Whether or not to continue */
     fun process(index: Int): Boolean

@@ -132,7 +132,7 @@ class LazyCollectionController {
   fun smoothScrollToIndex(
       index: Int,
       @Px offset: Int = 0,
-      smoothScrollAlignmentType: SmoothScrollAlignmentType? = SmoothScrollAlignmentType.DEFAULT,
+      smoothScrollAlignmentType: SmoothScrollAlignmentType = SmoothScrollAlignmentType.DEFAULT,
   ) {
     scrollerDelegate?.smoothScrollToIndex(index, offset, smoothScrollAlignmentType)
   }
@@ -166,7 +166,7 @@ class LazyCollectionController {
   fun smoothScrollToId(
       id: Any,
       @Px offset: Int = 0,
-      smoothScrollAlignmentType: SmoothScrollAlignmentType? = SmoothScrollAlignmentType.DEFAULT,
+      smoothScrollAlignmentType: SmoothScrollAlignmentType = SmoothScrollAlignmentType.DEFAULT,
   ) {
     scrollerDelegate?.smoothScrollToId(id, offset, smoothScrollAlignmentType)
   }
@@ -186,7 +186,7 @@ sealed interface ScrollerDelegate {
   fun smoothScrollToId(
       id: Any,
       @Px offset: Int = 0,
-      smoothScrollAlignmentType: SmoothScrollAlignmentType? = SmoothScrollAlignmentType.DEFAULT,
+      smoothScrollAlignmentType: SmoothScrollAlignmentType = SmoothScrollAlignmentType.DEFAULT,
   )
 
   /**
@@ -201,7 +201,7 @@ sealed interface ScrollerDelegate {
   fun smoothScrollToIndex(
       index: Int,
       @Px offset: Int = 0,
-      smoothScrollAlignmentType: SmoothScrollAlignmentType? = SmoothScrollAlignmentType.DEFAULT,
+      smoothScrollAlignmentType: SmoothScrollAlignmentType = SmoothScrollAlignmentType.DEFAULT,
   )
 
   /**
@@ -232,7 +232,7 @@ sealed interface ScrollerDelegate {
     override fun smoothScrollToId(
         id: Any,
         offset: Int,
-        smoothScrollAlignmentType: SmoothScrollAlignmentType?
+        smoothScrollAlignmentType: SmoothScrollAlignmentType
     ) {
       sectionTree.requestSmoothFocusOnRoot(id, offset, smoothScrollAlignmentType)
     }
@@ -240,7 +240,7 @@ sealed interface ScrollerDelegate {
     override fun smoothScrollToIndex(
         index: Int,
         offset: Int,
-        smoothScrollAlignmentType: SmoothScrollAlignmentType?
+        smoothScrollAlignmentType: SmoothScrollAlignmentType
     ) {
       sectionTree.requestSmoothFocusOnRoot(index, offset, smoothScrollAlignmentType)
     }
@@ -259,7 +259,7 @@ sealed interface ScrollerDelegate {
     override fun smoothScrollToId(
         id: Any,
         offset: Int,
-        smoothScrollAlignmentType: SmoothScrollAlignmentType?
+        smoothScrollAlignmentType: SmoothScrollAlignmentType
     ) {
       recyclerBinder.scrollSmoothToPosition(id, offset, smoothScrollAlignmentType)
     }
@@ -267,7 +267,7 @@ sealed interface ScrollerDelegate {
     override fun smoothScrollToIndex(
         index: Int,
         offset: Int,
-        smoothScrollAlignmentType: SmoothScrollAlignmentType?
+        smoothScrollAlignmentType: SmoothScrollAlignmentType
     ) {
       recyclerBinder.scrollSmoothToPosition(index, offset, smoothScrollAlignmentType)
     }
@@ -335,7 +335,7 @@ fun ResourcesScope.smoothScrollToIndex(
     controller: LazyCollectionController,
     index: Int,
     offset: Dimen = 0.px,
-    smoothScrollAlignmentType: SmoothScrollAlignmentType? = SmoothScrollAlignmentType.DEFAULT,
+    smoothScrollAlignmentType: SmoothScrollAlignmentType = SmoothScrollAlignmentType.DEFAULT,
 ) = controller.smoothScrollToIndex(index, offset.toPixels(), smoothScrollAlignmentType)
 
 /**
@@ -367,5 +367,5 @@ fun ResourcesScope.smoothScrollToId(
     controller: LazyCollectionController,
     id: Any,
     offset: Dimen = 0.px,
-    smoothScrollAlignmentType: SmoothScrollAlignmentType? = SmoothScrollAlignmentType.DEFAULT,
+    smoothScrollAlignmentType: SmoothScrollAlignmentType = SmoothScrollAlignmentType.DEFAULT,
 ) = controller.smoothScrollToId(id, offset.toPixels(), smoothScrollAlignmentType)

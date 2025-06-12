@@ -162,7 +162,7 @@ class TestCollection {
 
   internal val recyclerView: RecyclerView
     get() {
-      val recyclerView: RecyclerView? = Whitebox.getInternalState(recyclerBinder, "mMountedView")
+      val recyclerView: RecyclerView? = Whitebox.getInternalState(recyclerBinder, "mountedView")
 
       return requireNotNull(recyclerView) {
         """

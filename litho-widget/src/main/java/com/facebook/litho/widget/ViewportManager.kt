@@ -32,7 +32,7 @@ import kotlin.math.max
  * the [OnScrollListener] returned from [ViewportManager.getScrollListener] in the [RecyclerView]
  */
 @ThreadSafe
-internal class ViewportManager(
+class ViewportManager(
     private var currentFirstVisiblePosition: Int,
     private var currentLastVisiblePosition: Int,
     private val layoutInfo: LayoutInfo

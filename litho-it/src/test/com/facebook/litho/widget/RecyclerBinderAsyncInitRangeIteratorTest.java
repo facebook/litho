@@ -108,12 +108,12 @@ public class RecyclerBinderAsyncInitRangeIteratorTest {
     mRecyclerBinder.insertRangeAt(0, new ArrayList<>(Arrays.asList(components)));
 
     final int initialComponentPosition =
-        findInitialComponentPosition(mAllHoldersList, mRecyclerBinder.mTraverseLayoutBackwards);
+        findInitialComponentPosition(mAllHoldersList, mRecyclerBinder.traverseLayoutBackwards);
     assertThat(initialComponentPosition).isEqualTo(0);
 
     final Iterator<ComponentTreeHolder> asyncRangeIterator =
         new RecyclerBinder.ComponentAsyncInitRangeIterator(
-            mAllHoldersList, initialComponentPosition, 4, mRecyclerBinder.mTraverseLayoutBackwards);
+            mAllHoldersList, initialComponentPosition, 4, mRecyclerBinder.traverseLayoutBackwards);
     assertIterator(
         asyncRangeIterator,
         new LinkedList<>(
@@ -139,12 +139,12 @@ public class RecyclerBinderAsyncInitRangeIteratorTest {
     mRecyclerBinder.insertRangeAt(0, new ArrayList<>(Arrays.asList(components)));
 
     final int initialComponentPosition =
-        findInitialComponentPosition(mAllHoldersList, mRecyclerBinder.mTraverseLayoutBackwards);
+        findInitialComponentPosition(mAllHoldersList, mRecyclerBinder.traverseLayoutBackwards);
     assertThat(initialComponentPosition).isEqualTo(1);
 
     final Iterator<ComponentTreeHolder> asyncRangeIterator =
         new RecyclerBinder.ComponentAsyncInitRangeIterator(
-            mAllHoldersList, initialComponentPosition, 4, mRecyclerBinder.mTraverseLayoutBackwards);
+            mAllHoldersList, initialComponentPosition, 4, mRecyclerBinder.traverseLayoutBackwards);
     assertIterator(
         asyncRangeIterator,
         new LinkedList<>(
@@ -163,12 +163,12 @@ public class RecyclerBinderAsyncInitRangeIteratorTest {
     binder.insertRangeAt(0, new ArrayList<>(Arrays.asList(components)));
 
     final int initialComponentPosition =
-        findInitialComponentPosition(mAllHoldersList, binder.mTraverseLayoutBackwards);
+        findInitialComponentPosition(mAllHoldersList, binder.traverseLayoutBackwards);
     assertThat(initialComponentPosition).isEqualTo(9);
 
     final Iterator<ComponentTreeHolder> asyncRangeIterator =
         new RecyclerBinder.ComponentAsyncInitRangeIterator(
-            mAllHoldersList, initialComponentPosition, 4, binder.mTraverseLayoutBackwards);
+            mAllHoldersList, initialComponentPosition, 4, binder.traverseLayoutBackwards);
     assertIterator(
         asyncRangeIterator,
         new LinkedList<>(
@@ -189,12 +189,12 @@ public class RecyclerBinderAsyncInitRangeIteratorTest {
     mAllHoldersList.get(8).computeLayoutSync(mComponentContext, 0, 0, new Size());
 
     final int initialComponentPosition =
-        findInitialComponentPosition(mAllHoldersList, binder.mTraverseLayoutBackwards);
+        findInitialComponentPosition(mAllHoldersList, binder.traverseLayoutBackwards);
     assertThat(initialComponentPosition).isEqualTo(9);
 
     final Iterator<ComponentTreeHolder> asyncRangeIterator =
         new RecyclerBinder.ComponentAsyncInitRangeIterator(
-            mAllHoldersList, initialComponentPosition, 4, binder.mTraverseLayoutBackwards);
+            mAllHoldersList, initialComponentPosition, 4, binder.traverseLayoutBackwards);
     assertIterator(
         asyncRangeIterator,
         new LinkedList<>(
@@ -222,12 +222,12 @@ public class RecyclerBinderAsyncInitRangeIteratorTest {
     mAllHoldersList.get(6).computeLayoutSync(mComponentContext, 0, 0, new Size());
 
     final int initialComponentPosition =
-        findInitialComponentPosition(mAllHoldersList, mRecyclerBinder.mTraverseLayoutBackwards);
+        findInitialComponentPosition(mAllHoldersList, mRecyclerBinder.traverseLayoutBackwards);
     assertThat(initialComponentPosition).isEqualTo(4);
 
     final Iterator<ComponentTreeHolder> asyncRangeIterator =
         new RecyclerBinder.ComponentAsyncInitRangeIterator(
-            mAllHoldersList, initialComponentPosition, 4, mRecyclerBinder.mTraverseLayoutBackwards);
+            mAllHoldersList, initialComponentPosition, 4, mRecyclerBinder.traverseLayoutBackwards);
     assertIterator(asyncRangeIterator, new LinkedList<>(Arrays.asList(components[9])));
   }
 

@@ -83,7 +83,7 @@ public class RecyclerBinderCanRemeasureTest {
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
     assertThat(mRecyclerView.getPostAnimationRunnableList().size()).isEqualTo(1);
     assertThat(mRecyclerView.getPostAnimationRunnableList().get(0))
-        .isSameAs(recyclerBinder.mRemeasureRunnable);
+        .isSameAs(recyclerBinder.remeasureRunnable);
 
     recyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
     assertThat(size.width).isEqualTo(1000);

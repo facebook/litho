@@ -273,7 +273,8 @@ public class LithoStartupLoggerTest {
   }
 
   void createBindAndMountLithoView(RecyclerView recyclerView, int position) {
-    final RecyclerView.ViewHolder vh = recyclerView.getAdapter().onCreateViewHolder(null, 0);
+    final RecyclerView.ViewHolder vh =
+        recyclerView.getAdapter().onCreateViewHolder(recyclerView, 0);
     recyclerView.getAdapter().onBindViewHolder(vh, position);
     ComponentTestHelper.mountComponent(
         (LithoView) vh.itemView, mRecyclerBinder.getComponentAt(position));

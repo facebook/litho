@@ -705,8 +705,8 @@ public class RecyclerBinderTest {
     }
     mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
-    verify(recyclerView).removeCallbacks(mRecyclerBinder.mRemeasureRunnable);
-    verify(recyclerView).postOnAnimation(mRecyclerBinder.mRemeasureRunnable);
+    verify(recyclerView).removeCallbacks(mRecyclerBinder.remeasureRunnable);
+    verify(recyclerView).postOnAnimation(mRecyclerBinder.remeasureRunnable);
   }
 
   @Test
@@ -728,8 +728,8 @@ public class RecyclerBinderTest {
     mRecyclerBinder.insertRangeAt(0, components);
     mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
-    verify(recyclerView).removeCallbacks(mRecyclerBinder.mRemeasureRunnable);
-    verify(recyclerView).postOnAnimation(mRecyclerBinder.mRemeasureRunnable);
+    verify(recyclerView).removeCallbacks(mRecyclerBinder.remeasureRunnable);
+    verify(recyclerView).postOnAnimation(mRecyclerBinder.remeasureRunnable);
   }
 
   @Test
@@ -759,8 +759,8 @@ public class RecyclerBinderTest {
     }
     mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
-    verify(recyclerView).removeCallbacks(mRecyclerBinder.mRemeasureRunnable);
-    verify(recyclerView).postOnAnimation(mRecyclerBinder.mRemeasureRunnable);
+    verify(recyclerView).removeCallbacks(mRecyclerBinder.remeasureRunnable);
+    verify(recyclerView).postOnAnimation(mRecyclerBinder.remeasureRunnable);
   }
 
   @Test
@@ -791,8 +791,8 @@ public class RecyclerBinderTest {
     mRecyclerBinder.updateRangeAt(0, updatedComponents);
     mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
-    verify(recyclerView).removeCallbacks(mRecyclerBinder.mRemeasureRunnable);
-    verify(recyclerView).postOnAnimation(mRecyclerBinder.mRemeasureRunnable);
+    verify(recyclerView).removeCallbacks(mRecyclerBinder.remeasureRunnable);
+    verify(recyclerView).postOnAnimation(mRecyclerBinder.remeasureRunnable);
   }
 
   @Test
@@ -814,8 +814,8 @@ public class RecyclerBinderTest {
     }
     mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
-    verify(recyclerView, never()).removeCallbacks(mRecyclerBinder.mRemeasureRunnable);
-    verify(recyclerView, never()).postOnAnimation(mRecyclerBinder.mRemeasureRunnable);
+    verify(recyclerView, never()).removeCallbacks(mRecyclerBinder.remeasureRunnable);
+    verify(recyclerView, never()).postOnAnimation(mRecyclerBinder.remeasureRunnable);
   }
 
   @Test
@@ -1292,7 +1292,7 @@ public class RecyclerBinderTest {
     when(mLayoutInfo.findFirstVisibleItemPosition()).thenReturn(firstVisiblePosition);
     when(mLayoutInfo.findLastVisibleItemPosition()).thenReturn(lastVisiblePosition);
 
-    mRecyclerBinder.mViewportManager.onViewportChanged(ViewportInfo.State.DATA_CHANGES);
+    mRecyclerBinder.viewportManager.onViewportChanged(ViewportInfo.State.DATA_CHANGES);
   }
 
   @Test
@@ -1307,18 +1307,18 @@ public class RecyclerBinderTest {
 
     changeViewportTo(firstVisible, lastVisible);
 
-    assertThat(mRecyclerBinder.mViewportManager.shouldUpdate()).isFalse();
+    assertThat(mRecyclerBinder.viewportManager.shouldUpdate()).isFalse();
 
     int removeRangeSize = rangeSize;
     // Remove above the visible range
     mRecyclerBinder.removeRangeAt(0, removeRangeSize);
     mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
-    assertThat(mRecyclerBinder.mViewportManager.shouldUpdate()).isTrue();
+    assertThat(mRecyclerBinder.viewportManager.shouldUpdate()).isTrue();
 
     // compute range not yet updated, range will be updated in next frame
-    assertThat(mRecyclerBinder.mCurrentFirstVisiblePosition).isEqualTo(firstVisible);
-    assertThat(mRecyclerBinder.mCurrentLastVisiblePosition).isEqualTo(lastVisible);
+    assertThat(mRecyclerBinder.currentFirstVisiblePosition).isEqualTo(firstVisible);
+    assertThat(mRecyclerBinder.currentLastVisiblePosition).isEqualTo(lastVisible);
   }
 
   @Test
@@ -1333,18 +1333,18 @@ public class RecyclerBinderTest {
 
     changeViewportTo(firstVisible, lastVisible);
 
-    assertThat(mRecyclerBinder.mViewportManager.shouldUpdate()).isFalse();
+    assertThat(mRecyclerBinder.viewportManager.shouldUpdate()).isFalse();
 
     int removeRangeSize = rangeSize;
     // Remove below the visible range
     mRecyclerBinder.removeRangeAt(lastVisible + 1, removeRangeSize);
     mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
-    assertThat(mRecyclerBinder.mViewportManager.shouldUpdate()).isFalse();
+    assertThat(mRecyclerBinder.viewportManager.shouldUpdate()).isFalse();
 
     // compute range has been updated and range did not change
-    assertThat(mRecyclerBinder.mCurrentFirstVisiblePosition).isEqualTo(firstVisible);
-    assertThat(mRecyclerBinder.mCurrentLastVisiblePosition).isEqualTo(lastVisible);
+    assertThat(mRecyclerBinder.currentFirstVisiblePosition).isEqualTo(firstVisible);
+    assertThat(mRecyclerBinder.currentLastVisiblePosition).isEqualTo(lastVisible);
   }
 
   @Test
@@ -1528,21 +1528,21 @@ public class RecyclerBinderTest {
           }
         });
 
-    assertThat(mRecyclerBinder.mRenderInfoViewCreatorController.viewTypeToViewCreator.size())
+    assertThat(mRecyclerBinder.renderInfoViewCreatorController.viewTypeToViewCreator.size())
         .isEqualTo(1);
-    assertThat(mRecyclerBinder.mRenderInfoViewCreatorController.viewCreatorToViewType.size())
+    assertThat(mRecyclerBinder.renderInfoViewCreatorController.viewCreatorToViewType.size())
         .isEqualTo(1);
 
     ViewCreator obtainedViewCreator =
         mRecyclerBinder
-            .mRenderInfoViewCreatorController
+            .renderInfoViewCreatorController
             .viewCreatorToViewType
             .keySet()
             .iterator()
             .next();
     assertThat(obtainedViewCreator).isEqualTo(VIEW_CREATOR_1);
     assertThat(
-            mRecyclerBinder.mRenderInfoViewCreatorController.viewTypeToViewCreator.indexOfValue(
+            mRecyclerBinder.renderInfoViewCreatorController.viewTypeToViewCreator.indexOfValue(
                 obtainedViewCreator))
         .isGreaterThanOrEqualTo(0);
   }
@@ -1566,15 +1566,15 @@ public class RecyclerBinderTest {
           }
         });
 
-    assertThat(mRecyclerBinder.mRenderInfoViewCreatorController.viewTypeToViewCreator.size())
+    assertThat(mRecyclerBinder.renderInfoViewCreatorController.viewTypeToViewCreator.size())
         .isEqualTo(4);
-    assertThat(mRecyclerBinder.mRenderInfoViewCreatorController.viewCreatorToViewType.size())
+    assertThat(mRecyclerBinder.renderInfoViewCreatorController.viewCreatorToViewType.size())
         .isEqualTo(4);
 
     for (ViewCreator obtainedViewCreator :
-        mRecyclerBinder.mRenderInfoViewCreatorController.viewCreatorToViewType.keySet()) {
+        mRecyclerBinder.renderInfoViewCreatorController.viewCreatorToViewType.keySet()) {
       assertThat(
-              mRecyclerBinder.mRenderInfoViewCreatorController.viewTypeToViewCreator.indexOfValue(
+              mRecyclerBinder.renderInfoViewCreatorController.viewTypeToViewCreator.indexOfValue(
                   obtainedViewCreator))
           .isGreaterThanOrEqualTo(0);
     }
@@ -1593,9 +1593,9 @@ public class RecyclerBinderTest {
             .build());
     mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
-    assertThat(mRecyclerBinder.mRenderInfoViewCreatorController.viewCreatorToViewType.size())
+    assertThat(mRecyclerBinder.renderInfoViewCreatorController.viewCreatorToViewType.size())
         .isEqualTo(1);
-    assertThat(mRecyclerBinder.mRenderInfoViewCreatorController.viewTypeToViewCreator.size())
+    assertThat(mRecyclerBinder.renderInfoViewCreatorController.viewTypeToViewCreator.size())
         .isEqualTo(1);
 
     mRecyclerBinder.insertItemAt(
@@ -1606,18 +1606,18 @@ public class RecyclerBinderTest {
             .build());
     mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
-    assertThat(mRecyclerBinder.mRenderInfoViewCreatorController.viewCreatorToViewType.size())
+    assertThat(mRecyclerBinder.renderInfoViewCreatorController.viewCreatorToViewType.size())
         .isEqualTo(2);
-    assertThat(mRecyclerBinder.mRenderInfoViewCreatorController.viewTypeToViewCreator.size())
+    assertThat(mRecyclerBinder.renderInfoViewCreatorController.viewTypeToViewCreator.size())
         .isEqualTo(2);
 
     mRecyclerBinder.removeItemAt(1);
     mRecyclerBinder.removeItemAt(1);
     mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
-    assertThat(mRecyclerBinder.mRenderInfoViewCreatorController.viewCreatorToViewType.size())
+    assertThat(mRecyclerBinder.renderInfoViewCreatorController.viewCreatorToViewType.size())
         .isEqualTo(2);
-    assertThat(mRecyclerBinder.mRenderInfoViewCreatorController.viewTypeToViewCreator.size())
+    assertThat(mRecyclerBinder.renderInfoViewCreatorController.viewTypeToViewCreator.size())
         .isEqualTo(2);
   }
 
@@ -1639,9 +1639,9 @@ public class RecyclerBinderTest {
             .build());
     mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
-    assertThat(mRecyclerBinder.mRenderInfoViewCreatorController.viewCreatorToViewType.size())
+    assertThat(mRecyclerBinder.renderInfoViewCreatorController.viewCreatorToViewType.size())
         .isEqualTo(2);
-    assertThat(mRecyclerBinder.mRenderInfoViewCreatorController.viewTypeToViewCreator.size())
+    assertThat(mRecyclerBinder.renderInfoViewCreatorController.viewTypeToViewCreator.size())
         .isEqualTo(2);
 
     mRecyclerBinder.updateItemAt(
@@ -1652,9 +1652,9 @@ public class RecyclerBinderTest {
             .build());
     mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
-    assertThat(mRecyclerBinder.mRenderInfoViewCreatorController.viewCreatorToViewType.size())
+    assertThat(mRecyclerBinder.renderInfoViewCreatorController.viewCreatorToViewType.size())
         .isEqualTo(2);
-    assertThat(mRecyclerBinder.mRenderInfoViewCreatorController.viewTypeToViewCreator.size())
+    assertThat(mRecyclerBinder.renderInfoViewCreatorController.viewTypeToViewCreator.size())
         .isEqualTo(2);
 
     mRecyclerBinder.updateItemAt(
@@ -1665,9 +1665,9 @@ public class RecyclerBinderTest {
             .build());
     mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
-    assertThat(mRecyclerBinder.mRenderInfoViewCreatorController.viewCreatorToViewType.size())
+    assertThat(mRecyclerBinder.renderInfoViewCreatorController.viewCreatorToViewType.size())
         .isEqualTo(3);
-    assertThat(mRecyclerBinder.mRenderInfoViewCreatorController.viewTypeToViewCreator.size())
+    assertThat(mRecyclerBinder.renderInfoViewCreatorController.viewTypeToViewCreator.size())
         .isEqualTo(3);
   }
 
@@ -1687,7 +1687,7 @@ public class RecyclerBinderTest {
             .build());
     mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
-    assertThat(recyclerBinder.mRenderInfoViewCreatorController.viewCreatorToViewType.size())
+    assertThat(recyclerBinder.renderInfoViewCreatorController.viewCreatorToViewType.size())
         .isEqualTo(1);
   }
 
@@ -4459,7 +4459,7 @@ public class RecyclerBinderTest {
     recyclerBinder.notifyChangeSetComplete(false, changeSetCompleteCallback);
 
     verify(changeSetCompleteCallback).onDataRendered(eq(true), anyLong());
-    verify(recyclerView, never()).postOnAnimation(recyclerBinder.mRemeasureRunnable);
+    verify(recyclerView, never()).postOnAnimation(recyclerBinder.remeasureRunnable);
   }
 
   @Test
@@ -4484,7 +4484,7 @@ public class RecyclerBinderTest {
     // Mount view after insertions
     recyclerBinder.mount(recyclerView);
 
-    assertThat(recyclerBinder.mDataRenderedCallbacks).isNotEmpty();
+    assertThat(recyclerBinder.dataRenderedCallbacks).isNotEmpty();
   }
 
   @Test
@@ -4514,7 +4514,7 @@ public class RecyclerBinderTest {
     // Mount view after insertions
     recyclerBinder.mount(recyclerView);
 
-    assertThat(recyclerBinder.mDataRenderedCallbacks).isNotEmpty();
+    assertThat(recyclerBinder.dataRenderedCallbacks).isNotEmpty();
   }
 
   @Test
@@ -4540,7 +4540,7 @@ public class RecyclerBinderTest {
     recyclerBinder.insertRangeAt(0, renderInfos);
     recyclerBinder.notifyChangeSetComplete(true, changeSetCompleteCallback);
 
-    assertThat(recyclerBinder.mDataRenderedCallbacks).isEmpty();
+    assertThat(recyclerBinder.dataRenderedCallbacks).isEmpty();
   }
 
   @Test
@@ -4569,7 +4569,7 @@ public class RecyclerBinderTest {
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
 
-    assertThat(recyclerBinder.mDataRenderedCallbacks).isEmpty();
+    assertThat(recyclerBinder.dataRenderedCallbacks).isEmpty();
   }
 
   @Test
@@ -4667,7 +4667,7 @@ public class RecyclerBinderTest {
 
     recyclerBinder.notifyChangeSetComplete(true, changeSetCompleteCallback);
     assertThat(reporter.hasMessageType(LogLevel.ERROR)).isTrue();
-    assertThat(recyclerBinder.mDataRenderedCallbacks).isEmpty();
+    assertThat(recyclerBinder.dataRenderedCallbacks).isEmpty();
   }
 
   @Test(expected = IllegalStateException.class)

@@ -83,8 +83,8 @@ public class RecyclerBinderSubAdapterTest {
         true, RecyclerBinderTest.NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     recyclerBinder.updateSubAdapterVisibleRange(0, 10);
-    assertThat(recyclerBinder.mCurrentFirstVisiblePosition).isEqualTo(0);
-    assertThat(recyclerBinder.mCurrentLastVisiblePosition).isEqualTo(10);
+    assertThat(recyclerBinder.currentFirstVisiblePosition).isEqualTo(0);
+    assertThat(recyclerBinder.currentLastVisiblePosition).isEqualTo(10);
   }
 
   @Test
