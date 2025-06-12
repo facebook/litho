@@ -18,7 +18,7 @@ package com.facebook.rendercore
 
 import android.content.Context
 import com.facebook.rendercore.extensions.RenderCoreExtension
-import com.facebook.rendercore.thread.utils.ThreadInheritingPriorityFuture
+import com.facebook.rendercore.thread.utils.PriorityInheritingFuture
 import java.util.concurrent.Callable
 
 class LayoutFuture<State, RenderContext>(
@@ -32,7 +32,7 @@ class LayoutFuture<State, RenderContext>(
     extensions: Array<RenderCoreExtension<*, *>>?,
     val sizeConstraints: SizeConstraints
 ) :
-    ThreadInheritingPriorityFuture<RenderResult<State, RenderContext>>(
+    PriorityInheritingFuture<RenderResult<State, RenderContext>>(
         "LayoutFuture",
         Callable {
           if (previousResult != null &&

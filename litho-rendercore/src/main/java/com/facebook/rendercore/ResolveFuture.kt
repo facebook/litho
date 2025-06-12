@@ -18,7 +18,7 @@ package com.facebook.rendercore
 
 import com.facebook.rendercore.RenderState.ResolveFunc
 import com.facebook.rendercore.StateUpdateReceiver.StateUpdate
-import com.facebook.rendercore.thread.utils.ThreadInheritingPriorityFuture
+import com.facebook.rendercore.thread.utils.PriorityInheritingFuture
 import java.util.concurrent.Callable
 
 class ResolveFuture<State, RenderContext, StateUpdateType : StateUpdate<*>>(
@@ -30,7 +30,7 @@ class ResolveFuture<State, RenderContext, StateUpdateType : StateUpdate<*>>(
     val version: Int,
     val frameId: Int,
 ) :
-    ThreadInheritingPriorityFuture<ResolveResult<Node<RenderContext>, State>>(
+    PriorityInheritingFuture<ResolveResult<Node<RenderContext>, State>>(
         "ResolveFuture",
         Callable {
           resolveFunc.resolve(resolveContext, committedTree, committedState, stateUpdatesToApply)

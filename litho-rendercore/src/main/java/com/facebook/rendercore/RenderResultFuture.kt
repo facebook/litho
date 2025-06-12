@@ -18,7 +18,7 @@ package com.facebook.rendercore
 
 import android.content.Context
 import com.facebook.rendercore.extensions.RenderCoreExtension
-import com.facebook.rendercore.thread.utils.ThreadInheritingPriorityFuture
+import com.facebook.rendercore.thread.utils.PriorityInheritingFuture
 import java.util.concurrent.Callable
 
 class RenderResultFuture<State, RenderContext>(
@@ -26,9 +26,7 @@ class RenderResultFuture<State, RenderContext>(
     val setRootId: Int,
     val sizeConstraints: SizeConstraints,
     callable: Callable<RenderResult<State, RenderContext>>
-) :
-    ThreadInheritingPriorityFuture<RenderResult<State, RenderContext>>(
-        "RenderResultFuture", callable) {
+) : PriorityInheritingFuture<RenderResult<State, RenderContext>>("RenderResultFuture", callable) {
 
   @Deprecated(message = "Use the constructor that accepts SizeConstraints")
   constructor(
