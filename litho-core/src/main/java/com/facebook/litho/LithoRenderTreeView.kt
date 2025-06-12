@@ -177,6 +177,7 @@ class LithoRenderTreeView @JvmOverloads constructor(context: Context, attrs: Att
     layoutState = null
     _treeState = null
     hasNewTree = true
+    super.cleanup()
     requestLayout()
   }
 }
