@@ -158,8 +158,6 @@ internal constructor(
     private val updater: StateUpdateRequester,
 ) : StateUpdater, TreeStateProvider {
 
-  constructor(state: TreeState, updater: StateUpdateRequester) : this({ state }, updater)
-
   override var isFirstMount: Boolean
     get() = treeState?.mountInfo?.isFirstMount ?: false
     set(value) {
@@ -361,6 +359,10 @@ class NestedLithoTreeLifecycleProvider : LithoTreeLifecycleProvider {
 }
 
 // endregion
+
+fun interface StateUpdateRequester {
+  fun request(update: PendingStateUpdate)
+}
 
 @DataClassGenerate(toString = Mode.OMIT, equalsHashCode = Mode.KEEP)
 data class PendingStateUpdate(
