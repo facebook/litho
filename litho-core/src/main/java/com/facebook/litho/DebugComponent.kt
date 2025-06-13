@@ -282,7 +282,7 @@ private constructor(
       for (i in 0 until mountDelegateTarget.getMountItemCount()) {
         val mountItem = mountDelegateTarget.getMountItemAt(i)
         val mountItemComponent = mountItem?.let { getRenderUnit(it).component }
-        if (mountItemComponent?.id == component.id) {
+        if (mountItemComponent?.instanceId == component.instanceId) {
           val content = mountItem.content
           val sb = StringBuilder()
           if (content is TextContent) {

@@ -121,7 +121,7 @@ internal object Layout {
         ComponentsSystrace.beginSectionWithArgs("resolveNestedTree:${component.simpleName}")
             .arg("widthSpec", "EXACTLY ${result.width}")
             .arg("heightSpec", "EXACTLY ${result.height}")
-            .arg("rootComponentId", lithoNode.tailComponent.id)
+            .arg("rootComponentId", lithoNode.tailComponent.instanceId)
             .flush()
       }
       val size: Int = lithoNode.componentCount

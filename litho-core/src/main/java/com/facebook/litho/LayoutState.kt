@@ -242,12 +242,13 @@ internal constructor(
   }
 
   fun isCompatibleComponentAndSpec(componentId: Int, widthSpec: Int, heightSpec: Int): Boolean =
-      resolveResult.component.id == componentId && isCompatibleSpec(widthSpec, heightSpec)
+      resolveResult.component.instanceId == componentId && isCompatibleSpec(widthSpec, heightSpec)
 
   fun isCompatibleSize(width: Int, height: Int): Boolean =
       this.width == width && this.height == height
 
-  fun isForComponentId(componentId: Int): Boolean = resolveResult.component.id == componentId
+  fun isForComponentId(componentId: Int): Boolean =
+      resolveResult.component.instanceId == componentId
 
   override fun getMountableOutputCount(): Int = mountableOutputs.size
 

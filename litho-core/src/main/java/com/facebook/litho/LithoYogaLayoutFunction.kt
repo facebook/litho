@@ -425,7 +425,7 @@ internal object LithoYogaLayoutFunction {
         ComponentsSystrace.beginSectionWithArgs("measure:${component.simpleName}")
             .arg("widthSpec", SizeSpec.toString(widthSpec))
             .arg("heightSpec", SizeSpec.toString(heightSpec))
-            .arg("componentId", component.id)
+            .arg("componentId", component.instanceId)
             .flush()
       }
       try {

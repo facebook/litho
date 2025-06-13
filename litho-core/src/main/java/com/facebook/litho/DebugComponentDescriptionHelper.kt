@@ -18,7 +18,6 @@ package com.facebook.litho
 
 import android.graphics.Rect
 import android.view.View
-import com.facebook.litho.DebugComponentDescriptionHelper.ExtraDescription
 import com.facebook.litho.LithoRenderUnit.Companion.getRenderUnit
 import com.facebook.litho.annotations.Prop
 import com.facebook.litho.annotations.ResType
@@ -158,7 +157,7 @@ object DebugComponentDescriptionHelper {
     for (i in 0 until mountDelegateTarget.getMountItemCount()) {
       val mountItem = mountDelegateTarget.getMountItemAt(i)
       val mountItemComponent = mountItem?.let { getRenderUnit(it).component }
-      if (mountItemComponent?.id == debugComponent.component.id) {
+      if (mountItemComponent?.instanceId == debugComponent.component.instanceId) {
         val content = mountItem.content
         if (content is TextContent) {
           for (item in content.items) {

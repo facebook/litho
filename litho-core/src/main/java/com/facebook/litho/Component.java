@@ -400,7 +400,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     if (other == null || getClass() != other.getClass()) {
       return false;
     }
-    if (getId() == other.getId()) {
+    if (getInstanceId() == other.getInstanceId()) {
       return true;
     }
     return ComponentUtils.hasEquivalentFields(this, other);
@@ -760,7 +760,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
   }
 
   // Get an id that is identical across cloned instances, but otherwise unique
-  final int getId() {
+  final int getInstanceId() {
     return mId;
   }
 

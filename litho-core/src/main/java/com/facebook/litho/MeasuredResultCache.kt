@@ -52,7 +52,7 @@ constructor(private val delegateCache: MeasuredResultCache? = null) {
    * @param layoutResult The layout result
    */
   fun addCachedResult(component: Component, node: LithoNode, layoutResult: LithoLayoutResult) {
-    addCachedResult(component.id, node, layoutResult)
+    addCachedResult(component.instanceId, node, layoutResult)
   }
 
   /**
@@ -69,7 +69,7 @@ constructor(private val delegateCache: MeasuredResultCache? = null) {
   }
 
   /** Return true if there exists a cached layout result for the given component. */
-  fun hasCachedNode(component: Component): Boolean = hasCachedNode(component.id)
+  fun hasCachedNode(component: Component): Boolean = hasCachedNode(component.instanceId)
 
   /** Return true if there exists a cached layout result for the given component ID. */
   fun hasCachedNode(componentId: Int): Boolean =
@@ -81,7 +81,7 @@ constructor(private val delegateCache: MeasuredResultCache? = null) {
       nodeToResultCache.containsKey(node) || delegateCache?.hasCachedNode(node) == true
 
   /** Returns the cached LithoNode from a given component. */
-  fun getCachedNode(component: Component): LithoNode? = getCachedNode(component.id)
+  fun getCachedNode(component: Component): LithoNode? = getCachedNode(component.instanceId)
 
   /** Returns the cached LithoNode from a given component ID. */
   fun getCachedNode(componentId: Int): LithoNode? {
@@ -90,7 +90,8 @@ constructor(private val delegateCache: MeasuredResultCache? = null) {
   }
 
   /** Returns the cached layout result for the given component, or null if it does not exist. */
-  fun getCachedResult(component: Component): LithoLayoutResult? = getCachedResult(component.id)
+  fun getCachedResult(component: Component): LithoLayoutResult? =
+      getCachedResult(component.instanceId)
 
   /** Returns the cached layout result for the given component ID, or null if it does not exist. */
   fun getCachedResult(componentId: Int): LithoLayoutResult? {
@@ -114,7 +115,7 @@ constructor(private val delegateCache: MeasuredResultCache? = null) {
 
   /** Cleares the cache generated for the given component. */
   fun clearCache(component: Component) {
-    clearCache(component.id)
+    clearCache(component.instanceId)
   }
 
   /** Cleares the cache generated for the given component ID. */

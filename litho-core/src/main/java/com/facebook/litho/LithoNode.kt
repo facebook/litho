@@ -401,7 +401,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
       return
     }
 
-    val isRoot: Boolean = (context.rootComponentId == headComponent.id)
+    val isRoot: Boolean = (context.rootComponentId == headComponent.instanceId)
 
     if (!isRoot) { // if not root component
 

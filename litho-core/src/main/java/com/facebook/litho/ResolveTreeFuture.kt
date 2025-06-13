@@ -137,7 +137,7 @@ constructor(
     if (that !is ResolveTreeFuture) {
       return false
     }
-    if (component.id != that.component.id) {
+    if (component.instanceId != that.component.instanceId) {
       return false
     }
     if (componentContext.treePropContainer !== that.componentContext.treePropContainer) {
@@ -190,7 +190,7 @@ constructor(
           }
           ComponentsSystrace.beginSectionWithArgs("resolveTree:${component.simpleName}")
               .arg("treeId", componentTreeId)
-              .arg("rootId", component.id)
+              .arg("rootId", component.instanceId)
               .flush()
         }
         state.registerResolveState()
@@ -200,7 +200,7 @@ constructor(
                 MeasuredResultCache(),
                 state,
                 version,
-                component.id,
+                component.instanceId,
                 AccessibilityUtils.isAccessibilityEnabled(
                     context.androidContext.getSystemService(Context.ACCESSIBILITY_SERVICE)
                         as AccessibilityManager),

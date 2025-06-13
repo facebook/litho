@@ -903,7 +903,7 @@ public class ComponentTree
         final boolean hasSameRootAndEquivalentSpecs =
             isCompatibleComponentAndSpec(
                 mMainThreadLayoutState,
-                mRoot != null ? mRoot.getId() : INVALID_ID,
+                mRoot != null ? mRoot.getInstanceId() : INVALID_ID,
                 widthSpec,
                 heightSpec);
 
@@ -929,8 +929,8 @@ public class ComponentTree
                 attributes.put(IdMatch, true);
 
                 if (state != null) {
-                  int id = mRoot != null ? mRoot.getId() : INVALID_ID;
-                  int mainThreadLayoutStateRootId = state.getRootComponent().getId();
+                  int id = mRoot != null ? mRoot.getInstanceId() : INVALID_ID;
+                  int mainThreadLayoutStateRootId = state.getRootComponent().getInstanceId();
                   boolean doesSpecMatch = state.isCompatibleSpec(widthSpec, heightSpec);
                   boolean doesIdsMatch = mainThreadLayoutStateRootId != id && id != INVALID_ID;
 
@@ -1697,7 +1697,7 @@ public class ComponentTree
           && resolvedRoot != null
           && mostRecentLayoutState != null
           && (mostRecentLayoutState.isCompatibleComponentAndSpec(
-                  resolvedRoot.getId(), resolvedWidthSpec, resolvedHeightSpec)
+                  resolvedRoot.getInstanceId(), resolvedWidthSpec, resolvedHeightSpec)
               || (checkComponentEquivalence
                   && isEquivalentComponentAndSpec(
                       mostRecentLayoutState,

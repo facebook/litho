@@ -219,7 +219,7 @@ object TestLayoutState {
         val renderResult = component.render(resolveContext, c, widthSpec, heightSpec)
         val root = renderResult.value
         node =
-            if (root == null || root.id <= 0) {
+            if (root == null || root.instanceId <= 0) {
               null
             } else {
               resolveImmediateSubTree(resolveContext, c, widthSpec, heightSpec, root)

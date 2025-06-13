@@ -94,7 +94,7 @@ abstract class KComponent : Component() {
     if (other == null || javaClass != other.javaClass) {
       return false
     }
-    if (id == other.id) {
+    if (instanceId == other.instanceId) {
       return true
     }
     if (!hasEquivalentFields(this, other)) {

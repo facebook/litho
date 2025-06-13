@@ -55,7 +55,7 @@ internal class LithoResolveTreeFuture(
     if (that !is LithoResolveTreeFuture) {
       return false
     }
-    if (component.id != that.component.id) {
+    if (component.instanceId != that.component.instanceId) {
       return false
     }
     if (componentContext.treePropContainer !== that.componentContext.treePropContainer) {

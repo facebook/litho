@@ -51,7 +51,6 @@ import com.facebook.litho.widget.SimpleStateUpdateEmulator
 import com.facebook.litho.widget.SimpleStateUpdateEmulatorSpec
 import com.facebook.rendercore.RunnableHandler
 import java.lang.Exception
-import java.lang.RuntimeException
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import junit.framework.AssertionFailedError
@@ -135,7 +134,7 @@ class ComponentTreeTest {
     assertThat(mainThreadLayoutState).isEqualTo(committedLayoutState)
     assertThat(
             mainThreadLayoutState?.isCompatibleComponentAndSpec(
-                component.id, widthSpec, heightSpec))
+                component.instanceId, widthSpec, heightSpec))
         .isTrue
   }
 
@@ -588,9 +587,10 @@ class ComponentTreeTest {
     componentTree.setRootAsync(newComponent)
     assertThat(componentTree.root).isEqualTo(newComponent)
     componentTree.measure(widthSpec, heightSpec, IntArray(2), false)
-    assertThat(componentTree.mainThreadLayoutState?.isForComponentId(component.id)).isTrue
+    assertThat(componentTree.mainThreadLayoutState?.isForComponentId(component.instanceId)).isTrue
     runToEndOfTasks()
-    assertThat(componentTree.mainThreadLayoutState?.isForComponentId(newComponent.id)).isTrue
+    assertThat(componentTree.mainThreadLayoutState?.isForComponentId(newComponent.instanceId))
+        .isTrue
   }
 
   @Test
@@ -604,7 +604,8 @@ class ComponentTreeTest {
     componentTree.measure(widthSpec2, heightSpec2, IntArray(2), false)
     assertThat(componentTree.root).isEqualTo(newComponent)
     assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue
-    assertThat(componentTree.mainThreadLayoutState?.isForComponentId(newComponent.id)).isTrue
+    assertThat(componentTree.mainThreadLayoutState?.isForComponentId(newComponent.instanceId))
+        .isTrue
 
     // Clear tasks
     runToEndOfTasks()
@@ -664,7 +665,8 @@ class ComponentTreeTest {
     assertThat(lithoView.height).isEqualTo(1_000)
     assertThat(componentTree.root).isEqualTo(newComponent)
     assertThat(
-            componentTree.mainThreadLayoutState?.isForComponentId((newComponent as Component).id))
+            componentTree.mainThreadLayoutState?.isForComponentId(
+                (newComponent as Component).instanceId))
         .isTrue
     assertThat(componentTree.mainThreadLayoutState?.height).isEqualTo(1_000)
     assertThat(lithoStatsRule.componentCalculateLayoutCount)
@@ -768,7 +770,7 @@ class ComponentTreeTest {
     assertThat(componentTree.root).isEqualTo(secondComponent)
     assertThat(
             componentTree.mainThreadLayoutState?.isForComponentId(
-                (secondComponent as Component).id))
+                (secondComponent as Component).instanceId))
         .isTrue
 
     assertThat(lithoStatsRule.componentCalculateLayoutCount)
@@ -807,7 +809,7 @@ class ComponentTreeTest {
     // size specs when it does run
     assertThat(componentTree.root).isEqualTo(newComponent)
     assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue
-    assertThat(componentTree.mainThreadLayoutState?.isForComponentId(newComponent.id))
+    assertThat(componentTree.mainThreadLayoutState?.isForComponentId(newComponent.instanceId))
         .describedAs(
             "The old component spec is not compatible so we should do a sync layout with the new root.")
         .isTrue
@@ -816,7 +818,8 @@ class ComponentTreeTest {
 
     // Once the async layout finishes, the main thread should have the updated layout.
     assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue
-    assertThat(componentTree.mainThreadLayoutState?.isForComponentId(newComponent.id)).isTrue
+    assertThat(componentTree.mainThreadLayoutState?.isForComponentId(newComponent.instanceId))
+        .isTrue
     assertThat(componentTree.mainThreadLayoutState?.height).isEqualTo(0)
     assertThat(lithoStatsRule.componentCalculateLayoutCount)
         .describedAs(
@@ -853,11 +856,13 @@ class ComponentTreeTest {
     componentTree.measure(widthSpec2, heightSpec2, IntArray(2), false)
     assertThat(componentTree.root).isEqualTo(newComponent)
     assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue
-    assertThat(componentTree.mainThreadLayoutState?.isForComponentId(newComponent.id)).isTrue
+    assertThat(componentTree.mainThreadLayoutState?.isForComponentId(newComponent.instanceId))
+        .isTrue
     backgroundLayoutLooperRule.runToEndOfTasksSync()
     ShadowLooper.runUiThreadTasks()
     assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue
-    assertThat(componentTree.mainThreadLayoutState?.isForComponentId(newComponent.id)).isTrue
+    assertThat(componentTree.mainThreadLayoutState?.isForComponentId(newComponent.instanceId))
+        .isTrue
     assertThat(componentTree.mainThreadLayoutState?.height).isEqualTo(100)
     assertThat(lithoStatsRule.componentCalculateLayoutCount)
         .describedAs("We expect one initial layout and the async layout.")
@@ -893,12 +898,14 @@ class ComponentTreeTest {
     componentTree.measure(widthSpec2, heightSpec2, IntArray(2), false)
     assertThat(componentTree.root).isEqualTo(newComponent)
     assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue
-    assertThat(componentTree.mainThreadLayoutState?.isForComponentId(newComponent.id)).isTrue
+    assertThat(componentTree.mainThreadLayoutState?.isForComponentId(newComponent.instanceId))
+        .isTrue
     assertThat(componentTree.mainThreadLayoutState?.height).isEqualTo(500)
     backgroundLayoutLooperRule.runToEndOfTasksSync()
     ShadowLooper.runUiThreadTasks()
     assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue
-    assertThat(componentTree.mainThreadLayoutState?.isForComponentId(newComponent.id)).isTrue
+    assertThat(componentTree.mainThreadLayoutState?.isForComponentId(newComponent.instanceId))
+        .isTrue
     assertThat(componentTree.mainThreadLayoutState?.height).isEqualTo(500)
     assertThat(lithoStatsRule.componentCalculateLayoutCount)
         .describedAs(
@@ -935,7 +942,7 @@ class ComponentTreeTest {
     componentTree.measure(widthSpec2, heightSpec2, IntArray(2), false)
     assertThat(componentTree.root).isEqualTo(newComponent)
     assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue
-    assertThat(componentTree.mainThreadLayoutState?.isForComponentId(newComponent.id))
+    assertThat(componentTree.mainThreadLayoutState?.isForComponentId(newComponent.instanceId))
         .isTrue
         .withFailMessage(
             "The main thread should calculate a new layout synchronously because the async layout will not be used once it completes")
@@ -977,7 +984,7 @@ class ComponentTreeTest {
     componentTree.measure(widthSpec2, heightSpec2, IntArray(2), false)
     assertThat(componentTree.root).isEqualTo(newComponent)
     assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue
-    assertThat(componentTree.mainThreadLayoutState?.isForComponentId(newComponent.id))
+    assertThat(componentTree.mainThreadLayoutState?.isForComponentId(newComponent.instanceId))
         .isTrue
         .withFailMessage(
             "The main thread should promote the committed layout to the UI thread in measure.")
@@ -1018,7 +1025,7 @@ class ComponentTreeTest {
     componentTree.measure(widthSpec2, heightSpec2, IntArray(2), false)
     assertThat(componentTree.root).isEqualTo(newComponent)
     assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue
-    assertThat(componentTree.mainThreadLayoutState?.isForComponentId(newComponent.id))
+    assertThat(componentTree.mainThreadLayoutState?.isForComponentId(newComponent.instanceId))
         .isTrue
         .withFailMessage(
             "The main thread will calculate a new layout synchronously because the background layout isn't compatible.")
@@ -1072,7 +1079,8 @@ class ComponentTreeTest {
     assertThat(componentTree.root).isEqualTo(newComponent)
     assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue
     assertThat(
-            componentTree.mainThreadLayoutState?.isForComponentId((newComponent as Component).id))
+            componentTree.mainThreadLayoutState?.isForComponentId(
+                (newComponent as Component).instanceId))
         .isTrue
         .withFailMessage(
             "The main thread should calculate a new layout synchronously because the async layout will not have compatible size specs")
@@ -1085,7 +1093,8 @@ class ComponentTreeTest {
     assertThat(componentTree.root).isEqualTo(newComponent)
     assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue
     assertThat(
-            componentTree.mainThreadLayoutState?.isForComponentId((newComponent as Component).id))
+            componentTree.mainThreadLayoutState?.isForComponentId(
+                (newComponent as Component).instanceId))
         .isTrue
     assertThat(componentTree.mainThreadLayoutState?.height).isEqualTo(0)
     assertThat(lithoStatsRule.componentCalculateLayoutCount)
@@ -1146,7 +1155,8 @@ class ComponentTreeTest {
     assertThat(componentTree.root).isEqualTo(newComponent)
     assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue
     assertThat(
-            componentTree.mainThreadLayoutState?.isForComponentId((newComponent as Component).id))
+            componentTree.mainThreadLayoutState?.isForComponentId(
+                (newComponent as Component).instanceId))
         .isTrue
         .withFailMessage(
             "The main thread should calculate a new layout synchronously because the async layout will not have compatible size specs")
@@ -1162,7 +1172,8 @@ class ComponentTreeTest {
     assertThat(componentTree.root).isEqualTo(newComponent)
     assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue
     assertThat(
-            componentTree.mainThreadLayoutState?.isForComponentId((newComponent as Component).id))
+            componentTree.mainThreadLayoutState?.isForComponentId(
+                (newComponent as Component).instanceId))
         .isTrue
     assertThat(componentTree.mainThreadLayoutState?.height).isEqualTo(100)
     assertThat(lithoStatsRule.componentCalculateLayoutCount)
@@ -1223,7 +1234,8 @@ class ComponentTreeTest {
     assertThat(componentTree.root).isEqualTo(newComponent)
     assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue
     assertThat(
-            componentTree.mainThreadLayoutState?.isForComponentId((newComponent as Component).id))
+            componentTree.mainThreadLayoutState?.isForComponentId(
+                (newComponent as Component).instanceId))
         .isTrue
         .withFailMessage(
             "The main thread should calculate a new layout synchronously because the async layout will not have compatible size specs")
@@ -1239,7 +1251,8 @@ class ComponentTreeTest {
     assertThat(componentTree.root).isEqualTo(newComponent)
     assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue
     assertThat(
-            componentTree.mainThreadLayoutState?.isForComponentId((newComponent as Component).id))
+            componentTree.mainThreadLayoutState?.isForComponentId(
+                (newComponent as Component).instanceId))
         .isTrue
     assertThat(componentTree.mainThreadLayoutState?.height).isEqualTo(500)
     assertThat(lithoStatsRule.componentCalculateLayoutCount)
@@ -1285,7 +1298,8 @@ class ComponentTreeTest {
     assertThat(componentTree.root).isEqualTo(newComponent)
     assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue
     assertThat(
-            componentTree.mainThreadLayoutState?.isForComponentId((newComponent as Component).id))
+            componentTree.mainThreadLayoutState?.isForComponentId(
+                (newComponent as Component).instanceId))
         .isTrue
     assertThat(componentTree.mainThreadLayoutState?.height).isEqualTo(500)
     assertThat(lithoStatsRule.componentCalculateLayoutCount)
@@ -1320,7 +1334,7 @@ class ComponentTreeTest {
     // compatible main thread LayoutState at the end of measure.
     assertThat(componentTree.hasCompatibleLayout(widthSpec, heightSpec)).isTrue
     assertThat(componentTree.mainThreadLayoutState).isNotNull
-    assertThat(componentTree.mainThreadLayoutState?.isForComponentId(newRoot.id)).isTrue
+    assertThat(componentTree.mainThreadLayoutState?.isForComponentId(newRoot.instanceId)).isTrue
     assertThat(componentTree.mainThreadLayoutState?.height).isEqualTo(500)
     assertThat(lithoStatsRule.componentCalculateLayoutCount)
         .describedAs(
@@ -1378,15 +1392,15 @@ class ComponentTreeTest {
     val componentTree = ComponentTree.create(context).build()
     componentTree.setVersionedRootAndSizeSpec(root1, widthSpec, heightSpec, Size(), null, 0)
     var layoutState = componentTree.mainThreadLayoutState
-    junit.framework.Assert.assertEquals(root1.id, layoutState?.rootComponent?.id)
+    junit.framework.Assert.assertEquals(root1.instanceId, layoutState?.rootComponent?.instanceId)
     val root2: Component = ComponentTreeTester.create(context).build()
     val root3: Component = ComponentTreeTester.create(context).build()
     componentTree.setVersionedRootAndSizeSpec(root3, widthSpec, heightSpec, Size(), null, 2)
     layoutState = componentTree.mainThreadLayoutState
-    junit.framework.Assert.assertEquals(root3.id, layoutState?.rootComponent?.id)
+    junit.framework.Assert.assertEquals(root3.instanceId, layoutState?.rootComponent?.instanceId)
     componentTree.setVersionedRootAndSizeSpec(root2, widthSpec, heightSpec, Size(), null, 1)
     layoutState = componentTree.mainThreadLayoutState
-    junit.framework.Assert.assertEquals(root3.id, layoutState?.rootComponent?.id)
+    junit.framework.Assert.assertEquals(root3.instanceId, layoutState?.rootComponent?.instanceId)
   }
 
   @Test
@@ -1452,9 +1466,9 @@ class ComponentTreeTest {
     val firstComponent = Column.create(context).build()
     val copyFirstComponent = firstComponent.makeShallowCopyWithNewId()
     val secondComponent = Column.create(context).build()
-    assertThat(secondComponent.id).isNotEqualTo(copyFirstComponent.id)
-    assertThat(secondComponent.id).isNotEqualTo(firstComponent.id)
-    assertThat(firstComponent.id).isNotEqualTo(secondComponent.id)
+    assertThat(secondComponent.instanceId).isNotEqualTo(copyFirstComponent.instanceId)
+    assertThat(secondComponent.instanceId).isNotEqualTo(firstComponent.instanceId)
+    assertThat(firstComponent.instanceId).isNotEqualTo(secondComponent.instanceId)
   }
 
   private class DoubleMeasureViewGroup(context: Context?) : ViewGroup(context) {

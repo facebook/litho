@@ -59,7 +59,7 @@ class Wrapper private constructor() : SpecGeneratedComponent("Wrapper") {
     if (other !is Wrapper) {
       return false
     }
-    if (this.id == other.id) {
+    if (this.instanceId == other.instanceId) {
       return true
     }
     return ComponentUtils.isEquivalent(delegate, other.delegate, shouldCompareCommonProps)

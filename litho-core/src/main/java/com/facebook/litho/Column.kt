@@ -92,7 +92,7 @@ private constructor(
     if (other !is Column) {
       return false
     }
-    if (this.id == other.id) {
+    if (this.instanceId == other.instanceId) {
       return true
     }
     val children = children

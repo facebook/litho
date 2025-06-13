@@ -926,7 +926,7 @@ public abstract class SpecGeneratedComponent extends Component
     if (a.getClass() != b.getClass()) {
       return false;
     }
-    if (a.getId() == b.getId()) {
+    if (a.getInstanceId() == b.getInstanceId()) {
       return true;
     }
     @Nullable Object[] aProps = a.getProps();

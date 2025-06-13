@@ -108,7 +108,7 @@ class LayoutTreeFuture(
         if (isTracing) {
           beginSectionWithArgs("layoutTree:" + resolveResult.component.simpleName)
               .arg("treeId", treeId)
-              .arg("rootId", resolveResult.component.id)
+              .arg("rootId", resolveResult.component.instanceId)
               .arg("sizeConstraints", sizeConstraints.toString())
               .flush()
         }
@@ -131,7 +131,7 @@ class LayoutTreeFuture(
                 c,
                 treeState,
                 version,
-                resolveResult.component.id,
+                resolveResult.component.instanceId,
                 isAccessibilityEnabled(
                     c.androidContext.getSystemService(Context.ACCESSIBILITY_SERVICE)
                         as AccessibilityManager),

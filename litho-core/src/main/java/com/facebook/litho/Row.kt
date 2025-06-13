@@ -92,7 +92,7 @@ private constructor(
     if (other !is Row) {
       return false
     }
-    if (id == other.id) {
+    if (instanceId == other.instanceId) {
       return true
     }
     val children = children
