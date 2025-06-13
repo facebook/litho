@@ -275,8 +275,7 @@ class CollectionRecyclerComponent(
         }
 
         val listUpdateCallback =
-            CollectionUpdateCallback(
-                prevData = previousData, nextData = nextData, renderer = renderer)
+            CollectionUpdateCallback(prevData = previousData, nextData = nextData)
         val diffCallback =
             CollectionDiffCallback(
                 previousData, nextData, sameItemComparator, sameContentComparator)

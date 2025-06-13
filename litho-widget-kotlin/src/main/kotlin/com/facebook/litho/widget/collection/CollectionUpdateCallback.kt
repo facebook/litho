@@ -17,36 +17,20 @@
 package com.facebook.litho.widget.collection
 
 import androidx.recyclerview.widget.ListUpdateCallback
-import com.facebook.litho.widget.ComponentRenderInfo
-import com.facebook.litho.widget.RenderInfo
 
 /**
  * This class aims to generate the changeset between two lists of data and create the corresponding
  * RenderInfo for later use.
  */
-class CollectionUpdateCallback<T>(
-    val prevData: List<T>?,
-    val nextData: List<T>?,
-    private val renderer: (index: Int, model: T) -> RenderInfo
-) : ListUpdateCallback {
+class CollectionUpdateCallback<T>(val prevData: List<T>?, val nextData: List<T>?) :
+    ListUpdateCallback {
 
   internal val operations: MutableList<CollectionOperation> = mutableListOf()
 
   override fun onInserted(position: Int, count: Int) {
-    val renderInfoList = ArrayList<RenderInfo>(count)
-    for (index in position until (position + count)) {
-      val renderInfo =
-          nextData?.get(index)?.let { model -> renderer(index, model) }
-              ?: ComponentRenderInfo.createEmpty()
-      renderInfoList.add(renderInfo)
-    }
-
     operations.add(
         CollectionOperation(
-            type = CollectionOperation.Type.INSERT,
-            index = position,
-            count = count,
-            renderInfoList = renderInfoList))
+            type = CollectionOperation.Type.INSERT, index = position, count = count))
   }
 
   override fun onRemoved(position: Int, count: Int) {
@@ -62,20 +46,10 @@ class CollectionUpdateCallback<T>(
   }
 
   override fun onChanged(position: Int, count: Int, payload: Any?) {
-    val renderInfoList = ArrayList<RenderInfo>(count)
-
-    for (index in position until (position + count)) {
-      val renderInfo =
-          nextData?.get(index)?.let { model -> renderer(index, model) }
-              ?: ComponentRenderInfo.createEmpty()
-      renderInfoList.add(renderInfo)
-    }
-
+    // We cannot generate RenderInfo at this point because the index might change after the insert
+    // or remove operation, which ends up generating a ComponentInfo with an incorrect data model.
     operations.add(
         CollectionOperation(
-            type = CollectionOperation.Type.UPDATE,
-            index = position,
-            count = count,
-            renderInfoList = renderInfoList))
+            type = CollectionOperation.Type.UPDATE, index = position, count = count))
   }
 }

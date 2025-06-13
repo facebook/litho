@@ -18,7 +18,6 @@ package com.facebook.litho.widget.collection
 
 import androidx.recyclerview.widget.DiffUtil
 import com.facebook.litho.testing.testrunner.LithoTestRunner
-import com.facebook.litho.widget.ComponentRenderInfo
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -67,10 +66,7 @@ class CollectionDiffTest {
     val itemComparator = { a: Item, b: Item -> a.id == b.id }
     val contentComparator = { a: Item, b: Item -> a.content == b.content }
     val diffCallback = CollectionDiffCallback(oldData, newData, itemComparator, contentComparator)
-    val listUpdateCallback =
-        CollectionUpdateCallback(oldData, newData) { _: Int, _: Item ->
-          ComponentRenderInfo.createEmpty()
-        }
+    val listUpdateCallback = CollectionUpdateCallback(oldData, newData)
     DiffUtil.calculateDiff(diffCallback).dispatchUpdatesTo(listUpdateCallback)
     return listUpdateCallback.operations
   }
