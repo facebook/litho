@@ -35,7 +35,6 @@ constructor(
     private val component: Component,
     private val treeState: TreeState,
     private val currentRootNode: LithoNode?,
-    private val perfEvent: PerfEvent?,
     private val resolveVersion: Int,
     useCancellableFutures: Boolean,
     private val syncWidthSpec: Int,
@@ -53,7 +52,6 @@ constructor(
       component: Component,
       treeState: TreeState,
       currentRootNode: LithoNode?,
-      perfEvent: PerfEvent?,
       resolveVersion: Int,
       useCancellableFutures: Boolean,
       componentTreeId: Int,
@@ -64,7 +62,6 @@ constructor(
       component,
       treeState,
       currentRootNode,
-      perfEvent,
       resolveVersion,
       useCancellableFutures,
       ComponentTree.SIZE_UNINITIALIZED,
@@ -92,8 +89,7 @@ constructor(
           componentTreeId,
           currentRootNode,
           extraAttribution,
-          this,
-          perfEvent)
+          this)
     } finally {
       if (resolveTraceIdentifier != null) {
         DebugEventDispatcher.endTrace(resolveTraceIdentifier)
@@ -178,8 +174,7 @@ constructor(
         componentTreeId: Int,
         currentRootNode: LithoNode?,
         extraAttribution: String?,
-        future: TreeFuture<*>?,
-        perfEventLogger: PerfEvent?
+        future: TreeFuture<*>?
     ): ResolveResult {
       LithoStats.incrementResolveCount()
       val isTracing = ComponentsSystrace.isTracing

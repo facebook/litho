@@ -22,7 +22,6 @@ import com.facebook.litho.testing.ThreadTestingUtils
 import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.Text
-import java.lang.RuntimeException
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Ignore
@@ -67,7 +66,6 @@ class ResolveTreeFutureTest {
             componentContext,
             component,
             TreeState(),
-            null,
             null,
             0,
             true,
@@ -158,7 +156,6 @@ class ResolveTreeFutureTest {
             component,
             TreeState(),
             null,
-            null,
             0,
             true,
             1,
@@ -168,15 +165,7 @@ class ResolveTreeFutureTest {
     assertThat(renderResult).isNotNull
     val layoutTreeFuture =
         LayoutTreeFuture(
-            renderResult!!,
-            null,
-            null,
-            null,
-            widthSpec,
-            heightSpec,
-            -1,
-            0,
-            RenderSource.SET_ROOT_SYNC)
+            renderResult!!, null, null, widthSpec, heightSpec, -1, 0, RenderSource.SET_ROOT_SYNC)
     val layoutState = layoutTreeFuture.runAndGet(RenderSource.SET_ROOT_SYNC).result
     assertThat(layoutState).isNotNull
     val renderTree = layoutState?.toRenderTree()

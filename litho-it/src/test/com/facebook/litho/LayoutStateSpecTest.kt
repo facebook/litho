@@ -41,8 +41,7 @@ class LayoutStateSpecTest {
     heightSpec = makeSizeSpec(41, SizeSpec.EXACTLY)
     val component = TestLayoutComponent.create(context).build()
     Whitebox.setInternalState(component, "mId", COMPONENT_ID)
-    val result =
-        ResolveTreeFuture.resolve(context, component, TreeState(), 1, 1, null, null, null, null)
+    val result = ResolveTreeFuture.resolve(context, component, TreeState(), 1, 1, null, null, null)
     layoutState =
         LayoutTreeFuture.layout(result, widthSpec, heightSpec, 1, 1, null, null, null, null)
   }

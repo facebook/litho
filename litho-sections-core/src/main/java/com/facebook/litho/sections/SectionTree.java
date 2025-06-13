@@ -38,7 +38,6 @@ import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.CollectionsUtils;
 import com.facebook.litho.Component;
-import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.ComponentsReporter;
 import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.EventHandler;
@@ -1178,8 +1177,6 @@ public class SectionTree {
       Section nextRoot;
       StateUpdatesHolder pendingStateUpdates;
 
-      final ComponentsLogger logger;
-
       synchronized (this) {
         if (mReleased) {
           return;
@@ -1187,7 +1184,6 @@ public class SectionTree {
 
         currentRoot = copy(mCurrentSection, true);
         nextRoot = copy(mNextSection, false);
-        logger = mContext.getLogger();
         pendingStateUpdates = mPendingStateUpdates.copy();
         mIsChangeSetCalculationInProgress = true;
       }

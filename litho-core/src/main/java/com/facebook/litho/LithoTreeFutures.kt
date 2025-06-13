@@ -43,7 +43,6 @@ internal class LithoResolveTreeFuture(
         previousResult?.node,
         DESCRIPTION,
         null, // tree future is null; effectively cannot be cancelled
-        null, // no logger passed; perhaps can inherit from parent
     )
   }
 
@@ -92,7 +91,6 @@ internal class LithoLayoutTreeFuture(
         previousLayoutState,
         previousLayoutState?.diffTree,
         null, // tree future is null; task cannot be cancelled
-        null, // no logger passed; perhaps can inherit from parent
     )
   }
 

@@ -38,7 +38,6 @@ class LayoutTreeFuture(
     private val resolveResult: ResolveResult,
     private val currentLayoutState: LayoutState?,
     private val diffTreeRoot: DiffNode?,
-    private val perfEvent: PerfEvent?,
     private val widthSpec: Int,
     private val heightSpec: Int,
     override val treeId: Int,
@@ -68,8 +67,7 @@ class LayoutTreeFuture(
               treeId,
               currentLayoutState,
               diffTreeRoot,
-              this,
-              perfEvent)
+              this)
         }
   }
 
@@ -95,8 +93,7 @@ class LayoutTreeFuture(
         treeId: Int,
         currentLayoutState: LayoutState?,
         diffTreeRoot: DiffNode?,
-        future: TreeFuture<*>?,
-        perfEvent: PerfEvent?
+        future: TreeFuture<*>?
     ): LayoutState {
 
       LithoStats.incrementLayoutCount()
@@ -139,10 +136,6 @@ class LayoutTreeFuture(
                 diffTreeRoot,
                 future)
 
-        if (perfEvent != null) {
-          lsc.perfEvent = perfEvent
-        }
-
         val prevContext = c.calculationStateContext
         val stateProvider = c.stateProvider ?: error("State provider is null in layout")
 
@@ -150,7 +143,7 @@ class LayoutTreeFuture(
 
           c.setLithoLayoutContext(lsc)
           stateProvider.enterScope(treeState)
-          val root = measureTree(lsc, c.androidContext, node, sizeConstraints, perfEvent)
+          val root = measureTree(lsc, c.androidContext, node, sizeConstraints)
 
           val reductionState =
               ReductionState(
@@ -175,10 +168,8 @@ class LayoutTreeFuture(
             }
           }
 
-          perfEvent?.markerPoint("start_reduce")
           val layoutState =
               LithoReducer.reduce(lsc, resolveResult, version, treeId, layoutCache, reductionState)
-          perfEvent?.markerPoint("end_reduce")
 
           root?.releaseLayoutPhaseData()
 
@@ -225,7 +216,6 @@ class LayoutTreeFuture(
           currentLayoutState = currentLayoutState,
           diffTreeRoot = diffTreeRoot,
           future = future,
-          perfEvent = perfEvent,
       )
     }
   }

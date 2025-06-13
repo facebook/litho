@@ -550,7 +550,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
                 null);
 
         lastMeasuredLayout =
-            Layout.measureTree(nestedLsc, c.getAndroidContext(), node, widthSpec, heightSpec, null);
+            Layout.measureTree(nestedLsc, c.getAndroidContext(), node, widthSpec, heightSpec);
 
         if (lastMeasuredLayout == null) {
           outputSize.width = 0;

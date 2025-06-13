@@ -33,7 +33,6 @@ internal object Layout {
       node: LithoNode? = null,
       widthSpec: Int,
       heightSpec: Int,
-      layoutStatePerfEvent: PerfEvent? = null,
   ): LithoLayoutResult? {
     return measureTree(
         lithoLayoutContext = lithoLayoutContext,
@@ -43,8 +42,7 @@ internal object Layout {
             SizeConstraints.fromMeasureSpecs(
                 widthSpec = widthSpec,
                 heightSpec = heightSpec,
-            ),
-        layoutStatePerfEvent = layoutStatePerfEvent)
+            ))
   }
 
   fun measureTree(
@@ -52,20 +50,15 @@ internal object Layout {
       androidContext: Context,
       node: LithoNode? = null,
       sizeConstraints: SizeConstraints,
-      layoutStatePerfEvent: PerfEvent? = null,
   ): LithoLayoutResult? {
     if (node == null) {
       return null
     }
 
-    layoutStatePerfEvent?.markerPoint("start_measure")
-
     val context: LayoutContext<LithoLayoutContext> =
         LayoutContext(androidContext, lithoLayoutContext, 0, lithoLayoutContext.layoutCache, null)
 
     val result: LithoLayoutResult = node.calculateLayout(context, sizeConstraints)
-
-    layoutStatePerfEvent?.markerPoint("end_measure")
 
     return if (result !is NullLithoLayoutResult) {
       result

@@ -70,7 +70,7 @@ object TestLayoutState {
     c.setLithoLayoutContext(lsc)
     root.applyParentDependentCommonProps(
         resolveContext, LayoutDirection.fromContext(c.androidContext))
-    Layout.measureTree(lsc, c.androidContext, root, widthSpec, heightSpec, null)
+    Layout.measureTree(lsc, c.androidContext, root, widthSpec, heightSpec)
     c.clearCalculationStateContext()
     return root
   }
