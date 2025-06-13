@@ -16,19 +16,28 @@
 
 package com.facebook.litho.widget
 
+import com.facebook.litho.ComponentContext
 import com.facebook.litho.LithoRenderTreeView
 import com.facebook.litho.LithoRenderer
 import com.facebook.litho.LithoTree
+import com.facebook.litho.componentsConfig
 import com.facebook.rendercore.SizeConstraints
 
 /** A [CollectionItem] that renders a [LithoRenderTreeView]. */
 class LithoCollectionItem(
+    componentContext: ComponentContext,
     id: Int = LithoTree.generateComponentTreeId(),
     viewType: Int,
     renderInfo: RenderInfo,
 ) : CollectionItem<LithoRenderTreeView>(id, viewType, renderInfo) {
 
-  private val renderer: LithoRenderer = LithoRenderer()
+  private val renderer: LithoRenderer =
+      LithoRenderer(
+          context = componentContext.androidContext,
+          id = id,
+          componentsConfig = componentContext.componentsConfig,
+          treePropContainer = componentContext.treePropContainerCopy,
+          visibilityController = componentContext.lithoVisibilityEventsController)
 
   override fun prepare(sizeConstraints: SizeConstraints) {
     renderer.render(sizeConstraints, null, false)
