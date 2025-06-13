@@ -20,7 +20,6 @@ import android.content.Context
 import android.util.Log
 import androidx.collection.mutableObjectIntMapOf
 import com.facebook.litho.LithoRenderUnit.Companion.getRenderUnit
-import com.facebook.litho.LogTreePopulator.populatePerfEventFromLogger
 import com.facebook.litho.debug.LithoDebugEvent
 import com.facebook.rendercore.ContentAllocator
 import com.facebook.rendercore.PoolScope
@@ -35,12 +34,12 @@ import com.facebook.rendercore.debug.DebugEventDispatcher.generateTraceIdentifie
  *
  * Note that this pre-allocation must be executed only after layout has been created.
  */
-class ContentPreAllocator(
+class ContentPreAllocator
+constructor(
     private val treeId: Int,
     private val componentContext: ComponentContext,
     private val mountContentHandler: RunnableHandler,
     private val avoidRedundantPreAllocations: Boolean,
-    private val logger: ComponentsLogger?,
     private val nodeSupplier: () -> List<RenderTreeNode>,
     private val preAllocator: (Context, ContentAllocator<*>, PoolScope) -> Boolean
 ) {
@@ -65,14 +64,6 @@ class ContentPreAllocator(
   }
 
   private fun executeInternal() {
-    val event =
-        logger?.let {
-          populatePerfEventFromLogger(
-              componentContext,
-              it,
-              it.newPerformanceEvent(FrameworkLogEvents.EVENT_PRE_ALLOCATE_MOUNT_CONTENT))
-        }
-
     val traceIdentifier =
         generateTraceIdentifier(LithoDebugEvent.ComponentTreeMountContentPreallocated)
     if (traceIdentifier != null) {
@@ -91,9 +82,6 @@ class ContentPreAllocator(
 
     if (traceIdentifier != null) {
       endTrace(traceIdentifier)
-    }
-    if (event != null) {
-      logger?.logPerfEvent(event)
     }
   }
 

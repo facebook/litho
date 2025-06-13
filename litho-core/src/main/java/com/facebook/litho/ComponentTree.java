@@ -17,11 +17,6 @@
 package com.facebook.litho;
 
 import static android.content.Context.ACCESSIBILITY_SERVICE;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_ATTRIBUTION;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_COMPONENT;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_IS_BACKGROUND_LAYOUT;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_SOURCE;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_VERSION;
 import static com.facebook.litho.LayoutState.isFromSyncLayout;
 import static com.facebook.litho.LayoutState.layoutSourceToString;
 import static com.facebook.litho.PoolScopeTreePropKt.PoolScopeTreeProp;
@@ -399,7 +394,6 @@ public class ComponentTree
                 mContext,
                 mountContentHandler,
                 builder.config.avoidRedundantPreAllocations,
-                getLogger(),
                 () -> {
                   LayoutState layoutState = null;
                   synchronized (this) {
@@ -1912,14 +1906,6 @@ public class ComponentTree
       context = new ComponentContext(mContext, treePropContainer);
     }
 
-    PerfEvent resolvePerfEvent =
-        createEventForPipeline(
-            FrameworkLogEvents.EVENT_CALCULATE_RESOLVE,
-            source,
-            extraAttribution,
-            root,
-            localResolveVersion);
-
     if (root.getBuilderContextName() != null
         && !Component.getBuilderContextName(mContext.getAndroidContext())
             .equals(root.getBuilderContextName())) {
@@ -2004,12 +1990,6 @@ public class ComponentTree
       }
     } else {
       commitResolveResult(resolveResult);
-
-      ComponentsLogger logger = getLogger();
-      if (logger != null && resolvePerfEvent != null) {
-        logger.logPerfEvent(resolvePerfEvent);
-      }
-
       requestLayoutWithSplitFutures(
           resolveResult,
           output,
@@ -2020,32 +2000,6 @@ public class ComponentTree
           widthSpec,
           heightSpec);
     }
-  }
-
-  /**
-   * Creates a {@link PerfEvent} for the given {@param eventId}. If the used {@link
-   * ComponentsLogger} is not interested in that event, it will return <code>null</code>.
-   */
-  @Nullable
-  private PerfEvent createEventForPipeline(
-      @FrameworkLogEvents.LogEventId int eventId,
-      @RenderSource int source,
-      @Nullable String extraAttribution,
-      Component root,
-      int pipelineVersion) {
-    ComponentsLogger logger = getLogger();
-    PerfEvent resolvePerfEvent = null;
-    if (logger != null) {
-      resolvePerfEvent = logger.newPerformanceEvent(eventId);
-      if (resolvePerfEvent != null) {
-        resolvePerfEvent.markerAnnotate(PARAM_COMPONENT, root.getSimpleName());
-        resolvePerfEvent.markerAnnotate(PARAM_SOURCE, layoutSourceToString(source));
-        resolvePerfEvent.markerAnnotate(PARAM_IS_BACKGROUND_LAYOUT, !ThreadUtils.isMainThread());
-        resolvePerfEvent.markerAnnotate(PARAM_ATTRIBUTION, extraAttribution);
-        resolvePerfEvent.markerAnnotate(PARAM_VERSION, pipelineVersion);
-      }
-    }
-    return resolvePerfEvent;
   }
 
   private synchronized void commitResolveResult(final ResolveResult resolveResult) {

@@ -70,12 +70,13 @@ class ContentPreAllocatorTest {
         componentContext = componentTree.context,
         mountContentHandler = mountHandler,
         avoidRedundantPreAllocations = avoidRedundantAllocation,
-        logger = null,
-        nodeSupplier = { componentTree.mainThreadLayoutState?.mountableOutputs.orEmpty() },
-        preAllocator = { _, _, _ ->
+        nodeSupplier = { componentTree.mainThreadLayoutState?.mountableOutputs.orEmpty() }) {
+            _,
+            _,
+            _ ->
           onPreAllocate()
           true
-        })
+        }
   }
 }
 
