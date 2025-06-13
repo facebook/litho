@@ -232,8 +232,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       final ResolveContext resolveContext,
       final ScopedComponentInfo scopedComponentInfo,
       final int parentWidthSpec,
-      final int parentHeightSpec,
-      final @Nullable ComponentsLogger componentsLogger) {
+      final int parentHeightSpec) {
     throw new RuntimeException(
         "resolve should not be called on a component which hasn't implemented it! "
             + getSimpleName());

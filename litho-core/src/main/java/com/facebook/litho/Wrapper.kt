@@ -46,8 +46,7 @@ class Wrapper private constructor() : SpecGeneratedComponent("Wrapper") {
       resolveContext: ResolveContext,
       scopedComponentInfo: ScopedComponentInfo,
       parentWidthSpec: Int,
-      parentHeightSpec: Int,
-      componentsLogger: ComponentsLogger?
+      parentHeightSpec: Int
   ): ComponentResolveResult {
     val lithoNode: LithoNode? = resolve(resolveContext, scopedComponentInfo.context)
     return ComponentResolveResult(lithoNode, commonProps)

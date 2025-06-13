@@ -210,7 +210,7 @@ object TestLayoutState {
               resolve(resolveContext, c, widthSpec, heightSpec, component)
             } else {
               component
-                  .resolve(resolveContext, ScopedComponentInfo(component, c, null), 0, 0, null)
+                  .resolve(resolveContext, ScopedComponentInfo(component, c, null), 0, 0)
                   .lithoNode
             }
       }
@@ -334,7 +334,7 @@ object TestLayoutState {
                 resolve(resolveContext, c, widthSpec, heightSpec, component)
               } else {
                 component
-                    .resolve(resolveContext, ScopedComponentInfo(component, c, null), 0, 0, null)
+                    .resolve(resolveContext, ScopedComponentInfo(component, c, null), 0, 0)
                     .lithoNode
               }
         }

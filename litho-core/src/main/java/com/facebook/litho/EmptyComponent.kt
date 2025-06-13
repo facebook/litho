@@ -23,8 +23,7 @@ class EmptyComponent : Component() {
       resolveContext: ResolveContext,
       scopedComponentInfo: ScopedComponentInfo,
       parentWidthSpec: Int,
-      parentHeightSpec: Int,
-      componentsLogger: ComponentsLogger?
+      parentHeightSpec: Int
   ): ComponentResolveResult {
     return ComponentResolveResult(NullNode(), null)
   }

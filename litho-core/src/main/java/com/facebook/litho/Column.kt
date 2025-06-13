@@ -79,8 +79,7 @@ private constructor(
       resolveContext: ResolveContext,
       scopedComponentInfo: ScopedComponentInfo,
       parentWidthSpec: Int,
-      parentHeightSpec: Int,
-      componentsLogger: ComponentsLogger?
+      parentHeightSpec: Int
   ): ComponentResolveResult {
     val lithoNode = resolve(resolveContext, scopedComponentInfo.context)
     return ComponentResolveResult(lithoNode, commonProps)

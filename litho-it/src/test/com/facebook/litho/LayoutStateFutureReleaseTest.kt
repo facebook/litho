@@ -87,8 +87,7 @@ class LayoutStateFutureReleaseTest {
             })
     val child2 = TestChildComponent()
     val row = Row.create(context).child(child1).child(child2).build()
-    val result =
-        row.resolve(resolveContext, ScopedComponentInfo(row, c, null), 0, 0, null).lithoNode
+    val result = row.resolve(resolveContext, ScopedComponentInfo(row, c, null), 0, 0).lithoNode
     Assert.assertTrue(child1.hasRunLayout)
     Assert.assertFalse(child2.hasRunLayout)
     Assert.assertNull(result)
@@ -113,7 +112,7 @@ class LayoutStateFutureReleaseTest {
     val child2 = TestChildComponent()
     val column = Column.create(context).child(child1).child(child2).build()
     val result =
-        column.resolve(resolveContext, ScopedComponentInfo(column, c, null), 0, 0, null).lithoNode
+        column.resolve(resolveContext, ScopedComponentInfo(column, c, null), 0, 0).lithoNode
     Assert.assertTrue(child1.hasRunLayout)
     Assert.assertFalse(child2.hasRunLayout)
     Assert.assertNull(result)

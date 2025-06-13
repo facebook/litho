@@ -39,8 +39,7 @@ abstract class KComponent : Component() {
       resolveContext: ResolveContext,
       scopedComponentInfo: ScopedComponentInfo,
       parentWidthSpec: Int,
-      parentHeightSpec: Int,
-      componentsLogger: ComponentsLogger?
+      parentHeightSpec: Int
   ): ComponentResolveResult {
 
     val c: ComponentContext = scopedComponentInfo.context

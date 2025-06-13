@@ -153,10 +153,7 @@ object Resolver {
               if (isTracing) {
                 ComponentsSystrace.beginSection("create-node:${component.simpleName}")
               }
-              val componentsLogger: ComponentsLogger? = resolveContext.componentsLogger
-              val resolveLayoutCreationEvent: PerfEvent? =
-                  createPerformanceEvent(
-                      component, componentsLogger, FrameworkLogEvents.EVENT_COMPONENT_RESOLVE)
+
               val node: LithoNode?
               val c: ComponentContext
               val globalKey: String
@@ -205,11 +202,7 @@ object Resolver {
                   // Resolve the component into an InternalNode.
                   val resolveResult: ComponentResolveResult =
                       component.resolve(
-                          resolveContext,
-                          scopedComponentInfo,
-                          parentWidthSpec,
-                          parentHeightSpec,
-                          componentsLogger)
+                          resolveContext, scopedComponentInfo, parentWidthSpec, parentHeightSpec)
                   node = resolveResult.lithoNode
                   commonProps = resolveResult.commonProps
                 }
@@ -236,9 +229,6 @@ object Resolver {
                 return@trace null
               }
 
-              if (resolveLayoutCreationEvent != null && componentsLogger != null) {
-                componentsLogger.logPerfEvent(resolveLayoutCreationEvent)
-              }
               if (isTracing) {
                 ComponentsSystrace.beginSection("after-create-node:${component.simpleName}")
               }

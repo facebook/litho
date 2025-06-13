@@ -38,19 +38,11 @@ abstract class PrimitiveComponent : Component() {
       resolveContext: ResolveContext,
       scopedComponentInfo: ScopedComponentInfo,
       parentWidthSpec: Int,
-      parentHeightSpec: Int,
-      componentsLogger: ComponentsLogger?
+      parentHeightSpec: Int
   ): ComponentResolveResult {
 
     val node = LithoNode()
     var commonProps: CommonProps? = null
-
-    val prepareEvent =
-        Resolver.createPerformanceEvent(
-            this,
-            componentsLogger,
-            FrameworkLogEvents.EVENT_COMPONENT_PREPARE,
-        )
 
     val c = scopedComponentInfo.context
     val renderResult: RenderResult<LithoPrimitive> =
@@ -89,10 +81,6 @@ abstract class PrimitiveComponent : Component() {
         renderResult.useEffectEntries,
         node,
     )
-
-    if (prepareEvent != null && componentsLogger != null) {
-      componentsLogger.logPerfEvent(prepareEvent)
-    }
 
     return ComponentResolveResult(node, commonProps)
   }

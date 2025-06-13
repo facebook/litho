@@ -238,8 +238,7 @@ public abstract class SpecGeneratedComponent extends Component
       final ResolveContext resolveContext,
       final ScopedComponentInfo scopedComponentInfo,
       final int parentWidthSpec,
-      final int parentHeightSpec,
-      final @Nullable ComponentsLogger componentsLogger) {
+      final int parentHeightSpec) {
 
     final Integer traceId = generateTraceIdentifier(LithoDebugEvent.ComponentRendered);
     final boolean isTracing = ComponentsSystrace.isTracing();
