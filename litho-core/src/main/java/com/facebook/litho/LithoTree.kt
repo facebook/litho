@@ -18,28 +18,34 @@ package com.facebook.litho
 
 import com.facebook.infer.annotation.ThreadConfined
 import com.facebook.litho.config.ComponentsConfiguration
-import com.facebook.litho.state.StateProvider
 import com.facebook.litho.state.StateProviderImpl
 import com.facebook.litho.state.TreeStateProvider
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
 
+internal typealias StateProvider = TreeStateProvider
+
+internal typealias RootHostProvider = MountedViewReference
+
+internal typealias LithoRendererLifecycleProvider = LithoTreeLifecycleProvider
+
 /** Represents a pointer to the Tree that a ComponentContext is attached to */
 class LithoTree
 internal constructor(
-    treeStateProvider: TreeStateProvider,
+    val id: Int,
+    stateProvider: StateProvider,
     @field:ThreadConfined(ThreadConfined.ANY) val stateUpdater: StateUpdater,
-    @field:ThreadConfined(ThreadConfined.UI) val mountedViewReference: MountedViewReference,
+    @field:ThreadConfined(ThreadConfined.UI) val rootHost: RootHostProvider,
     val errorComponentReceiver: ErrorComponentReceiver,
-    val lithoTreeLifecycleProvider: LithoTreeLifecycleProvider,
-    val id: Int
+    val treeLifecycle: LithoRendererLifecycleProvider
 ) {
 
   val isReadTrackingEnabled: Boolean =
       ComponentsConfiguration.defaultInstance.enableStateReadTracking
 
   @field:ThreadConfined(ThreadConfined.ANY)
-  val stateProvider: StateProvider = StateProviderImpl(id, isReadTrackingEnabled, treeStateProvider)
+  val stateProvider: com.facebook.litho.state.StateProvider =
+      StateProviderImpl(id, isReadTrackingEnabled, stateProvider)
 
   // Used to lazily store a CoroutineScope, if coroutine helper methods are used.
   @JvmField val internalScopeRef: AtomicReference<Any> = AtomicReference<Any>()
@@ -50,13 +56,12 @@ internal constructor(
 
     fun create(componentTree: ComponentTree, stateUpdater: StateUpdater): LithoTree =
         LithoTree(
-            componentTree,
-            stateUpdater,
-            componentTree,
-            componentTree,
-            componentTree,
-            componentTree.mId,
-        )
+            id = componentTree.id,
+            stateProvider = componentTree,
+            stateUpdater = stateUpdater,
+            rootHost = componentTree,
+            errorComponentReceiver = componentTree,
+            treeLifecycle = componentTree)
 
     @JvmStatic
     fun generateComponentTreeId(): Int {

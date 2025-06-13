@@ -92,7 +92,7 @@ object NestedLithoTree {
     val components = consumeComponentScopes()
     val eventHandlers = consumeCreatedEventHandlers()
     val stateUpdater = checkNotNull(componentContext.stateUpdater)
-    val mountedView = checkNotNull(componentContext.lithoTree).mountedViewReference
+    val mountedView = checkNotNull(componentContext.lithoTree).rootHost
 
     // clear state updates
     treeState.commit()

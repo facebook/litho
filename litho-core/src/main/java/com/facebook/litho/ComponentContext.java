@@ -555,7 +555,7 @@ public class ComponentContext {
           "Calling findViewWithTag on a ComponentContext which isn't associated with a Tree. Make"
               + " sure it's one received in `render` or `onCreateLayout`");
     }
-    final View mountedView = mLithoTree.getMountedViewReference().getMountedView();
+    final View mountedView = mLithoTree.getRootHost().getMountedView();
     // The tree isn't mounted
     if (mountedView == null) {
       return null;
@@ -582,7 +582,7 @@ public class ComponentContext {
     if (mLithoTree == null) {
       return null;
     }
-    final View mountedView = mLithoTree.getMountedViewReference().getMountedView();
+    final View mountedView = mLithoTree.getRootHost().getMountedView();
     // The tree isn't mounted
     if (mountedView == null) {
       return null;
@@ -822,7 +822,7 @@ public class ComponentContext {
     if (mLithoTree == null) {
       return null;
     }
-    return mLithoTree.getMountedViewReference().getMountedView();
+    return mLithoTree.getRootHost().getMountedView();
   }
 
   void removePendingStateUpdate(String key, boolean nestedTreeContext) {

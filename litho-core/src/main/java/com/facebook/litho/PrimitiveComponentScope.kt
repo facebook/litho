@@ -253,6 +253,14 @@ fun PrimitiveComponentScope.useNestedTree(
   val errorComponentRef = useState { AtomicReference<Component?>(null) }
 
   val nestedTreeState = useCached(Unit) { NestedLithoTreeState(treeState = TreeState()) }
+  val lithoConfig =
+      useCached(config) {
+        buildDefaultLithoConfiguration(
+            context = androidContext,
+            componentsConfig = config,
+            renderUnitIdGenerator = RenderUnitIdGenerator(nestedTreeState.id),
+        )
+      }
   val lithoTree =
       useCached(nestedTreeState.id) {
         val stateUpdater =
@@ -265,23 +273,13 @@ fun PrimitiveComponentScope.useNestedTree(
               }
             }
         LithoTree(
-            treeStateProvider = stateUpdater,
+            id = nestedTreeState.id,
+            stateProvider = stateUpdater,
             stateUpdater = stateUpdater,
-            mountedViewReference = nestedTreeState.mountedViewReference,
+            rootHost = nestedTreeState.mountedViewReference,
             errorComponentReceiver = { errorComponentRef.update(AtomicReference(it)) },
-            lithoTreeLifecycleProvider = nestedTreeState.treeLifecycleProvider,
-            nestedTreeState.id,
-        )
+            treeLifecycle = nestedTreeState.treeLifecycleProvider)
       }
-  val lithoConfig =
-      useCached(config) {
-        buildDefaultLithoConfiguration(
-            context = androidContext,
-            componentsConfig = config,
-            renderUnitIdGenerator = RenderUnitIdGenerator(nestedTreeState.id),
-        )
-      }
-
   val componentContext =
       ComponentContext(
           androidContext,

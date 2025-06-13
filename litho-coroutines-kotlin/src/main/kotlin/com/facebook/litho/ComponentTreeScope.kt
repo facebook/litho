@@ -55,7 +55,7 @@ class ComponentTreeScope(
 ) : CoroutineScope {
 
   init {
-    if (lithoTree.lithoTreeLifecycleProvider.isReleased) {
+    if (lithoTree.treeLifecycle.isReleased) {
       coroutineContext.cancel()
     }
   }
@@ -66,10 +66,10 @@ class ComponentTreeScope(
 
   fun register() {
     launch(Dispatchers.Main.immediate) {
-      if (lithoTree.lithoTreeLifecycleProvider.isReleased) {
+      if (lithoTree.treeLifecycle.isReleased) {
         cancelScopeContext()
       } else {
-        lithoTree.lithoTreeLifecycleProvider.addOnReleaseListener { cancelScopeContext() }
+        lithoTree.treeLifecycle.addOnReleaseListener { cancelScopeContext() }
       }
     }
   }
