@@ -14,32 +14,32 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.editor;
+package com.facebook.litho.editor
 
-import com.facebook.litho.editor.model.EditorValue;
-import java.lang.reflect.Field;
+import com.facebook.litho.editor.model.EditorValue
+import java.lang.reflect.Field
 
 /**
  * A class to operate on Component fields from an external editor such as Flipper.
  *
- * <p>It is meant to be implemented for a single class. This pairing [Class, Implementation] cannot
- * be done in plain Java, so we rely on the implementor to pair it with its corresponding class in a
+ * It is meant to be implemented for a single class. This pairing [Class, Implementation] cannot be
+ * done in plain Java, so we rely on the implementor to pair it with its corresponding class in a
  * Map such as the one in the EditorRegistry.
  *
  * @see com.facebook.litho.editor.EditorRegistry
  */
-public interface Editor {
+interface Editor {
   /**
    * Receives the instance of the corresponding field, and expects the implementor to return an
    * EditorValue representation of it. This structure will be replicated for the values received by
-   * {@link Editor#write(Field, Object, EditorValue)}
+   * [Editor.write]
    */
-  EditorValue read(Field f, Object node);
+  fun read(f: Field, node: Any?): EditorValue
 
   /**
    * Receives the instance of the corresponding field, and one or multiple values following the
-   * structure that was given in {@link Editor#read(Field, Object)}. Those values are meant to be
-   * applied back to the corresponding field.
+   * structure that was given in [Editor.read]. Those values are meant to be applied back to the
+   * corresponding field.
    */
-  boolean write(Field f, Object node, EditorValue values);
+  fun write(f: Field, node: Any?, values: EditorValue): Boolean
 }

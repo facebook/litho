@@ -25,7 +25,7 @@ import com.facebook.litho.editor.model.EditorValue
 import java.lang.reflect.Field
 
 class CachedValueEditorInstance : Editor {
-  override fun read(f: Field, node: Any): EditorValue {
+  override fun read(f: Field, node: Any?): EditorValue {
     val cachedValue = getValueUNSAFE<CachedValue>(f, node)
     return when (val value = cachedValue?.value) {
       null -> EditorValue.string("null")
@@ -35,7 +35,7 @@ class CachedValueEditorInstance : Editor {
     }
   }
 
-  override fun write(f: Field, node: Any, values: EditorValue): Boolean {
+  override fun write(f: Field, node: Any?, values: EditorValue): Boolean {
     val deps = emptyArray<Any?>()
     val cachedValue = CachedValue(deps, values.value)
     setValueUNSAFE(f, node, cachedValue)
