@@ -282,17 +282,7 @@ public class ComponentContext {
   public ResolveContext setRenderStateContextForTests() {
     final ResolveContext resolveContext =
         new ResolveContext(
-            -1,
-            new MeasuredResultCache(),
-            new TreeState(),
-            0,
-            -1,
-            true,
-            null,
-            null,
-            null,
-            getLogger(),
-            false);
+            -1, new MeasuredResultCache(), new TreeState(), 0, -1, true, null, null, false);
     setRenderStateContext(resolveContext);
 
     return resolveContext;

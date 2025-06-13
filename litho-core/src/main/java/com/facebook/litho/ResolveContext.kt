@@ -29,8 +29,6 @@ constructor(
     override val isAccessibilityEnabled: Boolean,
     treeFuture: TreeFuture<*>?,
     val currentRoot: LithoNode?,
-    val perfEventLogger: PerfEvent?,
-    val componentsLogger: ComponentsLogger?,
     val isInLayout: Boolean,
 ) : CalculationContext {
 

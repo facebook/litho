@@ -524,8 +524,6 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
                   calculationContext.isAccessibilityEnabled(),
                   null,
                   null,
-                  null,
-                  null,
                   true);
           c.setRenderStateContext(nestedRsc);
 
@@ -641,8 +639,6 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
                   : AccessibilityUtils.isAccessibilityEnabled(
                       (AccessibilityManager)
                           c.getAndroidContext().getSystemService(ACCESSIBILITY_SERVICE)),
-              null,
-              null,
               null,
               null,
               true);

@@ -337,8 +337,6 @@ internal object Layout {
               isAccessibilityEnabled = lithoLayoutContext.isAccessibilityEnabled,
               treeFuture = null,
               currentRoot = null,
-              perfEventLogger = null,
-              componentsLogger = null,
               isInLayout = true)
       parentContext.renderStateContext = nestedRsc
 

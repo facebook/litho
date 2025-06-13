@@ -206,8 +206,6 @@ constructor(
                         as AccessibilityManager),
                 future,
                 currentRootNode,
-                perfEventLogger,
-                context.logger,
                 false)
         val previousStateContext = context.calculationStateContext
         val stateProvider = context.stateProvider ?: error("State provider is null in resolve")

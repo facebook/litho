@@ -37,10 +37,6 @@ import kotlin.math.max
 
 object Resolver {
 
-  private const val EVENT_START_CREATE_LAYOUT = "start_create_layout"
-  private const val EVENT_END_CREATE_LAYOUT = "end_create_layout"
-  private const val EVENT_START_RECONCILE = "start_reconcile_layout"
-  private const val EVENT_END_RECONCILE = "end_reconcile_layout"
   private val MEASURE_SPEC_UNSPECIFIED: Int = MeasureSpecUtils.unspecified()
 
   @JvmStatic
@@ -50,7 +46,6 @@ object Resolver {
       component: Component
   ): LithoNode? {
     val current: LithoNode? = resolveContext.currentRoot
-    val layoutStatePerfEvent: PerfEvent? = resolveContext.perfEventLogger
     val isReconcilable: Boolean = isReconcilable(c, component, resolveContext.treeState, current)
 
     try {
@@ -59,9 +54,6 @@ object Resolver {
       ComponentUtils.handleWithHierarchy(c, component, ex)
       return null
     }
-
-    layoutStatePerfEvent?.markerPoint(
-        if (isReconcilable) EVENT_START_RECONCILE else EVENT_START_CREATE_LAYOUT)
 
     val node: LithoNode?
     if (!isReconcilable) {
@@ -73,7 +65,6 @@ object Resolver {
 
       // This needs to finish layout on the UI thread.
       if (node != null && resolveContext.isResolveInterrupted) {
-        layoutStatePerfEvent?.markerPoint(EVENT_END_CREATE_LAYOUT)
         return node
       } else {
         // Layout is complete, disable interruption from this point on.
@@ -83,9 +74,6 @@ object Resolver {
       val globalKeyToReuse: String = checkNotNull(current).headComponentKey
       node = reconcile(resolveContext, c, current, component, globalKeyToReuse)
     }
-
-    layoutStatePerfEvent?.markerPoint(
-        if (current == null) EVENT_END_CREATE_LAYOUT else EVENT_END_RECONCILE)
 
     return node
   }
@@ -320,22 +308,6 @@ object Resolver {
     }
 
     return lithoNode
-  }
-
-  /**
-   * Creates a [PerfEvent] for the given {@param eventId}. If the used [ComponentsLogger] is not
-   * interested in that event, it will return `null`.
-   */
-  @JvmStatic
-  fun createPerformanceEvent(
-      component: Component,
-      componentsLogger: ComponentsLogger?,
-      @FrameworkLogEvents.LogEventId eventId: Int
-  ): PerfEvent? {
-    val event: PerfEvent = componentsLogger?.newPerformanceEvent(eventId) ?: return null
-    event.markerAnnotate(FrameworkLogEvents.PARAM_COMPONENT, component.simpleName)
-    event.markerAnnotate(FrameworkLogEvents.PARAM_IS_MAIN_THREAD, ThreadUtils.isMainThread)
-    return event
   }
 
   @JvmStatic
