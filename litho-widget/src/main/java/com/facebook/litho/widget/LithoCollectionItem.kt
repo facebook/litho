@@ -40,7 +40,7 @@ class LithoCollectionItem(
           visibilityController = componentContext.lithoVisibilityEventsController)
 
   override fun prepare(sizeConstraints: SizeConstraints) {
-    renderer.render(sizeConstraints, null, false)
+    renderer.render(renderInfo.component, sizeConstraints)
   }
 
   override fun prepareSync(
@@ -48,7 +48,11 @@ class LithoCollectionItem(
       result: IntArray?,
       shouldCommit: Boolean
   ) {
-    renderer.render(sizeConstraints, result, shouldCommit)
+    val layoutState = renderer.renderSync(renderInfo.component, sizeConstraints)
+    result?.let {
+      result[0] = layoutState?.width ?: 0
+      result[1] = layoutState?.height ?: 0
+    }
   }
 
   override fun onBindView(view: LithoRenderTreeView) {

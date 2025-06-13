@@ -18,7 +18,11 @@ package com.facebook.litho
 
 import android.content.Context
 import android.view.View
+import androidx.annotation.GuardedBy
+import androidx.annotation.UiThread
+import com.facebook.litho.NestedLithoTree.commit
 import com.facebook.litho.NestedLithoTree.enqueue
+import com.facebook.litho.NestedLithoTree.runEffects
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.rendercore.Host
 import com.facebook.rendercore.SizeConstraints
@@ -54,6 +58,11 @@ class LithoRenderer(
           treeLifecycle = NoOpLifecycleProvider())
   private val errorComponentRef = AtomicReference<Component?>(null)
 
+  /** The root component that this renderer is responsible for rendering. */
+  @GuardedBy("this") private var root: Component? = null
+  /** The size constraints used for layout calculations. */
+  @GuardedBy("this") private var sizeConstraints: SizeConstraints? = null
+
   @Volatile var currentResolveResult: ResolveResult? = null
   @Volatile var currentLayoutState: LayoutState? = null
 
@@ -64,16 +73,7 @@ class LithoRenderer(
   // no lock held, or read from any other thread with the lock held.
   var uiThreadLayoutState: LayoutState? = null
 
-  /**
-   * This method is used to compute the layout for the component.
-   *
-   * @param sizeConstraints The size constraints to use for the layout calculation.
-   * @param result The result of the layout calculation.
-   * @param shouldCommit Whether the result should be committed.
-   */
-  fun render(sizeConstraints: SizeConstraints, result: IntArray?, shouldCommit: Boolean) {
-    // todo
-  }
+  // region Public APIs
 
   /**
    * Initiates an asynchronous resolution process for a component.
@@ -145,6 +145,99 @@ class LithoRenderer(
   /** Applies any pending state updates that have been enqueued. */
   private fun applyPendingUpdates(isAsync: Boolean) {
     // todo: do render
+  }
+
+  /** Promotes the committed layout state to the UI thread. */
+  @UiThread
+  @GuardedBy("this")
+  fun maybePromoteCommittedLayoutStateToUI(layoutState: LayoutState?): Boolean {
+    layoutState ?: return false
+    if (layoutState === uiThreadLayoutState) return false
+
+    val previousUiThreadLayoutState = uiThreadLayoutState
+    uiThreadLayoutState = layoutState
+
+    if (LayoutState.isNullOrEmpty(previousUiThreadLayoutState) &&
+        LayoutState.isNullOrEmpty(layoutState)) {
+      return false
+    }
+    layoutState.commit()
+    layoutState.runEffects()
+    return true
+  }
+
+  // endregion
+
+  /** Performs a resolve future for the given component. */
+  private fun resolve(
+      root: Component,
+      treeState: TreeState,
+      version: Int,
+      previousResult: ResolveResult?,
+      resolveFutureLock: Any,
+      resolveTreeFutures: ArrayList<LithoResolveTreeFuture>,
+      renderMode: RenderMode,
+  ): TreeFuture.TreeFutureResult<ResolveResult> {
+    val future =
+        LithoResolveTreeFuture(
+            componentContext = createComponentContext(),
+            treeId = id,
+            component = root,
+            treeState = treeState,
+            previousResult = previousResult,
+            version = version,
+            useCancellableFutures = renderMode.isAsync())
+
+    return TreeFuture.trackAndRunTreeFuture(
+        future, resolveTreeFutures, renderMode.toRenderSource(), resolveFutureLock, null)
+  }
+
+  /** Commits the given resolve result if it is newer than the committed resolve result. */
+  @Synchronized
+  private fun commitResolveResult(resolveResult: ResolveResult) {
+    val committedResolveResult = currentResolveResult
+    if (committedResolveResult == null || committedResolveResult.version < resolveResult.version) {
+      currentResolveResult = resolveResult
+    }
+    treeState?.commitResolveState(resolveResult.treeState)
+  }
+
+  /** Performs a layout future for the given resolve result. */
+  private fun layout(
+      resolveResult: ResolveResult,
+      sizeConstraints: SizeConstraints,
+      version: Int,
+      previousLayoutState: LayoutState?,
+      layoutFutureLock: Any,
+      layoutTreeFutures: ArrayList<LithoLayoutTreeFuture>,
+      renderMode: RenderMode,
+  ): TreeFuture.TreeFutureResult<LayoutState> {
+    val future =
+        LithoLayoutTreeFuture(
+            treeId = id,
+            version = version,
+            resolveResult = resolveResult,
+            sizeConstraints = sizeConstraints,
+            previousLayoutState = previousLayoutState)
+
+    return TreeFuture.trackAndRunTreeFuture(
+        future, layoutTreeFutures, renderMode.toRenderSource(), layoutFutureLock, null)
+  }
+
+  /**
+   * Commits the given layout state if it is newer than the committed layout state and if the
+   * constraints are still compatible.
+   */
+  @Synchronized
+  private fun commitLayoutState(layoutState: LayoutState) {
+    val committedLayoutVersion =
+        currentLayoutState?.version ?: com.facebook.rendercore.RenderState.NO_ID
+    if (layoutState.version > committedLayoutVersion &&
+        sizeConstraints == layoutState.sizeConstraints) {
+      layoutState.toRenderTree()
+      currentLayoutState = layoutState
+      treeState?.commitLayoutState(layoutState.treeState)
+    }
   }
 
   // region StateUpdater
@@ -359,4 +452,39 @@ value class LithoRendererLifecycle(val value: Int) {
 
 fun interface UpdateSynchronizer {
   fun request(isAsync: Boolean)
+}
+
+/** A class that represents the trigger type of the render call. */
+@JvmInline
+value class RenderMode private constructor(val value: Int) {
+
+  /** Returns true if the given source is an asynchronous operation. */
+  fun isAsync(): Boolean {
+    return this == SetRoot || this == SetConstraints || this == StateUpdate || this == Measure
+  }
+
+  fun toRenderSource(): Int {
+    return when (this) {
+      SetRootSync -> RenderSource.SET_ROOT_SYNC
+      SetRoot -> RenderSource.SET_ROOT_ASYNC
+      SetConstraintsSync -> RenderSource.SET_SIZE_SPEC_SYNC
+      SetConstraints -> RenderSource.SET_SIZE_SPEC_ASYNC
+      StateUpdateSync -> RenderSource.UPDATE_STATE_SYNC
+      StateUpdate -> RenderSource.UPDATE_STATE_ASYNC
+      MeasureSync -> RenderSource.MEASURE_SET_SIZE_SPEC
+      Measure -> RenderSource.MEASURE_SET_SIZE_SPEC_ASYNC
+      else -> throw IllegalArgumentException("Unknown render mode: $this")
+    }
+  }
+
+  companion object {
+    val SetRootSync: RenderMode = RenderMode(0)
+    val SetRoot: RenderMode = RenderMode(1)
+    val SetConstraintsSync: RenderMode = RenderMode(2)
+    val SetConstraints: RenderMode = RenderMode(3)
+    val StateUpdateSync: RenderMode = RenderMode(4)
+    val StateUpdate: RenderMode = RenderMode(5)
+    val MeasureSync: RenderMode = RenderMode(6)
+    val Measure: RenderMode = RenderMode(7)
+  }
 }
