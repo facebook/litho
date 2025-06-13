@@ -28,7 +28,10 @@ apply plugin: "org.jetbrains.intellij"
 
 group 'com.facebook.litho.intellij'
 
-sourceCompatibility = rootProject.sourceCompatibilityVersion
+java {
+    sourceCompatibility = rootProject.sourceCompatibilityVersion
+    targetCompatibility = rootProject.targetCompatibilityVersion
+}
 
 compileKotlin {
     kotlinOptions.jvmTarget = rootProject.targetCompatibilityVersion
@@ -69,7 +72,7 @@ intellij {
 
 task merge {
     doLast {
-        def output = new File(project.buildDir, "patchedPluginXmlFiles/plugin.xml")
+        def output = project.layout.buildDirectory.file("patchedPluginXmlFiles/plugin.xml").get().asFile
 
         def parser = new XmlSlurper(false, false)
         def base = parser.parse(output)
