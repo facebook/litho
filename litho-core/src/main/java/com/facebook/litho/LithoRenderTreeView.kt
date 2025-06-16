@@ -34,7 +34,9 @@ class LithoRenderTreeView @JvmOverloads constructor(context: Context, attrs: Att
   private var hasNewTree = false
 
   // Set together
-  private var layoutState: LayoutState? = null
+  var layoutState: LayoutState? = null
+    private set
+
   private var _treeState: TreeState? = null
 
   private var currentLifecycleOwner: LifecycleOwner? = null
