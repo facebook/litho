@@ -2400,18 +2400,7 @@ public class ComponentTree
     if (mReleased || mTreeState == null) {
       return null;
     }
-    Object cachedValue =
-        mTreeState.getCachedValue(globalKey, index, cachedValueInputs, isLayoutState);
-
-    // This is a temporary solution to solve the issue of visibility events for
-    // VerticalScrollComponentSpec and HorizontalScrollSpec. We can remove it after shipping the
-    // primitive version of VerticalScroll and HorizontalScroll
-    if (cachedValue instanceof ComponentTree) {
-      if (((ComponentTree) cachedValue).isReleased()) {
-        return null;
-      }
-    }
-    return cachedValue;
+    return mTreeState.getCachedValue(globalKey, index, cachedValueInputs, isLayoutState);
   }
 
   @VisibleForTesting
