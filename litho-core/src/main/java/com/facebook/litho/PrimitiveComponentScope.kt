@@ -252,7 +252,7 @@ fun PrimitiveComponentScope.useNestedTree(
   val stateForSync = useState { Any() }
   val errorComponentRef = useState { AtomicReference<Component?>(null) }
 
-  val nestedTreeState = useCached(Unit) { NestedLithoTreeState(treeState = TreeState()) }
+  val nestedTreeState = useState { NestedLithoTreeState(treeState = TreeState()) }.value
   val lithoConfig =
       useCached(config) {
         buildDefaultLithoConfiguration(
