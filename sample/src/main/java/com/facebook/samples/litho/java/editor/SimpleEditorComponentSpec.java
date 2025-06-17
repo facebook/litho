@@ -17,6 +17,7 @@
 package com.facebook.samples.litho.java.editor;
 
 import android.graphics.Color;
+import androidx.annotation.NonNull;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -126,13 +127,14 @@ public class SimpleEditorComponentSpec {
     public static Editor editor() {
       return SimpleEditor.makeImmutable(
           new SimpleEditor.ImmutablePropertyEditor<ImmutableClass>() {
+
             @Override
             public ImmutableClass writeProperties(
                 ImmutableClass value,
-                Map<String, String> newStringValues,
-                Map<String, Number> newNumberValues,
-                Map<String, Boolean> newBoolValues,
-                Map<String, String> newPickValues) {
+                @NonNull Map<String, String> newStringValues,
+                @NonNull Map<String, ? extends Number> newNumberValues,
+                @NonNull Map<String, Boolean> newBoolValues,
+                @NonNull Map<String, String> newPickValues) {
               // Includes all properties, even those that haven't changed
               return new ImmutableClass(
                   newStringValues.get("name"),
