@@ -25,6 +25,7 @@ import androidx.core.text.TextDirectionHeuristicCompat
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.DynamicValue
+import com.facebook.litho.EmptyComponent
 import com.facebook.litho.EventHandler
 import com.facebook.litho.Output
 import com.facebook.litho.annotations.ExcuseMySpec
@@ -135,7 +136,9 @@ object TextSpec {
       @Prop(optional = true, resType = ResType.DIMEN_TEXT) lineHeight: Float,
   ): Component {
     if (ComponentsConfiguration.usePrimitiveText) {
-      checkNotNull(text)
+      if (text == null) {
+        return EmptyComponent()
+      }
       val richTextStyle = TextStyle()
       richTextStyle.breakStrategy = TextStylesHelper.DEFAULT_BREAK_STRATEGY
       ellipsize?.let { richTextStyle.ellipsize = it }
