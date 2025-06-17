@@ -11,13 +11,11 @@ litho_android_library(
     name = "litho-perf-logger",
     srcs = glob([
         "**/*.kt",
-        "**/*.java",
     ]),
     autoglob = False,
     feature = FBApp_UIFrameworks_Litho_Litho,
     k2 = True,
     labels = [],
-    pure_kotlin = False,
     required_for_source_only_abi = True,
     visibility = [
         "PUBLIC",
