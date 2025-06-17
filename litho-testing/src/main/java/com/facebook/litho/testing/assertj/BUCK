@@ -30,8 +30,8 @@ litho_android_library(
         "PUBLIC",
     ],
     deps = COMMON_DEPS + [
-        "//fbandroid/third-party/java/guava:guava",
         "//fbandroid/third-party/java/infer-annotations:infer-annotations",
+        "//third-party/java/com/google/guava/guava:guava",
         LITHO_ANDROIDSUPPORT_TESTING_CORE_TARGET,
         LITHO_KOTLIN_STDLIB_TARGET,
         LITHO_TESTING_HELPER_TARGET,

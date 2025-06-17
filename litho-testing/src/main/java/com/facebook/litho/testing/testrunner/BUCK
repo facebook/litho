@@ -18,8 +18,8 @@ litho_android_library(
         "PUBLIC",
     ],
     deps = [
-        "//fbandroid/third-party/java/guava:guava",
         "//fbandroid/third-party/java/infer-annotations:infer-annotations",
+        "//third-party/java/com/google/guava/guava:guava",
         LITHO_JUNIT_TARGET,
         LITHO_ROBOLECTRIC_V4_TARGET,
         make_dep_path("litho-core/src/main/java/com/facebook/litho:litho"),

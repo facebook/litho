@@ -33,9 +33,9 @@ litho_android_library(
         "PUBLIC",
     ],
     deps = [
-        "//fbandroid/third-party/java/guava:guava",
         "//fbandroid/third-party/java/infer-annotations:infer-annotations",
         "//third-party/java/com/google/code/findbugs/jsr305:jsr305",
+        "//third-party/java/com/google/guava/guava:guava",
         LITHO_RENDERCORE_TEXT_TARGET,
         LITHO_ANDROIDSUPPORT_TESTING_CORE_TARGET,
         LITHO_DIFFUTILS_TARGET,
