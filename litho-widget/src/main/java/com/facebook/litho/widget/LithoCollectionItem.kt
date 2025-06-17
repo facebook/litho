@@ -50,8 +50,8 @@ class LithoCollectionItem(
   ) {
     val layoutState = renderer.renderSync(renderInfo.component, sizeConstraints)
     result?.let {
-      result[0] = layoutState?.width ?: 0
-      result[1] = layoutState?.height ?: 0
+      result[0] = layoutState.width
+      result[1] = layoutState.height
     }
   }
 

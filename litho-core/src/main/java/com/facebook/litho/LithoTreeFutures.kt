@@ -42,8 +42,7 @@ internal class LithoResolveTreeFuture(
         treeId,
         previousResult?.node,
         DESCRIPTION,
-        null, // tree future is null; effectively cannot be cancelled
-    )
+        this)
   }
 
   override fun resumeCalculation(partialResult: ResolveResult?): ResolveResult {
@@ -90,8 +89,7 @@ internal class LithoLayoutTreeFuture(
         treeId,
         previousLayoutState,
         previousLayoutState?.diffTree,
-        null, // tree future is null; task cannot be cancelled
-    )
+        this)
   }
 
   override fun resumeCalculation(partialResult: LayoutState?): LayoutState =
