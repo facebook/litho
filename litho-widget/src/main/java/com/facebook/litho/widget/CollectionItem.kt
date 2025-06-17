@@ -17,6 +17,7 @@
 package com.facebook.litho.widget
 
 import android.view.View
+import com.facebook.rendercore.Size
 import com.facebook.rendercore.SizeConstraints
 
 /**
@@ -33,6 +34,7 @@ abstract class CollectionItem<V : View>(
     val id: Int,
     val viewType: Int,
     var renderInfo: RenderInfo,
+    @Volatile var size: Size? = null,
 ) {
 
   /**
