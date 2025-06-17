@@ -28,7 +28,6 @@ import com.facebook.litho.testing.logging.TestComponentsReporter
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.testing.unspecified
 import com.facebook.litho.widget.CardClip
-import com.facebook.litho.widget.EditText
 import com.facebook.litho.widget.SimpleMountSpecTester
 import com.facebook.litho.widget.Text
 import com.facebook.litho.widget.TextInput
@@ -176,10 +175,13 @@ class GlobalKeyTest {
           @OnCreateLayout
           override fun onCreateLayout(c: ComponentContext): Component? {
             return Column.create(c)
-                .child(EditText.create(c).text("").key("sameKey").widthDip(10f).heightDip(10f))
-                .child(EditText.create(c).text("").widthDip(10f).heightDip(10f))
-                .child(EditText.create(c).text("").key("sameKey").widthDip(10f).heightDip(10f))
-                .child(EditText.create(c).text("").key("sameKey").widthDip(10f).heightDip(10f))
+                .child(
+                    TextInput.create(c).initialText("").key("sameKey").widthDip(10f).heightDip(10f))
+                .child(TextInput.create(c).initialText("").widthDip(10f).heightDip(10f))
+                .child(
+                    TextInput.create(c).initialText("").key("sameKey").widthDip(10f).heightDip(10f))
+                .child(
+                    TextInput.create(c).initialText("").key("sameKey").widthDip(10f).heightDip(10f))
                 .build()
           }
         }
@@ -190,15 +192,15 @@ class GlobalKeyTest {
     val layoutSpecId = component.typeId
     val expectedKey0 =
         ComponentKeyUtils.getKeyWithSeparatorForTest(layoutSpecId, columnSpecId, "\$sameKey")
-    val firstEditTextSCI = scopedComponentInfos["EditText"]!![0]
+    val firstEditTextSCI = scopedComponentInfos["TextInput"]!![0]
     assertThat(firstEditTextSCI.context.globalKey).isEqualTo(expectedKey0)
     val expectedKey2 =
         ComponentKeyUtils.getKeyWithSeparatorForTest(layoutSpecId, columnSpecId, "\$sameKey!1")
-    val secondEditTextSCI = scopedComponentInfos["EditText"]!![2]
+    val secondEditTextSCI = scopedComponentInfos["TextInput"]!![2]
     assertThat(secondEditTextSCI.context.globalKey).isEqualTo(expectedKey2)
     val expectedKey3 =
         ComponentKeyUtils.getKeyWithSeparatorForTest(layoutSpecId, columnSpecId, "\$sameKey!2")
-    val thirdEditTextSCI = scopedComponentInfos["EditText"]!![3]
+    val thirdEditTextSCI = scopedComponentInfos["TextInput"]!![3]
     assertThat(thirdEditTextSCI.context.globalKey).isEqualTo(expectedKey3)
   }
 

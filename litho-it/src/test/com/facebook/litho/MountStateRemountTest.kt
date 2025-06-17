@@ -28,8 +28,8 @@ import com.facebook.litho.testing.TestViewComponent
 import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.helper.ComponentTestHelper
 import com.facebook.litho.testing.testrunner.LithoTestRunner
-import com.facebook.litho.widget.EditText
 import com.facebook.litho.widget.Text
+import com.facebook.litho.widget.TextInput
 import java.util.ArrayList
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -199,10 +199,10 @@ class MountStateRemountTest {
         Column.create(context)
             .backgroundColor(Color.WHITE)
             .child(
-                EditText.create(context)
+                TextInput.create(context)
                     .backgroundColor(Color.RED)
                     .foregroundColor(Color.CYAN)
-                    .text("Hello World")
+                    .initialText("Hello World")
                     .viewTag("Alpha")
                     .contentDescription("some description"))
             .build()
@@ -222,10 +222,10 @@ class MountStateRemountTest {
         Column.create(context)
             .backgroundColor(Color.WHITE)
             .child(
-                EditText.create(context)
+                TextInput.create(context)
                     .backgroundColor(Color.RED)
                     .foregroundColor(Color.CYAN)
-                    .text("Hello World")
+                    .initialText("Hello World")
                     .viewTag("Alpha")
                     .contentDescription("some description"))
             .build()
@@ -251,8 +251,8 @@ class MountStateRemountTest {
             .backgroundColor(Color.WHITE)
             .child(Text.create(context).textSizeSp(12f).text("label:"))
             .child(
-                EditText.create(context)
-                    .text("Hello World")
+                TextInput.create(context)
+                    .initialText("Hello World")
                     .textSizeSp(12f)
                     .viewTag("Alpha")
                     .enabled(true))
@@ -273,8 +273,8 @@ class MountStateRemountTest {
             .backgroundColor(Color.WHITE)
             .child(Text.create(context).textSizeSp(12f).text("label:"))
             .child(
-                EditText.create(context)
-                    .text("Hello World")
+                TextInput.create(context)
+                    .initialText("Hello World")
                     .textSizeSp(12f)
                     .viewTag("Beta")
                     .enabled(false))
@@ -297,8 +297,8 @@ class MountStateRemountTest {
             .backgroundColor(Color.WHITE)
             .child(Text.create(context).textSizeSp(12f).text("label:"))
             .child(
-                EditText.create(context)
-                    .text("Hello World")
+                TextInput.create(context)
+                    .initialText("Hello World")
                     .textSizeSp(12f)
                     .backgroundColor(Color.RED))
             .build()
@@ -317,8 +317,8 @@ class MountStateRemountTest {
             .backgroundColor(Color.WHITE)
             .child(Text.create(context).textSizeSp(12f).text("label:"))
             .child(
-                EditText.create(context)
-                    .text("Hello World")
+                TextInput.create(context)
+                    .initialText("Hello World")
                     .textSizeSp(12f)
                     .backgroundColor(Color.CYAN))
             .build()
