@@ -16,29 +16,11 @@
 
 package com.facebook.litho.editor.model
 
+import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
+
 /** Wraps over a boolean to make it an EditorValue */
-class EditorBool(@JvmField val value: Boolean) : EditorValue() {
-
-  override fun equals(o: Any?): Boolean {
-    if (o === this) {
-      return true
-    }
-    if (o !is EditorBool) {
-      return false
-    }
-    val thisValue: Any = this.value
-    val otherValue: Any = o.value
-    return thisValue == otherValue
-  }
-
-  override fun hashCode(): Int {
-    val PRIME = 59
-    var result = 1
-    val objValue: Any = this.value
-    result = result * PRIME + objValue.hashCode()
-    return result
-  }
-
+@DataClassGenerate
+data class EditorBool(@JvmField val value: Boolean) : EditorValue() {
   override fun toString(): String {
     return value.toString()
   }

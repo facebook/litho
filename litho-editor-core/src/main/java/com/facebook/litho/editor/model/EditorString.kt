@@ -16,28 +16,11 @@
 
 package com.facebook.litho.editor.model
 
+import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
+
 /** Wraps over a String to make it an EditorValue */
-class EditorString(@JvmField val value: String) : EditorValue() {
-  override fun equals(o: Any?): Boolean {
-    if (o === this) {
-      return true
-    }
-    if (o !is EditorString) {
-      return false
-    }
-    val thisValue: Any = this.value
-    val otherValue: Any = o.value
-    return thisValue == otherValue
-  }
-
-  override fun hashCode(): Int {
-    val PRIME = 59
-    var result = 1
-    val objValue: Any = this.value
-    result = result * PRIME + objValue.hashCode()
-    return result
-  }
-
+@DataClassGenerate
+data class EditorString(@JvmField val value: String) : EditorValue() {
   override fun toString(): String {
     return value
   }

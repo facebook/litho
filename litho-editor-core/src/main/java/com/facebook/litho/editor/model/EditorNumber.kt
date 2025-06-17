@@ -16,26 +16,11 @@
 
 package com.facebook.litho.editor.model
 
+import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
+
 /** Wraps over a number to make it an EditorValue */
-class EditorNumber(@JvmField val value: Number) : EditorValue() {
-  override fun equals(o: Any?): Boolean {
-    if (this === o) {
-      return true
-    }
-
-    if (o == null || javaClass != o.javaClass) {
-      return false
-    }
-
-    val that = o as EditorNumber
-
-    return value == that.value
-  }
-
-  override fun hashCode(): Int {
-    return value.hashCode()
-  }
-
+@DataClassGenerate
+data class EditorNumber(@JvmField val value: Number) : EditorValue() {
   override fun toString(): String {
     return value.toString()
   }
