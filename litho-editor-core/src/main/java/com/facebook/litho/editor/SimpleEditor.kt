@@ -293,7 +293,7 @@ object SimpleEditor {
       }
 
       @JvmStatic
-      fun pick(otherValues: Set<String?>, selected: String): SimpleEditorValue {
+      fun pick(otherValues: Set<String>, selected: String): SimpleEditorValue {
         return SimpleEditorValue(EditorPick(otherValues, selected), PRIMITIVE_TYPE_PICK)
       }
 
