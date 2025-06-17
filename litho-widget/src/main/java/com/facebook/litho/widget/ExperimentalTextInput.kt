@@ -51,6 +51,7 @@ import androidx.annotation.ColorInt
 import androidx.annotation.GravityInt
 import androidx.core.util.ObjectsCompat
 import androidx.core.view.ViewCompat
+import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.LithoPrimitive
@@ -236,7 +237,8 @@ class ExperimentalTextInput(
   override fun PrimitiveComponentScope.render(): LithoPrimitive {
     val mountedView = useState { AtomicReference<EditTextWithEventHandlers?>() }
     val savedText = useState { AtomicReference(initialText) }
-    val textForMeasure = useState<CharSequence> { initialText.toString() }
+    val textAndConstraintsForMeasure =
+        useState<TextAndConstraints> { TextAndConstraints(initialText.toString(), null) }
 
     val resolvedHighlightColor = useCached {
       if (highlightColor != null) {
@@ -287,7 +289,7 @@ class ExperimentalTextInput(
                 disableAutofill = disableAutofill,
                 movementMethod = movementMethod,
                 savedText = savedText.value,
-                textForMeasure = textForMeasure,
+                textAndConstraintsForMeasure = textAndConstraintsForMeasure,
             ),
         mountBehavior =
             MountBehavior(
@@ -303,8 +305,10 @@ class ExperimentalTextInput(
 
                   // Controller
                   withDescription("text-input-controller") {
-                    bind(textInputController, savedText.value, textForMeasure) { editText ->
-                      textInputController?.bind(editText, savedText.value, textForMeasure)
+                    bind(textInputController, savedText.value, textAndConstraintsForMeasure) {
+                        editText ->
+                      textInputController?.bind(
+                          editText, savedText.value, textAndConstraintsForMeasure)
                       onUnbind { textInputController?.unbind() }
                     }
                   }
@@ -418,7 +422,7 @@ class ExperimentalTextInput(
                       editText.onEditorAction = onEditorAction
                       editText.onInputConnection = onInputConnection
                       editText.onTextPasted = onTextPasted
-                      editText.textForMeasure = textForMeasure
+                      editText.textAndConstraintsForMeasure = textAndConstraintsForMeasure
 
                       onUnbind {
                         editText.detachWatchers()
@@ -433,7 +437,7 @@ class ExperimentalTextInput(
                         editText.customSelectionActionModeCallback = null
                         editText.customInsertionActionModeCallback = null
                         editText.onTextPasted = null
-                        editText.textForMeasure = null
+                        editText.textAndConstraintsForMeasure = null
                       }
                     }
                   }
@@ -477,7 +481,7 @@ internal class TextInputLayoutBehavior(
     private val movementMethod: MovementMethod,
     private val savedText: AtomicReference<CharSequence?>,
     // we're only reading it here in order to force remeasure if it gets updated
-    private val textForMeasure: State<CharSequence>,
+    private val textAndConstraintsForMeasure: State<TextAndConstraints>,
 ) : LayoutBehavior {
   override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
     // When input type has NO_SUGGESTIONS flag set then suggestion spans are removed when
@@ -528,7 +532,7 @@ internal class TextInputLayoutBehavior(
             // 1. After initState before onMount: savedText = initText.
             // 2. After onMount before onUnmount: savedText preserved from underlying editText.
             savedText.get(),
-            textForMeasure)
+            textAndConstraintsForMeasure)
 
     return PrimitiveLayoutResult(
         height = forMeasure.measuredHeight,
@@ -562,7 +566,7 @@ private val BackgroundPaddingRect = Rect()
 /** UI thread only; used in OnMount. */
 private val NO_FILTERS = arrayOfNulls<InputFilter>(0)
 
-fun createAndMeasureEditText(
+internal fun createAndMeasureEditText(
     context: Context,
     sizeConstraints: SizeConstraints,
     hint: CharSequence?,
@@ -597,13 +601,20 @@ fun createAndMeasureEditText(
     autofillHints: Array<String?>?,
     disableAutofill: Boolean,
     text: CharSequence?,
-    textForMeasure: State<CharSequence>,
+    textAndConstraintsForMeasure: State<TextAndConstraints>,
 ): EditText {
   // The height should be the measured height of EditText with relevant params
-  var textToMeasure = text
+  val constraints = textAndConstraintsForMeasure.value.constraints
+  val textToMeasure =
+      if (sizeConstraints == constraints) {
+        // If text contains Spans, we don't want it to be mutable for the measurement case
+        textAndConstraintsForMeasure.value.text
+      } else {
+        text
+      }
+
   val forMeasure = ForMeasureEditText(context)
-  // If text contains Spans, we don't want it to be mutable for the measurement case
-  textToMeasure = textForMeasure.value
+
   if (context is MeasureContext) {
     context.withInputMethodManagerDisabled {
       setParams(
@@ -875,7 +886,7 @@ internal class EditTextWithEventHandlers(context: Context?) :
   var onEditorAction: ((TextView, KeyEvent?, Int) -> Boolean)? = null
   var onInputConnection: ((InputConnection?, EditorInfo) -> InputConnection?)? = null
   var componentContext: ComponentContext? = null
-  var textForMeasure: com.facebook.litho.State<CharSequence>? = null
+  var textAndConstraintsForMeasure: com.facebook.litho.State<TextAndConstraints>? = null
   private var textState: AtomicReference<CharSequence?>? = null
   private var textLineCount = UNMEASURED_LINE_COUNT
   private var textWatcher: TextWatcher? = null
@@ -883,6 +894,9 @@ internal class EditTextWithEventHandlers(context: Context?) :
 
   private var disableAutofill = false
   private var isTextPasted = false
+
+  private var lastWidthSpec: Int = -1
+  private var lastHeightSpec: Int = -1
 
   private var onWindowFocusChangeListener: ViewTreeObserver.OnWindowFocusChangeListener? = null
 
@@ -906,7 +920,13 @@ internal class EditTextWithEventHandlers(context: Context?) :
     if (this.textLineCount != UNMEASURED_LINE_COUNT &&
         (this.textLineCount != lineCount) &&
         (componentContext != null)) {
-      textForMeasure?.update(text.toString())
+      val constraints =
+          if (lastWidthSpec != -1 && lastHeightSpec != -1) {
+            SizeConstraints.fromMeasureSpecs(lastWidthSpec, lastHeightSpec)
+          } else {
+            null
+          }
+      textAndConstraintsForMeasure?.update(TextAndConstraints(text.toString(), constraints))
     }
   }
 
@@ -919,6 +939,8 @@ internal class EditTextWithEventHandlers(context: Context?) :
 
   override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
     super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+    lastWidthSpec = widthMeasureSpec
+    lastHeightSpec = heightMeasureSpec
     // Line count of the current text.
     textLineCount = lineCount
   }
@@ -1196,16 +1218,16 @@ fun ComponentScope.useTextInputController(): TextInputController {
 class TextInputController internal constructor() {
   private var editText: EditTextWithEventHandlers? = null
   private var savedText: AtomicReference<CharSequence?>? = null
-  private var textForMeasure: com.facebook.litho.State<CharSequence>? = null
+  private var createAndMeasureEditText: com.facebook.litho.State<TextAndConstraints>? = null
 
   internal fun bind(
       editText: EditTextWithEventHandlers,
       savedText: AtomicReference<CharSequence?>,
-      textForMeasure: com.facebook.litho.State<CharSequence>?,
+      createAndMeasureEditText: com.facebook.litho.State<TextAndConstraints>?,
   ) {
     this.editText = editText
     this.savedText = savedText
-    this.textForMeasure = textForMeasure
+    this.createAndMeasureEditText = createAndMeasureEditText
   }
 
   internal fun unbind() {
@@ -1343,7 +1365,7 @@ class TextInputController internal constructor() {
   }
 
   private fun remeasureForUpdatedTextSync() {
-    textForMeasure?.updateSync(savedText?.get().toString())
+    createAndMeasureEditText?.updateSync(TextAndConstraints(savedText?.get().toString(), null))
   }
 }
 
@@ -1502,3 +1524,6 @@ private class MeasureContext(ctx: Context) : ContextWrapper(ctx) {
     }
   }
 }
+
+@DataClassGenerate
+internal data class TextAndConstraints(val text: CharSequence, val constraints: SizeConstraints?)
