@@ -17,6 +17,7 @@
 package com.facebook.litho.widget
 
 import android.view.ViewGroup
+import androidx.annotation.UiThread
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.litho.LithoRenderTreeView
 
@@ -26,7 +27,7 @@ import com.facebook.litho.LithoRenderTreeView
  * and [CollectionItem.onViewRecycled] on the holder when the item is bound and recycle
  * respectively.
  */
-internal class CollectionPrimitiveViewAdapter(
+class CollectionPrimitiveViewAdapter(
     private val viewHolderCreator:
         (parent: ViewGroup, viewType: Int) -> PrimitiveRecyclerViewHolder,
 ) : RecyclerView.Adapter<PrimitiveRecyclerViewHolder>() {
@@ -73,6 +74,14 @@ internal class CollectionPrimitiveViewAdapter(
   override fun getItemId(position: Int): Long = items[position].id.toLong()
 
   override fun getItemViewType(position: Int): Int = items[position].viewType
+
+  /** Returns the position of the first item with the given id, otherwise, returns -1. */
+  @UiThread
+  fun findPositionById(id: Any): Int {
+    return items.indexOfFirst { item ->
+      item.renderInfo.getCustomAttribute(CollectionItem.ID_CUSTOM_ATTR_KEY) == id
+    }
+  }
 
   // region update operations
 

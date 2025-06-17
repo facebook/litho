@@ -32,11 +32,11 @@ import com.facebook.litho.config.PrimitiveRecyclerBinderStrategy
 import com.facebook.litho.onCleanup
 import com.facebook.litho.sections.widget.NoUpdateItemAnimator
 import com.facebook.litho.sections.widget.RecyclerConfiguration
-import com.facebook.litho.useCached
 import com.facebook.litho.useCallback
 import com.facebook.litho.useEffect
 import com.facebook.litho.useState
 import com.facebook.litho.widget.ChangeSetCompleteCallback
+import com.facebook.litho.widget.CollectionPrimitiveViewScroller
 import com.facebook.litho.widget.LithoRecyclerView.OnAfterLayoutListener
 import com.facebook.litho.widget.LithoRecyclerView.OnBeforeLayoutListener
 import com.facebook.litho.widget.LithoRecyclerView.TouchInterceptor
@@ -138,14 +138,9 @@ class CollectionRecyclerComponent(
             }
             .value
 
-    val internalRecyclerEventsController =
-        useCached(lazyCollectionController) {
-          val eventsController = RecyclerEventsController()
-          lazyCollectionController?.recyclerEventsController = eventsController
-          lazyCollectionController?.scrollerDelegate =
-              ScrollerDelegate.RecyclerBinderScroller(binder)
-          eventsController
-        }
+    val recyclerEventsController = useState { RecyclerEventsController() }.value
+    val collectionPrimitiveViewScroller =
+        useState { CollectionPrimitiveViewScroller(context.androidContext) }.value
 
     // This calculates the diff between the previous and new data to determine what changes need to
     // be made to the RecyclerView. It's performed as a best-effort calculation on the background
@@ -160,6 +155,9 @@ class CollectionRecyclerComponent(
             sameContentComparator = contentComparator)
 
     useEffect(Any()) {
+      lazyCollectionController?.recyclerEventsController = recyclerEventsController
+      lazyCollectionController?.scrollerDelegate = RecyclerScroller(collectionPrimitiveViewScroller)
+
       val resolvedUpdateCallback =
           if (updateCallback.prevData !== latestCommittedData.data) {
             // If the data has changed since the last diff calculation, we need to re-calculate the
@@ -177,7 +175,11 @@ class CollectionRecyclerComponent(
       latestCommittedData.data = resolvedUpdateCallback.nextData
       resolvedUpdateCallback.submitTo(
           recyclerBinder = binder, onDataRendered = onDataRendered, onDataBound = onDataBound)
-      null
+
+      onCleanup {
+        lazyCollectionController?.recyclerEventsController = null
+        lazyCollectionController?.scrollerDelegate = null
+      }
     }
     useEffect(Unit) { onCleanup { poolScope.releaseScope() } }
 
@@ -243,7 +245,7 @@ class CollectionRecyclerComponent(
             },
         onScrollListeners = onScrollListeners?.filterNotNull(),
         overScrollMode = overScrollMode,
-        recyclerEventsController = internalRecyclerEventsController,
+        recyclerEventsController = recyclerEventsController,
         recyclerViewId = recyclerViewId,
         refreshProgressBarBackgroundColor = refreshProgressBarBackgroundColor,
         refreshProgressBarColor = refreshProgressBarColor,

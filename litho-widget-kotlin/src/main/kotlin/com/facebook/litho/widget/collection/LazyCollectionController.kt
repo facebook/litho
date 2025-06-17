@@ -22,10 +22,11 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SnapHelper
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.ResourcesScope
+import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.annotations.Hook
 import com.facebook.litho.sections.SectionTree
 import com.facebook.litho.useState
-import com.facebook.litho.widget.RecyclerBinder
+import com.facebook.litho.widget.CollectionPrimitiveViewScroller
 import com.facebook.litho.widget.RecyclerEventsController
 import com.facebook.litho.widget.SmoothScrollAlignmentType
 import com.facebook.rendercore.Dimen
@@ -226,59 +227,60 @@ sealed interface ScrollerDelegate {
    *   Collection.
    */
   fun scrollToIndex(index: Int, @Px offset: Int = 0)
+}
 
-  class SectionTreeScroller(private val sectionTree: SectionTree) : ScrollerDelegate {
+class SectionTreeScroller(private val sectionTree: SectionTree) : ScrollerDelegate {
 
-    override fun smoothScrollToId(
-        id: Any,
-        offset: Int,
-        smoothScrollAlignmentType: SmoothScrollAlignmentType
-    ) {
-      sectionTree.requestSmoothFocusOnRoot(id, offset, smoothScrollAlignmentType)
-    }
-
-    override fun smoothScrollToIndex(
-        index: Int,
-        offset: Int,
-        smoothScrollAlignmentType: SmoothScrollAlignmentType
-    ) {
-      sectionTree.requestSmoothFocusOnRoot(index, offset, smoothScrollAlignmentType)
-    }
-
-    override fun scrollToId(id: Any, offset: Int) {
-      sectionTree.requestFocusOnRoot(id, offset)
-    }
-
-    override fun scrollToIndex(index: Int, offset: Int) {
-      sectionTree.requestFocusOnRoot(index, offset)
-    }
+  override fun smoothScrollToId(
+      id: Any,
+      offset: Int,
+      smoothScrollAlignmentType: SmoothScrollAlignmentType
+  ) {
+    sectionTree.requestSmoothFocusOnRoot(id, offset, smoothScrollAlignmentType)
   }
 
-  class RecyclerBinderScroller(private val recyclerBinder: RecyclerBinder) : ScrollerDelegate {
+  override fun smoothScrollToIndex(
+      index: Int,
+      offset: Int,
+      smoothScrollAlignmentType: SmoothScrollAlignmentType
+  ) {
+    sectionTree.requestSmoothFocusOnRoot(index, offset, smoothScrollAlignmentType)
+  }
 
-    override fun smoothScrollToId(
-        id: Any,
-        offset: Int,
-        smoothScrollAlignmentType: SmoothScrollAlignmentType
-    ) {
-      recyclerBinder.scrollSmoothToPosition(id, offset, smoothScrollAlignmentType)
-    }
+  override fun scrollToId(id: Any, offset: Int) {
+    sectionTree.requestFocusOnRoot(id, offset)
+  }
 
-    override fun smoothScrollToIndex(
-        index: Int,
-        offset: Int,
-        smoothScrollAlignmentType: SmoothScrollAlignmentType
-    ) {
-      recyclerBinder.scrollSmoothToPosition(index, offset, smoothScrollAlignmentType)
-    }
+  override fun scrollToIndex(index: Int, offset: Int) {
+    sectionTree.requestFocusOnRoot(index, offset)
+  }
+}
 
-    override fun scrollToId(id: Any, offset: Int) {
-      recyclerBinder.scrollToPositionWithOffset(id, offset)
-    }
+@ExperimentalLithoApi
+class RecyclerScroller(private val scroller: CollectionPrimitiveViewScroller) : ScrollerDelegate {
 
-    override fun scrollToIndex(index: Int, offset: Int) {
-      recyclerBinder.scrollToPositionWithOffset(index, offset)
-    }
+  override fun smoothScrollToId(
+      id: Any,
+      offset: Int,
+      smoothScrollAlignmentType: SmoothScrollAlignmentType
+  ) {
+    scroller.startSmoothScrollWithOffset(id, offset, smoothScrollAlignmentType)
+  }
+
+  override fun smoothScrollToIndex(
+      index: Int,
+      offset: Int,
+      smoothScrollAlignmentType: SmoothScrollAlignmentType
+  ) {
+    scroller.startSmoothScrollWithOffset(index, offset, smoothScrollAlignmentType)
+  }
+
+  override fun scrollToId(id: Any, offset: Int) {
+    scroller.scrollToPositionWithOffset(id, offset)
+  }
+
+  override fun scrollToIndex(index: Int, offset: Int) {
+    scroller.scrollToPositionWithOffset(index, offset)
   }
 }
 

@@ -69,4 +69,9 @@ abstract class CollectionItem<V : View>(
    * preparation.
    */
   abstract fun unprepare()
+
+  companion object {
+    /** The key of unique identifier to find the position in the RecyclerView.Adapter. */
+    const val ID_CUSTOM_ATTR_KEY: String = "id"
+  }
 }

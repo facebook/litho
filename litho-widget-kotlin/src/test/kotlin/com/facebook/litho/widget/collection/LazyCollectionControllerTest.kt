@@ -136,7 +136,7 @@ class LazyCollectionControllerTest {
     val lazyCollectionController = LazyCollectionController()
 
     val mockSectionTree = mock<SectionTree>()
-    val sectionTreeScroller = ScrollerDelegate.SectionTreeScroller(mockSectionTree)
+    val sectionTreeScroller = SectionTreeScroller(mockSectionTree)
     lazyCollectionController.scrollerDelegate = sectionTreeScroller
 
     lazyCollectionController.scrollToIndex(5, 10)
@@ -148,7 +148,7 @@ class LazyCollectionControllerTest {
     val lazyCollectionController = LazyCollectionController()
 
     val mockSectionTree = mock<SectionTree>()
-    val sectionTreeScroller = ScrollerDelegate.SectionTreeScroller(mockSectionTree)
+    val sectionTreeScroller = SectionTreeScroller(mockSectionTree)
     lazyCollectionController.scrollerDelegate = sectionTreeScroller
 
     lazyCollectionController.smoothScrollToIndex(5, 10, SmoothScrollAlignmentType.SNAP_TO_START)
