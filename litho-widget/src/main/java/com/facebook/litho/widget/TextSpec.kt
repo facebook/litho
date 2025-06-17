@@ -201,7 +201,7 @@ object TextSpec {
         richTextStyle.textSize = defaultTextSize
       }
       if (extraSpacing != 0f) {
-        richTextStyle.extraSpacingRight = extraSpacing
+        richTextStyle.lineSpacingExtra = extraSpacing
       }
       if (spacingMultiplier != 1.0f) {
         richTextStyle.lineHeightMultiplier = spacingMultiplier
