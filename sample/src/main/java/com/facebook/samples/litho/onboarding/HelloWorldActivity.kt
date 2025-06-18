@@ -13,24 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.facebook.samples.litho.onboarding
 
-package com.facebook.samples.litho.onboarding;
+import android.os.Bundle
+import com.facebook.litho.ComponentContext
+import com.facebook.litho.LithoView
+import com.facebook.litho.widget.Text
+import com.facebook.samples.litho.NavigatableDemoActivity
 
-import android.os.Bundle;
-import com.facebook.litho.ComponentContext;
-import com.facebook.litho.LithoView;
-import com.facebook.litho.widget.Text;
-import com.facebook.samples.litho.NavigatableDemoActivity;
-
-public class HelloWorldActivity extends NavigatableDemoActivity {
-
+class HelloWorldActivity : NavigatableDemoActivity() {
   // start_example
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
 
-    ComponentContext c = new ComponentContext(this);
-    setContentView(LithoView.create(this, Text.create(c).text("Hello World!").build()));
+    val c = ComponentContext(this)
+    setContentView(LithoView.create(this, Text.create(c).text("Hello World!").build()))
   }
   // end_example
 }
