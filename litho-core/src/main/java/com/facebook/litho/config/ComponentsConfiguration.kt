@@ -311,6 +311,9 @@ internal constructor(
     /** This flag is to enable usage of Primitive TextInput */
     @JvmField var usePrimitiveTextInput: Boolean = false
 
+    /** This flag is to enable usage of seqNumber to trigger remeasure in TextInput */
+    @JvmField var useSeqNumberForRemeasuringTextInput: Boolean = false
+
     /**
      * This flag is used to enable a fix for the issue where the text is not truncated correctly
      * when customEllipsisText is set.
