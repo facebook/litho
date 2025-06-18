@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
-package com.facebook.samples.litho.onboarding;
+package com.facebook.samples.litho.onboarding
 
-import com.facebook.litho.Component;
-import com.facebook.litho.ComponentContext;
-import com.facebook.litho.annotations.LayoutSpec;
-import com.facebook.litho.annotations.OnCreateLayout;
-import com.facebook.litho.annotations.Prop;
-import com.facebook.litho.widget.Text;
+import com.facebook.litho.Component
+import com.facebook.litho.ComponentContext
+import com.facebook.litho.annotations.LayoutSpec
+import com.facebook.litho.annotations.OnCreateLayout
+import com.facebook.litho.annotations.Prop
+import com.facebook.litho.widget.Text
 
 // start_example
 @LayoutSpec
-public class FirstComponentSpec {
-
+object FirstComponentSpec {
   @OnCreateLayout
-  static Component onCreateLayout(ComponentContext c, @Prop String name) {
-    return Text.create(c).text("Hello " + name + "!").build();
+  fun onCreateLayout(c: ComponentContext?, @Prop name: String): Component {
+    return Text.create(c).text("Hello $name!").build()
   }
 }
 // end_example
