@@ -50,7 +50,7 @@ Props are just `val` properties of a Component.
 
 Props are defined using the `@Prop` annotation.
 
-```java file=sample/src/main/java/com/facebook/samples/litho/onboarding/FirstComponentSpec.java start=start_example end=end_example
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/onboarding/FirstComponentSpec.kt start=start_example end=end_example
 ```
 
   </TabItem>
