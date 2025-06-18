@@ -753,6 +753,19 @@ public class RCTextView extends View {
   }
 
   @Override
+  protected void drawableStateChanged() {
+    super.drawableStateChanged();
+    if (mColorStateList != null && mColorStateList.isStateful() && mLayout != null) {
+      int color =
+          mColorStateList.getColorForState(getDrawableState(), mColorStateList.getDefaultColor());
+      if (mLayout.getPaint().getColor() != color) {
+        mLayout.getPaint().setColor(color);
+        invalidate();
+      }
+    }
+  }
+
+  @Override
   public boolean dispatchHoverEvent(MotionEvent event) {
     return (mRCTextAccessibilityDelegate != null
             && mRCTextAccessibilityDelegate.dispatchHoverEvent(event))
