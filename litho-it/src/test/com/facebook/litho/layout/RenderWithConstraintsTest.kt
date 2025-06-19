@@ -62,7 +62,11 @@ class RenderWithConstraintsTest {
   fun `when component renders with constraints then effect should run`() {
     var effectRunCount = 0
     var effectCleanupCount = 0
-    val component = TestComponent({ effectRunCount++ }, { effectCleanupCount++ })
+    val component =
+        TestComponent(
+            runEffects = { effectRunCount++ },
+            cleanupEffects = { effectCleanupCount++ },
+        )
 
     lithoTestRule.render { component }
 
@@ -75,7 +79,7 @@ class RenderWithConstraintsTest {
 
   @Test
   fun `when component renders with constraints then transitions should be collected`() {
-    val component = TestComponent({}, {})
+    val component = TestComponent(runEffects = {}, cleanupEffects = {})
 
     val handle = lithoTestRule.render { component }
 
@@ -84,7 +88,7 @@ class RenderWithConstraintsTest {
 
   @Test
   fun `when component renders with constraints then state updates should work correctly`() {
-    val component = TestComponent({}, {})
+    val component = TestComponent(runEffects = {}, cleanupEffects = {})
 
     val handle = lithoTestRule.render { component }
 
@@ -99,11 +103,38 @@ class RenderWithConstraintsTest {
     handle.findViewWithText("count1: 1")
   }
 
+  @Test(expected = AssertionError::class)
+  fun `when component renders with constraints then transition in parent should be collected`() {
+    val component =
+        TestComponent(
+            useTransitionInParent = true,
+            runEffects = {},
+            cleanupEffects = {},
+        )
+
+    val handle = lithoTestRule.render { component }
+
+    assertThat(handle.committedLayoutState!!.transitions).hasSize(2)
+  }
+
   internal class TestComponent(
+      val useTransitionInParent: Boolean = false,
       val runEffects: () -> Unit,
       val cleanupEffects: () -> Unit,
   ) : KComponent() {
     override fun ComponentScope.render(): Component {
+
+      // FIXME: This transition is lost; NestedTreeHolder does not transfer to the nested node
+      useTransition(
+          if (useTransitionInParent) {
+            Transition.create("parent")
+                .animate(AnimatedProperties.ALPHA)
+                .appearFrom(0f)
+                .animator(Transition.timing(100))
+          } else {
+            null
+          })
+
       return RenderWithConstraints { constraints ->
         val count0 = useState { 0 }
         val count1 = useState { 0 }
