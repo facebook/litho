@@ -22,7 +22,8 @@ import kotlin.jvm.JvmField
  * The result of a [Component#resolveWithResult] call. This will hold the [LithoNode] this Component
  * resolved to as well as CommonProps of this component.
  */
-class ComponentResolveResult(
+class ComponentResolveResult
+constructor(
     @JvmField val lithoNode: LithoNode?,
-    @JvmField val commonProps: CommonProps?
+    @JvmField val commonProps: CommonProps?,
 )

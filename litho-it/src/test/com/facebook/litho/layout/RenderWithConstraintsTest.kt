@@ -25,7 +25,6 @@ import com.facebook.litho.Style
 import com.facebook.litho.Transition
 import com.facebook.litho.animation.AnimatedProperties
 import com.facebook.litho.config.ComponentsConfiguration
-import com.facebook.litho.kotlin.widget.RenderWithConstraints
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.onCleanup
 import com.facebook.litho.testing.LithoTestRule
@@ -59,8 +58,7 @@ class RenderWithConstraintsTest {
     ComponentsConfiguration.isAnimationDisabled = defaultAnimationDisabled
   }
 
-  /** This test will fail */
-  @Test(expected = AssertionError::class)
+  @Test
   fun `when component renders with constraints then effect should run`() {
     var effectRunCount = 0
     var effectCleanupCount = 0
@@ -68,21 +66,20 @@ class RenderWithConstraintsTest {
 
     lithoTestRule.render { component }
 
-    assertThat(effectRunCount).isEqualTo(1) // WILL FAIL HERE
+    assertThat(effectRunCount).isEqualTo(1)
 
     assertThat(effectCleanupCount).isEqualTo(0)
 
     lithoTestRule.render { EmptyComponent() }
   }
 
-  /** This test will fail */
-  @Test(expected = AssertionError::class)
+  @Test
   fun `when component renders with constraints then transitions should be collected`() {
     val component = TestComponent({}, {})
 
     val handle = lithoTestRule.render { component }
 
-    assertThat(handle.committedLayoutState!!.transitions).hasSize(1) // WILL FAIL HERE
+    assertThat(checkNotNull(handle.committedLayoutState).transitions).hasSize(1)
   }
 
   @Test

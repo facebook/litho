@@ -178,22 +178,20 @@ object Resolver {
                 scopedComponentInfo = c.scopedComponentInfo
 
                 // 6. Resolve the component into an InternalNode tree.
-
-                // If nested tree resolution is deferred, then create a nested tree holder.
-                if (shouldDeferNestedTreeResolution) {
-                  node =
-                      NestedTreeHolder(
-                          c.treePropContainer,
-                          resolveContext.cache.getCachedNode(component),
-                          parent)
-                } else {
-                  // Resolve the component into an InternalNode.
-                  val resolveResult: ComponentResolveResult =
+                val resolveResult: ComponentResolveResult =
+                    if (shouldDeferNestedTreeResolution) {
+                      component.resolveDeferred(resolveContext, c, parent)
+                    } else {
                       component.resolve(
-                          resolveContext, scopedComponentInfo, parentWidthSpec, parentHeightSpec)
-                  node = resolveResult.lithoNode
-                  commonProps = resolveResult.commonProps
-                }
+                          resolveContext,
+                          scopedComponentInfo,
+                          parentWidthSpec,
+                          parentHeightSpec,
+                      )
+                    }
+
+                node = resolveResult.lithoNode
+                commonProps = resolveResult.commonProps
 
                 // 7. If the layout is null then return immediately.
                 if (node == null) {
@@ -236,9 +234,9 @@ object Resolver {
                 }
               }
 
-              /* 9. Copy the common props
-              Skip if resolving a layout with size spec because common props were copied in the
-              previous layout pass. */
+              // 9. Copy the common props
+              //    Skip if resolving a component that renders with constraints because
+              //    common props were copied in the previous layout pass.
               if (commonProps == null && component is SpecGeneratedComponent) {
                 // this step is still needed to make OCLWSS case work
                 commonProps = component.commonProps
@@ -650,4 +648,20 @@ object Resolver {
       @JvmField internal val transitionData: TransitionData,
       @JvmField internal val stateReads: Map<StateId, ScatterSet<String>>,
   )
+
+  fun Component.resolveDeferred(
+      calculationContext: CalculationContext,
+      componentContext: ComponentContext,
+      parentContext: ComponentContext,
+      commonProps: CommonProps?,
+  ): ComponentResolveResult {
+    val node =
+        NestedTreeHolder(
+            componentContext.treePropContainer,
+            calculationContext.cache.getCachedNode(this),
+            parentContext,
+        )
+
+    return ComponentResolveResult(node, commonProps)
+  }
 }

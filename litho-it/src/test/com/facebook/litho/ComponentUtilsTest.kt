@@ -254,6 +254,23 @@ class ComponentUtilsTest {
     @field:Comparable(type = Comparable.EVENT_HANDLER) var propEventHandler: EventHandler<*>? = null
 
     @field:Comparable(type = Comparable.OTHER) var treePropObject: Any? = null
+
+    override fun resolve(
+        resolveContext: ResolveContext,
+        scopedComponentInfo: ScopedComponentInfo,
+        parentWidthSpec: Int,
+        parentHeightSpec: Int
+    ): ComponentResolveResult {
+      error("Not yet implemented")
+    }
+
+    override fun resolveDeferred(
+        calculationContext: CalculationContext,
+        componentContext: ComponentContext,
+        parentContext: ComponentContext
+    ): ComponentResolveResult {
+      error("Not yet implemented")
+    }
   }
 
   private class StateTest(

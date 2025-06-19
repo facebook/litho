@@ -16,6 +16,8 @@
 
 package com.facebook.litho
 
+import com.facebook.litho.Resolver.resolveDeferred
+
 /** A component which renders nothing. */
 class EmptyComponent : Component() {
 
@@ -26,5 +28,13 @@ class EmptyComponent : Component() {
       parentHeightSpec: Int
   ): ComponentResolveResult {
     return ComponentResolveResult(NullNode(), null)
+  }
+
+  override fun resolveDeferred(
+      calculationContext: CalculationContext,
+      componentContext: ComponentContext,
+      parentContext: ComponentContext
+  ): ComponentResolveResult {
+    return this.resolveDeferred(calculationContext, componentContext, parentContext, null)
   }
 }

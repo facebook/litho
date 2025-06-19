@@ -234,6 +234,19 @@ public abstract class SpecGeneratedComponent extends Component
   }
 
   @Override
+  public ComponentResolveResult resolveDeferred(
+      CalculationContext calculationContext,
+      ComponentContext componentContext,
+      ComponentContext parentContext) {
+    final LithoNode node =
+        new NestedTreeHolder(
+            componentContext.getTreePropContainer(),
+            calculationContext.getCache().getCachedNode(this),
+            parentContext);
+    return new ComponentResolveResult(node, getCommonProps());
+  }
+
+  @Override
   protected ComponentResolveResult resolve(
       final ResolveContext resolveContext,
       final ScopedComponentInfo scopedComponentInfo,

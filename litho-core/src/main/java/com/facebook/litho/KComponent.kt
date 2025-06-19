@@ -17,6 +17,7 @@
 package com.facebook.litho
 
 import android.content.Context
+import com.facebook.litho.Resolver.resolveDeferred
 import com.facebook.litho.debug.LithoDebugEvent.ComponentRendered
 import com.facebook.litho.debug.LithoDebugEventAttributes.Component
 import com.facebook.rendercore.debug.DebugEventAttribute.Name
@@ -79,6 +80,14 @@ abstract class KComponent : Component() {
 
     // KComponent doesn't itself hold any CommonProps so return null
     return ComponentResolveResult(node, null)
+  }
+
+  override fun resolveDeferred(
+      calculationContext: CalculationContext,
+      componentContext: ComponentContext,
+      parentContext: ComponentContext
+  ): ComponentResolveResult {
+    return this.resolveDeferred(calculationContext, componentContext, parentContext, null)
   }
 
   abstract fun ComponentScope.render(): Component?

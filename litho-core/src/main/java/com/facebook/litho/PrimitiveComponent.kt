@@ -17,6 +17,7 @@
 package com.facebook.litho
 
 import android.content.Context
+import com.facebook.litho.Resolver.resolveDeferred
 import com.facebook.litho.debug.LithoDebugEvent.ComponentRendered
 import com.facebook.litho.debug.LithoDebugEventAttributes.Component
 import com.facebook.rendercore.RenderUnit
@@ -83,6 +84,14 @@ abstract class PrimitiveComponent : Component() {
     )
 
     return ComponentResolveResult(node, commonProps)
+  }
+
+  override fun resolveDeferred(
+      calculationContext: CalculationContext,
+      componentContext: ComponentContext,
+      parentContext: ComponentContext
+  ): ComponentResolveResult {
+    return this.resolveDeferred(calculationContext, componentContext, parentContext, null)
   }
 
   /** This function must return [LithoPrimitive] which are immutable. */

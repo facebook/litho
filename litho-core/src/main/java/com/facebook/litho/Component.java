@@ -228,15 +228,21 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
    * ComponentResolveResult will have the {@link LithoNode} and {@link CommonProps} for the resolved
    * component.
    */
-  protected ComponentResolveResult resolve(
+  protected abstract ComponentResolveResult resolve(
       final ResolveContext resolveContext,
       final ScopedComponentInfo scopedComponentInfo,
       final int parentWidthSpec,
-      final int parentHeightSpec) {
-    throw new RuntimeException(
-        "resolve should not be called on a component which hasn't implemented it! "
-            + getSimpleName());
-  }
+      final int parentHeightSpec);
+
+  /**
+   * Returns the component's resolve result for a deferred resolution. The framework invokes this
+   * instead of the {@link Component#resolve(ResolveContext, ScopedComponentInfo, int, int)} if the
+   * component needs to defer its resolution until layout.
+   */
+  public abstract ComponentResolveResult resolveDeferred(
+      final CalculationContext calculationContext,
+      final ComponentContext componentContext,
+      final ComponentContext parentContext);
 
   protected boolean isEqualivalentTreePropContainer(
       ComponentContext current, ComponentContext next) {
@@ -760,7 +766,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
   }
 
   // Get an id that is identical across cloned instances, but otherwise unique
-  final int getInstanceId() {
+  public final int getInstanceId() {
     return mId;
   }
 
