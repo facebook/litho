@@ -32,6 +32,7 @@ import android.view.ViewGroup
 import android.view.ViewParent
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
+import androidx.annotation.CallSuper
 import androidx.annotation.FloatRange
 import androidx.annotation.IdRes
 import androidx.annotation.VisibleForTesting
@@ -1391,7 +1392,8 @@ open class ComponentHost(
   }
 
   /** Clean up all fields to avoid being reused with an incorrect state. */
-  fun cleanup() {
+  @CallSuper
+  open fun cleanup() {
     mountItems.clear()
     viewMountItems.clear()
     drawableMountItems.clear()

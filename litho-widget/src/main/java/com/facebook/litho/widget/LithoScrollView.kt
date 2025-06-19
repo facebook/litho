@@ -200,7 +200,7 @@ constructor(
 
   fun release() {
     if (renderTreeView is LithoRenderTreeView) {
-      renderTreeView.clean()
+      renderTreeView.cleanup()
     } else {
       throw UnsupportedOperationException(
           "This operation is only support for LithoRenderTreeView but it was : ${CommonUtils.getSectionNameForTracing(renderTreeView.javaClass)}")

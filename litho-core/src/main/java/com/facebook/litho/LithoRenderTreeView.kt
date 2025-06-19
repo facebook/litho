@@ -63,7 +63,7 @@ class LithoRenderTreeView @JvmOverloads constructor(context: Context, attrs: Att
 
   override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
     if (event == Lifecycle.Event.ON_DESTROY) {
-      clean()
+      cleanup()
     }
   }
 
@@ -170,7 +170,7 @@ class LithoRenderTreeView @JvmOverloads constructor(context: Context, attrs: Att
     requestLayout()
   }
 
-  fun clean() {
+  override fun cleanup() {
     unmountAllItems()
     onClean?.invoke()
     onClean = null

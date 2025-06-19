@@ -62,7 +62,7 @@ class LithoCollectionItem(
   }
 
   override fun onViewRecycled(view: LithoRenderTreeView) {
-    view.clean()
+    view.cleanup()
   }
 
   override fun unprepare() {

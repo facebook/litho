@@ -135,7 +135,7 @@ constructor(context: Context, val renderTreeView: BaseMountingView = LithoView(c
 
   fun unmount() {
     when (renderTreeView) {
-      is LithoRenderTreeView -> renderTreeView.clean()
+      is LithoRenderTreeView -> renderTreeView.cleanup()
       is LithoView -> renderTreeView.setComponentTree(null, false)
     }
     componentWidth = 0
