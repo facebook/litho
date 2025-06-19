@@ -576,7 +576,7 @@ class ViewAttributes {
       unsetRotationY(content, attributes)
       content.isClickable = LithoMountData.isViewClickable(mountFlags)
       content.isLongClickable = LithoMountData.isViewLongClickable(mountFlags)
-      unsetFocusable(content, mountFlags)
+      unsetFocusable(content, attributes, mountFlags)
       unsetEnabled(content, mountFlags)
       unsetSelected(content, mountFlags)
       unsetKeyboardNavigationCluster(content, mountFlags)
@@ -967,11 +967,13 @@ class ViewAttributes {
       }
     }
 
-    fun unsetFocusable(view: View, flags: Int) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        view.focusable = LithoMountData.getViewFocusable(flags)
-      } else {
-        view.isFocusable = LithoMountData.isViewFocusable(flags)
+    fun unsetFocusable(view: View, attributes: ViewAttributes, flags: Int) {
+      if (attributes.isFocusableSet) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+          view.focusable = LithoMountData.getViewFocusable(flags)
+        } else {
+          view.isFocusable = LithoMountData.isViewFocusable(flags)
+        }
       }
     }
 
