@@ -28,7 +28,7 @@ import com.facebook.litho.PrimitiveComponent
 import com.facebook.litho.PrimitiveComponentScope
 import com.facebook.litho.components.StateReadingTestLayout
 import com.facebook.litho.config.ComponentsConfiguration
-import com.facebook.litho.kotlin.widget.RenderWithConstraints
+import com.facebook.litho.layout.RenderWithConstraints
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.useEffect

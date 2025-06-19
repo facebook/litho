@@ -29,8 +29,8 @@ import com.facebook.litho.core.margin
 import com.facebook.litho.core.padding
 import com.facebook.litho.core.width
 import com.facebook.litho.kotlin.widget.Image
-import com.facebook.litho.kotlin.widget.RenderWithConstraints
 import com.facebook.litho.kotlin.widget.Text
+import com.facebook.litho.layout.RenderWithConstraints
 import com.facebook.litho.useState
 import com.facebook.litho.view.onClick
 import com.facebook.rendercore.dp
