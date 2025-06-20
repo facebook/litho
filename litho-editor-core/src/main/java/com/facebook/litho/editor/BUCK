@@ -12,14 +12,12 @@ DEPS = [
 fb_android_library(
     name = "editor",
     srcs = glob([
-        "**/*.java",
         "**/*.kt",
     ]),
     autoglob = False,
     feature = FBApp_UIFrameworks_Litho_Litho,
     k2 = True,
     labels = [],
-    pure_kotlin = False,
     visibility = [
         "PUBLIC",
     ],
