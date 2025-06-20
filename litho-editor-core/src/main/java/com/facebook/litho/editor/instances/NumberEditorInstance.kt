@@ -31,7 +31,7 @@ class NumberEditorInstance<T : Number?>(private val clazz: Class<T>) : Editor {
   }
 
   override fun write(f: Field, node: Any?, values: EditorValue): Boolean {
-    values.`when`<Void>(
+    values.`when`(
         object : EditorValue.DefaultEditorVisitor() {
           override fun isNumber(number: EditorNumber): Void? {
             var value: Number = number.value

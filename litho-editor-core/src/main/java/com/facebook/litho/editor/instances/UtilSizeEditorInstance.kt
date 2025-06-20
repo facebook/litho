@@ -51,7 +51,7 @@ class UtilSizeEditorInstance : Editor {
   // numbers are integers, we write them as the corresponding Size object.
   // In all other cases, nothing changes.
   override fun write(f: Field, node: Any?, values: EditorValue): Boolean {
-    values.`when`<Void>(
+    values.`when`(
         object : EditorValue.DefaultEditorVisitor() {
           override fun isString(editor: EditorString): Void? {
             val tokens: Array<String> = editor.value.split("=|\\s").toTypedArray()

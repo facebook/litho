@@ -20,9 +20,9 @@ import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClas
 
 /** Wraps over a color to make it an EditorValue */
 @DataClassGenerate
-data class EditorColor(@JvmField val value: Number) : EditorValue() {
+data class EditorColor(@JvmField val color: Number) : EditorValue() {
   override fun toString(): String {
-    return value.toString()
+    return color.toString()
   }
 
   override fun <R> `when`(visitor: EditorVisitor<R>): R {

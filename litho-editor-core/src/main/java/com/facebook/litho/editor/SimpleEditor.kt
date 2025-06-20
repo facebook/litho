@@ -97,7 +97,7 @@ object SimpleEditor {
                     }
 
                     override fun isColor(path: Array<String>, color: EditorColor): Boolean {
-                      propertyEditor.writeNumberProperty(value, key, color.value)
+                      propertyEditor.writeNumberProperty(value, key, color.color)
                       return true
                     }
 
@@ -129,7 +129,7 @@ object SimpleEditor {
       node: Any?,
       propertyEditor: ImmutablePropertyEditor<T>,
       value: T
-  ): EditorValue.EditorVisitor<Void> {
+  ): EditorValue.EditorVisitor<Void?> {
     return object : DefaultEditorVisitor() {
       override fun isShape(shape: EditorShape): Void? {
         val properties = propertyEditor.readProperties(value)
@@ -178,10 +178,10 @@ object SimpleEditor {
       return newValue
     }
     val ref = AtomicReference(newValue)
-    oldValue.value.`when`<Void>(
+    oldValue.value.`when`(
         object : DefaultEditorVisitor() {
           override fun isPick(pick: EditorPick): Void? {
-            return newValue.value.`when`<Void>(
+            return newValue.value.`when`(
                 object : DefaultEditorVisitor() {
                   override fun isString(string: EditorString): Void? {
                     ref.set(SimpleEditorValue.pick(pick.values, string.value))
@@ -207,7 +207,7 @@ object SimpleEditor {
       }
 
       override fun isColor(path: Array<String>, color: EditorColor): Boolean {
-        numberProperties[key] = color.value
+        numberProperties[key] = color.color
         return false
       }
 
@@ -302,8 +302,8 @@ object SimpleEditor {
         return v.`when`(asPrimitive)
       }
 
-      private val asPrimitive: EditorValue.EditorVisitor<SimpleEditorValue> =
-          object : EditorValue.EditorVisitor<SimpleEditorValue> {
+      private val asPrimitive: EditorValue.EditorVisitor<SimpleEditorValue?> =
+          object : EditorValue.EditorVisitor<SimpleEditorValue?> {
             override fun isShape(`object`: EditorShape): SimpleEditorValue? {
               return null
             }
@@ -321,7 +321,7 @@ object SimpleEditor {
             }
 
             override fun isColor(color: EditorColor): SimpleEditorValue? {
-              return color(color.value)
+              return color(color.color)
             }
 
             override fun isString(string: EditorString): SimpleEditorValue? {

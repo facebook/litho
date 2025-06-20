@@ -37,7 +37,7 @@ class CachedValueEditorInstance : Editor {
 
   override fun write(f: Field, node: Any?, values: EditorValue): Boolean {
     val deps = emptyArray<Any?>()
-    val cachedValue = CachedValue(deps, values.value)
+    val cachedValue = CachedValue(deps, values.getValue())
     setValueUNSAFE(f, node, cachedValue)
     return true
   }

@@ -108,8 +108,7 @@ public class GenericEditorInstance implements Editor {
                 bool,
                 (obj, field, fieldValue, editorValue) -> {
                   if (fieldValue instanceof Boolean) {
-                    Reflection.INSTANCE.setValueUNSAFE(
-                        field, obj, ((EditorBool) editorValue).value);
+                    Reflection.INSTANCE.setValueUNSAFE(field, obj, editorValue.getValue());
 
                     return true;
                   }
@@ -125,8 +124,7 @@ public class GenericEditorInstance implements Editor {
                 number,
                 (obj, field, fieldValue, editorValue) -> {
                   if (fieldValue instanceof Number) {
-                    Reflection.INSTANCE.setValueUNSAFE(
-                        field, obj, ((EditorNumber) editorValue).value);
+                    Reflection.INSTANCE.setValueUNSAFE(field, obj, editorValue.getValue());
 
                     return true;
                   }
@@ -142,8 +140,7 @@ public class GenericEditorInstance implements Editor {
                 string,
                 (obj, field, fieldValue, editorValue) -> {
                   if (fieldValue instanceof CharSequence) {
-                    Reflection.INSTANCE.setValueUNSAFE(
-                        field, obj, ((EditorString) editorValue).value);
+                    Reflection.INSTANCE.setValueUNSAFE(field, obj, editorValue.getValue());
 
                     return true;
                   }

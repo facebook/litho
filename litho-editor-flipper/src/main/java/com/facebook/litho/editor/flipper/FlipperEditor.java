@@ -218,17 +218,17 @@ public class FlipperEditor {
 
           @Override
           public Object isColor(EditorColor number) {
-            return InspectorValue.mutable(InspectorValue.Type.Color, number.value.intValue());
+            return InspectorValue.mutable(InspectorValue.Type.Color, number.color.intValue());
           }
 
           @Override
           public Object isString(EditorString string) {
-            return InspectorValue.mutable(string.value);
+            return InspectorValue.mutable(string.getValue());
           }
 
           @Override
           public Object isBool(EditorBool bool) {
-            return InspectorValue.mutable(bool.value);
+            return InspectorValue.mutable(bool.getValue());
           }
         });
   }

@@ -31,7 +31,7 @@ class BoolEditorInstance : Editor {
   }
 
   override fun write(f: Field, node: Any?, values: EditorValue): Boolean {
-    values.`when`<Void>(
+    values.`when`(
         object : EditorValue.DefaultEditorVisitor() {
           override fun isBool(bool: EditorBool): Void? {
             Reflection.setValueUNSAFE<Any>(f, node, bool.value)

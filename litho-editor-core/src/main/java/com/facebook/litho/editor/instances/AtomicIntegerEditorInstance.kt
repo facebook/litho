@@ -31,7 +31,7 @@ class AtomicIntegerEditorInstance : Editor {
   }
 
   override fun write(f: Field, node: Any?, values: EditorValue): Boolean {
-    values.`when`<Void>(
+    values.`when`(
         object : EditorValue.DefaultEditorVisitor() {
           override fun isNumber(editor: EditorNumber): Void? {
             // If the value if non-integer, it gets rounded down.

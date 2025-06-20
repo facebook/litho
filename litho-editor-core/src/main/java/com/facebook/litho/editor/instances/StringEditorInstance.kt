@@ -30,7 +30,7 @@ class StringEditorInstance : Editor {
   }
 
   override fun write(f: Field, node: Any?, values: EditorValue): Boolean {
-    values.`when`<Void>(
+    values.`when`(
         object : EditorValue.DefaultEditorVisitor() {
           override fun isString(string: EditorString): Void? {
             Reflection.setValueUNSAFE<Any>(f, node, string.value)
