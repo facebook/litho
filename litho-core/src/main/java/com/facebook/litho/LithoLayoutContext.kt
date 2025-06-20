@@ -47,7 +47,7 @@ constructor(
   private var _currentDiffTree: DiffNode? = currentDiffTree
 
   private var _eventHandlers: MutableList<Pair<String, EventHandler<*>>>? = null
-  private var _currentNestedTreeDiffNode: DiffNode? = null
+  private var _currentDiffNodeForDeferredNode: DiffNode? = null
 
   var rootOffset: Point = Point(0, 0)
 
@@ -94,16 +94,16 @@ constructor(
 
   var perfEvent: PerfEvent? = null
 
-  fun setNestedTreeDiffNode(diff: DiffNode?) {
-    _currentNestedTreeDiffNode = diff
+  fun setDiffNodeForDeferredNode(diff: DiffNode?) {
+    _currentDiffNodeForDeferredNode = diff
   }
 
-  fun hasNestedTreeDiffNodeSet(): Boolean {
-    return _currentNestedTreeDiffNode != null
+  fun hasDiffNodeSetForDeferredNode(): Boolean {
+    return _currentDiffNodeForDeferredNode != null
   }
 
-  fun consumeNestedTreeDiffNode(): DiffNode? {
-    return _currentNestedTreeDiffNode.apply { _currentNestedTreeDiffNode = null }
+  fun consumeDiffNodeForDeferredNode(): DiffNode? {
+    return _currentDiffNodeForDeferredNode.apply { _currentDiffNodeForDeferredNode = null }
   }
 
   fun release() {

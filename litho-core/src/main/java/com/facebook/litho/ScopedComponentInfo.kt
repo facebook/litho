@@ -22,7 +22,6 @@ import com.facebook.litho.state.ComponentState
 import com.facebook.litho.state.StateId
 import com.facebook.proguard.annotations.DoNotStrip
 import java.util.ArrayList
-import kotlin.collections.HashMap
 
 class ScopedComponentInfo(
     val component: Component,
@@ -117,7 +116,7 @@ class ScopedComponentInfo(
 
   fun commitToLayoutState(treeState: TreeState) {
     // the get method adds the state container to the needed state container map
-    treeState.markStateInUse(context.globalKey, context.isNestedTreeContext)
+    treeState.markStateInUse(context.globalKey, context.isContextForLayout)
   }
 
   override fun clone(): ScopedComponentInfo =

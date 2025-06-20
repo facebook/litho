@@ -16,37 +16,38 @@
 
 package com.facebook.litho
 
-/** This is an output only [NestedTreeHolderResult]; this is created by a [NestedTreeHolder]. */
-class NestedTreeHolderResult(
+/** This is an output only [DeferredLithoLayoutResult]; this is created by a [DeferredLithoNode]. */
+class DeferredLithoLayoutResult
+constructor(
     c: ComponentContext,
-    internalNode: NestedTreeHolder,
+    deferredNode: DeferredLithoNode,
     layoutOutput: YogaLayoutOutput,
-) : LithoLayoutResult(c, internalNode, layoutOutput) {
+) : LithoLayoutResult(c, deferredNode, layoutOutput) {
 
-  val nestedResult: LithoLayoutResult?
-    get() = layoutOutput.nestedResult
+  val result: LithoLayoutResult?
+    get() = layoutOutput.actualDeferredNodeResult
 
-  override val node: NestedTreeHolder
-    get() = super.node as NestedTreeHolder
+  override val node: DeferredLithoNode
+    get() = super.node as DeferredLithoNode
 
   override fun getXForChildAtIndex(index: Int): Int {
     if (index > 0) {
-      throw IllegalArgumentException("NestedTreeHolder Result has only one child")
+      throw IllegalArgumentException("Deferred Node Result has only one child")
     }
 
-    return nestedResult?.layoutOutput?.x ?: 0
+    return result?.layoutOutput?.x ?: 0
   }
 
   override fun getYForChildAtIndex(index: Int): Int {
     if (index > 0) {
-      throw IllegalArgumentException("NestedTreeHolder Result has only one child")
+      throw IllegalArgumentException("Deferred Node Result has only one child")
     }
 
-    return nestedResult?.layoutOutput?.y ?: 0
+    return result?.layoutOutput?.y ?: 0
   }
 
   override fun releaseLayoutPhaseData() {
     super.releaseLayoutPhaseData()
-    nestedResult?.releaseLayoutPhaseData()
+    result?.releaseLayoutPhaseData()
   }
 }

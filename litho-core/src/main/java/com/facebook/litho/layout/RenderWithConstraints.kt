@@ -24,8 +24,8 @@ import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentResolveResult
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.ComponentsSystrace
+import com.facebook.litho.DeferredLithoNode
 import com.facebook.litho.LithoNode
-import com.facebook.litho.NestedTreeHolder
 import com.facebook.litho.NullNode
 import com.facebook.litho.RenderResult
 import com.facebook.litho.ResolveContext
@@ -57,7 +57,7 @@ class RenderWithConstraints(
       parentContext: ComponentContext
   ): ComponentResolveResult {
     val node =
-        NestedTreeHolder(
+        DeferredLithoNode(
             componentContext.treePropContainer,
             calculationContext.cache.getCachedNode(this),
             parentContext,

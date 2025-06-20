@@ -133,7 +133,7 @@ object NestedLithoTree {
         queueHookStateUpdate(
             key = update.key,
             updater = update.updater,
-            isNestedTree = update.isLayoutState,
+            isLayoutState = update.isLayoutState,
         )
       }
       is StateContainer.StateUpdate -> {
@@ -141,7 +141,7 @@ object NestedLithoTree {
             key = update.key,
             stateUpdate = update.updater,
             update.isLazy,
-            isNestedTree = update.isLayoutState,
+            isLayoutState = update.isLayoutState,
         )
       }
     }

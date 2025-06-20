@@ -25,8 +25,8 @@ import com.facebook.litho.Column.Companion.create
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentTree
+import com.facebook.litho.DeferredLithoLayoutResult
 import com.facebook.litho.ErrorEventHandler
-import com.facebook.litho.NestedTreeHolderResult
 import com.facebook.litho.SizeSpec.EXACTLY
 import com.facebook.litho.SizeSpec.makeSizeSpec
 import com.facebook.litho.StateContainer
@@ -157,8 +157,8 @@ class StateUpdateTest {
     val testLithoView = createTestLithoView(component)
     val componentTree = testLithoView.componentTree
     val context =
-        (testLithoView.currentRootNode!!.getChildAt(0) as NestedTreeHolderResult)
-            .nestedResult!!
+        (testLithoView.currentRootNode!!.getChildAt(0) as DeferredLithoLayoutResult)
+            .result!!
             .node!!
             .getChildAt(0)
             .getComponentContextAt(1)
@@ -172,10 +172,10 @@ class StateUpdateTest {
     val testLithoView = createTestLithoView(component)
     val componentTree = testLithoView.componentTree
     val context =
-        ((testLithoView.currentRootNode!!.getChildAt(0) as NestedTreeHolderResult)
-                .nestedResult!!
-                .getChildAt(0) as NestedTreeHolderResult)
-            .nestedResult!!
+        ((testLithoView.currentRootNode!!.getChildAt(0) as DeferredLithoLayoutResult)
+                .result!!
+                .getChildAt(0) as DeferredLithoLayoutResult)
+            .result!!
             .getChildAt(0)
             .node
             .getComponentContextAt(1)
@@ -239,8 +239,8 @@ class StateUpdateTest {
     val testLithoView = createTestLithoView(component)
     val componentTree = testLithoView.componentTree
     val componentContext =
-        (testLithoView.currentRootNode!!.getChildAt(0) as NestedTreeHolderResult)
-            .nestedResult!!
+        (testLithoView.currentRootNode!!.getChildAt(0) as DeferredLithoLayoutResult)
+            .result!!
             .node
             .getChildAt(0)
             .getComponentContextAt(1)
@@ -256,10 +256,10 @@ class StateUpdateTest {
     val testLithoView = createTestLithoView(component)
     val componentTree = testLithoView.componentTree
     val componentContext =
-        ((testLithoView.currentRootNode!!.getChildAt(0) as NestedTreeHolderResult)
-                .nestedResult!!
-                .getChildAt(0) as NestedTreeHolderResult)
-            .nestedResult!!
+        ((testLithoView.currentRootNode!!.getChildAt(0) as DeferredLithoLayoutResult)
+                .result!!
+                .getChildAt(0) as DeferredLithoLayoutResult)
+            .result!!
             .getChildAt(0)
             .node
             .getComponentContextAt(1)
@@ -299,9 +299,7 @@ class StateUpdateTest {
     val testLithoView = createTestLithoView(component)
     val componentTree = testLithoView.componentTree
     val lithoNode =
-        (testLithoView.currentRootNode!!.getChildAt(0) as NestedTreeHolderResult)
-            .nestedResult!!
-            .node
+        (testLithoView.currentRootNode!!.getChildAt(0) as DeferredLithoLayoutResult).result!!.node
     val componentContextChild1 = lithoNode.getChildAt(0).getComponentContextAt(1)
     val componentContextChild2 = lithoNode.getChildAt(1).getComponentContextAt(1)
     val componentContextChild3 = lithoNode.getChildAt(2).getComponentContextAt(1)
@@ -320,10 +318,10 @@ class StateUpdateTest {
     val testLithoView = createTestLithoView(component)
     val componentTree = testLithoView.componentTree
     val layoutResult =
-        ((testLithoView.currentRootNode!!.getChildAt(0) as NestedTreeHolderResult)
-                .nestedResult!!
-                .getChildAt(0) as NestedTreeHolderResult)
-            .nestedResult
+        ((testLithoView.currentRootNode!!.getChildAt(0) as DeferredLithoLayoutResult)
+                .result!!
+                .getChildAt(0) as DeferredLithoLayoutResult)
+            .result
     val componentContextChild1 = layoutResult!!.getChildAt(0).node.getComponentContextAt(1)
     val componentContextChild2 = layoutResult.getChildAt(1).node.getComponentContextAt(1)
     val componentContextChild3 = layoutResult.getChildAt(2).node.getComponentContextAt(1)
@@ -372,9 +370,7 @@ class StateUpdateTest {
     val parentSibling = testLithoView.currentRootNode!!.node.getChildAt(0).getComponentContextAt(1)
     val parent = testLithoView.currentRootNode!!.node.getChildAt(1).getComponentContextAt(0)
     val lithoNode =
-        (testLithoView.currentRootNode!!.getChildAt(1) as NestedTreeHolderResult)
-            .nestedResult!!
-            .node
+        (testLithoView.currentRootNode!!.getChildAt(1) as DeferredLithoLayoutResult).result!!.node
     val componentContextChild1 = lithoNode.getChildAt(0).getComponentContextAt(1)
     val componentContextChild2 = lithoNode.getChildAt(1).getComponentContextAt(1)
     ComponentWithCounterStateLayout.incrementCountAsync(parent)
@@ -400,16 +396,14 @@ class StateUpdateTest {
         testLithoView.currentRootNode!!.node.getChildAt(0).getComponentContextAt(1)
     val grandParent = testLithoView.currentRootNode!!.node.getChildAt(1).getComponentContextAt(0)
     val lithoNode =
-        (testLithoView.currentRootNode!!.getChildAt(1) as NestedTreeHolderResult)
-            .nestedResult!!
-            .node
+        (testLithoView.currentRootNode!!.getChildAt(1) as DeferredLithoLayoutResult).result!!.node
     val parentSibling = lithoNode.getChildAt(0).getComponentContextAt(1)
     val parent = lithoNode.getChildAt(1).getComponentContextAt(0)
     val lithoLayoutResult =
-        ((testLithoView.currentRootNode!!.getChildAt(1) as NestedTreeHolderResult)
-                .nestedResult!!
-                .getChildAt(1) as NestedTreeHolderResult)
-            .nestedResult
+        ((testLithoView.currentRootNode!!.getChildAt(1) as DeferredLithoLayoutResult)
+                .result!!
+                .getChildAt(1) as DeferredLithoLayoutResult)
+            .result
     val componentContextChild1 = lithoLayoutResult!!.getChildAt(0).node.getComponentContextAt(1)
     val componentContextChild2 = lithoLayoutResult.getChildAt(1).node.getComponentContextAt(1)
     ComponentWithCounterStateLayout.incrementCountAsync(grandParent)
@@ -440,8 +434,8 @@ class StateUpdateTest {
             .measure()
             .layout()
     val componentContext =
-        (testLithoView.currentRootNode!!.getChildAt(0) as NestedTreeHolderResult)
-            .nestedResult!!
+        (testLithoView.currentRootNode!!.getChildAt(0) as DeferredLithoLayoutResult)
+            .result!!
             .node
             .getChildAt(0)
             .getComponentContextAt(1)

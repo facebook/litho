@@ -90,10 +90,10 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
   internal var gapPx: Int? = null
   internal var gapGutter: YogaGutter? = null
   internal var yogaMeasureFunction: YogaMeasureFunction? = null
-  internal var nestedTreeHolder: NestedTreeHolder? = null
+  internal var deferredNode: DeferredLithoNode? = null
   internal var _needsHostView: Boolean = false
-  internal var nestedPaddingEdges: Edges? = null
-  internal var nestedIsPaddingPercent: BooleanArray? = null
+  internal var paddingsFromDeferredNode: Edges? = null
+  internal var paddingIsPercentFromDefferedNode: BooleanArray? = null
   internal var privateFlags: Long = 0
   internal var debugLayoutProps: DefaultLayoutProps? = null
 
@@ -742,9 +742,9 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
   fun getGlobalKeyAt(index: Int): String =
       checkNotNull(getComponentContextAt(index).globalKey) { "Cannot have a null global key" }
 
-  fun setNestedPadding(padding: Edges?, isPercentage: BooleanArray?) {
-    nestedPaddingEdges = padding
-    nestedIsPaddingPercent = isPercentage
+  fun setDeferredPadding(padding: Edges?, isPercentage: BooleanArray?) {
+    paddingsFromDeferredNode = padding
+    paddingIsPercentFromDefferedNode = isPercentage
   }
 
   fun hasBorderColor(): Boolean {
@@ -895,8 +895,8 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
     return _needsHostView
   }
 
-  fun setNestedTreeHolder(holder: NestedTreeHolder?) {
-    nestedTreeHolder = holder
+  fun setDeferredNode(holder: DeferredLithoNode?) {
+    deferredNode = holder
   }
 
   private fun shouldApplyTouchExpansion(): Boolean =
@@ -1050,16 +1050,16 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
       }
     }
 
-    internal inline fun LithoNode.applyNestedPadding(
+    internal inline fun LithoNode.applyDeferredPadding(
         paddingPx: YogaEdgeIntFunction,
         paddingPercent: YogaEdgeFloatFunction
     ) {
-      nestedPaddingEdges?.let { edges ->
+      paddingsFromDeferredNode?.let { edges ->
         for (i in 0 until Edges.EDGES_LENGTH) {
           val value: Float = edges.getRaw(i)
           if (!YogaConstants.isUndefined(value)) {
             val edge: YogaEdge = YogaEdge.fromInt(i)
-            if (nestedIsPaddingPercent?.get(edge.intValue()) != null) {
+            if (paddingIsPercentFromDefferedNode?.get(edge.intValue()) != null) {
               paddingPercent(edge, value)
             } else {
               paddingPx(edge, value.toInt())
@@ -1073,7 +1073,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
      * This utility method checks if the {@param result} will mount a [android.view.View]. It
      * returns true if and only if the {@param result} will mount a [android.view.View]. If it
      * returns `false` then the result will either mount a [Drawable] or it is
-     * [NestedTreeHolderResult], which will not mount anything.
+     * [DeferredLithoLayoutResult], which will not mount anything.
      *
      * @return `true` iff the result will mount a view.
      */

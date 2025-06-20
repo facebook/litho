@@ -1082,7 +1082,7 @@ class NestedTreeResolutionWithStateTest {
     val rootLayoutResult = testLithoView.currentRootNode
     assertThat(rootLayoutResult).isNotNull
     return requireNotNull(
-        if (rootLayoutResult is NestedTreeHolderResult) {
+        if (rootLayoutResult is DeferredLithoLayoutResult) {
           val nestedResult = getCorrectLayoutResult(rootLayoutResult)
           val nestedMidResult = getCorrectLayoutResult(nestedResult?.getChildAt(1))
           assertThat(nestedMidResult).isNotNull
@@ -1097,7 +1097,7 @@ class NestedTreeResolutionWithStateTest {
     val rootLayoutResult = testLithoView.currentRootNode
     assertThat(rootLayoutResult).isNotNull
     return requireNotNull(
-        if (rootLayoutResult is NestedTreeHolderResult) {
+        if (rootLayoutResult is DeferredLithoLayoutResult) {
           val nestedResult = getCorrectLayoutResult(rootLayoutResult)
           val nestedMidResult = getCorrectLayoutResult(nestedResult?.getChildAt(1))
           assertThat(nestedMidResult).isNotNull
@@ -1105,7 +1105,7 @@ class NestedTreeResolutionWithStateTest {
           getCorrectLayoutResult(nestedBotResult)?.node?.getComponentContextAt(1)
         } else {
           val midResult = rootLayoutResult?.getChildAt(1)
-          if (midResult is NestedTreeHolderResult) {
+          if (midResult is DeferredLithoLayoutResult) {
             val nestedResult = getCorrectLayoutResult(midResult)
             val nestedBotResult = getCorrectLayoutResult(nestedResult?.getChildAt(1))
             getCorrectLayoutResult(nestedBotResult)?.node?.getComponentContextAt(1)
@@ -1422,8 +1422,8 @@ class NestedTreeResolutionWithStateTest {
      * Mid or Bot.
      */
     private fun getCorrectLayoutResult(from: LithoLayoutResult?): LithoLayoutResult? =
-        if (from is NestedTreeHolderResult) {
-          val nestedResult = from.nestedResult
+        if (from is DeferredLithoLayoutResult) {
+          val nestedResult = from.result
           assertThat(nestedResult).isNotNull
           nestedResult
         } else {

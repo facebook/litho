@@ -33,7 +33,7 @@ internal fun <T> ComponentScope.getUpdatedState(
   val key = context.globalKey
   val index = useStateIndex++
   val treeState: TreeState = resolveContext.treeState
-  val isLayoutState = context.isNestedTreeContext
+  val isLayoutState = context.isContextForLayout
   val existing = treeState.getState(key, isLayoutState) as ComponentState<KStateContainer>?
   val deps: Array<Any?> = deps as Array<Any?> /* TODO: Can this cast be avoided? */
 
@@ -100,7 +100,7 @@ fun <T> ComponentScope.useStateWithDeps(
   val globalKey = context.globalKey
   val hookIndex = useStateIndex
   val lithoTree = context.lithoTree ?: error("LithoTree is null")
-  val isNestedTreeContext = context.isNestedTreeContext
+  val isLayoutState = context.isContextForLayout
 
   val result = getUpdatedState(deps = deps, initializer = initializer)
 
@@ -109,7 +109,7 @@ fun <T> ComponentScope.useStateWithDeps(
       lithoTree.stateUpdater,
       hookIndex,
       globalKey,
-      isNestedTreeContext,
+      isLayoutState,
       context.componentScope,
       lithoTree.isReadTrackingEnabled,
       result,
@@ -134,7 +134,7 @@ internal constructor(
     private val stateUpdater: StateUpdater,
     private val hookStateIndex: Int,
     private val globalKey: String,
-    internal val isNestedTreeContext: Boolean,
+    internal val isLayoutContext: Boolean,
     private val componentScope: Component?,
     private val isReadTrackingEnabled: Boolean,
     internal val fallback: T
@@ -162,7 +162,7 @@ internal constructor(
         globalKey,
         HookUpdaterValue(newValue),
         componentScope?.simpleName ?: "hook",
-        isNestedTreeContext)
+        isLayoutContext)
   }
 
   /**
@@ -186,7 +186,7 @@ internal constructor(
         globalKey,
         HookUpdaterLambda(newValueFunction),
         componentScope?.simpleName ?: "hook",
-        isNestedTreeContext)
+        isLayoutContext)
   }
 
   /**
@@ -207,7 +207,7 @@ internal constructor(
         globalKey,
         HookUpdaterValue(newValue),
         componentScope?.simpleName ?: "hook",
-        isNestedTreeContext)
+        isLayoutContext)
   }
 
   /**
@@ -235,7 +235,7 @@ internal constructor(
         globalKey,
         HookUpdaterLambda(newValueFunction),
         componentScope?.simpleName ?: "hook",
-        isNestedTreeContext)
+        isLayoutContext)
   }
 
   inner class HookUpdaterValue(val newValue: T) : HookUpdater {
@@ -254,12 +254,12 @@ internal constructor(
   }
 
   private fun canSkip(newValue: T): Boolean {
-    return stateUpdater.canSkipStateUpdate(globalKey, hookStateIndex, newValue, isNestedTreeContext)
+    return stateUpdater.canSkipStateUpdate(globalKey, hookStateIndex, newValue, isLayoutContext)
   }
 
   private fun canSkip(newValueFunction: (T) -> T): Boolean {
     return stateUpdater.canSkipStateUpdate(
-        newValueFunction, globalKey, hookStateIndex, isNestedTreeContext)
+        newValueFunction, globalKey, hookStateIndex, isLayoutContext)
   }
 
   /**

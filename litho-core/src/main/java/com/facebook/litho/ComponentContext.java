@@ -98,7 +98,7 @@ public class ComponentContext {
 
   private @Nullable ScopedComponentInfo mScopedComponentInfo;
 
-  private boolean isNestedTreeContext;
+  private boolean isContextForLayout;
 
   private final ThreadLocal<CalculationContext> mCalculationStateContextThreadLocal;
 
@@ -192,9 +192,9 @@ public class ComponentContext {
     componentContext.mGlobalKey = globalKey;
     componentContext.mParentTreePropContainer = parentContext.mTreePropContainer;
     // TODO: T124275447 make these Component Context fields final
-    // Either this component is nested tree or descendant of nested tree component
-    componentContext.isNestedTreeContext =
-        Component.isNestedTree(scope) || parentContext.isNestedTreeContext;
+    // This component resolves during layout
+    componentContext.isContextForLayout =
+        Component.willDeferResolution(scope) || parentContext.isContextForLayout;
 
     final EventHandler<ErrorEvent> errorEventHandler =
         ComponentUtils.createOrGetErrorEventHandler(scope, parentContext, componentContext);
@@ -414,7 +414,7 @@ public class ComponentContext {
 
     mLithoTree
         .getStateUpdater()
-        .updateStateSync(getGlobalKey(), stateUpdate, attribution, isNestedTreeContext());
+        .updateStateSync(getGlobalKey(), stateUpdate, attribution, isContextForLayout());
   }
 
   /**
@@ -431,7 +431,7 @@ public class ComponentContext {
 
     mLithoTree
         .getStateUpdater()
-        .updateStateAsync(getGlobalKey(), stateUpdate, attribution, isNestedTreeContext());
+        .updateStateAsync(getGlobalKey(), stateUpdate, attribution, isContextForLayout());
   }
 
   public void updateStateWithTransition(StateUpdate stateUpdate, String attribution) {
@@ -443,9 +443,7 @@ public class ComponentContext {
       return;
     }
 
-    mLithoTree
-        .getStateUpdater()
-        .updateStateLazy(getGlobalKey(), stateUpdate, isNestedTreeContext());
+    mLithoTree.getStateUpdater().updateStateLazy(getGlobalKey(), stateUpdate, isContextForLayout());
   }
 
   final void updateHookStateAsync(String globalKey, HookUpdater updateBlock) {
@@ -462,7 +460,7 @@ public class ComponentContext {
             globalKey,
             updateBlock,
             scope != null ? scope.getSimpleName() : "hook",
-            isNestedTreeContext());
+            isContextForLayout());
   }
 
   final void updateHookStateSync(String globalKey, HookUpdater updateBlock) {
@@ -479,7 +477,7 @@ public class ComponentContext {
             globalKey,
             updateBlock,
             scope != null ? scope.getSimpleName() : "hook",
-            isNestedTreeContext());
+            isContextForLayout());
   }
 
   /**
@@ -493,7 +491,7 @@ public class ComponentContext {
 
     return mLithoTree
         .getStateUpdater()
-        .applyLazyStateUpdatesForContainer(getGlobalKey(), container, isNestedTreeContext());
+        .applyLazyStateUpdatesForContainer(getGlobalKey(), container, isContextForLayout());
   }
 
   void enterNoStateUpdatesMethod(String noStateUpdatesMethod) {
@@ -712,7 +710,7 @@ public class ComponentContext {
     }
     return mLithoTree
         .getStateUpdater()
-        .getCachedValue(globalKey, index, cachedValueInputs, isNestedTreeContext());
+        .getCachedValue(globalKey, index, cachedValueInputs, isContextForLayout());
   }
 
   public void putCachedValue(
@@ -722,7 +720,7 @@ public class ComponentContext {
     }
     mLithoTree
         .getStateUpdater()
-        .putCachedValue(globalKey, index, cachedValueInputs, cachedValue, isNestedTreeContext());
+        .putCachedValue(globalKey, index, cachedValueInputs, cachedValue, isContextForLayout());
   }
 
   @Nullable
@@ -792,8 +790,8 @@ public class ComponentContext {
     return mLithoConfiguration.componentsConfig.getUseNonRebindingEventHandlers();
   }
 
-  boolean isNestedTreeContext() {
-    return isNestedTreeContext;
+  boolean isContextForLayout() {
+    return isContextForLayout;
   }
 
   /**
@@ -825,9 +823,9 @@ public class ComponentContext {
     return mLithoTree.getRootHost().getMountedView();
   }
 
-  void removePendingStateUpdate(String key, boolean nestedTreeContext) {
+  void removePendingStateUpdate(String key, boolean isLayoutState) {
     if (mLithoTree != null) {
-      mLithoTree.getStateUpdater().removePendingStateUpdate(key, nestedTreeContext);
+      mLithoTree.getStateUpdater().removePendingStateUpdate(key, isLayoutState);
     }
   }
 

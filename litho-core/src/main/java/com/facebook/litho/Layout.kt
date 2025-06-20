@@ -71,16 +71,16 @@ internal object Layout {
   fun measure(
       lithoLayoutContext: LithoLayoutContext,
       parentContext: ComponentContext,
-      holder: NestedTreeHolderResult,
+      holder: DeferredLithoLayoutResult,
       widthSpec: Int,
       heightSpec: Int
   ): LithoLayoutResult? {
     val layout: LithoLayoutResult? =
-        measureNestedTree(lithoLayoutContext, parentContext, holder, widthSpec, heightSpec)
-    val currentLayout: LithoLayoutResult? = holder.nestedResult
+        measureDeferredNode(lithoLayoutContext, parentContext, holder, widthSpec, heightSpec)
+    val currentLayout: LithoLayoutResult? = holder.result
     // Set new created LayoutResult for future access
     if (layout != null && layout !== currentLayout) {
-      holder.layoutOutput._nestedResult = layout
+      holder.layoutOutput._actualDeferredNodeResult = layout
     }
     return layout
   }
@@ -88,7 +88,7 @@ internal object Layout {
   /**
    * In order to reuse render unit, we have to make sure layout data which render unit relies on is
    * determined before collecting layout results. So we're doing three things here:<br></br>
-   * 1. Resolve NestedTree.<br></br>
+   * 1. Resolve DeferredNode.<br></br>
    * 2. Measure Primitive that were skipped due to fixed size.<br></br>
    * 3. Invoke OnBoundsDefined for all MountSpecs.<br></br>
    */
@@ -107,11 +107,11 @@ internal object Layout {
     val component: Component = lithoNode.tailComponent
     val isTracing: Boolean = ComponentsSystrace.isTracing
 
-    if (result is NestedTreeHolderResult) {
-      // If the nested tree is defined, it has been resolved during a measure call during
+    if (result is DeferredLithoLayoutResult) {
+      // If the deferred node is defined, it has been resolved during a measure call during
       // layout calculation.
       if (isTracing) {
-        ComponentsSystrace.beginSectionWithArgs("resolveNestedTree:${component.simpleName}")
+        ComponentsSystrace.beginSectionWithArgs("resolveDeferredNode:${component.simpleName}")
             .arg("widthSpec", "EXACTLY ${result.width}")
             .arg("heightSpec", "EXACTLY ${result.height}")
             .arg("rootComponentId", lithoNode.tailComponent.instanceId)
@@ -124,7 +124,7 @@ internal object Layout {
           } else {
             lithoNode.getComponentContextAt(1)
           }
-      val nestedTree: LithoLayoutResult? =
+      val actualLayoutResult: LithoLayoutResult? =
           measure(
               lithoLayoutContext = lithoLayoutContext,
               parentContext = immediateParentContext,
@@ -136,11 +136,11 @@ internal object Layout {
         ComponentsSystrace.endSection()
       }
 
-      if (nestedTree == null) {
+      if (actualLayoutResult == null) {
         return
       }
 
-      Resolver.collectOutputs(nestedTree.node)?.let { outputs ->
+      Resolver.collectOutputs(actualLayoutResult.node)?.let { outputs ->
         reductionState.attachables
             .getOrCreate {
               ArrayList<Attachable>(outputs.attachables.size).also {
@@ -162,7 +162,7 @@ internal object Layout {
             parentContext = parentContext,
             lithoLayoutContext = lithoLayoutContext,
             reductionState = reductionState,
-            result = nestedTree)
+            result = actualLayoutResult)
       } catch (e: Exception) {
         throw ComponentUtils.wrapWithMetadata(parentContext, e)
       }
@@ -239,16 +239,16 @@ internal object Layout {
     return true
   }
 
-  private fun measureNestedTree(
+  private fun measureDeferredNode(
       lithoLayoutContext: LithoLayoutContext,
       parentContext: ComponentContext,
-      holderResult: NestedTreeHolderResult,
+      holderResult: DeferredLithoLayoutResult,
       widthSpec: Int,
       heightSpec: Int
   ): LithoLayoutResult? {
 
     // 1. Check if current layout result is compatible with size spec and can be reused or not
-    val currentLayout: LithoLayoutResult? = holderResult.nestedResult
+    val currentLayout: LithoLayoutResult? = holderResult.result
     if (currentLayout != null &&
         MeasureComparisonUtils.hasCompatibleSizeSpec(
             currentLayout.widthSpec,
@@ -257,8 +257,8 @@ internal object Layout {
             heightSpec,
             currentLayout.width,
             currentLayout.height)) {
-      // Tell TreeState to keep state containers for the cache of NestedTree, otherwise we'll end up
-      // getting lost state containers when we commit layout state.
+      // Tell TreeState to keep state containers for the cache of DeferredNode, otherwise we'll end
+      // up getting lost state containers when we commit layout state.
       if (lithoLayoutContext.rootComponentContext
           ?.lithoConfiguration
           ?.componentsConfig
@@ -269,11 +269,11 @@ internal object Layout {
     }
 
     // 2. Check if cached layout result is compatible and can be reused or not.
-    val node: NestedTreeHolder = holderResult.node
+    val node: DeferredLithoNode = holderResult.node
     consumeAndGetCachedLayout(lithoLayoutContext, node, holderResult, widthSpec, heightSpec)?.let {
         cachedLayout ->
-      // Tell TreeState to keep state containers for the cache of NestedTree, otherwise we'll end up
-      // getting lost state containers when we commit layout state.
+      // Tell TreeState to keep state containers for the cache of DeferredNode, otherwise we'll end
+      // up getting lost state containers when we commit layout state.
       if (lithoLayoutContext.rootComponentContext
           ?.lithoConfiguration
           ?.componentsConfig
@@ -300,11 +300,11 @@ internal object Layout {
     // then resolve the tree and measure it. At this point we know that current layout result and
     // cached layout result are not available or are not compatible with given size spec.
 
-    // NestedTree is used for two purposes i.e for components measured using Component.measure API
+    // DeferredNode is used for two purposes i.e for components measured using Component.measure API
     // and for components which are OnCreateLayoutWithSizeSpec.
     // For components measured with measure API, we want to reuse the same global key calculated
     // during measure API call and for that we are using the cached node and accessing the global
-    // key from it since NestedTreeHolder will have incorrect global key for it.
+    // key from it since DeferredNode will have incorrect global key for it.
     val globalKeyToReuse: String
     val treePropsToReuse: TreePropContainer?
     if (Component.isLayoutSpecWithSizeSpec(component)) {
@@ -361,7 +361,7 @@ internal object Layout {
       val layoutCache: LayoutCache =
           if (newNode.tailComponentContext.lithoConfiguration.componentsConfig
               .disableNestedTreeCaching) {
-            // Stop caching result for nested tree due to memory issue
+            // Stop caching result for deferred node due to memory issue
             LayoutCache()
           } else {
             lithoLayoutContext.layoutCache
@@ -379,8 +379,8 @@ internal object Layout {
               currentDiffTree = lithoLayoutContext.currentDiffTree,
               layoutStateFuture = null)
 
-      // Set the DiffNode for the nested tree's result to consume during measurement.
-      nestedLsc.setNestedTreeDiffNode(holderResult.diffNode)
+      // Set the DiffNode for the deferred node's result to consume during measurement.
+      nestedLsc.setDiffNodeForDeferredNode(holderResult.diffNode)
       parentContext.setLithoLayoutContext(nestedLsc)
 
       // 4.b Measure the tree
@@ -402,8 +402,8 @@ internal object Layout {
 
   private fun consumeAndGetCachedLayout(
       lithoLayoutContext: LithoLayoutContext,
-      holder: NestedTreeHolder,
-      holderResult: NestedTreeHolderResult,
+      holder: DeferredLithoNode,
+      holderResult: DeferredLithoLayoutResult,
       widthSpec: Int,
       heightSpec: Int
   ): LithoLayoutResult? {
@@ -414,7 +414,8 @@ internal object Layout {
 
     // Consume the cached result
     resultCache.removeCachedResult(cachedNode)
-    val hasValidDirection: Boolean = hasValidLayoutDirectionInNestedTree(holderResult, cachedLayout)
+    val hasValidDirection: Boolean =
+        hasValidLayoutDirectionInActualLayoutResult(holderResult, cachedLayout)
 
     // Transfer the cached layout to the node it if it's compatible.
     if (hasValidDirection) {
@@ -440,15 +441,15 @@ internal object Layout {
   }
 
   /**
-   * Check that the root of the nested tree we are going to use, has valid layout directions with
+   * Check that the root of the deferred node we are going to use, has valid layout directions with
    * its main tree holder node.
    */
-  private fun hasValidLayoutDirectionInNestedTree(
-      holder: NestedTreeHolderResult,
-      nestedTree: LithoLayoutResult
+  private fun hasValidLayoutDirectionInActualLayoutResult(
+      deferred: DeferredLithoLayoutResult,
+      actual: LithoLayoutResult
   ): Boolean =
-      nestedTree.node.layoutDirection.isInherit ||
-          nestedTree.node.layoutDirection == holder.node.layoutDirection
+      actual.node.layoutDirection.isInherit ||
+          actual.node.layoutDirection == deferred.node.layoutDirection
 
   /** DiffNode state should be retrieved from the committed LayoutState. */
   private fun getDiffNodeScopedContext(diffNode: DiffNode): ComponentContext =

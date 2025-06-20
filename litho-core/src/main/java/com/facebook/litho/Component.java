@@ -846,7 +846,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     return (component != null && component.getMountType() == MountType.PRIMITIVE);
   }
 
-  static boolean isNestedTree(@Nullable Component component) {
+  static boolean willDeferResolution(@Nullable Component component) {
     return isLayoutSpecWithSizeSpec(component);
   }
 
@@ -887,7 +887,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       return false;
     }
 
-    if (node instanceof NestedTreeHolder) {
+    if (node instanceof DeferredLithoNode) {
       // Components using @OnCreateLayoutWithSizeSpec are lazily resolved after the rest of the tree
       // has been measured (so that we have the proper measurements to pass in). This means we can't
       // eagerly check the result of OnCreateLayoutWithSizeSpec.

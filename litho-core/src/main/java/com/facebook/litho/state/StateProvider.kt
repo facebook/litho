@@ -110,12 +110,12 @@ internal class StateProviderImpl(
           null ->
               // The component state for a given key may not exist on the main tree state which
               // may imply that the corresponding component was removed from the tree
-              treeStateProvider.treeState?.getState(stateId.globalKey, state.isNestedTreeContext)
+              treeStateProvider.treeState?.getState(stateId.globalKey, state.isLayoutContext)
                   ?: return state.fallback
           else ->
               // The component state must be present when accessing the overridden tree state
               // since access requires prior creation
-              checkNotNull(source.getState(stateId.globalKey, state.isNestedTreeContext))
+              checkNotNull(source.getState(stateId.globalKey, state.isLayoutContext))
         }
     check(componentState.value is KStateContainer)
     return componentState.value.states[stateId.index].value as T

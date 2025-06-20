@@ -23,7 +23,7 @@ import androidx.collection.ScatterSet
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
 import com.facebook.litho.LithoNode.Companion.applyBorderWidth
-import com.facebook.litho.LithoNode.Companion.applyNestedPadding
+import com.facebook.litho.LithoNode.Companion.applyDeferredPadding
 import com.facebook.litho.LithoNode.Companion.writeStyledAttributesToLayoutProps
 import com.facebook.litho.YogaLayoutOutput.Companion.getYogaNode
 import com.facebook.litho.config.LithoDebugConfigurations
@@ -228,8 +228,8 @@ internal object LithoYogaLayoutFunction {
       val writer: YogaLayoutProps = currentNode.createYogaNodeWriter()
 
       // Transfer the layout props to YogaNode
-      if (currentNode is NestedTreeHolder) {
-        currentNode.writeNestedTreePropsToYogaNode(writer as NestedTreeYogaLayoutProps)
+      if (currentNode is DeferredLithoNode) {
+        currentNode.writeDeferredNodePropsToYogaNode(writer as DeferredNodeYogaLayoutProps)
       } else if (currentNode !is NullNode) {
         currentNode.writeNodePropsToYogaNode(writer)
       }
@@ -337,8 +337,8 @@ internal object LithoYogaLayoutFunction {
         when {
           (parent == null) -> { // If root, then get diff node root from the current layout state
             if (Component.isLayoutSpecWithSizeSpec(currentNode.headComponent) &&
-                current.hasNestedTreeDiffNodeSet()) {
-              current.consumeNestedTreeDiffNode()
+                current.hasDiffNodeSetForDeferredNode()) {
+              current.consumeDiffNodeForDeferredNode()
             } else {
               current.currentDiffTree
             }
@@ -430,8 +430,8 @@ internal object LithoYogaLayoutFunction {
       }
       try {
         size =
-            if (layoutResult is NestedTreeHolderResult) {
-              measureNestedTreeHolder(context, widthSpec, heightSpec, layoutResult)
+            if (layoutResult is DeferredLithoLayoutResult) {
+              measureDeferredNode(context, widthSpec, heightSpec, layoutResult)
             } else {
               if (layoutResult.node.tailComponentContext.isReadTrackingEnabled) {
                 var result: MeasureResult? = null
@@ -715,11 +715,11 @@ internal object LithoYogaLayoutFunction {
     return MeasureResult(width, height, layoutData)
   }
 
-  private fun measureNestedTreeHolder(
+  private fun measureDeferredNode(
       context: LayoutContext<LithoLayoutContext>,
       widthSpec: Int,
       heightSpec: Int,
-      lithoLayoutResult: NestedTreeHolderResult
+      lithoLayoutResult: DeferredLithoLayoutResult
   ): MeasureResult {
     val isTracing = ComponentsSystrace.isTracing
     val component = lithoLayoutResult.node.tailComponent
@@ -743,11 +743,11 @@ internal object LithoYogaLayoutFunction {
     checkNotNull(parentContext) { component.simpleName + ": Null component context during measure" }
 
     if (isTracing) {
-      ComponentsSystrace.beginSection("resolveNestedTree:" + component.simpleName)
+      ComponentsSystrace.beginSection("resolveDeferredNode:" + component.simpleName)
     }
 
     return try {
-      val nestedTree =
+      val actualResult =
           Layout.measure(
               renderContext,
               parentContext,
@@ -756,8 +756,8 @@ internal object LithoYogaLayoutFunction {
               heightSpec,
           )
 
-      if (nestedTree != null) {
-        MeasureResult(nestedTree.width, nestedTree.height, nestedTree.layoutData)
+      if (actualResult != null) {
+        MeasureResult(actualResult.width, actualResult.height, actualResult.layoutData)
       } else {
         MeasureResult(0, 0)
       }
@@ -811,7 +811,7 @@ internal object LithoYogaLayoutFunction {
                   _cachedMeasuresValid = true,
                   _wasMeasured = false,
                   _measureHadExceptions = false,
-                  _nestedResult = null, // disable nested tree caching
+                  _actualDeferredNodeResult = null, // disable deferred node caching
                   _adjustedBounds = Rect(layoutResult.layoutOutput.adjustedBounds)))
 
   private fun LithoLayoutResult.shouldDrawBorders(): Boolean =
@@ -881,8 +881,8 @@ internal object LithoYogaLayoutFunction {
 
   private fun LithoNode.createYogaNodeWriter(): YogaLayoutProps {
     return when (this) {
-      is NestedTreeHolder -> {
-        NestedTreeYogaLayoutProps(NodeConfig.createYogaNode())
+      is DeferredLithoNode -> {
+        DeferredNodeYogaLayoutProps(NodeConfig.createYogaNode())
       }
       is NullNode -> {
         NullWriter().apply { node.display = YogaDisplay.NONE }
@@ -906,18 +906,18 @@ internal object LithoYogaLayoutFunction {
     withValidGap { gap, yogaGutter -> node.setGap(yogaGutter, gap.toFloat()) }
     yogaMeasureFunction?.let { node.setMeasureFunction(it) }
 
-    var nestedTreeHolderTransfered = false
+    var wasDeferredNodePropsTransferred = false
     // Apply the layout props from the components to the YogaNode
     for (info in scopedComponentInfos) {
       val component: Component = info.component
 
-      // If a NestedTreeHolder is set then transfer its resolved props into this LithoNode.
-      if (nestedTreeHolder != null && Component.isLayoutSpecWithSizeSpec(component)) {
-        if (nestedTreeHolderTransfered) {
+      // If a DeferredNode is set then transfer its resolved props into this LithoNode.
+      if (deferredNode != null && Component.isLayoutSpecWithSizeSpec(component)) {
+        if (wasDeferredNodePropsTransferred) {
           continue
         }
-        nestedTreeHolderTransfered = true
-        nestedTreeHolder?.transferInto(this)
+        wasDeferredNodePropsTransferred = true
+        deferredNode?.transferInto(this)
         // TODO (T151239896): Revaluate copy into and freeze after common props are refactored
         _needsHostView = LithoNode.needsHostView(this)
         paddingFromBackground?.let { setPaddingFromDrawable(writer, it) }
@@ -938,8 +938,8 @@ internal object LithoYogaLayoutFunction {
     // Apply the border widths
     applyBorderWidth { yogaEdge, width -> writer.setBorderWidth(yogaEdge, width) }
 
-    // Maybe apply the padding if parent is a Nested Tree Holder
-    applyNestedPadding(
+    // Maybe apply the padding if parent is a Deferred Node
+    applyDeferredPadding(
         { yogaEdge, paddingPx -> writer.paddingPx(yogaEdge, paddingPx) },
         { yogaEdge, paddingPercent -> writer.paddingPercent(yogaEdge, paddingPercent) })
 
@@ -947,11 +947,13 @@ internal object LithoYogaLayoutFunction {
     isPaddingSet = writer.isPaddingSet
   }
 
-  private fun NestedTreeHolder.writeNestedTreePropsToYogaNode(writer: NestedTreeYogaLayoutProps) {
+  private fun DeferredLithoNode.writeDeferredNodePropsToYogaNode(
+      writer: DeferredNodeYogaLayoutProps
+  ) {
     writeNodePropsToYogaNode(writer)
-    nestedBorderEdges = writer.borderWidth
-    nestedTreePadding = writer.padding
-    nestedIsPaddingPercentage = writer.isPaddingPercentage
+    deferredBorders = writer.borderWidth
+    deferredPaddings = writer.padding
+    deferredIsPaddingPercentages = writer.isPaddingPercentage
   }
 
   internal fun setPaddingFromDrawable(target: LayoutProps, padding: Rect) {
@@ -995,7 +997,7 @@ data class YogaLayoutOutput(
     internal var _borderRenderUnit: LithoRenderUnit? = null,
     internal var _diffNode: DiffNode? = null,
     internal var _delegate: LayoutResult? = null,
-    internal var _nestedResult: LithoLayoutResult? = null,
+    internal var _actualDeferredNodeResult: LithoLayoutResult? = null,
     internal val _adjustedBounds: Rect = Rect(),
     internal var _stateReads: ScatterSet<StateId>? = null,
 ) : LithoLayoutOutput {
@@ -1087,8 +1089,8 @@ data class YogaLayoutOutput(
   override val diffNode: DiffNode?
     get() = _diffNode
 
-  override val nestedResult: LithoLayoutResult?
-    get() = _nestedResult
+  override val actualDeferredNodeResult: LithoLayoutResult?
+    get() = _actualDeferredNodeResult
 
   override val delegate: LayoutResult?
     get() = _delegate

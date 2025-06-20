@@ -17,10 +17,10 @@
 package com.facebook.litho.componentsfinder
 
 import com.facebook.litho.Component
+import com.facebook.litho.DeferredLithoLayoutResult
 import com.facebook.litho.LithoLayoutResult
 import com.facebook.litho.LithoNode
 import com.facebook.litho.LithoView
-import com.facebook.litho.NestedTreeHolderResult
 import com.facebook.litho.NullLithoLayoutResult
 import com.facebook.litho.ScopedComponentInfo
 import kotlin.reflect.KClass
@@ -208,8 +208,8 @@ private inline fun componentBreadthFirstSearch(
 
     onHandleScopedComponents(getOrderedScopedComponentInfos(current.node).map { it.component })
 
-    if (current is NestedTreeHolderResult) {
-      val nestedResult = current.nestedResult?.takeUnless { it in visited } ?: continue
+    if (current is DeferredLithoLayoutResult) {
+      val nestedResult = current.result?.takeUnless { it in visited } ?: continue
       queue.add(nestedResult)
       continue
     }

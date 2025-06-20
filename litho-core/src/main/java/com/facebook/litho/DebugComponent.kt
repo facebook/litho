@@ -143,8 +143,8 @@ private constructor(
       } else {
         return when {
           isNotTailComponent -> getImmediateDescendantAsChild()
-          result is NestedTreeHolderResult -> {
-            val nestedResult = result.nestedResult ?: return emptyList()
+          result is DeferredLithoLayoutResult -> {
+            val nestedResult = result.result ?: return emptyList()
             if (nestedResult.node.componentCount == 1) {
               return when (nestedResult.childCount) {
                 0 -> emptyList()
@@ -207,10 +207,9 @@ private constructor(
    * components) We want only the first component to 'take' the offset of the underlying layout node
    * other wise each delegating custom component will appear to multiply the offset.
    *
-   * NestedTreeHolder nodes have to be handled differently. The head component on the
-   * NestedTreeHolderResult will create a separate DebugComponent node but any margin that needs to
-   * be added to its bounds will be applied on the nested result node, which is hosted on another
-   * DebugComponent instance.
+   * DeferredNode nodes have to be handled differently. The head component on the DeferredNodeResult
+   * will create a separate DebugComponent node but any margin that needs to be added to its bounds
+   * will be applied on the nested result node, which is hosted on another DebugComponent instance.
    */
   /**
    * The bounds of this component relative to its parent componen
@@ -224,15 +223,15 @@ private constructor(
        * components) We want only the first component to 'take' the offset of the underlying layout
        * node other wise each delegating custom component will appear to multiply the offset.
        *
-       * NestedTreeHolder nodes have to be handled differently. The head component on the
-       * NestedTreeHolderResult will create a separate DebugComponent node but any margin that needs
-       * to be added to its bounds will be applied on the nested result node, which is hosted on
+       * DeferredNode nodes have to be handled differently. The head component on the
+       * DeferredNodeResult will create a separate DebugComponent node but any margin that needs to
+       * be added to its bounds will be applied on the nested result node, which is hosted on
        * another DebugComponent instance.
        */
       val isHeadComponent = componentIndex == node.componentCount - 1
       val xFromNestedResult: Int
       val yFromNestedResult: Int
-      if (result is NestedTreeHolderResult) {
+      if (result is DeferredLithoLayoutResult) {
         xFromNestedResult = result.getXForChildAtIndex(0)
         yFromNestedResult = result.getYForChildAtIndex(0)
       } else {

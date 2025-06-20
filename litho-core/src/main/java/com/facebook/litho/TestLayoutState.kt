@@ -286,7 +286,7 @@ object TestLayoutState {
   private fun createInternalNode(): LithoNode = LithoNode()
 
   private fun createNestedTreeHolder(treePropContainer: TreePropContainer?): LithoNode =
-      NestedTreeHolder(treePropContainer)
+      DeferredLithoNode(treePropContainer)
 
   // Mimics implementation of Layout.create but uses a custom InternalNode for shallow child
   // resolution.
@@ -321,7 +321,7 @@ object TestLayoutState {
       globalKey = c.globalKey
       scopedComponentInfo = c.scopedComponentInfo
       // 6. Resolve the component into an InternalNode tree.
-      val shouldDeferNestedTreeResolution = Component.isNestedTree(component)
+      val shouldDeferNestedTreeResolution = Component.willDeferResolution(component)
 
       // If nested tree resolution is deferred, then create an nested tree holder.
       when {
@@ -383,7 +383,7 @@ object TestLayoutState {
     // another component.
     if (node.childCount == 0) {
       val isMountSpecWithMeasure = component.canMeasure() && Component.isMountSpec(component)
-      if (isMountSpecWithMeasure || Component.isNestedTree(component)) {
+      if (isMountSpecWithMeasure || Component.willDeferResolution(component)) {
         node.setMeasureFunction(Component.sMeasureFunction)
       }
     }

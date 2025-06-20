@@ -239,7 +239,7 @@ public abstract class SpecGeneratedComponent extends Component
       ComponentContext componentContext,
       ComponentContext parentContext) {
     final LithoNode node =
-        new NestedTreeHolder(
+        new DeferredLithoNode(
             componentContext.getTreePropContainer(),
             calculationContext.getCache().getCachedNode(this),
             parentContext);

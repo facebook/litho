@@ -120,7 +120,7 @@ object Resolver {
       parentWidthSpec: Int,
       parentHeightSpec: Int,
       component: Component,
-      resolveNestedTree: Boolean = false,
+      resolveDeferredNode: Boolean = false,
       globalKeyToReuse: String? = null,
       treePropsToReuse: TreePropContainer? = null,
   ): LithoNode? {
@@ -145,7 +145,7 @@ object Resolver {
               val node: LithoNode?
               val c: ComponentContext
               val globalKey: String
-              val isNestedTree: Boolean = Component.isNestedTree(component)
+              val isDeferredNode: Boolean = Component.willDeferResolution(component)
               val hasCachedNode: Boolean = Component.hasCachedNode(resolveContext, component)
               val scopedComponentInfo: ScopedComponentInfo
               var commonProps: CommonProps? = null
@@ -162,8 +162,8 @@ object Resolver {
                   return@trace cached
                 }
 
-                val shouldDeferNestedTreeResolution =
-                    (isNestedTree || hasCachedNode) && !resolveNestedTree
+                val shouldDeferResolution =
+                    (isDeferredNode || hasCachedNode) && !resolveDeferredNode
 
                 // 5. Get or create the scoped context component.
                 c =
@@ -179,7 +179,7 @@ object Resolver {
 
                 // 6. Resolve the component into an InternalNode tree.
                 val resolveResult: ComponentResolveResult =
-                    if (shouldDeferNestedTreeResolution) {
+                    if (shouldDeferResolution) {
                       component.resolveDeferred(resolveContext, c, parent)
                     } else {
                       component.resolve(
@@ -229,7 +229,7 @@ object Resolver {
                 val isMountSpecWithMeasure =
                     component.canMeasure() && Component.isMountSpec(component)
                 if ((isMountSpecWithMeasure) ||
-                    (isNestedTree || hasCachedNode) && (!resolveNestedTree)) {
+                    (isDeferredNode || hasCachedNode) && (!resolveDeferredNode)) {
                   node.setMeasureFunction(Component.sMeasureFunction)
                 }
               }
@@ -243,7 +243,7 @@ object Resolver {
               }
               if (node !is NullNode) { // only if NOT a NullNode
                 if (commonProps != null &&
-                    !(Component.isLayoutSpecWithSizeSpec(component) && resolveNestedTree)) {
+                    !(Component.isLayoutSpecWithSizeSpec(component) && resolveDeferredNode)) {
                   commonProps.copyInto(c, node)
                 }
               }
@@ -445,7 +445,7 @@ object Resolver {
     node.attachables?.let { attachables -> collectedAttachables.addAll(attachables) }
 
     val c: ComponentContext = node.tailComponentContext
-    if (c.areTransitionsEnabled() && node !is NestedTreeHolder) {
+    if (c.areTransitionsEnabled() && node !is DeferredLithoNode) {
       // collect transitions
       node.transitionData?.let { transitionData -> collectedTransitionData.add(transitionData) }
     }
@@ -611,7 +611,7 @@ object Resolver {
     val components = current.scopedComponentInfos
 
     // 1.0 check early exit conditions
-    if (current is NestedTreeHolder) {
+    if (current is DeferredLithoNode) {
       return ReconciliationMode.RECREATE
     }
 
@@ -656,7 +656,7 @@ object Resolver {
       commonProps: CommonProps?,
   ): ComponentResolveResult {
     val node =
-        NestedTreeHolder(
+        DeferredLithoNode(
             componentContext.treePropContainer,
             calculationContext.cache.getCachedNode(this),
             parentContext,

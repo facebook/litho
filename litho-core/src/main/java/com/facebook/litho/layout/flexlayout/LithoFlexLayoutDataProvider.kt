@@ -22,7 +22,7 @@ import com.facebook.litho.Component
 import com.facebook.litho.LithoLayoutContext
 import com.facebook.litho.LithoNode
 import com.facebook.litho.LithoNode.Companion.applyBorderWidth
-import com.facebook.litho.LithoNode.Companion.applyNestedPadding
+import com.facebook.litho.LithoNode.Companion.applyDeferredPadding
 import com.facebook.litho.LithoNode.Companion.writeStyledAttributesToLayoutProps
 import com.facebook.litho.LithoYogaLayoutFunction
 import com.facebook.litho.layout.LayoutDirection
@@ -48,17 +48,17 @@ class LithoFlexLayoutDataProvider {
     node.yogaWrap?.let { writer.flexWrap(it) }
     node.withValidGap { gap, gapGutter -> writer.gap(gapGutter, gap) }
 
-    var nestedTreeHolderTransfered = false
+    var wasDeferredNodePropsTransferred = false
 
     for (info in node.scopedComponentInfos) {
       val component: Component = info.component
-      // If a NestedTreeHolder is set then transfer its resolved props into this LithoNode.
-      if (node.nestedTreeHolder != null && Component.isLayoutSpecWithSizeSpec(component)) {
-        if (nestedTreeHolderTransfered) {
+      // If a Deferred Node is set then transfer its resolved props into this LithoNode.
+      if (node.deferredNode != null && Component.isLayoutSpecWithSizeSpec(component)) {
+        if (wasDeferredNodePropsTransferred) {
           continue
         }
-        nestedTreeHolderTransfered = true
-        node.nestedTreeHolder?.transferInto(node)
+        wasDeferredNodePropsTransferred = true
+        node.deferredNode?.transferInto(node)
         node._needsHostView = LithoNode.needsHostView(node)
         node.paddingFromBackground?.let {
           LithoYogaLayoutFunction.setPaddingFromDrawable(writer, it)
@@ -83,7 +83,7 @@ class LithoFlexLayoutDataProvider {
     node.applyBorderWidth { yogaEdge, width -> writer.setBorderWidth(yogaEdge, width) }
 
     // Maybe apply the padding if parent is a Nested Tree Holder
-    node.applyNestedPadding(
+    node.applyDeferredPadding(
         { yogaEdge, paddingPx -> writer.paddingPx(yogaEdge, paddingPx) },
         { yogaEdge, paddingPercent -> writer.paddingPercent(yogaEdge, paddingPercent) })
 

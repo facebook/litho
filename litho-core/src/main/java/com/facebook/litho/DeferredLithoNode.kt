@@ -21,18 +21,19 @@ import kotlin.jvm.JvmField
 
 /**
  * This class is a placeholder for the unresolved layout and result of a [Component]s which
- * implement the [com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec].The
- * [TreePropContainer], padding and border width properties and held separately so that they can be
- * copied into the actual nested tree layout before measuring it.
+ * implement the [com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec] and
+ * [com.facebook.litho.layout.RenderWithConstraints].The [TreePropContainer], padding and border
+ * width properties and held separately so that they can be copied into the actual deferred node
+ * result before measuring it.
  */
-class NestedTreeHolder
+class DeferredLithoNode
 @JvmOverloads
 constructor(
     propContainer: TreePropContainer? = null,
     /**
      * When a node is measured during Component.measure and a layout-result is cached, it is cached
-     * using that node as the key. Later, this layout may resolve a nested-tree-holder node, and so
-     * in order to be able to access this cache, this node is used.
+     * using that node as the key. Later, this layout may resolve a deffered node, and so in order
+     * to be able to access this cache, this node is used.
      */
     val cachedNode: LithoNode? = null,
     @JvmField var parentContext: ComponentContext? = null
@@ -40,27 +41,27 @@ constructor(
 
   val pendingTreePropContainer: TreePropContainer? = TreePropContainer.copy(propContainer)
 
-  @JvmField var nestedBorderEdges: IntArray? = null
-  @JvmField var nestedTreePadding: Edges? = null
-  @JvmField var nestedIsPaddingPercentage: BooleanArray? = null
+  @JvmField var deferredBorders: IntArray? = null
+  @JvmField var deferredPaddings: Edges? = null
+  @JvmField var deferredIsPaddingPercentages: BooleanArray? = null
 
   override fun border(widths: IntArray, colors: IntArray, radii: FloatArray, effect: PathEffect?) {
-    val nestedBorderEdges = IntArray(Border.EDGE_COUNT)
-    System.arraycopy(widths, 0, nestedBorderEdges, 0, nestedBorderEdges.size)
+    val deferredBorders = IntArray(Border.EDGE_COUNT)
+    System.arraycopy(widths, 0, deferredBorders, 0, deferredBorders.size)
     System.arraycopy(colors, 0, borderColors, 0, borderColors.size)
     System.arraycopy(radii, 0, borderRadius, 0, borderRadius.size)
     borderPathEffect = effect
-    this.nestedBorderEdges = nestedBorderEdges
+    this.deferredBorders = deferredBorders
   }
 
-  override fun createLayoutResult(layoutOutput: YogaLayoutOutput): NestedTreeHolderResult =
-      NestedTreeHolderResult(
-          c = tailComponentContext, internalNode = this, layoutOutput = layoutOutput)
+  override fun createLayoutResult(layoutOutput: YogaLayoutOutput): DeferredLithoLayoutResult =
+      DeferredLithoLayoutResult(
+          c = tailComponentContext, deferredNode = this, layoutOutput = layoutOutput)
 
   fun copyInto(target: LithoNode) {
-    // Defer copying, and set this NestedTreeHolder on the target. The props will be
-    // transferred to the nested result during layout calculation.
-    target.setNestedTreeHolder(this)
+    // Defer copying, and set this DeferredNode on the target. The props will be
+    // transferred to the deferred result during layout calculation.
+    target.setDeferredNode(this)
   }
 
   fun transferInto(target: LithoNode) {
@@ -105,7 +106,7 @@ constructor(
     if (testKey != null) {
       target.testKey(testKey)
     }
-    nestedBorderEdges?.let { target.border(it, borderColors, borderRadius, borderPathEffect) }
+    deferredBorders?.let { target.border(it, borderColors, borderRadius, borderPathEffect) }
     if (privateFlags and PFLAG_TRANSITION_KEY_IS_SET != 0L) {
       target.transitionKey(transitionKey, transitionOwnerKey)
     }
@@ -127,6 +128,6 @@ constructor(
     if (layerType != LayerType.LAYER_TYPE_NOT_SET) {
       target.layerType(layerType, layerPaint)
     }
-    target.setNestedPadding(nestedTreePadding, nestedIsPaddingPercentage)
+    target.setDeferredPadding(deferredPaddings, deferredIsPaddingPercentages)
   }
 }

@@ -393,7 +393,7 @@ class LithoNodeTest {
   }
 
   companion object {
-    private fun acquireNestedTreeHolder(): NestedTreeHolder = NestedTreeHolder(null)
+    private fun acquireNestedTreeHolder(): DeferredLithoNode = DeferredLithoNode(null)
 
     private fun isFlagSet(node: LithoNode, flagName: String): Boolean {
       val flagPosition = Whitebox.getInternalState<Long>(LithoNode::class.java, flagName)

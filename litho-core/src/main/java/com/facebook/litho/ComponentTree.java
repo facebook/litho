@@ -2422,11 +2422,11 @@ public class ComponentTree
   }
 
   @Override
-  public void removePendingStateUpdate(String key, boolean nestedTreeContext) {
+  public void removePendingStateUpdate(String key, boolean isLayoutState) {
     if (mReleased || mTreeState == null) {
       return;
     }
-    mTreeState.removePendingStateUpdate(key, nestedTreeContext);
+    mTreeState.removePendingStateUpdate(key, isLayoutState);
   }
 
   public static synchronized Looper getDefaultLayoutThreadLooper() {

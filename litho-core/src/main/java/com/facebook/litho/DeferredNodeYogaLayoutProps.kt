@@ -19,7 +19,7 @@ package com.facebook.litho
 import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaNode
 
-class NestedTreeYogaLayoutProps(node: YogaNode) : YogaLayoutProps(node) {
+class DeferredNodeYogaLayoutProps(node: YogaNode) : YogaLayoutProps(node) {
 
   var borderWidth: IntArray? = null
     private set

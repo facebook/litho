@@ -62,11 +62,11 @@ class NestedTreeResolutionTest {
     assertThat(c.calculationStateContext).isNull()
     val root = testLithoView.currentRootNode
     assertThat(root).isNotNull
-    assertThat(root?.getChildAt(1)).isInstanceOf(NestedTreeHolderResult::class.java)
-    val holder = root?.getChildAt(1) as NestedTreeHolderResult
-    assertThat((holder.node as NestedTreeHolder).nestedTreePadding?.get(YogaEdge.ALL))
+    assertThat(root?.getChildAt(1)).isInstanceOf(DeferredLithoLayoutResult::class.java)
+    val holder = root?.getChildAt(1) as DeferredLithoLayoutResult
+    assertThat((holder.node as DeferredLithoNode).deferredPaddings?.get(YogaEdge.ALL))
         .isEqualTo(5.0f)
-    assertThat(holder.nestedResult?.paddingTop).isEqualTo(5)
+    assertThat(holder.result?.paddingTop).isEqualTo(5)
   }
 
   @Test
@@ -82,7 +82,7 @@ class NestedTreeResolutionTest {
             }
     val root = testLithoView.currentRootNode
     assertThat(root).isNotNull
-    assertThat(root?.getChildAt(1)).isInstanceOf(NestedTreeHolderResult::class.java)
+    assertThat(root?.getChildAt(1)).isInstanceOf(DeferredLithoLayoutResult::class.java)
     assertThat(props.steps)
         .containsExactly(
             LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
@@ -103,10 +103,10 @@ class NestedTreeResolutionTest {
             }
     val root = testLithoView.currentRootNode
     assertThat(root).isNotNull
-    assertThat(root?.getChildAt(1)).isInstanceOf(NestedTreeHolderResult::class.java)
-    val holder = root?.getChildAt(1) as NestedTreeHolderResult
+    assertThat(root?.getChildAt(1)).isInstanceOf(DeferredLithoLayoutResult::class.java)
+    val holder = root?.getChildAt(1) as DeferredLithoLayoutResult
     assertThat(holder.getYogaNode().layoutDirection).isEqualTo(YogaDirection.LTR)
-    assertThat(holder.nestedResult?.getYogaNode()?.layoutDirection).isEqualTo(YogaDirection.RTL)
+    assertThat(holder.result?.getYogaNode()?.layoutDirection).isEqualTo(YogaDirection.RTL)
   }
 
   @Test
@@ -126,10 +126,10 @@ class NestedTreeResolutionTest {
             }
     val root = testLithoView.currentRootNode
     assertThat(root).isNotNull
-    assertThat(root?.getChildAt(1)).isInstanceOf(NestedTreeHolderResult::class.java)
-    val holder = root?.getChildAt(1) as NestedTreeHolderResult
+    assertThat(root?.getChildAt(1)).isInstanceOf(DeferredLithoLayoutResult::class.java)
+    val holder = root?.getChildAt(1) as DeferredLithoLayoutResult
     assertThat(holder.getYogaNode().layoutDirection).isEqualTo(YogaDirection.RTL)
-    assertThat(holder.nestedResult?.getYogaNode()?.layoutDirection).isEqualTo(YogaDirection.RTL)
+    assertThat(holder.result?.getYogaNode()?.layoutDirection).isEqualTo(YogaDirection.RTL)
   }
 
   @Test

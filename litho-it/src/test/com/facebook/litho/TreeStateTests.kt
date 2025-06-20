@@ -66,7 +66,7 @@ class TreeStateTests {
 
   private fun testRegisterUnregisterInitialStateContainer(isNestedTree: Boolean) {
     val componentContext: ComponentContext = mock()
-    whenever(componentContext.isNestedTreeContext).thenReturn(isNestedTree)
+    whenever(componentContext.isContextForLayout).thenReturn(isNestedTree)
     whenever(componentContext.scopedComponentInfo)
         .thenReturn(ScopedComponentInfo(testComponent, context, null))
     val treeState = TreeState()
@@ -190,7 +190,7 @@ class TreeStateTests {
         key = testComponentKey,
         stateUpdate = StateUpdateTestComponent.createIncrementStateUpdate(),
         isLazyStateUpdate = false,
-        isNestedTree = false)
+        isLayoutState = false)
 
     assertThat(treeState.hasUncommittedUpdates()).isTrue
 
@@ -203,7 +203,7 @@ class TreeStateTests {
             key = testComponentKey,
             stateUpdate = StateUpdateTestComponent.createValueStateUpdate(5),
             isLazyStateUpdate = false,
-            isNestedTree = false)
+            isLayoutState = false)
 
     assertThat(treeState.hasUncommittedUpdates()).isTrue
     treeState.applyStateUpdatesEarly(context, testComponent, null, false)

@@ -20,9 +20,9 @@ import android.annotation.SuppressLint
 import android.view.ViewGroup
 import com.facebook.litho.BaseMountingView
 import com.facebook.litho.Component
+import com.facebook.litho.DeferredLithoLayoutResult
 import com.facebook.litho.LithoLayoutResult
 import com.facebook.litho.LithoView
-import com.facebook.litho.NestedTreeHolderResult
 import com.facebook.litho.getMountedContent
 import java.util.LinkedList
 
@@ -66,8 +66,8 @@ class LithoViewComponentsTraverser {
       val components = lithoNode.scopedComponentInfos.asReversed().mapNotNull { it.component }
       val lastScopedComponent = components.lastOrNull()
 
-      if (currentLayoutResult is NestedTreeHolderResult) {
-        val nestedResult = currentLayoutResult.nestedResult
+      if (currentLayoutResult is DeferredLithoLayoutResult) {
+        val nestedResult = currentLayoutResult.result
 
         /*
          * Let's consider an example where we have this hierarchy:
@@ -100,7 +100,7 @@ class LithoViewComponentsTraverser {
          * #3 (a NestedTreeHolderResult whose nested result is a LithoLayoutResult with no children)
          * */
         if (nestedResult != null &&
-            (nestedResult.node.childCount > 0 || nestedResult is NestedTreeHolderResult)) {
+            (nestedResult.node.childCount > 0 || nestedResult is DeferredLithoLayoutResult)) {
           layoutsStack.push(TraverseNode(nestedResult, parentComponent))
           continue
         }

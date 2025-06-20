@@ -192,7 +192,7 @@ public final class StateUpdatesTestHelper {
         context, "mLithoTree", LithoTree.Companion.create(componentTree, componentTree));
 
     if (isLayoutSpecWithSizeSpec(component)) {
-      Whitebox.setInternalState(context, "isNestedTreeContext", true);
+      Whitebox.setInternalState(context, "isContextForLayout", true);
     }
 
     final LithoViewTestHelper.InternalNodeRef rootLayoutNode =

@@ -402,7 +402,7 @@ internal object LithoReducer {
     val node: LithoNode = result.node
     val hierarchy: DebugHierarchy.Node? = node.getDebugHierarchy(parentHierarchy)
 
-    if (result is NestedTreeHolderResult) {
+    if (result is DeferredLithoLayoutResult) {
       val size: Int = node.componentCount
       val immediateParentContext: ComponentContext =
           if (size == 1) {
@@ -411,7 +411,7 @@ internal object LithoReducer {
             node.getComponentContextAt(1)
           }
 
-      val nestedTree: LithoLayoutResult = result.nestedResult ?: return
+      val actualResult: LithoLayoutResult = result.result ?: return
 
       if (node.componentCount > 1) {
         for (i in 1 until node.componentCount) {
@@ -425,7 +425,7 @@ internal object LithoReducer {
       try {
         collectResults(
             parentContext = immediateParentContext,
-            result = nestedTree,
+            result = actualResult,
             reductionState = reductionState,
             lithoLayoutContext = lithoLayoutContext,
             x = x + result.getXForChildAtIndex(0), // Account for position of the holder node.
@@ -763,8 +763,8 @@ internal object LithoReducer {
 
   private fun isLayoutRoot(reductionState: ReductionState, result: LithoLayoutResult): Boolean {
     val layoutResult = reductionState.rootLayoutResult
-    return if (layoutResult is NestedTreeHolderResult) {
-      result == layoutResult.nestedResult
+    return if (layoutResult is DeferredLithoLayoutResult) {
+      result == layoutResult.result
     } else {
       result == layoutResult
     }

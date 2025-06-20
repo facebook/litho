@@ -51,7 +51,7 @@ sealed interface LithoLayoutOutput {
   val foregroundRenderUnit: LithoRenderUnit?
   val borderRenderUnit: LithoRenderUnit?
   val delegate: LayoutResult?
-  val nestedResult: LithoLayoutResult?
+  val actualDeferredNodeResult: LithoLayoutResult?
   val adjustedBounds: Rect
   val layoutDirection: LayoutDirection
 }

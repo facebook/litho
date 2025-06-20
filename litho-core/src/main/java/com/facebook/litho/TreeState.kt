@@ -97,8 +97,8 @@ class TreeState {
 
   constructor() : this(fromState = null)
 
-  private fun getStateHandler(isNestedTree: Boolean): StateHandler {
-    return if (isNestedTree) {
+  private fun getStateHandler(isLayoutState: Boolean): StateHandler {
+    return if (isLayoutState) {
       layoutState
     } else {
       resolveState
@@ -138,14 +138,14 @@ class TreeState {
       key: String,
       stateUpdate: StateContainer.StateUpdate,
       isLazyStateUpdate: Boolean,
-      isNestedTree: Boolean
+      isLayoutState: Boolean
   ) {
-    val stateHandler = getStateHandler(isNestedTree)
+    val stateHandler = getStateHandler(isLayoutState)
     stateHandler.queueStateUpdate(key, stateUpdate, isLazyStateUpdate)
   }
 
-  fun queueHookStateUpdate(key: String, updater: HookUpdater, isNestedTree: Boolean) {
-    getStateHandler(isNestedTree).queueHookStateUpdate(key, updater)
+  fun queueHookStateUpdate(key: String, updater: HookUpdater, isLayoutState: Boolean) {
+    getStateHandler(isLayoutState).queueHookStateUpdate(key, updater)
   }
 
   fun applyLazyStateUpdatesForContainer(
@@ -167,9 +167,9 @@ class TreeState {
       context: ComponentContext,
       component: Component?,
       prevTreeRootNode: LithoNode?,
-      isNestedTree: Boolean
+      isLayoutState: Boolean
   ) {
-    getStateHandler(isNestedTree).applyStateUpdatesEarly(context, component, prevTreeRootNode)
+    getStateHandler(isLayoutState).applyStateUpdatesEarly(context, component, prevTreeRootNode)
   }
 
   val keysForPendingResolveStateUpdates: Set<String>
@@ -194,16 +194,16 @@ class TreeState {
       }
     }
 
-  fun addState(key: String, state: ComponentState<*>, isNestedTree: Boolean) {
-    getStateHandler(isNestedTree).addState(key, state)
+  fun addState(key: String, state: ComponentState<*>, isLayoutState: Boolean) {
+    getStateHandler(isLayoutState).addState(key, state)
   }
 
-  fun markStateInUse(key: String, isNestedTree: Boolean) {
-    getStateHandler(isNestedTree).markStateInUse(key)
+  fun markStateInUse(key: String, isLayoutState: Boolean) {
+    getStateHandler(isLayoutState).markStateInUse(key)
   }
 
-  fun getState(key: String, isNestedTree: Boolean): ComponentState<out StateContainer>? {
-    return getStateHandler(isNestedTree).getState(key)
+  fun getState(key: String, isLayoutState: Boolean): ComponentState<out StateContainer>? {
+    return getStateHandler(isLayoutState).getState(key)
   }
 
   fun createOrGetState(
@@ -211,7 +211,7 @@ class TreeState {
       component: Component,
       key: String
   ): ComponentState<out StateContainer> {
-    return getStateHandler(scopedContext.isNestedTreeContext)
+    return getStateHandler(scopedContext.isContextForLayout)
         .createOrGetState(scopedContext, component, key)
   }
 
@@ -221,26 +221,26 @@ class TreeState {
       key: String,
   ): EventDispatchInfo {
     return checkNotNull(
-        getStateHandler(scopedContext.isNestedTreeContext)
+        getStateHandler(scopedContext.isContextForLayout)
             .createOrGetState(scopedContext, component, key)
             .eventDispatchInfo)
   }
 
-  fun removePendingStateUpdate(key: String, isNestedTree: Boolean) {
-    getStateHandler(isNestedTree).removePendingStateUpdate(key)
+  fun removePendingStateUpdate(key: String, isLayoutState: Boolean) {
+    getStateHandler(isLayoutState).removePendingStateUpdate(key)
   }
 
   fun <T> canSkipStateUpdate(
       globalKey: String,
       hookStateIndex: Int,
       newValue: T,
-      isNestedTree: Boolean
+      isLayoutState: Boolean
   ): Boolean {
     return canSkipStateUpdate<T>(
         updater = { newValue },
         globalKey = globalKey,
         hookStateIndex = hookStateIndex,
-        isNestedTree = isNestedTree,
+        isLayoutState = isLayoutState,
     )
   }
 
@@ -248,9 +248,9 @@ class TreeState {
       updater: (T) -> T,
       globalKey: String,
       hookStateIndex: Int,
-      isNestedTree: Boolean
+      isLayoutState: Boolean
   ): Boolean {
-    val stateHandler = getStateHandler(isNestedTree)
+    val stateHandler = getStateHandler(isLayoutState)
     val committedState = stateHandler.getState(globalKey)
     if (committedState != null) {
       val committedStateWithUpdatesApplied = stateHandler.getKStateWithUpdates(globalKey)
@@ -288,18 +288,18 @@ class TreeState {
       index: Int,
       cachedValueInputs: Any,
       cachedValue: Any?,
-      isNestedTree: Boolean
+      isLayoutState: Boolean
   ) {
-    getStateHandler(isNestedTree).putCachedValue(globalKey, index, cachedValueInputs, cachedValue)
+    getStateHandler(isLayoutState).putCachedValue(globalKey, index, cachedValueInputs, cachedValue)
   }
 
   fun getCachedValue(
       globalKey: String,
       index: Int,
       cachedValueInputs: Any,
-      isNestedTree: Boolean
+      isLayoutState: Boolean
   ): Any? {
-    return getStateHandler(isNestedTree).getCachedValue(globalKey, index, cachedValueInputs)
+    return getStateHandler(isLayoutState).getCachedValue(globalKey, index, cachedValueInputs)
   }
 
   fun <T> createOrGetInitialHookState(
@@ -307,11 +307,11 @@ class TreeState {
       kStateIndex: Int,
       deps: Array<*>,
       initializer: HookInitializer<T>,
-      isNestedTree: Boolean,
+      isLayoutState: Boolean,
       componentName: String
   ): ComponentState<KStateContainer> {
 
-    return getStateHandler(isNestedTree)
+    return getStateHandler(isLayoutState)
         .initialState
         .getOrCreateInitialKState(
             key,
