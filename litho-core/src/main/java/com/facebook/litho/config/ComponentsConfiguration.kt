@@ -40,7 +40,6 @@ import com.facebook.rendercore.visibility.VisibilityBoundsTransformer
  */
 data class ComponentsConfiguration
 internal constructor(
-    val disableNestedTreeCaching: Boolean = true,
     val shouldAddHostViewForRootComponent: Boolean = false,
     @JvmField
     val useIncrementalMountGapWorker: Boolean = IncrementalMountExtensionConfigs.useGapWorker,
@@ -143,11 +142,6 @@ internal constructor(
      * attributes that may have been added by non-litho code.
      */
     @JvmField val isHostViewAttributesCleanUpEnabled: Boolean = false,
-    /**
-     * This flag is used to enable a fix for the issue where a cached NestedTree getting lost of
-     * state containers
-     */
-    @JvmField val enableFixForCachedNestedTree: Boolean = false,
 
     /** This flag is used to enable the redesigned event handler rebinding logic. */
     @JvmField val useStateForEventDispatchInfo: Boolean = true,
@@ -372,7 +366,6 @@ internal constructor(
     private var enableResolveWithoutSizeSpec = baseConfig.enableResolveWithoutSizeSpec
     private var enableHostWillNotDraw = baseConfig.enableHostWillNotDraw
     private var enableFixForResolveWithoutSizeSpec = baseConfig.enableFixForResolveWithoutSizeSpec
-    private var enableFixForCachedNestedTree = baseConfig.enableFixForCachedNestedTree
     private var isHostViewAttributesCleanUpEnabled = baseConfig.isHostViewAttributesCleanUpEnabled
     private var enableIMHelperForViewPager2 = baseConfig.enableIMHelperForViewPager2
 
@@ -470,10 +463,6 @@ internal constructor(
       enableFixForResolveWithoutSizeSpec = enabled
     }
 
-    fun enableFixForCachedNestedTree(enabled: Boolean): Builder = also {
-      enableFixForCachedNestedTree = enabled
-    }
-
     fun enableHostViewAttributesCleanUp(enabled: Boolean): Builder = also {
       isHostViewAttributesCleanUpEnabled = enabled
     }
@@ -515,7 +504,6 @@ internal constructor(
           enableResolveWithoutSizeSpec = enableResolveWithoutSizeSpec,
           enableHostWillNotDraw = enableHostWillNotDraw,
           enableFixForResolveWithoutSizeSpec = enableFixForResolveWithoutSizeSpec,
-          enableFixForCachedNestedTree = enableFixForCachedNestedTree,
           isHostViewAttributesCleanUpEnabled = isHostViewAttributesCleanUpEnabled,
           enableIMHelperForViewPager2 = enableIMHelperForViewPager2,
       )

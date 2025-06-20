@@ -259,12 +259,7 @@ internal object Layout {
             currentLayout.height)) {
       // Tell TreeState to keep state containers for the cache of DeferredNode, otherwise we'll end
       // up getting lost state containers when we commit layout state.
-      if (lithoLayoutContext.rootComponentContext
-          ?.lithoConfiguration
-          ?.componentsConfig
-          ?.enableFixForCachedNestedTree == true) {
-        Resolver.commitToLayoutStateRecursively(lithoLayoutContext.treeState, currentLayout.node)
-      }
+      Resolver.commitToLayoutStateRecursively(lithoLayoutContext.treeState, currentLayout.node)
       return currentLayout
     }
 
@@ -274,12 +269,7 @@ internal object Layout {
         cachedLayout ->
       // Tell TreeState to keep state containers for the cache of DeferredNode, otherwise we'll end
       // up getting lost state containers when we commit layout state.
-      if (lithoLayoutContext.rootComponentContext
-          ?.lithoConfiguration
-          ?.componentsConfig
-          ?.enableFixForCachedNestedTree == true) {
-        Resolver.commitToLayoutStateRecursively(lithoLayoutContext.treeState, cachedLayout.node)
-      }
+      Resolver.commitToLayoutStateRecursively(lithoLayoutContext.treeState, cachedLayout.node)
       return cachedLayout
     }
 
@@ -358,14 +348,6 @@ internal object Layout {
           parentLayoutDirection = holderResult.node.layoutDirection,
       )
 
-      val layoutCache: LayoutCache =
-          if (newNode.tailComponentContext.lithoConfiguration.componentsConfig
-              .disableNestedTreeCaching) {
-            // Stop caching result for deferred node due to memory issue
-            LayoutCache()
-          } else {
-            lithoLayoutContext.layoutCache
-          }
       val nestedLsc =
           LithoLayoutContext(
               treeId = nestedRsc.treeId,
@@ -375,7 +357,7 @@ internal object Layout {
               layoutVersion = nestedRsc.layoutVersion,
               rootComponentId = nestedRsc.rootComponentId,
               isAccessibilityEnabled = lithoLayoutContext.isAccessibilityEnabled,
-              layoutCache = layoutCache,
+              layoutCache = LayoutCache(), // disable caching deferred node results
               currentDiffTree = lithoLayoutContext.currentDiffTree,
               layoutStateFuture = null)
 
