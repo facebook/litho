@@ -1803,7 +1803,8 @@ public class ComponentTree
           attrs.put(Source, getSource(source));
           attrs.put(LithoDebugEventAttributes.RenderExecutionMode, getExecutionMode(source));
           attrs.put(LithoDebugEventAttributes.Attribution, attribution);
-          attrs.put(LithoDebugEventAttributes.Root, root != null ? root.getSimpleName() : "null");
+          attrs.put(
+              LithoDebugEventAttributes.Root, root != null ? root.getFullyQualifiedName() : "null");
           attrs.put(LithoDebugEventAttributes.Forced, wasForced);
           if (widthSpec != SIZE_UNINITIALIZED || heightSpec != SIZE_UNINITIALIZED) {
             attrs.put(WidthSpec, getMeasureSpecDescription(widthSpec));

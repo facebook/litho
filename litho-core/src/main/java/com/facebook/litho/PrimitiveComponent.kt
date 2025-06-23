@@ -52,7 +52,7 @@ abstract class PrimitiveComponent : Component() {
             renderStateId = { resolveContext.treeId.toString() },
             attributesAccumulator = { accumulator ->
               accumulator[Component] = simpleName
-              accumulator[Name] = simpleName
+              accumulator[Name] = fullyQualifiedName
             },
         ) {
           ComponentsSystrace.trace("render:$simpleName") {

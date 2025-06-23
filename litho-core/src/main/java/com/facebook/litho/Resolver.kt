@@ -136,7 +136,7 @@ object Resolver {
             { resolveContext.treeId.toString() },
             { attributes ->
               attributes[LithoDebugEventAttributes.Component] = component.simpleName
-              attributes[DebugEventAttribute.Name] = component.simpleName
+              attributes[DebugEventAttribute.Name] = component.fullyQualifiedName
             }) {
               if (isTracing) {
                 ComponentsSystrace.beginSection("create-node:${component.simpleName}")

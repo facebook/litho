@@ -87,7 +87,7 @@ class RenderWithConstraints(
             renderStateId = { calculationContext.treeId.toString() },
             attributesAccumulator = { accumulator ->
               accumulator[LithoDebugEventAttributes.Component] = simpleName
-              accumulator[DebugEventAttribute.Name] = simpleName
+              accumulator[DebugEventAttribute.Name] = fullyQualifiedName
             },
         ) {
           ComponentsSystrace.trace("render:$simpleName") {

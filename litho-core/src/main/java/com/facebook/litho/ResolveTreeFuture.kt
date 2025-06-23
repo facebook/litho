@@ -122,7 +122,7 @@ constructor(
 
   private fun createDebugAttributes(): HashMap<String, Any?> {
     val attributes = HashMap<String, Any?>()
-    attributes[Root] = component.simpleName
+    attributes[Root] = component.fullyQualifiedName
     attributes[Version] = resolveVersion
     attributes[Source] = LayoutState.layoutSourceToString(source)
     attributes[Attribution] = extraAttribution

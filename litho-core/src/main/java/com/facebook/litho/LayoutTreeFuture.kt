@@ -55,7 +55,7 @@ class LayoutTreeFuture(
         type = LithoDebugEvent.ComponentTreeLayout,
         renderStateId = { treeId.toString() },
         attributesAccumulator = { attrs ->
-          attrs[LithoDebugEventAttributes.Root] = resolveResult.component.simpleName
+          attrs[LithoDebugEventAttributes.Root] = resolveResult.component.fullyQualifiedName
           attrs[DebugEventAttribute.SizeConstraints] = sizeConstraints.toString()
           attrs[DebugEventAttribute.Version] = version
           attrs[DebugEventAttribute.Source] = LayoutState.layoutSourceToString(source)

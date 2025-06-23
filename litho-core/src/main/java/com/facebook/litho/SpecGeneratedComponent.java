@@ -266,7 +266,7 @@ public abstract class SpecGeneratedComponent extends Component
       if (traceId != null) {
         HashMap<String, Object> attributes = new HashMap<>();
         attributes.put(LithoDebugEventAttributes.Component, getSimpleName());
-        attributes.put(DebugEventAttribute.Name, getSimpleName());
+        attributes.put(DebugEventAttribute.Name, getFullyQualifiedName());
         beginTrace(
             traceId,
             LithoDebugEvent.ComponentRendered,
@@ -296,7 +296,7 @@ public abstract class SpecGeneratedComponent extends Component
       if (traceId != null) {
         HashMap<String, Object> attributes = new HashMap<>();
         attributes.put(LithoDebugEventAttributes.Component, getSimpleName());
-        attributes.put(DebugEventAttribute.Name, getSimpleName());
+        attributes.put(DebugEventAttribute.Name, getFullyQualifiedName());
         beginTrace(
             traceId,
             LithoDebugEvent.ComponentRendered,

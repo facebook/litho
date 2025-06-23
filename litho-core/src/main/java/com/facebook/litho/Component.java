@@ -376,6 +376,10 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     return getSectionNameForTracing(getClass());
   }
 
+  public final String getFullyQualifiedName() {
+    return getClass().getName();
+  }
+
   /**
    * Returns the list of props declared in this component that will be used to check its equivalence
    * with other instances of the same component type.
