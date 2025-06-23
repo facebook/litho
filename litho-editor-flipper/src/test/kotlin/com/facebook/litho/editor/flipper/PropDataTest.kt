@@ -78,7 +78,8 @@ class PropDataTest {
   @Test
   fun `test KComponent PropWithInspectorSection props creates new scetion`() {
     class A : PropWithInspectorSection {
-      override fun getFlipperLayoutInspectorSection(): AbstractMap.SimpleEntry<String, String> =
+
+      override val flipperLayoutInspectorSection: AbstractMap.SimpleEntry<String, String>? =
           AbstractMap.SimpleEntry("Inspector Section", "{\"A\":\"B\"}")
     }
 
@@ -186,8 +187,8 @@ class PropDataTest {
   fun `test LayoutSpec PropWithInspectorSection props creates new scetion`() {
     val propWithInspectorSection =
         object : PropWithInspectorSection {
-          override fun getFlipperLayoutInspectorSection(): AbstractMap.SimpleEntry<String, String> =
-              AbstractMap.SimpleEntry("New Section", "{\"A\":\"B\"}")
+          override val flipperLayoutInspectorSection: AbstractMap.SimpleEntry<String, String>?
+            get() = AbstractMap.SimpleEntry("New Section", "{\"A\":\"B\"}")
         }
 
     val component =

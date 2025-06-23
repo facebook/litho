@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.editor.flipper;
+package com.facebook.litho.editor.flipper
 
-import java.util.AbstractMap;
-import javax.annotation.CheckForNull;
+import java.util.AbstractMap
 
-public interface PropWithInspectorSection {
-  @CheckForNull
-  AbstractMap.SimpleEntry<String, String> getFlipperLayoutInspectorSection();
+interface PropWithInspectorSection {
+  val flipperLayoutInspectorSection: AbstractMap.SimpleEntry<String, String>?
 }
