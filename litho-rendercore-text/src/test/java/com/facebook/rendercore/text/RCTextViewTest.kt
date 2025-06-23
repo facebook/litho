@@ -23,6 +23,7 @@ import android.view.MotionEvent
 import android.view.View
 import com.facebook.rendercore.HostView
 import com.facebook.rendercore.testing.RenderCoreTestRule
+import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -37,8 +38,6 @@ import org.robolectric.RobolectricTestRunner
 class RCTextViewTest {
 
   @Rule @JvmField val renderCoreTestRule = RenderCoreTestRule()
-  private val FULL_TEXT_WIDTH: Int = 100
-  private val MINIMAL_TEXT_WIDTH: Int = 95
   private val UNSPECIFIED_WIDTH_SPEC =
       View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
 
@@ -184,7 +183,7 @@ class RCTextViewTest {
 
     // action cancel within the bounds
     val cancelEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_CANCEL, 0f, 0f, 0)
-    assertThat(textView.onTouchEvent(cancelEvent)).isEqualTo(true)
+    assertThat(textView.onTouchEvent(cancelEvent)).isEqualTo(false)
     assertThat(eventsFired.size).isEqualTo(1)
     assertThat(eventsFired).contains(MotionEvent.ACTION_CANCEL)
   }
@@ -197,7 +196,7 @@ class RCTextViewTest {
 
     // action up within the bounds
     val upEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 0f, 0f, 0)
-    assertThat(textView.onTouchEvent(upEvent)).isEqualTo(true)
+    assertThat(textView.onTouchEvent(upEvent)).isEqualTo(false)
     assertThat(eventsFired.size).isEqualTo(1)
     assertThat(eventsFired).contains(MotionEvent.ACTION_UP)
   }
@@ -247,6 +246,134 @@ class RCTextViewTest {
     val upEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 9000f, 9000f, 0)
     assertThat(textView.onTouchEvent(upEvent)).isEqualTo(false)
     assertThat(eventsFired.size).isEqualTo(0)
+  }
+
+  @Test
+  fun testSpannableWithClickableAndTouchableSpansWithSpanClickActionWillTriggerClickActionIfSpanListenerReturnsFalse() {
+    val eventsFired = ArrayList<String>()
+    val text = "hello world"
+
+    val clickableText = Spannable.Factory.getInstance().newSpannable(text)
+    val touchableSpanListener = TouchableSpanListener { span, motionEvent, view ->
+      eventsFired.add(SPAN_LISTENER_TOUCH_ACTION)
+      false
+    }
+
+    val clickableSpanListener =
+        object : ClickableSpanListener {
+          override fun onClick(span: ClickableSpan, view: View): Boolean {
+            eventsFired.add(SPAN_LISTENER_CLICK_ACTION)
+            return false
+          }
+        }
+
+    val clickableSpan =
+        object : ClickableSpan() {
+          override fun onClick(widget: View) {
+            eventsFired.add(SPAN_CLICK_ACTION)
+          }
+        }
+    clickableText.setSpan(clickableSpan, 0, text.length, 0)
+
+    val textStyle = TextStyle()
+    textStyle.textSize = 20
+
+    val root =
+        RichTextPrimitive(
+            id = 1,
+            text = clickableText,
+            style = textStyle,
+            touchableSpanListener = touchableSpanListener,
+            clickableSpanListener = clickableSpanListener,
+        )
+    renderCoreTestRule.useRootNode(root).setSizePx(100, 100).render()
+    val host = renderCoreTestRule.rootHost as HostView
+
+    val textView = host.getChildAt(0) as RCTextView
+
+    val downEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0f, 0f, 0)
+    var onTouchEventReturnValue = textView.onTouchEvent(downEvent)
+    // we touched the span and will return true to continue getting subsequent events related to the
+    // initial touch.
+    assertThat(onTouchEventReturnValue).isTrue()
+    assertThat(eventsFired).size().isEqualTo(1)
+    assertThat(eventsFired).contains(SPAN_LISTENER_TOUCH_ACTION)
+
+    eventsFired.clear()
+
+    val upEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 0f, 0f, 0)
+    onTouchEventReturnValue = textView.onTouchEvent(upEvent)
+    // because we are getting  subsequent events related to the initial touch, we will receive up
+    // event that will trigger ClickableSpanListener -> with return value = false and will trigger
+    // the ClickableSpan.onClick()
+    assertThat(onTouchEventReturnValue).isTrue()
+    assertThat(eventsFired).size().isEqualTo(3)
+    assertThat(eventsFired)
+        .contains(SPAN_LISTENER_CLICK_ACTION, SPAN_LISTENER_TOUCH_ACTION, SPAN_CLICK_ACTION)
+  }
+
+  @Test
+  fun testSpannableWithClickableAndTouchableSpansWithSpanClickActionWontTriggerClickActionIfSpanListenerReturnsTrue() {
+    val eventsFired = ArrayList<String>()
+    val text = "hello world"
+
+    val clickableText = Spannable.Factory.getInstance().newSpannable(text)
+    val touchableSpanListener = TouchableSpanListener { span, motionEvent, view ->
+      eventsFired.add(SPAN_LISTENER_TOUCH_ACTION)
+      false
+    }
+
+    val clickableSpanListener =
+        object : ClickableSpanListener {
+          override fun onClick(span: ClickableSpan, view: View): Boolean {
+            eventsFired.add(SPAN_LISTENER_CLICK_ACTION)
+            return true
+          }
+        }
+
+    val clickableSpan =
+        object : ClickableSpan() {
+          override fun onClick(widget: View) {
+            eventsFired.add(SPAN_CLICK_ACTION)
+          }
+        }
+    clickableText.setSpan(clickableSpan, 0, text.length, 0)
+
+    val textStyle = TextStyle()
+    textStyle.textSize = 20
+
+    val root =
+        RichTextPrimitive(
+            id = 1,
+            text = clickableText,
+            style = textStyle,
+            touchableSpanListener = touchableSpanListener,
+            clickableSpanListener = clickableSpanListener,
+        )
+    renderCoreTestRule.useRootNode(root).setSizePx(100, 100).render()
+    val host = renderCoreTestRule.rootHost as HostView
+
+    val textView = host.getChildAt(0) as RCTextView
+
+    val downEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0f, 0f, 0)
+    var onTouchEventReturnValue = textView.onTouchEvent(downEvent)
+    // we touched the span and will return true to continue getting subsequent events related to the
+    // initial touch.
+    assertThat(onTouchEventReturnValue).isTrue()
+    assertThat(eventsFired).size().isEqualTo(1)
+    assertThat(eventsFired).contains(SPAN_LISTENER_TOUCH_ACTION)
+
+    eventsFired.clear()
+
+    val upEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 0f, 0f, 0)
+    onTouchEventReturnValue = textView.onTouchEvent(upEvent)
+    // because we are getting  subsequent events related to the initial touch, we will receive up
+    // event that will trigger ClickableSpanListener -> with return value = true and we wont trigger
+    // the ClickableSpan.onClick()
+    assertThat(onTouchEventReturnValue).isTrue()
+    assertThat(eventsFired).size().isEqualTo(2)
+    Assertions.assertThat(eventsFired)
+        .contains(SPAN_LISTENER_CLICK_ACTION, SPAN_LISTENER_TOUCH_ACTION)
   }
 
   @Test
@@ -358,5 +485,13 @@ class RCTextViewTest {
     whenever(layout.getLineLeft(any())).thenReturn(0.0f)
 
     return layout
+  }
+
+  companion object {
+    private const val FULL_TEXT_WIDTH: Int = 100
+    private const val MINIMAL_TEXT_WIDTH: Int = 95
+    private const val SPAN_LISTENER_CLICK_ACTION: String = "SPAN_LISTENER_CLICK_ACTION"
+    private const val SPAN_LISTENER_TOUCH_ACTION: String = "SPAN_LISTENER_TOUCH_ACTION"
+    private const val SPAN_CLICK_ACTION: String = "SPAN_CLICK_ACTION"
   }
 }

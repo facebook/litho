@@ -272,9 +272,7 @@ class TextDrawable : Drawable(), Touchable, TextContent, Drawable.Callback {
       currentlyTouchedSpan = null
     }
     val touchableSpanListenerToUse = touchableSpanListener
-    if (touchableSpanListenerToUse != null) {
-      return touchableSpanListenerToUse.onTouch(currentSpan, event, view)
-    }
+    touchableSpanListenerToUse?.onTouch(currentSpan, event, view)
     if (currentSpan == null) {
       return false
     }
@@ -287,9 +285,7 @@ class TextDrawable : Drawable(), Touchable, TextContent, Drawable.Callback {
       clearSelection()
       resetLongClick()
       val touchableSpanListenerToUse = touchableSpanListener
-      if (touchableSpanListenerToUse != null) {
-        touchableSpanListenerToUse.onTouch(null, event, view)
-      }
+      touchableSpanListenerToUse?.onTouch(null, event, view)
       return false
     }
 

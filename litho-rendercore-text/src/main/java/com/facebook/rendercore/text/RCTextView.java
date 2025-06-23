@@ -530,7 +530,7 @@ public class RCTextView extends View {
       mCurrentlyTouchedSpan = null;
     }
     if (mTouchableSpanListener != null) {
-      return mTouchableSpanListener.onTouch(currentSpan, event, this);
+      mTouchableSpanListener.onTouch(currentSpan, event, this);
     }
     if (currentSpan == null) {
       return super.onTouchEvent(event);

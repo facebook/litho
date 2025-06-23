@@ -34,12 +34,14 @@ import com.facebook.litho.ComponentContext
 import com.facebook.litho.DynamicValue
 import com.facebook.litho.LithoView
 import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.eventHandler
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.eventhandler.EventHandlerTestHelper
 import com.facebook.litho.testing.helper.ComponentTestHelper
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.testing.unspecified
 import com.facebook.litho.widget.TextComponentSpec.resolveWidth
+import com.facebook.rendercore.text.ClickableSpanListener
 import com.facebook.rendercore.text.TouchableSpanListener
 import com.facebook.yoga.YogaDirection
 import org.assertj.core.api.Assertions.assertThat
@@ -133,7 +135,7 @@ class TextSpecTest {
   @Test
   fun testSpannableWithClickableSpansGettingCancelEventWithinBoundsWithoutPreviouslyTouchedSpanWillReturnNullSpan() {
     ComponentsConfiguration.enableNewHandleTouchForSpansMethod = true
-    testCancelEventHandling(0f, 0f, true, true, true)
+    testCancelEventHandling(0f, 0f, true, false, true)
   }
 
   private fun setupClickableSpanTest(
@@ -378,6 +380,125 @@ class TextSpecTest {
   @Throws(Exception::class)
   fun testTextIsRequired() {
     Text.create(context).build()
+  }
+
+  @Test
+  fun testSpannableWithClickableAndTouchableSpansWithSpanClickActionWillTriggerClickActionIfSpanListenerReturnsFalse() {
+    ComponentsConfiguration.enableNewHandleTouchForSpansMethod = true
+    val eventsFired = ArrayList<String>()
+    val text = "hello world"
+
+    val clickableText = Spannable.Factory.getInstance().newSpannable(text)
+    val touchableSpanListener = TouchableSpanListener { span, motionEvent, view ->
+      eventsFired.add(SPAN_LISTENER_TOUCH_ACTION)
+      false
+    }
+
+    val clickableSpanListener =
+        object : ClickableSpanListener {
+          override fun onClick(span: ClickableSpan, view: View): Boolean {
+            eventsFired.add(SPAN_LISTENER_CLICK_ACTION)
+            return false
+          }
+        }
+
+    val clickableSpan =
+        object : ClickableSpan() {
+          override fun onClick(widget: View) {
+            eventsFired.add(SPAN_CLICK_ACTION)
+          }
+        }
+    clickableText.setSpan(clickableSpan, 0, text.length, 0)
+
+    val testLithoView =
+        lithoTestRule.render {
+          Text.create(context)
+              .text(clickableText)
+              .viewTag("test")
+              .touchableSpanListener(touchableSpanListener)
+              .spanListener(clickableSpanListener)
+              .build()
+        }
+
+    val view = testLithoView.findViewWithText("hello world")
+    val downEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0f, 0f, 0)
+    var onTouchEventReturnValue = view.onTouchEvent(downEvent)
+    // we touched the span and will return true to continue getting subsequent events related to the
+    // initial touch.
+    assertThat(onTouchEventReturnValue).isTrue()
+    assertThat(eventsFired).size().isEqualTo(1)
+    assertThat(eventsFired).contains(SPAN_LISTENER_TOUCH_ACTION)
+
+    eventsFired.clear()
+
+    val upEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 0f, 0f, 0)
+    onTouchEventReturnValue = view.onTouchEvent(upEvent)
+    // because we are getting  subsequent events related to the initial touch, we will receive up
+    // event that will trigger ClickableSpanListener -> with return value = false and will trigger
+    // the ClickableSpan.onClick()
+    assertThat(onTouchEventReturnValue).isTrue()
+    assertThat(eventsFired).size().isEqualTo(3)
+    assertThat(eventsFired)
+        .contains(SPAN_LISTENER_CLICK_ACTION, SPAN_LISTENER_TOUCH_ACTION, SPAN_CLICK_ACTION)
+  }
+
+  @Test
+  fun testSpannableWithClickableAndTouchableSpansWithSpanClickActionWontTriggerClickActionIfSpanListenerReturnsTrue() {
+    ComponentsConfiguration.enableNewHandleTouchForSpansMethod = true
+    val eventsFired = ArrayList<String>()
+    val text = "hello world"
+
+    val clickableText = Spannable.Factory.getInstance().newSpannable(text)
+    val touchableSpanListener = TouchableSpanListener { span, motionEvent, view ->
+      eventsFired.add(SPAN_LISTENER_TOUCH_ACTION)
+      false
+    }
+
+    val clickableSpanListener =
+        object : ClickableSpanListener {
+          override fun onClick(span: ClickableSpan, view: View): Boolean {
+            eventsFired.add(SPAN_LISTENER_CLICK_ACTION)
+            return true
+          }
+        }
+
+    val clickableSpan =
+        object : ClickableSpan() {
+          override fun onClick(widget: View) {
+            eventsFired.add(SPAN_CLICK_ACTION)
+          }
+        }
+    clickableText.setSpan(clickableSpan, 0, text.length, 0)
+
+    val testLithoView =
+        lithoTestRule.render {
+          Text.create(context)
+              .text(clickableText)
+              .viewTag("test")
+              .touchableSpanListener(touchableSpanListener)
+              .spanListener(clickableSpanListener)
+              .build()
+        }
+
+    val view = testLithoView.findViewWithText("hello world")
+    val downEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0f, 0f, 0)
+    var onTouchEventReturnValue = view.onTouchEvent(downEvent)
+    // we touched the span and will return true to continue getting subsequent events related to the
+    // initial touch.
+    assertThat(onTouchEventReturnValue).isTrue()
+    assertThat(eventsFired).size().isEqualTo(1)
+    assertThat(eventsFired).contains(SPAN_LISTENER_TOUCH_ACTION)
+
+    eventsFired.clear()
+
+    val upEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 0f, 0f, 0)
+    onTouchEventReturnValue = view.onTouchEvent(upEvent)
+    // because we are getting  subsequent events related to the initial touch, we will receive up
+    // event that will trigger ClickableSpanListener -> with return value = true and we wont trigger
+    // the ClickableSpan.onClick()
+    assertThat(onTouchEventReturnValue).isTrue()
+    assertThat(eventsFired).size().isEqualTo(2)
+    assertThat(eventsFired).contains(SPAN_LISTENER_CLICK_ACTION, SPAN_LISTENER_TOUCH_ACTION)
   }
 
   @Test
@@ -917,6 +1038,9 @@ class TextSpecTest {
     private const val ARABIC_RTL_TEST_STRING =
         ("\u0645\u0646 \u0627\u0644\u064A\u0645\u064A\u0646 \u0627\u0644\u0649" +
             " \u0627\u0644\u064A\u0633\u0627\u0631")
+    private const val SPAN_LISTENER_CLICK_ACTION: String = "SPAN_LISTENER_CLICK_ACTION"
+    private const val SPAN_LISTENER_TOUCH_ACTION: String = "SPAN_LISTENER_TOUCH_ACTION"
+    private const val SPAN_CLICK_ACTION: String = "SPAN_CLICK_ACTION"
 
     private fun setupWidthTestTextLayout(): Layout {
       val layout: Layout = mock()
