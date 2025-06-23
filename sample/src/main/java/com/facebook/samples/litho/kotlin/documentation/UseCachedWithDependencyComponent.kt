@@ -31,7 +31,7 @@ class UseCachedWithDependencyComponent : KComponent() {
   override fun ComponentScope.render(): Component {
     val number = useState { 1 }
 
-    val expensiveValue = useCached(number) { expensiveRepeatFunc("hello", number.value) }
+    val expensiveValue = useCached(number.value) { expensiveRepeatFunc("hello", number.value) }
 
     return Column(style = Style.onClick { number.update { n -> n + 1 } }) {
       child(Text(text = expensiveValue))
