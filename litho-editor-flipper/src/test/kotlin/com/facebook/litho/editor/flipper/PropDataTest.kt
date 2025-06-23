@@ -99,11 +99,11 @@ class PropDataTest {
   @Test
   fun `test KComponent PropWithDescription props included in Props scetion`() {
     class SingleDescription : PropWithDescription {
-      override fun getFlipperLayoutInspectorPropDescription(): Any = "Hello World!"
+      override val flipperLayoutInspectorPropDescription: Any? = "Hello World!"
     }
 
     class MapDescription : PropWithDescription {
-      override fun getFlipperLayoutInspectorPropDescription(): Any =
+      override val flipperLayoutInspectorPropDescription: Any? =
           mapOf(
               "Hello" to 1,
               "World" to 2,
@@ -209,12 +209,12 @@ class PropDataTest {
   fun `test LayoutSpec PropWithDescription props included in Props scetion`() {
     val propWithOverride =
         object : PropWithDescription {
-          override fun getFlipperLayoutInspectorPropDescription(): Any = "Hello World!"
+          override val flipperLayoutInspectorPropDescription: Any? = "Hello World!"
         }
 
     val propWithMapOverride =
         object : PropWithDescription {
-          override fun getFlipperLayoutInspectorPropDescription(): Any =
+          override val flipperLayoutInspectorPropDescription: Any? =
               mapOf(
                   "Hello" to 1,
                   "World" to 2,

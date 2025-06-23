@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.editor.flipper;
+package com.facebook.litho.editor.flipper
 
-public interface PropWithDescription {
-
-  Object getFlipperLayoutInspectorPropDescription();
+interface PropWithDescription {
+  val flipperLayoutInspectorPropDescription: Any?
 }
