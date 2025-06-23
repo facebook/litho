@@ -76,6 +76,12 @@ import com.facebook.litho.viewcompat.ViewBinder
 import com.facebook.litho.widget.ComponentTreeHolder.ComponentTreeMeasureListenerFactory
 import com.facebook.litho.widget.ComponentWarmer.ComponentTreeHolderPreparer
 import com.facebook.litho.widget.LayoutInfo.RenderInfoCollection
+import com.facebook.litho.widget.RecyclerBinder.AsyncOperation.Insert
+import com.facebook.litho.widget.RecyclerBinder.AsyncOperation.Move
+import com.facebook.litho.widget.RecyclerBinder.AsyncOperation.Remove
+import com.facebook.litho.widget.RecyclerBinder.AsyncOperation.RemoveRange
+import com.facebook.litho.widget.RecyclerBinder.AsyncOperation.Update
+import com.facebook.litho.widget.RecyclerBinder.AsyncOperation.UpdateRange
 import com.facebook.litho.widget.RecyclerBinder.ComponentTreeHolderFactory
 import com.facebook.litho.widget.ViewportInfo.ViewportChanged
 import com.facebook.litho.widget.collection.CrossAxisWrapMode
@@ -108,7 +114,7 @@ class RecyclerBinder private constructor(builder: Builder) :
   @GuardedBy("this")
   private val asyncComponentTreeHolders: MutableList<ComponentTreeHolder?> = ArrayList()
 
-  private val layoutInfo: LayoutInfo?
+  private val layoutInfo: LayoutInfo
 
   /**
    * @return the internal RecyclerView.Adapter that is used to communicate to the RecyclerView. This
@@ -117,9 +123,9 @@ class RecyclerBinder private constructor(builder: Builder) :
   val internalAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>
   private val componentContext: ComponentContext?
 
-  private val recyclerBinderConfig: RecyclerBinderConfig? = builder.recyclerBinderConfig
+  private val recyclerBinderConfig: RecyclerBinderConfig
   private val layoutHandlerFactory: LayoutHandlerFactory?
-  private val componentTreeHolderFactory: ComponentTreeHolderFactory?
+  private val componentTreeHolderFactory: ComponentTreeHolderFactory
   private val mainThreadHandler = Handler(Looper.getMainLooper())
   private val rangeRatio: Float
   private val _isMeasured = AtomicBoolean(false)
@@ -222,7 +228,7 @@ class RecyclerBinder private constructor(builder: Builder) :
       }
       holder.measuredHeight = height
 
-      val sizeForMeasure = this@RecyclerBinder.sizeForMeasuring
+      val sizeForMeasure = this@RecyclerBinder.getSizeForMeasuring()
 
       if (sizeForMeasure != UNSET && holder.measuredHeight <= sizeForMeasure) {
         return@MeasureListener
@@ -609,9 +615,7 @@ class RecyclerBinder private constructor(builder: Builder) :
 
     // TODO(t34154921): Experiment with applying new RenderInfo for updates immediately when in
     // immediate mode
-    synchronized(this) {
-      renderInfo?.let { addToCurrentBatch(AsyncUpdateOperation(position, renderInfo)) }
-    }
+    synchronized(this) { renderInfo?.let { addToCurrentBatch(Update(position, renderInfo)) } }
   }
 
   /**
@@ -628,7 +632,7 @@ class RecyclerBinder private constructor(builder: Builder) :
           "(${hashCode()}) updateRangeAtAsync ${position}, count: ${renderInfos.size}")
     }
 
-    synchronized(this) { addToCurrentBatch(AsyncUpdateRangeOperation(position, renderInfos)) }
+    synchronized(this) { addToCurrentBatch(UpdateRange(position, renderInfos)) }
   }
 
   /**
@@ -711,20 +715,19 @@ class RecyclerBinder private constructor(builder: Builder) :
     }
   }
 
-  private val isRecyclerViewTargetComputingLayout: Boolean
-    get() {
-      val mountedView = this.mountedView
-      if (mountedView != null) {
-        return mountedView.isComputingLayout
-      }
-
-      val subAdapterRecyclerView = this.subAdapterRecyclerView
-      if (subAdapterRecyclerView != null) {
-        return subAdapterRecyclerView.isComputingLayout
-      }
-
-      return false
+  private fun isRecyclerViewTargetComputingLayout(): Boolean {
+    val mountedView = this.mountedView
+    if (mountedView != null) {
+      return mountedView.isComputingLayout
     }
+
+    val subAdapterRecyclerView = this.subAdapterRecyclerView
+    if (subAdapterRecyclerView != null) {
+      return subAdapterRecyclerView.isComputingLayout
+    }
+
+    return false
+  }
 
   fun setSubAdapterModeRecyclerView(recyclerView: RecyclerView) {
     check(isSubAdapter) {
@@ -778,7 +781,7 @@ class RecyclerBinder private constructor(builder: Builder) :
       // event triggers a new sections root synchronously which adds a component and calls
       // applyReadyBatches), we need to postpone changing the adapter since RecyclerView asserts
       // that changes don't happen while it's in scroll/layout.
-      if (isRecyclerViewTargetComputingLayout) {
+      if (isRecyclerViewTargetComputingLayout()) {
         // Sanity check that we don't get stuck in an infinite loop
         if (retryCount > APPLY_READY_BATCHES_RETRY_LIMIT) {
           val mountedView = if (isSubAdapter) subAdapterRecyclerView else mountedView
@@ -849,30 +852,13 @@ class RecyclerBinder private constructor(builder: Builder) :
       for (i in 0 until batch.operations.size) {
         val operation = batch.operations[i]
 
-        when (operation.operation) {
-          Operation.INSERT -> applyAsyncInsert(operation as AsyncInsertOperation)
-          Operation.UPDATE -> {
-            val updateOperation = operation as AsyncUpdateOperation
-            updateItemAt(updateOperation.position, updateOperation.renderInfo)
-          }
-
-          Operation.UPDATE_RANGE -> {
-            val updateRangeOperation = operation as AsyncUpdateRangeOperation
-            updateRangeAt(updateRangeOperation.position, updateRangeOperation.renderInfos)
-          }
-
-          Operation.REMOVE -> removeItemAt((operation as AsyncRemoveOperation).position)
-          Operation.REMOVE_RANGE -> {
-            val removeRangeOperation = operation as AsyncRemoveRangeOperation
-            removeRangeAt(removeRangeOperation.position, removeRangeOperation.count)
-          }
-
-          Operation.MOVE -> {
-            val moveOperation = operation as AsyncMoveOperation
-            moveItem(moveOperation.fromPosition, moveOperation.toPosition)
-          }
-
-          else -> throw RuntimeException("Unhandled operation type: ${operation.operation}")
+        when (operation) {
+          is Insert -> applyAsyncInsert(operation)
+          is Update -> updateItemAt(operation.position, operation.renderInfo)
+          is UpdateRange -> updateRangeAt(operation.position, operation.renderInfos)
+          is Remove -> removeItemAt(operation.position)
+          is RemoveRange -> removeRangeAt(operation.position, operation.count)
+          is Move -> moveItem(operation.fromPosition, operation.toPosition)
         }
       }
     }
@@ -884,7 +870,7 @@ class RecyclerBinder private constructor(builder: Builder) :
 
   @GuardedBy("this")
   @UiThread
-  private fun applyAsyncInsert(operation: AsyncInsertOperation) {
+  private fun applyAsyncInsert(operation: Insert) {
     if (operation.holder.isInserted) {
       return
     }
@@ -914,7 +900,7 @@ class RecyclerBinder private constructor(builder: Builder) :
   }
 
   @GuardedBy("this")
-  private fun registerAsyncInsert(operation: AsyncInsertOperation) {
+  private fun registerAsyncInsert(operation: Insert) {
     addToCurrentBatch(operation)
 
     val holder = operation.holder
@@ -944,7 +930,7 @@ class RecyclerBinder private constructor(builder: Builder) :
       Log.d(SectionsDebug.TAG, "(${hashCode()}) moveItemAsync ${fromPosition} to ${toPosition}")
     }
 
-    val operation = AsyncMoveOperation(fromPosition, toPosition)
+    val operation = Move(fromPosition, toPosition)
     synchronized(this) {
       hasAsyncOperations = true
       asyncComponentTreeHolders.add(toPosition, asyncComponentTreeHolders.removeAt(fromPosition))
@@ -963,10 +949,10 @@ class RecyclerBinder private constructor(builder: Builder) :
     assertSingleThreadForChangeSet()
 
     if (SectionsDebug.ENABLED) {
-      Log.d(SectionsDebug.TAG, "(${hashCode()}) removeItemAtAsync ${position}")
+      Log.d(SectionsDebug.TAG, "(${hashCode()}) removeItemAtAsync $position")
     }
 
-    val asyncRemoveOperation = AsyncRemoveOperation(position)
+    val asyncRemoveOperation = Remove(position)
     synchronized(this) {
       hasAsyncOperations = true
       if (handleIndexOutOfBoundsException(
@@ -997,7 +983,7 @@ class RecyclerBinder private constructor(builder: Builder) :
       Log.d(SectionsDebug.TAG, "(${hashCode()}) removeRangeAtAsync ${position}, size: ${count}")
     }
 
-    val operation = AsyncRemoveRangeOperation(position, count)
+    val operation = RemoveRange(position, count)
     synchronized(this) {
       hasAsyncOperations = true
       for (i in 0..<count) {
@@ -1032,7 +1018,7 @@ class RecyclerBinder private constructor(builder: Builder) :
       // TODO(t28712163): Cancel pending layouts for async inserts
       asyncComponentTreeHolders.clear()
 
-      val operation = AsyncRemoveRangeOperation(0, count)
+      val operation = RemoveRange(0, count)
       addToCurrentBatch(operation)
     }
   }
@@ -1141,7 +1127,7 @@ class RecyclerBinder private constructor(builder: Builder) :
       canRemeasure: Boolean
   ): Size {
     val out = Size()
-    val scrollDirection = checkNotNull(layoutInfo).getScrollDirection()
+    val scrollDirection = layoutInfo.getScrollDirection()
 
     val measuredWidth: Int
     val measuredHeight: Int
@@ -1163,21 +1149,7 @@ class RecyclerBinder private constructor(builder: Builder) :
               0
             }
       }
-
-      HORIZONTAL -> {
-        measuredWidth = getSize(parentWidthSpec)
-
-        measuredHeight =
-            if (!shouldMeasureItemForSize) {
-              getSize(parentHeightSpec)
-            } else if (sizeForMeasure != null) {
-              sizeForMeasure.height
-            } else {
-              0
-            }
-      }
-
-      else -> {
+      else -> { // HORIZONTAL
         measuredWidth = getSize(parentWidthSpec)
 
         measuredHeight =
@@ -1241,13 +1213,13 @@ class RecyclerBinder private constructor(builder: Builder) :
    * in the Binder and extra info like isSticky or spanCount.
    */
   @UiThread
-  fun insertRangeAt(position: Int, renderInfos: List<RenderInfo?>) {
+  fun insertRangeAt(position: Int, renderInfos: List<RenderInfo>) {
     ThreadUtils.assertMainThread()
 
     assertNoInsertOperationIfCircular()
 
     if (SectionsDebug.ENABLED) {
-      val names = Array(renderInfos.size) { index -> renderInfos[index]?.name }
+      val names = Array(renderInfos.size) { index -> renderInfos[index].name }
       Log.d(
           SectionsDebug.TAG,
           ("(${hashCode()}) insertRangeAt ${position}, size: ${renderInfos.size}, names: ${names.contentToString()}"))
@@ -1256,7 +1228,6 @@ class RecyclerBinder private constructor(builder: Builder) :
     synchronized(this) {
       for (i in 0 until renderInfos.size) {
         val renderInfo = renderInfos[i]
-        requireNotNull(renderInfo)
 
         val holder = createComponentTreeHolder(renderInfo)
         if (hasAsyncOperations) {
@@ -1280,16 +1251,13 @@ class RecyclerBinder private constructor(builder: Builder) :
     if (paginationStrategy == PaginationStrategy.SCROLL_TO_LAST_VISIBLE &&
         shouldAffectVisibleRange) {
       scrollToPosition(currentLastVisiblePosition)
-    } else if (paginationStrategy ==
-        PaginationStrategy
-            .SCROLL_TO_INSERT_POSITION // We want to only handle the situation where items are
-    // inserted right above the last
-    // loading item. This means that the start position of insertion should be exactly at the
-    // currently visible position.
+    } else if (paginationStrategy == PaginationStrategy.SCROLL_TO_INSERT_POSITION
+    // We want to only handle the situation where items are inserted right above the last loading
+    // item. This means that the start position of insertion should be exactly at the currently
+    // visible position.
     &&
-        (position ==
-            currentLastVisiblePosition) // 2. We don't want to interrupt users' scrolling behavior,
-        // more specifically when the
+        (position == currentLastVisiblePosition)
+        // 2. We don't want to interrupt users' scrolling behavior, more specifically when the
         // loading item is half visible.
         &&
         (currentFirstVisiblePosition == currentLastVisiblePosition)) {
@@ -1350,10 +1318,7 @@ class RecyclerBinder private constructor(builder: Builder) :
     ThreadUtils.assertMainThread()
 
     if (SectionsDebug.ENABLED) {
-      val names = arrayOfNulls<String>(renderInfos.size)
-      for (i in renderInfos.indices) {
-        names[i] = renderInfos[i]?.name
-      }
+      val names = Array(renderInfos.size) { index -> renderInfos[index]?.name }
       Log.d(
           SectionsDebug.TAG,
           ("(${hashCode()}) updateRangeAt ${position}, size: ${renderInfos.size}, names: ${names.contentToString()}"))
@@ -1632,12 +1597,8 @@ class RecyclerBinder private constructor(builder: Builder) :
       if (_componentTreeHolders.isNotEmpty()) {
         fillListViewport(measuredSize.width, measuredSize.height, null)
       } else if (asyncBatches.isNotEmpty()) {
-        val insertsInFirstBatch: MutableList<ComponentTreeHolder?> = ArrayList()
-        for (operation in asyncBatches.first.operations) {
-          if (operation is AsyncInsertOperation) {
-            insertsInFirstBatch.add(operation.holder)
-          }
-        }
+        val insertsInFirstBatch =
+            asyncBatches.first.operations.filterIsInstance<Insert>().map { it.holder }
         computeLayoutsToFillListViewport(
             insertsInFirstBatch, 0, measuredSize.width, measuredSize.height, null)
       }
@@ -1682,30 +1643,29 @@ class RecyclerBinder private constructor(builder: Builder) :
     } else {
       if (dataRenderedCallbacks.size > DATA_RENDERED_CALLBACKS_QUEUE_MAX_SIZE) {
         dataRenderedCallbacks.clear()
-        val messageBuilder = StringBuilder()
-        messageBuilder
-            .append("recyclerView: ")
-            .append(recyclerView)
-            .append(", hasPendingAdapterUpdates(): ")
-            .append(recyclerView.hasPendingAdapterUpdates())
-            .append(", isAttachedToWindow(): ")
-            .append(recyclerView.isAttachedToWindow)
-            .append(", getWindowVisibility(): ")
-            .append(recyclerView.windowVisibility)
-            .append(", vie visible hierarchy: ")
-            .append(getVisibleHierarchy(recyclerView))
-            .append(", getGlobalVisibleRect(): ")
-            .append(recyclerView.getGlobalVisibleRect(dummyRect))
-            .append(", isComputingLayout(): ")
-            .append(recyclerView.isComputingLayout)
-            .append(", isSubAdapter: ")
-            .append(isSubAdapter)
-        messageBuilder
-            .append(", visible range: [")
-            .append(currentFirstVisiblePosition)
-            .append(", ")
-            .append(currentLastVisiblePosition)
-            .append("]")
+        val messageBuilder = buildString {
+          append("recyclerView: ")
+          append(recyclerView)
+          append(", hasPendingAdapterUpdates(): ")
+          append(recyclerView.hasPendingAdapterUpdates())
+          append(", isAttachedToWindow(): ")
+          append(recyclerView.isAttachedToWindow)
+          append(", getWindowVisibility(): ")
+          append(recyclerView.windowVisibility)
+          append(", vie visible hierarchy: ")
+          append(getVisibleHierarchy(recyclerView))
+          append(", getGlobalVisibleRect(): ")
+          append(recyclerView.getGlobalVisibleRect(dummyRect))
+          append(", isComputingLayout(): ")
+          append(recyclerView.isComputingLayout)
+          append(", isSubAdapter: ")
+          append(isSubAdapter)
+          append(", visible range: [")
+          append(currentFirstVisiblePosition)
+          append(", ")
+          append(currentLastVisiblePosition)
+          append("]")
+        }
         ComponentsReporter.emitMessage(
             ComponentsReporter.LogLevel.ERROR,
             DATA_RENDERED_NOT_TRIGGERED,
@@ -1722,18 +1682,16 @@ class RecyclerBinder private constructor(builder: Builder) :
       isDataChanged: Boolean,
       changeSetCompleteCallback: ChangeSetCompleteCallback
   ) {
-    if (currentBatch == null) {
-      // We create a batch here even if it doesn't have any operations: this is so we can still
-      // invoke the OnDataBoundListener at the appropriate time (after all preceding batches
-      // complete)
-      currentBatch = AsyncBatch(commitPolicy)
-    }
+    // We create a batch here even if it doesn't have any operations: this is so we can still
+    // invoke the OnDataBoundListener at the appropriate time (after all preceding batches
+    // complete)
+    val currentBatch = currentBatch ?: AsyncBatch(commitPolicy)
 
-    currentBatch?.isDataChanged = isDataChanged
-    currentBatch?.changeSetCompleteCallback = changeSetCompleteCallback
+    currentBatch.isDataChanged = isDataChanged
+    currentBatch.changeSetCompleteCallback = changeSetCompleteCallback
     asyncBatches.addLast(currentBatch)
     hasAsyncBatchesToCheck.set(true)
-    currentBatch = null
+    this.currentBatch = null
   }
 
   private fun maybeUpdateRangeOrRemeasureForMutation() {
@@ -1883,7 +1841,7 @@ class RecyclerBinder private constructor(builder: Builder) :
     // once we break up the locking in measure.
     // TODO(t37195892): Do not hold lock throughout measure call in RecyclerBinder
     val canRemeasure = reMeasureEventHandler != null
-    val scrollDirection = checkNotNull(layoutInfo).getScrollDirection()
+    val scrollDirection = layoutInfo.getScrollDirection()
 
     validateMeasureSpecs(mountedView, widthSpec, heightSpec, canRemeasure, scrollDirection)
 
@@ -1930,7 +1888,7 @@ class RecyclerBinder private constructor(builder: Builder) :
         lastHeightSpec = heightSpec
 
         if (!hasComputedRange()) {
-          val holderForRangeInfo = holderForRangeInfo
+          val holderForRangeInfo = getHolderForRangeInfo()
           if (holderForRangeInfo != null) {
             initRange(getSize(widthSpec), getSize(heightSpec), holderForRangeInfo)
           }
@@ -1950,19 +1908,8 @@ class RecyclerBinder private constructor(builder: Builder) :
                 requiresRemeasure.set(!isMainAxisWrapContent)
               }
 
-          HORIZONTAL ->
-              if (!shouldMeasureItemForSize || sizeForMeasure != null) {
-                reMeasureEventEventHandler =
-                    if (hasDynamicItemHeight || isMainAxisWrapContent) reMeasureEventHandler
-                    else null
-                requiresRemeasure.set(hasDynamicItemHeight)
-              } else {
-                reMeasureEventEventHandler = reMeasureEventHandler
-                requiresRemeasure.set(!isMainAxisWrapContent)
-              }
-
-          else ->
-              if (!shouldMeasureItemForSize || sizeForMeasure != null) {
+          else -> // HORIZONTAL
+          if (!shouldMeasureItemForSize || sizeForMeasure != null) {
                 reMeasureEventEventHandler =
                     if (hasDynamicItemHeight || isMainAxisWrapContent) reMeasureEventHandler
                     else null
@@ -2014,7 +1961,7 @@ class RecyclerBinder private constructor(builder: Builder) :
     }
 
     val firstVisiblePosition =
-        if (isMainAxisWrapContent) 0 else checkNotNull(layoutInfo).findFirstVisibleItemPosition()
+        if (isMainAxisWrapContent) 0 else layoutInfo.findFirstVisibleItemPosition()
 
     // NB: This does not handle 1) partially visible items 2) item decorations
     val startIndex =
@@ -2024,7 +1971,7 @@ class RecyclerBinder private constructor(builder: Builder) :
         _componentTreeHolders, startIndex, maxWidth, maxHeight, outSize)
 
     if (!hasComputedRange()) {
-      val holderForRangeInfo = holderForRangeInfo
+      val holderForRangeInfo = getHolderForRangeInfo()
       if (holderForRangeInfo != null) {
         initRange(maxWidth, maxHeight, holderForRangeInfo)
       }
@@ -2044,7 +1991,7 @@ class RecyclerBinder private constructor(builder: Builder) :
       maxHeight: Int,
       outputSize: Size?
   ): Int {
-    val filler = layoutInfo?.createViewportFiller(maxWidth, maxHeight) ?: return 0
+    val filler = layoutInfo.createViewportFiller(maxWidth, maxHeight) ?: return 0
 
     val isTracing = isTracing
     if (isTracing) {
@@ -2121,7 +2068,7 @@ class RecyclerBinder private constructor(builder: Builder) :
   @GuardedBy("this")
   private fun updateBatch(batch: AsyncBatch) {
     for (operation in batch.operations) {
-      if (operation !is AsyncInsertOperation) {
+      if (operation !is Insert) {
         continue
       }
 
@@ -2212,7 +2159,7 @@ class RecyclerBinder private constructor(builder: Builder) :
 
     // We need to call this as we want to make sure everything is re-bound since we need new sizes
     // on all rows.
-    if (Looper.myLooper() == Looper.getMainLooper() && !isRecyclerViewTargetComputingLayout) {
+    if (Looper.myLooper() == Looper.getMainLooper() && !isRecyclerViewTargetComputingLayout()) {
       internalAdapter.notifyDataSetChanged()
     } else {
       mainThreadHandler.removeCallbacks(notifyDatasetChangedRunnable)
@@ -2292,7 +2239,7 @@ class RecyclerBinder private constructor(builder: Builder) :
         ComponentAsyncInitRangeIterator(
             holderRangeInfo.holders,
             holderRangeInfo.position,
-            _componentTreeHolders.size - 1,
+            _componentTreeHolders.lastIndex,
             traverseLayoutBackwards)
 
     if (isTracing) {
@@ -2338,9 +2285,7 @@ class RecyclerBinder private constructor(builder: Builder) :
       holder.computeLayoutSync(componentContext, childWidthSpec, childHeightSpec, size)
 
       val rangeSize =
-          max(
-              checkNotNull(layoutInfo).approximateRangeSize(size.width, size.height, width, height),
-              1)
+          max(layoutInfo.approximateRangeSize(size.width, size.height, width, height), 1)
 
       sizeForMeasure = size
       estimatedViewportCount = rangeSize
@@ -2381,9 +2326,8 @@ class RecyclerBinder private constructor(builder: Builder) :
 
     val rangeSize =
         max(
-            checkNotNull(layoutInfo)
-                .approximateRangeSize(
-                    getSize(lastWidthSpec), getSize(lastHeightSpec), width, maxHeight),
+            layoutInfo.approximateRangeSize(
+                getSize(lastWidthSpec), getSize(lastHeightSpec), width, maxHeight),
             1)
 
     sizeForMeasure.height = maxHeight
@@ -2455,12 +2399,12 @@ class RecyclerBinder private constructor(builder: Builder) :
     this.mountedView = view
     isInitMounted = true
 
-    val layoutManager = layoutInfo?.getLayoutManager()
+    val layoutManager = layoutInfo.getLayoutManager()
 
     // ItemPrefetching feature of RecyclerView clashes with RecyclerBinder's compute range
     // optimization and in certain scenarios (like sticky header) it might reset ComponentTree of
     // LithoView while it is still on screen making it render blank or zero height.
-    layoutManager?.isItemPrefetchEnabled = recyclerViewItemPrefetch
+    layoutManager.isItemPrefetchEnabled = recyclerViewItemPrefetch
     view.setItemViewCacheSize(itemViewCacheSize)
 
     // This will force padding to be resolved on the main thread before the LayoutManager finds out
@@ -2480,7 +2424,7 @@ class RecyclerBinder private constructor(builder: Builder) :
 
     registerDrawListener(view)
 
-    layoutInfo?.setRenderInfoCollection(this)
+    layoutInfo.setRenderInfoCollection(this)
 
     viewportManager.addViewportChangedListener(viewportChangedListener)
 
@@ -2502,7 +2446,7 @@ class RecyclerBinder private constructor(builder: Builder) :
                 }
               })
         } else {
-          layoutInfo?.scrollToPositionWithOffset(currentFirstVisiblePosition, currentOffset)
+          layoutInfo.scrollToPositionWithOffset(currentFirstVisiblePosition, currentOffset)
         }
       }
     } else if (isCircular) {
@@ -2520,8 +2464,8 @@ class RecyclerBinder private constructor(builder: Builder) :
               super.onInitializeAccessibilityNodeInfo(host, info)
 
               val itemCount = componentTreeHolders.size
-              val rowCount = if (layoutManager?.canScrollVertically() == true) itemCount else 1
-              val colCount = if (layoutManager?.canScrollHorizontally() == true) itemCount else 1
+              val rowCount = if (layoutManager.canScrollVertically()) itemCount else 1
+              val colCount = if (layoutManager.canScrollHorizontally()) itemCount else 1
 
               val collectionInfo =
                   CollectionInfoCompat.obtain(
@@ -2569,7 +2513,7 @@ class RecyclerBinder private constructor(builder: Builder) :
     val firstView = layoutManager.findViewByPosition(currentFirstVisiblePosition)
 
     if (firstView != null) {
-      val reverseLayout = this.reverseLayout
+      val reverseLayout = this.getReverseLayout()
 
       currentOffset =
           if (layoutInfo.getScrollDirection() == HORIZONTAL) {
@@ -2613,11 +2557,10 @@ class RecyclerBinder private constructor(builder: Builder) :
 
   private fun registerDrawListener(view: RecyclerView) {
     if (view is HasPostDispatchDrawListener) {
-      val viewHasPostDispatchDrawListener = view as HasPostDispatchDrawListener
-      viewHasPostDispatchDrawListener.registerPostDispatchDrawListener(postDispatchDrawListener)
+      view.registerPostDispatchDrawListener(postDispatchDrawListener)
 
       for (listener in additionalPostDispatchDrawListeners) {
-        viewHasPostDispatchDrawListener.registerPostDispatchDrawListener(listener)
+        view.registerPostDispatchDrawListener(listener)
       }
     } else if (view.viewTreeObserver != null) {
       view.viewTreeObserver.addOnPreDrawListener(onPreDrawListener)
@@ -2628,11 +2571,10 @@ class RecyclerBinder private constructor(builder: Builder) :
 
   private fun unregisterDrawListener(view: RecyclerView) {
     if (view is HasPostDispatchDrawListener) {
-      val viewHasPostDispatchDrawListener = view as HasPostDispatchDrawListener
-      viewHasPostDispatchDrawListener.unregisterPostDispatchDrawListener(postDispatchDrawListener)
+      view.unregisterPostDispatchDrawListener(postDispatchDrawListener)
 
       for (listener in additionalPostDispatchDrawListeners) {
-        viewHasPostDispatchDrawListener.unregisterPostDispatchDrawListener(listener)
+        view.unregisterPostDispatchDrawListener(listener)
       }
     } else view.viewTreeObserver?.removeOnPreDrawListener(onPreDrawListener)
   }
@@ -2710,7 +2652,7 @@ class RecyclerBinder private constructor(builder: Builder) :
     val target =
         if (isCircular) getClosestIndexInCircularList(checkNotNull(mountedView), position)
         else position
-    layoutInfo?.scrollToPositionWithOffset(target, offset)
+    layoutInfo.scrollToPositionWithOffset(target, offset)
   }
 
   @UiThread
@@ -2738,7 +2680,7 @@ class RecyclerBinder private constructor(builder: Builder) :
       return false
     }
 
-    val scrollDirection = layoutInfo?.getScrollDirection()
+    val scrollDirection = layoutInfo.getScrollDirection()
 
     if (lastWidthSpec != UNINITIALIZED) {
       when (scrollDirection) {
@@ -2756,17 +2698,15 @@ class RecyclerBinder private constructor(builder: Builder) :
     return false
   }
 
-  override fun findFirstVisibleItemPosition(): Int =
-      checkNotNull(layoutInfo).findFirstVisibleItemPosition()
+  override fun findFirstVisibleItemPosition(): Int = layoutInfo.findFirstVisibleItemPosition()
 
   override fun findFirstFullyVisibleItemPosition(): Int =
-      checkNotNull(layoutInfo).findFirstFullyVisibleItemPosition()
+      layoutInfo.findFirstFullyVisibleItemPosition()
 
-  override fun findLastVisibleItemPosition(): Int =
-      checkNotNull(layoutInfo).findLastVisibleItemPosition()
+  override fun findLastVisibleItemPosition(): Int = layoutInfo.findLastVisibleItemPosition()
 
   override fun findLastFullyVisibleItemPosition(): Int =
-      checkNotNull(layoutInfo).findLastFullyVisibleItemPosition()
+      layoutInfo.findLastFullyVisibleItemPosition()
 
   @UiThread
   @GuardedBy("this")
@@ -2775,8 +2715,7 @@ class RecyclerBinder private constructor(builder: Builder) :
 
   @UiThread
   @GuardedBy("this")
-  override fun isValidPosition(position: Int): Boolean =
-      position >= 0 && position < _componentTreeHolders.size
+  override fun isValidPosition(position: Int): Boolean = position in _componentTreeHolders.indices
 
   class RangeCalculationResult {
     // The estimated number of items needed to fill the viewport.
@@ -2913,22 +2852,13 @@ class RecyclerBinder private constructor(builder: Builder) :
     val processor =
         when (recyclingStrategy) {
           RecyclingStrategy.RETAIN_MAXIMUM_RANGE ->
-              object : RecyclerRangeTraverser.Processor {
-                override fun process(index: Int): Boolean =
-                    computeRangeLayoutWithRetainMaximumRange(
-                        index, rangeStart, rangeEnd, treeHoldersSize, didRangeExtremitiesChange)
+              RecyclerRangeTraverser.Processor { index ->
+                computeRangeLayoutWithRetainMaximumRange(
+                    index, rangeStart, rangeEnd, treeHoldersSize, didRangeExtremitiesChange)
               }
-
-          RecyclingStrategy.DEFAULT ->
-              object : RecyclerRangeTraverser.Processor {
-                override fun process(index: Int): Boolean =
-                    computeRangeLayoutAt(index, rangeStart, rangeEnd, treeHoldersSize)
-              }
-
-          else ->
-              object : RecyclerRangeTraverser.Processor {
-                override fun process(index: Int): Boolean =
-                    computeRangeLayoutAt(index, rangeStart, rangeEnd, treeHoldersSize)
+          else -> // RecyclingStrategy.DEFAULT
+          RecyclerRangeTraverser.Processor { index ->
+                computeRangeLayoutAt(index, rangeStart, rangeEnd, treeHoldersSize)
               }
         }
 
@@ -3035,61 +2965,57 @@ class RecyclerBinder private constructor(builder: Builder) :
     }
   }
 
-  private val reverseLayout: Boolean
-    get() {
-      val layoutManager = layoutInfo?.getLayoutManager()
-      return if (layoutManager is LinearLayoutManager) {
-        layoutManager.reverseLayout
-      } else {
-        false
-      }
+  private fun getReverseLayout(): Boolean {
+    val layoutManager = layoutInfo.getLayoutManager()
+    return if (layoutManager is LinearLayoutManager) {
+      layoutManager.reverseLayout
+    } else {
+      false
+    }
+  }
+
+  private fun getStackFromEnd(): Boolean {
+    val layoutManager = layoutInfo.getLayoutManager()
+    return if (layoutManager is LinearLayoutManager) {
+      layoutManager.stackFromEnd
+    } else {
+      false
+    }
+  }
+
+  @VisibleForTesting
+  fun getRangeCalculationResult(): RangeCalculationResult? {
+    if (sizeForMeasure == null && estimatedViewportCount == UNSET) {
+      return null
     }
 
-  private val stackFromEnd: Boolean
-    get() {
-      val layoutManager = layoutInfo?.getLayoutManager()
-      return if (layoutManager is LinearLayoutManager) {
-        layoutManager.stackFromEnd
-      } else {
-        false
-      }
-    }
+    val range = RangeCalculationResult()
+    range.measuredSize = getSizeForMeasuring()
+    range.estimatedViewportCount = this.estimatedViewportCount
 
-  @get:VisibleForTesting
-  val rangeCalculationResult: RangeCalculationResult?
-    get() {
-      if (sizeForMeasure == null && estimatedViewportCount == UNSET) {
-        return null
-      }
-
-      val range = RangeCalculationResult()
-      range.measuredSize = sizeForMeasuring
-      range.estimatedViewportCount = this.estimatedViewportCount
-
-      return range
-    }
+    return range
+  }
 
   private fun hasComputedRange(): Boolean =
       (sizeForMeasure != null && estimatedViewportCount != UNSET) || hasManualEstimatedViewportCount
 
-  private val sizeForMeasuring: Int
-    /**
-     * If measure is called with measure specs that cannot be used to measure the recyclerview, the
-     * size of one of an item will be used to determine how to measure instead.
-     *
-     * @return a size value that can be used to measure the dimension of the recycler that has
-     *   unknown size, which is width for vertical scrolling recyclers or height for horizontal
-     *   scrolling recyclers.
-     */
-    get() {
-      val sizeForMeasure = this.sizeForMeasure
-      if (sizeForMeasure == null) {
-        return UNSET
-      }
-
-      return if (layoutInfo?.getScrollDirection() == HORIZONTAL) sizeForMeasure.height
-      else sizeForMeasure.width
+  /**
+   * If measure is called with measure specs that cannot be used to measure the recyclerview, the
+   * size of one of an item will be used to determine how to measure instead.
+   *
+   * @return a size value that can be used to measure the dimension of the recycler that has unknown
+   *   size, which is width for vertical scrolling recyclers or height for horizontal scrolling
+   *   recyclers.
+   */
+  private fun getSizeForMeasuring(): Int {
+    val sizeForMeasure = this.sizeForMeasure
+    if (sizeForMeasure == null) {
+      return UNSET
     }
+
+    return if (layoutInfo.getScrollDirection() == HORIZONTAL) sizeForMeasure.height
+    else sizeForMeasure.width
+  }
 
   @Synchronized
   override fun getChildWidthSpec(index: Int): Int {
@@ -3116,12 +3042,11 @@ class RecyclerBinder private constructor(builder: Builder) :
             SizeSpec.EXACTLY)
       }
 
-      return checkNotNull(layoutInfo)
-          .getChildWidthSpec(
-              makeSizeSpec(measuredSize.width, SizeSpec.EXACTLY), treeHolder.renderInfo)
+      return layoutInfo.getChildWidthSpec(
+          makeSizeSpec(measuredSize.width, SizeSpec.EXACTLY), treeHolder.renderInfo)
     }
 
-    return checkNotNull(layoutInfo).getChildWidthSpec(lastWidthSpec, treeHolder.renderInfo)
+    return layoutInfo.getChildWidthSpec(lastWidthSpec, treeHolder.renderInfo)
   }
 
   private fun getActualChildrenHeightSpec(
@@ -3148,12 +3073,11 @@ class RecyclerBinder private constructor(builder: Builder) :
             SizeSpec.EXACTLY)
       }
 
-      return checkNotNull(layoutInfo)
-          .getChildHeightSpec(
-              makeSizeSpec(measuredSize?.height ?: 0, SizeSpec.EXACTLY), treeHolder.renderInfo)
+      return layoutInfo.getChildHeightSpec(
+          makeSizeSpec(measuredSize?.height ?: 0, SizeSpec.EXACTLY), treeHolder.renderInfo)
     }
 
-    return checkNotNull(layoutInfo).getChildHeightSpec(lastHeightSpec, treeHolder.renderInfo)
+    return layoutInfo.getChildHeightSpec(lastHeightSpec, treeHolder.renderInfo)
   }
 
   @AnyThread
@@ -3161,13 +3085,10 @@ class RecyclerBinder private constructor(builder: Builder) :
     this.commitPolicy = commitPolicy
   }
 
-  private fun createAsyncInsertOperation(
-      position: Int,
-      renderInfo: RenderInfo
-  ): AsyncInsertOperation {
+  private fun createAsyncInsertOperation(position: Int, renderInfo: RenderInfo): Insert {
     val holder = createComponentTreeHolder(renderInfo)
     holder.isInserted = false
-    return AsyncInsertOperation(position, holder)
+    return Insert(position, holder)
   }
 
   /** Async operation types. */
@@ -3226,24 +3147,22 @@ class RecyclerBinder private constructor(builder: Builder) :
   }
 
   /** An operation received from one of the *Async methods, pending execution. */
-  private abstract class AsyncOperation(val operation: Int)
+  private sealed class AsyncOperation(val operation: Int) {
 
-  private class AsyncInsertOperation(val position: Int, val holder: ComponentTreeHolder) :
-      AsyncOperation(Operation.INSERT)
+    class Insert(val position: Int, val holder: ComponentTreeHolder) :
+        AsyncOperation(Operation.INSERT)
 
-  private class AsyncUpdateOperation(val position: Int, val renderInfo: RenderInfo) :
-      AsyncOperation(Operation.UPDATE)
+    class Update(val position: Int, val renderInfo: RenderInfo) : AsyncOperation(Operation.UPDATE)
 
-  private class AsyncUpdateRangeOperation(val position: Int, val renderInfos: List<RenderInfo>) :
-      AsyncOperation(Operation.UPDATE_RANGE)
+    class UpdateRange(val position: Int, val renderInfos: List<RenderInfo>) :
+        AsyncOperation(Operation.UPDATE_RANGE)
 
-  private class AsyncRemoveOperation(val position: Int) : AsyncOperation(Operation.REMOVE)
+    class Remove(val position: Int) : AsyncOperation(Operation.REMOVE)
 
-  private class AsyncRemoveRangeOperation(val position: Int, val count: Int) :
-      AsyncOperation(Operation.REMOVE_RANGE)
+    class RemoveRange(val position: Int, val count: Int) : AsyncOperation(Operation.REMOVE_RANGE)
 
-  private class AsyncMoveOperation(val fromPosition: Int, val toPosition: Int) :
-      AsyncOperation(Operation.MOVE)
+    class Move(val fromPosition: Int, val toPosition: Int) : AsyncOperation(Operation.MOVE)
+  }
 
   /**
    * A batch of [AsyncOperation]s that should be applied all at once. The OnDataBoundListener should
@@ -3286,7 +3205,7 @@ class RecyclerBinder private constructor(builder: Builder) :
   private inner class DefaultRecyclerBinderAdapterDelegate :
       RecyclerBinderAdapterDelegate<RecyclerBinderViewHolder> {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
-      val lithoViewFactory = recyclerBinderConfig?.lithoViewFactory
+      val lithoViewFactory = recyclerBinderConfig.lithoViewFactory
       val lithoView =
           lithoViewFactory?.createLithoView(checkNotNull(componentContext))
               ?: LithoView(componentContext, null)
@@ -3309,17 +3228,9 @@ class RecyclerBinder private constructor(builder: Builder) :
 
   // A simple class to enable ScrollToOffset to run after the layout is finished.
   private abstract class ScrollToOffsetRunnable(
-      currentFirstVisiblePosition: Int,
-      currentOffset: Int
-  ) : Runnable {
-    var currentFirstVisiblePosition: Int = RecyclerView.NO_POSITION
-    var currentOffset: Int
-
-    init {
-      this.currentFirstVisiblePosition = currentFirstVisiblePosition
-      this.currentOffset = currentOffset
-    }
-  }
+      var currentFirstVisiblePosition: Int,
+      var currentOffset: Int
+  ) : Runnable
 
   private inner class InternalAdapter :
       RecyclerView.Adapter<RecyclerBinderViewHolder>(), RecyclerBinderAdapter {
@@ -3384,7 +3295,7 @@ class RecyclerBinder private constructor(builder: Builder) :
           componentTreeHolder.computeLayoutSync(
               checkNotNull(componentContext), childrenWidthSpec, childrenHeightSpec, size)
         }
-        val isOrientationVertical = layoutInfo?.getScrollDirection() == VERTICAL
+        val isOrientationVertical = layoutInfo.getScrollDirection() == VERTICAL
         val width =
             if (getMode(childrenWidthSpec) == SizeSpec.EXACTLY) {
               getSize(childrenWidthSpec)
@@ -3495,12 +3406,9 @@ class RecyclerBinder private constructor(builder: Builder) :
         lithoView.componentTree = null
         lithoView.resetMountStartupLoggingInfo()
       } else if (holder is BaseViewHolder) {
-        val baseViewHolder = holder
-        if (!baseViewHolder.isLithoViewType) {
-          if (baseViewHolder.viewBinder != null) {
-            baseViewHolder.viewBinder?.unbind(baseViewHolder.itemView)
-            baseViewHolder.viewBinder = null
-          }
+        if (!holder.isLithoViewType) {
+          holder.viewBinder?.unbind(holder.itemView)
+          holder.viewBinder = null
         }
       }
 
@@ -3513,11 +3421,9 @@ class RecyclerBinder private constructor(builder: Builder) :
         if (enableStableIds) recyclerBinderAdapterDelegate.getItemId(position)
         else super.getItemId(position)
 
-    override fun findFirstVisibleItemPosition(): Int =
-        checkNotNull(layoutInfo).findFirstVisibleItemPosition()
+    override fun findFirstVisibleItemPosition(): Int = layoutInfo.findFirstVisibleItemPosition()
 
-    override fun findLastVisibleItemPosition(): Int =
-        checkNotNull(layoutInfo).findLastVisibleItemPosition()
+    override fun findLastVisibleItemPosition(): Int = layoutInfo.findLastVisibleItemPosition()
 
     override fun getRenderInfoAt(position: Int): RenderInfo =
         _componentTreeHolders[getNormalizedPosition(position)].renderInfo
@@ -3556,13 +3462,12 @@ class RecyclerBinder private constructor(builder: Builder) :
     val layoutHandler = layoutHandlerFactory?.createLayoutCalculationHandler(renderInfo)
 
     val holder =
-        checkNotNull(componentTreeHolderFactory)
-            .create(
-                renderInfo,
-                layoutHandler,
-                componentTreeMeasureListenerFactory,
-                componentsConfiguration,
-                lithoVisibilityEventsController)
+        componentTreeHolderFactory.create(
+            renderInfo,
+            layoutHandler,
+            componentTreeMeasureListenerFactory,
+            componentsConfiguration,
+            lithoVisibilityEventsController)
     holder.setPoolScope(poolScope)
     return holder
   }
@@ -3631,42 +3536,42 @@ class RecyclerBinder private constructor(builder: Builder) :
     }
   }
 
-  private val holderForRangeInfo: ComponentTreeHolderRangeInfo?
-    get() {
-      var holderForRangeInfo: ComponentTreeHolderRangeInfo? = null
+  private fun getHolderForRangeInfo(): ComponentTreeHolderRangeInfo? {
+    var holderForRangeInfo: ComponentTreeHolderRangeInfo? = null
 
-      if (_componentTreeHolders.isNotEmpty()) {
-        val positionToComputeLayout =
-            findInitialComponentPosition(_componentTreeHolders, traverseLayoutBackwards)
-        if (currentFirstVisiblePosition < _componentTreeHolders.size &&
-            positionToComputeLayout >= 0) {
-          holderForRangeInfo =
-              ComponentTreeHolderRangeInfo(positionToComputeLayout, _componentTreeHolders)
-        }
-      } else if (asyncComponentTreeHolders.isNotEmpty()) {
-        val positionToComputeLayout =
-            findInitialComponentPosition(asyncComponentTreeHolders, traverseLayoutBackwards)
-        if (positionToComputeLayout >= 0) {
-          holderForRangeInfo =
-              ComponentTreeHolderRangeInfo(positionToComputeLayout, asyncComponentTreeHolders)
-        }
+    if (_componentTreeHolders.isNotEmpty()) {
+      val positionToComputeLayout =
+          findInitialComponentPosition(_componentTreeHolders, traverseLayoutBackwards)
+      if (currentFirstVisiblePosition < _componentTreeHolders.size &&
+          positionToComputeLayout >= 0) {
+        holderForRangeInfo =
+            ComponentTreeHolderRangeInfo(positionToComputeLayout, _componentTreeHolders)
       }
-
-      return holderForRangeInfo
+    } else if (asyncComponentTreeHolders.isNotEmpty()) {
+      val positionToComputeLayout =
+          findInitialComponentPosition(asyncComponentTreeHolders, traverseLayoutBackwards)
+      if (positionToComputeLayout >= 0) {
+        holderForRangeInfo =
+            ComponentTreeHolderRangeInfo(positionToComputeLayout, asyncComponentTreeHolders)
+      }
     }
+
+    return holderForRangeInfo
+  }
 
   init {
 
     this.componentContext = builder.componentContext
     this.lithoVisibilityEventsController = builder.lithoVisibilityEventsController
 
-    this.componentTreeHolderFactory = builder.componentTreeHolderFactory
+    this.recyclerBinderConfig = checkNotNull(builder.recyclerBinderConfig)
+    this.componentTreeHolderFactory = checkNotNull(builder.componentTreeHolderFactory)
 
     /*
      * If there is no configuration set, then we retrieve it from the owning
      * [com.facebook.litho.ComponentContext]
      */
-    val recyclerBinderConfigComponentsConfiguration = recyclerBinderConfig?.componentsConfiguration
+    val recyclerBinderConfigComponentsConfiguration = recyclerBinderConfig.componentsConfiguration
     var tempConfiguration =
         recyclerBinderConfigComponentsConfiguration
             ?: checkNotNull(componentContext).lithoConfiguration.componentsConfig
@@ -3689,11 +3594,10 @@ class RecyclerBinder private constructor(builder: Builder) :
      [RecyclerBinderConfig] has an optional components configuration.
     */
     val enableStableIdsToUse: Boolean =
-        recyclerBinderConfig?.enableStableIds
-            ?: componentsConfiguration.useStableIdsInRecyclerBinder
+        recyclerBinderConfig.enableStableIds ?: componentsConfiguration.useStableIdsInRecyclerBinder
 
     // we cannot enable circular list and stable id at the same time
-    this.enableStableIds = (!checkNotNull(recyclerBinderConfig).isCircular && enableStableIdsToUse)
+    this.enableStableIds = (!recyclerBinderConfig.isCircular && enableStableIdsToUse)
     recyclerBinderAdapterDelegate =
         (builder.adapterDelegate ?: DefaultRecyclerBinderAdapterDelegate())
     this.additionalPostDispatchDrawListeners =
@@ -3704,7 +3608,7 @@ class RecyclerBinder private constructor(builder: Builder) :
     notifyDatasetChangedRunnable = Runnable { internalAdapter.notifyDataSetChanged() }
 
     this.rangeRatio = recyclerBinderConfig.rangeRatio
-    this.layoutInfo = builder.layoutInfo
+    this.layoutInfo = checkNotNull(builder.layoutInfo)
     this.layoutHandlerFactory = recyclerBinderConfig.layoutHandlerFactory
     asyncInsertHandler = builder.asyncInsertLayoutHandler
     this.recyclerViewItemPrefetch = recyclerBinderConfig.recyclerViewItemPrefetch
@@ -3716,7 +3620,7 @@ class RecyclerBinder private constructor(builder: Builder) :
 
     this.isCircular = recyclerBinderConfig.isCircular
     hasDynamicItemHeight =
-        layoutInfo?.getScrollDirection() == HORIZONTAL &&
+        layoutInfo.getScrollDirection() == HORIZONTAL &&
             (recyclerBinderConfig.crossAxisWrapMode == CrossAxisWrapMode.Dynamic)
     componentTreeMeasureListenerFactory =
         if (!hasDynamicItemHeight) null
@@ -3724,7 +3628,7 @@ class RecyclerBinder private constructor(builder: Builder) :
 
     isMainAxisWrapContent = recyclerBinderConfig.wrapContent
     isCrossAxisWrapContent = recyclerBinderConfig.crossAxisWrapMode != CrossAxisWrapMode.NoWrap
-    traverseLayoutBackwards = stackFromEnd
+    traverseLayoutBackwards = getStackFromEnd()
 
     rangeTraverser =
         if (builder.recyclerRangeTraverser != null) {
@@ -3895,7 +3799,7 @@ class RecyclerBinder private constructor(builder: Builder) :
 
       for (i in 0 until batch.operations.size) {
         val operation = batch.operations[i]
-        if (operation is AsyncInsertOperation && !operation.holder.hasCompletedLatestLayout()) {
+        if (operation is Insert && !operation.holder.hasCompletedLatestLayout()) {
           return false
         }
       }
@@ -4078,11 +3982,10 @@ class RecyclerBinder private constructor(builder: Builder) :
 
       var current: Any? = view
       while (current is View) {
-        val currentView = current
-        if (currentView.alpha <= 0 || currentView.visibility != View.VISIBLE) {
+        if (current.alpha <= 0 || current.visibility != View.VISIBLE) {
           return false
         }
-        current = currentView.parent
+        current = current.parent
       }
 
       return view.getGlobalVisibleRect(dummyRect)
@@ -4093,13 +3996,12 @@ class RecyclerBinder private constructor(builder: Builder) :
       val hierarchy: MutableList<String> = ArrayList()
       var current: Any? = view
       while (current is View) {
-        val currentView = current
         hierarchy.add(
-            ("view=${currentView.javaClass.simpleName}, alpha=${currentView.alpha}, visibility=${currentView.visibility}"))
-        if (currentView.alpha <= 0 || currentView.visibility != View.VISIBLE) {
+            ("view=${current.javaClass.simpleName}, alpha=${current.alpha}, visibility=${current.visibility}"))
+        if (current.alpha <= 0 || current.visibility != View.VISIBLE) {
           break
         }
-        current = currentView.parent
+        current = current.parent
       }
       return hierarchy
     }
