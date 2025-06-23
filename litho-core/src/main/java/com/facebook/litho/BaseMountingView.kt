@@ -501,16 +501,20 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
 
       isMounting = true
 
+      val renderTree = layoutState.toRenderTree()
+      setupMountExtensions()
+      val coordinator = requireNotNull(lithoHostListenerCoordinator)
+
+      val willRemount = mountState.willRemountWith(renderTree)
+      if (!willRemount) {
+        return
+      }
       val onBeforeMountResult = onBeforeMount()
 
       layoutState.setShouldProcessVisibilityOutputs(shouldProcessVisibilityEvents)
 
-      val renderTree = layoutState.toRenderTree()
-      setupMountExtensions()
-      val coordinator = requireNotNull(lithoHostListenerCoordinator)
-      if (mountState.willRemountWith(renderTree)) {
-        coordinator.beforeMount(layoutState, visibleRect)
-      }
+      coordinator.beforeMount(layoutState, visibleRect)
+
       mountState.mount(renderTree)
       incrementComponentMountCount()
       drawDebugOverlay(this, layoutState.componentTreeId)
@@ -527,6 +531,7 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
       throw wrapWithMetadata(this, e)
     } finally {
       mountInfo?.isFirstMount = false
+      this.isMountStateDirty = false
       isMounting = false
       if (isMountStateDirty) {
         onDirtyMountComplete()
