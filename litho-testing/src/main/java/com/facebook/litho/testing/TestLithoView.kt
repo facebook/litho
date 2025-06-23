@@ -29,6 +29,7 @@ import com.facebook.litho.LayoutState
 import com.facebook.litho.LithoLayoutResult
 import com.facebook.litho.LithoView
 import com.facebook.litho.LithoVisibilityEventsController
+import com.facebook.litho.NullNode
 import com.facebook.litho.componentsfinder.findAllComponentsInLithoView
 import com.facebook.litho.componentsfinder.findComponentInLithoView
 import com.facebook.litho.componentsfinder.findDirectComponentInLithoView
@@ -41,6 +42,7 @@ import com.facebook.litho.widget.Recycler
 import com.facebook.litho.widget.collection.LazyCollection
 import com.google.common.base.Predicate
 import kotlin.reflect.KClass
+import org.assertj.core.api.Java6Assertions.assertThat
 import org.robolectric.Shadows
 
 /**
@@ -243,6 +245,12 @@ internal constructor(
   /** Explicitly releases current root [LithoView] */
   fun release(): TestLithoView {
     lithoView.release()
+    return this
+  }
+
+  fun didResolve(): TestLithoView {
+    val node = checkNotNull(committedLayoutState).resolveResult.node
+    assertThat(node).isNotNull.isNotInstanceOf(NullNode::class.java)
     return this
   }
 
