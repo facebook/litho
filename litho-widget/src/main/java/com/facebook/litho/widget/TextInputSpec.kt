@@ -106,6 +106,7 @@ import com.facebook.litho.config.ComponentsConfiguration
  * @prop highlightColor Color for selected text.
  * @prop textSize Size of the text.
  * @prop typeface Typeface for the text.
+ * @prop textStyle Style (bold, italic, bolditalic) for the text.
  * @prop textAlignment Alignment of the text within its container. This only has effect on API level
  *   17 and above; it's up to you to handle earlier API levels by adjusting gravity.
  * @prop gravity Gravity for the text within its container.
@@ -166,6 +167,7 @@ internal object TextInputSpec {
   @JvmField @PropDefault val textSize: Int = TextComponentSpec.UNSET
   @JvmField @PropDefault val inputBackground: Drawable = TextInputComponentSpec.UNSET_DRAWABLE
   @JvmField @PropDefault val typeface: Typeface = Typeface.DEFAULT
+  @JvmField @PropDefault val textStyle: Int = Typeface.NORMAL
   @JvmField @PropDefault val textAlignment: Int = View.TEXT_ALIGNMENT_GRAVITY
   @JvmField @PropDefault val gravity: Int = Gravity.CENTER_VERTICAL or Gravity.START
   @JvmField @PropDefault val editable: Boolean = true
@@ -197,6 +199,7 @@ internal object TextInputSpec {
       @Prop(optional = true, resType = ResType.COLOR) highlightColor: Int?,
       @Prop(optional = true, resType = ResType.DIMEN_TEXT) textSize: Int,
       @Prop(optional = true) typeface: Typeface?,
+      @Prop(optional = true) textStyle: Int,
       @Prop(optional = true) textAlignment: Int,
       @Prop(optional = true) gravity: Int,
       @Prop(optional = true) editable: Boolean,
@@ -240,6 +243,7 @@ internal object TextInputSpec {
           highlightColor = highlightColor,
           textSize = textSize,
           typeface = typeface ?: Typeface.DEFAULT,
+          textStyle = TextStyle(textStyle),
           textAlignment = textAlignment,
           gravity = gravity,
           editable = editable,
@@ -354,6 +358,7 @@ internal object TextInputSpec {
           .highlightColor(highlightColor)
           .textSizePx(textSize)
           .typeface(typeface)
+          .textStyle(textStyle)
           .textAlignment(textAlignment)
           .gravity(gravity)
           .editable(editable)

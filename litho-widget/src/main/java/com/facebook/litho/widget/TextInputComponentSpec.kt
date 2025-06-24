@@ -139,6 +139,7 @@ import kotlin.math.min
  * @prop highlightColor Color for selected text.
  * @prop textSize Size of the text.
  * @prop typeface Typeface for the text.
+ * @prop textStyle Style (bold, italic, bolditalic) for the text.
  * @prop textAlignment Alignment of the text within its container. This only has effect on API level
  *   17 and above; it's up to you to handle earlier API levels by adjusting gravity.
  * @prop gravity Gravity for the text within its container.
@@ -205,6 +206,7 @@ internal object TextInputComponentSpec {
   @JvmField @PropDefault val textSize: Int = TextComponentSpec.UNSET
   @JvmField @PropDefault val inputBackground: Drawable = UNSET_DRAWABLE
   @JvmField @PropDefault val typeface: Typeface = Typeface.DEFAULT
+  @JvmField @PropDefault val textStyle: Int = Typeface.NORMAL
   @JvmField @PropDefault val textAlignment: Int = View.TEXT_ALIGNMENT_GRAVITY
   @JvmField @PropDefault val gravity: Int = Gravity.CENTER_VERTICAL or Gravity.START
   @JvmField @PropDefault val editable: Boolean = true
@@ -270,6 +272,7 @@ internal object TextInputComponentSpec {
       @Prop(optional = true, resType = ResType.COLOR) highlightColor: Int?,
       @Prop(optional = true, resType = ResType.DIMEN_TEXT) textSize: Int,
       @Prop(optional = true) typeface: Typeface?,
+      @Prop(optional = true) testStyle: Int,
       @Prop(optional = true) textAlignment: Int,
       @Prop(optional = true) gravity: Int,
       @Prop(optional = true) editable: Boolean,
@@ -311,6 +314,7 @@ internal object TextInputComponentSpec {
             highlightColor,
             textSize,
             typeface,
+            textStyle,
             textAlignment,
             gravity,
             editable,
@@ -369,6 +373,7 @@ internal object TextInputComponentSpec {
       highlightColor: Int?,
       textSize: Int,
       typeface: Typeface?,
+      textStyle: Int,
       textAlignment: Int,
       gravity: Int,
       editable: Boolean,
@@ -417,6 +422,7 @@ internal object TextInputComponentSpec {
         highlightColor,
         textSize,
         typeface,
+        textStyle,
         textAlignment,
         gravity,
         editable,
@@ -458,6 +464,7 @@ internal object TextInputComponentSpec {
       highlightColor: Int?,
       textSize: Int,
       typeface: Typeface?,
+      textStyle: Int,
       textAlignment: Int,
       gravity: Int,
       editable: Boolean,
@@ -526,7 +533,7 @@ internal object TextInputComponentSpec {
       editText.setPadding(0, 0, 0, 0)
     }
     editText.setShadowLayer(shadowRadius, shadowDx, shadowDy, shadowColor)
-    editText.setTypeface(typeface, Typeface.NORMAL)
+    editText.setTypeface(typeface, textStyle)
     editText.gravity = gravity
     editText.imeOptions = imeOptions
     if (privateImeOptions != null) {
@@ -616,6 +623,7 @@ internal object TextInputComponentSpec {
       @Prop(optional = true, resType = ResType.COLOR) highlightColor: Diff<Int?>,
       @Prop(optional = true, resType = ResType.DIMEN_TEXT) textSize: Diff<Int?>,
       @Prop(optional = true) typeface: Diff<Typeface?>,
+      @Prop(optional = true) textStyle: Diff<Int>,
       @Prop(optional = true) textAlignment: Diff<Int?>,
       @Prop(optional = true) gravity: Diff<Int?>,
       @Prop(optional = true) editable: Diff<Boolean?>,
@@ -672,6 +680,9 @@ internal object TextInputComponentSpec {
       return true
     }
     if (!ObjectsCompat.equals(typeface.previous, typeface.next)) {
+      return true
+    }
+    if (!ObjectsCompat.equals(textStyle.previous, textStyle.next)) {
       return true
     }
     if (!ObjectsCompat.equals(textAlignment.previous, textAlignment.next)) {
@@ -824,6 +835,7 @@ internal object TextInputComponentSpec {
       @Prop(optional = true, resType = ResType.COLOR) highlightColor: Int?,
       @Prop(optional = true, resType = ResType.DIMEN_TEXT) textSize: Int,
       @Prop(optional = true) typeface: Typeface?,
+      @Prop(optional = true) textStyle: Int,
       @Prop(optional = true) textAlignment: Int,
       @Prop(optional = true) gravity: Int,
       @Prop(optional = true) editable: Boolean,
@@ -864,6 +876,7 @@ internal object TextInputComponentSpec {
         highlightColor,
         textSize,
         typeface,
+        textStyle,
         textAlignment,
         gravity,
         editable,

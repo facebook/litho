@@ -127,6 +127,7 @@ import kotlin.math.min
  * @property highlightColor Color for selected text.
  * @property textSize Size of the text.
  * @property typeface Typeface for the text.
+ * @property textStyle Style (bold, italic, bolditalic) for the text.
  * @property textAlignment Alignment of the text within its container. This only has effect on API
  *   level 17 and above; it's up to you to handle earlier API levels by adjusting gravity.
  * @property gravity Gravity for the text within its container.
@@ -198,6 +199,7 @@ class ExperimentalTextInput(
     @ColorInt private val highlightColor: Int? = null,
     private val textSize: Int = TextComponentSpec.UNSET,
     private val typeface: Typeface = Typeface.DEFAULT,
+    private val textStyle: TextStyle = TextStyle.Normal,
     private val textAlignment: Int = View.TEXT_ALIGNMENT_GRAVITY,
     @GravityInt private val gravity: Int = Gravity.CENTER_VERTICAL or Gravity.START,
     private val editable: Boolean = true,
@@ -279,6 +281,7 @@ class ExperimentalTextInput(
                 highlightColor = resolvedHighlightColor,
                 textSize = textSize,
                 typeface = typeface,
+                textStyle = textStyle,
                 textAlignment = textAlignment,
                 gravity = gravity,
                 editable = editable,
@@ -352,6 +355,7 @@ class ExperimentalTextInput(
                         resolvedHighlightColor,
                         textSize,
                         typeface,
+                        textStyle,
                         textAlignment,
                         gravity,
                         editable,
@@ -391,6 +395,7 @@ class ExperimentalTextInput(
                           resolvedHighlightColor,
                           textSize,
                           typeface,
+                          textStyle,
                           textAlignment,
                           gravity,
                           editable,
@@ -492,6 +497,7 @@ internal class TextInputLayoutBehavior(
     @ColorInt private val highlightColor: Int?,
     private val textSize: Int,
     private val typeface: Typeface,
+    private val textStyle: TextStyle,
     private val textAlignment: Int,
     @GravityInt private val gravity: Int,
     private val editable: Boolean,
@@ -545,6 +551,7 @@ internal class TextInputLayoutBehavior(
             highlightColor,
             textSize,
             typeface,
+            textStyle,
             textAlignment,
             gravity,
             editable,
@@ -619,6 +626,7 @@ internal fun createAndMeasureEditText(
     highlightColor: Int?,
     textSize: Int,
     typeface: Typeface?,
+    textStyle: TextStyle,
     textAlignment: Int,
     gravity: Int,
     editable: Boolean,
@@ -681,6 +689,7 @@ internal fun createAndMeasureEditText(
         highlightColor,
         textSize,
         typeface,
+        textStyle,
         textAlignment,
         gravity,
         editable,
@@ -734,6 +743,7 @@ fun setParams(
     highlightColor: Int?,
     textSize: Int,
     typeface: Typeface?,
+    textStyle: TextStyle,
     textAlignment: Int,
     gravity: Int,
     editable: Boolean,
@@ -802,7 +812,7 @@ fun setParams(
     editText.setPadding(0, 0, 0, 0)
   }
   editText.setShadowLayer(shadowRadius, shadowDx, shadowDy, shadowColor)
-  editText.setTypeface(typeface, Typeface.NORMAL)
+  editText.setTypeface(typeface, textStyle.style)
   editText.gravity = gravity
   editText.imeOptions = imeOptions
   if (privateImeOptions != null) {
@@ -1565,3 +1575,13 @@ internal class MeasureContext(ctx: Context) : ContextWrapper(ctx) {
 
 @DataClassGenerate
 internal data class TextAndConstraints(val text: CharSequence, val constraints: SizeConstraints?)
+
+@JvmInline
+value class TextStyle internal constructor(internal val style: Int) {
+  companion object {
+    val Normal: TextStyle = TextStyle(Typeface.NORMAL)
+    val Bold: TextStyle = TextStyle(Typeface.BOLD)
+    val Italic: TextStyle = TextStyle(Typeface.ITALIC)
+    val BoldItalic: TextStyle = TextStyle(Typeface.BOLD_ITALIC)
+  }
+}

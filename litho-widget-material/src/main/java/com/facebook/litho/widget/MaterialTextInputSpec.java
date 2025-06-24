@@ -106,6 +106,7 @@ class MaterialTextInputSpec {
   protected static final Drawable inputBackground = TextInputComponentSpec.inputBackground;
 
   @PropDefault protected static final Typeface typeface = TextInputComponentSpec.typeface;
+  @PropDefault protected static final int textStyle = TextInputComponentSpec.textStyle;
   @PropDefault protected static final int textAlignment = TextInputComponentSpec.textAlignment;
   @PropDefault protected static final int gravity = TextInputComponentSpec.gravity;
   @PropDefault protected static final boolean editable = TextInputComponentSpec.editable;
@@ -167,6 +168,7 @@ class MaterialTextInputSpec {
       @Prop(optional = true, resType = ResType.COLOR) @Nullable Integer highlightColor,
       @Prop(optional = true, resType = ResType.DIMEN_TEXT) int textSize,
       @Prop(optional = true) Typeface typeface,
+      @Prop(optional = true) int textStyle,
       @Prop(optional = true) int textAlignment,
       @Prop(optional = true) int gravity,
       @Prop(optional = true) boolean editable,
@@ -216,6 +218,7 @@ class MaterialTextInputSpec {
             highlightColor,
             textSize,
             typeface,
+            textStyle,
             textAlignment,
             gravity,
             editable,
@@ -275,6 +278,7 @@ class MaterialTextInputSpec {
       @Prop(optional = true, resType = ResType.COLOR) Diff<Integer> highlightColor,
       @Prop(optional = true, resType = ResType.DIMEN_TEXT) Diff<Integer> textSize,
       @Prop(optional = true) Diff<Typeface> typeface,
+      @Prop(optional = true) Diff<Integer> textStyle,
       @Prop(optional = true) Diff<Integer> textAlignment,
       @Prop(optional = true) Diff<Integer> gravity,
       @Prop(optional = true) Diff<Boolean> editable,
@@ -319,6 +323,7 @@ class MaterialTextInputSpec {
             highlightColor,
             textSize,
             typeface,
+            textStyle,
             textAlignment,
             gravity,
             editable,
@@ -380,6 +385,7 @@ class MaterialTextInputSpec {
       @Prop(optional = true, resType = ResType.COLOR) @Nullable Integer highlightColor,
       @Prop(optional = true, resType = ResType.DIMEN_TEXT) int textSize,
       @Prop(optional = true) Typeface typeface,
+      @Prop(optional = true) int textStyle,
       @Prop(optional = true) int textAlignment,
       @Prop(optional = true) int gravity,
       @Prop(optional = true) boolean editable,
@@ -429,6 +435,7 @@ class MaterialTextInputSpec {
         highlightColor,
         textSize,
         typeface,
+        textStyle,
         textAlignment,
         gravity,
         editable,
