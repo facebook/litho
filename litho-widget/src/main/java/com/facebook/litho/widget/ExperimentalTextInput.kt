@@ -1163,6 +1163,12 @@ internal class ForMeasureEditText(context: Context?) : EditText(context) {
     super.setBackground(background)
   }
 
+  override fun clearFocus() {
+    // no-op because people were calling clearFocus from InputFilters which resulted in clearFocus
+    // calls on the ForMeasureEditText which is used on a background thread. That is disallowed and
+    // crashes with CalledFromWrongThreadException
+  }
+
   override fun getAutofillType(): Int {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && this.disableAutofill) {
       AUTOFILL_TYPE_NONE
