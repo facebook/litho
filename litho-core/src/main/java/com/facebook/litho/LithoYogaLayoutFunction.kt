@@ -26,6 +26,7 @@ import com.facebook.litho.LithoNode.Companion.applyBorderWidth
 import com.facebook.litho.LithoNode.Companion.applyDeferredPadding
 import com.facebook.litho.LithoNode.Companion.writeStyledAttributesToLayoutProps
 import com.facebook.litho.YogaLayoutOutput.Companion.getYogaNode
+import com.facebook.litho.YogaLayoutOutput.Companion.layoutDirection
 import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.drawable.BorderColorDrawable
 import com.facebook.litho.layout.LayoutDirection
@@ -668,8 +669,12 @@ internal object LithoYogaLayoutFunction {
         // measure Primitive
         if (primitive != null) {
           context.setPreviousLayoutDataForCurrentNode(lithoLayoutResult.layoutData)
-          context.layoutContextExtraData =
-              LithoLayoutContextExtraData(lithoLayoutResult.getYogaNode())
+          context.setExtraContextForCurrentNode(
+              LithoExtraContextForLayoutScope(
+                  layoutDirection = lithoLayoutResult.layoutDirection,
+              ),
+          )
+
           @Suppress("UNCHECKED_CAST")
           delegate =
               primitive.calculateLayout(context as LayoutContext<Any?>, widthSpec, heightSpec)
@@ -1118,5 +1123,8 @@ data class YogaLayoutOutput(
     private const val UNSPECIFIED: Int = -1
 
     fun LithoLayoutResult.getYogaNode(): YogaNode = layoutOutput.yogaNode
+
+    val LithoLayoutResult.layoutDirection: LayoutDirection
+      get() = LayoutDirection.fromYoga(getYogaNode())
   }
 }

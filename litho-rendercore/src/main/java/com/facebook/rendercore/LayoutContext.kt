@@ -33,8 +33,9 @@ class LayoutContext<RenderContext>(
     val extensions: Array<RenderCoreExtension<*, *>>?
 ) {
 
-  var layoutContextExtraData: LayoutContextExtraData<*>? = null
+  private var extraContextForCurrentNode: Any? = null
   private var previousLayoutData: Any? = null
+
   val layoutCache: LayoutCache by
       lazy(LazyThreadSafetyMode.NONE) {
         checkNotNull(_layoutCache) { "Trying to access the LayoutCache from outside a layout call" }
@@ -52,5 +53,15 @@ class LayoutContext<RenderContext>(
     val data = previousLayoutData
     previousLayoutData = null
     return data
+  }
+
+  fun setExtraContextForCurrentNode(extraContext: Any?) {
+    extraContextForCurrentNode = extraContext
+  }
+
+  fun consumeExtraContextForCurrentNode(): Any? {
+    val extraContext = extraContextForCurrentNode
+    extraContextForCurrentNode = null
+    return extraContext
   }
 }

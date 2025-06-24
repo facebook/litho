@@ -16,18 +16,6 @@
 
 package com.facebook.litho
 
-import com.facebook.litho.LithoLayoutContextExtraData.LithoLayoutExtraData
-import com.facebook.rendercore.LayoutContextExtraData
-import com.facebook.yoga.YogaDirection
-import com.facebook.yoga.YogaNode
+import com.facebook.litho.layout.LayoutDirection
 
-class LithoLayoutContextExtraData(private val yogaNode: YogaNode) :
-    LayoutContextExtraData<LithoLayoutExtraData?> {
-
-  override val extraLayoutData: LithoLayoutExtraData
-    get() = LithoLayoutExtraData(yogaNode)
-
-  class LithoLayoutExtraData(private val yogaNode: YogaNode) {
-    val layoutDirection: YogaDirection = YogaDirection.RTL // yogaNode.getLayoutDirection();
-  }
-}
+class LithoExtraContextForLayoutScope constructor(val layoutDirection: LayoutDirection)

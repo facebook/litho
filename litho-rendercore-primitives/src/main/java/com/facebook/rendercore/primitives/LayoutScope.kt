@@ -27,8 +27,11 @@ import com.facebook.rendercore.ResourceResolver
  * layout data and utility methods that may help to compute the [PrimitiveLayoutResult].
  */
 class LayoutScope
-internal constructor(val layoutContext: LayoutContext<Any?>, val previousLayoutData: Any?) :
-    BaseResourcesScope {
+internal constructor(
+    val layoutContext: LayoutContext<Any?>,
+    val previousLayoutData: Any?,
+    val extraContext: Any?,
+) : BaseResourcesScope {
   override val androidContext: Context
     get() = layoutContext.androidContext
 

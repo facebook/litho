@@ -46,7 +46,12 @@ class Primitive(val layoutBehavior: LayoutBehavior, private val mountBehavior: M
       widthSpec: Int,
       heightSpec: Int
   ): LayoutResult {
-    val layoutScope = LayoutScope(context, context.consumePreviousLayoutDataForCurrentNode())
+    val layoutScope =
+        LayoutScope(
+            context,
+            context.consumePreviousLayoutDataForCurrentNode(),
+            context.consumeExtraContextForCurrentNode(),
+        )
     return with(layoutBehavior) {
       layoutScope
           .layout(SizeConstraints.fromMeasureSpecs(widthSpec, heightSpec))

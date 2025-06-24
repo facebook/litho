@@ -21,13 +21,14 @@ import android.view.ViewTreeObserver
 import android.widget.HorizontalScrollView
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentTree
-import com.facebook.litho.LithoLayoutContextExtraData.LithoLayoutExtraData
+import com.facebook.litho.LithoExtraContextForLayoutScope
 import com.facebook.litho.LithoPrimitive
 import com.facebook.litho.PrimitiveComponent
 import com.facebook.litho.PrimitiveComponentScope
 import com.facebook.litho.R
 import com.facebook.litho.Size
 import com.facebook.litho.Style
+import com.facebook.litho.layout.LayoutDirection
 import com.facebook.litho.useCached
 import com.facebook.litho.useState
 import com.facebook.litho.widget.HorizontalScrollEventsController
@@ -40,7 +41,6 @@ import com.facebook.rendercore.primitives.PrimitiveLayoutResult
 import com.facebook.rendercore.primitives.ViewAllocator
 import com.facebook.rendercore.toHeightSpec
 import com.facebook.rendercore.utils.MeasureSpecUtils
-import com.facebook.yoga.YogaDirection
 import kotlin.math.max
 
 private const val LAST_SCROLL_POSITION_UNSET = -1
@@ -150,7 +150,7 @@ class HorizontalScroll(
                         }
                         content.viewTreeObserver.removeOnPreDrawListener(this)
                         if (lastScrollPosition.value.x == LAST_SCROLL_POSITION_UNSET) {
-                          if (horizontalScrollLayoutData.layoutDirection == YogaDirection.RTL) {
+                          if (horizontalScrollLayoutData.layoutDirection.isRTL) {
                             content.fullScroll(HorizontalScrollView.FOCUS_RIGHT)
                           }
                           lastScrollPosition.value.x = content.scrollX
@@ -195,9 +195,8 @@ internal class HorizontalScrollLayoutBehavior(
     size.width = max(0, max(size.width, if (fillViewport) sizeConstraints.maxWidth else 0))
     size.height = max(0, size.height)
 
-    val extraLayoutData: LithoLayoutExtraData? =
-        layoutContext.layoutContextExtraData?.extraLayoutData as? LithoLayoutExtraData?
-    val direction = extraLayoutData?.layoutDirection ?: DEFAULT_LAYOUT_DIRECTION
+    val extraLayoutContext = extraContext as LithoExtraContextForLayoutScope
+    val direction = extraLayoutContext.layoutDirection
     return PrimitiveLayoutResult(
         width = size.width,
         height = size.height,
@@ -205,12 +204,12 @@ internal class HorizontalScrollLayoutBehavior(
   }
 
   companion object {
-    private val DEFAULT_LAYOUT_DIRECTION = YogaDirection.LTR
+    private val DEFAULT_LAYOUT_DIRECTION = LayoutDirection.LTR
   }
 }
 
 internal data class HorizontalScrollLayoutData(
     val measuredWidth: Int,
     val measuredHeight: Int,
-    val layoutDirection: YogaDirection
+    val layoutDirection: LayoutDirection
 )

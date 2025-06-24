@@ -19,6 +19,8 @@ package com.facebook.litho.layout
 import android.content.Context
 import android.view.View
 import com.facebook.litho.ContextUtils.isLayoutDirectionRTL
+import com.facebook.yoga.YogaDirection
+import com.facebook.yoga.YogaNode
 
 /**
  * A class for defining layout directions. A layout direction can be left-to-right (LTR) or
@@ -74,6 +76,15 @@ value class LayoutDirection private constructor(val value: Int) {
 
     fun fromContext(context: Context): LayoutDirection {
       return if (context.isLayoutDirectionRTL()) RTL else LTR
+    }
+
+    fun fromYoga(node: YogaNode): LayoutDirection {
+      return when (node.layoutDirection) {
+        YogaDirection.INHERIT -> INHERIT
+        YogaDirection.LTR -> LTR
+        YogaDirection.RTL -> RTL
+        else -> throw IllegalArgumentException("Unknown layout direction ${node.layoutDirection}")
+      }
     }
 
     fun LayoutDirection?.isNullOrInherit(): Boolean {
