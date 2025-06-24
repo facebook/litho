@@ -520,7 +520,6 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
       drawDebugOverlay(this, layoutState.componentTreeId)
 
       onAfterMount(onBeforeMountResult)
-      this.isMountStateDirty = false
 
       val treeState = this.treeState
       if (isMountStateDirty && treeState != null) {
