@@ -16,6 +16,14 @@
 
 package com.facebook.litho
 
+import com.facebook.rendercore.LayoutResult
+
+val LayoutResult.isDeferredLayoutResult: Boolean
+  get() = this is DeferredLithoLayoutResult
+
+val LayoutResult.measuredLayoutResult: LithoLayoutResult?
+  get() = (this as? DeferredLithoLayoutResult)?.result
+
 /** This is an output only [DeferredLithoLayoutResult]; this is created by a [DeferredLithoNode]. */
 class DeferredLithoLayoutResult
 constructor(

@@ -35,6 +35,9 @@ import com.facebook.litho.componentsfinder.findComponentInLithoView
 import com.facebook.litho.componentsfinder.findDirectComponentInLithoView
 import com.facebook.litho.componentsfinder.getRootComponentInLithoView
 import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.isDeferredLayoutResult
+import com.facebook.litho.isNullNode
+import com.facebook.litho.measuredLayoutResult
 import com.facebook.litho.testing.viewtree.ViewPredicates
 import com.facebook.litho.testing.viewtree.ViewTree
 import com.facebook.litho.widget.LegacyRecycler
@@ -42,7 +45,7 @@ import com.facebook.litho.widget.Recycler
 import com.facebook.litho.widget.collection.LazyCollection
 import com.google.common.base.Predicate
 import kotlin.reflect.KClass
-import org.assertj.core.api.Java6Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThat
 import org.robolectric.Shadows
 
 /**
@@ -251,6 +254,34 @@ internal constructor(
   fun didResolve(): TestLithoView {
     val node = checkNotNull(committedLayoutState).resolveResult.node
     assertThat(node).isNotNull.isNotInstanceOf(NullNode::class.java)
+    return this
+  }
+
+  fun didResolveWithConstraints(): TestLithoView {
+    val current = checkNotNull(committedLayoutState)
+    val root = checkNotNull(rootComponent)
+    assertThat(Component.isLayoutSpecWithSizeSpec(root)).isTrue
+
+    val result = checkNotNull(current.rootLayoutResult)
+    assertThat(result).isNotNull
+
+    return this
+  }
+
+  fun didNotResolveWithConstraints(): TestLithoView {
+    val current = checkNotNull(committedLayoutState)
+    val root = checkNotNull(rootComponent)
+    assertThat(Component.isLayoutSpecWithSizeSpec(root)).isTrue
+
+    assertThat(current.rootLayoutResult).isNotNull
+    val deferred = checkNotNull(current.rootLayoutResult)
+    assertThat(deferred.isDeferredLayoutResult).isTrue
+
+    val measureResult: LithoLayoutResult? = deferred.measuredLayoutResult
+    if (measureResult != null && !measureResult.node.isNullNode) {
+      error("Expected to render to null, but rendered to non-null layout")
+    }
+
     return this
   }
 

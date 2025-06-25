@@ -19,6 +19,9 @@ package com.facebook.litho
 import android.graphics.PathEffect
 import kotlin.jvm.JvmField
 
+val LithoNode.isDeferredNode: Boolean
+  get() = this is DeferredLithoNode
+
 /**
  * This class is a placeholder for the unresolved layout and result of a [Component]s which
  * implement the [com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec] and

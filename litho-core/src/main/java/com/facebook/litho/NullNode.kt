@@ -25,6 +25,12 @@ import com.facebook.yoga.YogaJustify
 import com.facebook.yoga.YogaPositionType
 import com.facebook.yoga.YogaWrap
 
+val LithoNode.isNullNode: Boolean
+  get() = this is NullNode
+
+val LithoLayoutResult.isNullNodeResult: Boolean
+  get() = this is NullLithoLayoutResult
+
 /**
  * This [LithoNode] represents a component that renders to `null`. This is required to support
  * reconciliation of state, and transitions on a component that conditionally renders to null.
