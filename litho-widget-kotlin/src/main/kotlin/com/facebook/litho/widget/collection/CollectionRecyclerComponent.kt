@@ -41,6 +41,7 @@ import com.facebook.litho.useEffect
 import com.facebook.litho.useState
 import com.facebook.litho.widget.ChangeSetCompleteCallback
 import com.facebook.litho.widget.CollectionItem
+import com.facebook.litho.widget.CollectionLayoutManager
 import com.facebook.litho.widget.CollectionPrimitiveViewAdapter
 import com.facebook.litho.widget.CollectionPrimitiveViewScroller
 import com.facebook.litho.widget.ComponentRenderInfo
@@ -55,6 +56,11 @@ import com.facebook.litho.widget.RecyclerEventsController
 import com.facebook.litho.widget.RenderInfo
 import com.facebook.litho.widget.SectionsRecyclerView.SectionsRecyclerViewLogger
 import com.facebook.rendercore.PoolScope
+import com.facebook.rendercore.SizeConstraints
+import com.facebook.rendercore.primitives.LayoutBehavior
+import com.facebook.rendercore.primitives.LayoutScope
+import com.facebook.rendercore.primitives.PrimitiveLayoutResult
+import kotlin.math.max
 
 /** A component that renders a list of items using a [RecyclerBinder]. */
 class CollectionRecyclerComponent(
@@ -494,4 +500,57 @@ class CollectionRecyclerComponent(
   }
 
   private class LatestCommittedData(@Volatile var data: List<CollectionChild>? = null)
+}
+
+/**
+ * Layout behavior implementation for primitive collection views that handles the measurement and
+ * layout of collection items within specified size constraints and padding.
+ */
+@OptIn(ExperimentalLithoApi::class)
+private class CollectionPrimitiveViewLayoutBehavior(
+    private val items: List<CollectionItem<*>>,
+    private val collectionLayoutManager: CollectionLayoutManager,
+    private val startPadding: Int,
+    private val endPadding: Int,
+    private val topPadding: Int,
+    private val bottomPadding: Int,
+) : LayoutBehavior {
+
+  override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
+    val horizontalPadding = startPadding + endPadding
+    val verticalPadding = topPadding + bottomPadding
+    val constraints =
+        sizeConstraintsWithoutPadding(sizeConstraints, horizontalPadding, verticalPadding)
+    val size = collectionLayoutManager.measure(items = items, parentSizeConstraints = constraints)
+    return PrimitiveLayoutResult(size.width, size.height)
+  }
+
+  companion object {
+    /** Exclude paddings from the size constraints */
+    private fun sizeConstraintsWithoutPadding(
+        constraints: SizeConstraints,
+        horizontalPadding: Int,
+        verticalPadding: Int,
+    ): SizeConstraints {
+
+      var minWidth: Int = constraints.minWidth
+      var maxWidth: Int = constraints.maxWidth
+      var minHeight: Int = constraints.minHeight
+      var maxHeight: Int = constraints.maxHeight
+      if (constraints.hasBoundedWidth) {
+        maxWidth = max(constraints.maxWidth - horizontalPadding, 0)
+      } else if (constraints.hasExactWidth) {
+        minWidth = max(constraints.minWidth - horizontalPadding, 0)
+        maxWidth = max(constraints.maxWidth - horizontalPadding, 0)
+      }
+      if (constraints.hasBoundedHeight) {
+        maxHeight = max(constraints.maxHeight - verticalPadding, 0)
+      } else if (constraints.hasExactHeight) {
+        minHeight = max(constraints.minHeight - verticalPadding, 0)
+        maxHeight = max(constraints.maxHeight - verticalPadding, 0)
+      }
+      return SizeConstraints(
+          minWidth = minWidth, maxWidth = maxWidth, minHeight = minHeight, maxHeight = maxHeight)
+    }
+  }
 }
