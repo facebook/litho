@@ -187,7 +187,7 @@ object CollectionLayoutManager {
         while (filler.wantsMore() && index < items.size) {
           val item = items[index]
           val output = IntArray(2)
-          item.prepareSync(
+          item.measure(
               getChildSizeConstraints(
                   layoutInfo = layoutInfo,
                   collectionSizeConstraints = collectionSizeConstraints,

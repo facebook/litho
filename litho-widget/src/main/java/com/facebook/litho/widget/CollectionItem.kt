@@ -38,6 +38,16 @@ abstract class CollectionItem<V : View>(
 ) {
 
   /**
+   * Measures the item according to the given size constraints.
+   *
+   * @param sizeConstraints The constraints that define the minimum and maximum dimensions for
+   *   measurement
+   * @param result Optional array to store the measured width and height values (index 0 for width,
+   *   index 1 for height)
+   */
+  abstract fun measure(sizeConstraints: SizeConstraints, result: IntArray?)
+
+  /**
    * To prepare the item for rendering in async way. This is going to be used in the range
    * preparation.
    *
@@ -50,13 +60,8 @@ abstract class CollectionItem<V : View>(
    *
    * @param sizeConstraints The size constraints of the item.
    * @param result The output of the rendering.
-   * @param shouldCommit Whether the result should be committed.
    */
-  abstract fun prepareSync(
-      sizeConstraints: SizeConstraints,
-      result: IntArray?,
-      shouldCommit: Boolean = true
-  )
+  abstract fun prepareSync(sizeConstraints: SizeConstraints, result: IntArray?)
 
   /** To bind properties for the underline view. */
   abstract fun onBindView(view: V)
