@@ -1,0 +1,198 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>CollectionPreparationManager</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+<a class="library-name--link" href="../../../index.html">
+                            Litho
+                    </a>            </div>
+            <div class="library-version">
+            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":litho-widget:dokkaHtmlPartial/release">androidJvm</button>
+        </div>
+    </div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
+    </div>
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="litho-widget::com.facebook.litho.widget/CollectionPreparationManager///PointingToDeclaration//-534206624">
+  <div class="breadcrumbs"><a href="../../index.html">litho-widget</a><span class="delimiter">/</span><a href="../index.html">com.facebook.litho.widget</a><span class="delimiter">/</span><span class="current">CollectionPreparationManager</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Collection</span><wbr><span>Preparation</span><wbr><span><span>Manager</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="../../../litho-core/com.facebook.litho.annotations/-experimental-litho-api/index.html"><span class="token annotation builtin">ExperimentalLithoApi</span></a></div></div><span class="token keyword">class </span><a href="index.html">CollectionPreparationManager</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">layoutInfo<span class="token operator">: </span><a href="../-layout-info/index.html">LayoutInfo</a></span></span><span class="token punctuation">)</span></div><p class="paragraph">This class is responsible for preparing the items in the collection. It will prepare the items that are in the viewport and the items that are in the range of the viewport.</p></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="">Constructors</h2>
+        <div class="table"><a data-name="934744503%2FConstructors%2F-534206624" anchor-label="CollectionPreparationManager" id="934744503%2FConstructors%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":litho-widget:dokkaHtmlPartial/release" data-filterable-set=":litho-widget:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-collection-preparation-manager.html"><span>Collection</span><wbr><span>Preparation</span><wbr><span><span>Manager</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="934744503%2FConstructors%2F-534206624"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">layoutInfo<span class="token operator">: </span><a href="../-layout-info/index.html">LayoutInfo</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="TYPE">
+        <h2 class="">Types</h2>
+        <div class="table"><a data-name="2146963519%2FClasslikes%2F-534206624" anchor-label="Companion" id="2146963519%2FClasslikes%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-widget:dokkaHtmlPartial/release" data-filterable-set=":litho-widget:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-companion/index.html"><span><span>Companion</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2146963519%2FClasslikes%2F-534206624"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-companion/index.html">Companion</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="-1860538219%2FFunctions%2F-534206624" anchor-label="addViewportChangedListener" id="-1860538219%2FFunctions%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-widget:dokkaHtmlPartial/release" data-filterable-set=":litho-widget:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="add-viewport-changed-listener.html"><span>add</span><wbr><span>Viewport</span><wbr><span>Changed</span><wbr><span><span>Listener</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1860538219%2FFunctions%2F-534206624"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="add-viewport-changed-listener.html"><span class="token function">addViewportChangedListener</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">viewportChangedListener<span class="token operator">: </span><a href="../-viewport-info/-viewport-changed/index.html">ViewportInfo.ViewportChanged</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2018021902%2FFunctions%2F-534206624" anchor-label="bind" id="-2018021902%2FFunctions%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-widget:dokkaHtmlPartial/release" data-filterable-set=":litho-widget:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="bind.html"><span><span>bind</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2018021902%2FFunctions%2F-534206624"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/UiThread.html"><span class="token annotation builtin">UiThread</span></a></div></div><span class="token keyword">fun </span><a href="bind.html"><span class="token function">bind</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">view<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/recyclerview/widget/RecyclerView.html">RecyclerView</a><span class="token punctuation">, </span></span><span class="parameter ">rangeRatio<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">collectionSizeProvider<span class="token operator">: </span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span data-unresolved-link="com.facebook.rendercore/Size///PointingToDeclaration/">Size</span><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">onEnterRange<span class="token operator">: </span><span class="token punctuation">(</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a><span class="token punctuation">, </span></span><span class="parameter ">onExitRange<span class="token operator">: </span><span class="token punctuation">(</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-392848881%2FFunctions%2F-534206624" anchor-label="estimateItemsInViewPort" id="-392848881%2FFunctions%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-widget:dokkaHtmlPartial/release" data-filterable-set=":litho-widget:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="estimate-items-in-view-port.html"><span>estimate</span><wbr><span>Items</span><wbr><span>In</span><wbr><span>View</span><wbr><span><span>Port</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-392848881%2FFunctions%2F-534206624"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="estimate-items-in-view-port.html"><span class="token function">estimateItemsInViewPort</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">item<span class="token operator">: </span><a href="../-collection-item/index.html">CollectionItem</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">sizeConstraintsProvider<span class="token operator">: </span><span class="token punctuation">(</span><a href="../-collection-item/index.html">CollectionItem</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span data-unresolved-link="com.facebook.rendercore/SizeConstraints///PointingToDeclaration/">SizeConstraints</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Estimates the number of items that can fit in the viewport based on measuring a sample item. This calculation is performed only once when estimatedItemsInViewPort is unset and helps determine how many items should be prepared for rendering to optimize performance.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="445956931%2FFunctions%2F-534206624" anchor-label="maybePostUpdateViewportAndComputeRange" id="445956931%2FFunctions%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-widget:dokkaHtmlPartial/release" data-filterable-set=":litho-widget:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="maybe-post-update-viewport-and-compute-range.html"><span>maybe</span><wbr><span>Post</span><wbr><span>Update</span><wbr><span>Viewport</span><wbr><span>And</span><wbr><span>Compute</span><wbr><span><span>Range</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="445956931%2FFunctions%2F-534206624"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/UiThread.html"><span class="token annotation builtin">UiThread</span></a></div></div><span class="token keyword">fun </span><a href="maybe-post-update-viewport-and-compute-range.html"><span class="token function">maybePostUpdateViewportAndComputeRange</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">firstVisibleIndex<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span>layoutInfo.findFirstVisibleItemPosition()<span class="token punctuation">, </span></span><span class="parameter ">lastVisibleIndex<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span>layoutInfo.findLastVisibleItemPosition()</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Attempts to update the viewport and compute the range of items that should be prepared. This method checks if the viewport needs updating and posts a runnable to handle the update. It also triggers computation of which items should enter or exit the preparation range.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-357620563%2FFunctions%2F-534206624" anchor-label="unbind" id="-357620563%2FFunctions%2F-534206624" data-filterable-set=":litho-widget:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-widget:dokkaHtmlPartial/release" data-filterable-set=":litho-widget:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="unbind.html"><span><span>unbind</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-357620563%2FFunctions%2F-534206624"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/UiThread.html"><span class="token annotation builtin">UiThread</span></a></div></div><span class="token keyword">fun </span><a href="unbind.html"><span class="token function">unbind</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">view<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/recyclerview/widget/RecyclerView.html">RecyclerView</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2025 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
