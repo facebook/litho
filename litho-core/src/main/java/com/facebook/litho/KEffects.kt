@@ -78,7 +78,7 @@ class CleanupFunc @PublishedApi internal constructor(private val cleanupFunc: ()
   }
 }
 
-private class UseEffectAttachable(
+internal class UseEffectAttachable(
     private val id: String,
     private val deps: Array<out Any?>?,
     private val attachCallback: () -> CleanupFunc?
@@ -112,5 +112,5 @@ private class UseEffectAttachable(
   }
 }
 
-private const val USE_EFFECT_NO_DEPS_ERROR =
+const val USE_EFFECT_NO_DEPS_ERROR =
     "useEffect must provide 'deps' parameter that determines whether the existing 'onAttach' cleanup callback will be invoked, and the new 'onAttach' callback will be invoked"

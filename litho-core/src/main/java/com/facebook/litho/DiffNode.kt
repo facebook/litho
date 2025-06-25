@@ -34,6 +34,7 @@ interface DiffNode : java.lang.Cloneable {
   val componentGlobalKey: String
   val scopedComponentInfo: ScopedComponentInfo
   var layoutData: Any?
+  var effects: List<Attachable>?
   /**
    * The last value the measure function associated with this node [Component] returned for the
    * width. This is used together with [lastWidthSpec] to implement measure caching. Also sets the

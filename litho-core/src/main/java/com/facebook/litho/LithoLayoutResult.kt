@@ -112,6 +112,9 @@ open class LithoLayoutResult(
   val borderRenderUnit: LithoRenderUnit?
     get() = layoutOutput.borderRenderUnit
 
+  val effects: List<Attachable>?
+    get() = layoutOutput.effects
+
   @get:Px
   override val width: Int
     get() = layoutOutput.width

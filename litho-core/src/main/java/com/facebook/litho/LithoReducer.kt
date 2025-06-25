@@ -557,8 +557,17 @@ internal object LithoReducer {
     diffNode.lastMeasuredWidth = result.contentWidth
     diffNode.lastMeasuredHeight = result.contentHeight
     diffNode.layoutData = result.layoutData
+    diffNode.effects = result.effects
     diffNode.primitive = result.node.primitive
     diffNode.delegate = result.delegate
+
+    result.effects?.let { effects ->
+      reductionState.attachables
+          .getOrCreate {
+            ArrayList<Attachable>(effects.size).also { reductionState.attachables = it }
+          }
+          .addAll(effects)
+    }
 
     // We must process the nodes in order so that the layout state output order is correct.
     for (i in 0 until result.childCount) {

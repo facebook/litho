@@ -147,7 +147,10 @@ internal object Layout {
                 reductionState.attachables = it
               }
             }
-            .addAll(outputs.attachables)
+            .apply {
+              addAll(outputs.attachables)
+              actualLayoutResult.effects?.let { addAll(it) }
+            }
 
         reductionState.transitionData
             .getOrCreate { MutableTransitionData().also { reductionState.transitionData = it } }

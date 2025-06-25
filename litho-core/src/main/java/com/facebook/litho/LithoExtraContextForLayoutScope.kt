@@ -18,4 +18,24 @@ package com.facebook.litho
 
 import com.facebook.litho.layout.LayoutDirection
 
-class LithoExtraContextForLayoutScope constructor(val layoutDirection: LayoutDirection)
+class LithoExtraContextForLayoutScope
+internal constructor(
+    internal val componentContext: ComponentContext,
+    val layoutDirection: LayoutDirection,
+) {
+
+  val globalKey: String
+    get() = componentContext.globalKey
+
+  internal var effects: MutableList<Attachable>? = null
+    private set
+
+  internal fun addEffect(entry: Attachable) {
+    (effects ?: mutableListOf<Attachable>().apply { effects = this }).add(entry)
+  }
+
+  internal fun generateEffectId(): String {
+    val index = effects?.size ?: 0
+    return "$globalKey:$index"
+  }
+}

@@ -647,6 +647,7 @@ internal object LithoYogaLayoutFunction {
     val height: Int
     val delegate: LayoutResult?
     val layoutData: Any?
+    val effects: List<Attachable>?
 
     // If diff node is set check if measurements from the previous pass can be reused
     if (diffNode?.lastWidthSpec == widthSpec &&
@@ -657,6 +658,7 @@ internal object LithoYogaLayoutFunction {
       layoutData = diffNode.layoutData
       delegate = diffNode.delegate
       yogaOutput._isDiffedLayout = true
+      effects = diffNode.effects
 
       // Measure the component
     } else {
@@ -668,11 +670,16 @@ internal object LithoYogaLayoutFunction {
         val newLayoutData: Any?
         // measure Primitive
         if (primitive != null) {
+
+          val contextForLayoutScope =
+              LithoExtraContextForLayoutScope(
+                  componentContext = componentScopedContext,
+                  layoutDirection = lithoLayoutResult.layoutDirection,
+              )
+
           context.setPreviousLayoutDataForCurrentNode(lithoLayoutResult.layoutData)
           context.setExtraContextForCurrentNode(
-              LithoExtraContextForLayoutScope(
-                  layoutDirection = lithoLayoutResult.layoutDirection,
-              ),
+              contextForLayoutScope,
           )
 
           @Suppress("UNCHECKED_CAST")
@@ -681,6 +688,7 @@ internal object LithoYogaLayoutFunction {
           width = delegate.width
           height = delegate.height
           newLayoutData = delegate.layoutData
+          effects = contextForLayoutScope.effects
         } else {
           val size = Size(Int.MIN_VALUE, Int.MIN_VALUE)
           // If the Layout Result was cached, but the size specs changed, then layout data
@@ -700,6 +708,7 @@ internal object LithoYogaLayoutFunction {
           delegate = null
           width = size.width
           height = size.height
+          effects = null
         }
 
         // If layout data has changed then content render unit should be recreated
@@ -717,6 +726,7 @@ internal object LithoYogaLayoutFunction {
     }
     yogaOutput._delegate = delegate
     yogaOutput._layoutData = layoutData
+    yogaOutput._effects = effects
     return MeasureResult(width, height, layoutData)
   }
 
@@ -1005,6 +1015,7 @@ data class YogaLayoutOutput(
     internal var _actualDeferredNodeResult: LithoLayoutResult? = null,
     internal val _adjustedBounds: Rect = Rect(),
     internal var _stateReads: ScatterSet<StateId>? = null,
+    internal var _effects: List<Attachable>? = null,
 ) : LithoLayoutOutput {
 
   override val x: Int
@@ -1087,6 +1098,9 @@ data class YogaLayoutOutput(
 
   override val borderRenderUnit: LithoRenderUnit?
     get() = _borderRenderUnit
+
+  override val effects: List<Attachable>?
+    get() = _effects
 
   override val isCachedLayout: Boolean
     get() = _isCachedLayout

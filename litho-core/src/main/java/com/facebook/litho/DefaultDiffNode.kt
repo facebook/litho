@@ -42,6 +42,7 @@ internal constructor(
   override var lastHeightSpec: Int = 0
   override var delegate: LayoutResult? = null
   override var layoutData: Any? = null
+  override var effects: List<Attachable>? = null
 
   override val childCount: Int
     get() = _children.size
