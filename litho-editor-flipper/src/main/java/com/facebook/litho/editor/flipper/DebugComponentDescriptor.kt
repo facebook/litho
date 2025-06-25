@@ -99,7 +99,7 @@ class DebugComponentDescriptor : NodeDescriptor<DebugComponent?>() {
         }
       }
 
-  override fun init(node: DebugComponent) {
+  override fun init(node: DebugComponent?) {
     // We rely on the LithoView being invalidated when a component hierarchy changes.
   }
 
@@ -243,14 +243,13 @@ class DebugComponentDescriptor : NodeDescriptor<DebugComponent?>() {
     }
 
     val layout = node.layoutNode
-    val hasNode = layout != null
     val margin =
         if (!node.isRoot) {
           Rect(
-              if (hasNode) layout.getLayoutMargin(YogaEdge.START).toInt() else 0,
-              if (hasNode) layout.getLayoutMargin(YogaEdge.TOP).toInt() else 0,
-              if (hasNode) layout.getLayoutMargin(YogaEdge.END).toInt() else 0,
-              if (hasNode) layout.getLayoutMargin(YogaEdge.BOTTOM).toInt() else 0)
+              layout?.getLayoutMargin(YogaEdge.START)?.toInt() ?: 0,
+              layout?.getLayoutMargin(YogaEdge.TOP)?.toInt() ?: 0,
+              layout?.getLayoutMargin(YogaEdge.END)?.toInt() ?: 0,
+              layout?.getLayoutMargin(YogaEdge.BOTTOM)?.toInt() ?: 0)
         } else {
           // Margin not applied if you're at the root
           Rect()
@@ -258,10 +257,10 @@ class DebugComponentDescriptor : NodeDescriptor<DebugComponent?>() {
 
     val padding =
         Rect(
-            if (hasNode) layout.getLayoutPadding(YogaEdge.START).toInt() else 0,
-            if (hasNode) layout.getLayoutPadding(YogaEdge.TOP).toInt() else 0,
-            if (hasNode) layout.getLayoutPadding(YogaEdge.END).toInt() else 0,
-            if (hasNode) layout.getLayoutPadding(YogaEdge.BOTTOM).toInt() else 0)
+            layout?.getLayoutPadding(YogaEdge.START)?.toInt() ?: 0,
+            layout?.getLayoutPadding(YogaEdge.TOP)?.toInt() ?: 0,
+            layout?.getLayoutPadding(YogaEdge.END)?.toInt() ?: 0,
+            layout?.getLayoutPadding(YogaEdge.BOTTOM)?.toInt() ?: 0)
 
     val contentBounds = node.boundsInLithoView
     HighlightedOverlay.setHighlighted(lithoView, margin, padding, contentBounds, isAlignmentMode)

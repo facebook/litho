@@ -53,7 +53,7 @@ class DebugSectionDescriptor : NodeDescriptor<DebugSection?>() {
         .run()
   }
 
-  @Throws(Exception::class) override fun init(node: DebugSection) = Unit
+  @Throws(Exception::class) override fun init(node: DebugSection?) = Unit
 
   @Throws(Exception::class)
   override fun getId(node: DebugSection?): String? {

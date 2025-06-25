@@ -31,8 +31,8 @@ import com.facebook.litho.DebugComponent.Companion.getRootInstance
 class LithoViewDescriptor : NodeDescriptor<BaseMountingView?>() {
 
   @Throws(Exception::class)
-  override fun init(node: BaseMountingView) {
-    node.setOnDirtyMountListener { view ->
+  override fun init(node: BaseMountingView?) {
+    node?.setOnDirtyMountListener { view ->
       invalidate(view)
       invalidateAX(view)
     }
