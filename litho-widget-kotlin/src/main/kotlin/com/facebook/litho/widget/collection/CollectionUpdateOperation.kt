@@ -22,7 +22,7 @@ import androidx.recyclerview.widget.ListUpdateCallback
  * This class aims to generate the changeset between two lists of data and create the corresponding
  * RenderInfo for later use.
  */
-class CollectionUpdateCallback<T>(val prevData: List<T>?, val nextData: List<T>?) :
+class CollectionUpdateOperation<T>(val prevData: List<T>?, val nextData: List<T>?) :
     ListUpdateCallback {
 
   internal val operations: MutableList<CollectionOperation> = mutableListOf()

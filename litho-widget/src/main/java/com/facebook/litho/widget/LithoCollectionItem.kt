@@ -27,7 +27,7 @@ import com.facebook.rendercore.SizeConstraints
 class LithoCollectionItem(
     componentContext: ComponentContext,
     id: Int = LithoTree.generateComponentTreeId(),
-    viewType: Int,
+    viewType: Int = DEFAULT_COMPONENT_VIEW_TYPE,
     renderInfo: RenderInfo,
 ) : CollectionItem<LithoRenderTreeView>(id, viewType, renderInfo) {
 
@@ -67,5 +67,9 @@ class LithoCollectionItem(
 
   override fun unprepare() {
     // todo
+  }
+
+  companion object {
+    const val DEFAULT_COMPONENT_VIEW_TYPE: Int = 0
   }
 }

@@ -124,5 +124,18 @@ class CollectionPrimitiveViewAdapter(
     notifyItemMoved(from, to)
   }
 
+  fun setItems(newData: List<CollectionItem<*>>) {
+    items.clear()
+    items.addAll(newData)
+  }
+
+  fun copyItems(): MutableList<CollectionItem<*>> {
+    return items.toMutableList()
+  }
+
+  fun readOnlyItems(): List<CollectionItem<*>> {
+    return items
+  }
+
   // endregion
 }

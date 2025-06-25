@@ -66,7 +66,7 @@ class CollectionDiffTest {
     val itemComparator = { a: Item, b: Item -> a.id == b.id }
     val contentComparator = { a: Item, b: Item -> a.content == b.content }
     val diffCallback = CollectionDiffCallback(oldData, newData, itemComparator, contentComparator)
-    val listUpdateCallback = CollectionUpdateCallback(oldData, newData)
+    val listUpdateCallback = CollectionUpdateOperation(oldData, newData)
     DiffUtil.calculateDiff(diffCallback).dispatchUpdatesTo(listUpdateCallback)
     return listUpdateCallback.operations
   }

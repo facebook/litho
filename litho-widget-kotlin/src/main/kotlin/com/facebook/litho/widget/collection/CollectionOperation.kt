@@ -16,8 +16,6 @@
 
 package com.facebook.litho.widget.collection
 
-import com.facebook.litho.widget.RenderInfo
-
 /**
  * Represents an operation that can be performed on a [com.facebook.litho.widget.RecyclerBinder].
  */
@@ -25,8 +23,7 @@ internal class CollectionOperation(
     val type: Type,
     val index: Int,
     val count: Int = 1,
-    val toIndex: Int = -1,
-    val renderInfoList: List<RenderInfo> = emptyList()
+    val toIndex: Int = -1
 ) {
 
   /** Operation types */
