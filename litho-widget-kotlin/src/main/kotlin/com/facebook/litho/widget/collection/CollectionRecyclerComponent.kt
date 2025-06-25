@@ -21,10 +21,14 @@ import android.os.SystemClock
 import android.view.View
 import androidx.annotation.UiThread
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.OrientationHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemAnimator
 import androidx.recyclerview.widget.SnapHelper
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
+import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentScope
@@ -35,13 +39,17 @@ import com.facebook.litho.LithoStartupLogger
 import com.facebook.litho.PrimitiveComponentScope
 import com.facebook.litho.Style
 import com.facebook.litho.annotations.ExperimentalLithoApi
+import com.facebook.litho.annotations.Hook
 import com.facebook.litho.config.PrimitiveRecyclerBinderStrategy
 import com.facebook.litho.onCleanup
+import com.facebook.litho.sections.widget.GridRecyclerConfiguration
 import com.facebook.litho.sections.widget.NoUpdateItemAnimator
 import com.facebook.litho.sections.widget.RecyclerConfiguration
+import com.facebook.litho.sections.widget.StaggeredGridRecyclerConfiguration
 import com.facebook.litho.useCallback
 import com.facebook.litho.useEffect
 import com.facebook.litho.useState
+import com.facebook.litho.useStateWithDeps
 import com.facebook.litho.widget.ChangeSetCompleteCallback
 import com.facebook.litho.widget.CollectionItem
 import com.facebook.litho.widget.CollectionLayoutManager
@@ -62,6 +70,8 @@ import com.facebook.litho.widget.RecyclerEventsController
 import com.facebook.litho.widget.RenderInfo
 import com.facebook.litho.widget.SectionsRecyclerView
 import com.facebook.litho.widget.SectionsRecyclerView.SectionsRecyclerViewLogger
+import com.facebook.litho.widget.SnapUtil
+import com.facebook.litho.widget.SnapUtil.SnapMode
 import com.facebook.litho.widget.bindLegacyAttachBinder
 import com.facebook.litho.widget.bindLegacyMountBinder
 import com.facebook.litho.widget.requireLithoRecyclerView
@@ -125,6 +135,7 @@ class CollectionRecyclerComponent(
 
   @OptIn(ExperimentalLithoApi::class)
   override fun ComponentScope.render(): Component {
+    val layoutConfig: CollectionLayoutConfig = useConfig(recyclerConfiguration)
     val latestCommittedData = useState { LatestCommittedData() }.value
     val poolScope = useState { PoolScope.ManuallyManaged() }.value
     val viewportChangedCallback =
@@ -141,10 +152,21 @@ class CollectionRecyclerComponent(
               firstFullyVisibleIndex,
               lastFullyVisibleIndex)
         }
+
+    val layoutInfo =
+        useStateWithDeps(
+                layoutConfig.orientation,
+                layoutConfig.reverseLayout,
+                layoutConfig.stackFromEnd,
+                layoutConfig.spanCount,
+                layoutConfig.gapStrategy) {
+                  recyclerConfiguration.getLayoutInfo(context)
+                }
+            .value
     val binder =
-        useState {
+        useStateWithDeps(layoutInfo) {
               RecyclerBinder.Builder()
-                  .layoutInfo(recyclerConfiguration.getLayoutInfo(context))
+                  .layoutInfo(layoutInfo)
                   .startupLogger(startupLogger)
                   .recyclerBinderConfig(
                       recyclerConfiguration.recyclerBinderConfiguration.recyclerBinderConfig)
@@ -298,6 +320,63 @@ class CollectionRecyclerComponent(
   }
 
   companion object {
+
+    /**
+     * Reads configuration values from a RecyclerConfiguration and creates a new
+     * CollectionLayoutConfig if there's any change. This function extracts various layout and
+     * behavior settings from the provided configuration and wraps them in a state-managed
+     * CollectionLayoutConfig object for use in the component.
+     */
+    @OptIn(ExperimentalLithoApi::class)
+    @Hook
+    private fun ComponentScope.useConfig(config: RecyclerConfiguration): CollectionLayoutConfig {
+      val mainAxisWrapContent = config.recyclerBinderConfiguration.recyclerBinderConfig.wrapContent
+      val crossAxisWrapMode =
+          config.recyclerBinderConfiguration.recyclerBinderConfig.crossAxisWrapMode
+      val snapHelper = config.snapHelper
+      val snapMode = config.snapMode
+      val rangeRatio = config.recyclerBinderConfiguration.recyclerBinderConfig.rangeRatio
+      val orientation = config.orientation
+      val reverseLayout = config.reverseLayout
+      val stackFromEnd = config.stackFromEnd
+      val spanCount =
+          when (config) {
+            is GridRecyclerConfiguration -> config.numColumns
+            is StaggeredGridRecyclerConfiguration -> config.numSpans
+            else -> GridLayoutManager.DEFAULT_SPAN_COUNT
+          }
+      val gapStrategy =
+          if (config is StaggeredGridRecyclerConfiguration) {
+            config.gapStrategy
+          } else {
+            StaggeredGridLayoutManager.GAP_HANDLING_NONE
+          }
+
+      return useStateWithDeps(
+              mainAxisWrapContent,
+              crossAxisWrapMode,
+              snapHelper,
+              snapMode,
+              rangeRatio,
+              orientation,
+              reverseLayout,
+              stackFromEnd,
+              spanCount,
+              gapStrategy) {
+                CollectionLayoutConfig(
+                    mainAxisWrapContent = mainAxisWrapContent,
+                    crossAxisWrapMode = crossAxisWrapMode,
+                    snapHelper = snapHelper,
+                    snapMode = snapMode,
+                    rangeRatio = rangeRatio,
+                    orientation = orientation,
+                    reverseLayout = reverseLayout,
+                    stackFromEnd = stackFromEnd,
+                    spanCount = spanCount,
+                    gapStrategy = gapStrategy)
+              }
+          .value
+    }
 
     /**
      * Calculates the difference between two lists and returns a CollectionUpdateOperation
@@ -747,5 +826,28 @@ private fun PrimitiveComponentScope.CollectionPrimitiveViewMountBehavior(
         }
       }
     }
+  }
+}
+
+/** An internal model that helps us access these configs as dependency. */
+@DataClassGenerate(toString = Mode.OMIT, equalsHashCode = Mode.KEEP)
+private data class CollectionLayoutConfig(
+    val mainAxisWrapContent: Boolean = false,
+    val crossAxisWrapMode: CrossAxisWrapMode = CrossAxisWrapMode.NoWrap,
+    val snapHelper: SnapHelper? = null,
+    @SnapMode val snapMode: Int = SnapUtil.SNAP_NONE,
+    val rangeRatio: Float = DEFAULT_RANGE_RATIO,
+
+    // Configs that requires regenerating a new layout info
+    val orientation: Int = RecyclerView.VERTICAL,
+    val reverseLayout: Boolean = false,
+    val stackFromEnd: Boolean = false,
+    val spanCount: Int = GridLayoutManager.DEFAULT_SPAN_COUNT,
+    val gapStrategy: Int = StaggeredGridLayoutManager.GAP_HANDLING_NONE
+) {
+
+  companion object {
+    // Default range ratio for the collection
+    private const val DEFAULT_RANGE_RATIO: Float = 2f
   }
 }

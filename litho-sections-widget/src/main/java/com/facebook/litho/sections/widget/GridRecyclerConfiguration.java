@@ -114,6 +114,10 @@ public class GridRecyclerConfiguration implements RecyclerConfiguration {
     return mRecyclerBinderConfiguration;
   }
 
+  public int getNumColumns() {
+    return mNumColumns;
+  }
+
   private static class DefaultGridLayoutInfoFactory implements GridLayoutInfoFactory {
     @Override
     public GridLayoutInfo createGridLayoutInfo(

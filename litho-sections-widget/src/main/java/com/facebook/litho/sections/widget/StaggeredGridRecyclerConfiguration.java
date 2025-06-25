@@ -104,6 +104,14 @@ public class StaggeredGridRecyclerConfiguration implements RecyclerConfiguration
     return mRecyclerBinderConfiguration;
   }
 
+  public int getNumSpans() {
+    return mNumSpans;
+  }
+
+  public int getGapStrategy() {
+    return mGapStrategy;
+  }
+
   private static class DefaultStaggeredGridLayoutInfoFactory
       implements StaggeredGridLayoutInfoFactory {
     @Override
