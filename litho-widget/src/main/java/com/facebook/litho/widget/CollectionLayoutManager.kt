@@ -16,8 +16,6 @@
 
 package com.facebook.litho.widget
 
-import androidx.annotation.UiThread
-import androidx.recyclerview.widget.OrientationHelper
 import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.widget.collection.CrossAxisWrapMode
 import com.facebook.rendercore.FastMath.round
@@ -26,93 +24,38 @@ import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.toHeightSpec
 import com.facebook.rendercore.toWidthSpec
 import com.facebook.rendercore.utils.MeasureSpecUtils
-import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.math.max
 import kotlin.math.min
 
 /**
- * A layout manager responsible for measuring and laying out collection components.
+ * A manager for measurement strategies of collection components.
  *
  * This class handles the measurement of [CollectionRecyclerComponent] and its children, supporting
  * different wrapping behaviors in both main and cross axes.
- *
- * @param layoutInfo Information about the layout configuration
- * @param wrapInMainAxis Whether the collection should wrap its content in the main scrolling axis
- * @param wrapInCrossAxis The wrapping behavior for the cross axis (perpendicular to scrolling)
  */
 @ExperimentalLithoApi
-class CollectionLayoutManager(
-    val layoutInfo: LayoutInfo,
-    private val wrapInMainAxis: Boolean = false,
-    private val wrapInCrossAxis: CrossAxisWrapMode = CrossAxisWrapMode.NoWrap
-) {
+object CollectionLayoutManager {
 
-  private var lastSizeConstraints: SizeConstraints = SizeConstraints()
-  private val isMeasured = AtomicBoolean(false)
-  @Volatile private var lastMeasuredSize: Size = Size(0, 0)
-  private val isVertical: Boolean = layoutInfo.getScrollDirection() == OrientationHelper.VERTICAL
-  private val isDynamicSize: Boolean = (wrapInCrossAxis == CrossAxisWrapMode.Dynamic)
-
-  /**
-   * To avoid any side effects when measuring the Recycler with a preview list, we'll have to commit
-   * the measured size along with the submission of changesets, and re-measure the Recycler when the
-   * size is no longer valid.
-   */
-  @UiThread
-  fun commitMeasureResult(size: Size) {
-    lastMeasuredSize = size
-    isMeasured.compareAndSet(false, true)
-  }
-
-  /** Returns true if we found a larger size of children since the last measurement. */
-  fun isDynamicSizeChanged(width: Int, height: Int): Boolean {
-    if (wrapInCrossAxis != CrossAxisWrapMode.Dynamic) {
-      return false
-    }
-    val measuredSize = lastMeasuredSize
-    return isMeasured.get() &&
-        ((isVertical && width > measuredSize.width) ||
-            (!isVertical && height > measuredSize.height))
-  }
-
-  /** Submit a larger size of children since the last measurement. */
-  fun submitDynamicSize(width: Int, height: Int) {
-    if (wrapInCrossAxis != CrossAxisWrapMode.Dynamic) {
-      return
-    }
-    val measuredSize = lastMeasuredSize
-    if (isVertical) {
-      commitMeasureResult(Size(max(width, measuredSize.width), measuredSize.height))
-    } else {
-      commitMeasureResult(Size(measuredSize.width, max(height, measuredSize.height)))
-    }
-  }
-
-  // Indicates that we have measured the collection and don't need to re-measure it anymore.
-  private fun isMeasured(): Boolean =
-      isMeasured.get() && (wrapInCrossAxis != CrossAxisWrapMode.Dynamic)
-
-  private fun isMatchingParentSize(percent: Float): Boolean {
-    return percent in 0.0..100.0
-  }
-
+  /** Calculates the size constraints for the child of the Recycler. */
   fun getChildSizeConstraints(
+      layoutInfo: LayoutInfo,
+      collectionSizeConstraints: SizeConstraints,
+      collectionSize: Size?,
       child: CollectionItem<*>,
-      sizeConstraints: SizeConstraints = lastSizeConstraints,
+      isVertical: Boolean,
+      isDynamicSize: Boolean,
   ): SizeConstraints {
 
     val (widthSpec, heightSpec) =
-        if (isMeasured()) {
+        if (collectionSize != null && !isDynamicSize) {
           // The size of the collection is determined so we can use it to measure the child for the
           // second pass.
-          val measuredSize = lastMeasuredSize
+          val measuredSize: Size = collectionSize
 
           val resolvedWidthSpec =
               if (isMatchingParentSize(child.renderInfo.parentWidthPercent)) {
                 MeasureSpecUtils.exactly(
                     round(measuredSize.width * child.renderInfo.parentWidthPercent / 100))
-              } else if (isDynamicSize && isVertical) {
-                MeasureSpecUtils.unspecified()
               } else {
                 layoutInfo.getChildWidthSpec(
                     MeasureSpecUtils.exactly(measuredSize.width), child.renderInfo)
@@ -121,8 +64,6 @@ class CollectionLayoutManager(
               if (isMatchingParentSize(child.renderInfo.parentHeightPercent)) {
                 MeasureSpecUtils.exactly(
                     round(measuredSize.height * child.renderInfo.parentHeightPercent / 100))
-              } else if (isDynamicSize && !isVertical) {
-                MeasureSpecUtils.unspecified()
               } else {
                 layoutInfo.getChildHeightSpec(
                     MeasureSpecUtils.exactly(measuredSize.height), child.renderInfo)
@@ -133,18 +74,21 @@ class CollectionLayoutManager(
           // measure the child for the first pass.
           val resolvedWidthSpec =
               if (isDynamicSize && isVertical) {
-                child.size?.let { MeasureSpecUtils.exactly(max(lastMeasuredSize.width, it.width)) }
-                    ?: MeasureSpecUtils.unspecified()
+                child.size?.let {
+                  MeasureSpecUtils.exactly(max(collectionSize?.width ?: 0, it.width))
+                } ?: MeasureSpecUtils.unspecified()
               } else {
-                layoutInfo.getChildWidthSpec(sizeConstraints.toWidthSpec(), child.renderInfo)
+                layoutInfo.getChildWidthSpec(
+                    collectionSizeConstraints.toWidthSpec(), child.renderInfo)
               }
           val resolvedHeightSpec =
               if (isDynamicSize && !isVertical) {
                 child.size?.let {
-                  MeasureSpecUtils.exactly(max(lastMeasuredSize.height, it.height))
+                  MeasureSpecUtils.exactly(max(collectionSize?.height ?: 0, it.height))
                 } ?: MeasureSpecUtils.unspecified()
               } else {
-                layoutInfo.getChildHeightSpec(sizeConstraints.toHeightSpec(), child.renderInfo)
+                layoutInfo.getChildHeightSpec(
+                    collectionSizeConstraints.toHeightSpec(), child.renderInfo)
               }
 
           resolvedWidthSpec to resolvedHeightSpec
@@ -153,7 +97,13 @@ class CollectionLayoutManager(
     return SizeConstraints.fromMeasureSpecs(widthSpec, heightSpec)
   }
 
-  private fun validateSizeConstraint(sizeConstraints: SizeConstraints) {
+  /** Validates the size constraints for the Recycler. */
+  fun validateSizeConstraint(
+      sizeConstraints: SizeConstraints,
+      isVertical: Boolean,
+      wrapInMainAxis: Boolean,
+      crossAxisWrapMode: CrossAxisWrapMode
+  ) {
     val noBoundedSizeInMainAxis =
         if (isVertical) {
           !sizeConstraints.hasBoundedHeight
@@ -171,7 +121,7 @@ class CollectionLayoutManager(
           "${if (isVertical) "Height" else "Width"}[main axis] has to be EXACTLY OR AT MOST " +
               "for a scrolling RecyclerView.")
     }
-    if (wrapInCrossAxis == CrossAxisWrapMode.NoWrap && noBoundedSizeInCrossAxis) {
+    if (crossAxisWrapMode == CrossAxisWrapMode.NoWrap && noBoundedSizeInCrossAxis) {
       throw IllegalArgumentException(
           "Can't use Unspecified ${if (isVertical) "width" else "height"} on a scrolling " +
               "RecyclerView if dynamic measurement is not allowed, please use " +
@@ -181,31 +131,28 @@ class CollectionLayoutManager(
 
   /** Measures the size of the Recycler. */
   fun measure(
+      layoutInfo: LayoutInfo,
       items: List<CollectionItem<*>>,
-      parentSizeConstraints: SizeConstraints = lastSizeConstraints
+      collectionSizeConstraints: SizeConstraints,
+      collectionSize: Size?,
+      isVertical: Boolean,
+      wrapInMainAxis: Boolean,
+      crossAxisWrapMode: CrossAxisWrapMode,
   ): Size {
 
-    validateSizeConstraint(parentSizeConstraints)
-
-    synchronized(this) {
-      if (lastSizeConstraints != parentSizeConstraints) {
-        lastSizeConstraints = parentSizeConstraints
-      }
-    }
-
-    if (parentSizeConstraints.hasExactWidth && parentSizeConstraints.hasExactHeight) {
+    if (collectionSizeConstraints.hasExactWidth && collectionSizeConstraints.hasExactHeight) {
       // The recycler has a fixed size, so we don't need to measure it again.
-      return Size(parentSizeConstraints.maxWidth, parentSizeConstraints.maxHeight)
+      return Size(collectionSizeConstraints.maxWidth, collectionSizeConstraints.maxHeight)
     }
 
     val sizeInMainAxis: Int
     val sizeInCrossAxis: Int
-    if (isMeasured()) {
+    if (collectionSize != null) {
       // We've measured the recycler once and size never changed after that, so we can check if we
       // can reuse the size from the last measurement.
-      val measuredSize = lastMeasuredSize
+      val measuredSize: Size = collectionSize
 
-      if (wrapInCrossAxis == CrossAxisWrapMode.MatchFirstChild) {
+      if (crossAxisWrapMode == CrossAxisWrapMode.MatchFirstChild) {
         val wasFirstChildSizeChanged =
             if (items.isNotEmpty()) {
               if (isVertical) {
@@ -229,7 +176,7 @@ class CollectionLayoutManager(
       // size. TODO: how about the entire list has changed and the size is becoming smaller?
       val filler: LayoutInfo.ViewportFiller? =
           layoutInfo.createViewportFiller(
-              parentSizeConstraints.maxWidth, parentSizeConstraints.maxHeight)
+              collectionSizeConstraints.maxWidth, collectionSizeConstraints.maxHeight)
 
       if (filler != null) {
         // The viewport info might not be reliable because user could be scrolling the list at the
@@ -241,12 +188,19 @@ class CollectionLayoutManager(
           val item = items[index]
           val output = IntArray(2)
           item.prepareSync(
-              getChildSizeConstraints(child = item, sizeConstraints = parentSizeConstraints),
+              getChildSizeConstraints(
+                  layoutInfo = layoutInfo,
+                  collectionSizeConstraints = collectionSizeConstraints,
+                  collectionSize = collectionSize,
+                  child = item,
+                  isVertical = isVertical,
+                  isDynamicSize = crossAxisWrapMode == CrossAxisWrapMode.Dynamic),
               output)
-          val size = Size(output[0], output[1])
-          filler.add(item.renderInfo, size.width, size.height)
-          maxChildWidthInTheViewport = max(maxChildWidthInTheViewport, size.width)
-          maxChildHeightInTheViewport = max(maxChildHeightInTheViewport, size.height)
+          val width = output[0]
+          val height = output[1]
+          filler.add(item.renderInfo, width, height)
+          maxChildWidthInTheViewport = max(maxChildWidthInTheViewport, width)
+          maxChildHeightInTheViewport = max(maxChildHeightInTheViewport, height)
           index++
         }
         sizeInMainAxis = filler.getFill()
@@ -255,9 +209,11 @@ class CollectionLayoutManager(
             if (isVertical) maxChildWidthInTheViewport else maxChildHeightInTheViewport
       } else {
         sizeInMainAxis =
-            if (isVertical) parentSizeConstraints.maxHeight else parentSizeConstraints.maxWidth
+            if (isVertical) collectionSizeConstraints.maxHeight
+            else collectionSizeConstraints.maxWidth
         sizeInCrossAxis =
-            if (isVertical) parentSizeConstraints.maxWidth else parentSizeConstraints.maxHeight
+            if (isVertical) collectionSizeConstraints.maxWidth
+            else collectionSizeConstraints.maxHeight
       }
     }
 
@@ -265,8 +221,8 @@ class CollectionLayoutManager(
     val height: Int
     if (isVertical) {
       width =
-          when (wrapInCrossAxis) {
-            CrossAxisWrapMode.NoWrap -> parentSizeConstraints.maxWidth
+          when (crossAxisWrapMode) {
+            CrossAxisWrapMode.NoWrap -> collectionSizeConstraints.maxWidth
             CrossAxisWrapMode.MatchFirstChild ->
                 if (items.isNotEmpty()) {
                   items[0].size?.width ?: 0
@@ -275,20 +231,20 @@ class CollectionLayoutManager(
           }
       height =
           if (wrapInMainAxis) {
-            min(sizeInMainAxis, parentSizeConstraints.maxHeight)
+            min(sizeInMainAxis, collectionSizeConstraints.maxHeight)
           } else {
-            parentSizeConstraints.maxHeight
+            collectionSizeConstraints.maxHeight
           }
     } else {
       width =
           if (wrapInMainAxis) {
-            min(sizeInMainAxis, parentSizeConstraints.maxWidth)
+            min(sizeInMainAxis, collectionSizeConstraints.maxWidth)
           } else {
-            parentSizeConstraints.maxWidth
+            collectionSizeConstraints.maxWidth
           }
       height =
-          when (wrapInCrossAxis) {
-            CrossAxisWrapMode.NoWrap -> parentSizeConstraints.maxHeight
+          when (crossAxisWrapMode) {
+            CrossAxisWrapMode.NoWrap -> collectionSizeConstraints.maxHeight
             CrossAxisWrapMode.MatchFirstChild ->
                 if (items.isNotEmpty()) {
                   items[0].size?.height ?: 0
@@ -297,5 +253,9 @@ class CollectionLayoutManager(
           }
     }
     return Size(width, height)
+  }
+
+  private fun isMatchingParentSize(percent: Float): Boolean {
+    return percent in 0.0..100.0
   }
 }

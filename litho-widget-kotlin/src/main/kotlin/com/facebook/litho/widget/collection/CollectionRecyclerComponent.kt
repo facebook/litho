@@ -49,6 +49,7 @@ import com.facebook.litho.widget.CollectionPrimitiveViewAdapter
 import com.facebook.litho.widget.CollectionPrimitiveViewScroller
 import com.facebook.litho.widget.ComponentRenderInfo
 import com.facebook.litho.widget.ItemDecorationWithMeasureFunction
+import com.facebook.litho.widget.LayoutInfo
 import com.facebook.litho.widget.LithoCollectionItem
 import com.facebook.litho.widget.LithoRecyclerView.OnAfterLayoutListener
 import com.facebook.litho.widget.LithoRecyclerView.OnBeforeLayoutListener
@@ -67,6 +68,7 @@ import com.facebook.litho.widget.requireLithoRecyclerView
 import com.facebook.litho.widget.unbindLegacyAttachBinder
 import com.facebook.litho.widget.unbindLegacyMountBinder
 import com.facebook.rendercore.PoolScope
+import com.facebook.rendercore.Size
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.primitives.LayoutBehavior
 import com.facebook.rendercore.primitives.LayoutScope
@@ -521,8 +523,12 @@ class CollectionRecyclerComponent(
  */
 @OptIn(ExperimentalLithoApi::class)
 private class CollectionPrimitiveViewLayoutBehavior(
+    private val layoutInfo: LayoutInfo,
     private val items: List<CollectionItem<*>>,
-    private val collectionLayoutManager: CollectionLayoutManager,
+    private val collectionSize: Size?,
+    private val wrapInMainAxis: Boolean,
+    private val isVertical: Boolean,
+    private val crossAxisWrapMode: CrossAxisWrapMode,
     private val startPadding: Int,
     private val endPadding: Int,
     private val topPadding: Int,
@@ -532,9 +538,17 @@ private class CollectionPrimitiveViewLayoutBehavior(
   override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
     val horizontalPadding = startPadding + endPadding
     val verticalPadding = topPadding + bottomPadding
-    val constraints =
+    val constraintsWithoutPadding =
         sizeConstraintsWithoutPadding(sizeConstraints, horizontalPadding, verticalPadding)
-    val size = collectionLayoutManager.measure(items = items, parentSizeConstraints = constraints)
+    val size =
+        CollectionLayoutManager.measure(
+            layoutInfo = layoutInfo,
+            items = items,
+            collectionSizeConstraints = constraintsWithoutPadding,
+            collectionSize = collectionSize,
+            isVertical = isVertical,
+            wrapInMainAxis = wrapInMainAxis,
+            crossAxisWrapMode = crossAxisWrapMode)
     return PrimitiveLayoutResult(size.width, size.height)
   }
 
