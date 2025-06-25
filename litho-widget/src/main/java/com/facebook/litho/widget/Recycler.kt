@@ -94,11 +94,6 @@ constructor(
     private val style: Style? = null
 ) : PrimitiveComponent() {
 
-  companion object {
-    // This is the default value for refresh spinner background from RecyclerSpec.
-    internal const val DEFAULT_REFRESH_SPINNER_BACKGROUND_COLOR = 0xFFFAFAFA.toInt()
-  }
-
   override fun PrimitiveComponentScope.render(): LithoPrimitive {
     val measureVersion = useState { 0 }
 
@@ -295,7 +290,7 @@ constructor(
    * - ItemDecorations: This will bind/unbind the [itemDecorations]
    * - Binder<RecyclerView>: This will bind/unbind the [binder].
    */
-  private fun PrimitiveComponentScope.SplitBindersMountBehavior(
+  fun PrimitiveComponentScope.SplitBindersMountBehavior(
       measureVersion: State<Int>,
       onRefresh: (() -> Unit)?,
       onScrollListeners: List<RecyclerView.OnScrollListener>?,
@@ -432,19 +427,25 @@ constructor(
         }
       }
 
-  private fun createSectionsRecyclerView(context: Context): SectionsRecyclerView =
-      SectionsRecyclerView(context, LithoRecyclerView(context)).apply {
-        id = R.id.recycler_view_container_id
-      }
-
   class NoUpdateItemAnimator : DefaultItemAnimator() {
     init {
       supportsChangeAnimations = false
     }
   }
+
+  companion object {
+
+    // This is the default value for refresh spinner background from RecyclerSpec.
+    internal const val DEFAULT_REFRESH_SPINNER_BACKGROUND_COLOR: Int = 0xFFFAFAFA.toInt()
+
+    fun createSectionsRecyclerView(context: Context): SectionsRecyclerView =
+        SectionsRecyclerView(context, LithoRecyclerView(context)).apply {
+          id = R.id.recycler_view_container_id
+        }
+  }
 }
 
-private fun SectionsRecyclerView.requireLithoRecyclerView(): LithoRecyclerView =
+fun SectionsRecyclerView.requireLithoRecyclerView(): LithoRecyclerView =
     recyclerView as? LithoRecyclerView
         ?: throw java.lang.IllegalStateException(
             "RecyclerView not found, it should not be removed from SwipeRefreshLayout")
@@ -476,7 +477,7 @@ private class RecyclerLayoutBehavior(
  * Binds the [sectionsRecyclerView] to the data according to the behavior that was present in the
  * initial version of the RecyclerSpec regarding mount binders (previously `RecyclerSpec.onMount`).
  */
-private fun ResourcesScope.bindLegacyMountBinder(
+fun ResourcesScope.bindLegacyMountBinder(
     sectionsRecyclerView: SectionsRecyclerView,
     contentDescription: CharSequence?,
     hasFixedSize: Boolean,
@@ -545,7 +546,7 @@ private fun ResourcesScope.bindLegacyMountBinder(
  * initial version of the RecyclerSpec regarding mount binders (previously
  * `RecyclerSpec.onUnmount`).
  */
-private fun unbindLegacyMountBinder(
+fun unbindLegacyMountBinder(
     sectionsRecyclerView: SectionsRecyclerView,
     @ColorInt refreshProgressBarBackgroundColor: Int?,
     edgeFactory: RecyclerView.EdgeEffectFactory?,
@@ -574,7 +575,7 @@ private fun unbindLegacyMountBinder(
  * initial version of the RecyclerSpec regarding the attach binders (previously
  * RecyclerSpec.onBind).
  */
-private fun bindLegacyAttachBinder(
+fun bindLegacyAttachBinder(
     sectionsRecyclerView: SectionsRecyclerView,
     sectionsViewLogger: SectionsRecyclerView.SectionsRecyclerViewLogger?,
     isPullToRefreshEnabled: Boolean,
@@ -637,7 +638,7 @@ private fun bindLegacyAttachBinder(
  * initial version of the RecyclerSpec regarding the attach binders (previously
  * `RecyclerSpec.onUnbind`).
  */
-private fun unbindLegacyAttachBinder(
+fun unbindLegacyAttachBinder(
     sectionsRecyclerView: SectionsRecyclerView,
     recyclerEventsController: RecyclerEventsController?,
     onScrollListeners: List<RecyclerView.OnScrollListener>?,

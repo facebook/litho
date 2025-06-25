@@ -36,7 +36,7 @@ import com.facebook.rendercore.thread.utils.ThreadUtils
  */
 abstract class ItemDecorationWithMeasureFunction : ItemDecoration() {
 
-  internal var measure: (View.() -> Unit)? = null
+  var measure: (View.() -> Unit)? = null
     @JvmName("setMeasure")
     set(value) {
       ThreadUtils.assertMainThread()

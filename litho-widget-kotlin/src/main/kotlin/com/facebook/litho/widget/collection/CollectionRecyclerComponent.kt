@@ -23,6 +23,8 @@ import androidx.annotation.UiThread
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.OrientationHelper
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.ItemAnimator
+import androidx.recyclerview.widget.SnapHelper
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentScope
@@ -30,6 +32,7 @@ import com.facebook.litho.ComponentsSystrace
 import com.facebook.litho.KComponent
 import com.facebook.litho.LithoRenderTreeView
 import com.facebook.litho.LithoStartupLogger
+import com.facebook.litho.PrimitiveComponentScope
 import com.facebook.litho.Style
 import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.config.PrimitiveRecyclerBinderStrategy
@@ -45,21 +48,31 @@ import com.facebook.litho.widget.CollectionLayoutManager
 import com.facebook.litho.widget.CollectionPrimitiveViewAdapter
 import com.facebook.litho.widget.CollectionPrimitiveViewScroller
 import com.facebook.litho.widget.ComponentRenderInfo
+import com.facebook.litho.widget.ItemDecorationWithMeasureFunction
 import com.facebook.litho.widget.LithoCollectionItem
 import com.facebook.litho.widget.LithoRecyclerView.OnAfterLayoutListener
 import com.facebook.litho.widget.LithoRecyclerView.OnBeforeLayoutListener
 import com.facebook.litho.widget.LithoRecyclerView.TouchInterceptor
 import com.facebook.litho.widget.PrimitiveRecyclerViewHolder
 import com.facebook.litho.widget.Recycler
+import com.facebook.litho.widget.Recycler.Companion.createSectionsRecyclerView
 import com.facebook.litho.widget.RecyclerBinder
 import com.facebook.litho.widget.RecyclerEventsController
 import com.facebook.litho.widget.RenderInfo
+import com.facebook.litho.widget.SectionsRecyclerView
 import com.facebook.litho.widget.SectionsRecyclerView.SectionsRecyclerViewLogger
+import com.facebook.litho.widget.bindLegacyAttachBinder
+import com.facebook.litho.widget.bindLegacyMountBinder
+import com.facebook.litho.widget.requireLithoRecyclerView
+import com.facebook.litho.widget.unbindLegacyAttachBinder
+import com.facebook.litho.widget.unbindLegacyMountBinder
 import com.facebook.rendercore.PoolScope
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.primitives.LayoutBehavior
 import com.facebook.rendercore.primitives.LayoutScope
+import com.facebook.rendercore.primitives.MountBehavior
 import com.facebook.rendercore.primitives.PrimitiveLayoutResult
+import com.facebook.rendercore.primitives.ViewAllocator
 import kotlin.math.max
 
 /** A component that renders a list of items using a [RecyclerBinder]. */
@@ -551,6 +564,174 @@ private class CollectionPrimitiveViewLayoutBehavior(
       }
       return SizeConstraints(
           minWidth = minWidth, maxWidth = maxWidth, minHeight = minHeight, maxHeight = maxHeight)
+    }
+  }
+}
+
+/**
+ * Creates a MountBehavior for CollectionPrimitiveView that handles the mounting and configuration
+ * of a SectionsRecyclerView with all necessary properties, listeners, and decorations.
+ */
+private fun PrimitiveComponentScope.CollectionPrimitiveViewMountBehavior(
+    adapter: CollectionPrimitiveViewAdapter,
+    bottomPadding: Int,
+    clipChildren: Boolean,
+    clipToPadding: Boolean,
+    endPadding: Int,
+    excludeFromIncrementalMount: Boolean,
+    fadingEdgeLength: Int,
+    horizontalFadingEdgeEnabled: Boolean,
+    isBottomFadingEnabled: Boolean,
+    isLeftFadingEnabled: Boolean,
+    isRightFadingEnabled: Boolean,
+    isTopFadingEnabled: Boolean,
+    itemAnimator: ItemAnimator?,
+    itemDecorations: List<RecyclerView.ItemDecoration>?,
+    itemTouchListener: RecyclerView.OnItemTouchListener?,
+    measureChild: View.() -> Unit,
+    nestedScrollingEnabled: Boolean,
+    onAfterLayoutListener: OnAfterLayoutListener?,
+    onBeforeLayoutListener: OnBeforeLayoutListener?,
+    onRefresh: (() -> Unit)?,
+    onScrollListeners: List<RecyclerView.OnScrollListener>?,
+    overScrollMode: Int,
+    pullToRefreshEnabled: Boolean,
+    recyclerEventsController: RecyclerEventsController?,
+    recyclerViewId: Int,
+    refreshProgressBarBackgroundColor: Int,
+    refreshProgressBarColor: Int,
+    scrollBarStyle: Int,
+    sectionsViewLogger: SectionsRecyclerViewLogger?,
+    snapHelper: SnapHelper?,
+    startPadding: Int,
+    topPadding: Int,
+    touchInterceptor: TouchInterceptor?,
+    verticalFadingEdgeEnabled: Boolean
+): MountBehavior<SectionsRecyclerView> {
+
+  return MountBehavior(ViewAllocator { context -> createSectionsRecyclerView(context) }) {
+    doesMountRenderTreeHosts = true
+    shouldExcludeFromIncrementalMount = excludeFromIncrementalMount
+
+    withDescription("recycler-decorations") {
+      bind(itemDecorations, measureChild) { sectionsRecyclerView ->
+        val recyclerView = sectionsRecyclerView.requireLithoRecyclerView()
+
+        itemDecorations?.forEach { decoration ->
+          if (decoration is ItemDecorationWithMeasureFunction) {
+            decoration.measure = measureChild
+          }
+          recyclerView.addItemDecoration(decoration)
+        }
+
+        onUnbind {
+          itemDecorations?.forEach { decoration ->
+            recyclerView.removeItemDecoration(decoration)
+            if (decoration is ItemDecorationWithMeasureFunction) {
+              decoration.measure = null
+            }
+          }
+        }
+      }
+    }
+
+    withDescription("recycler-equivalent-mount") {
+      bind(
+          clipToPadding,
+          startPadding,
+          topPadding,
+          endPadding,
+          bottomPadding,
+          clipChildren,
+          scrollBarStyle,
+          horizontalFadingEdgeEnabled,
+          verticalFadingEdgeEnabled,
+          fadingEdgeLength,
+          refreshProgressBarBackgroundColor,
+          refreshProgressBarColor,
+          itemAnimator?.javaClass) { sectionsRecyclerView ->
+            bindLegacyMountBinder(
+                sectionsRecyclerView = sectionsRecyclerView,
+                contentDescription = "", // not supported yet, using default value instead
+                hasFixedSize = true, // not supported yet, using default value instead
+                isClipToPaddingEnabled = clipToPadding,
+                paddingAdditionDisabled = false, // not supported yet, using default value instead
+                leftPadding = startPadding,
+                topPadding = topPadding,
+                rightPadding = endPadding,
+                bottomPadding = bottomPadding,
+                isClipChildrenEnabled = clipChildren,
+                isNestedScrollingEnabled = nestedScrollingEnabled,
+                scrollBarStyle = scrollBarStyle,
+                isHorizontalFadingEdgeEnabled = horizontalFadingEdgeEnabled,
+                isVerticalFadingEdgeEnabled = verticalFadingEdgeEnabled,
+                isLeftFadingEnabled = isLeftFadingEnabled,
+                isRightFadingEnabled = isRightFadingEnabled,
+                isTopFadingEnabled = isTopFadingEnabled,
+                isBottomFadingEnabled = isBottomFadingEnabled,
+                fadingEdgeLength = fadingEdgeLength,
+                recyclerViewId = recyclerViewId,
+                overScrollMode = overScrollMode,
+                edgeFactory = null, // // not supported yet, using default value instead
+                refreshProgressBarBackgroundColor = refreshProgressBarBackgroundColor,
+                refreshProgressBarColor = refreshProgressBarColor,
+                itemAnimator = itemAnimator)
+
+            onUnbind {
+              unbindLegacyMountBinder(
+                  sectionsRecyclerView = sectionsRecyclerView,
+                  refreshProgressBarBackgroundColor = refreshProgressBarBackgroundColor,
+                  edgeFactory = null,
+                  snapHelper = snapHelper)
+            }
+          }
+    }
+
+    withDescription("recycler-adapter") {
+      bind(adapter) { sectionsRecyclerView ->
+        val recyclerView = sectionsRecyclerView.requireLithoRecyclerView()
+        recyclerView.adapter = adapter
+        onUnbind { recyclerView.adapter = null }
+      }
+    }
+
+    withDescription("recycler-before-layout") {
+      bind(onBeforeLayoutListener) { sectionsRecyclerView ->
+        val recyclerView = sectionsRecyclerView.requireLithoRecyclerView()
+        recyclerView.setOnBeforeLayoutListener(onBeforeLayoutListener)
+        onUnbind { recyclerView.setOnBeforeLayoutListener(null) }
+      }
+    }
+
+    withDescription("recycler-after-layout") {
+      bind(onAfterLayoutListener) { sectionsRecyclerView ->
+        val recyclerView = sectionsRecyclerView.requireLithoRecyclerView()
+        recyclerView.setOnAfterLayoutListener(onAfterLayoutListener)
+        onUnbind { recyclerView.setOnAfterLayoutListener(null) }
+      }
+    }
+
+    withDescription("recycler-equivalent-bind") {
+      bind(Any()) { sectionsRecyclerView ->
+        bindLegacyAttachBinder(
+            sectionsRecyclerView = sectionsRecyclerView,
+            sectionsViewLogger = sectionsViewLogger,
+            isPullToRefreshEnabled = pullToRefreshEnabled,
+            onRefresh = onRefresh,
+            onScrollListeners = onScrollListeners,
+            touchInterceptor = touchInterceptor,
+            onItemTouchListener = itemTouchListener,
+            snapHelper = snapHelper,
+            recyclerEventsController = recyclerEventsController)
+
+        onUnbind {
+          unbindLegacyAttachBinder(
+              sectionsRecyclerView = sectionsRecyclerView,
+              recyclerEventsController = recyclerEventsController,
+              onScrollListeners = onScrollListeners,
+              onItemTouchListener = itemTouchListener)
+        }
+      }
     }
   }
 }
