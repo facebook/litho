@@ -264,7 +264,7 @@ fun PrimitiveComponentScope.useNestedTree(
   val lithoTree =
       useCached(nestedTreeState.id) {
         val stateUpdater =
-            NestedStateUpdater(nestedTreeState::treeState) { update: PendingStateUpdate ->
+            NestedStateUpdater(nestedTreeState::treeState) { update ->
               nestedTreeState.enqueue(update)
               when {
                 update.isLazy -> {} // No-Op
@@ -319,7 +319,7 @@ data class NestedLithoTreeState(
   val mountedViewReference: NestedMountedViewReference = NestedMountedViewReference()
   val treeLifecycleProvider: NestedLithoTreeLifecycleProvider = NestedLithoTreeLifecycleProvider()
 
-  fun enqueue(update: PendingStateUpdate) {
+  fun enqueue(update: PendingStateUpdate<*>) {
     synchronized(this) { treeState?.enqueue(update) }
   }
 

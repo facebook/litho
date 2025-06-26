@@ -446,40 +446,6 @@ public class ComponentContext {
     mLithoTree.getStateUpdater().updateStateLazy(getGlobalKey(), stateUpdate, isContextForLayout());
   }
 
-  final void updateHookStateAsync(String globalKey, HookUpdater updateBlock) {
-    checkIfNoStateUpdatesMethod();
-
-    if (mLithoTree == null) {
-      return;
-    }
-
-    final Component scope = getComponentScope();
-    mLithoTree
-        .getStateUpdater()
-        .updateHookStateAsync(
-            globalKey,
-            updateBlock,
-            scope != null ? scope.getSimpleName() : "hook",
-            isContextForLayout());
-  }
-
-  final void updateHookStateSync(String globalKey, HookUpdater updateBlock) {
-    checkIfNoStateUpdatesMethod();
-
-    if (mLithoTree == null) {
-      return;
-    }
-
-    final Component scope = getComponentScope();
-    mLithoTree
-        .getStateUpdater()
-        .updateHookStateSync(
-            globalKey,
-            updateBlock,
-            scope != null ? scope.getSimpleName() : "hook",
-            isContextForLayout());
-  }
-
   /**
    * @return A StateContainer with lazy state updates applied. This may be the same container passed
    *     in if there were no updates to apply. This method won't mutate the passed container.

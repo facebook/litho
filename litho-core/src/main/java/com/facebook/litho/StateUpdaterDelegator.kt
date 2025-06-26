@@ -16,6 +16,8 @@
 
 package com.facebook.litho
 
+import com.facebook.litho.state.StateId
+
 /**
  * StateUpdaterDelegator is responsible for holding reference to the right [StateUpdater] that will
  * be used during creation of [ComponentTree]
@@ -59,22 +61,18 @@ class StateUpdaterDelegator : StateUpdater {
   ) = applyOnStateUpdater { updateStateLazy(globalKey, stateUpdate, isLayoutState) }
 
   override fun updateHookStateAsync(
-      globalKey: String,
+      stateId: StateId,
       updateBlock: HookUpdater,
       attribution: String?,
       isLayoutState: Boolean
-  ) = applyOnStateUpdater {
-    updateHookStateAsync(globalKey, updateBlock, attribution, isLayoutState)
-  }
+  ) = applyOnStateUpdater { updateHookStateAsync(stateId, updateBlock, attribution, isLayoutState) }
 
   override fun updateHookStateSync(
-      globalKey: String,
+      stateId: StateId,
       updateBlock: HookUpdater,
       attribution: String?,
       isLayoutState: Boolean
-  ) = applyOnStateUpdater {
-    updateHookStateSync(globalKey, updateBlock, attribution, isLayoutState)
-  }
+  ) = applyOnStateUpdater { updateHookStateSync(stateId, updateBlock, attribution, isLayoutState) }
 
   override fun applyLazyStateUpdatesForContainer(
       globalKey: String,
@@ -108,22 +106,16 @@ class StateUpdaterDelegator : StateUpdater {
   }
 
   override fun <T> canSkipStateUpdate(
-      globalKey: String,
-      hookStateIndex: Int,
+      stateId: StateId,
       newValue: T?,
       isLayoutState: Boolean
-  ): Boolean = applyOnStateUpdater {
-    canSkipStateUpdate(globalKey, hookStateIndex, newValue, isLayoutState)
-  }
+  ): Boolean = applyOnStateUpdater { canSkipStateUpdate(stateId, newValue, isLayoutState) }
 
   override fun <T> canSkipStateUpdate(
       newValueFunction: (T) -> T,
-      globalKey: String,
-      hookStateIndex: Int,
+      stateId: StateId,
       isLayoutState: Boolean
-  ): Boolean = applyOnStateUpdater {
-    canSkipStateUpdate(newValueFunction, globalKey, hookStateIndex, isLayoutState)
-  }
+  ): Boolean = applyOnStateUpdater { canSkipStateUpdate(newValueFunction, stateId, isLayoutState) }
 
   override fun getEventTrigger(key: String): EventTrigger<*>? = applyOnStateUpdater {
     getEventTrigger(key)

@@ -26,6 +26,7 @@ import com.facebook.litho.NestedLithoTree.commit
 import com.facebook.litho.NestedLithoTree.enqueue
 import com.facebook.litho.NestedLithoTree.runEffects
 import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.state.StateId
 import com.facebook.rendercore.Host
 import com.facebook.rendercore.RunnableHandler
 import com.facebook.rendercore.RunnableHandler.DefaultHandler
@@ -456,7 +457,7 @@ class LithoRenderer(
   ) {
     request(
         PendingStateUpdate(
-            key = globalKey,
+            stateId = globalKey,
             updater = stateUpdate,
             isLayoutState = isLayoutState,
             isAsync = false,
@@ -472,7 +473,7 @@ class LithoRenderer(
   ) {
     request(
         PendingStateUpdate(
-            key = globalKey,
+            stateId = globalKey,
             updater = stateUpdate,
             isLayoutState = isLayoutState,
             isAsync = true,
@@ -487,7 +488,7 @@ class LithoRenderer(
   ) {
     request(
         PendingStateUpdate(
-            key = globalKey,
+            stateId = globalKey,
             updater = stateUpdate,
             isLayoutState = isLayoutState,
             isAsync = false,
@@ -496,14 +497,14 @@ class LithoRenderer(
   }
 
   override fun updateHookStateAsync(
-      globalKey: String,
+      stateId: StateId,
       updateBlock: HookUpdater,
       attribution: String?,
       isLayoutState: Boolean
   ) {
     request(
         PendingStateUpdate(
-            key = globalKey,
+            stateId = stateId,
             updater = updateBlock,
             isLayoutState = isLayoutState,
             isAsync = true,
@@ -512,14 +513,14 @@ class LithoRenderer(
   }
 
   override fun updateHookStateSync(
-      globalKey: String,
+      stateId: StateId,
       updateBlock: HookUpdater,
       attribution: String?,
       isLayoutState: Boolean
   ) {
     request(
         PendingStateUpdate(
-            key = globalKey,
+            stateId = stateId,
             updater = updateBlock,
             isLayoutState = isLayoutState,
             isAsync = false,
@@ -563,24 +564,21 @@ class LithoRenderer(
   }
 
   override fun <T> canSkipStateUpdate(
-      globalKey: String,
-      hookStateIndex: Int,
+      stateId: StateId,
       newValue: T?,
       isLayoutState: Boolean
   ): Boolean {
-    return treeState?.canSkipStateUpdate(globalKey, hookStateIndex, newValue, isLayoutState) == true
+    return treeState?.canSkipStateUpdate(stateId, newValue, isLayoutState) == true
   }
 
   override fun <T> canSkipStateUpdate(
       newValueFunction: (T) -> T,
-      globalKey: String,
-      hookStateIndex: Int,
+      stateId: StateId,
       isLayoutState: Boolean
   ): Boolean {
     return treeState?.canSkipStateUpdate(
         newValueFunction,
-        globalKey,
-        hookStateIndex,
+        stateId,
         isLayoutState,
     ) == true
   }
@@ -596,7 +594,7 @@ class LithoRenderer(
   // endregion
 
   // region StateUpdateRequester
-  override fun request(update: PendingStateUpdate) {
+  override fun request(update: PendingStateUpdate<*>) {
     if (currentLifecycle != LithoRendererLifecycle.STARTED) {
       // When the current view is out of the preparation range, we don't want to apply any state
       // updates.

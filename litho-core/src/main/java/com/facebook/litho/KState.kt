@@ -159,10 +159,7 @@ internal constructor(
     }
 
     stateUpdater?.updateHookStateAsync(
-        globalKey,
-        HookUpdaterValue(newValue),
-        componentScope?.simpleName ?: "hook",
-        isLayoutContext)
+        stateId, HookUpdaterValue(newValue), componentScope?.simpleName ?: "hook", isLayoutContext)
   }
 
   /**
@@ -183,7 +180,7 @@ internal constructor(
     }
 
     stateUpdater.updateHookStateAsync(
-        globalKey,
+        stateId,
         HookUpdaterLambda(newValueFunction),
         componentScope?.simpleName ?: "hook",
         isLayoutContext)
@@ -204,10 +201,7 @@ internal constructor(
     }
 
     stateUpdater.updateHookStateSync(
-        globalKey,
-        HookUpdaterValue(newValue),
-        componentScope?.simpleName ?: "hook",
-        isLayoutContext)
+        stateId, HookUpdaterValue(newValue), componentScope?.simpleName ?: "hook", isLayoutContext)
   }
 
   /**
@@ -232,7 +226,7 @@ internal constructor(
     }
 
     stateUpdater.updateHookStateSync(
-        globalKey,
+        stateId,
         HookUpdaterLambda(newValueFunction),
         componentScope?.simpleName ?: "hook",
         isLayoutContext)
@@ -254,12 +248,11 @@ internal constructor(
   }
 
   private fun canSkip(newValue: T): Boolean {
-    return stateUpdater.canSkipStateUpdate(globalKey, hookStateIndex, newValue, isLayoutContext)
+    return stateUpdater.canSkipStateUpdate(stateId, newValue, isLayoutContext)
   }
 
   private fun canSkip(newValueFunction: (T) -> T): Boolean {
-    return stateUpdater.canSkipStateUpdate(
-        newValueFunction, globalKey, hookStateIndex, isLayoutContext)
+    return stateUpdater.canSkipStateUpdate(newValueFunction, stateId, isLayoutContext)
   }
 
   /**

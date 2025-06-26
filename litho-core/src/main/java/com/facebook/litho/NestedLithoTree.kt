@@ -20,6 +20,7 @@ import android.view.View
 import androidx.annotation.UiThread
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
+import com.facebook.litho.state.StateId
 import com.facebook.litho.state.TreeStateProvider
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.thread.utils.ThreadUtils.assertMainThread
@@ -120,25 +121,25 @@ object NestedLithoTree {
     treeState.clearEventHandlersAndTriggers()
   }
 
-  fun TreeState.enqueue(updates: List<PendingStateUpdate>): TreeState {
+  fun TreeState.enqueue(updates: List<PendingStateUpdate<*>>): TreeState {
     for (update in updates) {
       this.enqueue(update)
     }
     return this
   }
 
-  fun TreeState.enqueue(update: PendingStateUpdate): TreeState {
+  fun TreeState.enqueue(update: PendingStateUpdate<*>): TreeState {
     when (update.updater) {
       is HookUpdater -> {
         queueHookStateUpdate(
-            key = update.key,
+            stateId = update.stateId as StateId,
             updater = update.updater,
             isLayoutState = update.isLayoutState,
         )
       }
       is StateContainer.StateUpdate -> {
         queueStateUpdate(
-            key = update.key,
+            key = update.stateId as String,
             stateUpdate = update.updater,
             update.isLazy,
             isLayoutState = update.isLayoutState,
@@ -166,14 +167,14 @@ internal constructor(
     get() = getState()
 
   override fun updateHookStateAsync(
-      globalKey: String,
+      stateId: StateId,
       updateBlock: HookUpdater,
       attribution: String?,
       isLayoutState: Boolean
   ) {
     updater.request(
         PendingStateUpdate(
-            key = globalKey,
+            stateId = stateId,
             updater = updateBlock,
             isLayoutState = isLayoutState,
             isAsync = true,
@@ -182,14 +183,14 @@ internal constructor(
   }
 
   override fun updateHookStateSync(
-      globalKey: String,
+      stateId: StateId,
       updateBlock: HookUpdater,
       attribution: String?,
       isLayoutState: Boolean
   ) {
     updater.request(
         PendingStateUpdate(
-            key = globalKey,
+            stateId = stateId,
             updater = updateBlock,
             isLayoutState = isLayoutState,
             isAsync = false,
@@ -205,7 +206,7 @@ internal constructor(
   ) {
     updater.request(
         PendingStateUpdate(
-            key = globalKey,
+            stateId = globalKey,
             updater = stateUpdate,
             isLayoutState = isLayoutState,
             isAsync = true,
@@ -221,7 +222,7 @@ internal constructor(
   ) {
     updater.request(
         PendingStateUpdate(
-            key = globalKey,
+            stateId = globalKey,
             updater = stateUpdate,
             isLayoutState = isLayoutState,
             isAsync = false,
@@ -236,7 +237,7 @@ internal constructor(
   ) {
     updater.request(
         PendingStateUpdate(
-            key = globalKey,
+            stateId = globalKey,
             updater = stateUpdate,
             isLayoutState = isLayoutState,
             isAsync = false,
@@ -254,25 +255,21 @@ internal constructor(
   }
 
   override fun <T> canSkipStateUpdate(
-      globalKey: String,
-      hookStateIndex: Int,
+      stateId: StateId,
       newValue: T?,
       isLayoutState: Boolean
   ): Boolean {
-    return treeState?.canSkipStateUpdate(globalKey, hookStateIndex, newValue, isLayoutState)
-        ?: false
+    return treeState?.canSkipStateUpdate(stateId, newValue, isLayoutState) ?: false
   }
 
   override fun <T> canSkipStateUpdate(
       newValueFunction: (T) -> T,
-      globalKey: String,
-      hookStateIndex: Int,
+      stateId: StateId,
       isLayoutState: Boolean
   ): Boolean {
     return treeState?.canSkipStateUpdate(
         newValueFunction,
-        globalKey,
-        hookStateIndex,
+        stateId,
         isLayoutState,
     ) ?: false
   }
@@ -359,12 +356,12 @@ class NestedLithoTreeLifecycleProvider : LithoTreeLifecycleProvider {
 // endregion
 
 fun interface StateUpdateRequester {
-  fun request(update: PendingStateUpdate)
+  fun request(update: PendingStateUpdate<*>)
 }
 
 @DataClassGenerate(toString = Mode.OMIT, equalsHashCode = Mode.KEEP)
-data class PendingStateUpdate(
-    val key: String,
+data class PendingStateUpdate<T>(
+    val stateId: T,
     val updater: StateUpdateApplier,
     val isLayoutState: Boolean, // state created during the layout phase
     val isAsync: Boolean,

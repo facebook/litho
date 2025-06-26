@@ -77,6 +77,7 @@ import com.facebook.litho.debug.LithoDebugEvent;
 import com.facebook.litho.debug.LithoDebugEventAttributes;
 import com.facebook.litho.lifecycle.LifecycleOwnerWrapper;
 import com.facebook.litho.perfboost.LithoPerfBooster;
+import com.facebook.litho.state.StateId;
 import com.facebook.litho.state.TreeStateProvider;
 import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.LogLevel;
@@ -513,30 +514,26 @@ public class ComponentTree
 
   @Override
   public <T> boolean canSkipStateUpdate(
-      final String globalKey,
-      final int hookStateIndex,
-      final @Nullable T newValue,
-      final boolean isLayoutState) {
+      final StateId stateId, final @Nullable T newValue, final boolean isLayoutState) {
     final TreeState treeState = getTreeState();
     if (treeState == null) {
       return false;
     }
 
-    return treeState.canSkipStateUpdate(globalKey, hookStateIndex, newValue, isLayoutState);
+    return treeState.canSkipStateUpdate(stateId, newValue, isLayoutState);
   }
 
   @Override
   public <T> boolean canSkipStateUpdate(
       final Function1<? super T, ? extends T> newValueFunction,
-      final String globalKey,
-      final int hookStateIndex,
+      final StateId stateId,
       final boolean isLayoutState) {
     final TreeState treeState = getTreeState();
     if (treeState == null) {
       return false;
     }
 
-    return treeState.canSkipStateUpdate(newValueFunction, globalKey, hookStateIndex, isLayoutState);
+    return treeState.canSkipStateUpdate(newValueFunction, stateId, isLayoutState);
   }
 
   @Override
@@ -1166,14 +1163,14 @@ public class ComponentTree
 
   @Override
   public final void updateHookStateSync(
-      String globalKey, HookUpdater updater, String attribution, boolean isLayoutState) {
+      StateId stateId, HookUpdater updater, String attribution, boolean isLayoutState) {
     synchronized (this) {
       if (mRoot == null) {
         return;
       }
 
       if (mTreeState != null) {
-        mTreeState.queueHookStateUpdate(globalKey, updater, isLayoutState);
+        mTreeState.queueHookStateUpdate(stateId, updater, isLayoutState);
       }
     }
 
@@ -1182,14 +1179,14 @@ public class ComponentTree
 
   @Override
   public final void updateHookStateAsync(
-      String globalKey, HookUpdater updater, String attribution, boolean isLayoutState) {
+      StateId stateId, HookUpdater updater, String attribution, boolean isLayoutState) {
     synchronized (this) {
       if (mRoot == null) {
         return;
       }
 
       if (mTreeState != null) {
-        mTreeState.queueHookStateUpdate(globalKey, updater, isLayoutState);
+        mTreeState.queueHookStateUpdate(stateId, updater, isLayoutState);
       }
     }
 

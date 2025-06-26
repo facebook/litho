@@ -21,6 +21,7 @@ import androidx.annotation.VisibleForTesting
 import com.facebook.litho.Component.RenderData
 import com.facebook.litho.internal.HookKey
 import com.facebook.litho.state.ComponentState
+import com.facebook.litho.state.StateId
 import com.facebook.rendercore.annotations.UIState
 
 class TreeState {
@@ -144,16 +145,16 @@ class TreeState {
     stateHandler.queueStateUpdate(key, stateUpdate, isLazyStateUpdate)
   }
 
-  fun queueHookStateUpdate(key: String, updater: HookUpdater, isLayoutState: Boolean) {
-    getStateHandler(isLayoutState).queueHookStateUpdate(key, updater)
+  fun queueHookStateUpdate(stateId: StateId, updater: HookUpdater, isLayoutState: Boolean) {
+    getStateHandler(isLayoutState).queueHookStateUpdate(stateId, updater)
   }
 
   fun applyLazyStateUpdatesForContainer(
-      componentKey: String,
+      key: String,
       container: StateContainer,
       isNestedTree: Boolean
   ): StateContainer {
-    return getStateHandler(isNestedTree).applyLazyStateUpdatesForContainer(componentKey, container)
+    return getStateHandler(isNestedTree).applyLazyStateUpdatesForContainer(key, container)
   }
 
   fun hasUncommittedUpdates(): Boolean {
@@ -172,12 +173,6 @@ class TreeState {
     getStateHandler(isLayoutState).applyStateUpdatesEarly(context, component, prevTreeRootNode)
   }
 
-  val keysForPendingResolveStateUpdates: Set<String>
-    get() = getKeysForPendingStateUpdates(resolveState)
-
-  val keysForPendingLayoutStateUpdates: Set<String>
-    get() = getKeysForPendingStateUpdates(layoutState)
-
   val keysForPendingStateUpdates: Set<String>
     get() {
       return HashSet<String>().apply {
@@ -193,6 +188,21 @@ class TreeState {
         addAll(layoutState.keysForAppliedUpdates)
       }
     }
+
+  fun getStateIdsForPendingStateUpdates(treeIdForSpec: Int): Set<StateId> {
+    return buildSet {
+      addAll(resolveState.getStateIdsForPendingUpdates(treeIdForSpec))
+      addAll(layoutState.getStateIdsForPendingUpdates(treeIdForSpec))
+    }
+  }
+
+  fun getStateIdsForPendingResolveStateUpdates(treeIdForSpec: Int): Set<StateId> {
+    return resolveState.getStateIdsForPendingUpdates(treeIdForSpec)
+  }
+
+  fun getStateIdsForPendingLayoutStateUpdates(treeIdForSpec: Int): Set<StateId> {
+    return layoutState.getStateIdsForPendingUpdates(treeIdForSpec)
+  }
 
   fun addState(key: String, state: ComponentState<*>, isLayoutState: Boolean) {
     getStateHandler(isLayoutState).addState(key, state)
@@ -230,33 +240,22 @@ class TreeState {
     getStateHandler(isLayoutState).removePendingStateUpdate(key)
   }
 
-  fun <T> canSkipStateUpdate(
-      globalKey: String,
-      hookStateIndex: Int,
-      newValue: T,
-      isLayoutState: Boolean
-  ): Boolean {
+  fun <T> canSkipStateUpdate(stateId: StateId, newValue: T, isLayoutState: Boolean): Boolean {
     return canSkipStateUpdate<T>(
         updater = { newValue },
-        globalKey = globalKey,
-        hookStateIndex = hookStateIndex,
+        stateId = stateId,
         isLayoutState = isLayoutState,
     )
   }
 
-  fun <T> canSkipStateUpdate(
-      updater: (T) -> T,
-      globalKey: String,
-      hookStateIndex: Int,
-      isLayoutState: Boolean
-  ): Boolean {
+  fun <T> canSkipStateUpdate(updater: (T) -> T, stateId: StateId, isLayoutState: Boolean): Boolean {
     val stateHandler = getStateHandler(isLayoutState)
-    val committedState = stateHandler.getState(globalKey)
+    val committedState = stateHandler.getState(stateId.globalKey)
     if (committedState != null) {
-      val committedStateWithUpdatesApplied = stateHandler.getKStateWithUpdates(globalKey)
+      val committedStateWithUpdatesApplied = stateHandler.getKStateWithUpdates(stateId.globalKey)
       if (committedStateWithUpdatesApplied != null) {
         val committedUpdatedCachedValue =
-            committedStateWithUpdatesApplied.states.getOrNull(hookStateIndex)
+            committedStateWithUpdatesApplied.states.getOrNull(stateId.index)
         val committedUpdatedValue: T = committedUpdatedCachedValue?.value as T
         val newValueAfterUpdate = updater.invoke(committedUpdatedValue)
         return if (committedUpdatedValue == null && newValueAfterUpdate == null) {

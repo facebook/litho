@@ -23,6 +23,7 @@ import com.facebook.litho.SpecGeneratedComponent.TransitionContainer
 import com.facebook.litho.StateContainer.StateUpdate
 import com.facebook.litho.debug.LithoDebugEvent
 import com.facebook.litho.state.ComponentState
+import com.facebook.litho.state.StateId
 import com.facebook.litho.stats.LithoStats
 import com.facebook.rendercore.LogLevel
 import com.facebook.rendercore.debug.DebugEvent
@@ -97,8 +98,8 @@ class StateHandler {
   // These are both lists of (globalKey, updateMethod) pairs, where globalKey is the global key
   // of the component the update applies to
   @GuardedBy("this")
-  private val pendingHookUpdates: MutableMap<String, MutableList<HookUpdater>> = HashMap()
-  private var appliedHookUpdates: MutableMap<String, List<HookUpdater>> = HashMap()
+  private val pendingHookUpdates: MutableMap<String, MutableList<HookUpdateData>> = HashMap()
+  private var appliedHookUpdates: MutableMap<String, List<HookUpdateData>> = HashMap()
 
   var initialState: InitialState
     private set
@@ -254,11 +255,8 @@ class StateHandler {
     _state[key] = state
   }
 
-  fun applyLazyStateUpdatesForContainer(
-      componentKey: String,
-      container: StateContainer
-  ): StateContainer {
-    val stateUpdatesForKey = synchronized(this) { pendingLazyStateUpdates[componentKey] }
+  fun applyLazyStateUpdatesForContainer(key: String, container: StateContainer): StateContainer {
+    val stateUpdatesForKey = synchronized(this) { pendingLazyStateUpdates[key] }
 
     if (stateUpdatesForKey.isNullOrEmpty()) {
       return container
@@ -313,6 +311,24 @@ class StateHandler {
           addAll(_appliedStateUpdates.keys)
           addAll(appliedHookUpdates.keys)
         }
+
+  @Synchronized
+  fun getStateIdsForPendingUpdates(treeIdForSpec: Int): Set<StateId> {
+    return buildSet {
+      _appliedStateUpdates.forEach { (k, _) -> add(StateId(treeIdForSpec, k, -1)) }
+      _pendingStateUpdates.forEach { (k, _) -> add(StateId(treeIdForSpec, k, -1)) }
+      pendingHookUpdates.forEach { (_, v) -> v.mapTo(this) { it.stateId } }
+      appliedHookUpdates.forEach { (_, v) -> v.mapTo(this) { it.stateId } }
+    }
+  }
+
+  @Synchronized
+  fun getStateIdsForAppliedUpdates(treeIdForSpec: Int): Set<StateId> {
+    return buildSet {
+      _appliedStateUpdates.forEach { (k, _) -> add(StateId(treeIdForSpec, k, -1)) }
+      appliedHookUpdates.forEach { (_, v) -> v.mapTo(this) { it.stateId } }
+    }
+  }
 
   private fun clearStateUpdates(appliedStateUpdates: Map<String, List<StateUpdate>>) {
     synchronized(this) {
@@ -406,10 +422,10 @@ class StateHandler {
    */
   private fun copyStateUpdatesMap(
       pendingStateUpdates: Map<String, MutableList<StateUpdate>>,
-      pendingHookStateUpdates: Map<String, MutableList<HookUpdater>>,
+      pendingHookStateUpdates: Map<String, MutableList<HookUpdateData>>,
       pendingLazyStateUpdates: Map<String, MutableList<StateUpdate>>,
       appliedStateUpdates: Map<String, List<StateUpdate>>,
-      appliedHookStateUpdates: Map<String, List<HookUpdater>>,
+      appliedHookStateUpdates: Map<String, List<HookUpdateData>>,
   ) {
     if (pendingStateUpdates.isEmpty() &&
         appliedStateUpdates.isEmpty() &&
@@ -479,14 +495,14 @@ class StateHandler {
    * Registers the given block to be run before the next layout calculation to update hook state.
    */
   @Synchronized
-  fun queueHookStateUpdate(key: String, updater: HookUpdater) {
-    var hookUpdaters = pendingHookUpdates[key]
+  fun queueHookStateUpdate(stateId: StateId, updater: HookUpdater) {
+    var hookUpdaters = pendingHookUpdates[stateId.globalKey]
     if (hookUpdaters == null) {
       hookUpdaters = ArrayList()
-      pendingHookUpdates[key] = hookUpdaters
+      pendingHookUpdates[stateId.globalKey] = hookUpdaters
     }
 
-    hookUpdaters.add(updater)
+    hookUpdaters.add(HookUpdateData(stateId, updater))
   }
 
   @get:VisibleForTesting
@@ -510,8 +526,8 @@ class StateHandler {
       if (stateContainer is KStateContainer) {
         var kStateContainer: KStateContainer = stateContainer
 
-        for (hookUpdate in value) {
-          kStateContainer = hookUpdate.getUpdatedStateContainer(kStateContainer)
+        for (update in value) {
+          kStateContainer = update.updater.getUpdatedStateContainer(kStateContainer)
         }
 
         _state[key] = current.copy(value = kStateContainer)
@@ -527,19 +543,19 @@ class StateHandler {
    */
   fun getKStateWithUpdates(globalKey: String): KStateContainer? {
     val stateContainer: StateContainer?
-    val updaters: List<HookUpdater>?
+    val updates: List<HookUpdateData>?
     synchronized(this) {
       stateContainer = _state[globalKey]?.value ?: return null
-      updaters = pendingHookUpdates[globalKey]?.let { ArrayList(it) }
+      updates = pendingHookUpdates[globalKey]?.let { ArrayList(it) }
     }
 
-    if (updaters == null) {
+    if (updates == null) {
       return stateContainer as KStateContainer
     }
 
     var updatedState = stateContainer as KStateContainer
-    for (updater in updaters) {
-      updatedState = updater.getUpdatedStateContainer(updatedState)
+    for (update in updates) {
+      updatedState = update.updater.getUpdatedStateContainer(updatedState)
     }
 
     return updatedState
@@ -551,13 +567,13 @@ class StateHandler {
    * this StateHandler applied, while leaving new ones that have accumulated in the interim. We also
    * copy over the new mapping from hook state keys to values.
    */
-  private fun commitHookState(appliedHookUpdates: Map<String, List<HookUpdater>>) {
+  private fun commitHookState(appliedHookUpdates: Map<String, List<HookUpdateData>>) {
     if (appliedHookUpdates.isEmpty() || pendingHookUpdates.isEmpty()) {
       return
     }
 
     for ((globalKey, appliedHookUpdatersForKey) in appliedHookUpdates) {
-      val pendingHookUpdatersForKey: MutableList<HookUpdater>?
+      val pendingHookUpdatersForKey: MutableList<HookUpdateData>?
       synchronized(this) {
         pendingHookUpdatersForKey = pendingHookUpdates[globalKey]
         if (!pendingHookUpdatersForKey.isNullOrEmpty()) {
@@ -621,9 +637,9 @@ class StateHandler {
     }
 
     private fun createHookStateUpdatesList(
-        copyFrom: List<HookUpdater>? = null
-    ): MutableList<HookUpdater> {
-      val list: MutableList<HookUpdater> =
+        copyFrom: List<HookUpdateData>? = null
+    ): MutableList<HookUpdateData> {
+      val list: MutableList<HookUpdateData> =
           ArrayList(copyFrom?.size ?: INITIAL_STATE_UPDATE_LIST_CAPACITY)
       if (copyFrom != null) {
         list.addAll(copyFrom)
@@ -657,6 +673,8 @@ class StateHandler {
     }
   }
 }
+
+private class HookUpdateData(val stateId: StateId, val updater: HookUpdater)
 
 sealed interface StateUpdateApplier
 

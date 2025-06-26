@@ -19,6 +19,7 @@ package com.facebook.litho
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.state.ComponentState
+import com.facebook.litho.state.StateId
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.util.Lists
@@ -48,7 +49,7 @@ class HooksStateHandlerTest {
     val first = StateHandler()
     first.addState(GLOBAL_KEY, ComponentState(value = kStateContainer))
     first.queueHookStateUpdate(
-        GLOBAL_KEY,
+        StateId(-1, GLOBAL_KEY, 0),
         object : HookUpdater {
           override fun getUpdatedStateContainer(currentState: KStateContainer): KStateContainer =
               KStateContainer.withNewState(currentState, "newValue")
@@ -79,14 +80,15 @@ class HooksStateHandlerTest {
     kStateContainer = KStateContainer.withNewState(kStateContainer, 4)
     kStateContainer = KStateContainer.withNewState(kStateContainer, bazState)
     first.addState(GLOBAL_KEY, ComponentState(value = kStateContainer))
+    val stateId = StateId(-1, GLOBAL_KEY, 0)
     first.queueHookStateUpdate(
-        GLOBAL_KEY,
+        stateId,
         object : HookUpdater {
           override fun getUpdatedStateContainer(currentState: KStateContainer): KStateContainer =
               KStateContainer.withNewState(currentState, "newValue").copyAndMutate(1, 5)
         })
     first.queueHookStateUpdate(
-        GLOBAL_KEY,
+        stateId,
         object : HookUpdater {
           override fun getUpdatedStateContainer(currentState: KStateContainer): KStateContainer =
               currentState.copyAndMutate(1, 1 + currentState.states.map { it.value }[1] as Int)
@@ -118,14 +120,15 @@ class HooksStateHandlerTest {
     kStateContainer = KStateContainer.withNewState(kStateContainer, 4)
     kStateContainer = KStateContainer.withNewState(kStateContainer, bazState)
     first.addState(GLOBAL_KEY, ComponentState(value = kStateContainer))
+    val stateId = StateId(-1, GLOBAL_KEY, 0)
     first.queueHookStateUpdate(
-        GLOBAL_KEY,
+        stateId,
         object : HookUpdater {
           override fun getUpdatedStateContainer(currentState: KStateContainer): KStateContainer =
               KStateContainer.withNewState(currentState, "newValue").copyAndMutate(1, 5)
         })
     first.queueHookStateUpdate(
-        GLOBAL_KEY,
+        stateId,
         object : HookUpdater {
           override fun getUpdatedStateContainer(currentState: KStateContainer): KStateContainer =
               currentState.copyAndMutate(1, currentState.states.map { it.value }[1] as Int + 1)
@@ -133,7 +136,7 @@ class HooksStateHandlerTest {
     val second = StateHandler(first)
     second.applyStateUpdatesEarly(context = c, component = null, prevTreeRootNode = null)
     first.queueHookStateUpdate(
-        GLOBAL_KEY,
+        stateId,
         object : HookUpdater {
           override fun getUpdatedStateContainer(currentState: KStateContainer): KStateContainer =
               currentState.copyAndMutate(1, currentState.states.map { it.value }[1] as Int + 1)

@@ -171,9 +171,11 @@ class TreeStateTests {
     // State Update on nested tree component
     treeState.queueStateUpdate(
         anotherTestComponentKey, StateUpdateTestComponent.createIncrementStateUpdate(), false, true)
-    val renderKeysForPendingUpdates = treeState.keysForPendingResolveStateUpdates
+    val renderKeysForPendingUpdates =
+        treeState.getStateIdsForPendingResolveStateUpdates(-1).mapTo(hashSetOf()) { it.globalKey }
     assertThat(renderKeysForPendingUpdates).contains(testComponentKey)
-    val layoutKeysForPendingUpdates = treeState.keysForPendingLayoutStateUpdates
+    val layoutKeysForPendingUpdates =
+        treeState.getStateIdsForPendingLayoutStateUpdates(-1).mapTo(hashSetOf()) { it.globalKey }
     assertThat(layoutKeysForPendingUpdates).contains(anotherTestComponentKey)
   }
 

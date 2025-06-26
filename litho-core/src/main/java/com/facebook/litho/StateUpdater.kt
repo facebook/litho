@@ -16,6 +16,8 @@
 
 package com.facebook.litho
 
+import com.facebook.litho.state.StateId
+
 /**
  * StateUpdater lets a [Component] rendered with a scoped [ComponentContext] interact with Litho's
  * state. An implementation of StateUpdater is responsible for collecting state update operations
@@ -63,7 +65,7 @@ interface StateUpdater {
 
   /** Same as updateStateAsync but for Hook State. */
   fun updateHookStateAsync(
-      globalKey: String,
+      stateId: StateId,
       updateBlock: HookUpdater,
       attribution: String?,
       isLayoutState: Boolean
@@ -71,7 +73,7 @@ interface StateUpdater {
 
   /** Same as updateStateSync but for Hook State. */
   fun updateHookStateSync(
-      globalKey: String,
+      stateId: StateId,
       updateBlock: HookUpdater,
       attribution: String?,
       isLayoutState: Boolean
@@ -106,17 +108,11 @@ interface StateUpdater {
    */
   fun removePendingStateUpdate(key: String, isLayoutState: Boolean)
 
-  fun <T> canSkipStateUpdate(
-      globalKey: String,
-      hookStateIndex: Int,
-      newValue: T?,
-      isLayoutState: Boolean
-  ): Boolean
+  fun <T> canSkipStateUpdate(stateId: StateId, newValue: T?, isLayoutState: Boolean): Boolean
 
   fun <T> canSkipStateUpdate(
       newValueFunction: (T) -> T,
-      globalKey: String,
-      hookStateIndex: Int,
+      stateId: StateId,
       isLayoutState: Boolean
   ): Boolean
 
