@@ -119,7 +119,7 @@ private constructor(
         isAttached)
   }
 
-  override fun <T : Binder<*, *, *>?> findAttachBinderByKey(key: BinderKey): T? {
+  override fun <T : BinderWithContext<*, *, *>?> findAttachBinderByKey(key: BinderKey): T? {
     return primitiveRenderUnit.findAttachBinderByKey(key)
   }
 

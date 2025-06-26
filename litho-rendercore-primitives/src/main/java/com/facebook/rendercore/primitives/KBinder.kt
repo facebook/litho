@@ -17,6 +17,7 @@
 package com.facebook.rendercore.primitives
 
 import android.content.Context
+import com.facebook.rendercore.BinderId
 import com.facebook.rendercore.BinderKey
 import com.facebook.rendercore.ClassBinderKey
 import com.facebook.rendercore.RenderUnit
@@ -85,9 +86,9 @@ class UnbindFunc @PublishedApi internal constructor(val unbind: () -> Unit)
 
 class BindScope {
 
-  private var context: Context? = null
+  private var context: RenderUnit.BinderContext? = null
 
-  internal inline fun <T> withContext(context: Context, block: () -> T): T {
+  internal inline fun <T> withContext(context: RenderUnit.BinderContext, block: () -> T): T {
     this.context = context
     return try {
       block()
@@ -97,7 +98,10 @@ class BindScope {
   }
 
   val androidContext: Context
-    get() = requireNotNull(context)
+    get() = requireNotNull(context).androidContext
+
+  val binderId: BinderId
+    get() = requireNotNull(context).binderId
 
   /**
    * Defines the function that will be called when the content is unmounted. [func] should undo any
@@ -109,7 +113,7 @@ class BindScope {
 internal class KBinder<Model, Content>(
     private val describe: () -> String,
     private val bindFunc: BindFuncWithLayoutData<Content>,
-) : RenderUnit.Binder<Model, Content, UnbindFunc> {
+) : RenderUnit.BinderWithContext<Model, Content, UnbindFunc> {
 
   val scope: BindScope = BindScope()
 
@@ -128,21 +132,21 @@ internal class KBinder<Model, Content>(
   }
 
   override fun bind(
-      context: Context,
+      binderContext: RenderUnit.BinderContext,
       content: Content,
       model: Model,
       layoutData: Any?
   ): UnbindFunc {
-    return scope.withContext(context) { with(bindFunc) { scope.bind(content, layoutData) } }
+    return scope.withContext(binderContext) { with(bindFunc) { scope.bind(content, layoutData) } }
   }
 
   override fun unbind(
-      context: Context,
+      binderContext: RenderUnit.BinderContext,
       content: Content,
       model: Model,
       layoutData: Any?,
       bindData: UnbindFunc?
   ) {
-    scope.withContext(context) { bindData?.unbind?.invoke() }
+    scope.withContext(binderContext) { bindData?.unbind?.invoke() }
   }
 }

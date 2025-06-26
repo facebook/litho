@@ -661,7 +661,7 @@ constructor(
     }
   }
 
-  open fun <T : Binder<*, *, *>?> findAttachBinderByKey(key: BinderKey): T? {
+  open fun <T : BinderWithContext<*, *, *>?> findAttachBinderByKey(key: BinderKey): T? {
     return attachBinderKeyToDelegateMap?.get(key)?.binder as T?
   }
 
@@ -678,7 +678,10 @@ constructor(
    * content type defined.
    */
   class DelegateBinder<MODEL, CONTENT, BIND_DATA : Any>
-  private constructor(internal val model: MODEL, val binder: Binder<MODEL, CONTENT, BIND_DATA>) {
+  private constructor(
+      internal val model: MODEL,
+      val binder: BinderWithContext<MODEL, CONTENT, BIND_DATA>
+  ) {
 
     companion object {
       /**
@@ -688,20 +691,22 @@ constructor(
       @JvmStatic
       fun <MODEL, CONTENT, BIND_DATA : Any> createDelegateBinder(
           model: MODEL,
-          binder: Binder<MODEL, CONTENT, BIND_DATA>
+          binder: BinderWithContext<MODEL, CONTENT, BIND_DATA>
       ): DelegateBinder<MODEL, CONTENT, BIND_DATA> {
         return DelegateBinder(model, binder)
       }
     }
   }
 
+  class BinderContext internal constructor(val androidContext: Context, val binderId: BinderId)
+
   /**
    * Represents a single bind function. Every bind has an equivalent unbind and a shouldUpdate
    * callback
    */
-  interface Binder<MODEL, CONTENT, BIND_DATA : Any> {
+  interface BinderWithContext<MODEL, CONTENT, BIND_DATA : Any> {
     /**
-     * Decides of the model should be re-bound to the content. If this method returns true, then
+     * Decides if the model should be re-bound to the content. If this method returns true, then
      * unbind will be called followed by bind.
      */
     fun shouldUpdate(
@@ -714,11 +719,16 @@ constructor(
     /**
      * Binds the model to the content and returns optional bind data that will be passed to unbind.
      */
-    fun bind(context: Context, content: CONTENT, model: MODEL, layoutData: Any?): BIND_DATA?
+    fun bind(
+        binderContext: BinderContext,
+        content: CONTENT,
+        model: MODEL,
+        layoutData: Any?
+    ): BIND_DATA?
 
     /** Unbinds the model from the content. */
     fun unbind(
-        context: Context,
+        binderContext: BinderContext,
         content: CONTENT,
         model: MODEL,
         layoutData: Any?,
@@ -730,6 +740,46 @@ constructor(
 
     val key: BinderKey
       get() = ClassBinderKey(javaClass)
+  }
+
+  /**
+   * Represents a single bind function. Every bind has an equivalent unbind and a shouldUpdate
+   * callback
+   */
+  interface Binder<MODEL, CONTENT, BIND_DATA : Any> : BinderWithContext<MODEL, CONTENT, BIND_DATA> {
+
+    override fun bind(
+        binderContext: BinderContext,
+        content: CONTENT,
+        model: MODEL,
+        layoutData: Any?
+    ): BIND_DATA? {
+      return bind(binderContext.androidContext, content, model, layoutData)
+    }
+
+    /**
+     * Binds the model to the content and returns optional bind data that will be passed to unbind.
+     */
+    fun bind(context: Context, content: CONTENT, model: MODEL, layoutData: Any?): BIND_DATA?
+
+    override fun unbind(
+        binderContext: BinderContext,
+        content: CONTENT,
+        model: MODEL,
+        layoutData: Any?,
+        bindData: BIND_DATA?
+    ) {
+      return unbind(binderContext.androidContext, content, model, layoutData, bindData)
+    }
+
+    /** Unbinds the model from the content. */
+    fun unbind(
+        context: Context,
+        content: CONTENT,
+        model: MODEL,
+        layoutData: Any?,
+        bindData: BIND_DATA?
+    )
   }
 
   companion object {
@@ -904,7 +954,7 @@ constructor(
 
 private class BinderHolder(
     val binderId: BinderId,
-    val binder: RenderUnit.Binder<*, *, *>,
+    val binder: RenderUnit.BinderWithContext<*, *, *>,
     private val model: Any?
 ) {
 
@@ -913,35 +963,37 @@ private class BinderHolder(
 
   @Suppress("UNCHECKED_CAST")
   fun shouldUpdate(previous: BinderHolder, currentLayoutData: Any?, nextLayoutData: Any?): Boolean {
-    val binder = binder as RenderUnit.Binder<Any?, Any, Any>
+    val binder = binder as RenderUnit.BinderWithContext<Any?, Any, Any>
     return binder.shouldUpdate(previous.model, model, currentLayoutData, nextLayoutData)
   }
 
   @Suppress("UNCHECKED_CAST")
   fun bind(context: MountContext, content: Any, layoutData: Any?): Any? {
+    val binderContext = RenderUnit.BinderContext(context.androidContext, binderId)
     var binderData: Any? = null
     if (context.binderObserver != null) {
       context.binderObserver.observeBind(binderId) {
-        val binder = binder as RenderUnit.Binder<Any?, Any, Any>
-        binderData = binder.bind(context.androidContext, content, model, layoutData)
+        val binder = binder as RenderUnit.BinderWithContext<Any?, Any, Any>
+        binderData = binder.bind(binderContext, content, model, layoutData)
       }
     } else {
-      val binder = binder as RenderUnit.Binder<Any?, Any, Any>
-      binderData = binder.bind(context.androidContext, content, model, layoutData)
+      val binder = binder as RenderUnit.BinderWithContext<Any?, Any, Any>
+      binderData = binder.bind(binderContext, content, model, layoutData)
     }
     return binderData
   }
 
   @Suppress("UNCHECKED_CAST")
   fun unbind(context: MountContext, content: Any, layoutData: Any?, bindData: Any?) {
+    val binderContext = RenderUnit.BinderContext(context.androidContext, binderId)
     if (context.binderObserver != null) {
       context.binderObserver.observeBind(binderId) {
-        val binder = binder as RenderUnit.Binder<Any?, Any, Any>
-        binder.unbind(context.androidContext, content, model, layoutData, bindData)
+        val binder = binder as RenderUnit.BinderWithContext<Any?, Any, Any>
+        binder.unbind(binderContext, content, model, layoutData, bindData)
       }
     } else {
-      val binder = binder as RenderUnit.Binder<Any?, Any, Any>
-      binder.unbind(context.androidContext, content, model, layoutData, bindData)
+      val binder = binder as RenderUnit.BinderWithContext<Any?, Any, Any>
+      binder.unbind(binderContext, content, model, layoutData, bindData)
     }
   }
 }
