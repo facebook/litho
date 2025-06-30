@@ -28,7 +28,7 @@ import com.facebook.litho.BaseMountingView
 import com.facebook.litho.DebugComponent.Companion.getRootInstance
 
 @Suppress("UNCHECKED_CAST", "KotlinGenericsCast")
-class LithoViewDescriptor : NodeDescriptor<BaseMountingView?>() {
+class LithoViewDescriptor : NodeDescriptor<BaseMountingView>() {
 
   @Throws(Exception::class)
   override fun init(node: BaseMountingView) {

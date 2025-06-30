@@ -53,7 +53,7 @@ import java.util.Arrays
 import java.util.Locale
 
 @Suppress("KotlinGenericsCast")
-class DebugComponentDescriptor : NodeDescriptor<DebugComponent?>() {
+class DebugComponentDescriptor : NodeDescriptor<DebugComponent>() {
   private val overrides:
       MutableMap<
           String, MutableList<Pair<Array<String>, Pair<FlipperValueHint?, FlipperDynamic>>>> =
