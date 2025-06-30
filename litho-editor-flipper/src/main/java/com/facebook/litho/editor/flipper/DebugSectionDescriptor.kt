@@ -35,7 +35,7 @@ import com.facebook.litho.editor.flipper.DataUtils.getStateData
 import com.facebook.litho.sections.debug.DebugSection
 
 @Suppress("KotlinGenericsCast")
-class DebugSectionDescriptor : NodeDescriptor<DebugSection?>() {
+class DebugSectionDescriptor : NodeDescriptor<DebugSection>() {
   override fun invalidate(debugSection: DebugSection?) {
     super.invalidate(debugSection)
 
