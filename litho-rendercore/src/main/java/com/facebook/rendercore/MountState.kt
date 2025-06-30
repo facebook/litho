@@ -207,6 +207,15 @@ constructor(
   }
 
   override fun unmountAllItems() {
+    if (RenderCoreConfig.isUnmountAllWhileMountingAssertionEnabled) {
+      val extensionClassNames =
+          _mountDelegate?.extensionStates?.joinToString {
+            "<cls>${it.extension::class.java.simpleName}</cls>"
+          } ?: ""
+      assert(!isMounting) {
+        "Trying to unmountAllItems while mounting! Extension class names: $extensionClassNames"
+      }
+    }
     try {
       _rootHost.setInLayout()
       if (renderTree == null) {
