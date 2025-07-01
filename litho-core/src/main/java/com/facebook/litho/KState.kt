@@ -270,12 +270,10 @@ internal constructor(
 
     return globalKey == other.globalKey &&
         hookStateIndex == other.hookStateIndex &&
-        if (isReadTrackingEnabled) stateId.treeId == other.stateId.treeId
-        else fallback == other.fallback
+        fallback == other.fallback
   }
 
   override fun hashCode(): Int {
-    return Objects.hash(
-        globalKey, hookStateIndex, if (isReadTrackingEnabled) stateId.treeId else fallback)
+    return Objects.hash(globalKey, hookStateIndex, fallback)
   }
 }
