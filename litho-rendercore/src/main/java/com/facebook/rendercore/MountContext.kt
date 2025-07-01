@@ -31,7 +31,40 @@ import android.content.Context
  */
 class MountContext
 internal constructor(
-    val androidContext: Context,
+    override val androidContext: Context,
     val tracer: Systracer,
     val binderObserver: BinderObserver? = null
-)
+) : BinderScope {
+
+  private var _binderId: BinderId? = null
+  private var _model: Any? = null
+
+  internal inline fun <T> withBinder(
+      binderId: BinderId,
+      model: Any?,
+      func: BinderScope.() -> T
+  ): T {
+    try {
+      _binderId = binderId
+      _model = model
+      return func()
+    } finally {
+      _binderId = null
+      _model = null
+    }
+  }
+
+  /**
+   * Returns the [BinderId] of the binder currently associated with the [BinderScope]. This is only
+   * valid when called within the scope of [withBinder] and will throw an exception otherwise.
+   */
+  override val binderId: BinderId
+    get() = requireNotNull(_binderId)
+
+  /**
+   * Returns the model of the binder currently associated with the [BinderScope]. This is only valid
+   * when called within the scope of [withBinder] and will throw an exception otherwise.
+   */
+  override val binderModel: Any?
+    get() = _model
+}

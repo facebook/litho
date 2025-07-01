@@ -698,8 +698,6 @@ constructor(
     }
   }
 
-  class BinderContext internal constructor(val androidContext: Context, val binderId: BinderId)
-
   /**
    * Represents a single bind function. Every bind has an equivalent unbind and a shouldUpdate
    * callback
@@ -719,21 +717,10 @@ constructor(
     /**
      * Binds the model to the content and returns optional bind data that will be passed to unbind.
      */
-    fun bind(
-        binderContext: BinderContext,
-        content: CONTENT,
-        model: MODEL,
-        layoutData: Any?
-    ): BIND_DATA?
+    fun BinderScope.bind(content: CONTENT, model: MODEL, layoutData: Any?): BIND_DATA?
 
     /** Unbinds the model from the content. */
-    fun unbind(
-        binderContext: BinderContext,
-        content: CONTENT,
-        model: MODEL,
-        layoutData: Any?,
-        bindData: BIND_DATA?
-    )
+    fun BinderScope.unbind(content: CONTENT, model: MODEL, layoutData: Any?, bindData: BIND_DATA?)
 
     val description: String
       get() = getSectionNameForTracing(javaClass)
@@ -748,13 +735,8 @@ constructor(
    */
   interface Binder<MODEL, CONTENT, BIND_DATA : Any> : BinderWithContext<MODEL, CONTENT, BIND_DATA> {
 
-    override fun bind(
-        binderContext: BinderContext,
-        content: CONTENT,
-        model: MODEL,
-        layoutData: Any?
-    ): BIND_DATA? {
-      return bind(binderContext.androidContext, content, model, layoutData)
+    override fun BinderScope.bind(content: CONTENT, model: MODEL, layoutData: Any?): BIND_DATA? {
+      return bind(androidContext, content, model, layoutData)
     }
 
     /**
@@ -762,14 +744,13 @@ constructor(
      */
     fun bind(context: Context, content: CONTENT, model: MODEL, layoutData: Any?): BIND_DATA?
 
-    override fun unbind(
-        binderContext: BinderContext,
+    override fun BinderScope.unbind(
         content: CONTENT,
         model: MODEL,
         layoutData: Any?,
         bindData: BIND_DATA?
     ) {
-      return unbind(binderContext.androidContext, content, model, layoutData, bindData)
+      return unbind(androidContext, content, model, layoutData, bindData)
     }
 
     /** Unbinds the model from the content. */
@@ -969,31 +950,39 @@ private class BinderHolder(
 
   @Suppress("UNCHECKED_CAST")
   fun bind(context: MountContext, content: Any, layoutData: Any?): Any? {
-    val binderContext = RenderUnit.BinderContext(context.androidContext, binderId)
     var binderData: Any? = null
     if (context.binderObserver != null) {
       context.binderObserver.observeBind(binderId) {
-        val binder = binder as RenderUnit.BinderWithContext<Any?, Any, Any>
-        binderData = binder.bind(binderContext, content, model, layoutData)
+        execute(context) { scope -> binderData = scope.bind(content, model, layoutData) }
       }
     } else {
-      val binder = binder as RenderUnit.BinderWithContext<Any?, Any, Any>
-      binderData = binder.bind(binderContext, content, model, layoutData)
+      execute(context) { scope -> binderData = scope.bind(content, model, layoutData) }
     }
     return binderData
   }
 
-  @Suppress("UNCHECKED_CAST")
   fun unbind(context: MountContext, content: Any, layoutData: Any?, bindData: Any?) {
-    val binderContext = RenderUnit.BinderContext(context.androidContext, binderId)
     if (context.binderObserver != null) {
       context.binderObserver.observeBind(binderId) {
-        val binder = binder as RenderUnit.BinderWithContext<Any?, Any, Any>
-        binder.unbind(binderContext, content, model, layoutData, bindData)
+        execute(context) { scope -> scope.unbind(content, model, layoutData, bindData) }
       }
     } else {
-      val binder = binder as RenderUnit.BinderWithContext<Any?, Any, Any>
-      binder.unbind(binderContext, content, model, layoutData, bindData)
+      execute(context) { scope -> scope.unbind(content, model, layoutData, bindData) }
     }
   }
+
+  @Suppress("UNCHECKED_CAST")
+  private inline fun <T> execute(
+      context: MountContext,
+      func: RenderUnit.BinderWithContext<Any?, Any, Any>.(BinderScope) -> T
+  ): T =
+      context.withBinder(binderId, model) {
+        with(binder as RenderUnit.BinderWithContext<Any?, Any, Any>) { func(this@withBinder) }
+      }
+}
+
+interface BinderScope {
+  val androidContext: Context
+  val binderId: BinderId
+  val binderModel: Any?
 }

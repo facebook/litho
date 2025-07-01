@@ -19,6 +19,7 @@ package com.facebook.rendercore.primitives
 import android.content.Context
 import com.facebook.rendercore.BinderId
 import com.facebook.rendercore.BinderKey
+import com.facebook.rendercore.BinderScope
 import com.facebook.rendercore.ClassBinderKey
 import com.facebook.rendercore.RenderUnit
 import com.facebook.rendercore.utils.CommonUtils.getSectionNameForTracing
@@ -86,22 +87,25 @@ class UnbindFunc @PublishedApi internal constructor(val unbind: () -> Unit)
 
 class BindScope {
 
-  private var context: RenderUnit.BinderContext? = null
+  private var delegate: BinderScope? = null
 
-  internal inline fun <T> withContext(context: RenderUnit.BinderContext, block: () -> T): T {
-    this.context = context
+  internal inline fun <T> withScope(scope: BinderScope, block: BindScope.() -> T): T {
+    this.delegate = scope
     return try {
       block()
     } finally {
-      this.context = null
+      this.delegate = null
     }
   }
 
   val androidContext: Context
-    get() = requireNotNull(context).androidContext
+    get() = requireNotNull(delegate).androidContext
 
   val binderId: BinderId
-    get() = requireNotNull(context).binderId
+    get() = requireNotNull(delegate).binderId
+
+  val binderModel: Any?
+    get() = requireNotNull(delegate).binderModel
 
   /**
    * Defines the function that will be called when the content is unmounted. [func] should undo any
@@ -131,22 +135,16 @@ internal class KBinder<Model, Content>(
     return bindFunc.shouldUpdate(currentModel, newModel, currentLayoutData, nextLayoutData)
   }
 
-  override fun bind(
-      binderContext: RenderUnit.BinderContext,
-      content: Content,
-      model: Model,
-      layoutData: Any?
-  ): UnbindFunc {
-    return scope.withContext(binderContext) { with(bindFunc) { scope.bind(content, layoutData) } }
+  override fun BinderScope.bind(content: Content, model: Model, layoutData: Any?): UnbindFunc {
+    return scope.withScope(this) { with(bindFunc) { bind(content, layoutData) } }
   }
 
-  override fun unbind(
-      binderContext: RenderUnit.BinderContext,
+  override fun BinderScope.unbind(
       content: Content,
       model: Model,
       layoutData: Any?,
       bindData: UnbindFunc?
   ) {
-    scope.withContext(binderContext) { bindData?.unbind?.invoke() }
+    scope.withScope(this) { bindData?.unbind?.invoke() }
   }
 }
