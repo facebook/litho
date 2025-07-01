@@ -27,6 +27,8 @@ import com.facebook.rendercore.RenderUnit
 import com.facebook.rendercore.RenderUnit.DelegateBinder
 import com.facebook.rendercore.RenderUnit.DelegateBinder.Companion.createDelegateBinder
 import com.facebook.rendercore.primitives.BindFunc
+import com.facebook.rendercore.primitives.BindScope
+import com.facebook.rendercore.primitives.UnbindFunc
 import com.facebook.rendercore.primitives.binder
 
 /**
@@ -175,9 +177,12 @@ inline fun Style.onBindView(func: BindFunc<View>): Style =
  * not equivalent then [UnbindFunc] is invoked followed by [BindFunc]. To invoke the callbacks only
  * once use [Unit] as [deps].
  *
+ * The model of the [BindScope] receiver is a [ModelWithContext] type and hence can be safely casted
+ * during the execution of the [BindFunc].
+ *
  * @param deps the dependencies that will be compared to check if the binder should be rerun.
  * @param func the [RenderUnit.Binder] to be used to bind the model to the View content.
- * @param name the name of the binder. This is used for debugging purposes.
+ * @param description the name of the binder. This is used for debugging purposes.
  */
 inline fun Style.onBindHostViewWithDescription(
     noinline description: () -> String,
@@ -187,7 +192,7 @@ inline fun Style.onBindHostViewWithDescription(
     this +
         ObjectStyleItem(
             BinderObjectField.HOST_VIEW_MOUNT_BINDER,
-            binder(description = description, dep = deps, func = func),
+            DeferredBinderData(description = description, deps = deps, func = func),
         )
 
 /**
@@ -206,6 +211,9 @@ inline fun Style.onBindHostViewWithDescription(
  * not equivalent then [UnbindFunc] is invoked followed by [BindFunc]. To invoke the callbacks only
  * once use [Unit] as [deps].
  *
+ * The model of the [BindScope] receiver is a [ModelWithContext] type and hence can be safely casted
+ * during the execution of the [BindFunc].
+ *
  * @param deps the dependencies that will be compared to check if the binder should be rerun.
  * @param func the [RenderUnit.Binder] to be used to bind the model to the View content.
  */
@@ -213,7 +221,7 @@ inline fun Style.onBindHostView(vararg deps: Any?, func: BindFunc<View>): Style 
     this +
         ObjectStyleItem(
             BinderObjectField.HOST_VIEW_MOUNT_BINDER,
-            binder(dep = deps, func = func),
+            DeferredBinderData(description = null, deps = deps, func = func),
         )
 
 @Deprecated(ON_BIND_NO_DEPS_ERROR, level = DeprecationLevel.ERROR)
@@ -286,16 +294,44 @@ internal data class ObjectStyleItem(
     override val field: BinderObjectField,
     override val value: Any?
 ) : StyleItem<Any?> {
+  @Suppress("UNCHECKED_CAST")
   override fun applyCommonProps(context: ComponentContext, commonProps: CommonProps) {
     when (field) {
       BinderObjectField.MOUNT_BINDER ->
           commonProps.mountBinder(value as DelegateBinder<Any, Any, Any>)
       BinderObjectField.VIEW_MOUNT_BINDER ->
           commonProps.delegateMountViewBinder(value as DelegateBinder<Any, Any, Any>)
-      BinderObjectField.HOST_VIEW_MOUNT_BINDER ->
-          commonProps.delegateHostViewMountBinder(value as DelegateBinder<Any, Any, Any>)
+      BinderObjectField.HOST_VIEW_MOUNT_BINDER -> {
+        value as DeferredBinderData
+        val model = ModelWithContext(context, value.deps)
+        val binder = binder(value.description, dep = model, value.func)
+        commonProps.delegateHostViewMountBinder(binder as DelegateBinder<Any, Any, Any>)
+      }
     }
   }
+}
+
+@PublishedApi
+internal class DeferredBinderData(
+    val description: (() -> String)?,
+    val deps: Array<*>,
+    val func: BindFunc<View>
+)
+
+/**
+ * A [com.facebook.rendercore.primitives.KBinder] model that contains the typical KBinder [deps]
+ * together with a scoped [ComponentContext].
+ *
+ * The [scopedContext] is transient and as a result does not participate in [equals]/[hashCode]
+ * evaluations. This ensures that the binder continues to behave exactly as if only [deps] were
+ * provided.
+ */
+class ModelWithContext
+internal constructor(val scopedContext: ComponentContext, internal val deps: Array<*>) {
+  override fun equals(other: Any?): Boolean =
+      other is ModelWithContext && deps.contentEquals(other.deps)
+
+  override fun hashCode(): Int = deps.contentHashCode()
 }
 
 const val ON_BIND_NO_DEPS_ERROR =
