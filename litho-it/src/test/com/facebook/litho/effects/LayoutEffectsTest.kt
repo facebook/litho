@@ -119,14 +119,14 @@ class LayoutEffectsTest {
 
     handle.findViewWithTag("test-view")
 
-    assertThat(observer.runs).containsExactly("useLayoutEffect", "useEffect")
+    assertThat(observer.runs).containsExactly("useEffect", "useEffect", "useLayoutEffect")
     assertThat(observer.cleanups).isEmpty()
     observer.clear()
 
     lithoViewRule.render(lithoView = handle.lithoView) { EmptyComponent() }
 
     assertThat(observer.runs).isEmpty()
-    assertThat(observer.cleanups).containsExactly("useLayoutEffect", "useEffect")
+    assertThat(observer.cleanups).containsExactly("useEffect", "useEffect", "useLayoutEffect")
   }
 
   @Test
@@ -139,7 +139,7 @@ class LayoutEffectsTest {
 
     val view = handle.findViewWithTag("test-view")
 
-    assertThat(observer.runs).containsExactly("useLayoutEffect", "useEffect")
+    assertThat(observer.runs).containsExactly("useEffect", "useEffect", "useLayoutEffect")
     assertThat(observer.cleanups).isEmpty()
     observer.clear()
 
@@ -167,7 +167,7 @@ class LayoutEffectsTest {
 
     val view = handle.findViewWithTag("test-view")
 
-    assertThat(observer.runs).containsExactly("useLayoutEffect", "useEffect")
+    assertThat(observer.runs).containsExactly("useEffect", "useEffect", "useLayoutEffect")
     assertThat(observer.cleanups).isEmpty()
     observer.clear()
 
@@ -186,7 +186,7 @@ class LayoutEffectsTest {
 
     val handle = lithoViewRule.render { Column { child(TestPrimitive(observer = observer)) } }
 
-    assertThat(observer.runs).containsExactly("useLayoutEffect", "useEffect")
+    assertThat(observer.runs).containsExactly("useEffect", "useEffect", "useLayoutEffect")
     assertThat(observer.cleanups).isEmpty()
     observer.clear()
 

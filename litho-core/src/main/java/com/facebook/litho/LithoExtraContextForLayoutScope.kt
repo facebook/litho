@@ -36,6 +36,6 @@ internal constructor(
 
   internal fun generateEffectId(): String {
     val index = effects?.size ?: 0
-    return "$globalKey:$index"
+    return "$globalKey:$index:layout"
   }
 }
