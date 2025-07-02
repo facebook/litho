@@ -16,10 +16,10 @@
 
 package com.facebook.litho.widget
 
+import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.UiThread
 import androidx.recyclerview.widget.RecyclerView
-import com.facebook.litho.LithoRenderTreeView
 
 /**
  * RecyclerView adapter that can be used to render a list of [CollectionItem]s. The adapter will
@@ -32,53 +32,46 @@ class CollectionPrimitiveViewAdapter : RecyclerView.Adapter<PrimitiveRecyclerVie
   private val items: MutableList<CollectionItem<*>> = ArrayList()
 
   /**
-   * Factory function for creating PrimitiveRecyclerViewHolder instances. This function is called by
-   * the adapter when a new view holder needs to be created. Must be set before the adapter starts
-   * creating view holders.
+   * Factory function for creating CollectionItemRootHostHolder instances. This function is called
+   * by the adapter when a new view holder needs to be created. Must be set before the adapter
+   * starts creating view holders.
    *
    * @param parent The ViewGroup into which the new View will be added after it is bound to an
    *   adapter position
    * @param viewType The view type of the new View, used to distinguish different item types
-   * @return A new PrimitiveRecyclerViewHolder that holds a View of the given view type
+   * @return A new CollectionItemRootHostHolder instance
    */
-  var viewHolderCreator: ((parent: ViewGroup, viewType: Int) -> PrimitiveRecyclerViewHolder)? = null
+  var viewHolderCreator:
+      ((parent: ViewGroup, viewType: Int) -> CollectionItemRootHostHolder<
+              out View, out CollectionItem<out View>>)? =
+      null
 
   init {
     setHasStableIds(true)
   }
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PrimitiveRecyclerViewHolder {
-    return checkNotNull(viewHolderCreator) {
-          "viewHolderCreator must be set before creating the view holders"
-        }
-        .invoke(parent, viewType)
+    val viewHolderDelegate =
+        checkNotNull(viewHolderCreator) {
+              "viewHolderCreator must be set before creating the view holders"
+            }
+            .invoke(parent, viewType)
+    @Suppress("UNCHECKED_CAST")
+    return PrimitiveRecyclerViewHolder(
+        viewHolderDelegate as CollectionItemRootHostHolder<View, CollectionItem<View>>)
   }
 
   override fun onBindViewHolder(viewHolder: PrimitiveRecyclerViewHolder, position: Int) {
     // TODO: handle OOB exception
     val item = items[position]
-    when (viewHolder.itemView) {
-      is LithoRenderTreeView -> {
-        (item as LithoCollectionItem).onBindView(viewHolder.itemView as LithoRenderTreeView)
-      }
-      else -> {
-        throw IllegalStateException("Not supported collection item")
-      }
-    }
-    viewHolder.data = item
+    @Suppress("UNCHECKED_CAST")
+    viewHolder.delegate.data = item as CollectionItem<View>
+    item.onBindView(viewHolder.delegate.view)
   }
 
   override fun onViewRecycled(viewHolder: PrimitiveRecyclerViewHolder) {
-    when (viewHolder.itemView) {
-      is LithoRenderTreeView -> {
-        (viewHolder.data as LithoCollectionItem).onViewRecycled(
-            viewHolder.itemView as LithoRenderTreeView)
-      }
-      else -> {
-        throw IllegalStateException("Not supported collection item")
-      }
-    }
-    viewHolder.data = null
+    viewHolder.delegate.data?.onViewRecycled(viewHolder.delegate.view)
+    viewHolder.delegate.data = null
   }
 
   override fun getItemCount(): Int = items.size
@@ -141,11 +134,7 @@ class CollectionPrimitiveViewAdapter : RecyclerView.Adapter<PrimitiveRecyclerVie
     items.addAll(newData)
   }
 
-  fun copyItems(): MutableList<CollectionItem<*>> {
-    return items.toMutableList()
-  }
-
-  fun readOnlyItems(): List<CollectionItem<*>> {
+  fun getItems(): List<CollectionItem<*>> {
     return items
   }
 

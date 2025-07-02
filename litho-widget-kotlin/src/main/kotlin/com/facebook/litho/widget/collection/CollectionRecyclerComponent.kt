@@ -16,6 +16,7 @@
 
 package com.facebook.litho.widget.collection
 
+import android.content.Context
 import android.graphics.Color
 import android.os.SystemClock
 import android.view.View
@@ -53,6 +54,7 @@ import com.facebook.litho.useState
 import com.facebook.litho.useStateWithDeps
 import com.facebook.litho.widget.ChangeSetCompleteCallback
 import com.facebook.litho.widget.CollectionItem
+import com.facebook.litho.widget.CollectionItemRootHostHolder
 import com.facebook.litho.widget.CollectionLayoutManager
 import com.facebook.litho.widget.CollectionPrimitiveViewAdapter
 import com.facebook.litho.widget.CollectionPrimitiveViewScroller
@@ -63,7 +65,6 @@ import com.facebook.litho.widget.LithoCollectionItem
 import com.facebook.litho.widget.LithoRecyclerView.OnAfterLayoutListener
 import com.facebook.litho.widget.LithoRecyclerView.OnBeforeLayoutListener
 import com.facebook.litho.widget.LithoRecyclerView.TouchInterceptor
-import com.facebook.litho.widget.PrimitiveRecyclerViewHolder
 import com.facebook.litho.widget.Recycler
 import com.facebook.litho.widget.Recycler.Companion.createSectionsRecyclerView
 import com.facebook.litho.widget.RecyclerBinder
@@ -431,13 +432,13 @@ class CollectionRecyclerComponent(
 
       if (updateOperation.operations.isEmpty()) {
         // Returns a read only list of items if there are no operations to apply
-        return adapter.readOnlyItems()
+        return adapter.getItems()
       }
 
       // We're creating a speculative changeset for measurement without side effects,
       // which may be discarded if the dataset changes before committing the result,
       // so we need to duplicate the items and apply modifications to the copy.
-      val updatedItems = adapter.copyItems()
+      val updatedItems = adapter.getItems().toMutableList()
       val itemsNeedToRefreshRenderInfo = mutableSetOf<Int>()
       for (operation in updateOperation.operations) {
         when (operation.type) {
@@ -618,7 +619,7 @@ private class CollectionPrimitiveViewLayoutBehavior(
             crossAxisWrapMode = crossAxisWrapMode)
 
     useLayoutEffect(adapter) {
-      adapter.viewHolderCreator = viewHolderCreator
+      adapter.viewHolderCreator = ViewHolderCreator
       onCleanup { adapter.viewHolderCreator = null }
     }
 
@@ -628,12 +629,19 @@ private class CollectionPrimitiveViewLayoutBehavior(
   companion object {
 
     /**
-     * The default factory function that creates PrimitiveRecyclerViewHolder instances for the
-     * RecyclerView.
+     * Factory function that creates CollectionItemRootHostHolder instances for RecyclerView items.
      */
-    private val viewHolderCreator: (View, Int) -> PrimitiveRecyclerViewHolder =
+    private val ViewHolderCreator:
+        (View, Int) -> CollectionItemRootHostHolder<out View, out CollectionItem<out View>> =
         { parent, viewType ->
-          PrimitiveRecyclerViewHolder(parent.context) { context -> LithoRenderTreeView(context) }
+          when (viewType) {
+            LithoCollectionItem.DEFAULT_COMPONENT_VIEW_TYPE -> {
+              LithoCollectionItemViewHolder(parent.context)
+            }
+            else -> {
+              throw IllegalArgumentException("Unknown view type: $viewType")
+            }
+          }
         }
 
     /** Exclude paddings from the size constraints */
@@ -663,6 +671,23 @@ private class CollectionPrimitiveViewLayoutBehavior(
           minWidth = minWidth, maxWidth = maxWidth, minHeight = minHeight, maxHeight = maxHeight)
     }
   }
+}
+
+/**
+ * ViewHolder implementation for Litho collection items that wraps a LithoRenderTreeView. This class
+ * serves as a bridge between RecyclerView's ViewHolder pattern and Litho's component rendering
+ * system, providing the view container for Litho components within a RecyclerView.
+ *
+ * @param context The Android context used to create the LithoRenderTreeView
+ */
+internal class LithoCollectionItemViewHolder(context: Context) :
+    CollectionItemRootHostHolder<LithoRenderTreeView, LithoCollectionItem>() {
+
+  /**
+   * The root view for this ViewHolder, which is a LithoRenderTreeView that can render Litho
+   * components within the RecyclerView item.
+   */
+  override val view: LithoRenderTreeView = LithoRenderTreeView(context)
 }
 
 /**

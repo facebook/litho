@@ -16,19 +16,34 @@
 
 package com.facebook.litho.widget
 
-import android.content.Context
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 
 /**
- * A ViewHolder implementation for RecyclerView that creates and holds a primitive View. This class
- * is used internally by the RecyclerView component to manage views.
+ * Abstract base class for holders that manage root host views in collection items. This class
+ * serves as a foundation for view holders that need to provide access to a root view and maintain
+ * associated data for collection items.
  *
- * @param context The context used to create the view
- * @param viewAllocator A function that creates a View given a Context
+ * @param V The type of View that serves as the root container, must extend Android's View class
+ * @param T The type of CollectionItem data associated with this holder, must be a CollectionItem of
+ *   type V
  */
-class PrimitiveRecyclerViewHolder(context: Context, viewAllocator: (Context) -> View) :
-    RecyclerView.ViewHolder(viewAllocator(context)) {
+abstract class CollectionItemRootHostHolder<V : View, T : CollectionItem<V>> {
+
+  /** The root View that this holder manages and provides access to */
+  abstract val view: V
+
   /** The data supports the view holder. */
-  var data: Any? = null
+  internal var data: T? = null
 }
+
+/**
+ * A ViewHolder implementation for RecyclerView that manages primitive views through delegation.
+ * This class wraps a CollectionItemRootHostHolder delegate to provide RecyclerView compatibility
+ * while maintaining access to the underlying view and associated data.
+ *
+ * @param delegate The CollectionItemRootHostHolder that provides the root view for this ViewHolder
+ */
+class PrimitiveRecyclerViewHolder(
+    val delegate: CollectionItemRootHostHolder<View, CollectionItem<View>>
+) : RecyclerView.ViewHolder(delegate.view)
