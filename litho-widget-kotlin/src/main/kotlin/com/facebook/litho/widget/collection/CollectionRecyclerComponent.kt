@@ -850,6 +850,14 @@ private fun PrimitiveComponentScope.CollectionPrimitiveViewMountBehavior(
           }
     }
 
+    withDescription("layout-manager") {
+      bind(layoutInfo) { sectionsRecyclerView ->
+        val recyclerView = sectionsRecyclerView.requireLithoRecyclerView()
+        recyclerView.layoutManager = layoutInfo.getLayoutManager()
+        onUnbind { recyclerView.layoutManager = null }
+      }
+    }
+
     withDescription("recycler-adapter") {
       bind(adapter) { sectionsRecyclerView ->
         val recyclerView = sectionsRecyclerView.requireLithoRecyclerView()
