@@ -91,6 +91,8 @@ import com.facebook.rendercore.primitives.LayoutScope
 import com.facebook.rendercore.primitives.MountBehavior
 import com.facebook.rendercore.primitives.PrimitiveLayoutResult
 import com.facebook.rendercore.primitives.ViewAllocator
+import com.facebook.rendercore.toHeightSpec
+import com.facebook.rendercore.toWidthSpec
 import kotlin.math.max
 
 /** A component that renders a list of items using a [RecyclerBinder]. */
@@ -761,7 +763,6 @@ private fun PrimitiveComponentScope.CollectionPrimitiveViewMountBehavior(
     itemAnimator: RecyclerView.ItemAnimator?,
     itemDecorations: List<RecyclerView.ItemDecoration>?,
     itemTouchListener: RecyclerView.OnItemTouchListener?,
-    measureChild: View.() -> Unit,
     nestedScrollingEnabled: Boolean,
     onAfterLayoutListener: OnAfterLayoutListener?,
     onBeforeLayoutListener: OnBeforeLayoutListener?,
@@ -787,12 +788,21 @@ private fun PrimitiveComponentScope.CollectionPrimitiveViewMountBehavior(
     shouldExcludeFromIncrementalMount = excludeFromIncrementalMount
 
     withDescription("recycler-decorations") {
-      bind(itemDecorations, measureChild) { sectionsRecyclerView ->
+      bind(itemDecorations, adapter) { sectionsRecyclerView ->
         val recyclerView = sectionsRecyclerView.requireLithoRecyclerView()
+
+        val measureFunction: (View.() -> Unit) = {
+          val position = (layoutParams as RecyclerView.LayoutParams).viewLayoutPosition
+          adapter.layoutData?.let { scope ->
+            val item = scope.items[position]
+            val constraints = scope.getChildSizeConstraints(item)
+            measure(constraints.toWidthSpec(), constraints.toHeightSpec())
+          }
+        }
 
         itemDecorations?.forEach { decoration ->
           if (decoration is ItemDecorationWithMeasureFunction) {
-            decoration.measure = measureChild
+            decoration.measure = measureFunction
           }
           recyclerView.addItemDecoration(decoration)
         }
