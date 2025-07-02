@@ -84,6 +84,7 @@ import com.facebook.litho.widget.requireLithoRecyclerView
 import com.facebook.litho.widget.unbindLegacyAttachBinder
 import com.facebook.litho.widget.unbindLegacyMountBinder
 import com.facebook.rendercore.PoolScope
+import com.facebook.rendercore.Size
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.primitives.LayoutBehavior
 import com.facebook.rendercore.primitives.LayoutScope
@@ -605,6 +606,7 @@ private class CollectionPrimitiveViewLayoutBehavior(
     private val layoutConfig: CollectionLayoutConfig,
     private val layoutInfo: LayoutInfo,
     private val items: List<CollectionItem<*>>,
+    private val preparationManager: CollectionPreparationManager,
     private val startPadding: Int,
     private val endPadding: Int,
     private val topPadding: Int,
@@ -628,6 +630,16 @@ private class CollectionPrimitiveViewLayoutBehavior(
 
     val size = scope.calculateLayout(items)
 
+    if (!preparationManager.hasApproximateRangeSize) {
+      // Measure the first child item with the calculated size constraints
+      // todo: use different strategies to have a more precise estimation
+      items.firstOrNull()?.let { firstChild ->
+        val output = IntArray(2)
+        firstChild.measure(scope.getChildSizeConstraints(firstChild), output)
+        preparationManager.estimateItemsInViewPort(size, Size(output[0], output[1]))
+      }
+    }
+
     useLayoutEffect(adapter) {
       adapter.viewHolderCreator = ViewHolderCreator
       onCleanup { adapter.viewHolderCreator = null }
@@ -647,7 +659,7 @@ private class CollectionPrimitiveViewLayoutBehavior(
       onCleanup { adapter.layoutData = null }
     }
 
-    return PrimitiveLayoutResult(size.width, size.height)
+    return PrimitiveLayoutResult(width = size.width, height = size.height)
   }
 
   companion object {

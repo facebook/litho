@@ -20,6 +20,7 @@ import androidx.annotation.UiThread
 import androidx.core.view.isGone
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.facebook.litho.ComponentsSystrace
 import com.facebook.litho.ThreadUtils
 import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.widget.ViewportInfo.ViewportChanged
@@ -43,6 +44,16 @@ class CollectionPreparationManager(private val layoutInfo: LayoutInfo) {
   private var onEnterRange: ((Int) -> Unit)? = null
   private var onExitRange: ((Int) -> Unit)? = null
   private var postUpdateViewportAttempts = 0
+
+  /**
+   * Indicates whether an approximate range size has been calculated for the viewport. This property
+   * is used to determine if the collection has estimated how many items can fit in the visible
+   * area, which is essential for efficient range computation.
+   *
+   * @return true if the estimated items in viewport has been set, false otherwise
+   */
+  val hasApproximateRangeSize: Boolean
+    get() = estimatedItemsInViewPort != UNSET
 
   private val viewportManager: ViewportManager =
       ViewportManager(
@@ -230,13 +241,14 @@ class CollectionPreparationManager(private val layoutInfo: LayoutInfo) {
    * @param childSize The size of a sample child item used for estimation (width and height)
    */
   fun estimateItemsInViewPort(collectionSize: Size, childSize: Size) {
-
     if (estimatedItemsInViewPort == UNSET) {
-      estimatedItemsInViewPort =
-          max(
-              layoutInfo.approximateRangeSize(
-                  childSize.width, childSize.height, collectionSize.width, collectionSize.height),
-              1)
+      ComponentsSystrace.trace("estimateItemsInViewPort") {
+        estimatedItemsInViewPort =
+            max(
+                layoutInfo.approximateRangeSize(
+                    childSize.width, childSize.height, collectionSize.width, collectionSize.height),
+                1)
+      }
     }
   }
 
