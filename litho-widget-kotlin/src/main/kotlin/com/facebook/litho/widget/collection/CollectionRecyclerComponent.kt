@@ -55,7 +55,8 @@ import com.facebook.litho.useStateWithDeps
 import com.facebook.litho.widget.ChangeSetCompleteCallback
 import com.facebook.litho.widget.CollectionItem
 import com.facebook.litho.widget.CollectionItemRootHostHolder
-import com.facebook.litho.widget.CollectionLayoutManager
+import com.facebook.litho.widget.CollectionLayoutData
+import com.facebook.litho.widget.CollectionLayoutScope
 import com.facebook.litho.widget.CollectionPrimitiveViewAdapter
 import com.facebook.litho.widget.CollectionPrimitiveViewScroller
 import com.facebook.litho.widget.ComponentRenderInfo
@@ -76,11 +77,11 @@ import com.facebook.litho.widget.SnapUtil
 import com.facebook.litho.widget.SnapUtil.SnapMode
 import com.facebook.litho.widget.bindLegacyAttachBinder
 import com.facebook.litho.widget.bindLegacyMountBinder
+import com.facebook.litho.widget.calculateLayout
 import com.facebook.litho.widget.requireLithoRecyclerView
 import com.facebook.litho.widget.unbindLegacyAttachBinder
 import com.facebook.litho.widget.unbindLegacyMountBinder
 import com.facebook.rendercore.PoolScope
-import com.facebook.rendercore.Size
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.primitives.LayoutBehavior
 import com.facebook.rendercore.primitives.LayoutScope
@@ -591,12 +592,9 @@ class CollectionRecyclerComponent(
 @OptIn(ExperimentalLithoApi::class)
 private class CollectionPrimitiveViewLayoutBehavior(
     private val adapter: CollectionPrimitiveViewAdapter,
+    private val layoutConfig: CollectionLayoutConfig,
     private val layoutInfo: LayoutInfo,
     private val items: List<CollectionItem<*>>,
-    private val collectionSize: Size?,
-    private val wrapInMainAxis: Boolean,
-    private val isVertical: Boolean,
-    private val crossAxisWrapMode: CrossAxisWrapMode,
     private val startPadding: Int,
     private val endPadding: Int,
     private val topPadding: Int,
@@ -608,19 +606,34 @@ private class CollectionPrimitiveViewLayoutBehavior(
     val verticalPadding = topPadding + bottomPadding
     val constraintsWithoutPadding =
         sizeConstraintsWithoutPadding(sizeConstraints, horizontalPadding, verticalPadding)
-    val size =
-        CollectionLayoutManager.measure(
-            layoutInfo = layoutInfo,
-            items = items,
-            collectionSizeConstraints = constraintsWithoutPadding,
-            collectionSize = collectionSize,
-            isVertical = isVertical,
-            wrapInMainAxis = wrapInMainAxis,
-            crossAxisWrapMode = crossAxisWrapMode)
+
+    val scope =
+        CollectionLayoutScope(
+            layoutInfo,
+            constraintsWithoutPadding,
+            adapter.layoutData?.collectionSize,
+            isVertical = layoutConfig.orientation == RecyclerView.VERTICAL,
+            wrapInMainAxis = layoutConfig.mainAxisWrapContent,
+            crossAxisWrapMode = layoutConfig.crossAxisWrapMode)
+
+    val size = scope.calculateLayout(items)
 
     useLayoutEffect(adapter) {
       adapter.viewHolderCreator = ViewHolderCreator
       onCleanup { adapter.viewHolderCreator = null }
+    }
+
+    useLayoutEffect(layoutInfo, layoutConfig, adapter, constraintsWithoutPadding, size) {
+      val layoutData =
+          CollectionLayoutData(
+              layoutInfo = layoutInfo,
+              collectionConstraints = constraintsWithoutPadding,
+              collectionSize = size,
+              isVertical = layoutConfig.orientation == RecyclerView.VERTICAL,
+              isDynamicSize = layoutConfig.crossAxisWrapMode == CrossAxisWrapMode.Dynamic,
+          )
+      adapter.layoutData = layoutData
+      onCleanup { adapter.layoutData = null }
     }
 
     return PrimitiveLayoutResult(size.width, size.height)

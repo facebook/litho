@@ -20,6 +20,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.UiThread
 import androidx.recyclerview.widget.RecyclerView
+import com.facebook.rendercore.thread.utils.ThreadUtils
 
 /**
  * RecyclerView adapter that can be used to render a list of [CollectionItem]s. The adapter will
@@ -45,6 +46,19 @@ class CollectionPrimitiveViewAdapter : RecyclerView.Adapter<PrimitiveRecyclerVie
       ((parent: ViewGroup, viewType: Int) -> CollectionItemRootHostHolder<
               out View, out CollectionItem<out View>>)? =
       null
+
+  /**
+   * Optional layout data that provides additional configuration and metadata for the collection's
+   * layout behavior. This can be used to store layout-specific information such as span counts,
+   * orientation, or other layout parameters that influence how items are arranged in the
+   * RecyclerView.
+   */
+  var layoutData: CollectionLayoutData? = null
+    @UiThread
+    set(value) {
+      ThreadUtils.assertMainThread()
+      field = value
+    }
 
   init {
     setHasStableIds(true)
