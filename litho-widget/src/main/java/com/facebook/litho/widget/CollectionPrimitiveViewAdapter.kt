@@ -27,19 +27,31 @@ import com.facebook.litho.LithoRenderTreeView
  * and [CollectionItem.onViewRecycled] on the holder when the item is bound and recycle
  * respectively.
  */
-class CollectionPrimitiveViewAdapter(
-    private val viewHolderCreator:
-        (parent: ViewGroup, viewType: Int) -> PrimitiveRecyclerViewHolder,
-) : RecyclerView.Adapter<PrimitiveRecyclerViewHolder>() {
+class CollectionPrimitiveViewAdapter : RecyclerView.Adapter<PrimitiveRecyclerViewHolder>() {
 
   private val items: MutableList<CollectionItem<*>> = ArrayList()
+
+  /**
+   * Factory function for creating PrimitiveRecyclerViewHolder instances. This function is called by
+   * the adapter when a new view holder needs to be created. Must be set before the adapter starts
+   * creating view holders.
+   *
+   * @param parent The ViewGroup into which the new View will be added after it is bound to an
+   *   adapter position
+   * @param viewType The view type of the new View, used to distinguish different item types
+   * @return A new PrimitiveRecyclerViewHolder that holds a View of the given view type
+   */
+  var viewHolderCreator: ((parent: ViewGroup, viewType: Int) -> PrimitiveRecyclerViewHolder)? = null
 
   init {
     setHasStableIds(true)
   }
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PrimitiveRecyclerViewHolder {
-    return viewHolderCreator(parent, viewType)
+    return checkNotNull(viewHolderCreator) {
+          "viewHolderCreator must be set before creating the view holders"
+        }
+        .invoke(parent, viewType)
   }
 
   override fun onBindViewHolder(viewHolder: PrimitiveRecyclerViewHolder, position: Int) {

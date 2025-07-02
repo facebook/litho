@@ -41,6 +41,7 @@ import com.facebook.litho.Style
 import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.annotations.Hook
 import com.facebook.litho.config.PrimitiveRecyclerBinderStrategy
+import com.facebook.litho.effects.useEffect as useLayoutEffect
 import com.facebook.litho.onCleanup
 import com.facebook.litho.sections.widget.GridRecyclerConfiguration
 import com.facebook.litho.sections.widget.NoUpdateItemAnimator
@@ -189,7 +190,7 @@ class CollectionRecyclerComponent(
                   }
             }
             .value
-    val adapter = useState { CollectionPrimitiveViewAdapter(viewHolderCreator) }.value
+    val adapter = useState { CollectionPrimitiveViewAdapter() }.value
     val recyclerEventsController = useState { RecyclerEventsController() }.value
     val collectionPrimitiveViewScroller =
         useState { CollectionPrimitiveViewScroller(context.androidContext) }.value
@@ -577,20 +578,6 @@ class CollectionRecyclerComponent(
         changeSetCompleteCallback.onDataRendered(true, SystemClock.uptimeMillis())
       }
     }
-
-    /**
-     * Factory function that creates PrimitiveRecyclerViewHolder instances for the RecyclerView.
-     * This lambda takes a parent View and viewType parameter and returns a configured ViewHolder
-     * that uses LithoRenderTreeView as its content view for rendering Litho components.
-     *
-     * @param parent The parent View
-     * @param viewType The view type identifier
-     * @return PrimitiveRecyclerViewHolder configured with LithoRenderTreeView
-     */
-    private val viewHolderCreator: (View, Int) -> PrimitiveRecyclerViewHolder =
-        { parent, viewType ->
-          PrimitiveRecyclerViewHolder(parent.context) { context -> LithoRenderTreeView(context) }
-        }
   }
 
   private class LatestCommittedData(@Volatile var data: List<CollectionChild>? = null)
@@ -602,6 +589,7 @@ class CollectionRecyclerComponent(
  */
 @OptIn(ExperimentalLithoApi::class)
 private class CollectionPrimitiveViewLayoutBehavior(
+    private val adapter: CollectionPrimitiveViewAdapter,
     private val layoutInfo: LayoutInfo,
     private val items: List<CollectionItem<*>>,
     private val collectionSize: Size?,
@@ -628,10 +616,26 @@ private class CollectionPrimitiveViewLayoutBehavior(
             isVertical = isVertical,
             wrapInMainAxis = wrapInMainAxis,
             crossAxisWrapMode = crossAxisWrapMode)
+
+    useLayoutEffect(adapter) {
+      adapter.viewHolderCreator = viewHolderCreator
+      onCleanup { adapter.viewHolderCreator = null }
+    }
+
     return PrimitiveLayoutResult(size.width, size.height)
   }
 
   companion object {
+
+    /**
+     * The default factory function that creates PrimitiveRecyclerViewHolder instances for the
+     * RecyclerView.
+     */
+    private val viewHolderCreator: (View, Int) -> PrimitiveRecyclerViewHolder =
+        { parent, viewType ->
+          PrimitiveRecyclerViewHolder(parent.context) { context -> LithoRenderTreeView(context) }
+        }
+
     /** Exclude paddings from the size constraints */
     private fun sizeConstraintsWithoutPadding(
         constraints: SizeConstraints,
