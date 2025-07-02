@@ -23,7 +23,6 @@ import android.view.View
 import androidx.annotation.UiThread
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.OrientationHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemAnimator
 import androidx.recyclerview.widget.SnapHelper
@@ -57,6 +56,7 @@ import com.facebook.litho.widget.CollectionItem
 import com.facebook.litho.widget.CollectionItemRootHostHolder
 import com.facebook.litho.widget.CollectionLayoutData
 import com.facebook.litho.widget.CollectionLayoutScope
+import com.facebook.litho.widget.CollectionOrientation
 import com.facebook.litho.widget.CollectionPrimitiveViewAdapter
 import com.facebook.litho.widget.CollectionPrimitiveViewScroller
 import com.facebook.litho.widget.ComponentRenderInfo
@@ -247,8 +247,7 @@ class CollectionRecyclerComponent(
     }
     useEffect(Unit) { onCleanup { poolScope.releaseScope() } }
 
-    val internalPullToRefreshEnabled =
-        (recyclerConfiguration.orientation != OrientationHelper.HORIZONTAL && pullToRefreshEnabled)
+    val internalPullToRefreshEnabled = (layoutConfig.orientation.isVertical && pullToRefreshEnabled)
     val componentsConfiguration = context.lithoConfiguration.componentsConfig
     val primitiveRecyclerBinderStrategy =
         recyclerConfiguration.recyclerBinderConfiguration.primitiveRecyclerBinderStrategy
@@ -339,7 +338,7 @@ class CollectionRecyclerComponent(
       val snapHelper = config.snapHelper
       val snapMode = config.snapMode
       val rangeRatio = config.recyclerBinderConfiguration.recyclerBinderConfig.rangeRatio
-      val orientation = config.orientation
+      val orientation = CollectionOrientation.fromInt(config.orientation)
       val reverseLayout = config.reverseLayout
       val stackFromEnd = config.stackFromEnd
       val spanCount =
@@ -612,7 +611,7 @@ private class CollectionPrimitiveViewLayoutBehavior(
             layoutInfo,
             constraintsWithoutPadding,
             adapter.layoutData?.collectionSize,
-            isVertical = layoutConfig.orientation == RecyclerView.VERTICAL,
+            isVertical = layoutConfig.orientation.isVertical,
             wrapInMainAxis = layoutConfig.mainAxisWrapContent,
             crossAxisWrapMode = layoutConfig.crossAxisWrapMode)
 
@@ -629,7 +628,7 @@ private class CollectionPrimitiveViewLayoutBehavior(
               layoutInfo = layoutInfo,
               collectionConstraints = constraintsWithoutPadding,
               collectionSize = size,
-              isVertical = layoutConfig.orientation == RecyclerView.VERTICAL,
+              isVertical = layoutConfig.orientation.isVertical,
               isDynamicSize = layoutConfig.crossAxisWrapMode == CrossAxisWrapMode.Dynamic,
           )
       adapter.layoutData = layoutData
@@ -881,7 +880,7 @@ private data class CollectionLayoutConfig(
     val rangeRatio: Float = DEFAULT_RANGE_RATIO,
 
     // Configs that requires regenerating a new layout info
-    val orientation: Int = RecyclerView.VERTICAL,
+    val orientation: CollectionOrientation = CollectionOrientation.VERTICAL,
     val reverseLayout: Boolean = false,
     val stackFromEnd: Boolean = false,
     val spanCount: Int = GridLayoutManager.DEFAULT_SPAN_COUNT,
