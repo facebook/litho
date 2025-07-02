@@ -59,14 +59,15 @@ fun ItemSizeConstraintsProviderScope.getChildSizeConstraints(
         // measure the child for the first pass.
         val resolvedWidthSpec =
             if (isDynamicSize && isVertical) {
-              item.size?.let { MeasureSpecUtils.exactly(max(collectionSize?.width ?: 0, it.width)) }
-                  ?: MeasureSpecUtils.unspecified()
+              item.size()?.let {
+                MeasureSpecUtils.exactly(max(collectionSize?.width ?: 0, it.width))
+              } ?: MeasureSpecUtils.unspecified()
             } else {
               layoutInfo.getChildWidthSpec(collectionConstraints.toWidthSpec(), item.renderInfo)
             }
         val resolvedHeightSpec =
             if (isDynamicSize && !isVertical) {
-              item.size?.let {
+              item.size()?.let {
                 MeasureSpecUtils.exactly(max(collectionSize?.height ?: 0, it.height))
               } ?: MeasureSpecUtils.unspecified()
             } else {
@@ -132,10 +133,10 @@ fun CollectionLayoutScope.calculateLayout(items: List<CollectionItem<*>>): Size 
       val wasFirstChildSizeChanged =
           if (items.isNotEmpty()) {
             if (isVertical) {
-              val width = items[0].size?.width ?: 0
+              val width = items[0].size()?.width ?: 0
               measuredSize.width != width
             } else {
-              val height = items[0].size?.height ?: 0
+              val height = items[0].size()?.height ?: 0
               measuredSize.height != height
             }
           } else {
@@ -191,7 +192,7 @@ fun CollectionLayoutScope.calculateLayout(items: List<CollectionItem<*>>): Size 
           CrossAxisWrapMode.NoWrap -> collectionConstraints.maxWidth
           CrossAxisWrapMode.MatchFirstChild ->
               if (items.isNotEmpty()) {
-                items[0].size?.width ?: 0
+                items[0].size()?.width ?: 0
               } else 0
           CrossAxisWrapMode.Dynamic -> sizeInCrossAxis
         }
@@ -213,7 +214,7 @@ fun CollectionLayoutScope.calculateLayout(items: List<CollectionItem<*>>): Size 
           CrossAxisWrapMode.NoWrap -> collectionConstraints.maxHeight
           CrossAxisWrapMode.MatchFirstChild ->
               if (items.isNotEmpty()) {
-                items[0].size?.height ?: 0
+                items[0].size()?.height ?: 0
               } else 0
           CrossAxisWrapMode.Dynamic -> sizeInCrossAxis
         }

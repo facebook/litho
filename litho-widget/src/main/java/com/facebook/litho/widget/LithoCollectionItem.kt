@@ -17,10 +17,12 @@
 package com.facebook.litho.widget
 
 import com.facebook.litho.ComponentContext
+import com.facebook.litho.LayoutState
 import com.facebook.litho.LithoRenderTreeView
 import com.facebook.litho.LithoRenderer
 import com.facebook.litho.LithoTree
 import com.facebook.litho.componentsConfig
+import com.facebook.rendercore.Size
 import com.facebook.rendercore.SizeConstraints
 
 /** A [CollectionItem] that renders a [LithoRenderTreeView]. */
@@ -39,6 +41,8 @@ class LithoCollectionItem(
           treePropContainer = componentContext.treePropContainerCopy,
           visibilityController = componentContext.lithoVisibilityEventsController)
 
+  override fun size(): Size? = renderer.currentLayoutState?.let { Size(it.width, it.height) }
+
   override fun measure(sizeConstraints: SizeConstraints, result: IntArray?) {
     prepareSync(sizeConstraints, result)
   }
@@ -55,18 +59,25 @@ class LithoCollectionItem(
     }
   }
 
-  override fun onBindView(view: LithoRenderTreeView) {
-    renderer.currentLayoutState?.let { layoutState ->
-      view.setLayoutState(layoutState, layoutState.treeState)
-    }
+  override fun onBindView(view: LithoRenderTreeView, sizeConstraints: SizeConstraints) {
+    renderer.bind(view)
+    val layoutState = renderer.renderSync(renderInfo.component, sizeConstraints)
+    bindLayoutState(view, layoutState)
+    renderer.onStateUpdateCompleted = { layoutState -> bindLayoutState(view, layoutState) }
   }
 
   override fun onViewRecycled(view: LithoRenderTreeView) {
+    renderer.unbind()
     view.cleanup()
   }
 
   override fun unprepare() {
-    // todo
+    renderer.cleanup()
+  }
+
+  private fun bindLayoutState(view: LithoRenderTreeView, layoutState: LayoutState) {
+    renderer.maybePromoteCommittedLayoutStateToUI(layoutState)
+    view.setLayoutState(layoutState, layoutState.treeState)
   }
 
   companion object {

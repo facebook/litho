@@ -33,9 +33,15 @@ import com.facebook.rendercore.SizeConstraints
 abstract class CollectionItem<V : View>(
     val id: Int,
     val viewType: Int,
-    var renderInfo: RenderInfo,
-    @Volatile var size: Size? = null,
+    var renderInfo: RenderInfo
 ) {
+
+  /**
+   * Returns the size of this collection item.
+   *
+   * @return Size object containing the width and height dimensions of the item
+   */
+  abstract fun size(): Size?
 
   /**
    * Measures the item according to the given size constraints.
@@ -63,10 +69,23 @@ abstract class CollectionItem<V : View>(
    */
   abstract fun prepareSync(sizeConstraints: SizeConstraints, result: IntArray?)
 
-  /** To bind properties for the underline view. */
-  abstract fun onBindView(view: V)
+  /**
+   * Binds data and properties to the view when it's being displayed in the collection. This method
+   * is called when the RecyclerView needs to display the item at a specific position.
+   *
+   * @param view The view instance of type V that will display this collection item
+   * @param sizeConstraints The size constraints that define the available space for rendering the
+   *   view
+   */
+  abstract fun onBindView(view: V, sizeConstraints: SizeConstraints)
 
-  /** To unbind properties for the underline view. */
+  /**
+   * Called when a view has been recycled and is no longer being displayed in the collection. This
+   * method should clean up any resources, listeners, or bindings associated with the view to
+   * prevent memory leaks and ensure proper recycling behavior.
+   *
+   * @param view The view instance of type V that has been recycled and needs cleanup
+   */
   abstract fun onViewRecycled(view: V)
 
   /**

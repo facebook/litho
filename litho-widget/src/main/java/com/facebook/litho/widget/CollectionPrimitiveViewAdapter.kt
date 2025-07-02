@@ -80,7 +80,9 @@ class CollectionPrimitiveViewAdapter : RecyclerView.Adapter<PrimitiveRecyclerVie
     val item = items[position]
     @Suppress("UNCHECKED_CAST")
     viewHolder.delegate.data = item as CollectionItem<View>
-    item.onBindView(viewHolder.delegate.view)
+    layoutData?.let { scope ->
+      item.onBindView(viewHolder.delegate.view, scope.getChildSizeConstraints(item))
+    }
   }
 
   override fun onViewRecycled(viewHolder: PrimitiveRecyclerViewHolder) {

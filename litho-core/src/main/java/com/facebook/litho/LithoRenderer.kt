@@ -215,6 +215,15 @@ class LithoRenderer(
       currentResolveResult = null
       currentLayoutState = null
     }
+  }
+
+  @UiThread
+  fun bind(host: Host) {
+    rootHost = host
+  }
+
+  @UiThread
+  fun unbind() {
     rootHost = null
   }
 
