@@ -97,7 +97,7 @@ interface LayoutInfo : ViewportInfo {
    */
   fun computeWrappedHeight(maxHeight: Int, componentTreeHolders: List<ComponentTreeHolder>): Int
 
-  interface RenderInfoCollection {
+  fun interface RenderInfoCollection {
     fun getRenderInfoAt(position: Int): RenderInfo
   }
 

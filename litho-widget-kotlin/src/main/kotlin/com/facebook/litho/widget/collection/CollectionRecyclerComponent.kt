@@ -645,6 +645,16 @@ private class CollectionPrimitiveViewLayoutBehavior(
       onCleanup { adapter.viewHolderCreator = null }
     }
 
+    useLayoutEffect(layoutInfo, adapter) {
+      layoutInfo.setRenderInfoCollection { position ->
+        val item =
+            adapter.findItemByPosition(position)
+                ?: throw IllegalStateException("Trying to find a child item out of range!")
+        item.renderInfo
+      }
+      onCleanup { layoutInfo.setRenderInfoCollection(null) }
+    }
+
     useLayoutEffect(layoutInfo, layoutConfig, adapter, constraintsWithoutPadding, size) {
       val layoutData =
           CollectionLayoutData(

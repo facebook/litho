@@ -104,6 +104,18 @@ class CollectionPrimitiveViewAdapter : RecyclerView.Adapter<PrimitiveRecyclerVie
     }
   }
 
+  /**
+   * Finds and returns a CollectionItem at the specified position in the adapter's data set.
+   *
+   * @param position The position of the item to retrieve
+   * @return The CollectionItem at the specified position, or null if position is invalid
+   */
+  @UiThread
+  fun findItemByPosition(position: Int): CollectionItem<*>? {
+    ThreadUtils.assertMainThread()
+    return items.getOrNull(position)
+  }
+
   // region update operations
 
   fun insertAt(position: Int, holders: List<CollectionItem<*>>) {
