@@ -721,8 +721,10 @@ internal class LithoCollectionItemViewHolder(context: Context) :
 @OptIn(ExperimentalLithoApi::class)
 private fun PrimitiveComponentScope.CollectionPrimitiveViewMountBehavior(
     layoutConfig: CollectionLayoutConfig,
+    layoutInfo: LayoutInfo,
     adapter: CollectionPrimitiveViewAdapter,
     preparationManager: CollectionPreparationManager,
+    scroller: CollectionPrimitiveViewScroller,
     bottomPadding: Int,
     clipChildren: Boolean,
     clipToPadding: Boolean,
@@ -861,6 +863,17 @@ private fun PrimitiveComponentScope.CollectionPrimitiveViewMountBehavior(
                 recyclerView, layoutConfig.rangeRatio, onEnterRangeCallback, onExitRangeCallback)
             onUnbind { preparationManager.unbind(recyclerView) }
           }
+    }
+
+    withDescription("recycler-scroller") {
+      bind(scroller, layoutInfo) { sectionsRecyclerView ->
+        val recyclerView = sectionsRecyclerView.requireLithoRecyclerView()
+        scroller.bind(layoutInfo, adapter)
+        onUnbind {
+          scroller.rememberScrollOffset(recyclerView)
+          scroller.unbind()
+        }
+      }
     }
 
     withDescription("recycler-before-layout") {
