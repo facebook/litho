@@ -24,7 +24,6 @@ import com.facebook.litho.ThreadUtils
 import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.widget.ViewportInfo.ViewportChanged
 import com.facebook.rendercore.Size
-import com.facebook.rendercore.SizeConstraints
 import kotlin.math.max
 
 /**
@@ -40,7 +39,6 @@ class CollectionPreparationManager(private val layoutInfo: LayoutInfo) {
    */
   private var estimatedItemsInViewPort: Int = UNSET
   private var mountedView: RecyclerView? = null
-  private var collectionSizeProvider: (() -> Size?)? = null
   private var rangeRatio: Float? = null
   private var onEnterRange: ((Int) -> Unit)? = null
   private var onExitRange: ((Int) -> Unit)? = null
@@ -101,11 +99,7 @@ class CollectionPreparationManager(private val layoutInfo: LayoutInfo) {
       }
   private val rangeTraverser: RecyclerRangeTraverser
   private val isBound
-    get() =
-        rangeRatio != null &&
-            collectionSizeProvider != null &&
-            onEnterRange != null &&
-            onExitRange != null
+    get() = rangeRatio != null && onEnterRange != null && onExitRange != null
 
   init {
     val layoutManager = layoutInfo.getLayoutManager()
@@ -127,14 +121,12 @@ class CollectionPreparationManager(private val layoutInfo: LayoutInfo) {
   fun bind(
       view: RecyclerView,
       rangeRatio: Float,
-      collectionSizeProvider: (() -> Size?),
       onEnterRange: (Int) -> Unit,
       onExitRange: (Int) -> Unit
   ) {
     ThreadUtils.assertMainThread()
     this.mountedView = view
     this.rangeRatio = rangeRatio
-    this.collectionSizeProvider = collectionSizeProvider
     this.onEnterRange = onEnterRange
     this.onExitRange = onExitRange
 
@@ -148,7 +140,6 @@ class CollectionPreparationManager(private val layoutInfo: LayoutInfo) {
     view.removeOnScrollListener(viewportManager.scrollListener)
     viewportManager.removeViewportChangedListener(viewportChangedListener)
     mountedView = null
-    collectionSizeProvider = null
     rangeRatio = null
     onEnterRange = null
     onExitRange = null
@@ -157,6 +148,10 @@ class CollectionPreparationManager(private val layoutInfo: LayoutInfo) {
 
   fun addViewportChangedListener(viewportChangedListener: ViewportChanged?) {
     viewportManager.addViewportChangedListener(viewportChangedListener)
+  }
+
+  fun removeViewportChangedListener(viewportChangedListener: ViewportChanged?) {
+    viewportManager.removeViewportChangedListener(viewportChangedListener)
   }
 
   /**
@@ -198,8 +193,7 @@ class CollectionPreparationManager(private val layoutInfo: LayoutInfo) {
   ) {
     if (!isBound) return
 
-    val collectionSize: Size? = requireNotNull(collectionSizeProvider).invoke()
-    if (collectionSize == null || estimatedItemsInViewPort == UNSET) {
+    if (estimatedItemsInViewPort == UNSET) {
       return
     }
 
@@ -232,24 +226,16 @@ class CollectionPreparationManager(private val layoutInfo: LayoutInfo) {
    * This calculation is performed only once when estimatedItemsInViewPort is unset and helps
    * determine how many items should be prepared for rendering to optimize performance.
    *
-   * @param item A sample CollectionItem used to estimate the size of items in the collection
-   * @param sizeConstraintsProvider A function that provides size constraints for measuring the
-   *   given item
+   * @param collectionSize The size of the collection container (width and height)
+   * @param childSize The size of a sample child item used for estimation (width and height)
    */
-  fun estimateItemsInViewPort(
-      item: CollectionItem<*>,
-      sizeConstraintsProvider: (CollectionItem<*>) -> SizeConstraints,
-  ) {
-    if (!isBound) return
+  fun estimateItemsInViewPort(collectionSize: Size, childSize: Size) {
 
-    val collectionSize: Size? = requireNotNull(collectionSizeProvider).invoke()
-    if (estimatedItemsInViewPort == UNSET && collectionSize != null) {
-      val output = IntArray(2)
-      item.measure(sizeConstraintsProvider(item), output)
+    if (estimatedItemsInViewPort == UNSET) {
       estimatedItemsInViewPort =
           max(
               layoutInfo.approximateRangeSize(
-                  output[0], output[1], collectionSize.width, collectionSize.height),
+                  childSize.width, childSize.height, collectionSize.width, collectionSize.height),
               1)
     }
   }

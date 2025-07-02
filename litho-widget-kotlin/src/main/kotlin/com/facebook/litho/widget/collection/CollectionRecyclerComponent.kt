@@ -24,7 +24,6 @@ import androidx.annotation.UiThread
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.ItemAnimator
 import androidx.recyclerview.widget.SnapHelper
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
@@ -57,6 +56,7 @@ import com.facebook.litho.widget.CollectionItemRootHostHolder
 import com.facebook.litho.widget.CollectionLayoutData
 import com.facebook.litho.widget.CollectionLayoutScope
 import com.facebook.litho.widget.CollectionOrientation
+import com.facebook.litho.widget.CollectionPreparationManager
 import com.facebook.litho.widget.CollectionPrimitiveViewAdapter
 import com.facebook.litho.widget.CollectionPrimitiveViewScroller
 import com.facebook.litho.widget.ComponentRenderInfo
@@ -75,9 +75,11 @@ import com.facebook.litho.widget.SectionsRecyclerView
 import com.facebook.litho.widget.SectionsRecyclerView.SectionsRecyclerViewLogger
 import com.facebook.litho.widget.SnapUtil
 import com.facebook.litho.widget.SnapUtil.SnapMode
+import com.facebook.litho.widget.ViewportInfo.ViewportChanged
 import com.facebook.litho.widget.bindLegacyAttachBinder
 import com.facebook.litho.widget.bindLegacyMountBinder
 import com.facebook.litho.widget.calculateLayout
+import com.facebook.litho.widget.getChildSizeConstraints
 import com.facebook.litho.widget.requireLithoRecyclerView
 import com.facebook.litho.widget.unbindLegacyAttachBinder
 import com.facebook.litho.widget.unbindLegacyMountBinder
@@ -91,6 +93,7 @@ import com.facebook.rendercore.primitives.ViewAllocator
 import kotlin.math.max
 
 /** A component that renders a list of items using a [RecyclerBinder]. */
+@OptIn(ExperimentalLithoApi::class)
 class CollectionRecyclerComponent(
     private val children: List<CollectionChild>,
     private val componentRenderer: (index: Int, model: CollectionChild) -> RenderInfo,
@@ -136,7 +139,6 @@ class CollectionRecyclerComponent(
     private val verticalFadingEdgeEnabled: Boolean = false,
 ) : KComponent() {
 
-  @OptIn(ExperimentalLithoApi::class)
   override fun ComponentScope.render(): Component {
     val layoutConfig: CollectionLayoutConfig = useConfig(recyclerConfiguration)
     val latestCommittedData = useState { LatestCommittedData() }.value
@@ -175,24 +177,12 @@ class CollectionRecyclerComponent(
                       recyclerConfiguration.recyclerBinderConfiguration.recyclerBinderConfig)
                   .poolScope(poolScope)
                   .build(context)
-                  .apply {
-                    setViewportChangedListener {
-                        firstVisibleIndex,
-                        lastVisibleIndex,
-                        firstFullyVisibleIndex,
-                        lastFullyVisibleIndex,
-                        _ ->
-                      viewportChangedCallback(
-                          firstVisibleIndex,
-                          lastVisibleIndex,
-                          getItemCount(),
-                          firstFullyVisibleIndex,
-                          lastFullyVisibleIndex)
-                    }
-                  }
             }
             .value
     val adapter = useState { CollectionPrimitiveViewAdapter() }.value
+    val collectionPreparationManager =
+        useStateWithDeps(layoutInfo) { CollectionPreparationManager(layoutInfo) }.value
+
     val recyclerEventsController = useState { RecyclerEventsController() }.value
     val collectionPrimitiveViewScroller =
         useState { CollectionPrimitiveViewScroller(context.androidContext) }.value
@@ -209,6 +199,27 @@ class CollectionRecyclerComponent(
             sameContentComparator = contentComparator)
     // We're going to measure the list with a best effort calculation of the changeset.
     val collectionItems = buildCollectionItems(context, adapter, componentRenderer, updateOperation)
+
+    useEffect(adapter, collectionPreparationManager) {
+      val viewportChangedListener =
+          ViewportChanged {
+              firstVisibleIndex,
+              lastVisibleIndex,
+              firstFullyVisibleIndex,
+              lastFullyVisibleIndex,
+              state ->
+            viewportChangedCallback(
+                firstVisibleIndex,
+                lastVisibleIndex,
+                adapter.getItemCount(),
+                firstFullyVisibleIndex,
+                lastFullyVisibleIndex)
+          }
+      collectionPreparationManager.addViewportChangedListener(viewportChangedListener)
+      onCleanup {
+        collectionPreparationManager.removeViewportChangedListener(viewportChangedListener)
+      }
+    }
 
     useEffect(Any()) {
       lazyCollectionController?.recyclerEventsController = recyclerEventsController
@@ -628,6 +639,7 @@ private class CollectionPrimitiveViewLayoutBehavior(
               layoutInfo = layoutInfo,
               collectionConstraints = constraintsWithoutPadding,
               collectionSize = size,
+              items = adapter.getItems(),
               isVertical = layoutConfig.orientation.isVertical,
               isDynamicSize = layoutConfig.crossAxisWrapMode == CrossAxisWrapMode.Dynamic,
           )
@@ -706,8 +718,11 @@ internal class LithoCollectionItemViewHolder(context: Context) :
  * Creates a MountBehavior for CollectionPrimitiveView that handles the mounting and configuration
  * of a SectionsRecyclerView with all necessary properties, listeners, and decorations.
  */
+@OptIn(ExperimentalLithoApi::class)
 private fun PrimitiveComponentScope.CollectionPrimitiveViewMountBehavior(
+    layoutConfig: CollectionLayoutConfig,
     adapter: CollectionPrimitiveViewAdapter,
+    preparationManager: CollectionPreparationManager,
     bottomPadding: Int,
     clipChildren: Boolean,
     clipToPadding: Boolean,
@@ -719,7 +734,7 @@ private fun PrimitiveComponentScope.CollectionPrimitiveViewMountBehavior(
     isLeftFadingEnabled: Boolean,
     isRightFadingEnabled: Boolean,
     isTopFadingEnabled: Boolean,
-    itemAnimator: ItemAnimator?,
+    itemAnimator: RecyclerView.ItemAnimator?,
     itemDecorations: List<RecyclerView.ItemDecoration>?,
     itemTouchListener: RecyclerView.OnItemTouchListener?,
     measureChild: View.() -> Unit,
@@ -827,6 +842,25 @@ private fun PrimitiveComponentScope.CollectionPrimitiveViewMountBehavior(
         recyclerView.adapter = adapter
         onUnbind { recyclerView.adapter = null }
       }
+    }
+
+    withDescription("preparation-manager") {
+      bindWithLayoutData<CollectionLayoutData>(
+          preparationManager, layoutConfig.rangeRatio, adapter) { sectionsRecyclerView, layoutData
+            ->
+            val recyclerView = sectionsRecyclerView.requireLithoRecyclerView()
+            val onEnterRangeCallback: (Int) -> Unit = { position ->
+              val item = layoutData.items[position]
+              item.prepare(layoutData.getChildSizeConstraints(item))
+            }
+            val onExitRangeCallback: (Int) -> Unit = { position ->
+              val item = layoutData.items[position]
+              item.unprepare()
+            }
+            preparationManager.bind(
+                recyclerView, layoutConfig.rangeRatio, onEnterRangeCallback, onExitRangeCallback)
+            onUnbind { preparationManager.unbind(recyclerView) }
+          }
     }
 
     withDescription("recycler-before-layout") {
