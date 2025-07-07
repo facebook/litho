@@ -278,7 +278,14 @@ fun PrimitiveComponentScope.useNestedTree(
             stateUpdater = stateUpdater,
             rootHost = nestedTreeState.mountedViewReference,
             errorComponentReceiver = { errorComponentRef.update(AtomicReference(it)) },
-            treeLifecycle = nestedTreeState.treeLifecycleProvider)
+            treeLifecycle = nestedTreeState.treeLifecycleProvider,
+            uiStateReadRecordsProvider = {
+              val host = nestedTreeState.mountedViewReference.mountedView
+              check(host is BaseMountingView) {
+                "Trying to get UI state read records without a set host"
+              }
+              host.uiStateReadRecords
+            })
       }
   val componentContext =
       ComponentContext(

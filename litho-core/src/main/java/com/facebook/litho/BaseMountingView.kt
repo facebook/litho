@@ -136,7 +136,7 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
 
   private var onDirtyMountListener: OnDirtyMountListener? = null
 
-  private val uiStateReadRecords = UiStateReadRecords(this)
+  @get:JvmName("getUiStateReadRecords") internal val uiStateReadRecords = UiStateReadRecords(this)
 
   private val mountState = MountState(this, systrace, uiStateReadRecords)
 

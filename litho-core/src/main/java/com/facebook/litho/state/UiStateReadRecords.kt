@@ -17,8 +17,10 @@
 package com.facebook.litho.state
 
 import androidx.annotation.MainThread
+import androidx.collection.MutableLongSet
 import androidx.collection.MutableScatterSet
 import androidx.collection.ScatterSet
+import androidx.collection.mutableLongSetOf
 import androidx.collection.mutableScatterMapOf
 import androidx.collection.mutableScatterSetOf
 import com.facebook.rendercore.BinderId
@@ -27,16 +29,19 @@ import com.facebook.rendercore.BinderObserver
 /**
  * A [BinderObserver] responsible for tracking and recording state reads in binders.
  *
- * The [UiStateReadRecords] keeps a live [records] of which state is read and by who. This may be
- * used to determine which binders need to be re-bound when a state that they read is updated, which
- * can help to significantly optimize binder execution in the mount phase.
+ * The [UiStateReadRecords] keeps a live record of which state is read and by who. These records are
+ * exclusively those that are read during the UI phases (namely Mount and Draw). These records may
+ * be used to determine which binders or draw hosts need to be re-bound or invalidated respectively,
+ * when a state that they read is updated, which can help to significantly optimize execution in the
+ * respective phases.
  *
  * @param config Supplies the read tracking status and current treeId to the observer.
  */
 @MainThread
 internal class UiStateReadRecords(private val config: Config) : BinderObserver() {
 
-  private val records = mutableScatterMapOf<StateId, MutableScatterSet<BinderId>>()
+  private val onBindRecords = mutableScatterMapOf<StateId, MutableScatterSet<BinderId>>()
+  private val onDrawRecords = mutableScatterMapOf<StateId, MutableLongSet>()
 
   override fun onBind(binderId: BinderId, func: () -> Unit) {
     if (!config.isReadTrackingEnabled) return func()
@@ -45,7 +50,7 @@ internal class UiStateReadRecords(private val config: Config) : BinderObserver()
     val reads = StateReadRecorder.record(treeId, func)
     synchronized(this) {
       reads.forEach { stateId ->
-        val binderIds = records.getOrPut(stateId) { mutableScatterSetOf() }
+        val binderIds = onBindRecords.getOrPut(stateId) { mutableScatterSetOf() }
         binderIds.add(binderId)
       }
     }
@@ -57,25 +62,49 @@ internal class UiStateReadRecords(private val config: Config) : BinderObserver()
 
     synchronized(this) {
       val stateIdsToRemove = mutableSetOf<StateId>()
-      records.forEach { stateId, binderIds ->
+      onBindRecords.forEach { stateId, binderIds ->
         val removed = binderIds.remove(binderId)
         if (removed && binderIds.isEmpty()) stateIdsToRemove.add(stateId)
       }
-      stateIdsToRemove.forEach { records.remove(it) }
+      stateIdsToRemove.forEach { onBindRecords.remove(it) }
+    }
+  }
+
+  fun recordOnDraw(hostId: Long, func: () -> Unit) {
+    if (!config.isReadTrackingEnabled) return func()
+
+    val treeId = config.currentTreeId()
+    val reads = StateReadRecorder.record(treeId, func)
+    reads.forEach { stateId ->
+      val hostIds = onDrawRecords.getOrPut(stateId) { mutableLongSetOf() }
+      hostIds.add(hostId)
+    }
+  }
+
+  fun removeDrawScope(hostId: Long) {
+    if (!config.isReadTrackingEnabled) return
+
+    synchronized(this) {
+      val stateIdsToRemove = mutableSetOf<StateId>()
+      onDrawRecords.forEach { stateId, hostIds ->
+        val removed = hostIds.remove(hostId)
+        if (removed && hostIds.isEmpty()) stateIdsToRemove.add(stateId)
+      }
+      stateIdsToRemove.forEach { onDrawRecords.remove(it) }
     }
   }
 
   fun hasBindersForState(dirtyStates: Set<StateId>): Boolean {
     return synchronized(this) {
-      dirtyStates.any { stateId -> records[stateId]?.isNotEmpty() == true }
+      dirtyStates.any { stateId -> onBindRecords[stateId]?.isNotEmpty() == true }
     }
   }
 
-  fun takeSnapshotForState(dirtyStates: Set<StateId>): ScatterSet<BinderId> {
+  fun takeBinderSnapshotForState(dirtyStates: Set<StateId>): ScatterSet<BinderId> {
     val result = mutableScatterSetOf<BinderId>()
     synchronized(this) {
       dirtyStates.forEach { stateId ->
-        val binderIds = records[stateId]
+        val binderIds = onBindRecords[stateId]
         if (binderIds != null) result.addAll(binderIds)
       }
     }

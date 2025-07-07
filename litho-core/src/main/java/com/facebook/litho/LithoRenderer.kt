@@ -60,7 +60,13 @@ class LithoRenderer(
           stateUpdater = this,
           rootHost = this,
           errorComponentReceiver = this,
-          treeLifecycle = NoOpLifecycleProvider())
+          treeLifecycle = NoOpLifecycleProvider(),
+          uiStateReadRecordsProvider = {
+            val host =
+                rootHost as? BaseMountingView
+                    ?: error("Trying to get UI state read records without a set host")
+            host.uiStateReadRecords
+          })
   private val errorComponentRef = AtomicReference<Component?>(null)
 
   /** The root component that this renderer is responsible for rendering. */

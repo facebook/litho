@@ -20,6 +20,7 @@ import com.facebook.infer.annotation.ThreadConfined
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.state.StateProviderImpl
 import com.facebook.litho.state.TreeStateProvider
+import com.facebook.litho.state.UiStateReadRecordsProvider
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
 
@@ -37,7 +38,8 @@ internal constructor(
     @field:ThreadConfined(ThreadConfined.ANY) val stateUpdater: StateUpdater,
     @field:ThreadConfined(ThreadConfined.UI) val rootHost: RootHostProvider,
     val errorComponentReceiver: ErrorComponentReceiver,
-    val treeLifecycle: LithoRendererLifecycleProvider
+    val treeLifecycle: LithoRendererLifecycleProvider,
+    internal val uiStateReadRecordsProvider: UiStateReadRecordsProvider,
 ) {
 
   val isReadTrackingEnabled: Boolean =
@@ -61,7 +63,8 @@ internal constructor(
             stateUpdater = stateUpdater,
             rootHost = componentTree,
             errorComponentReceiver = componentTree,
-            treeLifecycle = componentTree)
+            treeLifecycle = componentTree,
+            uiStateReadRecordsProvider = componentTree)
 
     @JvmStatic
     fun generateComponentTreeId(): Int {

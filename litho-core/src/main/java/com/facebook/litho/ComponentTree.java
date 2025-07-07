@@ -79,6 +79,8 @@ import com.facebook.litho.lifecycle.LifecycleOwnerWrapper;
 import com.facebook.litho.perfboost.LithoPerfBooster;
 import com.facebook.litho.state.StateId;
 import com.facebook.litho.state.TreeStateProvider;
+import com.facebook.litho.state.UiStateReadRecords;
+import com.facebook.litho.state.UiStateReadRecordsProvider;
 import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.LogLevel;
 import com.facebook.rendercore.MountContentPools;
@@ -114,6 +116,7 @@ public class ComponentTree
     implements LithoVisibilityEventsListener,
         StateUpdater,
         TreeStateProvider,
+        UiStateReadRecordsProvider,
         MountedViewReference,
         ErrorComponentReceiver,
         LithoTreeLifecycleProvider {
@@ -2578,6 +2581,15 @@ public class ComponentTree
               + "] "
               + info);
     }
+  }
+
+  @Override
+  public UiStateReadRecords getUiStateReadRecords() {
+    if (mLithoView == null) {
+      throw new IllegalStateException(
+          "Trying to get UI state read records without a set host view");
+    }
+    return mLithoView.getUiStateReadRecords();
   }
 
   private static void bindHandlesToComponentTree(

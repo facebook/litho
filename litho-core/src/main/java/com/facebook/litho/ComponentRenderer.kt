@@ -19,6 +19,7 @@
 package com.facebook.litho
 
 import com.facebook.litho.state.StateReadRecorder
+import com.facebook.litho.state.UiStateReadRecords
 
 /**
  * Wrapper around the Component-specific render implementation.
@@ -49,3 +50,9 @@ internal val ComponentContext.isReadTrackingEnabled: Boolean
   // Workaround for package-private calls directly in an inline function that seem
   // to generate bytecode that's incompatible with Java call-sites
   get() = lithoTree?.isReadTrackingEnabled == true
+
+internal val ComponentContext.uiStateReadRecords: UiStateReadRecords
+  get() =
+      checkNotNull(lithoTree?.uiStateReadRecordsProvider?.getUiStateReadRecords()) {
+        "Could not retrieve the UI state read records. This is likely because the LithoTree is not initialized."
+      }
