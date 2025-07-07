@@ -284,4 +284,8 @@ public interface SpecModel {
   default boolean shouldGenerateGetProps() {
     return false;
   }
+
+  default boolean shouldGenerateEventHandlerLambdaFactories() {
+    return false;
+  }
 }

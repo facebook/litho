@@ -23,8 +23,10 @@ import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeName;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import javax.lang.model.element.Modifier;
 
 public final class GeneratorUtils {
 
@@ -37,6 +39,11 @@ public final class GeneratorUtils {
     return parameter(param, param.getTypeName(), param.getName(), extraAnnotations);
   }
 
+  public static ParameterSpec parameter(MethodParamModel param, List<Modifier> modifiers) {
+    return parameter(
+        param.getTypeName(), param.getName(), modifiers, param.getExternalAnnotations());
+  }
+
   public static ParameterSpec parameter(
       MethodParamModel param, TypeName type, String name, AnnotationSpec... extraAnnotations) {
     return parameter(type, name, param.getExternalAnnotations(), extraAnnotations);
@@ -47,8 +54,21 @@ public final class GeneratorUtils {
       String name,
       List<AnnotationSpec> externalAnnotations,
       AnnotationSpec... extraAnnotations) {
+    return parameter(type, name, Collections.emptyList(), externalAnnotations, extraAnnotations);
+  }
+
+  public static ParameterSpec parameter(
+      TypeName type,
+      String name,
+      List<Modifier> modifiers,
+      List<AnnotationSpec> externalAnnotations,
+      AnnotationSpec... extraAnnotations) {
     final ParameterSpec.Builder builder =
         ParameterSpec.builder(type, name).addAnnotations(externalAnnotations);
+
+    if (!modifiers.isEmpty()) {
+      builder.addModifiers(modifiers.toArray(new Modifier[0]));
+    }
 
     for (AnnotationSpec annotation : extraAnnotations) {
       builder.addAnnotation(annotation);

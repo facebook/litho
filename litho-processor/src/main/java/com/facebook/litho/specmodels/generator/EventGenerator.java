@@ -379,6 +379,15 @@ public class EventGenerator {
       typeSpecDataHolder.addMethod(
           generateEventHandlerFactory(
               eventMethodModel, specModel.getContextClass(), specModel.getComponentName()));
+      if (specModel.shouldGenerateEventHandlerLambdaFactories()
+          && !eventMethodModel
+              .name
+              .toString()
+              .equals(EventCaseGenerator.INTERNAL_ON_ERROR_HANDLER_NAME)) {
+        typeSpecDataHolder.addMethod(
+            generateEventHandlerLambdaFactory(
+                specModel, eventMethodModel, specModel.getContextClass()));
+      }
     }
 
     return typeSpecDataHolder.build();
@@ -425,6 +434,163 @@ public class EventGenerator {
         eventMethodModel.specMethod.mode.getClass().getName()
             + "."
             + eventMethodModel.specMethod.mode);
+
+    return builder.build();
+  }
+
+  public static MethodSpec generateEventHandlerLambdaFactory(
+      SpecModel specModel,
+      SpecMethodModel<EventMethod, EventDeclarationModel> eventMethodModel,
+      TypeName paramClass) {
+
+    final Map.Entry<TypeName, List<TypeVariableName>> eventInfo = getEventInfo(eventMethodModel);
+
+    final TypeName lambdaReturnType;
+    final boolean returnsUnit;
+    if (eventMethodModel.returnType.equals(TypeName.VOID)) {
+      lambdaReturnType = ClassNames.Unit;
+      returnsUnit = true;
+    } else {
+      lambdaReturnType = eventMethodModel.returnType.box();
+      returnsUnit = false;
+    }
+
+    final TypeName returnType =
+        ParameterizedTypeName.get(ClassNames.Function1, eventInfo.getKey(), lambdaReturnType);
+
+    final MethodSpec.Builder builder =
+        MethodSpec.methodBuilder(eventMethodModel.name.toString() + "AsLambda")
+            .addModifiers(Modifier.STATIC)
+            .addTypeVariables(eventInfo.getValue())
+            .addParameter(paramClass, "c", Modifier.FINAL)
+            .returns(returnType);
+
+    for (MethodParamModel methodParamModel : eventMethodModel.methodParams) {
+      if (isAnnotatedWith(methodParamModel, Param.class)) {
+        builder.addParameter(parameter(methodParamModel, ImmutableList.of(Modifier.FINAL)));
+      }
+    }
+
+    final String contextParamName = "c";
+    final boolean hasLazyStateParams = SpecMethodModelUtils.hasLazyStateParams(eventMethodModel);
+
+    final String componentName = specModel.getComponentName();
+    builder.addStatement(
+        "final $L $L = ($L) $L.getComponentScope()",
+        componentName,
+        REF_VARIABLE_NAME,
+        componentName,
+        contextParamName);
+
+    if (hasLazyStateParams) {
+      builder.addStatement(
+          "final $L $L = $L.getStateContainerWithLazyStateUpdatesApplied(c, $L)",
+          StateContainerGenerator.getStateContainerClassName(specModel),
+          LOCAL_STATE_CONTAINER_NAME,
+          REF_VARIABLE_NAME,
+          REF_VARIABLE_NAME);
+    } else if (eventMethodModel.methodParams.stream().anyMatch(PREDICATE_NEEDS_STATE)) {
+      builder.addStatement(
+          "final $L $L = $L.$L",
+          StateContainerGenerator.getStateContainerClassName(specModel),
+          LOCAL_STATE_CONTAINER_NAME,
+          REF_VARIABLE_NAME,
+          STATE_CONTAINER_IMPL_GETTER + "(" + contextParamName + ")");
+    }
+
+    // Create a local variable for interstage props if they created or used.
+    if (ComponentBodyGenerator.requiresInterStatePropContainer(
+        eventMethodModel.methodParams, null)) {
+      builder.addStatement(
+          "final $L $L = $L",
+          ClassNames.INTER_STAGE_PROPS_CONTAINER,
+          ComponentBodyGenerator.LOCAL_INTER_STAGE_PROPS_CONTAINER_NAME,
+          "null");
+    }
+
+    final CodeBlock.Builder lambda = CodeBlock.builder();
+
+    lambda.add("return new $L() {\n", returnType);
+    lambda.indent();
+    lambda.add("@Override\n");
+    lambda.add("public $T invoke($T e) {\n", lambdaReturnType, eventInfo.getKey());
+    lambda.indent();
+
+    final String sourceDelegateAccessor = SpecModelUtils.getSpecAccessor(specModel);
+    if (eventMethodModel.returnType.equals(TypeName.VOID)) {
+      lambda.add("$L.$L(\n", sourceDelegateAccessor, eventMethodModel.name);
+    } else {
+      lambda.add(
+          "$T _result = ($T) $L.$L(\n",
+          lambdaReturnType,
+          lambdaReturnType,
+          sourceDelegateAccessor,
+          eventMethodModel.name);
+    }
+
+    lambda.indent();
+
+    for (int i = 0, size = eventMethodModel.methodParams.size(); i < size; i++) {
+      final MethodParamModel methodParamModel = eventMethodModel.methodParams.get(i);
+      if (isAnnotatedWith(methodParamModel, Param.class)) {
+        lambda.add(methodParamModel.getName());
+      } else if (isAnnotatedWith(methodParamModel, FromEvent.class)) {
+        lambda.add("($T) e.$L", methodParamModel.getTypeName(), methodParamModel.getName());
+      } else if (methodParamModel.getTypeName().equals(specModel.getContextClass())) {
+        lambda.add(contextParamName);
+      } else if (methodParamModel instanceof TreePropModel) {
+        if (specModel.isStateful()) {
+          lambda.add(
+              "(($T) $L.$L)",
+              methodParamModel.getTypeName(),
+              REF_VARIABLE_NAME,
+              methodParamModel.getName());
+        } else {
+          lambda.add(
+              "(($T) $L)",
+              methodParamModel.getTypeName(),
+              contextParamName
+                  + ".getParentTreeProp("
+                  + TreePropGenerator.findTypeByTypeName(methodParamModel.getTypeName())
+                  + ".class)");
+        }
+      } else if (methodParamModel instanceof StateParamModel) {
+        lambda.add(
+            "($T) $L",
+            methodParamModel.getTypeName(),
+            getImplAccessorFromContainer(
+                eventMethodModel.name.toString(),
+                specModel,
+                methodParamModel,
+                contextParamName,
+                LOCAL_STATE_CONTAINER_NAME));
+      } else {
+        lambda.add(
+            "($T) $L.$L",
+            methodParamModel.getTypeName(),
+            REF_VARIABLE_NAME,
+            getImplAccessor(
+                eventMethodModel.name.toString(), specModel, methodParamModel, contextParamName));
+      }
+
+      if (i < size - 1) {
+        lambda.add(",\n");
+      } else {
+        lambda.add(");\n");
+      }
+    }
+
+    lambda.unindent();
+
+    if (returnsUnit) {
+      lambda.addStatement("return $L.INSTANCE", ClassNames.Unit);
+    } else {
+      lambda.addStatement("return _result");
+    }
+    lambda.unindent().add("}\n");
+    lambda.unindent().addStatement("}");
+
+    builder.addCode(lambda.build());
 
     return builder.build();
   }

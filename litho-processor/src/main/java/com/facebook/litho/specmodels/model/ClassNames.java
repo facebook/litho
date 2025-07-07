@@ -147,4 +147,7 @@ public interface ClassNames {
   ClassName HANDLE = ClassName.bestGuess("com.facebook.litho.Handle");
 
   ClassName BUNDLE = ClassName.bestGuess("android.os.Bundle");
+
+  ClassName Unit = ClassName.bestGuess("kotlin.Unit");
+  ClassName Function1 = ClassName.bestGuess("kotlin.jvm.functions.Function1");
 }

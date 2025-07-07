@@ -348,4 +348,9 @@ public class LayoutSpecModel implements SpecModel {
         + mLayoutSpecGenerator
         + '}';
   }
+
+  @Override
+  public boolean shouldGenerateEventHandlerLambdaFactories() {
+    return true;
+  }
 }
