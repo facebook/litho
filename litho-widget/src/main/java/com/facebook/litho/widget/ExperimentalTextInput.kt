@@ -239,19 +239,7 @@ class ExperimentalTextInput(
   override fun PrimitiveComponentScope.render(): LithoPrimitive {
     val mountedView = useState { AtomicReference<EditTextWithEventHandlers?>() }
     val savedText = useState { AtomicReference(initialText) }
-    val useSeqNumberForRemeasuringTextInput =
-        useState { ComponentsConfiguration.useSeqNumberForRemeasuringTextInput }.value
-    val savedTextWithoutSpans = useState {
-      if (useSeqNumberForRemeasuringTextInput) {
-        AtomicReference(initialText.toString() as CharSequence)
-      } else {
-        null
-      }
-    }
-
-    // control
-    val textAndConstraintsForMeasure = useState { TextAndConstraints(initialText.toString(), null) }
-    // test
+    val savedTextWithoutSpans = useState { AtomicReference(initialText.toString() as CharSequence) }
     val measureSeqNumber = useState { 0 }
 
     val resolvedHighlightColor = useCached {
@@ -306,8 +294,6 @@ class ExperimentalTextInput(
                 savedText = savedText.value,
                 savedTextWithoutSpans = savedTextWithoutSpans.value,
                 measureSeqNumber = measureSeqNumber.value,
-                useSeqNumberForRemeasuringTextInput = useSeqNumberForRemeasuringTextInput,
-                textAndConstraintsForMeasure = textAndConstraintsForMeasure,
             ),
         mountBehavior =
             MountBehavior(
@@ -328,17 +314,15 @@ class ExperimentalTextInput(
                         savedText.value,
                         savedTextWithoutSpans.value,
                         measureSeqNumber.value,
-                        useSeqNumberForRemeasuringTextInput,
-                        textAndConstraintsForMeasure.value) { editText ->
-                          textInputController?.bind(
-                              editText,
-                              savedText.value,
-                              savedTextWithoutSpans.value,
-                              measureSeqNumber,
-                              useSeqNumberForRemeasuringTextInput,
-                              textAndConstraintsForMeasure)
-                          onUnbind { textInputController?.unbind() }
-                        }
+                    ) { editText ->
+                      textInputController?.bind(
+                          editText,
+                          savedText.value,
+                          savedTextWithoutSpans.value,
+                          measureSeqNumber,
+                      )
+                      onUnbind { textInputController?.unbind() }
+                    }
                   }
                   // OnMount
                   withDescription("text-input-equivalent-mount") {
@@ -457,9 +441,6 @@ class ExperimentalTextInput(
                       editText.onInputConnection = onInputConnection
                       editText.onTextPasted = onTextPasted
                       editText.measureSeqNumber = measureSeqNumber
-                      editText.useSeqNumberForRemeasuringTextInput =
-                          useSeqNumberForRemeasuringTextInput
-                      editText.textAndConstraintsForMeasure = textAndConstraintsForMeasure
 
                       onUnbind {
                         editText.detachWatchers()
@@ -475,8 +456,6 @@ class ExperimentalTextInput(
                         editText.customInsertionActionModeCallback = null
                         editText.onTextPasted = null
                         editText.measureSeqNumber = null
-                        editText.useSeqNumberForRemeasuringTextInput = false
-                        editText.textAndConstraintsForMeasure = null
                       }
                     }
                   }
@@ -520,11 +499,8 @@ internal class TextInputLayoutBehavior(
     private val disableAutofill: Boolean,
     private val movementMethod: MovementMethod,
     private val measureSeqNumber: Int,
-    private val useSeqNumberForRemeasuringTextInput: Boolean,
     private val savedText: AtomicReference<CharSequence?>,
     private val savedTextWithoutSpans: AtomicReference<CharSequence?>?,
-    // we're only reading it here in order to force remeasure if it gets updated
-    private val textAndConstraintsForMeasure: State<TextAndConstraints>,
 ) : LayoutBehavior {
   override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
     // When input type has NO_SUGGESTIONS flag set then suggestion spans are removed when
@@ -572,13 +548,8 @@ internal class TextInputLayoutBehavior(
             importantForAutofill,
             autofillHints,
             disableAutofill,
-            // onMeasure happens:
-            // 1. After initState before onMount: savedText = initText.
-            // 2. After onMount before onUnmount: savedText preserved from underlying editText.
-            savedText.get(),
             savedTextWithoutSpans?.get(),
-            useSeqNumberForRemeasuringTextInput,
-            textAndConstraintsForMeasure)
+        )
 
     return PrimitiveLayoutResult(
         height = forMeasure.measuredHeight,
@@ -647,25 +618,9 @@ internal fun createAndMeasureEditText(
     importantForAutofill: Int,
     autofillHints: Array<String?>?,
     disableAutofill: Boolean,
-    text: CharSequence?,
     textWithoutSpans: CharSequence?,
-    useSeqNumberForRemeasuringTextInput: Boolean,
-    textAndConstraintsForMeasure: State<TextAndConstraints>,
 ): EditText {
-  val textToMeasure =
-      if (useSeqNumberForRemeasuringTextInput) {
-        textWithoutSpans
-      } else {
-        // The height should be the measured height of EditText with relevant params
-        val constraints = textAndConstraintsForMeasure.value.constraints
-
-        if (sizeConstraints == constraints) {
-          // If text contains Spans, we don't want it to be mutable for the measurement case
-          textAndConstraintsForMeasure.value.text
-        } else {
-          text
-        }
-      }
+  val textToMeasure = textWithoutSpans
 
   val forMeasure = ForMeasureEditText(context)
 
@@ -899,8 +854,6 @@ internal class EditTextWithEventHandlers(context: Context?) :
   var onInputConnection: ((InputConnection?, EditorInfo) -> InputConnection?)? = null
   var componentContext: ComponentContext? = null
   var measureSeqNumber: State<Int>? = null
-  var useSeqNumberForRemeasuringTextInput: Boolean = false
-  var textAndConstraintsForMeasure: State<TextAndConstraints>? = null
   private var textState: AtomicReference<CharSequence?>? = null
   private var textWithoutSpansState: AtomicReference<CharSequence?>? = null
   private var textLineCount = UNMEASURED_LINE_COUNT
@@ -909,9 +862,6 @@ internal class EditTextWithEventHandlers(context: Context?) :
 
   private var disableAutofill = false
   private var isTextPasted = false
-
-  private var lastWidthSpec: Int = -1
-  private var lastHeightSpec: Int = -1
 
   private var onWindowFocusChangeListener: ViewTreeObserver.OnWindowFocusChangeListener? = null
 
@@ -924,9 +874,8 @@ internal class EditTextWithEventHandlers(context: Context?) :
   override fun onTextChanged(text: CharSequence, start: Int, lengthBefore: Int, lengthAfter: Int) {
     super.onTextChanged(text, start, lengthBefore, lengthAfter)
     textState?.set(text)
-    if (useSeqNumberForRemeasuringTextInput) {
-      textWithoutSpansState?.set(text.toString())
-    }
+    textWithoutSpansState?.set(text.toString())
+
     onTextChanged?.invoke(this@EditTextWithEventHandlers, text.toString())
 
     if (isTextPasted && onTextPasted != null) {
@@ -938,18 +887,7 @@ internal class EditTextWithEventHandlers(context: Context?) :
     if (this.textLineCount != UNMEASURED_LINE_COUNT &&
         (this.textLineCount != lineCount) &&
         (componentContext != null)) {
-
-      if (useSeqNumberForRemeasuringTextInput) {
-        val constraints =
-            if (lastWidthSpec != -1 && lastHeightSpec != -1) {
-              SizeConstraints.fromMeasureSpecs(lastWidthSpec, lastHeightSpec)
-            } else {
-              null
-            }
-        textAndConstraintsForMeasure?.update(TextAndConstraints(text.toString(), constraints))
-      } else {
-        measureSeqNumber?.update { it + 1 }
-      }
+      measureSeqNumber?.update { it + 1 }
     }
   }
 
@@ -962,8 +900,6 @@ internal class EditTextWithEventHandlers(context: Context?) :
 
   override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
     super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-    lastWidthSpec = widthMeasureSpec
-    lastHeightSpec = heightMeasureSpec
     // Line count of the current text.
     textLineCount = lineCount
   }
@@ -1254,23 +1190,17 @@ class TextInputController internal constructor() {
   private var savedText: AtomicReference<CharSequence?>? = null
   private var savedTextWithoutSpans: AtomicReference<CharSequence?>? = null
   private var measureSeqNumber: State<Int>? = null
-  private var useSeqNumberForRemeasuringTextInput: Boolean = false
-  private var createAndMeasureEditText: State<TextAndConstraints>? = null
 
   internal fun bind(
       editText: EditTextWithEventHandlers,
       savedText: AtomicReference<CharSequence?>,
       savedTextWithoutSpans: AtomicReference<CharSequence?>?,
       measureSeqNumber: State<Int>?,
-      useSeqNumberForRemeasuringTextInput: Boolean,
-      createAndMeasureEditText: State<TextAndConstraints>?,
   ) {
     this.editText = editText
     this.savedText = savedText
     this.savedTextWithoutSpans = savedTextWithoutSpans
     this.measureSeqNumber = measureSeqNumber
-    this.useSeqNumberForRemeasuringTextInput = useSeqNumberForRemeasuringTextInput
-    this.createAndMeasureEditText = createAndMeasureEditText
   }
 
   internal fun unbind() {
@@ -1347,9 +1277,7 @@ class TextInputController internal constructor() {
                 .append(currentSavedText.subSequence(0, startIndex))
                 .append(text)
                 .append(currentSavedText.subSequence(endIndex, currentSavedText.length)))
-    if (useSeqNumberForRemeasuringTextInput) {
-      savedText?.get()?.let { savedTextWithoutSpans?.set(it.toString()) }
-    }
+    savedText?.get()?.let { savedTextWithoutSpans?.set(it.toString()) }
 
     remeasureForUpdatedTextSync()
   }
@@ -1400,9 +1328,7 @@ class TextInputController internal constructor() {
     val view = editText
     if (view == null) {
       savedText?.set(text)
-      if (useSeqNumberForRemeasuringTextInput) {
-        savedTextWithoutSpans?.set(text.toString())
-      }
+      savedTextWithoutSpans?.set(text.toString())
       return true
     }
 
@@ -1415,11 +1341,7 @@ class TextInputController internal constructor() {
   }
 
   private fun remeasureForUpdatedTextSync() {
-    if (useSeqNumberForRemeasuringTextInput) {
-      createAndMeasureEditText?.updateSync(TextAndConstraints(savedText?.get().toString(), null))
-    } else {
-      measureSeqNumber?.updateSync { it + 1 }
-    }
+    measureSeqNumber?.updateSync { it + 1 }
   }
 }
 
