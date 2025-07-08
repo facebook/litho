@@ -144,6 +144,7 @@ class CollectionRecyclerComponent(
 
   override fun PrimitiveComponentScope.render(): LithoPrimitive {
     val layoutConfig: CollectionLayoutConfig = useConfig(recyclerConfiguration)
+    val measureVersion = useState { 0 }
     val latestCommittedData = useState { LatestCommittedData() }.value
     val poolScope = useState { PoolScope.ManuallyManaged() }.value
     val layoutInfo =
@@ -245,6 +246,7 @@ class CollectionRecyclerComponent(
           onDataRendered?.invoke(
               isDataChanged, isMounted, monoTimestampMs, firstVisibleIndex, lastVisibleIndex)
         }
+    val remeasureCallback: () -> Unit = useCallback { -> measureVersion.update { it + 1 } }
     val pullToRefreshCallback: () -> Unit = useCallback { -> onPullToRefresh?.invoke() }
     val internalPullToRefreshEnabled = (layoutConfig.orientation.isVertical && pullToRefreshEnabled)
     /*
@@ -295,9 +297,12 @@ class CollectionRecyclerComponent(
                 preparationManager = collectionPreparationManager,
                 onDataRendered = onDataRenderedCallback,
                 onDataBound = onDataBoundCallback,
-                padding = padding),
+                padding = padding,
+                onRemeasure = remeasureCallback,
+            ),
         mountBehavior =
             CollectionPrimitiveViewMountBehavior(
+                measureVersion = measureVersion.value,
                 layoutConfig = layoutConfig,
                 layoutInfo = layoutInfo,
                 adapter = adapter,
@@ -609,6 +614,7 @@ private class CollectionPrimitiveViewLayoutBehavior(
     private val onDataRendered: OnDataRendered?,
     private val preparationManager: CollectionPreparationManager,
     private val padding: Padding,
+    private val onRemeasure: () -> Unit,
 ) : LayoutBehavior {
 
   override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
@@ -685,7 +691,11 @@ private class CollectionPrimitiveViewLayoutBehavior(
                     contentComparator,
                     idComparator,
                     componentRenderer)
-            // todo remeasure the list and trigger re-layout if the size doesn't match
+            // Remeasure the list and trigger re-layout if the size doesn't match
+            val remeasuredSize = scope.calculateLayout(newChangeset.items)
+            if (latestSize != remeasuredSize) {
+              onRemeasure()
+            }
             newChangeset
           } else {
             changeset
@@ -852,6 +862,7 @@ internal class LithoCollectionItemViewHolder(context: Context) :
  */
 @OptIn(ExperimentalLithoApi::class)
 private fun PrimitiveComponentScope.CollectionPrimitiveViewMountBehavior(
+    measureVersion: Int,
     layoutConfig: CollectionLayoutConfig,
     layoutInfo: LayoutInfo,
     adapter: CollectionPrimitiveViewAdapter,
@@ -925,6 +936,7 @@ private fun PrimitiveComponentScope.CollectionPrimitiveViewMountBehavior(
 
     withDescription("recycler-equivalent-mount") {
       bind(
+          measureVersion,
           clipToPadding,
           padding,
           clipChildren,
