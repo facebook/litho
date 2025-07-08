@@ -72,7 +72,10 @@ class LithoRenderer(
   /** The root component that this renderer is responsible for rendering. */
   @GuardedBy("this") @Volatile private var root: Component = EmptyComponent()
   /** The size constraints used for layout calculations. */
-  @GuardedBy("this") @Volatile private var sizeConstraints: SizeConstraints? = null
+  @GuardedBy("this")
+  @Volatile
+  var sizeConstraints: SizeConstraints? = null
+    private set
 
   private val resolveFutureLock = Any()
   @GuardedBy("resolveFutureLock")

@@ -41,7 +41,11 @@ class LithoCollectionItem(
           treePropContainer = componentContext.treePropContainerCopy,
           visibilityController = componentContext.lithoVisibilityEventsController)
 
-  override fun size(): Size? = renderer.currentLayoutState?.let { Size(it.width, it.height) }
+  override val size: Size?
+    get() = renderer.currentLayoutState?.let { Size(it.width, it.height) }
+
+  override val sizeConstraints: SizeConstraints?
+    get() = renderer.sizeConstraints
 
   override fun measure(sizeConstraints: SizeConstraints, result: IntArray?) {
     prepareSync(sizeConstraints, result)

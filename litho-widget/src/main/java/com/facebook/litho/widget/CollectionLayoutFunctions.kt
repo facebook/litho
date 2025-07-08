@@ -20,6 +20,7 @@ import com.facebook.litho.widget.collection.CrossAxisWrapMode
 import com.facebook.rendercore.FastMath.round
 import com.facebook.rendercore.Size
 import com.facebook.rendercore.SizeConstraints
+import com.facebook.rendercore.areCompatible
 import com.facebook.rendercore.toHeightSpec
 import com.facebook.rendercore.toWidthSpec
 import com.facebook.rendercore.utils.MeasureSpecUtils
@@ -59,15 +60,14 @@ fun ItemSizeConstraintsProviderScope.getChildSizeConstraints(
         // measure the child for the first pass.
         val resolvedWidthSpec =
             if (isDynamicSize && isVertical) {
-              item.size()?.let {
-                MeasureSpecUtils.exactly(max(collectionSize?.width ?: 0, it.width))
-              } ?: MeasureSpecUtils.unspecified()
+              item.size?.let { MeasureSpecUtils.exactly(max(collectionSize?.width ?: 0, it.width)) }
+                  ?: MeasureSpecUtils.unspecified()
             } else {
               layoutInfo.getChildWidthSpec(collectionConstraints.toWidthSpec(), item.renderInfo)
             }
         val resolvedHeightSpec =
             if (isDynamicSize && !isVertical) {
-              item.size()?.let {
+              item.size?.let {
                 MeasureSpecUtils.exactly(max(collectionSize?.height ?: 0, it.height))
               } ?: MeasureSpecUtils.unspecified()
             } else {
@@ -133,10 +133,10 @@ fun CollectionLayoutScope.calculateLayout(items: List<CollectionItem<*>>): Size 
       val wasFirstChildSizeChanged =
           if (items.isNotEmpty()) {
             if (isVertical) {
-              val width = items[0].size()?.width ?: 0
+              val width = items[0].size?.width ?: 0
               measuredSize.width != width
             } else {
-              val height = items[0].size()?.height ?: 0
+              val height = items[0].size?.height ?: 0
               measuredSize.height != height
             }
           } else {
@@ -192,7 +192,7 @@ fun CollectionLayoutScope.calculateLayout(items: List<CollectionItem<*>>): Size 
           CrossAxisWrapMode.NoWrap -> collectionConstraints.maxWidth
           CrossAxisWrapMode.MatchFirstChild ->
               if (items.isNotEmpty()) {
-                items[0].size()?.width ?: 0
+                items[0].size?.width ?: 0
               } else 0
           CrossAxisWrapMode.Dynamic -> sizeInCrossAxis
         }
@@ -214,12 +214,26 @@ fun CollectionLayoutScope.calculateLayout(items: List<CollectionItem<*>>): Size 
           CrossAxisWrapMode.NoWrap -> collectionConstraints.maxHeight
           CrossAxisWrapMode.MatchFirstChild ->
               if (items.isNotEmpty()) {
-                items[0].size()?.height ?: 0
+                items[0].size?.height ?: 0
               } else 0
           CrossAxisWrapMode.Dynamic -> sizeInCrossAxis
         }
   }
   return Size(width, height)
+}
+
+/**
+ * Checks if the provided size constraints are compatible with this CollectionItem's current size
+ * constraints and measured size.
+ *
+ * @param constraints The size constraints to compare against this item's constraints
+ * @return true if the constraints are compatible with this item's size and constraints, false
+ *   otherwise
+ */
+fun CollectionItem<*>.areSizeConstraintsCompatible(constraints: SizeConstraints): Boolean {
+  val size = size ?: return false
+  val localConstraints = sizeConstraints ?: return false
+  return constraints.areCompatible(localConstraints, size)
 }
 
 private fun isMatchingParentSize(percent: Float): Boolean {

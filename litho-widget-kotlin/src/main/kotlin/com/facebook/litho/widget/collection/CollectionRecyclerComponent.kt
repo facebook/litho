@@ -75,6 +75,7 @@ import com.facebook.litho.widget.SectionsRecyclerView.SectionsRecyclerViewLogger
 import com.facebook.litho.widget.SnapUtil
 import com.facebook.litho.widget.SnapUtil.SnapMode
 import com.facebook.litho.widget.ViewportInfo.ViewportChanged
+import com.facebook.litho.widget.areSizeConstraintsCompatible
 import com.facebook.litho.widget.bindLegacyAttachBinder
 import com.facebook.litho.widget.bindLegacyMountBinder
 import com.facebook.litho.widget.calculateLayout
@@ -1001,22 +1002,27 @@ private fun PrimitiveComponentScope.CollectionPrimitiveViewMountBehavior(
     }
 
     withDescription("preparation-manager") {
-      bindWithLayoutData<CollectionLayoutData>(
-          preparationManager, layoutConfig.rangeRatio, adapter) { sectionsRecyclerView, layoutData
-            ->
-            val recyclerView = sectionsRecyclerView.requireLithoRecyclerView()
-            val onEnterRangeCallback: (Int) -> Unit = { position ->
-              val item = layoutData.items[position]
-              item.prepare(layoutData.getChildSizeConstraints(item))
+      bind(preparationManager, layoutConfig.rangeRatio, adapter) { sectionsRecyclerView ->
+        val recyclerView = sectionsRecyclerView.requireLithoRecyclerView()
+        val onEnterRangeCallback: (Int) -> Unit = { position ->
+          adapter.layoutData?.let { scope ->
+            val item = scope.items[position]
+            val constraints = scope.getChildSizeConstraints(item)
+            if (!item.areSizeConstraintsCompatible(constraints)) {
+              item.prepare(constraints)
             }
-            val onExitRangeCallback: (Int) -> Unit = { position ->
-              val item = layoutData.items[position]
-              item.unprepare()
-            }
-            preparationManager.bind(
-                recyclerView, layoutConfig.rangeRatio, onEnterRangeCallback, onExitRangeCallback)
-            onUnbind { preparationManager.unbind(recyclerView) }
           }
+        }
+        val onExitRangeCallback: (Int) -> Unit = { position ->
+          adapter.layoutData?.let { scope ->
+            val item = scope.items[position]
+            item.unprepare()
+          }
+        }
+        preparationManager.bind(
+            recyclerView, layoutConfig.rangeRatio, onEnterRangeCallback, onExitRangeCallback)
+        onUnbind { preparationManager.unbind(recyclerView) }
+      }
     }
 
     withDescription("recycler-scroller") {

@@ -41,7 +41,17 @@ abstract class CollectionItem<V : View>(
    *
    * @return Size object containing the width and height dimensions of the item
    */
-  abstract fun size(): Size?
+  abstract val size: Size?
+
+  /**
+   * Returns the size constraints that define the measurement boundaries for this collection item.
+   * These constraints specify the minimum and maximum width and height values that should be used
+   * when measuring and laying out the item.
+   *
+   * @return SizeConstraints object containing the measurement boundaries, or null if no specific
+   *   constraints are defined for this item
+   */
+  abstract val sizeConstraints: SizeConstraints?
 
   /**
    * Measures the item according to the given size constraints.
