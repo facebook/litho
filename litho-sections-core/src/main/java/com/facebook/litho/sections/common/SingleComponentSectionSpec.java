@@ -109,7 +109,6 @@ public class SingleComponentSectionSpec {
                   context,
                   component,
                   componentsLogger)
-              // NULLSAFE_FIXME[Parameter Not Nullable]
               .component(nextComponent)
               .isSticky(isNextSticky)
               .spanSize(nextSpanSize)
@@ -160,7 +159,6 @@ public class SingleComponentSectionSpec {
                   context,
                   component,
                   componentsLogger)
-              // NULLSAFE_FIXME[Parameter Not Nullable]
               .component(nextComponent)
               .isSticky(isNextSticky)
               .spanSize(nextSpanSize)
@@ -188,11 +186,8 @@ public class SingleComponentSectionSpec {
       Diff<Component> component,
       @Nullable Diff<ComponentsLogger> componentsLogger) {
     if (LithoDebugConfigurations.isRenderInfoDebuggingEnabled) {
-      // NULLSAFE_FIXME[Parameter Not Nullable]
       builder.debugInfo(SONAR_SECTIONS_DEBUG_INFO_TAG, c.getSectionScope());
-      // NULLSAFE_FIXME[Parameter Not Nullable]
       builder.debugInfo(SONAR_SINGLE_COMPONENT_SECTION_DATA_PREV, component.getPrevious());
-      // NULLSAFE_FIXME[Parameter Not Nullable]
       builder.debugInfo(SONAR_SINGLE_COMPONENT_SECTION_DATA_NEXT, component.getNext());
     }
 

@@ -156,7 +156,6 @@ public class DataDiffSectionSpec<T> {
 
     updatesCallback =
         new RecyclerBinderUpdateCallback<>(
-            // NULLSAFE_FIXME[Parameter Not Nullable]
             previousData, nextData, componentRenderer, operationExecutor);
     result.dispatchUpdatesTo(updatesCallback);
 
@@ -258,7 +257,6 @@ public class DataDiffSectionSpec<T> {
     }
 
     @Override
-    // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
     public void executeOperations(ComponentContext c, List<Operation> operations) {
       for (int i = 0, size = operations.size(); i < size; i++) {
         final Operation operation = operations.get(i);
@@ -393,7 +391,6 @@ public class DataDiffSectionSpec<T> {
       }
 
       if (LithoDebugConfigurations.isRenderInfoDebuggingEnabled) {
-        // NULLSAFE_FIXME[Parameter Not Nullable]
         renderInfo.addDebugInfo(SONAR_SECTIONS_DEBUG_INFO_TAG, mSectionContext.getSectionScope());
       }
 

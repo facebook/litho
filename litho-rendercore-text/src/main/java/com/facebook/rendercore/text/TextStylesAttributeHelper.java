@@ -156,7 +156,6 @@ public class TextStylesAttributeHelper {
       int textStyleInt = 0;
 
       if (attr == R.styleable.RenderCoreText_android_textColor) {
-        // NULLSAFE_FIXME[Parameter Not Nullable]
         textStyle.setTextColorStateList(a.getColorStateList(attr));
       } else if (attr == R.styleable.RenderCoreText_android_textSize) {
         textStyle.textSize = a.getDimensionPixelSize(attr, 0);
