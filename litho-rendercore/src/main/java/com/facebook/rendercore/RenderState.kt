@@ -382,7 +382,7 @@ constructor(
 
   companion object {
     @JvmField var NO_ID: Int = -1
-    private const val UNSET: Int = -1
+    const val UNSET: Int = -1
     private const val PROMOTION_MESSAGE: Int = 99
     private val ID_GENERATOR: AtomicInteger = AtomicInteger(0)
 

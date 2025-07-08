@@ -77,6 +77,10 @@ class LithoRenderer(
   var sizeConstraints: SizeConstraints? = null
     private set
 
+  @GuardedBy("this")
+  @Volatile
+  private var currentLifecycle: LithoRendererLifecycle = LithoRendererLifecycle.INITIALIZED
+
   private val resolveFutureLock = Any()
   @GuardedBy("resolveFutureLock")
   private val resolveTreeFutures = arrayListOf<LithoResolveTreeFuture>()
@@ -96,7 +100,6 @@ class LithoRenderer(
   @GuardedBy("this") @Volatile var currentLayoutState: LayoutState? = null
 
   var rootHost: Host? = null
-  var currentLifecycle: LithoRendererLifecycle = LithoRendererLifecycle.INITIALIZED
 
   // This is written to only by the main thread with the lock held, read from the main thread with
   // no lock held, or read from any other thread with the lock held.
@@ -221,6 +224,7 @@ class LithoRenderer(
       }
     }
     synchronized(this) {
+      currentLifecycle = LithoRendererLifecycle.INITIALIZED
       currentResolveResult = null
       currentLayoutState = null
     }
@@ -229,11 +233,13 @@ class LithoRenderer(
   @UiThread
   fun bind(host: Host) {
     rootHost = host
+    synchronized(this) { currentLifecycle = LithoRendererLifecycle.STARTED }
   }
 
   @UiThread
   fun unbind() {
     rootHost = null
+    synchronized(this) { currentLifecycle = LithoRendererLifecycle.PAUSED }
   }
 
   // endregion
@@ -449,7 +455,7 @@ class LithoRenderer(
    */
   @Synchronized
   private fun commitLayoutState(layoutState: LayoutState): Boolean {
-    val currentVersion = currentLayoutState?.id ?: com.facebook.rendercore.RenderState.NO_ID
+    val currentVersion = currentLayoutState?.version ?: com.facebook.rendercore.RenderState.UNSET
     if ((layoutState.version > currentVersion) &&
         (layoutState.sizeConstraints == sizeConstraints) &&
         (layoutState.resolveResult == currentResolveResult)) {
@@ -619,6 +625,11 @@ class LithoRenderer(
       return
     }
     treeState?.enqueue(update)
+
+    if (update.isLazy) {
+      // todo: figure out how to handle lazy updates properly
+      return
+    }
 
     if (synchronizer != null) {
       synchronizer.request(update.isAsync)
