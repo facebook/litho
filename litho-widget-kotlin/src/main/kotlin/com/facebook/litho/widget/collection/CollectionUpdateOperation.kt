@@ -27,6 +27,9 @@ class CollectionUpdateOperation<T>(val prevData: List<T>?, val nextData: List<T>
 
   internal val operations: MutableList<CollectionOperation> = mutableListOf()
 
+  internal val hasChanges: Boolean
+    get() = operations.isNotEmpty()
+
   override fun onInserted(position: Int, count: Int) {
     operations.add(
         CollectionOperation(

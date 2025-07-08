@@ -33,6 +33,7 @@ import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.ComponentsSystrace
 import com.facebook.litho.KComponent
+import com.facebook.litho.LithoExtraContextForLayoutScope
 import com.facebook.litho.LithoRenderTreeView
 import com.facebook.litho.LithoStartupLogger
 import com.facebook.litho.PrimitiveComponentScope
@@ -50,7 +51,6 @@ import com.facebook.litho.useCallback
 import com.facebook.litho.useEffect
 import com.facebook.litho.useState
 import com.facebook.litho.useStateWithDeps
-import com.facebook.litho.widget.ChangeSetCompleteCallback
 import com.facebook.litho.widget.CollectionItem
 import com.facebook.litho.widget.CollectionItemRootHostHolder
 import com.facebook.litho.widget.CollectionLayoutData
@@ -91,6 +91,7 @@ import com.facebook.rendercore.primitives.LayoutScope
 import com.facebook.rendercore.primitives.MountBehavior
 import com.facebook.rendercore.primitives.PrimitiveLayoutResult
 import com.facebook.rendercore.primitives.ViewAllocator
+import com.facebook.rendercore.thread.utils.ThreadUtils
 import com.facebook.rendercore.toHeightSpec
 import com.facebook.rendercore.toWidthSpec
 import kotlin.math.max
@@ -194,14 +195,15 @@ class CollectionRecyclerComponent(
     // be made to the RecyclerView. It's performed as a best-effort calculation on the background
     // thread without synchronization locks since this data might be discarded if new updates come
     // in before it's applied.
-    val updateOperation =
-        calculateDiff(
-            previousData = latestCommittedData.data,
-            nextData = children,
-            sameItemComparator = idComparator,
-            sameContentComparator = contentComparator)
-    // We're going to measure the list with a best effort calculation of the changeset.
-    val collectionItems = buildCollectionItems(context, adapter, componentRenderer, updateOperation)
+    val changeset =
+        generateChangeset(
+            context,
+            adapter,
+            latestCommittedData,
+            children,
+            contentComparator,
+            idComparator,
+            componentRenderer)
 
     useEffect(adapter, collectionPreparationManager) {
       val viewportChangedListener =
@@ -224,36 +226,9 @@ class CollectionRecyclerComponent(
       }
     }
 
-    useEffect(Any()) {
+    useEffect(lazyCollectionController) {
       lazyCollectionController?.recyclerEventsController = recyclerEventsController
       lazyCollectionController?.scrollerDelegate = RecyclerScroller(collectionPrimitiveViewScroller)
-
-      var resolvedItems: List<CollectionItem<*>> = collectionItems
-      var resolvedUpdateOperation: CollectionUpdateOperation<CollectionChild> = updateOperation
-
-      if (updateOperation.prevData !== latestCommittedData.data) {
-        // If the data has changed since the last diff calculation, we need to re-calculate the
-        // result to make sure we're always applying the latest changeset.
-        val operation =
-            calculateDiff(
-                previousData = latestCommittedData.data,
-                nextData = children,
-                sameItemComparator = idComparator,
-                sameContentComparator = contentComparator)
-        val items = buildCollectionItems(context, adapter, componentRenderer, updateOperation)
-        // todo remeasure the list and trigger re-layout if the size doesn't match
-        resolvedItems = items
-        resolvedUpdateOperation = operation
-      }
-
-      latestCommittedData.data = resolvedUpdateOperation.nextData
-      applyUpdateOperations(
-          updateOperation = resolvedUpdateOperation,
-          adapter = adapter,
-          items = resolvedItems,
-          onDataRendered = onDataRendered,
-          onDataBound = onDataBound)
-
       onCleanup {
         lazyCollectionController?.recyclerEventsController = null
         lazyCollectionController?.scrollerDelegate = null
@@ -393,209 +368,194 @@ class CollectionRecyclerComponent(
               }
           .value
     }
+  }
+}
 
-    /**
-     * Calculates the difference between two lists and returns a CollectionUpdateOperation
-     * containing the operations needed to transform the previous list into the next list.
-     *
-     * @param T The type of items in the lists
-     * @param previousData The original list of items (can be null)
-     * @param nextData The new list of items to compare against (can be null)
-     * @param sameItemComparator Optional comparator to determine if two items represent the same
-     *   entity
-     * @param sameContentComparator Optional comparator to determine if two items have the same
-     *   content
-     * @return CollectionUpdateOperation containing the diff operations and data references
-     */
-    private fun <T> calculateDiff(
-        previousData: List<T>?,
-        nextData: List<T>?,
-        sameItemComparator: ((previousItem: T, nextItem: T) -> Boolean)? = null,
-        sameContentComparator: ((previousItem: T, nextItem: T) -> Boolean)? = null,
-    ): CollectionUpdateOperation<T> {
-      ComponentsSystrace.trace("diffing") {
-        val updateOperation =
-            CollectionUpdateOperation(prevData = previousData, nextData = nextData)
-        val diffCallback =
-            CollectionDiffCallback(
-                previousData, nextData, sameItemComparator, sameContentComparator)
-        val result = DiffUtil.calculateDiff(diffCallback)
-        result.dispatchUpdatesTo(updateOperation)
+/**
+ * Internal data class that holds the latest committed data for the collection. Uses @Volatile to
+ * ensure thread-safe access to the data field across different threads.
+ *
+ * @param data The list of CollectionChild items that have been committed to the collection.
+ *   Defaults to null when no data has been committed yet.
+ */
+internal class LatestCommittedData(@Volatile var data: List<CollectionChild>? = null)
 
-        return updateOperation
-      }
-    }
+/**
+ * Calculates the difference between two lists and returns a CollectionUpdateOperation containing
+ * the operations needed to transform the previous list into the next list.
+ *
+ * @param T The type of items in the lists
+ * @param previousData The original list of items (can be null)
+ * @param nextData The new list of items to compare against (can be null)
+ * @param sameItemComparator Optional comparator to determine if two items represent the same entity
+ * @param sameContentComparator Optional comparator to determine if two items have the same content
+ * @return CollectionUpdateOperation containing the diff operations and data references
+ */
+private fun <T> calculateDiff(
+    previousData: List<T>?,
+    nextData: List<T>?,
+    sameItemComparator: ((previousItem: T, nextItem: T) -> Boolean)? = null,
+    sameContentComparator: ((previousItem: T, nextItem: T) -> Boolean)? = null,
+): CollectionUpdateOperation<T> {
+  ComponentsSystrace.trace("diffing") {
+    val updateOperation = CollectionUpdateOperation(prevData = previousData, nextData = nextData)
+    val diffCallback =
+        CollectionDiffCallback(previousData, nextData, sameItemComparator, sameContentComparator)
+    val result = DiffUtil.calculateDiff(diffCallback)
+    result.dispatchUpdatesTo(updateOperation)
+    return updateOperation
+  }
+}
 
-    /**
-     * Builds a list of CollectionItem objects by applying update operations to an existing
-     * adapter's items. This method processes insert, delete, move, and update operations to
-     * transform the current collection into the target state defined by the update callback.
-     *
-     * @param context The ComponentContext used for creating new collection items
-     * @param adapter The CollectionPrimitiveViewAdapter containing the current items
-     * @param renderer Function that converts a model at a given index into RenderInfo
-     * @param updateOperation Contains the operations and target data for the collection update
-     * @return List of CollectionItem objects representing the updated collection state
-     */
-    private fun buildCollectionItems(
-        context: ComponentContext,
-        adapter: CollectionPrimitiveViewAdapter,
-        renderer: (index: Int, model: CollectionChild) -> RenderInfo,
-        updateOperation: CollectionUpdateOperation<CollectionChild>,
-    ): List<CollectionItem<*>> {
-
-      if (updateOperation.operations.isEmpty()) {
-        // Returns a read only list of items if there are no operations to apply
-        return adapter.getItems()
-      }
-
-      // We're creating a speculative changeset for measurement without side effects,
-      // which may be discarded if the dataset changes before committing the result,
-      // so we need to duplicate the items and apply modifications to the copy.
-      val updatedItems = adapter.getItems().toMutableList()
-      val itemsNeedToRefreshRenderInfo = mutableSetOf<Int>()
-      for (operation in updateOperation.operations) {
-        when (operation.type) {
-          CollectionOperation.Type.INSERT -> {
-            for (index in 0 until operation.count) {
-              val item =
-                  LithoCollectionItem(
-                      componentContext = context, renderInfo = ComponentRenderInfo.createEmpty())
-              updatedItems.add(operation.index + index, item)
-              itemsNeedToRefreshRenderInfo.add(item.id)
-            }
-          }
-          CollectionOperation.Type.DELETE -> {
-            repeat(operation.count) { updatedItems.removeAt(operation.index) }
-          }
-          CollectionOperation.Type.MOVE -> {
-            updatedItems.add(operation.toIndex, updatedItems.removeAt(operation.index))
-          }
-          CollectionOperation.Type.UPDATE -> {
-            for (index in 0 until operation.count) {
-              val oldItem = updatedItems[operation.index + index]
-              itemsNeedToRefreshRenderInfo.add(oldItem.id)
-            }
-          }
+/**
+ * Builds a list of CollectionItem objects by applying update operations to an existing adapter's
+ * items. This method processes insert, delete, move, and update operations to transform the current
+ * collection into the target state defined by the update callback.
+ *
+ * @param context The ComponentContext used for creating new collection items
+ * @param updatedItems The list of CollectionItem objects to be applied with the update operations
+ * @param renderer Function that converts a model at a given index into RenderInfo
+ * @param updateOperation Contains the operations and target data for the collection update
+ * @return List of CollectionItem objects representing the updated collection state
+ */
+private fun buildCollectionItems(
+    context: ComponentContext,
+    updatedItems: MutableList<CollectionItem<*>>,
+    renderer: (index: Int, model: CollectionChild) -> RenderInfo,
+    updateOperation: CollectionUpdateOperation<CollectionChild>,
+): List<CollectionItem<*>> {
+  val itemsNeedToRefreshRenderInfo = mutableSetOf<Int>()
+  for (operation in updateOperation.operations) {
+    when (operation.type) {
+      CollectionOperation.Type.INSERT -> {
+        for (index in 0 until operation.count) {
+          val item =
+              LithoCollectionItem(
+                  componentContext = context, renderInfo = ComponentRenderInfo.createEmpty())
+          updatedItems.add(operation.index + index, item)
+          itemsNeedToRefreshRenderInfo.add(item.id)
         }
       }
-
-      if (updateOperation.nextData != null && updateOperation.nextData.size != updatedItems.size) {
-        // We may encounter a scenario where the data size doesn't match the result after applying
-        // the changeset operations. In such cases, we need to clear all existing items and
-        // repopulate the list with the new data.
-        updateOperation.operations.clear()
-        updatedItems.clear()
-        updateOperation.operations.add(
-            CollectionOperation(
-                type = CollectionOperation.Type.DELETE, index = 0, count = updatedItems.size))
-
-        // Refill the list with new data
-        for (index in updateOperation.nextData.indices) {
-          val model = updateOperation.nextData[index]
-          val renderInfo = renderer(index, model)
-          val item = LithoCollectionItem(componentContext = context, renderInfo = renderInfo)
-          updatedItems.add(item)
-        }
-        updateOperation.operations.add(
-            CollectionOperation(
-                type = CollectionOperation.Type.INSERT,
-                index = 0,
-                count = updateOperation.nextData.size))
-      } else {
-        for (index in 0 until updatedItems.size) {
-          val item = updatedItems[index]
-          // Generate render info for all changed items
-          if (itemsNeedToRefreshRenderInfo.contains(item.id)) {
-            item.renderInfo =
-                (updateOperation.nextData?.get(index)?.let { model -> renderer(index, model) }
-                    ?: ComponentRenderInfo.Companion.createEmpty())
-          }
-        }
+      CollectionOperation.Type.DELETE -> {
+        repeat(operation.count) { updatedItems.removeAt(operation.index) }
       }
-      return updatedItems
-    }
-
-    /**
-     * Applies update operations to the RecyclerView adapter and notifies it of data changes. This
-     * method processes a collection of operations (insert, delete, move, update) and dispatches the
-     * appropriate notifications to the adapter to trigger UI updates.
-     *
-     * @param updateOperation The collection update operation containing the list of changes to
-     *   apply
-     * @param adapter The adapter that manages the RecyclerView items
-     * @param items The updated list of collection items to set on the adapter
-     * @param onDataBound Optional callback invoked when data binding is complete
-     * @param onDataRendered Optional callback invoked when data rendering is complete
-     */
-    @UiThread
-    private fun applyUpdateOperations(
-        updateOperation: CollectionUpdateOperation<*>,
-        adapter: CollectionPrimitiveViewAdapter,
-        items: List<CollectionItem<*>>,
-        onDataBound: OnDataBound? = null,
-        onDataRendered: OnDataRendered? = null,
-    ) {
-      ComponentsSystrace.trace("applyUpdateOperations") {
-        val isDataChanged = updateOperation.operations.isNotEmpty()
-        if (isDataChanged) {
-          adapter.setItems(items)
-          for (operation in updateOperation.operations) {
-            when (operation.type) {
-              CollectionOperation.Type.INSERT -> {
-                if (operation.count > 1) {
-                  adapter.notifyItemRangeInserted(operation.index, operation.count)
-                } else {
-                  adapter.notifyItemInserted(operation.index)
-                }
-              }
-              CollectionOperation.Type.DELETE -> {
-                if (operation.count > 1) {
-                  adapter.notifyItemRangeRemoved(operation.index, operation.count)
-                } else {
-                  adapter.notifyItemRemoved(operation.index)
-                }
-              }
-              CollectionOperation.Type.MOVE -> {
-                adapter.notifyItemMoved(operation.index, operation.toIndex)
-              }
-              CollectionOperation.Type.UPDATE -> {
-                if (operation.count > 1) {
-                  adapter.notifyItemRangeChanged(operation.index, operation.count)
-                } else {
-                  adapter.notifyItemChanged(operation.index)
-                }
-              }
-            }
-          }
+      CollectionOperation.Type.MOVE -> {
+        updatedItems.add(operation.toIndex, updatedItems.removeAt(operation.index))
+      }
+      CollectionOperation.Type.UPDATE -> {
+        for (index in 0 until operation.count) {
+          val oldItem = updatedItems[operation.index + index]
+          itemsNeedToRefreshRenderInfo.add(oldItem.id)
         }
-        val changeSetCompleteCallback =
-            object : ChangeSetCompleteCallback {
-              override fun onDataBound() {
-                if (!isDataChanged) {
-                  return
-                }
-                onDataBound?.invoke()
-              }
-
-              override fun onDataRendered(isMounted: Boolean, uptimeMillis: Long) {
-                onDataRendered?.invoke(
-                    isDataChanged,
-                    isMounted,
-                    uptimeMillis,
-                    -1, // todo: read firstVisiblePosition from layout manager
-                    -1, // todo: read lastVisiblePosition from layout manager
-                )
-              }
-            }
-        // todo use a controller to dispatch data change events
-        changeSetCompleteCallback.onDataBound()
-        changeSetCompleteCallback.onDataRendered(true, SystemClock.uptimeMillis())
       }
     }
   }
 
-  private class LatestCommittedData(@Volatile var data: List<CollectionChild>? = null)
+  if (updateOperation.nextData != null && updateOperation.nextData.size != updatedItems.size) {
+    // We may encounter a scenario where the data size doesn't match the result after applying
+    // the changeset operations. In such cases, we need to clear all existing items and
+    // repopulate the list with the new data.
+    updateOperation.operations.clear()
+    updatedItems.clear()
+    updateOperation.operations.add(
+        CollectionOperation(
+            type = CollectionOperation.Type.DELETE, index = 0, count = updatedItems.size))
+
+    // Refill the list with new data
+    for (index in updateOperation.nextData.indices) {
+      val model = updateOperation.nextData[index]
+      val renderInfo = renderer(index, model)
+      val item = LithoCollectionItem(componentContext = context, renderInfo = renderInfo)
+      updatedItems.add(item)
+    }
+    updateOperation.operations.add(
+        CollectionOperation(
+            type = CollectionOperation.Type.INSERT,
+            index = 0,
+            count = updateOperation.nextData.size))
+  } else {
+    for (index in 0 until updatedItems.size) {
+      val item = updatedItems[index]
+      // Generate render info for all changed items
+      if (itemsNeedToRefreshRenderInfo.contains(item.id)) {
+        item.renderInfo =
+            (updateOperation.nextData?.get(index)?.let { model -> renderer(index, model) }
+                ?: ComponentRenderInfo.Companion.createEmpty())
+      }
+    }
+  }
+  return updatedItems
+}
+
+/**
+ * Applies update operations to the RecyclerView adapter and notifies it of data changes. This
+ * method processes a collection of operations (insert, delete, move, update) and dispatches the
+ * appropriate notifications to the adapter to trigger UI updates.
+ *
+ * @param changeset The changeset containing the operations and updated items to apply
+ */
+@UiThread
+private fun CollectionPrimitiveViewAdapter.applyChangeset(changeset: Changeset) {
+  ThreadUtils.assertMainThread()
+  ComponentsSystrace.trace("applyChangeset") {
+    val isDataChanged = changeset.operation.hasChanges
+    if (isDataChanged) {
+      setItems(changeset.items)
+      for (operation in changeset.operation.operations) {
+        when (operation.type) {
+          CollectionOperation.Type.INSERT -> {
+            if (operation.count > 1) {
+              notifyItemRangeInserted(operation.index, operation.count)
+            } else {
+              notifyItemInserted(operation.index)
+            }
+          }
+          CollectionOperation.Type.DELETE -> {
+            if (operation.count > 1) {
+              notifyItemRangeRemoved(operation.index, operation.count)
+            } else {
+              notifyItemRemoved(operation.index)
+            }
+          }
+          CollectionOperation.Type.MOVE -> {
+            notifyItemMoved(operation.index, operation.toIndex)
+          }
+          CollectionOperation.Type.UPDATE -> {
+            if (operation.count > 1) {
+              notifyItemRangeChanged(operation.index, operation.count)
+            } else {
+              notifyItemChanged(operation.index)
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Dispatches update callbacks to notify listeners about data changes and rendering completion. This
+ * function handles the invocation of data bound and data rendered callbacks based on whether the
+ * underlying data has changed.
+ *
+ * @param firstVisiblePosition The index of the first visible item in the collection
+ * @param lastVisiblePosition The index of the last visible item in the collection
+ * @param isDataChanged Boolean flag indicating whether the data has been modified
+ * @param onDataBound Optional callback invoked when data has been bound to the collection
+ * @param onDataRendered Optional callback invoked when data rendering is complete
+ */
+private fun dispatchUpdateCallback(
+    firstVisiblePosition: Int,
+    lastVisiblePosition: Int,
+    isDataChanged: Boolean,
+    onDataBound: OnDataBound?,
+    onDataRendered: OnDataRendered?,
+) {
+  if (isDataChanged) {
+    onDataBound?.invoke()
+  }
+  onDataRendered?.invoke(
+      isDataChanged, true, SystemClock.uptimeMillis(), firstVisiblePosition, lastVisiblePosition)
 }
 
 /**
@@ -607,8 +567,16 @@ private class CollectionPrimitiveViewLayoutBehavior(
     private val adapter: CollectionPrimitiveViewAdapter,
     private val layoutConfig: CollectionLayoutConfig,
     private val layoutInfo: LayoutInfo,
-    private val items: List<CollectionItem<*>>,
+    private val changeset: Changeset,
     private val preparationManager: CollectionPreparationManager,
+    private val children: List<CollectionChild>,
+    private val componentRenderer: (index: Int, model: CollectionChild) -> RenderInfo,
+    private val contentComparator:
+        (previousItem: CollectionChild, nextItem: CollectionChild) -> Boolean,
+    private val idComparator: (previousItem: CollectionChild, nextItem: CollectionChild) -> Boolean,
+    private val latestCommittedData: LatestCommittedData,
+    private val onDataBound: OnDataBound?,
+    private val onDataRendered: OnDataRendered?,
     private val startPadding: Int,
     private val endPadding: Int,
     private val topPadding: Int,
@@ -616,11 +584,21 @@ private class CollectionPrimitiveViewLayoutBehavior(
 ) : LayoutBehavior {
 
   override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
+    val previousLayoutData = previousLayoutData as CollectionLayoutData?
+    val componentContext = (extraContext as LithoExtraContextForLayoutScope).componentContext
+
     val horizontalPadding = startPadding + endPadding
     val verticalPadding = topPadding + bottomPadding
     val constraintsWithoutPadding =
         sizeConstraintsWithoutPadding(sizeConstraints, horizontalPadding, verticalPadding)
-
+    val latestItems =
+        if (previousLayoutData != null && latestCommittedData.data === children) {
+          // Items may have been modified after layout effects, so we use the cached version
+          // from the previous layout data to maintain consistency.
+          previousLayoutData.items
+        } else {
+          changeset.items
+        }
     val scope =
         CollectionLayoutScope(
             layoutInfo,
@@ -630,15 +608,24 @@ private class CollectionPrimitiveViewLayoutBehavior(
             wrapInMainAxis = layoutConfig.mainAxisWrapContent,
             crossAxisWrapMode = layoutConfig.crossAxisWrapMode)
 
-    val size = scope.calculateLayout(items)
+    val latestSize = scope.calculateLayout(latestItems)
+
+    val layoutData =
+        CollectionLayoutData(
+            layoutInfo = layoutInfo,
+            collectionConstraints = constraintsWithoutPadding,
+            collectionSize = latestSize,
+            items = latestItems,
+            isVertical = layoutConfig.orientation.isVertical,
+            isDynamicSize = layoutConfig.crossAxisWrapMode == CrossAxisWrapMode.Dynamic)
 
     if (!preparationManager.hasApproximateRangeSize) {
       // Measure the first child item with the calculated size constraints
       // todo: use different strategies to have a more precise estimation
-      items.firstOrNull()?.let { firstChild ->
+      latestItems.firstOrNull()?.let { firstChild ->
         val output = IntArray(2)
-        firstChild.measure(scope.getChildSizeConstraints(firstChild), output)
-        preparationManager.estimateItemsInViewPort(size, Size(output[0], output[1]))
+        firstChild.measure(layoutData.getChildSizeConstraints(firstChild), output)
+        preparationManager.estimateItemsInViewPort(latestSize, Size(output[0], output[1]))
       }
     }
 
@@ -657,21 +644,42 @@ private class CollectionPrimitiveViewLayoutBehavior(
       onCleanup { layoutInfo.setRenderInfoCollection(null) }
     }
 
-    useLayoutEffect(layoutInfo, layoutConfig, adapter, constraintsWithoutPadding, size) {
-      val layoutData =
-          CollectionLayoutData(
-              layoutInfo = layoutInfo,
-              collectionConstraints = constraintsWithoutPadding,
-              collectionSize = size,
-              items = adapter.getItems(),
-              isVertical = layoutConfig.orientation.isVertical,
-              isDynamicSize = layoutConfig.crossAxisWrapMode == CrossAxisWrapMode.Dynamic,
-          )
+    useLayoutEffect(changeset) {
+      val resolvedChangeset =
+          if (changeset.operation.prevData !== latestCommittedData.data) {
+            // If the data has changed since the last diff calculation, we need to re-calculate
+            // the result to make sure we're always applying the latest changeset.
+            val newChangeset =
+                generateChangeset(
+                    componentContext,
+                    adapter,
+                    latestCommittedData,
+                    children,
+                    contentComparator,
+                    idComparator,
+                    componentRenderer)
+            // todo remeasure the list and trigger re-layout if the size doesn't match
+            newChangeset
+          } else {
+            changeset
+          }
+
+      latestCommittedData.data = resolvedChangeset.operation.nextData
+      adapter.applyChangeset(resolvedChangeset)
+      dispatchUpdateCallback(
+          firstVisiblePosition = layoutInfo.findFirstVisibleItemPosition(),
+          lastVisiblePosition = layoutInfo.findLastVisibleItemPosition(),
+          isDataChanged = resolvedChangeset.operation.hasChanges,
+          onDataBound = onDataBound,
+          onDataRendered = onDataRendered)
+
+      layoutData.items = resolvedChangeset.items
       adapter.layoutData = layoutData
       onCleanup { adapter.layoutData = null }
     }
 
-    return PrimitiveLayoutResult(width = size.width, height = size.height)
+    return PrimitiveLayoutResult(
+        width = latestSize.width, height = latestSize.height, layoutData = layoutData)
   }
 
   companion object {
@@ -719,6 +727,56 @@ private class CollectionPrimitiveViewLayoutBehavior(
           minWidth = minWidth, maxWidth = maxWidth, minHeight = minHeight, maxHeight = maxHeight)
     }
   }
+}
+
+/**
+ * Represents a changeset containing the operations needed to update a collection and the resulting
+ * items. This data class encapsulates both the diff operations and the final list of collection
+ * items after applying those operations.
+ *
+ * @param operation The collection update operation containing insert, delete, move, and update
+ *   operations
+ * @param items The resulting list of collection items after applying the update operations
+ */
+@DataClassGenerate(toString = Mode.OMIT, equalsHashCode = Mode.KEEP)
+private data class Changeset(
+    val operation: CollectionUpdateOperation<CollectionChild>,
+    val items: List<CollectionItem<*>>
+)
+
+/**
+ * Generates a changeset by calculating the difference between the latest committed data and new
+ * children, then builds the corresponding collection items based on whether changes were detected.
+ */
+private fun generateChangeset(
+    componentContext: ComponentContext,
+    adapter: CollectionPrimitiveViewAdapter,
+    latestCommittedData: LatestCommittedData,
+    children: List<CollectionChild>,
+    contentComparator: (previousItem: CollectionChild, nextItem: CollectionChild) -> Boolean,
+    idComparator: (previousItem: CollectionChild, nextItem: CollectionChild) -> Boolean,
+    componentRenderer: (index: Int, model: CollectionChild) -> RenderInfo,
+): Changeset {
+  val operation =
+      calculateDiff(
+          previousData = latestCommittedData.data,
+          nextData = children,
+          sameItemComparator = idComparator,
+          sameContentComparator = contentComparator)
+  val items =
+      if (operation.hasChanges) {
+        // We're creating a speculative changeset for measurement without side effects,
+        // which may be discarded if the dataset changes before committing the result,
+        // so we need to duplicate the items and apply modifications to the copy.
+        buildCollectionItems(
+            context = componentContext,
+            updatedItems = adapter.getSnapshotOfItemsAsMutableList(),
+            renderer = componentRenderer,
+            updateOperation = operation)
+      } else {
+        adapter.getItems()
+      }
+  return Changeset(operation, items)
 }
 
 /**

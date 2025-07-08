@@ -43,7 +43,7 @@ class CollectionLayoutData(
     layoutInfo: LayoutInfo,
     collectionConstraints: SizeConstraints,
     collectionSize: Size?,
-    val items: List<CollectionItem<*>>,
+    var items: List<CollectionItem<*>>,
     isVertical: Boolean,
     isDynamicSize: Boolean
 ) :

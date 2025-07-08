@@ -20,7 +20,7 @@ import com.facebook.litho.layout.LayoutDirection
 
 class LithoExtraContextForLayoutScope
 internal constructor(
-    internal val componentContext: ComponentContext,
+    val componentContext: ComponentContext,
     val layoutDirection: LayoutDirection,
 ) {
 

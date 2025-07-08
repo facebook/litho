@@ -18,6 +18,7 @@ package com.facebook.litho.widget
 
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.GuardedBy
 import androidx.annotation.UiThread
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.rendercore.thread.utils.ThreadUtils
@@ -30,7 +31,8 @@ import com.facebook.rendercore.thread.utils.ThreadUtils
  */
 class CollectionPrimitiveViewAdapter : RecyclerView.Adapter<PrimitiveRecyclerViewHolder>() {
 
-  private val items: MutableList<CollectionItem<*>> = ArrayList()
+  private val lock = Any()
+  @GuardedBy("lock") private var items: List<CollectionItem<*>> = ArrayList()
 
   /**
    * Factory function for creating CollectionItemRootHostHolder instances. This function is called
@@ -99,6 +101,7 @@ class CollectionPrimitiveViewAdapter : RecyclerView.Adapter<PrimitiveRecyclerVie
   /** Returns the position of the first item with the given id, otherwise, returns -1. */
   @UiThread
   fun findPositionById(id: Any): Int {
+    ThreadUtils.assertMainThread()
     return items.indexOfFirst { item ->
       item.renderInfo.getCustomAttribute(CollectionItem.ID_CUSTOM_ATTR_KEY) == id
     }
@@ -118,53 +121,23 @@ class CollectionPrimitiveViewAdapter : RecyclerView.Adapter<PrimitiveRecyclerVie
 
   // region update operations
 
-  fun insertAt(position: Int, holders: List<CollectionItem<*>>) {
-    for (index in holders.indices) {
-      val holder = holders[index]
-      items.add(position + index, holder)
-    }
-    if (holders.size > 1) {
-      notifyItemRangeInserted(position, holders.size)
-    } else {
-      notifyItemInserted(position)
-    }
-  }
-
-  fun updateAt(position: Int, holders: List<CollectionItem<*>>) {
-    for (index in holders.indices) {
-      val holder = holders[index]
-      items.removeAt(position + index)
-      items.add(position + index, holder)
-    }
-    if (holders.size > 1) {
-      notifyItemRangeChanged(position, holders.size)
-    } else {
-      notifyItemChanged(position)
-    }
-  }
-
-  fun deleteAt(position: Int, count: Int) {
-    repeat(count) { items.removeAt(position) }
-    if (count > 1) {
-      notifyItemRangeRemoved(position, count)
-    } else {
-      notifyItemRemoved(position)
-    }
-  }
-
-  fun move(from: Int, to: Int) {
-    items.add(to, items.removeAt(from))
-    notifyItemMoved(from, to)
-  }
-
+  @UiThread
   fun setItems(newData: List<CollectionItem<*>>) {
-    items.clear()
-    items.addAll(newData)
-  }
-
-  fun getItems(): List<CollectionItem<*>> {
-    return items
+    ThreadUtils.assertMainThread()
+    synchronized(lock) { items = newData }
   }
 
   // endregion
+
+  fun getItems(): List<CollectionItem<*>> {
+    synchronized(lock) {
+      return items
+    }
+  }
+
+  fun getSnapshotOfItemsAsMutableList(): MutableList<CollectionItem<*>> {
+    synchronized(lock) {
+      return items.toMutableList()
+    }
+  }
 }
