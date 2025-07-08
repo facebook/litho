@@ -28,14 +28,14 @@ import androidx.recyclerview.widget.SnapHelper
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
-import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.ComponentsSystrace
-import com.facebook.litho.KComponent
 import com.facebook.litho.LithoExtraContextForLayoutScope
+import com.facebook.litho.LithoPrimitive
 import com.facebook.litho.LithoRenderTreeView
 import com.facebook.litho.LithoStartupLogger
+import com.facebook.litho.PrimitiveComponent
 import com.facebook.litho.PrimitiveComponentScope
 import com.facebook.litho.Style
 import com.facebook.litho.annotations.ExperimentalLithoApi
@@ -66,7 +66,6 @@ import com.facebook.litho.widget.LithoCollectionItem
 import com.facebook.litho.widget.LithoRecyclerView.OnAfterLayoutListener
 import com.facebook.litho.widget.LithoRecyclerView.OnBeforeLayoutListener
 import com.facebook.litho.widget.LithoRecyclerView.TouchInterceptor
-import com.facebook.litho.widget.Recycler
 import com.facebook.litho.widget.Recycler.Companion.createSectionsRecyclerView
 import com.facebook.litho.widget.RecyclerBinder
 import com.facebook.litho.widget.RecyclerEventsController
@@ -141,27 +140,12 @@ class CollectionRecyclerComponent(
     private val topPadding: Int = 0,
     private val touchInterceptor: TouchInterceptor? = null,
     private val verticalFadingEdgeEnabled: Boolean = false,
-) : KComponent() {
+) : PrimitiveComponent() {
 
-  override fun ComponentScope.render(): Component {
+  override fun PrimitiveComponentScope.render(): LithoPrimitive {
     val layoutConfig: CollectionLayoutConfig = useConfig(recyclerConfiguration)
     val latestCommittedData = useState { LatestCommittedData() }.value
     val poolScope = useState { PoolScope.ManuallyManaged() }.value
-    val viewportChangedCallback =
-        useCallback {
-            firstVisibleIndex: Int,
-            lastVisibleIndex: Int,
-            itemCount: Int,
-            firstFullyVisibleIndex: Int,
-            lastFullyVisibleIndex: Int ->
-          onViewportChanged?.invoke(
-              firstVisibleIndex,
-              lastVisibleIndex,
-              itemCount,
-              firstFullyVisibleIndex,
-              lastFullyVisibleIndex)
-        }
-
     val layoutInfo =
         useStateWithDeps(
                 layoutConfig.orientation,
@@ -172,24 +156,9 @@ class CollectionRecyclerComponent(
                   recyclerConfiguration.getLayoutInfo(context)
                 }
             .value
-    val binder =
-        useStateWithDeps(layoutInfo) {
-              RecyclerBinder.Builder()
-                  .layoutInfo(layoutInfo)
-                  .startupLogger(startupLogger)
-                  .recyclerBinderConfig(
-                      recyclerConfiguration.recyclerBinderConfiguration.recyclerBinderConfig)
-                  .poolScope(poolScope)
-                  .build(context)
-            }
-            .value
     val adapter = useState { CollectionPrimitiveViewAdapter() }.value
     val collectionPreparationManager =
         useStateWithDeps(layoutInfo) { CollectionPreparationManager(layoutInfo) }.value
-
-    val recyclerEventsController = useState { RecyclerEventsController() }.value
-    val collectionPrimitiveViewScroller =
-        useState { CollectionPrimitiveViewScroller(context.androidContext) }.value
 
     // This calculates the diff between the previous and new data to determine what changes need to
     // be made to the RecyclerView. It's performed as a best-effort calculation on the background
@@ -205,6 +174,32 @@ class CollectionRecyclerComponent(
             idComparator,
             componentRenderer)
 
+    val recyclerEventsController = useState { RecyclerEventsController() }.value
+    val collectionPrimitiveViewScroller =
+        useState { CollectionPrimitiveViewScroller(context.androidContext) }.value
+    useEffect(lazyCollectionController) {
+      lazyCollectionController?.recyclerEventsController = recyclerEventsController
+      lazyCollectionController?.scrollerDelegate = RecyclerScroller(collectionPrimitiveViewScroller)
+      onCleanup {
+        lazyCollectionController?.recyclerEventsController = null
+        lazyCollectionController?.scrollerDelegate = null
+      }
+    }
+
+    val viewportChangedCallback =
+        useCallback {
+            firstVisibleIndex: Int,
+            lastVisibleIndex: Int,
+            itemCount: Int,
+            firstFullyVisibleIndex: Int,
+            lastFullyVisibleIndex: Int ->
+          onViewportChanged?.invoke(
+              firstVisibleIndex,
+              lastVisibleIndex,
+              itemCount,
+              firstFullyVisibleIndex,
+              lastFullyVisibleIndex)
+        }
     useEffect(adapter, collectionPreparationManager) {
       val viewportChangedListener =
           ViewportChanged {
@@ -226,22 +221,32 @@ class CollectionRecyclerComponent(
       }
     }
 
-    useEffect(lazyCollectionController) {
-      lazyCollectionController?.recyclerEventsController = recyclerEventsController
-      lazyCollectionController?.scrollerDelegate = RecyclerScroller(collectionPrimitiveViewScroller)
-      onCleanup {
-        lazyCollectionController?.recyclerEventsController = null
-        lazyCollectionController?.scrollerDelegate = null
-      }
-    }
     useEffect(Unit) { onCleanup { poolScope.releaseScope() } }
 
+    val componentRendererCallback = useCallback { index: Int, model: CollectionChild ->
+      componentRenderer(index, model)
+    }
+    val contentComparatorCallback =
+        useCallback { previousItem: CollectionChild, nextItem: CollectionChild ->
+          contentComparator(previousItem, nextItem)
+        }
+    val idComparatorCallback =
+        useCallback { previousItem: CollectionChild, nextItem: CollectionChild ->
+          idComparator(previousItem, nextItem)
+        }
+    val onDataBoundCallback: () -> Unit = useCallback { -> onDataBound?.invoke() }
+    val onDataRenderedCallback: (Boolean, Boolean, Long, Int, Int) -> Unit =
+        useCallback {
+            isDataChanged: Boolean,
+            isMounted: Boolean,
+            monoTimestampMs: Long,
+            firstVisibleIndex: Int,
+            lastVisibleIndex: Int ->
+          onDataRendered?.invoke(
+              isDataChanged, isMounted, monoTimestampMs, firstVisibleIndex, lastVisibleIndex)
+        }
+    val pullToRefreshCallback: () -> Unit = useCallback { -> onPullToRefresh?.invoke() }
     val internalPullToRefreshEnabled = (layoutConfig.orientation.isVertical && pullToRefreshEnabled)
-    val componentsConfiguration = context.lithoConfiguration.componentsConfig
-    val primitiveRecyclerBinderStrategy =
-        recyclerConfiguration.recyclerBinderConfiguration.primitiveRecyclerBinderStrategy
-            ?: componentsConfiguration.primitiveRecyclerBinderStrategy
-
     /*
      * This is a temporary solution while we experiment with offering the same behavior regarding
      * the default item animators as in
@@ -266,47 +271,73 @@ class CollectionRecyclerComponent(
           }
           else -> itemAnimator
         }
-
-    return Recycler(
-        binderStrategy = primitiveRecyclerBinderStrategy,
-        binder = binder,
-        bottomPadding = bottomPadding,
-        excludeFromIncrementalMount = shouldExcludeFromIncrementalMount,
-        fadingEdgeLength = fadingEdgeLength,
-        isBottomFadingEnabled = isBottomFadingEnabled,
-        isClipChildrenEnabled = clipChildren,
-        isClipToPaddingEnabled = clipToPadding,
-        isHorizontalFadingEdgeEnabled = horizontalFadingEdgeEnabled,
-        isLeftFadingEnabled = isLeftFadingEnabled,
-        isNestedScrollingEnabled = nestedScrollingEnabled,
-        isPullToRefreshEnabled = internalPullToRefreshEnabled,
-        isRightFadingEnabled = isRightFadingEnabled,
-        isTopFadingEnabled = isTopFadingEnabled,
-        isVerticalFadingEdgeEnabled = verticalFadingEdgeEnabled,
-        itemAnimator = itemAnimatorToUse,
-        itemDecorations = itemDecoration?.let { listOf(it) },
-        leftPadding = startPadding,
-        onAfterLayoutListener = onAfterLayoutListener,
-        onBeforeLayoutListener = onBeforeLayoutListener,
-        onItemTouchListener = itemTouchListener,
-        onRefresh =
-            if (internalPullToRefreshEnabled && onPullToRefresh != null) {
-              onPullToRefresh
-            } else {
-              null
-            },
-        onScrollListeners = onScrollListeners?.filterNotNull(),
-        overScrollMode = overScrollMode,
-        recyclerEventsController = recyclerEventsController,
-        recyclerViewId = recyclerViewId,
-        refreshProgressBarBackgroundColor = refreshProgressBarBackgroundColor,
-        refreshProgressBarColor = refreshProgressBarColor,
-        rightPadding = endPadding,
-        scrollBarStyle = scrollBarStyle,
-        sectionsViewLogger = sectionsViewLogger,
-        snapHelper = recyclerConfiguration.snapHelper,
-        topPadding = topPadding,
-        touchInterceptor = touchInterceptor,
+    val padding =
+        useStateWithDeps(startPadding, topPadding, endPadding, bottomPadding) {
+              Padding(
+                  startPadding = startPadding,
+                  endPadding = endPadding,
+                  topPadding = topPadding,
+                  bottomPadding = bottomPadding)
+            }
+            .value
+    return LithoPrimitive(
+        layoutBehavior =
+            CollectionPrimitiveViewLayoutBehavior(
+                adapter = adapter,
+                layoutConfig = layoutConfig,
+                layoutInfo = layoutInfo,
+                changeset = changeset,
+                children = children,
+                componentRenderer = componentRendererCallback,
+                contentComparator = contentComparatorCallback,
+                idComparator = idComparatorCallback,
+                latestCommittedData = latestCommittedData,
+                preparationManager = collectionPreparationManager,
+                onDataRendered = onDataRenderedCallback,
+                onDataBound = onDataBoundCallback,
+                padding = padding),
+        mountBehavior =
+            CollectionPrimitiveViewMountBehavior(
+                layoutConfig = layoutConfig,
+                layoutInfo = layoutInfo,
+                adapter = adapter,
+                preparationManager = collectionPreparationManager,
+                scroller = collectionPrimitiveViewScroller,
+                clipChildren = clipChildren,
+                clipToPadding = clipToPadding,
+                padding = padding,
+                onRefresh =
+                    if (internalPullToRefreshEnabled) {
+                      pullToRefreshCallback
+                    } else {
+                      null
+                    },
+                snapHelper = layoutConfig.snapHelper,
+                excludeFromIncrementalMount =
+                    this@CollectionRecyclerComponent.shouldExcludeFromIncrementalMount,
+                fadingEdgeLength = fadingEdgeLength,
+                horizontalFadingEdgeEnabled = horizontalFadingEdgeEnabled,
+                isBottomFadingEnabled = isBottomFadingEnabled,
+                isLeftFadingEnabled = isLeftFadingEnabled,
+                isRightFadingEnabled = isRightFadingEnabled,
+                isTopFadingEnabled = isTopFadingEnabled,
+                itemAnimator = itemAnimatorToUse,
+                itemDecorations = itemDecoration?.let { listOf(it) },
+                itemTouchListener = itemTouchListener,
+                nestedScrollingEnabled = nestedScrollingEnabled,
+                onAfterLayoutListener = onAfterLayoutListener,
+                onBeforeLayoutListener = onBeforeLayoutListener,
+                onScrollListeners = onScrollListeners?.filterNotNull(),
+                overScrollMode = overScrollMode,
+                pullToRefreshEnabled = pullToRefreshEnabled,
+                recyclerEventsController = recyclerEventsController,
+                recyclerViewId = recyclerViewId,
+                refreshProgressBarBackgroundColor = refreshProgressBarBackgroundColor,
+                refreshProgressBarColor = refreshProgressBarColor,
+                scrollBarStyle = scrollBarStyle,
+                sectionsViewLogger = sectionsViewLogger,
+                touchInterceptor = touchInterceptor,
+                verticalFadingEdgeEnabled = verticalFadingEdgeEnabled),
         style = style)
   }
 
@@ -568,7 +599,6 @@ private class CollectionPrimitiveViewLayoutBehavior(
     private val layoutConfig: CollectionLayoutConfig,
     private val layoutInfo: LayoutInfo,
     private val changeset: Changeset,
-    private val preparationManager: CollectionPreparationManager,
     private val children: List<CollectionChild>,
     private val componentRenderer: (index: Int, model: CollectionChild) -> RenderInfo,
     private val contentComparator:
@@ -577,20 +607,17 @@ private class CollectionPrimitiveViewLayoutBehavior(
     private val latestCommittedData: LatestCommittedData,
     private val onDataBound: OnDataBound?,
     private val onDataRendered: OnDataRendered?,
-    private val startPadding: Int,
-    private val endPadding: Int,
-    private val topPadding: Int,
-    private val bottomPadding: Int,
+    private val preparationManager: CollectionPreparationManager,
+    private val padding: Padding,
 ) : LayoutBehavior {
 
   override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
     val previousLayoutData = previousLayoutData as CollectionLayoutData?
     val componentContext = (extraContext as LithoExtraContextForLayoutScope).componentContext
 
-    val horizontalPadding = startPadding + endPadding
-    val verticalPadding = topPadding + bottomPadding
     val constraintsWithoutPadding =
-        sizeConstraintsWithoutPadding(sizeConstraints, horizontalPadding, verticalPadding)
+        sizeConstraintsWithoutPadding(
+            sizeConstraints, padding.horizontalPadding, padding.verticalPadding)
     val latestItems =
         if (previousLayoutData != null && latestCommittedData.data === children) {
           // Items may have been modified after layout effects, so we use the cached version
@@ -745,6 +772,29 @@ private data class Changeset(
 )
 
 /**
+ * Represents padding values for all four sides of a UI component. Provides convenient computed
+ * properties for total horizontal and vertical padding.
+ *
+ * @param startPadding Padding at the start edge
+ * @param endPadding Padding at the end edge
+ * @param topPadding Padding at the top edge
+ * @param bottomPadding Padding at the bottom edge
+ */
+@DataClassGenerate(toString = Mode.OMIT, equalsHashCode = Mode.KEEP)
+private data class Padding(
+    val startPadding: Int,
+    val endPadding: Int,
+    val topPadding: Int,
+    val bottomPadding: Int
+) {
+  /** Total horizontal padding combining start and end padding values */
+  val horizontalPadding: Int = startPadding + endPadding
+
+  /** Total vertical padding combining top and bottom padding values */
+  val verticalPadding: Int = topPadding + bottomPadding
+}
+
+/**
  * Generates a changeset by calculating the difference between the latest committed data and new
  * children, then builds the corresponding collection items based on whether changes were detected.
  */
@@ -807,10 +857,9 @@ private fun PrimitiveComponentScope.CollectionPrimitiveViewMountBehavior(
     adapter: CollectionPrimitiveViewAdapter,
     preparationManager: CollectionPreparationManager,
     scroller: CollectionPrimitiveViewScroller,
-    bottomPadding: Int,
     clipChildren: Boolean,
     clipToPadding: Boolean,
-    endPadding: Int,
+    padding: Padding,
     excludeFromIncrementalMount: Boolean,
     fadingEdgeLength: Int,
     horizontalFadingEdgeEnabled: Boolean,
@@ -830,13 +879,11 @@ private fun PrimitiveComponentScope.CollectionPrimitiveViewMountBehavior(
     pullToRefreshEnabled: Boolean,
     recyclerEventsController: RecyclerEventsController?,
     recyclerViewId: Int,
-    refreshProgressBarBackgroundColor: Int,
+    refreshProgressBarBackgroundColor: Int?,
     refreshProgressBarColor: Int,
     scrollBarStyle: Int,
     sectionsViewLogger: SectionsRecyclerViewLogger?,
     snapHelper: SnapHelper?,
-    startPadding: Int,
-    topPadding: Int,
     touchInterceptor: TouchInterceptor?,
     verticalFadingEdgeEnabled: Boolean
 ): MountBehavior<SectionsRecyclerView> {
@@ -879,10 +926,7 @@ private fun PrimitiveComponentScope.CollectionPrimitiveViewMountBehavior(
     withDescription("recycler-equivalent-mount") {
       bind(
           clipToPadding,
-          startPadding,
-          topPadding,
-          endPadding,
-          bottomPadding,
+          padding,
           clipChildren,
           scrollBarStyle,
           horizontalFadingEdgeEnabled,
@@ -897,10 +941,10 @@ private fun PrimitiveComponentScope.CollectionPrimitiveViewMountBehavior(
                 hasFixedSize = true, // not supported yet, using default value instead
                 isClipToPaddingEnabled = clipToPadding,
                 paddingAdditionDisabled = false, // not supported yet, using default value instead
-                leftPadding = startPadding,
-                topPadding = topPadding,
-                rightPadding = endPadding,
-                bottomPadding = bottomPadding,
+                leftPadding = padding.startPadding,
+                topPadding = padding.topPadding,
+                rightPadding = padding.endPadding,
+                bottomPadding = padding.bottomPadding,
                 isClipChildrenEnabled = clipChildren,
                 isNestedScrollingEnabled = nestedScrollingEnabled,
                 scrollBarStyle = scrollBarStyle,
