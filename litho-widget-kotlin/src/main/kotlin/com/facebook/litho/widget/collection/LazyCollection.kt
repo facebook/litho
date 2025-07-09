@@ -16,6 +16,8 @@
 
 package com.facebook.litho.widget.collection
 
+import android.graphics.Color
+import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
@@ -25,6 +27,7 @@ import com.facebook.litho.KComponent
 import com.facebook.litho.LithoStartupLogger
 import com.facebook.litho.Style
 import com.facebook.litho.eventHandlerWithReturn
+import com.facebook.litho.handle
 import com.facebook.litho.kotlinStyle
 import com.facebook.litho.sections.Children
 import com.facebook.litho.sections.Section
@@ -80,6 +83,7 @@ class LazyCollection(
     private val shouldExcludeFromIncrementalMount: Boolean = false,
     private val onBeforeLayout: OnBeforeLayoutListener? = null,
     private val onAfterLayout: OnAfterLayoutListener? = null,
+    private val enableNewCollection: Boolean = false,
     private val lazyCollectionChildren: LazyCollectionChildren
 ) : KComponent() {
 
@@ -131,68 +135,154 @@ class LazyCollection(
               isDataChanged, isMounted, monoTimestampMs, firstVisibleIndex, lastVisibleIndex)
         }
 
-    val section =
-        CollectionGroupSection.create(sectionContext)
-            .childrenBuilder { context ->
-              Children.create()
-                  .child(
-                      createDataDiffSection(
-                          context,
-                          lazyCollectionChildren.collectionChildren,
-                          alwaysDetectDuplicates))
-            }
-            .apply { onDataBound?.let { onDataBound(it) } }
-            .onViewportChanged(combinedOnViewportChanged)
-            .onPullToRefresh(onPullToRefresh)
-            .onDataRendered(combinedOnDataRendered)
-            .build()
-
-    return CollectionRecycler.create(context)
-        .section(section)
-        .recyclerConfiguration(layout.recyclerConfiguration)
-        .itemAnimator(itemAnimator)
-        .itemDecoration(itemDecoration)
-        .clipToPadding(clipToPadding)
-        .clipChildren(clipChildren)
-        .startPaddingPx(startPadding?.toPixels(resourceResolver) ?: 0)
-        .endPaddingPx(endPadding?.toPixels(resourceResolver) ?: 0)
-        .topPaddingPx(topPadding?.toPixels(resourceResolver) ?: 0)
-        .bottomPaddingPx(bottomPadding?.toPixels(resourceResolver) ?: 0)
-        .pullToRefreshEnabled(onPullToRefresh != null)
-        .nestedScrollingEnabled(nestedScrollingEnabled)
-        .scrollBarStyle(scrollBarStyle)
-        .recyclerViewId(recyclerViewId)
-        .overScrollMode(overScrollMode)
-        .refreshProgressBarBackgroundColor(refreshProgressBarBackgroundColor)
-        .refreshProgressBarColor(refreshProgressBarColor)
-        .touchInterceptor(touchInterceptor)
-        .itemTouchListener(itemTouchListener)
-        .sectionTreeTag(sectionTreeTag)
-        .startupLogger(startupLogger)
-        .handle(recyclerHandle)
-        .onScrollListener(onScrollListener)
-        .onScrollListeners(onScrollListeners)
-        .lazyCollectionController(lazyCollectionController)
-        .shouldExcludeFromIncrementalMount(shouldExcludeFromIncrementalMount)
-        .onBeforeLayoutListener(onBeforeLayout)
-        .onAfterLayoutListener(onAfterLayout)
-        .apply {
-          val fadingEdgeLengthPx = fadingEdgeLength?.toPixels()
-          if (fadingEdgeLengthPx != null && fadingEdgeLengthPx > 0) {
-            fadingEdgeLengthPx(fadingEdgeLengthPx)
-            if (layout.isVertical) {
-              verticalFadingEdgeEnabled(true)
-            } else {
-              horizontalFadingEdgeEnabled(true)
-            }
-            isLeftFadingEnabled(isLeftFadingEnabled)
-            isRightFadingEnabled(isRightFadingEnabled)
-            isTopFadingEnabled(isTopFadingEnabled)
-            isBottomFadingEnabled(isBottomFadingEnabled)
+    if (enableNewCollection) {
+      val combinedScrollListeners =
+          if (onScrollListeners == null && onScrollListener == null) {
+            null
+          } else {
+            val listeners = mutableListOf<RecyclerView.OnScrollListener>()
+            onScrollListeners?.filterNotNullTo(listeners)
+            onScrollListener?.let { listeners.add(it) }
+            listeners
           }
-        }
-        .kotlinStyle(style)
-        .build()
+      val fadingEdgeLengthPx = fadingEdgeLength?.toPixels() ?: 0
+      val component =
+          CollectionRecyclerComponent(
+              children = lazyCollectionChildren.collectionChildren,
+              recyclerConfiguration = layout.recyclerConfiguration,
+              idComparator = { previousItem, nextItem -> previousItem.id == nextItem.id },
+              contentComparator = { previousItem, nextItem ->
+                isChildEquivalent(previousItem, nextItem)
+              },
+              itemAnimator = itemAnimator,
+              itemDecoration = itemDecoration,
+              clipToPadding = clipToPadding ?: true,
+              clipChildren = clipToPadding ?: true,
+              startPadding = startPadding?.toPixels(resourceResolver) ?: 0,
+              endPadding = endPadding?.toPixels(resourceResolver) ?: 0,
+              topPadding = topPadding?.toPixels(resourceResolver) ?: 0,
+              bottomPadding = bottomPadding?.toPixels(resourceResolver) ?: 0,
+              pullToRefreshEnabled = onPullToRefresh != null,
+              onPullToRefresh = onPullToRefresh,
+              nestedScrollingEnabled = nestedScrollingEnabled ?: false,
+              scrollBarStyle = scrollBarStyle ?: View.SCROLLBARS_INSIDE_OVERLAY,
+              recyclerViewId = recyclerViewId ?: View.NO_ID,
+              overScrollMode = overScrollMode ?: View.OVER_SCROLL_ALWAYS,
+              horizontalFadingEdgeEnabled = fadingEdgeLengthPx > 0 && !layout.isVertical,
+              verticalFadingEdgeEnabled = fadingEdgeLengthPx > 0 && layout.isVertical,
+              isLeftFadingEnabled = if (fadingEdgeLengthPx > 0) isLeftFadingEnabled else false,
+              isRightFadingEnabled = if (fadingEdgeLengthPx > 0) isRightFadingEnabled else false,
+              isTopFadingEnabled = if (fadingEdgeLengthPx > 0) isTopFadingEnabled else false,
+              isBottomFadingEnabled = if (fadingEdgeLengthPx > 0) isBottomFadingEnabled else false,
+              refreshProgressBarColor = refreshProgressBarColor ?: Color.BLACK,
+              touchInterceptor = touchInterceptor,
+              itemTouchListener = itemTouchListener,
+              startupLogger = startupLogger,
+              onDataBound = onDataBound,
+              onDataRendered = combinedOnDataRendered,
+              onScrollListeners = combinedScrollListeners,
+              onViewportChanged = combinedOnViewportChanged,
+              lazyCollectionController = lazyCollectionController,
+              shouldExcludeFromIncrementalMount = shouldExcludeFromIncrementalMount,
+              onBeforeLayoutListener = onBeforeLayout,
+              onAfterLayoutListener = onAfterLayout,
+              componentRenderer = { _: Int, model: CollectionChild ->
+                val component: Component? = model.component ?: model.componentFunction?.invoke()
+                if (component != null) {
+                  ComponentRenderInfo.create()
+                      .apply {
+                        isSticky(model.isSticky)
+                        isFullSpan(model.isFullSpan)
+                        model.spanSize?.let { spanSize(it) }
+                        customAttribute(RecyclerBinder.ID_CUSTOM_ATTR_KEY, model.id)
+                        model.customAttributes?.forEach { entry ->
+                          customAttribute(entry.key, entry.value)
+                        }
+                        if (model.parentWidthPercent in 0.0f..100.0f) {
+                          parentWidthPercent(model.parentWidthPercent)
+                        }
+                        if (model.parentHeightPercent in 0.0f..100.0f) {
+                          parentHeightPercent(model.parentHeightPercent)
+                        }
+                      }
+                      .component(component)
+                      .build()
+                } else {
+                  ComponentRenderInfo.createEmpty()
+                }
+              },
+              style = style)
+
+      return if (recyclerHandle != null) {
+        handle(recyclerHandle, componentLambda = { component })
+      } else {
+        component
+      }
+    } else {
+
+      val section =
+          CollectionGroupSection.create(sectionContext)
+              .childrenBuilder { context ->
+                Children.create()
+                    .child(
+                        createDataDiffSection(
+                            context,
+                            lazyCollectionChildren.collectionChildren,
+                            alwaysDetectDuplicates))
+              }
+              .apply { onDataBound?.let { onDataBound(it) } }
+              .onViewportChanged(combinedOnViewportChanged)
+              .onPullToRefresh(onPullToRefresh)
+              .onDataRendered(combinedOnDataRendered)
+              .build()
+
+      return CollectionRecycler.create(context)
+          .section(section)
+          .recyclerConfiguration(layout.recyclerConfiguration)
+          .itemAnimator(itemAnimator)
+          .itemDecoration(itemDecoration)
+          .clipToPadding(clipToPadding)
+          .clipChildren(clipChildren)
+          .startPaddingPx(startPadding?.toPixels(resourceResolver) ?: 0)
+          .endPaddingPx(endPadding?.toPixels(resourceResolver) ?: 0)
+          .topPaddingPx(topPadding?.toPixels(resourceResolver) ?: 0)
+          .bottomPaddingPx(bottomPadding?.toPixels(resourceResolver) ?: 0)
+          .pullToRefreshEnabled(onPullToRefresh != null)
+          .nestedScrollingEnabled(nestedScrollingEnabled)
+          .scrollBarStyle(scrollBarStyle)
+          .recyclerViewId(recyclerViewId)
+          .overScrollMode(overScrollMode)
+          .refreshProgressBarBackgroundColor(refreshProgressBarBackgroundColor)
+          .refreshProgressBarColor(refreshProgressBarColor)
+          .touchInterceptor(touchInterceptor)
+          .itemTouchListener(itemTouchListener)
+          .sectionTreeTag(sectionTreeTag)
+          .startupLogger(startupLogger)
+          .handle(recyclerHandle)
+          .onScrollListener(onScrollListener)
+          .onScrollListeners(onScrollListeners)
+          .lazyCollectionController(lazyCollectionController)
+          .shouldExcludeFromIncrementalMount(shouldExcludeFromIncrementalMount)
+          .onBeforeLayoutListener(onBeforeLayout)
+          .onAfterLayoutListener(onAfterLayout)
+          .apply {
+            val fadingEdgeLengthPx = fadingEdgeLength?.toPixels()
+            if (fadingEdgeLengthPx != null && fadingEdgeLengthPx > 0) {
+              fadingEdgeLengthPx(fadingEdgeLengthPx)
+              if (layout.isVertical) {
+                verticalFadingEdgeEnabled(true)
+              } else {
+                horizontalFadingEdgeEnabled(true)
+              }
+              isLeftFadingEnabled(isLeftFadingEnabled)
+              isRightFadingEnabled(isRightFadingEnabled)
+              isTopFadingEnabled(isTopFadingEnabled)
+              isBottomFadingEnabled(isBottomFadingEnabled)
+            }
+          }
+          .kotlinStyle(style)
+          .build()
+    }
   }
 
   private fun createDataDiffSection(

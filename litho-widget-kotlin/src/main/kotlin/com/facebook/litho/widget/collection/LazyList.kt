@@ -85,6 +85,7 @@ inline fun ResourcesScope.LazyList(
     isCircular: Boolean = false,
     enableStableIds: Boolean =
         context.lithoConfiguration.componentsConfig.useStableIdsInRecyclerBinder,
+    enableNewCollection: Boolean = false,
     linearLayoutInfoFactory: LinearLayoutInfoFactory? = null,
     onBeforeLayout: OnBeforeLayoutListener? = null,
     onAfterLayout: OnAfterLayoutListener? = null,
@@ -148,5 +149,6 @@ inline fun ResourcesScope.LazyList(
       shouldExcludeFromIncrementalMount = shouldExcludeFromIncrementalMount,
       onBeforeLayout = onBeforeLayout,
       onAfterLayout = onAfterLayout,
+      enableNewCollection = enableNewCollection,
       lazyCollectionChildren = lazyListScope.children)
 }

@@ -86,6 +86,7 @@ inline fun ResourcesScope.LazyGrid(
     gridLayoutInfoFactory: GridLayoutInfoFactory? = null,
     onBeforeLayout: OnBeforeLayoutListener? = null,
     onAfterLayout: OnAfterLayoutListener? = null,
+    enableNewCollection: Boolean = false,
     crossinline init: LazyGridScope.() -> Unit
 ): Component {
   val lazyGridScope = LazyGridScope(context).apply { init() }
@@ -144,5 +145,6 @@ inline fun ResourcesScope.LazyGrid(
       shouldExcludeFromIncrementalMount,
       onBeforeLayout,
       onAfterLayout,
+      enableNewCollection,
       lazyGridScope.children)
 }

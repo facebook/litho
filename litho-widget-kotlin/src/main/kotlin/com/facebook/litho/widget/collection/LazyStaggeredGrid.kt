@@ -85,6 +85,7 @@ inline fun ResourcesScope.LazyStaggeredGrid(
         context.lithoConfiguration.componentsConfig.useStableIdsInRecyclerBinder,
     onBeforeLayout: OnBeforeLayoutListener? = null,
     onAfterLayout: OnAfterLayoutListener? = null,
+    enableNewCollection: Boolean = false,
     crossinline init: LazyGridScope.() -> Unit
 ): Component {
   val lazyStaggeredGridScope = LazyGridScope(context).apply { init() }
@@ -140,5 +141,6 @@ inline fun ResourcesScope.LazyStaggeredGrid(
       shouldExcludeFromIncrementalMount,
       onBeforeLayout,
       onAfterLayout,
+      enableNewCollection,
       lazyStaggeredGridScope.children)
 }
