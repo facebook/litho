@@ -31,13 +31,7 @@ This guide provides detailed instructions for migrating from the Litho LayoutSpe
     2. Run the conversion script for the Layout spec:
 
 ```
-.fbandroid/scripts/litho/convert_spec_to_kotlin_api.sh <spec.kt>
-```
-
-If automatic conversion fails, use the `--save` option to save changes and manually fix errors:
-
-```
-.fbandroid/scripts/litho/convert_spec_to_kotlin_api.sh <spec.kt> --save
+.fbandroid/scripts/litho/convert_spec_to_kotlin_api.sh <spec.kt> --commit-and-publish
 ```
 
 3. Testing:
@@ -47,7 +41,7 @@ If automatic conversion fails, use the `--save` option to save changes and manua
 
 ## Current Limitations
 
-* The current codemod cannot handle all APIs due to the complexity of the Layout spec. [Unhandled APIs ](https://www.internalfb.com/code/fbsource/xplat/scripts/codemod_service/litho/spec_to_kotlin_api_conversion_input.sh?lines=5)are filtered out, and manual migration will be needed to handle all these cases.
+* The current codemod cannot handle all APIs due to the complexity of the Layout spec. [Unhandled APIs](https://www.internalfb.com/code/fbsource/fbandroid/java/com/facebook/tools/editus/commands/custom/scheduledcodemods/ConvertToKComponentCodemod.kt?lines=27) are filtered out, and manual migration will be needed to handle all these cases.
 * There is no codemod available for MountSpec and Sections as the small number of usages. Refer to the [Migrating MountSpecs to PrimitiveComponents](https://fblitho.com/docs/kotlin/migrating-from-mountspecs-to-primitives/) and [Migrating Sections to LazyCollections](https://fblitho.com/docs/kotlin/lazycollections/lazycollections-sections-migration/) for detailed steps.
 
 ## Additional Resources
