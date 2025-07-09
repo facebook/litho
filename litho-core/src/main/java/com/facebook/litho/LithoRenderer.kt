@@ -99,7 +99,7 @@ class LithoRenderer(
   @GuardedBy("this") @Volatile private var currentResolveResult: ResolveResult? = null
   @GuardedBy("this") @Volatile var currentLayoutState: LayoutState? = null
 
-  var rootHost: Host? = null
+  private var rootHost: Host? = null
 
   // This is written to only by the main thread with the lock held, read from the main thread with
   // no lock held, or read from any other thread with the lock held.
@@ -690,18 +690,17 @@ class LithoRenderer(
       rootComponent: Component? = null,
       constraints: SizeConstraints? = null,
   ): ResolveInputs {
-    return synchronized(this@LithoRenderer) {
-      rootComponent?.let { this@LithoRenderer.root = it }
-      constraints?.let { this@LithoRenderer.sizeConstraints = it }
+    return synchronized(this) {
+      rootComponent?.let { this.root = it }
+      constraints?.let { this.sizeConstraints = it }
       ResolveInputs(
-          resolveVersion = this@LithoRenderer.nextResolveVersionCounter++,
-          layoutVersion = this@LithoRenderer.nextLayoutVersionCounter++,
-          rootComponent =
-              this@LithoRenderer.errorComponentRef.getAndSet(null) ?: this@LithoRenderer.root,
-          constraints = constraints ?: this@LithoRenderer.sizeConstraints,
-          localTreeState = TreeState(this@LithoRenderer.treeState),
-          currentResolveResult = this@LithoRenderer.currentResolveResult,
-          treePropContainer = TreePropContainer.copy(this@LithoRenderer.treePropContainer),
+          resolveVersion = this.nextResolveVersionCounter++,
+          layoutVersion = this.nextLayoutVersionCounter++,
+          rootComponent = this.errorComponentRef.getAndSet(null) ?: this.root,
+          constraints = constraints ?: this.sizeConstraints,
+          localTreeState = TreeState(this.treeState),
+          currentResolveResult = this.currentResolveResult,
+          treePropContainer = TreePropContainer.copy(this.treePropContainer),
           renderMode = renderMode,
       )
     }
@@ -713,13 +712,13 @@ class LithoRenderer(
       resolveResult: ResolveResult? = null,
       constraints: SizeConstraints? = null,
   ): LayoutInputs {
-    return synchronized(this@LithoRenderer) {
-      constraints?.let { this@LithoRenderer.sizeConstraints = it }
+    return synchronized(this) {
+      constraints?.let { this.sizeConstraints = it }
       LayoutInputs(
-          layoutVersion = this@LithoRenderer.nextLayoutVersionCounter++,
-          currentResolveResult = resolveResult ?: this@LithoRenderer.currentResolveResult,
-          currentLayoutState = this@LithoRenderer.currentLayoutState,
-          constraints = constraints ?: this@LithoRenderer.sizeConstraints,
+          layoutVersion = this.nextLayoutVersionCounter++,
+          currentResolveResult = resolveResult ?: this.currentResolveResult,
+          currentLayoutState = this.currentLayoutState,
+          constraints = constraints ?: this.sizeConstraints,
           renderMode = renderMode,
       )
     }
@@ -730,12 +729,12 @@ class LithoRenderer(
       resolveInputs: ResolveInputs,
       resolveResult: ResolveResult,
   ): LayoutInputs {
-    return synchronized(this@LithoRenderer) {
+    return synchronized(this) {
       LayoutInputs(
           layoutVersion = resolveInputs.layoutVersion,
           currentResolveResult = resolveResult,
-          currentLayoutState = this@LithoRenderer.currentLayoutState,
-          constraints = resolveInputs.constraints ?: this@LithoRenderer.sizeConstraints,
+          currentLayoutState = this.currentLayoutState,
+          constraints = resolveInputs.constraints ?: this.sizeConstraints,
           renderMode = resolveInputs.renderMode,
       )
     }
