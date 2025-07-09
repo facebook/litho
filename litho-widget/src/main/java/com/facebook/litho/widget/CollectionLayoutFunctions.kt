@@ -131,39 +131,25 @@ fun CollectionLayoutScope.calculateLayout(items: List<CollectionItem<*>>): Size 
   validateSizeConstraint(collectionConstraints, isVertical, wrapInMainAxis, crossAxisWrapMode)
 
   if (collectionConstraints.hasExactWidth && collectionConstraints.hasExactHeight) {
-    // The recycler has a fixed size, so we don't need to measure it again.
+    // The collection has a fixed size, so we don't need to measure it again.
     return Size(collectionConstraints.maxWidth, collectionConstraints.maxHeight)
   }
 
-  val sizeInMainAxis: Int
-  val sizeInCrossAxis: Int
-  if (collectionSize != null) {
-    // We've measured the recycler once and size never changed after that, so we can check if we
-    // can reuse the size from the last measurement.
-    val measuredSize: Size = collectionSize
-
-    if (crossAxisWrapMode == CrossAxisWrapMode.MatchFirstChild) {
-      val wasFirstChildSizeChanged =
-          if (items.isNotEmpty()) {
-            if (isVertical) {
-              val width = items[0].size?.width ?: 0
-              measuredSize.width != width
-            } else {
-              val height = items[0].size?.height ?: 0
-              measuredSize.height != height
-            }
-          } else {
-            true
-          }
-      if (!wrapInMainAxis && !wasFirstChildSizeChanged) {
-        return Size(measuredSize.width, measuredSize.height)
+  var sizeInMainAxis: Int =
+      if (isVertical) {
+        collectionConstraints.maxHeight
+      } else {
+        collectionConstraints.maxWidth
       }
-    }
-    sizeInMainAxis = if (isVertical) measuredSize.height else measuredSize.width
-    sizeInCrossAxis = if (isVertical) measuredSize.width else measuredSize.height
-  } else {
-    // We haven't measured the recycler yet, so we need to fill the viewport to get the actual
-    // size. TODO: how about the entire list has changed and the size is becoming smaller?
+  var sizeInCrossAxis: Int =
+      if (isVertical) {
+        collectionConstraints.maxWidth
+      } else {
+        collectionConstraints.maxHeight
+      }
+
+  if (wrapInMainAxis || crossAxisWrapMode == CrossAxisWrapMode.Dynamic) {
+    // We need to measure items in the viewport to get the size of the collection.
     val filler: LayoutInfo.ViewportFiller? =
         layoutInfo.createViewportFiller(
             collectionConstraints.maxWidth, collectionConstraints.maxHeight)
@@ -177,62 +163,60 @@ fun CollectionLayoutScope.calculateLayout(items: List<CollectionItem<*>>): Size 
 
       while (filler.wantsMore() && index < items.size) {
         val item = items[index]
-        val output = IntArray(2)
-        item.measure(getChildSizeConstraints(item), output)
-        val width = output[0]
-        val height = output[1]
-        filler.add(item.renderInfo, width, height)
-        maxChildWidthInTheViewport = max(maxChildWidthInTheViewport, width)
-        maxChildHeightInTheViewport = max(maxChildHeightInTheViewport, height)
+        val size = getMeasuredSize(item)
+        filler.add(item.renderInfo, size.width, size.height)
+        maxChildWidthInTheViewport = max(maxChildWidthInTheViewport, size.width)
+        maxChildHeightInTheViewport = max(maxChildHeightInTheViewport, size.height)
         index++
       }
-      sizeInMainAxis = filler.getFill()
-      // This is only used for dynamic size, so we can use the max child size in the viewport.
-      sizeInCrossAxis = if (isVertical) maxChildWidthInTheViewport else maxChildHeightInTheViewport
-    } else {
-      sizeInMainAxis =
-          if (isVertical) collectionConstraints.maxHeight else collectionConstraints.maxWidth
-      sizeInCrossAxis =
-          if (isVertical) collectionConstraints.maxWidth else collectionConstraints.maxHeight
+      if (wrapInMainAxis) {
+        sizeInMainAxis = min(sizeInMainAxis, filler.getFill())
+      }
+
+      if (crossAxisWrapMode == CrossAxisWrapMode.Dynamic) {
+        sizeInCrossAxis =
+            if (isVertical) maxChildWidthInTheViewport else maxChildHeightInTheViewport
+      }
     }
   }
 
-  val width: Int
-  val height: Int
-  if (isVertical) {
-    width =
-        when (crossAxisWrapMode) {
-          CrossAxisWrapMode.NoWrap -> collectionConstraints.maxWidth
-          CrossAxisWrapMode.MatchFirstChild ->
-              if (items.isNotEmpty()) {
-                items[0].size?.width ?: 0
-              } else 0
-          CrossAxisWrapMode.Dynamic -> sizeInCrossAxis
-        }
-    height =
-        if (wrapInMainAxis) {
-          min(sizeInMainAxis, collectionConstraints.maxHeight)
+  if (crossAxisWrapMode == CrossAxisWrapMode.MatchFirstChild) {
+    // MatchFirstChild should always respect the first child's size.
+    sizeInCrossAxis =
+        if (items.isNotEmpty()) {
+          val size = getMeasuredSize(items[0])
+          if (isVertical) {
+            size.width
+          } else {
+            size.height
+          }
         } else {
-          collectionConstraints.maxHeight
-        }
-  } else {
-    width =
-        if (wrapInMainAxis) {
-          min(sizeInMainAxis, collectionConstraints.maxWidth)
-        } else {
-          collectionConstraints.maxWidth
-        }
-    height =
-        when (crossAxisWrapMode) {
-          CrossAxisWrapMode.NoWrap -> collectionConstraints.maxHeight
-          CrossAxisWrapMode.MatchFirstChild ->
-              if (items.isNotEmpty()) {
-                items[0].size?.height ?: 0
-              } else 0
-          CrossAxisWrapMode.Dynamic -> sizeInCrossAxis
+          0
         }
   }
-  return Size(width, height)
+
+  return if (isVertical) {
+    Size(sizeInCrossAxis, sizeInMainAxis)
+  } else {
+    Size(sizeInMainAxis, sizeInCrossAxis)
+  }
+}
+
+/** Gets the size of a collection item, either from its cached size or by measuring it. */
+private fun CollectionLayoutScope.getMeasuredSize(item: CollectionItem<*>): Size {
+  val constraints = getChildSizeConstraints(item)
+  val itemSize =
+      if (item.areSizeConstraintsCompatible(constraints)) {
+        item.size
+      } else {
+        null
+      }
+  return itemSize
+      ?: run {
+        val output = IntArray(2)
+        item.measure(constraints, output)
+        Size(output[0], output[1])
+      }
 }
 
 /**

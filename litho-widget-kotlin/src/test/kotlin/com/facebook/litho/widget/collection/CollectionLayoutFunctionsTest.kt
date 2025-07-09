@@ -16,6 +16,7 @@
 
 package com.facebook.litho.widget.collection
 
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -23,6 +24,7 @@ import com.facebook.litho.widget.CollectionLayoutScope
 import com.facebook.litho.widget.ComponentRenderInfo
 import com.facebook.litho.widget.LinearLayoutInfo
 import com.facebook.litho.widget.LithoCollectionItem
+import com.facebook.litho.widget.calculateLayout
 import com.facebook.litho.widget.getChildSizeConstraints
 import com.facebook.rendercore.Size
 import com.facebook.rendercore.SizeConstraints
@@ -353,6 +355,371 @@ class CollectionLayoutFunctionsTest {
     assertThat(result.maxWidth).isEqualTo(200)
     assertThat(result.hasExactHeight).isTrue
     assertThat(result.maxHeight).isEqualTo(500)
+  }
+
+  // endregion
+
+  // region CollectionLayoutFunctions::calculateLayout
+
+  // Tests calculateLayout when collection has exact size constraints
+  // Condition:
+  //  - Collection has exact size constraints (300x300) - both width and height are fixed
+  //  - Collection size is not pre-calculated (null)
+  //  - Empty list of items to layout
+  // Expectation:
+  //  - Should return exact size matching the constraints (300x300)
+  //  - Width and height should both be 300 regardless of item content
+  @Test
+  fun `calculateLayout with exact collection constraints`() {
+    val linearLayoutInfo = mock<LinearLayoutInfo>()
+    val scope =
+        CollectionLayoutScope(
+            layoutInfo = linearLayoutInfo,
+            collectionConstraints = SizeConstraints.exact(300, 300),
+            collectionSize = null,
+            isVertical = true,
+            wrapInMainAxis = false,
+            crossAxisWrapMode = CrossAxisWrapMode.NoWrap,
+        )
+
+    val result = scope.calculateLayout(emptyList())
+
+    assertThat(result).isNotNull
+    assertThat(result.width).isEqualTo(300)
+    assertThat(result.height).isEqualTo(300)
+  }
+
+  // Tests calculateLayout with maximum collection constraints and no wrapping
+  // Condition:
+  //  - Collection has maximum size constraints (maxWidth = 400, maxHeight = 500)
+  //  - Collection size is not pre-calculated (null)
+  //  - wrapInMainAxis = false: collection uses full available space in main axis
+  //  - CrossAxisWrapMode.NoWrap: collection uses full available space in cross axis
+  //  - Empty list of items to layout
+  // Expectation:
+  //  - Should return size matching the maximum constraints (400x500)
+  //  - Width and height should use full available space regardless of item content
+  @Test
+  fun `calculateLayout with maximum collection constraints and no wrapping`() {
+    val linearLayoutInfo = mock<LinearLayoutInfo>()
+    val scope =
+        CollectionLayoutScope(
+            layoutInfo = linearLayoutInfo,
+            collectionConstraints = SizeConstraints(maxWidth = 400, maxHeight = 500),
+            collectionSize = null,
+            isVertical = true,
+            wrapInMainAxis = false,
+            crossAxisWrapMode = CrossAxisWrapMode.NoWrap,
+        )
+
+    val result = scope.calculateLayout(emptyList())
+
+    assertThat(result).isNotNull
+    assertThat(result.width).isEqualTo(400)
+    assertThat(result.height).isEqualTo(500)
+  }
+
+  // Tests calculateLayout when cross-axis wrapping matches the first child's size
+  // Condition:
+  //  - CrossAxisWrapMode is MatchFirstChild - collection width should match first item
+  //  - Vertical orientation - items are stacked vertically, width varies per item
+  //  - Collection has bounded height constraint (maxHeight = 400) but flexible width
+  //  - Two items with different widths: first item 100px wide, second item 200px wide
+  // Expectation:
+  //  - Collection width should match the first item's width (100px), ignoring other items
+  //  - Collection height should use the maximum available height (400px)
+  //  - Final size should be 100x400, not influenced by the second item's 200px width
+  @Test
+  fun `calculateLayout with MatchFirstChild wrap mode vertical`() {
+    val linearLayoutInfo = mock<LinearLayoutInfo>()
+    whenever(linearLayoutInfo.createViewportFiller(any(), any())).thenReturn(null)
+
+    val scope =
+        spy(
+            CollectionLayoutScope(
+                layoutInfo = linearLayoutInfo,
+                collectionConstraints = SizeConstraints(maxHeight = 400),
+                collectionSize = null,
+                isVertical = true,
+                wrapInMainAxis = false,
+                crossAxisWrapMode = CrossAxisWrapMode.MatchFirstChild,
+            ))
+
+    // Create items with different sizes
+    val renderInfo1 = ComponentRenderInfo.createEmpty()
+    val firstItem = LithoCollectionItem(lithoTestRule.context, renderInfo = renderInfo1)
+    whenever(linearLayoutInfo.getChildWidthSpec(any(), eq(renderInfo1))).thenReturn(exactly(100))
+    val renderInfo2 = ComponentRenderInfo.createEmpty()
+    val secondItem = LithoCollectionItem(lithoTestRule.context, renderInfo = renderInfo2)
+    whenever(linearLayoutInfo.getChildWidthSpec(any(), eq(renderInfo2))).thenReturn(exactly(200))
+
+    val items = listOf(firstItem, secondItem)
+
+    val result = scope.calculateLayout(items)
+
+    assertThat(result).isNotNull
+    assertThat(result.width).isEqualTo(100)
+    assertThat(result.height).isEqualTo(400)
+  }
+
+  // Tests calculateLayout with MatchFirstChild wrap mode in horizontal orientation
+  // Condition:
+  //  - Collection is horizontally oriented (items arranged left-to-right)
+  //  - CrossAxisWrapMode.MatchFirstChild: collection's cross-axis size matches first item
+  //  - Collection has flexible width constraint (maxWidth = 400) but no fixed size
+  //  - Two items with different cross-axis (height) sizes: first=200px, second=100px
+  // Expectation:
+  //  - Collection width: uses maximum available width (400px) since width is main axis
+  //  - Collection height: matches first item's height (200px), ignoring second item's 100px
+  //  - Final size: 400x200 (width from constraint, height from first item)
+  @Test
+  fun `calculateLayout with MatchFirstChild wrap mode horizontal`() {
+    val linearLayoutInfo = mock<LinearLayoutInfo>()
+    whenever(linearLayoutInfo.createViewportFiller(any(), any())).thenReturn(null)
+    val scope =
+        CollectionLayoutScope(
+            layoutInfo = linearLayoutInfo,
+            collectionConstraints = SizeConstraints(maxWidth = 400),
+            collectionSize = null,
+            isVertical = false,
+            wrapInMainAxis = false,
+            crossAxisWrapMode = CrossAxisWrapMode.MatchFirstChild,
+        )
+
+    // Create items with different sizes
+    val renderInfo1 = ComponentRenderInfo.createEmpty()
+    val firstItem = LithoCollectionItem(lithoTestRule.context, renderInfo = renderInfo1)
+    whenever(linearLayoutInfo.getChildHeightSpec(any(), eq(renderInfo1))).thenReturn(exactly(200))
+    val renderInfo2 = ComponentRenderInfo.createEmpty()
+    val secondItem = LithoCollectionItem(lithoTestRule.context, renderInfo = renderInfo2)
+    whenever(linearLayoutInfo.getChildHeightSpec(any(), eq(renderInfo2))).thenReturn(exactly(100))
+
+    val items = listOf(firstItem, secondItem)
+
+    val result = scope.calculateLayout(items)
+
+    assertThat(result).isNotNull
+    assertThat(result.width).isEqualTo(400)
+    assertThat(result.height).isEqualTo(200)
+  }
+
+  // Tests calculateLayout with Dynamic wrap mode in vertical orientation
+  // Condition:
+  //  - Collection is vertically oriented (items stacked top-to-bottom)
+  //  - CrossAxisWrapMode.Dynamic: collection's cross-axis size adapts to largest item
+  //  - Collection has flexible height constraint (maxHeight = 400) but no fixed size
+  //  - Five items with varying cross-axis (width) sizes: 100px, 200px, 150px, 230px, 120px
+  // Expectation:
+  //  - Collection width: matches largest item width (230px from fourth item)
+  //  - Collection height: uses maximum available height (400px) since height is main axis
+  //  - Final size: 230x400 (width from largest item, height from constraint)
+  @Test
+  fun `calculateLayout with Dynamic wrap mode vertical`() {
+    val linearLayoutInfo =
+        spy(LinearLayoutInfo(LinearLayoutManager(lithoTestRule.context.androidContext)))
+
+    val scope =
+        spy(
+            CollectionLayoutScope(
+                layoutInfo = linearLayoutInfo,
+                collectionConstraints = SizeConstraints(maxHeight = 400),
+                collectionSize = null,
+                isVertical = true,
+                wrapInMainAxis = false,
+                crossAxisWrapMode = CrossAxisWrapMode.Dynamic,
+            ))
+
+    // Create items with different sizes
+    val renderInfo1 = ComponentRenderInfo.createEmpty()
+    val firstItem = spy(LithoCollectionItem(lithoTestRule.context, renderInfo = renderInfo1))
+    whenever(linearLayoutInfo.getChildHeightSpec(any(), eq(renderInfo1))).thenReturn(exactly(50))
+    whenever(firstItem.size).thenReturn(Size(100, 50))
+    val renderInfo2 = ComponentRenderInfo.createEmpty()
+    val secondItem = spy(LithoCollectionItem(lithoTestRule.context, renderInfo = renderInfo2))
+    whenever(linearLayoutInfo.getChildHeightSpec(any(), eq(renderInfo2))).thenReturn(exactly(75))
+    whenever(secondItem.size).thenReturn(Size(200, 75))
+    val renderInfo3 = ComponentRenderInfo.createEmpty()
+    val thirdItem = spy(LithoCollectionItem(lithoTestRule.context, renderInfo = renderInfo3))
+    whenever(linearLayoutInfo.getChildHeightSpec(any(), eq(renderInfo3))).thenReturn(exactly(60))
+    whenever(thirdItem.size).thenReturn(Size(150, 60))
+    val renderInfo4 = ComponentRenderInfo.createEmpty()
+    val fourthItem = spy(LithoCollectionItem(lithoTestRule.context, renderInfo = renderInfo4))
+    whenever(linearLayoutInfo.getChildHeightSpec(any(), eq(renderInfo4))).thenReturn(exactly(90))
+    whenever(fourthItem.size).thenReturn(Size(230, 90))
+    val renderInfo5 = ComponentRenderInfo.createEmpty()
+    val fifthItem = spy(LithoCollectionItem(lithoTestRule.context, renderInfo = renderInfo5))
+    whenever(linearLayoutInfo.getChildHeightSpec(any(), eq(renderInfo5))).thenReturn(exactly(40))
+    whenever(fifthItem.size).thenReturn(Size(120, 40))
+
+    val items = listOf(firstItem, secondItem, thirdItem, fourthItem, fifthItem)
+
+    val result = scope.calculateLayout(items)
+
+    assertThat(result).isNotNull
+    assertThat(result.width).isEqualTo(230) // Largest width
+    assertThat(result.height).isEqualTo(400)
+  }
+
+  // Tests calculateLayout with Dynamic wrap mode in horizontal orientation
+  // Condition:
+  //  - Collection is horizontally oriented (items arranged left-to-right)
+  //  - CrossAxisWrapMode.Dynamic: collection's cross-axis size adapts to largest item
+  //  - Collection has flexible width constraint (maxWidth = 400) but no fixed size
+  //  - Five items with varying cross-axis (height) sizes: 100px, 200px, 150px, 230px, 120px
+  // Expectation:
+  //  - Collection width: uses maximum available width (400px) since width is main axis
+  //  - Collection height: matches largest item height (230px from fourth item)
+  //  - Final size: 400x230 (width from constraint, height from largest item)
+  @Test
+  fun `calculateLayout with Dynamic wrap mode horizontal`() {
+    val linearLayoutInfo =
+        spy(
+            LinearLayoutInfo(
+                LinearLayoutManager(
+                    lithoTestRule.context.androidContext, LinearLayoutManager.HORIZONTAL, false)))
+
+    val scope =
+        spy(
+            CollectionLayoutScope(
+                layoutInfo = linearLayoutInfo,
+                collectionConstraints = SizeConstraints(maxWidth = 400),
+                collectionSize = null,
+                isVertical = false,
+                wrapInMainAxis = false,
+                crossAxisWrapMode = CrossAxisWrapMode.Dynamic,
+            ))
+
+    // Create items with different sizes
+    val renderInfo1 = ComponentRenderInfo.createEmpty()
+    val firstItem = spy(LithoCollectionItem(lithoTestRule.context, renderInfo = renderInfo1))
+    whenever(linearLayoutInfo.getChildWidthSpec(any(), eq(renderInfo1))).thenReturn(exactly(50))
+    whenever(firstItem.size).thenReturn(Size(50, 100))
+    val renderInfo2 = ComponentRenderInfo.createEmpty()
+    val secondItem = spy(LithoCollectionItem(lithoTestRule.context, renderInfo = renderInfo2))
+    whenever(linearLayoutInfo.getChildWidthSpec(any(), eq(renderInfo2))).thenReturn(exactly(75))
+    whenever(secondItem.size).thenReturn(Size(75, 200))
+    val renderInfo3 = ComponentRenderInfo.createEmpty()
+    val thirdItem = spy(LithoCollectionItem(lithoTestRule.context, renderInfo = renderInfo3))
+    whenever(linearLayoutInfo.getChildWidthSpec(any(), eq(renderInfo3))).thenReturn(exactly(60))
+    whenever(thirdItem.size).thenReturn(Size(60, 150))
+    val renderInfo4 = ComponentRenderInfo.createEmpty()
+    val fourthItem = spy(LithoCollectionItem(lithoTestRule.context, renderInfo = renderInfo4))
+    whenever(linearLayoutInfo.getChildWidthSpec(any(), eq(renderInfo4))).thenReturn(exactly(90))
+    whenever(fourthItem.size).thenReturn(Size(90, 230))
+    val renderInfo5 = ComponentRenderInfo.createEmpty()
+    val fifthItem = spy(LithoCollectionItem(lithoTestRule.context, renderInfo = renderInfo5))
+    whenever(linearLayoutInfo.getChildWidthSpec(any(), eq(renderInfo5))).thenReturn(exactly(40))
+    whenever(fifthItem.size).thenReturn(Size(40, 120))
+
+    val items = listOf(firstItem, secondItem, thirdItem, fourthItem, fifthItem)
+
+    val result = scope.calculateLayout(items)
+
+    assertThat(result).isNotNull
+    assertThat(result.width).isEqualTo(400)
+    assertThat(result.height).isEqualTo(230) // Largest height
+  }
+
+  // Tests calculateLayout with main-axis wrapping enabled in vertical orientation
+  // Condition:
+  //  - Collection is vertically oriented (items stacked top-to-bottom)
+  //  - CrossAxisWrapMode.NoWrap: collection width is constrained, not adaptive
+  //  - wrapInMainAxis = true: collection height wraps to fit content instead of using max
+  // constraint
+  //  - Collection has size constraints (maxWidth = 300, maxHeight = 400)
+  //  - Two items with heights 50px and 75px, both using full width (300px)
+  // Expectation:
+  //  - Collection width: uses maximum available width (300px) since cross-axis doesn't wrap
+  //  - Collection height: wraps to sum of item heights (50 + 75 = 125px), ignoring maxHeight
+  // constraint
+  //  - Final size: 300x125 (width from constraint, height from content wrapping)
+  @Test
+  fun `calculateLayout with wrapInMainAxis and vertical`() {
+    val linearLayoutInfo =
+        spy(LinearLayoutInfo(LinearLayoutManager(lithoTestRule.context.androidContext)))
+
+    val scope =
+        spy(
+            CollectionLayoutScope(
+                layoutInfo = linearLayoutInfo,
+                collectionConstraints = SizeConstraints(maxWidth = 300, maxHeight = 400),
+                collectionSize = null,
+                isVertical = true,
+                wrapInMainAxis = true,
+                crossAxisWrapMode = CrossAxisWrapMode.NoWrap,
+            ))
+
+    // Create items with different sizes
+    val renderInfo1 = ComponentRenderInfo.createEmpty()
+    val firstItem = spy(LithoCollectionItem(lithoTestRule.context, renderInfo = renderInfo1))
+    whenever(linearLayoutInfo.getChildWidthSpec(any(), eq(renderInfo1))).thenReturn(exactly(300))
+    whenever(linearLayoutInfo.getChildHeightSpec(any(), eq(renderInfo1))).thenReturn(exactly(50))
+    whenever(firstItem.size).thenReturn(Size(300, 50))
+    val renderInfo2 = ComponentRenderInfo.createEmpty()
+    val secondItem = spy(LithoCollectionItem(lithoTestRule.context, renderInfo = renderInfo2))
+    whenever(linearLayoutInfo.getChildWidthSpec(any(), eq(renderInfo2))).thenReturn(exactly(300))
+    whenever(linearLayoutInfo.getChildHeightSpec(any(), eq(renderInfo2))).thenReturn(exactly(75))
+    whenever(secondItem.size).thenReturn(Size(300, 75))
+
+    val items = listOf(firstItem, secondItem)
+
+    val result = scope.calculateLayout(items)
+
+    assertThat(result).isNotNull
+    assertThat(result.width).isEqualTo(300)
+    assertThat(result.height).isEqualTo(125) // Sum of item heights: 50 + 75
+  }
+
+  // Tests calculateLayout with main-axis wrapping enabled in horizontal orientation
+  // Condition:
+  //  - Collection is horizontally oriented (items arranged left-to-right)
+  //  - CrossAxisWrapMode.NoWrap: collection height is constrained, not adaptive
+  //  - wrapInMainAxis = true: collection width wraps to fit content instead of using max constraint
+  //  - Collection has size constraints (maxWidth = 400, maxHeight = 300)
+  //  - Two items with widths 50px and 75px, both using full height (300px)
+  // Expectation:
+  //  - Collection width: wraps to sum of item widths (50 + 75 = 125px), ignoring maxWidth
+  // constraint
+  //  - Collection height: uses maximum available height (300px) since cross-axis doesn't wrap
+  //  - Final size: 125x300 (width from content wrapping, height from constraint)
+  @Test
+  fun `calculateLayout with wrapInMainAxis and horizontal`() {
+    val linearLayoutInfo =
+        spy(
+            LinearLayoutInfo(
+                LinearLayoutManager(
+                    lithoTestRule.context.androidContext, LinearLayoutManager.HORIZONTAL, false)))
+
+    val scope =
+        spy(
+            CollectionLayoutScope(
+                layoutInfo = linearLayoutInfo,
+                collectionConstraints = SizeConstraints(maxWidth = 400, maxHeight = 300),
+                collectionSize = null,
+                isVertical = false,
+                wrapInMainAxis = true,
+                crossAxisWrapMode = CrossAxisWrapMode.NoWrap,
+            ))
+
+    // Create items with different sizes
+    val renderInfo1 = ComponentRenderInfo.createEmpty()
+    val firstItem = spy(LithoCollectionItem(lithoTestRule.context, renderInfo = renderInfo1))
+    whenever(linearLayoutInfo.getChildWidthSpec(any(), eq(renderInfo1))).thenReturn(exactly(50))
+    whenever(linearLayoutInfo.getChildHeightSpec(any(), eq(renderInfo1))).thenReturn(exactly(300))
+    whenever(firstItem.size).thenReturn(Size(50, 300))
+    val renderInfo2 = ComponentRenderInfo.createEmpty()
+    val secondItem = spy(LithoCollectionItem(lithoTestRule.context, renderInfo = renderInfo2))
+    whenever(linearLayoutInfo.getChildWidthSpec(any(), eq(renderInfo2))).thenReturn(exactly(75))
+    whenever(linearLayoutInfo.getChildHeightSpec(any(), eq(renderInfo2))).thenReturn(exactly(300))
+    whenever(secondItem.size).thenReturn(Size(75, 300))
+
+    val items = listOf(firstItem, secondItem)
+
+    val result = scope.calculateLayout(items)
+
+    assertThat(result).isNotNull
+    assertThat(result.width).isEqualTo(125) // Sum of item widths: 50 + 75
+    assertThat(result.height).isEqualTo(300)
   }
 
   // endregion
