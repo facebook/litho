@@ -56,24 +56,37 @@ fun ItemSizeConstraintsProviderScope.getChildSizeConstraints(
             }
         resolvedWidthSpec to resolvedHeightSpec
       } else {
-        // We haven't measured the collection yet, so we need to use the parent constraints to
-        // measure the child for the first pass.
+        // 1) We haven't measured the collection yet, delegating to the layout info to measure the
+        // child for the first pass.
+        // 2) We've measured the collection but the wrap mode is dynamic, so we need to ensure the
+        // child is aligned with the size of the collection.
+        val shouldMeasureWidthDynamically = (isDynamicSize && isVertical)
+        val size = item.size
         val resolvedWidthSpec =
-            if (isDynamicSize && isVertical) {
-              item.size?.let { MeasureSpecUtils.exactly(max(collectionSize?.width ?: 0, it.width)) }
-                  ?: MeasureSpecUtils.unspecified()
+            if (shouldMeasureWidthDynamically) {
+              if (size == null) {
+                // We haven't measured the child yet, so we need to measure its actual size.
+                MeasureSpecUtils.unspecified()
+              } else {
+                // We've known the size of the child, aligning with the size of the collection.
+                MeasureSpecUtils.exactly(max(collectionSize?.width ?: 0, size.width))
+              }
             } else {
               layoutInfo.getChildWidthSpec(collectionConstraints.toWidthSpec(), item.renderInfo)
             }
+        val shouldMeasureHeightDynamically = (isDynamicSize && !isVertical)
         val resolvedHeightSpec =
-            if (isDynamicSize && !isVertical) {
-              item.size?.let {
-                MeasureSpecUtils.exactly(max(collectionSize?.height ?: 0, it.height))
-              } ?: MeasureSpecUtils.unspecified()
+            if (shouldMeasureHeightDynamically) {
+              if (size == null) {
+                // We haven't measured the child yet, so we need to measure its actual size.
+                MeasureSpecUtils.unspecified()
+              } else {
+                // We've known the size of the child, aligning with the size of the collection.
+                MeasureSpecUtils.exactly(max(collectionSize?.height ?: 0, size.height))
+              }
             } else {
               layoutInfo.getChildHeightSpec(collectionConstraints.toHeightSpec(), item.renderInfo)
             }
-
         resolvedWidthSpec to resolvedHeightSpec
       }
 
