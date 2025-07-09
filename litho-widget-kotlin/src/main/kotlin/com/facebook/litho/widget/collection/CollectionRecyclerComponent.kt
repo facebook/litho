@@ -379,6 +379,10 @@ class CollectionRecyclerComponent(
           } else {
             StaggeredGridLayoutManager.GAP_HANDLING_NONE
           }
+      val enableItemPrefetch =
+          config.recyclerBinderConfiguration.recyclerBinderConfig.recyclerViewItemPrefetch
+      val itemViewCacheSize =
+          config.recyclerBinderConfiguration.recyclerBinderConfig.itemViewCacheSize
 
       return useStateWithDeps(
               mainAxisWrapContent,
@@ -390,7 +394,9 @@ class CollectionRecyclerComponent(
               reverseLayout,
               stackFromEnd,
               spanCount,
-              gapStrategy) {
+              gapStrategy,
+              enableItemPrefetch,
+              itemViewCacheSize) {
                 CollectionLayoutConfig(
                     mainAxisWrapContent = mainAxisWrapContent,
                     crossAxisWrapMode = crossAxisWrapMode,
@@ -401,7 +407,10 @@ class CollectionRecyclerComponent(
                     reverseLayout = reverseLayout,
                     stackFromEnd = stackFromEnd,
                     spanCount = spanCount,
-                    gapStrategy = gapStrategy)
+                    gapStrategy = gapStrategy,
+                    enableItemPrefetch = enableItemPrefetch,
+                    itemViewCacheSize = itemViewCacheSize,
+                )
               }
           .value
     }
@@ -986,9 +995,13 @@ private fun PrimitiveComponentScope.CollectionPrimitiveViewMountBehavior(
     }
 
     withDescription("layout-manager") {
-      bind(layoutInfo) { sectionsRecyclerView ->
+      bind(layoutInfo, layoutConfig.enableItemPrefetch, layoutConfig.itemViewCacheSize) {
+          sectionsRecyclerView ->
         val recyclerView = sectionsRecyclerView.requireLithoRecyclerView()
-        recyclerView.layoutManager = layoutInfo.getLayoutManager()
+        val layoutManager = layoutInfo.getLayoutManager()
+        layoutManager.isItemPrefetchEnabled = layoutConfig.enableItemPrefetch
+        recyclerView.setItemViewCacheSize(layoutConfig.itemViewCacheSize)
+        recyclerView.layoutManager = layoutManager
         onUnbind { recyclerView.layoutManager = null }
       }
     }
@@ -1085,6 +1098,32 @@ private data class CollectionLayoutConfig(
     val snapHelper: SnapHelper? = null,
     @SnapMode val snapMode: Int = SnapUtil.SNAP_NONE,
     val rangeRatio: Float = DEFAULT_RANGE_RATIO,
+    /**
+     * Set whether item prefetch should be enabled on the underlying RecyclerView.LayoutManager.
+     * Defaults to false.
+     *
+     * <p>ItemPrefetching feature of RecyclerView clashes with RecyclerBinder's compute range
+     * optimization and in certain scenarios (like sticky header) it might reset ComponentTree of
+     * LithoView while it is still on screen making it render blank or zero height.
+     *
+     * <p>As ItemPrefetching is built on top of item view cache, please do remember to set a proper
+     * cache size if you want to enable this feature. Otherwise, prefetched item will be thrown into
+     * the recycler pool immediately.
+     *
+     * See [RecyclerView.LayoutManager.setItemPrefetchEnabled].
+     */
+    @JvmField val enableItemPrefetch: Boolean = true,
+    /**
+     * Set the number of offscreen views to retain before adding them to the potentially shared
+     * recycled view pool.
+     *
+     * <p>The offscreen view cache stays aware of changes in the attached adapter, allowing a
+     * LayoutManager to reuse those views unmodified without needing to return to the adapter to
+     * rebind them.
+     *
+     * See [RecyclerView.setItemViewCacheSize].
+     */
+    @JvmField val itemViewCacheSize: Int = DEFAULT_CACHE_SIZE,
 
     // Configs that requires regenerating a new layout info
     val orientation: CollectionOrientation = CollectionOrientation.VERTICAL,
@@ -1097,5 +1136,7 @@ private data class CollectionLayoutConfig(
   companion object {
     // Default range ratio for the collection
     private const val DEFAULT_RANGE_RATIO: Float = 2f
+    // Default item view cache size for the collection
+    private const val DEFAULT_CACHE_SIZE: Int = 2
   }
 }
