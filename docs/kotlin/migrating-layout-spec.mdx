@@ -31,13 +31,7 @@ This guide provides detailed instructions for migrating from the Litho LayoutSpe
     2. Run the conversion script for the Layout spec:
 
 ```
-.fbandroid/scripts/litho/convert_spec_to_kotlin_api.sh <spec.kt>
-```
-
-If automatic conversion fails, use the `--save` option to save changes and manually fix errors:
-
-```
-.fbandroid/scripts/litho/convert_spec_to_kotlin_api.sh <spec.kt> --save
+.fbandroid/scripts/litho/convert_spec_to_kotlin_api.sh <spec.kt> --commit-and-publish
 ```
 
 3. Testing:
