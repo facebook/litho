@@ -112,14 +112,14 @@ object ThreadUtils {
     if (threadPriority == originalThreadPriority) {
       // We were unable to raise the priority of the thread at all.
       DebugInfoReporter.report(category = "ThreadUtilsPriorityInversion") {
-        this["type"] = "UnableToRaise"
+        this["event"] = "UnableToRaise"
         this["originalThreadPriority"] = "$originalThreadPriority"
         this["targetThreadPriority"] = "$targetThreadPriority"
       }
     } else if (threadPriority > targetThreadPriority) {
       // We were able to raise the priority but not at the desired level.
       DebugInfoReporter.report(category = "ThreadUtilsPriorityInversion") {
-        this["type"] = "RaisedButNotAtDesiredLevel"
+        this["event"] = "RaisedButNotAtDesiredLevel"
         this["originalThreadPriority"] = "$originalThreadPriority"
         this["targetThreadPriority"] = "$targetThreadPriority"
         this["threadPriority"] = "$threadPriority"

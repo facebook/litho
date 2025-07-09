@@ -343,7 +343,7 @@ abstract class TreeFuture<T : PotentiallyPartialResult>(
         // Log the scenario where the thread priority wasn't actually changed
         if (raisedThreadPriority == originalThreadPriority) {
           DebugInfoReporter.report(category = "TreeFuturePriorityInversion") {
-            this["type"] = "UnnecessaryResetting"
+            this["event"] = "UnnecessaryResetting"
           }
         }
 
@@ -359,7 +359,7 @@ abstract class TreeFuture<T : PotentiallyPartialResult>(
             // again.
             if (currentThreadPriority != raisedThreadPriority) {
               DebugInfoReporter.report(category = "TreeFuturePriorityInversion") {
-                this["type"] = "ResettingAfterExternalModification"
+                this["event"] = "ResettingAfterExternalModification"
                 this["originalThreadPriority"] = "$originalThreadPriority"
                 this["raisedThreadPriority"] = "$raisedThreadPriority"
                 this["currentThreadPriority"] = "$currentThreadPriority"
@@ -368,11 +368,11 @@ abstract class TreeFuture<T : PotentiallyPartialResult>(
           }
         } catch (ignored: IllegalArgumentException) {
           DebugInfoReporter.report(category = "TreeFuturePriorityInversion") {
-            this["type"] = "IllegalArgumentExceptionWhenResetting"
+            this["event"] = "IllegalArgumentExceptionWhenResetting"
           }
         } catch (ignored: SecurityException) {
           DebugInfoReporter.report(category = "TreeFuturePriorityInversion") {
-            this["type"] = "SecurityExceptionWhenResetting"
+            this["event"] = "SecurityExceptionWhenResetting"
           }
         }
       }
