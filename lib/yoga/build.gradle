@@ -41,7 +41,7 @@ dependencies {
 // Our current NDK setup only gets us half-way there to a way to run Yoga
 // locally for unit tests. We're reusing the buck builds for now and hopefully
 // someone (maybe you!) will fix this and get CMake to help us out.
-task buckBuild(type: Exec) {
+tasks.register('buckBuild', Exec) {
     workingDir rootDir
     environment BUCKVERSION: System.getenv('BUCKVERSION') ?: 'last'
     def buckPath = System.getenv('BUCK_PATH')
