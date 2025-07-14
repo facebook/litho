@@ -59,12 +59,12 @@ public class VisibilityEventsHelper {
           dispatch(getEventHandler(visibilityOutput, "Invisible"), "Invisible");
           return true;
         } else if (visibilityEventType == FocusedVisibleEvent.class
-            && getEventHandler(visibilityOutput, "Focused") != null) {
-          dispatch(getEventHandler(visibilityOutput, "Focused"), "Focused");
+            && getEventHandler(visibilityOutput, "FocusedVisible") != null) {
+          dispatch(getEventHandler(visibilityOutput, "FocusedVisible"), "Focused");
           return true;
         } else if (visibilityEventType == UnfocusedVisibleEvent.class
-            && getEventHandler(visibilityOutput, "Unfocused") != null) {
-          dispatch(getEventHandler(visibilityOutput, "Unfocused"), "Unfocused");
+            && getEventHandler(visibilityOutput, "UnfocusedVisible") != null) {
+          dispatch(getEventHandler(visibilityOutput, "UnfocusedVisible"), "Unfocused");
           return true;
         } else if (visibilityEventType == FullImpressionVisibleEvent.class
             && getEventHandler(visibilityOutput, "FullImpression") != null) {
@@ -91,7 +91,7 @@ public class VisibilityEventsHelper {
   }
 
   private static Function<Void> getEventHandler(Object layoutState, String name) {
-    return Whitebox.invokeMethod(layoutState, "get" + name + "EventHandler");
+    return Whitebox.invokeMethod(layoutState, "getOn" + name);
   }
 
   private static void dispatch(Object eventHandler, String name) throws ClassNotFoundException {

@@ -334,14 +334,12 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
           continue;
         }
 
-        final Function<Void> visibleHandler = visibilityOutput.getVisibleEventHandler();
-        final Function<Void> focusedHandler = visibilityOutput.getFocusedEventHandler();
-        final Function<Void> unfocusedHandler = visibilityOutput.getUnfocusedEventHandler();
-        final Function<Void> fullImpressionHandler =
-            visibilityOutput.getFullImpressionEventHandler();
-        final Function<Void> invisibleHandler = visibilityOutput.getInvisibleEventHandler();
-        final Function<Void> visibilityChangedHandler =
-            visibilityOutput.getVisibilityChangedEventHandler();
+        final Function<Void> visibleHandler = visibilityOutput.getOnVisible();
+        final Function<Void> focusedHandler = visibilityOutput.getOnFocusedVisible();
+        final Function<Void> unfocusedHandler = visibilityOutput.getOnUnfocusedVisible();
+        final Function<Void> fullImpressionHandler = visibilityOutput.getOnFullImpression();
+        final Function<Void> invisibleHandler = visibilityOutput.getOnInvisible();
+        final Function<Void> visibilityChangedHandler = visibilityOutput.getOnVisibilityChange();
 
         final boolean isCurrentlyVisible =
             boundsIntersect

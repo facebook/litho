@@ -605,24 +605,24 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
             mountState.getContentById(visibilityOutput.renderUnitId)
         else null
     if (visibilityEventType == VisibleEvent::class.java) {
-      if (visibilityOutput.visibleEventHandler != null) {
-        dispatchOnVisible(requireNotNull(visibilityOutput.visibleEventHandler), content)
+      if (visibilityOutput.onVisible != null) {
+        dispatchOnVisible(requireNotNull(visibilityOutput.onVisible), content)
       }
     } else if (visibilityEventType == InvisibleEvent::class.java) {
-      if (visibilityOutput.invisibleEventHandler != null) {
-        dispatchOnInvisible(requireNotNull(visibilityOutput.invisibleEventHandler))
+      if (visibilityOutput.onInvisible != null) {
+        dispatchOnInvisible(requireNotNull(visibilityOutput.onInvisible))
       }
     } else if (visibilityEventType == FocusedVisibleEvent::class.java) {
-      if (visibilityOutput.focusedEventHandler != null) {
-        dispatchOnFocused(requireNotNull(visibilityOutput.focusedEventHandler))
+      if (visibilityOutput.onFocusedVisible != null) {
+        dispatchOnFocused(requireNotNull(visibilityOutput.onFocusedVisible))
       }
     } else if (visibilityEventType == UnfocusedVisibleEvent::class.java) {
-      if (visibilityOutput.unfocusedEventHandler != null) {
-        dispatchOnUnfocused(requireNotNull(visibilityOutput.unfocusedEventHandler))
+      if (visibilityOutput.onUnfocusedVisible != null) {
+        dispatchOnUnfocused(requireNotNull(visibilityOutput.onUnfocusedVisible))
       }
     } else if (visibilityEventType == FullImpressionVisibleEvent::class.java) {
-      if (visibilityOutput.fullImpressionEventHandler != null) {
-        dispatchOnFullImpression(requireNotNull(visibilityOutput.fullImpressionEventHandler))
+      if (visibilityOutput.onFullImpression != null) {
+        dispatchOnFullImpression(requireNotNull(visibilityOutput.onFullImpression))
       }
     }
   }

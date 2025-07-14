@@ -176,7 +176,7 @@ class LayoutStateCalculateVisibilityOutputsTest {
     // Check number of Components with VisibleEvent handlers.
     var visibleHandlerCount = 0
     for (i in 0 until layoutState.visibilityOutputCount) {
-      if (layoutState.getVisibilityOutputAt(i).visibleEventHandler != null) {
+      if (layoutState.getVisibilityOutputAt(i).onVisible != null) {
         visibleHandlerCount += 1
       }
     }

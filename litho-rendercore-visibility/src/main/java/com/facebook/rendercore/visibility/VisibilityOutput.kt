@@ -38,12 +38,12 @@ class VisibilityOutput(
     val visibleHeightRatio: Float,
     val visibleWidthRatio: Float,
     val tag: String?,
-    val visibleEventHandler: Function<Void?>?,
-    val invisibleEventHandler: Function<Void?>?,
-    val focusedEventHandler: Function<Void?>?,
-    val unfocusedEventHandler: Function<Void?>?,
-    val fullImpressionEventHandler: Function<Void?>?,
-    val visibilityChangedEventHandler: Function<Void?>?
+    val onVisible: Function<Void?>?,
+    val onInvisible: Function<Void?>?,
+    val onFocusedVisible: Function<Void?>?,
+    val onUnfocusedVisible: Function<Void?>?,
+    val onFullImpression: Function<Void?>?,
+    val onVisibilityChange: Function<Void?>?
 ) {
 
   private var focusedRatio = 0f
