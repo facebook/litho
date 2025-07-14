@@ -282,12 +282,6 @@ internal constructor(
     @JvmField var enableRaisePriorityToMain: Boolean = false
 
     /**
-     * This flag will prevent attempting to reset thread priority when the original priority raising
-     * failed to succeed.
-     */
-    @JvmField var enablePreventPriorityResetOnRaiseFailure: Boolean = false
-
-    /**
      * This flag will prevent attempting to reset thread priority when the original priority
      * lowering was subsequently changed somewhere else.
      */

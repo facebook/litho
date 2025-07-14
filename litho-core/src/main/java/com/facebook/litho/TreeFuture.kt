@@ -301,9 +301,7 @@ abstract class TreeFuture<T : PotentiallyPartialResult>(
       val threadPriorityPair = tryRaiseThreadPriority(runningThreadId, desiredPriority)
       originalThreadPriority = threadPriorityPair.first
       raisedThreadPriority = threadPriorityPair.second
-      didRaiseThreadPriority =
-          originalThreadPriority != raisedThreadPriority ||
-              !ComponentsConfiguration.enablePreventPriorityResetOnRaiseFailure
+      didRaiseThreadPriority = originalThreadPriority != raisedThreadPriority
     } else {
       originalThreadPriority = Process.THREAD_PRIORITY_DEFAULT
       raisedThreadPriority = Process.THREAD_PRIORITY_DEFAULT
@@ -340,13 +338,6 @@ abstract class TreeFuture<T : PotentiallyPartialResult>(
       }
       onWaitEnd(shouldTrace, false)
       if (didRaiseThreadPriority) {
-        // Log the scenario where the thread priority wasn't actually changed
-        if (raisedThreadPriority == originalThreadPriority) {
-          DebugInfoReporter.report(category = "TreeFuturePriorityInversion") {
-            this["event"] = "UnnecessaryResetting"
-          }
-        }
-
         // Reset the running thread's priority after we're unblocked.
         try {
           val currentThreadPriority = Process.getThreadPriority(runningThreadId)
