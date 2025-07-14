@@ -12,6 +12,7 @@ litho_android_library(
     srcs = glob([
         "**/*.kt",
     ]),
+    abi_generation_mode = "source_only",
     autoglob = False,
     feature = FBApp_UIFrameworks_Litho_Litho,
     k2 = True,
