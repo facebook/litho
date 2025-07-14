@@ -38,12 +38,12 @@ class VisibilityOutput(
     val visibleHeightRatio: Float,
     val visibleWidthRatio: Float,
     val tag: String?,
-    val onVisible: Function<Void?>?,
-    val onInvisible: Function<Void?>?,
-    val onFocusedVisible: Function<Void?>?,
-    val onUnfocusedVisible: Function<Void?>?,
-    val onFullImpression: Function<Void?>?,
-    val onVisibilityChange: Function<Void?>?
+    val onVisible: VisibilityEventCallbackData?,
+    val onInvisible: VisibilityEventCallbackData?,
+    val onFocusedVisible: VisibilityEventCallbackData?,
+    val onUnfocusedVisible: VisibilityEventCallbackData?,
+    val onFullImpression: VisibilityEventCallbackData?,
+    val onVisibilityChange: VisibilityEventCallbackData?
 ) {
 
   private var focusedRatio = 0f
@@ -55,12 +55,12 @@ class VisibilityOutput(
       visibleHeightRatio: Float,
       visibleWidthRatio: Float,
       tag: String?,
-      visibleEventHandler: Function<Void?>?,
-      invisibleEventHandler: Function<Void?>?,
-      focusedEventHandler: Function<Void?>?,
-      unfocusedEventHandler: Function<Void?>?,
-      fullImpressionEventHandler: Function<Void?>?,
-      visibilityChangedEventHandler: Function<Void?>?
+      onVisible: VisibilityEventCallbackData?,
+      onInvisible: VisibilityEventCallbackData?,
+      onFocusedVisible: VisibilityEventCallbackData?,
+      onUnfocusedVisible: VisibilityEventCallbackData?,
+      onFullImpression: VisibilityEventCallbackData?,
+      onVisibilityChange: VisibilityEventCallbackData?
   ) : this(
       id,
       key,
@@ -70,12 +70,12 @@ class VisibilityOutput(
       visibleHeightRatio,
       visibleWidthRatio,
       tag,
-      visibleEventHandler,
-      invisibleEventHandler,
-      focusedEventHandler,
-      unfocusedEventHandler,
-      fullImpressionEventHandler,
-      visibilityChangedEventHandler)
+      onVisible,
+      onInvisible,
+      onFocusedVisible,
+      onUnfocusedVisible,
+      onFullImpression,
+      onVisibilityChange)
 
   val visibilityTop: Float
     get() =
@@ -146,3 +146,9 @@ class VisibilityOutput(
     fun createVisibilityOutput(result: R, absoluteBounds: Rect): VisibilityOutput?
   }
 }
+
+class VisibilityEventCallbackData(
+    widthRatio: Float,
+    heightRatio: Float,
+    val callback: Function<Void?>,
+)

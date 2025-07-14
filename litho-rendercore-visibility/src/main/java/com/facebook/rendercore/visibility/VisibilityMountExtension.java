@@ -31,7 +31,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.Nullsafe;
-import com.facebook.rendercore.Function;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.RenderCoreSystrace;
@@ -334,12 +333,16 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
           continue;
         }
 
-        final Function<Void> visibleHandler = visibilityOutput.getOnVisible();
-        final Function<Void> focusedHandler = visibilityOutput.getOnFocusedVisible();
-        final Function<Void> unfocusedHandler = visibilityOutput.getOnUnfocusedVisible();
-        final Function<Void> fullImpressionHandler = visibilityOutput.getOnFullImpression();
-        final Function<Void> invisibleHandler = visibilityOutput.getOnInvisible();
-        final Function<Void> visibilityChangedHandler = visibilityOutput.getOnVisibilityChange();
+        final @Nullable VisibilityEventCallbackData onVisible = visibilityOutput.getOnVisible();
+        final @Nullable VisibilityEventCallbackData onFocusedVisible =
+            visibilityOutput.getOnFocusedVisible();
+        final @Nullable VisibilityEventCallbackData onUnfocusedVisible =
+            visibilityOutput.getOnUnfocusedVisible();
+        final @Nullable VisibilityEventCallbackData onFullImpression =
+            visibilityOutput.getOnFullImpression();
+        final @Nullable VisibilityEventCallbackData onInvisible = visibilityOutput.getOnInvisible();
+        final @Nullable VisibilityEventCallbackData onVisibilityChange =
+            visibilityOutput.getOnVisibilityChange();
 
         final boolean isCurrentlyVisible =
             boundsIntersect
@@ -349,8 +352,8 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
 
           // If we did a relayout due to e.g. a state update then the handlers will have changed,
           // so we should keep them up to date.
-          visibilityItem.setUnfocusedHandler(unfocusedHandler);
-          visibilityItem.setInvisibleHandler(invisibleHandler);
+          visibilityItem.setUnfocusedHandler(onUnfocusedVisible);
+          visibilityItem.setInvisibleHandler(onInvisible);
 
           if (!isCurrentlyVisible) {
             // Either the component is invisible now, but used to be visible, or the key on the
@@ -358,15 +361,16 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
             // component.
             maybeDispatchOnInvisible(extensionState.getRenderStateId(), visibilityItem);
 
-            if (visibilityChangedHandler != null) {
+            if (onVisibilityChange != null) {
               VisibilityUtils.dispatchOnVisibilityChanged(
-                  visibilityChangedHandler, 0, 0, 0, 0, 0, 0, 0f, 0f);
+                  onVisibilityChange.getCallback(), 0, 0, 0, 0, 0, 0, 0f, 0f);
             }
 
             if (visibilityItem.isInFocusedRange()) {
               visibilityItem.setFocusedRange(false);
               if (visibilityItem.getUnfocusedHandler() != null) {
-                VisibilityUtils.dispatchOnUnfocused(visibilityItem.getUnfocusedHandler());
+                VisibilityUtils.dispatchOnUnfocused(
+                    visibilityItem.getUnfocusedHandler().getCallback());
               }
             }
 
@@ -385,9 +389,9 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
             visibilityItem =
                 new VisibilityItem(
                     globalKey,
-                    invisibleHandler,
-                    unfocusedHandler,
-                    visibilityChangedHandler,
+                    onInvisible,
+                    onUnfocusedVisible,
+                    onVisibilityChange,
                     visibilityOutput.getKey(),
                     visibilityOutput.renderUnitId,
                     visibilityOutput.getBounds());
@@ -396,7 +400,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
             visibilityItem.setWasFullyVisible(isFullyVisible);
             state.mVisibilityIdToItemMap.put(visibilityOutputId, visibilityItem);
 
-            if (visibleHandler != null) {
+            if (onVisible != null) {
               final Object content =
                   visibilityOutput.hasMountableContent
                       ? getContentById(extensionState, visibilityOutput.renderUnitId)
@@ -413,7 +417,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
                     createVisibilityDebugAttributes(visibilityItem));
               }
 
-              VisibilityUtils.dispatchOnVisible(visibleHandler, content);
+              VisibilityUtils.dispatchOnVisible(onVisible.getCallback(), content);
 
               if (traceIdentifier != null) {
                 DebugEventDispatcher.endTrace(traceIdentifier);
@@ -422,9 +426,9 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
           }
 
           Rect transformedViewportRect = null;
-          if (focusedHandler != null
-              || unfocusedHandler != null
-              || visibilityChangedHandler != null) {
+          if (onFocusedVisible != null
+              || onUnfocusedVisible != null
+              || onVisibilityChange != null) {
             if (shouldUseTransformedVisibleRect && transformer != null) {
               final Host host = getRootHost(extensionState);
               if (host != null && (host.getParent() instanceof View)) {
@@ -435,7 +439,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
           }
 
           // Check if the component has entered or exited the focused range.
-          if (focusedHandler != null || unfocusedHandler != null) {
+          if (onFocusedVisible != null || onUnfocusedVisible != null) {
             if (isInFocusedRange(
                 extensionState,
                 visibilityOutputBounds,
@@ -444,30 +448,30 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
                 transformedViewportRect)) {
               if (!visibilityItem.isInFocusedRange()) {
                 visibilityItem.setFocusedRange(true);
-                if (focusedHandler != null) {
-                  VisibilityUtils.dispatchOnFocused(focusedHandler);
+                if (onFocusedVisible != null) {
+                  VisibilityUtils.dispatchOnFocused(onFocusedVisible.getCallback());
                 }
               }
             } else {
               if (visibilityItem.isInFocusedRange()) {
                 visibilityItem.setFocusedRange(false);
-                if (unfocusedHandler != null) {
-                  VisibilityUtils.dispatchOnUnfocused(unfocusedHandler);
+                if (onUnfocusedVisible != null) {
+                  VisibilityUtils.dispatchOnUnfocused(onUnfocusedVisible.getCallback());
                 }
               }
             }
           }
           // If the component has not entered the full impression range yet, make sure to update the
           // information about the visible edges.
-          if (fullImpressionHandler != null && !visibilityItem.isInFullImpressionRange()) {
+          if (onFullImpression != null && !visibilityItem.isInFullImpressionRange()) {
             visibilityItem.setVisibleEdges(visibilityOutputBounds, intersection);
 
             if (visibilityItem.isInFullImpressionRange()) {
-              VisibilityUtils.dispatchOnFullImpression(fullImpressionHandler);
+              VisibilityUtils.dispatchOnFullImpression(onFullImpression.getCallback());
             }
           }
 
-          if (visibilityChangedHandler != null) {
+          if (onVisibilityChange != null) {
             final int visibleWidth = getVisibleWidth(intersection);
             final int visibleHeight = getVisibleHeight(intersection);
             int rootHostViewWidth = getRootHostViewWidth(extensionState);
@@ -478,7 +482,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
             }
 
             VisibilityUtils.dispatchOnVisibilityChanged(
-                visibilityChangedHandler,
+                onVisibilityChange.getCallback(),
                 getVisibleTop(visibilityOutputBounds, intersection),
                 getVisibleLeft(visibilityOutputBounds, intersection),
                 visibleWidth,
@@ -539,7 +543,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
           createVisibilityDebugAttributes(visibilityItem));
     }
 
-    VisibilityUtils.dispatchOnInvisible(visibilityItem.getInvisibleHandler());
+    VisibilityUtils.dispatchOnInvisible(visibilityItem.getInvisibleHandler().getCallback());
 
     if (traceIdentifier != null) {
       DebugEventDispatcher.endTrace(traceIdentifier);
@@ -619,22 +623,23 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
       final VisibilityItem visibilityItem = state.mVisibilityIdToItemMap.get(key);
 
       if (visibilityItem != null) {
-        final Function<Void> unfocusedHandler = visibilityItem.getUnfocusedHandler();
-        final Function<Void> visibilityChangedHandler =
+        final @Nullable VisibilityEventCallbackData onUnfocused =
+            visibilityItem.getUnfocusedHandler();
+        final @Nullable VisibilityEventCallbackData onVisibilityChanged =
             visibilityItem.getVisibilityChangedHandler();
 
         maybeDispatchOnInvisible(renderStateId, visibilityItem);
 
         if (visibilityItem.isInFocusedRange()) {
           visibilityItem.setFocusedRange(false);
-          if (unfocusedHandler != null) {
-            VisibilityUtils.dispatchOnUnfocused(unfocusedHandler);
+          if (onUnfocused != null) {
+            VisibilityUtils.dispatchOnUnfocused(onUnfocused.getCallback());
           }
         }
 
-        if (visibilityChangedHandler != null) {
+        if (onVisibilityChanged != null) {
           VisibilityUtils.dispatchOnVisibilityChanged(
-              visibilityChangedHandler, 0, 0, 0, 0, 0, 0, 0f, 0f);
+              onVisibilityChanged.getCallback(), 0, 0, 0, 0, 0, 0, 0f, 0f);
         }
 
         visibilityItem.setWasFullyVisible(false);

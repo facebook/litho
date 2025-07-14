@@ -17,7 +17,6 @@
 package com.facebook.rendercore.visibility
 
 import android.graphics.Rect
-import com.facebook.rendercore.Function
 
 /**
  * Holds information about a VisibilityOutput (that is, about an item for which a visibility event
@@ -28,9 +27,9 @@ class VisibilityItem(
     val key: String,
     // The invisible event and unfocused event handlers are required to make it possible to dispatch
     // the corresponding event when unbind is called or when the MountState is reset.
-    var invisibleHandler: Function<Void>?,
-    var unfocusedHandler: Function<Void>?,
-    val visibilityChangedHandler: Function<Void>?,
+    var invisibleHandler: VisibilityEventCallbackData?,
+    var unfocusedHandler: VisibilityEventCallbackData?,
+    val visibilityChangedHandler: VisibilityEventCallbackData?,
     val componentName: String,
     val renderUnitId: Long,
     val bounds: Rect

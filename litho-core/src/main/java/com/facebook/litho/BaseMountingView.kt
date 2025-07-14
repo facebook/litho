@@ -606,23 +606,23 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
         else null
     if (visibilityEventType == VisibleEvent::class.java) {
       if (visibilityOutput.onVisible != null) {
-        dispatchOnVisible(requireNotNull(visibilityOutput.onVisible), content)
+        dispatchOnVisible(requireNotNull(visibilityOutput.onVisible).callback, content)
       }
     } else if (visibilityEventType == InvisibleEvent::class.java) {
       if (visibilityOutput.onInvisible != null) {
-        dispatchOnInvisible(requireNotNull(visibilityOutput.onInvisible))
+        dispatchOnInvisible(requireNotNull(visibilityOutput.onInvisible).callback)
       }
     } else if (visibilityEventType == FocusedVisibleEvent::class.java) {
       if (visibilityOutput.onFocusedVisible != null) {
-        dispatchOnFocused(requireNotNull(visibilityOutput.onFocusedVisible))
+        dispatchOnFocused(requireNotNull(visibilityOutput.onFocusedVisible).callback)
       }
     } else if (visibilityEventType == UnfocusedVisibleEvent::class.java) {
       if (visibilityOutput.onUnfocusedVisible != null) {
-        dispatchOnUnfocused(requireNotNull(visibilityOutput.onUnfocusedVisible))
+        dispatchOnUnfocused(requireNotNull(visibilityOutput.onUnfocusedVisible).callback)
       }
     } else if (visibilityEventType == FullImpressionVisibleEvent::class.java) {
       if (visibilityOutput.onFullImpression != null) {
-        dispatchOnFullImpression(requireNotNull(visibilityOutput.onFullImpression))
+        dispatchOnFullImpression(requireNotNull(visibilityOutput.onFullImpression).callback)
       }
     }
   }

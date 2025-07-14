@@ -24,7 +24,7 @@ import com.facebook.litho.InvisibleEvent;
 import com.facebook.litho.UnfocusedVisibleEvent;
 import com.facebook.litho.VisibleEvent;
 import com.facebook.litho.testing.Whitebox;
-import com.facebook.rendercore.Function;
+import com.facebook.rendercore.visibility.VisibilityEventCallbackData;
 import com.facebook.rendercore.visibility.VisibilityUtils;
 
 /**
@@ -46,36 +46,38 @@ public class VisibilityEventsHelper {
    */
   public static boolean triggerVisibilityEvent(
       ComponentTree componentTree, Class<?> visibilityEventType) {
-    try {
-      final Object layoutState = getGetMainThreadLayoutState(componentTree);
-      for (int i = 0, size = getVisibilityOutputCount(layoutState); i < size; i++) {
-        final Object visibilityOutput = getVisibilityOutputAt(layoutState, i);
-        if (visibilityEventType == VisibleEvent.class
-            && getEventHandler(visibilityOutput, "Visible") != null) {
-          VisibilityUtils.dispatchOnVisible(getEventHandler(visibilityOutput, "Visible"), null);
-          return true;
-        } else if (visibilityEventType == InvisibleEvent.class
-            && getEventHandler(visibilityOutput, "Invisible") != null) {
-          dispatch(getEventHandler(visibilityOutput, "Invisible"), "Invisible");
-          return true;
-        } else if (visibilityEventType == FocusedVisibleEvent.class
-            && getEventHandler(visibilityOutput, "FocusedVisible") != null) {
-          dispatch(getEventHandler(visibilityOutput, "FocusedVisible"), "Focused");
-          return true;
-        } else if (visibilityEventType == UnfocusedVisibleEvent.class
-            && getEventHandler(visibilityOutput, "UnfocusedVisible") != null) {
-          dispatch(getEventHandler(visibilityOutput, "UnfocusedVisible"), "Unfocused");
-          return true;
-        } else if (visibilityEventType == FullImpressionVisibleEvent.class
-            && getEventHandler(visibilityOutput, "FullImpression") != null) {
-          dispatch(getEventHandler(visibilityOutput, "FullImpression"), "FullImpression");
-          return true;
-        }
+
+    final Object layoutState = getGetMainThreadLayoutState(componentTree);
+    for (int i = 0, size = getVisibilityOutputCount(layoutState); i < size; i++) {
+      final Object visibilityOutput = getVisibilityOutputAt(layoutState, i);
+      if (visibilityEventType == VisibleEvent.class
+          && getEventHandler(visibilityOutput, "Visible") != null) {
+        VisibilityUtils.dispatchOnVisible(
+            getEventHandler(visibilityOutput, "Visible").getCallback(), null);
+        return true;
+      } else if (visibilityEventType == InvisibleEvent.class
+          && getEventHandler(visibilityOutput, "Invisible") != null) {
+        VisibilityUtils.dispatchOnInvisible(
+            getEventHandler(visibilityOutput, "Invisible").getCallback());
+        return true;
+      } else if (visibilityEventType == FocusedVisibleEvent.class
+          && getEventHandler(visibilityOutput, "FocusedVisible") != null) {
+        VisibilityUtils.dispatchOnFocused(
+            getEventHandler(visibilityOutput, "FocusedVisible").getCallback());
+        return true;
+      } else if (visibilityEventType == UnfocusedVisibleEvent.class
+          && getEventHandler(visibilityOutput, "UnfocusedVisible") != null) {
+        VisibilityUtils.dispatchOnUnfocused(
+            getEventHandler(visibilityOutput, "UnfocusedVisible").getCallback());
+        return true;
+      } else if (visibilityEventType == FullImpressionVisibleEvent.class
+          && getEventHandler(visibilityOutput, "FullImpression") != null) {
+        VisibilityUtils.dispatchOnFullImpression(
+            getEventHandler(visibilityOutput, "FullImpression").getCallback());
+        return true;
       }
-      return false;
-    } catch (ClassNotFoundException e) {
-      throw new RuntimeException(e);
     }
+    return false;
   }
 
   private static Object getGetMainThreadLayoutState(ComponentTree componentTree) {
@@ -90,7 +92,7 @@ public class VisibilityEventsHelper {
     return Whitebox.invokeMethod(layoutState, "getVisibilityOutputAt", i);
   }
 
-  private static Function<Void> getEventHandler(Object layoutState, String name) {
+  private static VisibilityEventCallbackData getEventHandler(Object layoutState, String name) {
     return Whitebox.invokeMethod(layoutState, "getOn" + name);
   }
 

@@ -29,6 +29,7 @@ import com.facebook.rendercore.RenderTreeNode
 import com.facebook.rendercore.incrementalmount.ExcludeFromIncrementalMountBinder
 import com.facebook.rendercore.incrementalmount.IncrementalMountOutput
 import com.facebook.rendercore.incrementalmount.IncrementalMountRenderCoreExtension
+import com.facebook.rendercore.visibility.VisibilityEventCallbackData
 import com.facebook.rendercore.visibility.VisibilityOutput
 import kotlin.math.max
 import kotlin.math.min
@@ -308,32 +309,74 @@ internal object LithoReducer {
       renderTreeNode: RenderTreeNode?
   ): VisibilityOutput {
 
-    val visibleHandler: EventHandler<VisibleEvent>? = node.visibleHandler
-    val focusedHandler: EventHandler<FocusedVisibleEvent>? = node.focusedHandler
-    val unfocusedHandler: EventHandler<UnfocusedVisibleEvent>? = node.unfocusedHandler
-    val fullImpressionHandler: EventHandler<FullImpressionVisibleEvent>? =
-        node.fullImpressionHandler
-    val invisibleHandler: EventHandler<InvisibleEvent>? = node.invisibleHandler
-    val visibleRectChangedEventHandler: EventHandler<VisibilityChangedEvent>? =
-        node.visibilityChangedHandler
+    val onVisible =
+        node.visibleHandler?.let {
+          VisibilityEventCallbackData(
+              widthRatio = node.visibleWidthRatio,
+              heightRatio = node.visibleHeightRatio,
+              callback = it,
+          )
+        }
+
+    val onFocusedVisible =
+        node.focusedHandler?.let {
+          VisibilityEventCallbackData(
+              widthRatio = node.visibleWidthRatio,
+              heightRatio = node.visibleHeightRatio,
+              callback = it,
+          )
+        }
+    val onUnfocusedVisible =
+        node.unfocusedHandler?.let {
+          VisibilityEventCallbackData(
+              widthRatio = node.visibleWidthRatio,
+              heightRatio = node.visibleHeightRatio,
+              callback = it,
+          )
+        }
+    val onFullImpression =
+        node.fullImpressionHandler?.let {
+          VisibilityEventCallbackData(
+              widthRatio = node.visibleWidthRatio,
+              heightRatio = node.visibleHeightRatio,
+              callback = it,
+          )
+        }
+    val onInvisible =
+        node.invisibleHandler?.let {
+          VisibilityEventCallbackData(
+              widthRatio = node.visibleWidthRatio,
+              heightRatio = node.visibleHeightRatio,
+              callback = it,
+          )
+        }
+    val onVisibilityChange =
+        node.visibilityChangedHandler?.let {
+          VisibilityEventCallbackData(
+              widthRatio = node.visibleWidthRatio,
+              heightRatio = node.visibleHeightRatio,
+              callback = it,
+          )
+        }
     val component: Component = node.tailComponent
     val componentGlobalKey: String = node.tailComponentKey
 
     return VisibilityOutput(
-        componentGlobalKey,
-        component.simpleName,
-        Rect(bounds),
-        renderTreeNode != null,
-        renderTreeNode?.renderUnit?.id ?: 0,
-        node.visibleHeightRatio,
-        node.visibleWidthRatio,
-        node.visibilityOutputTag,
-        visibleHandler,
-        invisibleHandler,
-        focusedHandler,
-        unfocusedHandler,
-        fullImpressionHandler,
-        visibleRectChangedEventHandler)
+        id = componentGlobalKey,
+        key = component.simpleName,
+        bounds = Rect(bounds),
+        hasMountableContent = renderTreeNode != null,
+        renderUnitId = renderTreeNode?.renderUnit?.id ?: 0,
+        visibleWidthRatio = node.visibleWidthRatio,
+        visibleHeightRatio = node.visibleHeightRatio,
+        tag = node.visibilityOutputTag,
+        onVisible = onVisible,
+        onInvisible = onInvisible,
+        onFocusedVisible = onFocusedVisible,
+        onUnfocusedVisible = onUnfocusedVisible,
+        onFullImpression = onFullImpression,
+        onVisibilityChange = onVisibilityChange,
+    )
   }
 
   private fun createTestOutput(
