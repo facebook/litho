@@ -171,6 +171,14 @@ object LithoNodeUtils {
         mergeCommonDynamicProps(node.scopedComponentInfos)
     hostComponent.commonDynamicProps = commonDynamicProps
 
+    val additionalBinders =
+        node.customHostViewBinders +
+            if (node.willMountView) {
+              null
+            } else {
+              node.customViewBindersForMountSpec
+            }
+
     return createRenderUnit(
         id = MountState.ROOT_HOST_ID, // The root host (LithoView) always has ID 0
         component = hostComponent,
@@ -183,8 +191,7 @@ object LithoNodeUtils {
         duplicateParentState = node.isHostDuplicateParentStateEnabled,
         duplicateChildrenStates = node.isDuplicateChildrenStatesEnabled,
         isMountViewSpec = true,
-        customDelegateBindersForMountSpec =
-            if (node.willMountView) null else node.customViewBindersForMountSpec,
+        customDelegateBindersForMountSpec = additionalBinders,
         debugKey = getLithoNodeDebugKey(node, OutputUnitType.HOST),
         viewAttributes =
             createViewAttributesForBinder(
