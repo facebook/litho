@@ -23,7 +23,6 @@ import com.facebook.litho.ComponentTreeDebugEventListener
 import com.facebook.litho.ComponentsLogger
 import com.facebook.litho.DefaultErrorEventHandler
 import com.facebook.litho.ErrorEventHandler
-import com.facebook.litho.config.ComponentsConfiguration.Builder
 import com.facebook.litho.perfboost.LithoPerfBoosterFactory
 import com.facebook.rendercore.PoolingPolicy
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtensionConfigs
@@ -148,6 +147,8 @@ internal constructor(
     val useNonRebindingEventHandlers: Boolean = true,
     /** This flag is used to enable the new state read tracking logic. */
     @JvmField val enableStateReadTracking: Boolean = false,
+    /** This flag determines the policy to use for validation failures in state read tracking. */
+    @JvmField val stateReadViolationPolicy: LogicViolationPolicy = LogicViolationPolicy.LOG,
 
     /** This flag is used to enable incremental mount helper for ViewPager2. */
     @JvmField val enableIMHelperForViewPager2: Boolean = false,
@@ -499,5 +500,10 @@ internal constructor(
           enableIMHelperForViewPager2 = enableIMHelperForViewPager2,
       )
     }
+  }
+
+  enum class LogicViolationPolicy(val key: String) {
+    LOG("log"),
+    CRASH("crash")
   }
 }
