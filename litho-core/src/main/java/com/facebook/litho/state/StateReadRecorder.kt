@@ -21,6 +21,8 @@ import androidx.collection.ScatterSet
 import androidx.collection.emptyScatterSet
 import androidx.collection.mutableScatterSetOf
 import com.facebook.infer.annotation.ThreadSafe
+import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.debug.DebugInfoReporter
 import com.facebook.litho.utils.LithoThreadLocal
 import com.facebook.litho.utils.getOrSet
 
@@ -72,11 +74,23 @@ internal class StateReadRecorder private constructor() {
    *
    * @throws IllegalStateException If state is read from a different tree than where it was created
    */
-  private fun read(state: StateId) {
-    check(currentId == NO_ID || state.treeId == currentId) {
-      "State can only be read in the same tree where it was created. State tree: ${state.treeId}, Current tree: $currentId"
+  private fun read(state: StateId): Boolean {
+    val isStateReadFromDifferentTree = currentId != NO_ID && currentId != state.treeId
+    val violationPolicy = ComponentsConfiguration.defaultInstance.stateReadViolationPolicy
+    if (violationPolicy == ComponentsConfiguration.LogicViolationPolicy.CRASH) {
+      check(!isStateReadFromDifferentTree) {
+        "State can only be read in the same tree where it was created. State tree: ${state.treeId}, Current tree: $currentId"
+      }
+    } else if (isStateReadFromDifferentTree) {
+      DebugInfoReporter.report(
+          "StateReadTracking:ReadFromDifferentTree", renderStateId = state.treeId) {
+            put("state", state)
+            put("reader.treeId", currentId)
+          }
+      return false
     }
     readSet?.add(state)
+    return true
   }
 
   companion object {
@@ -90,8 +104,8 @@ internal class StateReadRecorder private constructor() {
       return current.record(treeId, scope)
     }
 
-    fun read(state: StateId) {
-      current.read(state)
+    fun read(state: StateId): Boolean {
+      return current.read(state)
     }
   }
 }

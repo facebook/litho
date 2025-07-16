@@ -145,8 +145,10 @@ internal constructor(
   val value: T
     get() {
       if (!isReadTrackingEnabled) return fallback
-      StateReadRecorder.read(stateId)
-      return stateProvider.getValue(this)
+      return when {
+        StateReadRecorder.read(stateId) -> stateProvider.getValue(this)
+        else -> fallback
+      }
     }
 
   /**

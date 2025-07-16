@@ -16,6 +16,7 @@
 
 package com.facebook.litho.state
 
+import com.facebook.litho.config.ComponentsConfiguration
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.core.api.Assertions.catchThrowable
@@ -80,9 +81,16 @@ class StateReadRecorderTest {
 
   @Test
   fun throwsWhenReadStateFromDifferentTree() {
+    val currentConfig = ComponentsConfiguration.defaultInstance
+    ComponentsConfiguration.defaultInstance =
+        currentConfig.copy(
+            stateReadViolationPolicy = ComponentsConfiguration.LogicViolationPolicy.CRASH)
+
     val state1 = newState(1, treeId = 10)
     assertThatThrownBy { StateReadRecorder.record(TREE_ID) { StateReadRecorder.read(state1) } }
         .isInstanceOf(IllegalStateException::class.java)
+
+    ComponentsConfiguration.defaultInstance = currentConfig
   }
 
   private fun newState(index: Int, treeId: Int = TREE_ID): StateId {
