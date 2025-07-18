@@ -28,7 +28,9 @@ import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClas
  *   [type] for any given binder is always unique within its [RenderUnit].
  */
 @DataClassGenerate
-data class BinderId(val renderUnitId: Long, val type: BinderType, val key: BinderKey)
+data class BinderId(val renderUnitId: Long, val type: BinderType, val key: BinderKey) {
+  var renderUnitDebugDescription: (() -> String?)? = null
+}
 
 /**
  * The type of a [RenderUnit.Binder]. This is used to distinguish between different kinds of

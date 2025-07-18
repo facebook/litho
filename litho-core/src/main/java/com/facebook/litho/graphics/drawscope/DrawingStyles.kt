@@ -35,16 +35,17 @@ fun Style.drawBehind(block: DrawScope.() -> Unit): Style {
 
         content as ComponentHost
         content.drawBehind = { canvas ->
-          uiStateReadsRecords.recordOnDraw(binderId.renderUnitId) {
-            canvas.withSave {
-              CanvasDrawScope(
-                      // canvas = canvas,
-                      // context = draw context,
-                      // size = Size(w, h),
-                      )
-                  .block()
-            }
-          }
+          uiStateReadsRecords.recordOnDraw(
+              binderId.renderUnitId, binderId.renderUnitDebugDescription) {
+                canvas.withSave {
+                  CanvasDrawScope(
+                          // canvas = canvas,
+                          // context = draw context,
+                          // size = Size(w, h),
+                          )
+                      .block()
+                }
+              }
         }
         onUnbind {
           content.drawBehind = null

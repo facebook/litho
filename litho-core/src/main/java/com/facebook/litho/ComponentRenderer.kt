@@ -38,7 +38,15 @@ internal inline fun <T> ScopedComponentInfo.runInRecorderScope(
 ): RenderResult<T> {
   return if (context.isReadTrackingEnabled) {
     var result: RenderResult<T>? = null
-    val stateReads = StateReadRecorder.record(resolveContext.treeId) { result = render() }
+    val stateReads =
+        StateReadRecorder.record(
+            resolveContext.treeId,
+            debugInfo = {
+              put("phase", "resolve")
+              put("reader.owner", component.simpleName)
+            }) {
+              result = render()
+            }
     context.scopedComponentInfo.stateReads = stateReads
     checkNotNull(result)
   } else {

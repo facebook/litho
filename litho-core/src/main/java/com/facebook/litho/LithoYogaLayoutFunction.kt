@@ -437,9 +437,14 @@ internal object LithoYogaLayoutFunction {
               if (layoutResult.node.tailComponentContext.isReadTrackingEnabled) {
                 var result: MeasureResult? = null
                 val stateReads =
-                    StateReadRecorder.record(renderContext.treeId) {
-                      result = measureLithoNode(context, widthSpec, heightSpec, layoutResult)
-                    }
+                    StateReadRecorder.record(
+                        renderContext.treeId,
+                        debugInfo = {
+                          put("phase", "layout")
+                          put("reader.owner", component.simpleName)
+                        }) {
+                          result = measureLithoNode(context, widthSpec, heightSpec, layoutResult)
+                        }
                 yogaOutput._stateReads = stateReads
                 requireNotNull(result)
               } else {

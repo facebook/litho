@@ -31,6 +31,7 @@ internal class StateReadRecorder private constructor() {
 
   private var readSet: MutableScatterSet<StateId>? = null
   private var currentId: Int = NO_ID
+  private var debugInfo: (MutableMap<String, Any?>.() -> Unit)? = null
 
   /**
    * Executes [scope] in the context of the current recorder to enable tracking of all state reads
@@ -40,7 +41,11 @@ internal class StateReadRecorder private constructor() {
    * @param scope The scope to execute
    * @return A set of all state ids that were read during the execution of the scope.
    */
-  private fun record(treeId: Int, scope: () -> Unit): ScatterSet<StateId> {
+  private fun record(
+      treeId: Int,
+      debugInfo: MutableMap<String, Any?>.() -> Unit,
+      scope: () -> Unit
+  ): ScatterSet<StateId> {
     return if (treeId == currentId) {
       // Re-entrant call. Simply run the scope and return an empty set
       // The full read set will be delivered to the parent recorder at the end.
@@ -51,13 +56,16 @@ internal class StateReadRecorder private constructor() {
       mutableScatterSetOf<StateId>().also { newSet ->
         val previousReadSet = readSet
         val previousTreeId = currentId
+        val previousDebugInfo = this.debugInfo
         try {
           readSet = newSet
           currentId = treeId
+          this.debugInfo = debugInfo
           scope()
         } finally {
           currentId = previousTreeId
           readSet = previousReadSet
+          this.debugInfo = previousDebugInfo
         }
       }
     }
@@ -79,13 +87,16 @@ internal class StateReadRecorder private constructor() {
     val violationPolicy = ComponentsConfiguration.defaultInstance.stateReadViolationPolicy
     if (violationPolicy == ComponentsConfiguration.LogicViolationPolicy.CRASH) {
       check(!isStateReadFromDifferentTree) {
-        "State can only be read in the same tree where it was created. State tree: ${state.treeId}, Current tree: $currentId"
+        "State can only be read in the same tree where it was created. " +
+            "State tree: ${state.treeId}, Current tree: $currentId"
       }
     } else if (isStateReadFromDifferentTree) {
       DebugInfoReporter.report(
           "StateReadTracking:ReadFromDifferentTree", renderStateId = state.treeId) {
             put("state", state)
+            put("state.owner", state.ownerName?.invoke())
             put("reader.treeId", currentId)
+            debugInfo?.invoke(this)
           }
       return false
     }
@@ -100,8 +111,12 @@ internal class StateReadRecorder private constructor() {
     private val current: StateReadRecorder
       get() = recorder.getOrSet { StateReadRecorder() }
 
-    fun record(treeId: Int, scope: () -> Unit): ScatterSet<StateId> {
-      return current.record(treeId, scope)
+    fun record(
+        treeId: Int,
+        debugInfo: MutableMap<String, Any?>.() -> Unit = {},
+        scope: () -> Unit
+    ): ScatterSet<StateId> {
+      return current.record(treeId, debugInfo, scope)
     }
 
     fun read(state: StateId): Boolean {

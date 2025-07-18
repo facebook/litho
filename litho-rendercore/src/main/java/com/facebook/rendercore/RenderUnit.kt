@@ -78,7 +78,7 @@ constructor(
       "Too many fixed mount binders. Max is $MAX_FIXED_MOUNT_BINDERS_COUNT"
     }
     renderType = type
-    this.fixedMountBinders = createFixedBinders(id, fixedMountBinders)
+    this.fixedMountBinders = createFixedBinders(id, fixedMountBinders, ::description)
     for (i in optionalMountBinders.indices) {
       val binder = optionalMountBinders[i]
       addOptionalMountBinder(binder)
@@ -772,13 +772,15 @@ constructor(
 
     private fun <MOUNT_CONTENT> createFixedBinders(
         renderUnitId: Long,
-        delegates: List<DelegateBinder<*, in MOUNT_CONTENT, *>>?
+        delegates: List<DelegateBinder<*, in MOUNT_CONTENT, *>>?,
+        renderUnitDescription: () -> String?
     ): List<BinderHolder>? {
       if (delegates.isNullOrEmpty()) {
         return null
       }
       return delegates.mapIndexed { index, delegate ->
         val binderId = BinderId(renderUnitId, BinderType.MOUNT, IndexedBinderKey(index))
+        binderId.renderUnitDebugDescription = renderUnitDescription
         BinderHolder(binderId, delegate.binder, delegate.model)
       }
     }

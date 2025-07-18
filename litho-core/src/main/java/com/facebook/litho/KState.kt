@@ -140,7 +140,10 @@ internal constructor(
     internal val fallback: T
 ) {
 
-  internal val stateId: StateId = StateId(stateProvider.treeId, globalKey, hookStateIndex)
+  internal val stateId: StateId =
+      StateId(stateProvider.treeId, globalKey, hookStateIndex).also {
+        it.ownerName = { componentScope?.simpleName }
+      }
 
   val value: T
     get() {

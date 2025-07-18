@@ -47,7 +47,15 @@ internal class UiStateReadRecords(private val config: Config) : BinderObserver()
     if (!config.isReadTrackingEnabled) return func()
 
     val treeId = config.currentTreeId()
-    val reads = StateReadRecorder.record(treeId, func)
+    val reads =
+        StateReadRecorder.record(
+            treeId,
+            debugInfo = {
+              put("phase", "bind")
+              put("reader.binder", binderId)
+              put("reader.owner", binderId.renderUnitDebugDescription?.invoke())
+            },
+            func)
     synchronized(this) {
       reads.forEach { stateId ->
         val binderIds = onBindRecords.getOrPut(stateId) { mutableScatterSetOf() }
@@ -70,11 +78,19 @@ internal class UiStateReadRecords(private val config: Config) : BinderObserver()
     }
   }
 
-  fun recordOnDraw(hostId: Long, func: () -> Unit) {
+  fun recordOnDraw(hostId: Long, description: (() -> String?)?, func: () -> Unit) {
     if (!config.isReadTrackingEnabled) return func()
 
     val treeId = config.currentTreeId()
-    val reads = StateReadRecorder.record(treeId, func)
+    val reads =
+        StateReadRecorder.record(
+            treeId,
+            debugInfo = {
+              put("phase", "draw")
+              put("reader.host", hostId)
+              put("reader.owner", description?.invoke())
+            },
+            func)
     reads.forEach { stateId ->
       val hostIds = onDrawRecords.getOrPut(stateId) { mutableLongSetOf() }
       hostIds.add(hostId)

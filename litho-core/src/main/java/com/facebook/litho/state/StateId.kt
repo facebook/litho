@@ -20,4 +20,6 @@ import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClas
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
 
 @DataClassGenerate(toString = Mode.KEEP)
-data class StateId(val treeId: Int, val globalKey: String, val index: Int)
+data class StateId(val treeId: Int, val globalKey: String, val index: Int) {
+  internal var ownerName: (() -> String?)? = null
+}
