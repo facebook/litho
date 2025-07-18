@@ -113,11 +113,11 @@ object NestedLithoTree {
   }
 
   fun LayoutState.runEffects() {
-    treeState.effectsHandler.onAttached(attachables)
+    treeState.effectsHandler.onAttached(treeId, attachables)
   }
 
   fun LayoutState.cleanup() {
-    treeState.effectsHandler.onDetached()
+    treeState.effectsHandler.onDetached(treeId)
     treeState.clearEventHandlersAndTriggers()
   }
 

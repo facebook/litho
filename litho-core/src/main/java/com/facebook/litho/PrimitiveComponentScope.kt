@@ -350,7 +350,7 @@ data class NestedLithoTreeState(
 
   fun cleanup() {
     synchronized(this) {
-      treeState?.effectsHandler?.onDetached()
+      treeState?.effectsHandler?.onDetached(id)
       treeLifecycleProvider.release()
       treeState = null
       currentResolveResult = null

@@ -882,7 +882,7 @@ public class ComponentTree
   private void dispatchOnAttached() {
     final @Nullable List<Attachable> attachables =
         mMainThreadLayoutState != null ? mMainThreadLayoutState.getAttachables() : null;
-    Preconditions.checkNotNull(mTreeState).getEffectsHandler().onAttached(attachables);
+    Preconditions.checkNotNull(mTreeState).getEffectsHandler().onAttached(mId, attachables);
   }
 
   void measure(int widthSpec, int heightSpec, int[] measureOutput, boolean forceLayout) {
@@ -2380,7 +2380,7 @@ public class ComponentTree
 
     // Execute detached callbacks if necessary.
     if (effectsHandler != null) {
-      effectsHandler.onDetached();
+      effectsHandler.onDetached(mId);
     }
 
     if (mOnReleaseListeners != null) {

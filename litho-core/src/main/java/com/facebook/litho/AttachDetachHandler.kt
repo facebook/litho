@@ -18,10 +18,15 @@ package com.facebook.litho
 
 import androidx.annotation.UiThread
 import androidx.annotation.VisibleForTesting
+import androidx.collection.ScatterSet
+import androidx.collection.emptyScatterSet
 import com.facebook.infer.annotation.ThreadSafe
 import com.facebook.litho.annotations.OnAttached
 import com.facebook.litho.annotations.OnDetached
-import java.util.LinkedHashMap
+import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.debug.DebugInfoReporter
+import com.facebook.litho.state.StateId
+import com.facebook.litho.state.StateReadRecorder
 
 /**
  * Manages dispatching attach/detach events to a set of [Attachable].
@@ -47,7 +52,7 @@ class AttachDetachHandler {
    * is determined by [Attachable#getUniqueId()].
    */
   @UiThread
-  fun onAttached(attachables: List<Attachable>?) {
+  fun onAttached(treeId: Int, attachables: List<Attachable>?) {
     ThreadUtils.assertMainThread()
     if (_attached == null && attachables == null) {
       return
@@ -55,7 +60,7 @@ class AttachDetachHandler {
 
     // 1. if there is nothing to attach, then we must detach all current attachables
     if (attachables == null) {
-      _attached?.let { detachAll(it) }
+      _attached?.let { detachAll(treeId, it) }
       _attached = null
       return
     }
@@ -65,7 +70,7 @@ class AttachDetachHandler {
 
     // 2. if we have no current attachables, we can simply attach all the new ones.
     if (_attached.isNullOrEmpty()) {
-      attachAll(newAttachablesMap)
+      attachAll(treeId, newAttachablesMap)
       _attached = newAttachablesMap
       return
     }
@@ -75,7 +80,7 @@ class AttachDetachHandler {
 
     for ((id, attachable) in currentAttached) {
       if (id !in newAttachablesMap) {
-        attachable.detach()
+        attachable.detachWithTracking(treeId)
       }
     }
 
@@ -85,10 +90,10 @@ class AttachDetachHandler {
       val existing = currentAttached[id]
 
       when {
-        existing == null -> newAttachable.attach()
+        existing == null -> newAttachable.attachWithTracking(treeId)
         existing.shouldUpdate(newAttachable) -> {
-          existing.detach()
-          newAttachable.attach()
+          existing.detachWithTracking(treeId)
+          newAttachable.attachWithTracking(treeId)
         }
         !existing.useLegacyUpdateBehavior() -> {
           // If the attachable already exists and it doesn't need to update, make sure to use the
@@ -104,21 +109,73 @@ class AttachDetachHandler {
 
   /** Detaches all Attachables currently attached. */
   @UiThread
-  fun onDetached() {
+  fun onDetached(treeId: Int) {
     ThreadUtils.assertMainThread()
-    _attached?.let { detachAll(it) }
+    _attached?.let { detachAll(treeId, it) }
     _attached = null
   }
 
-  private fun attachAll(toAttach: Map<String, Attachable>) {
+  private fun attachAll(treeId: Int, toAttach: Map<String, Attachable>) {
     for (entry in toAttach.values) {
-      entry.attach()
+      entry.attachWithTracking(treeId)
     }
   }
 
-  private fun detachAll(toDetach: Map<String, Attachable>) {
+  private fun detachAll(treeId: Int, toDetach: Map<String, Attachable>) {
     for (entry in toDetach.values) {
-      entry.detach()
+      entry.detachWithTracking(treeId)
     }
+  }
+
+  private fun Attachable.attachWithTracking(treeId: Int) {
+    val stateReads =
+        executeInTrackingScope(
+            treeId,
+            debugInfo = {
+              put("phase", "attachEffect")
+              put("reader.owner", decodeComponentName())
+            },
+            func = ::attach)
+
+    if (stateReads.isNotEmpty())
+        DebugInfoReporter.report("StateReadTracking:runEffect", renderStateId = treeId) {
+          put("component", decodeComponentName())
+          put("stateReadCount", stateReads.size)
+        }
+  }
+
+  private fun Attachable.detachWithTracking(treeId: Int) {
+    val stateReads =
+        executeInTrackingScope(
+            treeId,
+            debugInfo = {
+              put("phase", "detachEffect")
+              put("reader.owner", decodeComponentName())
+            },
+            func = ::detach)
+
+    if (stateReads.isNotEmpty())
+        DebugInfoReporter.report("StateReadTracking:disposeEffect", renderStateId = treeId) {
+          put("component", decodeComponentName())
+          put("stateReadCount", stateReads.size)
+        }
+  }
+
+  private inline fun executeInTrackingScope(
+      treeId: Int,
+      noinline debugInfo: MutableMap<String, Any?>.() -> Unit,
+      crossinline func: () -> Unit
+  ): ScatterSet<StateId> {
+    return if (ComponentsConfiguration.defaultInstance.enableStateReadTracking) {
+      StateReadRecorder.record(treeId, debugInfo) { func() }
+    } else {
+      func()
+      emptyScatterSet()
+    }
+  }
+
+  private fun Attachable.decodeComponentName(): String {
+    val componentKey = uniqueId.substringBeforeLast(':')
+    return Component.generateHierarchy(componentKey).lastOrNull() ?: "null"
   }
 }
