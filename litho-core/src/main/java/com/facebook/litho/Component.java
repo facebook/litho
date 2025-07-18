@@ -460,27 +460,37 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       final boolean shouldCacheResult) {
 
     final CalculationContext calculationContext = c.getCalculationStateContext();
+    final ComponentsConfiguration.LogicViolationPolicy violationPolicy =
+        ComponentsConfiguration.defaultInstance.stateReadViolationPolicy;
     if (calculationContext instanceof ResolveContext
-        && !((ResolveContext) calculationContext).isInLayout()
-        && LithoDebugConfigurations.isDebugModeEnabled) {
-      DebugInfoReporter.report(
-          "Component:MeasureInResolve.v2",
-          attr -> {
-            Component scope = c.getComponentScope();
-            if (scope != null) {
-              attr.put(DebugEventAttribute.Key, c.getGlobalKey());
-              attr.put(DebugEventAttribute.Source, scope);
-            }
-            attr.put("measured.component", toString());
-            attr.put("measured.key", getKey());
+        && !((ResolveContext) calculationContext).isInLayout()) {
+      if (violationPolicy == ComponentsConfiguration.LogicViolationPolicy.CRASH) {
+        throw new IllegalStateException(
+            getSimpleName()
+                + ": Measuring a component during resolve is forbidden as "
+                + "it can lead to undefined behaviors. "
+                + "Please consider using the RenderWithConstraints API (for KComponents) or "
+                + "@OnCreateLayoutWithSizeSpec annotation (for Spec Components)");
+      } else {
+        DebugInfoReporter.report(
+            "Component:MeasureInResolve.v2",
+            attr -> {
+              Component scope = c.getComponentScope();
+              if (scope != null) {
+                attr.put(DebugEventAttribute.Key, c.getGlobalKey());
+                attr.put(DebugEventAttribute.Source, scope);
+              }
+              attr.put("measured.component", toString());
+              attr.put("measured.key", getKey());
 
-            StringBuilder sb = new StringBuilder();
-            StackTraceElement[] traces = Thread.currentThread().getStackTrace();
-            for (int i = 5; i < 15; i++) sb.append(traces[i]).append("\n");
-            attr.put("stacktrace", sb.toString());
+              StringBuilder sb = new StringBuilder();
+              StackTraceElement[] traces = Thread.currentThread().getStackTrace();
+              for (int i = 5; i < 15; i++) sb.append(traces[i]).append("\n");
+              attr.put("stacktrace", sb.toString());
 
-            return Unit.INSTANCE;
-          });
+              return Unit.INSTANCE;
+            });
+      }
     }
 
     if (calculationContext == null) {
