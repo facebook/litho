@@ -38,7 +38,6 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
 import androidx.annotation.ColorInt
-import androidx.annotation.RequiresApi
 import androidx.annotation.VisibleForTesting
 import androidx.core.graphics.withSave
 import com.facebook.fbui.textlayoutbuilder.util.LayoutMeasureUtil
@@ -49,7 +48,6 @@ import com.facebook.litho.TextContent
 import com.facebook.litho.TextContent.SpannableItem
 import com.facebook.litho.Touchable
 import com.facebook.litho.config.ComponentsConfiguration
-import com.facebook.litho.utils.VersionedAndroidApis.Q.getShadowLayerColor
 import com.facebook.rendercore.text.ClickableSpanListener
 import com.facebook.rendercore.text.LongClickableSpan
 import com.facebook.rendercore.text.TouchableSpanListener
@@ -117,9 +115,7 @@ class TextDrawable : Drawable(), Touchable, TextContent, Drawable.Callback {
       }
       translate(bounds.left + layoutTranslationX, bounds.top + layoutTranslationY)
       try {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-          maybeDrawOutline(canvas)
-        }
+        maybeDrawOutline(canvas)
         layoutToUse.draw(canvas, selectionPath, highlightPaint, 0)
       } catch (e: IndexOutOfBoundsException) {
         val withDebugInfo = RuntimeException("Debug info for IOOB: " + debugInfo, e)
@@ -141,21 +137,20 @@ class TextDrawable : Drawable(), Touchable, TextContent, Drawable.Callback {
    *
    * @param canvas - A canvas to draw on.
    */
-  @RequiresApi(Build.VERSION_CODES.Q)
   private fun maybeDrawOutline(canvas: Canvas) {
     val layoutToUse = layout ?: return
     val isTracing = isTracing
     if (isTracing) {
       beginSection("TextDrawable.maybeDrawOutline")
     }
-    if (outlineWidth > 0f) {
+    if (outlineWidth > 0f && outlineColor != 0) {
       val p: Paint = layoutToUse.paint
       val savedColor = p.color
       val savedStyle = p.style
       val savedStrokeWidth = p.strokeWidth
       val savedJoin = p.strokeJoin
       p.strokeJoin = Paint.Join.ROUND
-      p.color = if (outlineColor != 0) outlineColor else getShadowLayerColor(p)
+      p.color = outlineColor
       p.style = Paint.Style.STROKE
       p.strokeWidth = outlineWidth
       layoutToUse.draw(canvas)

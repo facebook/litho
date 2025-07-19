@@ -16,7 +16,6 @@
 
 package com.facebook.litho.utils
 
-import android.graphics.Paint
 import android.icu.text.BreakIterator
 import android.os.Build
 import android.view.View
@@ -52,13 +51,6 @@ object VersionedAndroidApis {
     @JvmStatic
     fun setTextCursorDrawable(editText: EditText, @DrawableRes cursorDrawableRes: Int) {
       editText.setTextCursorDrawable(cursorDrawableRes)
-    }
-
-    @DoNotInline
-    @JvmStatic
-    @ColorInt
-    fun getShadowLayerColor(paint: Paint): Int {
-      return paint.shadowLayerColor
     }
 
     @DoNotInline
