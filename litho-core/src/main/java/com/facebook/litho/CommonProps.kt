@@ -925,22 +925,22 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
         node.wrapInView()
       }
       if ((privateFlags and PFLAG_VISIBLE_HANDLER_IS_SET).toLong() != 0L) {
-        node.visibleHandler(visibleHandler)
+        node.addVisibleEventListener(visibleHandler)
       }
       if ((privateFlags and PFLAG_FOCUSED_HANDLER_IS_SET).toLong() != 0L) {
-        node.focusedHandler(focusedHandler)
+        node.addFocusedVisibleEventListener(focusedHandler)
       }
       if ((privateFlags and PFLAG_FULL_IMPRESSION_HANDLER_IS_SET).toLong() != 0L) {
-        node.fullImpressionHandler(fullImpressionHandler)
+        node.addFullImpressionEventListener(fullImpressionHandler)
       }
       if ((privateFlags and PFLAG_INVISIBLE_HANDLER_IS_SET).toLong() != 0L) {
-        node.invisibleHandler(invisibleHandler)
+        node.addInvisibleEventListener(invisibleHandler)
       }
       if ((privateFlags and PFLAG_UNFOCUSED_HANDLER_IS_SET).toLong() != 0L) {
-        node.unfocusedHandler(unfocusedHandler)
+        node.addUnfocusedVisibleEventListener(unfocusedHandler)
       }
       if (privateFlags and PFLAG_VISIBILITY_CHANGED_HANDLER_IS_SET != 0) {
-        node.visibilityChangedHandler(visibilityChangedHandler)
+        node.addVisibilityChangedEventListener(visibilityChangedHandler)
       }
       if ((privateFlags and PFLAG_TRANSITION_KEY_IS_SET).toLong() != 0L) {
         node.transitionKey(transitionKey, transitionOwnerKey)

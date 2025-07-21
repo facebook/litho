@@ -89,22 +89,22 @@ constructor(
       target.wrapInView()
     }
     if (privateFlags and PFLAG_VISIBLE_HANDLER_IS_SET != 0L) {
-      target.visibleHandler(visibleHandler)
+      target.addVisibleEventListener(onVisible)
     }
     if (privateFlags and PFLAG_FOCUSED_HANDLER_IS_SET != 0L) {
-      target.focusedHandler(focusedHandler)
+      target.addFocusedVisibleEventListener(onFocusedVisible)
     }
     if (privateFlags and PFLAG_FULL_IMPRESSION_HANDLER_IS_SET != 0L) {
-      target.fullImpressionHandler(fullImpressionHandler)
+      target.addFullImpressionEventListener(onFullImpression)
     }
     if (privateFlags and PFLAG_INVISIBLE_HANDLER_IS_SET != 0L) {
-      target.invisibleHandler(invisibleHandler)
+      target.addInvisibleEventListener(onInvisible)
     }
     if (privateFlags and PFLAG_UNFOCUSED_HANDLER_IS_SET != 0L) {
-      target.unfocusedHandler(unfocusedHandler)
+      target.addUnfocusedVisibleEventListener(onUnfocusedVisible)
     }
     if (privateFlags and PFLAG_VISIBLE_RECT_CHANGED_HANDLER_IS_SET != 0L) {
-      target.visibilityChangedHandler(visibilityChangedHandler)
+      target.addVisibilityChangedEventListener(onVisibilityChanged)
     }
     if (testKey != null) {
       target.testKey(testKey)

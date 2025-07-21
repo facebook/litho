@@ -302,12 +302,12 @@ class LithoNodeTest {
     orig.duplicateParentState(true)
     orig.background(ColorDrawable())
     orig.foreground(null)
-    orig.visibleHandler(null)
-    orig.focusedHandler(null)
-    orig.fullImpressionHandler(null)
-    orig.invisibleHandler(null)
-    orig.unfocusedHandler(null)
-    orig.visibilityChangedHandler(null)
+    orig.addVisibleEventListener(null)
+    orig.addFocusedVisibleEventListener(null)
+    orig.addFullImpressionEventListener(null)
+    orig.addInvisibleEventListener(null)
+    orig.addUnfocusedVisibleEventListener(null)
+    orig.addVisibilityChangedEventListener(null)
     orig.transferInto(dest)
     assertThat(isFlagSet(dest, "PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET")).isTrue
     assertThat(isFlagSet(dest, "PFLAG_BACKGROUND_IS_SET")).isTrue

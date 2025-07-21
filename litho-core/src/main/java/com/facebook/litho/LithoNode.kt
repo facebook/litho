@@ -137,22 +137,22 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
   var nodeInfo: NodeInfo? = null
     internal set
 
-  var visibleHandler: EventHandler<VisibleEvent>? = null
+  var onVisible: EventHandler<VisibleEvent>? = null
     internal set
 
-  var focusedHandler: EventHandler<FocusedVisibleEvent>? = null
+  var onFocusedVisible: EventHandler<FocusedVisibleEvent>? = null
     internal set
 
-  var unfocusedHandler: EventHandler<UnfocusedVisibleEvent>? = null
+  var onUnfocusedVisible: EventHandler<UnfocusedVisibleEvent>? = null
     internal set
 
-  var fullImpressionHandler: EventHandler<FullImpressionVisibleEvent>? = null
+  var onFullImpression: EventHandler<FullImpressionVisibleEvent>? = null
     internal set
 
-  var invisibleHandler: EventHandler<InvisibleEvent>? = null
+  var onInvisible: EventHandler<InvisibleEvent>? = null
     internal set
 
-  var visibilityChangedHandler: EventHandler<VisibilityChangedEvent>? = null
+  var onVisibilityChanged: EventHandler<VisibilityChangedEvent>? = null
     internal set
 
   var background: Drawable? = null
@@ -680,26 +680,11 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
     flexDirection = direction
   }
 
-  fun focusedHandler(focusedHandler: EventHandler<FocusedVisibleEvent>?) {
-    privateFlags = privateFlags or PFLAG_FOCUSED_HANDLER_IS_SET
-    this.focusedHandler = addVisibilityHandler(this.focusedHandler, focusedHandler)
-  }
-
   fun layerType(@LayerType type: Int, paint: Paint?) {
     if (type != LayerType.LAYER_TYPE_NOT_SET) {
       layerType = type
       layerPaint = paint
     }
-  }
-
-  fun visibilityOutputTag(visibilityOutputTag: String?) {
-    this.visibilityOutputTag = visibilityOutputTag
-  }
-
-  fun fullImpressionHandler(fullImpressionHandler: EventHandler<FullImpressionVisibleEvent>?) {
-    privateFlags = privateFlags or PFLAG_FULL_IMPRESSION_HANDLER_IS_SET
-    this.fullImpressionHandler =
-        addVisibilityHandler(this.fullImpressionHandler, fullImpressionHandler)
   }
 
   fun getChildAt(index: Int): LithoNode = children[index]
@@ -758,20 +743,6 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
 
   fun hasTransitionKey(): Boolean = !transitionKey.isNullOrEmpty()
 
-  fun hasVisibilityHandlers(): Boolean =
-      visibleHandler != null ||
-          focusedHandler != null ||
-          unfocusedHandler != null ||
-          fullImpressionHandler != null ||
-          invisibleHandler != null ||
-          visibilityChangedHandler != null
-
-  fun invisibleHandler(invisibleHandler: EventHandler<InvisibleEvent>?): LithoNode {
-    privateFlags = privateFlags or PFLAG_INVISIBLE_HANDLER_IS_SET
-    this.invisibleHandler = addVisibilityHandler(this.invisibleHandler, invisibleHandler)
-    return this
-  }
-
   fun justifyContent(justifyContent: YogaJustify) {
     this.justifyContent = justifyContent
   }
@@ -817,20 +788,35 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
     transitionKeyType = type
   }
 
-  fun unfocusedHandler(unfocusedHandler: EventHandler<UnfocusedVisibleEvent>?) {
+  fun addUnfocusedVisibleEventListener(callback: EventHandler<UnfocusedVisibleEvent>?) {
     privateFlags = privateFlags or PFLAG_UNFOCUSED_HANDLER_IS_SET
-    this.unfocusedHandler = addVisibilityHandler(this.unfocusedHandler, unfocusedHandler)
+    this.onUnfocusedVisible = addVisibilityHandler(this.onUnfocusedVisible, callback)
   }
 
-  fun visibilityChangedHandler(visibilityChangedHandler: EventHandler<VisibilityChangedEvent>?) {
+  fun addVisibilityChangedEventListener(callback: EventHandler<VisibilityChangedEvent>?) {
     privateFlags = privateFlags or PFLAG_VISIBLE_RECT_CHANGED_HANDLER_IS_SET
-    this.visibilityChangedHandler =
-        addVisibilityHandler(this.visibilityChangedHandler, visibilityChangedHandler)
+    this.onVisibilityChanged = addVisibilityHandler(this.onVisibilityChanged, callback)
   }
 
-  fun visibleHandler(visibleHandler: EventHandler<VisibleEvent>?) {
+  fun addVisibleEventListener(callback: EventHandler<VisibleEvent>?) {
     privateFlags = privateFlags or PFLAG_VISIBLE_HANDLER_IS_SET
-    this.visibleHandler = addVisibilityHandler(this.visibleHandler, visibleHandler)
+    this.onVisible = addVisibilityHandler(this.onVisible, callback)
+  }
+
+  fun addInvisibleEventListener(callback: EventHandler<InvisibleEvent>?): LithoNode {
+    privateFlags = privateFlags or PFLAG_INVISIBLE_HANDLER_IS_SET
+    this.onInvisible = addVisibilityHandler(this.onInvisible, callback)
+    return this
+  }
+
+  fun addFocusedVisibleEventListener(callback: EventHandler<FocusedVisibleEvent>?) {
+    privateFlags = privateFlags or PFLAG_FOCUSED_HANDLER_IS_SET
+    this.onFocusedVisible = addVisibilityHandler(this.onFocusedVisible, callback)
+  }
+
+  fun addFullImpressionEventListener(callback: EventHandler<FullImpressionVisibleEvent>?) {
+    privateFlags = privateFlags or PFLAG_FULL_IMPRESSION_HANDLER_IS_SET
+    this.onFullImpression = addVisibilityHandler(this.onFullImpression, callback)
   }
 
   fun visibleHeightRatio(visibleHeightRatio: Float) {
@@ -839,6 +825,18 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
 
   fun visibleWidthRatio(visibleWidthRatio: Float) {
     this.visibleWidthRatio = visibleWidthRatio
+  }
+
+  fun hasVisibilityHandlers(): Boolean =
+      onVisible != null ||
+          onFocusedVisible != null ||
+          onUnfocusedVisible != null ||
+          onFullImpression != null ||
+          onInvisible != null ||
+          onVisibilityChanged != null
+
+  fun visibilityOutputTag(visibilityOutputTag: String?) {
+    this.visibilityOutputTag = visibilityOutputTag
   }
 
   fun wrap(wrap: YogaWrap) {

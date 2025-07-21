@@ -310,7 +310,7 @@ internal object LithoReducer {
   ): VisibilityOutput {
 
     val onVisible =
-        node.visibleHandler?.let {
+        node.onVisible?.let {
           VisibilityEventCallbackData(
               widthRatio = node.visibleWidthRatio,
               heightRatio = node.visibleHeightRatio,
@@ -319,7 +319,7 @@ internal object LithoReducer {
         }
 
     val onFocusedVisible =
-        node.focusedHandler?.let {
+        node.onFocusedVisible?.let {
           VisibilityEventCallbackData(
               widthRatio = node.visibleWidthRatio,
               heightRatio = node.visibleHeightRatio,
@@ -327,7 +327,7 @@ internal object LithoReducer {
           )
         }
     val onUnfocusedVisible =
-        node.unfocusedHandler?.let {
+        node.onUnfocusedVisible?.let {
           VisibilityEventCallbackData(
               widthRatio = node.visibleWidthRatio,
               heightRatio = node.visibleHeightRatio,
@@ -335,7 +335,7 @@ internal object LithoReducer {
           )
         }
     val onFullImpression =
-        node.fullImpressionHandler?.let {
+        node.onFullImpression?.let {
           VisibilityEventCallbackData(
               widthRatio = node.visibleWidthRatio,
               heightRatio = node.visibleHeightRatio,
@@ -343,7 +343,7 @@ internal object LithoReducer {
           )
         }
     val onInvisible =
-        node.invisibleHandler?.let {
+        node.onInvisible?.let {
           VisibilityEventCallbackData(
               widthRatio = node.visibleWidthRatio,
               heightRatio = node.visibleHeightRatio,
@@ -351,7 +351,7 @@ internal object LithoReducer {
           )
         }
     val onVisibilityChange =
-        node.visibilityChangedHandler?.let {
+        node.onVisibilityChanged?.let {
           VisibilityEventCallbackData(
               widthRatio = node.visibleWidthRatio,
               heightRatio = node.visibleHeightRatio,
