@@ -24,9 +24,6 @@ android {
     compileSdkVersion rootProject.compileSdkVersion
     buildToolsVersion rootProject.buildToolsVersion
 
-    // We're on an old version of Robolectric which requires this, sadly.
-    useLibrary 'org.apache.http.legacy'
-
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
     }
