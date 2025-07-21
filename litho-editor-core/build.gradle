@@ -27,19 +27,20 @@ android {
         targetSdkVersion rootProject.targetSdkVersion
     }
 
-    // TODO(#62): Re-enable abort on error.
-
-    dependencies {
-        api project(':litho-core')
-        compileOnly deps.jsr305
-        compileOnly deps.proguardAnnotations
-        compileOnly deps.supportAnnotations
-        compileOnly deps.inferAnnotations
-    }
     namespace 'com.facebook.litho.editor'
+
+    // TODO(#62): Re-enable abort on error.
     lint {
         abortOnError false
     }
+}
+
+dependencies {
+    api project(':litho-core')
+    compileOnly deps.jsr305
+    compileOnly deps.proguardAnnotations
+    compileOnly deps.supportAnnotations
+    compileOnly deps.inferAnnotations
 }
 
 apply plugin: "com.vanniktech.maven.publish"

@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+import com.android.build.gradle.tasks.JavaDocGenerationTask
+import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
+import org.jetbrains.dokka.gradle.DokkaTaskPartial
+import org.jetbrains.kotlin.gradle.internal.KaptWithoutKotlincTask
+import org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin
+
 def latestSdkVersion = 34
 
 buildscript {
@@ -44,14 +50,14 @@ allprojects {
         maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
     }
 
-    tasks.withType(Javadoc).all {
+    tasks.withType(Javadoc).configureEach {
         options.addStringOption('Xdoclint:none', '-quiet')
     }
     // Disabled until there's a workaround/fix for https://github.com/Kotlin/dokka/issues/2472
-    tasks.withType(com.android.build.gradle.tasks.JavaDocGenerationTask).all {
+    tasks.withType(JavaDocGenerationTask).configureEach {
         enabled = false
     }
-    configurations.all {
+    configurations.configureEach {
         // Temporarily exclude sample-barebones project from substitution in order to fix the gradle
         // build.
         if (project.name != "sample-barebones") {
@@ -66,11 +72,11 @@ allprojects {
 }
 
 subprojects {
-    tasks.withType(Javadoc).all {
+    tasks.withType(Javadoc).configureEach {
         enabled = false
     }
 
-    tasks.withType(org.jetbrains.dokka.gradle.DokkaTaskPartial).configureEach {
+    tasks.withType(DokkaTaskPartial).configureEach {
         dokkaSourceSets {
             configureEach {
                 def module_docs_file = 'module-docs.md'
@@ -79,10 +85,10 @@ subprojects {
                 }
             }
         }
-        dependsOn(tasks.withType(org.jetbrains.kotlin.gradle.internal.KaptWithoutKotlincTask))
+        dependsOn(tasks.withType(KaptWithoutKotlincTask))
     }
 
-    tasks.withType(Test) {
+    tasks.withType(Test).configureEach {
         systemProperty "robolectric.looperMode", "LEGACY"
 
         testLogging {
@@ -91,14 +97,14 @@ subprojects {
         }
     }
 
-    plugins.withType(org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin) {
+    plugins.withType(KotlinBasePlugin).configureEach {
         kotlin {
             jvmToolchain(17)
         }
     }
 
     afterEvaluate {
-        tasks.withType(Test) {
+        tasks.withType(Test).configureEach {
             it.dependsOn copyYogaLibs
             systemProperty 'java.library.path', "${rootDir}/build/jniLibs"
             environment 'LD_LIBRARY_PATH', "${rootDir}/build/jniLibs"
@@ -114,7 +120,7 @@ subprojects {
 
 apply plugin: 'org.jetbrains.dokka'
 
-tasks.withType(org.jetbrains.dokka.gradle.DokkaMultiModuleTask).configureEach {
+tasks.withType(DokkaMultiModuleTask).configureEach {
     outputDirectory = file("${rootDir}/website/static/reference")
     moduleName = "Litho"
 }
@@ -207,7 +213,8 @@ ext.deps.yoga =
 
 // This should hopefully only serve as a temporary measure until
 // we have a proper Gradle setup for Yoga and JNI.
-task copyYogaLibs(type: Copy, dependsOn: ':yoga:buckBuild') {
+tasks.register('copyYogaLibs', Copy) {
+    dependsOn ':yoga:buckBuild'
     from 'buck-out/gen/lib/yogajni/jni#default,shared/'
     include '*.so'
     include '*.dylib'

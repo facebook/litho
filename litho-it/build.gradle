@@ -144,7 +144,7 @@ gradle.projectsEvaluated {
         def variationName = variant.name.capitalize()
         def variationPath = variant.buildType.name
 
-        task "copyTest${variationName}Resources"(type: Copy) {
+        tasks.register("copyTest${variationName}Resources", Copy) {
             from "${projectDir}/src/test/resources"
             into "${testClassesPath}/${variationPath}"
         }
