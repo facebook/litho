@@ -46,8 +46,6 @@ class VisibilityOutput(
     val onVisibilityChange: VisibilityEventCallbackData?
 ) {
 
-  private var focusedRatio = 0f
-
   constructor(
       id: String,
       key: String,
@@ -77,62 +75,6 @@ class VisibilityOutput(
       onFullImpression,
       onVisibilityChange)
 
-  val visibilityTop: Float
-    get() =
-        if (visibleHeightRatio == 0f) {
-          bounds.top.toFloat()
-        } else {
-          bounds.top + visibleHeightRatio * (bounds.bottom - bounds.top)
-        }
-
-  val visibilityBottom: Float
-    get() =
-        if (visibleHeightRatio == 0f) {
-          bounds.bottom.toFloat()
-        } else {
-          bounds.bottom - visibleHeightRatio * (bounds.bottom - bounds.top)
-        }
-
-  val visibilityLeft: Float
-    get() = bounds.left + visibleWidthRatio * (bounds.right - bounds.left)
-
-  val visibilityRight: Float
-    get() = bounds.right - visibleHeightRatio * (bounds.right - bounds.left)
-
-  val fullImpressionTop: Float
-    get() = bounds.bottom.toFloat()
-
-  val fullImpressionBottom: Float
-    get() = bounds.top.toFloat()
-
-  val fullImpressionLeft: Float
-    get() = bounds.right.toFloat()
-
-  val fullImpressionRight: Float
-    get() = bounds.left.toFloat()
-
-  val focusedTop: Float
-    get() = bounds.top + focusedRatio * (bounds.bottom - bounds.top)
-
-  val focusedBottom: Float
-    get() = bounds.bottom - focusedRatio * (bounds.bottom - bounds.top)
-
-  val focusedLeft: Float
-    get() = bounds.left + focusedRatio * (bounds.right - bounds.left)
-
-  val focusedRight: Float
-    get() = bounds.right - focusedRatio * (bounds.right - bounds.left)
-
-  val componentArea: Int
-    get() {
-      val rect = bounds
-      return if (rect.isEmpty) 0 else rect.width() * rect.height()
-    }
-
-  fun setFocusedRatio(focusedRatio: Float) {
-    this.focusedRatio = focusedRatio
-  }
-
   /**
    * The factory that client frameworks must implement to enable [VisibilityExtension] to create a
    * [VisibilityOutput] for every visited [LayoutResult] during the layout pass.
@@ -148,7 +90,7 @@ class VisibilityOutput(
 }
 
 class VisibilityEventCallbackData(
-    widthRatio: Float,
-    heightRatio: Float,
+    val widthRatio: Float,
+    val heightRatio: Float,
     val callback: Function<Void?>,
 )
