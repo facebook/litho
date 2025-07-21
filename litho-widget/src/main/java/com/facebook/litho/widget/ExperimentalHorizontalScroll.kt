@@ -84,7 +84,12 @@ class ExperimentalHorizontalScroll(
     ) = useNestedTree(root = child, config = config, treeProps = context.treePropContainer)
 
     val scrollPosition = useState {
-      HorizontalScrollLithoView.ScrollPosition(initialScrollPosition.toPixels())
+      HorizontalScrollLithoView.ScrollPosition(
+          if (initialScrollPosition == LAST_SCROLL_POSITION_UNSET.dp) {
+            LAST_SCROLL_POSITION_UNSET
+          } else {
+            initialScrollPosition.toPixels()
+          })
     }
 
     return LithoPrimitive(

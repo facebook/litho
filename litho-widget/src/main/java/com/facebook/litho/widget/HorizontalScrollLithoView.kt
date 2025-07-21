@@ -151,7 +151,10 @@ constructor(context: Context, val renderTreeView: BaseMountingView = LithoView(c
     doOnPreDraw {
       val position = this.scrollPosition ?: return@doOnPreDraw
       if (position.x == LAST_SCROLL_POSITION_UNSET) {
-        fullScroll(FOCUS_RIGHT)
+        // If RTL layout, scroll to right end
+        if (layoutDirection == LAYOUT_DIRECTION_RTL) {
+          fullScroll(FOCUS_RIGHT)
+        }
         position.x = scrollX
       } else {
         scrollX = position.x
