@@ -98,85 +98,92 @@ class DebugLayoutNodeEditor(private val node: LithoNode) {
 
   fun setFlexBasis(value: YogaValue) {
     when (value.unit) {
-      YogaUnit.UNDEFINED,
-      YogaUnit.MAX_CONTENT,
-      YogaUnit.FIT_CONTENT,
-      YogaUnit.STRETCH,
-      YogaUnit.AUTO -> {} // no ops
       YogaUnit.PERCENT -> node.debugLayoutEditor?.flexBasisPercent(value.value)
       YogaUnit.POINT -> node.debugLayoutEditor?.flexBasisPx(value.value.toInt())
+      // YogaUnit.UNDEFINED,
+      // YogaUnit.MAX_CONTENT,
+      // YogaUnit.FIT_CONTENT,
+      // YogaUnit.STRETCH,
+      // YogaUnit.AUTO,
+      else -> {} // no ops
     }
   }
 
   fun setWidth(value: YogaValue) {
     when (value.unit) {
-      YogaUnit.UNDEFINED,
-      YogaUnit.MAX_CONTENT,
-      YogaUnit.FIT_CONTENT,
-      YogaUnit.STRETCH,
-      YogaUnit.AUTO -> {} // no ops
       YogaUnit.PERCENT -> node.debugLayoutEditor?.widthPercent(value.value)
       YogaUnit.POINT -> node.debugLayoutEditor?.widthPx(value.value.toInt())
+      // YogaUnit.UNDEFINED,
+      // YogaUnit.MAX_CONTENT,
+      // YogaUnit.FIT_CONTENT,
+      // YogaUnit.STRETCH,
+      // YogaUnit.AUTO,
+      else -> {} // no ops
     }
   }
 
   fun setMinWidth(value: YogaValue) {
     when (value.unit) {
-      YogaUnit.UNDEFINED,
-      YogaUnit.MAX_CONTENT,
-      YogaUnit.FIT_CONTENT,
-      YogaUnit.STRETCH,
-      YogaUnit.AUTO -> node.debugLayoutEditor?.minWidthPx(Int.MIN_VALUE)
       YogaUnit.PERCENT -> node.debugLayoutEditor?.minWidthPercent(value.value)
       YogaUnit.POINT -> node.debugLayoutEditor?.minWidthPx(value.value.toInt())
+      // YogaUnit.UNDEFINED,
+      // YogaUnit.MAX_CONTENT,
+      // YogaUnit.FIT_CONTENT,
+      // YogaUnit.STRETCH,
+      // YogaUnit.AUTO,
+      else -> node.debugLayoutEditor?.minWidthPx(Int.MIN_VALUE)
     }
   }
 
   fun setMaxWidth(value: YogaValue) {
     when (value.unit) {
-      YogaUnit.UNDEFINED,
-      YogaUnit.MAX_CONTENT,
-      YogaUnit.FIT_CONTENT,
-      YogaUnit.STRETCH,
-      YogaUnit.AUTO -> node.debugLayoutEditor?.maxWidthPx(Int.MAX_VALUE)
       YogaUnit.PERCENT -> node.debugLayoutEditor?.maxWidthPercent(value.value)
       YogaUnit.POINT -> node.debugLayoutEditor?.maxWidthPx(value.value.toInt())
+      // YogaUnit.UNDEFINED,
+      // YogaUnit.MAX_CONTENT,
+      // YogaUnit.FIT_CONTENT,
+      // YogaUnit.STRETCH,
+      // YogaUnit.AUTO,
+      else -> node.debugLayoutEditor?.maxWidthPx(Int.MAX_VALUE)
     }
   }
 
   fun setHeight(value: YogaValue) {
     when (value.unit) {
-      YogaUnit.UNDEFINED,
-      YogaUnit.MAX_CONTENT,
-      YogaUnit.FIT_CONTENT,
-      YogaUnit.STRETCH,
-      YogaUnit.AUTO -> {} // no ops
       YogaUnit.PERCENT -> node.debugLayoutEditor?.heightPercent(value.value)
       YogaUnit.POINT -> node.debugLayoutEditor?.heightPx(value.value.toInt())
+      // YogaUnit.UNDEFINED,
+      // YogaUnit.MAX_CONTENT,
+      // YogaUnit.FIT_CONTENT,
+      // YogaUnit.STRETCH,
+      // YogaUnit.AUTO,
+      else -> {} // no ops
     }
   }
 
   fun setMinHeight(value: YogaValue) {
     when (value.unit) {
-      YogaUnit.UNDEFINED,
-      YogaUnit.MAX_CONTENT,
-      YogaUnit.FIT_CONTENT,
-      YogaUnit.STRETCH,
-      YogaUnit.AUTO -> node.debugLayoutEditor?.minHeightPx(Int.MIN_VALUE)
       YogaUnit.PERCENT -> node.debugLayoutEditor?.minHeightPercent(value.value)
       YogaUnit.POINT -> node.debugLayoutEditor?.minHeightPx(value.value.toInt())
+      // YogaUnit.UNDEFINED,
+      // YogaUnit.MAX_CONTENT,
+      // YogaUnit.FIT_CONTENT,
+      // YogaUnit.STRETCH,
+      // YogaUnit.AUTO,
+      else -> node.debugLayoutEditor?.minHeightPx(Int.MIN_VALUE)
     }
   }
 
   fun setMaxHeight(value: YogaValue) {
     when (value.unit) {
-      YogaUnit.UNDEFINED,
-      YogaUnit.MAX_CONTENT,
-      YogaUnit.FIT_CONTENT,
-      YogaUnit.STRETCH,
-      YogaUnit.AUTO -> node.debugLayoutEditor?.maxHeightPx(Int.MAX_VALUE)
       YogaUnit.PERCENT -> node.debugLayoutEditor?.maxHeightPercent(value.value)
       YogaUnit.POINT -> node.debugLayoutEditor?.maxHeightPx(value.value.toInt())
+      // YogaUnit.UNDEFINED,
+      // YogaUnit.MAX_CONTENT,
+      // YogaUnit.FIT_CONTENT,
+      // YogaUnit.STRETCH,
+      // YogaUnit.AUTO,
+      else -> node.debugLayoutEditor?.maxHeightPx(Int.MAX_VALUE)
     }
   }
 
@@ -186,37 +193,40 @@ class DebugLayoutNodeEditor(private val node: LithoNode) {
 
   fun setMargin(edge: YogaEdge, value: YogaValue) {
     when (value.unit) {
-      YogaUnit.MAX_CONTENT,
-      YogaUnit.FIT_CONTENT,
-      YogaUnit.STRETCH,
-      YogaUnit.UNDEFINED -> node.debugLayoutEditor?.marginPx(edge, 0)
       YogaUnit.AUTO -> node.debugLayoutEditor?.marginAuto(edge)
       YogaUnit.PERCENT -> node.debugLayoutEditor?.marginPercent(edge, value.value)
       YogaUnit.POINT -> node.debugLayoutEditor?.marginPx(edge, value.value.toInt())
+      // YogaUnit.UNDEFINED,
+      // YogaUnit.MAX_CONTENT,
+      // YogaUnit.FIT_CONTENT,
+      // YogaUnit.STRETCH,
+      else -> node.debugLayoutEditor?.marginPx(edge, 0)
     }
   }
 
   fun setPadding(edge: YogaEdge, value: YogaValue) {
     when (value.unit) {
-      YogaUnit.UNDEFINED,
-      YogaUnit.MAX_CONTENT,
-      YogaUnit.FIT_CONTENT,
-      YogaUnit.STRETCH,
-      YogaUnit.AUTO -> node.debugLayoutEditor?.paddingPx(edge, 0)
       YogaUnit.PERCENT -> node.debugLayoutEditor?.paddingPercent(edge, value.value)
       YogaUnit.POINT -> node.debugLayoutEditor?.paddingPx(edge, value.value.toInt())
+      // YogaUnit.UNDEFINED,
+      // YogaUnit.MAX_CONTENT,
+      // YogaUnit.FIT_CONTENT,
+      // YogaUnit.STRETCH,
+      // YogaUnit.AUTO,
+      else -> node.debugLayoutEditor?.paddingPx(edge, 0)
     }
   }
 
   fun setPosition(edge: YogaEdge, value: YogaValue) {
     when (value.unit) {
-      YogaUnit.UNDEFINED,
-      YogaUnit.MAX_CONTENT,
-      YogaUnit.FIT_CONTENT,
-      YogaUnit.STRETCH,
-      YogaUnit.AUTO -> node.debugLayoutEditor?.positionPercent(edge, YogaConstants.UNDEFINED)
       YogaUnit.PERCENT -> node.debugLayoutEditor?.positionPercent(edge, value.value)
       YogaUnit.POINT -> node.debugLayoutEditor?.positionPx(edge, value.value.toInt())
+      // YogaUnit.UNDEFINED,
+      // YogaUnit.MAX_CONTENT,
+      // YogaUnit.FIT_CONTENT,
+      // YogaUnit.STRETCH,
+      // YogaUnit.AUTO,
+      else -> node.debugLayoutEditor?.positionPercent(edge, YogaConstants.UNDEFINED)
     }
   }
 

@@ -108,7 +108,7 @@ jobs:
       - name: Check if SNAPSHOT version
         id: check_snapshot
         run: |
-          echo "IS_SNAPSHOT=`grep 'VERSION_NAME=[0-9\.]\+-SNAPSHOT' gradle.properties)`" >> $GITHUB_OUTPUT
+          echo "IS_SNAPSHOT=`grep 'VERSION_NAME=[0-9\.]\+-SNAPSHOT' gradle.properties`" >> $GITHUB_OUTPUT
   deploy:
     needs: [deploy-check]
     if: ${{ needs.deploy-check.outputs.is-snapshot == 'true' }}
@@ -134,6 +134,10 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.9.16'
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+      - name: Install CMake
+        run: sdkmanager 'cmake;3.18.1'
       - name: Gradle caches
         uses: actions/cache@v3
         with:
@@ -151,5 +155,12 @@ jobs:
           mv buck-v2022.05.05.01-java11.pex buck/buck && \
           chmod +x buck/buck && \
           ls -l buck)
+      - name: Write GPG Sec Ring
+        run: echo '${{ secrets.GPG_KEY_CONTENTS }}' | base64 -d > /tmp/secring.gpg
+      - name: Update gradle.properties
+        run: echo -e "signing.secretKeyRingFile=/tmp/secring.gpg\nsigning.keyId=${{ secrets.SIGNING_KEY_ID }}\nsigning.password=${{ secrets.SIGNING_PASSWORD }}\nmavenCentralPassword=${{ secrets.SONATYPE_NEXUS_PASSWORD }}\nmavenCentralUsername=${{ secrets.SONATYPE_NEXUS_USERNAME }}" >> gradle.properties
       - name: Publish Snapshot
-        run: BUCK_PATH=`realpath buck/buck` ./gradlew uploadArchives --stacktrace
+        run: BUCK_PATH=`realpath buck/buck` ./gradlew publishToMavenCentral --stacktrace
+      - name: Clean secrets
+        if: always()
+        run: rm /tmp/secring.gpg
