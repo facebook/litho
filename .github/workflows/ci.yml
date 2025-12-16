@@ -11,9 +11,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
       - name: Set up JDK
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v5
         with:
           distribution: 'adopt'
           java-version: 17
@@ -27,7 +27,7 @@ jobs:
         with:
           ndk-version: r26b
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v6
         with:
           python-version: '3.9.16'
       - name: Setup Android SDK
@@ -35,12 +35,12 @@ jobs:
       - name: Install CMake
         run: sdkmanager 'cmake;3.18.1'
       - name: Gradle caches
-        uses: actions/cache@v3
+        uses: actions/cache@v5
         with:
           path: ~/.gradle/caches
           key: caches-${{ runner.os }}-${{ hashFiles('**/*.gradle') }}
       - name: Gradle wrapper caches
-        uses: actions/cache@v3
+        uses: actions/cache@v5
         with:
           path: ~/.gradle/wrapper
           key: wrapper-${{ runner.os }}-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
@@ -57,9 +57,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
       - name: Set up JDK
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v5
         with:
           distribution: 'adopt'
           java-version: 17
@@ -73,16 +73,16 @@ jobs:
         with:
           ndk-version: r26b
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v6
         with:
           python-version: '3.9.16'
       - name: Gradle caches
-        uses: actions/cache@v3
+        uses: actions/cache@v5
         with:
           path: ~/.gradle/caches
           key: caches-${{ runner.os }}-${{ hashFiles('**/*.gradle') }}
       - name: Gradle wrapper caches
-        uses: actions/cache@v3
+        uses: actions/cache@v5
         with:
           path: ~/.gradle/wrapper
           key: wrapper-${{ runner.os }}-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
@@ -104,7 +104,7 @@ jobs:
       is-snapshot: ${{ steps.check_snapshot.outputs.IS_SNAPSHOT != '' }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
       - name: Check if SNAPSHOT version
         id: check_snapshot
         run: |
@@ -115,9 +115,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
       - name: Set up JDK
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v5
         with:
           distribution: 'adopt'
           java-version: 17
@@ -131,16 +131,16 @@ jobs:
         with:
           ndk-version: r26b
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v6
         with:
           python-version: '3.9.16'
       - name: Gradle caches
-        uses: actions/cache@v3
+        uses: actions/cache@v5
         with:
           path: ~/.gradle/caches
           key: caches-${{ runner.os }}-${{ hashFiles('**/*.gradle') }}
       - name: Gradle wrapper caches
-        uses: actions/cache@v3
+        uses: actions/cache@v5
         with:
           path: ~/.gradle/wrapper
           key: wrapper-${{ runner.os }}-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}

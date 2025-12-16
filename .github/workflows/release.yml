@@ -37,7 +37,7 @@ jobs:
       release-version-info: ${{ steps.version_info.outputs.VERSION_INFO }}
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v6
     - name: Extract version info
       id: version_info
       run: echo "VERSION_INFO=`git log --format=%B -n 1 . | egrep '^[rR]elease version' | egrep -o '([[:digit:]]+\.){2}[[:digit:]]+' | xargs -0 printf v%s`" >> $GITHUB_OUTPUT
@@ -61,14 +61,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v6
     - name: Set up JDK
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v5
       with:
         distribution: 'adopt'
         java-version: 17
     - name: Setup Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v6
       with:
         python-version: '3.9.16'
     - name: Fetch buck
@@ -90,14 +90,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v6
     - name: Set up JDK
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v5
       with:
         distribution: 'adopt'
         java-version: 17
     - name: Setup Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v6
       with:
         python-version: '3.9.16'
     - name: Fetch buck
@@ -115,14 +115,14 @@ jobs:
     needs: [test-job, sample-app-job]
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v6
     - name: Set up JDK
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v5
       with:
         distribution: 'adopt'
         java-version: 17
     - name: Setup Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v6
       with:
         python-version: '3.9.16'
     - name: Write GPG Sec Ring
@@ -147,7 +147,7 @@ jobs:
     needs: [check-release-job, publish-job]
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v6
     - name: Set Git tag
       uses: tvdias/github-tagger@v0.0.1
       with:
