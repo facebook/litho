@@ -25,5 +25,5 @@ object RenderCoreThreadUtilsConfig {
    *
    * system property at startup but can be overridden at runtime.
    */
-  @JvmField var isEndToEndTestRun: Boolean = System.getProperty("IS_TESTING") != null
+  @Volatile @JvmField var isEndToEndTestRun: Boolean = System.getProperty("IS_TESTING") != null
 }
