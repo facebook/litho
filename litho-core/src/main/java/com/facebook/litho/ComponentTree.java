@@ -2772,7 +2772,7 @@ public class ComponentTree
      * that will execute in the main thread (via {@link #mCreateMainChoreographerRunnable})
      *
      * @return {@code true} when the main choreographer was initialized already, or {@code false}
-     *     when the process was started, but the initialization has not occured yet.
+     *     when the process was started, but the initialization has not occurred yet.
      */
     private void initializeMainChoreographer() {
       if (mMainChoreographer.get() != null) return;
