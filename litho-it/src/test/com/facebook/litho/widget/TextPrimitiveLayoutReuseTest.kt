@@ -20,12 +20,15 @@ import android.graphics.Color
 import android.text.Layout
 import android.view.View
 import android.view.ViewGroup
+import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
+import com.facebook.litho.LithoView
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.rendercore.RenderCoreConfig
 import com.facebook.rendercore.text.RCTextView
+import com.facebook.yoga.YogaDirection
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
@@ -109,6 +112,89 @@ class TextPrimitiveLayoutReuseTest {
 
     assertThat(mountedLayout(testLithoView.lithoView).text.toString()).isEqualTo("Goodbye")
   }
+
+  @Test
+  fun `a flip to RTL lays out text with its own direction again`() {
+    assertFlipMatchesFreshLayout { c, direction -> directedText(c, direction) }
+  }
+
+  @Test
+  fun `a flip to RTL lays out text inheriting its direction again`() {
+    assertFlipMatchesFreshLayout { c, direction -> textIn(c, direction, fixedHeight = true) }
+  }
+
+  @Test
+  fun `a flip to RTL lays out legacy text again`() {
+    ComponentsConfiguration.usePrimitiveText = false
+
+    assertFlipMatchesFreshLayout { c, direction -> textIn(c, direction, fixedHeight = false) }
+    assertFlipMatchesFreshLayout { c, direction -> textIn(c, direction, fixedHeight = true) }
+  }
+
+  @Test
+  fun `a re-render in the same direction keeps the layout`() {
+    val testLithoView =
+        lithoTestRule.render(widthPx = WIDTH_PX, heightPx = 2000) {
+          textIn(context, YogaDirection.LTR, fixedHeight = true)
+        }
+    val first = mountedTextLayout(testLithoView.lithoView)
+
+    testLithoView.setRoot(textIn(lithoTestRule.context, YogaDirection.LTR, fixedHeight = true))
+    lithoTestRule.idle()
+
+    assertThat(mountedTextLayout(testLithoView.lithoView)).isSameAs(first)
+  }
+
+  /**
+   * Lays out LTR, then RTL with equal props, and checks the text starts where a fresh RTL layout
+   * puts it. LAYOUT_START alignment follows the direction, so the two directions differ.
+   */
+  private fun assertFlipMatchesFreshLayout(
+      build: (ComponentContext, YogaDirection) -> Component,
+  ) {
+    val freshLineLeft = mountedTextLayout(
+        lithoTestRule
+            .render(widthPx = WIDTH_PX, heightPx = 2000) { build(context, YogaDirection.RTL) }
+            .lithoView,
+    )
+        .getLineLeft(0)
+    val testLithoView =
+        lithoTestRule.render(widthPx = WIDTH_PX, heightPx = 2000) {
+          build(context, YogaDirection.LTR)
+        }
+    assertThat(mountedTextLayout(testLithoView.lithoView).getLineLeft(0))
+        .isNotEqualTo(freshLineLeft)
+
+    testLithoView.setRoot(build(lithoTestRule.context, YogaDirection.RTL))
+    lithoTestRule.idle()
+
+    assertThat(mountedTextLayout(testLithoView.lithoView).getLineLeft(0)).isEqualTo(freshLineLeft)
+  }
+
+  private fun directedText(c: ComponentContext, direction: YogaDirection): Component =
+      Text.create(c)
+          .text("Hello")
+          .textSizePx(40)
+          .alignment(TextAlignment.LAYOUT_START)
+          .layoutDirection(direction)
+          .build()
+
+  private fun textIn(
+      c: ComponentContext,
+      direction: YogaDirection,
+      fixedHeight: Boolean,
+  ): Component {
+    val text = Text.create(c).text("Hello").textSizePx(40).alignment(TextAlignment.LAYOUT_START)
+    if (fixedHeight) {
+      text.heightPx(60)
+    }
+    return Column.create(c).layoutDirection(direction).child(text).build()
+  }
+
+  /** The mounted text layout, for primitive (RCTextView) and legacy (TextDrawable) Text alike. */
+  private fun mountedTextLayout(lithoView: LithoView): Layout =
+      lithoView.drawables.filterIsInstance<TextDrawable>().firstOrNull()?.layout
+          ?: mountedLayout(lithoView)
 
   private fun text(
       c: ComponentContext,

@@ -17,6 +17,7 @@
 package com.facebook.litho
 
 import androidx.collection.ScatterSet
+import com.facebook.litho.layout.LayoutDirection
 import com.facebook.litho.state.StateId
 import com.facebook.rendercore.LayoutResult
 import com.facebook.rendercore.primitives.Primitive
@@ -42,6 +43,7 @@ internal constructor(
   override var lastMeasuredHeight: Int = 0
   override var lastWidthSpec: Int = 0
   override var lastHeightSpec: Int = 0
+  override var layoutDirection: LayoutDirection? = null
   override var delegate: LayoutResult? = null
   override var layoutData: Any? = null
   override var effects: List<Attachable>? = null

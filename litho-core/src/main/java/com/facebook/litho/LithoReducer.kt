@@ -1017,6 +1017,7 @@ internal object LithoReducer {
   private fun stampDiffNodeMetadata(diffNode: DiffNode, result: LithoLayoutResult) {
     diffNode.lastWidthSpec = result.widthSpec
     diffNode.lastHeightSpec = result.heightSpec
+    diffNode.layoutDirection = result.node.layoutDirection
     diffNode.lastMeasuredWidth = result.contentWidth
     diffNode.lastMeasuredHeight = result.contentHeight
     diffNode.layoutData = result.layoutData

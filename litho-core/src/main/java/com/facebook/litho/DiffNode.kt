@@ -17,6 +17,7 @@
 package com.facebook.litho
 
 import androidx.collection.ScatterSet
+import com.facebook.litho.layout.LayoutDirection
 import com.facebook.litho.state.StateId
 import com.facebook.rendercore.LayoutResult
 import com.facebook.rendercore.primitives.Primitive
@@ -53,6 +54,11 @@ interface DiffNode : Cloneable {
   var lastMeasuredHeight: Int
   var lastWidthSpec: Int
   var lastHeightSpec: Int
+  /**
+   * The direction this node was last laid out in. A layout can depend on it, so its last
+   * measurement is only reused in the same direction.
+   */
+  var layoutDirection: LayoutDirection?
   val children: List<DiffNode>
 
   fun addChild(node: DiffNode)

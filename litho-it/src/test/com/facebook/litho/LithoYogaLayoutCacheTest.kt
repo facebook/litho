@@ -19,6 +19,7 @@ package com.facebook.litho
 import android.content.Context
 import androidx.collection.ScatterSet
 import androidx.test.core.app.ApplicationProvider
+import com.facebook.litho.layout.LayoutDirection
 import com.facebook.litho.state.StateId
 import com.facebook.litho.testing.TestDrawableComponent
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -537,6 +538,7 @@ class LithoYogaLayoutCacheTest {
   private fun populateDiffTreeMeasurements(diffNode: DiffNode, result: LithoLayoutResult) {
     diffNode.lastWidthSpec = result.widthSpec
     diffNode.lastHeightSpec = result.heightSpec
+    diffNode.layoutDirection = result.node.layoutDirection
     diffNode.lastMeasuredWidth = result.contentWidth
     diffNode.lastMeasuredHeight = result.contentHeight
     for (i in 0 until minOf(diffNode.childCount, result.childCount)) {
@@ -686,6 +688,7 @@ private class TestDiffNode(
   override var lastMeasuredHeight = 0
   override var lastWidthSpec = 0
   override var lastHeightSpec = 0
+  override var layoutDirection: LayoutDirection? = null
   override var layoutData: Any? = null
   override var effects: List<Attachable>? = null
   override var stateReads: ScatterSet<StateId>? = null

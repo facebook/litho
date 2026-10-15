@@ -966,7 +966,7 @@ internal object LithoYogaLayoutFunction {
     yogaOutput._diffNode = diff
 
     trace({ "layout.shouldRemeasure:${currentNode.headComponent.simpleName}" }) {
-      val isEquivalent =
+      val haveEquivalentProps =
           if (currentNode.primitive != null) {
             allNotNull(currentNode.primitive?.layoutBehavior, diff.primitive?.layoutBehavior) {
                 layoutBehavior1,
@@ -989,6 +989,10 @@ internal object LithoYogaLayoutFunction {
               }
             }
           }
+      // A layout may depend on its direction (Text resolves alignment from it), and it isn't part
+      // of
+      // the props, so a measurement from the other direction can't be reused.
+      val isEquivalent = haveEquivalentProps && diff.layoutDirection == currentNode.layoutDirection
       val isMountSpecWithMeasure = component.canMeasure() && Component.isMountSpec(component)
       if (isMountSpecWithMeasure && !isEquivalent) {
         yogaOutput.yogaNode.dirty()
