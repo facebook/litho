@@ -313,7 +313,6 @@ internal constructor(
     @JvmField var reduceMemorySpikeUserSession: Boolean = false
     @JvmField var reduceMemorySpikeDataDiffSection: Boolean = false
     @JvmField var reduceMemorySpikeGetUri: Boolean = false
-    @JvmField var useSafeSpanEndInTextInputSpec: Boolean = false
     @JvmField var clampSelectionMarkerBoundsInTextInput: Boolean = true
 
     @JvmField var enableInvalidAccessibilityVirtualNodeFix: Boolean = false

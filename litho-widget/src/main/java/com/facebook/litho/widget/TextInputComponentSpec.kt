@@ -1798,8 +1798,7 @@ internal object TextInputComponentSpec {
         }
 
         private fun shouldUseSafeSpanEnd(span: Any?): Boolean {
-          return (SuggestionRangeSpanApi33Util.isSuggestionRangeSpan(span) &&
-              ComponentsConfiguration.useSafeSpanEndInTextInputSpec)
+          return SuggestionRangeSpanApi33Util.isSuggestionRangeSpan(span)
         }
 
         // Orthogonal to shouldUseSafeSpanEnd to preserve D54969262's narrow scope.
