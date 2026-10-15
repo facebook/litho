@@ -77,11 +77,13 @@ import com.facebook.samples.litho.kotlin.animations.animatedcounter.AnimatingCou
 import com.facebook.samples.litho.kotlin.animations.animationcomposition.ComposedAnimationsComponentKotlin
 import com.facebook.samples.litho.kotlin.animations.blur.BlurKComponent
 import com.facebook.samples.litho.kotlin.animations.bounds.BoundsAnimationComponent
+import com.facebook.samples.litho.kotlin.animations.diffbased.ChoreographyComponent
 import com.facebook.samples.litho.kotlin.animations.diffbased.DiffBoundsReorderComponent
 import com.facebook.samples.litho.kotlin.animations.diffbased.DiffFadeToggleComponent
 import com.facebook.samples.litho.kotlin.animations.diffbased.DiffInterruptionPreservationComponent
 import com.facebook.samples.litho.kotlin.animations.diffbased.DiffReflowToggleComponent
 import com.facebook.samples.litho.kotlin.animations.diffbased.DiffReusableMotionComponent
+import com.facebook.samples.litho.kotlin.animations.diffbased.PageIndicatorsComponent
 import com.facebook.samples.litho.kotlin.animations.docs.ParallelTransitionWithAnimatorsComponent as KotlinParallelTransitionWithAnimatorsComponent
 import com.facebook.samples.litho.kotlin.animations.docs.SequenceTransitionLoopComponent as KotlinSequenceTransitionLoopComponent
 import com.facebook.samples.litho.kotlin.animations.docs.StaggerTransitionComponent as KotlinStaggerTransitionComponent
@@ -97,10 +99,12 @@ import com.facebook.samples.litho.kotlin.animations.statebased.AnimatedContentDe
 import com.facebook.samples.litho.kotlin.animations.statebased.AnimatedCounterComponent
 import com.facebook.samples.litho.kotlin.animations.statebased.AnimatedPropertiesComponent
 import com.facebook.samples.litho.kotlin.animations.statebased.AnimatedVisibilityDemoComponent
+import com.facebook.samples.litho.kotlin.animations.statebased.AnimationCallbackComponent
 import com.facebook.samples.litho.kotlin.animations.statebased.ColorAnimationComponent
 import com.facebook.samples.litho.kotlin.animations.statebased.ExpandableCardComponent
 import com.facebook.samples.litho.kotlin.animations.statebased.FadeToggleComponent
 import com.facebook.samples.litho.kotlin.animations.statebased.InfiniteAnimationDemosComponent
+import com.facebook.samples.litho.kotlin.animations.statebased.PathMotionComponent
 import com.facebook.samples.litho.kotlin.animations.statebased.SpecComparisonComponent
 import com.facebook.samples.litho.kotlin.animations.statebased.SpringComparisonComponent
 import com.facebook.samples.litho.kotlin.animations.transitions.TransitionsComponent
@@ -354,6 +358,14 @@ class Demos {
                             name = "Infinite Animations",
                             component = InfiniteAnimationDemosComponent(),
                         ),
+                        SingleDemo(
+                            name = "Path Motion",
+                            component = PathMotionComponent(),
+                        ),
+                        SingleDemo(
+                            name = "Animation Callback",
+                            component = AnimationCallbackComponent(),
+                        ),
                     ),
                 ),
                 DemoGrouping(
@@ -378,6 +390,14 @@ class Demos {
                         SingleDemo(
                             name = "Reflow",
                             component = DiffReflowToggleComponent(),
+                        ),
+                        SingleDemo(
+                            name = "Choreography",
+                            component = ChoreographyComponent(),
+                        ),
+                        SingleDemo(
+                            name = "Page Indicators",
+                            component = PageIndicatorsComponent(),
                         ),
                     ),
                 ),
