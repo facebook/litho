@@ -18,11 +18,10 @@ package com.facebook.litho
 
 import android.os.Build
 import android.view.View
+import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.core.view.ViewCompat
-import com.facebook.rendercore.MountItem
 import java.lang.IllegalArgumentException
-import java.lang.RuntimeException
 import kotlin.jvm.JvmField
 
 /** This class hosts any extra mount data related to MountItem. */
@@ -48,6 +47,7 @@ class LithoMountData(content: Any?) {
     private const val FLAG_VIEW_KEYBOARD_NAVIGATION_CLUSTER = 1 shl 9
     private const val FLAG_VIEW_VISIBILITY_1 = 1 shl 10
     private const val FLAG_VIEW_VISIBILITY_2 = 1 shl 11
+    private const val FLAG_VIEW_CLIP_CHILDREN = 1 shl 12
 
     /** @return Whether the view associated with this MountItem is clickable. */
     @JvmStatic
@@ -88,6 +88,14 @@ class LithoMountData(content: Any?) {
     fun isViewKeyboardNavigationCluster(flags: Int): Boolean =
         flags and FLAG_VIEW_KEYBOARD_NAVIGATION_CLUSTER == FLAG_VIEW_KEYBOARD_NAVIGATION_CLUSTER
 
+    /**
+     * @return Whether the [ViewGroup] associated with this MountItem clips its children. Always
+     *   false for content that is not a [ViewGroup].
+     */
+    @JvmStatic
+    fun isViewClipChildren(flags: Int): Boolean =
+        flags and FLAG_VIEW_CLIP_CHILDREN == FLAG_VIEW_CLIP_CHILDREN
+
     @JvmStatic
     @LayerType
     fun getOriginalLayerType(flags: Int): Int =
@@ -107,12 +115,6 @@ class LithoMountData(content: Any?) {
         } else {
           View.GONE
         }
-
-    @JvmStatic
-    fun getMountData(item: MountItem): LithoMountData {
-      return item.mountData as? LithoMountData
-          ?: throw RuntimeException("MountData should not be null when using Litho's MountState.")
-    }
 
     @JvmStatic
     fun getViewAttributeFlags(content: Any?): Int {
@@ -143,6 +145,9 @@ class LithoMountData(content: Any?) {
         }
         if (ViewCompat.isKeyboardNavigationCluster(content)) {
           flags = flags or FLAG_VIEW_KEYBOARD_NAVIGATION_CLUSTER
+        }
+        if (content is ViewGroup && content.clipChildren) {
+          flags = flags or FLAG_VIEW_CLIP_CHILDREN
         }
         when (content.visibility) {
           View.VISIBLE -> {} // 00

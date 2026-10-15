@@ -19,6 +19,8 @@ package com.facebook.litho
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import com.facebook.litho.kotlin.widget.Text
+import com.facebook.litho.layout.flexbox.Column
+import com.facebook.litho.layout.flexbox.Row
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -145,8 +147,9 @@ class KEffectsTest {
 
     val useEffectCalls = mutableListOf<String>()
 
-    val testLithoView =
-        lithoViewRule.render { UseEffectComponent(useEffectCalls, dep = null, seq = 0) }
+    val testLithoView = lithoViewRule.render {
+      UseEffectComponent(useEffectCalls, dep = null, seq = 0)
+    }
     assertThat(useEffectCalls).containsExactly("attach 0")
     useEffectCalls.clear()
 
@@ -260,7 +263,7 @@ class KEffectsTest {
     testLithoView.setRoot(UseEffectComponent(useEffectCalls, dep1 = 1, dep2 = 1, dep3 = 1, seq = 2))
 
     assertThat(useEffectCalls)
-        .containsExactly("dep1: detach 0", "dep1: attach 2", "dep3: detach 0", "dep3: attach 2")
+        .containsExactly("dep1: detach 0", "dep3: detach 0", "dep1: attach 2", "dep3: attach 2")
     useEffectCalls.clear()
 
     testLithoView.setRoot(UseEffectComponent(useEffectCalls, dep1 = 1, dep2 = 1, dep3 = 1, seq = 3))
@@ -446,8 +449,9 @@ class KEffectsTest {
 
     val useEffectCalls = mutableListOf<String>()
 
-    val testLithoView =
-        lithoViewRule.render { UseEffectComponent(useEffectCalls, dep = null, seq = 0) }
+    val testLithoView = lithoViewRule.render {
+      UseEffectComponent(useEffectCalls, dep = null, seq = 0)
+    }
     assertThat(useEffectCalls).containsExactly("attach 0")
     useEffectCalls.clear()
 
@@ -561,7 +565,7 @@ class KEffectsTest {
     testLithoView.setRoot(UseEffectComponent(useEffectCalls, dep1 = 1, dep2 = 1, dep3 = 1, seq = 2))
 
     assertThat(useEffectCalls)
-        .containsExactly("dep1: detach 0", "dep1: attach 2", "dep3: detach 0", "dep3: attach 2")
+        .containsExactly("dep1: detach 0", "dep3: detach 0", "dep1: attach 2", "dep3: attach 2")
     useEffectCalls.clear()
 
     testLithoView.setRoot(UseEffectComponent(useEffectCalls, dep1 = 1, dep2 = 1, dep3 = 1, seq = 3))
@@ -614,14 +618,13 @@ class KEffectsTest {
     var attachCount = 0
     var detachCount = 0
     val controller = TestCounterComponent.Controller()
-    val component =
-        TestCounterComponent(
-            initialCount = 2,
-            onRender = { renderCount++ },
-            onAttach = { attachCount++ },
-            onDetach = { detachCount++ },
-            controller = controller,
-        )
+    val component = TestCounterComponent(
+        initialCount = 2,
+        onRender = { renderCount++ },
+        onAttach = { attachCount++ },
+        onDetach = { detachCount++ },
+        controller = controller,
+    )
 
     val testLithoView = lithoViewRule.render { Column { child(component) } }
 
@@ -653,7 +656,8 @@ class KEffectsTest {
 
     // remove component
     testLithoView.setRoot(
-        with(ComponentScope(ComponentContext(lithoViewRule.context))) { Text(text = "hello") })
+        with(ComponentScope(ComponentContext(lithoViewRule.context))) { Text(text = "hello") },
+    )
 
     // testLithoView.setRoot(component)
     testLithoView.findViewWithText("hello")
@@ -704,5 +708,6 @@ class KEffectsTest {
 internal fun PrimitiveComponentScope.TestPrimitive(): Primitive {
   return Primitive(
       layoutBehavior = FixedSizeLayoutBehavior(100.px, 100.px),
-      mountBehavior = MountBehavior(DrawableAllocator { ColorDrawable(Color.RED) }) {})
+      mountBehavior = MountBehavior(DrawableAllocator { ColorDrawable(Color.RED) }) {},
+  )
 }

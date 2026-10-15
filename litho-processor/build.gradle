@@ -18,8 +18,16 @@ import org.gradle.internal.jvm.Jvm
 
 apply plugin: 'java'
 
-sourceCompatibility = rootProject.sourceCompatibilityVersion
-targetCompatibility = rootProject.targetCompatibilityVersion
+java.sourceCompatibility = rootProject.sourceCompatibilityVersion
+java.targetCompatibility = rootProject.targetCompatibilityVersion
+
+// ParamNameExtractor reads javac's internal Symbol and Name types.
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs += [
+        '--add-exports', 'jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED',
+        '--add-exports', 'jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED',
+    ]
+}
 
 dependencies {
     // We *generate* code based on these annotations, so we cannot just depend on them
@@ -27,7 +35,6 @@ dependencies {
     implementation project(':litho-annotations')
     implementation deps.jsr305
 
-    compileOnly files('../lib/tools.jar')
 
     // Processor
     implementation deps.javapoet

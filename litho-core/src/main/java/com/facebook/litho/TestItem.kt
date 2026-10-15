@@ -61,7 +61,8 @@ class TestItem {
     get() =
         (content as? Checkable)?.isChecked
             ?: throw UnsupportedOperationException(
-                "This Litho component can't be checked, we can't determine its check state.")
+                "This Litho component can't be checked, we can't determine its check state.",
+            )
 
   @DoNotStrip class AcquireKey
 }

@@ -53,7 +53,7 @@ class ComponentTreeScopeTest {
   fun `componentTreeScope can start when LithoView is attached`() {
     val events = mutableListOf<String>()
 
-    val tree = ComponentTree.create(ComponentContext(context)).build()
+    val tree = ComponentTree.create(ComponentContext(context)).enableChildClipping(true).build()
     val lithoTree = LithoTree.create(tree, tree)
 
     lithoTree.lithoTreeScope.launch { events += "launch" }
@@ -66,7 +66,7 @@ class ComponentTreeScopeTest {
   fun `componentTreeScope is canceled when LithoView is detached`() {
     val events = mutableListOf<String>()
 
-    val tree = ComponentTree.create(ComponentContext(context)).build()
+    val tree = ComponentTree.create(ComponentContext(context)).enableChildClipping(true).build()
     val lithoTree = LithoTree.create(tree, tree)
 
     lithoTree.lithoTreeScope.launch {
@@ -88,7 +88,7 @@ class ComponentTreeScopeTest {
 
   @Test
   fun `componentTreeScope starts as canceled if view is detached`() {
-    val tree = ComponentTree.create(ComponentContext(context)).build()
+    val tree = ComponentTree.create(ComponentContext(context)).enableChildClipping(true).build()
     val lithoTree = LithoTree.create(tree, tree)
 
     tree.release()

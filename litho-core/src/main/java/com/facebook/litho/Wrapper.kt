@@ -25,7 +25,8 @@ import java.util.BitSet
  * Utility class for wrapping an existing [Component]. This is useful for adding further
  * [CommonProps] to an already created component.
  */
-class Wrapper private constructor() : SpecGeneratedComponent("Wrapper") {
+class Wrapper private constructor(name: String? = null) :
+    SpecGeneratedComponent(if (name.isNullOrEmpty()) "Wrapper" else name) {
 
   @Prop var delegate: Component? = null
 
@@ -46,13 +47,13 @@ class Wrapper private constructor() : SpecGeneratedComponent("Wrapper") {
       resolveContext: ResolveContext,
       scopedComponentInfo: ScopedComponentInfo,
       parentWidthSpec: Int,
-      parentHeightSpec: Int
+      parentHeightSpec: Int,
   ): ComponentResolveResult {
     val lithoNode: LithoNode? = resolve(resolveContext, scopedComponentInfo.context)
     return ComponentResolveResult(lithoNode, commonProps)
   }
 
-  override fun isEquivalentProps(other: Component?, shouldCompareCommonProps: Boolean): Boolean {
+  override fun isEquivalentProps(other: Component?): Boolean {
     if (this === other) {
       return true
     }
@@ -62,7 +63,7 @@ class Wrapper private constructor() : SpecGeneratedComponent("Wrapper") {
     if (this.instanceId == other.instanceId) {
       return true
     }
-    return ComponentUtils.isEquivalent(delegate, other.delegate, shouldCompareCommonProps)
+    return ComponentUtils.isEquivalent(delegate, other.delegate)
   }
 
   override fun getSimpleNameDelegate(): Component? {
@@ -74,7 +75,7 @@ class Wrapper private constructor() : SpecGeneratedComponent("Wrapper") {
       context: ComponentContext,
       defStyleAttr: Int,
       defStyleRes: Int,
-      private var wrapper: Wrapper
+      private var wrapper: Wrapper,
   ) : Component.Builder<Builder>(context, defStyleAttr, defStyleRes, wrapper) {
     private val required = BitSet(REQUIRED_PROPS_COUNT)
 
@@ -107,8 +108,13 @@ class Wrapper private constructor() : SpecGeneratedComponent("Wrapper") {
   companion object {
     @JvmOverloads
     @JvmStatic
-    fun create(context: ComponentContext?, defStyleAttr: Int = 0, defStyleRes: Int = 0): Builder {
-      return Builder(requireNotNull(context), defStyleAttr, defStyleRes, Wrapper())
+    fun create(
+        context: ComponentContext?,
+        name: String? = null,
+        defStyleAttr: Int = 0,
+        defStyleRes: Int = 0,
+    ): Builder {
+      return Builder(requireNotNull(context), defStyleAttr, defStyleRes, Wrapper(name))
     }
   }
 }
@@ -119,8 +125,27 @@ class Wrapper private constructor() : SpecGeneratedComponent("Wrapper") {
  */
 @Suppress("NOTHING_TO_INLINE", "FunctionName")
 inline fun ResourcesScope.Wrapper(
+    name: String? = null,
     style: Style,
-    crossinline content: ResourcesScope.() -> Component
+    crossinline content: ResourcesScope.() -> Component,
 ): Wrapper {
-  return Wrapper.create(context).delegate(content()).kotlinStyle(style).build()
+  return Wrapper.create(context = context, name = name)
+      .delegate(content())
+      .kotlinStyle(style)
+      .build()
+}
+
+/**
+ * Builder function for creating [Wrapper] components for a nullable content. It's useful for adding
+ * additional [Style] props to a given component.
+ */
+@Suppress("NOTHING_TO_INLINE", "FunctionName")
+inline fun ResourcesScope.NullableWrapper(
+    name: String? = null,
+    style: Style,
+    crossinline content: ResourcesScope.() -> Component?,
+): Wrapper? {
+  return content()?.let { component ->
+    Wrapper.create(context = context, name = name).delegate(component).kotlinStyle(style).build()
+  }
 }

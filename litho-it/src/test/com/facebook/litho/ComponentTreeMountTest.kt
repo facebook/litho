@@ -23,6 +23,8 @@ import android.graphics.Color.YELLOW
 import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import androidx.test.core.app.ApplicationProvider
+import com.facebook.litho.core.height
+import com.facebook.litho.core.width
 import com.facebook.litho.testing.TestTransitionComponent
 import com.facebook.litho.testing.eventhandler.EventHandlerTestHelper
 import com.facebook.litho.testing.eventhandler.EventHandlerTestHelper.MockEventHandler
@@ -31,11 +33,15 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.SimpleMountSpecTester
 import com.facebook.litho.widget.SolidColor
 import com.facebook.litho.widget.Text
+import com.facebook.rendercore.dp
+import com.facebook.rendercore.extensions.VisibilityChangeReason
+import com.facebook.rendercore.visibility.VisibleEvent
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.Shadows
+import org.robolectric.shadow.api.Shadow
+import org.robolectric.shadows.ShadowView
 
 @RunWith(LithoTestRunner::class)
 class ComponentTreeMountTest {
@@ -51,12 +57,13 @@ class ComponentTreeMountTest {
   fun testRemountsWithNewInputOnSameLayout() {
     val lithoView =
         ComponentTestHelper.mountComponent(
-            context, SimpleMountSpecTester.create(context).color(Color.BLACK).build())
-    Shadows.shadowOf(lithoView).callOnAttachedToWindow()
+            context,
+            SimpleMountSpecTester(color = Color.BLACK),
+        )
+    (Shadow.extract(lithoView) as ShadowView).callOnAttachedToWindow()
     assertThat(lithoView.drawables).hasSize(1)
     assertThat((lithoView.drawables[0] as ColorDrawable).color).isEqualTo(Color.BLACK)
-    lithoView.componentTree?.root =
-        SimpleMountSpecTester.create(context).color(Color.YELLOW).build()
+    lithoView.componentTree?.root = SimpleMountSpecTester(color = Color.YELLOW)
     assertThat(lithoView.drawables).hasSize(1)
     assertThat((lithoView.drawables[0] as ColorDrawable).color).isEqualTo(Color.YELLOW)
   }
@@ -74,27 +81,45 @@ class ComponentTreeMountTest {
                           Row.create(context)
                               .child(Text.create(context).text("text").textSizeDip(20f))
                               .child(
-                                  SolidColor.create(context)
-                                      .color(Color.BLUE)
-                                      .widthDip(20f)
-                                      .heightDip(20f))
-                              .build())
-                      .build())
+                                  SolidColor(
+                                      color = Color.BLUE,
+                                      style = Style.width(20.dp).height(20.dp),
+                                  ),
+                              )
+                              .build(),
+                      )
+                      .build(),
+              )
               null
-            })
+            },
+        )
     lithoView.setComponent(
         TestTransitionComponent.create(
                 context,
                 Column.create(context)
                     .child(
-                        SolidColor.create(context).color(Color.YELLOW).widthDip(10f).heightDip(10f))
+                        SolidColor(
+                            color = Color.YELLOW,
+                            style = Style.width(10.dp).height(10.dp),
+                        ),
+                    )
                     .child(
-                        SolidColor.create(context).color(Color.GREEN).widthDip(10f).heightDip(10f))
+                        SolidColor(
+                            color = Color.GREEN,
+                            style = Style.width(10.dp).height(10.dp),
+                        ),
+                    )
                     .child(
-                        SolidColor.create(context).color(Color.GRAY).widthDip(10f).heightDip(10f))
-                    .build())
+                        SolidColor(
+                            color = Color.GRAY,
+                            style = Style.width(10.dp).height(10.dp),
+                        ),
+                    )
+                    .build(),
+            )
             .visibleHandler(visibleEventHandler)
-            .build())
-    lithoView.notifyVisibleBoundsChanged(Rect(0, 0, 100, 100), true)
+            .build(),
+    )
+    lithoView.notifyVisibleBoundsChanged(Rect(0, 0, 100, 100), true, VisibilityChangeReason.UNKNOWN)
   }
 }

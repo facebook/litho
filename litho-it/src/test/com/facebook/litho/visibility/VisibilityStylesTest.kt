@@ -17,10 +17,10 @@
 package com.facebook.litho.visibility
 
 import android.widget.FrameLayout
-import com.facebook.litho.Row
 import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
+import com.facebook.litho.layout.flexbox.Row
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.LithoTestRuleResizeMode
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -36,13 +36,13 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class VisibilityStylesTest {
 
-  @Rule @JvmField val mLithoTestRule = LithoTestRule(resizeMode = LithoTestRuleResizeMode.MANUAL)
+  @Rule @JvmField val lithoTestRule = LithoTestRule(resizeMode = LithoTestRuleResizeMode.MANUAL)
 
   @Test
   fun onVisible_whenSet_firesWhenVisible() {
     val eventFired = AtomicBoolean(false)
 
-    mLithoTestRule.render {
+    lithoTestRule.render {
       Row(style = Style.width(200.px).height(200.px).onVisible { eventFired.set(true) })
     }
 
@@ -53,10 +53,9 @@ class VisibilityStylesTest {
   fun onInvisible_whenSet_firesWhenVisibleThenInvisible() {
     val eventFired = AtomicBoolean(false)
 
-    val testLithoView =
-        mLithoTestRule.render {
-          Row(style = Style.width(200.px).height(200.px).onInvisible { eventFired.set(true) })
-        }
+    val testLithoView = lithoTestRule.render {
+      Row(style = Style.width(200.px).height(200.px).onInvisible { eventFired.set(true) })
+    }
 
     assertThat(eventFired.get()).isFalse()
 
@@ -74,18 +73,18 @@ class VisibilityStylesTest {
     // the focus event cannot be invoked as the LithoView does not have a parent yet, which
     // is required for FocusedVisible. Consequently, we will not dispatch the focus/unfocus event
     // for a fully visible item again.
-    val testLithoView =
-        mLithoTestRule.createTestLithoView {
-          Row(
-              style =
-                  Style.width(200.px)
-                      .height(200.px)
-                      .onFocusedVisible { focusFired.set(true) }
-                      .onUnfocusedVisible { unfocusFired.set(true) })
-        }
+    val testLithoView = lithoTestRule.createTestLithoView {
+      Row(
+          style =
+              Style.width(200.px)
+                  .height(200.px)
+                  .onFocusedVisible { focusFired.set(true) }
+                  .onUnfocusedVisible { unfocusFired.set(true) },
+      )
+    }
 
     // FocusedVisible requires a measured parent
-    val frameLayout = FrameLayout(mLithoTestRule.context.androidContext)
+    val frameLayout = FrameLayout(lithoTestRule.context.androidContext)
     frameLayout.addView(testLithoView.lithoView)
     frameLayout.measure(unspecified(), unspecified())
     frameLayout.layout(0, 0, frameLayout.measuredWidth, frameLayout.measuredHeight)
@@ -101,7 +100,7 @@ class VisibilityStylesTest {
   fun onFullImpression_whenSet_firesWhenVisible() {
     val eventFired = AtomicBoolean(false)
 
-    mLithoTestRule.render {
+    lithoTestRule.render {
       Row(style = Style.width(200.px).height(200.px).onFullImpression { eventFired.set(true) })
     }
 
@@ -112,7 +111,7 @@ class VisibilityStylesTest {
   fun onVisibilityChanged_whenSet_firesWhenVisibilityBoundsChange() {
     val eventFired = AtomicBoolean(false)
 
-    mLithoTestRule.render {
+    lithoTestRule.render {
       Row(style = Style.width(200.px).height(200.px).onVisibilityChanged { eventFired.set(true) })
     }
 

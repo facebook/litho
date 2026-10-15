@@ -36,9 +36,9 @@ class ApplyStylesTest {
 
   @JvmField
   @Rule
-  var lithoTestRule: LithoTestRule =
-      LithoTestRule(
-          ComponentsConfiguration.defaultInstance.copy(shouldAddHostViewForRootComponent = true))
+  var lithoTestRule: LithoTestRule = LithoTestRule(
+      ComponentsConfiguration.defaultInstance.copy(shouldAddHostViewForRootComponent = true),
+  )
 
   @Test
   fun styles_withWidthHeightStyle_appliesWidthHeight() {
@@ -73,7 +73,9 @@ class ApplyStylesTest {
             ViewMatchNode.forType(LithoView::class.java)
                 .child(
                     ViewMatchNode.forType(View::class.java)
-                        .bounds(10, 20, 100 - 10 - 30, 100 - 20 - 40)))
+                        .bounds(10, 20, 100 - 10 - 30, 100 - 20 - 40),
+                ),
+        )
   }
 
   @Test
@@ -89,7 +91,9 @@ class ApplyStylesTest {
             ViewMatchNode.forType(LithoView::class.java)
                 .child(
                     ViewMatchNode.forType(View::class.java)
-                        .bounds(15, 15, 100 - 15 - 15, 100 - 15 - 15)))
+                        .bounds(15, 15, 100 - 15 - 15, 100 - 15 - 15),
+                ),
+        )
   }
 
   @Test
@@ -103,7 +107,8 @@ class ApplyStylesTest {
     ViewAssertions.assertThat(testLithoView.lithoView)
         .matches(
             ViewMatchNode.forType(LithoView::class.java)
-                .child(ViewMatchNode.forType(View::class.java).bounds(20, 0, 100 - 20 - 40, 100)))
+                .child(ViewMatchNode.forType(View::class.java).bounds(20, 0, 100 - 20 - 40, 100)),
+        )
   }
 
   @Test
@@ -115,9 +120,11 @@ class ApplyStylesTest {
                   Column.create(
                           lithoTestRule.context,
                           0,
-                          R.style.ApplyStylesTest_MarginLeftTopRightBottom)
+                          R.style.ApplyStylesTest_MarginLeftTopRightBottom,
+                      )
                       .flexGrow(1f)
-                      .wrapInView())
+                      .wrapInView(),
+              )
               .build()
         }
     ViewAssertions.assertThat(testLithoView.lithoView)
@@ -125,7 +132,9 @@ class ApplyStylesTest {
             ViewMatchNode.forType(LithoView::class.java)
                 .child(
                     ViewMatchNode.forType(View::class.java)
-                        .bounds(10, 20, 100 - 10 - 30, 100 - 20 - 40)))
+                        .bounds(10, 20, 100 - 10 - 30, 100 - 20 - 40),
+                ),
+        )
   }
 
   @Test
@@ -136,7 +145,8 @@ class ApplyStylesTest {
               .child(
                   Column.create(lithoTestRule.context, 0, R.style.ApplyStylesTest_MarginAll)
                       .flexGrow(1f)
-                      .wrapInView())
+                      .wrapInView(),
+              )
               .build()
         }
     ViewAssertions.assertThat(testLithoView.lithoView)
@@ -144,7 +154,9 @@ class ApplyStylesTest {
             ViewMatchNode.forType(LithoView::class.java)
                 .child(
                     ViewMatchNode.forType(View::class.java)
-                        .bounds(15, 15, 100 - 15 - 15, 100 - 15 - 15)))
+                        .bounds(15, 15, 100 - 15 - 15, 100 - 15 - 15),
+                ),
+        )
   }
 
   @Test
@@ -155,13 +167,15 @@ class ApplyStylesTest {
               .child(
                   Column.create(lithoTestRule.context, 0, R.style.ApplyStylesTest_MarginStartEnd)
                       .flexGrow(1f)
-                      .wrapInView())
+                      .wrapInView(),
+              )
               .build()
         }
     ViewAssertions.assertThat(testLithoView.lithoView)
         .matches(
             ViewMatchNode.forType(LithoView::class.java)
-                .child(ViewMatchNode.forType(View::class.java).bounds(10, 0, 100 - 10 - 30, 100)))
+                .child(ViewMatchNode.forType(View::class.java).bounds(10, 0, 100 - 10 - 30, 100)),
+        )
   }
 
   @Test
@@ -172,9 +186,13 @@ class ApplyStylesTest {
               .wrapInView()
               .child(
                   Column.create(
-                          lithoTestRule.context, 0, R.style.ApplyStylesTest_BackgroundForeground)
+                          lithoTestRule.context,
+                          0,
+                          R.style.ApplyStylesTest_BackgroundForeground,
+                      )
                       .flexGrow(1f)
-                      .wrapInView())
+                      .wrapInView(),
+              )
               .build()
         }
     val innerHost = testLithoView.lithoView.getChildAt(0) as ComponentHost
@@ -184,7 +202,11 @@ class ApplyStylesTest {
                 .child(
                     ViewMatchNode.forType(ComponentHost::class.java)
                         .prop<MatchNode>(
-                            "background", MatchNode.forType(ColorDrawable::class.java))))
+                            "background",
+                            MatchNode.forType(ColorDrawable::class.java),
+                        ),
+                ),
+        )
   }
 
   @Test
@@ -197,9 +219,11 @@ class ApplyStylesTest {
                   Column.create(
                           lithoTestRule.context,
                           0,
-                          R.style.ApplyStylesTest_AccessibilityAndContentDescription)
+                          R.style.ApplyStylesTest_AccessibilityAndContentDescription,
+                      )
                       .flexGrow(1f)
-                      .wrapInView())
+                      .wrapInView(),
+              )
               .build()
         }
     val innerHost = testLithoView.lithoView.getChildAt(0) as ComponentHost
@@ -209,7 +233,9 @@ class ApplyStylesTest {
                 .child(
                     ViewMatchNode.forType(ComponentHost::class.java)
                         .prop<String>("contentDescription", "Test Content Description")
-                        .prop<Boolean>("isImportantForAccessibility", true)))
+                        .prop<Boolean>("isImportantForAccessibility", true),
+                ),
+        )
   }
 
   @Test
@@ -220,9 +246,13 @@ class ApplyStylesTest {
               .wrapInView()
               .child(
                   Column.create(
-                          lithoTestRule.context, 0, R.style.ApplyStylesTest_DuplicateParentState)
+                          lithoTestRule.context,
+                          0,
+                          R.style.ApplyStylesTest_DuplicateParentState,
+                      )
                       .flexGrow(1f)
-                      .wrapInView())
+                      .wrapInView(),
+              )
               .build()
         }
     val innerHost = testLithoView.lithoView.getChildAt(0) as ComponentHost
@@ -231,6 +261,8 @@ class ApplyStylesTest {
             ViewMatchNode.forType(ComponentHost::class.java)
                 .child(
                     ViewMatchNode.forType(ComponentHost::class.java)
-                        .prop<Boolean>("isDuplicateParentStateEnabled", true)))
+                        .prop<Boolean>("isDuplicateParentStateEnabled", true),
+                ),
+        )
   }
 }

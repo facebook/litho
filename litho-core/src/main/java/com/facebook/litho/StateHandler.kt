@@ -18,7 +18,6 @@ package com.facebook.litho
 
 import androidx.annotation.VisibleForTesting
 import com.facebook.infer.annotation.ThreadSafe
-import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.litho.SpecGeneratedComponent.TransitionContainer
 import com.facebook.litho.StateContainer.StateUpdate
 import com.facebook.litho.debug.LithoDebugEvent
@@ -41,72 +40,124 @@ class StateHandler {
   constructor(initialState: InitialState, stateHandler: StateHandler? = null) {
     this.initialState = initialState
     if (stateHandler != null) {
-      copyStateUpdatesMap(
-          stateHandler.pendingStateUpdates,
-          stateHandler.pendingHookUpdates,
-          stateHandler.pendingLazyStateUpdates,
-          stateHandler.appliedStateUpdates,
-          stateHandler.appliedHookUpdates,
-      )
+      stateHandler.copyPendingUpdates(this)
       copyCurrentState(stateHandler.state)
       copyPendingStateTransitions(stateHandler.pendingStateUpdateTransitions)
       stateHandler.cachedValues?.let { synchronized(stateHandler) { cachedValues = HashMap(it) } }
+      synchronized(stateHandler) {
+        stateHandler._stateIdsToPromote?.let {
+          if (it.isNotEmpty()) getOrCreateStateIdsToPromote().putAll(it)
+        }
+      }
     }
   }
 
   constructor(
-      stateHandler: StateHandler? = null
+      stateHandler: StateHandler? = null,
   ) : this(
       initialState = stateHandler?.initialState ?: InitialState(),
       stateHandler = stateHandler,
   )
 
-  /** List of state updates that will be applied during the next layout pass. */
+  /**
+   * List of state updates that will be applied during the next layout pass. Lazily initialized to
+   * avoid allocating empty HashMaps for the majority of StateHandler instances that never receive
+   * state updates.
+   */
   @GuardedBy("this")
-  private val _pendingStateUpdates: MutableMap<String, MutableList<StateUpdate>> =
-      HashMap(INITIAL_MAP_CAPACITY)
+  private var _pendingStateUpdates: MutableMap<StateId, MutableList<StateUpdate>>? = null
 
-  /** List of lazy state updates. */
+  /** List of lazy state updates. Lazily initialized. */
   @GuardedBy("this")
-  private val _pendingLazyStateUpdates: MutableMap<String, MutableList<StateUpdate>> =
-      HashMap(INITIAL_MAP_CAPACITY)
+  private var _pendingLazyStateUpdates: MutableMap<StateId, MutableList<StateUpdate>>? = null
 
-  /** List of transitions from state update that will be applied on next mount. */
+  /**
+   * List of transitions from state update that will be applied on next mount. Lazily initialized.
+   */
   @GuardedBy("this")
-  private val _pendingStateUpdateTransitions: MutableMap<String, List<Transition>> = HashMap()
+  private var _pendingStateUpdateTransitions: MutableMap<StateId, List<Transition>>? = null
 
-  /** List of transitions from state update that have been applied on next mount. */
+  /**
+   * List of transitions from state update that have been applied on next mount. Lazily initialized.
+   */
   @GuardedBy("this")
-  private val _appliedStateUpdates: MutableMap<String, List<StateUpdate>> =
-      HashMap(INITIAL_MAP_CAPACITY)
+  private var _appliedStateUpdates: MutableMap<StateId, List<StateUpdate>>? = null
 
   /**
    * Maps a component key to a component object that retains the current state values for that key.
+   * Lazily initialized.
    */
   @GuardedBy("this")
-  private val _state: MutableMap<String, ComponentState<out StateContainer>> = HashMap()
+  private var _state: MutableMap<GlobalKey, ComponentState<out StateContainer>>? = null
 
   /**
    * Contains all keys of components that were present in the current ComponentTree and therefore
-   * their StateContainer needs to be kept around.
+   * their StateContainer needs to be kept around. Lazily initialized.
    */
-  @GuardedBy("this") private val neededState = HashSet<String>()
+  @GuardedBy("this") private var neededState: MutableSet<GlobalKey>? = null
 
   /** Map of all cached values that are stored for the current ComponentTree. */
-  @GuardedBy("this") private var cachedValues: MutableMap<CacheKey, CacheValue>? = null
+  @GuardedBy("this") private var cachedValues: MutableMap<HookGlobalKey, CacheValue>? = null
 
   // These are both lists of (globalKey, updateMethod) pairs, where globalKey is the global key
-  // of the component the update applies to
+  // of the component the update applies to. Lazily initialized.
   @GuardedBy("this")
-  private val pendingHookUpdates: MutableMap<String, MutableList<HookUpdateData>> = HashMap()
-  private var appliedHookUpdates: MutableMap<String, List<HookUpdateData>> = HashMap()
+  private var pendingHookUpdates: MutableMap<GlobalKey, MutableList<HookUpdateData>>? = null
+  private var appliedHookUpdates: MutableMap<GlobalKey, List<HookUpdateData>>? = null
+
+  /**
+   * Count-based multiset of committed-but-not-promoted state updates. Copied from source at
+   * construction; on committed handler, updated at commit and subtracted at promotion. Lazily
+   * initialized.
+   */
+  @GuardedBy("this") private var _stateIdsToPromote: MutableMap<StateId, Int>? = null
+
+  // Lazy initializer helpers to avoid allocating empty maps when they are never used.
+  private fun getOrCreatePendingStateUpdates(): MutableMap<StateId, MutableList<StateUpdate>> =
+      _pendingStateUpdates
+          ?: HashMap<StateId, MutableList<StateUpdate>>(INITIAL_MAP_CAPACITY).also {
+            _pendingStateUpdates = it
+          }
+
+  private fun getOrCreatePendingLazyStateUpdates(): MutableMap<StateId, MutableList<StateUpdate>> =
+      _pendingLazyStateUpdates
+          ?: HashMap<StateId, MutableList<StateUpdate>>(INITIAL_MAP_CAPACITY).also {
+            _pendingLazyStateUpdates = it
+          }
+
+  private fun getOrCreatePendingStateUpdateTransitions(): MutableMap<StateId, List<Transition>> =
+      _pendingStateUpdateTransitions
+          ?: HashMap<StateId, List<Transition>>().also { _pendingStateUpdateTransitions = it }
+
+  private fun getOrCreateAppliedStateUpdates(): MutableMap<StateId, List<StateUpdate>> =
+      _appliedStateUpdates
+          ?: HashMap<StateId, List<StateUpdate>>(INITIAL_MAP_CAPACITY).also {
+            _appliedStateUpdates = it
+          }
+
+  private fun getOrCreatePendingHookUpdates(): MutableMap<GlobalKey, MutableList<HookUpdateData>> =
+      pendingHookUpdates
+          ?: HashMap<GlobalKey, MutableList<HookUpdateData>>().also { pendingHookUpdates = it }
+
+  private fun getOrCreateAppliedHookUpdates(): MutableMap<GlobalKey, List<HookUpdateData>> =
+      appliedHookUpdates
+          ?: HashMap<GlobalKey, List<HookUpdateData>>().also { appliedHookUpdates = it }
+
+  private fun getOrCreateStateIdsToPromote(): MutableMap<StateId, Int> =
+      _stateIdsToPromote ?: HashMap<StateId, Int>().also { _stateIdsToPromote = it }
+
+  private fun getOrCreateState(): MutableMap<GlobalKey, ComponentState<out StateContainer>> =
+      _state ?: HashMap<GlobalKey, ComponentState<out StateContainer>>().also { _state = it }
+
+  private fun getOrCreateNeededState(): MutableSet<GlobalKey> =
+      neededState ?: HashSet<GlobalKey>().also { neededState = it }
 
   var initialState: InitialState
     private set
 
   @get:Synchronized
   val isEmpty: Boolean
-    get() = _state.isEmpty()
+    get() = _state.isNullOrEmpty()
 
   /**
    * @return whether this StateHandler has updates that haven't been committed to the
@@ -116,9 +167,9 @@ class StateHandler {
   fun hasUncommittedUpdates(): Boolean =
       // Because we immediately apply Kotlin state updates at the  beginning of layout, we need to
       // also check applied state updates to see if this StateHandler has uncommitted updates.
-      _pendingStateUpdates.isNotEmpty() ||
-          pendingHookUpdates.isNotEmpty() ||
-          appliedHookUpdates.isNotEmpty()
+      _pendingStateUpdates?.isNotEmpty() == true ||
+          pendingHookUpdates?.isNotEmpty() == true ||
+          appliedHookUpdates?.isNotEmpty() == true
 
   /**
    * Adds a state update to the list of the state updates that will be applied for the given
@@ -129,32 +180,42 @@ class StateHandler {
    * @param isLazyStateUpdate the flag to indicate if it's a lazy state update
    */
   @Synchronized
-  fun queueStateUpdate(key: String, stateUpdate: StateUpdate, isLazyStateUpdate: Boolean) {
-    addStateUpdateForKey(key, stateUpdate, _pendingStateUpdates)
+  fun queueStateUpdate(key: StateId, stateUpdate: StateUpdate, isLazyStateUpdate: Boolean) {
+    addStateUpdateForKey(key, stateUpdate, getOrCreatePendingStateUpdates())
     if (isLazyStateUpdate) {
-      addStateUpdateForKey(key, stateUpdate, _pendingLazyStateUpdates)
+      addStateUpdateForKey(key, stateUpdate, getOrCreatePendingLazyStateUpdates())
     }
   }
 
-  fun markStateInUse(key: String) {
-    neededState.add(key)
+  @Synchronized
+  fun markStateInUse(key: GlobalKey) {
+    getOrCreateNeededState().add(key)
+  }
+
+  @Synchronized
+  fun markAllStateInUse() {
+    val state = _state
+    if (state != null && state.isNotEmpty()) {
+      getOrCreateNeededState().addAll(state.keys)
+    }
   }
 
   /**
    * StateContainer in this StateHandler should be accessed using this method as it will also ensure
    * that the state is marked as needed
    */
-  fun getState(key: String): ComponentState<out StateContainer>? = _state[key]
+  fun getState(key: GlobalKey): ComponentState<out StateContainer>? = _state?.get(key)
 
+  @Synchronized
   fun createOrGetState(
       scopedContext: ComponentContext,
       component: Component,
-      key: String
+      key: GlobalKey,
   ): ComponentState<out StateContainer> {
-    val current: ComponentState<out StateContainer>? = synchronized(this) { _state[key] }
+    val current: ComponentState<out StateContainer>? = synchronized(this) { _state?.get(key) }
 
     return if (current != null) {
-      neededState.add(key)
+      getOrCreateNeededState().add(key)
       current
     } else {
       val state =
@@ -168,9 +229,9 @@ class StateHandler {
     }
   }
 
-  private fun applyStateUpdates(key: String, newStateContainer: StateContainer) {
+  private fun applyStateUpdates(key: StateId, newStateContainer: StateContainer) {
     // If there are no state updates pending for this component, simply store its current state.
-    val stateUpdatesForKey = synchronized(this) { _pendingStateUpdates[key] } ?: return
+    val stateUpdatesForKey = synchronized(this) { _pendingStateUpdates?.get(key) } ?: return
 
     var transitionsFromStateUpdate: MutableList<Transition>? = null
     val asTransitionContainer = newStateContainer as? TransitionContainer
@@ -182,7 +243,7 @@ class StateHandler {
           if (transitionsFromStateUpdate == null) {
             transitionsFromStateUpdate = ArrayList()
           }
-          TransitionUtils.setOwnerKey(transition, key)
+          TransitionUtils.setOwnerKey(transition, key.globalKey)
           transitionsFromStateUpdate.add(transition)
         }
       } else {
@@ -193,11 +254,11 @@ class StateHandler {
     LithoStats.incrementComponentAppliedStateUpdateCountBy(stateUpdatesForKey.size.toLong())
 
     synchronized(this) {
-      _pendingLazyStateUpdates.remove(key)
-      _appliedStateUpdates[key] = stateUpdatesForKey // add to applied
+      _pendingLazyStateUpdates?.remove(key)
+      getOrCreateAppliedStateUpdates()[key] = stateUpdatesForKey // add to applied
 
       if (!transitionsFromStateUpdate.isNullOrEmpty()) {
-        _pendingStateUpdateTransitions[key] = transitionsFromStateUpdate
+        getOrCreatePendingStateUpdateTransitions()[key] = transitionsFromStateUpdate
       }
     }
   }
@@ -207,40 +268,44 @@ class StateHandler {
   fun applyStateUpdatesEarly(
       context: ComponentContext,
       component: Component?,
-      prevTreeRootNode: LithoNode?
+      prevTreeRootNode: LithoNode?,
   ) {
-    for ((key, _) in _pendingStateUpdates) {
-      try {
-        val current: ComponentState<StateContainer> =
-            (_state[key] ?: initialState.getInitialStateForComponent(key))
-                as ComponentState<StateContainer>? ?: continue
+    val pendingUpdates = _pendingStateUpdates
+    if (pendingUpdates != null) {
+      for ((key, _) in pendingUpdates) {
+        try {
+          val current: ComponentState<StateContainer> =
+              (_state?.get(key.globalKey)
+                  ?: initialState.getInitialStateForComponent(key.globalKey))
+                  as ComponentState<StateContainer>? ?: continue
 
-        val currentValue: StateContainer = current.value
+          val currentValue: StateContainer = current.value
 
-        val newValue = currentValue.clone()
-        _state[key] = current.copy(value = newValue)
-        applyStateUpdates(key, newValue)
-      } catch (ex: Exception) {
+          val newValue = currentValue.clone()
+          getOrCreateState()[key.globalKey] = current.copy(value = newValue)
+          applyStateUpdates(key, newValue)
+        } catch (ex: Exception) {
 
-        // Remove pending state update from ComponentTree's state handler since we don't want to
-        // process this pending state update again. If we don't remove it and someone is using
-        // setRoot in onError api then we can end up in an infinite loop
-        context.removePendingStateUpdate(key, context.isContextForLayout)
-        if (prevTreeRootNode != null) {
-          handleExceptionDuringApplyStateUpdate(key, prevTreeRootNode, ex)
-        } else {
-          ComponentUtils.handleWithHierarchy(context, component, ex)
+          // Remove pending state update from ComponentTree's state handler since we don't want to
+          // process this pending state update again. If we don't remove it and someone is using
+          // setRoot in onError api then we can end up in an infinite loop
+          context.removePendingStateUpdate(key.globalKey, context.isContextForLayout)
+          if (prevTreeRootNode != null) {
+            handleExceptionDuringApplyStateUpdate(key, prevTreeRootNode, ex)
+          } else {
+            ComponentUtils.handleWithHierarchy(context, component, ex)
+          }
         }
       }
+      _pendingStateUpdates = null
     }
-    _pendingStateUpdates.clear()
 
     runHooks()
   }
 
   @Synchronized
-  fun removePendingStateUpdate(key: String) {
-    _pendingStateUpdates.remove(key)
+  fun removePendingStateUpdate(key: StateId) {
+    _pendingStateUpdates?.remove(key)
   }
 
   /**
@@ -250,13 +315,13 @@ class StateHandler {
    * @param state the state value that needs to be retained
    */
   @Synchronized
-  fun addState(key: String, state: ComponentState<*>) {
-    neededState.add(key)
-    _state[key] = state
+  fun addState(key: GlobalKey, state: ComponentState<*>) {
+    getOrCreateNeededState().add(key)
+    getOrCreateState()[key] = state
   }
 
-  fun applyLazyStateUpdatesForContainer(key: String, container: StateContainer): StateContainer {
-    val stateUpdatesForKey = synchronized(this) { pendingLazyStateUpdates[key] }
+  fun applyLazyStateUpdatesForContainer(key: StateId, container: StateContainer): StateContainer {
+    val stateUpdatesForKey = synchronized(this) { _pendingLazyStateUpdates?.get(key) }
 
     if (stateUpdatesForKey.isNullOrEmpty()) {
       return container
@@ -277,62 +342,106 @@ class StateHandler {
    * @param stateHandler state handler that was used to apply state updates in a layout pass
    */
   fun commit(stateHandler: StateHandler) {
-    clearStateUpdates(stateHandler.appliedStateUpdates)
+    stateHandler.appliedStateUpdates?.let { clearStateUpdates(it) }
     clearUnusedState(stateHandler)
     copyCurrentState(stateHandler.state)
     copyPendingStateTransitions(stateHandler.pendingStateUpdateTransitions)
-    commitHookState(stateHandler.appliedHookUpdates)
+    stateHandler.appliedHookUpdates?.let { commitHookState(it) }
   }
 
   fun commit() {
     synchronized(this) {
-      clearStateUpdates(appliedStateUpdates)
+      _appliedStateUpdates?.let { clearStateUpdates(it) }
       clearUnusedState(this)
-      commitHookState(appliedHookUpdates)
-      _appliedStateUpdates.clear()
-      appliedHookUpdates.clear()
+      appliedHookUpdates?.let { commitHookState(it) }
+      _appliedStateUpdates = null
+      appliedHookUpdates = null
     }
   }
 
   @get:Synchronized
-  val keysForPendingUpdates: Set<String>
+  val keysForPendingUpdates: Set<GlobalKey>
     get() =
-        HashSet<String>().apply {
-          addAll(_appliedStateUpdates.keys)
-          addAll(_pendingStateUpdates.keys)
-          addAll(pendingHookUpdates.keys)
-          addAll(appliedHookUpdates.keys)
+        HashSet<GlobalKey>().apply {
+          _appliedStateUpdates?.keys?.mapTo(this) { it.globalKey }
+          _pendingStateUpdates?.keys?.mapTo(this) { it.globalKey }
+          pendingHookUpdates?.keys?.let { addAll(it) }
+          appliedHookUpdates?.keys?.let { addAll(it) }
         }
 
   @get:Synchronized
-  val keysForAppliedUpdates: Set<String>
+  val keysForAppliedUpdates: Set<GlobalKey>
     get() =
-        HashSet<String>().apply {
-          addAll(_appliedStateUpdates.keys)
-          addAll(appliedHookUpdates.keys)
+        HashSet<GlobalKey>().apply {
+          _appliedStateUpdates?.keys?.mapTo(this) { it.globalKey }
+          appliedHookUpdates?.keys?.let { addAll(it) }
         }
 
+  /**
+   * Cached result of [getStateIdsForPendingUpdates]. No invalidation or synchronization is needed
+   * because this method is only called on copied (in-flight) StateHandlers that are never mutated
+   * after construction. The committed StateHandler receives mutations but never serves this cache.
+   */
+  @Volatile private var _cachedPendingStateIds: Set<StateId>? = null
+
+  fun getStateIdsForPendingUpdates(): Set<StateId> {
+    return _cachedPendingStateIds
+        ?: buildSet {
+          _appliedStateUpdates?.keys?.let { addAll(it) }
+          _pendingStateUpdates?.keys?.let { addAll(it) }
+          pendingHookUpdates?.forEach { (_, v) -> v.mapTo(this) { it.stateId } }
+          appliedHookUpdates?.forEach { (_, v) -> v.mapTo(this) { it.stateId } }
+        }
+            .also { _cachedPendingStateIds = it }
+  }
+
+  /**
+   * Returns the _stateIdsToPromote map without copying.
+   *
+   * This method is safe to call on StateHandlers of in-flight operations (e.g TreeState of
+   * ResolveResult), but not on persistent StateHandlers (e.g committed TreeState of the
+   * ComponentTree).
+   */
+  internal fun getStateIdsToPromoteUnsafe(): Map<StateId, Int>? = _stateIdsToPromote
+
+  /** Adds the given stateIds to the promotion multiset, incrementing each by 1. */
   @Synchronized
-  fun getStateIdsForPendingUpdates(treeIdForSpec: Int): Set<StateId> {
-    return buildSet {
-      _appliedStateUpdates.forEach { (k, _) -> add(StateId(treeIdForSpec, k, -1)) }
-      _pendingStateUpdates.forEach { (k, _) -> add(StateId(treeIdForSpec, k, -1)) }
-      pendingHookUpdates.forEach { (_, v) -> v.mapTo(this) { it.stateId } }
-      appliedHookUpdates.forEach { (_, v) -> v.mapTo(this) { it.stateId } }
+  fun addToStateIdsToPromote(stateIds: Set<StateId>) {
+    val map = getOrCreateStateIdsToPromote()
+    for (id in stateIds) {
+      map[id] = (map[id] ?: 0) + 1
     }
   }
 
+  /** Subtracts the promoted counts. Removes entries that reach zero or below. */
   @Synchronized
-  fun getStateIdsForAppliedUpdates(treeIdForSpec: Int): Set<StateId> {
-    return buildSet {
-      _appliedStateUpdates.forEach { (k, _) -> add(StateId(treeIdForSpec, k, -1)) }
-      appliedHookUpdates.forEach { (_, v) -> v.mapTo(this) { it.stateId } }
+  fun subtractPromotedUpdates(promoted: Map<StateId, Int>) {
+    val map = _stateIdsToPromote ?: return
+    for ((id, count) in promoted) {
+      val current = map[id] ?: continue
+      val remaining = current - count
+      if (remaining <= 0) map.remove(id) else map[id] = remaining
     }
   }
 
-  private fun clearStateUpdates(appliedStateUpdates: Map<String, List<StateUpdate>>) {
+  /** Computes the effective snapshot by taking min(localCount, committedCount) per stateId. */
+  @Synchronized
+  fun computeEffective(localSnapshot: Map<StateId, Int>): Map<StateId, Int> {
+    if (localSnapshot.isEmpty()) {
+      return emptyMap()
+    }
+    val map = _stateIdsToPromote ?: return emptyMap()
+    return buildMap {
+      for ((id, localCount) in localSnapshot) {
+        val committedCount = map[id] ?: continue
+        put(id, minOf(localCount, committedCount))
+      }
+    }
+  }
+
+  private fun clearStateUpdates(appliedStateUpdates: Map<StateId, List<StateUpdate>>) {
     synchronized(this) {
-      if (_pendingStateUpdates.isEmpty()) {
+      if (_pendingStateUpdates.isNullOrEmpty()) {
         return
       }
     }
@@ -340,8 +449,10 @@ class StateHandler {
     for ((appliedStateUpdateKey, appliedStateUpdatesForKey) in appliedStateUpdates) {
       val (pendingStateUpdatesForKey, pendingLazyStateUpdatesForKey) =
           synchronized(this) {
-            _pendingStateUpdates[appliedStateUpdateKey] to
-                _pendingLazyStateUpdates[appliedStateUpdateKey]
+            Pair(
+                _pendingStateUpdates?.get(appliedStateUpdateKey),
+                _pendingLazyStateUpdates?.get(appliedStateUpdateKey),
+            )
           }
 
       if (pendingStateUpdatesForKey == null) {
@@ -350,8 +461,8 @@ class StateHandler {
 
       if (pendingStateUpdatesForKey.size == appliedStateUpdatesForKey.size) {
         synchronized(this) {
-          _pendingStateUpdates.remove(appliedStateUpdateKey)
-          _pendingLazyStateUpdates.remove(appliedStateUpdateKey)
+          _pendingStateUpdates?.remove(appliedStateUpdateKey)
+          _pendingLazyStateUpdates?.remove(appliedStateUpdateKey)
         }
       } else {
         pendingStateUpdatesForKey.removeAll(appliedStateUpdatesForKey)
@@ -361,29 +472,28 @@ class StateHandler {
   }
 
   @get:Synchronized
-  val state: Map<String, ComponentState<out StateContainer>>
+  val state: Map<GlobalKey, ComponentState<out StateContainer>>?
     get() = _state
 
   @get:Synchronized
-  val pendingStateUpdates: Map<String, MutableList<StateUpdate>>
+  val pendingStateUpdates: Map<StateId, MutableList<StateUpdate>>?
     get() = _pendingStateUpdates
 
   @get:Synchronized
-  val pendingLazyStateUpdates: Map<String, MutableList<StateUpdate>>
+  val pendingLazyStateUpdates: Map<StateId, MutableList<StateUpdate>>?
     get() = _pendingLazyStateUpdates
 
   @get:Synchronized
-  val pendingStateUpdateTransitions: Map<String, List<Transition>>
+  val pendingStateUpdateTransitions: Map<StateId, List<Transition>>?
     get() = _pendingStateUpdateTransitions
 
   @get:Synchronized
   @get:VisibleForTesting
-  val appliedStateUpdates: Map<String, List<StateUpdate>>
+  val appliedStateUpdates: Map<StateId, List<StateUpdate>>?
     get() = _appliedStateUpdates
 
   @Synchronized
-  fun getCachedValue(globalKey: String, index: Int, cachedValueInputs: Any): Any? {
-    val cacheKey = CacheKey(globalKey, index)
+  fun getCachedValue(cacheKey: HookGlobalKey, cachedValueInputs: Any): Any? {
     val cacheValue = cachedValues?.get(cacheKey) ?: return null
 
     if (areObjectsEquivalent(cacheValue.inputs, cachedValueInputs)) {
@@ -403,8 +513,7 @@ class StateHandler {
   }
 
   @Synchronized
-  fun putCachedValue(globalKey: String, index: Int, cachedValueInputs: Any, cachedValue: Any?) {
-    val cacheKey = CacheKey(globalKey, index)
+  fun putCachedValue(cacheKey: HookGlobalKey, cachedValueInputs: Any, cachedValue: Any?) {
     if (cachedValue == null) {
       cachedValues?.remove(cacheKey)
       return
@@ -420,48 +529,38 @@ class StateHandler {
    * Copies the information from the given map of state updates into the map of pending state
    * updates.
    */
-  private fun copyStateUpdatesMap(
-      pendingStateUpdates: Map<String, MutableList<StateUpdate>>,
-      pendingHookStateUpdates: Map<String, MutableList<HookUpdateData>>,
-      pendingLazyStateUpdates: Map<String, MutableList<StateUpdate>>,
-      appliedStateUpdates: Map<String, List<StateUpdate>>,
-      appliedHookStateUpdates: Map<String, List<HookUpdateData>>,
-  ) {
-    if (pendingStateUpdates.isEmpty() &&
-        appliedStateUpdates.isEmpty() &&
-        pendingHookStateUpdates.isEmpty() &&
-        appliedHookStateUpdates.isEmpty()) {
-      return
+  @Synchronized
+  private fun copyPendingUpdates(stateHandler: StateHandler) {
+    _pendingStateUpdates?.let { source ->
+      if (source.isNotEmpty()) {
+        source.mapValuesTo(stateHandler.getOrCreatePendingStateUpdates()) { (_, v) ->
+          v.toMutableList()
+        }
+      }
     }
-    synchronized(this) {
-      for (key in pendingStateUpdates.keys) {
-        _pendingStateUpdates[key] = createStateUpdatesList(pendingStateUpdates[key])
+    _appliedStateUpdates?.let { source ->
+      if (source.isNotEmpty()) {
+        source.mapValuesTo(stateHandler.getOrCreateAppliedStateUpdates()) { (_, v) -> v }
       }
-
-      for ((key, value) in appliedStateUpdates) {
-        _appliedStateUpdates[key] = createStateUpdatesList(value)
-      }
-
-      for ((key, value) in pendingHookStateUpdates) {
-        pendingHookUpdates[key] = createHookStateUpdatesList(value)
-      }
-
-      for ((key, value) in appliedHookStateUpdates) {
-        appliedHookUpdates[key] = createHookStateUpdatesList(value)
-      }
-
-      copyPendingLazyStateUpdates(pendingLazyStateUpdates)
     }
-  }
-
-  private fun copyPendingLazyStateUpdates(
-      pendingLazyStateUpdates: Map<String, MutableList<StateUpdate>>
-  ) {
-    if (pendingLazyStateUpdates.isEmpty()) {
-      return
+    appliedHookUpdates?.let { source ->
+      if (source.isNotEmpty()) {
+        source.mapValuesTo(stateHandler.getOrCreateAppliedHookUpdates()) { (_, v) -> v }
+      }
     }
-    for ((key, value) in pendingLazyStateUpdates) {
-      _pendingLazyStateUpdates[key] = createStateUpdatesList(value)
+    pendingHookUpdates?.let { source ->
+      if (source.isNotEmpty()) {
+        source.mapValuesTo(stateHandler.getOrCreatePendingHookUpdates()) { (_, v) ->
+          v.toMutableList()
+        }
+      }
+    }
+    _pendingLazyStateUpdates?.let { source ->
+      if (source.isNotEmpty()) {
+        source.mapValuesTo(stateHandler.getOrCreatePendingLazyStateUpdates()) { (_, v) ->
+          v.toMutableList()
+        }
+      }
     }
   }
 
@@ -469,22 +568,22 @@ class StateHandler {
    * Copies the list of given state containers into the map that holds the current state containers
    * of components.
    */
-  private fun copyCurrentState(state: Map<String, ComponentState<out StateContainer>>) {
-
+  private fun copyCurrentState(state: Map<GlobalKey, ComponentState<out StateContainer>>?) {
     synchronized(this) {
-      _state.clear()
-      _state.putAll(state)
+      _state = if (state.isNullOrEmpty()) null else HashMap(state)
     }
   }
 
   private fun copyPendingStateTransitions(
-      pendingStateUpdateTransitions: Map<String, List<Transition>>
+      pendingStateUpdateTransitions: Map<StateId, List<Transition>>?,
   ) {
-    if (pendingStateUpdateTransitions.isEmpty()) {
+    if (pendingStateUpdateTransitions.isNullOrEmpty()) {
       return
     }
 
-    synchronized(this) { _pendingStateUpdateTransitions.putAll(pendingStateUpdateTransitions) }
+    synchronized(this) {
+      getOrCreatePendingStateUpdateTransitions().putAll(pendingStateUpdateTransitions)
+    }
   }
 
   //
@@ -496,10 +595,11 @@ class StateHandler {
    */
   @Synchronized
   fun queueHookStateUpdate(stateId: StateId, updater: HookUpdater) {
-    var hookUpdaters = pendingHookUpdates[stateId.globalKey]
+    val hookUpdatesMap = getOrCreatePendingHookUpdates()
+    var hookUpdaters = hookUpdatesMap[stateId.globalKey]
     if (hookUpdaters == null) {
       hookUpdaters = ArrayList()
-      pendingHookUpdates[stateId.globalKey] = hookUpdaters
+      hookUpdatesMap[stateId.globalKey] = hookUpdaters
     }
 
     hookUpdaters.add(HookUpdateData(stateId, updater))
@@ -507,7 +607,7 @@ class StateHandler {
 
   @get:VisibleForTesting
   val pendingHookUpdatesCount: Int
-    get() = pendingHookUpdates.asSequence().sumOf { it.value.size }
+    get() = pendingHookUpdates?.asSequence()?.sumOf { it.value.size } ?: 0
 
   /**
    * Called when creating a new StateHandler for a layout calculation. It copies the source of truth
@@ -519,8 +619,9 @@ class StateHandler {
    *   collected
    */
   private fun runHooks() {
-    for ((key, value) in pendingHookUpdates) {
-      val current = _state[key] as ComponentState<KStateContainer>?
+    val pending = pendingHookUpdates ?: return
+    for ((key, value) in pending) {
+      val current = _state?.get(key) as ComponentState<KStateContainer>?
       val stateContainer = current?.value
       /* currentState could be null if the state is removed from the StateHandler before the update runs */
       if (stateContainer is KStateContainer) {
@@ -530,23 +631,23 @@ class StateHandler {
           kStateContainer = update.updater.getUpdatedStateContainer(kStateContainer)
         }
 
-        _state[key] = current.copy(value = kStateContainer)
+        getOrCreateState()[key] = current.copy(value = kStateContainer)
       }
     }
-    appliedHookUpdates.putAll(pendingHookUpdates)
-    pendingHookUpdates.clear()
+    getOrCreateAppliedHookUpdates().putAll(pending)
+    pendingHookUpdates = null
   }
 
   /**
    * Gets a state container with all applied updates for the given key without committing the
    * updates to a state handler.
    */
-  fun getKStateWithUpdates(globalKey: String): KStateContainer? {
+  fun getKStateWithUpdates(globalKey: GlobalKey): KStateContainer? {
     val stateContainer: StateContainer?
     val updates: List<HookUpdateData>?
     synchronized(this) {
-      stateContainer = _state[globalKey]?.value ?: return null
-      updates = pendingHookUpdates[globalKey]?.let { ArrayList(it) }
+      stateContainer = _state?.get(globalKey)?.value ?: return null
+      updates = pendingHookUpdates?.get(globalKey)?.let { ArrayList(it) }
     }
 
     if (updates == null) {
@@ -567,19 +668,19 @@ class StateHandler {
    * this StateHandler applied, while leaving new ones that have accumulated in the interim. We also
    * copy over the new mapping from hook state keys to values.
    */
-  private fun commitHookState(appliedHookUpdates: Map<String, List<HookUpdateData>>) {
-    if (appliedHookUpdates.isEmpty() || pendingHookUpdates.isEmpty()) {
+  private fun commitHookState(appliedHookUpdates: Map<GlobalKey, List<HookUpdateData>>) {
+    if (appliedHookUpdates.isEmpty() || pendingHookUpdates.isNullOrEmpty()) {
       return
     }
 
     for ((globalKey, appliedHookUpdatersForKey) in appliedHookUpdates) {
       val pendingHookUpdatersForKey: MutableList<HookUpdateData>?
       synchronized(this) {
-        pendingHookUpdatersForKey = pendingHookUpdates[globalKey]
+        pendingHookUpdatersForKey = pendingHookUpdates?.get(globalKey)
         if (!pendingHookUpdatersForKey.isNullOrEmpty()) {
           pendingHookUpdatersForKey.removeAll(appliedHookUpdatersForKey)
           if (pendingHookUpdatersForKey.isEmpty()) {
-            pendingHookUpdates.remove(globalKey)
+            pendingHookUpdates?.remove(globalKey)
           }
         }
       }
@@ -591,9 +692,9 @@ class StateHandler {
     private const val INITIAL_MAP_CAPACITY = 4
 
     private fun addStateUpdateForKey(
-        key: String,
+        key: StateId,
         stateUpdate: StateUpdate,
-        map: MutableMap<String, MutableList<StateUpdate>>
+        map: MutableMap<StateId, MutableList<StateUpdate>>,
     ) {
       var pendingStateUpdatesForKey = map[key]
       if (pendingStateUpdatesForKey == null) {
@@ -605,28 +706,30 @@ class StateHandler {
     }
 
     private fun handleExceptionDuringApplyStateUpdate(
-        key: String,
+        key: StateId,
         current: LithoNode,
-        exception: Exception
+        exception: Exception,
     ) {
       val scopedComponentInfos = current.scopedComponentInfos
+      val targetKey: GlobalKey = key.globalKey
       for (scopedComponentInfo in scopedComponentInfos) {
         val context = scopedComponentInfo.context
-        if (context.globalKey == key) {
+        if (context.nullableGlobalKey == targetKey) {
           ComponentUtils.handleWithHierarchy(context, scopedComponentInfo.component, exception)
           break
         }
       }
       for (index in 0 until current.childCount) {
         val childLithoNode = current.getChildAt(index)
-        if (key.startsWith(childLithoNode.headComponentKey)) {
+        val headKey = childLithoNode.headComponentKey
+        if (targetKey.isOrIsDescendantOf(headKey)) {
           handleExceptionDuringApplyStateUpdate(key, childLithoNode, exception)
         }
       }
     }
 
     private fun createStateUpdatesList(
-        copyFrom: List<StateUpdate>? = null
+        copyFrom: List<StateUpdate>? = null,
     ): MutableList<StateUpdate> {
       val list: MutableList<StateUpdate> =
           ArrayList(copyFrom?.size ?: INITIAL_STATE_UPDATE_LIST_CAPACITY)
@@ -637,7 +740,7 @@ class StateHandler {
     }
 
     private fun createHookStateUpdatesList(
-        copyFrom: List<HookUpdateData>? = null
+        copyFrom: List<HookUpdateData>? = null,
     ): MutableList<HookUpdateData> {
       val list: MutableList<HookUpdateData> =
           ArrayList(copyFrom?.size ?: INITIAL_STATE_UPDATE_LIST_CAPACITY)
@@ -648,24 +751,25 @@ class StateHandler {
     }
 
     private fun clearUnusedState(currentStateHandler: StateHandler) {
-      if (currentStateHandler._state.isEmpty()) {
+      val state = currentStateHandler._state
+      if (state.isNullOrEmpty()) {
         return
       }
 
-      val neededState: Set<String> = currentStateHandler.neededState
-      val stateKeys: List<String> = ArrayList(currentStateHandler._state.keys)
+      val neededState = currentStateHandler.neededState
+      val stateKeys = ArrayList(state.keys)
 
       for (key in stateKeys) {
-        if (key !in neededState) {
-          currentStateHandler._state.remove(key)
+        if (neededState == null || key !in neededState) {
+          state.remove(key)
         }
       }
     }
 
     private fun getHookUpdatesCopy(
-        copyFrom: Map<String, List<HookUpdater>>
-    ): Map<String, List<HookUpdater>> {
-      val copyInto: MutableMap<String, List<HookUpdater>> = HashMap(copyFrom.size)
+        copyFrom: Map<GlobalKey, List<HookUpdater>>,
+    ): Map<GlobalKey, List<HookUpdater>> {
+      val copyInto: MutableMap<GlobalKey, List<HookUpdater>> = HashMap(copyFrom.size)
       for ((key, value) in copyFrom) {
         copyInto[key] = ArrayList(value)
       }
@@ -677,7 +781,5 @@ class StateHandler {
 private class HookUpdateData(val stateId: StateId, val updater: HookUpdater)
 
 sealed interface StateUpdateApplier
-
-@DataClassGenerate private data class CacheKey(val globalKey: String, val index: Int)
 
 private class CacheValue(val inputs: Any, val inputsHash: Int, val value: Any)

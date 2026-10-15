@@ -91,11 +91,13 @@ public final class DebugSection {
       return childViews;
     } else {
       final List<DebugSection> childrenDebugSections = new ArrayList<>();
-      // NULLSAFE_FIXME[Nullable Dereference]
-      for (Section child : mSectionDebugNode.getChildren()) {
-        final DebugSection debugSection = new DebugSection(child, mViews);
-        if (debugSection.getSectionChildren().size() > 0) {
-          childrenDebugSections.add(debugSection);
+      final List<Section> sectionChildren = mSectionDebugNode.getChildren();
+      if (sectionChildren != null) {
+        for (Section child : sectionChildren) {
+          final DebugSection debugSection = new DebugSection(child, mViews);
+          if (debugSection.getSectionChildren().size() > 0) {
+            childrenDebugSections.add(debugSection);
+          }
         }
       }
 
@@ -141,14 +143,12 @@ public final class DebugSection {
       DebugSection lastSection = (DebugSection) children.get(count - 1);
       Rect first = firstSection.getBounds();
       Rect last = lastSection.getBounds();
-      // NULLSAFE_FIXME[Nullable Dereference]
-      rect.left = first.left;
-      // NULLSAFE_FIXME[Nullable Dereference]
-      rect.top = first.top;
-      // NULLSAFE_FIXME[Nullable Dereference]
-      rect.right = last.right;
-      // NULLSAFE_FIXME[Nullable Dereference]
-      rect.bottom = last.bottom;
+      if (first != null && last != null) {
+        rect.left = first.left;
+        rect.top = first.top;
+        rect.right = last.right;
+        rect.bottom = last.bottom;
+      }
     }
 
     return rect;

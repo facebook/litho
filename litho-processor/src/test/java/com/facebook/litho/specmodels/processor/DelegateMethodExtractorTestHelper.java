@@ -16,43 +16,44 @@
 
 package com.facebook.litho.specmodels.processor;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.DelegateMethod;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
 import javax.lang.model.element.Modifier;
-import org.junit.Assert;
 
 class DelegateMethodExtractorTestHelper {
 
   static void assertDelegateMethodExtraction(
       ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods) {
-    Assert.assertEquals(1, delegateMethods.size());
+    assertThat(delegateMethods.size()).isEqualTo(1);
 
     SpecMethodModel<DelegateMethod, Void> delegateMethod = delegateMethods.iterator().next();
-    Assert.assertEquals(1, delegateMethod.annotations.size());
+    assertThat(delegateMethod.annotations.size()).isEqualTo(1);
 
-    Assert.assertEquals(1, delegateMethod.modifiers.size());
+    assertThat(delegateMethod.modifiers.size()).isEqualTo(1);
 
-    Assert.assertTrue(delegateMethod.modifiers.contains(Modifier.PUBLIC));
-    Assert.assertEquals("testMethod", delegateMethod.name.toString());
+    assertThat(delegateMethod.modifiers.contains(Modifier.PUBLIC)).isTrue();
+    assertThat(delegateMethod.name.toString()).isEqualTo("testMethod");
 
-    Assert.assertEquals(TypeName.VOID, delegateMethod.returnType);
+    assertThat(delegateMethod.returnType).isEqualTo(TypeName.VOID);
 
-    Assert.assertEquals(3, delegateMethod.methodParams.size());
+    assertThat(delegateMethod.methodParams.size()).isEqualTo(3);
 
-    Assert.assertEquals("testProp", delegateMethod.methodParams.get(0).getName());
-    Assert.assertEquals(TypeName.BOOLEAN, delegateMethod.methodParams.get(0).getTypeName());
-    Assert.assertEquals(1, delegateMethod.methodParams.get(0).getAnnotations().size());
+    assertThat(delegateMethod.methodParams.get(0).getName()).isEqualTo("testProp");
+    assertThat(delegateMethod.methodParams.get(0).getTypeName()).isEqualTo(TypeName.BOOLEAN);
+    assertThat(delegateMethod.methodParams.get(0).getAnnotations().size()).isEqualTo(1);
 
-    Assert.assertEquals("testState", delegateMethod.methodParams.get(1).getName());
-    Assert.assertEquals(TypeName.INT, delegateMethod.methodParams.get(1).getTypeName());
-    Assert.assertEquals(1, delegateMethod.methodParams.get(1).getAnnotations().size());
+    assertThat(delegateMethod.methodParams.get(1).getName()).isEqualTo("testState");
+    assertThat(delegateMethod.methodParams.get(1).getTypeName()).isEqualTo(TypeName.INT);
+    assertThat(delegateMethod.methodParams.get(1).getAnnotations().size()).isEqualTo(1);
 
-    Assert.assertEquals("testPermittedAnnotation", delegateMethod.methodParams.get(2).getName());
-    Assert.assertEquals(
-        ClassName.bestGuess("java.lang.Object"), delegateMethod.methodParams.get(2).getTypeName());
-    Assert.assertEquals(1, delegateMethod.methodParams.get(2).getAnnotations().size());
+    assertThat(delegateMethod.methodParams.get(2).getName()).isEqualTo("testPermittedAnnotation");
+    assertThat(delegateMethod.methodParams.get(2).getTypeName())
+        .isEqualTo(ClassName.bestGuess("java.lang.Object"));
+    assertThat(delegateMethod.methodParams.get(2).getAnnotations().size()).isEqualTo(1);
   }
 }

@@ -20,7 +20,7 @@ import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import java.util.concurrent.atomic.AtomicInteger
-import org.assertj.core.api.Java6Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -29,23 +29,31 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class UseRefTest {
 
-  @Rule @JvmField val mLithoTestRule = LithoTestRule()
+  @Rule @JvmField val lithoTestRule = LithoTestRule()
 
   @Test
   fun useRef_onMutation_doesNotTriggerLayout() {
     val logCount = AtomicInteger()
     val renderCount = AtomicInteger()
+    val sideEffectCount = AtomicInteger()
 
     class UseRefTestComponent(
         private val logCount: AtomicInteger,
         private val renderCount: AtomicInteger,
-        private val seq: Int
+        private val sideEffectCount: AtomicInteger,
+        private val seq: Int,
     ) : KComponent() {
       override fun ComponentScope.render(): Component? {
         val hasLogged = useRef { false }
-        if (!hasLogged.value) {
-          logCount.incrementAndGet()
-          hasLogged.value = true
+        // Pass `Any()` so deps differ on every render and the effect re-runs each layout.
+        // `Unit` would only fire once (singleton equality), defeating the useRef demonstration.
+        useEffect(Any()) {
+          sideEffectCount.incrementAndGet()
+          if (!hasLogged.value) {
+            logCount.incrementAndGet()
+            hasLogged.value = true
+          }
+          null
         }
 
         renderCount.incrementAndGet()
@@ -54,18 +62,36 @@ class UseRefTest {
       }
     }
 
-    val testLithoView =
-        mLithoTestRule.render {
-          UseRefTestComponent(logCount = logCount, renderCount = renderCount, seq = 0)
-        }
+    val testLithoView = lithoTestRule.createTestLithoView().attachToWindow().measure().layout()
+
+    testLithoView.setRootAsync(
+        UseRefTestComponent(
+            logCount = logCount,
+            renderCount = renderCount,
+            sideEffectCount = sideEffectCount,
+            seq = 0,
+        ),
+    )
+    lithoTestRule.idle()
 
     assertThat(logCount.get()).isEqualTo(1)
     assertThat(renderCount.get()).isEqualTo(1)
+    assertThat(sideEffectCount.get()).isEqualTo(1)
 
-    testLithoView.setRoot(
-        UseRefTestComponent(logCount = logCount, renderCount = renderCount, seq = 0))
+    testLithoView.setRootAsync(
+        UseRefTestComponent(
+            logCount = logCount,
+            renderCount = renderCount,
+            sideEffectCount = sideEffectCount,
+            seq = 0,
+        ),
+    )
+    lithoTestRule.idle()
 
+    // useRef's value persists across renders → logCount stays at 1 even though
+    // the effect fired again (sideEffectCount == 2, renderCount == 2).
     assertThat(logCount.get()).isEqualTo(1)
     assertThat(renderCount.get()).isEqualTo(2)
+    assertThat(sideEffectCount.get()).isEqualTo(2)
   }
 }

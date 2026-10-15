@@ -59,10 +59,11 @@ const features = [
     imageUrl: 'images/home-flat-not-flat.png',
     description: (
       <>
-        Litho uses <a href="https://yogalayout.dev/docs/about-yoga">Yoga</a> for layout and
-        automatically reduces the number of ViewGroups that your UI contains.
-        This, in addition to Litho's text optimizations, allows for much smaller
-        view hierarchies and improves both memory and scroll performance.
+        Litho uses <a href="https://yogalayout.dev/docs/about-yoga">Yoga</a> for
+        layout and automatically reduces the number of ViewGroups that your UI
+        contains. This, in addition to Litho's text optimizations, allows for
+        much smaller view hierarchies and improves both memory and scroll
+        performance.
       </>
     ),
     dark: false,
@@ -142,12 +143,12 @@ function Home() {
           <div className={styles.buttons}>
             <Link
               className={clsx('button button--outline', styles.button)}
-              to={useBaseUrl('docs/mainconcepts/components-basics')}>
+              to={useBaseUrl('docs/mainconcepts')}>
               GET STARTED
             </Link>
             <Link
               className={clsx('button button--outline', styles.button)}
-              to={useBaseUrl('docs/intro')}>
+              to={useBaseUrl('docs/intro/what-is-litho')}>
               LEARN MORE
             </Link>
             <Link
@@ -159,15 +160,6 @@ function Home() {
         </div>
       </div>
       <main>
-      <div>
-       <div className={styles.banner}>
-         Support Ukraine 🇺🇦{' '}
-         <Link to="https://opensource.facebook.com/support-ukraine">
-           Help Provide Humanitarian Aid to Ukraine
-         </Link>
-         .
-       </div>
-      </div>
         <VideoContainer />
         {features &&
           features.length > 0 &&

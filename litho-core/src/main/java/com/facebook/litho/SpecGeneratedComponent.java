@@ -39,12 +39,11 @@ import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnAttached;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.OnDetached;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.debug.LithoDebugEvent;
 import com.facebook.litho.debug.LithoDebugEventAttributes;
 import com.facebook.rendercore.ContentAllocator;
 import com.facebook.rendercore.MountContentPools;
-import com.facebook.rendercore.RenderUnit;
+import com.facebook.rendercore.RenderType;
 import com.facebook.rendercore.debug.DebugEventAttribute;
 import com.facebook.rendercore.transitions.TransitionUtils;
 import com.facebook.yoga.YogaFlexDirection;
@@ -62,7 +61,7 @@ public abstract class SpecGeneratedComponent extends Component
   private static final DynamicValue[] sEmptyArray = new DynamicValue[0];
 
   private final String mSimpleName;
-  private @Nullable String mOwnerGlobalKey;
+  private @Nullable Object mOwnerGlobalKey;
 
   // If we have a cachedLayout, onPrepare and onMeasure would have been called on it already.
   private @Nullable CommonProps mCommonProps;
@@ -79,11 +78,11 @@ public abstract class SpecGeneratedComponent extends Component
 
   @VisibleForTesting
   @Nullable
-  final String getOwnerGlobalKey() {
+  final Object getOwnerGlobalKey() {
     return mOwnerGlobalKey;
   }
 
-  final void setOwnerGlobalKey(String ownerGlobalKey) {
+  final void setOwnerGlobalKey(@Nullable Object ownerGlobalKey) {
     mOwnerGlobalKey = ownerGlobalKey;
   }
 
@@ -107,7 +106,7 @@ public abstract class SpecGeneratedComponent extends Component
     }
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
-      ComponentsSystrace.beginSection("onBind: " + getSimpleName());
+      ComponentsSystrace.beginSection("bind:" + getSimpleName());
     }
     try {
       onBind(c, mountedContent, interStagePropsContainer);
@@ -136,7 +135,7 @@ public abstract class SpecGeneratedComponent extends Component
     }
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
-      ComponentsSystrace.beginSection("onMount: " + getSimpleName());
+      ComponentsSystrace.beginSection("mount:" + getSimpleName());
     }
     try {
       onMount(c, convertContent, interStagePropsContainer);
@@ -162,7 +161,7 @@ public abstract class SpecGeneratedComponent extends Component
       final @Nullable InterStagePropsContainer interStagePropsContainer) {
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
-      ComponentsSystrace.beginSection("onUnbind: " + getSimpleName());
+      ComponentsSystrace.beginSection("unbind:" + getSimpleName());
     }
     try {
       onUnbind(c, mountedContent, interStagePropsContainer);
@@ -181,7 +180,7 @@ public abstract class SpecGeneratedComponent extends Component
       final @Nullable InterStagePropsContainer interStagePropsContainer) {
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
-      ComponentsSystrace.beginSection("onUnmount: " + getSimpleName());
+      ComponentsSystrace.beginSection("unmount:" + getSimpleName());
     }
     try {
       onUnmount(c, mountedContent, interStagePropsContainer);
@@ -253,9 +252,8 @@ public abstract class SpecGeneratedComponent extends Component
       final int parentWidthSpec,
       final int parentHeightSpec) {
 
-    final Integer traceId = generateTraceIdentifier(LithoDebugEvent.ComponentRendered);
-    final boolean isTracing = ComponentsSystrace.isTracing();
     final ComponentContext c = scopedComponentInfo.getContext();
+    final boolean isTracing = ComponentsSystrace.isTracing();
     LithoNode node = null;
 
     if (Component.isMountSpec(this)) {
@@ -263,10 +261,11 @@ public abstract class SpecGeneratedComponent extends Component
       node = new LithoNode();
       node.flexDirection(YogaFlexDirection.COLUMN);
 
+      final Integer traceId = generateTraceIdentifier(LithoDebugEvent.ComponentRendered);
       if (traceId != null) {
-        HashMap<String, Object> attributes = new HashMap<>();
-        attributes.put(LithoDebugEventAttributes.Component, getSimpleName());
+        HashMap<String, Object> attributes = new HashMap<>(4);
         attributes.put(DebugEventAttribute.Name, getFullyQualifiedName());
+        attributes.put(LithoDebugEventAttributes.ResolveVersion, resolveContext.getLayoutVersion());
         beginTrace(
             traceId,
             LithoDebugEvent.ComponentRendered,
@@ -293,10 +292,11 @@ public abstract class SpecGeneratedComponent extends Component
     // If the component is a LayoutSpec.
     else if (Component.isLayoutSpec(this)) {
 
+      final Integer traceId = generateTraceIdentifier(LithoDebugEvent.ComponentRendered);
       if (traceId != null) {
-        HashMap<String, Object> attributes = new HashMap<>();
-        attributes.put(LithoDebugEventAttributes.Component, getSimpleName());
+        HashMap<String, Object> attributes = new HashMap<>(4);
         attributes.put(DebugEventAttribute.Name, getFullyQualifiedName());
+        attributes.put(LithoDebugEventAttributes.ResolveVersion, resolveContext.getLayoutVersion());
         beginTrace(
             traceId,
             LithoDebugEvent.ComponentRendered,
@@ -312,13 +312,10 @@ public abstract class SpecGeneratedComponent extends Component
 
       try {
         renderResult =
-            ComponentRenderer.runInRecorderScope(
-                scopedComponentInfo,
-                resolveContext,
-                () -> render(resolveContext, c, parentWidthSpec, parentHeightSpec));
+            ComponentRenderer.renderWithRecorder(
+                this, resolveContext, scopedComponentInfo, parentWidthSpec, parentHeightSpec);
       } finally {
         if (isTracing) {
-          // end of prepare
           ComponentsSystrace.endSection();
         }
         if (traceId != null) {
@@ -354,10 +351,12 @@ public abstract class SpecGeneratedComponent extends Component
    *
    * @param c The {@link ComponentContext} to build a {@link ComponentLayout} tree.
    */
+  @SuppressWarnings("deprecation") // default empty layout uses the legacy Column builder
   protected @Nullable Component onCreateLayout(ComponentContext c) {
     return Column.create(c).build();
   }
 
+  @SuppressWarnings("deprecation") // default empty layout uses the legacy Column builder
   protected Component onCreateLayoutWithSizeSpec(
       ComponentContext c, int widthSpec, int heightSpec) {
     return Column.create(c).build();
@@ -463,7 +462,7 @@ public abstract class SpecGeneratedComponent extends Component
   final @Nullable Transition createTransition(ComponentContext c) {
     final Transition transition = onCreateTransition(c);
     if (transition != null) {
-      TransitionUtils.setOwnerKey(transition, c.getGlobalKey());
+      TransitionUtils.setOwnerKey(transition, c.getNullableGlobalKey());
     }
     return transition;
   }
@@ -747,6 +746,32 @@ public abstract class SpecGeneratedComponent extends Component
     return height;
   }
 
+  /** Min-content intrinsic width; generated from {@code @OnMeasureIntrinsicWidth}. */
+  protected int onMeasureIntrinsicWidth(
+      final ComponentContext c,
+      final ComponentLayout layout,
+      final int widthSpec,
+      final int heightSpec) {
+    throw new IllegalStateException(
+        getSimpleName()
+            + " declares hasIntrinsicSize = true but does not implement @OnMeasureIntrinsicWidth. "
+            + "A MountSpec opting into intrinsic sizing must implement both "
+            + "@OnMeasureIntrinsicWidth and @OnMeasureIntrinsicHeight.");
+  }
+
+  /** Min-content intrinsic height; generated from {@code @OnMeasureIntrinsicHeight}. */
+  protected int onMeasureIntrinsicHeight(
+      final ComponentContext c,
+      final ComponentLayout layout,
+      final int widthSpec,
+      final int heightSpec) {
+    throw new IllegalStateException(
+        getSimpleName()
+            + " declares hasIntrinsicSize = true but does not implement @OnMeasureIntrinsicHeight. "
+            + "A MountSpec opting into intrinsic sizing must implement both "
+            + "@OnMeasureIntrinsicWidth and @OnMeasureIntrinsicHeight.");
+  }
+
   /**
    * Deploy all UI elements representing the final bounds defined in the given {@link
    * ComponentLayout}. Return either a {@link Drawable} or a {@link View} or {@code null} to be
@@ -817,10 +842,8 @@ public abstract class SpecGeneratedComponent extends Component
   }
 
   @Override
-  public RenderUnit.RenderType getRenderType() {
-    return getMountType() == Component.MountType.DRAWABLE
-        ? RenderUnit.RenderType.DRAWABLE
-        : RenderUnit.RenderType.VIEW;
+  public RenderType getRenderType() {
+    return getMountType() == Component.MountType.DRAWABLE ? RenderType.DRAWABLE : RenderType.VIEW;
   }
 
   @Override
@@ -898,23 +921,17 @@ public abstract class SpecGeneratedComponent extends Component
 
   @Override
   public final boolean isEquivalentTo(@Nullable Component other) {
-    return isEquivalentTo(other, ComponentsConfiguration.shouldCompareCommonPropsInIsEquivalentTo);
-  }
-
-  public final boolean isEquivalentTo(@Nullable Component other, boolean shouldCompareCommonProps) {
-    if (shouldCompareCommonProps
-        && other instanceof SpecGeneratedComponent
+    if (other instanceof SpecGeneratedComponent
         && !isEquivalentCommonProps((SpecGeneratedComponent) other)) {
       return false;
     }
     if (Component.isEfficientEqualityConfigEnabled(this)) {
-      @Nullable
-      Boolean isEquivalent = isEquivalentPropsOptimized(this, other, shouldCompareCommonProps);
+      @Nullable Boolean isEquivalent = isEquivalentPropsOptimized(this, other);
       if (isEquivalent != null) {
         return isEquivalent;
       }
     }
-    return isEquivalentProps(other, shouldCompareCommonProps);
+    return isEquivalentProps(other);
   }
 
   /**
@@ -922,14 +939,12 @@ public abstract class SpecGeneratedComponent extends Component
    *
    * @param a the first component to compare
    * @param b the other component to compare
-   * @param shouldCompareCommonProps whether to compare common props. This applies to props that are
-   *     components themselves, and are compared recursively.
    * @return true if the props are equivalent, false otherwise. This method may also return null if
    *     {@link Component#getProps()} has not been implemented.
    */
   @Nullable
   protected static Boolean isEquivalentPropsOptimized(
-      @Nullable Component a, @Nullable Component b, boolean shouldCompareCommonProps) {
+      @Nullable Component a, @Nullable Component b) {
     if (a == b) {
       return true;
     }
@@ -947,16 +962,7 @@ public abstract class SpecGeneratedComponent extends Component
     if (aProps == null || bProps == null) {
       return null;
     }
-    return ComponentUtils.arePropsEquivalent(aProps, bProps, shouldCompareCommonProps);
-  }
-
-  @Override
-  protected final boolean isEquivalentProps(@Nullable Component other) {
-    return isEquivalentProps(other, false);
-  }
-
-  protected boolean isEquivalentProps(@Nullable Component other, boolean shouldCompareCommonProps) {
-    return super.isEquivalentProps(other);
+    return ComponentUtils.arePropsEquivalent(aProps, bProps);
   }
 
   protected final boolean isEquivalentCommonProps(@Nullable SpecGeneratedComponent other) {
@@ -982,11 +988,7 @@ public abstract class SpecGeneratedComponent extends Component
     if (eventHandler.id == ERROR_EVENT_HANDLER_ID) {
       if (isTracing) {
         ComponentsSystrace.beginSection(
-            "onError:"
-                + getSimpleName()
-                + "("
-                + getSectionNameForTracing(eventState.getClass())
-                + ")");
+            "onError:" + getSimpleName() + ":" + getSectionNameForTracing(eventState.getClass()));
       }
       try {
         return dispatchOnEventImpl(eventHandler, eventState);
@@ -1000,11 +1002,7 @@ public abstract class SpecGeneratedComponent extends Component
     final Object token = EventDispatcherInstrumenter.onBeginWork(eventHandler, eventState);
     if (isTracing) {
       ComponentsSystrace.beginSection(
-          "onEvent:"
-              + getSimpleName()
-              + "("
-              + getSectionNameForTracing(eventState.getClass())
-              + ")");
+          "onEvent:" + getSimpleName() + ":" + getSectionNameForTracing(eventState.getClass()));
     }
     try {
       return dispatchOnEventImpl(eventHandler, eventState);

@@ -28,20 +28,18 @@ import org.mockito.kotlin.verify
 class DelegatingEventHandlerTest {
 
   private val hasEventDispatcher: HasEventDispatcher = mock()
-  private val eventHandler1: EventHandler<Any> =
-      EventHandler(
-          1,
-          EventHandlerRebindMode.REBIND,
-          EventDispatchInfo(hasEventDispatcher, null),
-          null,
-      )
-  private val eventHandler2: EventHandler<Any> =
-      EventHandler(
-          2,
-          EventHandlerRebindMode.REBIND,
-          EventDispatchInfo(hasEventDispatcher, null),
-          null,
-      )
+  private val eventHandler1: EventHandler<Any> = EventHandler(
+      1,
+      EventHandlerRebindMode.REBIND,
+      EventDispatchInfo(hasEventDispatcher, null),
+      null,
+  )
+  private val eventHandler2: EventHandler<Any> = EventHandler(
+      2,
+      EventHandlerRebindMode.REBIND,
+      EventDispatchInfo(hasEventDispatcher, null),
+      null,
+  )
   private val mockEventHandler1: EventHandler<Any> = mock()
   private val mockEventHandler2: EventHandler<Any> = mock()
 

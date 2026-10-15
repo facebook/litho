@@ -27,6 +27,7 @@ import com.facebook.rendercore.MountDelegateTarget
 import com.facebook.rendercore.RenderCoreSystrace
 import com.facebook.rendercore.RenderTreeNode
 import com.facebook.rendercore.RenderUnit
+import com.facebook.rendercore.extensions.VisibilityChangeReason
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtension
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtensionInput
 import com.facebook.rendercore.incrementalmount.IncrementalMountOutput
@@ -46,7 +47,7 @@ class IncrementalMountExtensionTest {
   @Test
   fun onIteratingOnIncrementMountOutputs_shouldIterateByInsertionOrder() {
     val input = TestInput(10)
-    input.incrementalMountOutputs.forEachIndexed { i, output ->
+    input.getIncrementalMountOutputs().forEachIndexed { i, output ->
       assertThat(output.id).isEqualTo(input.getMountableOutputAt(i).renderUnit.id)
     }
   }
@@ -59,7 +60,7 @@ class IncrementalMountExtensionTest {
     val mountDelegateTarget = mock<MountDelegateTarget>()
     whenever(mountDelegate.tracer).thenReturn(RenderCoreSystrace.getInstance())
     whenever(mountDelegate.mountDelegateTarget).thenReturn(mountDelegateTarget)
-    val extension = IncrementalMountExtension.getInstance()
+    val extension = IncrementalMountExtension.instance
     val extensionState = extension.createExtensionState(mountDelegate)
     val state = extensionState.state
     mountDelegate.registerMountExtension(extension)
@@ -79,7 +80,11 @@ class IncrementalMountExtensionTest {
       extension.beforeMountItem(extensionState, node, i)
     }
     extension.afterMount(extensionState)
-    extension.onVisibleBoundsChanged(extensionState, Rect(0, 0, 10, 50))
+    extension.onVisibleBoundsChanged(
+        extensionState,
+        Rect(0, 0, 10, 50),
+        VisibilityChangeReason.UNKNOWN,
+    )
     assertThat(IncrementalMountExtension.getPreviousBottomsIndex(state)).isEqualTo(0)
     assertThat(IncrementalMountExtension.getPreviousTopsIndex(state)).isEqualTo(3)
   }
@@ -92,7 +97,7 @@ class IncrementalMountExtensionTest {
     val mountDelegateTarget = mock<MountDelegateTarget>()
     whenever(mountDelegate.tracer).thenReturn(RenderCoreSystrace.getInstance())
     whenever(mountDelegate.mountDelegateTarget).thenReturn(mountDelegateTarget)
-    val extension = IncrementalMountExtension.getInstance()
+    val extension = IncrementalMountExtension.instance
     mountDelegate.registerMountExtension(extension)
     val extensionState = extension.createExtensionState(mountDelegate)
     val state = extensionState.state
@@ -113,7 +118,11 @@ class IncrementalMountExtensionTest {
       extension.beforeMountItem(extensionState, node, i)
     }
     extension.afterMount(extensionState)
-    extension.onVisibleBoundsChanged(extensionState, Rect(0, 0, 10, 50))
+    extension.onVisibleBoundsChanged(
+        extensionState,
+        Rect(0, 0, 10, 50),
+        VisibilityChangeReason.UNKNOWN,
+    )
     assertThat(IncrementalMountExtension.getPreviousBottomsIndex(state)).isEqualTo(0)
     assertThat(IncrementalMountExtension.getPreviousTopsIndex(state)).isEqualTo(3)
   }
@@ -155,14 +164,16 @@ class IncrementalMountExtensionTest {
             DrawableWrapperUnit(ColorDrawable(Color.BLACK), i.toLong())
         whenever(renderTreeNode.renderUnit).thenReturn(renderUnit)
         mountableOutputs.add(renderTreeNode)
-        val incrementalMountOutput =
-            IncrementalMountOutput(
-                i.toLong(),
-                i,
-                bounds,
-                false,
-                "",
-                if (i != 0) _incrementalMountOutputs[(i - 1).toLong()] else null)
+        val incrementalMountOutput = IncrementalMountOutput(
+            i.toLong(),
+            i,
+            bounds,
+            false,
+            "",
+            if (i != 0) _incrementalMountOutputs[(i - 1).toLong()] else null,
+            Any(),
+            if (i != 0) (i - 1).toLong() else IncrementalMountOutput.NO_HOST_ID,
+        )
         _incrementalMountOutputs[incrementalMountOutput.id] = incrementalMountOutput
         tops.add(incrementalMountOutput)
         bottoms.add(incrementalMountOutput)

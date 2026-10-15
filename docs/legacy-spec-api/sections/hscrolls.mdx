@@ -1,0 +1,227 @@
+---
+id: hscrolls
+title: Horizontal Scrolling and Measurement
+---
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+:::caution
+**Deprecated:** The Java Spec API is no longer supported and should not be used for new development.
+For current best practices and supported approaches, please refer to the [layout docs for Lazy Collection](../../lazycollections/lazycollections-layout.mdx) page.
+:::
+
+Vertical scrolling lists usually fill the width of the screen so it's easy to measure them with a fixed size. Working with horizontal scrolling lists (h-scroll) is not always so trivial because different height settings have different performance implications.
+
+To see how to create a h-scroll, using a `RecyclerCollectionComponent`, refer to the 'Horizontal Lists' section of the [Adding and Adapting the RecyclerCollection to your App](recycler-collection-component.md#horizontal-lists) page.
+
+:::note
+The code samples contained within this page are extracted from the [h-scroll height codelab](https://github.com/facebook/litho/tree/master/codelabs/hscroll-height).
+:::
+
+## Setting the height of a horizontal RecyclerCollectionComponent
+
+You can set the height of a horizontally scrolling `RecyclerCollectionComponent` with the following methods:
+
+* [Fixed height method](#fixed-height-method) - a fixed height is set on the H-Scroll component.  This is the most performant method and is recommended where possible.
+* [Unknown height method](#unknown-height-method) - height is not known when the Component is created so let the h-scroll set its height to the height of the first item.
+* [Dynamic height method](#dynamic-height-method) - lets the h-scroll dynamically change its height to fit the tallest item.  This is the least performant method.
+
+Each of these methods is detailed in the following sub-sections.
+
+### Fixed height method
+
+Using this method, a fixed height is set on the h-Scroll Component.  The client knows the height of the h-scroll when it creates it, but it cannot be changed once the h-scroll gets measured.
+
+Children of this h-scroll are measured with, at most, the height of the h-scroll.  Taller children will be clipped, and smaller children will be positioned at the start of the h-scroll.
+
+:::note
+In Litho, this is the most performant (efficient) way to set the height of a h-scroll. It's recommended to use this option whenever possible.
+:::
+
+To use this preferred method, set the height through the `height` prop on your `RecyclerCollectionComponent`:
+
+```kotlin
+import androidx.recyclerview.widget.OrientationHelper
+import com.facebook.litho.Component
+import com.facebook.litho.ComponentContext
+import com.facebook.litho.annotations.FromEvent
+import com.facebook.litho.annotations.LayoutSpec
+import com.facebook.litho.annotations.OnCreateLayout
+import com.facebook.litho.annotations.OnEvent
+import com.facebook.litho.annotations.Prop
+import com.facebook.litho.sections.SectionContext
+import com.facebook.litho.sections.common.DataDiffSection
+import com.facebook.litho.sections.common.RenderEvent
+import com.facebook.litho.sections.widget.ListRecyclerConfiguration
+import com.facebook.litho.sections.widget.RecyclerCollectionComponent
+import com.facebook.litho.widget.ComponentRenderInfo
+import com.facebook.litho.widget.RenderInfo
+import com.facebook.litho.widget.SolidColor
+
+@LayoutSpec
+object FixedHeightHscrollComponentSpec {
+
+    @OnCreateLayout
+    fun onCreateLayout(c: ComponentContext, @Prop colors: List<Int>): Component {
+        return RecyclerCollectionComponent.create(c)
+          .recyclerConfiguration(ListRecyclerConfiguration.create().orientation(OrientationHelper.HORIZONTAL).build())
+          .section(DataDiffSection.create<Int>(SectionContext(c))
+            .data(colors)
+            .renderEventHandler(FixedHeightHscrollComponent.onRender(c))
+            .build())
+          .heightDip(150f)
+          .build()
+    }
+
+    @OnEvent(RenderEvent::class)
+    fun onRender(c: ComponentContext, @FromEvent model: Int): RenderInfo {
+        return ComponentRenderInfo.create()
+          .component(SolidColor.create(c).color(model).heightDip(100f).widthDip(100f))
+          .build()
+    }
+}
+```
+
+The code produces the structure shown in the following image.
+
+![fixedheight](/images/fixed-height-hscroll.png)
+
+Notice the grey background is the actual bounds of the h-scroll, and the children have smaller heights.
+
+### Unknown height method
+
+Using this method, the height is unknown when the Component is created. The height is determined by measuring the first child of the h-scroll and setting that as the height of the h-scroll.
+
+This measurement occurs only when the h-scroll is first measured, after which the height cannot be changed. All other children heights will be measured with, at most, the height of the h-scroll and position at the start of the h-scroll.
+
+To enable this, instead of passing a `height` prop on the `RecyclerCollectionComponent`, specify `crossAxisWrapMode` as `CrossAxisWrapMode.MatchFirstChild` it should measure itself:
+
+```kotlin
+import androidx.recyclerview.widget.OrientationHelper
+import com.facebook.litho.Component
+import com.facebook.litho.ComponentContext
+import com.facebook.litho.annotations.FromEvent
+import com.facebook.litho.annotations.LayoutSpec
+import com.facebook.litho.annotations.OnCreateLayout
+import com.facebook.litho.annotations.OnEvent
+import com.facebook.litho.annotations.Prop
+import com.facebook.litho.sections.SectionContext
+import com.facebook.litho.sections.common.DataDiffSection
+import com.facebook.litho.sections.common.RenderEvent
+import com.facebook.litho.sections.widget.ListRecyclerConfiguration
+import com.facebook.litho.sections.widget.RecyclerBinderConfiguration
+import com.facebook.litho.sections.widget.RecyclerCollectionComponent
+import com.facebook.litho.widget.ComponentRenderInfo
+import com.facebook.litho.widget.CrossAxisWrapMode
+import com.facebook.litho.widget.RecyclerBinderConfig
+import com.facebook.litho.widget.RenderInfo
+import com.facebook.litho.widget.SolidColor
+
+@LayoutSpec
+object MeasureFirstItemForHeightHscrollComponentSpec {
+
+    @OnCreateLayout
+    fun onCreateLayout(c: ComponentContext, @Prop colors: List<Int>): Component {
+      return RecyclerCollectionComponent.create(c)
+          .recyclerConfiguration(
+              ListRecyclerConfiguration.create()
+                  .orientation(OrientationHelper.HORIZONTAL)
+                  .recyclerBinderConfiguration(
+                      RecyclerBinderConfiguration.create()
+                          .recyclerBinderConfig(
+                              RecyclerBinderConfig(
+                                  crossAxisWrapMode = CrossAxisWrapMode.MatchFirstChild))
+                          .build())
+                  .build())
+          .section(
+              DataDiffSection.create<Int>(SectionContext(c))
+                  .data(colors)
+                  .renderEventHandler(MeasureFirstItemForHeightHscrollComponent.onRender(c))
+                  .build())
+          .build()
+    }
+
+    @OnEvent(RenderEvent::class)
+    fun onRender(c: ComponentContext, @FromEvent model: Int, @FromEvent index: Int): RenderInfo {
+      if (index == 0) {
+        return ComponentRenderInfo.create()
+          .component(SolidColor.create(c).color(model).heightDip(100f).widthDip(100f))
+          .build()
+      }
+
+      if (index == 1) {
+         return ComponentRenderInfo.create()
+           component(SolidColor.create(c).color(model).heightDip(200f).widthDip(100f))
+           .build()
+      }
+
+      return ComponentRenderInfo.create()
+        .component(SolidColor.create(c).color(model).heightDip(50f).widthDip(100f))
+        .build()
+    }
+}
+```
+
+The code produces the structure shown in the following image.
+
+![canmeasure](/images/canmeasure.png)
+
+In this case, the first child has a height of 100dip; the second child has a height of 200dip, but it's cropped to fit the size of the h-scroll as determined by the first child. Once measured like this, the height cannot be changed. The grey background represents the bounds of the h-scroll.
+
+:::note
+If you don't set a non-zero height on the `RecyclerCollectionComponent` and never change `crossAxisWrapMode`(Its default value is `CrossAxisWrapMode.NoWrap`), your RecyclerCollectionComponent will end up with a height of zero.
+:::
+
+### Dynamic height method
+
+:::caution
+This is the least performant (inefficient) method. Enabling this option should be done only if absolutely needed and should especially be avoided for lists with infinite scrolling.
+:::
+
+Using this method, the h-scroll dynamically changes its height to fit the tallest item.
+
+H-Scrolls can be configured to support items of different height or remeasuring of the height if the height of the children could change after the initial measurement.
+
+In this case:
+
+* The initial height of the h-scroll is determined by the height of the tallest child.
+* If a child wants to expand to become taller than the current height of the h-scroll, the h-scroll will be remeasured with the new height of the child. Other items will not be remeasured.
+* If the child with the biggest height collapses, then the h-scroll will again determine what its height should be by remeasuring all the items.
+
+Measuring all the children to determine the tallest comes with a high-performance cost, especially for infinite loading h-scrolls when the height needs to be remeasured every time new items are inserted.
+
+If you must use this method, you can pass your own [RecyclerConfiguration](pathname:///javadoc/com/facebook/litho/sections/widget/RecyclerConfiguration.html) to the `RecyclerCollectionComponent` and enable `CrossAxisWrapMode.Dynamic` on the [RecyclerBinderConfiguration](pathname:///javadoc/com/facebook/litho/sections/widget/RecyclerBinderConfiguration.html) that is used to create the `RecyclerConfiguration`, as shown in the following code:
+
+```kotlin
+import androidx.recyclerview.widget.OrientationHelper
+import com.facebook.litho.sections.SectionContext
+import com.facebook.litho.sections.common.DataDiffSection
+import com.facebook.litho.sections.widget.ListRecyclerConfiguration
+import com.facebook.litho.sections.widget.RecyclerBinderConfiguration
+import com.facebook.litho.sections.widget.RecyclerCollectionComponent
+import com.facebook.litho.widget.CrossAxisWrapMode
+import com.facebook.litho.widget.RecyclerBinderConfig
+
+RecyclerCollectionComponent.create(c)
+    .recyclerConfiguration(
+        ListRecyclerConfiguration.create()
+            .orientation(OrientationHelper.HORIZONTAL)
+            .recyclerBinderConfiguration(
+                RecyclerBinderConfiguration.create()
+                    .recyclerBinderConfig(
+                        RecyclerBinderConfig(crossAxisWrapMode = CrossAxisWrapMode.Dynamic))
+                    .build())
+            .build())
+    .section(
+        DataDiffSection.create<Int>(SectionContext(c))
+            .data(colors)
+            .renderEventHandler(DynamicHeightHscrollComponent.onRender(c))
+            .build())
+    .build()
+```
+
+In the short video below, you can see that the h-scroll will remeasure to always adjust height to accommodate the tallest item, but it won't collapse to fit a smaller maximum height.
+
+<video loop="true" autoplay="true" controls="true" class="video" width="600px" height="100%">
+  <source type="video/mp4" src={useBaseUrl("/videos/dynamicheight.mov")}></source>
+  <p>Your browser does not support the video element.</p>
+</video>

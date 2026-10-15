@@ -32,11 +32,14 @@ import com.facebook.litho.viewcompat.ViewCreator
     """ViewCompatComponent is not efficient as it will do measurement of views twice.
       Recommended way now is to use either ViewRenderInfo (which utilizes same interfaces as this
       class: ViewCreator and ViewBinder) if the view is used with sections API or create a custom
-      MountSpec.""")
+      MountSpec.""",
+)
 class ViewCompatComponent<V : View>
 private constructor(private val viewCreator: ViewCreator<*>, componentName: String) :
     SpecGeneratedComponent(
-        System.identityHashCode(viewCreator), "ViewCompatComponent_$componentName") {
+        System.identityHashCode(viewCreator),
+        "ViewCompatComponent_$componentName",
+    ) {
   private var viewBinder: ViewBinder<V>? = null
   private var poolSize = UNSPECIFIED_POOL_SIZE
 
@@ -48,7 +51,7 @@ private constructor(private val viewCreator: ViewCreator<*>, componentName: Stri
     return Builder(componentContext, this)
   }
 
-  override fun isEquivalentProps(other: Component?, shouldCompareCommonProps: Boolean): Boolean {
+  override fun isEquivalentProps(other: Component?): Boolean {
     return this === other
   }
 
@@ -62,7 +65,7 @@ private constructor(private val viewCreator: ViewCreator<*>, componentName: Stri
       widthSpec: Int,
       heightSpec: Int,
       size: Size,
-      interStagePropsContainer: InterStagePropsContainer?
+      interStagePropsContainer: InterStagePropsContainer?,
   ) {
     val toMeasure: V = onCreateMountContent(c.androidContext)
     val layoutParams = ViewGroup.LayoutParams(size.width, size.height)
@@ -87,7 +90,7 @@ private constructor(private val viewCreator: ViewCreator<*>, componentName: Stri
   override fun onBind(
       c: ComponentContext?,
       mountedContent: Any,
-      interStagePropsContainer: InterStagePropsContainer?
+      interStagePropsContainer: InterStagePropsContainer?,
   ) {
     requireViewBinder().bind(mountedContent as V)
   }
@@ -95,7 +98,7 @@ private constructor(private val viewCreator: ViewCreator<*>, componentName: Stri
   override fun onUnbind(
       c: ComponentContext?,
       mountedContent: Any,
-      interStagePropsContainer: InterStagePropsContainer?
+      interStagePropsContainer: InterStagePropsContainer?,
   ) {
     requireViewBinder().unbind(mountedContent as V)
   }
@@ -110,7 +113,7 @@ private constructor(private val viewCreator: ViewCreator<*>, componentName: Stri
 
   class Builder<V : View>(
       context: ComponentContext,
-      private var viewCompatComponent: ViewCompatComponent<V>
+      private var viewCompatComponent: ViewCompatComponent<V>,
   ) : Component.Builder<Builder<V>?>(context, 0, 0, viewCompatComponent) {
     fun viewBinder(viewBinder: ViewBinder<V>): Builder<V> {
       viewCompatComponent.viewBinder = viewBinder
@@ -148,7 +151,7 @@ private constructor(private val viewCreator: ViewCreator<*>, componentName: Stri
     @JvmStatic
     operator fun <V : View> get(
         viewCreator: ViewCreator<V>,
-        componentName: String
+        componentName: String,
     ): ViewCompatComponent<V> {
       return ViewCompatComponent(viewCreator, componentName)
     }

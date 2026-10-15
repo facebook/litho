@@ -31,7 +31,6 @@ import androidx.annotation.VisibleForTesting
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.children
-import java.lang.IllegalArgumentException
 
 private const val INITIAL_MOUNT_ITEMS_SIZE = 8
 
@@ -40,6 +39,9 @@ open class HostView @JvmOverloads constructor(context: Context, attrs: Attribute
     Host(context, attrs) {
 
   private val _dispatchDraw = InterleavedDispatchDraw()
+  private val interceptTouchEventHandlers: MutableList<InterceptTouchHandler> by lazy {
+    mutableListOf()
+  }
 
   private var mountItems: Array<MountItem?> = arrayOfNulls(INITIAL_MOUNT_ITEMS_SIZE)
   private var _childDrawingOrder = IntArray(0)
@@ -60,7 +62,8 @@ open class HostView @JvmOverloads constructor(context: Context, attrs: Attribute
   }
 
   override fun mount(index: Int, mountItem: MountItem) {
-    if (mountItem.renderUnit.renderType == RenderUnit.RenderType.DRAWABLE) {
+    checkNotVisitingMountItems()
+    if (mountItem.renderUnit.renderType == RenderType.DRAWABLE) {
       mountDrawable(mountItem)
     } else {
       mountView(mountItem)
@@ -101,16 +104,18 @@ open class HostView @JvmOverloads constructor(context: Context, attrs: Attribute
     }
     throw IllegalStateException(
         """
-              Mount item was not found in the list of mounted items.
-              Item to remove: ${item.renderTreeNode.generateDebugString(null)}
-              Mounted items: ${getDescriptionOfMountedItems(mountItems)}
-              Scraped items: ${getDescriptionOfMountedItems(scrapMountItemsArray)}
-              """
-            .trimIndent())
+        Mount item was not found in the list of mounted items.
+        Item to remove: ${item.renderTreeNode.generateDebugString(null)}
+        Mounted items: ${getDescriptionOfMountedItems(mountItems)}
+        Scraped items: ${getDescriptionOfMountedItems(scrapMountItemsArray)}
+        """
+            .trimIndent(),
+    )
   }
 
   override fun unmount(index: Int, mountItem: MountItem) {
-    if (mountItem.renderUnit.renderType == RenderUnit.RenderType.DRAWABLE) {
+    checkNotVisitingMountItems()
+    if (mountItem.renderUnit.renderType == RenderType.DRAWABLE) {
       unmountDrawable(mountItem)
     } else {
       unmountView(mountItem)
@@ -134,12 +139,25 @@ open class HostView @JvmOverloads constructor(context: Context, attrs: Attribute
   override fun getMountItemAt(index: Int): MountItem =
       mountItems[index] ?: throw IllegalArgumentException("No MountItem exists at position $index")
 
+  override fun visitMountItemsUnguarded(visitor: MountItemVisitor): Boolean {
+    for (item in mountItems) {
+      if (item != null && !visitor.visit(item)) return false
+    }
+    scrapMountItemsArray?.let { scrap ->
+      for (item in scrap) {
+        if (item != null && !visitor.visit(item)) return false
+      }
+    }
+    return true
+  }
+
   override fun moveItem(item: MountItem?, oldIndex: Int, newIndex: Int) {
+    checkNotVisitingMountItems()
     val mountItem: MountItem = item ?: scrapMountItemsArray?.get(oldIndex) ?: return
 
     val content = mountItem.content
     invalidate()
-    if (mountItem.renderUnit.renderType == RenderUnit.RenderType.VIEW) {
+    if (mountItem.renderUnit.renderType == RenderType.VIEW) {
       isChildDrawingOrderDirty = true
       startTemporaryDetach(content as View)
     }
@@ -150,7 +168,7 @@ open class HostView @JvmOverloads constructor(context: Context, attrs: Attribute
     }
     MountUtils.moveItem(oldIndex, newIndex, mountItems, scrapMountItemsArray)
     releaseScrapDataStructuresIfNeeded()
-    if (mountItem.renderUnit.renderType == RenderUnit.RenderType.VIEW) {
+    if (mountItem.renderUnit.renderType == RenderType.VIEW) {
       finishTemporaryDetach(content as View)
     }
   }
@@ -165,9 +183,38 @@ open class HostView @JvmOverloads constructor(context: Context, attrs: Attribute
     onInterceptTouchEventHandler = interceptTouchEventHandler
   }
 
-  override fun onInterceptTouchEvent(ev: MotionEvent): Boolean =
-      onInterceptTouchEventHandler?.onInterceptTouchEvent(this, ev)
-          ?: super.onInterceptTouchEvent(ev)
+  /**
+   * Registers an InterceptTouchHandler that will be invoked when [HostView#onInterceptTouchEvent]
+   * is called.
+   *
+   * Event would be treated as intercepted if any of the registered handlers, including ones set by
+   * previous [setInterceptTouchEventHandler] returns true.
+   *
+   * @param interceptTouchEventHandler the handler to be registered on this host.
+   */
+  fun registerTouchEventHandler(interceptTouchEventHandler: InterceptTouchHandler) {
+    interceptTouchEventHandlers.add(interceptTouchEventHandler)
+  }
+
+  /**
+   * Unregisters an InterceptTouchHandler that was previously registered by
+   * [registerTouchEventHandler].
+   */
+  fun unregisterTouchEventHandler(interceptTouchEventHandler: InterceptTouchHandler) {
+    interceptTouchEventHandlers.remove(interceptTouchEventHandler)
+  }
+
+  override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
+    var intercepted: Boolean? = null
+    for (handler in interceptTouchEventHandlers) {
+      if (handler.onInterceptTouchEvent(this, ev) == true) {
+        intercepted = true
+      }
+    }
+    return onInterceptTouchEventHandler?.onInterceptTouchEvent(this, ev)
+        ?: intercepted
+        ?: super.onInterceptTouchEvent(ev)
+  }
 
   private fun mountView(mountItem: MountItem) {
     val view = mountItem.content as View
@@ -242,11 +289,13 @@ open class HostView @JvmOverloads constructor(context: Context, attrs: Attribute
     var handled = false
     if (isEnabled) {
       // Iterate drawable from last to first to respect drawing order.
-      for (i in (if (mountItems == null) 0 else mountItems.size) - 1 downTo 0) {
+      for (i in mountItems.size - 1 downTo 0) {
         val item = mountItems[i]
-        if (item != null &&
-            item.renderUnit.renderType == RenderUnit.RenderType.DRAWABLE &&
-            item.content is Touchable) {
+        if (
+            item != null &&
+                item.renderUnit.renderType == RenderType.DRAWABLE &&
+                item.content is Touchable
+        ) {
           val t = item.content
           if (t.shouldHandleTouchEvent(event) && t.onTouchEvent(event, this)) {
             handled = true
@@ -277,7 +326,7 @@ open class HostView @JvmOverloads constructor(context: Context, attrs: Attribute
     // wrongly ignored by this host.
     var parent: ViewParent? = this
     while (parent is HostView) {
-      val host = parent as HostView
+      val host = parent
       if (!host.shouldRequestLayout()) {
         return
       }
@@ -297,7 +346,7 @@ open class HostView @JvmOverloads constructor(context: Context, attrs: Attribute
   public override fun drawableStateChanged() {
     super.drawableStateChanged()
     mountItems.forEach { mountItem ->
-      if (mountItem != null && mountItem.renderUnit.renderType == RenderUnit.RenderType.DRAWABLE) {
+      if (mountItem != null && mountItem.renderUnit.renderType == RenderType.DRAWABLE) {
         MountUtils.maybeSetDrawableState(this, mountItem.content as Drawable)
       }
     }
@@ -307,7 +356,7 @@ open class HostView @JvmOverloads constructor(context: Context, attrs: Attribute
   override fun jumpDrawablesToCurrentState() {
     super.jumpDrawablesToCurrentState()
     mountItems.forEach { mountItem ->
-      if (mountItem != null && mountItem.renderUnit.renderType == RenderUnit.RenderType.DRAWABLE) {
+      if (mountItem != null && mountItem.renderUnit.renderType == RenderType.DRAWABLE) {
         val drawable = mountItem.content as Drawable
         DrawableCompat.jumpToCurrentState(drawable)
       }
@@ -318,7 +367,7 @@ open class HostView @JvmOverloads constructor(context: Context, attrs: Attribute
   override fun setVisibility(visibility: Int) {
     super.setVisibility(visibility)
     mountItems.forEach { mountItem ->
-      if (mountItem != null && mountItem.renderUnit.renderType == RenderUnit.RenderType.DRAWABLE) {
+      if (mountItem != null && mountItem.renderUnit.renderType == RenderType.DRAWABLE) {
         val drawable = mountItem.content as Drawable
         drawable.setVisible(visibility == View.VISIBLE, false)
       }
@@ -361,7 +410,7 @@ open class HostView @JvmOverloads constructor(context: Context, attrs: Attribute
     val mountItemCount = mountItems.size
     for (i in 0 until mountItemCount) {
       val mountItem = mountItems[i]
-      if (mountItem != null && mountItem.renderUnit.renderType == RenderUnit.RenderType.VIEW) {
+      if (mountItem != null && mountItem.renderUnit.renderType == RenderType.VIEW) {
         val child = mountItem.content as View
         _childDrawingOrder[index++] = indexOfChild(child)
       }
@@ -430,7 +479,7 @@ open class HostView @JvmOverloads constructor(context: Context, attrs: Attribute
         // getChildDrawingOrder() will be called before each child view is drawn. This
         // method will only draw the drawables "between" the child views and the let
         // the host draw its children as usual. This is why views are skipped here.
-        if (mountItem.renderUnit.renderType == RenderUnit.RenderType.VIEW) {
+        if (mountItem.renderUnit.renderType == RenderType.VIEW) {
           drawIndex = i + 1
           return
         }
@@ -438,7 +487,11 @@ open class HostView @JvmOverloads constructor(context: Context, attrs: Attribute
           i++
           continue
         }
-        canvas?.let { (mountItem.content as Drawable).draw(it) }
+        val drawable = mountItem.content as? Drawable
+        val currentCanvas = canvas
+        if (drawable != null && currentCanvas != null) {
+          drawable.draw(currentCanvas)
+        }
         i++
       }
       drawIndex = itemsToDraw
@@ -473,9 +526,9 @@ open class HostView @JvmOverloads constructor(context: Context, attrs: Attribute
    */
   private fun setForegroundLollipop(newForeground: Drawable?) {
     if (_foreground !== newForeground) {
-      _foreground?.let {
-        it.callback = null
-        this.unscheduleDrawable(it)
+      _foreground?.let { foreground ->
+        foreground.callback = null
+        this.unscheduleDrawable(foreground)
       }
       _foreground = newForeground
       if (newForeground != null) {
@@ -523,6 +576,7 @@ open class HostView @JvmOverloads constructor(context: Context, attrs: Attribute
   }
 
   override fun safelyUnmountAll() {
+    checkNotVisitingMountItems()
     safelyUnmountAll(mountItems)
     safelyUnmountAll(scrapMountItemsArray)
   }
@@ -532,7 +586,7 @@ open class HostView @JvmOverloads constructor(context: Context, attrs: Attribute
       for (i in items.indices) {
         val item = items[i]
         if (item != null) {
-          if (item.renderUnit.renderType == RenderUnit.RenderType.DRAWABLE) {
+          if (item.renderUnit.renderType == RenderType.DRAWABLE) {
             unmountDrawable(item)
           } else {
             unmountView(item)
@@ -565,10 +619,8 @@ open class HostView @JvmOverloads constructor(context: Context, attrs: Attribute
     }
 
     private fun startTemporaryDetach(view: View) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-        // Cancel any pending clicks.
-        view.cancelPendingInputEvents()
-      }
+      // Cancel any pending clicks.
+      view.cancelPendingInputEvents()
 
       // The HostView's parent will send an ACTION_CANCEL if it's going to receive
       // other motion events for the recycled child.
@@ -591,7 +643,8 @@ open class HostView @JvmOverloads constructor(context: Context, attrs: Attribute
           // this would conflict with the component's own layout calculations.
           child.measure(
               MeasureSpec.makeMeasureSpec(child.width, MeasureSpec.EXACTLY),
-              MeasureSpec.makeMeasureSpec(child.height, MeasureSpec.EXACTLY))
+              MeasureSpec.makeMeasureSpec(child.height, MeasureSpec.EXACTLY),
+          )
           child.layout(child.left, child.top, child.right, child.bottom)
         }
         if (child is HostView) {

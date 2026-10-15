@@ -16,7 +16,7 @@
 
 package com.facebook.litho.widget
 
-import com.facebook.litho.Column
+import com.facebook.litho.Column as ColumnBuilder
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.TestTriggerEvent
@@ -30,8 +30,8 @@ object TriggerCallbackComponentSpec {
 
   @JvmStatic
   @OnCreateLayout
-  fun onCreateLayout(c: ComponentContext, @Prop callback: TriggerListener): Component =
-      Column.create(c).child(Text.create(c).text("hello world")).build()
+  fun onCreateLayout(c: ComponentContext): Component =
+      ColumnBuilder.create(c).child(Text.create(c).text("hello world")).build()
 
   @JvmStatic
   @OnTrigger(TestTriggerEvent::class)

@@ -97,14 +97,14 @@ object LithoViewTestHelper {
       view: View,
       depth: Int,
       withProps: Boolean,
-      extraDescription: ExtraDescription? = null
+      extraDescription: ExtraDescription? = null,
   ): String {
     if (view !is BaseMountingView) {
       return ""
     }
     val root = DebugComponent.getRootInstance(view) ?: return ""
     val sb = StringBuilder()
-    viewToString(root, sb, true, withProps, depth, 0, 0, extraDescription)
+    viewToString(root, sb, true, withProps, depth, extraDescription = extraDescription)
     return sb.toString()
   }
 
@@ -155,11 +155,18 @@ object LithoViewTestHelper {
       depth: Int = 0,
       leftOffset: Int = 0,
       topOffset: Int = 0,
-      extraDescription: ExtraDescription? = null
+      extraDescription: ExtraDescription? = null,
   ) {
     writeIndentByDepth(sb, depth)
     DebugComponentDescriptionHelper.addViewDescription(
-        component, sb, leftOffset, topOffset, embedded, withProps, extraDescription)
+        component,
+        sb,
+        leftOffset,
+        topOffset,
+        embedded,
+        withProps,
+        extraDescription,
+    )
     sb.append("\n")
 
     val spannedTextContent = DebugComponentDescriptionHelper.getSyntheticViewDescriptions(component)
@@ -173,7 +180,15 @@ object LithoViewTestHelper {
     val bounds = component.boundsInLithoView
     for (child in component.childComponents) {
       viewToString(
-          child, sb, embedded, withProps, depth + 1, bounds.left, bounds.top, extraDescription)
+          child,
+          sb,
+          embedded,
+          withProps,
+          depth + 1,
+          bounds.left,
+          bounds.top,
+          extraDescription,
+      )
     }
   }
 

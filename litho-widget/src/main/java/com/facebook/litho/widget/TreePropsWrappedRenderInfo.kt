@@ -18,7 +18,6 @@ package com.facebook.litho.widget
 
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentTreeDebugEventListener
-import com.facebook.litho.ComponentsLogger
 import com.facebook.litho.EventHandler
 import com.facebook.litho.RenderCompleteEvent
 import com.facebook.litho.TreePropContainer
@@ -29,7 +28,7 @@ import com.facebook.litho.widget.ComponentRenderInfo.Companion.createEmpty
 /** A wrapper around [RenderInfo] that also stores TreeProps used for rendering the component. */
 class TreePropsWrappedRenderInfo(
     renderInfo: RenderInfo?,
-    val treePropContainer: TreePropContainer?
+    val treePropContainer: TreePropContainer?,
 ) : RenderInfo {
 
   private val renderInfo = renderInfo ?: createEmpty()
@@ -43,9 +42,6 @@ class TreePropsWrappedRenderInfo(
   override fun rendersComponent(): Boolean {
     return renderInfo.rendersComponent()
   }
-
-  override val componentsLogger: ComponentsLogger?
-    get() = renderInfo.componentsLogger
 
   override val debugEventListener: ComponentTreeDebugEventListener?
     get() = renderInfo.debugEventListener

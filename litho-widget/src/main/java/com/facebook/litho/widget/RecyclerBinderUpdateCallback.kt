@@ -21,9 +21,7 @@ import androidx.recyclerview.widget.ListUpdateCallback
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentsReporter
 import com.facebook.litho.ComponentsReporter.emitMessage
-import com.facebook.litho.ComponentsSystrace.beginSection
-import com.facebook.litho.ComponentsSystrace.endSection
-import com.facebook.litho.ComponentsSystrace.isTracing
+import com.facebook.litho.ComponentsSystrace.trace
 import com.facebook.litho.Diff
 
 /**
@@ -37,7 +35,7 @@ class RecyclerBinderUpdateCallback<T>(
     private val prevData: List<T>?,
     private val nextData: List<T>?,
     private val componentRenderer: ComponentRenderer<T>,
-    private val operationExecutor: OperationExecutor
+    private val operationExecutor: OperationExecutor,
 ) : ListUpdateCallback {
 
   fun interface ComponentRenderer<T> {
@@ -57,7 +55,7 @@ class RecyclerBinderUpdateCallback<T>(
       prevData: List<T>?,
       nextData: List<T>?,
       componentRenderer: ComponentRenderer<T>,
-      recyclerBinder: RecyclerBinder
+      recyclerBinder: RecyclerBinder,
   ) : this(prevData, nextData, componentRenderer, RecyclerBinderOperationExecutor(recyclerBinder))
 
   init {
@@ -125,8 +123,6 @@ class RecyclerBinderUpdateCallback<T>(
   }
 
   fun applyChangeset(c: ComponentContext) {
-    val isTracing = isTracing
-
     if (nextData != null && nextData.size != placeholders.size) {
       logErrorForInconsistentSize(c)
 
@@ -147,13 +143,8 @@ class RecyclerBinderUpdateCallback<T>(
       val dataHolders: MutableList<Diff<T>> = ArrayList(dataSize)
       for (i in 0 until dataSize) {
         val model = nextData[i]
-        if (isTracing) {
-          beginSection("renderInfo:" + getModelName(model))
-        }
-        val renderInfo = componentRenderer.render(model, i)
-        if (isTracing) {
-          endSection()
-        }
+        val renderInfo =
+            trace({ "renderInfo:${getModelName(model)}" }) { componentRenderer.render(model, i) }
 
         placeholders.add(i, ComponentContainer(renderInfo, false))
         dataHolders.add(Diff(null, model))
@@ -166,25 +157,16 @@ class RecyclerBinderUpdateCallback<T>(
       for (i in 0 until size) {
         if (placeholders[i].needsComputation) {
           val model = nextData?.get(i)
-          if (isTracing) {
-            beginSection("renderInfo:" + getModelName(model))
-          }
-          placeholders[i].renderInfo = model?.let { componentRenderer.render(model, i) }
-          if (isTracing) {
-            endSection()
-          }
+          placeholders[i].renderInfo =
+              trace({ "renderInfo:${getModelName(model)}" }) {
+                model?.let { componentRenderer.render(model, i) }
+              }
           dataHolders[i].next = model
         }
       }
     }
 
-    if (isTracing) {
-      beginSection("executeOperations")
-    }
-    operationExecutor.executeOperations(c, _operations)
-    if (isTracing) {
-      endSection()
-    }
+    trace({ "executeOperations" }) { operationExecutor.executeOperations(c, _operations) }
   }
 
   /** Emit a soft error if the size between mPlaceholders and mNextData aren't the same. */
@@ -234,7 +216,7 @@ class RecyclerBinderUpdateCallback<T>(
       val index: Int,
       val toIndex: Int,
       val componentContainers: List<ComponentContainer>?,
-      val dataContainers: List<Diff<*>>
+      val dataContainers: List<Diff<*>>,
   ) {
     companion object {
       const val INSERT: Int = 0

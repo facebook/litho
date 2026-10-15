@@ -1,0 +1,812 @@
+---
+id: migrating-from-mountspecs-to-primitives
+title: Migrating MountSpecs
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import VersionedCodeBlock from '@theme/VersionedCodeBlock';
+import {FbInternalOnly, OssOnly} from 'docusaurus-plugin-internaldocs-fb/internal';
+
+This page outlines the process of migrating from [MountSpecs](../legacy-spec-api/mount-specs.md) to [Primitive Components](../primitives/primitive-component.mdx).
+
+Unlike MountSpecs, Primitive Components consist of two separate pieces:
+
+* `PrimitiveComponent.render()` - a method that returns a `Primitive` and `Style` that will be applied to it.
+* `Primitive` - an object that encapsulates the logic for creating, measuring, and setting properties on the mount content (a `View` or a `Drawable`).
+
+The following two sections contain information on how to migrate MountSpec static lifecycle methods into a Primitive Component `render()` and the `Primitive` it returns. The [Cheatsheet](kotlin-api-cheatsheet.mdx) can also be consulted for a set of links for the migration of individual aspects of existing code.
+
+## Setup - Adding Dependencies
+
+<OssOnly>
+
+Litho is published to Maven Central. Add the dependencies to your module's `build.gradle`:
+
+<VersionedCodeBlock language="groovy" code={`
+dependencies {
+  implementation 'com.facebook.litho:litho-core:{{site.lithoVersion}}'
+  implementation 'com.facebook.litho:litho-widget-kotlin:{{site.lithoVersion}}'
+}
+`} />
+
+From Litho 0.51.0, Kotlin code that calls Litho hooks also has to be built with the Litho Gradle plugin. Apply it with the same version as the Litho dependencies, and add `mavenCentral()` to `pluginManagement.repositories` in `settings.gradle`:
+
+```groovy
+plugins {
+  id 'com.facebook.litho' version '<Litho version>'
+}
+```
+
+</OssOnly>
+
+<FbInternalOnly>
+
+To use the Kotlin Litho API you'll need to add the following dependencies into your BUCK file:
+
+```python title="BUCK"
+deps = [
+    "//fbandroid/libraries/components/litho-core/src/main/java/com/facebook/litho:litho",
+    "//fbandroid/libraries/components/litho-widget/src/main/kotlin/com/facebook/litho/kotlin/widget:widget", # for widgets
+],
+```
+
+</FbInternalOnly>
+
+More details on the setup steps are outlined in the [Introduction and Setup](../migrating-to-kcomponents/kotlin-intro.mdx) page.
+
+## Example
+
+The below example shows a comparison of a simple component implemented with MountSpec and Primitive Component API.
+
+<table>
+<tr>
+  <th>MountSpec</th>
+  <th>PrimitiveComponent</th>
+</tr>
+<tr><td>
+
+```kotlin
+@MountSpec
+object FooComponentSpec {
+  @OnCreateMountContent
+  fun onCreateMountContent(
+    context: Context
+  ): View {
+    return View(context)
+  }
+
+  @OnMeasure
+  fun onMeasure(
+      c: ComponentContext,
+      layout: ComponentLayout,
+      widthSpec: Int,
+      heightSpec: Int,
+      size: Size
+  ) {
+    size.width = 100
+    size.height = 200
+  }
+
+  @OnMount
+  fun onMount(
+      c: ComponentContext,
+      view: View,
+      @Prop description: String
+  ) {
+    view.contentDescription = description
+  }
+
+  @OnUnmount
+  fun onUnmount(
+      c: ComponentContext,
+      view: View
+  ) {
+    view.contentDescription = null
+  }
+
+  @ShouldUpdate
+  fun shouldUpdate(
+    @Prop description: Diff<String>
+  ): Boolean {
+      return description.previous
+              != description.next
+  }
+}
+```
+</td><td>
+
+```kotlin
+class FooComponent(
+  private val description: String
+): PrimitiveComponent() {
+  override fun PrimitiveComponentScope.render(): LithoPrimitive {
+    return LithoPrimitive(
+      layoutBehavior = FooLayoutBehavior,
+      mountBehavior = MountBehavior(
+        ViewAllocator { context -> View(context) }
+      ) {
+        description.bindTo(View::setContentDescription, null)
+      }
+    )
+  }
+}
+
+private object FooLayoutBehavior: LayoutBehavior {
+  override fun LayoutScope.layout(
+    sizeConstraints: SizeConstraints
+  ): PrimitiveLayoutResult {
+    return PrimitiveLayoutResult(
+      width = 100,
+      height = 200
+    )
+  }
+}
+```
+
+</td></tr>
+</table>
+
+The Primitive Component API is composable, its most important building blocks are:
+
+* `ViewAllocator` - responsible for creating the content it hosts. Content can be a `View` or a `Drawable`. For the latter, the `DrawableAllocator` should be used.
+* `LayoutBehavior` - responsible for measuring and determining the final size of the `Component`.
+* `MountBehavior` - responsible for setting and unsetting properties on the content.
+
+For more information about Primitive Component API refer to the [documentation](../primitives/overview.mdx).
+
+## Migrating `MountSpec` to `PrimitiveComponent`
+
+### Creating components
+
+In the MountSpec API the component spec class serves as a description which is used by the annotation processor to generate the actual component at compile time. In the Primitive Component API the component is a regular class and annotation processing is no longer needed. To get more details you can read [Creating a Primitive Component](../primitives/primitive-component.mdx) page.
+
+<table>
+<tr>
+  <th>MountSpec</th>
+  <th>PrimitiveComponent</th>
+</tr>
+<tr><td>
+
+```kotlin
+@MountSpec
+object FooComponentSpec {
+  ...
+}
+```
+</td><td>
+
+```kotlin
+class FooComponent: PrimitiveComponent() {
+  ...
+}
+```
+
+</td></tr>
+</table>
+
+### Passing props
+
+In Spec API for every method parameter annotated with `@Prop` annotation, a builder method is generated for setting a value of that property when instantiating the component. In Kotlin API props are passed as constructor parameters, and `@PropDefault`s are replaced by default values of these parameters.
+
+<table>
+<tr>
+  <th>MountSpec</th>
+  <th>PrimitiveComponent</th>
+</tr>
+<tr><td>
+
+```kotlin
+@MountSpec
+object FooComponentSpec {
+
+  @PropDefault const val progress = 0f
+
+  @OnMount
+  fun onMount(
+      c: ComponentContext,
+      view: View,
+      @Prop description: String,
+      @Prop(optional = true) progress: Float
+  ) {
+    view.contentDescription = description
+  }
+}
+```
+</td><td>
+
+```kotlin
+class FooComponent(
+  private val description: String,
+  private val progress: Float = 0f
+): PrimitiveComponent() {
+  ...
+}
+```
+
+</td></tr>
+</table>
+
+#### Common props
+
+In Spec API common props such as `margin`, `clickHandler`, `alpha` could be applied to any сomponent using its generated builder methods. In Primitive Component API similar to other Kotlin API components, if a component wants to accept common props they should be passed via `Style` prop.
+
+<table>
+<tr>
+  <th>MountSpec</th>
+  <th>PrimitiveComponent</th>
+</tr>
+<tr><td>
+
+```kotlin
+FooComponent.create(c)
+  .scale(2f)
+  .build()
+```
+</td><td>
+
+```kotlin
+// Allow accepting [Style] for customizing common props
+class FooComponent(
+  private val style: Style = Style
+): PrimitiveComponent() {
+  override fun PrimitiveComponentScope.render(): LithoPrimitive {
+    return LithoPrimitive(
+      ...
+      style = style
+    )
+  }
+}
+
+// Pass properly configured [Style] instance to a Component
+FooComponent(
+  style = Style.scale(2f)
+)
+```
+
+</td></tr>
+</table>
+
+
+### Creating mountable content
+
+In MountSpec API content creation is configured in the method annotated with `@OnCreateMountContent` annotation by returning a proper `View` or `Drawable` instance. In Primitive Components API it is implemented by creating a `ViewAllocator` or a `DrawableAllocator` and passing it to `MountBehavior`.
+
+More information on Primitive content creation can be found on the dedicated [Lifecycle of a Primitive Component](../primitives/primitive.mdx/#content-creation) page.
+
+<table>
+<tr>
+  <th>MountSpec</th>
+  <th>PrimitiveComponent</th>
+</tr>
+<tr><td>
+
+```kotlin
+@MountSpec
+object FooComponentSpec {
+  @OnCreateMountContent
+  fun onCreateMountContent(
+    context: Context
+  ): View {
+    return View(context)
+  }
+}
+```
+</td><td>
+
+```kotlin
+class FooComponent: PrimitiveComponent() {
+  override fun PrimitiveComponentScope.render(): LithoPrimitive {
+    return LithoPrimitive(
+      ...
+      mountBehavior = MountBehavior(
+        ViewAllocator { context -> View(context) }
+      ) {
+        ...
+      }
+    )
+  }
+}
+```
+
+</td></tr>
+</table>
+
+### Measurement
+
+#### `@OnMeasure`
+
+Measuring a component using MountSpec API is done by implementing a method annotated with `@OnMeasure` annotation. The size of a component is returned by setting `width` and `height` values on the `Size` input parameter. In Primitive Component API the measurement logic is defined in an implementation of `LayoutBehavior` interface. The size of a component is returned in `PrimitiveLayoutResult`.
+
+More information on Primitive Component content measurement can be found [here](../primitives/primitive-measuring.mdx).
+
+<table>
+<tr>
+  <th>MountSpec</th>
+  <th>PrimitiveComponent</th>
+</tr>
+<tr><td>
+
+```kotlin
+@MountSpec
+object FooComponentSpec {
+  @OnMeasure
+  fun onMeasure(
+      c: ComponentContext,
+      layout: ComponentLayout,
+      widthSpec: Int,
+      heightSpec: Int,
+      size: Size
+  ) {
+    size.width = 100
+    size.height = 200
+  }
+}
+```
+</td><td>
+
+```kotlin
+class FooComponent: PrimitiveComponent() {
+  override fun PrimitiveComponentScope.render(): LithoPrimitive {
+    return LithoPrimitive(
+      ...
+      layoutBehavior = FooLayoutBehavior
+    )
+  }
+}
+
+private object FooLayoutBehavior: LayoutBehavior {
+  override fun LayoutScope.layout(
+    sizeConstraints: SizeConstraints
+  ): PrimitiveLayoutResult {
+    return PrimitiveLayoutResult(
+      width = 100,
+      height = 200
+    )
+  }
+}
+```
+
+</td></tr>
+</table>
+
+#### `@OnBoundsDefined`
+
+The method annotated with `@OnBoundsDefined` annotation can [receive outputs](../legacy-spec-api/mount-specs.md/#inter-stage-inputs-and-outputs) from method annotated with `@OnMeasure` annotation and is executed after layout calculation. It can be used to perform additional operations after final size of the Component is known, but before the Component is mounted. In Primitive Component API the logic needs to be merged into a single `layout()` method.
+
+<table>
+<tr>
+  <th>MountSpec</th>
+  <th>PrimitiveComponent</th>
+</tr>
+<tr><td>
+
+```kotlin
+@MountSpec
+object FooComponentSpec {
+  @OnMeasure
+  fun onMeasure(
+      c: ComponentContext,
+      layout: ComponentLayout,
+      widthSpec: Int,
+      heightSpec: Int,
+      size: Size,
+      measuredWidth: Output<Integer>,
+      measuredHeight: Output<Integer>
+  ) {
+    val width = ...
+    val height = ...
+
+    measuredWidth.set(width)
+    measuredHeight.set(height)
+
+    size.width = width
+    size.height = height
+  }
+
+  @OnBoundsDefined
+  fun onBoundsDefined(
+      c: ComponentContext,
+      layout: ComponentLayout,
+      @FromMeasure
+      measuredWidth: Int?,
+      @FromMeasure
+      measuredHeight: Int?) {
+    // Use measuredWidth and measuredHeight.
+  }
+}
+```
+</td><td>
+
+```kotlin
+class FooComponent: PrimitiveComponent() {
+  override fun PrimitiveComponentScope.render(): LithoPrimitive {
+    return LithoPrimitive(
+      ...
+      layoutBehavior = FooLayoutBehavior
+    )
+  }
+}
+
+private object FooLayoutBehavior: LayoutBehavior {
+  override fun LayoutScope.layout(
+    sizeConstraints: SizeConstraints
+  ): PrimitiveLayoutResult {
+    val width = ...
+    val height = ...
+
+    // Use width and height.
+
+    return PrimitiveLayoutResult(
+      width = width,
+      height = height
+    )
+  }
+}
+```
+
+</td></tr>
+</table>
+
+:::note
+For most common measurement use cases, there are a few [built-in](../primitives/primitive-measuring.mdx) `LayoutBehavior` implementations available.
+:::
+
+### Mounting content
+
+#### `@OnMount/@OnUnmount` and `@ShouldUpdate`
+
+In MountSpec API the properties can be set and unset on the content in methods annotated with `@OnMount` and `@OnUnmount`. Additionally a method annotated with `@ShouldUpdate` can be added to tell the framework when the content should be re-mounted - if `@ShouldUpdate` method returns true, then `@OnUnmount` method will be invoked, followed by `@OnMount` method. In Primitive Components, the `bind(deps){}` API should be used. The `deps` parameter is used as a replacement of `@ShouldUpdate` method - the `deps` are automatically checked to determine if re-mount should happen.
+
+More information on mounting content with Primitive Component API can be found [here](../primitives/primitive.mdx/#mounting-and-unmounting-content-properties).
+
+<table>
+<tr>
+  <th>MountSpec</th>
+  <th>PrimitiveComponent</th>
+</tr>
+<tr><td>
+
+```kotlin
+@MountSpec
+object FooComponentSpec {
+  @OnMount
+  fun onMount(
+      c: ComponentContext,
+      view: View,
+      @Prop description: String
+  ) {
+    view.contentDescription = description
+  }
+
+  @OnUnmount
+  fun onUnmount(
+      c: ComponentContext,
+      view: View
+  ) {
+    view.contentDescription = null
+  }
+
+  @ShouldUpdate
+  fun shouldUpdate(
+    @Prop description: Diff<String>
+  ): Boolean {
+      return description.previous
+              != description.next
+  }
+}
+```
+</td><td>
+
+```kotlin
+class FooComponent(
+  private val description: String
+): PrimitiveComponent() {
+  override fun PrimitiveComponentScope.render(): LithoPrimitive {
+    return LithoPrimitive(
+      ...
+      mountBehavior = MountBehavior(...) {
+        bind(description) { content ->
+          content.contentDescription = description
+          onUnbind {
+            content.contentDescription = null
+          }
+        }
+        // Or an equivalent but shorter version:
+        description.bindTo(View::setContentDescription, null)
+      }
+    )
+  }
+}
+```
+
+</td></tr>
+</table>
+
+#### `@OnBind/@OnUnbind`
+
+The `@OnBind` and `@OnUnbind` are similar to `@OnMount` and `@OnUnmount`, the only difference is that `@OnBind` and `@OnUnbind` are called on each update, regardless of the value returned from `@ShouldUpdate` annotated method. In Primitive Components API `@OnBind` and `@OnUnbind` can be replaced with `bind(Any()){}`. Using `Any()` as `deps` will ensure that the content will be re-mounted every time.
+
+<table>
+<tr>
+  <th>MountSpec</th>
+  <th>PrimitiveComponent</th>
+</tr>
+<tr><td>
+
+```kotlin
+@MountSpec
+object FooComponentSpec {
+  @OnBind
+  fun onBind(
+      c: ComponentContext,
+      view: View,
+      @Prop description: String
+  ) {
+    view.contentDescription = description
+  }
+
+  @OnUnbind
+  fun onUnbind(
+      c: ComponentContext,
+      view: View
+  ) {
+    view.contentDescription = null
+  }
+}
+```
+</td><td>
+
+```kotlin
+class FooComponent(
+  private val description: String
+): PrimitiveComponent() {
+  override fun PrimitiveComponentScope.render(): LithoPrimitive {
+    return LithoPrimitive(
+      ...
+      mountBehavior = MountBehavior(...) {
+        bind(Any()) { content ->
+          content.contentDescription = description
+          onUnbind {
+            content.contentDescription = null
+          }
+        }
+      }
+    )
+  }
+}
+```
+
+</td></tr>
+</table>
+
+#### `@OnBindDynamicValue`
+
+Dynamic props are properties that are applied directly to a `View` or `Drawable` without triggering a new layout or mount. In MountSpec API the dynamic value is set on a content by annotating a method with `@OnBindDynamicValue` annotation. In PrimitiveComponents API `bindDynamic` API should be used.
+
+<table>
+<tr>
+  <th>MountSpec</th>
+  <th>PrimitiveComponent</th>
+</tr>
+<tr><td>
+
+```kotlin
+@MountSpec
+object FooComponentSpec {
+  @OnBindDynamicValue
+  fun onBindAlpha(
+    content: View,
+    @Prop(dynamic = true) alphaValue: Float
+  ) {
+    content.alpha = alphaValue
+  }
+}
+```
+</td><td>
+
+```kotlin
+class FooComponent(
+  private val alpha: DynamicValue<Float>,
+): PrimitiveComponent() {
+  override fun PrimitiveComponentScope.render(): LithoPrimitive {
+    return LithoPrimitive(
+      ...
+      mountBehavior = MountBehavior(...) {
+        bindDynamic(alpha) { content, alphaValue ->
+          content.alpha = alphaValue
+          onUnbindDynamic {
+            content.alpha = 1f
+          }
+        }
+      }
+    )
+  }
+}
+```
+
+</td></tr>
+</table>
+
+### Pre-allocation
+
+In MountSpec API pre-allocation is configured by providing the parameters to `@MountSpec` annotation. In Primitive Component API the pre-allocation is configured via `ViewAllocator`/`DrawableAllocator`.
+
+More information on Primitive Component pre-allocation can be found [here](../primitives/primitive-preallocation.mdx/#configuring-pools).
+
+<table>
+<tr>
+  <th>MountSpec</th>
+  <th>PrimitiveComponent</th>
+</tr>
+<tr><td>
+
+```kotlin
+@MountSpec(canPreallocate = true, poolSize = 5)
+object FooComponentSpec {
+  ...
+}
+```
+</td><td>
+
+```kotlin
+class FooComponent: PrimitiveComponent() {
+  override fun PrimitiveComponentScope.render(): LithoPrimitive {
+    return LithoPrimitive(
+      mountBehavior = MountBehavior(
+        ViewAllocator(
+          canPreallocate = true,
+          poolSize = 5
+        ) { context -> View(context) }
+      ) {
+        ...
+      }
+    )
+  }
+}
+```
+
+</td></tr>
+</table>
+
+### Pre-filling content pool
+
+Content can be manually pre-filled ahead of time using one of the methods from `MountContentPools`, such as `prefillMountContentPool`. For MountSpec API the Component instance should be passed as the `ContentAllocator` parameter. In Primitive Components API a `ViewAllocator`/`DrawableAllocator` should be passed instead. In order to do that, the allocator can be defined inside of a `companion object` which will allow for accessing it without creating an instance of the Component.
+
+More information on pre-filling content pools with Primitive Component API can be found [here](../primitives/primitive-preallocation.mdx/#pre-filling-content-pool).
+
+<table>
+<tr>
+  <th>MountSpec</th>
+  <th>PrimitiveComponent</th>
+</tr>
+<tr><td>
+
+```kotlin
+// Preallocate 40 FooComponent components.
+MountContentPools.prefillMountContentPool(
+  androidContext,
+  40,
+  FooComponent.create(c).build()
+)
+```
+</td><td>
+
+```kotlin
+class FooComponent: PrimitiveComponent() {
+  override fun PrimitiveComponentScope.render(): LithoPrimitive {
+    return LithoPrimitive(
+      mountBehavior = MountBehavior(ALLOCATOR) {
+        ...
+      }
+    )
+  }
+
+  companion object {
+    val ALLOCATOR = ViewAllocator { context ->
+      View(context)
+    }
+  }
+}
+
+// Preallocate 40 FooComponent components.
+MountContentPools.prefillMountContentPool(
+  androidContext,
+  40,
+  FooComponent.ALLOCATOR
+)
+```
+
+</td></tr>
+</table>
+
+### `hasChildLithoViews`
+
+Configuring `hasChildLithoViews` in MountSpec API is done by passing the boolean value to `@MountSpec`'s parameter. In Primitive Components API there is a `doesMountRenderTreeHosts` flag available inside of `MountConfigurationScope`.
+
+<table>
+<tr>
+  <th>MountSpec</th>
+  <th>PrimitiveComponent</th>
+</tr>
+<tr><td>
+
+```kotlin
+@MountSpec(hasChildLithoViews = true)
+object FooComponentSpec {
+  ...
+}
+```
+</td><td>
+
+```kotlin
+class FooComponent: PrimitiveComponent() {
+  override fun PrimitiveComponentScope.render(): LithoPrimitive {
+    return LithoPrimitive(
+      ...
+      mountBehavior = MountBehavior(
+        ViewAllocator { context -> View(context) }
+      ) {
+        doesMountRenderTreeHosts = true
+      }
+    )
+  }
+}
+```
+
+</td></tr>
+</table>
+
+### `@ShouldExcludeFromIncrementalMount`
+
+Excluding a Component from Incremental Mount in MountSpec API is done by creating a method annotated with `@ShouldExcludeFromIncrementalMount` annotation. If such method returns `true`, then the Component will be excluded from Incremental Mount. In Primitive Components API there is a `shouldExcludeFromIncrementalMount` flag available inside of `MountConfigurationScope`.
+
+<table>
+<tr>
+  <th>MountSpec</th>
+  <th>PrimitiveComponent</th>
+</tr>
+<tr><td>
+
+```kotlin
+@MountSpec(hasChildLithoViews = true)
+object FooComponentSpec {
+  @ShouldExcludeFromIncrementalMount
+  fun shouldPreMount(
+    @Prop excludeFromIncrementalMount: Boolean
+  ): Boolean {
+    return excludeFromIncrementalMount
+  }
+}
+```
+</td><td>
+
+```kotlin
+class FooComponent(
+  private val excludeFromIncrementalMount: Boolean
+): PrimitiveComponent() {
+  override fun PrimitiveComponentScope.render(): LithoPrimitive {
+    return LithoPrimitive(
+      ...
+      mountBehavior = MountBehavior(
+        ViewAllocator { context -> View(context) }
+      ) {
+        shouldExcludeFromIncrementalMount = excludeFromIncrementalMount
+      }
+    )
+  }
+}
+```
+
+</td></tr>
+</table>
+
+### Others
+
+#### `isPureRender`
+
+In Primitive Component API there is no equivalent of `@MountSpec(isPureRender = true)`. All Primitive Components are pure render. When migrating from MountSpec to Primitive Component, the `isPureRender` parameter should be ignored.
+
+#### `@OnPrepare` and`@OnLoadStyle`
+
+In Primitive Component API there is no equivalent of `@OnPrepare` and `@OnLoadStyle`. When migrating from MountSpec to Primitive Component, the `@OnPrepare` and `@OnLoadStyle` logic should be placed in Primitive Component's `render()` method.

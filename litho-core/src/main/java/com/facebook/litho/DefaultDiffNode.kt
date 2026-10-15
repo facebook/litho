@@ -16,6 +16,8 @@
 
 package com.facebook.litho
 
+import androidx.collection.ScatterSet
+import com.facebook.litho.state.StateId
 import com.facebook.rendercore.LayoutResult
 import com.facebook.rendercore.primitives.Primitive
 import com.facebook.rendercore.visibility.VisibilityOutput
@@ -24,8 +26,8 @@ import java.util.ArrayList
 class DefaultDiffNode
 internal constructor(
     override val component: Component,
-    override val componentGlobalKey: String,
-    override val scopedComponentInfo: ScopedComponentInfo
+    override val componentGlobalKey: GlobalKey,
+    override val scopedComponentInfo: ScopedComponentInfo,
 ) : DiffNode {
 
   private val _children: MutableList<DiffNode> = ArrayList(4)
@@ -43,6 +45,7 @@ internal constructor(
   override var delegate: LayoutResult? = null
   override var layoutData: Any? = null
   override var effects: List<Attachable>? = null
+  override var stateReads: ScatterSet<StateId>? = null
 
   override val childCount: Int
     get() = _children.size

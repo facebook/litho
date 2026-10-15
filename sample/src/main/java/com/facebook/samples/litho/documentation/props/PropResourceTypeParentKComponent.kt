@@ -16,8 +16,6 @@
 
 package com.facebook.samples.litho.documentation.props
 
-import android.content.res.Resources
-import androidx.core.content.ContextCompat
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
@@ -35,18 +33,19 @@ class PropResourceTypeParentKComponent(
 
     if (!useResourceType) {
       // start_prop_without_resource_type_usage
-      val res: Resources = context.resources
       return PropWithoutResourceTypeKComponent(
-          name = res.getString(R.string.name_string),
+          name = stringRes(R.string.name_string),
           size = dimenRes(R.dimen.primary_text_size),
-          color = ContextCompat.getColor(context.getAndroidContext(), R.color.primaryColor))
+          color = colorRes(R.color.primaryColor),
+      )
       // end_prop_without_resource_type_usage
     } else {
       // start_prop_with_resource_type_usage
       return PropWithResourceTypeKComponent(
           name = stringRes(R.string.name_string),
           size = dimenRes(R.dimen.primary_text_size),
-          color = colorRes(R.color.primaryColor))
+          color = colorRes(R.color.primaryColor),
+      )
       // end_prop_with_resource_type_usage
     }
   }

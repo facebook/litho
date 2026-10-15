@@ -16,12 +16,13 @@
 
 package com.facebook.litho
 
+import android.os.Handler
+import android.os.Looper
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Lifecycle.Event
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import com.facebook.litho.LithoVisibilityEventsController.LithoVisibilityState
-import com.facebook.litho.config.ComponentsConfiguration
 
 /**
  * This LithoVisibilityEventsController implementation dispatches to the registered observers the
@@ -29,22 +30,48 @@ import com.facebook.litho.config.ComponentsConfiguration
  * passed as param, the observers will be registered to listen to all of the fragment's lifecycle
  * state changes.
  */
-open class AOSPLithoVisibilityEventsController(final override val lifecycleOwner: LifecycleOwner) :
-    LithoVisibilityEventsController, LifecycleEventObserver, AOSPLifecycleOwnerProvider {
+open class AOSPLithoVisibilityEventsController
+@JvmOverloads
+constructor(
+    final override val lifecycleOwner: LifecycleOwner,
+    /**
+     * Allows this controller to be built off the main thread, by deferring observer registration.
+     *
+     * Off by default, which keeps [LifecycleRegistry]'s own main-thread check as the contract.
+     */
+    private val allowOffMainThreadRegistration: Boolean = false,
+) : LithoVisibilityEventsController, LifecycleEventObserver, AOSPLifecycleOwnerProvider {
 
-  private val delegate: LithoVisibilityEventsControllerDelegate =
-      if (ComponentsConfiguration.defaultInstance
-          .enableInitStateForAOSPLithoVisibilityEventsController)
-          LithoVisibilityEventsControllerDelegate(
-              if (lifecycleOwner.lifecycle.currentState == Lifecycle.State.RESUMED)
-                  LithoVisibilityState.HINT_VISIBLE
-              else LithoVisibilityState.HINT_INVISIBLE)
-      else {
-        LithoVisibilityEventsControllerDelegate()
-      }
+  private val delegate:
+      LithoVisibilityEventsControllerDelegate = LithoVisibilityEventsControllerDelegate(
+      if (lifecycleOwner.lifecycle.currentState == Lifecycle.State.RESUMED)
+          LithoVisibilityState.HINT_VISIBLE
+      else LithoVisibilityState.HINT_INVISIBLE,
+  )
 
   init {
-    lifecycleOwner.lifecycle.addObserver(this)
+    // LifecycleRegistry only accepts observers from the main thread. Registration replays the
+    // owner's current state, so hopping loses nothing.
+    if (allowOffMainThreadRegistration && Looper.myLooper() != Looper.getMainLooper()) {
+      mainHandler.post { registerOrMarkDestroyed() }
+    } else {
+      lifecycleOwner.lifecycle.addObserver(this)
+    }
+  }
+
+  /**
+   * Registers this observer, unless the owner was destroyed while registration was queued.
+   *
+   * Adding to a destroyed lifecycle does not replay ON_DESTROY, so the observer would sit in the
+   * registry forever and this controller would never learn it should move to
+   * [LithoVisibilityState.DESTROYED]. Take that transition directly instead of registering.
+   */
+  private fun registerOrMarkDestroyed() {
+    if (lifecycleOwner.lifecycle.currentState == Lifecycle.State.DESTROYED) {
+      moveToVisibilityState(LithoVisibilityState.DESTROYED)
+    } else {
+      lifecycleOwner.lifecycle.addObserver(this)
+    }
   }
 
   override val visibilityState: LithoVisibilityState
@@ -72,5 +99,9 @@ open class AOSPLithoVisibilityEventsController(final override val lifecycleOwner
       }
       else -> {}
     }
+  }
+
+  private companion object {
+    private val mainHandler = Handler(Looper.getMainLooper())
   }
 }

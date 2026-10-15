@@ -22,15 +22,19 @@ import android.view.View
 import androidx.annotation.AnyThread
 import androidx.annotation.GuardedBy
 import androidx.annotation.UiThread
+import com.facebook.litho.NestedLithoTree.cleanup
 import com.facebook.litho.NestedLithoTree.commit
 import com.facebook.litho.NestedLithoTree.enqueue
-import com.facebook.litho.NestedLithoTree.runEffects
 import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.config.RunnableHandlerProvider
+import com.facebook.litho.debug.DebugInfoReporter
+import com.facebook.litho.effects.EffectContext
 import com.facebook.litho.state.StateId
 import com.facebook.rendercore.Host
 import com.facebook.rendercore.RunnableHandler
 import com.facebook.rendercore.RunnableHandler.DefaultHandler
 import com.facebook.rendercore.SizeConstraints
+import com.facebook.rendercore.utils.equals
 import java.util.concurrent.atomic.AtomicReference
 
 /** A renderer for Litho components that handles RESOLVE and LAYOUT. */
@@ -39,35 +43,40 @@ class LithoRenderer(
     val id: Int = LithoTree.generateComponentTreeId(),
     val componentsConfig: ComponentsConfiguration = ComponentsConfiguration.defaultInstance,
     val renderUnitIdGenerator: RenderUnitIdGenerator = RenderUnitIdGenerator(id),
-    override val treeState: TreeState? = TreeState(),
+    val treeState: TreeState? = TreeState(),
     val parentTreePropContainer: TreePropContainer? = TreePropContainer(),
     val treePropContainer: TreePropContainer? = TreePropContainer(),
+    runnableHandlerProvider: RunnableHandlerProvider = ComponentTree.DefaultLayoutHandlerProvider(),
     val visibilityController: LithoVisibilityEventsController? = null,
     /* this is only set by the containers for child renderers */
     val synchronizer: UpdateSynchronizer? = null,
 ) : StateProvider, StateUpdater, StateUpdateRequester, RootHostProvider, ErrorComponentReceiver {
 
   // todo Rename this class to LithoTreeContext
-  private val lithoConfiguration: LithoConfiguration =
-      ComponentContextUtils.buildDefaultLithoConfiguration(
-          context = context,
-          componentsConfig = componentsConfig,
-          renderUnitIdGenerator = renderUnitIdGenerator)
-  private val lithoTree: LithoTree =
-      LithoTree(
-          id = id,
-          stateProvider = this,
-          stateUpdater = this,
-          rootHost = this,
-          errorComponentReceiver = this,
-          treeLifecycle = NoOpLifecycleProvider(),
-          uiStateReadRecordsProvider = {
-            val host =
-                rootHost as? BaseMountingView
-                    ?: error("Trying to get UI state read records without a set host")
-            host.uiStateReadRecords
-          })
+  private val lithoConfiguration: LithoConfiguration = LithoConfiguration(
+      context = context,
+      componentsConfig = componentsConfig,
+      renderUnitIdGenerator = renderUnitIdGenerator,
+  )
+  private val combinedTreePropContainer: TreePropContainer? =
+      mergeTreePropContainersIfNeeded(parentTreePropContainer, treePropContainer)
+  private val lithoTree: LithoTree = LithoTree(
+      id = id,
+      stateProvider = this,
+      stateUpdater = this,
+      rootHost = this,
+      errorComponentReceiver = this,
+      treeLifecycle = NoOpLifecycleProvider(),
+      uiStateReadRecordsProvider = {
+        val host =
+            rootHost as? BaseMountingView
+                ?: error("Trying to get UI state read records without a set host")
+        host.uiStateReadRecords
+      },
+      isReadTrackingEnabled = componentsConfig.enableStateReadTracking,
+  )
   private val errorComponentRef = AtomicReference<Component?>(null)
+  private val renderHandler = runnableHandlerProvider.getRunnableHandler()
 
   /** The root component that this renderer is responsible for rendering. */
   @GuardedBy("this") @Volatile private var root: Component = EmptyComponent()
@@ -92,6 +101,7 @@ class LithoRenderer(
   private val runnableLock = Any()
   @GuardedBy("runnableLock") private var currentLayoutRunnable: DoLayoutRunnable? = null
   @GuardedBy("runnableLock") private var currentResolveRunnable: DoResolveRunnable? = null
+  @GuardedBy("runnableLock") private var currentRebindRunnable: Runnable? = null
 
   @GuardedBy("this") private var nextResolveVersionCounter: Int = 0
   @GuardedBy("this") private var nextLayoutVersionCounter: Int = 0
@@ -103,10 +113,10 @@ class LithoRenderer(
 
   // This is written to only by the main thread with the lock held, read from the main thread with
   // no lock held, or read from any other thread with the lock held.
-  var uiThreadLayoutState: LayoutState? = null
+  private var uiThreadLayoutState: LayoutState? = null
 
-  /** Callback that is invoked when a state update is completed */
-  var onStateUpdateCompleted: ((LayoutState) -> Unit)? = null
+  // Whether [uiThreadLayoutState] was bound without attaching its effects. Main thread only.
+  private var uiThreadLayoutStateEffectsSkipped: Boolean = false
 
   // region Public APIs
 
@@ -116,7 +126,9 @@ class LithoRenderer(
    * @param root The root component to resolve.
    */
   fun resolve(root: Component) {
-    synchronized(this) { this.root = root }
+    if (checkIfCanSkipResolveAndUpdateInputs(root)) {
+      return
+    }
 
     resolveAsync(RenderMode.SetRoot)
   }
@@ -128,11 +140,15 @@ class LithoRenderer(
    * @param constraints The size constraints to use for layout.
    */
   fun layout(constraints: SizeConstraints) {
-    synchronized(this) { this.sizeConstraints = constraints }
+    if (checkIfCanSkipLayoutAndUpdateInputs(constraints)) {
+      return
+    }
 
-    currentResolveResult ?: resolveAsync(RenderMode.SetConstraints)
-
-    layoutAsync(RenderMode.SetConstraints)
+    if (currentResolveResult != null) {
+      layoutAsync(RenderMode.SetConstraints)
+    } else {
+      resolveAsync(RenderMode.SetConstraints)
+    }
   }
 
   /**
@@ -161,13 +177,11 @@ class LithoRenderer(
    * @param constraints The size constraints to use.
    */
   fun render(root: Component, constraints: SizeConstraints) {
-    synchronized(this) {
-      this.root = root
-      this.sizeConstraints = constraints
+    if (checkIfCanSkipRenderAndUpdateInputs(newRoot = root, newConstraints = constraints)) {
+      return
     }
-    resolveAsync(RenderMode.SetRoot)
 
-    layoutAsync(RenderMode.SetRoot)
+    resolveAsync(RenderMode.SetRoot)
   }
 
   /**
@@ -189,25 +203,6 @@ class LithoRenderer(
     return layoutSync(layoutInputs)
   }
 
-  /** Promotes the committed layout state to the UI thread. */
-  @UiThread
-  @Synchronized
-  fun maybePromoteCommittedLayoutStateToUI(layoutState: LayoutState?): Boolean {
-    layoutState ?: return false
-    if (layoutState === uiThreadLayoutState) return false
-
-    val previousUiThreadLayoutState = uiThreadLayoutState
-    uiThreadLayoutState = layoutState
-
-    if (LayoutState.isNullOrEmpty(previousUiThreadLayoutState) &&
-        LayoutState.isNullOrEmpty(layoutState)) {
-      return false
-    }
-    layoutState.commit()
-    layoutState.runEffects()
-    return true
-  }
-
   /** Cleans up any pending resolve or layout operations and resets the renderer state. */
   @AnyThread
   fun cleanup() {
@@ -223,15 +218,79 @@ class LithoRenderer(
         currentLayoutRunnable = null
       }
     }
+    synchronized(runnableLock) {
+      currentRebindRunnable?.let { runnable ->
+        uiThreadHandler.remove(runnable)
+        currentRebindRunnable = null
+      }
+    }
     synchronized(this) {
       currentLifecycle = LithoRendererLifecycle.INITIALIZED
       currentResolveResult = null
       currentLayoutState = null
+      root = EmptyComponent()
+      sizeConstraints = null
+      errorComponentRef.set(null)
     }
   }
 
   @UiThread
-  fun bind(host: Host) {
+  fun renderSyncWithCompatibilityChecks(root: Component, sizeConstraint: SizeConstraints) {
+    if (this.sizeConstraints != null && sizeConstraint != this.sizeConstraints) {
+      DebugInfoReporter.report(category = "Collection") {
+        this["event"] = "InvalidSizeConstraints"
+        this["originalConstraints"] = "${this@LithoRenderer.sizeConstraints}"
+        this["newConstraints"] = "$sizeConstraint"
+        this["component"] = root.simpleName
+      }
+    }
+    rebind(renderSync(root, sizeConstraint))
+  }
+
+  /**
+   * Shows the last committed layout if it was computed for [constraints] and renders [root] in the
+   * background, unless that layout is already for [root]. Returns false when nothing compatible can
+   * be shown, in which case the caller must render synchronously.
+   *
+   * @param postAtFront posts the background render ahead of other queued work. Only safe on a
+   *   handler the caller owns: on a shared layout thread it would jump ahead of other trees.
+   */
+  @UiThread
+  fun renderAsyncKeepingCommittedLayout(
+      root: Component,
+      constraints: SizeConstraints,
+      postAtFront: Boolean = false,
+  ): Boolean {
+    val committed = currentLayoutState
+    if (committed == null || committed.sizeConstraints != constraints) {
+      return false
+    }
+    val committedIsCurrent = ComponentUtils.isEquivalent(committed.rootComponent, root)
+    // A layout for an older root is only shown until [root] commits, so its effects aren't
+    // attached:
+    // they'd run for a component that is being replaced, and ones with unchanged deps would outlive
+    // it.
+    rebind(committed, runEffects = committedIsCurrent)
+    if (uiThreadLayoutState?.sizeConstraints != constraints) {
+      return false
+    }
+    // The root went back to the shown layout's (e.g. a change rolled back before it rendered), so
+    // that layout won't be rebound and its skipped effects have to be attached here.
+    if (
+        committedIsCurrent && committed === uiThreadLayoutState && uiThreadLayoutStateEffectsSkipped
+    ) {
+      attachSkippedEffects(committed)
+    }
+    val inputsChanged = !checkIfCanSkipRenderAndUpdateInputs(root, constraints)
+    if (inputsChanged || !committedIsCurrent) {
+      // Always re-post: a previously queued render may never commit.
+      resolveAsync(RenderMode.SetRoot, atFront = postAtFront)
+    }
+    return true
+  }
+
+  @UiThread
+  fun bindTo(host: Host) {
     rootHost = host
     synchronized(this) { currentLifecycle = LithoRendererLifecycle.STARTED }
   }
@@ -239,22 +298,169 @@ class LithoRenderer(
   @UiThread
   fun unbind() {
     rootHost = null
-    synchronized(this) { currentLifecycle = LithoRendererLifecycle.PAUSED }
+    synchronized(this) {
+      currentLifecycle = LithoRendererLifecycle.PAUSED
+      uiThreadLayoutState?.cleanup()
+      uiThreadLayoutState = null
+      uiThreadLayoutStateEffectsSkipped = false
+    }
   }
 
   // endregion
 
+  @UiThread
+  @Synchronized
+  private fun attachSkippedEffects(layoutState: LayoutState) {
+    uiThreadLayoutStateEffectsSkipped = false
+    val effectContext = EffectContext(id, componentsConfig.enableStateReadTracking, emptySet())
+    with(layoutState.treeState.effectsHandler) {
+          effectContext.updateEffects(layoutState.attachables)
+        }
+        .run()
+  }
+
+  private fun commitAndRunEffects(layoutState: LayoutState, updatedStates: Set<StateId>) {
+    val effectContext = EffectContext(id, componentsConfig.enableStateReadTracking, updatedStates)
+    var effectRunnable: Runnable? = null
+    try {
+      with(layoutState.treeState.effectsHandler) {
+        effectRunnable = effectContext.updateEffects(layoutState.attachables)
+      }
+      layoutState.commit()
+    } finally {
+      effectRunnable?.run()
+    }
+  }
+
+  /**
+   * Rebinds the layout state to the UI by promoting it to the UI thread and invoking the view
+   * binder. This method ensures the layout state is properly committed and then triggers the view
+   * binding process.
+   *
+   * @param layoutState The layout state to rebind to the UI
+   */
+  @UiThread private fun rebind(layoutState: LayoutState) = rebind(layoutState, runEffects = true)
+
+  @UiThread
+  @Synchronized
+  private fun rebind(layoutState: LayoutState, runEffects: Boolean) {
+    if (layoutState === uiThreadLayoutState) return
+
+    val previousUiThreadLayoutState = uiThreadLayoutState
+    if (
+        LayoutState.isNullOrEmpty(previousUiThreadLayoutState) &&
+            LayoutState.isNullOrEmpty(layoutState)
+    ) {
+      return
+    }
+    if (
+        previousUiThreadLayoutState != null &&
+            layoutState.version <= previousUiThreadLayoutState.version
+    ) {
+      return
+    }
+    if (rootHost is LithoRenderTreeView) {
+      uiThreadLayoutState = layoutState
+      uiThreadLayoutStateEffectsSkipped = !runEffects
+
+      // Compute effective updates
+      val mainState = treeState
+      val effectiveSnapshot =
+          if (componentsConfig.enableStateReadTracking) {
+            mainState?.getUpdatesForPromotion(layoutState.treeState) ?: emptyMap()
+          } else {
+            emptyMap()
+          }
+      val updatedStates = effectiveSnapshot.keys
+
+      if (runEffects) {
+        commitAndRunEffects(layoutState, updatedStates)
+      } else {
+        layoutState.commit()
+      }
+
+      // Carry forward unconsumed mount updates from previous layout
+      val previousUnconsumed =
+          previousUiThreadLayoutState?.treeState?.consumeMountUpdates() ?: emptySet()
+      layoutState.treeState.addMountUpdates(updatedStates + previousUnconsumed)
+
+      // Subtract from main TreeState
+      if (effectiveSnapshot.isNotEmpty()) {
+        mainState?.subtractPromotedUpdates(effectiveSnapshot)
+      }
+
+      // Ensure the layout state is bound to the view if rootHost is available.
+      (rootHost as LithoRenderTreeView).setLayoutState(layoutState, layoutState.treeState)
+    }
+  }
+
+  /**
+   * Determines whether a render operation can be skipped based on whether the root component or
+   * size constraints have changed. Updates the internal state with new values if they differ.
+   *
+   * @param newRoot The new root component to compare against the current root
+   * @param newConstraints The new size constraints to compare against current constraints
+   * @return true if the render can be skipped (no changes detected), false if a render is needed
+   */
+  @Synchronized
+  private fun checkIfCanSkipRenderAndUpdateInputs(
+      newRoot: Component,
+      newConstraints: SizeConstraints,
+  ): Boolean {
+    val canSkip =
+        ComponentUtils.isEquivalent(this.root, newRoot) && this.sizeConstraints == newConstraints
+    if (!canSkip) {
+      this.root = newRoot
+      this.sizeConstraints = newConstraints
+    }
+    return canSkip
+  }
+
+  /**
+   * Determines whether a resolve operation can be skipped based on whether the root component has
+   * changed. Updates the internal state with the new root if it differs.
+   *
+   * @param newRoot The new root component to compare against the current root
+   * @return true if the resolve can be skipped (no changes detected), false if a resolve is needed
+   */
+  @Synchronized
+  private fun checkIfCanSkipResolveAndUpdateInputs(newRoot: Component): Boolean {
+    val canSkip = ComponentUtils.isEquivalent(this.root, newRoot)
+    if (!canSkip) {
+      this.root = newRoot
+    }
+    return canSkip
+  }
+
+  /**
+   * Determines whether a layout operation can be skipped based on whether the size constraints have
+   * changed. Updates the internal state with the new constraints if they differ.
+   *
+   * @param newConstraints The new size constraints to compare against current constraints
+   * @return true if the layout can be skipped (no changes detected), false if a layout is needed
+   */
+  @Synchronized
+  private fun checkIfCanSkipLayoutAndUpdateInputs(newConstraints: SizeConstraints): Boolean {
+    val canSkip = this.sizeConstraints == newConstraints
+    if (!canSkip) {
+      this.sizeConstraints = newConstraints
+    }
+    return canSkip
+  }
+
   /** Creates a new [ComponentContext] for the resolution. */
-  private fun createComponentContext(treePropContainer: TreePropContainer?): ComponentContext =
-      ComponentContext(
-          context,
-          treePropContainer,
-          lithoConfiguration,
-          lithoTree,
-          ROOT_KEY,
-          visibilityController,
-          null,
-          parentTreePropContainer)
+  private fun createComponentContext(
+      treePropContainer: TreePropContainer?,
+  ): ComponentContext = ComponentContext(
+      context,
+      treePropContainer,
+      lithoConfiguration,
+      lithoTree,
+      StringGlobalKey(ROOT_KEY),
+      visibilityController,
+      null,
+      parentTreePropContainer,
+  )
 
   /** Performs a synchronous state update. */
   private fun updateStateSync() {
@@ -270,8 +476,6 @@ class LithoRenderer(
   /** Performs an asynchronous state update. */
   private fun updateState() {
     resolveAsync(RenderMode.StateUpdate)
-
-    layoutAsync(RenderMode.StateUpdate)
   }
 
   /** Applies any pending state updates that have been enqueued. */
@@ -284,7 +488,7 @@ class LithoRenderer(
   }
 
   /** Initiates a resolve for the given component in an async way. */
-  private fun resolveAsync(renderMode: RenderMode) {
+  private fun resolveAsync(renderMode: RenderMode, atFront: Boolean = false) {
     synchronized(runnableLock) {
       // clear pending resolve runnable
       currentResolveRunnable?.let { runnable ->
@@ -292,12 +496,16 @@ class LithoRenderer(
         currentResolveRunnable = null
       }
 
-      val runnable = DoResolveRunnable(renderMode).also { currentResolveRunnable = it }
+      val runnable = DoResolveRunnable(renderMode, atFront).also { currentResolveRunnable = it }
       var tag = EMPTY_STRING
       if (renderHandler.isTracing()) {
         tag = "doResolve ${root.simpleName}"
       }
-      renderHandler.post(runnable, tag)
+      if (atFront) {
+        renderHandler.postAtFront(runnable, tag)
+      } else {
+        renderHandler.post(runnable, tag)
+      }
     }
   }
 
@@ -312,24 +520,32 @@ class LithoRenderer(
     val isSameRoot =
         (resolveInputs.currentResolveResult != null) &&
             ComponentUtils.isEquivalent(
-                resolveInputs.rootComponent, resolveInputs.currentResolveResult.component, true)
+                resolveInputs.rootComponent,
+                resolveInputs.currentResolveResult.component,
+            )
     val noPendingStateUpdate = resolveInputs.localTreeState.keysForPendingStateUpdates.isEmpty()
-    val isSameTreePropContainer =
-        com.facebook.rendercore.utils.equals(
-            resolveInputs.treePropContainer,
-            resolveInputs.currentResolveResult?.context?.treePropContainer)
 
     // The current root and tree-props are the same as the committed resolved result, and there is
     // no pending state update. Therefore, there is no need to calculate the resolved result again,
     // and we can proceed straight to layout.
-    if (isSameRoot && noPendingStateUpdate && isSameTreePropContainer) {
+    //
+    // Comparing two tree-prop containers walks the map and runs arbitrary value equals, so it has
+    // to stay behind the cheaper checks instead of being hoisted into its own val.
+    if (
+        isSameRoot &&
+            noPendingStateUpdate &&
+            equals(
+                resolveInputs.treePropContainer,
+                resolveInputs.currentResolveResult?.context?.treePropContainer,
+            )
+    ) {
       return resolveInputs.currentResolveResult
     }
     return resolve(resolveInputs, MAX_RESOLVE_TIMES)
   }
 
   /** Initiates an async layout with the latest resolve result and size constraints. */
-  private fun layoutAsync(renderMode: RenderMode) {
+  private fun layoutAsync(renderMode: RenderMode, atFront: Boolean = false) {
     synchronized(runnableLock) {
       // clear pending layout runnable
       currentLayoutRunnable?.let { runnable ->
@@ -341,7 +557,11 @@ class LithoRenderer(
       if (renderHandler.isTracing()) {
         tag = "doLayout ${root.simpleName}"
       }
-      renderHandler.post(runnable, tag)
+      if (atFront) {
+        renderHandler.postAtFront(runnable, tag)
+      } else {
+        renderHandler.post(runnable, tag)
+      }
     }
   }
 
@@ -371,26 +591,33 @@ class LithoRenderer(
 
   /** Performs a resolve future for the given component. */
   private fun resolve(resolveInputs: ResolveInputs, retryTimes: Int): ResolveResult? {
-    val future =
-        LithoResolveTreeFuture(
-            componentContext = createComponentContext(resolveInputs.treePropContainer),
-            treeId = id,
-            component = resolveInputs.rootComponent,
-            treeState = resolveInputs.localTreeState,
-            previousResult = resolveInputs.currentResolveResult,
-            version = resolveInputs.resolveVersion,
-            useCancellableFutures = resolveInputs.renderMode.isAsync())
+    val componentContext = createComponentContext(resolveInputs.treePropContainer)
+    val initialStateScope = InitialStateScope.forResolve(resolveInputs.localTreeState)
+    val viewModelStore = resolveInputs.treePropContainer?.get(LithoViewModelStoreTreeProp)
+    val future = LithoResolveTreeFuture(
+        componentContext = componentContext,
+        treeId = id,
+        component = resolveInputs.rootComponent,
+        treeState = resolveInputs.localTreeState,
+        previousResult = resolveInputs.currentResolveResult,
+        version = resolveInputs.resolveVersion,
+        useCancellableFutures = resolveInputs.renderMode.isAsync(),
+    )
 
     val treeFutureResult =
-        TreeFuture.trackAndRunTreeFuture(
+        TreeFuture.trackRunAndCommit(
             future,
             resolveTreeFutures,
             resolveInputs.renderMode.toRenderSource(),
             resolveFutureLock,
-            null)
+            null,
+            initialStateScope,
+            viewModelStore,
+        ) { result ->
+          commitResolveResult(result)
+        }
 
     return if (treeFutureResult.result != null) {
-      commitResolveResult(treeFutureResult.result)
       treeFutureResult.result
     } else {
       // To check if this is the latest resolve request because we don't want to leave render in
@@ -413,38 +640,52 @@ class LithoRenderer(
     val committedResolveResult = currentResolveResult
     if (committedResolveResult == null || committedResolveResult.version < resolveResult.version) {
       currentResolveResult = resolveResult
+      treeState?.commitResolveState(
+          resolveResult.treeState,
+          trackForPromotion = componentsConfig.enableStateReadTracking,
+      )
     }
-    treeState?.commitResolveState(resolveResult.treeState)
   }
 
   /** Performs a layout future for the given resolve result. */
   private fun layout(layoutInputs: LayoutInputs): LayoutState? {
-    val future =
-        LithoLayoutTreeFuture(
-            treeId = id,
-            version = layoutInputs.layoutVersion,
-            resolveResult = requireNotNull(layoutInputs.currentResolveResult),
-            sizeConstraints = requireNotNull(layoutInputs.constraints),
-            previousLayoutState = layoutInputs.currentLayoutState)
+    val resolveResult = requireNotNull(layoutInputs.currentResolveResult)
+    val constraints = requireNotNull(layoutInputs.constraints)
+    val initialStateScope = InitialStateScope.forLayout(layoutInputs.localTreeState)
+    val viewModelStore = resolveResult.context.treePropContainer?.get(LithoViewModelStoreTreeProp)
+    val future = LithoLayoutTreeFuture(
+        treeId = id,
+        version = layoutInputs.layoutVersion,
+        resolveResult = resolveResult,
+        sizeConstraints = constraints,
+        previousLayoutState = layoutInputs.currentLayoutState,
+        treeState = layoutInputs.localTreeState,
+    )
 
     val treeFutureResult =
-        TreeFuture.trackAndRunTreeFuture(
+        TreeFuture.trackRunAndCommit(
             future,
             layoutTreeFutures,
             layoutInputs.renderMode.toRenderSource(),
             layoutFutureLock,
-            null)
+            null,
+            initialStateScope,
+            viewModelStore,
+        ) { layoutState ->
+          layoutState.toRenderTree()
 
-    treeFutureResult.result?.let { layoutState ->
-      layoutState.toRenderTree()
-
-      if (commitLayoutState(layoutState)) {
-        if (layoutInputs.renderMode == RenderMode.StateUpdate ||
-            layoutInputs.renderMode == RenderMode.StateUpdateSync) {
-          uiThreadHandler.post({ onStateUpdateCompleted?.invoke(layoutState) }, TAG_STATE_UPDATE)
+          if (commitLayoutState(layoutState)) {
+            synchronized(runnableLock) {
+              currentRebindRunnable?.let { runnable ->
+                uiThreadHandler.remove(runnable)
+                currentRebindRunnable = null
+              }
+              val runnable = Runnable { rebind(layoutState) }
+              currentRebindRunnable = runnable
+              uiThreadHandler.post(runnable, TAG_STATE_UPDATE)
+            }
+          }
         }
-      }
-    }
 
     return treeFutureResult.result
   }
@@ -456,15 +697,48 @@ class LithoRenderer(
   @Synchronized
   private fun commitLayoutState(layoutState: LayoutState): Boolean {
     val currentVersion = currentLayoutState?.version ?: com.facebook.rendercore.RenderState.UNSET
-    if ((layoutState.version > currentVersion) &&
-        (layoutState.sizeConstraints == sizeConstraints) &&
-        (layoutState.resolveResult == currentResolveResult)) {
+    if (
+        (layoutState.version > currentVersion) &&
+            (layoutState.sizeConstraints == sizeConstraints) &&
+            (layoutState.resolveResult == currentResolveResult)
+    ) {
       currentLayoutState = layoutState
-      treeState?.commitLayoutState(layoutState.treeState)
+      treeState?.commitLayoutState(
+          layoutState.treeState,
+          trackForPromotion = componentsConfig.enableStateReadTracking,
+      )
       return true
     }
     return false
   }
+
+  /**
+   * Merges the source tree properties with the destination tree properties container. Creates a new
+   * TreePropContainer that contains all properties from the destination container and adds any
+   * additional properties from the source container.
+   *
+   * @param destination The destination tree properties container to merge into, can be null
+   * @param source The source tree properties to merge, can be null
+   * @return A new TreePropContainer containing merged properties from destination and source
+   *   containers, or the source container if no merging is needed
+   */
+  private fun mergeTreePropContainersIfNeeded(
+      destination: TreePropContainer?,
+      source: TreePropContainer?,
+  ): TreePropContainer? {
+    val treePropContainer = TreePropContainer.copy(destination) ?: TreePropContainer()
+    if (source != null) {
+      treePropContainer.putAll(source)
+    }
+    return if (treePropContainer != source) {
+      treePropContainer
+    } else {
+      source
+    }
+  }
+
+  override val uiTreeState: TreeState?
+    @Synchronized get() = treeState
 
   // region StateUpdater
   override var isFirstMount: Boolean
@@ -474,57 +748,60 @@ class LithoRenderer(
     }
 
   override fun updateStateSync(
-      globalKey: String,
+      globalKey: GlobalKey,
       stateUpdate: StateContainer.StateUpdate,
       attribution: String?,
-      isLayoutState: Boolean
+      isLayoutState: Boolean,
   ) {
     request(
         PendingStateUpdate(
-            stateId = globalKey,
+            stateId = StateId.forSpec(id, globalKey),
             updater = stateUpdate,
             isLayoutState = isLayoutState,
             isAsync = false,
             attribution = attribution,
-        ))
+        ),
+    )
   }
 
   override fun updateStateAsync(
-      globalKey: String,
+      globalKey: GlobalKey,
       stateUpdate: StateContainer.StateUpdate,
       attribution: String?,
-      isLayoutState: Boolean
+      isLayoutState: Boolean,
   ) {
     request(
         PendingStateUpdate(
-            stateId = globalKey,
+            stateId = StateId.forSpec(id, globalKey),
             updater = stateUpdate,
             isLayoutState = isLayoutState,
             isAsync = true,
             attribution = attribution,
-        ))
+        ),
+    )
   }
 
   override fun updateStateLazy(
-      globalKey: String,
+      globalKey: GlobalKey,
       stateUpdate: StateContainer.StateUpdate,
-      isLayoutState: Boolean
+      isLayoutState: Boolean,
   ) {
     request(
         PendingStateUpdate(
-            stateId = globalKey,
+            stateId = StateId.forSpec(id, globalKey),
             updater = stateUpdate,
             isLayoutState = isLayoutState,
             isAsync = false,
             isLazy = true,
-        ))
+        ),
+    )
   }
 
   override fun updateHookStateAsync(
       stateId: StateId,
       updateBlock: HookUpdater,
       attribution: String?,
-      isLayoutState: Boolean
+      isLayoutState: Boolean,
   ) {
     request(
         PendingStateUpdate(
@@ -533,14 +810,15 @@ class LithoRenderer(
             isLayoutState = isLayoutState,
             isAsync = true,
             attribution = attribution,
-        ))
+        ),
+    )
   }
 
   override fun updateHookStateSync(
       stateId: StateId,
       updateBlock: HookUpdater,
       attribution: String?,
-      isLayoutState: Boolean
+      isLayoutState: Boolean,
   ) {
     request(
         PendingStateUpdate(
@@ -549,48 +827,56 @@ class LithoRenderer(
             isLayoutState = isLayoutState,
             isAsync = false,
             attribution = attribution,
-        ))
+        ),
+    )
   }
 
+  @Synchronized
   override fun applyLazyStateUpdatesForContainer(
-      globalKey: String,
+      globalKey: GlobalKey,
       container: StateContainer,
-      isLayoutState: Boolean
+      isLayoutState: Boolean,
   ): StateContainer {
-    return treeState?.applyLazyStateUpdatesForContainer(globalKey, container, isLayoutState)
-        ?: container
+    return treeState?.applyLazyStateUpdatesForContainer(
+        StateId.forSpec(id, globalKey),
+        container,
+        isLayoutState,
+    ) ?: container
   }
 
+  @Synchronized
   override fun getCachedValue(
-      globalKey: String,
-      index: Int,
+      cacheKey: HookGlobalKey,
       cachedValueInputs: Any,
-      isLayoutState: Boolean
+      isLayoutState: Boolean,
   ): Any? {
-    return treeState?.getCachedValue(globalKey, index, cachedValueInputs, isLayoutState)
+    return treeState?.getCachedValue(cacheKey, cachedValueInputs, isLayoutState)
   }
 
+  @Synchronized
   override fun putCachedValue(
-      globalKey: String,
-      index: Int,
+      cacheKey: HookGlobalKey,
       cachedValueInputs: Any,
       cachedValue: Any?,
-      isLayoutState: Boolean
+      isLayoutState: Boolean,
   ) {
-    treeState?.putCachedValue(globalKey, index, cachedValueInputs, cachedValue, isLayoutState)
+    treeState?.putCachedValue(cacheKey, cachedValueInputs, cachedValue, isLayoutState)
   }
 
-  override fun removePendingStateUpdate(key: String, isLayoutState: Boolean) {
+  override fun removePendingStateUpdate(key: GlobalKey, isLayoutState: Boolean) {
     throw UnsupportedOperationException(
-        """This API should not be invoked. Nested Litho Tree updates will
-          |be cleared when nested layout state is committed."""
-            .trimMargin())
+        """
+        |This API should not be invoked. Nested Litho Tree updates will
+        |be cleared when nested layout state is committed.
+        """
+            .trimMargin(),
+    )
   }
 
   override fun <T> canSkipStateUpdate(
       stateId: StateId,
       newValue: T?,
-      isLayoutState: Boolean
+      isLayoutState: Boolean,
   ): Boolean {
     return treeState?.canSkipStateUpdate(stateId, newValue, isLayoutState) == true
   }
@@ -598,7 +884,7 @@ class LithoRenderer(
   override fun <T> canSkipStateUpdate(
       newValueFunction: (T) -> T,
       stateId: StateId,
-      isLayoutState: Boolean
+      isLayoutState: Boolean,
   ): Boolean {
     return treeState?.canSkipStateUpdate(
         newValueFunction,
@@ -607,7 +893,7 @@ class LithoRenderer(
     ) == true
   }
 
-  override fun getEventTrigger(key: String): EventTrigger<*>? {
+  override fun getEventTrigger(key: Any): EventTrigger<*>? {
     return treeState?.getEventTrigger(triggerKey = key)
   }
 
@@ -618,13 +904,13 @@ class LithoRenderer(
   // endregion
 
   // region StateUpdateRequester
-  override fun request(update: PendingStateUpdate<*>) {
+  override fun request(update: PendingStateUpdate) {
     if (currentLifecycle != LithoRendererLifecycle.STARTED) {
       // When the current view is out of the preparation range, we don't want to apply any state
       // updates.
       return
     }
-    treeState?.enqueue(update)
+    synchronized(this) { treeState?.enqueue(update) }
 
     if (update.isLazy) {
       // todo: figure out how to handle lazy updates properly
@@ -662,10 +948,16 @@ class LithoRenderer(
    */
   private inner class DoResolveRunnable(
       private val renderMode: RenderMode,
+      private val atFront: Boolean = false,
   ) : ThreadTracingRunnable() {
 
     override fun tracedRun() {
-      requestResolve(captureResolveInputs(renderMode))
+      val result = requestResolve(captureResolveInputs(renderMode))
+      if (result != null) {
+        // Resolve operation may be interrupted by cancellation or errors.
+        // Verify the result is valid before proceeding to the layout phase.
+        layoutAsync(renderMode, atFront)
+      }
     }
   }
 
@@ -691,34 +983,39 @@ class LithoRenderer(
       constraints: SizeConstraints? = null,
   ): ResolveInputs {
     return synchronized(this) {
-      rootComponent?.let { this.root = it }
-      constraints?.let { this.sizeConstraints = it }
+      rootComponent?.let { root = it }
+      constraints?.let { sizeConstraints = it }
       ResolveInputs(
-          resolveVersion = this.nextResolveVersionCounter++,
-          layoutVersion = this.nextLayoutVersionCounter++,
-          rootComponent = this.errorComponentRef.getAndSet(null) ?: this.root,
-          constraints = constraints ?: this.sizeConstraints,
-          localTreeState = TreeState(this.treeState),
-          currentResolveResult = this.currentResolveResult,
-          treePropContainer = TreePropContainer.copy(this.treePropContainer),
+          resolveVersion = nextResolveVersionCounter++,
+          layoutVersion = nextLayoutVersionCounter++,
+          rootComponent = errorComponentRef.getAndSet(null) ?: root,
+          constraints = constraints ?: sizeConstraints,
+          localTreeState = TreeState(treeState),
+          currentResolveResult = currentResolveResult,
+          treePropContainer = combinedTreePropContainer,
           renderMode = renderMode,
       )
     }
   }
 
   /** Captures all inputs for Layout. */
-  private fun captureLayoutInputs(
-      renderMode: RenderMode,
-      resolveResult: ResolveResult? = null,
-      constraints: SizeConstraints? = null,
-  ): LayoutInputs {
+  private fun captureLayoutInputs(renderMode: RenderMode): LayoutInputs {
     return synchronized(this) {
-      constraints?.let { this.sizeConstraints = it }
+      val resolveResult = currentResolveResult
+      val layoutState = currentLayoutState
       LayoutInputs(
-          layoutVersion = this.nextLayoutVersionCounter++,
-          currentResolveResult = resolveResult ?: this.currentResolveResult,
-          currentLayoutState = this.currentLayoutState,
-          constraints = constraints ?: this.sizeConstraints,
+          layoutVersion = nextLayoutVersionCounter++,
+          currentResolveResult = resolveResult,
+          currentLayoutState = layoutState,
+          // Same resolve, new constraints: continue from the last committed layout, which holds
+          // layout-scoped state created since the resolve snapshot was taken.
+          localTreeState =
+              if (layoutState != null && layoutState.resolveResult === resolveResult) {
+                TreeState.forLayoutOnlyPass(layoutState.treeState, resolveResult?.treeState)
+              } else {
+                TreeState(resolveResult?.treeState)
+              },
+          constraints = sizeConstraints,
           renderMode = renderMode,
       )
     }
@@ -733,8 +1030,9 @@ class LithoRenderer(
       LayoutInputs(
           layoutVersion = resolveInputs.layoutVersion,
           currentResolveResult = resolveResult,
-          currentLayoutState = this.currentLayoutState,
-          constraints = resolveInputs.constraints ?: this.sizeConstraints,
+          currentLayoutState = currentLayoutState,
+          localTreeState = TreeState(resolveResult.treeState),
+          constraints = resolveInputs.constraints ?: sizeConstraints,
           renderMode = resolveInputs.renderMode,
       )
     }
@@ -757,13 +1055,13 @@ class LithoRenderer(
       val layoutVersion: Int,
       val currentResolveResult: ResolveResult?,
       val currentLayoutState: LayoutState?,
+      val localTreeState: TreeState,
       val constraints: SizeConstraints?,
       val renderMode: RenderMode,
   )
 
   companion object {
     private val uiThreadHandler: RunnableHandler = DefaultHandler(Looper.getMainLooper())
-    private val renderHandler = DefaultHandler(ComponentTree.getDefaultLayoutThreadLooper())
 
     // The max number of times we will retry a failed resolve request.
     private const val MAX_RESOLVE_TIMES: Int = 2
@@ -781,6 +1079,10 @@ private class NoOpLifecycleProvider : LithoTreeLifecycleProvider {
     get() = false
 
   override fun addOnReleaseListener(listener: LithoTreeLifecycleProvider.OnReleaseListener) {
+    // no ops
+  }
+
+  override fun removeOnReleaseListener(listener: LithoTreeLifecycleProvider.OnReleaseListener) {
     // no ops
   }
 }

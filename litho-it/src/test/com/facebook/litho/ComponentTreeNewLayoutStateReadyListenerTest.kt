@@ -32,8 +32,8 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.reset
 import org.mockito.kotlin.verify
-import org.robolectric.Shadows
 import org.robolectric.annotation.LooperMode
+import org.robolectric.shadow.api.Shadow
 import org.robolectric.shadows.ShadowLooper
 
 @LooperMode(LooperMode.Mode.LEGACY)
@@ -53,12 +53,13 @@ class ComponentTreeNewLayoutStateReadyListenerTest {
   @Before
   fun setup() {
     context = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    component = SimpleMountSpecTester.create(context).build()
-    componentTree = ComponentTree.create(context, component).build()
+    component = SimpleMountSpecTester()
+    componentTree = ComponentTree.create(context, component).enableChildClipping(true).build()
     layoutThreadShadowLooper =
-        Shadows.shadowOf(
+        Shadow.extract(
             Whitebox.invokeMethod<Any>(ComponentTree::class.java, "getDefaultLayoutThreadLooper")
-                as Looper)
+                as Looper,
+        )
     listener = mock()
     widthSpec = makeSizeSpec(39, EXACTLY)
     widthSpec2 = makeSizeSpec(40, EXACTLY)

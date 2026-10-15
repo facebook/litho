@@ -58,7 +58,7 @@ class UseCoroutineTest {
             useCoroutineCalls += "cancel"
           }
         }
-        return Row()
+        return EmptyComponent()
       }
     }
 
@@ -84,7 +84,7 @@ class UseCoroutineTest {
             useCoroutineCalls += "detach $seq"
           }
         }
-        return Row()
+        return EmptyComponent()
       }
     }
 
@@ -120,7 +120,7 @@ class UseCoroutineTest {
             useCoroutineCalls += "detach $seq"
           }
         }
-        return Row()
+        return EmptyComponent()
       }
     }
 
@@ -162,7 +162,7 @@ class UseCoroutineTest {
             useCoroutineCalls += "detach $seq"
           }
         }
-        return Row()
+        return EmptyComponent()
       }
     }
 
@@ -214,7 +214,7 @@ class UseCoroutineTest {
             useCoroutineCalls += "detach $dep1:$dep2:$seq"
           }
         }
-        return Row()
+        return EmptyComponent()
       }
     }
 
@@ -285,12 +285,13 @@ class UseCoroutineTest {
             useCoroutineCalls += "dep3: detach $seq"
           }
         }
-        return Row()
+        return null
       }
     }
 
-    val lithoView =
-        lithoViewRule.render { UseCoroutineComponent(dep1 = 0, dep2 = 0, dep3 = 0, seq = 0) }
+    val lithoView = lithoViewRule.render {
+      UseCoroutineComponent(dep1 = 0, dep2 = 0, dep3 = 0, seq = 0)
+    }
     testDispatcher.scheduler.runCurrent()
 
     assertThat(useCoroutineCalls)
@@ -307,7 +308,7 @@ class UseCoroutineTest {
     testDispatcher.scheduler.runCurrent()
 
     assertThat(useCoroutineCalls)
-        .containsExactly("dep1: detach 0", "dep1: attach 2", "dep3: detach 0", "dep3: attach 2")
+        .containsExactly("dep1: detach 0", "dep3: detach 0", "dep1: attach 2", "dep3: attach 2")
     useCoroutineCalls.clear()
 
     lithoView.setRoot(UseCoroutineComponent(dep1 = 1, dep2 = 1, dep3 = 1, seq = 3))

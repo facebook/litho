@@ -28,13 +28,12 @@ import android.view.View
 import android.view.View.OnTouchListener
 import android.widget.TextView
 import androidx.test.core.app.ApplicationProvider
-import com.facebook.rendercore.RenderUnit.RenderType
 import com.facebook.rendercore.testing.DrawableWrapperUnit
 import com.facebook.rendercore.testing.LayoutResultWrappingNode
 import com.facebook.rendercore.testing.RenderCoreTestRule
 import com.facebook.rendercore.testing.SimpleLayoutResult
 import com.facebook.rendercore.testing.ViewWrapperUnit
-import org.assertj.core.api.Java6Assertions
+import org.assertj.core.api.Assertions
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -51,14 +50,36 @@ class HostViewTest {
   fun testOnInterceptTouchEvent_withHandler() {
     val hostView = HostView(context)
     val ev = MotionEvent.obtain(0, 0, 0, 0f, 0f, 0)
-    Java6Assertions.assertThat(hostView.onInterceptTouchEvent(ev)).isFalse
-    hostView.setInterceptTouchEventHandler(
+    Assertions.assertThat(hostView.onInterceptTouchEvent(ev)).isFalse
+    hostView.setInterceptTouchEventHandler { _, _ -> true }
+
+    Assertions.assertThat(hostView.onInterceptTouchEvent(ev)).isTrue
+  }
+
+  @Test
+  fun testRegisterTouchEvent_Handler_withHandler() {
+    val hostView = HostView(context)
+    val ev = MotionEvent.obtain(0, 0, 0, 0f, 0f, 0)
+    Assertions.assertThat(hostView.onInterceptTouchEvent(ev)).isFalse
+    hostView.registerTouchEventHandler { _, _ -> true }
+
+    Assertions.assertThat(hostView.onInterceptTouchEvent(ev)).isTrue
+  }
+
+  @Test
+  fun testUnregisterTouchEventHandler_withHandler() {
+    val hostView = HostView(context)
+    val ev = MotionEvent.obtain(0, 0, 0, 0f, 0f, 0)
+    val handler: InterceptTouchHandler =
         object : InterceptTouchHandler {
-          override fun onInterceptTouchEvent(view: View, ev: MotionEvent): Boolean {
+          override fun onInterceptTouchEvent(view: View, ev: MotionEvent): Boolean? {
             return true
           }
-        })
-    Java6Assertions.assertThat(hostView.onInterceptTouchEvent(ev)).isTrue
+        }
+    hostView.registerTouchEventHandler(handler)
+    hostView.unregisterTouchEventHandler(handler)
+
+    Assertions.assertThat(hostView.onInterceptTouchEvent(ev)).isFalse
   }
 
   @Test
@@ -67,8 +88,8 @@ class HostViewTest {
     val content = View(context)
     val mountItem = createMountItem(hostView, content, 1)
     hostView.mount(0, mountItem)
-    Java6Assertions.assertThat(hostView.getMountItemAt(0)).isSameAs(mountItem)
-    Java6Assertions.assertThat(hostView.getChildAt(0)).isSameAs(content)
+    Assertions.assertThat(hostView.getMountItemAt(0)).isSameAs(mountItem)
+    Assertions.assertThat(hostView.getChildAt(0)).isSameAs(content)
   }
 
   @Test
@@ -77,7 +98,7 @@ class HostViewTest {
     val mountItem = createMountItem(hostView, View(context), 1)
     hostView.mount(0, mountItem)
     hostView.moveItem(mountItem, 0, 100)
-    Java6Assertions.assertThat(hostView.getMountItemAt(100)).isSameAs(mountItem)
+    Assertions.assertThat(hostView.getMountItemAt(100)).isSameAs(mountItem)
   }
 
   @Test
@@ -89,8 +110,8 @@ class HostViewTest {
     hostView.mount(1, mountItem2)
     hostView.moveItem(mountItem, 0, 1)
     hostView.moveItem(mountItem2, 1, 0)
-    Java6Assertions.assertThat(hostView.getMountItemAt(0)).isSameAs(mountItem2)
-    Java6Assertions.assertThat(hostView.getMountItemAt(1)).isSameAs(mountItem)
+    Assertions.assertThat(hostView.getMountItemAt(0)).isSameAs(mountItem2)
+    Assertions.assertThat(hostView.getMountItemAt(1)).isSameAs(mountItem)
   }
 
   @Test
@@ -113,10 +134,14 @@ class HostViewTest {
                                 true,
                                 drawTracker,
                                 setStateTracker,
-                                jumpToCurrentStateTracker),
-                            2))
+                                jumpToCurrentStateTracker,
+                            ),
+                            2,
+                        ),
+                    )
                     .width(120)
-                    .height(120))
+                    .height(120),
+            )
             .child(
                 SimpleLayoutResult.create()
                     .renderUnit(
@@ -127,19 +152,24 @@ class HostViewTest {
                                 false,
                                 drawTracker,
                                 setStateTracker,
-                                jumpToCurrentStateTracker),
-                            3))
+                                jumpToCurrentStateTracker,
+                            ),
+                            3,
+                        ),
+                    )
                     .x(5)
                     .y(5)
                     .width(110)
-                    .height(110))
+                    .height(110),
+            )
             .child(
                 SimpleLayoutResult.create()
                     .renderUnit(ViewWrapperUnit(TextView(c), 4))
                     .x(10)
                     .y(10)
                     .width(100)
-                    .height(100))
+                    .height(100),
+            )
             .child(
                 SimpleLayoutResult.create()
                     .renderUnit(
@@ -150,37 +180,41 @@ class HostViewTest {
                                 true,
                                 drawTracker,
                                 setStateTracker,
-                                jumpToCurrentStateTracker),
-                            5))
+                                jumpToCurrentStateTracker,
+                            ),
+                            5,
+                        ),
+                    )
                     .x(15)
                     .y(15)
                     .width(95)
-                    .height(95))
+                    .height(95),
+            )
             .build()
     renderCoreTestRule.useRootNode(LayoutResultWrappingNode(root)).render()
     val host = renderCoreTestRule.rootHost as HostView
-    Java6Assertions.assertThat(host.mountItemCount).describedAs("Mounted items").isEqualTo(4)
+    Assertions.assertThat(host.mountItemCount).describedAs("Mounted items").isEqualTo(4)
     host.dispatchDraw(Canvas())
-    Java6Assertions.assertThat(drawTracker).containsExactly(2L, 3L, 5L)
-    Java6Assertions.assertThat(setStateTracker).containsExactly(2L, 5L)
+    Assertions.assertThat(drawTracker).containsExactly(2L, 3L, 5L)
+    Assertions.assertThat(setStateTracker).containsExactly(2L, 5L)
     setStateTracker.clear()
     host.drawableStateChanged()
-    Java6Assertions.assertThat(setStateTracker).containsExactly(2L, 5L)
-    Java6Assertions.assertThat(jumpToCurrentStateTracker).containsExactly(2L, 3L, 5L)
+    Assertions.assertThat(setStateTracker).containsExactly(2L, 5L)
+    Assertions.assertThat(jumpToCurrentStateTracker).containsExactly(2L, 3L, 5L)
     jumpToCurrentStateTracker.clear()
     host.jumpDrawablesToCurrentState()
-    Java6Assertions.assertThat(jumpToCurrentStateTracker).containsExactly(2L, 3L, 5L)
+    Assertions.assertThat(jumpToCurrentStateTracker).containsExactly(2L, 3L, 5L)
     val item = host.getMountItemAt(1)
     host.unmount(item)
-    Java6Assertions.assertThat(host.mountItemCount).describedAs("Mounted items").isEqualTo(3)
+    Assertions.assertThat(host.mountItemCount).describedAs("Mounted items").isEqualTo(3)
     drawTracker.clear()
     host.dispatchDraw(Canvas())
-    Java6Assertions.assertThat(drawTracker).containsExactly(2L, 5L)
+    Assertions.assertThat(drawTracker).containsExactly(2L, 5L)
     host.visibility = View.INVISIBLE
-    Java6Assertions.assertThat((host.getMountItemAt(0).content as Drawable).isVisible)
+    Assertions.assertThat((host.getMountItemAt(0).content as Drawable).isVisible)
         .describedAs("Drawable visibility is")
         .isFalse
-    Java6Assertions.assertThat((host.getMountItemAt(3).content as Drawable).isVisible)
+    Assertions.assertThat((host.getMountItemAt(3).content as Drawable).isVisible)
         .describedAs("Drawable visibility is")
         .isFalse
   }
@@ -188,14 +222,14 @@ class HostViewTest {
   @Test
   fun onRenderUnitWithTouchableDrawable_shouldHandleTouchEvent() {
     val point = Point(0, 0)
-    val unit =
-        DrawableWrapperUnit(
-            TouchableColorDrawable { v, event ->
-              point.x = event.x.toInt()
-              point.y = event.y.toInt()
-              true
-            },
-            1)
+    val unit = DrawableWrapperUnit(
+        TouchableColorDrawable { v, event ->
+          point.x = event.x.toInt()
+          point.y = event.y.toInt()
+          true
+        },
+        1,
+    )
     val root: LayoutResult =
         SimpleLayoutResult.create()
             .width(100)
@@ -206,12 +240,12 @@ class HostViewTest {
     val host = renderCoreTestRule.rootHost as HostView
     val event = MotionEvent.obtain(200, 300, MotionEvent.ACTION_DOWN, 10.0f, 10.0f, 0)
     host.onTouchEvent(event)
-    Java6Assertions.assertThat(point.x).describedAs("touch x is").isEqualTo(10)
-    Java6Assertions.assertThat(point.y).describedAs("touch y is").isEqualTo(10)
+    Assertions.assertThat(point.x).describedAs("touch x is").isEqualTo(10)
+    Assertions.assertThat(point.y).describedAs("touch y is").isEqualTo(10)
   }
 
-  private class TestRenderUnit(renderType: RenderType) :
-      RenderUnit<Any>(renderType), ContentAllocator<Any> {
+  private class TestRenderUnit(override val renderType: RenderType) :
+      RenderUnit<Any>(), ContentAllocator<Any> {
 
     override fun createContent(context: Context): Any {
       return Any()
@@ -230,7 +264,7 @@ class HostViewTest {
       private val isStateful: Boolean,
       private val drawTracker: MutableList<Long>,
       private val setStateTracker: MutableList<Long>,
-      private val jumpToCurrentStateTracker: MutableList<Long>
+      private val jumpToCurrentStateTracker: MutableList<Long>,
   ) : ColorDrawable(color) {
 
     override fun draw(canvas: Canvas) {

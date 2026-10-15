@@ -22,6 +22,7 @@ import com.facebook.litho.SizeSpec.makeSizeSpec
 import com.facebook.litho.testing.TestLayoutComponent
 import com.facebook.litho.testing.Whitebox
 import com.facebook.litho.testing.testrunner.LithoTestRunner
+import com.facebook.rendercore.SizeConstraints
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -43,7 +44,16 @@ class LayoutStateSpecTest {
     Whitebox.setInternalState(component, "mId", COMPONENT_ID)
     val result = ResolveTreeFuture.resolve(context, component, TreeState(), 1, 1, null, null, null)
     layoutState =
-        LayoutTreeFuture.layout(result, widthSpec, heightSpec, 1, 1, null, null, null, null)
+        LayoutTreeFuture.layout(
+            result,
+            SizeConstraints.fromMeasureSpecs(widthSpec, heightSpec),
+            1,
+            1,
+            TreeState(result.treeState),
+            null,
+            null,
+            null,
+        )
   }
 
   @Test
@@ -54,21 +64,24 @@ class LayoutStateSpecTest {
   @Test
   fun testIncompatibleInput() {
     assertThat(
-            layoutState.isCompatibleComponentAndSpec(COMPONENT_ID + 1_000, widthSpec, heightSpec))
+        layoutState.isCompatibleComponentAndSpec(COMPONENT_ID + 1_000, widthSpec, heightSpec),
+    )
         .isFalse
   }
 
   @Test
   fun testIncompatibleWidthSpec() {
     assertThat(
-            layoutState.isCompatibleComponentAndSpec(COMPONENT_ID, widthSpec + 1_000, heightSpec))
+        layoutState.isCompatibleComponentAndSpec(COMPONENT_ID, widthSpec + 1_000, heightSpec),
+    )
         .isFalse
   }
 
   @Test
   fun testIncompatibleHeightSpec() {
     assertThat(
-            layoutState.isCompatibleComponentAndSpec(COMPONENT_ID, widthSpec, heightSpec + 1_000))
+        layoutState.isCompatibleComponentAndSpec(COMPONENT_ID, widthSpec, heightSpec + 1_000),
+    )
         .isFalse
   }
 
@@ -77,7 +90,7 @@ class LayoutStateSpecTest {
 
     fun newComponentTreeContext(): ComponentContext {
       val baseContext = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-      return ComponentTree.create(baseContext).build().context
+      return ComponentTree.create(baseContext).enableChildClipping(true).build().context
     }
   }
 }

@@ -1,0 +1,63 @@
+---
+id: mainconcepts
+title: Main Concepts
+keywords:
+    - Main Concepts
+    - Components
+    - KComponent
+    - Primitive
+    - Props
+    - Layout
+    - State
+    - Hooks
+    - Side Effects
+    - Interactions
+    - Flexbox
+    - Yoga
+    - render function
+    - declarative UI
+api_category: concepts
+related_docs: [components-basics, hooks-intro, layout-intro, common-props]
+api_names: [KComponent, Primitive, useState, useEffect, Style, Row, Column]
+---
+
+Litho empowers you to build Android user interfaces declaratively, primarily focusing on performance and maintainability.
+Below are the key concepts required to write and understand UI code with Litho.
+
+## Components
+
+To create UIs in Litho, you build Components - the fundamental, composable building blocks of your interface. See **[Components](/components-basics.mdx)** for more details.
+
+- **[KComponent](/components-basics.mdx#declaring-a-component)** - You can build your user interface in Kotlin by defining a set of KComponents. Components accept inputs as immutable and comparable props, they create and update state, and return their layout all from its `render` function.
+- **[Primitive](/primitives/overview.mdx)** - Primitives are used to bridge Android Views or Drawables in Litho. Use them to expose your Android views and drawables using Litho components.
+
+## Props
+
+Props are the "properties" of a Component — values you provide to customize how the component is rendered and its behaviour.
+
+- **[Props](components-basics.mdx)** - Pass data to components by declaring `val` properties to control their behavior.
+- **[Tree Props](props/treeprops.mdx)** - Share contextual data (like themes or loggers) across your component tree without manually passing them through every level.
+- **[Common Props](props/common-props.mdx)** - Apply built-in styling and behavior (onClick, background, margin, etc.) to any component using the Style API.
+
+## Layout
+
+To control the size, position, and arrangement of components on screen, you use Layout styles. See **[Layout & Common Props](layout/layout-intro.mdx)**.
+
+- **[Sizing & Spacing](layout/core-styles.mdx)** - Set component dimensions (width, height), spacing (margin), and internal padding with core layout properties.
+- **[Flexible Layouts](layout/flexbox-styles.mdx)** - Create flexible, responsive layouts using Yoga's flexbox layout system. Control how components flex, position themselves, and align within their parent containers.
+- **[Layout Container Control](layout/flexbox-yoga.mdx)** - Control how child components are distributed and aligned within their parent container using `justifyContent` and `alignItems`.
+
+## State
+
+To make components interactive and dynamic, you use State to track data across renders and use Hooks to manage this behaviour alongside side effects and lifecycle. See **[Introduction to Hooks](state-and-side-effects/hooks-intro.mdx)**.
+
+## Interactions
+
+To respond to user actions and visibility changes, you handle Interactions with event callbacks.
+
+- **[Touch](/docs/layout/view-styles#onclick)** - Handle user input with click, long-click, and touch event handlers.
+- **[Visibility](/docs/layout/visibility-styles)** - Track when components become visible, focused, or gain full impressions on screen.
+
+## Hooks
+
+Hooks are functions that let you "hook into" component lifecycle and features from within your components. They enable you to reuse stateful logic between components without changing your component hierarchy. Litho implements state and side effects using hooks, allowing you to add state management, perform side effects, cache values, and access other Litho features in a clean and composable way. See **[Introduction to Hooks](state-and-side-effects/hooks-intro.mdx)** for more details on available hooks and how to use them.

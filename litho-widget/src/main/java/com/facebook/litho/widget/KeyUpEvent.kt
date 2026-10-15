@@ -24,7 +24,10 @@ import com.facebook.litho.annotations.Event
  * event, return true. If you want to allow the event to be handled by the next receiver, return
  * false.
  */
-@Event(returnType = Boolean::class)
+// Uses explicit Java class reference (java.lang.CharSequence::class) instead of Kotlin's to ensure
+// kapt generates correct Java stubs. Kotlin type references like cause kapt to generate invalid
+// annotations (kotlin.CharSequence.class) that the Litho annotation processor cannot handle.
+@Event(returnType = java.lang.Boolean::class)
 class KeyUpEvent {
   @JvmField var keyCode: Int = 0
   lateinit var keyEvent: KeyEvent

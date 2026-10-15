@@ -18,7 +18,6 @@ package com.facebook.litho.widget
 
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentTreeDebugEventListener
-import com.facebook.litho.ComponentsLogger
 import com.facebook.litho.EventHandler
 import com.facebook.litho.RenderCompleteEvent
 import com.facebook.litho.viewcompat.ViewBinder
@@ -131,16 +130,8 @@ abstract class BaseRenderInfo protected constructor(builder: Builder<*>) : Rende
      *   [ComponentRenderInfo.create], otherwise it will throw [UnsupportedOperationException].
      */
     get() {
-      // TODO(T28620590): Support RenderCompleteEvent handler for ViewRenderInfo
       throw UnsupportedOperationException()
     }
-
-  override val componentsLogger: ComponentsLogger?
-    /**
-     * @return Optional [ComponentsLogger] if [RenderInfo] was created through
-     *   [ComponentRenderInfo.create], null otherwise
-     */
-    get() = null
 
   override val debugEventListener: ComponentTreeDebugEventListener?
     /**

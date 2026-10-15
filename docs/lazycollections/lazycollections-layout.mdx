@@ -1,0 +1,220 @@
+---
+id: lazycollections-layout
+title: Layouts, Spacing & Styling
+keywords:
+    - lazy list layout
+    - grid layout
+    - horizontal list
+    - sticky headers
+    - item spacing
+    - linear spacing
+    - height constraint
+    - width constraint
+    - LazyList crash
+    - nested scrolling
+---
+
+:::note
+Within Litho, lists are implemented using the Lazy Collection API.
+:::
+
+## Layouts
+
+Lazy Collections are available as follows:
+
+* [LazyList](https://github.com/facebook/litho/blob/master/litho-widget/src/main/kotlin/com/facebook/litho/widget/collection/LazyList.kt) - arranged as a sequential list.
+* [LazyGrid](https://github.com/facebook/litho/blob/master/litho-widget/src/main/kotlin/com/facebook/litho/widget/collection/LazyGrid.kt) - arranged as a grid with the number of columns specified by the `columns` parameter.
+* [LazyStaggeredGrid](https://github.com/facebook/litho/blob/master/litho-widget/src/main/kotlin/com/facebook/litho/widget/collection/LazyStaggeredGrid.kt) - arranged into columns where children are inserted into the first column that has space.
+
+## Horizontal lists
+
+To make a Lazy Collection horizontal, set the parameter `orientation = RecyclerView.HORIZONTAL`. By default, it's necessary to specify a height, such as `style = Style.height(100.dp)`, as follows:
+
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/collection/LayoutAndStyling.kt start=start_fixed_height_hscroll_example end=end_fixed_height_hscroll_example
+```
+
+### Defining height behavior
+
+The height behavior of a horizontal list is determined by the `crossAxisWrapMode` parameter.
+
+Possible values are:
+
+* `NoWrap` (**default**) - by default, a horizontal list requires a height to provided via the `style` parameter, either as an explicit height (Style.height()) or as layout constraints (such as Style.flex()).
+* `MatchFirstChild` - the horizontal scroll height will be tied to the height of the first child.
+* `Dynamic` - the horizontal scroll height will match the tallest item in the list.
+
+:::caution
+`CrossAxisWrapMode.Dynamic` requires measuring all the components in the list. This is inefficient and should be avoided if possible.
+:::
+
+## Spacing
+
+To add spacing around and between items, use `LinearSpacing`. This will create an `ItemDecorator` that will be applied to the underlying `RecyclerView`. It automatically takes care of edge cases including equality checks (to avoid [unnecessary layouts](lazycollections-working-with-updates.mdx#avoiding-unnecessary-layouts)), orientation, and layout direction handling:
+
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/collection/LayoutAndStyling.kt start=start_linear_spacing_example end=end_linear_spacing_example
+```
+
+## Sticky headers
+
+To make a child 'sticky', specify the parameter `isSticky = true`. This will cause the child to stick to the top of the Lazy Collection rather than being scrolled out of the viewport.
+
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/collection/LayoutAndStyling.kt start=start_sticky_header_example end=end_sticky_header_example
+```
+
+## Height and Width Constraints
+
+LazyList and LazyGrid require **bounded dimensions** in their scroll direction (main axis) to layout correctly.
+
+### Vertical LazyList/LazyGrid
+
+A **vertical** scrolling list requires **bounded height**:
+- Provide explicit height via `Style.height()`
+- Or use flex constraints like `Style.flex(grow = 1f)` in a height-bounded parent
+- Or use `mainAxisWrapContent = true` to size based on content
+
+Without bounded height, you'll get a runtime crash:
+> "LazyList/LazyGrid height constraint error: A vertical scrolling list requires bounded height..."
+
+### Horizontal LazyList/LazyGrid
+
+A **horizontal** scrolling list requires **bounded width**:
+- Provide explicit width via `Style.width()`
+- Or use flex constraints in a width-bounded parent
+
+### Common Mistakes
+
+:::danger These patterns will crash at runtime
+
+**Vertical LazyList inside unbounded Column:**
+```kotlin
+// ❌ CRASH: Column has unbounded height, LazyList cannot measure
+Column {
+  child(LazyList { ... })
+}
+```
+
+**LazyList inside ScrollView or NestedScrollView:**
+```kotlin
+// ❌ CRASH: ScrollView doesn't constrain child height
+NestedScrollView {
+  LazyList { ... }
+}
+```
+
+**Vertical LazyGrid inside another vertical scrolling container (like Feed):**
+```kotlin
+// ❌ CRASH: Feed already scrolls vertically
+FeedItemComponent {
+  LazyGrid(columns = 2) { ... }
+}
+```
+
+:::
+
+### Correct Patterns
+
+:::tip Use these patterns instead
+
+**Explicit height:**
+```kotlin
+LazyList(style = Style.height(400.dp)) {
+  // children...
+}
+```
+
+**Flex in a height-bounded parent:**
+```kotlin
+Column(style = Style.height(600.dp)) {
+  child(Header())
+  child(LazyList(style = Style.flex(grow = 1f)) {
+    // children...
+  })
+  child(Footer())
+}
+```
+
+**Wrap to content height:**
+```kotlin
+LazyList(mainAxisWrapContent = true) {
+  // children...
+}
+```
+
+:::
+
+## When NOT to Use LazyList/LazyGrid
+
+Lazy Collections are optimized for **large, scrollable lists** where item recycling provides a performance benefit. However, they're not always the right choice.
+
+**Use `Column` + `Row` (wrapped in `VerticalScroll`/`HorizontalScroll` if needed) instead when:**
+
+| Scenario | Why |
+|----------|-----|
+| Fixed, small number of items (e.g., 2x2 grid) | No recycling benefit, simpler code |
+| Component is inside another scrolling container | Requires bounded height (explicit, flex, or `mainAxisWrapContent`) — consider if recycling is even needed |
+| Less than ~20 items total | Recycling overhead may exceed benefit |
+
+### Example: Fixed Grid Inside Feed
+
+```kotlin
+// ❌ WRONG: LazyGrid crashes inside Feed (vertical scroll inside vertical scroll)
+class FeedCard : KComponent() {
+  override fun ComponentScope.render(): Component {
+    return LazyGrid(columns = 2) {
+      child(id = 1, component = Item1())
+      child(id = 2, component = Item2())
+      child(id = 3, component = Item3())
+      child(id = 4, component = Item4())
+    }
+  }
+}
+
+// ✅ RIGHT: Use Column + Row for fixed grids
+class FeedCard : KComponent() {
+  override fun ComponentScope.render(): Component {
+    return Column {
+      child(Row {
+        child(Item1())
+        child(Item2())
+      })
+      child(Row {
+        child(Item3())
+        child(Item4())
+      })
+    }
+  }
+}
+```
+
+### Example: Scrollable List with Few Items
+
+When you have a small number of items that need to scroll, use `VerticalScroll` or `HorizontalScroll` instead of `LazyList`:
+
+```kotlin
+// ❌ WRONG: LazyList for small number of items adds unnecessary complexity
+LazyList {
+  child(id = 1, component = Item1())
+  child(id = 2, component = Item2())
+  child(id = 3, component = Item3())
+}
+
+// ✅ RIGHT: Use VerticalScroll + Column for small scrollable lists
+VerticalScroll {
+  Column {
+    child(Item1())
+    child(Item2())
+    child(Item3())
+  }
+}
+
+// ✅ RIGHT: Use HorizontalScroll + Row for small horizontal scrollable lists
+HorizontalScroll {
+  Row {
+    child(Item1())
+    child(Item2())
+    child(Item3())
+  }
+}
+```
+
+For more information on when to use `Column`/`Row` (with `VerticalScroll`/`HorizontalScroll`) vs Lazy Collections, see [Why not just use Column or Row?](lazycollections.mdx#why-not-just-use-column-or-row)

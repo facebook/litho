@@ -23,11 +23,8 @@ import com.facebook.litho.specmodels.processor.AbstractComponentsProcessor;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import javax.annotation.processing.SupportedSourceVersion;
-import javax.lang.model.SourceVersion;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
-@SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class ComponentsTestingProcessor extends AbstractComponentsProcessor {
 
   public ComponentsTestingProcessor() {

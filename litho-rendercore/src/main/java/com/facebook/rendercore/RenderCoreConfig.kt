@@ -24,14 +24,37 @@ object RenderCoreConfig {
    * <pre>IS_TESTING</pre>
    *
    * system property at startup but can be overridden at runtime.
+   *
+   * Note: we read via `System.getProperties().getProperty(...)` rather than
+   * `System.getProperty(...)` to avoid invoking `java.lang.System.checkKey`, which on certain
+   * OEM-modified libcore implementations (e.g. Samsung Android 8.1, SM-J710FQ) throws
+   * `IllegalArgumentException("key can't be empty")` even for non-empty caller literals.
+   * `Properties.getProperty` delegates to `Hashtable.get` and never invokes the vendor-patched
+   * validator. Reads the same backing `Properties` store, so semantics on AOSP and
+   * `System.setProperty` writes are unchanged.
    */
-  @JvmField var isEndToEndTestRun: Boolean = System.getProperty("IS_TESTING") != null
+  @JvmField
+  var isEndToEndTestRun: Boolean = System.getProperties().getProperty("IS_TESTING") != null
 
   /**
-   * Enables the global gap worker which will schedule gaps between mountable items in the same
-   * frame.
+   * When enabled, `IncrementalMountGapWorker.get` only resolves the display frame interval when a
+   * worker actually has to be constructed. Resolving it reads `Display.refreshRate`, which costs
+   * more than 1ms on some devices, so doing it on every call — including the ones that just return
+   * the already initialised global worker — can drop frames.
    */
-  @JvmField var useGlobalGapWorker: Boolean = true
+  @JvmField var computeGapWorkerFrameIntervalLazily: Boolean = false
+
+  /**
+   * When enabled, `IncrementalMountGapWorker` re-reads the display frame interval each frame
+   * instead of keeping the one captured when the process-wide worker was built. Requires API 30.
+   */
+  @JvmField var refreshGapWorkerFrameIntervalPerFrame: Boolean = false
+
+  /**
+   * When enabled, `IncrementalMountGapWorker` calls its single gap-worker extension directly
+   * instead of routing each item through `MountDelegate`'s extension fan-out.
+   */
+  @JvmField var useGapWorkerExtensionState: Boolean = false
 
   /**
    * Enabling this config will fix the issue that component matches host view size will never be
@@ -54,6 +77,50 @@ object RenderCoreConfig {
   /** Flag to re-use compatible TextLayouts in truncation scenarios. */
   @JvmField var useTruncationCaching: Boolean = false
 
-  /** Flag to enable isMounting assertion during unmount in MountState. */
-  @JvmField var isUnmountAllWhileMountingAssertionEnabled: Boolean = false
+  /**
+   * Master switch for debug-only tooling that is too costly to run in production. When enabled,
+   * RenderCore:
+   * - logs mount statistics ([MountState.mountStats]);
+   * - populates the debug descriptions on [BinderId]s; and
+   * - reads the debug-only [RenderUnit.debugKey] when building `IncrementalMountOutput`s. Some
+   *   RenderUnits compute this key by recursively rebuilding a string (e.g. Litho under structural
+   *   global keys), so reading it for every output is wasted work in prod, where the output's debug
+   *   key is unused.
+   *
+   * Defaults to debug builds; a host can enable it in internal release builds that surface debug
+   * tooling.
+   */
+  @JvmField var isDebugModeEnabled: Boolean = BuildConfig.DEBUG
+
+  /**
+   * When enabled, a binder that re-runs reports which dependency changed. Costs a `toString` per
+   * changed dependency.
+   *
+   * Defaults to debug builds. Assigned from [BuildConfig.DEBUG] rather than from
+   * [isDebugModeEnabled]: a property initialiser would snapshot that field before a host sets it,
+   * leaving this silently off wherever the two are turned on together.
+   */
+  @JvmField var collectBindReasons: Boolean = BuildConfig.DEBUG
+
+  /** Skip calling [View.setPadding] if the padding values have not changed. */
+  @JvmField var skipRedundantSetPadding: Boolean = true
+
+  /**
+   * When true, [MountContentPools.DefaultContentPool.maybePreallocateContent] will skip creating
+   * and pooling mount content ahead of time. When false (default), preallocation works normally.
+   */
+  @JvmField var disableDefaultPoolPreallocation: Boolean = false
+
+  /**
+   * Caches the reflected instance field list per class in
+   * [com.facebook.rendercore.utils.hasEquivalentFields].
+   *
+   * `Class.getDeclaredFields` clones the array and every `Field` in it on every call, so an
+   * uncached comparison allocates proportionally to the field count before it reads a value, and
+   * toggles accessibility on each field as it goes. When false, the field list is resolved per
+   * comparison, which is what shipped before the cache existed.
+   *
+   * Both arms return the same answer for every pair; this exists to measure the difference.
+   */
+  @JvmField var cacheEquivalenceFields: Boolean = false
 }

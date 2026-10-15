@@ -22,14 +22,15 @@ import android.view.View
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.LinearLayout
-import com.facebook.litho.Column
 import com.facebook.litho.Component
-import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.LithoView
 import com.facebook.litho.Style
 import com.facebook.litho.kotlin.widget.Text
+import com.facebook.litho.layout.flexbox.Column
+import com.facebook.litho.surface.getLithoView
+import com.facebook.litho.surface.setLithoContent
 import com.facebook.litho.visibility.onInvisible
 import com.facebook.litho.visibility.onVisible
 import com.facebook.samples.litho.NavigatableDemoActivity
@@ -44,11 +45,14 @@ class SetVisibilityActivity : NavigatableDemoActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
+    setLithoContent { VisibilityComponent() }
+
     val containerLayout = LinearLayout(this)
     containerLayout.orientation = LinearLayout.VERTICAL
     val actionButtons = createButtons()
     val parentContainer = FrameLayout(this)
-    val lithoView = setupLithoView(parentContainer)
+    val lithoView = getLithoView()
+    parentContainer.addView(lithoView)
     setupButton1(actionButtons[0], lithoView)
     setupButton2(actionButtons[1], parentContainer)
 
@@ -64,12 +68,6 @@ class SetVisibilityActivity : NavigatableDemoActivity() {
     val button1 = Button(this)
     val button2 = Button(this)
     return listOf(button1, button2)
-  }
-
-  private fun setupLithoView(parent: FrameLayout): LithoView {
-    val lithoView = LithoView.create(ComponentContext(this), VisibilityComponent())
-    parent.addView(lithoView)
-    return lithoView
   }
 
   private fun setupButton1(button: Button, lithoView: LithoView) {
@@ -96,9 +94,10 @@ class SetVisibilityActivity : NavigatableDemoActivity() {
       return Column(
           style =
               Style.onVisible { Log.d("VisibilityComponentLog", "onVisible") }
-                  .onInvisible { Log.d("VisibilityComponentLog", "onInvisible") }) {
-            child(Text("Hello World"))
-          }
+                  .onInvisible { Log.d("VisibilityComponentLog", "onInvisible") },
+      ) {
+        child(Text("Hello World"))
+      }
     }
   }
 }

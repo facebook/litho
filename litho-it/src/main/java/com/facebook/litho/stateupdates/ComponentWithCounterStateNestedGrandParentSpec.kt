@@ -16,7 +16,7 @@
 
 package com.facebook.litho.stateupdates
 
-import com.facebook.litho.Column
+import com.facebook.litho.Column as ColumnBuilder
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.SizeSpec
@@ -32,13 +32,14 @@ object ComponentWithCounterStateNestedGrandParentSpec {
       c: ComponentContext,
       widthSpec: Int,
       heightSpec: Int,
-      @Prop(optional = true) caller: ComponentWithCounterStateLayoutSpec.Caller?
+      @Prop(optional = true) caller: ComponentWithCounterStateLayoutSpec.Caller?,
   ): Component =
-      Column.create(c)
+      ColumnBuilder.create(c)
           .child(
               ComponentWithCounterStateNestedParent.create(c)
                   .caller(caller)
                   .widthPx(SizeSpec.getSize(widthSpec))
-                  .heightPx(SizeSpec.getSize(heightSpec)))
+                  .heightPx(SizeSpec.getSize(heightSpec)),
+          )
           .build()
 }

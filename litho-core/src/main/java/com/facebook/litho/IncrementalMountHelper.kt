@@ -20,6 +20,7 @@ import androidx.core.view.ViewCompat
 import androidx.viewpager.widget.ViewPager
 import androidx.viewpager.widget.ViewPager.SimpleOnPageChangeListener
 import androidx.viewpager2.widget.ViewPager2
+import com.facebook.rendercore.visibility.VisibilityChangeReason
 import java.lang.ref.WeakReference
 import java.util.ArrayList
 import java.util.ConcurrentModificationException
@@ -32,18 +33,11 @@ import java.util.ConcurrentModificationException
 internal class IncrementalMountHelper(private val componentTree: ComponentTree) {
 
   private val viewPagerListeners: MutableList<ViewPagerListener> = ArrayList(2)
-  private var isViewPager2Supported: Boolean = false
-  private var viewPager2Listeners: MutableList<ViewPager2Listener>? = null
+  private val viewPager2Listeners: MutableList<ViewPager2Listener> = ArrayList(2)
 
   fun onAttach(lithoView: LithoView) {
     if (!componentTree.isIncrementalMountEnabled) {
       return
-    }
-    if (lithoView.configuration?.enableIMHelperForViewPager2 == true) {
-      isViewPager2Supported = true
-      if (viewPager2Listeners == null) {
-        viewPager2Listeners = ArrayList(2)
-      }
     }
 
     // ViewPager does not give its child views any callbacks when it moves content onto the screen,
@@ -68,16 +62,11 @@ internal class IncrementalMountHelper(private val componentTree: ComponentTree) 
           }
         }
         viewPagerListeners.add(viewPagerListener)
-      } else if (isViewPager2Supported && (viewParent is ViewPager2)) {
+      } else if (viewParent is ViewPager2) {
         val viewPager2 = viewParent
         val viewPager2Listener = ViewPager2Listener(componentTree, viewPager2)
-
-        try {
-          viewPager2.registerOnPageChangeCallback(viewPager2Listener)
-        } catch (e: ConcurrentModificationException) {
-          viewPager2.postOnAnimation { viewPager2.registerOnPageChangeCallback(viewPager2Listener) }
-        }
-        viewPager2Listeners?.add(viewPager2Listener)
+        viewPager2.postOnAnimation { viewPager2.registerOnPageChangeCallback(viewPager2Listener) }
+        viewPager2Listeners.add(viewPager2Listener)
       }
       viewParent = viewParent.parent
     }
@@ -88,14 +77,10 @@ internal class IncrementalMountHelper(private val componentTree: ComponentTree) 
       listener.release()
     }
     viewPagerListeners.clear()
-    if (isViewPager2Supported) {
-      viewPager2Listeners?.let { listeners ->
-        for (listener in listeners) {
-          listener.release()
-        }
-        listeners.clear()
-      }
+    for (listener in viewPager2Listeners) {
+      listener.release()
     }
+    viewPager2Listeners.clear()
   }
 
   private class ViewPagerListener(componentTree: ComponentTree, viewPager: ViewPager) :
@@ -105,7 +90,9 @@ internal class IncrementalMountHelper(private val componentTree: ComponentTree) 
     private val viewPager: WeakReference<ViewPager> = WeakReference(viewPager)
 
     override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
-      componentTree.get()?.lithoView?.notifyVisibleBoundsChanged()
+      componentTree.get()?.lithoView?.let { view ->
+        view.notifyVisibleBoundsChanged(VisibilityChangeReason.SCROLL)
+      }
     }
 
     fun release() {
@@ -124,7 +111,9 @@ internal class IncrementalMountHelper(private val componentTree: ComponentTree) 
     private val viewPager2: WeakReference<ViewPager2> = WeakReference(viewPager2)
 
     override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
-      componentTree.get()?.lithoView?.notifyVisibleBoundsChanged()
+      componentTree.get()?.lithoView?.let { view ->
+        view.notifyVisibleBoundsChanged(VisibilityChangeReason.SCROLL)
+      }
     }
 
     fun release() {

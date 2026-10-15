@@ -1,0 +1,246 @@
+---
+id: style-transitions
+title: Style Transitions
+keywords:
+    - animations
+    - transitions
+    - style transitions
+    - diff-based animations
+    - bounds animation
+    - reflow
+    - AnimationSpec
+    - spring
+    - tween
+---
+
+## Overview
+
+`Style.transition {}` is an experimental, diff-based animation API for host
+properties. Attach it to the component style, declare which properties should
+animate, and Litho infers the animation endpoints from the previous and next
+layout states.
+
+```kotlin
+Row(
+    style =
+        Style.width(if (expanded) 200.dp else 120.dp)
+            .alpha(if (enabled) 1f else 0.4f)
+            .transition {
+              bounds = spring()
+              alpha = tween(duration = 120.ms)
+            }
+)
+```
+
+When `expanded` or `enabled` changes, Litho starts the relevant animations from
+the previous mounted value or in-flight animated value and retargets them to the
+new mounted value. You do not provide explicit `from` or `to` values.
+
+## When to use it
+
+Use `Style.transition {}` when the final layout should be applied immediately
+and the mounted host should visually animate to that final state. This is a
+good fit for moving, resizing, fading, scaling, or rotating a host across normal
+state updates.
+
+When siblings should progressively reflow while a host resizes, use
+[`bounds(spec, reflow = true)`](#reflowing-bounds) instead of the default
+mount-space `bounds`.
+
+Use [state-based animations](state-based-animations.mdx) when you need to own
+the animated value yourself — for example, driving `Style.height(...)` from
+`useAnimatedDimen` so the same value can also be read elsewhere in `render`.
+
+## Supported properties
+
+| Property | What it animates |
+|----------|------------------|
+| `bounds` | Mount-space `x`, `y`, `width`, and `height` |
+| `alpha` | Host opacity |
+| `scale` | Uniform host `scaleX` and `scaleY` |
+| `rotation` | Host Z-axis rotation in degrees |
+| `rotationX` | Host X-axis rotation in degrees |
+| `rotationY` | Host Y-axis rotation in degrees |
+
+All properties accept an `AnimationSpec<Float>` such as `spring()` or
+`tween(...)`.
+
+`bounds` also has a member-function form, `bounds(spec, reflow = ...)`, which
+can opt the size change into a real per-frame relayout. See
+[Reflowing bounds](#reflowing-bounds).
+
+## Bounds animations
+
+`bounds` is a mount-space animation. Litho computes the next Yoga layout
+normally, mounts the tree in its final structural state, and then animates the
+host's visual `x`, `y`, `width`, and `height` values.
+
+By default this means sibling layout does not re-run every frame. Siblings are
+already in their final layout while the transitioned host visually moves or
+resizes.
+
+```kotlin
+Row(
+    justifyContent = if (expanded) YogaJustify.FLEX_END else YogaJustify.FLEX_START,
+    style = Style.width(240.dp).height(80.dp),
+) {
+  child(
+      Row(
+          style =
+              Style.width(if (expanded) 96.dp else 48.dp)
+                  .height(48.dp)
+                  .transition { bounds = spring() }
+      )
+  )
+}
+```
+
+### Reflowing bounds
+
+A mount-space `bounds` animation does not change layout, so siblings sit at
+their final positions while the host animates. When the surrounding layout
+should follow the host frame by frame instead, use the `bounds(...)` member
+function with `reflow = true`:
+
+```kotlin
+Column {
+  child(
+      Row(
+          style =
+              Style.height(if (expanded) 240.dp else 64.dp)
+                  .transition { bounds(spring(), reflow = true) }
+      )
+  )
+  // Moves progressively as the row above grows, instead of snapping.
+  child(Text(text = "Follows the resize"))
+}
+```
+
+With `reflow = true`, Litho re-runs layout on each animation frame using the
+interpolated size, so siblings and nested content resolve against it. This also
+covers hosts with no declared size, whose natural size comes from their content.
+
+Because it re-runs layout, `reflow = true` costs more than the default. Reach
+for it where the layout response is the point of the animation, and keep the
+default where only the host's own bounds need to move.
+
+`reflow = false` is equivalent to the `bounds` property and stays visual-only.
+
+Reflow requires state read tracking
+(`ComponentsConfiguration.enableStateReadTracking`). Declaring `reflow = true`
+without it throws at runtime rather than silently falling back to a visual
+animation.
+
+## Retargeting
+
+If a transitioned property changes while an animation is still running, Litho
+starts the next animation from the current in-flight value and retargets it to
+the latest mounted value. Springs preserve velocity during retargeting, so
+rapid state changes can still feel continuous.
+
+```kotlin
+Row(
+    style =
+        Style.width(if (selected) 180.dp else 120.dp)
+            .scale(if (pressed) 0.96f else 1f)
+            .transition {
+              bounds = spring(dampingRatio = DampingRatio.MediumBouncy)
+              scale = spring(stiffness = Stiffness.High)
+            }
+)
+```
+
+## Identity
+
+`Style.transition {}` is keyless in its public API. Litho uses the structural
+identity of the host across renders to match previous and next transition
+targets.
+
+When a logical item needs stable identity across structural movement, provide
+identity through normal Litho APIs such as `key(...)`:
+
+```kotlin
+items.forEach { item ->
+  child(
+      key(item.id) {
+        Row(
+            style =
+                Style.width(if (item.selected) 160.dp else 120.dp)
+                    .transition { bounds = spring() }
+        )
+      }
+  )
+}
+```
+
+Do not combine `Style.transition {}` with legacy `Style.transitionKey(...)` on
+the same component. Legacy `transitionKey` and `useTransition` should remain on
+separate hosts.
+
+### Conditional rendering
+
+Structural identity follows the position of a host in the Litho tree. This is
+convenient for simple conditionals where the same host remains in the same
+place, but it is not semantic list identity. If an item can move, reorder, or
+cross a component boundary, put the identity on the component with `key(...)`.
+
+## Reusable motion
+
+Reusable style transitions are ordinary reusable `Style` values or style
+extension helpers.
+
+```kotlin
+private fun Style.cardMotion(): Style =
+    transition {
+      bounds = spring()
+      alpha = tween(duration = 140.ms)
+      scale = spring()
+    }
+
+Row(
+    style =
+        Style.width(if (selected) 180.dp else 140.dp)
+            .alpha(if (selected) 1f else 0.72f)
+            .scale(if (selected) 1f else 0.96f)
+            .cardMotion()
+)
+```
+
+You can also compose reusable `Style` values with `+`:
+
+```kotlin
+val cardMotion =
+    Style.transition {
+      bounds = spring()
+      alpha = tween(duration = 140.ms)
+    }
+
+Row(style = Style.backgroundColor(Color.RED) + cardMotion)
+```
+
+## Composition
+
+Multiple `Style.transition {}` entries on the same host compose. If two entries
+declare the same property, the later declaration wins.
+
+```kotlin
+Row(
+    style =
+        Style.transition { alpha = spring() }
+            .transition {
+              alpha = tween(duration = 120.ms)
+              scale = spring()
+            }
+)
+```
+
+In this example, `alpha` uses the `tween(...)` spec and `scale` uses the
+`spring()` spec.
+
+## Current limitations
+
+`Style.transition {}` currently supports change animations only. Enter and exit
+transitions, stagger, sequence, delays, translation, elevation, background
+color, and custom properties are not part of this API's surface. Continuous
+looping animations (shimmer, pulse, spinners) have their own API —
+[`useInfiniteAnimationGroup`](state-based-animations.mdx#infinite-animations).

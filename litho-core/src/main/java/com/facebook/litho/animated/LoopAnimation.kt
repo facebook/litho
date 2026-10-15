@@ -22,7 +22,7 @@ import com.facebook.infer.annotation.ThreadConfined
  * Creates animation that will run in a loop [repeatCount] times when [LoopAnimation.start] is
  * triggered
  */
-class LoopAnimation(private var repeatCount: Int, private val animation: AnimatedAnimation) :
+class LoopAnimation(private val repeatCount: Int, private val animation: AnimatedAnimation) :
     AnimatedAnimation {
   private val loopAnimatorListeners = mutableListOf<AnimationFinishListener>()
   private var currentLoop = 0
@@ -39,7 +39,8 @@ class LoopAnimation(private var repeatCount: Int, private val animation: Animate
             }
             loopOrEndAnimation(cancelled)
           }
-        })
+        },
+    )
   }
 
   @ThreadConfined(ThreadConfined.UI) override fun isActive(): Boolean = _isActive

@@ -16,6 +16,8 @@
 
 package com.facebook.litho.specmodels.processor;
 
+import static java.util.Objects.requireNonNull;
+
 import com.facebook.litho.annotations.FromBoundsDefined;
 import com.facebook.litho.annotations.FromMeasure;
 import com.facebook.litho.annotations.FromMeasureBaseline;
@@ -95,6 +97,7 @@ public class MountSpecModelFactory implements SpecModelFactory<MountSpecModel> {
 
   /** Create a {@link MountSpecModel} from the given {@link TypeElement}. */
   @Override
+  @SuppressWarnings("deprecation")
   public MountSpecModel create(
       Elements elements,
       Types types,
@@ -102,9 +105,10 @@ public class MountSpecModelFactory implements SpecModelFactory<MountSpecModel> {
       Messager messager,
       EnumSet<RunMode> runMode,
       @Nullable InterStageStore interStageStore) {
+    final MountSpec mountSpec = requireNonNull(element.getAnnotation(MountSpec.class));
     return new MountSpecModel(
         element.getQualifiedName().toString(),
-        element.getAnnotation(MountSpec.class).value(),
+        mountSpec.value(),
         DelegateMethodExtractor.getDelegateMethods(
             element,
             DELEGATE_METHOD_ANNOTATIONS,
@@ -159,11 +163,12 @@ public class MountSpecModelFactory implements SpecModelFactory<MountSpecModel> {
         AnnotationExtractor.extractValidAnnotations(element),
         TagExtractor.extractTagsFromSpecClass(types, element, runMode),
         JavadocExtractor.getPropJavadocs(elements, element),
-        element.getAnnotation(MountSpec.class).isPublic(),
-        element.getAnnotation(MountSpec.class).isPureRender(),
-        element.getAnnotation(MountSpec.class).hasChildLithoViews(),
-        element.getAnnotation(MountSpec.class).poolSize(),
-        element.getAnnotation(MountSpec.class).canPreallocate(),
+        mountSpec.isPublic(),
+        mountSpec.isPureRender(),
+        mountSpec.hasIntrinsicSize(),
+        mountSpec.hasChildLithoViews(),
+        mountSpec.poolSize(),
+        mountSpec.canPreallocate(),
         getMountType(elements, element, runMode),
         SpecElementTypeDeterminator.determine(element),
         element,

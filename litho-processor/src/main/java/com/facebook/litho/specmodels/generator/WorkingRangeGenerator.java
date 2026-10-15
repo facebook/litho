@@ -140,7 +140,7 @@ public class WorkingRangeGenerator {
           "interStageProps");
     }
 
-    final String sourceDelegateAccessor = SpecModelUtils.getSpecAccessor(specModel);
+    final String sourceDelegateAccessor = SpecModelUtils.getSpecAccessor(specModel, methodModel);
     delegation.add("$L.$L(\n", sourceDelegateAccessor, methodModel.name);
     delegation.indent();
 
@@ -199,9 +199,7 @@ public class WorkingRangeGenerator {
         .addStatement("return")
         .endControlFlow()
         .addStatement("$T component = c.getComponentScope()", ClassNames.COMPONENT)
-        .addStatement(
-            "registerWorkingRange(c, \"$L\", workingRange, component, c.getGlobalKey())",
-            nameInAnnotation);
+        .addStatement("registerWorkingRange(c, \"$L\", workingRange, component)", nameInAnnotation);
 
     return registerMethod.build();
   }

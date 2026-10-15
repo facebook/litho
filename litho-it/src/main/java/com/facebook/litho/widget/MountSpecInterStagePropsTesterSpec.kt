@@ -51,7 +51,7 @@ object MountSpecInterStagePropsTesterSpec {
   fun onCreateInitialState(
       context: ComponentContext,
       @Prop lifecycleTracker: LifecycleTracker,
-      addOnUnbindLifecycleStep: StateValue<AtomicReference<Boolean>>
+      addOnUnbindLifecycleStep: StateValue<AtomicReference<Boolean>>,
   ) {
     lifecycleTracker.addStep(LifecycleStep.ON_CREATE_INITIAL_STATE)
     addOnUnbindLifecycleStep.set(AtomicReference(null))
@@ -62,7 +62,7 @@ object MountSpecInterStagePropsTesterSpec {
   fun onPrepare(
       c: ComponentContext,
       @Prop lifecycleTracker: LifecycleTracker,
-      addOnBindLifecycleStep: Output<Boolean>
+      addOnBindLifecycleStep: Output<Boolean>,
   ) {
     addOnBindLifecycleStep.set(true)
     lifecycleTracker.addStep(LifecycleStep.ON_PREPARE)
@@ -77,7 +77,7 @@ object MountSpecInterStagePropsTesterSpec {
       heightSpec: Int,
       size: Size,
       @Prop lifecycleTracker: LifecycleTracker,
-      addOnMountLifecycleStep: Output<Boolean>
+      addOnMountLifecycleStep: Output<Boolean>,
   ) {
     size.width = 600
     size.height = 800
@@ -92,7 +92,7 @@ object MountSpecInterStagePropsTesterSpec {
       context: ComponentContext,
       view: View?,
       @Prop lifecycleTracker: LifecycleTracker,
-      @FromMeasure addOnMountLifecycleStep: Boolean
+      @FromMeasure addOnMountLifecycleStep: Boolean,
   ) {
     if (addOnMountLifecycleStep) {
       lifecycleTracker.addStep(LifecycleStep.ON_MOUNT)
@@ -110,7 +110,7 @@ object MountSpecInterStagePropsTesterSpec {
       @Prop lifecycleTracker: LifecycleTracker,
       @FromPrepare addOnBindLifecycleStep: Boolean,
       @State addOnUnbindLifecycleStep: AtomicReference<Boolean>,
-      @FromMeasure addOnMountLifecycleStep: Boolean
+      @FromMeasure addOnMountLifecycleStep: Boolean,
   ) {
     if (addOnBindLifecycleStep) {
       lifecycleTracker.addStep(LifecycleStep.ON_BIND)
@@ -125,7 +125,7 @@ object MountSpecInterStagePropsTesterSpec {
       c: ComponentContext,
       view: View,
       @Prop lifecycleTracker: LifecycleTracker,
-      @State addOnUnbindLifecycleStep: AtomicReference<Boolean>
+      @State addOnUnbindLifecycleStep: AtomicReference<Boolean>,
   ) {
     if (addOnUnbindLifecycleStep.get()) {
       lifecycleTracker.addStep(LifecycleStep.ON_UNBIND)
@@ -138,7 +138,7 @@ object MountSpecInterStagePropsTesterSpec {
       c: ComponentContext,
       layout: ComponentLayout,
       @Prop lifecycleTracker: LifecycleTracker,
-      addOnUnMountLifecycleStep: Output<Boolean>
+      addOnUnMountLifecycleStep: Output<Boolean>,
   ) {
     addOnUnMountLifecycleStep.set(true)
   }
@@ -150,7 +150,7 @@ object MountSpecInterStagePropsTesterSpec {
       context: ComponentContext,
       view: View,
       @Prop lifecycleTracker: LifecycleTracker,
-      @FromBoundsDefined addOnUnMountLifecycleStep: Boolean
+      @FromBoundsDefined addOnUnMountLifecycleStep: Boolean,
   ) {
     if (addOnUnMountLifecycleStep) {
       lifecycleTracker.addStep(LifecycleStep.ON_UNMOUNT)

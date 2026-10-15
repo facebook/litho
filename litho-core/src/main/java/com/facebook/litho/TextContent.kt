@@ -55,6 +55,31 @@ interface TextContent {
     val linesCount: Int
 
     val spannables: List<SpannableItem>
+
+    /**
+     * Whether this item's content is truncated — i.e. the text actually drawn ([displayedText])
+     * differs from the complete text ([fullText]). Covers a standard `maxLines` + `ellipsize`
+     * truncation and a custom ellipsis (e.g. "… See more"), including the framework bug that
+     * re-ellipsizes a custom ellipsis.
+     */
+    val isTruncated: Boolean
+
+    /**
+     * The complete text the component was given, before any truncation. For a standard ellipsize
+     * the drawn text keeps the full string (the ellipsis is applied only at draw time); for a
+     * custom ellipsis the framework pre-truncates and bakes the ellipsis into the drawn text, so
+     * [fullText] is the only place the original text survives.
+     */
+    val fullText: CharSequence
+
+    /**
+     * The text actually drawn on screen. For a standard ellipsize the ellipsized run is replaced
+     * with the ellipsis glyph ("…"), reconstructed from the layout's per-line ellipsis metadata
+     * (`getEllipsisStart`/`getEllipsisCount`) — exactly the substitution the platform makes when
+     * drawing the line. For a custom ellipsis it is the pre-truncated text with the custom ellipsis
+     * already baked in. Equals [fullText] when nothing is truncated.
+     */
+    val displayedText: CharSequence
   }
 
   interface SpannableItem {

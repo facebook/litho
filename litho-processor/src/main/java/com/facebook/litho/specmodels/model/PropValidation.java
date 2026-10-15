@@ -223,27 +223,28 @@ public class PropValidation {
               "visibleHandler",
               ParameterizedTypeName.get(
                   ClassName.bestGuess("com.facebook.litho.EventHandler"),
-                  ClassName.bestGuess("com.facebook.litho.VisibleEvent"))),
+                  ClassName.bestGuess("com.facebook.rendercore.visibility.VisibleEvent"))),
           new CommonPropModel(
               "focusedHandler",
               ParameterizedTypeName.get(
                   ClassName.bestGuess("com.facebook.litho.EventHandler"),
-                  ClassName.bestGuess("com.facebook.litho.FocusedVisibleEvent"))),
+                  ClassName.bestGuess("com.facebook.rendercore.visibility.FocusedVisibleEvent"))),
           new CommonPropModel(
               "unfocusedHandler",
               ParameterizedTypeName.get(
                   ClassName.bestGuess("com.facebook.litho.EventHandler"),
-                  ClassName.bestGuess("com.facebook.litho.UnfocusedVisibleEvent"))),
+                  ClassName.bestGuess("com.facebook.rendercore.visibility.UnfocusedVisibleEvent"))),
           new CommonPropModel(
               "fullImpressionHandler",
               ParameterizedTypeName.get(
                   ClassName.bestGuess("com.facebook.litho.EventHandler"),
-                  ClassName.bestGuess("com.facebook.litho.FullImpressionVisibleEvent"))),
+                  ClassName.bestGuess(
+                      "com.facebook.rendercore.visibility.FullImpressionVisibleEvent"))),
           new CommonPropModel(
               "invisibleHandler",
               ParameterizedTypeName.get(
                   ClassName.bestGuess("com.facebook.litho.EventHandler"),
-                  ClassName.bestGuess("com.facebook.litho.InvisibleEvent"))),
+                  ClassName.bestGuess("com.facebook.rendercore.visibility.InvisibleEvent"))),
           new CommonPropModel("contentDescription", ClassName.bestGuess("java.lang.CharSequence")),
           new CommonPropModel("accessibilityHeading", TypeName.BOOLEAN),
           new CommonPropModel("viewTag", TypeName.OBJECT),

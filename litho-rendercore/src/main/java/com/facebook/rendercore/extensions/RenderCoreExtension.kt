@@ -25,7 +25,7 @@ import com.facebook.rendercore.MountDelegate
 import com.facebook.rendercore.MountDelegateTarget
 import com.facebook.rendercore.RenderCoreExtensionHost
 import com.facebook.rendercore.RenderCoreSystrace
-import com.facebook.rendercore.Systracer
+import com.meta.systrace.Systracer
 import java.util.ArrayDeque
 
 /**
@@ -71,7 +71,7 @@ open class RenderCoreExtension<Input, State> {
     fun beforeMount(
         host: Host,
         mountDelegate: MountDelegate?,
-        results: List<Pair<RenderCoreExtension<*, *>, Any>>?
+        results: List<Pair<RenderCoreExtension<*, *>, Any>>?,
     ) {
       if (mountDelegate != null && results != null) {
         val visibleRect = Rect()
@@ -84,10 +84,14 @@ open class RenderCoreExtension<Input, State> {
      * Calls [MountExtension.afterMount] for each [RenderCoreExtension] that has a mount phase.
      *
      * @param mountDelegate The [MountDelegate].
+     * @param reason The visibility change reason to propagate to visibility-aware extensions.
      */
     @JvmStatic
-    fun afterMount(mountDelegate: MountDelegate?) {
-      mountDelegate?.afterMount()
+    fun afterMount(
+        mountDelegate: MountDelegate?,
+        reason: VisibilityChangeReason,
+    ) {
+      mountDelegate?.afterMount(reason)
     }
 
     /**
@@ -97,12 +101,16 @@ open class RenderCoreExtension<Input, State> {
      * @param host The [Host] of the extensions
      */
     @JvmStatic
-    fun notifyVisibleBoundsChanged(target: MountDelegateTarget, host: Host) {
+    fun notifyVisibleBoundsChanged(
+        target: MountDelegateTarget,
+        host: Host,
+        reason: VisibilityChangeReason,
+    ) {
       val delegate = target.getMountDelegate()
       if (delegate != null) {
         val rect = Rect()
         host.getLocalVisibleRect(rect)
-        delegate.notifyVisibleBoundsChanged(rect)
+        delegate.notifyVisibleBoundsChanged(rect, reason)
       }
     }
 
@@ -122,7 +130,7 @@ open class RenderCoreExtension<Input, State> {
     @JvmStatic
     fun shouldUpdate(
         current: List<Pair<RenderCoreExtension<*, *>, Any>>?,
-        next: List<Pair<RenderCoreExtension<*, *>, Any>>?
+        next: List<Pair<RenderCoreExtension<*, *>, Any>>?,
     ): Boolean {
       if (current === next) {
         return false
@@ -143,7 +151,11 @@ open class RenderCoreExtension<Input, State> {
 
     @JvmStatic
     @JvmOverloads
-    fun recursivelyNotifyVisibleBoundsChanged(content: Any?, tracer: Systracer? = null) {
+    fun recursivelyNotifyVisibleBoundsChanged(
+        content: Any?,
+        tracer: Systracer? = null,
+        reason: VisibilityChangeReason,
+    ) {
       val systracer = tracer ?: RenderCoreSystrace.getInstance()
       systracer.beginSection("recursivelyNotifyVisibleBoundsChanged")
 
@@ -154,7 +166,7 @@ open class RenderCoreExtension<Input, State> {
         while (!contentStack.isEmpty()) {
           val currentContent = contentStack.pop()
           if (currentContent is RenderCoreExtensionHost) {
-            currentContent.notifyVisibleBoundsChanged()
+            currentContent.notifyVisibleBoundsChanged(reason)
           } else if (currentContent is ViewGroup) {
             for (i in currentContent.childCount - 1 downTo 0) {
               contentStack.push(currentContent.getChildAt(i))

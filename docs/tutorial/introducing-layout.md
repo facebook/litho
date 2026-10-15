@@ -4,13 +4,13 @@ title: Introducing Layout
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-In this section of the tutorial, you'll become familiar with building layouts using [Flexbox](../kotlin/flexbox-containers.mdx) in Litho for an Instagram post component.
+In this section of the tutorial, you'll become familiar with building layouts using [Flexbox](../migrating-to-kcomponents/kotlin-flexbox-containers.mdx) in Litho for an Instagram post component.
 
 ## Yoga and Flexbox
 
 To **measure** and **layout** on-screen components, Litho uses the [Yoga](https://yogalayout.dev/) library, which is an implementation of [Flexbox](https://www.w3.org/TR/css-flexbox-1/).
 
-To learn more about Flexbox, see the [Layout System with Flexbox](../mainconcepts/flexbox-yoga.mdx) page in the 'Main Concepts' section.
+To learn more about Flexbox, see the [Layout System with Flexbox](/docs/layout/flexbox-yoga) page.
 
 ## Preparatory data model classes
 
@@ -54,4 +54,4 @@ With the Flexbox style applied, your component should look like the following im
 
 In the next section of the tutorial, [Adding State](adding-state.md), you'll learn about 'useState', one of Litho's 'hooks'.
 
-For more information, see [Layout System with Flexbox](../mainconcepts/flexbox-yoga.mdx) in the 'Main Concepts' section.
+For more information, see [Layout System with Flexbox](/docs/layout/flexbox-yoga).

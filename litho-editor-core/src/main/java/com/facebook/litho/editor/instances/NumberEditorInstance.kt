@@ -66,7 +66,8 @@ class NumberEditorInstance<T : Number?>(private val clazz: Class<T>) : Editor {
             Reflection.setValueUNSAFE(f, node, value)
             return null
           }
-        })
+        },
+    )
     return true
   }
 }

@@ -16,7 +16,6 @@
 
 package com.facebook.litho.widget
 
-import android.view.View
 import androidx.annotation.IntDef
 import androidx.annotation.UiThread
 import androidx.annotation.VisibleForTesting
@@ -27,6 +26,8 @@ import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentTree
 import com.facebook.litho.ComponentTree.MeasureListener
 import com.facebook.litho.ComponentTree.NewLayoutStateReadyListener
+import com.facebook.litho.LithoSaveableStateRegistry
+import com.facebook.litho.LithoTree
 import com.facebook.litho.LithoVisibilityEventsController
 import com.facebook.litho.LithoVisibilityEventsController.LithoVisibilityState
 import com.facebook.litho.LithoVisibilityEventsControllerDelegate
@@ -58,7 +59,7 @@ open class ComponentTreeHolder @VisibleForTesting internal constructor(builder: 
     fun create(holder: ComponentTreeHolder): MeasureListener?
   }
 
-  val id: Int = idGenerator.getAndIncrement()
+  val id: Int = LithoTree.generateComponentTreeId()
 
   private val lithoVisibilityEventsController = builder.lithoVisibilityEventsController
   private val componentsConfiguration = builder.componentsConfiguration
@@ -78,6 +79,7 @@ open class ComponentTreeHolder @VisibleForTesting internal constructor(builder: 
 
   @GuardedBy("this") private var _isTreeValid = false
   @GuardedBy("this") private var _componentTree: ComponentTree? = null
+  @GuardedBy("this") private var lithoSaveableStateRegistry: LithoSaveableStateRegistry? = null
 
   @get:Synchronized @set:Synchronized @GuardedBy("this") var measuredHeight: Int = 0
 
@@ -134,14 +136,14 @@ open class ComponentTreeHolder @VisibleForTesting internal constructor(builder: 
     }
 
     fun componentTreeMeasureListenerFactory(
-        componentTreeMeasureListenerFactory: ComponentTreeMeasureListenerFactory?
+        componentTreeMeasureListenerFactory: ComponentTreeMeasureListenerFactory?,
     ): Builder {
       this.componentTreeMeasureListenerFactory = componentTreeMeasureListenerFactory
       return this
     }
 
     fun lithoVisibilityEventsController(
-        lithoVisibilityEventsController: LithoVisibilityEventsController?
+        lithoVisibilityEventsController: LithoVisibilityEventsController?,
     ): Builder {
       this.lithoVisibilityEventsController = lithoVisibilityEventsController
       return this
@@ -178,7 +180,7 @@ open class ComponentTreeHolder @VisibleForTesting internal constructor(builder: 
     if (shouldAcquireTreeStateOnRelease()) {
       acquireTreeState()
     }
-    releaseTree()
+    releaseTree(releaseRetainedState = false)
   }
 
   @Synchronized
@@ -205,7 +207,7 @@ open class ComponentTreeHolder @VisibleForTesting internal constructor(builder: 
       context: ComponentContext,
       widthSpec: Int,
       heightSpec: Int,
-      size: Size?
+      size: Size?,
   ) {
     val componentTree: ComponentTree
     val component: Component
@@ -241,7 +243,7 @@ open class ComponentTreeHolder @VisibleForTesting internal constructor(builder: 
       context: ComponentContext,
       widthSpec: Int,
       heightSpec: Int,
-      measureListener: MeasureListener? = null
+      measureListener: MeasureListener? = null,
   ) {
     val componentTree: ComponentTree
     val component: Component
@@ -299,14 +301,15 @@ open class ComponentTreeHolder @VisibleForTesting internal constructor(builder: 
       firstVisibleIndex: Int,
       lastVisibleIndex: Int,
       firstFullyVisibleIndex: Int,
-      lastFullyVisibleIndex: Int
+      lastFullyVisibleIndex: Int,
   ) {
     _componentTree?.checkWorkingRangeAndDispatch(
         position,
         firstVisibleIndex,
         lastVisibleIndex,
         firstFullyVisibleIndex,
-        lastFullyVisibleIndex)
+        lastFullyVisibleIndex,
+    )
   }
 
   @Synchronized
@@ -327,22 +330,27 @@ open class ComponentTreeHolder @VisibleForTesting internal constructor(builder: 
           ComponentsConfiguration.create(componentsConfiguration)
 
       renderInfo.logTag?.let(treeComponentsConfigurationBuilder::logTag)
-      renderInfo.componentsLogger?.let(treeComponentsConfigurationBuilder::componentsLogger)
 
       val treeComponentConfiguration = treeComponentsConfigurationBuilder.build()
 
       val builder =
-          ComponentTree.create(context, renderInfo.component, visibilityEventsController)
+          ComponentTree.create(context, renderInfo.component)
+              .withLithoVisibilityEventsController(visibilityEventsController)
               .componentsConfiguration(treeComponentConfiguration)
+              .overrideComponentTreeId(id)
               .layoutThreadHandler(layoutHandler)
               .treeState(treeState)
               .measureListener(componentTreeMeasureListenerFactory?.create(this))
+
+      lithoSaveableStateRegistry?.let(builder::withLithoSaveableStateRegistry)
+          ?: stableSaveableStateKey(renderInfo)?.let(builder::withNestedTreeSaveableStateKey)
 
       val stateUpdaterDelegator =
           stateUpdaterDelegator ?: StateUpdaterDelegator().also { stateUpdaterDelegator = it }
 
       builder.stateUpdater(stateUpdaterDelegator)
       builder.poolScope(poolScope)
+      builder.enableChildClipping(true)
 
       _componentTree =
           builder.build().also { tree ->
@@ -353,42 +361,33 @@ open class ComponentTreeHolder @VisibleForTesting internal constructor(builder: 
     return checkNotNull(_componentTree)
   }
 
-  /**
-   * We may need to wait until the corresponding view is detached before releasing the tree as the
-   * view might need to run an animation
-   */
-  @UiThread
-  @Synchronized
-  fun releaseTreeImmediatelyOrOnViewDetached() {
-    val componentTree = _componentTree
-    if (componentTree != null) {
-      val lithoView = componentTree.lithoView
-      if (lithoView?.isAttachedToWindow == true) {
-        lithoView.addOnAttachStateChangeListener(
-            object : View.OnAttachStateChangeListener {
-              override fun onViewAttachedToWindow(view: View) = Unit
-
-              override fun onViewDetachedFromWindow(view: View) {
-                releaseTree()
-                view.removeOnAttachStateChangeListener(this)
-              }
-            })
-      } else {
-        releaseTree()
-      }
-    }
-  }
-
   @UiThread
   @Synchronized
   fun releaseTree() {
-    if (_componentTree != null) {
-      visibilityEventsController?.let { controller ->
+    releaseTree(releaseRetainedState = true)
+  }
+
+  @UiThread
+  @GuardedBy("this")
+  private fun releaseTree(releaseRetainedState: Boolean) {
+    val componentTree = _componentTree
+    if (componentTree != null) {
+      val controller = visibilityEventsController
+      if (controller != null) {
         controller.moveToVisibilityState(LithoVisibilityState.DESTROYED)
+        if (releaseRetainedState) {
+          lithoSaveableStateRegistry?.close()
+          lithoSaveableStateRegistry = null
+        }
         return
       }
-      _componentTree?.release()
+      componentTree.release()
       _componentTree = null
+    }
+
+    if (releaseRetainedState) {
+      lithoSaveableStateRegistry?.close()
+      lithoSaveableStateRegistry = null
     }
 
     _isTreeValid = false
@@ -406,7 +405,15 @@ open class ComponentTreeHolder @VisibleForTesting internal constructor(builder: 
 
   @GuardedBy("this")
   private fun acquireTreeState() {
-    _componentTree?.let { treeState = it.acquireTreeState() }
+    _componentTree?.let { tree ->
+      treeState = tree.acquireTreeState()
+      // A released tree has nothing left to transfer: release() already retained the registry this
+      // holder gave it, or closed the child registry it created itself. The registry referenced
+      // below therefore stays correct, while acquiring from a released tree would throw.
+      if (!tree.isReleased) {
+        lithoSaveableStateRegistry = tree.acquireLithoSaveableStateRegistry()
+      }
+    }
   }
 
   /** Lifecycle controlled by a ComponentTreeHolder. */
@@ -432,10 +439,10 @@ open class ComponentTreeHolder @VisibleForTesting internal constructor(builder: 
     }
 
     @UiThread
-    override fun moveToVisibilityState(lithoLifecycle: LithoVisibilityState) {
+    override fun moveToVisibilityState(newVisibilityState: LithoVisibilityState) {
       ThreadUtils.assertMainThread()
-      lithoVisibilityEventsControllerDelegate.moveToVisibilityState(lithoLifecycle)
-      if (lithoLifecycle == LithoVisibilityState.DESTROYED) {
+      lithoVisibilityEventsControllerDelegate.moveToVisibilityState(newVisibilityState)
+      if (newVisibilityState == LithoVisibilityState.DESTROYED) {
         lithoVisibilityEventsController?.removeListener(this)
         _componentTree = null
         _isTreeValid = false
@@ -458,7 +465,6 @@ open class ComponentTreeHolder @VisibleForTesting internal constructor(builder: 
 
   companion object {
     private const val UNINITIALIZED = -1
-    private val idGenerator = AtomicInteger(1)
     const val PREVENT_RELEASE_TAG: String = "prevent_release"
     const val ACQUIRE_STATE_HANDLER_ON_RELEASE: String = "acquire_state_handler"
     const val RENDER_UNINITIALIZED: Int = 0
@@ -466,5 +472,18 @@ open class ComponentTreeHolder @VisibleForTesting internal constructor(builder: 
     const val RENDER_DRAWN: Int = 2
 
     @JvmStatic fun create(configuration: ComponentsConfiguration): Builder = Builder(configuration)
+
+    private fun stableSaveableStateKey(renderInfo: RenderInfo): String? =
+        when (val id = renderInfo.getCustomAttribute(RecyclerBinder.ID_CUSTOM_ATTR_KEY)) {
+          is String -> "string:${id.length}:$id"
+          is Byte,
+          is Short,
+          is Int,
+          is Long,
+          is Boolean,
+          is Char -> "${id.javaClass.name}:$id"
+          is Enum<*> -> "${id.javaClass.name}:${id.name}"
+          else -> ComponentTree.stableNestedTreeSaveableStateKey(renderInfo.component)
+        }
   }
 }

@@ -52,4 +52,25 @@ class ResourceCacheTest {
     configuration.setLocale(Locale("it"))
     assertThat(cache).isNotEqualTo(ResourceCache.getLatest(configuration))
   }
+
+  @Test
+  fun testAreConfigurationsEqualSafelyReturnsTrueForEqualConfigurations() {
+    val configuration = ApplicationProvider.getApplicationContext<Context>().resources.configuration
+    assertThat(
+        ResourceCache.areConfigurationsEqualSafely(configuration, Configuration(configuration)),
+    )
+        .isTrue()
+  }
+
+  @Suppress("AppBundleLocaleChanges")
+  @Test
+  fun testAreConfigurationsEqualSafelyReturnsFalseForDifferentConfigurations() {
+    val a =
+        Configuration(ApplicationProvider.getApplicationContext<Context>().resources.configuration)
+            .apply { setLocale(Locale.forLanguageTag("en")) }
+    val b =
+        Configuration(ApplicationProvider.getApplicationContext<Context>().resources.configuration)
+            .apply { setLocale(Locale.forLanguageTag("it")) }
+    assertThat(ResourceCache.areConfigurationsEqualSafely(a, b)).isFalse()
+  }
 }

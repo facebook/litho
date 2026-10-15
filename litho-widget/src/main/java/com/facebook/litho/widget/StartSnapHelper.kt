@@ -54,7 +54,7 @@ open class StartSnapHelper : SnapHelper {
 
   override fun calculateDistanceToFinalSnap(
       layoutManager: LayoutManager,
-      targetView: View
+      targetView: View,
   ): IntArray? {
     val out = IntArray(2)
     if (layoutManager.canScrollHorizontally()) {
@@ -89,7 +89,7 @@ open class StartSnapHelper : SnapHelper {
   override fun findTargetSnapPosition(
       layoutManager: LayoutManager?,
       velocityX: Int,
-      velocityY: Int
+      velocityY: Int,
   ): Int {
     val itemCount: Int = layoutManager?.getItemCount() ?: 0
     if (itemCount == 0 || layoutManager == null) {
@@ -135,7 +135,7 @@ open class StartSnapHelper : SnapHelper {
   private fun getForwardTargetPosition(
       layoutManager: LayoutManager,
       reverseLayout: Boolean,
-      firstBeforeStartPosition: Int
+      firstBeforeStartPosition: Int,
   ): Int {
     if (layoutManager is GridLayoutManager) {
       return if (reverseLayout) ((firstBeforeStartPosition - layoutManager.spanCount) / flingOffset)
@@ -210,7 +210,7 @@ open class StartSnapHelper : SnapHelper {
      */
     private fun findViewClosestToStart(
         layoutManager: LayoutManager,
-        helper: OrientationHelper
+        helper: OrientationHelper,
     ): View? {
       val childCount: Int = layoutManager.childCount
       if (childCount == 0) {
@@ -239,7 +239,7 @@ open class StartSnapHelper : SnapHelper {
     /** @return the first View whose start is before the start of this recycler view */
     private fun findFirstViewBeforeStart(
         layoutManager: LayoutManager,
-        helper: OrientationHelper
+        helper: OrientationHelper,
     ): View? {
       val childCount: Int = layoutManager.childCount
       if (childCount == 0) {

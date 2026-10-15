@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 @file:JvmName("RecyclerMeasureHelper")
 
 package com.facebook.litho.widget
@@ -24,9 +25,8 @@ import com.facebook.rendercore.utils.MeasureSpecUtils.unspecified
 import java.lang.IllegalStateException
 
 /**
- * Calculates which is the size spec taking into account the [totalPadding]. This is temporarily
- * defined as helper method because we are on the process of migrating from [LegacyRecyclerSpec] to
- * [ExperimentalRecycler]
+ * Calculates which is the size spec taking into account the [totalPadding]. Extracted as a helper
+ * so the padding logic can be shared with [Recycler].
  */
 internal fun maybeGetSpecWithPadding(
     sizeSpec: Int,

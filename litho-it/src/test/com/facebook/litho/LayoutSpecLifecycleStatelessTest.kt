@@ -52,7 +52,8 @@ class LayoutSpecLifecycleStatelessTest {
             LifecycleStep.ON_CREATE_INITIAL_STATE,
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
-            LifecycleStep.ON_CREATE_LAYOUT)
+            LifecycleStep.ON_CREATE_LAYOUT,
+        )
   }
 
   @Test
@@ -69,7 +70,8 @@ class LayoutSpecLifecycleStatelessTest {
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT,
             LifecycleStep.ON_CREATE_TRANSITION,
-            LifecycleStep.ON_ATTACHED)
+            LifecycleStep.ON_ATTACHED,
+        )
     ComponentsConfiguration.isAnimationDisabled = true
   }
 
@@ -98,7 +100,8 @@ class LayoutSpecLifecycleStatelessTest {
         .containsExactly(
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
-            LifecycleStep.ON_CREATE_LAYOUT)
+            LifecycleStep.ON_CREATE_LAYOUT,
+        )
   }
 
   @Test
@@ -116,7 +119,8 @@ class LayoutSpecLifecycleStatelessTest {
             LifecycleStep.ON_UPDATE_STATE,
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
-            LifecycleStep.ON_CREATE_LAYOUT)
+            LifecycleStep.ON_CREATE_LAYOUT,
+        )
   }
 
   @Test
@@ -135,7 +139,8 @@ class LayoutSpecLifecycleStatelessTest {
             LifecycleStep.ON_UPDATE_STATE_WITH_TRANSITION,
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
-            LifecycleStep.ON_CREATE_LAYOUT)
+            LifecycleStep.ON_CREATE_LAYOUT,
+        )
   }
 
   @Test

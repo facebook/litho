@@ -1,0 +1,208 @@
+---
+id: hooks-intro
+title: Hooks Overview
+keywords:
+    - litho hooks
+    - useState
+    - useEffect
+    - useRef
+    - useCached
+    - useCallback
+    - useErrorBoundary
+    - useLiveData
+    - useFlow
+    - state management
+    - side effects
+    - cached value
+    - expensive calculation
+    - performance optimization
+    - component lifecycle
+    - render function
+api_category: hooks
+related_docs: [use-state, use-effect, use-ref, use-cached, use-callback, use-error-boundary, use-live-data, use-flow]
+api_names: [useState, useEffect, useRef, useCached, useCallback, useErrorBoundary, useLiveData, useFlow, useFlowWithLifecycle]
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import VersionedCodeBlock from '@theme/VersionedCodeBlock';
+
+:::note
+**Definition**: *Hooks* are special functions that can persist state across renders and perform side-effects[^1] . They begin with `use` and may only be called from `render()` and other hooks. The API is heavily inspired by [React Hooks](https://reactjs.org/docs/hooks-intro.html).
+:::
+
+Hooks are Litho's way to enable components to persist state across renders and register for lifecycle events while remaining immutable. Litho has a suite of built in hooks whose docs you'll find in this section.
+
+As a brief introduction, some of the most common ones you'll encounter are:
+
+- **[useState](/state-and-side-effects/use-state.mdx)** - keeps track of a variable across renders.
+- **[useEffect](/state-and-side-effects/use-effect.mdx)** - lets a component perform side-effects when it's attached or detached from the tree.
+- **[useRef](/state-and-side-effects/use-ref.mdx)** - keeps track of a mutable reference across renders.
+- **[useCached](/state-and-side-effects/use-cached.mdx)** - keeps track of a cached value that is expensive to calculate.
+- **[useCallback](/state-and-side-effects/use-callback.mdx)** - gives a capturing UI-thread callback stable identity while keeping its captured values current.
+
+[^1]: Side-effects are operations that affect your component. Side-effects include operations such as fetch requests, subscriptions, using timers, and manually changing the DOM. Side-effects cannot occur during rendering. For more information on side-effects, see the [useEffect](use-effect.mdx) hook.
+
+### Hooks in Practice
+
+To demonstrate the use of hooks in practice, the component below implements a simple counter; whenever it's clicked, it increments the number of clicks and re-renders:
+
+```kotlin
+import com.facebook.litho.ClickEvent
+import com.facebook.litho.Component
+import com.facebook.litho.ComponentScope
+import com.facebook.litho.KComponent
+import com.facebook.litho.Style
+import com.facebook.litho.kotlin.widget.Text
+import com.facebook.litho.useCallback
+import com.facebook.litho.useState
+import com.facebook.litho.view.onClick
+
+class CounterComponent : KComponent() {
+  override fun ComponentScope.render(): Component {
+    val clicks = useState { 0 }
+    val onClick = useCallback<ClickEvent, Unit> { clicks.update { c -> c + 1 } }
+    return Text(
+        style = Style.onClick(action = onClick),
+        text = "Clicks: ${clicks.value}")
+  }
+}
+```
+
+As shown in the above code, `useState` is a hook that can keep track of a variable across renders. The first time it's called it returns the initial value (`0`). Subsequent calls return the current value of the state. `useCallback` gives the capturing click handler stable identity while keeping its captured state current. For more information, see the [useState](/state-and-side-effects/use-state.mdx) and [useCallback](/state-and-side-effects/use-callback.mdx) pages.
+
+The compiler assigns every hook call a structural identity from its source call site and its nesting path. This keeps one hook's state independent of whether other call sites ran during the same render.
+
+## Rules for Hooks
+
+There are **three hooks rules** to remember:
+
+1. Hooks can only be called from `render()` or from another `@Hook` function.
+2. Hook calls must execute synchronously as part of render. Do not hide them in event handlers,
+   effect bodies, cache calculators, or other lambdas that run later or only sometimes.
+3. Hook names should start with `use`.
+
+None of the rules restrict control flow. The compiler gives every hook call site a structural
+identity, so hooks work inside conditions, inside loops, and after early returns. Rule 2 is the one
+that still bites — a hook inside a selectively evaluated lambda is incorrect, because the lambda is
+not part of render:
+
+```kotlin
+import com.facebook.litho.useCached
+import com.facebook.litho.animated.useBinding
+
+val cachedValue = useCached(dependency) {
+  val dynamicColor = useBinding { 0 } // Incorrect: the calculator does not run every render.
+  false
+}
+```
+
+## Conditional Hooks and Early Returns
+
+Hooks may be called conditionally. Each source call site has its own identity, so skipping one call
+never shifts the state belonging to another:
+
+```kotlin
+import com.facebook.litho.useState
+
+if (something) {
+  val state = useState { 1 } // Supported
+}
+```
+
+What a condition *does* change is how long that hook's state lives:
+
+:::note
+**A hook's state lives exactly as long as you keep calling the hook.** Stop calling it and its state
+is dropped at the end of that render; call it again and it starts from its initial value.
+:::
+
+This is the same rule as mounting and unmounting a component, applied one level down, and it is what
+keeps conditional hooks from accumulating state forever. It is easiest to miss when a hook sits
+after an early return, because the call itself looks unconditional:
+
+```kotlin
+class VideoOverlayComponent(private val video: Video) : KComponent() {
+  override fun ComponentScope.render(): Component {
+    val isMuted = useState { true }      // called on every render
+
+    if (video.isLive) {
+      return LiveBadge(video)            // early return
+    }
+
+    val scrubPosition = useState { 0L }  // only reached when the video is not live
+    return Scrubber(position = scrubPosition.value) { scrubPosition.update(it) }
+  }
+}
+```
+
+If `video.isLive` becomes `true` and later `false` again, `scrubPosition` is dropped while the badge
+is showing, and starts over afterwards:
+
+| Render | `video.isLive` | Hooks called | `scrubPosition` |
+| --- | --- | --- | --- |
+| 1 | `false` | `isMuted`, `scrubPosition` | user scrubs to `30_000` |
+| 2 | `true` | `isMuted` | dropped |
+| 3 | `false` | `isMuted`, `scrubPosition` | back to `0L` |
+
+When a value should survive the guard, hoist the hook above it. A hook called on every render is
+never dropped:
+
+```kotlin
+val scrubPosition = useState { 0L }  // called every render, so retained across the guard
+
+if (video.isLive) {
+  return LiveBadge(video)
+}
+```
+
+## Hooks in Loops
+
+Hooks may also be called in a loop. By default, the occurrences of a repeated call site are
+**positional**: the first execution in a render takes the first identity, the second takes the
+second, and so on. State therefore belongs to the *slot*, not to the item that happened to occupy
+it.
+
+That is what you want when the list is stable, or when the state really is about the position. It is
+wrong as soon as items can reorder, or one can be inserted or removed in the middle — every item
+after the change inherits its neighbour's state.
+
+To bind state to the item instead, wrap each item's hook-using subtree in `withNewScope` with a
+stable ID:
+
+```kotlin
+items.forEach { item ->
+  val itemComponent = withNewScope(item.id) {
+    val selected = useState { false }
+    ItemComponent(item = item, selected = selected.value)
+  }
+  child(itemComponent)
+}
+```
+
+Every hook called inside the block is then identified under `item.id`, so `selected` follows its
+item wherever the item moves.
+
+The key must be:
+
+- **immutable and stable across renders** — the item's own ID. Not a loop index, and not a value
+  recomputed each render.
+- **unique among invocations of that call site** under the same parent scope. Duplicate sibling keys
+  are reported, and fall back to positional order between the duplicates.
+- **small.** The key is retained alongside hook state, so prefer an identifier or a small value
+  object over a heavyweight one.
+
+Two different `withNewScope` call sites may use the same key without colliding.
+
+It may prove helpful to look at some more examples, starting with the most fundamental hook: [useState](/state-and-side-effects/use-state.mdx)!
+
+## See Also
+
+- [useState](use-state.mdx) - Persist and update values across renders
+- [useEffect](use-effect.mdx) - Run side-effects and cleanup on attach/detach
+- [useRef](use-ref.mdx) - Mutable references without triggering re-renders
+- [useCached](use-cached.mdx) - Cache expensive calculations
+- [useCallback](use-callback.mdx) - Stable callbacks with latest state
+- [useErrorBoundary](use-error-boundary.mdx) - Catch and handle errors in child components
+- [useLiveData](use-live-data.mdx) - Observe Android LiveData
+- [useFlow](use-flow.mdx) - Observe Kotlin Flow/StateFlow

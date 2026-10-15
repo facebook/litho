@@ -19,7 +19,12 @@
 package com.facebook.rendercore.utils
 
 import android.util.SparseArray
+import androidx.annotation.VisibleForTesting
 import com.facebook.rendercore.Equivalence
+import com.facebook.rendercore.RenderCoreConfig
+import java.lang.reflect.Field
+import java.lang.reflect.Modifier
+import java.util.concurrent.ConcurrentHashMap
 
 /** Checks if two objects are equal. */
 fun equals(a: Any?, b: Any?): Boolean {
@@ -79,7 +84,63 @@ fun <T> isEqualOrEquivalentTo(a: T?, b: T?): Boolean {
   }
 }
 
-/** Checks if all private final fields in two objects are equivalent. */
+/**
+ * Ceiling on [instanceFieldsByClass], as a backstop against pathological class generation rather
+ * than a working limit. A full `litho-it` run puts 180 distinct classes through
+ * [hasEquivalentFields], and IG4A's entire static `KComponent` population including the shared
+ * libraries it links is roughly 2.5k, so real hosts stay far below this.
+ */
+private const val DEFAULT_MAX_CACHED_CLASSES = 16384
+
+@VisibleForTesting internal var maxCachedClasses: Int = DEFAULT_MAX_CACHED_CLASSES
+
+private val instanceFieldsByClass = ConcurrentHashMap<Class<*>, Array<Field>>()
+
+@VisibleForTesting internal fun cachedClassCountForTesting(): Int = instanceFieldsByClass.size
+
+@VisibleForTesting
+internal fun clearInstanceFieldCacheForTesting() {
+  instanceFieldsByClass.clear()
+}
+
+/**
+ * The declared instance fields of [cls], with accessibility already forced, or null if [cls] is not
+ * cached and the cache is full.
+ *
+ * [Class.getDeclaredFields] clones the array and every [Field] in it on each call, so asking for
+ * them per comparison allocates proportionally to the field count before a single value is read.
+ * The clone also means the accessibility flag set here is only visible to this cache.
+ *
+ * Static fields are dropped: reading one off two instances of the same class yields the same value
+ * by construction, so they can never make two objects inequivalent.
+ *
+ * Entries are never evicted; on Android the classes reaching them are loaded by the app's own class
+ * loader and live for the process. Growth is bounded by [maxCachedClasses], past which callers
+ * resolve the fields themselves. The size check races with concurrent inserts, so the map may
+ * overshoot by the number of threads in flight — this is a ceiling, not an exact size.
+ */
+private fun instanceFieldsOf(cls: Class<*>): Array<Field>? {
+  instanceFieldsByClass[cls]?.let {
+    return it
+  }
+  if (instanceFieldsByClass.size >= maxCachedClasses) {
+    return null
+  }
+  val fields =
+      cls.declaredFields
+          .filterNot { Modifier.isStatic(it.modifiers) }
+          .onEach { it.isAccessible = true }
+          .toTypedArray()
+  return instanceFieldsByClass.putIfAbsent(cls, fields) ?: fields
+}
+
+/**
+ * Checks if all private final fields in two objects are equivalent.
+ *
+ * [RenderCoreConfig.cacheEquivalenceFields] selects between the cached field list and resolving it
+ * per comparison. Reading it here is a static boolean load; the MobileConfig it is wired from is
+ * read once at app startup.
+ */
 fun hasEquivalentFields(a: Any?, b: Any?): Boolean {
   if (a === b) {
     return true
@@ -93,6 +154,34 @@ fun hasEquivalentFields(a: Any?, b: Any?): Boolean {
     return false
   }
 
+  if (RenderCoreConfig.cacheEquivalenceFields) {
+    instanceFieldsOf(a.javaClass)?.let {
+      return hasEquivalentFieldsFrom(it, a, b)
+    }
+  }
+  return hasEquivalentDeclaredFields(a, b)
+}
+
+private fun hasEquivalentFieldsFrom(fields: Array<Field>, a: Any, b: Any): Boolean {
+  for (field in fields) {
+    val val1: Any?
+    val val2: Any?
+    try {
+      val1 = field[a]
+      val2 = field[b]
+    } catch (e: IllegalAccessException) {
+      throw IllegalStateException("Unable to get fields by reflection.", e)
+    }
+
+    if (!areObjectsEquivalent(val1, val2)) {
+      return false
+    }
+  }
+
+  return true
+}
+
+private fun hasEquivalentDeclaredFields(a: Any, b: Any): Boolean {
   for (field in a.javaClass.declaredFields) {
     val val1: Any?
     val val2: Any?
@@ -136,7 +225,23 @@ fun areObjectsEquivalent(val1: Any?, val2: Any?): Boolean {
     val1.javaClass.isArray -> areArraysEquivalent(val1, val2)
     val1 is List<*> && val1 is RandomAccess -> areRandomAccessListsEquivalent(val1, val2 as List<*>)
     val1 is Collection<*> -> areCollectionsEquivalent(val1, val2 as Collection<*>)
+    val1 is CharSequence -> safeCharSequenceEquals(val1, val2 as CharSequence)
     else -> val1 == val2
+  }
+}
+
+/**
+ * Safely compares two [CharSequence] objects for equality. Android's
+ * [android.text.SpannableStringInternal.equals] can throw [NullPointerException] when the spans
+ * array contains null elements (a known Android framework bug on API 34+). This method catches that
+ * NPE and returns false (not equivalent), which triggers a safe re-render in Litho rather than
+ * crashing.
+ */
+private fun safeCharSequenceEquals(val1: CharSequence, val2: CharSequence): Boolean {
+  return try {
+    val1 == val2
+  } catch (e: NullPointerException) {
+    false
   }
 }
 

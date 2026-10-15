@@ -25,49 +25,55 @@ import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.debug.DebugInfoReporter
 import com.facebook.litho.utils.LithoThreadLocal
 import com.facebook.litho.utils.getOrSet
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 
 @ThreadSafe
 internal class StateReadRecorder private constructor() {
 
-  private var readSet: MutableScatterSet<StateId>? = null
-  private var currentId: Int = NO_ID
-  private var debugInfo: (MutableMap<String, Any?>.() -> Unit)? = null
+  internal var readSet: MutableScatterSet<StateId>? = null
+  internal var currentId: Int = NO_ID
+  internal var currentDescription: String? = null
 
   /**
    * Executes [scope] in the context of the current recorder to enable tracking of all state reads
    * during that execution which are then returned as a set of [StateId]s.
    *
    * @param treeId The id of the current tree
+   * @param description Optional attribution label surfaced on cross-tree read violation reports
    * @param scope The scope to execute
    * @return A set of all state ids that were read during the execution of the scope.
    */
-  private fun record(
+  @OptIn(ExperimentalContracts::class)
+  private inline fun record(
       treeId: Int,
-      debugInfo: MutableMap<String, Any?>.() -> Unit,
-      scope: () -> Unit
+      description: String?,
+      scope: () -> Unit,
   ): ScatterSet<StateId> {
+    contract { callsInPlace(scope, InvocationKind.EXACTLY_ONCE) }
     return if (treeId == currentId) {
-      // Re-entrant call. Simply run the scope and return an empty set
+      // Re-entrant call. Simply run the scope and return an empty set.
       // The full read set will be delivered to the parent recorder at the end.
-      check(readSet != null)
       scope()
       emptyScatterSet()
     } else {
-      mutableScatterSetOf<StateId>().also { newSet ->
-        val previousReadSet = readSet
-        val previousTreeId = currentId
-        val previousDebugInfo = this.debugInfo
-        try {
-          readSet = newSet
-          currentId = treeId
-          this.debugInfo = debugInfo
-          scope()
-        } finally {
-          currentId = previousTreeId
-          readSet = previousReadSet
-          this.debugInfo = previousDebugInfo
-        }
+      val previousReadSet = readSet
+      val previousTreeId = currentId
+      val previousDescription = currentDescription
+      val result: ScatterSet<StateId>
+      try {
+        readSet = null
+        currentId = treeId
+        currentDescription = description
+        scope()
+        result = readSet ?: emptyScatterSet()
+      } finally {
+        currentId = previousTreeId
+        readSet = previousReadSet
+        currentDescription = previousDescription
       }
+      result
     }
   }
 
@@ -84,23 +90,34 @@ internal class StateReadRecorder private constructor() {
    */
   private fun read(state: StateId): Boolean {
     val isStateReadFromDifferentTree = currentId != NO_ID && currentId != state.treeId
-    val violationPolicy = ComponentsConfiguration.defaultInstance.stateReadViolationPolicy
-    if (violationPolicy == ComponentsConfiguration.LogicViolationPolicy.CRASH) {
-      check(!isStateReadFromDifferentTree) {
-        "State can only be read in the same tree where it was created. " +
-            "State tree: ${state.treeId}, Current tree: $currentId"
+    if (isStateReadFromDifferentTree) {
+      val violationPolicy = ComponentsConfiguration.defaultInstance.crossTreeStateReadPolicy
+      if (violationPolicy == ComponentsConfiguration.LogicViolationPolicy.CRASH) {
+        error(
+            "State can only be read in the same tree where it was created. " +
+                "State owner: ${state.ownerName}\n" +
+                "State hookKey: ${state.hookGlobalKey.hookKey}\n" +
+                "State tree: ${state.treeId}\n" +
+                "Reader tree: $currentId",
+        )
       }
-    } else if (isStateReadFromDifferentTree) {
-      DebugInfoReporter.report(
-          "StateReadTracking:ReadFromDifferentTree", renderStateId = state.treeId) {
-            put("state", state)
-            put("state.owner", state.ownerName?.invoke())
-            put("reader.treeId", currentId)
-            debugInfo?.invoke(this)
-          }
+      if (violationPolicy == ComponentsConfiguration.LogicViolationPolicy.LOG) {
+        DebugInfoReporter.report(
+            "StateReadTracking:ReadFromDifferentTree",
+            renderStateId = state.treeId,
+        ) {
+          put("state.treeId", state.treeId)
+          put("state.hookKey", state.hookGlobalKey.hookKey)
+          put("state.owner", state.ownerName)
+          put("reader.treeId", currentId)
+          currentDescription?.let { put("reader.description", it) }
+        }
+      }
       return false
     }
-    readSet?.add(state)
+    if (currentId != NO_ID) {
+      (readSet ?: mutableScatterSetOf<StateId>().also { readSet = it }).add(state)
+    }
     return true
   }
 
@@ -111,16 +128,40 @@ internal class StateReadRecorder private constructor() {
     private val current: StateReadRecorder
       get() = recorder.getOrSet { StateReadRecorder() }
 
-    fun record(
+    @OptIn(ExperimentalContracts::class)
+    inline fun record(
         treeId: Int,
-        debugInfo: MutableMap<String, Any?>.() -> Unit = {},
-        scope: () -> Unit
+        description: String? = null,
+        scope: () -> Unit,
     ): ScatterSet<StateId> {
-      return current.record(treeId, debugInfo, scope)
+      contract { callsInPlace(scope, InvocationKind.EXACTLY_ONCE) }
+      return current.record(treeId, description, scope)
     }
 
     fun read(state: StateId): Boolean {
       return current.read(state)
+    }
+
+    /**
+     * Runs [scope] with no recording in progress, so a read in it goes to whatever records it
+     * itself, if anything, rather than to the enclosing recording. A `Layout` measures each child
+     * this way, so the child's reads land on the child's layout, as a flexbox child's do.
+     */
+    inline fun <T> untracked(scope: () -> T): T {
+      val recorder = current
+      val previousReadSet = recorder.readSet
+      val previousTreeId = recorder.currentId
+      val previousDescription = recorder.currentDescription
+      recorder.readSet = null
+      recorder.currentId = NO_ID
+      recorder.currentDescription = null
+      try {
+        return scope()
+      } finally {
+        recorder.readSet = previousReadSet
+        recorder.currentId = previousTreeId
+        recorder.currentDescription = previousDescription
+      }
     }
   }
 }

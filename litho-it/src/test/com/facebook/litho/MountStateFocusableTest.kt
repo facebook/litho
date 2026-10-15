@@ -41,7 +41,8 @@ class MountStateFocusableTest {
     TempComponentsConfigurations.setShouldAddHostViewForRootComponent(true)
     context =
         ComponentContext(
-            androidx.test.core.app.ApplicationProvider.getApplicationContext<Context>())
+            androidx.test.core.app.ApplicationProvider.getApplicationContext<Context>(),
+        )
     focusableDefault = ComponentHost(context).isFocusable
   }
 
@@ -55,9 +56,10 @@ class MountStateFocusableTest {
                   Column.create(c)
                       .child(Column.create(c).focusable(true).child(TestViewComponent.create(c)))
                       .build()
-            })
+            },
+        )
     assertThat(lithoView.childCount).isEqualTo(1)
-    // TODO(T16959291): The default varies between internal and external test runs, which indicates
+    // The default varies between internal and external test runs, which indicates
     // that our Robolectric setup is not actually identical. Until we can figure out why,
     // we will compare against the dynamic default instead of asserting false.
     assertThat(lithoView.isFocusable).isEqualTo(focusableDefault)
@@ -72,8 +74,9 @@ class MountStateFocusableTest {
             context,
             object : InlineLayoutSpec() {
               override fun onCreateLayout(c: ComponentContext): Component? =
-                  Column.create(c).focusable(true).child(SimpleMountSpecTester.create(c)).build()
-            })
+                  Column.create(c).focusable(true).child(SimpleMountSpecTester()).build()
+            },
+        )
     assertThat(lithoView.childCount).isEqualTo(1)
     val innerHost = lithoView.getChildAt(0)
     assertThat(innerHost.isFocusable).isTrue

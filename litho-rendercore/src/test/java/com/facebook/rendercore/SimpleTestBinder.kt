@@ -25,7 +25,7 @@ internal class SimpleTestBinder(private val mountRunnable: Runnable) :
       currentModel: Any?,
       newModel: Any?,
       currentLayoutData: Any?,
-      nextLayoutData: Any?
+      nextLayoutData: Any?,
   ): Boolean = true
 
   override fun bind(context: Context, content: Any, model: Any?, layoutData: Any?): Any? {
@@ -38,7 +38,7 @@ internal class SimpleTestBinder(private val mountRunnable: Runnable) :
       content: Any,
       model: Any?,
       layoutData: Any?,
-      bindData: Any?
+      bindData: Any?,
   ) = Unit
 
   override val description: String

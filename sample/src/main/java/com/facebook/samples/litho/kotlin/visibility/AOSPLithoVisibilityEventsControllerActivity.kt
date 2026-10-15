@@ -19,7 +19,6 @@ package com.facebook.samples.litho.kotlin.visibility
 import android.os.Bundle
 import android.util.Log
 import com.facebook.litho.AOSPLithoVisibilityEventsController
-import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentScope
@@ -27,6 +26,7 @@ import com.facebook.litho.KComponent
 import com.facebook.litho.LithoView
 import com.facebook.litho.Style
 import com.facebook.litho.kotlin.widget.Text
+import com.facebook.litho.layout.flexbox.Column
 import com.facebook.litho.visibility.onInvisible
 import com.facebook.litho.visibility.onVisible
 import com.facebook.samples.litho.NavigatableDemoActivity
@@ -40,7 +40,9 @@ class AOSPLithoVisibilityEventsControllerActivity : NavigatableDemoActivity() {
         LithoView.create(
             ComponentContext(this),
             VisibilityComponent(),
-            AOSPLithoVisibilityEventsController(this))
+            AOSPLithoVisibilityEventsController(this),
+            this,
+        )
     setContentView(lithoView)
   }
 
@@ -49,9 +51,10 @@ class AOSPLithoVisibilityEventsControllerActivity : NavigatableDemoActivity() {
       return Column(
           style =
               Style.onVisible { Log.d("VisibilityComponentLog", "onVisible") }
-                  .onInvisible { Log.d("VisibilityComponentLog", "onInvisible") }) {
-            child(Text("Hello World"))
-          }
+                  .onInvisible { Log.d("VisibilityComponentLog", "onInvisible") },
+      ) {
+        child(Text("Hello World"))
+      }
     }
   }
 }

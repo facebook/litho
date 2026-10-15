@@ -25,7 +25,7 @@ import java.util.Arrays
 /** A comparable gradient drawable. */
 open class ComparableGradientDrawable(
     orientation: Orientation = Orientation.TOP_BOTTOM, // default orientation of GradientDrawable
-    @JvmField protected var colors: IntArray? = null
+    @JvmField protected var colors: IntArray? = null,
 ) : GradientDrawable(orientation, colors), ComparableDrawable {
 
   @JvmField protected var color: Int = 0
@@ -56,6 +56,7 @@ open class ComparableGradientDrawable(
 
   @JvmField protected var strokeColorStateList: ColorStateList? = null
 
+  @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
   override fun equals(o: Any?): Boolean {
     if (this === o) return true
     if (o !is ComparableGradientDrawable) return false
@@ -79,23 +80,23 @@ open class ComparableGradientDrawable(
   }
 
   override fun hashCode(): Int {
-    var result =
-        arrayOf(
-                orientation,
-                color,
-                colorStateList,
-                cornerRadius,
-                gradientType,
-                gradientRadius,
-                shape,
-                width,
-                height,
-                strokeWidth,
-                strokeDashWidth,
-                strokeDashGap,
-                strokeColor,
-                strokeColorStateList)
-            .contentHashCode()
+    var result = arrayOf(
+        orientation,
+        color,
+        colorStateList,
+        cornerRadius,
+        gradientType,
+        gradientRadius,
+        shape,
+        width,
+        height,
+        strokeWidth,
+        strokeDashWidth,
+        strokeDashGap,
+        strokeColor,
+        strokeColorStateList,
+    )
+        .contentHashCode()
     result = 31 * result + colors.contentHashCode()
     result = 31 * result + cornerRadii.contentHashCode()
     return result
@@ -163,7 +164,7 @@ open class ComparableGradientDrawable(
       width: Int,
       colorStateList: ColorStateList,
       dashWidth: Float,
-      dashGap: Float
+      dashGap: Float,
   ) {
     super.setStroke(width, colorStateList, dashWidth, dashGap)
     strokeWidth = width

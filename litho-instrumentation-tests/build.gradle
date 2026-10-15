@@ -15,6 +15,8 @@
  */
 
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
@@ -46,11 +48,12 @@ dependencies {
     // For main targets
     implementation project(':litho-core')
     implementation project(':litho-widget')
+    implementation project(':litho-widget-kotlin')
     implementation project(':litho-sections-core')
     implementation project(':litho-sections-widget')
     implementation deps.soloader
     implementation deps.supportAnnotations
-    annotationProcessor project(':litho-sections-processor')
+    kapt project(':litho-sections-processor')
 
     compileOnly deps.jsr305
     compileOnly deps.inferAnnotations

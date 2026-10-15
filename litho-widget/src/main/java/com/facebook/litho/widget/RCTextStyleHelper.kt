@@ -74,9 +74,9 @@ object RCTextStyleHelper {
   }
 
   private fun resolveStyleAttrsForTypedArray(a: TypedArray, style: TextStyle) {
-    var viewTextAlignment = View.TEXT_ALIGNMENT_GRAVITY
+    var viewTextAlignment: Int
     var gravity = Gravity.NO_GRAVITY
-    var fontFamily: String? = null
+    var fontFamily: String?
 
     var i = 0
     val size = a.indexCount

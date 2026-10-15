@@ -29,10 +29,11 @@ import com.facebook.litho.LayoutState
 import com.facebook.litho.LithoRenderTreeView
 import com.facebook.litho.LithoView
 import com.facebook.litho.TreeState
+import com.facebook.rendercore.visibility.VisibilityChangeReason
 
 /**
  * Extension of [HorizontalScrollView] that allows to add more features needed for
- * [HorizontalScrollSpec] and [ExperimentalHorizontalScroll] primitive component.
+ * [HorizontalScrollSpec] and [HorizontalScroll] primitive component.
  */
 class HorizontalScrollLithoView
 @JvmOverloads
@@ -66,7 +67,7 @@ constructor(context: Context, val renderTreeView: BaseMountingView = LithoView(c
     // We need to notify LithoView about the visibility bounds that has changed when View is
     // scrolled so that correct visibility events are fired for the child components of
     // HorizontalScroll.
-    renderTreeView.notifyVisibleBoundsChanged()
+    renderTreeView.notifyVisibleBoundsChanged(VisibilityChangeReason.SCROLL)
 
     scrollPosition?.let { position ->
       onScrollChangeListener?.onScrollChange(this, scrollX, position.x)
@@ -91,11 +92,14 @@ constructor(context: Context, val renderTreeView: BaseMountingView = LithoView(c
     // UI thread.
     renderTreeView.measure(
         MeasureSpec.makeMeasureSpec(componentWidth, MeasureSpec.EXACTLY),
-        MeasureSpec.makeMeasureSpec(componentHeight, MeasureSpec.EXACTLY))
+        MeasureSpec.makeMeasureSpec(componentHeight, MeasureSpec.EXACTLY),
+    )
 
     // The mounted view always gets exact dimensions from the framework.
     setMeasuredDimension(
-        MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.getSize(heightMeasureSpec))
+        MeasureSpec.getSize(widthMeasureSpec),
+        MeasureSpec.getSize(heightMeasureSpec),
+    )
   }
 
   override fun obtainLithoViewChildren(lithoViews: MutableList<BaseMountingView>) {
@@ -115,7 +119,7 @@ constructor(context: Context, val renderTreeView: BaseMountingView = LithoView(c
       height: Int,
       scrollX: Int,
       onScrollChangeListener: OnScrollChangeListener?,
-      scrollStateListener: ScrollStateListener?
+      scrollStateListener: ScrollStateListener?,
   ) {
     if (renderTreeView !is LithoView) {
       throw UnsupportedOperationException("API can only be invoked from Horizontal Scroll Spec")
@@ -135,7 +139,7 @@ constructor(context: Context, val renderTreeView: BaseMountingView = LithoView(c
 
   fun unmount() {
     when (renderTreeView) {
-      is LithoRenderTreeView -> renderTreeView.cleanup()
+      is LithoRenderTreeView -> renderTreeView.clean()
       is LithoView -> renderTreeView.setComponentTree(null, false)
     }
     componentWidth = 0

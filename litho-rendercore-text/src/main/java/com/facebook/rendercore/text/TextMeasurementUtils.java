@@ -25,7 +25,6 @@ import android.text.BoringLayout;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.Spanned;
-import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.style.ClickableSpan;
@@ -38,6 +37,7 @@ import androidx.annotation.GuardedBy;
 import androidx.annotation.Nullable;
 import androidx.annotation.Size;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.text.TextDirectionHeuristicCompat;
 import androidx.core.text.TextDirectionHeuristicsCompat;
 import com.facebook.fbui.textlayoutbuilder.TextLayoutBuilder;
 import com.facebook.fbui.textlayoutbuilder.util.LayoutMeasureUtil;
@@ -45,6 +45,9 @@ import com.facebook.rendercore.LayoutContext;
 import com.facebook.rendercore.MountableLayoutResult;
 import com.facebook.rendercore.RenderCoreConfig;
 import com.facebook.rendercore.utils.LayoutUtils;
+import java.text.BreakIterator;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TextMeasurementUtils {
 
@@ -59,6 +62,7 @@ public class TextMeasurementUtils {
   // The offsets of the returned values within the int array.
   private static final int CAP_HEIGHT_OFFSET_INDEX = 0;
   private static final int BASELINE_OFFSET_INDEX = 1;
+  private static final int MAX_CUSTOM_ELLIPSIS_STEP_BACKS = 16;
 
   @VisibleForTesting
   public interface DebugMeasureListener {
@@ -73,16 +77,32 @@ public class TextMeasurementUtils {
 
     public Layout layout;
     public CharSequence processedText;
+    @Nullable CharSequence fullText;
     public float textLayoutTranslationX;
     public float textLayoutTranslationY;
     ClickableSpan[] clickableSpans;
     ImageSpan[] imageSpans;
     TextStyle textStyle;
     boolean isExplicitlyTruncated;
+
+    /** A copy that reuses this measured layout for new full text and style. */
+    TextLayout copyForReuse(CharSequence fullText, TextStyle textStyle) {
+      final TextLayout copy = new TextLayout();
+      copy.layout = layout;
+      copy.processedText = processedText;
+      copy.fullText = fullText;
+      copy.textLayoutTranslationX = textLayoutTranslationX;
+      copy.textLayoutTranslationY = textLayoutTranslationY;
+      copy.clickableSpans = clickableSpans;
+      copy.imageSpans = imageSpans;
+      copy.textStyle = textStyle;
+      copy.isExplicitlyTruncated = isExplicitlyTruncated;
+      return copy;
+    }
   }
 
   public static MountableLayoutResult layout(
-      LayoutContext context,
+      LayoutContext<?> context,
       int widthSpec,
       int heightSpec,
       CharSequence text,
@@ -92,7 +112,7 @@ public class TextMeasurementUtils {
   }
 
   public static MountableLayoutResult layout(
-      LayoutContext context,
+      LayoutContext<?> context,
       int widthSpec,
       int heightSpec,
       CharSequence text,
@@ -182,7 +202,7 @@ public class TextMeasurementUtils {
     // run layout to ensure that spacing and spans are applied to processed text
     final Pair<Rect, TextLayout> intermediateResult =
         TextMeasurementUtils.layout(context, widthSpec, heightSpec, text, textStyle);
-    textLayout = (TextMeasurementUtils.TextLayout) intermediateResult.second;
+    textLayout = intermediateResult.second;
     // we just ran layout, so textLayoutContext should not be null
     textLayout.textLayoutTranslationY = topPadding;
 
@@ -225,6 +245,17 @@ public class TextMeasurementUtils {
       CharSequence text,
       TextStyle textStyle,
       boolean usePerformantTruncation) {
+    return layout(context, widthSpec, heightSpec, text, textStyle, usePerformantTruncation, false);
+  }
+
+  public static Pair<Rect, TextLayout> layout(
+      Context context,
+      int widthSpec,
+      int heightSpec,
+      CharSequence text,
+      TextStyle textStyle,
+      boolean usePerformantTruncation,
+      boolean useLegacyTextCustomEllipsisOffsetFix) {
     CharSequence processedText = text;
     final TextLayout textLayout = new TextLayout();
     textLayout.textStyle = textStyle;
@@ -270,53 +301,111 @@ public class TextMeasurementUtils {
 
     final Pair<Integer, Boolean> resolvedWidth = resolveWidth(widthSpec, layout, textStyle);
     final int layoutWidth = resolvedWidth.first;
-    final boolean recalculateLayoutForMinimalWidth = resolvedWidth.second;
+    final boolean isMinimallyWide = resolvedWidth.second;
 
-    // Handle custom text truncation or minimallyWide setting:
-    boolean hasCustomEllipsisText =
-        textStyle.customEllipsisText != null && !textStyle.customEllipsisText.equals("");
-    if (hasCustomEllipsisText || recalculateLayoutForMinimalWidth) {
+    // Handle custom text truncation:
+    final CharSequence customEllipsisText = textStyle.customEllipsisText;
+    if (customEllipsisText != null && !customEllipsisText.equals("")) {
       CharSequence maybeTruncated = processedText;
       boolean isTruncated = false;
-      if (hasCustomEllipsisText) {
-        if (textStyle.truncationStyle == TruncationStyle.FORCE_INLINE_TRUNCATION) {
-          int maxLines = getEllipsizedLineNumber(layout);
-          if (maxLines != -1) {
-            int lastLineWithWordsOrNumbers =
-                lastLineWithWordsOrNumbers(layout, maxLines, processedText);
+      if (textStyle.truncationStyle == TruncationStyle.FORCE_INLINE_TRUNCATION) {
+        int maxLines = getEllipsizedLineNumber(layout);
+        if (maxLines != -1) {
+          int lastLineWithWordsOrNumbers =
+              lastLineWithWordsOrNumbers(layout, maxLines, processedText);
+          layout =
+              TextMeasurementUtils.createTextLayout(
+                  context,
+                  textStyle,
+                  widthSpec,
+                  heightSpec,
+                  processedText,
+                  lastLineWithWordsOrNumbers);
+        }
+      }
+      final int ellipsizedLineNumber = getEllipsizedLineNumber(layout);
+      if (ellipsizedLineNumber != -1) {
+        maybeTruncated =
+            truncateText(
+                processedText,
+                customEllipsisText,
+                layout,
+                ellipsizedLineNumber,
+                layoutWidth,
+                usePerformantTruncation,
+                useLegacyTextCustomEllipsisOffsetFix,
+                textStyle);
+        isTruncated = true;
+      }
+      if (isTruncated) {
+        layout =
+            TextMeasurementUtils.createTextLayout(
+                context,
+                textStyle,
+                View.MeasureSpec.makeMeasureSpec(layoutWidth, View.MeasureSpec.EXACTLY),
+                heightSpec,
+                maybeTruncated);
+        if (maybeTruncated != processedText
+            && keepsAdvanceOffset(useLegacyTextCustomEllipsisOffsetFix, usePerformantTruncation)) {
+          // The kept offset is the closest one, so the prefix can be one grapheme too long and
+          // Android ellipsizes the custom ellipsis itself. Step back until it fits.
+          final BreakIterator graphemes = BreakIterator.getCharacterInstance();
+          graphemes.setText(processedText.toString());
+          int prefixLength = maybeTruncated.length() - customEllipsisText.length();
+          if (!graphemes.isBoundary(prefixLength)) {
+            // Never keep part of a grapheme, like a letter without its combining accent.
+            prefixLength = graphemes.preceding(prefixLength);
+            maybeTruncated =
+                TextUtils.concat(processedText.subSequence(0, prefixLength), customEllipsisText);
             layout =
                 TextMeasurementUtils.createTextLayout(
                     context,
                     textStyle,
-                    widthSpec,
+                    View.MeasureSpec.makeMeasureSpec(layoutWidth, View.MeasureSpec.EXACTLY),
+                    heightSpec,
+                    maybeTruncated);
+          }
+          for (int i = 0;
+              i < MAX_CUSTOM_ELLIPSIS_STEP_BACKS && getEllipsizedLineNumber(layout) != -1;
+              i++) {
+            prefixLength =
+                prefixLength > 0 ? graphemes.preceding(prefixLength) : BreakIterator.DONE;
+            if (prefixLength == BreakIterator.DONE) {
+              break;
+            }
+            maybeTruncated =
+                TextUtils.concat(processedText.subSequence(0, prefixLength), customEllipsisText);
+            layout =
+                TextMeasurementUtils.createTextLayout(
+                    context,
+                    textStyle,
+                    View.MeasureSpec.makeMeasureSpec(layoutWidth, View.MeasureSpec.EXACTLY),
+                    heightSpec,
+                    maybeTruncated);
+          }
+          if (getEllipsizedLineNumber(layout) != -1 && prefixLength > 0) {
+            // Out of steps and still cut by Android: the base-paint advance misjudged text with
+            // size-changing spans. The suffix can need earlier lines too, so search shorter
+            // prefixes down to the suffix alone and keep the longest that fits.
+            final Pair<CharSequence, Layout> fitting =
+                longestFittingPrefix(
+                    context,
+                    textStyle,
+                    layoutWidth,
                     heightSpec,
                     processedText,
-                    lastLineWithWordsOrNumbers);
+                    customEllipsisText,
+                    graphemes,
+                    0,
+                    prefixLength);
+            if (fitting != null) {
+              maybeTruncated = fitting.first;
+              layout = fitting.second;
+            }
           }
         }
-        final int ellipsizedLineNumber = getEllipsizedLineNumber(layout);
-        if (ellipsizedLineNumber != -1) {
-          maybeTruncated =
-              truncateText(
-                  processedText,
-                  textStyle.customEllipsisText,
-                  layout,
-                  ellipsizedLineNumber,
-                  layoutWidth,
-                  usePerformantTruncation,
-                  textStyle);
-          isTruncated = true;
-        }
-      }
-      layout =
-          TextMeasurementUtils.createTextLayout(
-              context,
-              textStyle,
-              View.MeasureSpec.makeMeasureSpec(layoutWidth, View.MeasureSpec.EXACTLY),
-              heightSpec,
-              maybeTruncated);
-      processedText = maybeTruncated;
-      if (isTruncated) {
+        processedText = maybeTruncated;
+        textLayout.fullText = text;
         textLayout.isExplicitlyTruncated = true;
       }
     }
@@ -382,6 +471,17 @@ public class TextMeasurementUtils {
     } else if (textStyle.alignment == TextAlignment.TEXT_END) {
       textLayout.textLayoutTranslationX = -textStyle.extraSpacingRight;
     }
+
+    // Apply minimallyWide translation adjustment to properly center/align text
+    // within the minimally-wide container.
+    if (isMinimallyWide && layout.getLineCount() > 1) {
+      float leftMost = layoutWidth;
+      for (int i = 0; i < layout.getLineCount(); i++) {
+        leftMost = Math.min(leftMost, layout.getLineLeft(i));
+      }
+      textLayout.textLayoutTranslationX = -leftMost;
+    }
+
     textLayout.textLayoutTranslationY = textLayoutTranslationY;
     if (processedText instanceof Spanned) {
       Spanned spanned = (Spanned) processedText;
@@ -485,9 +585,7 @@ public class TextMeasurementUtils {
       layoutBuilder.setLineHeight(textStyle.lineHeight);
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      layoutBuilder.setLetterSpacing(textStyle.letterSpacing);
-    }
+    layoutBuilder.setLetterSpacing(textStyle.letterSpacing);
 
     if (textStyle.minEms != TextStyle.UNSET) {
       layoutBuilder.setMinEms(textStyle.minEms);
@@ -513,46 +611,62 @@ public class TextMeasurementUtils {
       layoutBuilder.setTextStyle(textStyle.textStyle);
     }
 
-    final boolean isLocaleDirectionRTL = LayoutUtils.isLayoutDirectionRTL(context);
-    // We ignore the locale direction if the text direction is manually set.
-    final boolean ignoreLocaleDirection;
-    if (textStyle.textDirection == null) {
-      ignoreLocaleDirection = false;
-      textStyle.textDirection =
-          isLocaleDirectionRTL
+    final Boolean resolvedLayoutDirectionRtl = textStyle.resolvedLayoutDirectionRtl;
+    final boolean isLayoutDirectionRTL =
+        resolvedLayoutDirectionRtl != null
+            ? resolvedLayoutDirectionRtl
+            : LayoutUtils.isLayoutDirectionRTL(context);
+    // TEXT_START/TEXT_END follow the text's own direction when it's set manually or the host
+    // resolved the layout direction; otherwise they're relative to the locale on the first layout
+    // of a style. That branch writes the derived direction back into the style, so later layouts
+    // of the same style take the first branch.
+    final boolean ignoreLayoutDirection;
+    final TextDirectionHeuristicCompat textDirection;
+    if (textStyle.textDirection != null) {
+      ignoreLayoutDirection = true;
+      textDirection = textStyle.textDirection;
+    } else if (resolvedLayoutDirectionRtl != null) {
+      ignoreLayoutDirection = true;
+      textDirection =
+          isLayoutDirectionRTL
               ? TextDirectionHeuristicsCompat.FIRSTSTRONG_RTL
               : TextDirectionHeuristicsCompat.FIRSTSTRONG_LTR;
     } else {
-      ignoreLocaleDirection = true;
+      ignoreLayoutDirection = false;
+      textStyle.textDirection =
+          isLayoutDirectionRTL
+              ? TextDirectionHeuristicsCompat.FIRSTSTRONG_RTL
+              : TextDirectionHeuristicsCompat.FIRSTSTRONG_LTR;
+      textDirection = textStyle.textDirection;
     }
-    layoutBuilder.setTextDirection(textStyle.textDirection);
+    layoutBuilder.setTextDirection(textDirection);
 
-    final boolean isTextDirectionRTL = textStyle.textDirection.isRtl(text, 0, text.length());
+    final boolean isTextDirectionRTL = textDirection.isRtl(text, 0, text.length());
 
     final Layout.Alignment textAlignment;
     switch (textStyle.alignment) {
       default:
       case TEXT_START:
         textAlignment =
-            ignoreLocaleDirection || (isLocaleDirectionRTL == isTextDirectionRTL)
+            ignoreLayoutDirection || (isLayoutDirectionRTL == isTextDirectionRTL)
                 ? Layout.Alignment.ALIGN_NORMAL
                 : Layout.Alignment.ALIGN_OPPOSITE;
         break;
       case TEXT_END:
         textAlignment =
-            ignoreLocaleDirection || (isLocaleDirectionRTL == isTextDirectionRTL)
+            ignoreLayoutDirection || (isLayoutDirectionRTL == isTextDirectionRTL)
                 ? Layout.Alignment.ALIGN_OPPOSITE
                 : Layout.Alignment.ALIGN_NORMAL;
         break;
       case LAYOUT_START:
         textAlignment =
-            (isLocaleDirectionRTL == isTextDirectionRTL)
+            (isLayoutDirectionRTL == isTextDirectionRTL)
                 ? Layout.Alignment.ALIGN_NORMAL
                 : Layout.Alignment.ALIGN_OPPOSITE;
         break;
       case LAYOUT_END:
         textAlignment =
-            (isLocaleDirectionRTL == isTextDirectionRTL)
+            (isLayoutDirectionRTL == isTextDirectionRTL)
                 ? Layout.Alignment.ALIGN_OPPOSITE
                 : Layout.Alignment.ALIGN_NORMAL;
         break;
@@ -617,13 +731,34 @@ public class TextMeasurementUtils {
    * @return The provided text truncated in such a way that the 'customEllipsisText' can appear at
    *     the end.
    */
-  private static CharSequence truncateText(
+  @VisibleForTesting
+  static CharSequence truncateText(
       CharSequence text,
       CharSequence customEllipsisText,
       Layout newLayout,
       int ellipsizedLineNumber,
       float fullLayoutWidth,
       boolean usePerformantTruncation,
+      TextStyle textStyle) {
+    return truncateText(
+        text,
+        customEllipsisText,
+        newLayout,
+        ellipsizedLineNumber,
+        fullLayoutWidth,
+        usePerformantTruncation,
+        false,
+        textStyle);
+  }
+
+  static CharSequence truncateText(
+      CharSequence text,
+      CharSequence customEllipsisText,
+      Layout newLayout,
+      int ellipsizedLineNumber,
+      float fullLayoutWidth,
+      boolean usePerformantTruncation,
+      boolean useLegacyTextCustomEllipsisOffsetFix,
       TextStyle textStyle) {
     // Identify the X position at which to truncate the final line:
     // Note: The left position of the line is needed for the case of RTL text.
@@ -676,9 +811,12 @@ public class TextMeasurementUtils {
     }
 
     if (ellipsisOffset > 0) {
-      // getOffsetForHorizontal returns the closest character, but we need to guarantee no
-      // truncation, so subtract 1 from the result:
-      ellipsisOffset -= 1;
+      // Both lookups return the closest character, which may not fit, so the original
+      // implementation subtracts one to make room. Legacy Text with its offset fix keeps that
+      // character; layout() then steps back if it doesn't fit.
+      if (!keepsAdvanceOffset(useLegacyTextCustomEllipsisOffsetFix, usePerformantTruncation)) {
+        ellipsisOffset -= 1;
+      }
 
       // Ensure that we haven't chosen an ellipsisOffset that's past the end of the ellipsis start.
       // This can occur in several cases, including when the width of the customEllipsisText is less
@@ -693,6 +831,16 @@ public class TextMeasurementUtils {
           ellipsisOffset = ellipsisStart;
         }
       }
+
+      // Don't split in the middle of a surrogate pair. If ellipsisOffset points
+      // to a low surrogate (the second half of a surrogate pair), move back one
+      // more position to truncate before the surrogate pair.
+      if (ellipsisOffset > 0
+          && ellipsisOffset < text.length()
+          && Character.isLowSurrogate(text.charAt(ellipsisOffset))) {
+        ellipsisOffset -= 1;
+      }
+
       if (ellipsisOffset >= 0 && ellipsisOffset < text.length()) {
         return TextUtils.concat(text.subSequence(0, ellipsisOffset), customEllipsisText);
       } else {
@@ -701,6 +849,63 @@ public class TextMeasurementUtils {
     } else {
       return text;
     }
+  }
+
+  /**
+   * The longest prefix ending on a grapheme boundary in [{@code from}, {@code before}) that,
+   * followed by {@code suffix}, lays out without Android ellipsizing it, or null if none does.
+   * Longer prefixes take more room, so the boundaries are binary searched.
+   */
+  private static @Nullable Pair<CharSequence, Layout> longestFittingPrefix(
+      Context context,
+      TextStyle textStyle,
+      int layoutWidth,
+      int heightSpec,
+      CharSequence text,
+      CharSequence suffix,
+      BreakIterator graphemes,
+      int from,
+      int before) {
+    final List<Integer> boundaries = new ArrayList<>();
+    final int first = graphemes.isBoundary(from) ? from : graphemes.following(from);
+    for (int offset = first;
+        offset != BreakIterator.DONE && offset < before;
+        offset = graphemes.following(offset)) {
+      boundaries.add(offset);
+    }
+    @Nullable Pair<CharSequence, Layout> best = null;
+    int low = 0;
+    int high = boundaries.size() - 1;
+    while (low <= high) {
+      final int middle = (low + high) >>> 1;
+      final CharSequence candidate =
+          TextUtils.concat(text.subSequence(0, boundaries.get(middle)), suffix);
+      final Layout layout =
+          TextMeasurementUtils.createTextLayout(
+              context,
+              textStyle,
+              View.MeasureSpec.makeMeasureSpec(layoutWidth, View.MeasureSpec.EXACTLY),
+              heightSpec,
+              candidate);
+      if (getEllipsizedLineNumber(layout) == -1) {
+        best = new Pair<>(candidate, layout);
+        low = middle + 1;
+      } else {
+        high = middle - 1;
+      }
+    }
+    return best;
+  }
+
+  /**
+   * Whether truncation keeps the closest offset from {@code Paint.getOffsetForAdvance} instead of
+   * one character less, as legacy Litho Text does with its custom ellipsis offset fix.
+   */
+  private static boolean keepsAdvanceOffset(
+      boolean useLegacyTextCustomEllipsisOffsetFix, boolean usePerformantTruncation) {
+    return useLegacyTextCustomEllipsisOffsetFix
+        && usePerformantTruncation
+        && Build.VERSION.SDK_INT >= 23;
   }
 
   /**
@@ -740,11 +945,6 @@ public class TextMeasurementUtils {
   }
 
   /**
-   * Prior to version 20, If the Layout specifies extra space between lines (either by spacingmult
-   * or spacingadd) the StaticLayout would erroneously add this space after the last line as well.
-   * This bug was fixed in version 20. This method calculates the extra space and reduces the height
-   * by that amount.
-   *
    * @param layout The layout.
    * @return The height of the layout.
    */
@@ -753,21 +953,7 @@ public class TextMeasurementUtils {
       return 0;
     }
 
-    int extra = 0;
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT_WATCH
-        && layout instanceof StaticLayout) {
-      int line = Math.max(0, layout.getLineCount() - 1);
-      int above = layout.getLineAscent(line);
-      int below = layout.getLineDescent(line);
-      float originalSize = (below - above - layout.getSpacingAdd()) / layout.getSpacingMultiplier();
-      float ex = below - above - originalSize;
-      if (ex >= 0) {
-        extra = (int) (ex + 0.5);
-      } else {
-        extra = -(int) (-ex + 0.5);
-      }
-    }
-    return layout.getHeight() - extra;
+    return layout.getHeight();
   }
 
   /**

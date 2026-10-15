@@ -23,7 +23,7 @@ import androidx.recyclerview.widget.LinearSmoothScroller
 class EdgeSnappingSmoothScroller(
     context: Context,
     private val snapPreference: Int,
-    private val offset: Int
+    private val offset: Int,
 ) : LinearSmoothScroller(context) {
 
   override fun calculateDtToFit(
@@ -31,7 +31,7 @@ class EdgeSnappingSmoothScroller(
       viewEnd: Int,
       boxStart: Int,
       boxEnd: Int,
-      snapPreference: Int
+      snapPreference: Int,
   ): Int {
     val result = super.calculateDtToFit(viewStart, viewEnd, boxStart, boxEnd, snapPreference)
     return result + offset

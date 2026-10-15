@@ -60,7 +60,7 @@ class UseProducerTest {
       override fun ComponentScope.render(): Component {
         val value = useProducer(initialValue = { false }, Unit) { stateFlow.collect { update(it) } }
         stateRef.set(value)
-        return Row()
+        return EmptyComponent()
       }
     }
 
@@ -85,7 +85,7 @@ class UseProducerTest {
         val value =
             useProducer(initialValue = { false }, Unit) { stateFlow.collect { updateSync(it) } }
         stateRef.set(value)
-        return Row()
+        return EmptyComponent()
       }
     }
 
@@ -109,7 +109,7 @@ class UseProducerTest {
         val value =
             useProducer(initialValue = { 0 }, Unit) { sharedFlow.collect { update { it + 1 } } }
         stateRef.set(value)
-        return Row()
+        return EmptyComponent()
       }
     }
 
@@ -140,7 +140,7 @@ class UseProducerTest {
         val value =
             useProducer(initialValue = { 0 }, Unit) { sharedFlow.collect { updateSync { it + 1 } } }
         stateRef.set(value)
-        return Row()
+        return EmptyComponent()
       }
     }
 
@@ -176,7 +176,7 @@ class UseProducerTest {
             events.add("cancel $dep")
           }
         }
-        return Row()
+        return EmptyComponent()
       }
     }
 
@@ -211,7 +211,7 @@ class UseProducerTest {
             events.add("cancel $dep1:$dep2")
           }
         }
-        return Row()
+        return EmptyComponent()
       }
     }
 

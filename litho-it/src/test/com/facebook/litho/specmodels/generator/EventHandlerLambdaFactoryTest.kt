@@ -18,7 +18,7 @@ package com.facebook.litho.specmodels.generator
 
 import android.view.View
 import com.facebook.litho.ClickEvent
-import com.facebook.litho.Column
+import com.facebook.litho.Column as ColumnBuilder
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.annotations.Event
@@ -69,26 +69,16 @@ class EventHandlerLambdaFactoryTest {
     Assertions.assertThat(holder.methodSpecs[1].toString())
         .isEqualTo(
             """
+            @java.lang.SuppressWarnings({"unchecked", "cast"})
             static kotlin.jvm.functions.Function1<com.facebook.litho.ClickEvent, kotlin.Unit> onClickAsLambda(
                 final com.facebook.litho.ComponentContext c,
                 @org.jetbrains.annotations.NotNull final java.lang.String something) {
-              final TestLayout _ref = (TestLayout) c.getComponentScope();
-              return new kotlin.jvm.functions.Function1<com.facebook.litho.ClickEvent, kotlin.Unit>() {
-                @Override
-                public kotlin.Unit invoke(com.facebook.litho.ClickEvent e) {
-                  TestLayoutSpec.INSTANCE.onClick(
-                    c,
-                    (android.view.View) _ref.view,
-                    (java.lang.String) _ref.name,
-                    (int) _ref.age,
-                    something);
-                  return kotlin.Unit.INSTANCE;
-                }
-              };
+              return new com.facebook.litho.EquivalentEventLambda<com.facebook.litho.ClickEvent, kotlin.Unit>(TestLayout.onClick(c, something), true);
             }
-            
+
             """
-                .trimIndent())
+                .trimIndent(),
+        )
   }
 
   @Test
@@ -108,25 +98,16 @@ class EventHandlerLambdaFactoryTest {
     Assertions.assertThat(holder.methodSpecs[3].toString())
         .isEqualTo(
             """
+            @java.lang.SuppressWarnings({"unchecked", "cast"})
             static kotlin.jvm.functions.Function1<com.facebook.litho.specmodels.generator.EventHandlerLambdaFactoryTest.StringEvent, java.lang.String> getStringAsLambda(
                 final com.facebook.litho.ComponentContext c,
                 @org.jetbrains.annotations.NotNull final java.lang.String something) {
-              final TestLayout _ref = (TestLayout) c.getComponentScope();
-              return new kotlin.jvm.functions.Function1<com.facebook.litho.specmodels.generator.EventHandlerLambdaFactoryTest.StringEvent, java.lang.String>() {
-                @Override
-                public java.lang.String invoke(com.facebook.litho.specmodels.generator.EventHandlerLambdaFactoryTest.StringEvent e) {
-                  java.lang.String _result = (java.lang.String) TestLayoutSpec.INSTANCE.getString(
-                    c,
-                    (java.lang.String) _ref.name,
-                    (int) _ref.age,
-                    something);
-                  return _result;
-                }
-              };
+              return new com.facebook.litho.EquivalentEventLambda<com.facebook.litho.specmodels.generator.EventHandlerLambdaFactoryTest.StringEvent, java.lang.String>(TestLayout.getString(c, something), false);
             }
-            
+
             """
-                .trimIndent())
+                .trimIndent(),
+        )
   }
 
   @ExcuseMySpec(reason = Reason.LEGACY)
@@ -137,9 +118,9 @@ class EventHandlerLambdaFactoryTest {
         c: ComponentContext,
         @Prop name: String,
         @Prop age: Int,
-        @Prop id: Long
+        @Prop id: Long,
     ): Component {
-      return Column.create(c).build()
+      return ColumnBuilder.create(c).build()
     }
 
     @OnEvent(ClickEvent::class)

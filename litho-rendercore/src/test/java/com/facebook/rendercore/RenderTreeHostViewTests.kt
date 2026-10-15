@@ -22,7 +22,7 @@ import android.view.View
 import com.facebook.rendercore.RenderResult.Companion.render
 import com.facebook.rendercore.testing.TestNode
 import com.facebook.rendercore.testing.TestRenderUnit
-import org.assertj.core.api.Java6Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -40,24 +40,32 @@ class RenderTreeHostViewTests {
     val didMount = BooleanArray(1)
     renderUnit.addOptionalMountBinder(
         RenderUnit.DelegateBinder.createDelegateBinder(
-            null, SimpleTestBinder { didMount[0] = true }))
+            null,
+            SimpleTestBinder { didMount[0] = true },
+        ),
+    )
     node.setRenderUnit(renderUnit)
-    val renderTree =
-        render(
-                c,
-                ResolveResult<Node<Any?>, Any?>(node),
-                null,
-                null,
-                null,
-                0,
-                SizeConstraints(0, 100, 0, 100))
-            .renderTree
-    renderTreeHostView.setRenderTree(renderTree)
+    val mountInput = render(
+        c,
+        ResolveResult<Node<Any?>, Any?>(node),
+        null,
+        null,
+        null,
+        0,
+        SizeConstraints(0, 100, 0, 100),
+    )
+        .mountInput
+    renderTreeHostView.setMountInput(mountInput)
     renderTreeHostView.measure(
         View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.AT_MOST),
-        View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.AT_MOST))
+        View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.AT_MOST),
+    )
     renderTreeHostView.layout(
-        0, 0, renderTreeHostView.measuredWidth, renderTreeHostView.measuredHeight)
+        0,
+        0,
+        renderTreeHostView.measuredWidth,
+        renderTreeHostView.measuredHeight,
+    )
     assertThat(didMount[0]).isTrue
   }
 
@@ -72,22 +80,33 @@ class RenderTreeHostViewTests {
     val node1 = RenderTreeNode(null, renderUnit1, null, Rect(), null, 0)
     val node2 = RenderTreeNode(null, renderUnit2, null, Rect(), null, 1)
     var exceptionOccurred = false
+    var renderTree: RenderTree? = null
     try {
-      // RenderTree ctor should detect duplicate RU ids and throw an illegal state exception here.
-      RenderTree(
-          node1,
-          arrayOf(node1, node2),
-          null,
-          SizeConstraints.exact(0, 0),
-          RenderState.NO_ID,
-          null,
-          null,
-          null)
+      // RenderTree ctor should detect duplicate RU ids but now logs an error instead of throwing.
+      renderTree =
+          RenderTree(
+              node1,
+              arrayOf(node1, node2),
+              null,
+              SizeConstraints.exact(0, 0),
+              RenderState.NO_ID,
+              null,
+              null,
+              null,
+          )
     } catch (e: IllegalStateException) {
-      // Exception occurred as expected, raise flag indicate valid state for assert.
+      // Exception should NOT occur with the new graceful error handling.
       exceptionOccurred = true
     }
-    assertThat(exceptionOccurred).isTrue
+    if (BuildConfig.DEBUG) {
+      assertThat(exceptionOccurred).isTrue
+    } else {
+      // Verify that no exception was thrown and RenderTree was created successfully.
+      assertThat(exceptionOccurred).isFalse
+      assertThat(renderTree).isNotNull
+      // Verify that only the first occurrence is kept (duplicate is skipped).
+      assertThat(renderTree?.getRenderTreeNodeIndex(1)).isEqualTo(0)
+    }
   }
 
   @Test
@@ -97,20 +116,21 @@ class RenderTreeHostViewTests {
     val node = TestNode(0, 0, 99, 99)
     val renderUnit: RenderUnit<*> = TestRenderUnit()
     node.setRenderUnit(renderUnit)
-    val renderTree =
-        render(
-                c,
-                ResolveResult<Node<Any?>, Any?>(node),
-                null,
-                null,
-                null,
-                0,
-                SizeConstraints(0, 100, 0, 100))
-            .renderTree
-    renderTreeHostView.setRenderTree(renderTree)
+    val renderTree = render(
+        c,
+        ResolveResult<Node<Any?>, Any?>(node),
+        null,
+        null,
+        null,
+        0,
+        SizeConstraints(0, 100, 0, 100),
+    )
+        .mountInput
+    renderTreeHostView.setMountInput(renderTree)
     renderTreeHostView.measure(
         View.MeasureSpec.makeMeasureSpec(200, View.MeasureSpec.EXACTLY),
-        View.MeasureSpec.makeMeasureSpec(200, View.MeasureSpec.EXACTLY))
+        View.MeasureSpec.makeMeasureSpec(200, View.MeasureSpec.EXACTLY),
+    )
     assertThat(renderTreeHostView.measuredWidth).isEqualTo(99)
     assertThat(renderTreeHostView.measuredHeight).isEqualTo(99)
   }
@@ -124,7 +144,10 @@ class RenderTreeHostViewTests {
     val nestedMountRenderUnit: RenderUnit<*> = TestRenderUnit()
     nestedMountRenderUnit.addOptionalMountBinder(
         RenderUnit.DelegateBinder.createDelegateBinder(
-            null, SimpleTestBinder { didMount[0] = true }))
+            null,
+            SimpleTestBinder { didMount[0] = true },
+        ),
+    )
     nestedMountTestNode.setRenderUnit(nestedMountRenderUnit)
     val node = TestNode()
     val renderUnit: RenderUnit<*> = TestRenderUnit()
@@ -132,35 +155,44 @@ class RenderTreeHostViewTests {
         RenderUnit.DelegateBinder.createDelegateBinder(
             null,
             SimpleTestBinder {
-              renderTreeHostView.setRenderTree(
+              renderTreeHostView.setMountInput(
                   render(
-                          c,
-                          ResolveResult<Node<Any?>, Any?>(nestedMountTestNode),
-                          null,
-                          null,
-                          null,
-                          0,
-                          SizeConstraints(0, 100, 0, 100))
-                      .renderTree)
-            }))
+                      c,
+                      ResolveResult<Node<Any?>, Any?>(nestedMountTestNode),
+                      null,
+                      null,
+                      null,
+                      0,
+                      SizeConstraints(0, 100, 0, 100),
+                  )
+                      .mountInput,
+              )
+            },
+        ),
+    )
     node.setRenderUnit(renderUnit)
-    val renderTree =
-        render(
-                c,
-                ResolveResult<Node<Any?>, Any?>(nestedMountTestNode),
-                null,
-                null,
-                null,
-                0,
-                SizeConstraints(0, 100, 0, 100))
-            .renderTree
-    renderTreeHostView.setRenderTree(renderTree)
+    val mountInput = render(
+        c,
+        ResolveResult<Node<Any?>, Any?>(nestedMountTestNode),
+        null,
+        null,
+        null,
+        0,
+        SizeConstraints(0, 100, 0, 100),
+    )
+        .mountInput
+    renderTreeHostView.setMountInput(mountInput)
     renderTreeHostView.measure(
         View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.AT_MOST),
-        View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.AT_MOST))
+        View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.AT_MOST),
+    )
     assertThat(didMount[0]).isFalse
     renderTreeHostView.layout(
-        0, 0, renderTreeHostView.measuredWidth, renderTreeHostView.measuredHeight)
+        0,
+        0,
+        renderTreeHostView.measuredWidth,
+        renderTreeHostView.measuredHeight,
+    )
     assertThat(didMount[0]).isTrue
   }
 }

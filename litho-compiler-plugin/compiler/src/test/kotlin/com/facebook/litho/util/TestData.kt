@@ -23,5 +23,5 @@ class TestData(
     val processor: AbstractTestProcessor,
     val processorExpectedOutput: String,
     val compilerExpectedOutput: String,
-    val sourceFiles: List<SourceFile>
+    val sourceFiles: List<SourceFile>,
 )

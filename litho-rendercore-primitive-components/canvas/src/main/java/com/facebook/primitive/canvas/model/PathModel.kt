@@ -23,8 +23,8 @@ import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClas
 import com.facebook.primitive.canvas.CanvasState
 import com.facebook.primitive.canvas.addArc
 import com.facebook.primitive.utils.types.FillRule
-import com.facebook.primitive.utils.types.Point
-import com.facebook.primitive.utils.types.Size
+import com.facebook.rendercore.geometry.Point
+import com.facebook.rendercore.geometry.Size
 
 sealed interface CanvasPathModel : CanvasShape {
   fun toAndroidPath(state: CanvasState): Path
@@ -46,7 +46,7 @@ sealed interface CanvasPathChildModel {
 @DataClassGenerate
 data class CanvasPath(
     private val fillRule: FillRule,
-    private val children: List<CanvasPathChildModel>
+    private val children: List<CanvasPathChildModel>,
 ) : CanvasPathModel {
   override fun toAndroidPath(state: CanvasState): Path {
     return Path().apply {
@@ -119,11 +119,17 @@ data class CanvasPathQuadTo(private val controlPoint: Point, private val endPoin
 data class CanvasPathCubicTo(
     private val controlPoint1: Point,
     private val controlPoint2: Point,
-    private val endPoint: Point
+    private val endPoint: Point,
 ) : CanvasPathChildModel {
   override fun applyTo(androidPath: Path, state: CanvasState) {
     androidPath.cubicTo(
-        controlPoint1.x, controlPoint1.y, controlPoint2.x, controlPoint2.y, endPoint.x, endPoint.y)
+        controlPoint1.x,
+        controlPoint1.y,
+        controlPoint2.x,
+        controlPoint2.y,
+        endPoint.x,
+        endPoint.y,
+    )
   }
 }
 
@@ -162,14 +168,15 @@ data class CanvasPathArc(
 data class CanvasPathRect(
     private val topLeft: Point,
     private val size: Size,
-    private val cornerRadius: Float
+    private val cornerRadius: Float,
 ) : CanvasPathChildModel {
   override fun applyTo(androidPath: Path, state: CanvasState) {
     androidPath.addRoundRect(
         RectF(topLeft.x, topLeft.y, topLeft.x + size.width, topLeft.y + size.height),
         cornerRadius,
         cornerRadius,
-        Path.Direction.CW)
+        Path.Direction.CW,
+    )
   }
 }
 
@@ -186,7 +193,8 @@ data class CanvasPathEllipse(private val topLeft: Point, private val size: Size)
   override fun applyTo(androidPath: Path, state: CanvasState) {
     androidPath.addOval(
         RectF(topLeft.x, topLeft.y, topLeft.x + size.width, topLeft.y + size.height),
-        Path.Direction.CW)
+        Path.Direction.CW,
+    )
   }
 }
 
@@ -227,7 +235,7 @@ object CanvasPathClose : CanvasPathChildModel {
 @DataClassGenerate
 data class CanvasPathAdd(
     private val src: CanvasPathModel,
-    private val transformModel: CanvasTransformModel
+    private val transformModel: CanvasTransformModel,
 ) : CanvasPathChildModel {
   override fun applyTo(androidPath: Path, state: CanvasState) {
     val srcPath =

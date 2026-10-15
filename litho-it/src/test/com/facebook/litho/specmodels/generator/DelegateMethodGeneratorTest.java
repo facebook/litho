@@ -134,6 +134,7 @@ public class DelegateMethodGeneratorTest {
     assertThat(typeSpecDataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
             "@java.lang.Override\n"
+                + "@java.lang.SuppressWarnings(\"cast\")\n"
                 + "protected com.facebook.litho.Component"
                 + " onCreateLayout(com.facebook.litho.ComponentContext c) {\n"
                 + "  com.facebook.litho.Component _result;\n"
@@ -212,6 +213,7 @@ public class DelegateMethodGeneratorTest {
     assertThat(typeSpecDataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
             "@java.lang.Override\n"
+                + "@java.lang.SuppressWarnings(\"cast\")\n"
                 + "protected com.facebook.litho.Component"
                 + " onCreateLayout(com.facebook.litho.ComponentContext c) {\n"
                 + "  com.facebook.litho.Component _result;\n"

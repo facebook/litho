@@ -19,6 +19,7 @@ package com.facebook.litho
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.components.StateUpdateTestLayout
+import com.facebook.litho.state.StateId
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.TestLithoView
@@ -48,7 +49,7 @@ open class StateUpdatesTest {
   private lateinit var testComponent: StateUpdateTestComponent
   private lateinit var testLithoView: TestLithoView
   private lateinit var componentTree: ComponentTree
-  private lateinit var testComponentKey: String
+  private lateinit var testComponentKey: GlobalKey
 
   @JvmField
   @Rule
@@ -62,10 +63,10 @@ open class StateUpdatesTest {
     widthSpec = exactly(39)
     heightSpec = exactly(41)
     testComponent = StateUpdateTestComponent()
-    testComponentKey = testComponent.key
     testLithoView =
         lithoTestRule.render(widthSpec = widthSpec, heightSpec = heightSpec) { testComponent }
     componentTree = testLithoView.componentTree
+    testComponentKey = stateContainersMap!!.keys.single()
   }
 
   @After
@@ -125,7 +126,11 @@ open class StateUpdatesTest {
   @Test
   fun testKeepUpdatedStateValue() {
     componentTree.updateStateAsync(
-        testComponentKey, StateUpdateTestComponent.createIncrementStateUpdate(), "test", false)
+        testComponentKey,
+        StateUpdateTestComponent.createIncrementStateUpdate(),
+        "test",
+        false,
+    )
     backgroundLayoutLooperRule.runToEndOfTasksSync()
     val previousStateContainer =
         stateContainersMap?.get(testComponentKey) as StateUpdateTestComponent.TestStateContainer?
@@ -137,22 +142,35 @@ open class StateUpdatesTest {
   @Test
   fun testClearUnusedStateContainers() {
     componentTree.updateStateSync(
-        testComponentKey, StateUpdateTestComponent.createIncrementStateUpdate(), "test", false)
+        testComponentKey,
+        StateUpdateTestComponent.createIncrementStateUpdate(),
+        "test",
+        false,
+    )
     assertThat(stateContainersMap?.keys?.size).isEqualTo(1)
     assertThat(stateContainersMap?.keys?.contains(testComponentKey)).isTrue
     val child1 = StateUpdateTestComponent()
     child1.key = "key"
     testLithoView.setRootAndSizeSpecSync(child1, exactly(1_000), unspecified())
+    val child1Key = resolveState!!.state!!.keys.first()
     componentTree.updateStateSync(
-        "\$key", StateUpdateTestComponent.createIncrementStateUpdate(), "test", false)
+        child1Key,
+        StateUpdateTestComponent.createIncrementStateUpdate(),
+        "test",
+        false,
+    )
     assertThat(stateContainersMap?.keys?.size).isEqualTo(1)
-    assertThat(stateContainersMap?.keys?.contains("\$key")).isTrue
+    assertThat(stateContainersMap?.keys?.contains(child1Key)).isTrue
   }
 
   @Test
   fun testClearAppliedStateUpdates() {
     componentTree.updateStateAsync(
-        testComponentKey, StateUpdateTestComponent.createIncrementStateUpdate(), "test", false)
+        testComponentKey,
+        StateUpdateTestComponent.createIncrementStateUpdate(),
+        "test",
+        false,
+    )
     assertThat(getPendingStateUpdatesForComponent(testComponentKey)).hasSize(1)
     backgroundLayoutLooperRule.runToEndOfTasksSync()
     assertThat(getPendingStateUpdatesForComponent(testComponentKey)).isNull()
@@ -161,15 +179,23 @@ open class StateUpdatesTest {
   @Test
   fun testEnqueueStateUpdate() {
     componentTree.updateStateAsync(
-        testComponentKey, StateUpdateTestComponent.createIncrementStateUpdate(), "test", false)
+        testComponentKey,
+        StateUpdateTestComponent.createIncrementStateUpdate(),
+        "test",
+        false,
+    )
     assertThat(getPendingStateUpdatesForComponent(testComponentKey)).hasSize(1)
     backgroundLayoutLooperRule.runToEndOfTasksSync()
     componentTree.updateStateAsync(
-        testComponentKey, StateUpdateTestComponent.createIncrementStateUpdate(), "test", false)
+        testComponentKey,
+        StateUpdateTestComponent.createIncrementStateUpdate(),
+        "test",
+        false,
+    )
     assertThat(
-            (stateContainersMap?.get(testComponentKey)
-                    as StateUpdateTestComponent.TestStateContainer?)
-                ?.count)
+        (stateContainersMap?.get(testComponentKey) as StateUpdateTestComponent.TestStateContainer?)
+            ?.count,
+    )
         .isEqualTo(StateUpdateTestComponent.INITIAL_COUNT_STATE_VALUE + 1)
     assertThat(getPendingStateUpdatesForComponent(testComponentKey)).hasSize(1)
   }
@@ -177,7 +203,11 @@ open class StateUpdatesTest {
   @Test
   fun testEnqueueStateUpdate_checkAppliedStateUpdate() {
     componentTree.updateStateAsync(
-        testComponentKey, StateUpdateTestComponent.createIncrementStateUpdate(), "test", false)
+        testComponentKey,
+        StateUpdateTestComponent.createIncrementStateUpdate(),
+        "test",
+        false,
+    )
     assertThat(getPendingStateUpdatesForComponent(testComponentKey)).hasSize(1)
     backgroundLayoutLooperRule.runToEndOfTasksSync()
     assertThat(getPendingStateUpdatesForComponent(testComponentKey)).isNullOrEmpty()
@@ -192,7 +222,11 @@ open class StateUpdatesTest {
   @Test
   fun testUpdateState() {
     componentTree.updateStateAsync(
-        testComponentKey, StateUpdateTestComponent.createIncrementStateUpdate(), "test", false)
+        testComponentKey,
+        StateUpdateTestComponent.createIncrementStateUpdate(),
+        "test",
+        false,
+    )
     backgroundLayoutLooperRule.runToEndOfTasksSync()
     assertThat(testComponent.componentForStateUpdate.getCount(context))
         .isEqualTo(StateUpdateTestComponent.INITIAL_COUNT_STATE_VALUE + 1)
@@ -204,19 +238,27 @@ open class StateUpdatesTest {
       throw RuntimeException("Should not have computed a new layout!")
     }
     componentTree.updateStateLazy(
-        testComponentKey, StateUpdateTestComponent.createIncrementStateUpdate())
+        testComponentKey,
+        StateUpdateTestComponent.createIncrementStateUpdate(),
+    )
     backgroundLayoutLooperRule.runToEndOfTasksSync()
   }
 
   @Test
   fun testLazyUpdateState_isCommittedOnlyOnRelayout() {
     componentTree.updateStateLazy(
-        testComponentKey, StateUpdateTestComponent.createIncrementStateUpdate())
+        testComponentKey,
+        StateUpdateTestComponent.createIncrementStateUpdate(),
+    )
     backgroundLayoutLooperRule.runToEndOfTasksSync()
     assertThat(testComponent.componentForStateUpdate.getCount(context))
         .isEqualTo(StateUpdateTestComponent.INITIAL_COUNT_STATE_VALUE)
     componentTree.updateStateAsync(
-        testComponentKey, StateUpdateTestComponent.createNoopStateUpdate(), "test", false)
+        testComponentKey,
+        StateUpdateTestComponent.createNoopStateUpdate(),
+        "test",
+        false,
+    )
     backgroundLayoutLooperRule.runToEndOfTasksSync()
     assertThat(testComponent.componentForStateUpdate.getCount(context))
         .isEqualTo(StateUpdateTestComponent.INITIAL_COUNT_STATE_VALUE + 1)
@@ -225,11 +267,19 @@ open class StateUpdatesTest {
   @Test
   fun testLazyUpdateState_isCommittedInCorrectOrder() {
     componentTree.updateStateLazy(
-        testComponentKey, StateUpdateTestComponent.createIncrementStateUpdate())
+        testComponentKey,
+        StateUpdateTestComponent.createIncrementStateUpdate(),
+    )
     componentTree.updateStateLazy(
-        testComponentKey, StateUpdateTestComponent.createMultiplyStateUpdate())
+        testComponentKey,
+        StateUpdateTestComponent.createMultiplyStateUpdate(),
+    )
     componentTree.updateStateAsync(
-        testComponentKey, StateUpdateTestComponent.createIncrementStateUpdate(), "test", false)
+        testComponentKey,
+        StateUpdateTestComponent.createIncrementStateUpdate(),
+        "test",
+        false,
+    )
     backgroundLayoutLooperRule.runToEndOfTasksSync()
     assertThat(testComponent.componentForStateUpdate.getCount(context))
         .isEqualTo((StateUpdateTestComponent.INITIAL_COUNT_STATE_VALUE + 1) * 2 + 1)
@@ -238,11 +288,19 @@ open class StateUpdatesTest {
   @Test
   fun testLazyUpdateState_everyLazyUpdateThatManagesToBeEnqueuedBeforeActualRelayoutGetsCommitted() {
     componentTree.updateStateLazy(
-        testComponentKey, StateUpdateTestComponent.createIncrementStateUpdate())
+        testComponentKey,
+        StateUpdateTestComponent.createIncrementStateUpdate(),
+    )
     componentTree.updateStateAsync(
-        testComponentKey, StateUpdateTestComponent.createMultiplyStateUpdate(), "test", false)
+        testComponentKey,
+        StateUpdateTestComponent.createMultiplyStateUpdate(),
+        "test",
+        false,
+    )
     componentTree.updateStateLazy(
-        testComponentKey, StateUpdateTestComponent.createIncrementStateUpdate())
+        testComponentKey,
+        StateUpdateTestComponent.createIncrementStateUpdate(),
+    )
     backgroundLayoutLooperRule.runToEndOfTasksSync()
     assertThat(testComponent.componentForStateUpdate.getCount(context))
         .isEqualTo((StateUpdateTestComponent.INITIAL_COUNT_STATE_VALUE + 1) * 2 + 1)
@@ -251,7 +309,11 @@ open class StateUpdatesTest {
   @Test
   fun testTransferState() {
     componentTree.updateStateAsync(
-        testComponentKey, StateUpdateTestComponent.createIncrementStateUpdate(), "test", false)
+        testComponentKey,
+        StateUpdateTestComponent.createIncrementStateUpdate(),
+        "test",
+        false,
+    )
     backgroundLayoutLooperRule.runToEndOfTasksSync()
     componentTree.setSizeSpec(widthSpec, heightSpec)
     assertThat(testComponent.componentForStateUpdate.getCount(context))
@@ -261,10 +323,18 @@ open class StateUpdatesTest {
   @Test
   fun testTransferAndUpdateState() {
     componentTree.updateStateAsync(
-        testComponentKey, StateUpdateTestComponent.createIncrementStateUpdate(), "test", false)
+        testComponentKey,
+        StateUpdateTestComponent.createIncrementStateUpdate(),
+        "test",
+        false,
+    )
     backgroundLayoutLooperRule.runToEndOfTasksSync()
     componentTree.updateStateAsync(
-        testComponentKey, StateUpdateTestComponent.createIncrementStateUpdate(), "test", false)
+        testComponentKey,
+        StateUpdateTestComponent.createIncrementStateUpdate(),
+        "test",
+        false,
+    )
     backgroundLayoutLooperRule.runToEndOfTasksSync()
     assertThat(testComponent.componentForStateUpdate.getCount(context))
         .isEqualTo(StateUpdateTestComponent.INITIAL_COUNT_STATE_VALUE + 2)
@@ -272,7 +342,7 @@ open class StateUpdatesTest {
 
   @Test
   fun testStateContainerDrained() {
-    val componentTree = ComponentTree.create(context).build()
+    val componentTree = ComponentTree.create(context).enableChildClipping(true).build()
     val check = CountDownLatch(2)
     val waitForFirstLayoutToStart = CountDownLatch(1)
     val waitForFirstThreadToStart = CountDownLatch(1)
@@ -296,7 +366,8 @@ open class StateUpdatesTest {
                     .outStateValue(stateValue)
                     .build(),
                 exactly(100),
-                exactly(100))
+                exactly(100),
+            )
             check.countDown()
           }
         }
@@ -312,7 +383,8 @@ open class StateUpdatesTest {
                     .outStateValue(secondStateValue)
                     .build(),
                 exactly(200),
-                exactly(200))
+                exactly(200),
+            )
             check.countDown()
           }
         }
@@ -327,15 +399,16 @@ open class StateUpdatesTest {
   }
 
   private val resolveState: StateHandler?
-    get() = componentTree.treeState?.resolveState
+    get() = componentTree.committedTreeState?.resolveState
 
-  private val stateContainersMap: Map<String, StateContainer>?
+  private val stateContainersMap: Map<GlobalKey, StateContainer>?
     get() = resolveState?.state?.mapValues { it.value.value }
 
-  private val pendingStateUpdates: Map<String, List<StateContainer.StateUpdate>>?
+  private val pendingStateUpdates: Map<StateId, List<StateContainer.StateUpdate>>?
     get() = resolveState?.pendingStateUpdates
 
   private fun getPendingStateUpdatesForComponent(
-      globalKey: String?
-  ): List<StateContainer.StateUpdate>? = pendingStateUpdates?.get(globalKey)
+      globalKey: GlobalKey?,
+  ): List<StateContainer.StateUpdate>? =
+      pendingStateUpdates?.get(StateId.forSpec(componentTree.id, globalKey ?: StringGlobalKey("")))
 }

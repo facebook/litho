@@ -28,6 +28,7 @@ import com.facebook.litho.ViewAttributes.Companion.unsetAmbientShadowColor
 import com.facebook.litho.ViewAttributes.Companion.unsetClickHandler
 import com.facebook.litho.ViewAttributes.Companion.unsetContentDescription
 import com.facebook.litho.ViewAttributes.Companion.unsetFocusChangeHandler
+import com.facebook.litho.ViewAttributes.Companion.unsetForeground
 import com.facebook.litho.ViewAttributes.Companion.unsetInterceptTouchEventHandler
 import com.facebook.litho.ViewAttributes.Companion.unsetLongClickHandler
 import com.facebook.litho.ViewAttributes.Companion.unsetSpotShadowColor
@@ -47,7 +48,7 @@ class HostViewAttributesCleanupBinder : RenderUnit.Binder<Any?, Host, Any> {
       currentModel: Any?,
       newModel: Any?,
       currentLayoutData: Any?,
-      nextLayoutData: Any?
+      nextLayoutData: Any?,
   ): Boolean = false
 
   override fun bind(context: Context, content: Host, model: Any?, layoutData: Any?): Any? {
@@ -59,7 +60,7 @@ class HostViewAttributesCleanupBinder : RenderUnit.Binder<Any?, Host, Any> {
       content: Host,
       model: Any?,
       layoutData: Any?,
-      bindData: Any?
+      bindData: Any?,
   ) {
     unsetAllViewAttributes(content)
     if (content is ComponentHost) {
@@ -107,11 +108,11 @@ private fun unsetAllViewAttributes(content: Host) {
   }
   content.isEnabled = true
   content.isSelected = false
-  content.foreground = null
   ViewCompat.setKeyboardNavigationCluster(content, false)
   ViewCompat.setImportantForAccessibility(content, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO)
   unsetAccessibilityDelegate(content)
   setBackgroundCompat(content, null)
+  unsetForeground(content)
   unsetViewLayoutDirection(content)
   content.setLayerType(View.LAYER_TYPE_NONE, null)
   ViewCompat.setSystemGestureExclusionRects(content, emptyList())

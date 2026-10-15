@@ -20,6 +20,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NavUtils;
 import java.util.Arrays;
@@ -34,7 +35,12 @@ public class NavigatableDemoActivity extends AppCompatActivity {
     int[] indices = getIntent().getIntArrayExtra(DemoListActivity.INDICES);
     if (indices != null) {
       mDataModel = getDataModel(indices);
-      getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+      // May be null when a subclass uses a NoActionBar theme (e.g.
+      // FullScreenComponentDemoActivity).
+      ActionBar actionBar = getSupportActionBar();
+      if (actionBar != null) {
+        actionBar.setDisplayHomeAsUpEnabled(true);
+      }
       setTitle(mDataModel.getName());
     }
   }
@@ -50,7 +56,11 @@ public class NavigatableDemoActivity extends AppCompatActivity {
     switch (item.getItemId()) {
       // Respond to the action bar's Up/Home button
       case android.R.id.home:
-        NavUtils.navigateUpFromSameTask(this);
+        if (isTaskRoot()) {
+          NavUtils.navigateUpFromSameTask(this);
+        } else {
+          finish();
+        }
         return true;
     }
     return super.onOptionsItemSelected(item);
@@ -80,7 +90,7 @@ public class NavigatableDemoActivity extends AppCompatActivity {
   }
 
   private Demos.DemoItem getDataModel(int[] indices) {
-    Demos.DemoItem model = Demos.DEMOS.get(indices[0]);
+    Demos.DemoItem model = Demos.Demos.get(indices[0]);
     for (int i = 1; i < indices.length; i++) {
       if (model instanceof Demos.HasChildrenDemos) {
         model = ((Demos.HasChildrenDemos) model).getDemos().get(indices[i]);

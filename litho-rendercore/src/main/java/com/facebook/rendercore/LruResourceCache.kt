@@ -27,7 +27,7 @@ open class LruResourceCache(configuration: Configuration) : ResourceCache(config
         override fun sizeOf(key: Int, value: Any): Int = if (value is String) value.length else 1
       }
 
-  override fun <T> get(key: Int): T? = cache[key] as T?
+  @Suppress("UNCHECKED_CAST") override fun <T> get(key: Int): T? = cache[key] as T?
 
   override fun set(key: Int, value: Any) {
     cache.put(key, value)

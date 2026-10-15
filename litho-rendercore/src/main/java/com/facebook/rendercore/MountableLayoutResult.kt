@@ -22,7 +22,7 @@ constructor(
     private val _renderUnit: RenderUnit<*>?,
     private val measuredWidth: Int,
     private val measuredHeight: Int,
-    private val _layoutData: Any? = null
+    private val _layoutData: Any? = null,
 ) : LayoutResult {
 
   override val renderUnit: RenderUnit<*>?

@@ -16,7 +16,7 @@
 
 package com.facebook.litho.stateupdates
 
-import com.facebook.litho.Column
+import com.facebook.litho.Column as ColumnBuilder
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.SizeSpec
@@ -28,18 +28,21 @@ object NestedParentWithMultipleStateChildSpec {
   @JvmStatic
   @OnCreateLayoutWithSizeSpec
   fun onCreateLayoutWithSizeSpec(c: ComponentContext, widthSpec: Int, heightSpec: Int): Component =
-      Column.create(c)
+      ColumnBuilder.create(c)
           .child(
               ComponentWithCounterStateLayout.create(c)
                   .widthPx(SizeSpec.getSize(widthSpec))
-                  .heightPx(SizeSpec.getSize(heightSpec)))
+                  .heightPx(SizeSpec.getSize(heightSpec)),
+          )
           .child(
               ComponentWithCounterStateLayout.create(c)
                   .widthPx(SizeSpec.getSize(widthSpec))
-                  .heightPx(SizeSpec.getSize(heightSpec)))
+                  .heightPx(SizeSpec.getSize(heightSpec)),
+          )
           .child(
               ComponentWithCounterStateLayout.create(c)
                   .widthPx(SizeSpec.getSize(widthSpec))
-                  .heightPx(SizeSpec.getSize(heightSpec)))
+                  .heightPx(SizeSpec.getSize(heightSpec)),
+          )
           .build()
 }

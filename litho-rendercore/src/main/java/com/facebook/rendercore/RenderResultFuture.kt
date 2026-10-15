@@ -21,11 +21,11 @@ import com.facebook.rendercore.extensions.RenderCoreExtension
 import com.facebook.rendercore.thread.utils.PriorityInheritingFuture
 import java.util.concurrent.Callable
 
-class RenderResultFuture<State, RenderContext>(
+open class RenderResultFuture<State, RenderContext>(
     @Volatile private var previousResult: RenderResult<State, RenderContext>?,
     val setRootId: Int,
     val sizeConstraints: SizeConstraints,
-    callable: Callable<RenderResult<State, RenderContext>>
+    callable: Callable<RenderResult<State, RenderContext>>,
 ) : PriorityInheritingFuture<RenderResult<State, RenderContext>>("RenderResultFuture", callable) {
 
   @Deprecated(message = "Use the constructor that accepts SizeConstraints")
@@ -37,7 +37,7 @@ class RenderResultFuture<State, RenderContext>(
       previousResult: RenderResult<State, RenderContext>?,
       setRootId: Int,
       widthSpec: Int,
-      heightSpec: Int
+      heightSpec: Int,
   ) : this(
       context,
       resolveResult,
@@ -45,7 +45,8 @@ class RenderResultFuture<State, RenderContext>(
       extensions,
       previousResult,
       setRootId,
-      SizeConstraints.fromMeasureSpecs(widthSpec, heightSpec))
+      SizeConstraints.fromMeasureSpecs(widthSpec, heightSpec),
+  )
 
   constructor(
       context: Context,
@@ -54,7 +55,7 @@ class RenderResultFuture<State, RenderContext>(
       extensions: Array<RenderCoreExtension<*, *>>?,
       previousResult: RenderResult<State, RenderContext>?,
       setRootId: Int,
-      sizeConstraints: SizeConstraints
+      sizeConstraints: SizeConstraints,
   ) : this(
       previousResult,
       setRootId,
@@ -67,23 +68,29 @@ class RenderResultFuture<State, RenderContext>(
             extensions,
             previousResult,
             setRootId,
-            sizeConstraints)
-      })
+            sizeConstraints,
+        )
+      },
+  )
 
   constructor(
       previousResult: RenderResult<State, RenderContext>?,
       setRootId: Int,
       widthSpec: Int,
       heightSpec: Int,
-      callable: Callable<RenderResult<State, RenderContext>>
+      callable: Callable<RenderResult<State, RenderContext>>,
   ) : this(
-      previousResult, setRootId, SizeConstraints.fromMeasureSpecs(widthSpec, heightSpec), callable)
+      previousResult,
+      setRootId,
+      SizeConstraints.fromMeasureSpecs(widthSpec, heightSpec),
+      callable,
+  )
 
   override fun onResultReady(result: RenderResult<State, RenderContext>) {
     super.onResultReady(result)
     previousResult = null
   }
 
-  val latestAvailableRenderResult: RenderResult<State, RenderContext>?
+  open val latestAvailableRenderResult: RenderResult<State, RenderContext>?
     get() = if (isDone) runAndGet() else previousResult
 }

@@ -43,7 +43,9 @@ class ResolveResTest {
   fun setup() {
     lithoTestRule.useContext(
         ComponentContext(
-            ContextThemeWrapper(ApplicationProvider.getApplicationContext(), TestTheme)))
+            ContextThemeWrapper(ApplicationProvider.getApplicationContext(), TestTheme),
+        ),
+    )
   }
 
   @Test

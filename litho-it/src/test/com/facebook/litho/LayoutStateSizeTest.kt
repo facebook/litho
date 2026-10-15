@@ -22,6 +22,7 @@ import com.facebook.litho.SizeSpec.makeSizeSpec
 import com.facebook.litho.testing.TestLayoutComponent
 import com.facebook.litho.testing.Whitebox
 import com.facebook.litho.testing.testrunner.LithoTestRunner
+import com.facebook.rendercore.SizeConstraints
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -41,14 +42,17 @@ class LayoutStateSizeTest {
     layoutState =
         LayoutTreeFuture.layout(
             result,
-            makeSizeSpec(WIDTH, SizeSpec.EXACTLY),
-            makeSizeSpec(HEIGHT, SizeSpec.EXACTLY),
+            SizeConstraints.fromMeasureSpecs(
+                makeSizeSpec(WIDTH, SizeSpec.EXACTLY),
+                makeSizeSpec(HEIGHT, SizeSpec.EXACTLY),
+            ),
             1,
             1,
+            TreeState(result.treeState),
             null,
             null,
             null,
-            null)
+        )
   }
 
   @Test
@@ -73,7 +77,7 @@ class LayoutStateSizeTest {
 
     fun newComponentTreeContext(): ComponentContext {
       val baseContext = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-      return ComponentTree.create(baseContext).build().context
+      return ComponentTree.create(baseContext).enableChildClipping(true).build().context
     }
   }
 }

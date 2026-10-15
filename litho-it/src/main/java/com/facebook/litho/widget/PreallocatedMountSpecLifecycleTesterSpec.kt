@@ -65,7 +65,7 @@ object PreallocatedMountSpecLifecycleTesterSpec {
       widthSpec: Int,
       heightSpec: Int,
       size: Size,
-      @Prop steps: MutableList<StepInfo>
+      @Prop steps: MutableList<StepInfo>,
   ) {
     steps.add(StepInfo(LifecycleStep.ON_MEASURE))
     size.width = 600
@@ -77,7 +77,7 @@ object PreallocatedMountSpecLifecycleTesterSpec {
   fun onBoundsDefined(
       c: ComponentContext,
       layout: ComponentLayout,
-      @Prop steps: MutableList<StepInfo>
+      @Prop steps: MutableList<StepInfo>,
   ) {
     steps.add(StepInfo(LifecycleStep.ON_BOUNDS_DEFINED))
   }
@@ -100,7 +100,6 @@ object PreallocatedMountSpecLifecycleTesterSpec {
   @UiThread
   @OnMount
   fun onMount(context: ComponentContext, view: View, @Prop steps: MutableList<StepInfo>) {
-    // TODO: (T64290961) Remove the StaticContainer hack for tracing OnCreateMountContent callback.
     if (view === StaticContainer.sLastCreatedView) {
       steps.add(StepInfo(LifecycleStep.ON_CREATE_MOUNT_CONTENT))
       StaticContainer.sLastCreatedView = null

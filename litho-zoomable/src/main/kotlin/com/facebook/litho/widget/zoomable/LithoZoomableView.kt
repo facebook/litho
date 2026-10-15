@@ -22,11 +22,15 @@ import android.view.ViewGroup
 import androidx.core.view.NestedScrollingChild3
 import androidx.core.view.NestedScrollingChildHelper
 import com.facebook.litho.LithoRenderTreeView
+import com.facebook.rendercore.extensions.subscribeToVisibilityNotifications
+import com.facebook.rendercore.extensions.unsubscribeFromVisibilityNotifications
 import com.facebook.rendercore.simplelist.RCRecyclerView.RCRecyclerViewNestedScrollingChild
 import com.facebook.rendercore.zoomable.ZoomableContainerView
 
-class LithoZoomableView(context: Context) :
-    ZoomableContainerView(context), NestedScrollingChild3, RCRecyclerViewNestedScrollingChild {
+class LithoZoomableView(context: Context, forwardScrollChanges: Boolean = true) :
+    ZoomableContainerView(context, forwardScrollChanges = forwardScrollChanges),
+    NestedScrollingChild3,
+    RCRecyclerViewNestedScrollingChild {
 
   val renderTreeView: LithoRenderTreeView = LithoRenderTreeView(context)
 
@@ -40,24 +44,26 @@ class LithoZoomableView(context: Context) :
     clipToPadding = false
   }
 
-  public override fun attachViewToParent(
+  override fun attachViewToParent(
       child: View?,
       index: Int,
-      params: ViewGroup.LayoutParams?
+      params: ViewGroup.LayoutParams?,
   ) {
     super.attachViewToParent(child, index, params)
   }
 
-  public override fun detachViewFromParent(child: View?) {
+  override fun detachViewFromParent(child: View?) {
     super.detachViewFromParent(child)
   }
 
   override fun onAttachedToWindow() {
     super.onAttachedToWindow()
     nestedScrollingChildHelper.isNestedScrollingEnabled = true
+    renderTreeView.subscribeToVisibilityNotifications()
   }
 
   override fun onDetachedFromWindow() {
+    renderTreeView.unsubscribeFromVisibilityNotifications()
     nestedScrollingChildHelper.isNestedScrollingEnabled = false
     super.onDetachedFromWindow()
   }
@@ -81,10 +87,17 @@ class LithoZoomableView(context: Context) :
       dyUnconsumed: Int,
       offsetInWindow: IntArray?,
       type: Int,
-      consumed: IntArray
+      consumed: IntArray,
   ) {
     return nestedScrollingChildHelper.dispatchNestedScroll(
-        dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, offsetInWindow, type, consumed)
+        dxConsumed,
+        dyConsumed,
+        dxUnconsumed,
+        dyUnconsumed,
+        offsetInWindow,
+        type,
+        consumed,
+    )
   }
 
   override fun dispatchNestedScroll(
@@ -93,10 +106,16 @@ class LithoZoomableView(context: Context) :
       dxUnconsumed: Int,
       dyUnconsumed: Int,
       offsetInWindow: IntArray?,
-      type: Int
+      type: Int,
   ): Boolean {
     return nestedScrollingChildHelper.dispatchNestedScroll(
-        dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, offsetInWindow, type)
+        dxConsumed,
+        dyConsumed,
+        dxUnconsumed,
+        dyUnconsumed,
+        offsetInWindow,
+        type,
+    )
   }
 
   override fun dispatchNestedPreScroll(
@@ -104,10 +123,15 @@ class LithoZoomableView(context: Context) :
       dy: Int,
       consumed: IntArray?,
       offsetInWindow: IntArray?,
-      type: Int
+      type: Int,
   ): Boolean {
     return nestedScrollingChildHelper.dispatchNestedPreScroll(
-        dx, dy, consumed, offsetInWindow, type)
+        dx,
+        dy,
+        consumed,
+        offsetInWindow,
+        type,
+    )
   }
 
   override fun dispatchNestedFling(velocityX: Float, velocityY: Float, consumed: Boolean): Boolean {

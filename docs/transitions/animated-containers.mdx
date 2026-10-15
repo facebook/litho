@@ -1,0 +1,85 @@
+---
+id: animated-containers
+title: Animated Containers
+keywords:
+    - animations
+    - transitions
+    - enter transition
+    - exit transition
+    - AnimatedVisibility
+    - AnimatedContent
+    - fadeIn
+    - fadeOut
+    - litho animations
+---
+
+:::caution Experimental
+`AnimatedVisibility` and `AnimatedContent` are annotated `@ExperimentalLithoApi`. The API may change; opt in with `@OptIn(ExperimentalLithoApi::class)`.
+:::
+
+## Overview
+
+Animated containers help make UI changes feel intentional: panels can fade and expand into place, page-like content can slide between states, and surrounding layout can move with the content when that is the right effect.
+
+Most Litho animations describe how a property changes *while a component stays in the tree*. Animated containers handle the other case: animating content as it **enters** and **leaves** the tree.
+
+- [`AnimatedVisibility`](pathname:///javadoc/com/facebook/litho/animation/AnimatedVisibility.html) shows or hides a single piece of content with enter/exit transitions.
+- [`AnimatedContent`](pathname:///javadoc/com/facebook/litho/animation/AnimatedContent.html) swaps between content for different keyed states, cross-animating the outgoing and incoming content.
+
+Both are **container-owned**: the container keeps exiting content mounted in its own subtree until the exit transition settles, then unmounts it. There is no separate disappearing-host machinery to manage.
+
+## Behavior model
+
+Animated containers animate content they render themselves. They are a good fit for product surfaces like expandable panels, mode switches, cards, empty states, and keyed detail views. If a `LazyList` / Sections row disappears because its parent data set changed, that row is removed by the parent diff and is outside the container's retention boundary.
+
+Visual effects (`fadeIn`, `fadeOut`, `scaleIn`, `scaleOut`, and slides) are the default building blocks. They are ideal when the content should animate visually while the surrounding layout stays steady. Layout can still change at transition boundaries: `AnimatedVisibility` keeps exiting content laid out until its exit settles, then collapses it; `AnimatedContent` sizes itself to the target content.
+
+## Enter and exit transitions
+
+Enter and exit effects are values you compose, not view mutations. The building blocks are factory functions returning an `EnterTransition` or `ExitTransition`:
+
+| Effect | Enter | Exit |
+| --- | --- | --- |
+| Fade | `fadeIn()` | `fadeOut()` |
+| Scale | `scaleIn()` | `scaleOut()` |
+| Slide | `slideInVertically()`, `slideInHorizontally()` | `slideOutVertically()`, `slideOutHorizontally()` |
+| Expand / shrink | `expandVertically()`, `expandHorizontally()`, `expandIn()` | `shrinkVertically()`, `shrinkHorizontally()`, `shrinkOut()` |
+
+Each factory takes an `AnimationSpec` (defaulting to `spring()`); pass `tween(...)` or `snap()` for different timing. Combine effects with `+` — they run together:
+
+```kotlin
+enter = fadeIn() + slideInVertically()
+exit = fadeOut() + slideOutVertically()
+```
+
+## AnimatedVisibility
+
+Drive `AnimatedVisibility` with a `visible` boolean. When `visible` flips to `true` the content mounts and plays its `enter`; when it flips to `false` the content plays its `exit` and only then unmounts.
+
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/animations/statebased/AnimatedContainerDemos.kt start=visibility_example_start end=visibility_example_end
+```
+
+The initial content (visible on first render) appears without an enter animation, matching `AndroidX`/Compose `AnimatedVisibility`. Reversing mid-exit (flipping `visible` back to `true` before the exit settles) cancels the unmount.
+
+## AnimatedContent
+
+`AnimatedContent` renders content for a `targetState`. When the state changes to one with a different `contentKey`, the new content enters while the previous content exits, both overlapping in the container until the exit settles. The `transitionSpec` lambda declares the transition by setting `enter` / `exit` on its [`AnimatedContentTransitionScope`](pathname:///javadoc/com/facebook/litho/animation/AnimatedContentTransitionScope.html), and exposes `initialState`/`targetState` so the transition can depend on direction.
+
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/animations/statebased/AnimatedContainerDemos.kt start=content_example_start end=content_example_end
+```
+
+`enter` sets how the target content enters and `exit` how the previous content exits; anything you don't set defaults to `None` (an empty `transitionSpec = {}` swaps instantly with no animation). Reusing the same `contentKey` does not animate. The container sizes itself to the **target** content (the incoming content drives the container's size, not the outgoing one).
+
+## Container-relative slides
+
+`slideIntoContainer(direction)` / `slideOutOfContainer(direction)` slide content across the **container's** bounds, rather than offsetting by the content's own size the way `slideInHorizontally()` and friends do. `direction` is the way the content moves; an optional offset lambda scales the full-slide distance. The [`AnimatedContent` sample](#animatedcontent) above slides each page in the direction of travel:
+
+```kotlin
+val enter = fadeIn() + slideIntoContainer(towards) + scaleIn()
+val exit = fadeOut() + slideOutOfContainer(towards) + scaleOut()
+```
+
+## Choosing motion
+
+Start with the simplest motion that communicates the change. Fades, scales, and slides work well for content that appears over a stable layout. Use container-relative slides for page-like swaps where the old and new content should travel across the same frame.
+

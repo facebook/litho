@@ -20,8 +20,8 @@ import android.os.Build
 import android.os.Trace
 import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.rendercore.RenderCoreSystrace
-import com.facebook.rendercore.Systracer
-import com.facebook.rendercore.Systracer.ArgsBuilder
+import com.meta.systrace.Systracer
+import com.meta.systrace.Systracer.ArgsBuilder
 
 open class DefaultComponentsSystrace : Systracer {
 
@@ -75,7 +75,7 @@ open class DefaultComponentsSystrace : Systracer {
      * We handle this case in our scenario and will trim it in case it is bigger than the valid
      * limit.
      *
-     * @see [android.os.Trace](https://fburl.com/7bngmv5x)
+     * @see [android.os.Trace](https://developer.android.com/reference/android/os/Trace)
      */
     private const val MAX_CHARACTERS_SECTION_NAME = 127
   }

@@ -22,14 +22,14 @@ import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentTree
 import com.facebook.litho.EventHandler
-import com.facebook.litho.FocusedVisibleEvent
-import com.facebook.litho.FullImpressionVisibleEvent
-import com.facebook.litho.InvisibleEvent
 import com.facebook.litho.Row
-import com.facebook.litho.UnfocusedVisibleEvent
-import com.facebook.litho.VisibleEvent
 import com.facebook.litho.testing.TestLayoutComponent
 import com.facebook.litho.testing.testrunner.LithoTestRunner
+import com.facebook.rendercore.visibility.FocusedVisibleEvent
+import com.facebook.rendercore.visibility.FullImpressionVisibleEvent
+import com.facebook.rendercore.visibility.InvisibleEvent
+import com.facebook.rendercore.visibility.UnfocusedVisibleEvent
+import com.facebook.rendercore.visibility.VisibleEvent
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -73,7 +73,8 @@ class VisibilityEventsHelperTest {
   @Test
   fun triggerVisibleEventForEventsShouldDispatchHandler() {
     assertThat(
-            VisibilityEventsHelper.triggerVisibilityEvent(_componentTree, VisibleEvent::class.java))
+        VisibilityEventsHelper.triggerVisibilityEvent(_componentTree, VisibleEvent::class.java),
+    )
         .isTrue
     verify(visibleEventEventHandler).call(any<VisibleEvent>())
   }
@@ -81,8 +82,11 @@ class VisibilityEventsHelperTest {
   @Test
   fun triggerInvisibleEventForEventsShouldDispatchHandler() {
     assertThat(
-            VisibilityEventsHelper.triggerVisibilityEvent(
-                _componentTree, InvisibleEvent::class.java))
+        VisibilityEventsHelper.triggerVisibilityEvent(
+            _componentTree,
+            InvisibleEvent::class.java,
+        ),
+    )
         .isTrue
     verify(invisibleEventEventHandler).call(any<InvisibleEvent>())
   }
@@ -90,8 +94,11 @@ class VisibilityEventsHelperTest {
   @Test
   fun triggerFocusedEventForEventsShouldDispatchHandler() {
     assertThat(
-            VisibilityEventsHelper.triggerVisibilityEvent(
-                _componentTree, FocusedVisibleEvent::class.java))
+        VisibilityEventsHelper.triggerVisibilityEvent(
+            _componentTree,
+            FocusedVisibleEvent::class.java,
+        ),
+    )
         .isTrue
     verify(focusedVisibleEventEventHandler).call(any<FocusedVisibleEvent>())
   }
@@ -99,8 +106,11 @@ class VisibilityEventsHelperTest {
   @Test
   fun triggerUnfocusedEventForEventsShouldDispatchHandler() {
     assertThat(
-            VisibilityEventsHelper.triggerVisibilityEvent(
-                _componentTree, UnfocusedVisibleEvent::class.java))
+        VisibilityEventsHelper.triggerVisibilityEvent(
+            _componentTree,
+            UnfocusedVisibleEvent::class.java,
+        ),
+    )
         .isTrue
     verify(unfocusedVisibleEventEventHandler).call(any<UnfocusedVisibleEvent>())
   }
@@ -108,8 +118,11 @@ class VisibilityEventsHelperTest {
   @Test
   fun triggerFullImpressionEventForEventsShouldDispatchHandler() {
     assertThat(
-            VisibilityEventsHelper.triggerVisibilityEvent(
-                _componentTree, FullImpressionVisibleEvent::class.java))
+        VisibilityEventsHelper.triggerVisibilityEvent(
+            _componentTree,
+            FullImpressionVisibleEvent::class.java,
+        ),
+    )
         .isTrue
     verify(fullImpressionEventEventHandler).call(any<FullImpressionVisibleEvent>())
   }
@@ -120,7 +133,8 @@ class VisibilityEventsHelperTest {
     val componentTree = getComponentTree(component)
     reset(visibleEventEventHandler)
     assertThat(
-            VisibilityEventsHelper.triggerVisibilityEvent(componentTree, VisibleEvent::class.java))
+        VisibilityEventsHelper.triggerVisibilityEvent(componentTree, VisibleEvent::class.java),
+    )
         .isFalse
   }
 
@@ -134,7 +148,8 @@ class VisibilityEventsHelperTest {
     val componentTree = getComponentTree(component)
     reset(visibleEventEventHandler)
     assertThat(
-            VisibilityEventsHelper.triggerVisibilityEvent(componentTree, VisibleEvent::class.java))
+        VisibilityEventsHelper.triggerVisibilityEvent(componentTree, VisibleEvent::class.java),
+    )
         .isTrue
     verify(visibleEventEventHandler).call(any<VisibleEvent>())
   }

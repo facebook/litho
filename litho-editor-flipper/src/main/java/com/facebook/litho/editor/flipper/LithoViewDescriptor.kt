@@ -95,8 +95,11 @@ class LithoViewDescriptor : NodeDescriptor<BaseMountingView>() {
                         .put("left", mountedBounds?.left)
                         .put("top", mountedBounds?.top)
                         .put("right", mountedBounds?.right)
-                        .put("bottom", mountedBounds?.bottom))
-                .build()))
+                        .put("bottom", mountedBounds?.bottom),
+                )
+                .build(),
+        ),
+    )
 
     descriptor?.getData(node)?.let { props.addAll(it) }
     return props
@@ -115,7 +118,7 @@ class LithoViewDescriptor : NodeDescriptor<BaseMountingView>() {
       node: BaseMountingView?,
       path: Array<String>,
       kind: FlipperValueHint?,
-      value: FlipperDynamic
+      value: FlipperDynamic,
   ) {
     val descriptor = descriptorForClass(ViewGroup::class.java) as NodeDescriptor<BaseMountingView>?
     descriptor?.setValue(node, path, kind, value)
@@ -142,7 +145,7 @@ class LithoViewDescriptor : NodeDescriptor<BaseMountingView>() {
   override fun setHighlighted(
       node: BaseMountingView?,
       selected: Boolean,
-      isAlignmentMode: Boolean
+      isAlignmentMode: Boolean,
   ) {
     val descriptor = descriptorForClass(ViewGroup::class.java) as NodeDescriptor<BaseMountingView>?
     descriptor?.setHighlighted(node, selected, isAlignmentMode)

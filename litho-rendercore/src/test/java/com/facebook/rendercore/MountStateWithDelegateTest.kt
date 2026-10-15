@@ -29,7 +29,7 @@ import com.facebook.rendercore.testing.TestNode
 import com.facebook.rendercore.testing.TestRenderCoreExtension
 import com.facebook.rendercore.testing.TestRenderUnit
 import com.facebook.rendercore.testing.TestRootHostView
-import org.assertj.core.api.Java6Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -48,9 +48,11 @@ class MountStateWithDelegateTest {
     val testBinderOne = TestBinder<Any>()
     val testBinderTwo = TestBinder<Any>()
     testRenderUnitOne.addOptionalMountBinder(
-        DelegateBinder.createDelegateBinder<Any, View, Any>(testRenderUnitOne, testBinderOne))
+        DelegateBinder.createDelegateBinder<Any, View, Any>(testRenderUnitOne, testBinderOne),
+    )
     testRenderUnitTwo.addOptionalMountBinder(
-        DelegateBinder.createDelegateBinder<Any, View, Any>(testRenderUnitTwo, testBinderTwo))
+        DelegateBinder.createDelegateBinder<Any, View, Any>(testRenderUnitTwo, testBinderTwo),
+    )
     leaf.setRenderUnit(testRenderUnitOne)
     val mountExtension = TestMountExtensionWithAcquire()
     val extensions: Array<RenderCoreExtension<*, *>> =
@@ -93,12 +95,14 @@ class MountStateWithDelegateTest {
     val renderUnit = TestRenderUnit()
     renderUnit.addAttachBinders(
         DelegateBinder.createDelegateBinder<Any, View, Any>(renderUnit, attachBinderOne),
-        DelegateBinder.createDelegateBinder<Any, View, Any>(renderUnit, attachBinderTwo))
+        DelegateBinder.createDelegateBinder<Any, View, Any>(renderUnit, attachBinderTwo),
+    )
     val mountBinderOne = object : TestBinder<Any>(bindOrder, unbindOrder) {}
     val mountBinderTwo = TestBinder<Any>(bindOrder, unbindOrder)
     renderUnit.addOptionalMountBinders(
         DelegateBinder.createDelegateBinder<Any, View, Any>(renderUnit, mountBinderOne),
-        DelegateBinder.createDelegateBinder<Any, View, Any>(renderUnit, mountBinderTwo))
+        DelegateBinder.createDelegateBinder<Any, View, Any>(renderUnit, mountBinderTwo),
+    )
     leaf.setRenderUnit(renderUnit)
     val mountExtension = TestMountExtensionWithAcquire(bindOrder, unbindOrder)
     val extensions: Array<RenderCoreExtension<*, *>> =
@@ -118,7 +122,8 @@ class MountStateWithDelegateTest {
             host,
             attachBinderOne,
             attachBinderTwo,
-            mountExtension)
+            mountExtension,
+        )
     assertThat(unbindOrder)
         .containsExactly(
             host,
@@ -129,7 +134,8 @@ class MountStateWithDelegateTest {
             mountBinderTwo,
             mountBinderOne,
             mountExtension, // root unbind
-            mountExtension) // root unmount
+            mountExtension,
+        ) // root unmount
   }
 
   @Test
@@ -147,12 +153,14 @@ class MountStateWithDelegateTest {
     val renderUnit = TestRenderUnit()
     renderUnit.addAttachBinders(
         DelegateBinder.createDelegateBinder<Any, View, Any>(renderUnit, attachBinderOne),
-        DelegateBinder.createDelegateBinder<Any, View, Any>(renderUnit, attachBinderTwo))
+        DelegateBinder.createDelegateBinder<Any, View, Any>(renderUnit, attachBinderTwo),
+    )
     val mountBinderOne = object : TestBinder<Any>(bindOrder, unbindOrder) {}
     val mountBinderTwo = TestBinder<Any>(bindOrder, unbindOrder)
     renderUnit.addOptionalMountBinders(
         DelegateBinder.createDelegateBinder<Any, View, Any>(renderUnit, mountBinderOne),
-        DelegateBinder.createDelegateBinder<Any, View, Any>(renderUnit, mountBinderTwo))
+        DelegateBinder.createDelegateBinder<Any, View, Any>(renderUnit, mountBinderTwo),
+    )
     leaf.setRenderUnit(renderUnit)
     val mountExtension = TestMountExtensionWithAcquire(bindOrder, unbindOrder)
     val extensions: Array<RenderCoreExtension<*, *>> =
@@ -174,10 +182,12 @@ class MountStateWithDelegateTest {
     val newRenderUnit = TestRenderUnit(renderUnit.id)
     newRenderUnit.addAttachBinders(
         DelegateBinder.createDelegateBinder<Any, View, Any>(newRenderUnit, attachBinderOne),
-        DelegateBinder.createDelegateBinder<Any, View, Any>(newRenderUnit, attachBinderTwo))
+        DelegateBinder.createDelegateBinder<Any, View, Any>(newRenderUnit, attachBinderTwo),
+    )
     newRenderUnit.addOptionalMountBinders(
         DelegateBinder.createDelegateBinder<Any, View, Any>(newRenderUnit, mountBinderOne),
-        DelegateBinder.createDelegateBinder<Any, View, Any>(newRenderUnit, mountBinderTwo))
+        DelegateBinder.createDelegateBinder<Any, View, Any>(newRenderUnit, mountBinderTwo),
+    )
     newLeaf.setRenderUnit(newRenderUnit)
     val newRenderTree = createRenderTree(c, newRoot, extensions)
     mountState.mount(newRenderTree)
@@ -188,7 +198,8 @@ class MountStateWithDelegateTest {
             attachBinderOne,
             mountExtension,
             mountBinderTwo,
-            mountBinderOne)
+            mountBinderOne,
+        )
     assertThat(bindOrder)
         .containsExactly(
             mountBinderOne,
@@ -196,14 +207,15 @@ class MountStateWithDelegateTest {
             mountExtension,
             attachBinderOne,
             attachBinderTwo,
-            mountExtension)
+            mountExtension,
+        )
   }
 
   private inner class TestMountExtensionWithAcquire
   @JvmOverloads
   constructor(
       private val bindOrder: MutableList<Any?> = ArrayList(),
-      private val unbindOrder: MutableList<Any?> = ArrayList()
+      private val unbindOrder: MutableList<Any?> = ArrayList(),
   ) : TestMountExtension(), OnItemCallbacks<Any?> {
     fun acquire(state: ExtensionState<*>, id: Long, position: Int) {
       state.acquireMountReference(id, true)
@@ -222,7 +234,7 @@ class MountStateWithDelegateTest {
         previousRenderUnit: RenderUnit<*>,
         previousLayoutData: Any?,
         nextRenderUnit: RenderUnit<*>,
-        nextLayoutData: Any?
+        nextLayoutData: Any?,
     ): Boolean {
       return true
     }
@@ -231,7 +243,7 @@ class MountStateWithDelegateTest {
         extensionState: ExtensionState<Any?>,
         renderUnit: RenderUnit<*>,
         content: Any,
-        layoutData: Any?
+        layoutData: Any?,
     ) {
       bindOrder.add(this)
     }
@@ -240,7 +252,7 @@ class MountStateWithDelegateTest {
         extensionState: ExtensionState<Any?>,
         renderUnit: RenderUnit<*>,
         content: Any,
-        layoutData: Any?
+        layoutData: Any?,
     ) {
       unbindOrder.add(this)
     }
@@ -249,7 +261,7 @@ class MountStateWithDelegateTest {
         extensionState: ExtensionState<Any?>,
         renderUnit: RenderUnit<*>,
         content: Any,
-        layoutData: Any?
+        layoutData: Any?,
     ) {
       unbindOrder.add(this)
     }
@@ -258,7 +270,7 @@ class MountStateWithDelegateTest {
         extensionState: ExtensionState<Any?>,
         renderUnit: RenderUnit<*>,
         content: Any,
-        layoutData: Any?
+        layoutData: Any?,
     ) {
       bindOrder.add(this)
     }
@@ -268,13 +280,13 @@ class MountStateWithDelegateTest {
         renderUnit: RenderUnit<*>,
         content: Any,
         layoutData: Any?,
-        changed: Boolean
+        changed: Boolean,
     ) = Unit
 
     override fun beforeMountItem(
         extensionState: ExtensionState<Any?>,
         renderTreeNode: RenderTreeNode,
-        index: Int
+        index: Int,
     ) = Unit
 
     override fun beforeMount(state: ExtensionState<Any>, o: Any?, localVisibleRect: Rect?) = Unit
@@ -284,7 +296,7 @@ class MountStateWithDelegateTest {
     private fun createRenderTree(
         c: Context,
         root: TestNode,
-        extensions: Array<RenderCoreExtension<*, *>>
+        extensions: Array<RenderCoreExtension<*, *>>,
     ): RenderTree {
       val sizeConstraints = SizeConstraints.exact(200, 200)
       val layoutContext: LayoutContext<*> =

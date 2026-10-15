@@ -16,7 +16,7 @@
 
 package com.facebook.litho.sections.specmodels.processor;
 
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.facebook.litho.sections.specmodels.model.GroupSectionSpecModel;
 import com.facebook.litho.specmodels.internal.ImmutableList;

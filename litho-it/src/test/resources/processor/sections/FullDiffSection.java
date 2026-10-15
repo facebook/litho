@@ -24,7 +24,9 @@ import com.facebook.litho.Component;
 import com.facebook.litho.Diff;
 import com.facebook.litho.EventDispatcher;
 import com.facebook.litho.EventHandler;
+import com.facebook.litho.GlobalKey;
 import com.facebook.litho.HasEventDispatcher;
+import com.facebook.litho.HookGlobalKey;
 import com.facebook.litho.StateContainer;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.annotations.Comparable;
@@ -82,7 +84,7 @@ public final class FullDiffSection<T> extends Section implements TestTag {
   }
 
   @Override
-  public boolean isEquivalentTo(Section other) {
+  protected boolean isEquivalentProps(Section other) {
     if (this == other) {
       return true;
     }
@@ -353,12 +355,13 @@ public final class FullDiffSection<T> extends Section implements TestTag {
   }
 
   private int getCached(SectionContext c) {
-    String globalKey = c.getGlobalKey();
+    GlobalKey globalKey = c.getGlobalKey();
     final CachedInputs inputs = new CachedInputs(prop1);
-    Integer cached = (Integer) c.getCachedValue(globalKey, 0, inputs);
+    HookGlobalKey cacheKey = HookGlobalKey.createForResolveScope(globalKey, 0);
+    Integer cached = (Integer) c.getCachedValue(cacheKey, inputs);
     if (cached == null) {
       cached = FullDiffSectionSpec.onCalculateCached(prop1);
-      c.putCachedValue(globalKey, 0, inputs, cached);
+      c.putCachedValue(cacheKey, inputs, cached);
     }
     return cached;
   }

@@ -39,7 +39,8 @@ class AtomicBooleanEditorInstance : Editor {
             setValueUNSAFE(f, node, AtomicBoolean(bool.value))
             return null
           }
-        })
+        },
+    )
     return true
   }
 }

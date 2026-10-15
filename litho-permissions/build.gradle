@@ -18,7 +18,6 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'org.jetbrains.dokka'
-apply plugin: 'com.facebook.kotlin.compilerplugins.dataclassgenerate'
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
@@ -34,16 +33,15 @@ android {
         main.java.srcDirs += 'src/main/kotlin'
         test.java.srcDirs += 'src/test/kotlin'
     }
+    namespace 'com.facebook.litho.permissions'
 }
 
-tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
-    kotlinOptions {
-        freeCompilerArgs = ["-XXLanguage:+InlineClasses"]
-    }
-}
 
 dependencies {
     implementation project(':litho-core')
+
+    implementation deps.activity
+    implementation deps.lifecycle
 
     // Annotations
     compileOnly deps.jsr305

@@ -28,6 +28,7 @@ public class HamcrestCondition<T> extends Condition<T> {
 
   private final Matcher<T> matcher;
 
+  @SuppressWarnings("this-escape") // Safe: as() is a final method from Condition
   public HamcrestCondition(Matcher<T> matcher) {
     this.matcher = matcher;
     as(describeMatcher());

@@ -1,0 +1,86 @@
+---
+id: common-props
+title: Common Props
+keywords:
+    - litho props
+    - common props
+    - litho style
+    - Style API
+    - combining styles
+    - view properties
+    - layout parameters
+api_category: props
+related_docs: [treeprops, layout-intro, view-styles]
+api_names: [Style, margin, padding, backgroundColor, viewTag, onClick, alpha]
+---
+
+The [Components](components-basics.mdx) page details how to declare a component and its **props** as standard `val` properties. This page covers another way for a parent component to configure its children with props: Common props, aka the `Style` API.
+
+## Common Props
+
+Common props are props that can be applied to any component and are defined by the `Style` API. They include View properties like `onClick` and `background`, visibility events like `onVisible`, as well as layout parameters like `margin`.
+
+A Style object can be constructed by chaining multiple Styles together, as shown in the following example:
+
+```kotlin
+import com.facebook.litho.view.backgroundColor
+
+MyComponent(
+    style = Style.margin(all = 4.px)
+        .backgroundColor(Color.RED)
+        .viewTag("my_view")
+)
+```
+
+For a component to be configured with a Style, it should declare a Style prop (such as `val style: Style = Style`). It should then pass that Style object to one of the components it renders to, usually the root component it returns from `render`. In this way, the Style will eventually end up on a [`PrimitiveComponent`](primitives/overview.mdx) (for example, `Text` or `Row)`. All common props end up being materialized by PrimitiveComponents, as shown in the following example:
+
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/documentation/HelloComponent.kt start=start_styled_example end=end_styled_example
+```
+
+### Combining a Style from a Parent with a Local Style
+
+The following example shows how you can combine a Style passed from a parent with the Style the component itself wants to define:
+
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/documentation/ChildStylesExample.kt start=start_combine_style_example end=end_combine_style_example
+```
+
+### Working with Style
+
+In the above example, you may have noticed the use of `+` to combine the Style passed from `OuterTextComponent` and the styles that `InnerTextComponent` defines. The `+` operator combines two Styles into a single Style without mutating either:
+
+```kotlin
+import com.facebook.litho.Style
+
+val alphaStyle = Style.alpha(1f)
+val combinedStyle = alphaStyle + Style.padding(all = 8.dp).margin(all = 8.dp)
+
+// Result:
+//   alphaStyle: (alpha: 1f)
+//   combinedStyle: (alpha: 1f) <- (padding-all: 8.dp) <- (margin-all: 8.dp)
+```
+
+Note that ordering around `+` matters: if a Style property is defined twice, the **last** definition takes precendence:
+
+```kotlin
+import com.facebook.litho.Style
+import com.facebook.litho.core.padding
+
+val alphaStyle = Style.alpha(1f)
+val combinedStyle = alphaStyle + Style.padding(all = 8.dp).alpha(.5f)
+
+// Result:
+//   combinedStyle will apply padding of 8.dp and alpha of .5f
+```
+
+Generally, `Style` objects are immutable: any time you combine styles or add new properties to a style, you get a new `Style` instance that contains all the properties of the previous style plus the new properties.
+
+### Interoperability with Legacy Components
+
+For passing style from Kotlin code to a Java Spec component, you can use `.kotlinStyle()`, which is equivalent to setting all the common props the `Style` defines:
+
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/documentation/ChildStylesExample.kt start=start_combine_java_kotlin_style_example end=end_combine_java_kotlin_style_example
+```
+
+### See also
+
+- **[Tree Props](treeprops.mdx)** - provides a way to give access to contextual objects, like a theme or logging utility, to all components in a sub-tree without having to manually pass them.

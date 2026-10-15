@@ -22,15 +22,13 @@ import android.util.SparseArray
 import android.view.View
 import androidx.annotation.IntDef
 import com.facebook.litho.ComponentHostUtils.maybeSetDrawableState
-import com.facebook.litho.ComponentsSystrace.beginSection
-import com.facebook.litho.ComponentsSystrace.endSection
-import com.facebook.litho.ComponentsSystrace.isTracing
+import com.facebook.litho.ComponentsSystrace.trace
 import com.facebook.litho.LithoLayoutData.Companion.getInterStageProps
-import com.facebook.litho.LithoLayoutData.Companion.verifyAndGetLithoLayoutData
 import com.facebook.rendercore.ContentAllocator
 import com.facebook.rendercore.MountContentPools.ContentPool
 import com.facebook.rendercore.PoolingPolicy
 import com.facebook.rendercore.RenderTreeNode
+import com.facebook.rendercore.RenderType
 import com.facebook.rendercore.RenderUnit
 
 /** This [RenderUnit] encapsulates a Litho output to be mounted using Render Core. */
@@ -44,7 +42,7 @@ private constructor(
     importantForAccessibility: Int,
     @UpdateState val updateState: Int,
     context: ComponentContext,
-    debugKey: String?
+    debugKey: String?,
 ) :
     LithoRenderUnit(
         id,
@@ -53,10 +51,14 @@ private constructor(
         nodeInfo,
         flags,
         importantForAccessibility,
-        getRenderType(component),
         context,
-        debugKey),
+        debugKey,
+        excludesFromIncrementalMount =
+            component is SpecGeneratedComponent && component.excludeFromIncrementalMount(),
+    ),
     ContentAllocator<Any> {
+
+  override val renderType: RenderType = getRenderType(component)
 
   private var isShouldUpdateCachingEnabled = false
   private var isShouldUpdateResultCached = false
@@ -159,7 +161,7 @@ private constructor(
               content: Any,
               unit: MountSpecLithoRenderUnit,
               layoutData: Any?,
-              bindData: Any?
+              bindData: Any?,
           ) {
             (unit.component as SpecGeneratedComponent).unmount(
                 getComponentContext(unit),
@@ -225,7 +227,7 @@ private constructor(
         flags: Int,
         importantForAccessibility: Int,
         @UpdateState updateState: Int,
-        debugKey: String?
+        debugKey: String?,
     ): MountSpecLithoRenderUnit {
       return MountSpecLithoRenderUnit(
           id,
@@ -236,7 +238,8 @@ private constructor(
           importantForAccessibility,
           updateState,
           context,
-          debugKey)
+          debugKey,
+      )
     }
 
     @JvmStatic
@@ -249,23 +252,16 @@ private constructor(
       if (current.isShouldUpdateCachingEnabled && current.isShouldUpdateResultCached) {
         return current.isCachedShouldUpdateResult
       }
-      val currentLithoData = verifyAndGetLithoLayoutData(currentData)
-      val nextLithoData = verifyAndGetLithoLayoutData(nextData)
       val nextContext = getComponentContext(next)
-      val previousIdFromNextOutput = nextLithoData.previousLayoutStateId
       val currentContext = getComponentContext(current)
-      val idFromCurrentOutput = currentLithoData.currentLayoutStateId
-      val updateValueFromLayoutOutput = previousIdFromNextOutput == idFromCurrentOutput
-      val result =
-          shouldUpdateMountItem(
-              next,
-              nextData as LithoLayoutData?,
-              nextContext,
-              current,
-              currentData as LithoLayoutData?,
-              currentContext,
-              updateValueFromLayoutOutput,
-          )
+      val result = shouldUpdateMountItem(
+          next,
+          nextData as LithoLayoutData?,
+          nextContext,
+          current,
+          currentData as LithoLayoutData?,
+          currentContext,
+      )
       if (current.isShouldUpdateCachingEnabled && !current.isShouldUpdateResultCached) {
         current.isCachedShouldUpdateResult = result
         current.isShouldUpdateResultCached = true
@@ -289,7 +285,6 @@ private constructor(
         currentRenderUnit: MountSpecLithoRenderUnit,
         currentLayoutData: LithoLayoutData?,
         currentContext: ComponentContext?,
-        useUpdateValueFromLayoutOutput: Boolean,
     ): Boolean {
       @UpdateState val updateState = nextRenderUnit.updateState
       val currentComponent = currentRenderUnit.component
@@ -297,20 +292,26 @@ private constructor(
 
       // If the two components have different sizes and the mounted content depends on the size we
       // just return true immediately.
-      if (nextComponent is SpecGeneratedComponent &&
-          nextComponent.isMountSizeDependent &&
-          !sameSize(
-              checkNotNull(nextLayoutData),
-              checkNotNull(currentLayoutData),
-          )) {
+      if (
+          nextComponent is SpecGeneratedComponent &&
+              nextComponent.isMountSizeDependent &&
+              !sameSize(
+                  checkNotNull(nextLayoutData),
+                  checkNotNull(currentLayoutData),
+              )
+      ) {
         return true
       }
-      if (useUpdateValueFromLayoutOutput) {
-        if (updateState == STATE_UPDATED) {
-          return false
-        } else if (updateState == STATE_DIRTY) {
-          return true
-        }
+      // updateState is always trusted without chain-continuity checks. This is safe because
+      // state updates accumulate via TreeState — all concurrent resolves see all pending updates.
+      // STATE_UPDATED can only be set when the component is unchanged from baseline, and if it's
+      // unchanged in this layout, it's also unchanged in any intermediate mounted layout (since
+      // both resolves accumulated the same state). STATE_DIRTY always forces update.
+      if (updateState == STATE_DIRTY) {
+        return true
+      }
+      if (updateState == STATE_UPDATED) {
+        return false
       }
       return shouldUpdate(currentComponent, currentContext, nextComponent, nextContext)
     }
@@ -321,25 +322,19 @@ private constructor(
         nextComponent: Component,
         nextScopedContext: ComponentContext?,
     ): Boolean {
-      val isTracing = isTracing
-      return try {
-        if (isTracing) {
-          beginSection("MountState.shouldUpdate")
-        }
-        currentComponent.shouldComponentUpdate(
-            currentScopedContext,
-            currentComponent,
-            nextScopedContext,
-            nextComponent,
-        )
-      } catch (e: Exception) {
-        if (nextScopedContext != null) {
-          ComponentUtils.handle(nextScopedContext, e)
-        }
-        true
-      } finally {
-        if (isTracing) {
-          endSection()
+      return trace({ "MountState.shouldUpdate" }) {
+        try {
+          currentComponent.shouldComponentUpdate(
+              currentScopedContext,
+              currentComponent,
+              nextScopedContext,
+              nextComponent,
+          )
+        } catch (e: Exception) {
+          if (nextScopedContext != null) {
+            ComponentUtils.handle(nextScopedContext, e)
+          }
+          true
         }
       }
     }

@@ -77,7 +77,8 @@ class LayoutSpecTriggerTest {
                     .steps(info)
                     .triggerObjectRef(triggerObjectRef)
                     .handle(triggerHandle)
-                    .build())
+                    .build(),
+            )
             .build()
     lithoTestRule.render { component }
     val bazObject = Any()
@@ -111,7 +112,10 @@ class LayoutSpecTriggerTest {
                                     .steps(info)
                                     .triggerObjectRef(triggerObjectRef)
                                     .handle(triggerHandle)
-                                    .build())))
+                                    .build(),
+                            ),
+                    ),
+            )
             .build()
     lithoTestRule.render { component }
     val bazObject = Any()
@@ -148,7 +152,11 @@ class LayoutSpecTriggerTest {
                                             .steps(info)
                                             .triggerObjectRef(triggerObjectRef)
                                             .handle(triggerHandle)
-                                            .build()))))
+                                            .build(),
+                                    ),
+                            ),
+                    ),
+            )
             .build()
     lithoTestRule.render { component }
     val bazObject = Any()

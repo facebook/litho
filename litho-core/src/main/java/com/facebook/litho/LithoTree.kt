@@ -17,6 +17,8 @@
 package com.facebook.litho
 
 import com.facebook.infer.annotation.ThreadConfined
+import com.facebook.litho.animation.ReflowAnimationStore
+import com.facebook.litho.animation.ReflowProvider
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.state.StateProviderImpl
 import com.facebook.litho.state.TreeStateProvider
@@ -40,14 +42,16 @@ internal constructor(
     val errorComponentReceiver: ErrorComponentReceiver,
     val treeLifecycle: LithoRendererLifecycleProvider,
     internal val uiStateReadRecordsProvider: UiStateReadRecordsProvider,
+    val isReadTrackingEnabled: Boolean =
+        ComponentsConfiguration.defaultInstance.enableStateReadTracking,
 ) {
-
-  val isReadTrackingEnabled: Boolean =
-      ComponentsConfiguration.defaultInstance.enableStateReadTracking
 
   @field:ThreadConfined(ThreadConfined.ANY)
   val stateProvider: com.facebook.litho.state.StateProvider =
       StateProviderImpl(id, isReadTrackingEnabled, stateProvider)
+
+  /** This tree's reflow surface, held as the abstraction; see [ReflowProvider]. */
+  @JvmField internal val reflowProvider: ReflowProvider = ReflowAnimationStore(this)
 
   // Used to lazily store a CoroutineScope, if coroutine helper methods are used.
   @JvmField val internalScopeRef: AtomicReference<Any> = AtomicReference<Any>()
@@ -56,15 +60,22 @@ internal constructor(
 
     private val IdGenerator = AtomicInteger(0)
 
-    fun create(componentTree: ComponentTree, stateUpdater: StateUpdater): LithoTree =
-        LithoTree(
-            id = componentTree.id,
-            stateProvider = componentTree,
-            stateUpdater = stateUpdater,
-            rootHost = componentTree,
-            errorComponentReceiver = componentTree,
-            treeLifecycle = componentTree,
-            uiStateReadRecordsProvider = componentTree)
+    @JvmOverloads
+    fun create(
+        componentTree: ComponentTree,
+        stateUpdater: StateUpdater,
+        isReadTrackingEnabled: Boolean =
+            ComponentsConfiguration.defaultInstance.enableStateReadTracking,
+    ): LithoTree = LithoTree(
+        id = componentTree.id,
+        stateProvider = componentTree,
+        stateUpdater = stateUpdater,
+        rootHost = componentTree,
+        errorComponentReceiver = componentTree,
+        treeLifecycle = componentTree,
+        uiStateReadRecordsProvider = componentTree,
+        isReadTrackingEnabled = isReadTrackingEnabled,
+    )
 
     @JvmStatic
     fun generateComponentTreeId(): Int {

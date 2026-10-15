@@ -22,11 +22,11 @@ open class MountItem(renderTreeNode: RenderTreeNode, val content: Any) {
 
   private var _renderTreeNode: RenderTreeNode = renderTreeNode
 
+  internal val registry: MountStateRestartRegistry = MountStateRestartRegistry()
+
   var host: Host? = null
 
   var isBound: Boolean = false
-
-  @Deprecated("Use BindData API instead") var mountData: Any? = null
 
   val bindData: BindData = BindData()
 
@@ -42,6 +42,36 @@ open class MountItem(renderTreeNode: RenderTreeNode, val content: Any) {
 
   fun releaseMountContent(context: Context) {
     renderUnit.contentAllocator.recycleContent(context, content, renderTreeNode.poolScope)
+  }
+
+  internal fun restartContinuations(context: MountContinuationContext) {
+    if (!hasAnyContinuations()) {
+      return
+    }
+    RenderCoreSystrace.beginSection(
+        "restartContinuations [${renderUnit.description} / ${renderUnit.id}]",
+    )
+    renderUnit.restartContinuations(context)
+    registry.restartMountStates()
+    RenderCoreSystrace.endSection()
+  }
+
+  internal fun hasAnyContinuations(): Boolean {
+    return renderUnit.hasAnyContinuations() || registry.hasAnyMountStates()
+  }
+
+  /**
+   * Like [hasAnyContinuations] but consults whether this render unit's continuations have a new
+   * value to re-run against ([RenderUnit.hasNewContinuationValues]) or any nested mount state has
+   * pending restart work, so clean restart registrations can be skipped.
+   */
+  internal fun hasPendingRestartWork(context: MountContinuationContext): Boolean {
+    return renderUnit.hasNewContinuationValues(context) ||
+        registry.anyMountStateHasPendingRestartWork()
+  }
+
+  internal fun clearContinuations() {
+    registry.clear()
   }
 
   companion object {

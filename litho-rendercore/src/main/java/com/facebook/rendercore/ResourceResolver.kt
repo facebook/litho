@@ -93,7 +93,7 @@ open class ResourceResolver(private val androidContext: Context, val resourceCac
   fun resolveQuantityStringRes(
       @PluralsRes resId: Int,
       quantity: Int,
-      vararg formatArgs: Any?
+      vararg formatArgs: Any?,
   ): String? {
     return if (resId != 0) resources.getQuantityString(resId, quantity, *formatArgs) else null
   }

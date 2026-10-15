@@ -43,7 +43,7 @@ interface Binder<V : ViewGroup> {
       outSize: Size,
       widthSpec: Int,
       heightSpec: Int,
-      reMeasureEventHandler: EventHandler<ReMeasureEvent>?
+      reMeasureEventHandler: EventHandler<ReMeasureEvent>?,
   )
 
   /** Returns the component at the given position in the binder. */

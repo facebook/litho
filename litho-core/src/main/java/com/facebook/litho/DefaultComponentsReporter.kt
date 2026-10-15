@@ -30,7 +30,7 @@ open class DefaultComponentsReporter : ErrorReporterDelegate {
       message: String,
       cause: Throwable?,
       samplingFrequency: Int,
-      metadata: Map<String, Any?>?
+      metadata: Map<String, Any?>?,
   ) {
     when (level) {
       LogLevel.WARNING ->
@@ -53,7 +53,7 @@ open class DefaultComponentsReporter : ErrorReporterDelegate {
       categoryKey: String,
       message: String,
       samplingFrequency: Int = /* take default*/ 0,
-      metadata: Map<String, Any>? = null
+      metadata: Map<String, Any>? = null,
   ) {
     report(ComponentsReporter.map(level), categoryKey, message, null, samplingFrequency, metadata)
   }

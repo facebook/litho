@@ -19,4 +19,7 @@ package com.facebook.litho.widget
 import com.facebook.litho.annotations.Event
 
 /** Use this with TextInput to get the field's current text. */
-@Event(returnType = CharSequence::class) class GetTextEvent
+// Uses explicit Java class reference (java.lang.CharSequence::class) instead of Kotlin's to ensure
+// kapt generates correct Java stubs. Kotlin type references like cause kapt to generate invalid
+// annotations (kotlin.CharSequence.class) that the Litho annotation processor cannot handle.
+@Event(returnType = java.lang.CharSequence::class) class GetTextEvent

@@ -65,7 +65,7 @@ class EventTriggersContainer {
    * @param triggerKey
    * @return EventTrigger with the triggerKey given.
    */
-  fun getEventTrigger(triggerKey: String): EventTrigger<*>? {
+  fun getEventTrigger(triggerKey: Any): EventTrigger<*>? {
     return getEventTriggerInternal(triggerKey)
   }
 

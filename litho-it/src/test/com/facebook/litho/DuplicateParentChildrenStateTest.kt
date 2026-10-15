@@ -22,9 +22,12 @@ import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.eventhandler.EventHandlerTestHelper
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec
 import com.facebook.litho.testing.testrunner.LithoTestRunner
+import com.facebook.litho.view.clickable
+import com.facebook.litho.view.duplicateParentState
+import com.facebook.litho.view.focusable
 import com.facebook.litho.widget.SimpleMountSpecTester
-import junit.framework.Assert
 import org.assertj.core.api.Assertions
+import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -35,11 +38,10 @@ import org.robolectric.annotation.LooperMode
 class DuplicateParentChildrenStateTest {
   @JvmField
   @Rule
-  val mLithoTestRule: LithoTestRule =
-      LithoTestRule(
-          componentsConfiguration =
-              ComponentsConfiguration.defaultInstance.copy(
-                  shouldAddHostViewForRootComponent = true))
+  val lithoTestRule: LithoTestRule = LithoTestRule(
+      componentsConfiguration =
+          ComponentsConfiguration.defaultInstance.copy(shouldAddHostViewForRootComponent = true),
+  )
 
   @Test
   fun duplicateParentState_avoidedIfRedundant() {
@@ -52,81 +54,106 @@ class DuplicateParentChildrenStateTest {
                 .child(
                     Column.create(c)
                         .duplicateParentState(false) // (2 = simpleMountTester)
-                        .child(SimpleMountSpecTester.create(c).duplicateParentState(true)))
+                        .child(SimpleMountSpecTester(style = Style.duplicateParentState(true))),
+                )
                 .child(
                     Column.create(c)
                         .duplicateParentState(true) // (3 = simpleMountTester)
-                        .child(SimpleMountSpecTester.create(c).duplicateParentState(true)))
+                        .child(SimpleMountSpecTester(style = Style.duplicateParentState(true))),
+                )
                 .child(
                     Column.create(c) // (4 = generated host)
                         .clickHandler(
-                            EventHandlerTestHelper.create(c, 2)
-                                as EventHandler<ClickEvent>) // (5 = simpleMountTester)
-                        .child(SimpleMountSpecTester.create(c).duplicateParentState(true)))
+                            EventHandlerTestHelper.create(c, 2) as EventHandler<ClickEvent>,
+                        ) // (5 = simpleMountTester)
+                        .child(SimpleMountSpecTester(style = Style.duplicateParentState(true))),
+                )
                 .child(
                     Column.create(c) // (6 = generated host)
                         .clickHandler(
-                            EventHandlerTestHelper.create(c, 3)
-                                as EventHandler<ClickEvent>) // (7 = simpleMountTester)
-                        .child(SimpleMountSpecTester.create(c).duplicateParentState(false)))
+                            EventHandlerTestHelper.create(c, 3) as EventHandler<ClickEvent>,
+                        ) // (7 = simpleMountTester)
+                        .child(SimpleMountSpecTester(style = Style.duplicateParentState(false))),
+                )
                 .child(
                     Column.create(c) // (8 = generated host)
                         .clickHandler(
-                            EventHandlerTestHelper.create(c, 3) as EventHandler<ClickEvent>)
+                            EventHandlerTestHelper.create(c, 3) as EventHandler<ClickEvent>,
+                        )
                         .backgroundColor(Color.RED)
-                        .foregroundColor(Color.RED))
+                        .foregroundColor(Color.RED),
+                )
                 .child(
-                    Column.create(c)
-                        .backgroundColor(Color.BLUE)
-                        .foregroundColor(Color.BLUE)) // (9 = generated host)
+                    Column.create(c).backgroundColor(Color.BLUE).foregroundColor(Color.BLUE),
+                ) // (9 = generated host)
                 .build()
           }
         }
 
-    val testLithoView = mLithoTestRule.render(widthPx = 100, heightPx = 100) { component }
+    val testLithoView = lithoTestRule.render(widthPx = 100, heightPx = 100) { component }
     val layoutState = testLithoView.componentTree.mainThreadLayoutState!!
 
     Assertions.assertThat(layoutState.getMountableOutputCount()).isEqualTo(10)
     Assert.assertFalse(
         "Root output doesn't have duplicate state",
         LithoRenderUnit.isDuplicateParentState(
-            LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(0)).flags))
+            LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(0)).flags,
+        ),
+    )
     Assert.assertTrue(
         "Clickable generated root host output has duplicate state",
         LithoRenderUnit.isDuplicateParentState(
-            LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(1)).flags))
+            LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(1)).flags,
+        ),
+    )
     Assert.assertFalse(
         "Drawable doesn't duplicate host state",
         LithoRenderUnit.isDuplicateParentState(
-            LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(2)).flags))
+            LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(2)).flags,
+        ),
+    )
     Assert.assertTrue(
         "Drawable does duplicate parent state",
         LithoRenderUnit.isDuplicateParentState(
-            LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(3)).flags))
+            LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(3)).flags,
+        ),
+    )
     Assert.assertFalse(
         "Drawable host doesn't duplicate clickable parent state",
         LithoRenderUnit.isDuplicateParentState(
-            LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(4)).flags))
+            LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(4)).flags,
+        ),
+    )
     Assert.assertTrue(
         "Drawable duplicates parent state",
         LithoRenderUnit.isDuplicateParentState(
-            LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(5)).flags))
+            LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(5)).flags,
+        ),
+    )
     Assert.assertFalse(
         "Drawable host doesn't duplicate clickable parent state",
         LithoRenderUnit.isDuplicateParentState(
-            LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(6)).flags))
+            LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(6)).flags,
+        ),
+    )
     Assert.assertFalse(
         "Drawable doesn't duplicate clickable parent state",
         LithoRenderUnit.isDuplicateParentState(
-            LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(7)).flags))
+            LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(7)).flags,
+        ),
+    )
     Assert.assertFalse(
         "Clickable host doesn't duplicate parent state",
         LithoRenderUnit.isDuplicateParentState(
-            LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(8)).flags))
+            LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(8)).flags,
+        ),
+    )
     Assert.assertFalse(
         "Host with bg doesn't duplicate parent state",
         LithoRenderUnit.isDuplicateParentState(
-            LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(9)).flags))
+            LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(9)).flags,
+        ),
+    )
   }
 
   @Test
@@ -138,12 +165,13 @@ class DuplicateParentChildrenStateTest {
                 .child(
                     Row.create(c)
                         .duplicateChildrenStates(true)
-                        .child(SimpleMountSpecTester.create(c).focusable(true))
-                        .child(SimpleMountSpecTester.create(c).clickable(true)))
+                        .child(SimpleMountSpecTester(style = Style.focusable(true)))
+                        .child(SimpleMountSpecTester(style = Style.clickable(true))),
+                )
                 .build()
           }
         }
-    val testLithoView = mLithoTestRule.render(widthPx = 100, heightPx = 100) { component }
+    val testLithoView = lithoTestRule.render(widthPx = 100, heightPx = 100) { component }
     val secondMountedItem =
         testLithoView.lithoView.mountDelegateTarget!!.getMountItemAt(1)!!.content
     Assert.assertTrue(secondMountedItem is ComponentHost)

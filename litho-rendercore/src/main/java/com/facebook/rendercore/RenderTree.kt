@@ -17,21 +17,21 @@
 package com.facebook.rendercore
 
 import android.util.Pair
-import androidx.collection.LongSparseArray
+import androidx.collection.MutableLongIntMap
 import com.facebook.rendercore.extensions.RenderCoreExtension
 import java.util.Locale
 
-/** TODO add javadoc */
+/** Input of the mount phase containing the flattened representation of the laid-out node tree */
 class RenderTree(
     val root: RenderTreeNode,
     private val flatList: Array<RenderTreeNode>,
-    idToIndexMap: LongSparseArray<Int>?,
+    idToIndexMap: MutableLongIntMap?,
     val sizeConstraints: SizeConstraints,
     val renderStateId: Int,
     val extensionResults: List<Pair<RenderCoreExtension<*, *>, Any>>?,
     val renderContext: Any?,
     // This will vary by framework and will be null outside of debug builds
-    val debugData: Any?
+    val debugData: Any?,
 ) {
 
   val width: Int
@@ -43,22 +43,24 @@ class RenderTree(
   val mountableOutputCount: Int
     get() = flatList.size
 
-  private val idToIndexMap: LongSparseArray<Int>
+  private val idToIndexMap: MutableLongIntMap
 
   init {
     if (idToIndexMap != null) {
       this.idToIndexMap = idToIndexMap
     } else {
-      this.idToIndexMap = LongSparseArray(flatList.size)
+      this.idToIndexMap = MutableLongIntMap(flatList.size)
       for (i in flatList.indices) {
-        assertNoDuplicateRenderUnits(i, this.idToIndexMap, this@RenderTree)
+        if (checkAndReportDuplicateRenderUnits(i, this.idToIndexMap, this@RenderTree)) {
+          continue
+        }
         this.idToIndexMap.put(flatList[i].renderUnit.id, i)
       }
     }
   }
 
   fun getRenderTreeNodeIndex(renderUnitId: Long): Int {
-    return idToIndexMap.get(renderUnitId, -1)
+    return idToIndexMap.getOrDefault(renderUnitId, -1)
   }
 
   fun getRenderTreeNodeAtIndex(index: Int): RenderTreeNode {
@@ -70,12 +72,12 @@ class RenderTree(
     fun create(
         root: RenderTreeNode,
         flatList: Array<RenderTreeNode>,
-        idToIndexMap: LongSparseArray<Int>?,
+        idToIndexMap: MutableLongIntMap?,
         sizeConstraints: Long,
         renderStateId: Int,
         extensionResults: List<Pair<RenderCoreExtension<*, *>, Any>>?,
         layoutContext: LayoutContext<*>?,
-        debugData: Any?
+        debugData: Any?,
     ): RenderTree {
       return RenderTree(
           root,
@@ -90,37 +92,62 @@ class RenderTree(
     }
 
     /**
-     * Throws an exception if this RenderTree already has a RenderUnit with the same ID as the one
-     * at the given index.
+     * Checks if this RenderTree already has a RenderUnit with the same ID as the one at the given
+     * index. Instead of throwing an exception, this method logs an error via ErrorReporter and
+     * returns true to indicate a duplicate was found. This allows graceful degradation rather than
+     * crashing the app.
+     *
+     * @return true if a duplicate was found, false otherwise
      */
-    private fun assertNoDuplicateRenderUnits(
+    private fun checkAndReportDuplicateRenderUnits(
         newNodeIndex: Int,
-        idToIndexMap: LongSparseArray<Int>,
+        idToIndexMap: MutableLongIntMap,
         renderTree: RenderTree,
-    ) {
+    ): Boolean {
       val flatList = renderTree.flatList
       val newNode = flatList[newNodeIndex]
-      val existingNodeIndex = idToIndexMap.get(newNode.renderUnit.id, -1)
+      val existingNodeIndex = idToIndexMap.getOrDefault(newNode.renderUnit.id, -1)
       if (existingNodeIndex == -1) {
-        return
+        return false
       } else {
         val existingNode = flatList[existingNodeIndex]
-        throw DuplicateRenderUnitException(
-            newNode.renderUnit.id,
+        val errorMessage =
             String.format(
                 Locale.US,
                 """
-              RenderTrees must not have RenderUnits with the same ID:
-              Attempted to add item with existing ID at index %d: %s
-              Existing item at index %d: %s
-              Full RenderTree: %s
-              """
+                RenderTrees must not have RenderUnits with the same ID:
+                Attempted to add item with existing ID at index %d: %s
+                Existing item at index %d: %s
+                Full RenderTree: %s
+                """
                     .trimIndent(),
                 newNodeIndex,
                 newNode.generateDebugString(null),
                 existingNodeIndex,
                 existingNode.generateDebugString(null),
-                generateDebugString(renderTree)))
+                generateDebugString(renderTree),
+            )
+
+        if (BuildConfig.DEBUG) {
+          throw DuplicateRenderUnitException(newNode.renderUnit.id, errorMessage)
+        } else {
+          // Log the error via ErrorReporter for debugging and monitoring
+          ErrorReporter.report(
+              LogLevel.ERROR,
+              "DuplicateRenderUnit",
+              errorMessage,
+              DuplicateRenderUnitException(newNode.renderUnit.id, errorMessage),
+              // Default sampling frequency
+              metadata =
+                  mapOf(
+                      "duplicate_id" to newNode.renderUnit.id,
+                      "new_index" to newNodeIndex,
+                      "existing_index" to existingNodeIndex,
+                  ),
+          )
+        }
+
+        return true
       }
     }
 

@@ -20,9 +20,9 @@ import android.annotation.SuppressLint
 import android.graphics.Matrix
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.primitive.canvas.values
-import com.facebook.primitive.utils.types.Point
 import com.facebook.rendercore.ErrorReporter
 import com.facebook.rendercore.LogLevel
+import com.facebook.rendercore.geometry.Point
 
 sealed interface CanvasTransformModel {
   fun applyTo(matrix: Matrix)
@@ -53,7 +53,7 @@ data class CanvasTransform(
     private val d: Float,
     private val tx: Float,
     private val ty: Float,
-    private val children: List<CanvasTransformChildModel>
+    private val children: List<CanvasTransformChildModel>,
 ) : CanvasTransformModel, CanvasTransformChildModel {
   override fun applyTo(matrix: Matrix) {
     matrix.postConcat(toMatrix())
@@ -92,7 +92,8 @@ object CanvasInverseTransform : CanvasTransformChildModel {
       ErrorReporter.report(
           LogLevel.ERROR,
           "com.facebook.primitive.canvas.model.CanvasInverseTransform",
-          "The matrix supplied cannot be inverted")
+          "The matrix supplied cannot be inverted",
+      )
     }
   }
 }

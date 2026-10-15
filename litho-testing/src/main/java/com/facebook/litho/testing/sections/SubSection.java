@@ -51,13 +51,13 @@ public class SubSection {
   }
 
   @Override
-  public boolean equals(@Nullable Object o) {
+  public boolean equals(@Nullable Object other) {
 
-    if (!(o instanceof SubSection)) {
+    if (!(other instanceof SubSection)) {
       return false;
     }
 
-    SubSection that = (SubSection) o;
+    SubSection that = (SubSection) other;
     return that.mSectionType.equals(mSectionType) && arePropsEqual(that.mSection, mSection);
   }
 

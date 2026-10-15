@@ -28,15 +28,16 @@ import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.MountContentPools;
 import com.facebook.rendercore.Node;
+import com.facebook.rendercore.RCRenderTrace;
 import com.facebook.rendercore.RenderResult;
 import com.facebook.rendercore.RenderState;
 import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RenderTreeHost;
 import com.facebook.rendercore.RenderTreeHostView;
-import com.facebook.rendercore.ResolveContext;
 import com.facebook.rendercore.ResolveResult;
 import com.facebook.rendercore.RootHost;
 import com.facebook.rendercore.RootHostView;
+import com.facebook.rendercore.StateUpdateReceiver;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 import java.util.List;
 import org.junit.rules.TestRule;
@@ -57,16 +58,19 @@ public class RenderCoreTestRule implements TestRule {
   private static final RenderState.Delegate DELEGATE =
       new RenderState.Delegate() {
         @Override
-        // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
         public void commit(
             int layoutVersion,
-            RenderTree current,
+            @Nullable RenderTree current,
             RenderTree next,
-            Object currentState,
-            Object nextState) {}
+            @Nullable Object currentState,
+            @Nullable Object nextState) {}
 
         @Override
-        public void commitToUI(@Nullable RenderTree tree, @Nullable Object o, int frameVersion) {}
+        public void commitToUI(
+            RenderTree tree,
+            @Nullable Object o,
+            int frameVersion,
+            @Nullable RCRenderTrace renderTrace) {}
       };
 
   // NULLSAFE_FIXME[Field Not Initialized]
@@ -235,7 +239,7 @@ public class RenderCoreTestRule implements TestRule {
             getWidthSpec(),
             getHeightSpec());
 
-    getRenderTreeHost().setRenderTree(renderResult.getRenderTree());
+    getRenderTreeHost().setMountInput(renderResult.getMountInput());
 
     rootHost.measure(getWidthSpec(), getHeightSpec());
     rootHost.layout(0, 0, rootHost.getMeasuredWidth(), rootHost.getMeasuredHeight());
@@ -269,7 +273,7 @@ public class RenderCoreTestRule implements TestRule {
 
     @Override
     public ResolveResult resolve(
-        ResolveContext resolveContext,
+        StateUpdateReceiver stateUpdateReceiver,
         @Nullable Node committedTree,
         @Nullable Object committedState,
         List stateUpdatesToApply) {

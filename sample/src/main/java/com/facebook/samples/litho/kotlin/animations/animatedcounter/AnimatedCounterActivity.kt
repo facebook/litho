@@ -17,7 +17,8 @@
 package com.facebook.samples.litho.kotlin.animations.animatedcounter
 
 import android.os.Bundle
-import com.facebook.litho.LithoView
+import com.facebook.litho.surface.getLithoView
+import com.facebook.litho.surface.setLithoContent
 import com.facebook.samples.litho.NavigatableDemoActivity
 
 class AnimatedCounterActivity : NavigatableDemoActivity() {
@@ -25,6 +26,7 @@ class AnimatedCounterActivity : NavigatableDemoActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    setContentView(LithoView.create(this, AnimatingCounterRootComponent()))
+    setLithoContent { AnimatingCounterRootComponent() }
+    setContentView(getLithoView())
   }
 }

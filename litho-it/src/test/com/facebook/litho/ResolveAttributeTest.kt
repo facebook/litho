@@ -37,7 +37,8 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.Shadows
+import org.robolectric.shadow.api.Shadow
+import org.robolectric.shadows.ShadowDrawable
 
 @RunWith(LithoTestRunner::class)
 class ResolveAttributeTest {
@@ -48,7 +49,9 @@ class ResolveAttributeTest {
   fun setup() {
     lithoTestRule.useContext(
         ComponentContext(
-            ContextThemeWrapper(ApplicationProvider.getApplicationContext(), TestTheme)))
+            ContextThemeWrapper(ApplicationProvider.getApplicationContext(), TestTheme),
+        ),
+    )
   }
 
   @Test
@@ -59,8 +62,8 @@ class ResolveAttributeTest {
         lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) { column }
     val d = c.resources.getDrawable(test_bg)
     val drawable = testLithoView.currentRootNode?.node?.background
-    assertThat(Shadows.shadowOf(drawable).createdFromResId)
-        .isEqualTo(Shadows.shadowOf(d).createdFromResId)
+    assertThat((Shadow.extract(checkNotNull(drawable)) as ShadowDrawable).createdFromResId)
+        .isEqualTo((Shadow.extract(d) as ShadowDrawable).createdFromResId)
   }
 
   @Test
@@ -81,8 +84,8 @@ class ResolveAttributeTest {
         lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) { column }
     val d = c.resources.getDrawable(test_bg)
     val drawable = testLithoView.currentRootNode?.node?.background
-    assertThat(Shadows.shadowOf(drawable).createdFromResId)
-        .isEqualTo(Shadows.shadowOf(d).createdFromResId)
+    assertThat((Shadow.extract(checkNotNull(drawable)) as ShadowDrawable).createdFromResId)
+        .isEqualTo((Shadow.extract(d) as ShadowDrawable).createdFromResId)
   }
 
   @Test

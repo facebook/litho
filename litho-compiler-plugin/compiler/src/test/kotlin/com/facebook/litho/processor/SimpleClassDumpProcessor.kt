@@ -51,7 +51,8 @@ class SimpleClassDumpProcessor : AbstractTestProcessor() {
                     .append(": ")
                     .appendLine(
                         declaration.backingField?.type?.classOrNull?.owner?.name
-                            ?: declaration.getter?.returnType?.classOrNull?.owner?.name)
+                            ?: declaration.getter?.returnType?.classOrNull?.owner?.name,
+                    )
             is IrClass -> analyseClass(declaration, indentLevel + 1)
             else -> Unit
           }

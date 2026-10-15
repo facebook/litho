@@ -57,7 +57,7 @@ object MountSpecLifecycleTesterDrawableSpec {
   fun onCreateInitialState(
       context: ComponentContext,
       dummyState: StateValue<Any?>,
-      @Prop lifecycleTracker: LifecycleTracker
+      @Prop lifecycleTracker: LifecycleTracker,
   ) {
     dummyState.set(Any())
     lifecycleTracker.addStep(LifecycleStep.ON_CREATE_INITIAL_STATE)
@@ -69,7 +69,7 @@ object MountSpecLifecycleTesterDrawableSpec {
       c: ComponentContext,
       @Prop lifecycleTracker: LifecycleTracker,
       @State dummyState: Any?,
-      @CachedValue expensiveValue: Int
+      @CachedValue expensiveValue: Int,
   ) {
     lifecycleTracker.addStep(LifecycleStep.ON_PREPARE)
   }
@@ -83,7 +83,7 @@ object MountSpecLifecycleTesterDrawableSpec {
       heightSpec: Int,
       size: Size,
       @Prop lifecycleTracker: LifecycleTracker,
-      @Prop(optional = true) intrinsicSize: Size?
+      @Prop(optional = true) intrinsicSize: Size?,
   ) {
     val width = SizeSpec.getSize(widthSpec)
     val height = SizeSpec.getSize(heightSpec)
@@ -102,7 +102,7 @@ object MountSpecLifecycleTesterDrawableSpec {
   fun onBoundsDefined(
       c: ComponentContext,
       layout: ComponentLayout,
-      @Prop lifecycleTracker: LifecycleTracker
+      @Prop lifecycleTracker: LifecycleTracker,
   ) {
     val bounds = Rect(layout.x, layout.y, layout.x + layout.width, layout.y + layout.height)
     lifecycleTracker.addStep(LifecycleStep.ON_BOUNDS_DEFINED, bounds)
@@ -124,9 +124,8 @@ object MountSpecLifecycleTesterDrawableSpec {
   fun onMount(
       context: ComponentContext,
       drawable: ColorDrawable,
-      @Prop lifecycleTracker: LifecycleTracker
+      @Prop lifecycleTracker: LifecycleTracker,
   ) {
-    // TODO: (T64290961) Remove the StaticContainer hack for tracing OnCreateMountContent callback.
     if (drawable === StaticContainer.sLastCreatedDrawable) {
       lifecycleTracker.addStep(LifecycleStep.ON_CREATE_MOUNT_CONTENT)
       StaticContainer.sLastCreatedDrawable = null
@@ -140,7 +139,7 @@ object MountSpecLifecycleTesterDrawableSpec {
   fun onUnmount(
       context: ComponentContext,
       drawable: ColorDrawable,
-      @Prop lifecycleTracker: LifecycleTracker
+      @Prop lifecycleTracker: LifecycleTracker,
   ) {
     lifecycleTracker.addStep(LifecycleStep.ON_UNMOUNT)
   }
@@ -151,7 +150,7 @@ object MountSpecLifecycleTesterDrawableSpec {
   fun onBind(
       c: ComponentContext,
       drawable: ColorDrawable,
-      @Prop lifecycleTracker: LifecycleTracker
+      @Prop lifecycleTracker: LifecycleTracker,
   ) {
     lifecycleTracker.addStep(LifecycleStep.ON_BIND)
   }
@@ -162,7 +161,7 @@ object MountSpecLifecycleTesterDrawableSpec {
   fun onUnbind(
       c: ComponentContext,
       drawable: ColorDrawable,
-      @Prop lifecycleTracker: LifecycleTracker
+      @Prop lifecycleTracker: LifecycleTracker,
   ) {
     lifecycleTracker.addStep(LifecycleStep.ON_UNBIND)
   }

@@ -17,21 +17,22 @@
 package com.facebook.litho.recyclerview
 
 import androidx.recyclerview.widget.RecyclerView
-import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.core.height
 import com.facebook.litho.kotlin.widget.Text
+import com.facebook.litho.layout.flexbox.Column
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.common.SingleComponentSection
-import com.facebook.litho.sections.widget.RecyclerCollectionComponent
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.assertj.LithoAssertions
 import com.facebook.litho.testing.atMost
 import com.facebook.litho.widget.collection.CrossAxisWrapMode
 import com.facebook.litho.widget.collection.LazyList
+import com.facebook.litho.widget.collection.RecyclerCollectionComponent
 import com.facebook.rendercore.dp
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -59,36 +60,39 @@ class TestCollectionTest {
         lithoTestRule.render(heightSpec = atMost(500)) {
           LazyList(
               orientation = RecyclerView.HORIZONTAL,
-              crossAxisWrapMode = CrossAxisWrapMode.MatchFirstChild) {
-                children(items = (0..5), id = { it }) {
-                  if (it % 2 == 0) {
-                    return@children Text("$it", style = Style.height(50.dp))
-                  } else {
-                    return@children Text("$it", style = Style.height(100.dp))
-                  }
-                }
+              crossAxisWrapMode = CrossAxisWrapMode.MatchFirstChild,
+          ) {
+            children(items = (0..5), id = { it }) {
+              if (it % 2 == 0) {
+                return@children Text("$it", style = Style.height(50.dp))
+              } else {
+                return@children Text("$it", style = Style.height(100.dp))
               }
+            }
+          }
         }
     assertThat(lithoView.lithoView.measuredHeight).isEqualTo(50)
   }
 
   @Test
   @Ignore(
-      "We haven't exposed re-measure listener to lazy collection yet, so we're not able to get the expected measured size, will fix it later. ")
+      "We haven't exposed re-measure listener to lazy collection yet, so we're not able to get the expected measured size, will fix it later. ",
+  )
   fun `respect CrossAxisWrapMode Dynamic when set on LazyList`() {
     val lithoView =
         lithoTestRule.render(heightSpec = atMost(500)) {
           LazyList(
               orientation = RecyclerView.HORIZONTAL,
-              crossAxisWrapMode = CrossAxisWrapMode.Dynamic) {
-                children(items = (0..5), id = { it }) {
-                  if (it % 2 == 0) {
-                    return@children Text("$it", style = Style.height(50.dp))
-                  } else {
-                    return@children Text("$it", style = Style.height(100.dp))
-                  }
-                }
+              crossAxisWrapMode = CrossAxisWrapMode.Dynamic,
+          ) {
+            children(items = (0..5), id = { it }) {
+              if (it % 2 == 0) {
+                return@children Text("$it", style = Style.height(50.dp))
+              } else {
+                return@children Text("$it", style = Style.height(100.dp))
               }
+            }
+          }
         }
     assertThat(lithoView.lithoView.measuredHeight).isEqualTo(100)
   }
@@ -98,15 +102,17 @@ class TestCollectionTest {
     val lithoView =
         lithoTestRule.render(heightSpec = atMost(500)) {
           LazyList(
-              orientation = RecyclerView.HORIZONTAL, crossAxisWrapMode = CrossAxisWrapMode.NoWrap) {
-                children(items = (0..5), id = { it }) {
-                  if (it % 2 == 0) {
-                    return@children Text("$it", style = Style.height(50.dp))
-                  } else {
-                    return@children Text("$it", style = Style.height(100.dp))
-                  }
-                }
+              orientation = RecyclerView.HORIZONTAL,
+              crossAxisWrapMode = CrossAxisWrapMode.NoWrap,
+          ) {
+            children(items = (0..5), id = { it }) {
+              if (it % 2 == 0) {
+                return@children Text("$it", style = Style.height(50.dp))
+              } else {
+                return@children Text("$it", style = Style.height(100.dp))
               }
+            }
+          }
         }
     assertThat(lithoView.lithoView.measuredHeight).isEqualTo(500)
   }
@@ -114,15 +120,16 @@ class TestCollectionTest {
   @Test
   fun `test helpful error when recycler collection components recycler view is not mounted`() {
 
-    val testView =
-        lithoTestRule.render {
-          TestComponent(
-              RecyclerCollectionComponent(
-                  section =
-                      SingleComponentSection.create(SectionContext(context))
-                          .component(Text("0"))
-                          .build()))
-        }
+    val testView = lithoTestRule.render {
+      TestComponent(
+          RecyclerCollectionComponent(
+              section =
+                  SingleComponentSection.create(SectionContext(context))
+                      .component(Text("0"))
+                      .build(),
+          ),
+      )
+    }
 
     val listComponent = testView.findCollectionComponent()
     assertThat(listComponent).isNotNull
@@ -134,13 +141,24 @@ class TestCollectionTest {
 
   @Test
   fun `test helpful error when lazy list recycler view is unable to properly measure`() {
-    assertThatThrownBy {
-          lithoTestRule.render {
-            TestComponent(LazyList { child(id = 0, component = Text("child0")) })
+    if (ComponentsConfiguration.defaultInstance.enableNewCollection) {
+      assertThatThrownBy {
+            lithoTestRule.render {
+              TestComponent(LazyList { child(id = 0, component = Text("child0")) })
+            }
           }
-        }
-        .hasMessageContaining(
-            "Height mode has to be EXACTLY OR AT MOST for a vertical scrolling RecyclerView")
+          .hasMessageContaining(
+              "Height[main axis] has to be EXACTLY OR AT MOST for a scrolling RecyclerView",
+          )
+    } else {
+      assertThatThrownBy {
+            lithoTestRule.render {
+              TestComponent(LazyList { child(id = 0, component = Text("child0")) })
+            }
+          }
+          .hasMessageContaining("LazyList/LazyGrid height constraint error")
+          .hasMessageContaining("vertical scrolling list requires bounded height")
+    }
   }
 
   private class TestComponent(private val childComponent: Component) : KComponent() {

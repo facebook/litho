@@ -27,7 +27,9 @@ import com.facebook.litho.annotations.OnUnmount
 @MountSpec
 internal object TestCrasherOnMountSpec {
 
-  @JvmStatic @OnCreateMountContent fun onCreateMountContent(c: Context?): LithoView = LithoView(c)
+  @JvmStatic
+  @OnCreateMountContent
+  fun onCreateMountContent(c: Context?): LithoView = LithoView(requireNotNull(c))
 
   @JvmStatic
   @OnMount

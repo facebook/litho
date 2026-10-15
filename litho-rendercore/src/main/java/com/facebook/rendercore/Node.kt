@@ -43,7 +43,7 @@ interface Node<RenderContext> {
    */
   fun calculateLayout(
       context: LayoutContext<@UnsafeVariance RenderContext>,
-      sizeConstraints: SizeConstraints
+      sizeConstraints: SizeConstraints,
   ): LayoutResult {
     return calculateLayout(context, sizeConstraints.toWidthSpec(), sizeConstraints.toHeightSpec())
   }

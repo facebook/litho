@@ -35,5 +35,5 @@ public @interface FromEvent {
    * <p>Either the parameter type as declared or the type specified here must match the type in the
    * Event object.
    */
-  Class baseClass() default Object.class;
+  Class<?> baseClass() default Object.class;
 }

@@ -1,0 +1,46 @@
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.facebook.litho.widget
+
+import com.facebook.litho.Component
+import com.facebook.litho.ComponentScope
+import com.facebook.litho.KComponent
+import com.facebook.litho.SizeSpec
+import com.facebook.litho.Style
+import com.facebook.litho.layout.RenderWithConstraints
+import com.facebook.rendercore.toHeightSpec
+import com.facebook.rendercore.toWidthSpec
+
+class NestedTreeComponentWithChildState(
+    private val caller: SimpleStateUpdateEmulatorSpec.Caller,
+    private val style: Style = Style,
+) : KComponent() {
+
+  override fun ComponentScope.render(): Component {
+    return RenderWithConstraints(style = style) { sizeConstraints ->
+      val widthSpec = sizeConstraints.toWidthSpec()
+      val heightSpec = sizeConstraints.toHeightSpec()
+
+      SimpleStateUpdateEmulator.create(context)
+          .caller(caller)
+          .widthPx(SizeSpec.getSize(widthSpec))
+          .heightPx(SizeSpec.getSize(heightSpec))
+          .prefix("Count: ")
+          .build()
+    }
+  }
+}

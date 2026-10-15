@@ -261,13 +261,11 @@ public final class Change {
     return mNextData;
   }
 
-  // TODO t11953296
   private static Change acquireMoveChange(int index, int toIndex, @Nullable Object data) {
     final List<?> singleDataList = data != null ? Collections.singletonList(data) : null;
     return acquire(MOVE, index, toIndex, 1, null, null, singleDataList, singleDataList);
   }
 
-  // TODO t11953296
   private static Change acquireSingularChange(
       @Type int ct,
       int index,
@@ -285,7 +283,6 @@ public final class Change {
         nextData != null ? Collections.singletonList(nextData) : null);
   }
 
-  // TODO t11953296
   private static Change acquireRangedChange(
       @Type int ct,
       int index,
@@ -296,7 +293,6 @@ public final class Change {
     return acquire(ct, index, -1, count, null, renderInfos, prevData, nextData);
   }
 
-  // TODO t11953296
   private static Change acquire(
       @Type int ct,
       int index,

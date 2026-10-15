@@ -167,22 +167,28 @@ object EditorRegistry {
   init {
     registerEditor(
         Int::class.javaPrimitiveType,
-        NumberEditorInstance(checkNotNull(Int::class.javaPrimitiveType)))
+        NumberEditorInstance(checkNotNull(Int::class.javaPrimitiveType)),
+    )
     registerEditor(
         Float::class.javaPrimitiveType,
-        NumberEditorInstance(checkNotNull(Float::class.javaPrimitiveType)))
+        NumberEditorInstance(checkNotNull(Float::class.javaPrimitiveType)),
+    )
     registerEditor(
         Double::class.javaPrimitiveType,
-        NumberEditorInstance(checkNotNull(Double::class.javaPrimitiveType)))
+        NumberEditorInstance(checkNotNull(Double::class.javaPrimitiveType)),
+    )
     registerEditor(
         Long::class.javaPrimitiveType,
-        NumberEditorInstance(checkNotNull(Long::class.javaPrimitiveType)))
+        NumberEditorInstance(checkNotNull(Long::class.javaPrimitiveType)),
+    )
     registerEditor(
         Short::class.javaPrimitiveType,
-        NumberEditorInstance(checkNotNull(Short::class.javaPrimitiveType)))
+        NumberEditorInstance(checkNotNull(Short::class.javaPrimitiveType)),
+    )
     registerEditor(
         Byte::class.javaPrimitiveType,
-        NumberEditorInstance(checkNotNull(Byte::class.javaPrimitiveType)))
+        NumberEditorInstance(checkNotNull(Byte::class.javaPrimitiveType)),
+    )
     registerEditor(Int::class.java, NumberEditorInstance(Int::class.java))
     registerEditor(Float::class.java, NumberEditorInstance(Float::class.java))
     registerEditor(Double::class.java, NumberEditorInstance(Double::class.java))
@@ -207,10 +213,7 @@ object EditorRegistry {
 
     registerEditor(Style::class.java, StyleEditorInstance.instance)
 
-    // Conditionally register Size editor only if API level is 21 or higher
-    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-      registerEditor(Size::class.java, UtilSizeEditorInstance())
-    }
+    registerEditor(Size::class.java, UtilSizeEditorInstance())
 
     registerEditor(ColorDrawable::class.java, ColorDrawableEditorInstance())
     registerEditor(ComparableColorDrawable::class.java, ComparableColorDrawableEditorInstance())

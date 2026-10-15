@@ -17,14 +17,22 @@
 package com.facebook.litho
 
 import android.content.Context
+import android.graphics.Rect
 import android.os.SystemClock
 import android.view.MotionEvent
+import android.view.TouchDelegate
 import android.view.View
 import androidx.test.core.app.ApplicationProvider
+import com.facebook.litho.core.height
+import com.facebook.litho.core.padding
+import com.facebook.litho.core.width
+import com.facebook.litho.layout.flexbox.Column
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
+import com.facebook.litho.view.touchExpansion
 import com.facebook.litho.widget.OnClickCallbackComponent
 import com.facebook.litho.widget.Text
+import com.facebook.rendercore.px
 import com.facebook.yoga.YogaEdge
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -47,6 +55,104 @@ class TouchExpansionDelegateTest {
   }
 
   @Test
+  fun findExpandedTouchTarget_returnsTargetWithinExpansionWithoutDispatching() {
+    val callback = ClickListenerCallback()
+    val lithoView = renderExpandedComponent(callback)
+
+    val target = lithoView.findExpandedTouchTarget(5, 5)
+
+    assertThat(target).isNotNull
+    assertThat(callback.handled).isFalse
+    assertThat(callback.count).isZero()
+  }
+
+  @Test
+  fun findExpandedTouchTarget_usesInclusiveStartAndExclusiveEndBounds() {
+    val lithoView = renderExpandedComponent(ClickListenerCallback())
+
+    assertThat(lithoView.findExpandedTouchTarget(5, 5)).isNotNull
+    assertThat(lithoView.findExpandedTouchTarget(24, 24)).isNotNull
+    assertThat(lithoView.findExpandedTouchTarget(4, 5)).isNull()
+    assertThat(lithoView.findExpandedTouchTarget(25, 24)).isNull()
+    assertThat(lithoView.findExpandedTouchTarget(24, 25)).isNull()
+  }
+
+  @Test
+  fun findExpandedTouchTarget_returnsHighestMountIndexWhenExpansionsOverlap() {
+    val lithoView =
+        lithoTestRule
+            .render {
+              Column(style = Style.padding(all = 10.px)) {
+                child(
+                    OnClickCallbackComponent(
+                        callback = ClickListenerCallback(),
+                        style = Style.width(10.px).height(10.px).touchExpansion(all = 10.px),
+                    ),
+                )
+                child(
+                    OnClickCallbackComponent(
+                        callback = ClickListenerCallback(),
+                        style = Style.width(10.px).height(10.px).touchExpansion(all = 10.px),
+                    ),
+                )
+              }
+            }
+            .lithoView
+
+    // The lower child's expansion covers y in [0, 30); the upper child's covers y in [10, 40).
+    // (10, 15) sits in both, so the highest mount index (upper) must win; identity comparison
+    // avoids coupling the assertion to a legacy View id.
+    val overlapTarget = lithoView.findExpandedTouchTarget(10, 15)
+    val lowerOnlyTarget = lithoView.findExpandedTouchTarget(10, 5)
+    val upperOnlyTarget = lithoView.findExpandedTouchTarget(10, 35)
+
+    assertThat(overlapTarget).isNotNull
+    assertThat(overlapTarget).isSameAs(upperOnlyTarget)
+    assertThat(overlapTarget).isNotSameAs(lowerOnlyTarget)
+  }
+
+  @Test
+  fun findExpandedTouchTarget_doesNotPrimeGestureState() {
+    val callback = ClickListenerCallback()
+    val lithoView = renderExpandedComponent(callback)
+
+    assertThat(lithoView.findExpandedTouchTarget(5, 5)).isNotNull
+    lithoView.dispatchTouchEvent(
+        MotionEvent.obtain(
+            SystemClock.uptimeMillis(),
+            SystemClock.uptimeMillis(),
+            MotionEvent.ACTION_UP,
+            5f,
+            5f,
+            0,
+        ),
+    )
+
+    assertThat(callback.handled).isFalse
+    assertThat(callback.count).isZero()
+  }
+
+  @Test
+  fun findExpandedTouchTarget_returnsNullAfterUnmount() {
+    val lithoView = renderExpandedComponent(ClickListenerCallback())
+    assertThat(lithoView.findExpandedTouchTarget(5, 5)).isNotNull
+
+    lithoView.unmountAllItems()
+
+    assertThat(lithoView.findExpandedTouchTarget(5, 5)).isNull()
+  }
+
+  @Test
+  fun findExpandedTouchTarget_returnsNullWhenAndroidDelegateIsReplaced() {
+    val lithoView = renderExpandedComponent(ClickListenerCallback())
+    assertThat(lithoView.findExpandedTouchTarget(5, 5)).isNotNull
+
+    lithoView.touchDelegate = TouchDelegate(Rect(), lithoView)
+
+    assertThat(lithoView.findExpandedTouchTarget(5, 5)).isNull()
+  }
+
+  @Test
   fun onTouchEventOnEmptyDelegate_shouldNoOp() {
     val host = ComponentHost(ApplicationProvider.getApplicationContext<Context>(), null)
     val delegate = TouchExpansionDelegate(host)
@@ -58,7 +164,9 @@ class TouchExpansionDelegateTest {
                 MotionEvent.ACTION_DOWN,
                 0f,
                 0f,
-                0))
+                0,
+            ),
+        )
     assertThat(handled).describedAs("TouchEvent on empty delegate should not handle event").isFalse
   }
 
@@ -68,11 +176,11 @@ class TouchExpansionDelegateTest {
     val component =
         Column.create(context)
             .child(
-                OnClickCallbackComponent.create(context)
-                    .widthPx(10)
-                    .heightPx(10)
-                    .callback(callback)
-                    .touchExpansionPx(YogaEdge.ALL, 5))
+                OnClickCallbackComponent(
+                    callback = callback,
+                    style = Style.width(10.px).height(10.px).touchExpansion(all = 5.px),
+                ),
+            )
             .paddingPx(YogaEdge.ALL, 10)
             .build()
     val testLithoView = lithoTestRule.render { component }
@@ -91,11 +199,11 @@ class TouchExpansionDelegateTest {
     val component =
         Column.create(context)
             .child(
-                OnClickCallbackComponent.create(context)
-                    .widthPx(10)
-                    .heightPx(10)
-                    .callback(callback)
-                    .touchExpansionPx(YogaEdge.ALL, 5))
+                OnClickCallbackComponent(
+                    callback = callback,
+                    style = Style.width(10.px).height(10.px).touchExpansion(all = 5.px),
+                ),
+            )
             .paddingPx(YogaEdge.ALL, 10)
             .build()
     val testLithoView = lithoTestRule.render { component }
@@ -111,11 +219,11 @@ class TouchExpansionDelegateTest {
     val component =
         Column.create(context)
             .child(
-                OnClickCallbackComponent.create(context)
-                    .widthPx(10)
-                    .heightPx(10)
-                    .callback(callback)
-                    .touchExpansionPx(YogaEdge.ALL, 5))
+                OnClickCallbackComponent(
+                    callback = callback,
+                    style = Style.width(10.px).height(10.px).touchExpansion(all = 5.px),
+                ),
+            )
             .paddingPx(YogaEdge.ALL, 10)
             .build()
     val testLithoView = lithoTestRule.render { component }
@@ -138,24 +246,26 @@ class TouchExpansionDelegateTest {
     val component =
         Column.create(context)
             .child(
-                OnClickCallbackComponent.create(context)
-                    .widthPx(10)
-                    .heightPx(10)
-                    .callback(callback)
-                    .touchExpansionPx(YogaEdge.ALL, 5))
+                OnClickCallbackComponent(
+                    callback = callback,
+                    style = Style.width(10.px).height(10.px).touchExpansion(all = 5.px),
+                ),
+            )
             .paddingPx(YogaEdge.ALL, 10)
             .build()
     val testLithoView = lithoTestRule.render { component }
     val updated =
         Column.create(context)
             .child(
-                OnClickCallbackComponent.create(context)
-                    .widthPx(10)
-                    .heightPx(10)
-                    .callback(callback))
+                OnClickCallbackComponent(
+                    callback = callback,
+                    style = Style.width(10.px).height(10.px),
+                ),
+            )
             .paddingPx(YogaEdge.ALL, 10)
             .build()
     testLithoView.setRoot(updated)
+    assertThat(testLithoView.lithoView.findExpandedTouchTarget(7, 7)).isNull()
     testLithoView.lithoView.emulateClickEvent(7, 7)
     assertThat(callback.handled)
         .describedAs("TouchEvent within bounds bounds should not be handled")
@@ -179,11 +289,11 @@ class TouchExpansionDelegateTest {
     val component =
         Column.create(context)
             .child(
-                OnClickCallbackComponent.create(context)
-                    .widthPx(10)
-                    .heightPx(10)
-                    .callback(callback)
-                    .touchExpansionPx(YogaEdge.ALL, 5))
+                OnClickCallbackComponent(
+                    callback = callback,
+                    style = Style.width(10.px).height(10.px).touchExpansion(all = 5.px),
+                ),
+            )
             .paddingPx(YogaEdge.ALL, 10)
             .build()
     val testLithoView = lithoTestRule.render { component }
@@ -191,14 +301,16 @@ class TouchExpansionDelegateTest {
         Column.create(context)
             .child(Text.create(context).text("hello world").widthPx(10).heightPx(10))
             .child(
-                OnClickCallbackComponent.create(context)
-                    .widthPx(10)
-                    .heightPx(10)
-                    .callback(callback)
-                    .touchExpansionPx(YogaEdge.ALL, 5))
+                OnClickCallbackComponent(
+                    callback = callback,
+                    style = Style.width(10.px).height(10.px).touchExpansion(all = 5.px),
+                ),
+            )
             .paddingPx(YogaEdge.ALL, 10)
             .build()
     testLithoView.setRoot(updated).measure().layout()
+    assertThat(testLithoView.lithoView.findExpandedTouchTarget(7, 7)).isNull()
+    assertThat(testLithoView.lithoView.findExpandedTouchTarget(7, 21)).isNotNull
     testLithoView.lithoView.emulateClickEvent(7, 7)
     assertThat(callback.handled)
         .describedAs("TouchEvent within bounds bounds should not be handled")
@@ -210,6 +322,21 @@ class TouchExpansionDelegateTest {
     assertThat(callback.count)
         .describedAs("TouchEvent within bounds bounds should be handled only once")
         .isEqualTo(1)
+  }
+
+  private fun renderExpandedComponent(callback: ClickListenerCallback): LithoView {
+    return lithoTestRule
+        .render {
+          Column(style = Style.padding(all = 10.px)) {
+            child(
+                OnClickCallbackComponent(
+                    callback = callback,
+                    style = Style.width(10.px).height(10.px).touchExpansion(all = 5.px),
+                ),
+            )
+          }
+        }
+        .lithoView
   }
 
   class ClickListenerCallback : View.OnClickListener {
@@ -236,7 +363,8 @@ class TouchExpansionDelegateTest {
               MotionEvent.ACTION_DOWN,
               x.toFloat(),
               y.toFloat(),
-              0)
+              0,
+          )
       val up =
           MotionEvent.obtain(
               SystemClock.uptimeMillis() + 10,
@@ -244,7 +372,8 @@ class TouchExpansionDelegateTest {
               MotionEvent.ACTION_UP,
               x.toFloat(),
               y.toFloat(),
-              0)
+              0,
+          )
       dispatchTouchEvent(down)
       dispatchTouchEvent(up)
     }

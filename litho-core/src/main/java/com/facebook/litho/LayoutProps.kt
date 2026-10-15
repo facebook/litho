@@ -16,6 +16,7 @@
 
 package com.facebook.litho
 
+import android.graphics.Rect
 import androidx.annotation.Px
 import com.facebook.litho.layout.LayoutDirection
 import com.facebook.yoga.YogaAlign
@@ -89,4 +90,24 @@ interface LayoutProps {
   fun setBorderWidth(edge: YogaEdge, borderWidth: Float)
 
   fun gap(gutter: YogaGutter, length: Int)
+
+  fun widthAuto()
+
+  fun heightAuto()
+}
+
+/** Pads each side of these props by a background drawable's padding on that side, if it has any. */
+internal fun LayoutProps.setPaddingFromRect(padding: Rect) {
+  if (padding.left > 0) {
+    paddingPx(YogaEdge.LEFT, padding.left)
+  }
+  if (padding.top > 0) {
+    paddingPx(YogaEdge.TOP, padding.top)
+  }
+  if (padding.right > 0) {
+    paddingPx(YogaEdge.RIGHT, padding.right)
+  }
+  if (padding.bottom > 0) {
+    paddingPx(YogaEdge.BOTTOM, padding.bottom)
+  }
 }

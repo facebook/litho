@@ -95,7 +95,6 @@ import java.lang.annotation.RetentionPolicy;
  *
  * @see Prop
  * @see TreeProp
- * @see InjectProp
  * @see State
  * @see Param
  * @deprecated Use {@link com.facebook.litho.KComponent}s for new derived components instead of

@@ -23,8 +23,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.facebook.litho.Component;
-import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.Diff;
+import com.facebook.litho.Row;
 import com.facebook.litho.sections.Change;
 import com.facebook.litho.sections.ChangeSet;
 import com.facebook.litho.sections.Section;
@@ -62,9 +62,7 @@ public class SingleComponentSectionSpecTest {
     Diff<Boolean> isFullSpanDiff = new Diff<>(null, null);
     Diff<Map<String, Object>> customAttributesDiff = new Diff<>(null, null);
     Diff<Object> dataDiff = new Diff<>(null, null);
-    Diff<ComponentsLogger> componentLoggerDiff = new Diff<>(null, null);
     Diff<String> logTagDiff = new Diff<>(null, null);
-    Diff<Boolean> shouldCompareComponentCommonProps = new Diff<>(null, null);
     SingleComponentSectionSpec.onCreateChangeSet(
         mSectionContext,
         mChangeSet,
@@ -74,9 +72,7 @@ public class SingleComponentSectionSpecTest {
         isFullSpanDiff,
         customAttributesDiff,
         dataDiff,
-        componentLoggerDiff,
-        logTagDiff,
-        shouldCompareComponentCommonProps);
+        logTagDiff);
 
     assertThat(mChangeSet.getChangeCount()).isEqualTo(0);
   }
@@ -90,9 +86,7 @@ public class SingleComponentSectionSpecTest {
     Diff<Map<String, Object>> customAttributesDiff =
         new Diff<>(null, new HashMap<String, Object>());
     Diff<Object> dataDiff = new Diff<>(null, 1);
-    Diff<ComponentsLogger> componentLoggerDiff = new Diff<>(null, null);
     Diff<String> logTagDiff = new Diff<>(null, null);
-    Diff<Boolean> shouldCompareComponentCommonProps = new Diff<>(null, null);
     SingleComponentSectionSpec.onCreateChangeSet(
         mSectionContext,
         mChangeSet,
@@ -102,9 +96,7 @@ public class SingleComponentSectionSpecTest {
         isFullSpanDiff,
         customAttributesDiff,
         dataDiff,
-        componentLoggerDiff,
-        logTagDiff,
-        shouldCompareComponentCommonProps);
+        logTagDiff);
 
     assertThat(mChangeSet.getChangeCount()).isEqualTo(0);
   }
@@ -118,9 +110,7 @@ public class SingleComponentSectionSpecTest {
     Diff<Map<String, Object>> customAttributesDiff =
         new Diff<>(null, new HashMap<String, Object>());
     Diff<Object> dataDiff = new Diff<>(1, null);
-    Diff<ComponentsLogger> componentLoggerDiff = new Diff<>(null, null);
     Diff<String> logTagDiff = new Diff<>(null, null);
-    Diff<Boolean> shouldCompareComponentCommonProps = new Diff<>(null, null);
     SingleComponentSectionSpec.onCreateChangeSet(
         mSectionContext,
         mChangeSet,
@@ -130,9 +120,7 @@ public class SingleComponentSectionSpecTest {
         isFullSpanDiff,
         customAttributesDiff,
         dataDiff,
-        componentLoggerDiff,
-        logTagDiff,
-        shouldCompareComponentCommonProps);
+        logTagDiff);
 
     assertThat(mChangeSet.getChangeCount()).isEqualTo(0);
   }
@@ -145,9 +133,7 @@ public class SingleComponentSectionSpecTest {
     Diff<Boolean> isFullSpanDiff = new Diff<>(null, null);
     Diff<Map<String, Object>> customAttributesDiff = new Diff<>(null, null);
     Diff<Object> dataDiff = new Diff<>(1, null);
-    Diff<ComponentsLogger> componentLoggerDiff = new Diff<>(null, null);
     Diff<String> logTagDiff = new Diff<>(null, null);
-    Diff<Boolean> shouldCompareComponentCommonProps = new Diff<>(null, null);
     SingleComponentSectionSpec.onCreateChangeSet(
         mSectionContext,
         mChangeSet,
@@ -157,9 +143,7 @@ public class SingleComponentSectionSpecTest {
         isFullSpanDiff,
         customAttributesDiff,
         dataDiff,
-        componentLoggerDiff,
-        logTagDiff,
-        shouldCompareComponentCommonProps);
+        logTagDiff);
 
     Change change = verifyChangeSetAndGetTheChange(mChangeSet);
     assertThat(change.getType()).isEqualTo(Change.DELETE);
@@ -176,9 +160,7 @@ public class SingleComponentSectionSpecTest {
     Diff<Boolean> isFullSpanDiff = new Diff<>(null, true);
     Diff<Map<String, Object>> customAttributesDiff = new Diff<>(null, null);
     Diff<Object> dataDiff = new Diff<>(null, 1);
-    Diff<ComponentsLogger> componentLoggerDiff = new Diff<>(null, null);
     Diff<String> logTagDiff = new Diff<>(null, null);
-    Diff<Boolean> shouldCompareComponentCommonProps = new Diff<>(null, null);
     SingleComponentSectionSpec.onCreateChangeSet(
         mSectionContext,
         mChangeSet,
@@ -188,9 +170,7 @@ public class SingleComponentSectionSpecTest {
         isFullSpanDiff,
         customAttributesDiff,
         dataDiff,
-        componentLoggerDiff,
-        logTagDiff,
-        shouldCompareComponentCommonProps);
+        logTagDiff);
 
     Change change = verifyChangeSetAndGetTheChange(mChangeSet);
     assertThat(change.getType()).isEqualTo(Change.INSERT);
@@ -214,9 +194,7 @@ public class SingleComponentSectionSpecTest {
     Diff<Boolean> isFullSpanDiff = new Diff<>(true, true);
     Diff<Map<String, Object>> customAttributesDiff = new Diff<>(null, null);
     Diff<Object> dataDiff = new Diff<>(1, 2);
-    Diff<ComponentsLogger> componentLoggerDiff = new Diff<>(null, null);
     Diff<String> logTagDiff = new Diff<>(null, null);
-    Diff<Boolean> shouldCompareComponentCommonProps = new Diff<>(null, null);
     SingleComponentSectionSpec.onCreateChangeSet(
         mSectionContext,
         mChangeSet,
@@ -226,9 +204,7 @@ public class SingleComponentSectionSpecTest {
         isFullSpanDiff,
         customAttributesDiff,
         dataDiff,
-        componentLoggerDiff,
-        logTagDiff,
-        shouldCompareComponentCommonProps);
+        logTagDiff);
 
     Change change = verifyChangeSetAndGetTheChange(mChangeSet);
     assertThat(change.getType()).isEqualTo(Change.UPDATE);
@@ -241,6 +217,28 @@ public class SingleComponentSectionSpecTest {
   }
 
   @Test
+  public void testUpdateComponentWhenOnlyCommonPropsDiffer() {
+    Component prevComponent = Row.create(mSectionContext).alpha(0.5f).build();
+    Component nextComponent = Row.create(mSectionContext).alpha(0.1f).build();
+
+    SingleComponentSectionSpec.onCreateChangeSet(
+        mSectionContext,
+        mChangeSet,
+        new Diff<>(prevComponent, nextComponent),
+        new Diff<>(true, true),
+        new Diff<>(2, 2),
+        new Diff<>(true, true),
+        new Diff<>(null, null),
+        new Diff<>(1, 2),
+        new Diff<>(null, null));
+
+    Change change = verifyChangeSetAndGetTheChange(mChangeSet);
+    assertThat(change.getType()).isEqualTo(Change.UPDATE);
+    assertThat(mChangeSet.getChangeCount()).isEqualTo(1);
+    assertThat(change.getRenderInfo().getComponent()).isEqualTo(nextComponent);
+  }
+
+  @Test
   public void testUpdateSpanSize() {
     Component component = mock(Component.class);
     Diff<Component> componentDiff = new Diff<>(component, component);
@@ -249,9 +247,7 @@ public class SingleComponentSectionSpecTest {
     Diff<Boolean> isFullSpanDiff = new Diff<>(true, true);
     Diff<Map<String, Object>> customAttributesDiff = new Diff<>(null, null);
     Diff<Object> dataDiff = new Diff<>(null, null);
-    Diff<ComponentsLogger> componentLoggerDiff = new Diff<>(null, null);
     Diff<String> logTagDiff = new Diff<>(null, null);
-    Diff<Boolean> shouldCompareComponentCommonProps = new Diff<>(null, null);
     SingleComponentSectionSpec.onCreateChangeSet(
         mSectionContext,
         mChangeSet,
@@ -261,9 +257,7 @@ public class SingleComponentSectionSpecTest {
         isFullSpanDiff,
         customAttributesDiff,
         dataDiff,
-        componentLoggerDiff,
-        logTagDiff,
-        shouldCompareComponentCommonProps);
+        logTagDiff);
 
     Change change = verifyChangeSetAndGetTheChange(mChangeSet);
     assertThat(change.getType()).isEqualTo(Change.UPDATE);
@@ -282,9 +276,7 @@ public class SingleComponentSectionSpecTest {
     Diff<Boolean> isFullSpanDiff = new Diff<>(true, true);
     Diff<Map<String, Object>> customAttributesDiff = new Diff<>(null, null);
     Diff<Object> dataDiff = new Diff<>(null, null);
-    Diff<ComponentsLogger> componentLoggerDiff = new Diff<>(null, null);
     Diff<String> logTagDiff = new Diff<>(null, null);
-    Diff<Boolean> shouldCompareComponentCommonProps = new Diff<>(null, null);
     SingleComponentSectionSpec.onCreateChangeSet(
         mSectionContext,
         mChangeSet,
@@ -294,9 +286,7 @@ public class SingleComponentSectionSpecTest {
         isFullSpanDiff,
         customAttributesDiff,
         dataDiff,
-        componentLoggerDiff,
-        logTagDiff,
-        shouldCompareComponentCommonProps);
+        logTagDiff);
 
     Change change = verifyChangeSetAndGetTheChange(mChangeSet);
     assertThat(change.getType()).isEqualTo(Change.UPDATE);
@@ -315,9 +305,7 @@ public class SingleComponentSectionSpecTest {
     Diff<Boolean> isFullSpanDiff = new Diff<>(true, false);
     Diff<Map<String, Object>> customAttributesDiff = new Diff<>(null, null);
     Diff<Object> dataDiff = new Diff<>(null, null);
-    Diff<ComponentsLogger> componentLoggerDiff = new Diff<>(null, null);
     Diff<String> logTagDiff = new Diff<>(null, null);
-    Diff<Boolean> shouldCompareComponentCommonProps = new Diff<>(null, null);
     SingleComponentSectionSpec.onCreateChangeSet(
         mSectionContext,
         mChangeSet,
@@ -327,9 +315,7 @@ public class SingleComponentSectionSpecTest {
         isFullSpanDiff,
         customAttributesDiff,
         dataDiff,
-        componentLoggerDiff,
-        logTagDiff,
-        shouldCompareComponentCommonProps);
+        logTagDiff);
 
     Change change = verifyChangeSetAndGetTheChange(mChangeSet);
     assertThat(change.getType()).isEqualTo(Change.UPDATE);
@@ -352,9 +338,7 @@ public class SingleComponentSectionSpecTest {
     Diff<Boolean> isFullSpanDiff = new Diff<>(true, true);
     Diff<Map<String, Object>> customAttributesDiff = new Diff<>(null, null);
     Diff<Object> dataDiff = new Diff<>(1, 1);
-    Diff<ComponentsLogger> componentLoggerDiff = new Diff<>(null, null);
     Diff<String> logTagDiff = new Diff<>(null, null);
-    Diff<Boolean> shouldCompareComponentCommonProps = new Diff<>(null, null);
     SingleComponentSectionSpec.onCreateChangeSet(
         mSectionContext,
         mChangeSet,
@@ -364,9 +348,7 @@ public class SingleComponentSectionSpecTest {
         isFullSpanDiff,
         customAttributesDiff,
         dataDiff,
-        componentLoggerDiff,
-        logTagDiff,
-        shouldCompareComponentCommonProps);
+        logTagDiff);
 
     assertThat(mChangeSet.getChangeCount()).isEqualTo(0);
   }
@@ -383,9 +365,7 @@ public class SingleComponentSectionSpecTest {
     attrs.put("test", true);
     Diff<Map<String, Object>> customAttributesDiff = new Diff<>(null, attrs);
     Diff<Object> dataDiff = new Diff<>(null, null);
-    Diff<ComponentsLogger> componentLoggerDiff = new Diff<>(null, null);
     Diff<String> logTagDiff = new Diff<>(null, null);
-    Diff<Boolean> shouldCompareComponentCommonProps = new Diff<>(null, null);
 
     SingleComponentSectionSpec.onCreateChangeSet(
         mSectionContext,
@@ -396,9 +376,7 @@ public class SingleComponentSectionSpecTest {
         isFullSpanDiff,
         customAttributesDiff,
         dataDiff,
-        componentLoggerDiff,
-        logTagDiff,
-        shouldCompareComponentCommonProps);
+        logTagDiff);
 
     Change change = verifyChangeSetAndGetTheChange(mChangeSet);
     assertThat(change.getType()).isEqualTo(Change.UPDATE);
@@ -420,9 +398,7 @@ public class SingleComponentSectionSpecTest {
         isFullSpanDiff,
         customAttributesDiff,
         dataDiff,
-        componentLoggerDiff,
-        logTagDiff,
-        shouldCompareComponentCommonProps);
+        logTagDiff);
     assertThat(mChangeSet.getChangeCount()).isEqualTo(0);
     assertThat((Boolean) change.getRenderInfo().getCustomAttribute("test")).isTrue();
 
@@ -437,9 +413,7 @@ public class SingleComponentSectionSpecTest {
         isFullSpanDiff,
         customAttributesDiff,
         dataDiff,
-        componentLoggerDiff,
-        logTagDiff,
-        shouldCompareComponentCommonProps);
+        logTagDiff);
     change = verifyChangeSetAndGetTheChange(mChangeSet);
     assertThat(mChangeSet.getChangeCount()).isEqualTo(1);
     assertThat(change.getRenderInfo().getCustomAttribute("test")).isNull();

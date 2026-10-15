@@ -29,9 +29,11 @@ import android.os.Bundle
 import android.text.Layout
 import android.text.SpannableStringBuilder
 import android.text.Spanned
+import android.text.TextPaint
 import android.text.TextUtils
 import android.text.style.ClickableSpan
 import android.text.style.ImageSpan
+import android.text.style.ReplacementSpan
 import android.view.View
 import androidx.annotation.Dimension
 import androidx.annotation.Dimension.Companion.SP
@@ -43,7 +45,6 @@ import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.customview.widget.ExploreByTouchHelper
 import com.facebook.fbui.textlayoutbuilder.TextLayoutBuilder
 import com.facebook.fbui.textlayoutbuilder.util.LayoutMeasureUtil
-import com.facebook.litho.AccessibilityRole
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentLayout
 import com.facebook.litho.ComponentsReporter
@@ -69,6 +70,8 @@ import com.facebook.litho.annotations.OnBoundsDefined
 import com.facebook.litho.annotations.OnCreateMountContent
 import com.facebook.litho.annotations.OnLoadStyle
 import com.facebook.litho.annotations.OnMeasure
+import com.facebook.litho.annotations.OnMeasureIntrinsicHeight
+import com.facebook.litho.annotations.OnMeasureIntrinsicWidth
 import com.facebook.litho.annotations.OnMount
 import com.facebook.litho.annotations.OnPerformActionForVirtualView
 import com.facebook.litho.annotations.OnPopulateAccessibilityNode
@@ -80,6 +83,7 @@ import com.facebook.litho.annotations.PropDefault
 import com.facebook.litho.annotations.Reason
 import com.facebook.litho.annotations.ResType
 import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.utils.VersionedAndroidApis.M.getEllipsisOffsetFromPaintAdvance
 import com.facebook.litho.utils.VersionedAndroidApis.Q.breakIteratorGetPreceding
 import com.facebook.litho.widget.TextDrawable.TextOffsetOnTouchListener
 import com.facebook.litho.widget.TextStylesHelper.DEFAULT_BREAK_STRATEGY
@@ -90,6 +94,7 @@ import com.facebook.litho.widget.TextStylesHelper.DEFAULT_MAX_WIDTH
 import com.facebook.litho.widget.TextStylesHelper.DEFAULT_MIN_WIDTH
 import com.facebook.litho.widget.TextureWarmer.Companion.instance
 import com.facebook.rendercore.text.ClickableSpanListener
+import com.facebook.rendercore.text.TextLayoutIntrinsics
 import com.facebook.rendercore.text.TouchableSpanListener
 import com.facebook.widget.accessibility.delegates.AccessibleClickableSpan
 import com.facebook.widget.accessibility.delegates.ContentDescriptionSpan
@@ -184,9 +189,11 @@ import kotlin.math.min
 @ExcuseMySpec(reason = Reason.J2K_CONVERSION)
 @MountSpec(
     isPureRender = true,
+    hasIntrinsicSize = true,
     poolSize = 30,
     canPreallocate = true,
-    events = [TextOffsetOnTouchEvent::class])
+    events = [TextOffsetOnTouchEvent::class],
+)
 object TextComponentSpec {
   @Dimension(unit = SP) val DEFAULT_TEXT_SIZE_SP: Int = 14
   const val UNSET: Int = -1
@@ -264,7 +271,7 @@ object TextComponentSpec {
       shadowDy: Output<Float>?,
       shadowColor: Output<Int>?,
       verticalGravity: Output<VerticalGravity>?,
-      typeface: Output<Typeface>?
+      typeface: Output<Typeface>?,
   ) {
     TextStylesHelper.onLoadStyle(
         c,
@@ -294,7 +301,8 @@ object TextComponentSpec {
         shadowDy,
         shadowColor,
         verticalGravity,
-        typeface)
+        typeface,
+    )
   }
 
   @OnMeasure
@@ -340,7 +348,7 @@ object TextComponentSpec {
       measureLayout: Output<Layout?>,
       measuredWidth: Output<Int?>,
       measuredHeight: Output<Int?>,
-      fullWidth: Output<Int?>
+      fullWidth: Output<Int?>,
   ) {
     if (text.isNullOrEmpty()) {
       measureLayout.set(null)
@@ -351,41 +359,41 @@ object TextComponentSpec {
 
     val resolvedTextAlignment = getTextAlignment(textAlignment, alignment)
 
-    val newLayout =
-        createTextLayout(
-            context,
-            widthSpec,
-            ellipsize,
-            shouldIncludeFontPadding,
-            maxLines,
-            shadowRadius,
-            shadowDx,
-            shadowDy,
-            shadowColor,
-            isSingleLine,
-            text,
-            textColor,
-            textColorStateList,
-            linkColor,
-            textSize,
-            extraSpacing,
-            spacingMultiplier,
-            letterSpacing,
-            textStyle,
-            typeface,
-            resolvedTextAlignment,
-            glyphWarming,
-            layout.resolvedLayoutDirection,
-            minEms,
-            maxEms,
-            minTextWidth,
-            maxTextWidth,
-            context.androidContext.resources.displayMetrics.density,
-            breakStrategy,
-            hyphenationFrequency,
-            justificationMode,
-            textDirection,
-            lineHeight)
+    val newLayout = createTextLayout(
+        context,
+        widthSpec,
+        ellipsize,
+        shouldIncludeFontPadding,
+        maxLines,
+        shadowRadius,
+        shadowDx,
+        shadowDy,
+        shadowColor,
+        isSingleLine,
+        text,
+        textColor,
+        textColorStateList,
+        linkColor,
+        textSize,
+        extraSpacing,
+        spacingMultiplier,
+        letterSpacing,
+        textStyle,
+        typeface,
+        resolvedTextAlignment,
+        glyphWarming,
+        layout.resolvedLayoutDirection,
+        minEms,
+        maxEms,
+        minTextWidth,
+        maxTextWidth,
+        context.androidContext.resources.displayMetrics.density,
+        breakStrategy,
+        hyphenationFrequency,
+        justificationMode,
+        textDirection,
+        lineHeight,
+    )
     measureLayout.set(newLayout)
 
     fullWidth.set(max(0, resolveSize(widthSpec, newLayout.width)))
@@ -412,7 +420,8 @@ object TextComponentSpec {
       emitMessage(
           ComponentsReporter.LogLevel.ERROR,
           WRONG_TEXT_SIZE,
-          "Text layout measured to less than 0 pixels")
+          "Text layout measured to less than 0 pixels",
+      )
     }
 
     measuredWidth.set(size.width)
@@ -425,7 +434,7 @@ object TextComponentSpec {
       widthSpec: Int,
       layout: Layout,
       minimallyWide: Boolean,
-      minimallyWideThreshold: Int
+      minimallyWideThreshold: Int,
   ): Int {
     val fullWidth = resolveSize(widthSpec, layout.width)
 
@@ -446,6 +455,153 @@ object TextComponentSpec {
     }
 
     return fullWidth
+  }
+
+  /** Min-content width: the longest-word width (measured unbounded). */
+  @OnMeasureIntrinsicWidth
+  fun onMeasureIntrinsicWidth(
+      c: ComponentContext,
+      layout: ComponentLayout,
+      widthSpec: Int,
+      heightSpec: Int,
+      @Prop(resType = ResType.STRING) text: CharSequence?,
+      @Prop(optional = true) ellipsize: TextUtils.TruncateAt?,
+      @Prop(optional = true, resType = ResType.BOOL) shouldIncludeFontPadding: Boolean,
+      @Prop(optional = true, resType = ResType.INT) maxLines: Int,
+      @Prop(optional = true, resType = ResType.INT) minEms: Int,
+      @Prop(optional = true, resType = ResType.INT) maxEms: Int,
+      @Prop(optional = true, resType = ResType.DIMEN_SIZE) minTextWidth: Int,
+      @Prop(optional = true, resType = ResType.DIMEN_SIZE) maxTextWidth: Int,
+      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) shadowRadius: Float,
+      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) shadowDx: Float,
+      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) shadowDy: Float,
+      @Prop(optional = true, resType = ResType.COLOR) shadowColor: Int,
+      @Prop(optional = true, resType = ResType.BOOL) isSingleLine: Boolean,
+      @Prop(optional = true, resType = ResType.COLOR) textColor: Int,
+      @Prop(optional = true) textColorStateList: ColorStateList?,
+      @Prop(optional = true, resType = ResType.COLOR) linkColor: Int,
+      @Prop(optional = true, resType = ResType.DIMEN_TEXT) textSize: Int,
+      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) extraSpacing: Float,
+      @Prop(optional = true, resType = ResType.FLOAT) spacingMultiplier: Float,
+      @Prop(optional = true, resType = ResType.FLOAT) letterSpacing: Float,
+      @Prop(optional = true) textStyle: Int,
+      @Prop(optional = true) typeface: Typeface?,
+      @Prop(optional = true) @java.lang.Deprecated textAlignment: Layout.Alignment?,
+      @Prop(optional = true) alignment: TextAlignment?,
+      @Prop(optional = true) breakStrategy: Int,
+      @Prop(optional = true) hyphenationFrequency: Int,
+      @Prop(optional = true) justificationMode: Int,
+      @Prop(optional = true) textDirection: TextDirectionHeuristicCompat?,
+      @Prop(optional = true, resType = ResType.DIMEN_TEXT) lineHeight: Float,
+  ): Int {
+    if (text.isNullOrEmpty()) {
+      return 0
+    }
+    val paint = createIntrinsicTextPaint(
+        c,
+        textSize,
+        textStyle,
+        typeface,
+        letterSpacing,
+        shadowRadius,
+        shadowDx,
+        shadowDy,
+        shadowColor,
+    )
+    return TextLayoutIntrinsics.longestWordWidth(text, paint)
+  }
+
+  /** Min-content height: the natural single-line height (measured unbounded). */
+  @OnMeasureIntrinsicHeight
+  fun onMeasureIntrinsicHeight(
+      c: ComponentContext,
+      layout: ComponentLayout,
+      widthSpec: Int,
+      heightSpec: Int,
+      @Prop(resType = ResType.STRING) text: CharSequence?,
+      @Prop(optional = true) ellipsize: TextUtils.TruncateAt?,
+      @Prop(optional = true, resType = ResType.BOOL) shouldIncludeFontPadding: Boolean,
+      @Prop(optional = true, resType = ResType.INT) maxLines: Int,
+      @Prop(optional = true, resType = ResType.INT) minEms: Int,
+      @Prop(optional = true, resType = ResType.INT) maxEms: Int,
+      @Prop(optional = true, resType = ResType.DIMEN_SIZE) minTextWidth: Int,
+      @Prop(optional = true, resType = ResType.DIMEN_SIZE) maxTextWidth: Int,
+      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) shadowRadius: Float,
+      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) shadowDx: Float,
+      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) shadowDy: Float,
+      @Prop(optional = true, resType = ResType.COLOR) shadowColor: Int,
+      @Prop(optional = true, resType = ResType.BOOL) isSingleLine: Boolean,
+      @Prop(optional = true, resType = ResType.COLOR) textColor: Int,
+      @Prop(optional = true) textColorStateList: ColorStateList?,
+      @Prop(optional = true, resType = ResType.COLOR) linkColor: Int,
+      @Prop(optional = true, resType = ResType.DIMEN_TEXT) textSize: Int,
+      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) extraSpacing: Float,
+      @Prop(optional = true, resType = ResType.FLOAT) spacingMultiplier: Float,
+      @Prop(optional = true, resType = ResType.FLOAT) letterSpacing: Float,
+      @Prop(optional = true) textStyle: Int,
+      @Prop(optional = true) typeface: Typeface?,
+      @Prop(optional = true) @java.lang.Deprecated textAlignment: Layout.Alignment?,
+      @Prop(optional = true) alignment: TextAlignment?,
+      @Prop(optional = true) breakStrategy: Int,
+      @Prop(optional = true) hyphenationFrequency: Int,
+      @Prop(optional = true) justificationMode: Int,
+      @Prop(optional = true) textDirection: TextDirectionHeuristicCompat?,
+      @Prop(optional = true, resType = ResType.DIMEN_TEXT) lineHeight: Float,
+  ): Int {
+    if (text.isNullOrEmpty()) {
+      return 0
+    }
+    val paint = createIntrinsicTextPaint(
+        c,
+        textSize,
+        textStyle,
+        typeface,
+        letterSpacing,
+        shadowRadius,
+        shadowDx,
+        shadowDy,
+        shadowColor,
+    )
+    return TextLayoutIntrinsics.singleLineHeight(paint, shouldIncludeFontPadding)
+  }
+
+  /**
+   * Builds a [TextPaint] with the advance-width-affecting properties [createTextLayout] applies,
+   * without building a [Layout]. Must stay in sync with [createTextLayout]'s textSize/typeface
+   * setters; textLocale is left at the default so [TextLayoutIntrinsics.longestWordWidth]'s
+   * BreakIterator matches.
+   */
+  private fun createIntrinsicTextPaint(
+      context: ComponentContext,
+      textSize: Int,
+      textStyle: Int,
+      typeface: Typeface?,
+      letterSpacing: Float,
+      shadowRadius: Float,
+      shadowDx: Float,
+      shadowDy: Float,
+      shadowColor: Int,
+  ): TextPaint {
+    val paint = TextPaint(Paint.ANTI_ALIAS_FLAG)
+    paint.density = context.androidContext.resources.displayMetrics.density
+    paint.textSize =
+        if (textSize != UNSET) {
+          textSize.toFloat()
+        } else {
+          context.resourceResolver.sipsToPixels(DEFAULT_TEXT_SIZE_SP.toFloat()).toFloat()
+        }
+    paint.letterSpacing = letterSpacing
+    // Skip Paint.setTypeface for the framework default: a fresh TextPaint already measures with it,
+    // and on some OEMs (e.g. MIUI) setTypeface triggers an expensive, class-locked variable-font
+    // load — costly when this min-content probe runs on the main thread during list scrolling. Only
+    // a non-default typeface (custom, or bold/italic default) needs to be set.
+    val resolvedTypeface =
+        if (DEFAULT_TYPEFACE != typeface) typeface else Typeface.defaultFromStyle(textStyle)
+    if (resolvedTypeface != null && resolvedTypeface != Typeface.DEFAULT) {
+      paint.typeface = resolvedTypeface
+    }
+    paint.setShadowLayer(shadowRadius, shadowDx, shadowDy, shadowColor)
+    return paint
   }
 
   private fun createTextLayout(
@@ -481,7 +637,7 @@ object TextComponentSpec {
       hyphenationFrequency: Int,
       justificationMode: Int,
       textDirection: TextDirectionHeuristicCompat?,
-      lineHeight: Float
+      lineHeight: Float,
   ): Layout {
     var textDirectionToUse = textDirection
     val newLayout: Layout
@@ -565,7 +721,8 @@ object TextComponentSpec {
     textDirectionToUse = getTextDirection(textDirectionToUse, layoutDirection)
     layoutBuilder.setTextDirection(textDirectionToUse)
     layoutBuilder.setAlignment(
-        getLayoutAlignment(textAlignment, textDirectionToUse, text, layoutDirection))
+        getLayoutAlignment(textAlignment, textDirectionToUse, text, layoutDirection),
+    )
 
     try {
       newLayout = checkNotNull(layoutBuilder.build())
@@ -574,7 +731,6 @@ object TextComponentSpec {
     }
 
     if (glyphWarming) {
-      // TODO(T34488162): we also don't want this to happen when we are using DL (legacy?)
       instance.warmLayout(newLayout)
     }
 
@@ -626,9 +782,13 @@ object TextComponentSpec {
       textLayoutTranslationX: Output<Float?>,
       textLayoutTranslationY: Output<Float?>,
       clickableSpans: Output<Array<ClickableSpan?>?>,
-      imageSpans: Output<Array<ImageSpan?>?>
+      imageSpans: Output<Array<ImageSpan?>?>,
+      isExplicitlyTruncated: Output<Boolean>,
   ) {
     processedText.set(text)
+    // Set true only when we pre-truncate the text for a custom ellipsis below. A standard ellipsize
+    // leaves the full text in place and is detected from the layout's ellipsis metadata instead.
+    isExplicitlyTruncated.set(false)
     if (text.isNullOrEmpty()) {
       return
     }
@@ -636,9 +796,11 @@ object TextComponentSpec {
     val layoutWidth = (layout.width - layout.paddingLeft - layout.paddingRight).toFloat()
     val layoutHeight = (layout.height - layout.paddingTop - layout.paddingBottom).toFloat()
 
-    if (measureLayout != null &&
-        (measuredWidth?.toFloat() ?: 0f) == layoutWidth &&
-        (measuredHeight?.toFloat() ?: 0f) == layoutHeight) {
+    if (
+        measureLayout != null &&
+            (measuredWidth?.toFloat() ?: 0f) == layoutWidth &&
+            (measuredHeight?.toFloat() ?: 0f) == layoutHeight
+    ) {
       textLayout.set(measureLayout)
       // We don't need to perform translation if we didn't pass minimally wide threshold above
       if (minimallyWide && fullWidth != measuredWidth) {
@@ -688,7 +850,9 @@ object TextComponentSpec {
               hyphenationFrequency,
               justificationMode,
               textDirection,
-              lineHeight))
+              lineHeight,
+          ),
+      )
     }
 
     val textHeight = LayoutMeasureUtil.getHeight(textLayout.get()).toFloat()
@@ -702,96 +866,97 @@ object TextComponentSpec {
     if (customEllipsisText != null && customEllipsisText != "") {
       val ellipsizedLineNumber = getEllipsizedLineNumber(textLayout.get())
       if (ellipsizedLineNumber != -1) {
-        val customEllipsisLayout =
-            createTextLayout(
-                c,
-                makeSizeSpec(layoutWidth.toInt(), EXACTLY),
-                ellipsize,
-                shouldIncludeFontPadding,
-                maxLines,
-                shadowRadius,
-                shadowDx,
-                shadowDy,
-                shadowColor,
-                isSingleLine,
-                customEllipsisText,
-                textColor,
-                textColorStateList,
-                linkColor,
-                textSize,
-                extraSpacing,
-                spacingMultiplier,
-                letterSpacing,
-                textStyle,
-                typeface,
-                getTextAlignment(textAlignment, alignment),
-                glyphWarming,
-                layout.resolvedLayoutDirection,
-                minEms,
-                maxEms,
-                minTextWidth,
-                maxTextWidth,
-                c.androidContext.resources.displayMetrics.density,
-                breakStrategy,
-                hyphenationFrequency,
-                justificationMode,
-                textDirection,
-                lineHeight)
+        val customEllipsisLayout = createTextLayout(
+            c,
+            makeSizeSpec(layoutWidth.toInt(), EXACTLY),
+            ellipsize,
+            shouldIncludeFontPadding,
+            maxLines,
+            shadowRadius,
+            shadowDx,
+            shadowDy,
+            shadowColor,
+            isSingleLine,
+            customEllipsisText,
+            textColor,
+            textColorStateList,
+            linkColor,
+            textSize,
+            extraSpacing,
+            spacingMultiplier,
+            letterSpacing,
+            textStyle,
+            typeface,
+            getTextAlignment(textAlignment, alignment),
+            glyphWarming,
+            layout.resolvedLayoutDirection,
+            minEms,
+            maxEms,
+            minTextWidth,
+            maxTextWidth,
+            c.androidContext.resources.displayMetrics.density,
+            breakStrategy,
+            hyphenationFrequency,
+            justificationMode,
+            textDirection,
+            lineHeight,
+        )
 
         val layoutDirection = layout.resolvedLayoutDirection
         val finalTextDirection = getTextDirection(textDirection, layoutDirection)
         val finalLayoutAlignment = customEllipsisLayout.alignment
-        val isRtl: Boolean = finalTextDirection?.isRtl(text, 0, text.length) == true
+        val isRtl: Boolean = finalTextDirection.isRtl(text, 0, text.length) == true
         val isAlignedLeft = isRtl xor (finalLayoutAlignment == Layout.Alignment.ALIGN_NORMAL)
-        val truncated =
-            truncateText(
-                text,
-                customEllipsisText,
-                checkNotNull(textLayout.get()),
-                customEllipsisLayout,
-                ellipsizedLineNumber,
-                layoutWidth,
-                isAlignedLeft,
-                isRtl)
+        val truncated = truncateText(
+            text,
+            customEllipsisText,
+            checkNotNull(textLayout.get()),
+            customEllipsisLayout,
+            ellipsizedLineNumber,
+            layoutWidth,
+            isAlignedLeft,
+            isRtl,
+        )
 
-        val newLayout =
-            createTextLayout(
-                c,
-                makeSizeSpec(layoutWidth.toInt(), EXACTLY),
-                ellipsize,
-                shouldIncludeFontPadding,
-                maxLines,
-                shadowRadius,
-                shadowDx,
-                shadowDy,
-                shadowColor,
-                isSingleLine,
-                truncated,
-                textColor,
-                textColorStateList,
-                linkColor,
-                textSize,
-                extraSpacing,
-                spacingMultiplier,
-                letterSpacing,
-                textStyle,
-                typeface,
-                getTextAlignment(textAlignment, alignment),
-                glyphWarming,
-                layout.resolvedLayoutDirection,
-                minEms,
-                maxEms,
-                minTextWidth,
-                maxTextWidth,
-                c.androidContext.resources.displayMetrics.density,
-                breakStrategy,
-                hyphenationFrequency,
-                justificationMode,
-                textDirection,
-                lineHeight)
+        val newLayout = createTextLayout(
+            c,
+            makeSizeSpec(layoutWidth.toInt(), EXACTLY),
+            null,
+            shouldIncludeFontPadding,
+            Int.MAX_VALUE,
+            shadowRadius,
+            shadowDx,
+            shadowDy,
+            shadowColor,
+            isSingleLine,
+            truncated,
+            textColor,
+            textColorStateList,
+            linkColor,
+            textSize,
+            extraSpacing,
+            spacingMultiplier,
+            letterSpacing,
+            textStyle,
+            typeface,
+            getTextAlignment(textAlignment, alignment),
+            glyphWarming,
+            layout.resolvedLayoutDirection,
+            minEms,
+            maxEms,
+            minTextWidth,
+            maxTextWidth,
+            c.androidContext.resources.displayMetrics.density,
+            breakStrategy,
+            hyphenationFrequency,
+            justificationMode,
+            textDirection,
+            lineHeight,
+        )
 
         processedText.set(truncated)
         textLayout.set(newLayout)
+        isExplicitlyTruncated.set(true)
       }
     }
 
@@ -817,7 +982,9 @@ object TextComponentSpec {
    * @return The provided text truncated in such a way that the 'customEllipsisText' can appear at
    *   the end.
    */
-  private fun truncateText(
+  @VisibleForTesting
+  @JvmStatic
+  fun truncateText(
       text: CharSequence,
       customEllipsisText: CharSequence,
       newLayout: Layout,
@@ -825,7 +992,7 @@ object TextComponentSpec {
       ellipsizedLineNumber: Int,
       layoutWidth: Float,
       isAlignedLeft: Boolean,
-      isRtl: Boolean
+      isRtl: Boolean,
   ): CharSequence {
     val customEllipsisTextWidth = ellipsisTextLayout.getLineWidth(0)
     // Identify the X position at which to truncate the final line:
@@ -841,13 +1008,27 @@ object TextComponentSpec {
     } else /* isRtl && !isAlignedLeft */ {
       ellipsisTarget = customEllipsisTextWidth
     }
-    // Get character offset number corresponding to that X position:
-    val paint: Paint = newLayout.paint
-    val lineStart = newLayout.getLineStart(ellipsizedLineNumber)
-    val lineEnd = newLayout.getLineEnd(ellipsizedLineNumber)
-    var ellipsisOffset =
-        paint.getOffsetForAdvance(
-            text, lineStart, lineEnd, lineStart, lineEnd, isRtl, ellipsisTarget)
+    // Get character offset at ellipsisTarget. For RTL, getOffsetForAdvance expects
+    // run-relative advances (from right edge), not left-edge X coordinates like ellipsisTarget.
+    // Convert ellipsisTarget to run-relative advance for RTL.
+    val fixRtlTruncation = isRtl && ComponentsConfiguration.fixRtlCustomEllipsisTruncation
+    var ellipsisOffset: Int =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+          val advance = if (fixRtlTruncation) layoutWidth - ellipsisTarget else ellipsisTarget
+          val offset = getEllipsisOffsetFromPaintAdvance(
+              newLayout,
+              text,
+              isRtl,
+              ellipsizedLineNumber,
+              advance,
+          )
+          // The advance conversion for RTL rounds inward by one character; adjust to avoid
+          // over-truncation. This is safe because ellipsisStart bounds check below prevents
+          // exceeding the line.
+          if (fixRtlTruncation && offset > 0) offset + 1 else offset
+        } else {
+          newLayout.getOffsetForHorizontal(ellipsizedLineNumber, ellipsisTarget)
+        }
 
     if (ellipsisOffset > 0) {
       // Since the offset adjustment was for the original implementation with
@@ -878,9 +1059,22 @@ object TextComponentSpec {
         ellipsisOffset = 0
       } else if (ellipsisOffset > text.length) {
         ellipsisOffset = text.length
-      } else if (Character.isSurrogate(text[ellipsisOffset]) &&
+      }
+
+      ellipsisOffset =
+          clampEllipsisOffsetToReplacementSpanBoundary(
+              text,
+              newLayout,
+              ellipsizedLineNumber,
+              ellipsisTarget,
+              ellipsisOffset,
+          )
+
+      if (
           ellipsisOffset != 0 &&
-          ellipsisOffset != text.length) {
+              ellipsisOffset != text.length &&
+              Character.isLowSurrogate(text[ellipsisOffset])
+      ) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
           ellipsisOffset = breakIteratorGetPreceding(text, ellipsisOffset)
         } else {
@@ -894,6 +1088,45 @@ object TextComponentSpec {
     } else {
       return text
     }
+  }
+
+  private fun clampEllipsisOffsetToReplacementSpanBoundary(
+      text: CharSequence,
+      layout: Layout,
+      ellipsizedLineNumber: Int,
+      ellipsisTarget: Float,
+      ellipsisOffset: Int,
+  ): Int {
+    val spannedText = text as? Spanned ?: return ellipsisOffset
+    val lineStart = layout.getLineStart(ellipsizedLineNumber)
+    val lineEnd = layout.getLineEnd(ellipsizedLineNumber)
+    // Avoid Layout.getOffsetForHorizontal's ANR-prone binary search and use Layout's span-aware
+    // boundary positions instead of measuring each span again.
+    val spanStart =
+        spannedText
+            .getSpans(lineStart, lineEnd, ReplacementSpan::class.java)
+            .mapNotNull { span ->
+              val start = spannedText.getSpanStart(span)
+              val end = spannedText.getSpanEnd(span)
+              if (start < lineStart || end > lineEnd || start >= end) {
+                return@mapNotNull null
+              }
+              val startX = layout.getPrimaryHorizontal(start)
+              val endX = layout.getPrimaryHorizontal(end)
+              val targetInsideSpan =
+                  if (startX <= endX) {
+                    ellipsisTarget >= startX && ellipsisTarget < endX
+                  } else {
+                    ellipsisTarget <= startX && ellipsisTarget > endX
+                  }
+              if (targetInsideSpan || ellipsisOffset > start && ellipsisOffset < end) {
+                start
+              } else {
+                null
+              }
+            }
+            .minOrNull()
+    return if (spanStart == null) ellipsisOffset else minOf(ellipsisOffset, spanStart)
   }
 
   /**
@@ -921,6 +1154,7 @@ object TextComponentSpec {
   fun onMount(
       c: ComponentContext,
       textDrawable: TextDrawable,
+      @Prop(resType = ResType.STRING) text: CharSequence?,
       @Prop(optional = true, resType = ResType.COLOR) textColor: Int,
       @Prop(optional = true, resType = ResType.COLOR) highlightColor: Int,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) outlineWidth: Float,
@@ -938,7 +1172,8 @@ object TextComponentSpec {
       @FromBoundsDefined textLayoutTranslationX: Float?,
       @FromBoundsDefined textLayoutTranslationY: Float?,
       @FromBoundsDefined clickableSpans: Array<ClickableSpan?>?,
-      @FromBoundsDefined imageSpans: Array<ImageSpan?>?
+      @FromBoundsDefined imageSpans: Array<ImageSpan?>?,
+      @FromBoundsDefined isExplicitlyTruncated: Boolean,
   ) {
     val componentScope = c.componentScope
     componentScope?.setDebugAttributeKey(WidgetAttributes.Text, listOf(processedText ?: ""))
@@ -948,7 +1183,10 @@ object TextComponentSpec {
     if (textOffsetOnTouchHandler != null) {
       textOffsetOnTouchListener = TextOffsetOnTouchListener { textOffset ->
         TextComponent.dispatchTextOffsetOnTouchEvent(
-            textOffsetOnTouchHandler, processedText, textOffset)
+            textOffsetOnTouchHandler,
+            processedText,
+            textOffset,
+        )
       }
     }
     textDrawable.mount(
@@ -970,18 +1208,28 @@ object TextComponentSpec {
         highlightStartOffset,
         highlightEndOffset,
         clickableSpanExpandedOffset,
-        c.logTag)
+        c.logTag,
+        // The original, pre-truncation text. For a custom ellipsis `processedText` is the truncated
+        // string actually drawn, so this is the only place the full text survives.
+        text,
+        // Whether we pre-truncated for a custom ellipsis (a standard ellipsize is detected from the
+        // layout). Lets the dumper report truncation without comparing text contents.
+        isExplicitlyTruncated,
+    )
 
-    if (processedText is MountableCharSequence) {
-      processedText.onMount(textDrawable)
-    }
+    // Custom ellipsis creates a new CharSequence containing the original spans. Mount the original
+    // sequence when that copy no longer carries its lifecycle contract; the copied image spans
+    // still share the same backing drawables.
+    ((processedText as? MountableCharSequence) ?: (text as? MountableCharSequence))?.onMount(
+        textDrawable,
+    )
   }
 
   @OnUnmount
   fun onUnmount(
       c: ComponentContext?,
       textDrawable: TextDrawable,
-      @Prop(resType = ResType.STRING) text: CharSequence?
+      @Prop(resType = ResType.STRING) text: CharSequence?,
   ) {
     textDrawable.unmount()
 
@@ -996,11 +1244,13 @@ object TextComponentSpec {
       host: View?,
       node: AccessibilityNodeInfoCompat,
       @Prop(resType = ResType.STRING) text: CharSequence?,
-      @Prop(optional = true, resType = ResType.BOOL) isSingleLine: Boolean
+      @Prop(optional = true, resType = ResType.BOOL) isSingleLine: Boolean,
   ) {
-    if (host != null &&
-        ViewCompat.getImportantForAccessibility(host) ==
-            ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
+    if (
+        host != null &&
+            ViewCompat.getImportantForAccessibility(host) ==
+                ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO
+    ) {
       ViewCompat.setImportantForAccessibility(host, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES)
     }
 
@@ -1059,7 +1309,7 @@ object TextComponentSpec {
   fun getExtraAccessibilityNodesCount(
       c: ComponentContext?,
       @Prop(optional = true, resType = ResType.BOOL) accessibleClickableSpans: Boolean,
-      @FromBoundsDefined clickableSpans: Array<ClickableSpan?>?
+      @FromBoundsDefined clickableSpans: Array<ClickableSpan?>?,
   ): Int {
     return if ((accessibleClickableSpans && clickableSpans != null)) clickableSpans.size else 0
   }
@@ -1072,7 +1322,7 @@ object TextComponentSpec {
       virtualViewId: Int,
       action: Int,
       arguments: Bundle?,
-      @FromBoundsDefined clickableSpans: Array<ClickableSpan>
+      @FromBoundsDefined clickableSpans: Array<ClickableSpan>,
   ): Boolean {
     if (host != null && action == AccessibilityNodeInfoCompat.ACTION_CLICK) {
       clickableSpans[virtualViewId].onClick(host)
@@ -1088,7 +1338,7 @@ object TextComponentSpec {
       accessibilityNode: AccessibilityNodeInfoCompat?,
       virtualViewId: Int,
       hasFocus: Boolean,
-      @FromBoundsDefined clickableSpans: Array<ClickableSpan?>
+      @FromBoundsDefined clickableSpans: Array<ClickableSpan?>,
   ) {
     val span = clickableSpans[virtualViewId]
     if (span is AccessibleClickableSpan) {
@@ -1107,9 +1357,14 @@ object TextComponentSpec {
       componentBoundsTop: Int,
       @Prop(resType = ResType.STRING) text: CharSequence?,
       @FromBoundsDefined textLayout: Layout,
-      @FromBoundsDefined clickableSpans: Array<ClickableSpan?>
+      @FromBoundsDefined clickableSpans: Array<ClickableSpan?>,
   ) {
     if (text !is Spanned) {
+      if (ComponentsConfiguration.enableInvalidAccessibilityVirtualNodeFix) {
+        TempRect[0, 0, 1] = 1
+        node.setBoundsInParent(TempRect)
+        node.contentDescription = ""
+      }
       return
     }
 
@@ -1154,25 +1409,7 @@ object TextComponentSpec {
     node.isEnabled = true
     node.isVisibleToUser = true
     node.text = spanned.subSequence(start, end)
-    if (span is AccessibleClickableSpan) {
-      val accessibleClickableSpan = span
-      val contentDescription = accessibleClickableSpan.accessibilityDescription
-      val roleDescription = accessibleClickableSpan.roleDescription
-      val role = accessibleClickableSpan.accessibilityRole
-      if (contentDescription != null) {
-        node.contentDescription = contentDescription
-      }
-      if (roleDescription != null) {
-        node.roleDescription = roleDescription
-      }
-      if (role != null) {
-        node.className = role
-      } else {
-        node.className = AccessibilityRole.BUTTON
-      }
-    } else {
-      node.className = AccessibilityRole.BUTTON
-    }
+    AccessibleClickableSpanNodes.applyRoleAndLabel(span, node)
   }
 
   @GetExtraAccessibilityNodeAt
@@ -1182,7 +1419,7 @@ object TextComponentSpec {
       y: Int,
       @Prop(resType = ResType.STRING) text: CharSequence?,
       @FromBoundsDefined textLayout: Layout,
-      @FromBoundsDefined clickableSpans: Array<ClickableSpan?>
+      @FromBoundsDefined clickableSpans: Array<ClickableSpan?>,
   ): Int {
     if (text !is Spanned) {
       return ExploreByTouchHelper.INVALID_ID
@@ -1209,7 +1446,7 @@ object TextComponentSpec {
   @OnBindDynamicValue
   fun onBindTextColor(
       textDrawable: TextDrawable,
-      @Prop(optional = true, dynamic = true) dynamicTextColor: Int?
+      @Prop(optional = true, dynamic = true) dynamicTextColor: Int?,
   ) {
     if (dynamicTextColor != null) {
       textDrawable.setTextColor(dynamicTextColor)
@@ -1233,8 +1470,8 @@ object TextComponentSpec {
 
   private fun getTextDirection(
       textDirection: TextDirectionHeuristicCompat?,
-      layoutDirection: YogaDirection
-  ): TextDirectionHeuristicCompat? {
+      layoutDirection: YogaDirection,
+  ): TextDirectionHeuristicCompat {
     var textDirectionToUse = textDirection
     if (textDirectionToUse == null) {
       textDirectionToUse =
@@ -1248,7 +1485,7 @@ object TextComponentSpec {
       textAlignment: TextAlignment,
       textDirection: TextDirectionHeuristicCompat?,
       text: CharSequence?,
-      layoutDirection: YogaDirection
+      layoutDirection: YogaDirection,
   ): Layout.Alignment {
     val alignment: Layout.Alignment
     val layoutRtl: Boolean

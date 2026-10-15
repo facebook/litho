@@ -18,7 +18,6 @@ package com.facebook.litho
 
 import android.content.Context
 import android.util.Log
-import androidx.collection.mutableObjectIntMapOf
 import com.facebook.litho.LithoRenderUnit.Companion.getRenderUnit
 import com.facebook.litho.debug.LithoDebugEvent
 import com.facebook.rendercore.ContentAllocator
@@ -39,13 +38,11 @@ constructor(
     private val treeId: Int,
     private val componentContext: ComponentContext,
     private val mountContentHandler: RunnableHandler,
-    private val avoidRedundantPreAllocations: Boolean,
     private val nodeSupplier: () -> List<RenderTreeNode>,
-    private val preAllocator: (Context, ContentAllocator<*>, PoolScope) -> Boolean
+    private val preAllocator: (Context, ContentAllocator<*>, PoolScope) -> Boolean,
 ) {
 
   private val runnable = Runnable(::executeInternal)
-  private val preAllocationCounter = mutableObjectIntMapOf<String>()
 
   val isHandlerTracing: Boolean
     get() = mountContentHandler.isTracing()
@@ -71,11 +68,11 @@ constructor(
           traceIdentifier,
           LithoDebugEvent.ComponentTreeMountContentPreallocated,
           treeId.toString(),
-          hashMapOf())
+          hashMapOf(),
+      )
     }
 
-    val suffix = if (avoidRedundantPreAllocations) "(avoidRedundantPreAllocations)" else ""
-    ComponentsSystrace.trace("preAllocateMountContentForTree$suffix") {
+    ComponentsSystrace.trace({ "mount.preAllocateContent" }) {
       val mountOutputs = nodeSupplier()
       preAllocateMountContent(mountOutputs)
     }
@@ -88,40 +85,26 @@ constructor(
   private fun preAllocateMountContent(mountableOutputs: List<RenderTreeNode>) {
     if (mountableOutputs.isEmpty()) return
 
-    val componentCounter = mutableObjectIntMapOf<String>()
     for (treeNode in mountableOutputs) {
       val component = getRenderUnit(treeNode).component
-      if (!component.isSpecGeneratedComponentThatCanPreallocate() &&
-          !treeNode.isPrimitiveThatCanPreallocate()) {
+      if (
+          !component.isSpecGeneratedComponentThatCanPreallocate() &&
+              !treeNode.isPrimitiveThatCanPreallocate()
+      ) {
         continue
       }
       val componentSimpleName = component.simpleName
 
-      if (avoidRedundantPreAllocations) {
-        val existingAllocation =
-            synchronized(preAllocationCounter) {
-              preAllocationCounter.getOrDefault(componentSimpleName, 0)
-            }
-        val processedComponents = componentCounter.getOrDefault(componentSimpleName, 0)
-        componentCounter.put(componentSimpleName, processedComponents + 1)
-        if (processedComponents < existingAllocation) continue
-      }
-
-      ComponentsSystrace.trace("preallocateMount: $componentSimpleName") {
-        val preallocated =
-            preAllocator(
-                componentContext.androidContext,
-                treeNode.renderUnit.contentAllocator,
-                componentContext.getTreeProp(PoolScopeTreeProp))
+      ComponentsSystrace.trace({ "mount.preAllocateContent:$componentSimpleName" }) {
+        val preallocated = preAllocator(
+            componentContext.androidContext,
+            treeNode.renderUnit.contentAllocator,
+            componentContext.getTreeProp(PoolScopeTreeProp),
+        )
         Log.d(
             "ContentPreAllocator",
-            "Preallocation of $componentSimpleName" + if (preallocated) " succeeded" else " failed")
-
-        if (preallocated && avoidRedundantPreAllocations)
-            synchronized(preAllocationCounter) {
-              val existingAllocation = preAllocationCounter.getOrDefault(componentSimpleName, 0)
-              preAllocationCounter.put(componentSimpleName, existingAllocation + 1)
-            }
+            "Preallocation of $componentSimpleName" + if (preallocated) " succeeded" else " failed",
+        )
       }
     }
   }

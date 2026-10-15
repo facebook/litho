@@ -18,7 +18,6 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'org.jetbrains.dokka'
-apply plugin: 'com.facebook.kotlin.compilerplugins.dataclassgenerate'
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
@@ -30,22 +29,21 @@ android {
 
     testOptions.unitTests.includeAndroidResources = true
 
+    // The sources live in litho-widget; internally they are separate Buck targets that depend on
+    // litho-sections-*, which in turn depend on litho-widget's Java sources.
     sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
-        test.java.srcDirs += 'src/test/kotlin'
+        main.java.srcDirs = ['../litho-widget/src/main/kotlin']
+        main.kotlin.srcDirs = ['../litho-widget/src/main/kotlin']
+        main.res.srcDirs = []
     }
     namespace 'com.facebook.litho.widget.kotlin'
 }
 
-tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
-    kotlinOptions {
-        freeCompilerArgs = ["-XXLanguage:+InlineClasses"]
-    }
-}
 
 dependencies {
     implementation project(':litho-core')
     api project(':litho-widget')
+    api project(':range-manager')
     api project(':litho-sections-core')
     api project(':litho-sections-widget')
     implementation project(':litho-primitive-canvas')

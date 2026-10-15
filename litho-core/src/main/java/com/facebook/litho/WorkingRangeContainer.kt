@@ -41,7 +41,7 @@ class WorkingRangeContainer {
       name: String,
       workingRange: WorkingRange,
       scopedComponentInfo: ScopedComponentInfo,
-      interStageProps: InterStagePropsContainer?
+      interStageProps: InterStagePropsContainer?,
   ) {
     val key = "${name}_${workingRange.hashCode()}"
     val rangeTuple = workingRanges[key]
@@ -62,14 +62,13 @@ class WorkingRangeContainer {
       lastVisibleIndex: Int,
       firstFullyVisibleIndex: Int,
       lastFullyVisibleIndex: Int,
-      statusHandler: WorkingRangeStatusHandler
+      statusHandler: WorkingRangeStatusHandler,
   ) {
     if (workingRanges.isEmpty()) {
       return
     }
 
-    for (key in workingRanges.keys) {
-      val rangeTuple = checkNotNull(workingRanges[key])
+    for (rangeTuple in workingRanges.values) {
       var i = 0
       val size = rangeTuple.scopedComponentInfos.size
       while (i < size) {
@@ -78,34 +77,46 @@ class WorkingRangeContainer {
         val component = scopedComponentInfo.component as SpecGeneratedComponent
         val globalKey = scopedContext.globalKey
         val isInRange = statusHandler.isInRange(rangeTuple.name, globalKey)
-        val isOutOfRange = !statusHandler.isInRange(rangeTuple.name, globalKey)
+        val isOutOfRange = !isInRange
 
-        if (isOutOfRange &&
-            isEnteringRange(
-                rangeTuple.workingRange,
-                position,
-                firstVisibleIndex,
-                lastVisibleIndex,
-                firstFullyVisibleIndex,
-                lastFullyVisibleIndex)) {
+        if (
+            isOutOfRange &&
+                isEnteringRange(
+                    rangeTuple.workingRange,
+                    position,
+                    firstVisibleIndex,
+                    lastVisibleIndex,
+                    firstFullyVisibleIndex,
+                    lastFullyVisibleIndex,
+                )
+        ) {
           try {
             component.dispatchOnEnteredRange(
-                scopedContext, rangeTuple.name, rangeTuple.interStagePropsContainer)
+                scopedContext,
+                rangeTuple.name,
+                rangeTuple.interStagePropsContainer,
+            )
           } catch (e: Exception) {
             ComponentUtils.handle(scopedContext, e)
           }
           statusHandler.setEnteredRangeStatus(rangeTuple.name, globalKey)
-        } else if (isInRange &&
-            isExitingRange(
-                rangeTuple.workingRange,
-                position,
-                firstVisibleIndex,
-                lastVisibleIndex,
-                firstFullyVisibleIndex,
-                lastFullyVisibleIndex)) {
+        } else if (
+            isInRange &&
+                isExitingRange(
+                    rangeTuple.workingRange,
+                    position,
+                    firstVisibleIndex,
+                    lastVisibleIndex,
+                    firstFullyVisibleIndex,
+                    lastFullyVisibleIndex,
+                )
+        ) {
           try {
             component.dispatchOnExitedRange(
-                scopedContext, rangeTuple.name, rangeTuple.interStagePropsContainer)
+                scopedContext,
+                rangeTuple.name,
+                rangeTuple.interStagePropsContainer,
+            )
           } catch (e: Exception) {
             ComponentUtils.handle(scopedContext, e)
           }
@@ -118,15 +129,15 @@ class WorkingRangeContainer {
 
   /**
    * Dispatch onExitRange if the status of the component is in the range. This method should only be
-   * called when releasing a ComponentTree, thus no status update needed.
+   * called when releasing a ComponentTree; the status is updated purely so that a component reached
+   * through more than one [RangeTuple] is not dispatched twice.
    */
   fun dispatchOnExitedRangeIfNeeded(statusHandler: WorkingRangeStatusHandler) {
     if (workingRanges.isEmpty()) {
       return
     }
 
-    for (key in workingRanges.keys) {
-      val rangeTuple = checkNotNull(workingRanges[key])
+    for (rangeTuple in workingRanges.values) {
       var i = 0
       val size = rangeTuple.scopedComponentInfos.size
       while (i < size) {
@@ -138,10 +149,14 @@ class WorkingRangeContainer {
         if (statusHandler.isInRange(rangeTuple.name, globalKey)) {
           try {
             component.dispatchOnExitedRange(
-                scopedContext, rangeTuple.name, rangeTuple.interStagePropsContainer)
+                scopedContext,
+                rangeTuple.name,
+                rangeTuple.interStagePropsContainer,
+            )
           } catch (e: Exception) {
             ComponentUtils.handle(scopedContext, e)
           }
+          statusHandler.setExitedRangeStatus(rangeTuple.name, globalKey)
         }
         i++
       }
@@ -161,7 +176,7 @@ class WorkingRangeContainer {
       @JvmField val name: String,
       @JvmField val workingRange: WorkingRange,
       scopedComponentInfo: ScopedComponentInfo,
-      @JvmField val interStagePropsContainer: InterStagePropsContainer?
+      @JvmField val interStagePropsContainer: InterStagePropsContainer?,
   ) {
 
     @JvmField val scopedComponentInfos: MutableList<ScopedComponentInfo> = ArrayList()
@@ -179,7 +194,7 @@ class WorkingRangeContainer {
   class Registration(
       @JvmField val name: String,
       @JvmField val workingRange: WorkingRange,
-      @JvmField val scopedComponentInfo: ScopedComponentInfo
+      @JvmField val scopedComponentInfo: ScopedComponentInfo,
   )
 
   companion object {
@@ -190,14 +205,15 @@ class WorkingRangeContainer {
         firstVisibleIndex: Int,
         lastVisibleIndex: Int,
         firstFullyVisibleIndex: Int,
-        lastFullyVisibleIndex: Int
+        lastFullyVisibleIndex: Int,
     ): Boolean =
         workingRange.shouldEnterRange(
             position,
             firstVisibleIndex,
             lastVisibleIndex,
             firstFullyVisibleIndex,
-            lastFullyVisibleIndex)
+            lastFullyVisibleIndex,
+        )
 
     @JvmStatic
     fun isExitingRange(
@@ -206,13 +222,14 @@ class WorkingRangeContainer {
         firstVisibleIndex: Int,
         lastVisibleIndex: Int,
         firstFullyVisibleIndex: Int,
-        lastFullyVisibleIndex: Int
+        lastFullyVisibleIndex: Int,
     ): Boolean =
         workingRange.shouldExitRange(
             position,
             firstVisibleIndex,
             lastVisibleIndex,
             firstFullyVisibleIndex,
-            lastFullyVisibleIndex)
+            lastFullyVisibleIndex,
+        )
   }
 }

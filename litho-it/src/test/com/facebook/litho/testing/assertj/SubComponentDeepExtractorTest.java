@@ -28,7 +28,7 @@ import com.facebook.litho.config.LithoDebugConfigurations;
 import com.facebook.litho.testing.LithoTestRule;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
-import com.facebook.litho.widget.Card;
+import com.facebook.litho.widget.PrimitiveCard;
 import com.facebook.litho.widget.Text;
 import org.junit.Before;
 import org.junit.Rule;
@@ -55,7 +55,7 @@ public class SubComponentDeepExtractorTest {
           @Override
           protected Component onCreateLayout(ComponentContext c) {
             return Column.create(c)
-                .child(Card.create(c).content(Text.create(c).text("test")))
+                .child(new PrimitiveCard.Builder(Text.create(c).text("test").build()).build())
                 .build();
           }
         };

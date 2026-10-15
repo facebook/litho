@@ -32,6 +32,9 @@ import com.facebook.rendercore.RootHostView
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.extensions.ExtensionState
 import com.facebook.rendercore.extensions.RenderCoreExtension
+import com.facebook.rendercore.extensions.VisibilityChangeReason
+import com.facebook.rendercore.incrementalmount.GapWorkerMode.COST_AWARE_PREMOUNT_WITH_INCREMENTAL_UNMOUNT
+import com.facebook.rendercore.incrementalmount.GapWorkerMode.PREMOUNT
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtension.IncrementalMountExtensionState
 import com.facebook.rendercore.testing.LayoutResultWrappingNode
 import com.facebook.rendercore.testing.RenderCoreTestRule
@@ -39,12 +42,11 @@ import com.facebook.rendercore.testing.SimpleLayoutResult
 import com.facebook.rendercore.testing.TestHostRenderUnit
 import com.facebook.rendercore.testing.TestRenderUnit
 import com.facebook.rendercore.testing.ViewWrapperUnit
-import org.assertj.core.api.Java6Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
 class IncrementalMountExtensionTest {
@@ -153,7 +155,8 @@ class IncrementalMountExtensionTest {
     val parent = FrameLayout(c)
     parent.measure(
         View.MeasureSpec.makeMeasureSpec(10, View.MeasureSpec.EXACTLY),
-        View.MeasureSpec.makeMeasureSpec(300, View.MeasureSpec.EXACTLY))
+        View.MeasureSpec.makeMeasureSpec(300, View.MeasureSpec.EXACTLY),
+    )
     parent.layout(0, 0, 10, 300)
     val host = RootHostView(c)
     parent.addView(host)
@@ -166,19 +169,22 @@ class IncrementalMountExtensionTest {
                 SimpleLayoutResult.create()
                     .renderUnit(ViewWrapperUnit(TextView(c), 1))
                     .width(100)
-                    .height(100))
+                    .height(100),
+            )
             .child(
                 SimpleLayoutResult.create()
                     .renderUnit(ViewWrapperUnit(TextView(c), 2))
                     .y(100)
                     .width(100)
-                    .height(100))
+                    .height(100),
+            )
             .child(
                 SimpleLayoutResult.create()
                     .renderUnit(ViewWrapperUnit(TextView(c), 3))
                     .y(200)
                     .width(100)
-                    .height(100))
+                    .height(100),
+            )
             .build()
     renderCoreTestRule
         .useRootHost(host)
@@ -207,7 +213,8 @@ class IncrementalMountExtensionTest {
     val parent = FrameLayout(c)
     parent.measure(
         View.MeasureSpec.makeMeasureSpec(10, View.MeasureSpec.EXACTLY),
-        View.MeasureSpec.makeMeasureSpec(300, View.MeasureSpec.EXACTLY))
+        View.MeasureSpec.makeMeasureSpec(300, View.MeasureSpec.EXACTLY),
+    )
     parent.layout(0, 0, 10, 300)
     val host = RootHostView(c)
     parent.addView(host)
@@ -220,19 +227,22 @@ class IncrementalMountExtensionTest {
                 SimpleLayoutResult.create()
                     .renderUnit(ViewWrapperUnit(TextView(c), 1))
                     .width(100)
-                    .height(100))
+                    .height(100),
+            )
             .child(
                 SimpleLayoutResult.create()
                     .renderUnit(ViewWrapperUnit(TextView(c), 2))
                     .y(100)
                     .width(100)
-                    .height(100))
+                    .height(100),
+            )
             .child(
                 SimpleLayoutResult.create()
                     .renderUnit(ViewWrapperUnit(TextView(c), 3))
                     .y(200)
                     .width(100)
-                    .height(100))
+                    .height(100),
+            )
             .build()
     renderCoreTestRule
         .useRootHost(host)
@@ -251,7 +261,8 @@ class IncrementalMountExtensionTest {
     val parent = FrameLayout(c)
     parent.measure(
         View.MeasureSpec.makeMeasureSpec(300, View.MeasureSpec.EXACTLY),
-        View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY))
+        View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
+    )
     parent.layout(0, 0, 300, 100)
     val host = RootHostView(c)
     parent.addView(host)
@@ -264,19 +275,22 @@ class IncrementalMountExtensionTest {
                 SimpleLayoutResult.create()
                     .renderUnit(ViewWrapperUnit(TextView(c), 1))
                     .width(100)
-                    .height(100))
+                    .height(100),
+            )
             .child(
                 SimpleLayoutResult.create()
                     .renderUnit(ViewWrapperUnit(TextView(c), 2))
                     .x(100)
                     .width(100)
-                    .height(100))
+                    .height(100),
+            )
             .child(
                 SimpleLayoutResult.create()
                     .renderUnit(ViewWrapperUnit(TextView(c), 3))
                     .x(200)
                     .width(100)
-                    .height(100))
+                    .height(100),
+            )
             .build()
     renderCoreTestRule
         .useRootHost(host)
@@ -304,13 +318,13 @@ class IncrementalMountExtensionTest {
   }
 
   @Test
-  @Config(sdk = [21])
   fun whenPreviousHostIsMovedOutOfBounds_shouldMountItemsCorrectly() {
     val c = renderCoreTestRule.context
     val parent = FrameLayout(c)
     parent.measure(
         View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
-        View.MeasureSpec.makeMeasureSpec(99, View.MeasureSpec.EXACTLY))
+        View.MeasureSpec.makeMeasureSpec(99, View.MeasureSpec.EXACTLY),
+    )
     parent.layout(0, 0, 100, 200)
     val host = RootHostView(c)
     parent.addView(host)
@@ -333,13 +347,17 @@ class IncrementalMountExtensionTest {
                                 SimpleLayoutResult.create()
                                     .renderUnit(ViewWrapperUnit(TextView(c), 3))
                                     .width(100)
-                                    .height(100))))
+                                    .height(100),
+                            ),
+                    ),
+            )
             .child(
                 SimpleLayoutResult.create()
                     .renderUnit(ViewWrapperUnit(HostView(c), 4))
                     .y(100)
                     .width(100)
-                    .height(101))
+                    .height(101),
+            )
             .build()
     host.translationY = 100f
     renderCoreTestRule
@@ -348,7 +366,7 @@ class IncrementalMountExtensionTest {
         .useRootNode(LayoutResultWrappingNode(root))
         .setSizePx(100, 201)
         .render()
-    assertThat(host.childCount).isEqualTo(2)
+    assertThat(host.childCount).isEqualTo(1)
     assertThat((host.getChildAt(0) as HostView).childCount).isEqualTo(1)
     val newRoot: LayoutResult =
         SimpleLayoutResult.create()
@@ -358,7 +376,8 @@ class IncrementalMountExtensionTest {
                 SimpleLayoutResult.create()
                     .renderUnit(ViewWrapperUnit(HostView(c), 1))
                     .width(100)
-                    .height(100))
+                    .height(100),
+            )
             .child(
                 SimpleLayoutResult.create()
                     .renderUnit(ViewWrapperUnit(HostView(c), 4))
@@ -375,19 +394,22 @@ class IncrementalMountExtensionTest {
                                 SimpleLayoutResult.create()
                                     .renderUnit(ViewWrapperUnit(TextView(c), 3))
                                     .width(100)
-                                    .height(100))))
+                                    .height(100),
+                            ),
+                    ),
+            )
             .build()
     renderCoreTestRule.useRootNode(LayoutResultWrappingNode(newRoot)).setSizePx(100, 201).render()
 
     // Un-mounts the Host with id 2.
     assertThat((host.getChildAt(0) as HostView).childCount).isEqualTo(0)
-    // Host with id 2 is not mounted because it is outside of visible bounds.
-    assertThat((host.getChildAt(1) as HostView).childCount).isEqualTo(0)
 
-    // Scroll Host with id 2 into the view port
+    // On API 23+, only the visible host is mounted initially due to more precise bounds checking
+    assertThat(host.childCount).isEqualTo(1)
     host.offsetTopAndBottom(-2)
 
-    // Host with id 2 is mounted because it enters the visible bounds.
+    // Now both hosts should be mounted
+    assertThat(host.childCount).isEqualTo(2)
     assertThat((host.getChildAt(1) as HostView).childCount).isEqualTo(1)
   }
 
@@ -397,7 +419,8 @@ class IncrementalMountExtensionTest {
     val parent = FrameLayout(c)
     parent.measure(
         View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
-        View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY))
+        View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
+    )
     parent.layout(0, 0, 100, 100)
     val host = RootHostView(c)
     parent.addView(host)
@@ -412,7 +435,8 @@ class IncrementalMountExtensionTest {
                     .renderUnit(ViewWrapperUnit(TextView(c), 3))
                     .y(110)
                     .width(100)
-                    .height(100))
+                    .height(100),
+            )
             .build()
     host.translationY = -105f
     renderCoreTestRule
@@ -429,37 +453,81 @@ class IncrementalMountExtensionTest {
   @Test
   fun testNegativeMarginChild_forcesHostMount() {
     val c = ApplicationProvider.getApplicationContext<Context>()
-    val extension = IncrementalMountExtension.getInstance()
+    val extension = IncrementalMountExtension.instance
     val mountState = createMountState(c)
     val extensionState =
-        mountState.registerMountExtension(extension)
-            as ExtensionState<IncrementalMountExtensionState>
-    val rootHost = IncrementalMountOutput(0, 0, Rect(0, 100, 100, 200), false, "root", null)
+        mountState.registerExtension(extension) as ExtensionState<IncrementalMountExtensionState>
+    val rootHost = IncrementalMountOutput(
+        0,
+        0,
+        Rect(0, 100, 100, 200),
+        false,
+        "root",
+        null,
+        DEFAULT_CONTENT_TYPE,
+        IncrementalMountOutput.NO_HOST_ID,
+    )
     val hostRenderUnit = TestHostRenderUnit(0)
     val hostRenderTreeNode = RenderTreeNode(null, hostRenderUnit, null, rootHost.bounds, null, 0)
-    val host1 = IncrementalMountOutput(1, 1, Rect(0, 100, 50, 200), false, "host1", rootHost)
+    val host1 = IncrementalMountOutput(
+        1,
+        1,
+        Rect(0, 100, 50, 200),
+        false,
+        "host1",
+        rootHost,
+        DEFAULT_CONTENT_TYPE,
+        rootHost.id,
+    )
     val host1RenderUnit = TestHostRenderUnit(1)
     val host1RTN = RenderTreeNode(hostRenderTreeNode, host1RenderUnit, null, host1.bounds, null, 0)
-    val child1 = IncrementalMountOutput(2, 2, Rect(0, 85, 50, 190), false, "child1", host1)
+    val child1 = IncrementalMountOutput(
+        2,
+        2,
+        Rect(0, 85, 50, 190),
+        false,
+        "child1",
+        host1,
+        DEFAULT_CONTENT_TYPE,
+        host1.id,
+    )
     val child1RenderUnit = TestRenderUnit(2)
     val child11RTN = RenderTreeNode(host1RTN, child1RenderUnit, null, child1.bounds, null, 0)
-    val host2 = IncrementalMountOutput(3, 3, Rect(50, 100, 50, 200), false, "host2", rootHost)
+    val host2 = IncrementalMountOutput(
+        3,
+        3,
+        Rect(50, 100, 50, 200),
+        false,
+        "host2",
+        rootHost,
+        DEFAULT_CONTENT_TYPE,
+        rootHost.id,
+    )
     val host2RenderUnit = TestHostRenderUnit(3)
     val host2RTN = RenderTreeNode(hostRenderTreeNode, host2RenderUnit, null, host2.bounds, null, 1)
-    val child2 = IncrementalMountOutput(4, 4, Rect(50, 100, 50, 200), false, "child2", host2)
+    val child2 = IncrementalMountOutput(
+        4,
+        4,
+        Rect(50, 100, 50, 200),
+        false,
+        "child2",
+        host2,
+        DEFAULT_CONTENT_TYPE,
+        host2.id,
+    )
     val child2RenderUnit = TestRenderUnit(4)
     val child2RTN = RenderTreeNode(host2RTN, child2RenderUnit, null, child2.bounds, null, 0)
     val flatList = arrayOf(hostRenderTreeNode, host1RTN, child11RTN, host2RTN, child2RTN)
-    val renderTree =
-        RenderTree(
-            hostRenderTreeNode,
-            flatList,
-            null,
-            SizeConstraints.exact(100, 100),
-            RenderState.NO_ID,
-            null,
-            null,
-            null)
+    val renderTree = RenderTree(
+        hostRenderTreeNode,
+        flatList,
+        null,
+        SizeConstraints.exact(100, 100),
+        RenderState.NO_ID,
+        null,
+        null,
+        null,
+    )
     val input1 = TestIncrementalMountExtensionInput(rootHost, host1, child1, host2, child2)
     extension.beforeMount(extensionState, input1, Rect(0, 80, 100, 90))
     mountState.mount(renderTree)
@@ -471,76 +539,1605 @@ class IncrementalMountExtensionTest {
   @Test
   fun testNegativeMarginChild_hostMovedAndUnmounted_forcesHostMount() {
     val c = ApplicationProvider.getApplicationContext<Context>()
-    val extension = IncrementalMountExtension.getInstance()
+    val extension = IncrementalMountExtension.instance
     val mountState = createMountState(c)
     val extensionState =
-        mountState.registerMountExtension(extension)
-            as ExtensionState<IncrementalMountExtensionState>
-    val rootHost = IncrementalMountOutput(0, 0, Rect(0, 100, 100, 200), false, "root", null)
+        mountState.registerExtension(extension) as ExtensionState<IncrementalMountExtensionState>
+    val rootHost = IncrementalMountOutput(
+        0,
+        0,
+        Rect(0, 100, 100, 200),
+        false,
+        "root",
+        null,
+        DEFAULT_CONTENT_TYPE,
+        IncrementalMountOutput.NO_HOST_ID,
+    )
     val hostRenderUnit = TestHostRenderUnit(0)
     val hostRenderTreeNode = RenderTreeNode(null, hostRenderUnit, null, rootHost.bounds, null, 0)
-    val host1 = IncrementalMountOutput(1, 1, Rect(0, 100, 50, 200), false, "host1", rootHost)
+    val host1 = IncrementalMountOutput(
+        1,
+        1,
+        Rect(0, 100, 50, 200),
+        false,
+        "host1",
+        rootHost,
+        DEFAULT_CONTENT_TYPE,
+        rootHost.id,
+    )
     val host1RenderUnit = TestHostRenderUnit(1)
     val host1RTN = RenderTreeNode(hostRenderTreeNode, host1RenderUnit, null, host1.bounds, null, 0)
-    val child1 = IncrementalMountOutput(2, 2, Rect(0, 85, 50, 190), false, "child1", host1)
+    val child1 = IncrementalMountOutput(
+        2,
+        2,
+        Rect(0, 85, 50, 190),
+        false,
+        "child1",
+        host1,
+        DEFAULT_CONTENT_TYPE,
+        host1.id,
+    )
     val child1RenderUnit = TestRenderUnit(2)
     val child11RTN = RenderTreeNode(host1RTN, child1RenderUnit, null, child1.bounds, null, 0)
-    val host2 = IncrementalMountOutput(3, 3, Rect(50, 100, 50, 200), false, "host2", rootHost)
+    val host2 = IncrementalMountOutput(
+        3,
+        3,
+        Rect(50, 100, 50, 200),
+        false,
+        "host2",
+        rootHost,
+        DEFAULT_CONTENT_TYPE,
+        rootHost.id,
+    )
     val host2RenderUnit = TestHostRenderUnit(3)
     val host2RTN = RenderTreeNode(hostRenderTreeNode, host2RenderUnit, null, host2.bounds, null, 1)
-    val child2 = IncrementalMountOutput(4, 4, Rect(50, 100, 50, 200), false, "child2", host2)
+    val child2 = IncrementalMountOutput(
+        4,
+        4,
+        Rect(50, 100, 50, 200),
+        false,
+        "child2",
+        host2,
+        DEFAULT_CONTENT_TYPE,
+        host2.id,
+    )
     val child2RenderUnit = TestRenderUnit(4)
     val child2RTN = RenderTreeNode(host2RTN, child2RenderUnit, null, child2.bounds, null, 0)
     val flatList = arrayOf(hostRenderTreeNode, host2RTN, child2RTN, host1RTN, child11RTN)
-    val renderTree =
-        RenderTree(
-            hostRenderTreeNode,
-            flatList,
-            null,
-            SizeConstraints.exact(100, 100),
-            RenderState.NO_ID,
-            null,
-            null,
-            null)
+    val renderTree = RenderTree(
+        hostRenderTreeNode,
+        flatList,
+        null,
+        SizeConstraints.exact(100, 100),
+        RenderState.NO_ID,
+        null,
+        null,
+        null,
+    )
     val input = TestIncrementalMountExtensionInput(rootHost, host2, child2, host1, child1)
     extension.beforeMount(extensionState, input, Rect(0, 80, 100, 90))
     mountState.mount(renderTree)
     assertThat(extensionState.ownsReference(1)).isTrue
     assertThat(extensionState.ownsReference(2)).isTrue
-    val host1Reparented = IncrementalMountOutput(1, 1, Rect(0, 100, 50, 200), false, "host1", host2)
+    val host1Reparented = IncrementalMountOutput(
+        1,
+        1,
+        Rect(0, 100, 50, 200),
+        false,
+        "host1",
+        host2,
+        DEFAULT_CONTENT_TYPE,
+        host2.id,
+    )
     val host1RenderUnitReparented = TestHostRenderUnit(1)
     val host1RTNReparented =
         RenderTreeNode(host2RTN, host1RenderUnitReparented, null, host1Reparented.bounds, null, 1)
-    val child1Reparented =
-        IncrementalMountOutput(2, 2, Rect(0, 85, 50, 190), false, "child1", host1Reparented)
+    val child1Reparented = IncrementalMountOutput(
+        2,
+        2,
+        Rect(0, 85, 50, 190),
+        false,
+        "child1",
+        host1Reparented,
+        DEFAULT_CONTENT_TYPE,
+        host1Reparented.id,
+    )
     val child1RenderUnitReparented = TestRenderUnit(2)
-    val child11RTNReparented =
-        RenderTreeNode(
-            host1RTNReparented, child1RenderUnitReparented, null, child1Reparented.bounds, null, 0)
+    val child11RTNReparented = RenderTreeNode(
+        host1RTNReparented,
+        child1RenderUnitReparented,
+        null,
+        child1Reparented.bounds,
+        null,
+        0,
+    )
     val flatListReparented =
         arrayOf(hostRenderTreeNode, host2RTN, child2RTN, host1RTNReparented, child11RTNReparented)
-    val renderTreeReparented =
-        RenderTree(
-            hostRenderTreeNode,
-            flatListReparented,
-            null,
-            SizeConstraints.exact(100, 100),
-            RenderState.NO_ID,
-            null,
-            null,
-            null)
-    val inputReparented =
-        TestIncrementalMountExtensionInput(
-            rootHost, host2, child2, host1Reparented, child1Reparented)
+    val renderTreeReparented = RenderTree(
+        hostRenderTreeNode,
+        flatListReparented,
+        null,
+        SizeConstraints.exact(100, 100),
+        RenderState.NO_ID,
+        null,
+        null,
+        null,
+    )
+    val inputReparented = TestIncrementalMountExtensionInput(
+        rootHost,
+        host2,
+        child2,
+        host1Reparented,
+        child1Reparented,
+    )
     extension.beforeMount(extensionState, inputReparented, Rect(0, 80, 100, 90))
     mountState.mount(renderTreeReparented)
     assertThat(extensionState.ownsReference(1)).isTrue
     assertThat(extensionState.ownsReference(2)).isTrue
   }
 
+  @Test
+  fun `unknown non-null content type mounts as a probe and exposes a pending sample`() {
+    val contentType = Any()
+    val output = output(id = 1, index = 1, top = 20, contentType = contentType)
+    val fixture = createCostAwareFixture(listOf(output))
+    val estimatedTypes = mutableListOf<Any>()
+
+    val result =
+        fixture.premount(
+            frameSequence = 1,
+            estimateNs = { type -> estimatedTypes.add(type).let { null } },
+        )
+
+    assertThat(result).isEqualTo(PremountResult.MOUNTED)
+    assertThat(estimatedTypes).containsExactly(contentType)
+    assertThat(fixture.extension.consumePendingPremountContentType(fixture.extensionState))
+        .isSameAs(contentType)
+    assertThat(fixture.mountState.getContentById(output.id)).isNotNull()
+  }
+
+  @Test
+  fun `known estimate rejects above remaining deadline and accepts at or below it`() {
+    val contentType = Any()
+    val rejected = output(id = 1, index = 1, top = 20, contentType = contentType)
+    val rejectedFixture = createCostAwareFixture(listOf(rejected))
+
+    assertThat(
+        rejectedFixture.premount(
+            frameSequence = 1,
+            runwayNs = ONE_SECOND_NS,
+            nowNs = ONE_SECOND_NS,
+            estimateNs = { TWO_SECONDS_NS },
+        ),
+    )
+        .isEqualTo(PremountResult.YIELD)
+    assertThat(rejectedFixture.mountState.getContentById(rejected.id)).isNull()
+
+    val accepted = output(id = 2, index = 1, top = 20, contentType = contentType)
+    val acceptedFixture = createCostAwareFixture(listOf(accepted))
+    assertThat(
+        acceptedFixture.premount(
+            frameSequence = 1,
+            runwayNs = ONE_SECOND_NS,
+            nowNs = ONE_SECOND_NS,
+            estimateNs = { ONE_SECOND_NS },
+        ),
+    )
+        .isEqualTo(PremountResult.MOUNTED)
+    assertThat(acceptedFixture.mountState.getContentById(accepted.id)).isNotNull()
+  }
+
+  @Test
+  fun `top scan mounts a cheap output past an expensive head`() {
+    val expensiveType = Any()
+    val cheapType = Any()
+    val expensive = output(id = 1, index = 1, top = 20, contentType = expensiveType)
+    val cheap = output(id = 2, index = 2, top = 40, contentType = cheapType)
+    val fixture = createCostAwareFixture(listOf(expensive, cheap))
+
+    val result =
+        fixture.premount(
+            frameSequence = 1,
+            estimateNs = { type -> if (type === expensiveType) TWO_SECONDS_NS else 1L },
+        )
+
+    assertThat(result).isEqualTo(PremountResult.MOUNTED)
+    assertThat(fixture.mountState.getContentById(expensive.id)).isNull()
+    assertThat(fixture.mountState.getContentById(cheap.id)).isNotNull()
+  }
+
+  @Test
+  fun `bottom scan is the fallback after the top scan finds no affordable output`() {
+    val expensiveType = Any()
+    val cheapType = Any()
+    val outputs =
+        (0 until 9).map { offset ->
+          output(
+              id = offset.toLong() + 1,
+              index = offset + 1,
+              top = 20 + offset * 20,
+              contentType = if (offset == 8) cheapType else expensiveType,
+          )
+        }
+    val fixture = createCostAwareFixture(outputs)
+    fixture.extensionState.state.previousBottomsIndex = outputs.size
+
+    val result =
+        fixture.premount(
+            frameSequence = 1,
+            estimateNs = { type -> if (type === cheapType) 1L else TWO_SECONDS_NS },
+        )
+
+    assertThat(result).isEqualTo(PremountResult.MOUNTED)
+    assertThat(fixture.mountState.getContentById(outputs.last().id)).isNotNull()
+    assertThat(outputs.dropLast(1).map { fixture.mountState.getContentById(it.id) })
+        .containsOnlyNulls()
+  }
+
+  @Test
+  fun `a resolved prefix does not consume the scan limit`() {
+    val outputs =
+        (0 until 10).map { offset ->
+          output(
+              id = offset.toLong() + 1,
+              index = offset + 1,
+              top = 20 + offset * 20,
+              contentType = Any(),
+          )
+        }
+    val fixture = createCostAwareFixture(outputs)
+    fixture.extensionState.state.previousBottomsIndex = 0
+    for (output in outputs.take(9)) {
+      fixture.extensionState.acquireMountReference(output.id, true)
+    }
+    val estimated = mutableListOf<Any>()
+
+    // Nine owned outputs sit in front of the only real candidate, three more than the per-frame
+    // inspection budget. Stepping over them costs nothing, so the tenth is still reached.
+    val result =
+        fixture.premount(
+            frameSequence = 1,
+            estimateNs = { contentType ->
+              estimated.add(contentType)
+              null
+            },
+        )
+
+    assertThat(result).isEqualTo(PremountResult.MOUNTED)
+    assertThat(fixture.mountState.getContentById(outputs.last().id)).isNotNull()
+    // Exactly one: counting estimator calls is what separates "did not re-walk" from
+    // "re-walked, but cheaply".
+    assertThat(estimated).hasSize(1)
+  }
+
+  @Test
+  fun `premount depth grows past the eight-slot budget across scroll frames`() {
+    val outputs =
+        (0 until 30).map { offset ->
+          output(
+              id = offset.toLong() + 1,
+              index = offset + 1,
+              top = 20 + offset * 20,
+              contentType = Any(),
+          )
+        }
+    val fixture = createCostAwareFixture(outputs)
+    fixture.extensionState.state.previousBottomsIndex = 0
+
+    // Production order, once per frame: the visible bounds change, then the gap worker asks.
+    // The bounds change is what rewinds the sweep back onto the outputs already premounted. An
+    // empty rect makes it return before it touches the official cursors, so this pins the reset
+    // and nothing else.
+    for (frame in 1L..20L) {
+      fixture.extension.onVisibleBoundsChanged(
+          fixture.extensionState,
+          Rect(),
+          com.facebook.rendercore.extensions.VisibilityChangeReason.SCROLL,
+      )
+      repeat(8) { fixture.premount(frameSequence = frame) }
+    }
+
+    // Fails at eight under the old accounting: from frame nine on, every frame spent its whole
+    // budget re-walking outputs it already owned and mounted nothing new, so depth was pinned at
+    // the budget size no matter how long the user scrolled.
+    assertThat(fixture.mountState.getContentById(outputs[15].id)).isNotNull()
+  }
+
+  @Test
+  fun `scan continuation reaches an affordable candidate beyond the prior frame limit`() {
+    val expensiveType = Any()
+    val cheapType = Any()
+    val outputs =
+        (0 until 9).map { offset ->
+          output(
+              id = offset.toLong() + 1,
+              index = offset + 1,
+              top = 20 + offset * 20,
+              contentType = if (offset == 8) cheapType else expensiveType,
+          )
+        }
+    val fixture = createCostAwareFixture(outputs)
+    fixture.extensionState.state.previousBottomsIndex = 0
+
+    assertThat(
+        fixture.premount(
+            frameSequence = 1,
+            estimateNs = { type -> if (type === cheapType) 1L else TWO_SECONDS_NS },
+        ),
+    )
+        .isEqualTo(PremountResult.YIELD)
+    assertThat(fixture.mountState.getContentById(outputs.last().id)).isNull()
+
+    assertThat(
+        fixture.premount(
+            frameSequence = 2,
+            estimateNs = { type -> if (type === cheapType) 1L else TWO_SECONDS_NS },
+        ),
+    )
+        .isEqualTo(PremountResult.MOUNTED)
+    assertThat(fixture.mountState.getContentById(outputs.last().id)).isNotNull()
+  }
+
+  @Test
+  fun `full scan cycle resets so a declined non-head candidate is reconsidered`() {
+    val host = output(id = 1, index = 1, top = 0, contentType = Any())
+    val blockedHead = output(
+        id = 2,
+        index = 2,
+        top = 20,
+        contentType = Any(),
+        hostOutput = host,
+        hostId = host.id,
+    )
+    val laterType = Any()
+    val later = output(id = 3, index = 3, top = 40, contentType = laterType)
+    val fixture =
+        createCostAwareFixture(listOf(host, blockedHead, later), hostOutputIds = setOf(host.id))
+    fixture.extensionState.state.previousTopsIndex = 1
+    fixture.extensionState.state.previousBottomsIndex = 0
+    var laterEstimateCalls = 0
+
+    for (frameSequence in 1L..2L) {
+      assertThat(
+          fixture.premount(
+              frameSequence = frameSequence,
+              estimateNs = { type ->
+                if (type === laterType) {
+                  laterEstimateCalls++
+                }
+                TWO_SECONDS_NS
+              },
+          ),
+      )
+          .isEqualTo(PremountResult.YIELD)
+    }
+
+    assertThat(laterEstimateCalls).isEqualTo(2)
+    assertThat(fixture.mountState.getContentById(later.id)).isNull()
+  }
+
+  @Test
+  fun `scan time is deducted before comparing the estimate with the absolute deadline`() {
+    val output = output(id = 1, index = 1, top = 20, contentType = Any())
+    val fixture = createCostAwareFixture(listOf(output))
+    var nowNs = 100L
+
+    val result =
+        fixture.extension.premountNextForGapWorker(
+            fixture.extensionState,
+            deadlineNs = 110L,
+            frameSequence = 1,
+            nanoTime = { nowNs },
+            estimator =
+                estimator {
+                  nowNs = 109L
+                  2L
+                },
+        )
+
+    assertThat(result).isEqualTo(PremountResult.YIELD)
+    assertThat(fixture.mountState.getContentById(output.id)).isNull()
+  }
+
+  @Test
+  fun `each direction scans at most eight list entries`() {
+    for (direction in listOf("top", "bottom")) {
+      val outputs =
+          (0 until 9).map { offset ->
+            output(
+                id = offset.toLong() + 1,
+                index = offset + 1,
+                top = 20 + offset * 20,
+                contentType = Any(),
+            )
+          }
+      val fixture = createCostAwareFixture(outputs)
+      if (direction == "top") {
+        fixture.extensionState.state.previousBottomsIndex = 0
+      } else {
+        fixture.extensionState.state.previousTopsIndex = outputs.size
+        fixture.extensionState.state.previousBottomsIndex = outputs.size
+      }
+      var estimateCalls = 0
+
+      assertThat(
+          fixture.premount(
+              frameSequence = 1,
+              estimateNs = {
+                estimateCalls++
+                TWO_SECONDS_NS
+              },
+          ),
+      )
+          .isEqualTo(PremountResult.YIELD)
+      assertThat(estimateCalls).describedAs("$direction scan count").isEqualTo(8)
+    }
+  }
+
+  @Test
+  fun `bottom scan continues after rejecting a duplicate already inspected by top`() {
+    val expensiveType = Any()
+    val cheapType = Any()
+    val expensiveOutputs =
+        (0 until 8).map { offset ->
+          output(
+              id = offset.toLong() + 1,
+              index = offset + 1,
+              top = 20 + offset * 20,
+              bottom = if (offset == 0) 1_000 else 100 + offset * 20,
+              contentType = expensiveType,
+          )
+        }
+    val cheap = output(
+        id = 9,
+        index = 9,
+        top = 180,
+        bottom = 900,
+        contentType = cheapType,
+    )
+    val fixture = createCostAwareFixture(expensiveOutputs + cheap)
+    fixture.extensionState.state.previousBottomsIndex = 9
+    val estimatedTypes = mutableListOf<Any>()
+
+    assertThat(
+        fixture.premount(
+            frameSequence = 1,
+            estimateNs = { type ->
+              estimatedTypes.add(type)
+              if (type === cheapType) 1L else TWO_SECONDS_NS
+            },
+        ),
+    )
+        .isEqualTo(PremountResult.MOUNTED)
+
+    assertThat(estimatedTypes).containsExactlyElementsOf(List(8) { expensiveType } + cheapType)
+    assertThat(fixture.mountState.getContentById(cheap.id)).isNotNull()
+  }
+
+  @Test
+  fun `cost-aware scan never changes the official incremental mount cursors`() {
+    val expensiveType = Any()
+    val cheapType = Any()
+    val outputs = listOf(
+        output(id = 1, index = 1, top = 20, contentType = expensiveType),
+        output(id = 2, index = 2, top = 40, contentType = cheapType),
+        output(id = 3, index = 3, top = 60, contentType = expensiveType),
+    )
+    val fixture = createCostAwareFixture(outputs)
+    fixture.extensionState.state.previousTopsIndex = 0
+    fixture.extensionState.state.previousBottomsIndex = outputs.size
+
+    fixture.premount(
+        frameSequence = 1,
+        estimateNs = { type -> if (type === cheapType) 1L else TWO_SECONDS_NS },
+    )
+
+    assertThat(IncrementalMountExtension.getPreviousTopsIndex(fixture.extensionState.state))
+        .isZero()
+    assertThat(IncrementalMountExtension.getPreviousBottomsIndex(fixture.extensionState.state))
+        .isEqualTo(outputs.size)
+  }
+
+  @Test
+  fun `an output skipped by the cost-aware scan mounts normally when it becomes visible`() {
+    val output = output(id = 1, index = 1, top = 100, contentType = Any())
+    val fixture = createCostAwareFixture(listOf(output))
+
+    assertThat(
+        fixture.premount(
+            frameSequence = 1,
+            estimateNs = { TWO_SECONDS_NS },
+        ),
+    )
+        .isEqualTo(PremountResult.YIELD)
+    assertThat(fixture.mountState.getContentById(output.id)).isNull()
+
+    fixture.extension.onVisibleBoundsChanged(
+        fixture.extensionState,
+        Rect(0, 100, 10, 110),
+        com.facebook.rendercore.extensions.VisibilityChangeReason.UNKNOWN,
+    )
+
+    assertThat(fixture.extensionState.ownsReference(output.id)).isTrue()
+    assertThat(fixture.mountState.getContentById(output.id)).isNotNull()
+  }
+
+  @Test
+  fun `candidate readiness handles host relationships`() {
+    val noHost = output(id = 1, index = 1, top = 20)
+    val noHostFixture = createCostAwareFixture(listOf(noHost))
+    assertThat(noHostFixture.premount(frameSequence = 1))
+        .describedAs("no host")
+        .isEqualTo(PremountResult.MOUNTED)
+    assertThat(noHostFixture.mountState.getContentById(noHost.id)).isNotNull()
+
+    val rootHosted = output(
+        id = 2,
+        index = 1,
+        top = 20,
+        hostId = MountState.ROOT_HOST_ID,
+    )
+    val rootHostFixture = createCostAwareFixture(listOf(rootHosted))
+    assertThat(rootHostFixture.premount(frameSequence = 1))
+        .describedAs("root host")
+        .isEqualTo(PremountResult.MOUNTED)
+    assertThat(rootHostFixture.mountState.getContentById(rootHosted.id)).isNotNull()
+
+    val expectedHost = output(id = 3, index = 1, top = 0, contentType = Any())
+    val misleadingHost = output(id = 4, index = 2, top = 0, contentType = Any())
+    val hosted = output(
+        id = 5,
+        index = 3,
+        top = 20,
+        contentType = Any(),
+        hostOutput = misleadingHost,
+        hostId = expectedHost.id,
+    )
+    val mountedHostFixture = createCostAwareFixture(
+        listOf(expectedHost, misleadingHost, hosted),
+        hostOutputIds = setOf(expectedHost.id, misleadingHost.id),
+    )
+    mountedHostFixture.extensionState.acquireMountReference(expectedHost.id, true)
+    mountedHostFixture.extensionState.state.previousTopsIndex = 2
+    assertThat(mountedHostFixture.premount(frameSequence = 1))
+        .describedAs("mounted Host selected by hostId")
+        .isEqualTo(PremountResult.MOUNTED)
+    assertThat(mountedHostFixture.mountState.getContentById(expectedHost.id))
+        .isInstanceOf(com.facebook.rendercore.Host::class.java)
+    assertThat(mountedHostFixture.mountState.getContentById(hosted.id)).isNotNull()
+    assertThat(mountedHostFixture.mountState.getContentById(misleadingHost.id)).isNull()
+
+    val missingHost = output(id = 6, index = 1, top = 20, contentType = Any(), hostId = 99)
+    val missingHostFixture = createCostAwareFixture(listOf(missingHost))
+    assertThat(missingHostFixture.premount(frameSequence = 1))
+        .describedAs("missing host")
+        .isEqualTo(PremountResult.YIELD)
+    assertThat(missingHostFixture.mountState.getContentById(missingHost.id)).isNull()
+
+    val nonHost = output(id = 7, index = 1, top = 0, contentType = Any())
+    val nonHostChild = output(
+        id = 8,
+        index = 2,
+        top = 20,
+        contentType = Any(),
+        hostId = nonHost.id,
+    )
+    val nonHostFixture = createCostAwareFixture(listOf(nonHost, nonHostChild))
+    nonHostFixture.extensionState.acquireMountReference(nonHost.id, true)
+    nonHostFixture.extensionState.state.previousTopsIndex = 1
+    assertThat(nonHostFixture.premount(frameSequence = 1))
+        .describedAs("mounted non-Host")
+        .isEqualTo(PremountResult.YIELD)
+    assertThat(nonHostFixture.mountState.getContentById(nonHost.id)).isNotNull()
+    assertThat(nonHostFixture.mountState.getContentById(nonHostChild.id)).isNull()
+  }
+
+  @Test
+  fun `scheduler state resets on input replacement official cursor setup and visible bounds changes`() {
+    val resetActions = listOf<(CostAwarePremountFixture, IncrementalMountOutput) -> Unit>(
+        { fixture, output ->
+          fixture.extension.beforeMount(
+              fixture.extensionState,
+              TestIncrementalMountExtensionInput(output),
+              Rect(),
+          )
+        },
+        { fixture, _ ->
+          fixture.extensionState.state.previousLocalVisibleRect.set(Rect(0, 0, 10, 10))
+          fixture.extension.afterMount(fixture.extensionState)
+        },
+        { fixture, _ ->
+          fixture.extensionState.state.previousLocalVisibleRect.set(Rect(0, 0, 10, 10))
+          fixture.extension.onVisibleBoundsChanged(
+              fixture.extensionState,
+              Rect(0, 1, 10, 11),
+              com.facebook.rendercore.extensions.VisibilityChangeReason.UNKNOWN,
+          )
+        },
+    )
+
+    for (resetAction in resetActions) {
+      val output = output(id = 1, index = 1, top = 100, contentType = Any())
+      val fixture = createCostAwareFixture(listOf(output))
+      rejectOnDistinctFrames(fixture, 1L..7L)
+
+      resetAction(fixture, output)
+
+      assertThat(
+          fixture.premount(
+              frameSequence = 8,
+              estimateNs = { TWO_SECONDS_NS },
+          ),
+      )
+          .isEqualTo(PremountResult.YIELD)
+      assertThat(fixture.mountState.getContentById(output.id)).isNull()
+    }
+  }
+
+  @Test
+  fun `ambiguous host relation clears starvation rather than forcing the candidate`() {
+    val valid = output(id = 1, index = 1, top = 100, contentType = Any())
+    val ambiguous = output(
+        id = valid.id,
+        index = valid.index,
+        top = valid.bounds.top,
+        contentType = valid.contentType,
+        hostId = 99,
+    )
+    val fixture = createCostAwareFixture(listOf(valid))
+    rejectOnDistinctFrames(fixture, 1L..7L)
+
+    fixture.extensionState.state.input = TestIncrementalMountExtensionInput(ambiguous)
+    assertThat(
+        fixture.premount(
+            frameSequence = 8,
+            estimateNs = { TWO_SECONDS_NS },
+        ),
+    )
+        .isEqualTo(PremountResult.YIELD)
+    fixture.extensionState.state.input = TestIncrementalMountExtensionInput(valid)
+
+    assertThat(
+        fixture.premount(
+            frameSequence = 9,
+            estimateNs = { TWO_SECONDS_NS },
+        ),
+    )
+        .isEqualTo(PremountResult.YIELD)
+    assertThat(fixture.mountState.getContentById(valid.id)).isNull()
+  }
+
+  @Test
+  fun `starvation rejection increments once per frame and forces on the eighth distinct frame`() {
+    val output = output(id = 1, index = 1, top = 20, contentType = Any())
+    val fixture = createCostAwareFixture(listOf(output))
+
+    repeat(4) {
+      assertThat(
+          fixture.premount(
+              frameSequence = 1,
+              estimateNs = { TWO_SECONDS_NS },
+          ),
+      )
+          .isEqualTo(PremountResult.YIELD)
+    }
+    rejectOnDistinctFrames(fixture, 2L..7L)
+    assertThat(fixture.mountState.getContentById(output.id)).isNull()
+
+    assertThat(
+        fixture.premount(
+            frameSequence = 8,
+            estimateNs = { TWO_SECONDS_NS },
+        ),
+    )
+        .isEqualTo(PremountResult.MOUNTED)
+    assertThat(fixture.mountState.getContentById(output.id)).isNotNull()
+  }
+
+  @Test
+  fun `mounting cheap scan-ahead outputs does not reset starvation of the expensive head`() {
+    val expensiveType = Any()
+    val cheapType = Any()
+    val head = output(id = 1, index = 1, top = 20, contentType = expensiveType)
+    val cheapOutputs =
+        (0 until 7).map { offset ->
+          output(
+              id = offset.toLong() + 2,
+              index = offset + 2,
+              top = 40 + offset * 20,
+              contentType = cheapType,
+          )
+        }
+    val fixture = createCostAwareFixture(listOf(head) + cheapOutputs)
+
+    for (frameSequence in 1L..7L) {
+      assertThat(
+          fixture.premount(
+              frameSequence = frameSequence,
+              estimateNs = { type -> if (type === expensiveType) TWO_SECONDS_NS else 1L },
+          ),
+      )
+          .isEqualTo(PremountResult.MOUNTED)
+      assertThat(fixture.mountState.getContentById(head.id)).isNull()
+    }
+
+    assertThat(
+        fixture.premount(
+            frameSequence = 8,
+            estimateNs = { type -> if (type === expensiveType) TWO_SECONDS_NS else 1L },
+        ),
+    )
+        .isEqualTo(PremountResult.MOUNTED)
+    assertThat(fixture.mountState.getContentById(head.id)).isNotNull()
+  }
+
+  @Test
+  fun `head replacement waits for cycle reset after stored head mounts`() {
+    val expensiveType = Any()
+    val cheapType = Any()
+    val firstHead = output(id = 1, index = 1, top = 20, contentType = expensiveType)
+    val nextHead = output(id = 2, index = 2, top = 40, contentType = expensiveType)
+    val cheap = output(id = 3, index = 3, top = 60, contentType = cheapType)
+    val fixture = createCostAwareFixture(listOf(firstHead, nextHead, cheap))
+    fixture.extensionState.state.previousBottomsIndex = 0
+
+    assertThat(
+        fixture.premount(
+            frameSequence = 1,
+            estimateNs = { TWO_SECONDS_NS },
+        ),
+    )
+        .isEqualTo(PremountResult.YIELD)
+
+    assertThat(
+        fixture.premount(
+            frameSequence = 2,
+            estimateNs = { type -> if (type === cheapType) 1L else null },
+        ),
+    )
+        .isEqualTo(PremountResult.MOUNTED)
+    assertThat(fixture.mountState.getContentById(firstHead.id)).isNotNull()
+
+    assertThat(
+        fixture.premount(
+            frameSequence = 2,
+            estimateNs = { type -> if (type === cheapType) 1L else TWO_SECONDS_NS },
+        ),
+    )
+        .isEqualTo(PremountResult.MOUNTED)
+    assertThat(fixture.mountState.getContentById(nextHead.id)).isNull()
+    assertThat(fixture.mountState.getContentById(cheap.id)).isNotNull()
+
+    assertThat(
+        fixture.premount(
+            frameSequence = 3,
+            estimateNs = { TWO_SECONDS_NS },
+        ),
+    )
+        .isEqualTo(PremountResult.YIELD)
+    assertThat(fixture.extensionState.state.starvation.deferredId)
+        .isEqualTo(IncrementalMountOutput.NO_HOST_ID)
+
+    assertThat(
+        fixture.premount(
+            frameSequence = 4,
+            estimateNs = { TWO_SECONDS_NS },
+        ),
+    )
+        .isEqualTo(PremountResult.YIELD)
+    assertThat(fixture.extensionState.state.starvation.deferredId).isEqualTo(nextHead.id)
+  }
+
+  @Test
+  fun `host not ready frames do not increment starvation rejection`() {
+    val host = output(id = 1, index = 1, top = 0, contentType = Any())
+    val child = output(
+        id = 2,
+        index = 2,
+        top = 20,
+        contentType = Any(),
+        hostOutput = host,
+        hostId = host.id,
+    )
+    val fixture = createCostAwareFixture(listOf(host, child), hostOutputIds = setOf(host.id))
+    fixture.extensionState.state.previousTopsIndex = 1
+
+    rejectOnDistinctFrames(fixture, 1L..8L)
+    assertThat(fixture.mountState.getContentById(child.id)).isNull()
+
+    fixture.extensionState.acquireMountReference(host.id, true)
+    assertThat(
+        fixture.premount(
+            frameSequence = 9,
+            estimateNs = { TWO_SECONDS_NS },
+        ),
+    )
+        .isEqualTo(PremountResult.YIELD)
+    assertThat(fixture.mountState.getContentById(child.id)).isNull()
+
+    rejectOnDistinctFrames(fixture, 10L..15L)
+    assertThat(
+        fixture.premount(
+            frameSequence = 16,
+            estimateNs = { TWO_SECONDS_NS },
+        ),
+    )
+        .isEqualTo(PremountResult.MOUNTED)
+    assertThat(fixture.mountState.getContentById(child.id)).isNotNull()
+  }
+
+  @Test
+  fun `visible bounds reason reaches nested callback during non-dirty pass and then resets`() {
+    val output = output(id = 1, index = 1, top = 20)
+    val fixture = createCostAwareFixture(listOf(output))
+    val nestedHost = RecordingExtensionHost(renderCoreTestRule.context)
+    fixture.extensionState.state.previousLocalVisibleRect.set(Rect(0, 0, 10, 10))
+    fixture.extensionState.state.mountedOutputIdsWithNestedContent.put(output.id, nestedHost)
+
+    fixture.extension.onVisibleBoundsChanged(
+        fixture.extensionState,
+        Rect(0, 1, 10, 11),
+        VisibilityChangeReason.SCROLL,
+    )
+    IncrementalMountExtension.recursivelyNotifyVisibleBoundsChanged(
+        fixture.extensionState,
+        output.id,
+        nestedHost,
+    )
+
+    assertThat(nestedHost.visibleBoundsReasons)
+        .containsExactly(VisibilityChangeReason.SCROLL, VisibilityChangeReason.UNKNOWN)
+  }
+
+  @Test
+  fun `cost-aware premount reports nothing when there is no candidate`() {
+    val fixture = createCostAwareFixture(emptyList())
+
+    assertThat(fixture.premount(frameSequence = 0)).isEqualTo(PremountResult.EXHAUSTED)
+  }
+
+  @Test
+  fun `each gap worker mode has one stable instance`() {
+    val instances =
+        GapWorkerMode.entries.associateWith { IncrementalMountExtension.getInstance(it) }
+
+    GapWorkerMode.entries.forEach { mode ->
+      assertThat(IncrementalMountExtension.getInstance(mode)).isSameAs(instances[mode])
+    }
+    assertThat(instances.values.toSet()).hasSize(GapWorkerMode.entries.size)
+    GapWorkerMode.entries.forEach { mode ->
+      val lifecycle = instances.getValue(mode).createState().premountLifecycle
+      if (mode == COST_AWARE_PREMOUNT_WITH_INCREMENTAL_UNMOUNT) {
+        assertThat(lifecycle).isNotNull()
+      } else {
+        assertThat(lifecycle).isNull()
+      }
+    }
+  }
+
+  @Test
+  fun `scroll marks a premounted leaf as seen`() {
+    val output = output(id = 1, index = 1, top = 20)
+    val fixture =
+        createCostAwareFixture(listOf(output), mode = COST_AWARE_PREMOUNT_WITH_INCREMENTAL_UNMOUNT)
+    assertThat(fixture.premount(frameSequence = 1)).isEqualTo(PremountResult.MOUNTED)
+
+    fixture.extension.onVisibleBoundsChanged(
+        fixture.extensionState,
+        output.bounds,
+        VisibilityChangeReason.SCROLL,
+    )
+
+    assertThat(fixture.extensionState.state.premountLifecycle?.stateOf(output.id))
+        .isEqualTo(PremountLifecycle.State.SEEN)
+  }
+
+  @Test
+  fun `animation marks a premounted leaf as seen`() {
+    val output = output(id = 1, index = 1, top = 20)
+    val fixture =
+        createCostAwareFixture(listOf(output), mode = COST_AWARE_PREMOUNT_WITH_INCREMENTAL_UNMOUNT)
+    assertThat(fixture.premount(frameSequence = 1)).isEqualTo(PremountResult.MOUNTED)
+
+    fixture.extension.onVisibleBoundsChanged(
+        fixture.extensionState,
+        output.bounds,
+        VisibilityChangeReason.ANIMATION,
+    )
+
+    assertThat(fixture.extensionState.state.premountLifecycle?.stateOf(output.id))
+        .isEqualTo(PremountLifecycle.State.SEEN)
+  }
+
+  @Test
+  fun `unknown reason does not mark a premounted leaf as seen`() {
+    val output = output(id = 1, index = 1, top = 20)
+    val fixture =
+        createCostAwareFixture(listOf(output), mode = COST_AWARE_PREMOUNT_WITH_INCREMENTAL_UNMOUNT)
+    assertThat(fixture.premount(frameSequence = 1)).isEqualTo(PremountResult.MOUNTED)
+
+    // Transient state mounts the whole host with UNKNOWN; that rect is not the screen.
+    fixture.extension.onVisibleBoundsChanged(
+        fixture.extensionState,
+        Rect(0, 0, 1000, 1000),
+        VisibilityChangeReason.UNKNOWN,
+    )
+
+    assertThat(fixture.extensionState.state.premountLifecycle?.stateOf(output.id))
+        .isEqualTo(PremountLifecycle.State.PREMOUNTED)
+  }
+
+  @Test
+  fun `scroll exit releases a premounted leaf`() {
+    val output = output(id = 1, index = 1, top = 20)
+    val fixture =
+        createCostAwareFixture(listOf(output), mode = COST_AWARE_PREMOUNT_WITH_INCREMENTAL_UNMOUNT)
+
+    assertThat(fixture.premount(frameSequence = 1)).isEqualTo(PremountResult.MOUNTED)
+    assertThat(fixture.extensionState.state.premountLifecycle?.stateOf(output.id))
+        .isEqualTo(PremountLifecycle.State.PREMOUNTED)
+
+    showThenHide(fixture, output)
+
+    assertThat(fixture.extensionState.state.premountLifecycle?.stateOf(output.id))
+        .isEqualTo(PremountLifecycle.State.RELEASED)
+    assertThat(fixture.extensionState.ownsReference(output.id)).isFalse()
+    assertThat(fixture.mountState.getContentById(output.id)).isNull()
+  }
+
+  @Test
+  fun `reentrant visibility records untracked to seen instead of premounted`() {
+    val output = output(id = 1, index = 1, top = 20)
+    lateinit var fixture: CostAwarePremountFixture
+    fixture =
+        createCostAwareFixture(
+            listOf(output),
+            mode = COST_AWARE_PREMOUNT_WITH_INCREMENTAL_UNMOUNT,
+            onCreateById =
+                mapOf(
+                    output.id to
+                        {
+                          fixture.extension.onVisibleBoundsChanged(
+                              fixture.extensionState,
+                              output.bounds,
+                              VisibilityChangeReason.SCROLL,
+                          )
+                        },
+                ),
+        )
+
+    assertThat(fixture.premount(frameSequence = 1)).isEqualTo(PremountResult.MOUNTED)
+
+    assertThat(fixture.extensionState.state.premountLifecycle?.stateOf(output.id))
+        .isEqualTo(PremountLifecycle.State.SEEN)
+  }
+
+  @Test
+  fun `released leaf is skipped before cost estimation`() {
+    val output = output(id = 1, index = 1, top = 20)
+    val fixture =
+        createCostAwareFixture(listOf(output), mode = COST_AWARE_PREMOUNT_WITH_INCREMENTAL_UNMOUNT)
+    fixture.premount(frameSequence = 1)
+    showThenHide(fixture, output)
+    var estimates = 0
+
+    assertThat(
+        fixture.premount(
+            frameSequence = 2,
+            estimateNs = {
+              estimates++
+              null
+            },
+        ),
+    )
+        .isEqualTo(PremountResult.EXHAUSTED)
+    assertThat(estimates).isZero()
+  }
+
+  @Test
+  fun `mount reason releases an untracked leaf without tracking it`() {
+    val output = output(id = 1, index = 1, top = 20)
+    val fixture =
+        createCostAwareFixture(listOf(output), mode = COST_AWARE_PREMOUNT_WITH_INCREMENTAL_UNMOUNT)
+
+    fixture.extension.onVisibleBoundsChanged(
+        fixture.extensionState,
+        Rect(0, 20, 10, 30),
+        VisibilityChangeReason.MOUNT,
+    )
+    fixture.extension.onVisibleBoundsChanged(
+        fixture.extensionState,
+        Rect(0, 100, 10, 110),
+        VisibilityChangeReason.MOUNT,
+    )
+
+    assertThat(fixture.extensionState.ownsReference(output.id)).isFalse()
+    assertThat(fixture.extensionState.state.premountLifecycle?.stateOf(output.id)).isNull()
+  }
+
+  @Test
+  fun `zero area scroll does not mark anything seen`() {
+    val output = output(id = 1, index = 1, top = 20)
+    val fixture =
+        createCostAwareFixture(listOf(output), mode = COST_AWARE_PREMOUNT_WITH_INCREMENTAL_UNMOUNT)
+
+    fixture.extension.onVisibleBoundsChanged(
+        fixture.extensionState,
+        Rect(0, 20, 0, 30),
+        VisibilityChangeReason.SCROLL,
+    )
+
+    assertThat(fixture.extensionState.state.premountLifecycle?.stateOf(output.id)).isNull()
+  }
+
+  @Test
+  fun `before-unmount fences late premount work`() {
+    val output = output(id = 1, index = 1, top = 20)
+    val fixture =
+        createCostAwareFixture(listOf(output), mode = COST_AWARE_PREMOUNT_WITH_INCREMENTAL_UNMOUNT)
+    assertThat(fixture.extensionState.state.premountLifecycle?.currentSession()).isNotNull()
+
+    fixture.extension.onBeforeUnmount(fixture.extensionState)
+
+    assertThat(fixture.extensionState.state.premountLifecycle?.currentSession()).isNull()
+    assertThat(fixture.extensionState.state.input).isNull()
+    assertThat(fixture.extensionState.state.isRegisteredWithGapWorker).isFalse()
+    assertThat(fixture.premount(frameSequence = 1)).isEqualTo(PremountResult.STALE)
+  }
+
+  @Test
+  fun `before-unmount leaves state untouched without incremental unmount`() {
+    val output = output(id = 1, index = 1, top = 20)
+    val fixture = createCostAwareFixture(listOf(output), mode = PREMOUNT)
+    val input = fixture.extensionState.state.input
+    assertThat(input).isNotNull()
+
+    fixture.extension.onBeforeUnmount(fixture.extensionState)
+
+    assertThat(fixture.extensionState.state.input).isSameAs(input)
+  }
+
+  @Test
+  fun `same id reappearing after removal starts untracked`() {
+    val output = output(id = 1, index = 1, top = 20)
+    val fixture =
+        createCostAwareFixture(listOf(output), mode = COST_AWARE_PREMOUNT_WITH_INCREMENTAL_UNMOUNT)
+    fixture.premount(frameSequence = 1)
+    showThenHide(fixture, output)
+
+    fixture.extension.beforeMount(
+        fixture.extensionState,
+        TestIncrementalMountExtensionInput(),
+        Rect(),
+    )
+    fixture.extension.beforeMount(
+        fixture.extensionState,
+        TestIncrementalMountExtensionInput(output),
+        Rect(),
+    )
+
+    assertThat(fixture.extensionState.state.premountLifecycle?.stateOf(output.id)).isNull()
+  }
+
+  @Test
+  fun `offscreen host stays owned while its seen leaf is released`() {
+    val host = output(id = 10, index = 1, top = 0, bottom = 30)
+    val child = output(id = 11, index = 2, top = 20, hostOutput = host, hostId = host.id)
+    val fixture = createCostAwareFixture(
+        listOf(host, child),
+        hostOutputIds = setOf(host.id),
+        mode = COST_AWARE_PREMOUNT_WITH_INCREMENTAL_UNMOUNT,
+    )
+    fixture.premount(frameSequence = 1)
+    fixture.premount(frameSequence = 2)
+
+    fixture.extension.onVisibleBoundsChanged(
+        fixture.extensionState,
+        Rect(0, 0, 10, 30),
+        VisibilityChangeReason.SCROLL,
+    )
+    fixture.extension.onVisibleBoundsChanged(
+        fixture.extensionState,
+        Rect(0, 100, 10, 110),
+        VisibilityChangeReason.SCROLL,
+    )
+
+    assertThat(fixture.extensionState.ownsReference(host.id)).isTrue()
+    assertThat(fixture.extensionState.ownsReference(child.id)).isFalse()
+    assertThat(fixture.extensionState.state.premountLifecycle?.stateOf(child.id))
+        .isEqualTo(PremountLifecycle.State.RELEASED)
+  }
+
+  @Test
+  fun `input replacement during acquire returns stale and reconciles ownership`() {
+    val output = output(id = 1, index = 1, top = 20)
+    lateinit var fixture: CostAwarePremountFixture
+    fixture =
+        createCostAwareFixture(
+            listOf(output),
+            mode = COST_AWARE_PREMOUNT_WITH_INCREMENTAL_UNMOUNT,
+            onCreateById =
+                mapOf(
+                    output.id to
+                        {
+                          fixture.extension.beforeMount(
+                              fixture.extensionState,
+                              TestIncrementalMountExtensionInput(output),
+                              Rect(),
+                          )
+                        },
+                ),
+        )
+
+    assertThat(fixture.premount(frameSequence = 1)).isEqualTo(PremountResult.STALE)
+    assertThat(fixture.extensionState.ownsReference(output.id)).isFalse()
+    assertThat(fixture.extensionState.state.premountLifecycle?.stateOf(output.id)).isNull()
+  }
+
+  @Test
+  fun `re-registering an already registered tree keeps released items released`() {
+    val output = output(id = 1, index = 1, top = 20)
+    val fixture =
+        createCostAwareFixture(listOf(output), mode = COST_AWARE_PREMOUNT_WITH_INCREMENTAL_UNMOUNT)
+    fixture.premount(frameSequence = 1)
+    showThenHide(fixture, output)
+    val lifecycle = checkNotNull(fixture.extensionState.state.premountLifecycle)
+    val session = lifecycle.currentSession()
+
+    try {
+      // A RecyclerView rebind of an attached row registers again without unregistering first.
+      fixture.extension.onRegisterForPremount(fixture.extensionState, null)
+
+      assertThat(lifecycle.currentSession()).isEqualTo(session)
+      assertThat(lifecycle.stateOf(output.id)).isEqualTo(PremountLifecycle.State.RELEASED)
+    } finally {
+      IncrementalMountGapWorker.resetWorkerForTesting()
+    }
+  }
+
+  @Test
+  fun `first scroll after a layout marks premounted items already on screen as seen`() {
+    val output = output(id = 1, index = 1, top = 20)
+    val fixture =
+        createCostAwareFixture(listOf(output), mode = COST_AWARE_PREMOUNT_WITH_INCREMENTAL_UNMOUNT)
+    fixture.premount(frameSequence = 1)
+    val lifecycle = checkNotNull(fixture.extensionState.state.premountLifecycle)
+
+    fixture.extension.onVisibleBoundsChanged(
+        fixture.extensionState,
+        Rect(0, 0, 10, 50),
+        VisibilityChangeReason.MOUNT,
+    )
+    assertThat(lifecycle.stateOf(output.id)).isEqualTo(PremountLifecycle.State.PREMOUNTED)
+
+    // A small scroll: the item stays on screen, so the edge sweep never visits it.
+    fixture.extension.onVisibleBoundsChanged(
+        fixture.extensionState,
+        Rect(0, 5, 10, 55),
+        VisibilityChangeReason.SCROLL,
+    )
+    assertThat(lifecycle.stateOf(output.id)).isEqualTo(PremountLifecycle.State.SEEN)
+
+    fixture.extension.onVisibleBoundsChanged(
+        fixture.extensionState,
+        Rect(0, 100, 10, 150),
+        VisibilityChangeReason.SCROLL,
+    )
+    assertThat(lifecycle.stateOf(output.id)).isEqualTo(PremountLifecycle.State.RELEASED)
+    assertThat(fixture.extensionState.ownsReference(output.id)).isFalse()
+  }
+
+  @Test
+  fun `first scroll after a layout records an item mounted by the layout as released`() {
+    val output = output(id = 1, index = 1, top = 20)
+    val fixture =
+        createCostAwareFixture(listOf(output), mode = COST_AWARE_PREMOUNT_WITH_INCREMENTAL_UNMOUNT)
+    val lifecycle = checkNotNull(fixture.extensionState.state.premountLifecycle)
+
+    fixture.extension.onVisibleBoundsChanged(
+        fixture.extensionState,
+        Rect(0, 0, 10, 50),
+        VisibilityChangeReason.MOUNT,
+    )
+    assertThat(fixture.extensionState.ownsReference(output.id)).isTrue()
+    assertThat(lifecycle.stateOf(output.id)).isNull()
+
+    fixture.extension.onVisibleBoundsChanged(
+        fixture.extensionState,
+        Rect(0, 5, 10, 55),
+        VisibilityChangeReason.SCROLL,
+    )
+    fixture.extension.onVisibleBoundsChanged(
+        fixture.extensionState,
+        Rect(0, 100, 10, 150),
+        VisibilityChangeReason.SCROLL,
+    )
+
+    assertThat(fixture.extensionState.ownsReference(output.id)).isFalse()
+    assertThat(lifecycle.isReleased(output.id)).isTrue()
+  }
+
+  @Test
+  fun `unregistering during an acquire stops further premount asks`() {
+    val output = output(id = 1, index = 1, top = 20)
+    lateinit var fixture: CostAwarePremountFixture
+    fixture =
+        createCostAwareFixture(
+            listOf(output),
+            mode = COST_AWARE_PREMOUNT_WITH_INCREMENTAL_UNMOUNT,
+            onCreateById =
+                mapOf(
+                    output.id to
+                        {
+                          // A mount that recycles this very row unregisters it mid-acquire.
+                          fixture.extension.onUnregisterForPremount(fixture.extensionState)
+                        },
+                ),
+        )
+
+    try {
+      // The legacy and direct-callback loops ask while hasItemToMount() is true.
+      var asks = 0
+      while (fixture.extension.hasItemToMount(fixture.extensionState) && asks < 10) {
+        fixture.extension.premountNext(fixture.extensionState)
+        asks++
+      }
+
+      assertThat(asks).isEqualTo(1)
+      assertThat(fixture.extensionState.ownsReference(output.id)).isFalse()
+    } finally {
+      IncrementalMountGapWorker.resetWorkerForTesting()
+    }
+  }
+
+  @Test
+  fun `registering for premount starts the lifecycle session`() {
+    val output = output(id = 1, index = 1, top = 20)
+    val fixture =
+        createCostAwareFixture(listOf(output), mode = COST_AWARE_PREMOUNT_WITH_INCREMENTAL_UNMOUNT)
+    val state = fixture.extensionState.state
+    val lifecycle = checkNotNull(state.premountLifecycle)
+    lifecycle.stopSession()
+    state.isRegisteredWithGapWorker = false
+
+    try {
+      fixture.extension.onRegisterForPremount(fixture.extensionState, null)
+
+      assertThat(lifecycle.currentSession()).isNotNull()
+      assertThat(state.isRegisteredWithGapWorker).isTrue()
+      assertThat(fixture.premount(frameSequence = 1)).isEqualTo(PremountResult.MOUNTED)
+    } finally {
+      IncrementalMountGapWorker.resetWorkerForTesting()
+    }
+  }
+
+  @Test
+  fun `unregistering stops the session so late premount work is stale`() {
+    val output = output(id = 1, index = 1, top = 20)
+    val fixture =
+        createCostAwareFixture(listOf(output), mode = COST_AWARE_PREMOUNT_WITH_INCREMENTAL_UNMOUNT)
+    val state = fixture.extensionState.state
+
+    try {
+      fixture.extension.onUnregisterForPremount(fixture.extensionState)
+
+      assertThat(state.premountLifecycle?.currentSession()).isNull()
+      assertThat(state.isRegisteredWithGapWorker).isFalse()
+      assertThat(fixture.premount(frameSequence = 1)).isEqualTo(PremountResult.STALE)
+    } finally {
+      IncrementalMountGapWorker.resetWorkerForTesting()
+    }
+  }
+
+  @Test
+  fun `empty-rect remount of a registered tree keeps visible items mounted`() {
+    val output = output(id = 1, index = 1, top = 20)
+    val fixture =
+        createCostAwareFixture(listOf(output), mode = COST_AWARE_PREMOUNT_WITH_INCREMENTAL_UNMOUNT)
+    val lifecycle = checkNotNull(fixture.extensionState.state.premountLifecycle)
+    fixture.extension.onVisibleBoundsChanged(
+        fixture.extensionState,
+        Rect(0, 0, 10, 50),
+        VisibilityChangeReason.SCROLL,
+    )
+    assertThat(lifecycle.stateOf(output.id)).isEqualTo(PremountLifecycle.State.SEEN)
+
+    // A rebind of an attached row with a new layout: onRegisterForPremount mounts with Rect().
+    fixture.extension.beforeMount(
+        fixture.extensionState,
+        TestIncrementalMountExtensionInput(output),
+        Rect(),
+    )
+    fixture.extension.beforeMountItem(fixture.extensionState, nodeFor(output), output.index)
+
+    assertThat(fixture.extensionState.ownsReference(output.id)).isTrue()
+    assertThat(lifecycle.stateOf(output.id)).isEqualTo(PremountLifecycle.State.SEEN)
+  }
+
+  @Test
+  fun `stale acquire keeps an item the newer layout shows`() {
+    val output = output(id = 1, index = 1, top = 20)
+    lateinit var fixture: CostAwarePremountFixture
+    fixture =
+        createCostAwareFixture(
+            listOf(output),
+            mode = COST_AWARE_PREMOUNT_WITH_INCREMENTAL_UNMOUNT,
+            onCreateById =
+                mapOf(
+                    output.id to
+                        {
+                          fixture.extension.beforeMount(
+                              fixture.extensionState,
+                              TestIncrementalMountExtensionInput(output),
+                              Rect(0, 0, 10, 50),
+                          )
+                          fixture.extension.beforeMountItem(
+                              fixture.extensionState,
+                              nodeFor(output),
+                              output.index,
+                          )
+                        },
+                ),
+        )
+
+    assertThat(fixture.premount(frameSequence = 1)).isEqualTo(PremountResult.STALE)
+    assertThat(fixture.extensionState.ownsReference(output.id)).isTrue()
+    assertThat(fixture.mountState.getContentById(output.id)).isNotNull()
+  }
+
+  @Test
+  fun `premounted item that scrolls in from below and back out is released`() {
+    val output = output(id = 1, index = 1, top = 20)
+    val fixture =
+        createCostAwareFixture(listOf(output), mode = COST_AWARE_PREMOUNT_WITH_INCREMENTAL_UNMOUNT)
+    (fixture.extensionState.rootHost as View).layout(0, 0, 10, 1_000)
+    val lifecycle = checkNotNull(fixture.extensionState.state.premountLifecycle)
+    fixture.extension.onVisibleBoundsChanged(
+        fixture.extensionState,
+        Rect(0, 0, 10, 15),
+        VisibilityChangeReason.SCROLL,
+    )
+    fixture.premount(frameSequence = 1)
+    assertThat(lifecycle.stateOf(output.id)).isEqualTo(PremountLifecycle.State.PREMOUNTED)
+
+    // Enters through the bottom edge.
+    fixture.extension.onVisibleBoundsChanged(
+        fixture.extensionState,
+        Rect(0, 18, 10, 33),
+        VisibilityChangeReason.SCROLL,
+    )
+    assertThat(lifecycle.stateOf(output.id)).isEqualTo(PremountLifecycle.State.SEEN)
+
+    // Leaves through the bottom edge.
+    fixture.extension.onVisibleBoundsChanged(
+        fixture.extensionState,
+        Rect(0, 0, 10, 15),
+        VisibilityChangeReason.SCROLL,
+    )
+    assertThat(lifecycle.stateOf(output.id)).isEqualTo(PremountLifecycle.State.RELEASED)
+    assertThat(fixture.extensionState.ownsReference(output.id)).isFalse()
+  }
+
+  @Test
+  fun `unmeasured pass after the first scroll still gets its items marked seen`() {
+    val output = output(id = 1, index = 1, top = 20)
+    val fixture =
+        createCostAwareFixture(listOf(output), mode = COST_AWARE_PREMOUNT_WITH_INCREMENTAL_UNMOUNT)
+    val lifecycle = checkNotNull(fixture.extensionState.state.premountLifecycle)
+
+    // The first measured frame after the layout, with the item off screen.
+    fixture.extension.onVisibleBoundsChanged(
+        fixture.extensionState,
+        Rect(0, 100, 10, 150),
+        VisibilityChangeReason.SCROLL,
+    )
+    // A transient whole-view mount brings it in without marking it.
+    fixture.extension.onVisibleBoundsChanged(
+        fixture.extensionState,
+        Rect(0, 0, 10, 50),
+        VisibilityChangeReason.MOUNT,
+    )
+    assertThat(fixture.extensionState.ownsReference(output.id)).isTrue()
+    fixture.extension.onVisibleBoundsChanged(
+        fixture.extensionState,
+        Rect(0, 5, 10, 55),
+        VisibilityChangeReason.SCROLL,
+    )
+    fixture.extension.onVisibleBoundsChanged(
+        fixture.extensionState,
+        Rect(0, 100, 10, 150),
+        VisibilityChangeReason.SCROLL,
+    )
+
+    assertThat(fixture.extensionState.ownsReference(output.id)).isFalse()
+    assertThat(lifecycle.isReleased(output.id)).isTrue()
+  }
+
+  private fun nodeFor(output: IncrementalMountOutput): RenderTreeNode =
+      RenderTreeNode(null, TestRenderUnit(output.id), null, output.bounds, null, 0)
+
   companion object {
+    /** These tests do not care what the content type is, only that there is one. */
+    private val DEFAULT_CONTENT_TYPE = Any()
+
+    private const val ONE_SECOND_NS = 1_000_000_000L
+    private const val TWO_SECONDS_NS = 2_000_000_000L
+
     private fun createMountState(c: Context): MountState {
       return MountState(RootHostView(c))
     }
+
+    private fun output(
+        id: Long,
+        index: Int,
+        top: Int,
+        contentType: Any = DEFAULT_CONTENT_TYPE,
+        bottom: Int = top + 10,
+        hostOutput: IncrementalMountOutput? = null,
+        hostId: Long = hostOutput?.id ?: IncrementalMountOutput.NO_HOST_ID,
+        excludeFromIncrementalMount: Boolean = false,
+    ): IncrementalMountOutput = IncrementalMountOutput(
+        id,
+        index,
+        Rect(0, top, 10, bottom),
+        excludeFromIncrementalMount,
+        "output-$id",
+        hostOutput,
+        contentType,
+        hostId,
+    )
+
+    private fun createCostAwareFixture(
+        outputs: List<IncrementalMountOutput>,
+        hostOutputIds: Set<Long> = emptySet(),
+        inputOutputs: List<IncrementalMountOutput> = outputs,
+        mode: GapWorkerMode = PREMOUNT,
+        onCreateById: Map<Long, () -> Unit> = emptyMap(),
+    ): CostAwarePremountFixture {
+      val context = ApplicationProvider.getApplicationContext<Context>()
+      val extension = IncrementalMountExtension.getInstance(mode)
+      val mountState = createMountState(context)
+      val extensionState = mountState.registerExtension(extension)
+      val root = RenderTreeNode(
+          null,
+          TestHostRenderUnit(MountState.ROOT_HOST_ID),
+          null,
+          Rect(0, 0, 10, 1_000),
+          null,
+          0,
+      )
+      val nodesById = mutableMapOf(MountState.ROOT_HOST_ID to root)
+      val childCountsByHostId = mutableMapOf<Long, Int>()
+      val nodes = mutableListOf(root)
+      for (output in outputs.sortedBy { it.index }) {
+        val parentId =
+            if (output.hostId == IncrementalMountOutput.NO_HOST_ID) {
+              MountState.ROOT_HOST_ID
+            } else {
+              output.hostId
+            }
+        val parent = nodesById[parentId] ?: root
+        val renderUnit =
+            if (hostOutputIds.contains(output.id)) {
+              TestHostRenderUnit(output.id)
+            } else if (onCreateById.containsKey(output.id)) {
+              CallbackTestRenderUnit(output.id, requireNotNull(onCreateById[output.id]))
+            } else {
+              TestRenderUnit(output.id)
+            }
+        val positionInParent = childCountsByHostId[parentId] ?: 0
+        childCountsByHostId[parentId] = positionInParent + 1
+        val node = RenderTreeNode(
+            parent,
+            renderUnit,
+            null,
+            output.bounds,
+            null,
+            positionInParent,
+        )
+        nodes.add(node)
+        nodesById[output.id] = node
+      }
+      mountState.mount(
+          RenderTree(
+              root,
+              nodes.toTypedArray(),
+              null,
+              SizeConstraints.exact(10, 1_000),
+              RenderState.NO_ID,
+              null,
+              null,
+              null,
+          ),
+      )
+      val input = TestIncrementalMountExtensionInput(*inputOutputs.toTypedArray())
+      if (mode == COST_AWARE_PREMOUNT_WITH_INCREMENTAL_UNMOUNT) {
+        extensionState.state.isRegisteredWithGapWorker = true
+        extensionState.state.premountLifecycle?.startSession()
+        extension.beforeMount(extensionState, input, Rect())
+      } else {
+        extensionState.state.input = input
+      }
+      return CostAwarePremountFixture(extension, extensionState, mountState)
+    }
+
+    private fun showThenHide(
+        fixture: CostAwarePremountFixture,
+        output: IncrementalMountOutput,
+    ) {
+      fixture.extension.onVisibleBoundsChanged(
+          fixture.extensionState,
+          output.bounds,
+          VisibilityChangeReason.SCROLL,
+      )
+      assertThat(fixture.extensionState.state.premountLifecycle?.stateOf(output.id))
+          .isEqualTo(PremountLifecycle.State.SEEN)
+      fixture.extension.onVisibleBoundsChanged(
+          fixture.extensionState,
+          Rect(0, 100, 10, 110),
+          VisibilityChangeReason.SCROLL,
+      )
+    }
+
+    private fun rejectOnDistinctFrames(
+        fixture: CostAwarePremountFixture,
+        frameSequences: LongRange,
+    ) {
+      for (frameSequence in frameSequences) {
+        assertThat(
+            fixture.premount(
+                frameSequence = frameSequence,
+                estimateNs = { TWO_SECONDS_NS },
+            ),
+        )
+            .isEqualTo(PremountResult.YIELD)
+      }
+    }
+  }
+
+  private class RecordingExtensionHost(context: Context) : RootHostView(context) {
+
+    val visibleBoundsReasons = ArrayList<VisibilityChangeReason>()
+
+    override fun notifyVisibleBoundsChanged(reason: VisibilityChangeReason) {
+      visibleBoundsReasons.add(reason)
+    }
+  }
+
+  private class CallbackTestRenderUnit(
+      id: Long,
+      private val onCreate: () -> Unit,
+  ) : TestRenderUnit(id) {
+    override fun createContent(c: Context): View {
+      onCreate()
+      return super.createContent(c)
+    }
+  }
+
+  private class CostAwarePremountFixture(
+      val extension: IncrementalMountExtension,
+      val extensionState: ExtensionState<IncrementalMountExtensionState>,
+      val mountState: MountState,
+  ) {
+    fun premount(
+        frameSequence: Long,
+        runwayNs: Long = ONE_SECOND_NS,
+        nowNs: Long = 0L,
+        estimateNs: (Any) -> Long? = { null },
+    ): PremountResult =
+        extension.premountNextForGapWorker(
+            extensionState,
+            nowNs + runwayNs,
+            frameSequence,
+            { nowNs },
+            estimator(estimateNs),
+        )
   }
 }
+
+private fun estimator(estimateNs: (Any) -> Long?): PremountCostEstimator =
+    object : PremountCostEstimator {
+      override fun estimateNs(contentType: Any): Long? = estimateNs(contentType)
+
+      override fun record(contentType: Any, actualNs: Long): Unit = Unit
+    }

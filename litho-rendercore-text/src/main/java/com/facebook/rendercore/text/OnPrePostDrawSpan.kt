@@ -30,7 +30,7 @@ interface OnPrePostDrawSpan {
       start: Int,
       end: Int,
       layout: Layout,
-      drawCommand: Command
+      drawCommand: Command,
   )
 
   interface Command {

@@ -17,7 +17,7 @@
 package com.facebook.litho.flexbox
 
 import com.facebook.litho.LithoView
-import com.facebook.litho.Row
+import com.facebook.litho.Row as RowBuilder
 import com.facebook.litho.Style
 import com.facebook.litho.assertMatches
 import com.facebook.litho.core.height
@@ -42,7 +42,7 @@ class FlexboxStyleCompatibilityTest {
   fun specComponent_whenKotlinStyleSetOnBuilder_commonPropsAreApplied() {
     lithoTestRule
         .render(widthSpec = unspecified(), heightSpec = unspecified()) {
-          Row.create(lithoTestRule.context)
+          RowBuilder.create(lithoTestRule.context)
               .wrapInView()
               .kotlinStyle(Style.width(100.px).height(100.px))
               .build()
@@ -54,7 +54,7 @@ class FlexboxStyleCompatibilityTest {
   fun specComponent_whenKotlinStyleSetOnBuilderThenOverriden_overriddenValuesApply() {
     lithoTestRule
         .render(widthSpec = unspecified(), heightSpec = unspecified()) {
-          Row.create(lithoTestRule.context)
+          RowBuilder.create(lithoTestRule.context)
               .wrapInView()
               .kotlinStyle(Style.width(100.px).height(100.px))
               .widthPx(50)

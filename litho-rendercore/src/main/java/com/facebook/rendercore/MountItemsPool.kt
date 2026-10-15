@@ -16,13 +16,11 @@
 
 package com.facebook.rendercore
 
-import android.annotation.TargetApi
 import android.app.Activity
 import android.app.Application
 import android.app.Service
 import android.content.Context
 import android.content.ContextWrapper
-import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.annotation.VisibleForTesting
@@ -30,6 +28,7 @@ import androidx.core.util.Pools
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
+import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.rendercore.thread.utils.ThreadUtils.runOnUiThread
 import java.util.WeakHashMap
 import java.util.concurrent.atomic.AtomicInteger
@@ -77,6 +76,13 @@ object MountContentPools {
   /** Should be used to disable pooling entirely for debugging, testing, and other use cases. */
   @JvmField var isPoolingDisabled: Boolean = false
 
+  /**
+   * Enables per-pool usage statistics tracking (acquire hits/misses, releases, discards, peak
+   * size). When false (default), [DefaultContentPool] skips all stats bookkeeping so there is zero
+   * overhead on the acquire/release hot path. Set to true by the observability system at init time.
+   */
+  @JvmField var isStatsTrackingEnabled: Boolean = false
+
   /** Can be used to return a custom Pool implementation for testing. */
   private val mountContentPoolFactory: ThreadLocal<Factory> = ThreadLocal<Factory>()
 
@@ -86,13 +92,15 @@ object MountContentPools {
   fun acquireMountContent(
       context: Context,
       poolableMountContent: ContentAllocator<*>,
-      poolScope: PoolScope = PoolScope.None
+      poolScope: PoolScope = PoolScope.None,
   ): Any {
     val contentFromPool =
         if (poolableMountContent.poolingPolicy.canAcquireContent) {
-          val pool =
-              getOrCreateMountContentPool(
-                  context = context, allocator = poolableMountContent, poolScope = poolScope)
+          val pool = getOrCreateMountContentPool(
+              context = context,
+              allocator = poolableMountContent,
+              poolScope = poolScope,
+          )
           pool?.acquire(poolableMountContent)
         } else {
           null
@@ -104,7 +112,8 @@ object MountContentPools {
           val isTracing = RenderCoreSystrace.isTracing()
           if (isTracing) {
             RenderCoreSystrace.beginSection(
-                "MountContentPools:createMountContent ${poolableMountContent.poolKeyTypeName}")
+                "MountContentPools:createMountContent ${poolableMountContent.poolKeyTypeName}",
+            )
           }
           val newContent = poolableMountContent.createContent(context)
           if (isTracing) {
@@ -125,38 +134,73 @@ object MountContentPools {
       context: Context,
       poolableMountContent: ContentAllocator<*>,
       mountContent: Any,
-      poolScope: PoolScope = PoolScope.None
+      poolScope: PoolScope = PoolScope.None,
   ) {
-    if (RenderCoreConfig.removeComponentHostListeners) {
-      if (mountContent is Host) {
-        mountContent.removeViewListeners()
+    val isTracing = RenderCoreSystrace.isTracing()
+    if (isTracing) {
+      RenderCoreSystrace.beginSection(
+          "MountContentPools:recycleToPool ${poolableMountContent.poolKeyTypeName}",
+      )
+    }
+    try {
+      if (RenderCoreConfig.removeComponentHostListeners) {
+        if (mountContent is Host) {
+          mountContent.removeViewListeners()
+        }
+      }
+      val pool =
+          if (poolableMountContent.poolingPolicy.canReleaseContent) {
+            getOrCreateMountContentPool(
+                context = context,
+                allocator = poolableMountContent,
+                poolScope = poolScope,
+            )
+          } else {
+            null
+          }
+
+      if (pool == null) {
+        // There is no pool, call onContentDiscarded to allow for releasing resources if needed.
+        poolableMountContent.onContentDiscarded?.invoke(mountContent)
+        return
+      }
+
+      if (mountItemPoolsReleaseValidator != null && mountContent is View) {
+        mountItemPoolsReleaseValidator?.assertValidRelease(
+            mountContent,
+            listOf(poolableMountContent.poolKeyTypeName),
+        )
+      }
+
+      val releasedToThePool = pool.release(mountContent)
+
+      if (!releasedToThePool) {
+        // Content was not released to the pool. Call onContentDiscarded to allow for releasing
+        // resources if needed.
+        poolableMountContent.onContentDiscarded?.invoke(mountContent)
+      }
+    } finally {
+      if (isTracing) {
+        RenderCoreSystrace.endSection()
       }
     }
-    val pool =
-        if (poolableMountContent.poolingPolicy.canReleaseContent) {
-          getOrCreateMountContentPool(
-              context = context, allocator = poolableMountContent, poolScope = poolScope)
-        } else {
-          null
-        }
+  }
 
-    if (pool == null) {
-      // There is no pool, call onContentDiscarded to allow for releasing resources if needed.
-      poolableMountContent.onContentDiscarded?.invoke(mountContent)
-      return
+  @JvmStatic
+  fun getContentPoolItemCount(
+      context: Context,
+      allocator: ContentAllocator<*>,
+      poolScope: PoolScope = PoolScope.None,
+  ): Int {
+    if (isPoolingDisabled) {
+      return 0
     }
 
-    if (mountItemPoolsReleaseValidator != null && mountContent is View) {
-      mountItemPoolsReleaseValidator?.assertValidRelease(
-          mountContent, listOf(poolableMountContent.poolKeyTypeName))
-    }
-
-    val releasedToThePool = pool.release(mountContent)
-
-    if (!releasedToThePool) {
-      // Content was not released to the pool. Call onContentDiscarded to allow for releasing
-      // resources if needed.
-      poolableMountContent.onContentDiscarded?.invoke(mountContent)
+    return synchronized(mountContentLock) {
+      val contextContentPools = mountContentPoolsByContext[context]
+      val scopedPools = contextContentPools?.getPools(poolScope)
+      val pool = scopedPools?.get(allocator.getPoolKey())
+      pool?.pooledItemsCount ?: 0
     }
   }
 
@@ -164,12 +208,26 @@ object MountContentPools {
   fun maybePreallocateContent(
       context: Context,
       poolableMountContent: ContentAllocator<*>,
-      poolScope: PoolScope = PoolScope.None
+      poolScope: PoolScope = PoolScope.None,
   ): Boolean {
-    val pool =
-        getOrCreateMountContentPool(
-            context = context, allocator = poolableMountContent, poolScope = poolScope)
-    return pool?.maybePreallocateContent(context, poolableMountContent) ?: false
+    val isTracing = RenderCoreSystrace.isTracing()
+    if (isTracing) {
+      RenderCoreSystrace.beginSection(
+          "MountContentPools:maybePreallocateContent ${poolableMountContent.poolKeyTypeName}",
+      )
+    }
+    try {
+      val pool = getOrCreateMountContentPool(
+          context = context,
+          allocator = poolableMountContent,
+          poolScope = poolScope,
+      )
+      return pool?.maybePreallocateContent(context, poolableMountContent) ?: false
+    } finally {
+      if (isTracing) {
+        RenderCoreSystrace.endSection()
+      }
+    }
   }
 
   /**
@@ -183,24 +241,36 @@ object MountContentPools {
       context: Context,
       poolSize: Int,
       poolableMountContent: ContentAllocator<*>,
-      poolScope: PoolScope = PoolScope.None
+      poolScope: PoolScope = PoolScope.None,
   ) {
     if (poolSize == 0) {
       return
     }
 
-    val pool =
-        getOrCreateMountContentPool(
-            context = context,
-            allocator = poolableMountContent,
-            poolScope = poolScope,
-            poolSize = poolSize)
+    val isTracing = RenderCoreSystrace.isTracing()
+    if (isTracing) {
+      RenderCoreSystrace.beginSection(
+          "MountContentPools:prefillMountContentPool ${poolableMountContent.poolKeyTypeName}",
+      )
+    }
+    try {
+      val pool = getOrCreateMountContentPool(
+          context = context,
+          allocator = poolableMountContent,
+          poolScope = poolScope,
+          poolSize = poolSize,
+      )
 
-    if (pool != null) {
-      for (i in 0 until poolSize) {
-        if (!pool.release(poolableMountContent.createContent(context))) {
-          break
+      if (pool != null) {
+        for (i in 0 until poolSize) {
+          if (!pool.release(poolableMountContent.createContent(context))) {
+            break
+          }
         }
+      }
+    } finally {
+      if (isTracing) {
+        RenderCoreSystrace.endSection()
       }
     }
   }
@@ -213,7 +283,7 @@ object MountContentPools {
       context: Context,
       allocator: ContentAllocator<*>,
       poolScope: PoolScope,
-      poolSize: Int = allocator.poolSize()
+      poolSize: Int = allocator.poolSize(),
   ): ContentPool? {
     if (isPoolingDisabled || poolSize <= 0) {
       return null
@@ -284,10 +354,12 @@ object MountContentPools {
    */
   private fun getRootContext(context: Context): Context {
     var currentContext = context
-    while (currentContext is ContextWrapper &&
-        currentContext !is Activity &&
-        currentContext !is Application &&
-        currentContext !is Service) {
+    while (
+        currentContext is ContextWrapper &&
+            currentContext !is Activity &&
+            currentContext !is Application &&
+            currentContext !is Service
+    ) {
       currentContext = currentContext.baseContext
     }
     return currentContext
@@ -305,13 +377,10 @@ object MountContentPools {
           }
         }
       } else if (activityCallbacks == null) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-          throw RuntimeException(
-              "Activity callbacks must be invoked manually below ICS (API level 14)")
-        }
         activityCallbacks = PoolsActivityCallback()
         (context.applicationContext as Application).registerActivityLifecycleCallbacks(
-            activityCallbacks)
+            activityCallbacks,
+        )
       }
     }
   }
@@ -352,6 +421,28 @@ object MountContentPools {
     }
   }
 
+  /**
+   * Returns a snapshot of pool statistics for all active pools. Useful for observability and
+   * detecting pool sizing issues.
+   */
+  @JvmStatic
+  fun getAllPoolStats(): List<PoolStats> {
+    synchronized(mountContentLock) {
+      val result = mutableListOf<PoolStats>()
+      for (contextPools in mountContentPoolsByContext.values) {
+        for (pool in contextPools.unscopedPools.values) {
+          pool.getPoolStats()?.let { result.add(it) }
+        }
+        for (scopedMap in contextPools.scopedPools.values) {
+          for (pool in scopedMap.values) {
+            pool.getPoolStats()?.let { result.add(it) }
+          }
+        }
+      }
+      return result
+    }
+  }
+
   @get:VisibleForTesting
   val mountContentPools: List<ContentPool>
     get() {
@@ -383,7 +474,6 @@ object MountContentPools {
     }
 
   /** Empty implementation of the [Application.ActivityLifecycleCallbacks] interface */
-  @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
   private class PoolsActivityCallback : Application.ActivityLifecycleCallbacks {
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
       onContextCreated(activity)
@@ -443,18 +533,22 @@ object MountContentPools {
       failOnDetection: Boolean,
       excludedPatterns: Set<Regex> = emptySet(),
       extraFields: List<MountItemPoolsReleaseValidator.FieldExtractionDefinition> = emptyList(),
-      onInvalidRelease: (exception: InvalidReleaseToMountPoolException) -> Unit
+      onInvalidRelease: (exception: InvalidReleaseToMountPoolException) -> Unit,
   ) {
     mountItemPoolsReleaseValidator =
         MountItemPoolsReleaseValidator(
             failOnDetection = failOnDetection,
             excludedPatterns = excludedPatterns,
             onInvalidRelease = onInvalidRelease,
-            extraFields = extraFields)
+            extraFields = extraFields,
+        )
   }
 
   /** Content pool that RenderCore uses to recycle content (such as Views) */
   interface ContentPool {
+
+    /** The number of items currently in the pool. */
+    val pooledItemsCount: Int
 
     /** Interface definition for a callback to be invoked when the pool is cleared. */
     fun interface OnClearedListener {
@@ -501,9 +595,50 @@ object MountContentPools {
 
     /** Clears the pool and dispatches [OnClearedListener] if present. */
     fun clear(): Unit = Unit
+
+    /** Returns a snapshot of pool statistics for observability, or null if not tracked. */
+    fun getPoolStats(): PoolStats? = null
   }
 
-  open class DefaultContentPool(poolKey: Any, private val maxPoolSize: Int) : ContentPool {
+  /**
+   * Snapshot of pool usage statistics for observability.
+   *
+   * These stats enable detection of pool sizing issues:
+   * - Cold-start: [totalHits] == 0 on first mount pass
+   * - Steady-state misses: high [totalMisses] / ([totalHits] + [totalMisses]) ratio
+   * - Oversized: [peakSize] << [maxSize] (pool larger than needed)
+   * - Undersized: [totalDiscards] > 0 (content discarded because pool was full)
+   */
+  @DataClassGenerate
+  data class PoolStats(
+      /** Debug name for this pool (typically the component class name). */
+      val name: String,
+      /**
+       * Unique identifier for this pool instance. Distinguishes pools that share the same [name]
+       * but exist in different contexts or scopes (e.g., multiple Activities each have their own
+       * ViewAllocator pool).
+       */
+      val id: Int,
+      /** Maximum capacity of the pool. */
+      val maxSize: Int,
+      /** Current number of items in the pool. */
+      val currentSize: Int,
+      /** Highest number of items the pool has held simultaneously. */
+      val peakSize: Int,
+      /** Total number of acquire() calls. */
+      val totalAcquires: Int,
+      /** Number of acquire() calls that returned content (pool hit). */
+      val totalHits: Int,
+      /** Number of acquire() calls that returned null (pool miss). */
+      val totalMisses: Int,
+      /** Total number of release() calls. */
+      val totalReleases: Int,
+      /** Number of release() calls where the pool was full (content discarded). */
+      val totalDiscards: Int,
+  )
+
+  open class DefaultContentPool(private val poolKey: Any, private val maxPoolSize: Int) :
+      ContentPool {
 
     private val pool: Pools.SynchronizedPool<Any> = Pools.SynchronizedPool(maxPoolSize)
 
@@ -513,34 +648,133 @@ object MountContentPools {
 
     private var onClearedListener: ContentPool.OnClearedListener? = null
 
+    // Pool usage stats for observability
+    private val _totalAcquires = AtomicInteger(0)
+    private val _totalHits = AtomicInteger(0)
+    private val _totalMisses = AtomicInteger(0)
+    private val _totalReleases = AtomicInteger(0)
+    private val _totalDiscards = AtomicInteger(0)
+    private val _peakSize = AtomicInteger(0)
+
+    override val pooledItemsCount: Int
+      get() = currentPoolSize.get()
+
     override fun acquire(contentAllocator: ContentAllocator<*>): Any? {
-      val content = pool.acquire()
-      if (content != null) {
-        currentPoolSize.decrementAndGet()
+      val isTracing = RenderCoreSystrace.isTracing()
+      if (isTracing) {
+        val poolKey = contentAllocator.getPoolKey()
+        RenderCoreSystrace.beginSection(
+            "MountContentPools:acquireFromPool ${(poolKey as? Class<*>)?.simpleName ?: poolKey}",
+        )
       }
-      return content
+      try {
+        val tracking = isStatsTrackingEnabled
+        if (tracking) {
+          _totalAcquires.incrementAndGet()
+        }
+        val content = pool.acquire()
+        if (content != null) {
+          currentPoolSize.decrementAndGet()
+          if (tracking) {
+            _totalHits.incrementAndGet()
+          }
+        } else {
+          if (tracking) {
+            _totalMisses.incrementAndGet()
+          }
+        }
+        return content
+      } finally {
+        if (isTracing) {
+          RenderCoreSystrace.endSection()
+        }
+      }
     }
 
     override fun release(item: Any): Boolean {
-      return try {
-        val releasedIntoPool = pool.release(item)
-        if (releasedIntoPool) {
-          currentPoolSize.incrementAndGet()
-        }
-        releasedIntoPool
-      } catch (e: IllegalStateException) {
-        val metadata = "Failed to release item to DefaultContentPool: $debugIdentifier"
-        throw IllegalStateException(metadata, e)
+      val isTracing = RenderCoreSystrace.isTracing()
+      if (isTracing) {
+        RenderCoreSystrace.beginSection(
+            "MountContentPools:releaseToPool ${(poolKey as? Class<*>)?.simpleName ?: poolKey}",
+        )
       }
+      try {
+        val tracking = isStatsTrackingEnabled
+        if (tracking) {
+          _totalReleases.incrementAndGet()
+        }
+        return try {
+          val releasedIntoPool = pool.release(item)
+          if (releasedIntoPool) {
+            val newSize = currentPoolSize.incrementAndGet()
+            if (tracking) {
+              // Update peak size atomically
+              var peak = _peakSize.get()
+              while (newSize > peak) {
+                if (_peakSize.compareAndSet(peak, newSize)) {
+                  break
+                }
+                peak = _peakSize.get()
+              }
+            }
+          } else {
+            if (tracking) {
+              _totalDiscards.incrementAndGet()
+            }
+          }
+          releasedIntoPool
+        } catch (e: IllegalStateException) {
+          val metadata = "Failed to release item to DefaultContentPool: $debugIdentifier"
+          throw IllegalStateException(metadata, e)
+        }
+      } finally {
+        if (isTracing) {
+          RenderCoreSystrace.endSection()
+        }
+      }
+    }
+
+    override fun getPoolStats(): PoolStats? {
+      if (!isStatsTrackingEnabled) {
+        return null
+      }
+      return PoolStats(
+          name = debugIdentifier,
+          id = System.identityHashCode(this),
+          maxSize = maxPoolSize,
+          currentSize = currentPoolSize.get(),
+          peakSize = _peakSize.get(),
+          totalAcquires = _totalAcquires.get(),
+          totalHits = _totalHits.get(),
+          totalMisses = _totalMisses.get(),
+          totalReleases = _totalReleases.get(),
+          totalDiscards = _totalDiscards.get(),
+      )
     }
 
     override fun maybePreallocateContent(
         c: Context,
-        contentAllocator: ContentAllocator<*>
+        contentAllocator: ContentAllocator<*>,
     ): Boolean {
-      return if (currentPoolSize.get() < maxPoolSize) {
-        release(contentAllocator.createContent(c))
-      } else false
+      val isTracing = RenderCoreSystrace.isTracing()
+      if (isTracing) {
+        val poolKey = contentAllocator.getPoolKey()
+        RenderCoreSystrace.beginSection(
+            "MountContentPools:preallocateToPool ${(poolKey as? Class<*>)?.simpleName ?: poolKey}",
+        )
+      }
+      try {
+        if (RenderCoreConfig.disableDefaultPoolPreallocation) {
+          return false
+        }
+        return if (currentPoolSize.get() < maxPoolSize) {
+          release(contentAllocator.createContent(c))
+        } else false
+      } finally {
+        if (isTracing) {
+          RenderCoreSystrace.endSection()
+        }
+      }
     }
 
     override fun setOnClearedListener(listener: ContentPool.OnClearedListener?) {
@@ -589,7 +823,8 @@ sealed interface PoolScope {
               lifecycle.removeObserver(this)
               MountContentPools.releaseScope(this@LifecycleAware)
             }
-          })
+          },
+      )
     }
   }
 
@@ -617,7 +852,7 @@ private class ContextContentPools {
 
   /** Returns pools associated with [poolScope] or [unscopedPools] if [poolScope] is null. */
   fun getPools(
-      poolScope: PoolScope = PoolScope.None
+      poolScope: PoolScope = PoolScope.None,
   ): MutableMap<Any, MountContentPools.ContentPool> {
     if (poolScope == PoolScope.None) {
       return unscopedPools

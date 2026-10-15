@@ -26,13 +26,13 @@ class DrawableComponent
 private constructor(
     private val drawable: Drawable,
     private val drawableWidth: Int,
-    private val drawableHeight: Int
+    private val drawableHeight: Int,
 ) : SpecGeneratedComponent("DrawableComponent") {
 
   override fun onBoundsDefined(
       c: ComponentContext,
       layout: ComponentLayout,
-      interStagePropsContainer: InterStagePropsContainer?
+      interStagePropsContainer: InterStagePropsContainer?,
   ): Unit = Unit
 
   override fun onCreateMountContent(c: Context): Any = MatrixDrawable<Drawable>()
@@ -40,7 +40,7 @@ private constructor(
   override fun onMount(
       context: ComponentContext?,
       content: Any,
-      interStagePropsContainer: InterStagePropsContainer?
+      interStagePropsContainer: InterStagePropsContainer?,
   ) {
     val drawable = content as MatrixDrawable<Drawable>
     drawable.mount(this.drawable)
@@ -49,7 +49,7 @@ private constructor(
   override fun onBind(
       c: ComponentContext?,
       mountedContent: Any,
-      interStagePropsContainer: InterStagePropsContainer?
+      interStagePropsContainer: InterStagePropsContainer?,
   ) {
     val mountedDrawable = mountedContent as MatrixDrawable<*>
     mountedDrawable.bind(drawableWidth, drawableHeight)
@@ -58,7 +58,7 @@ private constructor(
   override fun onUnmount(
       context: ComponentContext?,
       mountedContent: Any,
-      interStagePropsContainer: InterStagePropsContainer?
+      interStagePropsContainer: InterStagePropsContainer?,
   ) {
     val matrixDrawable = mountedContent as MatrixDrawable<*>
     matrixDrawable.unmount()
@@ -68,7 +68,7 @@ private constructor(
 
   override fun getMountType(): MountType = MountType.DRAWABLE
 
-  override fun isEquivalentProps(o: Component?, shouldCompareCommonProps: Boolean): Boolean {
+  override fun isEquivalentProps(o: Component?): Boolean {
     if (this === o) {
       return true
     }

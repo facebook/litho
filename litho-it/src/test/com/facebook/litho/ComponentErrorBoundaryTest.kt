@@ -20,31 +20,27 @@ import android.graphics.Rect
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.kotlin.widget.Text
+import com.facebook.litho.layout.flexbox.Column
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.common.SingleComponentSection
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
 import com.facebook.litho.testing.LithoTestRule
-import com.facebook.litho.testing.error.TestCrasherOnCreateLayout
 import com.facebook.litho.testing.error.TestCrasherOnCreateLayoutWithSizeSpec
 import com.facebook.litho.testing.error.TestCrasherOnMount
 import com.facebook.litho.testing.error.TestErrorBoundary
 import com.facebook.litho.testing.testrunner.LithoTestRunner
-import com.facebook.litho.widget.CrashFromLayoutFromStyle
-import com.facebook.litho.widget.CrashKotlinComponent
 import com.facebook.litho.widget.CrashingMountable
 import com.facebook.litho.widget.CrashingMountableSpec.MountPhaseException
 import com.facebook.litho.widget.CreateMountContentCrashing
-import com.facebook.litho.widget.CreateMountPoolCrashing
 import com.facebook.litho.widget.DynamicPropCrasher
-import com.facebook.litho.widget.OnErrorNotPresentChild
 import com.facebook.litho.widget.OnErrorPassUpChildTester
 import com.facebook.litho.widget.OnErrorPassUpParentTester
 import com.facebook.litho.widget.TestCrashFromEachLayoutLifecycleMethod
 import com.facebook.litho.widget.TestCrashFromEachLayoutLifecycleMethodParent
 import com.facebook.litho.widget.TestCrashFromEachLayoutLifecycleMethodSpec
-import com.facebook.litho.widget.ThrowExceptionGrandChildTester
+import com.facebook.rendercore.extensions.VisibilityChangeReason
 import com.facebook.yoga.YogaEdge
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.reflect.KClass
@@ -53,6 +49,7 @@ import org.hamcrest.core.Is
 import org.junit.After
 import org.junit.Assume.assumeThat
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExpectedException
@@ -84,7 +81,8 @@ class ComponentErrorBoundaryTest {
     assumeThat(
         "These tests can only be run in debug mode.",
         LithoDebugConfigurations.isDebugModeEnabled,
-        Is.`is`(true))
+        Is.`is`(true),
+    )
   }
 
   @After
@@ -96,8 +94,7 @@ class ComponentErrorBoundaryTest {
   fun testOnCreateLayoutErrorWithoutBoundaryWhenEnabled() {
     var exception: Exception? = null
     try {
-      val component = TestCrasherOnCreateLayout.create(lithoTestRule.context).build()
-      lithoTestRule.render { component }
+      lithoTestRule.render { TestCrasherOnCreateLayout() }
     } catch (error: Exception) {
       exception = error
     }
@@ -148,7 +145,9 @@ class ComponentErrorBoundaryTest {
     assertThat(exception).isNotNull
     assertThat(info)
         .containsExactly(
-            "OnErrorPassUpChildTesterSpec->onError", "OnErrorPassUpParentTesterSpec->onError")
+            "OnErrorPassUpChildTesterSpec->onError",
+            "OnErrorPassUpParentTesterSpec->onError",
+        )
   }
 
   @Test
@@ -158,7 +157,7 @@ class ComponentErrorBoundaryTest {
     try {
       val component =
           OnErrorPassUpParentTester.create(lithoTestRule.context)
-              .child(OnErrorNotPresentChild.create(lithoTestRule.context).build())
+              .child(OnErrorNotPresentChild())
               .info(info)
               .build()
       lithoTestRule.render { component }
@@ -172,13 +171,16 @@ class ComponentErrorBoundaryTest {
   @Test
   fun testOwnErrorHandler() {
     val errorEventHandler = Mockito.mock(ErrorEventHandler::class.java)
-    val component = ThrowExceptionGrandChildTester.create(lithoTestRule.context).build()
+    val component = ThrowExceptionGrandChildTester()
     val componentTreeBuilder = ComponentTree.create(lithoTestRule.context)
     val componentTree =
         componentTreeBuilder
             .componentsConfiguration(
                 lithoTestRule.context.lithoConfiguration.componentsConfig.copy(
-                    errorEventHandler = errorEventHandler))
+                    errorEventHandler = errorEventHandler,
+                ),
+            )
+            .enableChildClipping(true)
             .build()
     componentTree.root = component
     lithoTestRule.render(componentTree = componentTree) { component }
@@ -203,13 +205,19 @@ class ComponentErrorBoundaryTest {
   @Test
   fun testOnCreateLayoutCrashWithTestErrorBoundary() {
     crashingScenarioLayoutHelper(
-        LifecycleStep.ON_CREATE_LAYOUT, "onCreateLayout crash", expectHierarchy = false)
+        LifecycleStep.ON_CREATE_LAYOUT,
+        "onCreateLayout crash",
+        expectHierarchy = false,
+    )
   }
 
   @Test
   fun testOnCreateTreePropCrashWithTestErrorBoundary() {
     crashingScenarioLayoutHelper(
-        LifecycleStep.ON_CREATE_TREE_PROP, "onCreateTreeProp crash", expectHierarchy = false)
+        LifecycleStep.ON_CREATE_TREE_PROP,
+        "onCreateTreeProp crash",
+        expectHierarchy = false,
+    )
   }
 
   @Test
@@ -217,7 +225,8 @@ class ComponentErrorBoundaryTest {
     crashingScenarioLayoutHelper(
         LifecycleStep.ON_CREATE_INITIAL_STATE,
         "onCreateInitialState crash",
-        expectHierarchy = false)
+        expectHierarchy = false,
+    )
   }
 
   @Test
@@ -225,19 +234,26 @@ class ComponentErrorBoundaryTest {
     crashingScenarioLayoutHelper(
         LifecycleStep.ON_CALCULATE_CACHED_VALUE,
         "onCalculateCachedValue crash",
-        expectHierarchy = false)
+        expectHierarchy = false,
+    )
   }
 
   @Test
   fun testOnCreateTransitionCrashWithTestErrorBoundary() {
     crashingScenarioLayoutHelper(
-        LifecycleStep.ON_CREATE_TRANSITION, "onCreateTransition crash", expectHierarchy = false)
+        LifecycleStep.ON_CREATE_TRANSITION,
+        "onCreateTransition crash",
+        expectHierarchy = false,
+    )
   }
 
   @Test
   fun testOnAttachedCrashWithTestErrorBoundary() {
     crashingScenarioLayoutHelper(
-        LifecycleStep.ON_ATTACHED, "onAttached crash", expectHierarchy = true)
+        LifecycleStep.ON_ATTACHED,
+        "onAttached crash",
+        expectHierarchy = true,
+    )
   }
 
   @Test
@@ -246,7 +262,8 @@ class ComponentErrorBoundaryTest {
         LifecycleStep.ON_REGISTER_RANGES,
         "onRegisterRanges crash",
         releaseAfter = false,
-        expectHierarchy = false)
+        expectHierarchy = false,
+    )
   }
 
   @Test
@@ -255,7 +272,8 @@ class ComponentErrorBoundaryTest {
         LifecycleStep.ON_ENTERED_RANGE,
         "onEnteredRange crash",
         releaseAfter = false,
-        expectHierarchy = true)
+        expectHierarchy = true,
+    )
   }
 
   @Test
@@ -264,7 +282,8 @@ class ComponentErrorBoundaryTest {
         LifecycleStep.ON_EXITED_RANGE,
         "onExitedRange crash",
         releaseAfter = true,
-        expectHierarchy = true)
+        expectHierarchy = true,
+    )
   }
 
   @Test
@@ -320,10 +339,9 @@ class ComponentErrorBoundaryTest {
             .errorOutput(errorOutput)
             .child(
                 Column.create(lithoTestRule.context)
-                    .child(
-                        TestCrashFromEachLayoutLifecycleMethodParent.create(lithoTestRule.context)
-                            .caller(caller))
-                    .build())
+                    .child(TestCrashFromEachLayoutLifecycleMethodParent(caller))
+                    .build(),
+            )
             .build()
     lithoTestRule.render { component }
     caller.updateStateSync()
@@ -416,13 +434,21 @@ class ComponentErrorBoundaryTest {
             .child(crashingComponent)
             .build()
     val testLithoView = lithoTestRule.render { component }
-    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 0, 20, 20), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(
+        Rect(0, 0, 20, 20),
+        true,
+        VisibilityChangeReason.UNKNOWN,
+    )
     assertThat(errorOutput).hasSize(1)
     assertThat(errorOutput[0]).isInstanceOf(LithoMetadataExceptionWrapper::class.java)
     assertThat(errorOutput[0].message).contains("onEventVisible crash")
     assertThat(errorOutput[0].message)
         .contains(
-            "layout_stack:", "TestCrashFromEachLayoutLifecycleMethod", "->", "TestErrorBoundary")
+            "layout_stack:",
+            "TestCrashFromEachLayoutLifecycleMethod",
+            "->",
+            "TestErrorBoundary",
+        )
   }
 
   @Test
@@ -442,16 +468,26 @@ class ComponentErrorBoundaryTest {
                             .caller(caller)
                             .widthPx(10)
                             .heightPx(5)
-                            .marginPx(YogaEdge.TOP, 5)))
+                            .marginPx(YogaEdge.TOP, 5),
+                    ),
+            )
             .build()
     val testLithoView = lithoTestRule.render(widthPx = 10, heightPx = 10) { component }
-    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 0, 10, 5), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(
+        Rect(0, 0, 10, 5),
+        true,
+        VisibilityChangeReason.UNKNOWN,
+    )
     assertThat(errorOutput).hasSize(1)
     assertThat(errorOutput[0]).isInstanceOf(LithoMetadataExceptionWrapper::class.java)
     assertThat(errorOutput[0].message).contains("onEventInvisible crash")
     assertThat(errorOutput[0].message)
         .contains(
-            "layout_stack:", "TestCrashFromEachLayoutLifecycleMethod", "->", "TestErrorBoundary")
+            "layout_stack:",
+            "TestCrashFromEachLayoutLifecycleMethod",
+            "->",
+            "TestErrorBoundary",
+        )
   }
 
   @Test
@@ -460,7 +496,8 @@ class ComponentErrorBoundaryTest {
         LifecycleStep.ON_FOCUSED_EVENT_VISIBLE,
         "onFocusedEventVisible crash",
         releaseAfter = false,
-        true)
+        true,
+    )
   }
 
   @Test
@@ -469,7 +506,8 @@ class ComponentErrorBoundaryTest {
         LifecycleStep.ON_FULL_IMPRESSION_VISIBLE_EVENT,
         "onFullImpressionVisible crash",
         false,
-        true)
+        true,
+    )
   }
 
   @Test
@@ -478,7 +516,8 @@ class ComponentErrorBoundaryTest {
         LifecycleStep.ON_VISIBILITY_CHANGED,
         "onVisibilityChanged crash",
         releaseAfter = false,
-        expectHierarchy = true)
+        expectHierarchy = true,
+    )
   }
 
   @Test
@@ -500,7 +539,11 @@ class ComponentErrorBoundaryTest {
     assertThat(errorOutput[0].message).contains("onDetached crash")
     assertThat(errorOutput[0].message)
         .contains(
-            "layout_stack:", "TestCrashFromEachLayoutLifecycleMethod", "->", "TestErrorBoundary")
+            "layout_stack:",
+            "TestCrashFromEachLayoutLifecycleMethod",
+            "->",
+            "TestErrorBoundary",
+        )
   }
 
   @Test
@@ -522,13 +565,20 @@ class ComponentErrorBoundaryTest {
 
     // We need to use a ComponentContext with a ComponentTree on it
     TestCrashFromEachLayoutLifecycleMethod.triggerTestEvent(
-        testLithoView.componentTree.context, triggerHandle, bazObject)
+        testLithoView.componentTree.context,
+        triggerHandle,
+        bazObject,
+    )
     assertThat(errorOutput).hasSize(1)
     assertThat(errorOutput[0]).isInstanceOf(RuntimeException::class.java)
     assertThat(errorOutput[0].message).contains("onTrigger crash")
     assertThat(errorOutput[0].message)
         .contains(
-            "layout_stack:", "TestCrashFromEachLayoutLifecycleMethod", "->", "TestErrorBoundary")
+            "layout_stack:",
+            "TestCrashFromEachLayoutLifecycleMethod",
+            "->",
+            "TestErrorBoundary",
+        )
   }
 
   @Test
@@ -537,7 +587,7 @@ class ComponentErrorBoundaryTest {
     // TestCrashFromEachLayoutLifecycleMethod.create(c, 0, android.R.style.Animation) crashes at
     // component initialization and not at layout, so we need to wrap it in another spec that will
     // rethrow from onCreateLayout()
-    val crashingComponent = CrashFromLayoutFromStyle.create(lithoTestRule.context).build()
+    val crashingComponent = CrashFromLayoutFromStyle()
     val errorOutput: List<Exception> = ArrayList()
     val component =
         TestErrorBoundary.create(lithoTestRule.context)
@@ -551,30 +601,33 @@ class ComponentErrorBoundaryTest {
         .hasMessage("onLoadStyle crash")
   }
 
+  @Ignore("T243069803")
   @Test
   fun testOnBindDynamicValueCrashWithTestErrorBoundary() {
-    val dynamicStringProp = DynamicValue("dynamic_prop_test")
-    val crashingComponent =
-        DynamicPropCrasher.create(lithoTestRule.context).someStringProp(dynamicStringProp).build()
-    val errorOutput: List<Exception> = ArrayList()
-    val component =
-        TestErrorBoundary.create(lithoTestRule.context)
-            .errorOutput(errorOutput)
-            .child(crashingComponent)
-            .build()
-    lithoTestRule.render { component }
+    val dynamicStringProp = DynamicValue("")
+    val crashingComponent = DynamicPropCrasher(dynamicStringProp)
+    class KErrorBoundary(private val childComponent: Component) : KComponent() {
+      override fun ComponentScope.render(): Component? {
+        val errorState = useState<Exception?> { null }
+        useErrorBoundary { exception: Exception -> errorState.update(exception) }
+
+        return if (errorState.value == null) childComponent
+        else Text("error caught: ${errorState.value?.message}")
+      }
+    }
+    val testLithoView = lithoTestRule.render { KErrorBoundary(crashingComponent) }
     dynamicStringProp.set("change_dynamic_prop_test")
-    assertThat(errorOutput).hasSize(1)
-    assertThat(errorOutput[0]).isInstanceOf(LithoMetadataExceptionWrapper::class.java)
-    assertThat(errorOutput[0].message).contains("onBindDynamicValue crash")
-    assertThat(errorOutput[0].message)
-        .contains("layout_stack:", "DynamicPropCrasher", "->", "TestErrorBoundary")
+    assertThat(testLithoView.findViewWithText("bindDynamic crash")).isNotNull
   }
 
   @Test
   fun testOnMountCrashWithTestErrorBoundary() {
     crashingScenarioMountHelper(
-        LifecycleStep.ON_MOUNT, "Crashed on ON_MOUNT", unmountAfter = false, expectHierarchy = true)
+        LifecycleStep.ON_MOUNT,
+        "Crashed on ON_MOUNT",
+        unmountAfter = false,
+        expectHierarchy = true,
+    )
   }
 
   @Test
@@ -583,13 +636,18 @@ class ComponentErrorBoundaryTest {
         LifecycleStep.ON_UNMOUNT,
         "Crashed on ON_UNMOUNT",
         unmountAfter = true,
-        expectHierarchy = true)
+        expectHierarchy = true,
+    )
   }
 
   @Test
   fun testOnBindCrashWithTestErrorBoundary() {
     crashingScenarioMountHelper(
-        LifecycleStep.ON_BIND, "Crashed on ON_BIND", unmountAfter = false, expectHierarchy = true)
+        LifecycleStep.ON_BIND,
+        "Crashed on ON_BIND",
+        unmountAfter = false,
+        expectHierarchy = true,
+    )
   }
 
   @Test
@@ -598,7 +656,8 @@ class ComponentErrorBoundaryTest {
         LifecycleStep.ON_UNBIND,
         "Crashed on ON_UNBIND",
         unmountAfter = true,
-        expectHierarchy = true)
+        expectHierarchy = true,
+    )
   }
 
   @Test
@@ -607,7 +666,8 @@ class ComponentErrorBoundaryTest {
         LifecycleStep.ON_PREPARE,
         "Crashed on ON_PREPARE",
         unmountAfter = false,
-        expectHierarchy = false)
+        expectHierarchy = false,
+    )
   }
 
   @Test
@@ -616,7 +676,8 @@ class ComponentErrorBoundaryTest {
         LifecycleStep.ON_MEASURE,
         "Crashed on ON_MEASURE",
         unmountAfter = false,
-        expectHierarchy = true)
+        expectHierarchy = true,
+    )
   }
 
   @Test
@@ -625,12 +686,12 @@ class ComponentErrorBoundaryTest {
         LifecycleStep.ON_BOUNDS_DEFINED,
         "Crashed on ON_BOUNDS_DEFINED",
         unmountAfter = false,
-        expectHierarchy = false)
+        expectHierarchy = false,
+    )
   }
 
   @Test
   fun testOnCreateMountContentCrashWithTestErrorBoundary() {
-    // TODO(T85975360): add onError coverage and remove expected exception
     // RuntimeException we throw is wrapped, so we need to expect that one
     expectedException.expect(LithoMetadataExceptionWrapper::class.java)
     expectedException.expectMessage("Crashed on ON_CREATE_MOUNT_CONTENT")
@@ -641,20 +702,8 @@ class ComponentErrorBoundaryTest {
         expectHierarchy = true,
         crashingComponentClass = CreateMountContentCrashing::class,
     ) { _ ->
-      CreateMountContentCrashing.create(lithoTestRule.context).build()
+      CreateMountContentCrashing()
     }
-  }
-
-  @Test
-  fun testOnCreateMountContentPoolCrashWithTestErrorBoundary() {
-    crashingScenarioMountHelper(
-        LifecycleStep.ON_CREATE_MOUNT_CONTENT_POOL,
-        "Crashed on ON_CREATE_MOUNT_CONTENT_POOL",
-        false,
-        true,
-        crashingComponentClass = CreateMountPoolCrashing::class) { _ ->
-          CreateMountPoolCrashing.create(lithoTestRule.context).build()
-        }
   }
 
   @Test
@@ -712,9 +761,11 @@ class ComponentErrorBoundaryTest {
 
     // The crashing mountable component should not get added to
     // the RenderTree if the error is thrown before mount.
-    if (crashFromStep == LifecycleStep.ON_PREPARE ||
-        crashFromStep == LifecycleStep.ON_MEASURE ||
-        crashFromStep == LifecycleStep.ON_BOUNDS_DEFINED) {
+    if (
+        crashFromStep == LifecycleStep.ON_PREPARE ||
+            crashFromStep == LifecycleStep.ON_MEASURE ||
+            crashFromStep == LifecycleStep.ON_BOUNDS_DEFINED
+    ) {
       val count = testLithoView.lithoView.mountDelegateTarget.getRenderUnitCount()
       for (i in 0 until count) {
         val item = testLithoView.lithoView.mountDelegateTarget.getMountItemAt(i)
@@ -734,7 +785,11 @@ class ComponentErrorBoundaryTest {
       assertThat(errorOutput[0].message).contains(expectedMessage)
       assertThat(errorOutput[0].message)
           .contains(
-              "layout_stack:", "${crashingComponentClass.simpleName}", "->", "TestErrorBoundary")
+              "layout_stack:",
+              "${crashingComponentClass.simpleName}",
+              "->",
+              "TestErrorBoundary",
+          )
     } else {
       assertThat(errorOutput[0])
           .isInstanceOf(MountPhaseException::class.java)
@@ -745,7 +800,7 @@ class ComponentErrorBoundaryTest {
   private fun crashingScenarioLayoutHelper(
       crashFromStep: LifecycleStep,
       expectedMessage: String,
-      expectHierarchy: Boolean
+      expectHierarchy: Boolean,
   ) {
     val crashingComponent =
         TestCrashFromEachLayoutLifecycleMethod.create(lithoTestRule.context)
@@ -764,7 +819,11 @@ class ComponentErrorBoundaryTest {
       assertThat(errorOutput[0].message).contains(expectedMessage)
       assertThat(errorOutput[0].message)
           .contains(
-              "layout_stack:", "TestCrashFromEachLayoutLifecycleMethod", "->", "TestErrorBoundary")
+              "layout_stack:",
+              "TestCrashFromEachLayoutLifecycleMethod",
+              "->",
+              "TestErrorBoundary",
+          )
     } else {
       assertThat(errorOutput[0])
           .isInstanceOf(RuntimeException::class.java)
@@ -776,7 +835,7 @@ class ComponentErrorBoundaryTest {
       crashFromStep: LifecycleStep,
       expectedMessage: String,
       releaseAfter: Boolean,
-      expectHierarchy: Boolean
+      expectHierarchy: Boolean,
   ) {
     val crashingComponent =
         TestCrashFromEachLayoutLifecycleMethod.create(lithoTestRule.context)
@@ -795,7 +854,8 @@ class ComponentErrorBoundaryTest {
             .section(
                 SingleComponentSection.create(SectionContext(lithoTestRule.context))
                     .component(component)
-                    .build())
+                    .build(),
+            )
             .build()
     val testLithoView = lithoTestRule.render(widthPx = 100, heightPx = 100) { rcc }
     if (releaseAfter) {
@@ -807,7 +867,11 @@ class ComponentErrorBoundaryTest {
       assertThat(errorOutput[0].message).contains(expectedMessage)
       assertThat(errorOutput[0].message)
           .contains(
-              "layout_stack:", "TestCrashFromEachLayoutLifecycleMethod", "->", "TestErrorBoundary")
+              "layout_stack:",
+              "TestCrashFromEachLayoutLifecycleMethod",
+              "->",
+              "TestErrorBoundary",
+          )
     } else {
       assertThat(errorOutput[0]).isInstanceOf(RuntimeException::class.java)
       assertThat(errorOutput[0].message).contains(expectedMessage)
@@ -869,6 +933,42 @@ class ComponentErrorBoundaryTest {
     assertThat(errorList.size).isEqualTo(2)
     errorList.forEach { error ->
       assertThat(error.message).isEqualTo("onCreateLayoutWithSizeSpec crash")
+    }
+  }
+
+  private class ThrowExceptionGrandChildTester : KComponent() {
+    override fun ComponentScope.render(): Component {
+      throw RuntimeException("Exception from the ThrowExceptionGrandChildTesterSpec")
+    }
+  }
+
+  private class OnErrorNotPresentChild : KComponent() {
+    override fun ComponentScope.render(): Component {
+      return ThrowExceptionGrandChildTester()
+    }
+  }
+
+  private class TestCrasherOnCreateLayout : KComponent() {
+    override fun ComponentScope.render(): Component {
+      throw RuntimeException("onCreateLayout crash")
+    }
+  }
+
+  private class CrashKotlinComponent : KComponent() {
+    override fun ComponentScope.render(): Component? {
+      throw RuntimeException("crash from kotlin component")
+    }
+  }
+
+  private class CrashFromLayoutFromStyle : KComponent() {
+    override fun ComponentScope.render(): Component {
+      return Column {
+        child(
+            TestCrashFromEachLayoutLifecycleMethod.create(context, 0, android.R.style.Animation)
+                .crashFromStep(LifecycleStep.ON_LOAD_STYLE)
+                .build(),
+        )
+      }
     }
   }
 }

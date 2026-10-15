@@ -17,7 +17,6 @@
 package com.facebook.litho.widget.collection
 
 import android.graphics.Color
-import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
@@ -27,6 +26,7 @@ import com.facebook.litho.core.height
 import com.facebook.litho.core.padding
 import com.facebook.litho.core.width
 import com.facebook.litho.flexbox.aspectRatio
+import com.facebook.litho.layout.flexbox.Column
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.backgroundColor
@@ -57,18 +57,18 @@ class LazyListTest {
     val bottomPadding = 4
     val lateralPadding = 10
 
-    val lithoView =
-        lithoTestRule.render {
-          TestGridComponent(
-              tag = tag,
-              outerPadding = outerPadding.px,
-              lazyListStartPadding = lateralPadding.px,
-              lazyListEndPadding = lateralPadding.px,
-              lazyListTopPadding = topPadding.px,
-              lazyListBottomPadding = bottomPadding.px,
-              width = width.px,
-              height = height.px)
-        }
+    val lithoView = lithoTestRule.render {
+      TestGridComponent(
+          tag = tag,
+          outerPadding = outerPadding.px,
+          lazyListStartPadding = lateralPadding.px,
+          lazyListEndPadding = lateralPadding.px,
+          lazyListTopPadding = topPadding.px,
+          lazyListBottomPadding = bottomPadding.px,
+          width = width.px,
+          height = height.px,
+      )
+    }
 
     // Verify measured sizes
     val collectionComponent = lithoView.findCollectionComponent()
@@ -104,7 +104,7 @@ class LazyListTest {
       private val lazyListTopPadding: Dimen,
       private val lazyListBottomPadding: Dimen,
       private val height: Dimen,
-      private val width: Dimen
+      private val width: Dimen,
   ) : KComponent() {
 
     override fun ComponentScope.render(): Component {
@@ -117,9 +117,11 @@ class LazyListTest {
                 startPadding = lazyListStartPadding,
                 endPadding = lazyListEndPadding,
                 clipToPadding = false,
-                style = Style.viewTag(tag)) {
-                  children(items = (0..31), id = { it }) { item(Style.padding(all = 8.dp)) }
-                })
+                style = Style.viewTag(tag),
+            ) {
+              children(items = (0..31), id = { it }) { item(Style.padding(all = 8.dp)) }
+            },
+        )
       }
     }
 

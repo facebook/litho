@@ -23,7 +23,8 @@ typealias OnViewportChanged =
         lastVisibleIndex: Int,
         totalCount: Int,
         firstFullyVisibleIndex: Int,
-        lastFullyVisibleIndex: Int) -> Unit
+        lastFullyVisibleIndex: Int,
+    ) -> Unit
 
 /** Callbacks for [LazyCollection]'s data changes. */
 typealias OnDataBound = () -> Unit
@@ -35,4 +36,5 @@ typealias OnDataRendered =
         isMounted: Boolean,
         monoTimestampMs: Long,
         firstVisibleIndex: Int,
-        lastVisibleIndex: Int) -> Unit
+        lastVisibleIndex: Int,
+    ) -> Unit

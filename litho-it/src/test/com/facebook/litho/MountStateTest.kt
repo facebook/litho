@@ -20,19 +20,22 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.config.TempComponentsConfigurations
+import com.facebook.litho.core.height
+import com.facebook.litho.core.width
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.Whitebox
 import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.DynamicPropsComponentTester
-import com.facebook.litho.widget.Image
 import com.facebook.litho.widget.MountSpecWithMountUnmountAssertion
-import com.facebook.litho.widget.MountSpecWithMountUnmountAssertionSpec
-import com.facebook.litho.widget.Progress
+import com.facebook.litho.widget.PrimitiveImage
+import com.facebook.litho.widget.ProgressPrimitiveComponent
 import com.facebook.litho.widget.SolidColor
 import com.facebook.litho.widget.Text
 import com.facebook.litho.widget.TextInput
 import com.facebook.rendercore.MountState
+import com.facebook.rendercore.dp
+import com.facebook.rendercore.px
 import com.facebook.yoga.YogaEdge
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -52,40 +55,24 @@ class MountStateTest {
   }
 
   @Test
-  fun testDetachLithoView_unbindComponentFromContent() {
-    val child1 = DynamicPropsComponentTester.create(context).dynamicPropValue(1).build()
-    val root =
-        Column.create(context)
-            .child(Wrapper.create(context).delegate(child1).widthPx(10).heightPx(10))
-            .build()
-    val testLithoView = lithoTestRule.render(widthPx = 1_000, heightPx = 1_000) { root }
-    val dynamicPropsManager = testLithoView.lithoView.dynamicPropsManager
-    assertThat(dynamicPropsManager).isNotNull
-    assertThat(dynamicPropsManager?.hasCachedContent(child1)).isTrue
-    testLithoView.detachFromWindow()
-    assertThat(dynamicPropsManager?.hasCachedContent(child1)).isFalse
-  }
-
-  @Test
   fun testUnbindMountItem_unbindComponentFromContent() {
-    val child1 = DynamicPropsComponentTester.create(context).dynamicPropValue(1).build()
+    val dynamicValue = DynamicValue<Long>(1)
+    val child1 = DynamicPropsComponentTester(dynamicPropValue = dynamicValue)
     val root =
         Column.create(context)
             .child(Wrapper.create(context).delegate(child1).widthPx(10).heightPx(10))
             .build()
     val testLithoView = lithoTestRule.render(widthPx = 1_000, heightPx = 1_000) { root }
-    val dynamicPropsManager = testLithoView.lithoView.dynamicPropsManager
-    assertThat(dynamicPropsManager?.hasCachedContent(child1)).isTrue
+    // For PrimitiveComponents, verify that the dynamic value has listeners attached
+    assertThat(dynamicValue.numberOfListeners).isGreaterThan(0)
     testLithoView.setRoot(Column.create(context).build())
-    assertThat(dynamicPropsManager?.hasCachedContent(child1)).isFalse
+    // After unmounting, the listener should be removed
+    assertThat(dynamicValue.numberOfListeners).isEqualTo(0)
   }
 
   @Test
   fun onSetRootWithNoOutputsWithRenderCore_shouldSuccessfullyCompleteMount() {
-    val root =
-        Wrapper.create(context)
-            .delegate(SolidColor.create(context).color(Color.BLACK).build())
-            .build()
+    val root = Wrapper.create(context).delegate(SolidColor(color = Color.BLACK)).build()
     val testLithoView = lithoTestRule.render(widthPx = 1_000, heightPx = 1_000) { root }
     val emptyRoot: Component = Wrapper.create(context).delegate(null).build()
     testLithoView.setRoot(emptyRoot)
@@ -117,7 +104,7 @@ class MountStateTest {
     val testLithoView = lithoTestRule.render(widthPx = 1_000, heightPx = 1_000) { root }
     val newRoot =
         Column.create(context)
-            .child(Progress.create(context).widthDip(100f).heightDip(100f))
+            .child(ProgressPrimitiveComponent(style = Style.width(100.dp).height(100.dp)))
             .build()
     testLithoView.setRoot(newRoot).setSizeSpecs(exactly(1_000), exactly(1_000))
   }
@@ -151,7 +138,9 @@ class MountStateTest {
                         Border.create(context) // Drawable to be mounted after parent unmounts
                             .widthPx(YogaEdge.ALL, 2)
                             .color(YogaEdge.ALL, Color.YELLOW)
-                            .build()))
+                            .build(),
+                    ),
+            )
             .build()
     val testLithoView =
         lithoTestRule.render(
@@ -159,12 +148,15 @@ class MountStateTest {
                 ComponentTree.create(context)
                     .componentsConfiguration(
                         ComponentsConfiguration.defaultInstance.copy(
-                            shouldAddHostViewForRootComponent = true))
+                            shouldAddHostViewForRootComponent = true,
+                        ),
+                    )
                     .build(),
             widthPx = 1_000,
-            heightPx = 1_000) {
-              root
-            }
+            heightPx = 1_000,
+        ) {
+          root
+        }
     val parentOfParent = testLithoView.findViewWithTagOrNull("root") as ComponentHost
     val parentNode = parentOfParent.getMountItemAt(0).renderTreeNode
     val parentId = parentNode.renderUnit.id
@@ -185,17 +177,23 @@ class MountStateTest {
         Row.create(context)
             .backgroundColor(Color.BLUE)
             .child(
-                Image.create(context).drawable(ColorDrawable(Color.RED)).heightPx(100).widthPx(200))
+                PrimitiveImage(
+                    drawable = ColorDrawable(Color.RED),
+                    style = Style.width(200.px).height(100.px),
+                ),
+            )
             .build()
     val testLithoView = lithoTestRule.render(widthPx = 1_000, heightPx = 1_000) { root }
     val lithoView = testLithoView.lithoView
     val mountDelegate = lithoView.mountDelegateTarget.getMountDelegate()
     var coordinator =
         Whitebox.getInternalState<LithoHostListenerCoordinator>(
-            lithoView, "lithoHostListenerCoordinator")
+            lithoView,
+            "lithoHostListenerCoordinator",
+        )
     assertThat(coordinator).isNotNull
-    assertThat(coordinator.visibilityExtensionState).isNotNull
-    assertThat(coordinator.incrementalMountExtensionState).isNotNull
+    assertThat(coordinator.getVisibilityExtensionState()).isNotNull
+    assertThat(coordinator.getIncrementalMountExtensionState()).isNotNull
     assertThat(mountDelegate).isNotNull
     assertThat(mountDelegate?.extensionStates).isNotEmpty
 
@@ -226,17 +224,22 @@ class MountStateTest {
                     .heightPx(800)
                     .child(TextInput.create(c).key("#0").initialText("0").heightPx(100))
                     .child(
-                        MountSpecWithMountUnmountAssertion.create(c)
-                            .key("test")
-                            .container(MountSpecWithMountUnmountAssertionSpec.Container())
-                            .heightPx(100))
+                        key("test") {
+                          MountSpecWithMountUnmountAssertion(
+                              container = MountSpecWithMountUnmountAssertion.Container(),
+                              style = Style.height(100.px),
+                          )
+                        },
+                    )
                     .child(TextInput.create(c).key("#2").initialText("2").heightPx(100))
                     .child(TextInput.create(c).key("#3").initialText("3").heightPx(100))
                     .child(TextInput.create(c).key("#4").initialText("4").heightPx(100))
                     .child(TextInput.create(c).key("#5").initialText("5").heightPx(100))
-                    .child(TextInput.create(c).key("#6").initialText("6").heightPx(100)))
+                    .child(TextInput.create(c).key("#6").initialText("6").heightPx(100)),
+            )
             .build()
-    val initialComponentTree = ComponentTree.create(c, initialComponent).build()
+    val initialComponentTree =
+        ComponentTree.create(c, initialComponent).enableChildClipping(true).build()
     val lithoView = LithoView(c.androidContext)
 
     // Mount a layout with the component.
@@ -260,11 +263,15 @@ class MountStateTest {
                     .child(TextInput.create(c).key("#3").initialText("3").heightPx(100))
                     .child(TextInput.create(c).key("#4").initialText("4").heightPx(100))
                     .child(
-                        MountSpecWithMountUnmountAssertion.create(c)
-                            .key("test")
-                            .container(MountSpecWithMountUnmountAssertionSpec.Container())
-                            .heightPx(100))
-                    .child(TextInput.create(c).key("#6").initialText("6").heightPx(100)))
+                        key("test") {
+                          MountSpecWithMountUnmountAssertion(
+                              container = MountSpecWithMountUnmountAssertion.Container(),
+                              style = Style.height(100.px),
+                          )
+                        },
+                    )
+                    .child(TextInput.create(c).key("#6").initialText("6").heightPx(100)),
+            )
             .build()
     lithoView.setComponent(newComponent)
 

@@ -35,7 +35,7 @@ class FocusOrderModel(val key: String) {
 }
 
 /** Create multiple [FocusOrderModel]s, which can to be used to specify a focus traversal order. */
-class FocusOrderModelProvider(private val key: String) {
+class FocusOrderModelProvider(private val key: GlobalKey) {
   private val models: MutableMap<Int, FocusOrderModel> = mutableMapOf()
 
   private fun getOrCreate(index: Int): FocusOrderModel =

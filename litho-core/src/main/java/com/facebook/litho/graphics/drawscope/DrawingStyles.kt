@@ -19,12 +19,14 @@ package com.facebook.litho.graphics.drawscope
 import androidx.core.graphics.withSave
 import com.facebook.litho.ComponentHost
 import com.facebook.litho.Style
+import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.binders.ModelWithContext
 import com.facebook.litho.binders.onBindHostView
 import com.facebook.litho.uiStateReadRecords
 import com.facebook.rendercore.graphics.drawscope.CanvasDrawScope
 import com.facebook.rendercore.graphics.drawscope.DrawScope
 
+@ExperimentalLithoApi
 fun Style.drawBehind(block: DrawScope.() -> Unit): Style {
   return this +
       onBindHostView(Unit) { content ->
@@ -36,16 +38,13 @@ fun Style.drawBehind(block: DrawScope.() -> Unit): Style {
         content as ComponentHost
         content.drawBehind = { canvas ->
           uiStateReadsRecords.recordOnDraw(
-              binderId.renderUnitId, binderId.renderUnitDebugDescription) {
-                canvas.withSave {
-                  CanvasDrawScope(
-                          // canvas = canvas,
-                          // context = draw context,
-                          // size = Size(w, h),
-                          )
-                      .block()
-                }
-              }
+              binderId.renderUnitId,
+              binderId.renderUnitDebugDescription,
+          ) {
+            canvas.withSave {
+              CanvasDrawScope(drawContext = content.drawContext, canvas = canvas).block()
+            }
+          }
         }
         onUnbind {
           content.drawBehind = null

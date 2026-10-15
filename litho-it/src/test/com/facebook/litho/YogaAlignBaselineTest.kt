@@ -51,12 +51,14 @@ class YogaAlignBaselineTest {
                               .widthPx(500)
                               .heightPx(800)
                               .child(Column.create(c).widthPx(500).heightPx(300).wrapInView())
-                              .child(Column.create(c).widthPx(500).heightPx(400).wrapInView()))
+                              .child(Column.create(c).widthPx(500).heightPx(400).wrapInView()),
+                      )
                       .alignItems(YogaAlign.BASELINE)
                       .widthPx(1_000)
                       .heightPx(1_000)
                       .build()
-            })
+            },
+        )
     val child0 = lithoView.getChildAt(0)
     val child1Child0 = lithoView.getChildAt(1)
     val child1Child1 = lithoView.getChildAt(2)
@@ -83,12 +85,14 @@ class YogaAlignBaselineTest {
                               .heightPx(800)
                               .child(Column.create(c).widthPx(500).heightPx(300).wrapInView())
                               .child(Column.create(c).widthPx(500).heightPx(400).wrapInView())
-                              .useHeightAsBaseline(true))
+                              .useHeightAsBaseline(true),
+                      )
                       .alignItems(YogaAlign.BASELINE)
                       .widthPx(1_000)
                       .heightPx(1_000)
                       .build()
-            })
+            },
+        )
     val child0 = lithoView.getChildAt(0)
     val child1Child0 = lithoView.getChildAt(1)
     val child1Child1 = lithoView.getChildAt(2)
@@ -114,12 +118,14 @@ class YogaAlignBaselineTest {
                               .widthPx(1_000)
                               .heightPx(800)
                               .child(Column.create(c).widthPx(500).heightPx(300).wrapInView())
-                              .child(Column.create(c).widthPx(500).heightPx(400).wrapInView()))
+                              .child(Column.create(c).widthPx(500).heightPx(400).wrapInView()),
+                      )
                       .alignItems(YogaAlign.BASELINE)
                       .widthPx(2_000)
                       .heightPx(2_000)
                       .build()
-            })
+            },
+        )
     val child0 = lithoView.getChildAt(0)
     val child1Child0 = lithoView.getChildAt(1)
     val child1Child1 = lithoView.getChildAt(2)
@@ -146,12 +152,14 @@ class YogaAlignBaselineTest {
                               .heightPx(800)
                               .child(Column.create(c).widthPx(500).heightPx(300).wrapInView())
                               .child(Column.create(c).widthPx(500).heightPx(400).wrapInView())
-                              .useHeightAsBaseline(true))
+                              .useHeightAsBaseline(true),
+                      )
                       .alignItems(YogaAlign.BASELINE)
                       .widthPx(2_000)
                       .heightPx(2_000)
                       .build()
-            })
+            },
+        )
     val child0 = lithoView.getChildAt(0)
     val child1Child0 = lithoView.getChildAt(1)
     val child1Child1 = lithoView.getChildAt(2)
@@ -182,12 +190,15 @@ class YogaAlignBaselineTest {
                                       .widthPx(500)
                                       .heightPx(400)
                                       .wrapInView()
-                                      .isReferenceBaseline(true)))
+                                      .isReferenceBaseline(true),
+                              ),
+                      )
                       .alignItems(YogaAlign.BASELINE)
                       .widthPx(1_000)
                       .heightPx(1_000)
                       .build()
-            })
+            },
+        )
     val child0 = lithoView.getChildAt(0)
     val child1Child0 = lithoView.getChildAt(1)
     val child1Child1 = lithoView.getChildAt(2)
@@ -218,12 +229,15 @@ class YogaAlignBaselineTest {
                                       .widthPx(500)
                                       .heightPx(400)
                                       .wrapInView()
-                                      .isReferenceBaseline(true)))
+                                      .isReferenceBaseline(true),
+                              ),
+                      )
                       .alignItems(YogaAlign.BASELINE)
                       .widthPx(2_000)
                       .heightPx(2_000)
                       .build()
-            })
+            },
+        )
     val child0 = lithoView.getChildAt(0)
     val child1Child0 = lithoView.getChildAt(1)
     val child1Child1 = lithoView.getChildAt(2)

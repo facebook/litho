@@ -18,11 +18,9 @@ package com.facebook.samples.litho.onboarding
 
 import android.graphics.Typeface
 import android.widget.ImageView
-import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
-import com.facebook.litho.Row
 import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.core.margin
@@ -31,6 +29,8 @@ import com.facebook.litho.core.width
 import com.facebook.litho.flexbox.aspectRatio
 import com.facebook.litho.kotlin.widget.Image
 import com.facebook.litho.kotlin.widget.Text
+import com.facebook.litho.layout.flexbox.Column
+import com.facebook.litho.layout.flexbox.Row
 import com.facebook.rendercore.dp
 import com.facebook.rendercore.drawableRes
 import com.facebook.samples.litho.onboarding.model.Post
@@ -45,14 +45,19 @@ class PostStyledKComponent(val post: Post) : KComponent() {
             child(
                 Image(
                     drawable = drawableRes(post.user.avatarRes),
-                    style = Style.width(36.dp).height(36.dp).margin(start = 4.dp, end = 8.dp)))
+                    style = Style.width(36.dp).height(36.dp).margin(start = 4.dp, end = 8.dp),
+                ),
+            )
             child(Text(text = post.user.username, textStyle = Typeface.BOLD))
-          })
+          },
+      )
       child(
           Image(
               drawable = drawableRes(post.imageRes),
               scaleType = ImageView.ScaleType.CENTER_CROP,
-              style = Style.aspectRatio(1f)))
+              style = Style.aspectRatio(1f),
+          ),
+      )
     }
   }
 }

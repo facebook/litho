@@ -42,7 +42,6 @@ import java.lang.annotation.RetentionPolicy;
  * <ul>
  *   <li>{@link Prop}
  *   <li>{@link TreeProp}
- *   <li>{@link InjectProp}
  *   <li>{@link State}
  *   <li>{@code Output}
  * </ul>
@@ -53,7 +52,10 @@ import java.lang.annotation.RetentionPolicy;
  *
  * <p>For example: <br>
  *
- * <pre><code>{@literal @LayoutSpec}
+ * <pre><code>import android.widget.ImageView.ScaleType;
+ * import com.facebook.litho.widget.PrimitiveImage;
+ *
+ * {@literal @LayoutSpec}
  * class MyComponentSpec {
  *
  *  {@literal @OnCreateLayoutWithSizeSpec}
@@ -75,7 +77,14 @@ import java.lang.annotation.RetentionPolicy;
  *         textOutputSize);
  *
  *     // Small component to use in case textComponent does not fit within the current layout.
- *     final Component imageComponent = Image.create(c).drawableRes(R.drawable.ic_launcher).build();
+ *     final Component imageComponent =
+ *         PrimitiveImage.create(
+ *             c.getResourceResolver().resolveDrawableRes(R.drawable.ic_launcher),
+ *             ScaleType.FIT_CENTER,
+ *             true,
+ *             null,
+ *             null,
+ *             null);
  *
  *     // Assuming SizeSpec.getMode(widthSpec) == EXACTLY or AT_MOST.
  *     final int layoutWidth = SizeSpec.getSize(widthSpec);

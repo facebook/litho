@@ -20,12 +20,12 @@ import android.content.Context
 import android.view.ViewGroup
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
-import com.facebook.litho.ComponentContextUtils.buildDefaultLithoConfiguration
 import com.facebook.litho.NestedLithoTree.commit
 import com.facebook.litho.NestedLithoTree.enqueue
-import com.facebook.litho.NestedLithoTree.runEffects
+import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.annotations.Hook
 import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.effects.EffectContext
 import com.facebook.rendercore.ContentAllocator
 import com.facebook.rendercore.primitives.MountBehavior as PrimitiveMountBehavior
 import com.facebook.rendercore.primitives.MountConfigurationScope
@@ -54,10 +54,13 @@ class PrimitiveComponentScope internal constructor(context: ComponentContext) :
   @Suppress("FunctionName", "NOTHING_TO_INLINE")
   inline fun <ContentType : Any> MountBehavior(
       contentAllocator: ContentAllocator<ContentType>,
-      noinline mountConfigurationCall: MountConfigurationScope<ContentType>.() -> Unit
+      noinline mountConfigurationCall: MountConfigurationScope<ContentType>.() -> Unit,
   ): PrimitiveMountBehavior<ContentType> {
     return PrimitiveMountBehavior(
-        id = createPrimitiveId(), contentAllocator, mountConfigurationCall)
+        id = createPrimitiveId(),
+        contentAllocator,
+        mountConfigurationCall,
+    )
   }
 
   /**
@@ -74,10 +77,14 @@ class PrimitiveComponentScope internal constructor(context: ComponentContext) :
   inline fun <ContentType : Any> MountBehavior(
       noinline description: () -> String,
       contentAllocator: ContentAllocator<ContentType>,
-      noinline mountConfigurationCall: MountConfigurationScope<ContentType>.() -> Unit
+      noinline mountConfigurationCall: MountConfigurationScope<ContentType>.() -> Unit,
   ): PrimitiveMountBehavior<ContentType> {
     return PrimitiveMountBehavior(
-        id = createPrimitiveId(), description, contentAllocator, mountConfigurationCall)
+        id = createPrimitiveId(),
+        description,
+        contentAllocator,
+        mountConfigurationCall,
+    )
   }
 
   /**
@@ -88,13 +95,14 @@ class PrimitiveComponentScope internal constructor(context: ComponentContext) :
    */
   fun <ContentType : Any, T> MountConfigurationScope<ContentType>.bindDynamic(
       dynamicValue: DynamicValue<T>?,
-      bindCall: BindDynamicScope.(ContentType, T) -> UnbindDynamicFunc
+      bindCall: BindDynamicScope.(ContentType, T) -> UnbindDynamicFunc,
   ) {
     val bindDynamicScope = if (dynamicValue != null) BindDynamicScope() else null
     addBinder(
         dynamicValue,
         { content, value -> bindDynamicScope?.bindCall(content, value) },
-        { bindDynamicScope?.unbindDynamicFunc?.onUnbindDynamic() })
+        { bindDynamicScope?.unbindDynamicFunc?.onUnbindDynamic() },
+    )
   }
 
   /**
@@ -106,12 +114,13 @@ class PrimitiveComponentScope internal constructor(context: ComponentContext) :
   fun <ContentType : Any, T> MountConfigurationScope<ContentType>.bindDynamic(
       dynamicValue: DynamicValue<T>?,
       setter: KFunction2<ContentType, T, Any?>,
-      default: T
+      default: T,
   ) {
     addBinder(
         dynamicValue,
         { content, value -> setter(content, value) },
-        { content -> setter(content, default) })
+        { content -> setter(content, default) },
+    )
   }
 
   /**
@@ -123,12 +132,13 @@ class PrimitiveComponentScope internal constructor(context: ComponentContext) :
   fun <ContentType : Any, T> MountConfigurationScope<ContentType>.bindDynamic(
       dynamicValue: DynamicValue<T>?,
       setter: KMutableProperty1<ContentType, T>,
-      default: T
+      default: T,
   ) {
     addBinder(
         dynamicValue,
         { content, value -> setter.set(content, value) },
-        { content -> setter.set(content, default) })
+        { content -> setter.set(content, default) },
+    )
   }
 
   /**
@@ -137,7 +147,7 @@ class PrimitiveComponentScope internal constructor(context: ComponentContext) :
    *
    * @param setter function reference that will set the dynamic value on the content
    */
-  inline fun <ContentType : Any, T> MountConfigurationScope<ContentType>.bindDynamic(
+  fun <ContentType : Any, T> MountConfigurationScope<ContentType>.bindDynamic(
       dynamicValue: DynamicValue<T?>?,
       setter: KFunction2<ContentType, T?, Any?>,
   ) = bindDynamic(dynamicValue, setter, null)
@@ -148,7 +158,7 @@ class PrimitiveComponentScope internal constructor(context: ComponentContext) :
    *
    * @param setter property reference that will set the dynamic value on the content
    */
-  inline fun <ContentType : Any, T> MountConfigurationScope<ContentType>.bindDynamic(
+  fun <ContentType : Any, T> MountConfigurationScope<ContentType>.bindDynamic(
       dynamicValue: DynamicValue<T?>?,
       setter: KMutableProperty1<ContentType, T?>,
   ) = bindDynamic(dynamicValue, setter, null)
@@ -161,18 +171,17 @@ class PrimitiveComponentScope internal constructor(context: ComponentContext) :
   private inline fun <ContentType : Any, T> MountConfigurationScope<ContentType>.addBinder(
       dynamicValue: DynamicValue<T>?,
       crossinline bindCall: (ContentType, T) -> Unit,
-      crossinline unbindCall: (ContentType) -> Unit
+      crossinline unbindCall: (ContentType) -> Unit,
   ) {
     var listener: DynamicValue.OnValueChangeListener<T>? = null
 
     bind(dynamicValue) { content ->
       if (dynamicValue != null) {
         if (listener == null) {
-          listener =
-              DynamicValue.OnValueChangeListener {
-                ThreadUtils.assertMainThread()
-                bindCall(content, dynamicValue.get())
-              }
+          listener = DynamicValue.OnValueChangeListener {
+            ThreadUtils.assertMainThread()
+            bindCall(content, dynamicValue.get())
+          }
         }
         listener?.let { dynamicValue.attachListener(it) }
         bindCall(content, dynamicValue.get())
@@ -192,8 +201,9 @@ class PrimitiveComponentScope internal constructor(context: ComponentContext) :
     // TODO(zielinskim): calculateLayoutOutputId is mutated during resolve/layout and it may race.
     // Ideally, we'd like to replace this hacky solution with something else.
     return context.renderUnitIdGenerator?.calculateLayoutOutputId(
-        context.globalKey, OutputUnitType.CONTENT)
-        ?: throw IllegalStateException("Attempt to use a released RenderStateContext")
+        context.globalKey,
+        OutputUnitType.CONTENT,
+    ) ?: throw IllegalStateException("Attempt to use a released RenderStateContext")
   }
 }
 
@@ -222,8 +232,7 @@ fun <ContentType : ViewGroup> MountConfigurationScope<ContentType>.bindToRenderT
 
   withDescription("litho-tree") {
     bindWithLayoutData<LayoutState>(state) { content, layoutState ->
-      state.commit(layoutState = layoutState)
-      layoutState.runEffects()
+      state.commitAndRunEffects(layoutState)
       content.getRenderTreeView().setLayoutState(layoutState, layoutState.treeState)
       onUnbind {}
     }
@@ -233,12 +242,13 @@ fun <ContentType : ViewGroup> MountConfigurationScope<ContentType>.bindToRenderT
     bind(Unit) { content ->
       onUnbind {
         state.cleanup()
-        content.getRenderTreeView().cleanup()
+        content.getRenderTreeView().clean()
       }
     }
   }
 }
 
+@OptIn(ExperimentalLithoApi::class)
 @Hook
 fun PrimitiveComponentScope.useNestedTree(
     androidContext: Context = context.androidContext,
@@ -247,57 +257,60 @@ fun PrimitiveComponentScope.useNestedTree(
     treeProps: TreePropContainer? = context.treePropContainer,
 ): Pair<NestedLithoTreeState, ResolveResult> {
 
-  // Any() is used ensure state updates are always
-  // requested, and not skipped due to duplicate checks.
-  val stateForSync = useState { Any() }
+  // Any() ensures state updates are always requested, and not skipped due to duplicate checks.
+  // The state is also read explicitly to force resolve whenever the value changes.
+  val stateForSync = useState { Any() }.also { it.value }
   val errorComponentRef = useState { AtomicReference<Component?>(null) }
 
   val nestedTreeState = useState { NestedLithoTreeState(treeState = TreeState()) }.value
   val lithoConfig =
-      useCached(config) {
-        buildDefaultLithoConfiguration(
-            context = androidContext,
-            componentsConfig = config,
-            renderUnitIdGenerator = RenderUnitIdGenerator(nestedTreeState.id),
-        )
-      }
+      useStateWithDeps(config, nestedTreeState.id) {
+            LithoConfiguration(
+                context = androidContext,
+                componentsConfig = config,
+                renderUnitIdGenerator = RenderUnitIdGenerator(nestedTreeState.id),
+            )
+          }
+          .value
   val lithoTree =
-      useCached(nestedTreeState.id) {
-        val stateUpdater =
-            NestedStateUpdater(nestedTreeState::treeState) { update ->
-              nestedTreeState.enqueue(update)
-              when {
-                update.isLazy -> {} // No-Op
-                !update.isAsync -> stateForSync.updateSync(Any())
-                else -> stateForSync.update(Any())
-              }
-            }
-        LithoTree(
-            id = nestedTreeState.id,
-            stateProvider = stateUpdater,
-            stateUpdater = stateUpdater,
-            rootHost = nestedTreeState.mountedViewReference,
-            errorComponentReceiver = { errorComponentRef.update(AtomicReference(it)) },
-            treeLifecycle = nestedTreeState.treeLifecycleProvider,
-            uiStateReadRecordsProvider = {
-              val host = nestedTreeState.mountedViewReference.mountedView
-              check(host is BaseMountingView) {
-                "Trying to get UI state read records without a set host"
-              }
-              host.uiStateReadRecords
-            })
-      }
-  val componentContext =
-      ComponentContext(
-          androidContext,
-          treeProps,
-          lithoConfig,
-          lithoTree,
-          "nested-tree-root",
-          context.lithoVisibilityEventsController,
-          null,
-          null,
-      )
+      useStateWithDeps(nestedTreeState.id) {
+            val stateUpdater =
+                NestedStateUpdater(nestedTreeState.id, nestedTreeState::treeState) { update ->
+                  nestedTreeState.enqueue(update)
+                  when {
+                    update.isLazy -> {} // No-Op
+                    !update.isAsync -> stateForSync.updateSync(Any())
+                    else -> stateForSync.update(Any())
+                  }
+                }
+            LithoTree(
+                id = nestedTreeState.id,
+                stateProvider = stateUpdater,
+                stateUpdater = stateUpdater,
+                rootHost = nestedTreeState.mountedViewReference,
+                errorComponentReceiver = { errorComponentRef.update(AtomicReference(it)) },
+                treeLifecycle = nestedTreeState.treeLifecycleProvider,
+                uiStateReadRecordsProvider = {
+                  val host = nestedTreeState.mountedViewReference.mountedView
+                  check(host is BaseMountingView) {
+                    "Trying to get UI state read records without a set host"
+                  }
+                  host.uiStateReadRecords
+                },
+                isReadTrackingEnabled = config.enableStateReadTracking,
+            )
+          }
+          .value
+  val componentContext = ComponentContext(
+      androidContext,
+      treeProps,
+      lithoConfig,
+      lithoTree,
+      StringGlobalKey("nested-tree-root"),
+      context.lithoVisibilityEventsController,
+      null,
+      null,
+  )
 
   val errorComponent = errorComponentRef.value.getAndSet(null)
   val currentResolveResult = nestedTreeState.currentResolveResult
@@ -310,6 +323,7 @@ fun PrimitiveComponentScope.useNestedTree(
           treeProps,
           nestedTreeState.getUpdatedState(),
           currentResolveResult,
+          resolveVersion,
       )
 
   return Pair(nestedTreeState, result)
@@ -326,7 +340,7 @@ data class NestedLithoTreeState(
   val mountedViewReference: NestedMountedViewReference = NestedMountedViewReference()
   val treeLifecycleProvider: NestedLithoTreeLifecycleProvider = NestedLithoTreeLifecycleProvider()
 
-  fun enqueue(update: PendingStateUpdate<*>) {
+  fun enqueue(update: PendingStateUpdate) {
     synchronized(this) { treeState?.enqueue(update) }
   }
 
@@ -334,8 +348,60 @@ data class NestedLithoTreeState(
     return synchronized(this) { TreeState(treeState) }
   }
 
-  fun commit(layoutState: LayoutState) {
+  fun commitAndRunEffects(layoutState: LayoutState): Boolean {
+    val previousLayoutState = currentLayoutState
+    val updatedStates = layoutState.resolveResult.updatedStates
+    val effectContext =
+        EffectContext(id, layoutState.componentContext.isReadTrackingEnabled, updatedStates)
+    var effectRunnable: Runnable? = null
+    var commitSucceeded = false
+    try {
+      commitSucceeded =
+          commit(layoutState = layoutState) {
+            // updateEffects() mutates the EffectHandler's internal state, so it must run only
+            // after stale layouts are rejected. It must still run before committing new tree state
+            // because outgoing effect cleanup observes the previously committed state.
+            with(layoutState.treeState.effectsHandler) {
+              effectRunnable = effectContext.updateEffects(layoutState.attachables)
+            }
+          }
+    } finally {
+      // Close InitialStateScopes after commit or failure. On success,
+      // commitResolveState/commitLayoutState already closed (idempotent double-close
+      // is harmless). On exception or stale rejection, this ensures cleanup.
+      layoutState.resolveResult.treeState.scope?.close()
+      layoutState.treeState.scope?.close()
+
+      // Only run effects if commit succeeded - don't run effects for stale/rejected commits.
+      if (commitSucceeded) {
+        effectRunnable?.run()
+        // Carry forward unconsumed mount updates from previous layout
+        val previousUnconsumed = previousLayoutState?.treeState?.consumeMountUpdates() ?: emptySet()
+        layoutState.treeState.addMountUpdates(updatedStates + previousUnconsumed)
+      }
+    }
+    return commitSucceeded
+  }
+
+  private inline fun commit(layoutState: LayoutState, beforeCommit: () -> Unit): Boolean {
     synchronized(this) {
+      // Only reject if versions are strictly older (stale results)
+      // Equal versions are allowed because resolve() may return cached results
+      val committedResolve = currentResolveResult
+      val committedLayout = currentLayoutState
+
+      val isStaleResolve =
+          committedResolve != null && layoutState.resolveResult.version < committedResolve.version
+      val isStaleLayout = committedLayout != null && layoutState.version < committedLayout.version
+
+      if (isStaleResolve || isStaleLayout) {
+        // Reject stale results to prevent race conditions.
+        // Unregister is handled by the finally block in commitAndRunEffects.
+        return false
+      }
+
+      beforeCommit()
+
       treeState?.apply {
         commitResolveState(layoutState.resolveResult.treeState)
         commitLayoutState(layoutState.treeState)
@@ -345,12 +411,13 @@ data class NestedLithoTreeState(
 
       // commit the layout state
       layoutState.commit()
+      return true
     }
   }
 
   fun cleanup() {
     synchronized(this) {
-      treeState?.effectsHandler?.onDetached(id)
+      treeState?.effectsHandler?.onCleanup()
       treeLifecycleProvider.release()
       treeState = null
       currentResolveResult = null

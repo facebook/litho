@@ -16,19 +16,27 @@
 
 package com.facebook.litho.widget
 
-import android.R
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.Rect
+import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.text.Layout
 import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.TextPaint
 import android.text.TextUtils
 import android.text.style.ClickableSpan
+import android.text.style.ImageSpan
 import android.view.MotionEvent
 import android.view.View
+import androidx.annotation.RequiresApi
 import androidx.core.text.TextDirectionHeuristicCompat
 import androidx.core.text.TextDirectionHeuristicsCompat
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.DynamicValue
@@ -45,6 +53,7 @@ import com.facebook.rendercore.text.ClickableSpanListener
 import com.facebook.rendercore.text.TouchableSpanListener
 import com.facebook.yoga.YogaDirection
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.After
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Rule
@@ -54,35 +63,54 @@ import org.mockito.ArgumentMatchers
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
-/** Tests [Text] component. */
+/**
+ * Tests [Text] component's legacy implementation ([TextComponentSpec]), which most cases reach into
+ * directly (its drawable, layout and accessibility hooks). Primitive Text is covered by the parity
+ * tests, which run each case with both implementations.
+ */
 @RunWith(LithoTestRunner::class)
 class TextSpecTest {
   private var context: ComponentContext? = null
+  private var previousUsePrimitiveText = false
 
   @JvmField @Rule var lithoTestRule = LithoTestRule()
 
   @Before
   fun setup() {
+    previousUsePrimitiveText = ComponentsConfiguration.usePrimitiveText
+    ComponentsConfiguration.usePrimitiveText = false
     context = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
   }
 
-  private class TestMountableCharSequence : MountableCharSequence {
+  @After
+  fun tearDown() {
+    ComponentsConfiguration.usePrimitiveText = previousUsePrimitiveText
+  }
+
+  private class TestMountableCharSequence(
+      private val value: String = "",
+  ) : MountableCharSequence {
     var mountDrawable: Drawable? = null
+    var unmountDrawable: Drawable? = null
 
     override fun onMount(parent: Drawable) {
       mountDrawable = parent
     }
 
-    override fun onUnmount(parent: Drawable) = Unit
-
-    override val length: Int
-      get() = 0
-
-    override fun get(index: Int): Char {
-      return 0.toChar()
+    override fun onUnmount(parent: Drawable) {
+      unmountDrawable = parent
     }
 
-    override fun subSequence(start: Int, end: Int): CharSequence = ""
+    override val length: Int
+      get() = value.length
+
+    override fun get(index: Int): Char {
+      return value[index]
+    }
+
+    override fun subSequence(start: Int, end: Int): CharSequence = value.subSequence(start, end)
+
+    override fun toString(): String = value
   }
 
   @Test
@@ -108,10 +136,38 @@ class TextSpecTest {
         },
         0,
         1,
-        0)
+        0,
+    )
 
     val drawable = getMountedDrawableForText(clickableText)
     assertThat(drawable.clickableSpans).isNotNull().hasSize(1)
+  }
+
+  @Test
+  fun testStaleAccessibilityNodeFallbackForPlainText() {
+    val previousValue = ComponentsConfiguration.enableInvalidAccessibilityVirtualNodeFix
+    val node = AccessibilityNodeInfoCompat.obtain()
+
+    try {
+      ComponentsConfiguration.enableInvalidAccessibilityVirtualNodeFix = true
+      TextComponentSpec.onPopulateExtraAccessibilityNode(
+          context,
+          node,
+          0,
+          0,
+          0,
+          "plain text",
+          mock<Layout>(),
+          emptyArray(),
+      )
+
+      val bounds = Rect()
+      node.getBoundsInParent(bounds)
+      assertThat(node.contentDescription).isEqualTo("")
+      assertThat(bounds).isEqualTo(Rect(0, 0, 1, 1))
+    } finally {
+      ComponentsConfiguration.enableInvalidAccessibilityVirtualNodeFix = previousValue
+    }
   }
 
   @Test
@@ -141,7 +197,7 @@ class TextSpecTest {
   private fun setupClickableSpanTest(
       text: String,
       eventsFired: ArrayList<Int>,
-      touchableSpanListener: TouchableSpanListener
+      touchableSpanListener: TouchableSpanListener,
   ): LithoView {
     val clickableText = Spannable.Factory.getInstance().newSpannable(text)
     val clickableSpan: ClickableSpan =
@@ -158,7 +214,8 @@ class TextSpecTest {
             Text.create(context)
                 .text(clickableText)
                 .touchableSpanListener(touchableSpanListener)
-                .build())
+                .build(),
+        )
 
     return lithoView
   }
@@ -202,9 +259,11 @@ class TextSpecTest {
           true
         }
 
-    val lithoView =
-        setupClickableSpanTest(
-            "Some text that is really long and has two spans.", eventsFired, touchableSpanListener)
+    val lithoView = setupClickableSpanTest(
+        "Some text that is really long and has two spans.",
+        eventsFired,
+        touchableSpanListener,
+    )
 
     val textDrawable = lithoView.drawables[0] as TextDrawable
     // click on the span
@@ -255,7 +314,8 @@ class TextSpecTest {
             Text.create(context)
                 .text(clickableText)
                 .touchableSpanListener(touchableSpanListener)
-                .build())
+                .build(),
+        )
 
     val textDrawable = lithoView.drawables[0] as TextDrawable
     // click on the span
@@ -283,9 +343,11 @@ class TextSpecTest {
           true
         }
 
-    val lithoView =
-        setupClickableSpanTest(
-            "Some text that is really long and has two spans.", eventsFired, touchableSpanListener)
+    val lithoView = setupClickableSpanTest(
+        "Some text that is really long and has two spans.",
+        eventsFired,
+        touchableSpanListener,
+    )
 
     val textDrawable = lithoView.drawables[0] as TextDrawable
     // click on the span
@@ -313,9 +375,11 @@ class TextSpecTest {
           true
         }
 
-    val lithoView =
-        setupClickableSpanTest(
-            "Some text that is really long and has two spans.", eventsFired, touchableSpanListener)
+    val lithoView = setupClickableSpanTest(
+        "Some text that is really long and has two spans.",
+        eventsFired,
+        touchableSpanListener,
+    )
 
     val textDrawable = lithoView.drawables[0] as TextDrawable
     // click on the span
@@ -336,7 +400,7 @@ class TextSpecTest {
       y: Float,
       expectedHandled: Boolean,
       expectedReturnValue: Boolean,
-      spanShouldBeNull: Boolean
+      spanShouldBeNull: Boolean,
   ) {
     val cancelEventFired = booleanArrayOf(false)
 
@@ -368,7 +432,8 @@ class TextSpecTest {
             Text.create(context)
                 .text(clickableText)
                 .touchableSpanListener(touchableSpanListener)
-                .build())
+                .build(),
+        )
 
     val textDrawable = lithoView.drawables[0] as TextDrawable
     val cancelEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_CANCEL, x, y, 0)
@@ -410,19 +475,18 @@ class TextSpecTest {
         }
     clickableText.setSpan(clickableSpan, 0, text.length, 0)
 
-    val testLithoView =
-        lithoTestRule.render {
-          Text.create(context)
-              .text(clickableText)
-              .viewTag("test")
-              .touchableSpanListener(touchableSpanListener)
-              .spanListener(clickableSpanListener)
-              .build()
-        }
+    val testLithoView = lithoTestRule.render {
+      Text.create(context)
+          .text(clickableText)
+          .viewTag("test")
+          .touchableSpanListener(touchableSpanListener)
+          .spanListener(clickableSpanListener)
+          .build()
+    }
 
     val view = testLithoView.findViewWithText("hello world")
     val downEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0f, 0f, 0)
-    var onTouchEventReturnValue = view.onTouchEvent(downEvent)
+    var onTouchEventReturnValue = view.dispatchTouchEvent(downEvent)
     // we touched the span and will return true to continue getting subsequent events related to the
     // initial touch.
     assertThat(onTouchEventReturnValue).isTrue()
@@ -432,7 +496,7 @@ class TextSpecTest {
     eventsFired.clear()
 
     val upEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 0f, 0f, 0)
-    onTouchEventReturnValue = view.onTouchEvent(upEvent)
+    onTouchEventReturnValue = view.dispatchTouchEvent(upEvent)
     // because we are getting  subsequent events related to the initial touch, we will receive up
     // event that will trigger ClickableSpanListener -> with return value = false and will trigger
     // the ClickableSpan.onClick()
@@ -470,19 +534,18 @@ class TextSpecTest {
         }
     clickableText.setSpan(clickableSpan, 0, text.length, 0)
 
-    val testLithoView =
-        lithoTestRule.render {
-          Text.create(context)
-              .text(clickableText)
-              .viewTag("test")
-              .touchableSpanListener(touchableSpanListener)
-              .spanListener(clickableSpanListener)
-              .build()
-        }
+    val testLithoView = lithoTestRule.render {
+      Text.create(context)
+          .text(clickableText)
+          .viewTag("test")
+          .touchableSpanListener(touchableSpanListener)
+          .spanListener(clickableSpanListener)
+          .build()
+    }
 
     val view = testLithoView.findViewWithText("hello world")
     val downEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0f, 0f, 0)
-    var onTouchEventReturnValue = view.onTouchEvent(downEvent)
+    var onTouchEventReturnValue = view.dispatchTouchEvent(downEvent)
     // we touched the span and will return true to continue getting subsequent events related to the
     // initial touch.
     assertThat(onTouchEventReturnValue).isTrue()
@@ -492,7 +555,7 @@ class TextSpecTest {
     eventsFired.clear()
 
     val upEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 0f, 0f, 0)
-    onTouchEventReturnValue = view.onTouchEvent(upEvent)
+    onTouchEventReturnValue = view.dispatchTouchEvent(upEvent)
     // because we are getting  subsequent events related to the initial touch, we will receive up
     // event that will trigger ClickableSpanListener -> with return value = true and we wont trigger
     // the ClickableSpan.onClick()
@@ -510,19 +573,144 @@ class TextSpecTest {
   }
 
   @Test
+  fun testMountableCharSequenceTextWithCustomEllipsis() {
+    val testMountableCharSequence = TestMountableCharSequence("A long caption")
+    val processedText = TextUtils.concat(testMountableCharSequence.subSequence(0, 6), "… more")
+    val drawable = TextDrawable()
+
+    TextComponentSpec.onMount(
+        c = checkNotNull(context),
+        textDrawable = drawable,
+        text = testMountableCharSequence,
+        textColor = 0,
+        highlightColor = 0,
+        outlineWidth = 0f,
+        outlineColor = 0,
+        textColorStateList = null,
+        textOffsetOnTouchHandler = null,
+        highlightStartOffset = -1,
+        highlightEndOffset = -1,
+        clickableSpanExpandedOffset = 0f,
+        clipToBounds = true,
+        spanListener = null,
+        touchableSpanListener = null,
+        processedText = processedText,
+        textLayout = null,
+        textLayoutTranslationX = null,
+        textLayoutTranslationY = null,
+        clickableSpans = null,
+        imageSpans = null,
+        isExplicitlyTruncated = true,
+    )
+
+    assertThat(drawable.text).isSameAs(processedText)
+    assertThat<Drawable?>(testMountableCharSequence.mountDrawable).isSameAs(drawable)
+
+    TextComponentSpec.onUnmount(context, drawable, testMountableCharSequence)
+    assertThat<Drawable?>(testMountableCharSequence.unmountDrawable).isSameAs(drawable)
+  }
+
+  @RequiresApi(Build.VERSION_CODES.M)
+  @Test
+  fun testCustomEllipsisDoesNotSplitReplacementSpan() {
+    val text = SpannableStringBuilder("aXY😀b")
+    val sticker = ColorDrawable().apply { setBounds(0, 0, 76, 20) }
+    text.setSpan(ImageSpan(sticker), 1, 3, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+    val layout = mock<Layout>()
+    val ellipsisLayout = mock<Layout>()
+    val paint = mock<TextPaint>()
+    whenever(layout.paint).thenReturn(paint)
+    whenever(layout.getLineStart(0)).thenReturn(0)
+    whenever(layout.getLineEnd(0)).thenReturn(text.length)
+    whenever(layout.getPrimaryHorizontal(1)).thenReturn(10f)
+    whenever(layout.getPrimaryHorizontal(3)).thenReturn(70f)
+    fun truncateAt(ellipsisTarget: Float, offset: Int, isRtl: Boolean = false): CharSequence {
+      val ellipsisWidth = if (isRtl) ellipsisTarget else 80f - ellipsisTarget
+      val advance =
+          if (isRtl && ComponentsConfiguration.fixRtlCustomEllipsisTruncation) {
+            80f - ellipsisTarget
+          } else {
+            ellipsisTarget
+          }
+      whenever(ellipsisLayout.getLineWidth(0)).thenReturn(ellipsisWidth)
+      whenever(
+          paint.getOffsetForAdvance(
+              text,
+              0,
+              text.length,
+              0,
+              text.length,
+              isRtl,
+              advance,
+          ),
+      )
+          .thenReturn(offset)
+      return TextComponentSpec.truncateText(
+          text,
+          "… more",
+          layout,
+          ellipsisLayout,
+          0,
+          80f,
+          !isRtl,
+          isRtl,
+      )
+    }
+
+    val truncatedText = truncateAt(ellipsisTarget = 40f, offset = 3) as Spanned
+
+    assertThat(truncatedText.toString()).endsWith("… more")
+    assertThat(truncatedText.getSpans(0, truncatedText.length, ImageSpan::class.java)).isEmpty()
+
+    val textKeepingSpan = truncateAt(ellipsisTarget = 70f, offset = 3) as Spanned
+    val retainedSpans = textKeepingSpan.getSpans(0, textKeepingSpan.length, ImageSpan::class.java)
+    assertThat(retainedSpans).hasSize(1)
+    assertThat(textKeepingSpan.getSpanStart(retainedSpans[0])).isEqualTo(1)
+    assertThat(textKeepingSpan.getSpanEnd(retainedSpans[0])).isEqualTo(3)
+
+    val textWithOffsetInsideSpan = truncateAt(ellipsisTarget = 75f, offset = 2) as Spanned
+    assertThat(
+        textWithOffsetInsideSpan.getSpans(
+            0,
+            textWithOffsetInsideSpan.length,
+            ImageSpan::class.java,
+        ),
+    )
+        .isEmpty()
+
+    whenever(layout.getPrimaryHorizontal(1)).thenReturn(70f)
+    whenever(layout.getPrimaryHorizontal(3)).thenReturn(10f)
+    val rtlTruncatedText = truncateAt(ellipsisTarget = 40f, offset = 3, isRtl = true) as Spanned
+    assertThat(
+        rtlTruncatedText.getSpans(
+            0,
+            rtlTruncatedText.length,
+            ImageSpan::class.java,
+        ),
+    )
+        .isEmpty()
+
+    whenever(layout.getPrimaryHorizontal(1)).thenReturn(10f)
+    whenever(layout.getPrimaryHorizontal(3)).thenReturn(70f)
+    assertThat(truncateAt(ellipsisTarget = 40f, offset = 0)).isSameAs(text)
+  }
+
+  @Test
   fun testTouchOffsetChangeHandlerFired() {
     val eventFired = booleanArrayOf(false)
     val eventHandler =
         EventHandlerTestHelper.createMockEventHandler<TextOffsetOnTouchEvent, Void>(
-            TextOffsetOnTouchEvent::class.java) {
-              eventFired[0] = true
-              null
-            }
+            TextOffsetOnTouchEvent::class.java,
+        ) {
+          eventFired[0] = true
+          null
+        }
 
     val lithoView =
         ComponentTestHelper.mountComponent(
             context,
-            Text.create(context).text("Some text").textOffsetOnTouchHandler(eventHandler).build())
+            Text.create(context).text("Some text").textOffsetOnTouchHandler(eventHandler).build(),
+        )
     val textDrawable = lithoView.drawables[0] as TextDrawable
     val motionEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0f, 0f, 0)
     val handled = textDrawable.onTouchEvent(motionEvent, lithoView)
@@ -536,15 +724,17 @@ class TextSpecTest {
     val eventFired = booleanArrayOf(false)
     val eventHandler =
         EventHandlerTestHelper.createMockEventHandler<TextOffsetOnTouchEvent, Void>(
-            TextOffsetOnTouchEvent::class.java) {
-              eventFired[0] = true
-              null
-            }
+            TextOffsetOnTouchEvent::class.java,
+        ) {
+          eventFired[0] = true
+          null
+        }
 
     val lithoView =
         ComponentTestHelper.mountComponent(
             context,
-            Text.create(context).text("Text2").textOffsetOnTouchHandler(eventHandler).build())
+            Text.create(context).text("Text2").textOffsetOnTouchHandler(eventHandler).build(),
+        )
 
     val textDrawable = lithoView.drawables[0] as TextDrawable
 
@@ -591,12 +781,13 @@ class TextSpecTest {
 
   @Test
   fun testColorStateListMultipleStates() {
-    val colorStateList =
-        ColorStateList(
-            arrayOf(
-                intArrayOf(-R.attr.state_enabled), // disabled state
-                intArrayOf()),
-            intArrayOf(Color.RED, Color.GREEN))
+    val colorStateList = ColorStateList(
+        arrayOf(
+            intArrayOf(-android.R.attr.state_enabled), // disabled state
+            intArrayOf(),
+        ),
+        intArrayOf(Color.RED, Color.GREEN),
+    )
     val drawable = getMountedDrawableForTextWithColors("Some text", 0, colorStateList)
 
     // color should fallback to default state
@@ -612,7 +803,7 @@ class TextSpecTest {
   private fun getMountedDrawableForTextWithColors(
       text: CharSequence,
       color: Int,
-      colorStateList: ColorStateList?
+      colorStateList: ColorStateList?,
   ): TextDrawable {
     val builder = Text.create(context).text(text)
     if (color != 0) {
@@ -628,9 +819,12 @@ class TextSpecTest {
   fun testFullWidthText() {
     val layout = setupWidthTestTextLayout()
 
-    val resolvedWidth =
-        resolveWidth(
-            unspecified(), layout, false, /* minimallyWide */ 0 /* minimallyWideThreshold */)
+    val resolvedWidth = resolveWidth(
+        unspecified(),
+        layout,
+        false, /* minimallyWide */
+        0, /* minimallyWideThreshold */
+    )
 
     assertThat(resolvedWidth.toLong()).isEqualTo(FULL_TEXT_WIDTH.toLong())
   }
@@ -639,12 +833,12 @@ class TextSpecTest {
   fun testMinimallyWideText() {
     val layout = setupWidthTestTextLayout()
 
-    val resolvedWidth =
-        resolveWidth(
-            unspecified(),
-            layout,
-            true, /* minimallyWide */
-            FULL_TEXT_WIDTH - MINIMAL_TEXT_WIDTH - 1 /* minimallyWideThreshold */)
+    val resolvedWidth = resolveWidth(
+        unspecified(),
+        layout,
+        true, /* minimallyWide */
+        FULL_TEXT_WIDTH - MINIMAL_TEXT_WIDTH - 1, /* minimallyWideThreshold */
+    )
 
     assertThat(resolvedWidth.toLong()).isEqualTo(MINIMAL_TEXT_WIDTH.toLong())
   }
@@ -653,12 +847,12 @@ class TextSpecTest {
   fun testMinimallyWideThresholdText() {
     val layout = setupWidthTestTextLayout()
 
-    val resolvedWidth =
-        resolveWidth(
-            unspecified(),
-            layout,
-            true, /* minimallyWide */
-            FULL_TEXT_WIDTH - MINIMAL_TEXT_WIDTH /* minimallyWideThreshold */)
+    val resolvedWidth = resolveWidth(
+        unspecified(),
+        layout,
+        true, /* minimallyWide */
+        FULL_TEXT_WIDTH - MINIMAL_TEXT_WIDTH, /* minimallyWideThreshold */
+    )
 
     assertThat(resolvedWidth.toLong()).isEqualTo(FULL_TEXT_WIDTH.toLong())
   }
@@ -666,160 +860,274 @@ class TextSpecTest {
   @Test
   fun testTextAlignment_textStart() {
     assertThat(
-            getMountedDrawableLayoutAlignment(
-                "asdf", YogaDirection.LTR, null, TextAlignment.TEXT_START))
+        getMountedDrawableLayoutAlignment(
+            "asdf",
+            YogaDirection.LTR,
+            null,
+            TextAlignment.TEXT_START,
+        ),
+    )
         .isEqualTo(Layout.Alignment.ALIGN_NORMAL)
 
     assertThat(
-            getMountedDrawableLayoutAlignment(
-                "asdf", YogaDirection.RTL, null, TextAlignment.TEXT_START))
+        getMountedDrawableLayoutAlignment(
+            "asdf",
+            YogaDirection.RTL,
+            null,
+            TextAlignment.TEXT_START,
+        ),
+    )
         .isEqualTo(Layout.Alignment.ALIGN_NORMAL)
 
     // Layout.Alignment.ALIGN_NORMAL is mapped to TextAlignment.TEXT_START
     assertThat(
-            getMountedDrawableLayoutAlignment(
-                "asdf", YogaDirection.LTR, Layout.Alignment.ALIGN_NORMAL, null))
+        getMountedDrawableLayoutAlignment(
+            "asdf",
+            YogaDirection.LTR,
+            Layout.Alignment.ALIGN_NORMAL,
+            null,
+        ),
+    )
         .isEqualTo(Layout.Alignment.ALIGN_NORMAL)
 
     assertThat(
-            getMountedDrawableLayoutAlignment(
-                "asdf", YogaDirection.RTL, Layout.Alignment.ALIGN_NORMAL, null))
+        getMountedDrawableLayoutAlignment(
+            "asdf",
+            YogaDirection.RTL,
+            Layout.Alignment.ALIGN_NORMAL,
+            null,
+        ),
+    )
         .isEqualTo(Layout.Alignment.ALIGN_NORMAL)
   }
 
   @Test
   fun testTextAlignment_textEnd() {
     assertThat(
-            getMountedDrawableLayoutAlignment(
-                "asdf", YogaDirection.LTR, null, TextAlignment.TEXT_END))
+        getMountedDrawableLayoutAlignment(
+            "asdf",
+            YogaDirection.LTR,
+            null,
+            TextAlignment.TEXT_END,
+        ),
+    )
         .isEqualTo(Layout.Alignment.ALIGN_OPPOSITE)
 
     assertThat(
-            getMountedDrawableLayoutAlignment(
-                "asdf", YogaDirection.RTL, null, TextAlignment.TEXT_END))
+        getMountedDrawableLayoutAlignment(
+            "asdf",
+            YogaDirection.RTL,
+            null,
+            TextAlignment.TEXT_END,
+        ),
+    )
         .isEqualTo(Layout.Alignment.ALIGN_OPPOSITE)
 
     // Layout.Alignment.ALIGN_OPPOSITE is mapped to TextAlignment.TEXT_END
     assertThat(
-            getMountedDrawableLayoutAlignment(
-                "asdf", YogaDirection.LTR, Layout.Alignment.ALIGN_OPPOSITE, null))
+        getMountedDrawableLayoutAlignment(
+            "asdf",
+            YogaDirection.LTR,
+            Layout.Alignment.ALIGN_OPPOSITE,
+            null,
+        ),
+    )
         .isEqualTo(Layout.Alignment.ALIGN_OPPOSITE)
 
     assertThat(
-            getMountedDrawableLayoutAlignment(
-                "asdf", YogaDirection.RTL, Layout.Alignment.ALIGN_OPPOSITE, null))
+        getMountedDrawableLayoutAlignment(
+            "asdf",
+            YogaDirection.RTL,
+            Layout.Alignment.ALIGN_OPPOSITE,
+            null,
+        ),
+    )
         .isEqualTo(Layout.Alignment.ALIGN_OPPOSITE)
   }
 
   @Test
   fun testTextAlignment_center() {
     assertThat(
-            getMountedDrawableLayoutAlignment(
-                "asdf", YogaDirection.LTR, null, TextAlignment.CENTER))
+        getMountedDrawableLayoutAlignment("asdf", YogaDirection.LTR, null, TextAlignment.CENTER),
+    )
         .isEqualTo(Layout.Alignment.ALIGN_CENTER)
 
     assertThat(
-            getMountedDrawableLayoutAlignment(
-                "asdf", YogaDirection.RTL, null, TextAlignment.CENTER))
+        getMountedDrawableLayoutAlignment("asdf", YogaDirection.RTL, null, TextAlignment.CENTER),
+    )
         .isEqualTo(Layout.Alignment.ALIGN_CENTER)
 
     // Layout.Alignment.ALIGN_CENTER is mapped to TextAlignment.CENTER
     assertThat(
-            getMountedDrawableLayoutAlignment(
-                "asdf", YogaDirection.LTR, Layout.Alignment.ALIGN_CENTER, null))
+        getMountedDrawableLayoutAlignment(
+            "asdf",
+            YogaDirection.LTR,
+            Layout.Alignment.ALIGN_CENTER,
+            null,
+        ),
+    )
         .isEqualTo(Layout.Alignment.ALIGN_CENTER)
 
     assertThat(
-            getMountedDrawableLayoutAlignment(
-                "asdf", YogaDirection.RTL, Layout.Alignment.ALIGN_CENTER, null))
+        getMountedDrawableLayoutAlignment(
+            "asdf",
+            YogaDirection.RTL,
+            Layout.Alignment.ALIGN_CENTER,
+            null,
+        ),
+    )
         .isEqualTo(Layout.Alignment.ALIGN_CENTER)
   }
 
   @Test
   fun testTextAlignment_layoutStart() {
     assertThat(
-            getMountedDrawableLayoutAlignment(
-                "asdf", YogaDirection.LTR, null, TextAlignment.LAYOUT_START))
+        getMountedDrawableLayoutAlignment(
+            "asdf",
+            YogaDirection.LTR,
+            null,
+            TextAlignment.LAYOUT_START,
+        ),
+    )
         .isEqualTo(Layout.Alignment.ALIGN_NORMAL)
 
     assertThat(
-            getMountedDrawableLayoutAlignment(
-                "asdf", YogaDirection.RTL, null, TextAlignment.LAYOUT_START))
+        getMountedDrawableLayoutAlignment(
+            "asdf",
+            YogaDirection.RTL,
+            null,
+            TextAlignment.LAYOUT_START,
+        ),
+    )
         .isEqualTo(Layout.Alignment.ALIGN_OPPOSITE)
 
     assertThat(
-            getMountedDrawableLayoutAlignment(
-                ARABIC_RTL_TEST_STRING, YogaDirection.LTR, null, TextAlignment.LAYOUT_START))
+        getMountedDrawableLayoutAlignment(
+            ARABIC_RTL_TEST_STRING,
+            YogaDirection.LTR,
+            null,
+            TextAlignment.LAYOUT_START,
+        ),
+    )
         .isEqualTo(Layout.Alignment.ALIGN_OPPOSITE)
 
     assertThat(
-            getMountedDrawableLayoutAlignment(
-                ARABIC_RTL_TEST_STRING, YogaDirection.RTL, null, TextAlignment.LAYOUT_START))
+        getMountedDrawableLayoutAlignment(
+            ARABIC_RTL_TEST_STRING,
+            YogaDirection.RTL,
+            null,
+            TextAlignment.LAYOUT_START,
+        ),
+    )
         .isEqualTo(Layout.Alignment.ALIGN_NORMAL)
   }
 
   @Test
   fun testTextAlignment_layoutEnd() {
     assertThat(
-            getMountedDrawableLayoutAlignment(
-                "asdf", YogaDirection.LTR, null, TextAlignment.LAYOUT_END))
+        getMountedDrawableLayoutAlignment(
+            "asdf",
+            YogaDirection.LTR,
+            null,
+            TextAlignment.LAYOUT_END,
+        ),
+    )
         .isEqualTo(Layout.Alignment.ALIGN_OPPOSITE)
 
     assertThat(
-            getMountedDrawableLayoutAlignment(
-                "asdf", YogaDirection.RTL, null, TextAlignment.LAYOUT_END))
+        getMountedDrawableLayoutAlignment(
+            "asdf",
+            YogaDirection.RTL,
+            null,
+            TextAlignment.LAYOUT_END,
+        ),
+    )
         .isEqualTo(Layout.Alignment.ALIGN_NORMAL)
 
     assertThat(
-            getMountedDrawableLayoutAlignment(
-                ARABIC_RTL_TEST_STRING, YogaDirection.LTR, null, TextAlignment.LAYOUT_END))
+        getMountedDrawableLayoutAlignment(
+            ARABIC_RTL_TEST_STRING,
+            YogaDirection.LTR,
+            null,
+            TextAlignment.LAYOUT_END,
+        ),
+    )
         .isEqualTo(Layout.Alignment.ALIGN_NORMAL)
 
     assertThat(
-            getMountedDrawableLayoutAlignment(
-                ARABIC_RTL_TEST_STRING, YogaDirection.RTL, null, TextAlignment.LAYOUT_END))
+        getMountedDrawableLayoutAlignment(
+            ARABIC_RTL_TEST_STRING,
+            YogaDirection.RTL,
+            null,
+            TextAlignment.LAYOUT_END,
+        ),
+    )
         .isEqualTo(Layout.Alignment.ALIGN_OPPOSITE)
   }
 
   @Test
   fun testTextAlignment_left() {
     assertThat(
-            getMountedDrawableLayoutAlignment("asdf", YogaDirection.LTR, null, TextAlignment.LEFT))
+        getMountedDrawableLayoutAlignment("asdf", YogaDirection.LTR, null, TextAlignment.LEFT),
+    )
         .isEqualTo(Layout.Alignment.ALIGN_NORMAL)
 
     assertThat(
-            getMountedDrawableLayoutAlignment("asdf", YogaDirection.RTL, null, TextAlignment.LEFT))
+        getMountedDrawableLayoutAlignment("asdf", YogaDirection.RTL, null, TextAlignment.LEFT),
+    )
         .isEqualTo(Layout.Alignment.ALIGN_NORMAL)
 
     assertThat(
-            getMountedDrawableLayoutAlignment(
-                ARABIC_RTL_TEST_STRING, YogaDirection.LTR, null, TextAlignment.LEFT))
+        getMountedDrawableLayoutAlignment(
+            ARABIC_RTL_TEST_STRING,
+            YogaDirection.LTR,
+            null,
+            TextAlignment.LEFT,
+        ),
+    )
         .isEqualTo(Layout.Alignment.ALIGN_OPPOSITE)
 
     assertThat(
-            getMountedDrawableLayoutAlignment(
-                ARABIC_RTL_TEST_STRING, YogaDirection.RTL, null, TextAlignment.LEFT))
+        getMountedDrawableLayoutAlignment(
+            ARABIC_RTL_TEST_STRING,
+            YogaDirection.RTL,
+            null,
+            TextAlignment.LEFT,
+        ),
+    )
         .isEqualTo(Layout.Alignment.ALIGN_OPPOSITE)
   }
 
   @Test
   fun testTextAlignment_right() {
     assertThat(
-            getMountedDrawableLayoutAlignment("asdf", YogaDirection.LTR, null, TextAlignment.RIGHT))
+        getMountedDrawableLayoutAlignment("asdf", YogaDirection.LTR, null, TextAlignment.RIGHT),
+    )
         .isEqualTo(Layout.Alignment.ALIGN_OPPOSITE)
 
     assertThat(
-            getMountedDrawableLayoutAlignment("asdf", YogaDirection.RTL, null, TextAlignment.RIGHT))
+        getMountedDrawableLayoutAlignment("asdf", YogaDirection.RTL, null, TextAlignment.RIGHT),
+    )
         .isEqualTo(Layout.Alignment.ALIGN_OPPOSITE)
 
     assertThat(
-            getMountedDrawableLayoutAlignment(
-                ARABIC_RTL_TEST_STRING, YogaDirection.LTR, null, TextAlignment.RIGHT))
+        getMountedDrawableLayoutAlignment(
+            ARABIC_RTL_TEST_STRING,
+            YogaDirection.LTR,
+            null,
+            TextAlignment.RIGHT,
+        ),
+    )
         .isEqualTo(Layout.Alignment.ALIGN_NORMAL)
 
     assertThat(
-            getMountedDrawableLayoutAlignment(
-                ARABIC_RTL_TEST_STRING, YogaDirection.RTL, null, TextAlignment.RIGHT))
+        getMountedDrawableLayoutAlignment(
+            ARABIC_RTL_TEST_STRING,
+            YogaDirection.RTL,
+            null,
+            TextAlignment.RIGHT,
+        ),
+    )
         .isEqualTo(Layout.Alignment.ALIGN_NORMAL)
   }
 
@@ -827,13 +1135,13 @@ class TextSpecTest {
   @Test
   @Ignore("T146174263")
   fun testCustomEllipsisTextForLtrShortText() {
-    val textDrawable =
-        getMountedDrawableForTextWithMaxLines(
-            "Simple\nSome second line",
-            1,
-            "Truncate",
-            TextAlignment.LEFT,
-            TextDirectionHeuristicsCompat.FIRSTSTRONG_LTR)
+    val textDrawable = getMountedDrawableForTextWithMaxLines(
+        "Simple\nSome second line",
+        1,
+        "Truncate",
+        TextAlignment.LEFT,
+        TextDirectionHeuristicsCompat.FIRSTSTRONG_LTR,
+    )
 
     assertThat(textDrawable.text.toString()).isEqualTo("SimpleTruncate")
   }
@@ -841,34 +1149,35 @@ class TextSpecTest {
   @Test
   @Ignore("T146174263")
   fun testCustomEllipsisTextForLtrLongText() {
-    val textDrawable =
-        getMountedDrawableForTextWithMaxLines(
-            """
-            Simple sentence that should be quite long quite long quite long quite long quite long quite long quite long
-            Some second line
-            """
-                .trimIndent(),
-            1,
-            "Truncate",
-            TextAlignment.LEFT,
-            TextDirectionHeuristicsCompat.FIRSTSTRONG_LTR)
+    val textDrawable = getMountedDrawableForTextWithMaxLines(
+        """
+        Simple sentence that should be quite long quite long quite long quite long quite long quite long quite long
+        Some second line
+        """
+            .trimIndent(),
+        1,
+        "Truncate",
+        TextAlignment.LEFT,
+        TextDirectionHeuristicsCompat.FIRSTSTRONG_LTR,
+    )
 
     assertThat(textDrawable.text.toString())
         .isEqualTo(
             "Simple sentence that should be quite long quite long quite long quite long quite long" +
-                " quiteTruncate")
+                " quiteTruncate",
+        )
   }
 
   @Test
   @Ignore("T146174263")
   fun testCustomEllipsisTextForLtrShortTextWithShortEllipsis() {
-    val textDrawable =
-        getMountedDrawableForTextWithMaxLines(
-            "Simple\nSome second line",
-            1,
-            ".",
-            TextAlignment.LEFT,
-            TextDirectionHeuristicsCompat.FIRSTSTRONG_LTR)
+    val textDrawable = getMountedDrawableForTextWithMaxLines(
+        "Simple\nSome second line",
+        1,
+        ".",
+        TextAlignment.LEFT,
+        TextDirectionHeuristicsCompat.FIRSTSTRONG_LTR,
+    )
 
     assertThat(textDrawable.text.toString()).isEqualTo("Simple.")
   }
@@ -876,35 +1185,36 @@ class TextSpecTest {
   @Test
   @Ignore("T146174263")
   fun testCustomEllipsisTextForLtrLongTextWithShortEllipsis() {
-    val textDrawable =
-        getMountedDrawableForTextWithMaxLines(
-            """
-            Simple sentence that should be quite long quite long quite long quite long quite long quite long quite long
-            Some second line
-            """
-                .trimIndent(),
-            1,
-            ".",
-            TextAlignment.LEFT,
-            TextDirectionHeuristicsCompat.FIRSTSTRONG_LTR)
+    val textDrawable = getMountedDrawableForTextWithMaxLines(
+        """
+        Simple sentence that should be quite long quite long quite long quite long quite long quite long quite long
+        Some second line
+        """
+            .trimIndent(),
+        1,
+        ".",
+        TextAlignment.LEFT,
+        TextDirectionHeuristicsCompat.FIRSTSTRONG_LTR,
+    )
 
     assertThat(textDrawable.text.toString())
         .isEqualTo(
             "Simple sentence that should be quite long quite long quite long quite long quite long" +
-                " quite long q.")
+                " quite long q.",
+        )
   }
 
   /* Test for LTR text aligned right. */
   @Test
   @Ignore("T146174263")
   fun testCustomEllipsisTextForLtrShortTextAlignedRight() {
-    val textDrawable =
-        getMountedDrawableForTextWithMaxLines(
-            "Simple\nSome second line",
-            1,
-            "Truncate",
-            TextAlignment.RIGHT,
-            TextDirectionHeuristicsCompat.FIRSTSTRONG_LTR)
+    val textDrawable = getMountedDrawableForTextWithMaxLines(
+        "Simple\nSome second line",
+        1,
+        "Truncate",
+        TextAlignment.RIGHT,
+        TextDirectionHeuristicsCompat.FIRSTSTRONG_LTR,
+    )
 
     assertThat(textDrawable.text.toString()).isEqualTo("SimpleTruncate")
   }
@@ -912,34 +1222,35 @@ class TextSpecTest {
   @Test
   @Ignore("T146174263")
   fun testCustomEllipsisTextForLtrLongTextAlignedRight() {
-    val textDrawable =
-        getMountedDrawableForTextWithMaxLines(
-            """
-            Simple sentence that should be quite long quite long quite long quite long quite long quite long quite long
-            Some second line
-            """
-                .trimIndent(),
-            1,
-            "Truncate",
-            TextAlignment.RIGHT,
-            TextDirectionHeuristicsCompat.FIRSTSTRONG_LTR)
+    val textDrawable = getMountedDrawableForTextWithMaxLines(
+        """
+        Simple sentence that should be quite long quite long quite long quite long quite long quite long quite long
+        Some second line
+        """
+            .trimIndent(),
+        1,
+        "Truncate",
+        TextAlignment.RIGHT,
+        TextDirectionHeuristicsCompat.FIRSTSTRONG_LTR,
+    )
 
     assertThat(textDrawable.text.toString())
         .isEqualTo(
             "Simple sentence that should be quite long quite long quite long quite long quite long" +
-                " quiteTruncate")
+                " quiteTruncate",
+        )
   }
 
   @Test
   @Ignore("T146174263")
   fun testCustomEllipsisTextForLtrShortTextWithShortEllipsisAlignedRight() {
-    val textDrawable =
-        getMountedDrawableForTextWithMaxLines(
-            "Simple\nSome second line",
-            1,
-            ".",
-            TextAlignment.RIGHT,
-            TextDirectionHeuristicsCompat.FIRSTSTRONG_LTR)
+    val textDrawable = getMountedDrawableForTextWithMaxLines(
+        "Simple\nSome second line",
+        1,
+        ".",
+        TextAlignment.RIGHT,
+        TextDirectionHeuristicsCompat.FIRSTSTRONG_LTR,
+    )
 
     assertThat(textDrawable.text.toString()).isEqualTo("Simple.")
   }
@@ -947,22 +1258,23 @@ class TextSpecTest {
   @Test
   @Ignore("T146174263")
   fun testCustomEllipsisTextForLtrLongTextWithShortEllipsisAlignedRight() {
-    val textDrawable =
-        getMountedDrawableForTextWithMaxLines(
-            """
-            Simple sentence that should be quite long quite long quite long quite long quite long quite long quite long
-            Some second line
-            """
-                .trimIndent(),
-            1,
-            ".",
-            TextAlignment.RIGHT,
-            TextDirectionHeuristicsCompat.FIRSTSTRONG_LTR)
+    val textDrawable = getMountedDrawableForTextWithMaxLines(
+        """
+        Simple sentence that should be quite long quite long quite long quite long quite long quite long quite long
+        Some second line
+        """
+            .trimIndent(),
+        1,
+        ".",
+        TextAlignment.RIGHT,
+        TextDirectionHeuristicsCompat.FIRSTSTRONG_LTR,
+    )
 
     assertThat(textDrawable.text.toString())
         .isEqualTo(
             "Simple sentence that should be quite long quite long quite long quite long quite long" +
-                " quite long q.")
+                " quite long q.",
+        )
   }
 
   @Test
@@ -991,7 +1303,7 @@ class TextSpecTest {
       maxLines: Int,
       customEllipsisText: String,
       alignment: TextAlignment,
-      textDirection: TextDirectionHeuristicCompat
+      textDirection: TextDirectionHeuristicCompat,
   ): TextDrawable {
     return ComponentTestHelper.mountComponent(
             context,
@@ -1002,7 +1314,8 @@ class TextSpecTest {
                 .alignment(alignment)
                 .maxLines(maxLines)
                 .customEllipsisText(customEllipsisText)
-                .build())
+                .build(),
+        )
         .drawables[0]
         as TextDrawable
   }
@@ -1011,7 +1324,7 @@ class TextSpecTest {
       text: String,
       layoutDirection: YogaDirection?,
       deprecatedTextAlignment: Layout.Alignment?,
-      textAlignment: TextAlignment?
+      textAlignment: TextAlignment?,
   ): Layout.Alignment? {
     val builder = Text.create(context).text(text)
 

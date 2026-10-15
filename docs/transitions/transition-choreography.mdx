@@ -1,0 +1,105 @@
+---
+id: transition-choreography
+title: Customizing Transitions
+keywords:
+    - stagger
+    - parallel animation
+    - custom animations
+    - transition sets
+    - animators
+    - transition end callback
+---
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+Litho provides several APIs to customise many aspects of transitions and animate different components together.
+
+## Sequence, Stagger, and Parallel sets
+
+Transitions can be composed using the following:
+
+* `Sequence` - all transitions are run in order. Each transition must end before the following one starts.
+* `Stagger` - all transitions are run in order. There is a fixed delay between starting each transition, and they may overlap.
+* `Parallel` - all transitions start at the same time but may end at different times.
+
+The following code uses a `stagger` set to animate three different rectangles.
+
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/animations/docs/StaggerTransitionComponent.kt start=start_example end=end_example
+```
+
+The following animation shows this component in action.
+
+<video loop="true" autoplay="true" class="video" width="100%" height="500px">
+  <source type="video/webm" src={useBaseUrl("/videos/transitions/stagger.webm")}></source>
+  <p>Your browser does not support the video element.</p>
+</video>
+
+Transition sets can be nested within each other, for example, you could have a 'stagger' of 'parallel' animation sets.
+
+Sequences and Staggers support interrupting behaviour, which ensures a component will never jump and will always end up in the correct end position.
+
+The sets can also be used to animate different properties of the same component, as shown in the following example:
+
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/animations/docs/StaggerTransitionSameComponent.kt start=start_example end=end_example
+```
+
+The following animation shows this component in action.
+
+<video loop="true" autoplay="true" class="video" width="100%" height="500px">
+  <source type="video/webm" src={useBaseUrl("/videos/transitions/stagger3.webm")}></source>
+  <p>Your browser does not support the video element.</p>
+</video>
+
+## Animators
+
+Animators affect the rate in which new values are pushed to the animated components. An `Animator` can be added to any transition with the `.animator()` builder method.
+
+Litho provides two Animators:
+
+* **Spring-based** - see the [SpringTransitionAnimator](pathname:///javadoc/com/facebook/litho/Transition.SpringTransitionAnimator.html)
+* **Timing-based** - see the [TimingTransitionAnimator](pathname:///javadoc/com/facebook/litho/Transition.TimingTransitionAnimator.html)
+
+These Animators can be configured to cover most use cases.
+
+It's possible to configure a custom transition by implementing [Transition.TransitionAnimator](pathname:///javadoc/com/facebook/litho/Transition.TransitionAnimator.html).
+
+By default, all transitions in Litho run by the [SpringTransitionAnimator](pathname:///javadoc/com/facebook/litho/Transition.SpringTransitionAnimator.html), which is physics based and naturally interruptible. You can tune the parameters of this spring by creating another `Animator` using `Transition.springWithConfig()` and pass custom tension and friction.
+
+In addition, the [TimingTransitionAnimator](pathname:///javadoc/com/facebook/litho/Transition.TimingTransitionAnimator.html) enables you to set a total time and an `Interpolator`. To do this, use the builder `Transition.timing()` that receives the total time and an optional `Interpolator`.
+
+:::info
+The default interpolator for the [TimingTransitionAnimator](pathname:///javadoc/com/facebook/litho/Transition.TimingTransitionAnimator.html) is an `AccelerateDecelerateInterpolator`.
+:::
+
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/animations/docs/ParallelTransitionWithAnimatorsComponent.kt start=start_example end=end_example
+```
+
+The following animation shows this component in action.
+
+<video loop="true" autoplay="true" class="video" width="100%" height="500px">
+  <source type="video/webm" src={useBaseUrl("/videos/transitions/stagger4.webm")}></source>
+  <p>Your browser does not support the video element.</p>
+</video>
+
+
+### TransitionEnd callback
+
+A Listener can be added to receive a callback when an individual transition has ended. Use `eventHandler<TransitionEndEvent>` to create a handler and pass it to `.transitionEndHandler()`.
+
+The `TransitionEndEvent` will be called with the transition key and the specific `AnimatedProperty` that has been animated for that key. If multiple instances of `AnimatedProperty` are added to the same transition, and all of them run at the same time, a callback will be executed for each. This callback may be useful to loop animations by updating state.
+
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/animations/docs/SequenceTransitionLoopComponent.kt start=start_example end=end_example
+```
+
+:::note
+Many examples can be found in the Litho Sample app: `API Demos`->`Animation Callbacks`.
+:::
+
+A `transitionEndHandler` can also be added to `Transition.allLayout()` where the same logic applies:
+
+```kotlin
+val onTransitionEnd = eventHandler<TransitionEndEvent> { event ->
+    // Handle transition end
+}
+
+useTransition(Transition.allLayout().transitionEndHandler(onTransitionEnd))
+```

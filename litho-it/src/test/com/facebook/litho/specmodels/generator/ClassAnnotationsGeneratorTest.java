@@ -49,10 +49,22 @@ public class ClassAnnotationsGeneratorTest {
 
     final TypeSpecDataHolder dataHolder = ClassAnnotationsGenerator.generate(specModel);
 
+    // Every generated component gets a class-level @SuppressWarnings for the
+    // rawtypes/unchecked/cast
+    // warnings inherent to generated code, in addition to the spec's own class annotations and
+    // @Generated.
+    final AnnotationSpec suppressWarnings =
+        AnnotationSpec.builder(SuppressWarnings.class)
+            .addMember("value", "$S", "rawtypes")
+            .addMember("value", "$S", "unchecked")
+            .addMember("value", "$S", "cast")
+            .build();
+
     assertThat(dataHolder.getAnnotationSpecs())
-        .hasSize(3)
+        .hasSize(4)
         .contains(AnnotationSpec.builder(Generated.class).build())
         .contains(AnnotationSpec.builder(Deprecated.class).build())
-        .contains(AnnotationSpec.builder(OnEvent.class).build());
+        .contains(AnnotationSpec.builder(OnEvent.class).build())
+        .contains(suppressWarnings);
   }
 }

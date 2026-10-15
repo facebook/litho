@@ -22,10 +22,13 @@ import androidx.annotation.VisibleForTesting
 import androidx.collection.LruCache
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentsReporter
+import com.facebook.litho.ComponentsSystrace.trace
 import com.facebook.litho.Size
 import com.facebook.litho.ThreadUtils
+import com.facebook.litho.debug.DebugInfoReporter
 import com.facebook.rendercore.RunnableHandler
 import java.util.concurrent.BlockingQueue
+import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.LinkedBlockingQueue
 import kotlin.concurrent.Volatile
 
@@ -60,7 +63,7 @@ class ComponentWarmer {
   inner class ComponentTreeHolderPreparerWithSizeImpl(
       private val componentContext: ComponentContext,
       private val widthSpec: Int,
-      private val heightSpec: Int
+      private val heightSpec: Int,
   ) : ComponentTreeHolderPreparer {
     override fun create(renderInfo: ComponentRenderInfo): ComponentTreeHolder =
         ComponentTreeHolder.create(componentContext.lithoConfiguration.componentsConfig)
@@ -84,8 +87,10 @@ class ComponentWarmer {
     fun onInstanceReadyToPrepare()
   }
 
-  fun interface CacheListener {
-    fun onEntryEvicted(tag: String, holder: ComponentTreeHolder)
+  interface CacheListener {
+    fun onEntryEvicted(tag: String, holder: ComponentTreeHolder) {}
+
+    fun onEntryCreated(tag: String, holder: ComponentTreeHolder) {}
   }
 
   interface Cache {
@@ -98,19 +103,30 @@ class ComponentWarmer {
     fun evictAll()
 
     fun setCacheListener(cacheListener: CacheListener?)
+
+    fun addCacheListener(cacheListener: CacheListener) {}
   }
 
-  private class DefaultCache(maxSize: Int, private val cacheListener: CacheListener?) : Cache {
+  private class DefaultCache(maxSize: Int, initialListener: CacheListener?) : Cache {
+    private val listeners: CopyOnWriteArrayList<CacheListener> =
+        CopyOnWriteArrayList<CacheListener>().apply {
+          if (initialListener != null) {
+            add(initialListener)
+          }
+        }
+
     val cache: LruCache<String, ComponentTreeHolder> =
         object : LruCache<String, ComponentTreeHolder>(maxSize) {
           override fun entryRemoved(
               evicted: Boolean,
               key: String,
               oldValue: ComponentTreeHolder,
-              newValue: ComponentTreeHolder?
+              newValue: ComponentTreeHolder?,
           ) {
-            if (evicted && cacheListener != null) {
-              cacheListener.onEntryEvicted(key, oldValue)
+            if (evicted) {
+              for (listener in listeners) {
+                listener.onEntryEvicted(key, oldValue)
+              }
             }
           }
         }
@@ -119,6 +135,9 @@ class ComponentWarmer {
 
     override fun put(tag: String, holder: ComponentTreeHolder) {
       this.cache.put(tag, holder)
+      for (listener in listeners) {
+        listener.onEntryCreated(tag, holder)
+      }
     }
 
     override fun get(tag: String): ComponentTreeHolder? = this.cache[tag]
@@ -130,25 +149,52 @@ class ComponentWarmer {
     override fun setCacheListener(cacheListener: CacheListener?) {
       // Already set from the constructor, so there is nothing to do here
     }
+
+    override fun addCacheListener(cacheListener: CacheListener) {
+      listeners.add(cacheListener)
+    }
   }
 
   private val mainThreadHandler = Handler(Looper.getMainLooper())
+  private val holdersToRelease: java.util.ArrayDeque<ComponentTreeHolder> = java.util.ArrayDeque()
+  private val releaseRunnableLock = Any()
+  private var hasPendingReleaseRunnable = false
+
+  private val releaseTreeRunnable = Runnable {
+    while (true) {
+      val holder: ComponentTreeHolder =
+          synchronized(releaseRunnableLock) {
+            val h = holdersToRelease.pollFirst()
+            if (h == null) {
+              hasPendingReleaseRunnable = false
+              return@Runnable
+            }
+            h
+          }
+      holder.releaseTree()
+    }
+  }
 
   private var pendingRenderInfos: BlockingQueue<ComponentRenderInfo>? = null
   private var readyListener: ComponentWarmerReadyListener? = null
   @Volatile private var releaseEvictedEntries = false
+  @Volatile private var logPendingQueueDrops = false
+  @Volatile private var useSynchronizedFactoryInit = false
+  @Volatile private var useCoalescedEvictionRelease = false
 
   @get:VisibleForTesting
   lateinit var cache: Cache
     private set
 
   @get:VisibleForTesting
+  @Volatile
   var factory: ComponentTreeHolderPreparer? = null
     private set
 
   val prepareImpl: ComponentTreeHolderPreparer?
     @VisibleForTesting get() = factory
 
+  @Volatile
   @get:Synchronized
   var isReady: Boolean = false
     private set
@@ -194,7 +240,7 @@ class ComponentWarmer {
   @JvmOverloads
   constructor(
       recyclerBinder: RecyclerBinder,
-      cache: Cache? = null
+      cache: Cache? = null,
   ) : this(recyclerBinder.componentTreeHolderPreparer, cache) {
     recyclerBinder.componentWarmer = this
   }
@@ -220,16 +266,39 @@ class ComponentWarmer {
     this.releaseEvictedEntries = releaseEvictedEntries
   }
 
+  fun setLogPendingQueueDrops(logPendingQueueDrops: Boolean) {
+    this.logPendingQueueDrops = logPendingQueueDrops
+  }
+
+  fun setUseSynchronizedFactoryInit(useSynchronizedFactoryInit: Boolean) {
+    this.useSynchronizedFactoryInit = useSynchronizedFactoryInit
+  }
+
+  fun setUseCoalescedEvictionRelease(useCoalescedEvictionRelease: Boolean) {
+    this.useCoalescedEvictionRelease = useCoalescedEvictionRelease
+  }
+
   private fun init(factory: ComponentTreeHolderPreparer?, cache: Cache?) {
-    val cacheListener = CacheListener { _, holder ->
-      if (releaseEvictedEntries) {
-        if (ThreadUtils.isMainThread) {
-          holder.releaseTree()
-        } else {
-          mainThreadHandler.post { holder.releaseTree() }
+    val cacheListener =
+        object : CacheListener {
+          override fun onEntryEvicted(tag: String, holder: ComponentTreeHolder) {
+            if (releaseEvictedEntries) {
+              if (ThreadUtils.isMainThread) {
+                holder.releaseTree()
+              } else if (useCoalescedEvictionRelease) {
+                synchronized(releaseRunnableLock) {
+                  holdersToRelease.add(holder)
+                  if (!hasPendingReleaseRunnable) {
+                    hasPendingReleaseRunnable = true
+                    mainThreadHandler.post(releaseTreeRunnable)
+                  }
+                }
+              } else {
+                mainThreadHandler.post { holder.releaseTree() }
+              }
+            }
+          }
         }
-      }
-    }
 
     if (cache != null) {
       this.cache = cache
@@ -245,13 +314,26 @@ class ComponentWarmer {
   }
 
   fun setComponentTreeHolderFactory(factory: ComponentTreeHolderPreparer) {
-    this.factory = factory
+    if (useSynchronizedFactoryInit) {
+      synchronized(this) {
+        this.factory = factory
 
-    if (!isReady) {
-      readyListener?.onInstanceReadyToPrepare()
+        if (!isReady) {
+          readyListener?.onInstanceReadyToPrepare()
 
-      executePending()
-      synchronized(this) { isReady = true }
+          executePending()
+          isReady = true
+        }
+      }
+    } else {
+      this.factory = factory
+
+      if (!isReady) {
+        readyListener?.onInstanceReadyToPrepare()
+
+        executePending()
+        synchronized(this) { isReady = true }
+      }
     }
   }
 
@@ -274,20 +356,27 @@ class ComponentWarmer {
       tag: String,
       componentRenderInfo: ComponentRenderInfo,
       size: Size?,
-      handler: RunnableHandler? = null
+      handler: RunnableHandler? = null,
   ) {
-    if (!isReady) {
-      ComponentsReporter.emitMessage(
-          ComponentsReporter.LogLevel.WARNING,
-          COMPONENT_WARMER_LOG_TAG,
-          "ComponentWarmer not ready: unable to prepare sync. This will be executed asynchronously when the ComponentWarmer is ready.")
+    trace("ComponentWarmer.prepare") {
+      if (!isReady) {
+        ComponentsReporter.emitMessage(
+            ComponentsReporter.LogLevel.WARNING,
+            COMPONENT_WARMER_LOG_TAG,
+            "ComponentWarmer not ready: unable to prepare sync. This will be executed asynchronously when the ComponentWarmer is ready.",
+        )
 
-      addToPending(tag, componentRenderInfo, handler)
+        addToPending(tag, componentRenderInfo, handler)
 
-      return
+        return
+      }
+
+      executePrepare(tag, componentRenderInfo, size, false, handler)
     }
+  }
 
-    executePrepare(tag, componentRenderInfo, size, false, handler)
+  fun addCacheListener(cacheListener: CacheListener) {
+    cache.addCacheListener(cacheListener)
   }
 
   /**
@@ -300,13 +389,15 @@ class ComponentWarmer {
    * Alternatively you can use [prepare] to synchronously post the prepare call to a custom handler.
    */
   fun prepareAsync(tag: String, componentRenderInfo: ComponentRenderInfo) {
-    if (!isReady) {
-      addToPending(tag, componentRenderInfo, null)
+    trace("ComponentWarmer.prepareAsync") {
+      if (!isReady) {
+        addToPending(tag, componentRenderInfo, null)
 
-      return
+        return
+      }
+
+      executePrepare(tag, componentRenderInfo, null, true, null)
     }
-
-    executePrepare(tag, componentRenderInfo, null, true, null)
   }
 
   private fun executePrepare(
@@ -314,23 +405,25 @@ class ComponentWarmer {
       renderInfo: ComponentRenderInfo,
       size: Size?,
       isAsync: Boolean,
-      handler: RunnableHandler?
+      handler: RunnableHandler?,
   ) {
-    val prepareImpl =
-        checkNotNull(factory) {
-          "ComponentWarmer: trying to execute prepare but ComponentWarmer is not ready."
-        }
-    renderInfo.addCustomAttribute(COMPONENT_WARMER_TAG, tag)
-    val holder = prepareImpl.create(renderInfo)
-    cache.put(tag, holder)
+    trace("ComponentWarmer.executePrepare") {
+      val prepareImpl =
+          checkNotNull(factory) {
+            "ComponentWarmer: trying to execute prepare but ComponentWarmer is not ready."
+          }
+      renderInfo.addCustomAttribute(COMPONENT_WARMER_TAG, tag)
+      val holder = prepareImpl.create(renderInfo)
+      cache.put(tag, holder)
 
-    if (isAsync) {
-      prepareImpl.prepareAsync(holder)
-    } else {
-      if (handler != null) {
-        handler.post(Runnable { prepareImpl.prepareSync(holder, size) }, "prepare")
+      if (isAsync) {
+        prepareImpl.prepareAsync(holder)
       } else {
-        prepareImpl.prepareSync(holder, size)
+        if (handler != null) {
+          handler.post(Runnable { prepareImpl.prepareSync(holder, size) }, "prepare")
+        } else {
+          prepareImpl.prepareSync(holder, size)
+        }
       }
     }
   }
@@ -338,7 +431,7 @@ class ComponentWarmer {
   private fun addToPending(
       tag: String,
       componentRenderInfo: ComponentRenderInfo,
-      handler: RunnableHandler?
+      handler: RunnableHandler?,
   ) {
     ensurePendingQueue()
 
@@ -348,43 +441,51 @@ class ComponentWarmer {
       componentRenderInfo.addCustomAttribute(COMPONENT_WARMER_PREPARE_HANDLER, handler)
     }
 
-    checkNotNull(pendingRenderInfos).offer(componentRenderInfo)
+    val offered = checkNotNull(pendingRenderInfos).offer(componentRenderInfo)
+    if (!offered && logPendingQueueDrops) {
+      DebugInfoReporter.report(COMPONENT_WARMER_LOG_TAG) {
+        this["message"] =
+            "ComponentWarmer: pending queue full, prepare request for tag '$tag' was dropped."
+      }
+    }
   }
 
   private fun executePending() {
-    val pending =
-        synchronized(this) {
-          pendingRenderInfos
-              ?: run {
-                isReady = true
-                return
-              }
+    trace("ComponentWarmer.executePending") {
+      val pending =
+          synchronized(this) {
+            pendingRenderInfos
+                ?: run {
+                  isReady = true
+                  return
+                }
+          }
+      while (!pending.isEmpty()) {
+        val renderInfo = pending.poll()
+
+        val customAttrTag = renderInfo.getCustomAttribute(COMPONENT_WARMER_TAG) ?: continue
+
+        val tag = customAttrTag as String
+
+        if (renderInfo.getCustomAttribute(COMPONENT_WARMER_PREPARE_HANDLER) != null) {
+          val handler =
+              renderInfo.getCustomAttribute(COMPONENT_WARMER_PREPARE_HANDLER) as RunnableHandler?
+          executePrepare(tag, renderInfo, null, false, handler)
+        } else {
+          executePrepare(tag, renderInfo, null, true, null)
         }
-    while (!pending.isEmpty()) {
-      val renderInfo = pending.poll()
 
-      val customAttrTag = renderInfo.getCustomAttribute(COMPONENT_WARMER_TAG) ?: continue
-
-      val tag = customAttrTag as String
-
-      if (renderInfo.getCustomAttribute(COMPONENT_WARMER_PREPARE_HANDLER) != null) {
-        val handler =
-            renderInfo.getCustomAttribute(COMPONENT_WARMER_PREPARE_HANDLER) as RunnableHandler?
-        executePrepare(tag, renderInfo, null, false, handler)
-      } else {
-        executePrepare(tag, renderInfo, null, true, null)
-      }
-
-      // Sync around pendingRenderInfos.isEmpty() because otherwise this can happen:
-      // 1. T1: check if is ready in prepare(), get false
-      // 2. T2: here, check pendingRenderInfos.isEmpty(), get true
-      // 3. T1: add item to pending list
-      // 4. T2: make isReady true
-      // 5. T1: do step 1 again, read isReady true, execute layout before T2 loops. Prepare calls
-      // are executed out of order.
-      synchronized(this) {
-        if (pending.isEmpty()) {
-          isReady = true
+        // Sync around pendingRenderInfos.isEmpty() because otherwise this can happen:
+        // 1. T1: check if is ready in prepare(), get false
+        // 2. T2: here, check pendingRenderInfos.isEmpty(), get true
+        // 3. T1: add item to pending list
+        // 4. T2: make isReady true
+        // 5. T1: do step 1 again, read isReady true, execute layout before T2 loops. Prepare calls
+        // are executed out of order.
+        synchronized(this) {
+          if (pending.isEmpty()) {
+            isReady = true
+          }
         }
       }
     }
@@ -402,6 +503,9 @@ class ComponentWarmer {
    * If it exists, it returns the cached ComponentTreeHolder for this tag and removes it from cache.
    */
   fun consume(tag: String): ComponentTreeHolder? = cache.remove(tag)
+
+  /** Returns true if a prepared entry for this tag is currently cached, without consuming it. */
+  fun isCached(tag: String): Boolean = cache[tag] != null
 
   /**
    * Cancels the prepare execution for the item with the given tag if it's currently running and it

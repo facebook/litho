@@ -1,0 +1,933 @@
+---
+id: dynamic-value-styles
+title: Runtime Animation & Dynamic Values
+keywords:
+    - dynamic value styles
+    - animation
+    - dynamic value
+    - alpha
+    - rotation
+    - scale
+    - translation
+---
+
+Dynamic Value Styles enable animated and interactive properties on components by using `DynamicValue` objects. These styles allow you to change visual properties dynamically at runtime without triggering a full layout recalculation, making them ideal for smooth animations and interactive effects. For information on layout transitions between component states, see **[Animations & Transitions](../transitions/transition-basics.mdx)**.
+
+Dynamic Value Styles encompass:
+
+- **Alpha**: Controls component transparency
+- **Background**: Sets animated background drawables or colors
+- **Foreground**: Sets animated foreground colors
+- **Elevation**: Controls shadow depth
+- **Rotation**: Controls 2D and 3D rotation
+- **Scale**: Controls component scaling
+- **Translation**: Controls component position offset
+
+These styles work with `DynamicValue` objects that can be updated at runtime to animate or interactively change visual properties.
+
+## Understanding DynamicValue
+
+`DynamicValue<T>` is a container that holds a value that can be changed at runtime. When you update a `DynamicValue`, any component using it will automatically reflect the change without requiring a layout pass.
+
+In Litho components, you create `DynamicValue` objects using the `useBinding()` hook:
+
+```kotlin
+import com.facebook.litho.animated.useBinding
+
+// Create a DynamicValue using useBinding hook
+val dynamicAlpha = useBinding(1f)
+
+// Later, update the value to trigger a visual change
+dynamicAlpha.set(0.5f)
+```
+
+## The useBinding Hook
+
+The `useBinding` hook is the recommended way to create `DynamicValue` objects in Litho components. It ensures that the `DynamicValue` instance is preserved across component renders, which is essential for animations and interactive effects.
+
+### Basic Usage
+
+Create a `DynamicValue` with an initial value:
+
+```kotlin
+import com.facebook.litho.animated.useBinding
+
+// Create a DynamicValue with initial value
+val alpha = useBinding(1f)
+val scale = useBinding(1.5f)
+val color = useBinding(Color.BLUE)
+```
+
+The `useBinding` hook:
+- Returns the **same** `DynamicValue` instance across re-renders
+- Initializes the value only once (on first render)
+- Preserves the current value when the component re-renders
+
+### Derived Bindings
+
+Create a `DynamicValue` that derives its value from another binding with a transform function:
+
+```kotlin
+import com.facebook.litho.animated.useBinding
+import android.graphics.Color
+
+// Base binding: progress from 0 to 100
+val progress = useBinding(0f)
+
+// Derived binding: convert progress to scale (0.0 to 1.0)
+val scale = useBinding(progress) { p -> p / 100f }
+
+// Derived binding: convert progress to color
+val bgColor = useBinding(progress) { p ->
+  Color.HSVToColor(floatArrayOf(100f * p, 100f, 255f))
+}
+```
+
+**When the source binding changes, all derived bindings automatically update.**
+
+Example:
+```kotlin
+progress.set(50f)
+// scale automatically becomes 0.5f
+// bgColor automatically updates to the corresponding color
+```
+
+### Key Characteristics
+
+1. **Preserved Across Renders**: The same `DynamicValue` instance is maintained even when the component re-renders
+2. **One-time Initialization**: The initial value is set only on the first render
+3. **Main Thread Only**: You can only call `.set()` or `.get()` on the main thread
+4. **Automatic Updates**: Derived bindings automatically update when their source changes
+
+### When to Use useBinding
+
+Use `useBinding` when you need to:
+- Animate component properties (alpha, scale, translation, etc.)
+- Create interactive effects that respond to user input
+- Build derived values that transform other dynamic values
+- Coordinate multiple animated properties
+
+## Alpha
+
+Controls the transparency of the component. Values range from 0.0 (fully transparent) to 1.0 (fully opaque).
+
+```kotlin
+import com.facebook.litho.animated.Animated
+import com.facebook.litho.animated.alpha
+import com.facebook.litho.animated.useBinding
+
+// Create a dynamic alpha value using useBinding
+val alpha = useBinding(1f)
+
+// Apply to component
+MyComponent(style = Style.alpha(alpha))
+
+// Animate fade out
+val fadeOut = Animated.timing(
+    target = alpha,
+    to = 0f,
+    duration = 300
+)
+fadeOut.start()
+
+// Animate fade in
+val fadeIn = Animated.timing(
+    target = alpha,
+    to = 1f,
+    duration = 300
+)
+fadeIn.start()
+```
+
+
+## Background
+
+Sets an animated background drawable for the component.
+
+```kotlin
+import android.graphics.drawable.Drawable
+import com.facebook.litho.animated.background
+import com.facebook.litho.animated.useBinding
+
+// Create a dynamic drawable value
+val backgroundDrawable = useBinding<Drawable>(initialDrawable)
+
+// Apply to component
+MyComponent(style = Style.background(backgroundDrawable))
+
+// Later, change the background
+backgroundDrawable.set(newDrawable)
+```
+
+
+## Background Color
+
+Sets an animated background color for the component using a color integer.
+
+```kotlin
+import android.graphics.Color
+import com.facebook.litho.animated.Animated
+import com.facebook.litho.animated.backgroundColor
+import com.facebook.litho.animated.useBinding
+
+// Create a dynamic color value
+val bgColor = useBinding(Color.BLUE)
+
+// Apply to component
+MyComponent(style = Style.backgroundColor(bgColor))
+
+// Animate color change from blue to red
+val colorAnimation = Animated.timingArgb(
+    target = bgColor,
+    to = Color.RED,
+    duration = 500
+)
+colorAnimation.start()
+```
+
+
+## Foreground Color
+
+Sets an animated foreground color overlay for the component.
+
+```kotlin
+import android.graphics.Color
+import com.facebook.litho.animated.foregroundColor
+import com.facebook.litho.animated.useBinding
+
+// Create a dynamic foreground color
+val fgColor = useBinding(Color.TRANSPARENT)
+
+// Apply to component
+MyComponent(style = Style.foregroundColor(fgColor))
+
+// Later, add a color overlay
+fgColor.set(Color.argb(128, 255, 0, 0)) // Semi-transparent red
+```
+
+
+## Elevation
+
+Controls the elevation (shadow depth) of the component. Higher values create larger shadows.
+
+```kotlin
+import com.facebook.litho.animated.elevation
+import com.facebook.litho.animated.useBinding
+
+// Create a dynamic elevation value (in pixels)
+val elevation = useBinding(8f)
+
+// Apply to component
+MyComponent(style = Style.elevation(elevation))
+
+// Later, change elevation
+elevation.set(16f) // Increase shadow depth
+```
+
+
+## Rotation
+
+Controls the 2D rotation of the component around the Z-axis (perpendicular to screen). Values are in degrees.
+
+```kotlin
+import com.facebook.litho.animated.Animated
+import com.facebook.litho.animated.Easing
+import com.facebook.litho.animated.rotation
+import com.facebook.litho.animated.useBinding
+
+// Create a dynamic rotation value
+val rotation = useBinding(0f)
+
+// Apply to component
+MyComponent(style = Style.rotation(rotation))
+
+// Animate a full 360-degree rotation
+val rotateAnimation = Animated.timing(
+    target = rotation,
+    to = 360f,
+    duration = 1000,
+    easing = Easing.linear()
+)
+rotateAnimation.start()
+
+// Continuous spinning using loop
+val spinAnimation = Animated.loop(
+    Animated.timing(
+        target = rotation,
+        to = 360f,
+        duration = 2000,
+        easing = Easing.linear()
+    )
+)
+spinAnimation.start()
+```
+
+
+## Rotation X
+
+Controls the 3D rotation around the horizontal X-axis (tilting up/down). Values are in degrees.
+
+```kotlin
+import com.facebook.litho.animated.rotationX
+import com.facebook.litho.animated.useBinding
+
+// Create a dynamic X rotation value
+val rotationX = useBinding(0f)
+
+// Apply to component
+MyComponent(style = Style.rotationX(rotationX))
+
+// Later, tilt the component
+rotationX.set(30f) // Tilt forward 30 degrees
+```
+
+
+## Rotation Y
+
+Controls the 3D rotation around the vertical Y-axis (rotating left/right). Values are in degrees.
+
+```kotlin
+import com.facebook.litho.animated.rotationY
+import com.facebook.litho.animated.useBinding
+
+// Create a dynamic Y rotation value
+val rotationY = useBinding(0f)
+
+// Apply to component
+MyComponent(style = Style.rotationY(rotationY))
+
+// Later, rotate the component
+rotationY.set(45f) // Rotate 45 degrees around Y-axis
+```
+
+
+## Scale X
+
+Controls the horizontal scaling of the component. Default is 1.0 (normal size).
+
+```kotlin
+import com.facebook.litho.animated.scaleX
+import com.facebook.litho.animated.useBinding
+
+// Create a dynamic X scale value
+val scaleX = useBinding(1f)
+
+// Apply to component
+MyComponent(style = Style.scaleX(scaleX))
+
+// Later, scale the component
+scaleX.set(1.5f) // 150% width
+scaleX.set(0.5f) // 50% width
+```
+
+
+## Scale Y
+
+Controls the vertical scaling of the component. Default is 1.0 (normal size).
+
+```kotlin
+import com.facebook.litho.animated.scaleY
+import com.facebook.litho.animated.useBinding
+
+// Create a dynamic Y scale value
+val scaleY = useBinding(1f)
+
+// Apply to component
+MyComponent(style = Style.scaleY(scaleY))
+
+// Later, scale the component
+scaleY.set(1.5f) // 150% height
+scaleY.set(0.5f) // 50% height
+```
+
+
+### Combining Scale X and Y
+
+```kotlin
+import com.facebook.litho.animated.Animated
+import com.facebook.litho.animated.SpringConfig
+import com.facebook.litho.animated.scaleX
+import com.facebook.litho.animated.scaleY
+import com.facebook.litho.animated.useBinding
+import androidx.dynamicanimation.animation.SpringForce
+
+// Create a single dynamic value for uniform scaling
+val scale = useBinding(1f)
+
+// Apply to both scaleX and scaleY for uniform scaling
+MyComponent(
+    style = Style
+        .scaleX(scale)
+        .scaleY(scale)
+)
+
+// Animate scale with spring physics for bouncy effect
+val scaleUp = Animated.spring(
+    target = scale,
+    to = 1.5f,
+    springConfig = SpringConfig(
+        stiffness = SpringForce.STIFFNESS_LOW,
+        dampingRatio = SpringForce.DAMPING_RATIO_MEDIUM_BOUNCY
+    )
+)
+scaleUp.start()
+```
+
+## Translation X
+
+Controls the horizontal offset of the component from its original position. Values are in pixels.
+
+```kotlin
+import com.facebook.litho.animated.translationX
+import com.facebook.litho.animated.useBinding
+
+// Create a dynamic X translation value
+val translationX = useBinding(0f)
+
+// Apply to component
+MyComponent(style = Style.translationX(translationX))
+
+// Later, move the component
+translationX.set(100f)  // Move 100px to the right
+translationX.set(-50f)  // Move 50px to the left
+```
+
+
+## Translation Y
+
+Controls the vertical offset of the component from its original position. Values are in pixels.
+
+```kotlin
+import com.facebook.litho.animated.Animated
+import com.facebook.litho.animated.Easing
+import com.facebook.litho.animated.translationY
+import com.facebook.litho.animated.useBinding
+
+// Create a dynamic Y translation value
+val translationY = useBinding(0f)
+
+// Apply to component
+MyComponent(style = Style.translationY(translationY))
+
+// Animate slide down
+val slideDown = Animated.timing(
+    target = translationY,
+    to = 100f,
+    duration = 300,
+    easing = Easing.bezier(0.85f, 0f, 0.15f, 1f)
+)
+slideDown.start()
+
+// Animate slide up with overshoot
+val slideUp = Animated.timing(
+    target = translationY,
+    to = -50f,
+    duration = 400,
+    easing = Easing.overshoot()
+)
+slideUp.start()
+```
+
+
+## Translation Z
+
+Controls the depth offset of the component (Z-axis position). Positive values bring the component forward, negative values push it back. Values are in pixels.
+
+```kotlin
+import com.facebook.litho.animated.translationZ
+import com.facebook.litho.animated.useBinding
+
+// Create a dynamic Z translation value
+val translationZ = useBinding(0f)
+
+// Apply to component
+MyComponent(style = Style.translationZ(translationZ))
+
+// Later, change depth
+translationZ.set(10f)  // Bring forward
+translationZ.set(-10f) // Push back
+```
+
+
+## Combining Dynamic Value Styles
+
+Multiple dynamic styles can be combined to create complex animations and interactive effects:
+
+```kotlin
+import com.facebook.litho.animated.Animated
+import com.facebook.litho.animated.alpha
+import com.facebook.litho.animated.rotation
+import com.facebook.litho.animated.scaleX
+import com.facebook.litho.animated.scaleY
+import com.facebook.litho.animated.translationY
+import com.facebook.litho.animated.useBinding
+
+// Create multiple dynamic values using useBinding
+val alpha = useBinding(1f)
+val rotation = useBinding(0f)
+val scale = useBinding(1f)
+val translationY = useBinding(0f)
+
+// Combine multiple dynamic styles
+MyComponent(
+    style = Style
+        .alpha(alpha)
+        .rotation(rotation)
+        .scaleX(scale)
+        .scaleY(scale)
+        .translationY(translationY)
+)
+
+// Animate all properties in parallel
+val complexAnimation = Animated.parallel(
+    Animated.timing(target = alpha, to = 0f, duration = 500),
+    Animated.timing(target = rotation, to = 360f, duration = 800),
+    Animated.timing(target = scale, to = 0.5f, duration = 500),
+    Animated.timing(target = translationY, to = 100f, duration = 500)
+)
+complexAnimation.start()
+```
+
+## Derived Dynamic Values
+
+You can create derived `DynamicValue` objects that transform values from another binding:
+
+```kotlin
+import com.facebook.litho.animated.Animated
+import com.facebook.litho.animated.SpringConfig
+import com.facebook.litho.animated.scaleX
+import com.facebook.litho.animated.scaleY
+import com.facebook.litho.animated.useBinding
+import androidx.dynamicanimation.animation.SpringForce
+
+// Create a base dynamic value for scale percentage (100-110)
+val animScale = useBinding(100f)
+
+// Create a derived value that converts percentage to scale factor
+val scale = useBinding(animScale) { progress -> progress / 100f }
+
+// Apply derived scale to component
+MyComponent(
+    style = Style
+        .scaleX(scale)
+        .scaleY(scale)
+)
+
+// Animate the base value (derived value updates automatically)
+val pulseAnimation = Animated.loop(
+    Animated.sequence(
+        Animated.spring(
+            target = animScale,
+            to = 110f,
+            springConfig = SpringConfig(
+                stiffness = 50f,
+                dampingRatio = 0.5f
+            )
+        ),
+        Animated.spring(
+            target = animScale,
+            to = 100f,
+            springConfig = SpringConfig(
+                stiffness = 50f,
+                dampingRatio = 0.5f
+            )
+        )
+    )
+)
+pulseAnimation.start()
+```
+
+## Animated API Reference
+
+The `Animated` object provides declarative APIs for creating animations. All methods return an `AnimatedAnimation` that can be started, cancelled, or composed with other animations.
+
+### Animated.timing()
+
+Returns an `AnimatedAnimation` ready for running timing animation that calculates animated values and sets them on the target parameter.
+
+**Default behavior**: Uses `AccelerateDecelerateInterpolator` and duration of 300 milliseconds.
+
+```kotlin
+fun timing(
+    target: DynamicValue<Float>,
+    to: Float,
+    duration: Long = 300,
+    easing: Interpolator = Easing.accelerateDecelerate(),
+    animationFinishListener: AnimationFinishListener? = null,
+    onUpdate: ((Float) -> Unit)? = null
+): AnimatedAnimation
+```
+
+**Parameters:**
+- `target` - The DynamicValue to animate
+- `to` - The target value
+- `duration` - Animation duration in milliseconds (default: 300)
+- `easing` - Interpolator for animation curve (default: AccelerateDecelerateInterpolator)
+- `animationFinishListener` - Callback when animation finishes or is cancelled
+- `onUpdate` - Callback invoked on each animation frame with the current value
+
+### Animated.timingArgb()
+
+Returns an `AnimatedAnimation` ready for running timing animation that calculates animated color values and sets them on the target parameter.
+
+**Default behavior**: Uses `AccelerateDecelerateInterpolator` and duration of 300 milliseconds.
+
+```kotlin
+fun timingArgb(
+    target: DynamicValue<Int>,
+    to: Int,  // @ColorInt
+    duration: Long = 300,
+    easing: Interpolator = Easing.accelerateDecelerate(),
+    animationFinishListener: AnimationFinishListener? = null,
+    onUpdate: ((Int) -> Unit)? = null
+): AnimatedAnimation
+```
+
+**Parameters:**
+- `target` - The `DynamicValue<Int>` to animate (color values)
+- `to` - The target color value
+- `duration` - Animation duration in milliseconds (default: 300)
+- `easing` - Interpolator for animation curve
+- `animationFinishListener` - Callback when animation finishes or is cancelled
+- `onUpdate` - Callback invoked on each animation frame with the current color
+
+### Animated.spring()
+
+Returns an `AnimatedAnimation` ready for running spring animation based on the `SpringConfig` parameters.
+
+**Default behavior**: Uses medium stiffness and damping for natural, bouncy motion.
+
+```kotlin
+fun spring(
+    target: DynamicValue<Float>,
+    to: Float,
+    springConfig: SpringConfig = SpringConfig(),
+    animationFinishListener: AnimationFinishListener? = null,
+    onUpdate: ((Float) -> Unit)? = null
+): AnimatedAnimation
+```
+
+**Parameters:**
+- `target` - The DynamicValue to animate
+- `to` - The target value
+- `springConfig` - Configuration for spring physics (stiffness and damping ratio)
+- `animationFinishListener` - Callback when animation finishes or is cancelled
+- `onUpdate` - Callback invoked on each animation frame with the current value
+
+**SpringConfig:** The stiffer the spring is, the harder it is to stretch it and the faster it undergoes dampening. Spring damping ratio describes behavior after the disturbance - over-damped values (more than 1) make the spring quickly return to rest position. Under-damped values (less than 1) cause overshooting. Damping equal to 0 will cause the spring to oscillate forever. (The lower the damping ratio, the higher the bounciness)
+
+### Animated.sequence()
+
+Returns a `SequenceAnimation` ready for running a collection of animations in sequence, one after another. The order of arguments is the order of the sequence.
+
+```kotlin
+fun sequence(vararg animations: AnimatedAnimation): AnimatedAnimation
+```
+
+**Parameters:**
+- `animations` - Variable number of animations to run sequentially
+
+### Animated.parallel()
+
+Returns a `ParallelAnimation` ready for running a collection of animations in parallel (simultaneously).
+
+```kotlin
+fun parallel(vararg animations: AnimatedAnimation): AnimatedAnimation
+```
+
+**Parameters:**
+- `animations` - Variable number of animations to run simultaneously
+
+### Animated.stagger()
+
+Returns an `AnimatedAnimation` ready for running a collection of animations in stagger with a given delay value in milliseconds between each animation start.
+
+```kotlin
+fun stagger(
+    staggerMs: Long,
+    vararg animations: AnimatedAnimation
+): AnimatedAnimation
+```
+
+**Parameters:**
+- `staggerMs` - Delay in milliseconds between each animation start
+- `animations` - Variable number of animations to stagger
+
+### Animated.loop()
+
+Returns a `LoopAnimation` ready for running an `AnimatedAnimation` object repeated a specified number of times.
+
+**Default behavior**: Runs infinite number of times (`repeatCount = -1`).
+
+```kotlin
+fun loop(
+    animation: AnimatedAnimation,
+    repeatCount: Int = -1
+): AnimatedAnimation
+```
+
+**Parameters:**
+- `animation` - The animation to loop
+- `repeatCount` - Number of times to repeat (-1 for infinite, default: -1)
+
+### Animated.delay()
+
+Returns an `AnimatedAnimation` ready for running a single animation or a collection of animations after a given delay in milliseconds.
+
+```kotlin
+fun delay(
+    startDelay: Long,
+    animation: AnimatedAnimation
+): AnimatedAnimation
+```
+
+**Parameters:**
+- `startDelay` - Delay in milliseconds before starting the animation
+- `animation` - The animation to run after the delay
+
+## Animation Patterns with Animated API
+
+The `Animated` object provides powerful methods for creating declarative animations. Here are common patterns:
+
+### Sequential Animations
+
+Run animations one after another:
+
+```kotlin
+import com.facebook.litho.animated.Animated
+import com.facebook.litho.animated.alpha
+import com.facebook.litho.animated.translationY
+import com.facebook.litho.animated.useBinding
+
+val alpha = useBinding(0f)
+val translationY = useBinding(100f)
+
+MyComponent(style = Style.alpha(alpha).translationY(translationY))
+
+// Fade in, then slide up
+val sequenceAnimation = Animated.sequence(
+    Animated.timing(target = alpha, to = 1f, duration = 300),
+    Animated.timing(target = translationY, to = 0f, duration = 300)
+)
+sequenceAnimation.start()
+```
+
+### Parallel Animations
+
+Run animations at the same time:
+
+```kotlin
+import com.facebook.litho.animated.Animated
+import com.facebook.litho.animated.alpha
+import com.facebook.litho.animated.translationY
+import com.facebook.litho.animated.useBinding
+
+val alpha = useBinding(0f)
+val translationY = useBinding(100f)
+
+MyComponent(style = Style.alpha(alpha).translationY(translationY))
+
+// Fade in and slide up simultaneously
+val parallelAnimation = Animated.parallel(
+    Animated.timing(target = alpha, to = 1f, duration = 300),
+    Animated.timing(target = translationY, to = 0f, duration = 300)
+)
+parallelAnimation.start()
+```
+
+### Staggered Animations
+
+Delay animations by a fixed interval:
+
+```kotlin
+import com.facebook.litho.animated.Animated
+import com.facebook.litho.animated.alpha
+import com.facebook.litho.animated.useBinding
+
+val alpha1 = useBinding(0f)
+val alpha2 = useBinding(0f)
+val alpha3 = useBinding(0f)
+
+MyComponent1(style = Style.alpha(alpha1))
+MyComponent2(style = Style.alpha(alpha2))
+MyComponent3(style = Style.alpha(alpha3))
+
+// Stagger fade-in with 200ms delay between each
+val staggerAnimation = Animated.stagger(
+    200,
+    Animated.timing(target = alpha1, to = 1f, duration = 300),
+    Animated.timing(target = alpha2, to = 1f, duration = 300),
+    Animated.timing(target = alpha3, to = 1f, duration = 300)
+)
+staggerAnimation.start()
+```
+
+### Looping Animations
+
+Repeat animations continuously or a specific number of times:
+
+```kotlin
+import com.facebook.litho.animated.Animated
+import com.facebook.litho.animated.translationY
+import com.facebook.litho.animated.useBinding
+
+val translationY = useBinding(0f)
+
+MyComponent(style = Style.translationY(translationY))
+
+// Infinite bouncing animation
+val bounceAnimation = Animated.loop(
+    Animated.sequence(
+        Animated.timing(target = translationY, to = -20f, duration = 300),
+        Animated.timing(target = translationY, to = 0f, duration = 300)
+    )
+)
+bounceAnimation.start()
+
+// Repeat 5 times
+val limitedLoop = Animated.loop(
+    Animated.timing(target = translationY, to = 100f, duration = 500),
+    repeatCount = 5
+)
+limitedLoop.start()
+```
+
+### Delayed Animations
+
+Start an animation after a delay:
+
+```kotlin
+import com.facebook.litho.animated.Animated
+import com.facebook.litho.animated.alpha
+import com.facebook.litho.animated.useBinding
+
+val alpha = useBinding(0f)
+
+MyComponent(style = Style.alpha(alpha))
+
+// Wait 1 second, then fade in
+val delayedAnimation = Animated.delay(
+    startDelay = 1000,
+    animation = Animated.timing(target = alpha, to = 1f, duration = 300)
+)
+delayedAnimation.start()
+```
+
+### Spring Animations
+
+Use physics-based spring animations:
+
+```kotlin
+import com.facebook.litho.animated.Animated
+import com.facebook.litho.animated.SpringConfig
+import com.facebook.litho.animated.scaleX
+import com.facebook.litho.animated.scaleY
+import com.facebook.litho.animated.useBinding
+import androidx.dynamicanimation.animation.SpringForce
+
+val scale = useBinding(1f)
+
+val style = Style.scaleX(scale).scaleY(scale)
+
+// Bouncy spring animation
+val springAnimation = Animated.spring(
+    target = scale,
+    to = 1.2f,
+    springConfig = SpringConfig(
+        stiffness = SpringForce.STIFFNESS_LOW,
+        dampingRatio = SpringForce.DAMPING_RATIO_LOW_BOUNCY
+    )
+)
+springAnimation.start()
+```
+
+### Animation with Finish Listener
+
+Execute code when animation completes:
+
+```kotlin
+import com.facebook.litho.animated.Animated
+import com.facebook.litho.animated.alpha
+import com.facebook.litho.animated.useBinding
+
+val alpha = useBinding(1f)
+
+val style = Style.alpha(alpha)
+
+val fadeOut = Animated.timing(
+    target = alpha,
+    to = 0f,
+    duration = 300,
+    animationFinishListener = { cancelled ->
+        if (!cancelled) {
+            // Animation completed successfully
+            // Perform next action here
+        }
+    }
+)
+fadeOut.start()
+```
+
+### Custom Easing
+
+Control animation timing with easing functions:
+
+```kotlin
+import com.facebook.litho.animated.Animated
+import com.facebook.litho.animated.Easing
+import com.facebook.litho.animated.translationY
+import com.facebook.litho.animated.useBinding
+
+val translationY = useBinding(0f)
+
+val style = Style.translationY(translationY)
+
+// Smooth ease-in-out
+val smoothAnimation = Animated.timing(
+    target = translationY,
+    to = 100f,
+    duration = 500,
+    easing = Easing.bezier(0.42f, 0f, 0.58f, 1f)
+)
+smoothAnimation.start()
+
+// Linear timing
+val linearAnimation = Animated.timing(
+    target = translationY,
+    to = 100f,
+    duration = 500,
+    easing = Easing.linear()
+)
+linearAnimation.start()
+
+// Bounce effect
+val bounceAnimation = Animated.timing(
+    target = translationY,
+    to = 100f,
+    duration = 500,
+    easing = Easing.bounce()
+)
+bounceAnimation.start()
+```
+
+## Performance Considerations
+
+Dynamic value styles are optimized for performance:
+
+- **No Layout Recalculation**: Updating dynamic values doesn't trigger layout passes
+- **Direct Property Updates**: Changes are applied directly to the mounted view
+- **Efficient Rendering**: Only the visual properties are updated, not the entire component tree
+
+## Best Practices
+
+1. **Use useBinding hook**: Always create `DynamicValue` objects with `useBinding()` in component scope
+2. **Derive values when needed**: Use `useBinding(source) { transform }` to create derived values
+3. **Prefer Animated API**: Use `Animated.timing()`, `Animated.spring()`, etc. instead of manual animators
+4. **Reuse across renders**: `useBinding()` automatically maintains the same instance across renders
+5. **Update on main thread**: Only call `.set()` or `.get()` on the main thread
+
+## See also
+
+- **[Common Props](../props/common-props.mdx)** - Learn about the broader Style API and how to combine styles.
+- **[View Styles](view-styles.mdx)** - Learn about static view styling properties.
+- **[Core Styles](core-styles.mdx)** - Learn about fundamental sizing and spacing styles.

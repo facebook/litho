@@ -20,6 +20,8 @@ import android.util.Pair;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.EventHandler;
+import com.facebook.litho.GlobalKey;
+import com.facebook.litho.StringGlobalKey;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,10 +46,10 @@ public class ChangeSetCalculationState {
     if (mState == null) {
       throw new RuntimeException("Trying to use inactive ChangeSetCalculationState!");
     }
-    mState.eventHandlers.add(new Pair<>(globalKey, eventHandler));
+    mState.eventHandlers.add(new Pair<>(new StringGlobalKey(globalKey), eventHandler));
   }
 
-  List<Pair<String, EventHandler<?>>> getEventHandlers() {
+  List<Pair<GlobalKey, EventHandler<?>>> getEventHandlers() {
     if (mState == null) {
       throw new RuntimeException("Trying to use inactive ChangeSetCalculationState!");
     }
@@ -70,6 +72,6 @@ public class ChangeSetCalculationState {
    * for this data which can be cleared.
    */
   private static class State {
-    private final ArrayList<Pair<String, EventHandler<?>>> eventHandlers = new ArrayList<>();
+    private final ArrayList<Pair<GlobalKey, EventHandler<?>>> eventHandlers = new ArrayList<>();
   }
 }

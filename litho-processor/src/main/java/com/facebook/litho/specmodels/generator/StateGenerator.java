@@ -29,6 +29,7 @@ import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelUtils;
 import com.facebook.litho.specmodels.model.StateParamModel;
 import com.facebook.litho.specmodels.model.UpdateStateMethod;
+import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.MethodSpec;
@@ -133,10 +134,7 @@ public class StateGenerator {
             .addParameter(
                 ParameterSpec.builder(specModel.getComponentTypeName(), "component").build())
             .addStatement(
-                "$L $L = ($L) getStateContainerImpl(c)",
-                stateContainerClassName,
-                STATE_CONTAINER_NAME,
-                stateContainerClassName)
+                "$L $L = getStateContainerImpl(c)", stateContainerClassName, STATE_CONTAINER_NAME)
             .addStatement(
                 "return ($L) c.applyLazyStateUpdatesForContainer($L)",
                 stateContainerClassName,
@@ -219,6 +217,10 @@ public class StateGenerator {
     final MethodSpec.Builder builder =
         MethodSpec.methodBuilder(name)
             .addModifiers(Modifier.PROTECTED, Modifier.STATIC)
+            .addAnnotation(
+                AnnotationSpec.builder(SuppressWarnings.class)
+                    .addMember("value", "$S", "rawtypes")
+                    .build())
             .addParameter(specModel.getContextClass(), "c");
 
     builder
@@ -273,8 +275,17 @@ public class StateGenerator {
       default:
         throw new RuntimeException("Unhandled state update type: " + stateUpdateType);
     }
-    builder.addStatement(
-        "c." + stateUpdateMethod + "(_stateUpdate, " + stateUpdateAttribution + ")");
+    if (specModel.getComponentClass().equals(ClassNames.COMPONENT)) {
+      // Pass the owning component's class so ComponentContext can assert the state update is being
+      // performed with the context of the component that owns the @State (mirrors event handlers).
+      // Only Components route through ComponentContext; Sections/Surfaces use their own scope.
+      builder.addStatement(
+          "c." + stateUpdateMethod + "(_stateUpdate, " + stateUpdateAttribution + ", $L.class)",
+          specModel.getComponentName());
+    } else {
+      builder.addStatement(
+          "c." + stateUpdateMethod + "(_stateUpdate, " + stateUpdateAttribution + ")");
+    }
 
     return TypeSpecDataHolder.newBuilder().addMethod(builder.build()).build();
   }
@@ -300,6 +311,10 @@ public class StateGenerator {
                     + stateValue.getName().substring(0, 1).toUpperCase(Locale.ROOT)
                     + stateValue.getName().substring(1))
             .addModifiers(Modifier.PROTECTED, Modifier.STATIC)
+            .addAnnotation(
+                AnnotationSpec.builder(SuppressWarnings.class)
+                    .addMember("value", "$S", "rawtypes")
+                    .build())
             .addParameter(specModel.getContextClass(), "c")
             .addTypeVariables(MethodParamModelUtils.getTypeVariables(stateValue))
             .addParameter(
@@ -328,7 +343,12 @@ public class StateGenerator {
         type,
         LAZY_STATE_UPDATE_VALUE_PARAM);
 
-    builder.addStatement("c.updateStateLazy(_stateUpdate)");
+    if (specModel.getComponentClass().equals(ClassNames.COMPONENT)) {
+      builder.addStatement(
+          "c.updateStateLazy(_stateUpdate, $L.class)", specModel.getComponentName());
+    } else {
+      builder.addStatement("c.updateStateLazy(_stateUpdate)");
+    }
 
     return TypeSpecDataHolder.newBuilder().addMethod(builder.build()).build();
   }

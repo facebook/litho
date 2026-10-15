@@ -23,7 +23,7 @@ Litho provides a manual component measurement API for determining component size
 
 ## Size Specs
 
-Before diving into the API, it's recommended that you familiarise yourself with how the [onMeasure](https://developer.android.com/reference/android/view/View.html#onMeasure(int,%20int)) function works in a regular Android `View`.  Also,  what a [MeasureSpec](https://developer.android.com/reference/android/view/View.MeasureSpec.html) is, since Litho uses an analogous concept called [SizeSpec](pathname:///javadoc/com/facebook/litho/SizeSpec.html).
+Before diving into the API, it's recommended that you familiarise yourself with how the [onMeasure](https://developer.android.com/reference/android/view/View.html#onMeasure(int,%20int)) function works in a regular Android `View`.  Also,  what a [MeasureSpec](https://developer.android.com/reference/android/view/View.MeasureSpec.html) is, since Litho uses an analogous concept called `SizeSpec`.
 
 Similar to the Android `MeasureSpec` equivalent, Litho's `SizeSpec` is composed of a size and a mode. The possible modes, same as for `MeasureSpec`, are: `UNSPECIFIED`, `EXACTLY`, and `AT_MOST`.
 
@@ -52,13 +52,13 @@ final int textComponentHeight = outputSize.height;
 
 ## SizeSpec Information During Layout
 
-During layout creation, the API can provide information about the `SizeSpec`s with which the component is going to be measured. To access this information, the [@OnCreateLayoutWithSizeSpec](pathname:///javadoc/com/facebook/litho/annotations/OnCreateLayoutWithSizeSpec.html) annotation needs to be used instead of `@OnCreateLayout`. The arguments of the annotated method, besides the standard `ComponentContext`, are two more integers representing the width spec and the height spec.
+During layout creation, the API can provide information about the `SizeSpec`s with which the component is going to be measured. To access this information, the `@OnCreateLayoutWithSizeSpec` annotation needs to be used instead of `@OnCreateLayout`. The arguments of the annotated method, besides the standard `ComponentContext`, are two more integers representing the width spec and the height spec.
 
 Similar to Android's `MeasureSpec`, you can resolve the exact size of a width or height spec integers by using `SizeSpec.getSize(widthSpec)`, and the mode with `SizeSpec.getMode(widthSpec)`.
 
 In the following example, a `Text` component is measured to check if the given text fits in the available space. An `Image` component is otherwise used.
 
-``` java file=sample/src/main/java/com/facebook/samples/litho/java/documentation/LongTextReplacerComponentSpec.java start=start_example end=end_example
+``` java file=sample-java/src/main/java/com/facebook/samples/litho/documentation/LongTextReplacerComponentSpec.java start=start_example end=end_example
 ```
 
 ## Kotlin Integration
@@ -67,7 +67,7 @@ Kotlin equivalent of `@OnCreateLayoutWithSizeSpec` is called `RenderWithConstrai
 
 Below, there is an example that uses `SizeConstraints` provided by `RenderWithConstraints`:
 
-``` kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/renderwithconstraints/RenderWithConstraintsKComponent.kt start=start_renderwithconstraints_example end=end_renderwithconstraints_example
+``` kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/renderwithconstraints/RenderWithConstraintsKComponent.kt start=start_renderwithconstraints_example end=end_renderwithconstraints_example
 ```
 
 :::note

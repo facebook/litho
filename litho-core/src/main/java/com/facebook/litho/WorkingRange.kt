@@ -26,7 +26,7 @@ interface WorkingRange {
       firstVisibleIndex: Int,
       lastVisibleIndex: Int,
       firstFullyVisibleIndex: Int,
-      lastFullyVisibleIndex: Int
+      lastFullyVisibleIndex: Int,
   ): Boolean
 
   /**
@@ -37,6 +37,6 @@ interface WorkingRange {
       firstVisibleIndex: Int,
       lastVisibleIndex: Int,
       firstFullyVisibleIndex: Int,
-      lastFullyVisibleIndex: Int
+      lastFullyVisibleIndex: Int,
   ): Boolean
 }

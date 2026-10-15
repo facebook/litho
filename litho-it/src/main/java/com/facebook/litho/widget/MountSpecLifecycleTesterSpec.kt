@@ -60,7 +60,7 @@ object MountSpecLifecycleTesterSpec {
   fun onCreateInitialState(
       context: ComponentContext,
       dummyState: StateValue<Any?>,
-      @Prop lifecycleTracker: LifecycleTracker
+      @Prop lifecycleTracker: LifecycleTracker,
   ) {
     dummyState.set(Any())
     lifecycleTracker.addStep(LifecycleStep.ON_CREATE_INITIAL_STATE)
@@ -80,7 +80,7 @@ object MountSpecLifecycleTesterSpec {
   @JvmStatic
   @ShouldExcludeFromIncrementalMount
   fun shouldExcludeFromIncrementalMount(
-      @Prop(optional = true) shouldExcludeFromIncrementalMount: Boolean?
+      @Prop(optional = true) shouldExcludeFromIncrementalMount: Boolean?,
   ): Boolean {
     return shouldExcludeFromIncrementalMount ?: false
   }
@@ -144,7 +144,6 @@ object MountSpecLifecycleTesterSpec {
       @Prop(optional = true) defaultAlpha: Float,
       @FromBoundsDefined fromMeasureOutput: Any,
   ) {
-    // TODO: (T64290961) Remove the StaticContainer hack for tracing OnCreateMountContent callback.
     if (view === StaticContainer.sLastCreatedView) {
       lifecycleTracker.addStep(LifecycleStep.ON_CREATE_MOUNT_CONTENT)
       StaticContainer.sLastCreatedView = null
@@ -162,7 +161,7 @@ object MountSpecLifecycleTesterSpec {
       context: ComponentContext,
       view: View,
       @Prop lifecycleTracker: LifecycleTracker,
-      @Prop(optional = true) defaultAlpha: Float
+      @Prop(optional = true) defaultAlpha: Float,
   ) {
     lifecycleTracker.addStep(LifecycleStep.ON_UNMOUNT)
     if (defaultAlpha != 0f) {
@@ -193,7 +192,7 @@ object MountSpecLifecycleTesterSpec {
       c: ComponentContext,
       view: View,
       @Prop lifecycleTracker: LifecycleTracker,
-      @Prop(optional = true) defaultScale: Float
+      @Prop(optional = true) defaultScale: Float,
   ) {
     lifecycleTracker.addStep(LifecycleStep.ON_UNBIND)
     if (defaultScale != 0f) {

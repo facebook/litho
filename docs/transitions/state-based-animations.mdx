@@ -1,0 +1,661 @@
+---
+id: state-based-animations
+title: State-Based Animations
+keywords:
+    - animations
+    - state-based animations
+    - useAnimatedFloat
+    - useAnimatedInt
+    - useAnimatedColor
+    - useAnimatedDimen
+    - useAnimatedValue
+    - useAnimationGroup
+    - LithoAnimationTestRule
+    - spring
+    - tween
+    - keyframes
+    - AnimationSpec
+    - Value
+    - useInfiniteAnimationGroup
+    - infiniteRepeatable
+    - StartOffset
+    - FiniteAnimationSpec
+    - DurationBasedAnimationSpec
+    - InfiniteAnimationSpec
+---
+
+## Overview
+
+State-based animations let you declare *what* value you want and *how* it should animate
+— Litho handles the rest. When the target changes, a new animation starts automatically.
+If the target changes again mid-flight, the running animation is smoothly retargeted with
+velocity preservation.
+
+```kotlin
+val alpha: Value<Float> = useAnimatedFloat(if (visible) 1f else 0f)
+
+Column(style = Style.alpha(alpha))
+```
+
+That's it — `alpha` animates between `0f` and `1f` whenever `visible` changes.
+
+### How it works
+
+When an animated value updates each frame, only the appropriate phase re-runs. E.g, using the
+example above, when the alpha animates, layout and resolve are skipped entirely. This is possible
+because `Value<T>` integrates with Litho's state read tracking: the framework knows exactly which
+phases read the value and only re-runs those. As a result, updates are smooth and efficient.
+
+## Quick Start
+
+```kotlin
+class FadeExample : KComponent() {
+    override fun ComponentScope.render(): Component {
+        val visible = useState { true }
+        val alpha = useAnimatedFloat(if (visible.value) 1f else 0f)
+
+        return Column(
+            style = Style
+                .alpha(alpha)
+                .onClick { visible.update { !it } }
+        ) {
+            child(Text(text = "Tap to toggle"))
+        }
+    }
+}
+```
+
+## Animation Hooks
+
+### useAnimatedFloat
+
+Animates a `Float` value. Starts a new animation whenever `targetValue` changes.
+
+```kotlin
+fun ComponentScope.useAnimatedFloat(
+    targetValue: Float,
+    spec: FiniteAnimationSpec<Float> = spring(),
+    trigger: AnimationTrigger = AnimationTrigger.Immediate,
+    label: String = "float",
+): Value<Float>
+```
+
+```kotlin
+val alpha = useAnimatedFloat(if (visible) 1f else 0f)
+val scale = useAnimatedFloat(if (expanded) 1.2f else 1f, spec = spring(stiffness = Stiffness.Low))
+```
+
+### useAnimatedInt
+
+Animates an `Int` value.
+
+```kotlin
+fun ComponentScope.useAnimatedInt(
+    targetValue: Int,
+    spec: FiniteAnimationSpec<Int> = spring(),
+    trigger: AnimationTrigger = AnimationTrigger.Immediate,
+    label: String = "int",
+): Value<Int>
+```
+
+### useAnimatedColor
+
+Animates a `Color` value with per-channel interpolation.
+
+```kotlin
+fun ComponentScope.useAnimatedColor(
+    targetValue: Color,
+    spec: FiniteAnimationSpec<Color> = spring(),
+    trigger: AnimationTrigger = AnimationTrigger.Immediate,
+    label: String = "color",
+): Value<Color>
+```
+
+### useAnimatedDimen
+
+Animates a `Dimen` value. Dimensions are converted to pixels for animation computation.
+
+```kotlin
+fun ComponentScope.useAnimatedDimen(
+    targetValue: Dimen,
+    spec: FiniteAnimationSpec<Dimen> = spring(),
+    trigger: AnimationTrigger = AnimationTrigger.Immediate,
+    label: String = "dimen",
+): Value<Dimen>
+```
+
+```kotlin
+val height = useAnimatedDimen(
+    targetValue = if (expanded) 200.dp else 56.dp,
+    spec = spring(stiffness = Stiffness.Low),
+)
+
+Column(style = Style.height(height))
+```
+
+### useAnimatedValue
+
+Generic hook for custom types. Use this when the built-in typed hooks don't cover your
+value type and you need to provide a custom `TypeConverter`.
+
+```kotlin
+fun <T> ComponentScope.useAnimatedValue(
+    targetValue: T,
+    typeConverter: TypeConverter<T>,
+    spec: FiniteAnimationSpec<T> = spring(),
+    trigger: AnimationTrigger = AnimationTrigger.Immediate,
+    label: String = "",
+): Value<T>
+```
+
+All typed hooks (`useAnimatedFloat`, `useAnimatedInt`, etc.) delegate to this internally.
+
+### Retargeting
+
+If the target value changes while an animation is running, the current animation is
+interrupted and a new one starts from the current position. For spring animations,
+the current velocity is captured and passed to the new animation, producing smooth
+retargeting without visual discontinuities.
+
+No explicit cancellation or restart is needed — just change the state and the animation
+adapts.
+
+## Testing Animations
+
+Use `LithoAnimationTestRule` from `com.facebook.litho.testing` when tests need
+deterministic control over animation frames and frame timestamps. The rule
+installs a test frame driver for `AnimationController` during the test and lets
+you advance animation time directly instead of waiting for real frames.
+
+```kotlin
+@get:Rule
+val animationRule = LithoAnimationTestRule { shadowOf(getMainLooper()).idle() }
+```
+
+The optional `afterFrame` callback is useful in Robolectric tests where Litho or
+main-looper work should be flushed after each frame.
+
+```kotlin
+testView.setRoot(FadeComponent(visible = true))
+
+animationRule.advanceBy(250.ms)
+assertThat(testView.lithoView.alpha).isEqualTo(0.25f)
+assertThat(animationRule.hasScheduledFrames()).isTrue()
+
+animationRule.advanceBy(750.ms)
+assertThat(testView.lithoView.alpha).isEqualTo(1f)
+assertThat(animationRule.hasScheduledFrames()).isFalse()
+```
+
+`LithoAnimationTestRule` works with `useAnimatedValue`, typed `useAnimated*`
+hooks, `useAnimatable`, and `Style.transition {}` because they all receive
+frames through the shared `AnimationController`.
+
+| Method | Behavior |
+|--------|----------|
+| `runNextFrame(frameDelay)` | Dispatches one frame. New duration-based animations start on this frame. |
+| `advanceBy(duration)` | Advances elapsed animation time by `duration`, bootstrapping scheduled animations. |
+| `advanceTo(frameTime)` | Advances animation time to an absolute test timestamp. |
+| `hasScheduledFrames()` | Returns whether any animations are waiting for another frame. |
+
+### Deferred start with AnimationTrigger
+
+By default, animations begin receiving frame callbacks immediately (`AnimationTrigger.Immediate`).
+For items in a scrollable collection, this means animations can run to completion while the
+item is still off-screen. Use `useLazyAnimationTrigger()` to get a stable lazy trigger and defer
+animation start until you explicitly trigger it — for example, when the item becomes visible:
+
+```kotlin
+val trigger = useLazyAnimationTrigger()
+val alpha = useAnimatedFloat(
+    targetValue = if (visible) 1f else 0f,
+    trigger = trigger,
+)
+
+// Later, when the item becomes visible on screen:
+trigger.start()
+```
+
+`start()` is safe to call multiple times — only the first call has effect.
+
+## Animation Specs
+
+Animation specs describe *how* an animation behaves. They are lightweight, immutable
+configuration objects — think of them as recipes. The default spec for all hooks is
+`spring()`.
+
+Specs form a small hierarchy: `spring` is a `FiniteAnimationSpec` (it settles); `tween`,
+`keyframes`, and `snap` are `DurationBasedAnimationSpec`s (finite, with a known cycle duration);
+and `infiniteRepeatable` produces an `InfiniteAnimationSpec` that never settles. Target-settling
+APIs (`useAnimated*`, `useAnimationGroup`, `Style.transition`, `AnimatedVisibility`,
+`AnimatedContent`) require a `FiniteAnimationSpec`, so an infinite spec can only be used with
+[`useInfiniteAnimationGroup`](#infinite-animations).
+
+### spring
+
+Physics-based spring animation. Produces natural, interruptible motion.
+
+```kotlin
+fun <T> spring(
+    stiffness: Stiffness = Stiffness.Medium,
+    dampingRatio: DampingRatio = DampingRatio.NoBouncy,
+): FiniteAnimationSpec<T>
+```
+
+**Stiffness presets:**
+
+| Preset | Value | Feel |
+|--------|-------|------|
+| `Stiffness.VeryHigh` | 10,000 | Very fast, stiff |
+| `Stiffness.High` | 1,500 | Fast, snappy |
+| `Stiffness.Medium` | 200 | Balanced (default) |
+| `Stiffness.MediumLow` | 120 | Moderately loose |
+| `Stiffness.Low` | 50 | Loose, slow |
+| `Stiffness.VeryLow` | 10 | Very loose, very slow |
+
+**Damping ratio presets:**
+
+| Preset | Value | Feel |
+|--------|-------|------|
+| `DampingRatio.HighBouncy` | 0.2 | Significant overshoot and oscillation |
+| `DampingRatio.MediumBouncy` | 0.5 | Moderate overshoot |
+| `DampingRatio.LowBouncy` | 0.75 | Slight overshoot |
+| `DampingRatio.NoBouncy` | 1.0 | No overshoot (default) |
+
+```kotlin
+// Bouncy expand animation
+val scale = useAnimatedFloat(
+    targetValue = if (expanded) 1f else 0.8f,
+    spec = spring(stiffness = Stiffness.Low, dampingRatio = DampingRatio.MediumBouncy),
+)
+```
+
+### tween
+
+Duration-based animation with an easing curve.
+
+```kotlin
+fun <T> tween(
+    duration: Duration = 300.ms,
+    easing: Easing = Easing.FastOutSlowIn,
+    delay: Duration = ZERO,
+): DurationBasedAnimationSpec<T>
+```
+
+**Easing presets:**
+
+| Preset | Description |
+|--------|-------------|
+| `Easing.Linear` | Constant rate |
+| `Easing.EaseIn` | Starts slow, accelerates |
+| `Easing.EaseOut` | Starts fast, decelerates |
+| `Easing.EaseInOut` | Slow start and end |
+| `Easing.FastOutSlowIn` | Material standard curve (default) |
+| `Easing.FastOutLinearIn` | Elements leaving screen |
+| `Easing.LinearOutSlowIn` | Elements entering screen |
+
+```kotlin
+val alpha = useAnimatedFloat(
+    targetValue = if (visible) 1f else 0f,
+    spec = tween(200.ms, easing = Easing.EaseOut),
+)
+```
+
+Custom cubic bezier easing:
+
+```kotlin
+val customEasing = CubicBezierEasing(0.25f, 0.1f, 0.25f, 1f)
+val alpha = useAnimatedFloat(0f, spec = tween(300.ms, easing = customEasing))
+```
+
+### keyframes
+
+Piecewise animation with per-segment easing. Useful for multi-step animations within a
+single value.
+
+```kotlin
+fun <T> keyframes(
+    duration: Duration,
+    block: KeyframesBuilder<T>.() -> Unit,
+): DurationBasedAnimationSpec<T>
+```
+
+```kotlin
+val scale = useAnimatedFloat(
+    targetValue = if (pressed) 0.95f else 1f,
+    spec = keyframes(300.ms) {
+        1f at 0.ms
+        0.9f at 100.ms using Easing.EaseIn
+        0.95f at 300.ms using Easing.EaseOut
+    },
+)
+```
+
+### snap
+
+Immediately jumps to the target value with no animation. Useful for testing or when you
+want an instant state change.
+
+```kotlin
+fun <T> snap(): DurationBasedAnimationSpec<T>
+```
+
+### repeatable / infiniteRepeatable
+
+Repeat a duration-based inner spec. `repeatable` returns a `FiniteAnimationSpec` (it settles after
+its iterations); `infiniteRepeatable` returns an `InfiniteAnimationSpec` that never settles and can
+only be consumed by [`useInfiniteAnimationGroup`](#infinite-animations).
+
+```kotlin
+fun <T> repeatable(
+    iterations: Int,
+    animation: DurationBasedAnimationSpec<T>,
+    repeatMode: RepeatMode = RepeatMode.Restart,
+    initialStartOffset: StartOffset = StartOffset(0),
+): FiniteAnimationSpec<T>
+
+fun <T> infiniteRepeatable(
+    animation: DurationBasedAnimationSpec<T>,
+    repeatMode: RepeatMode = RepeatMode.Restart,
+    initialStartOffset: StartOffset = StartOffset(0),
+): InfiniteAnimationSpec<T>
+```
+
+The inner `animation` must be **duration-based** (`tween`, `keyframes`, `snap`) — a cycle can only
+repeat if its length is known up front, so springs are excluded. `RepeatMode.Restart` resets to the
+start each iteration; `RepeatMode.Reverse` alternates direction. `infiniteRepeatable` rejects a
+zero-duration cycle (e.g. `snap()`). See [StartOffset](#startoffset) for `initialStartOffset`.
+
+## Infinite Animations
+
+Use `useInfiniteAnimationGroup` for continuous loops that run while a component is mounted, such as pulse
+indicators, spinners, shimmer sweeps, breathing effects, and typing dots. Infinite animations are
+separate from target-settling APIs because they never complete: they do not drive `onSettled`, enter/exit
+unmount, or `Style.transition` convergence.
+
+```kotlin
+fun ComponentScope.useInfiniteAnimationGroup(
+    running: Boolean = true,
+    label: String = "infinite",
+): InfiniteAnimation
+```
+
+The returned `InfiniteAnimation` declares child loops; each loops between an explicit `from` and
+`to`. `animateInt`, `animateColor`, `animateDimen`, and a generic `animateValue(..., typeConverter)`
+mirror `animateFloat`:
+
+```kotlin
+fun animateFloat(
+    from: Float,
+    to: Float,
+    animation: DurationBasedAnimationSpec<Float> = tween(),
+    repeatMode: RepeatMode = RepeatMode.Reverse,
+    initialStartOffset: StartOffset = StartOffset(0),
+    label: String = "float",
+): Value<Float>
+```
+
+```kotlin
+// Pulse: alpha + scale breathe together.
+val infinite = useInfiniteAnimationGroup()
+val alpha = infinite.animateFloat(from = 0.4f, to = 1f, animation = tween(700.ms))
+val scale = infinite.animateFloat(from = 0.85f, to = 1.1f, animation = tween(700.ms))
+Dot(style = Style.alpha(alpha).scale(scale))
+```
+
+```kotlin
+// Spinner: constant-rate rotation. Restart (never reverse) + Linear.
+val rotation = infinite.animateFloat(
+    from = 0f, to = 360f,
+    animation = tween(900.ms, easing = Easing.Linear),
+    repeatMode = RepeatMode.Restart,
+)
+Icon(style = Style.rotation(rotation))
+```
+
+```kotlin
+// Staggered "typing" dots: a FastForward phase offset staggers otherwise-identical loops.
+val dots = (0..2).map { i ->
+    infinite.animateFloat(
+        from = 0f, to = -14f, animation = tween(360.ms),
+        initialStartOffset = StartOffset(i * 120, StartOffsetType.FastForward),
+    )
+}
+Row { dots.forEach { y -> Dot(style = Style.translationY(y)) } }
+```
+
+### StartOffset
+
+A `StartOffset` is a one-time shift of a loop's first cycle — distinct from a tween's `delay`, which
+is baked into the spec and so repeats every cycle:
+
+- `StartOffset(ms, StartOffsetType.Delay)` — hold at `from` for `ms`, then begin the first cycle.
+- `StartOffset(ms, StartOffsetType.FastForward)` — begin immediately, already `ms` into the cycle. Because the loop is periodic this is a persistent phase shift — the natural way to stagger several otherwise-identical loops.
+
+### Pausing with `running`
+
+`running = false` unregisters the loops and holds their current values; flipping back to `true`
+restarts each loop from its `from` (a stop/hold + restart, not an elapsed-time resume). Wire it to
+visibility so off-screen content isn't animating:
+
+```kotlin
+val infinite = useInfiniteAnimationGroup(running = isVisible)
+```
+
+:::caution Performance
+A running infinite animation keeps a frame callback scheduled every frame for as long as it is
+mounted — even a cheap alpha pulse, and even when scrolled off-screen but still mounted. Prefer
+bind-phase properties (alpha / scale / rotation / translation); a loop that animates layout
+(width / height) re-lays-out every frame. Gate `running` on visibility for off-screen content.
+:::
+
+### When to use which
+
+| API | Use for |
+|-----|---------|
+| `useInfiniteAnimationGroup` | continuous loops (shimmer, pulse, spinner, dots) |
+| `useAnimated*` | a single value animating to a new target |
+| `useAnimationGroup` | several values retargeting together on a state change |
+| `AnimatedVisibility` / `AnimatedContent` | enter/exit and content swaps with retention |
+| `Style.transition` | diff-based mount-space changes (move / resize) |
+
+Polished, runnable demos (pulse, spinner, shimmer, staggered dots, with a run/pause toggle) live in
+`sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/animations/statebased/InfiniteAnimationDemos.kt`.
+
+## Style Properties
+
+The following `Style` extensions accept `Value<T>` for animated binding.
+
+### Layout time styles
+
+Package: `com.facebook.litho.animation`
+
+| Style | Type |
+|-------|------|
+| `Style.height(height)` | `Value<Dimen>` |
+| `Style.width(width)` | `Value<Dimen>` |
+
+### Bind time styles
+
+Package: `com.facebook.litho.animation`
+
+| Style | Type | Default (on unbind) |
+|-------|------|---------------------|
+| `Style.alpha(alpha)` | `Value<Float>` | 1f |
+| `Style.rotation(rotation)` | `Value<Float>` | 0f |
+| `Style.rotationX(rotationX)` | `Value<Float>` | 0f |
+| `Style.rotationY(rotationY)` | `Value<Float>` | 0f |
+| `Style.scale(scale)` | `Value<Float>` | 1f |
+| `Style.elevation(elevation)` | `Value<Float>` | 0f |
+| `Style.translationX(translationX)` | `Value<Float>` | 0f |
+| `Style.translationY(translationY)` | `Value<Float>` | 0f |
+| `Style.backgroundColor(backgroundColor)` | `Value<Color>` | `Color.fromInt(android.graphics.Color.TRANSPARENT)` |
+
+:::note
+These APIs are currently annotated with `@ExperimentalLithoApi`.
+:::
+
+## Coordinated Animations with useAnimationGroup
+
+When multiple properties should animate together in response to a shared state change,
+use `useAnimationGroup` instead of individual hooks. It provides:
+
+- **Directional spec selection** — choose different animation specs based on the direction
+  of a state change (e.g., bouncy spring for expand, quick tween for collapse)
+- **Coordinated completion** — `currentState` only updates when ALL animations
+  finish
+- **Unified retargeting** — all animations retarget together when state changes mid-flight
+
+```kotlin
+fun <S> ComponentScope.useAnimationGroup(
+    targetState: S,
+    trigger: AnimationTrigger = AnimationTrigger.Immediate,
+    label: String = "transition",
+): AnimationGroup<S>
+```
+
+### Adding animated properties
+
+Call `animateFloat`, `animateInt`, `animateColor`, or `animateDimen` on the returned group
+to add animations:
+
+```kotlin
+val group = useAnimationGroup(expanded)
+
+val height = group.animateDimen { state -> if (state) 200.dp else 56.dp }
+val alpha = group.animateFloat { state -> if (state) 1f else 0f }
+```
+
+Each child maps the target state to a target value via the `targetValueByState` lambda.
+
+### Directional specs with Segment
+
+The `transitionSpec` parameter receives a `Segment<S>` — it knows both the initial state
+and target state, so you can choose different animations for different directions:
+
+```kotlin
+val height = group.animateDimen(
+    transitionSpec = {
+        when {
+            false.isTransitioningTo(true) ->
+                spring(stiffness = Stiffness.Low)           // expand: bouncy spring
+            true.isTransitioningTo(false) ->
+                tween(200.ms, easing = Easing.FastOutSlowIn) // collapse: quick tween
+            else -> spring()
+        }
+    },
+) { state -> if (state) 200.dp else 56.dp }
+```
+
+This works with any state type — booleans, enums, sealed classes:
+
+```kotlin
+enum class Screen { Feed, Profile, Settings }
+
+val group = useAnimationGroup(currentScreen)
+
+val offsetX = group.animateFloat(
+    transitionSpec = {
+        when {
+            Feed.isTransitioningTo(Profile) -> tween(300.ms, easing = Easing.EaseInOut)
+            Profile.isTransitioningTo(Feed) -> tween(300.ms, easing = Easing.EaseInOut)
+            else -> tween(200.ms)
+        }
+    },
+) { screen ->
+    when (screen) {
+        Feed -> 0f
+        Profile -> -1f
+        Settings -> -2f
+    }
+}
+```
+
+### currentState vs targetState
+
+| Property | Updates when | Use |
+|----------|-------------|-----|
+| `targetState` | Immediately when `useAnimationGroup` receives a new value | Where animations are heading |
+| `currentState` | Only when ALL child animations finish | Last settled state |
+
+`currentState` lagging behind `targetState` is intentional — it enables future features
+like exit animations where a component needs to stay mounted while animating out.
+
+### Complete example
+
+```kotlin
+class ExpandableCard(
+    private val title: String,
+    private val content: String,
+) : KComponent() {
+    override fun ComponentScope.render(): Component {
+        val expanded = useState { false }
+        val group = useAnimationGroup(expanded.value, label = "expand")
+
+        val height = group.animateDimen(
+            label = "height",
+            transitionSpec = {
+                when {
+                    false.isTransitioningTo(true) ->
+                        spring(stiffness = Stiffness.Low, dampingRatio = DampingRatio.LowBouncy)
+                    else ->
+                        tween(250.ms, easing = Easing.FastOutSlowIn)
+                }
+            },
+        ) { state -> if (state) 200.dp else 56.dp }
+
+        val contentAlpha = group.animateFloat(
+            label = "contentAlpha",
+            transitionSpec = {
+                when {
+                    false.isTransitioningTo(true) -> tween(200.ms, easing = Easing.EaseIn)
+                    else -> tween(150.ms, easing = Easing.EaseOut)
+                }
+            },
+        ) { state -> if (state) 1f else 0f }
+
+        val chevronRotation = group.animateFloat(
+            label = "chevronRotation",
+        ) { state -> if (state) 180f else 0f }
+
+        return Column(
+            style = Style
+                .height(height)
+                .onClick { expanded.update { !it } }
+        ) {
+            child(
+                Row {
+                    child(Text(text = title))
+                    child(
+                        Image(
+                            drawable = chevronDrawable,
+                            style = Style.rotation(chevronRotation),
+                        )
+                    )
+                }
+            )
+            child(
+                Text(
+                    text = content,
+                    style = Style.alpha(contentAlpha),
+                )
+            )
+        }
+    }
+}
+```
+
+## Interruption and Retargeting
+
+The animation system handles interruption automatically. When a target changes mid-flight:
+
+1. The current animation's velocity is captured
+2. A new animation starts from the current position toward the new target
+3. The captured velocity is passed to the new animation
+
+For springs, this produces physically correct retargeting — the animation continues with
+its current momentum. For tweens, the velocity is ignored and the new tween starts fresh
+from the current position.
+
+No explicit `cancel()`, `stop()`, or `restart()` calls are needed. Simply update the
+state and the animation system handles the transition smoothly.

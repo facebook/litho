@@ -17,19 +17,22 @@
 package com.facebook.litho
 
 import android.content.Context
+import android.view.View
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.TouchExpansionDelegateTest.Companion.emulateClickEvent
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.config.LithoDebugConfigurations
+import com.facebook.litho.core.height
+import com.facebook.litho.core.width
+import com.facebook.litho.layout.flexbox.Column
 import com.facebook.litho.testing.LithoTestRule
-import com.facebook.litho.testing.error.TestCrasherOnCreateLayout
-import com.facebook.litho.testing.error.TestHasDelegateThatCrashesOnCreateLayout
 import com.facebook.litho.testing.testrunner.LithoTestRunner
+import com.facebook.litho.view.onClick
 import com.facebook.litho.widget.OnClickCallbackComponent
-import com.facebook.litho.widget.OnErrorNotPresentChild
 import com.facebook.litho.widget.OnErrorPassUpChildTester
 import com.facebook.litho.widget.OnErrorPassUpParentTester
 import com.facebook.litho.widget.TriggerCallbackComponent
+import com.facebook.rendercore.px
 import java.lang.RuntimeException
 import java.util.ArrayList
 import org.hamcrest.BaseMatcher
@@ -68,14 +71,16 @@ class LithoMetadataExceptionWrapperTest {
           }
 
           override fun describeTo(description: Description) = Unit
-        })
+        },
+    )
     val c = lithoTestRule.context
     lithoTestRule.render {
       Wrapper.create(c)
           .delegate(
               Row.create(c)
-                  .child(Column.create(c).child(TestHasDelegateThatCrashesOnCreateLayout.create(c)))
-                  .build())
+                  .child(Column.create(c).child(TestHasDelegateThatCrashesOnCreateLayout()))
+                  .build(),
+          )
           .build()
     }
   }
@@ -85,7 +90,7 @@ class LithoMetadataExceptionWrapperTest {
     expectedException.expect(LithoMetadataExceptionWrapper::class.java)
     expectedException.expectMessage("layout_stack: TestCrasherOnCreateLayout")
     val c = lithoTestRule.context
-    lithoTestRule.render { TestCrasherOnCreateLayout.create(c).build() }
+    lithoTestRule.render { TestCrasherOnCreateLayout() }
   }
 
   @Test
@@ -93,7 +98,8 @@ class LithoMetadataExceptionWrapperTest {
     Assume.assumeThat(
         "Error boundary is enabled in debug builds.",
         LithoDebugConfigurations.isDebugModeEnabled,
-        Is.`is`(true))
+        Is.`is`(true),
+    )
     expectedException.expect(LithoMetadataExceptionWrapper::class.java)
     expectedException.expectMessage(
         object : BaseMatcher<String?>() {
@@ -107,7 +113,8 @@ class LithoMetadataExceptionWrapperTest {
           }
 
           override fun describeTo(description: Description) = Unit
-        })
+        },
+    )
     val info: List<String> = ArrayList()
     val context = lithoTestRule.context
     val component: Component =
@@ -123,7 +130,8 @@ class LithoMetadataExceptionWrapperTest {
     Assume.assumeThat(
         "Error boundary is enabled in debug builds.",
         LithoDebugConfigurations.isDebugModeEnabled,
-        Is.`is`(true))
+        Is.`is`(true),
+    )
     expectedException.expect(LithoMetadataExceptionWrapper::class.java)
     expectedException.expectMessage(
         object : BaseMatcher<String?>() {
@@ -137,14 +145,12 @@ class LithoMetadataExceptionWrapperTest {
           }
 
           override fun describeTo(description: Description) = Unit
-        })
+        },
+    )
     val info: List<String> = ArrayList()
     val context = lithoTestRule.context
     val component =
-        OnErrorPassUpParentTester.create(context)
-            .child(OnErrorNotPresentChild.create(context).build())
-            .info(info)
-            .build()
+        OnErrorPassUpParentTester.create(context).child(OnErrorNotPresentChild()).info(info).build()
     lithoTestRule.render { component }
   }
 
@@ -153,8 +159,10 @@ class LithoMetadataExceptionWrapperTest {
     expectedException.expect(LithoMetadataExceptionWrapper::class.java)
     expectedException.expectMessage("log_tag: myLogTag")
     val c = getComponentContextForTest()
-    lithoTestRule.render(componentTree = ComponentTree.create(c).build()) {
-      TestCrasherOnCreateLayout.create(c).build()
+    lithoTestRule.render(
+        componentTree = ComponentTree.create(c).enableChildClipping(true).build(),
+    ) {
+      TestCrasherOnCreateLayout()
     }
   }
 
@@ -164,9 +172,12 @@ class LithoMetadataExceptionWrapperTest {
     expectedException.expectMessage("log_tag: myLogTag")
     val c = getComponentContextForTest()
     lithoTestRule.render(
-        componentTree = ComponentTree.create(c).build(), widthPx = 100, heightPx = 100) {
-          TestCrasherOnCreateLayout.create(c).build()
-        }
+        componentTree = ComponentTree.create(c).enableChildClipping(true).build(),
+        widthPx = 100,
+        heightPx = 100,
+    ) {
+      TestCrasherOnCreateLayout()
+    }
   }
 
   @Test
@@ -178,12 +189,48 @@ class LithoMetadataExceptionWrapperTest {
     val component: Component =
         Column.create(c)
             .child(
-                OnClickCallbackComponent.create(c).widthPx(10).heightPx(10).callback {
-                  throw RuntimeException("Expected test exception")
-                })
+                OnClickCallbackComponent(
+                    callback =
+                        View.OnClickListener { throw RuntimeException("Expected test exception") },
+                    style = Style.width(10.px).height(10.px),
+                ),
+            )
             .build()
     val testLithoView =
-        lithoTestRule.render(componentTree = ComponentTree.create(c).build()) { component }
+        lithoTestRule.render(
+            componentTree = ComponentTree.create(c).enableChildClipping(true).build(),
+        ) {
+          component
+        }
+    testLithoView.lithoView.emulateClickEvent(7, 7)
+  }
+
+  @Test
+  fun onClickEvent_withLogTag_showsLogTagInStack_KComponent() {
+    class TestComponent : KComponent() {
+      override fun ComponentScope.render(): Component? {
+        return Column(
+            style =
+                Style.onClick { throw RuntimeException("Expected test exception") }
+                    .width(10.px)
+                    .height(10.px),
+        ) {}
+      }
+    }
+    expectedException.expect(LithoMetadataExceptionWrapper::class.java)
+    expectedException.expectMessage("log_tag: myLogTag")
+    expectedException.expectMessage(
+        "<cls>com.facebook.litho.LithoMetadataExceptionWrapperTest\$onClickEvent_withLogTag_showsLogTagInStack_KComponent\$TestComponent</cls>",
+    )
+    val c = getComponentContextForTest()
+    val component: Component = Column.create(c).child(TestComponent()).build()
+
+    val testLithoView =
+        lithoTestRule.render(
+            componentTree = ComponentTree.create(c).enableChildClipping(true).build(),
+        ) {
+          component
+        }
     testLithoView.lithoView.emulateClickEvent(7, 7)
   }
 
@@ -201,9 +248,14 @@ class LithoMetadataExceptionWrapperTest {
                     .widthPx(10)
                     .heightPx(10)
                     .handle(handle)
-                    .callback { throw RuntimeException("Expected test exception") })
+                    .callback { throw RuntimeException("Expected test exception") },
+            )
             .build()
-    lithoTestRule.render(componentTree = ComponentTree.create(c).build()) { component }
+    lithoTestRule.render(
+        componentTree = ComponentTree.create(c).enableChildClipping(true).build(),
+    ) {
+      component
+    }
     TriggerCallbackComponent.doTrigger(lithoTestRule.context, handle)
   }
 
@@ -211,9 +263,35 @@ class LithoMetadataExceptionWrapperTest {
     val androidContext = ApplicationProvider.getApplicationContext<Context>()
     return ComponentContext(
         androidContext,
-        ComponentContextUtils.buildDefaultLithoConfiguration(
+        LithoConfiguration(
             context = androidContext,
-            componentsConfig = ComponentsConfiguration.defaultInstance.copy(logTag = "myLogTag")),
-        null)
+            componentsConfig = ComponentsConfiguration.defaultInstance.copy(logTag = "myLogTag"),
+        ),
+        null,
+    )
+  }
+
+  private class ThrowExceptionGrandChildTester : KComponent() {
+    override fun ComponentScope.render(): Component {
+      throw RuntimeException("Exception from the ThrowExceptionGrandChildTesterSpec")
+    }
+  }
+
+  private class OnErrorNotPresentChild : KComponent() {
+    override fun ComponentScope.render(): Component {
+      return ThrowExceptionGrandChildTester()
+    }
+  }
+
+  private class TestCrasherOnCreateLayout : KComponent() {
+    override fun ComponentScope.render(): Component {
+      throw RuntimeException("onCreateLayout crash")
+    }
+  }
+
+  private class TestHasDelegateThatCrashesOnCreateLayout : KComponent() {
+    override fun ComponentScope.render(): Component {
+      return TestCrasherOnCreateLayout()
+    }
   }
 }

@@ -24,7 +24,6 @@ import androidx.annotation.ColorInt
 import androidx.annotation.IntDef
 import com.facebook.infer.annotation.ThreadConfined
 import com.facebook.litho.AccessibilityRole.AccessibilityRoleType
-import com.facebook.litho.CollectionsUtils.mergeSparseArrays
 import com.facebook.litho.visibility.Visibility
 import com.facebook.rendercore.Equivalence
 import com.facebook.rendercore.utils.equals
@@ -59,47 +58,47 @@ class NodeInfo : Equivalence<NodeInfo> {
   @IntDef(
       REQUEST_INITIAL_ACCESSIBILITY_FOCUS_UNSET,
       REQUEST_INITIAL_ACCESSIBILITY_FOCUS_SET_FALSE,
-      REQUEST_INITIAL_ACCESSIBILITY_FOCUS_SET_TRUE)
+      REQUEST_INITIAL_ACCESSIBILITY_FOCUS_SET_TRUE,
+  )
   @Retention(AnnotationRetention.SOURCE)
   internal annotation class InitialFocusState
 
   @IntDef(
-      ACCESSIBILITY_HEADING_UNSET, ACCESSIBILITY_HEADING_SET_TRUE, ACCESSIBILITY_HEADING_SET_FALSE)
+      ACCESSIBILITY_HEADING_UNSET,
+      ACCESSIBILITY_HEADING_SET_TRUE,
+      ACCESSIBILITY_HEADING_SET_FALSE,
+  )
   @Retention(AnnotationRetention.SOURCE)
   internal annotation class AccessibilityHeadingState
 
   @IntDef(
       KEYBOARD_NAVIGATION_CLUSTER_UNSET,
       KEYBOARD_NAVIGATION_CLUSTER_SET_TRUE,
-      KEYBOARD_NAVIGATION_CLUSTER_SET_FALSE)
+      KEYBOARD_NAVIGATION_CLUSTER_SET_FALSE,
+  )
   @Retention(AnnotationRetention.SOURCE)
   internal annotation class KeyboardNavigationClusterState
 
+  var binderMigratedNodeInfo: BinderMigratedNodeInfo? = null
+    private set
+
+  internal fun getOrCreateBinderMigratedNodeInfo(): BinderMigratedNodeInfo {
+    var info = binderMigratedNodeInfo
+    if (info == null) {
+      info = BinderMigratedNodeInfo()
+      binderMigratedNodeInfo = info
+    }
+    return info
+  }
+
+  var transitionName: String?
+    get() = binderMigratedNodeInfo?.transitionName
+    set(value) {
+      getOrCreateBinderMigratedNodeInfo().transitionName = value
+    }
+
   private var _contentDescription: CharSequence? = null
   private var _stateDescription: CharSequence? = null
-  private var _viewId = View.NO_ID
-  private var _viewTag: Any? = null
-  var transitionName: String? = null
-  private var _viewTags: SparseArray<Any>? = null
-  private var _shadowElevation = 0f
-  @ColorInt private var _ambientShadowColor = Color.BLACK
-  @ColorInt private var _spotShadowColor = Color.BLACK
-  private var _outlineProvider: ViewOutlineProvider? = null
-  private var _renderEffect: LithoRenderEffect? = null
-  private var _clipToOutline = false
-
-  // Default value for ViewGroup
-  private var _clipChildren = true
-  private var _scale = 1f
-  private var _alpha = 1f
-  private var _rotation = 0f
-  private var _rotationX = 0f
-  private var _rotationY = 0f
-  private var _clickHandler: EventHandler<ClickEvent>? = null
-  private var _focusChangeHandler: EventHandler<FocusChangedEvent>? = null
-  private var _longClickHandler: EventHandler<LongClickEvent>? = null
-  private var _touchHandler: EventHandler<TouchEvent>? = null
-  private var _interceptTouchHandler: EventHandler<InterceptTouchEvent>? = null
   private var _focusOrder: FocusOrderModel? = null
   @AccessibilityRoleType private var _accessibilityRole: String? = null
   private var _accessibilityRoleDescription: CharSequence? = null
@@ -137,17 +136,20 @@ class NodeInfo : Equivalence<NodeInfo> {
   private var _labeledBy: Any? = null
   private var _accessibilityPaneTitle: CharSequence? = null
   private var _liveRegionMode: Int? = null
-  private var _tooltipText: String? = null
 
-  var visibility: Visibility? = null
+  var visibility: Visibility?
+    get() = binderMigratedNodeInfo?.visibility
     internal set(value) {
       flags = flags or PFLAG_VISIBILITY_IS_SET
-      field = value
+      getOrCreateBinderMigratedNodeInfo().visibility = value
     }
 
   @FocusState
-  var focusState: Int = FOCUS_UNSET
-    private set
+  var focusState: Int
+    get() = binderMigratedNodeInfo?.focusState ?: FOCUS_UNSET
+    private set(value) {
+      getOrCreateBinderMigratedNodeInfo().focusState = value
+    }
 
   @InitialFocusState
   var initialFocusState: Int = REQUEST_INITIAL_ACCESSIBILITY_FOCUS_UNSET
@@ -158,24 +160,37 @@ class NodeInfo : Equivalence<NodeInfo> {
     private set
 
   @ClickableState
-  var clickableState: Int = CLICKABLE_UNSET
-    private set
+  var clickableState: Int
+    get() = binderMigratedNodeInfo?.clickableState ?: CLICKABLE_UNSET
+    private set(value) {
+      getOrCreateBinderMigratedNodeInfo().clickableState = value
+    }
 
   @EnabledState
-  var enabledState: Int = ENABLED_UNSET
-    private set
+  var enabledState: Int
+    get() = binderMigratedNodeInfo?.enabledState ?: ENABLED_UNSET
+    private set(value) {
+      getOrCreateBinderMigratedNodeInfo().enabledState = value
+    }
 
   @SelectedState
-  var selectedState: Int = SELECTED_UNSET
-    private set
+  var selectedState: Int
+    get() = binderMigratedNodeInfo?.selectedState ?: SELECTED_UNSET
+    private set(value) {
+      getOrCreateBinderMigratedNodeInfo().selectedState = value
+    }
 
   @AccessibilityHeadingState
   var accessibilityHeadingState: Int = ACCESSIBILITY_HEADING_UNSET
     private set
 
   @KeyboardNavigationClusterState
-  var keyboardNavigationClusterState: Int = KEYBOARD_NAVIGATION_CLUSTER_UNSET
-    private set
+  var keyboardNavigationClusterState: Int
+    get() =
+        binderMigratedNodeInfo?.keyboardNavigationClusterState ?: KEYBOARD_NAVIGATION_CLUSTER_UNSET
+    private set(value) {
+      getOrCreateBinderMigratedNodeInfo().keyboardNavigationClusterState = value
+    }
 
   var flags: Long = 0
     private set
@@ -195,128 +210,142 @@ class NodeInfo : Equivalence<NodeInfo> {
     }
 
   var tooltipText: String?
-    get() = _tooltipText
+    get() = binderMigratedNodeInfo?.tooltipText
     set(tooltipText) {
       flags = flags or PFLAG_TOOLTIP_TEXT_IS_SET
-      _tooltipText = tooltipText
+      getOrCreateBinderMigratedNodeInfo().tooltipText = tooltipText
     }
 
-  fun hasViewId(): Boolean = flags and PFLAG_VIEW_ID_IS_SET != 0L
+  fun hasViewId(): Boolean = binderMigratedNodeInfo?.hasViewId() ?: false
 
   var viewId: Int
-    get() = _viewId
+    get() = binderMigratedNodeInfo?.viewId ?: View.NO_ID
     set(id) {
       flags = flags or PFLAG_VIEW_ID_IS_SET
-      _viewId = id
+      getOrCreateBinderMigratedNodeInfo().viewId = id
     }
 
   var viewTag: Any?
-    get() = _viewTag
+    get() = binderMigratedNodeInfo?.viewTag
     set(viewTag) {
       flags = flags or PFLAG_VIEW_TAG_IS_SET
-      _viewTag = viewTag
+      getOrCreateBinderMigratedNodeInfo().viewTag = viewTag
     }
 
   var shadowElevation: Float
-    get() = _shadowElevation
+    get() = binderMigratedNodeInfo?.shadowElevation ?: 0f
     set(shadowElevation) {
       flags = flags or PFLAG_SHADOW_ELEVATION_IS_SET
-      _shadowElevation = shadowElevation
+      getOrCreateBinderMigratedNodeInfo().shadowElevation = shadowElevation
     }
 
   @get:ColorInt
   var ambientShadowColor: Int
-    get() = _ambientShadowColor
+    get() = binderMigratedNodeInfo?.ambientShadowColor ?: Color.BLACK
     set(color) {
       flags = flags or PFLAG_AMBIENT_SHADOW_COLOR_IS_SET
-      _ambientShadowColor = color
+      getOrCreateBinderMigratedNodeInfo().ambientShadowColor = color
     }
 
   @get:ColorInt
   var spotShadowColor: Int
-    get() = _spotShadowColor
+    get() = binderMigratedNodeInfo?.spotShadowColor ?: Color.BLACK
     set(color) {
       flags = flags or PFLAG_SPOT_SHADOW_COLOR_IS_SET
-      _spotShadowColor = color
+      getOrCreateBinderMigratedNodeInfo().spotShadowColor = color
     }
 
   var outlineProvider: ViewOutlineProvider?
-    get() = _outlineProvider
+    get() = binderMigratedNodeInfo?.outlineProvider
     set(outlineProvider) {
       flags = flags or PFLAG_OUTINE_PROVIDER_IS_SET
-      _outlineProvider = outlineProvider
+      getOrCreateBinderMigratedNodeInfo().outlineProvider = outlineProvider
     }
 
   var renderEffect: LithoRenderEffect?
-    get() = _renderEffect
+    get() = binderMigratedNodeInfo?.renderEffect
     set(renderEffect) {
       flags = flags or PFLAG_RENDER_EFFECT_IS_SET
-      _renderEffect = renderEffect
+      getOrCreateBinderMigratedNodeInfo().renderEffect = renderEffect
     }
 
   var clipToOutline: Boolean
-    get() = _clipToOutline
+    get() = binderMigratedNodeInfo?.clipToOutline ?: false
     set(clipToOutline) {
       flags = flags or PFLAG_CLIP_TO_OUTLINE_IS_SET
-      _clipToOutline = clipToOutline
+      getOrCreateBinderMigratedNodeInfo().clipToOutline = clipToOutline
     }
 
   var clipChildren: Boolean
-    get() = _clipChildren
+    get() = binderMigratedNodeInfo?.clipChildren ?: true
     set(clipChildren) {
       flags = flags or PFLAG_CLIP_CHILDREN_IS_SET
-      _clipChildren = clipChildren
+      getOrCreateBinderMigratedNodeInfo().clipChildren = clipChildren
     }
 
   val isClipChildrenSet: Boolean
-    get() = flags and PFLAG_CLIP_CHILDREN_IS_SET != 0L
+    get() = binderMigratedNodeInfo?.isClipChildrenSet ?: false
+
+  var defaultFocusHighlightEnabled: Boolean
+    get() = binderMigratedNodeInfo?.defaultFocusHighlightEnabled ?: true
+    set(defaultFocusHighlightEnabled) {
+      flags = flags or PFLAG_DEFAULT_FOCUS_HIGHLIGHT_ENABLED_IS_SET
+      getOrCreateBinderMigratedNodeInfo().defaultFocusHighlightEnabled =
+          defaultFocusHighlightEnabled
+    }
+
+  val isDefaultFocusHighlightEnabledSet: Boolean
+    get() = binderMigratedNodeInfo?.isDefaultFocusHighlightEnabledSet ?: false
 
   var viewTags: SparseArray<Any>? = null
-    get() = _viewTags
+    get() = binderMigratedNodeInfo?.viewTags
     private set
 
   var clickHandler: EventHandler<ClickEvent>?
-    get() = _clickHandler
+    get() = binderMigratedNodeInfo?.clickHandler
     set(clickHandler) {
       flags = flags or PFLAG_CLICK_HANDLER_IS_SET
-      _clickHandler = clickHandler
+      getOrCreateBinderMigratedNodeInfo().clickHandler = clickHandler
     }
 
+  internal val extraClickListeners: List<com.facebook.litho.view.ClickListenerHolder>?
+    get() = binderMigratedNodeInfo?.extraClickListeners
+
+  internal fun addExtraClickListener(holder: com.facebook.litho.view.ClickListenerHolder) {
+    getOrCreateBinderMigratedNodeInfo().addExtraClickListener(holder)
+  }
+
   var longClickHandler: EventHandler<LongClickEvent>?
-    get() = _longClickHandler
+    get() = binderMigratedNodeInfo?.longClickHandler
     set(longClickHandler) {
       flags = flags or PFLAG_LONG_CLICK_HANDLER_IS_SET
-      _longClickHandler = longClickHandler
+      getOrCreateBinderMigratedNodeInfo().longClickHandler = longClickHandler
     }
 
   var focusChangeHandler: EventHandler<FocusChangedEvent>?
-    get() = _focusChangeHandler
+    get() = binderMigratedNodeInfo?.focusChangeHandler
     set(focusChangedHandler) {
       flags = flags or PFLAG_FOCUS_CHANGE_HANDLER_IS_SET
-      _focusChangeHandler = focusChangedHandler
+      getOrCreateBinderMigratedNodeInfo().focusChangeHandler = focusChangedHandler
     }
 
-  fun hasFocusChangeHandler(): Boolean = _focusChangeHandler != null
+  fun hasFocusChangeHandler(): Boolean = binderMigratedNodeInfo?.hasFocusChangeHandler() ?: false
 
   var touchHandler: EventHandler<TouchEvent>?
-    get() = _touchHandler
+    get() = binderMigratedNodeInfo?.touchHandler
     set(touchHandler) {
       flags = flags or PFLAG_TOUCH_HANDLER_IS_SET
-      _touchHandler = touchHandler
+      getOrCreateBinderMigratedNodeInfo().touchHandler = touchHandler
     }
 
   var interceptTouchHandler: EventHandler<InterceptTouchEvent>?
-    get() = _interceptTouchHandler
+    get() = binderMigratedNodeInfo?.interceptTouchHandler
     set(interceptTouchHandler) {
       flags = flags or PFLAG_INTERCEPT_TOUCH_HANDLER_IS_SET
-      _interceptTouchHandler = interceptTouchHandler
+      getOrCreateBinderMigratedNodeInfo().interceptTouchHandler = interceptTouchHandler
     }
 
-  fun hasTouchEventHandlers(): Boolean =
-      _clickHandler != null ||
-          _longClickHandler != null ||
-          _touchHandler != null ||
-          _interceptTouchHandler != null
+  fun hasTouchEventHandlers(): Boolean = binderMigratedNodeInfo?.hasTouchEventHandlers() ?: false
 
   var focusOrder: FocusOrderModel?
     get() = _focusOrder
@@ -333,20 +362,13 @@ class NodeInfo : Equivalence<NodeInfo> {
     }
 
   fun addViewTag(id: Int, tag: Any) {
-    if (_viewTags == null) {
-      _viewTags = SparseArray<Any>()
-    }
     flags = flags or PFLAG_VIEW_TAGS_IS_SET
-    _viewTags?.put(id, tag)
+    getOrCreateBinderMigratedNodeInfo().addViewTag(id, tag)
   }
 
   fun addViewTags(viewTags: SparseArray<Any>?) {
     flags = flags or PFLAG_VIEW_TAGS_IS_SET
-    if (_viewTags == null) {
-      _viewTags = viewTags
-    } else {
-      _viewTags = mergeSparseArrays(_viewTags, viewTags)
-    }
+    getOrCreateBinderMigratedNodeInfo().addViewTags(viewTags)
   }
 
   @get:AccessibilityRoleType
@@ -490,11 +512,15 @@ class NodeInfo : Equivalence<NodeInfo> {
           _minDurationBetweenContentChangesMillis != null ||
           _accessibilityPaneTitle != null ||
           _liveRegionMode != null ||
+          // Only what a service would read: a heading set to false, or an empty string, is not.
+          accessibilityHeadingState == ACCESSIBILITY_HEADING_SET_TRUE ||
+          !_stateDescription.isNullOrEmpty() ||
+          !_containerTitle.isNullOrEmpty() ||
           screenReaderFocusState != SCREEN_READER_FOCUS_UNSET ||
           initialFocusState != REQUEST_INITIAL_ACCESSIBILITY_FOCUS_UNSET
 
   fun setFocusable(isFocusable: Boolean) {
-    focusState = if (isFocusable) FOCUS_SET_TRUE else FOCUS_SET_FALSE
+    getOrCreateBinderMigratedNodeInfo().setFocusable(isFocusable)
   }
 
   fun setScreenReaderFocusable(isFocusable: Boolean) {
@@ -509,15 +535,15 @@ class NodeInfo : Equivalence<NodeInfo> {
   }
 
   fun setClickable(isClickable: Boolean) {
-    clickableState = if (isClickable) CLICKABLE_SET_TRUE else CLICKABLE_SET_FALSE
+    getOrCreateBinderMigratedNodeInfo().setClickable(isClickable)
   }
 
   fun setEnabled(isEnabled: Boolean) {
-    enabledState = if (isEnabled) ENABLED_SET_TRUE else ENABLED_SET_FALSE
+    getOrCreateBinderMigratedNodeInfo().setEnabled(isEnabled)
   }
 
   fun setSelected(isSelected: Boolean) {
-    selectedState = if (isSelected) SELECTED_SET_TRUE else SELECTED_SET_FALSE
+    getOrCreateBinderMigratedNodeInfo().setSelected(isSelected)
   }
 
   fun setAccessibilityHeading(isHeading: Boolean) {
@@ -530,9 +556,9 @@ class NodeInfo : Equivalence<NodeInfo> {
   }
 
   var scale: Float
-    get() = _scale
+    get() = binderMigratedNodeInfo?.scale ?: 1f
     set(scale) {
-      _scale = scale
+      getOrCreateBinderMigratedNodeInfo().scale = scale
       flags =
           if (scale == 1f) {
             flags and PFLAG_SCALE_IS_SET.inv()
@@ -542,12 +568,12 @@ class NodeInfo : Equivalence<NodeInfo> {
     }
 
   val isScaleSet: Boolean
-    get() = flags and PFLAG_SCALE_IS_SET != 0L
+    get() = binderMigratedNodeInfo?.isScaleSet ?: false
 
   var alpha: Float
-    get() = _alpha
+    get() = binderMigratedNodeInfo?.alpha ?: 1f
     set(alpha) {
-      _alpha = alpha
+      getOrCreateBinderMigratedNodeInfo().alpha = alpha
       flags =
           if (alpha == 1f) {
             flags and PFLAG_ALPHA_IS_SET.inv()
@@ -557,12 +583,12 @@ class NodeInfo : Equivalence<NodeInfo> {
     }
 
   val isAlphaSet: Boolean
-    get() = flags and PFLAG_ALPHA_IS_SET != 0L
+    get() = binderMigratedNodeInfo?.isAlphaSet ?: false
 
   var rotation: Float
-    get() = _rotation
+    get() = binderMigratedNodeInfo?.rotation ?: 0f
     set(rotation) {
-      _rotation = rotation
+      getOrCreateBinderMigratedNodeInfo().rotation = rotation
       flags =
           if (rotation == 0f) {
             flags and PFLAG_ROTATION_IS_SET.inv()
@@ -572,35 +598,30 @@ class NodeInfo : Equivalence<NodeInfo> {
     }
 
   val isRotationSet: Boolean
-    get() = flags and PFLAG_ROTATION_IS_SET != 0L
+    get() = binderMigratedNodeInfo?.isRotationSet ?: false
 
   var rotationX: Float
-    get() = _rotationX
+    get() = binderMigratedNodeInfo?.rotationX ?: 0f
     set(rotationX) {
-      _rotationX = rotationX
+      getOrCreateBinderMigratedNodeInfo().rotationX = rotationX
       flags = flags or PFLAG_ROTATION_X_IS_SET
     }
 
   val isRotationXSet: Boolean
-    get() = flags and PFLAG_ROTATION_X_IS_SET != 0L
+    get() = binderMigratedNodeInfo?.isRotationXSet ?: false
 
   var rotationY: Float
-    get() = _rotationY
+    get() = binderMigratedNodeInfo?.rotationY ?: 0f
     set(rotationY) {
-      _rotationY = rotationY
+      getOrCreateBinderMigratedNodeInfo().rotationY = rotationY
       flags = flags or PFLAG_ROTATION_Y_IS_SET
     }
 
   val isRotationYSet: Boolean
-    get() = flags and PFLAG_ROTATION_Y_IS_SET != 0L
+    get() = binderMigratedNodeInfo?.isRotationYSet ?: false
 
   fun setKeyboardNavigationCluster(isKeyboardNavigationCluster: Boolean) {
-    keyboardNavigationClusterState =
-        if (isKeyboardNavigationCluster) {
-          KEYBOARD_NAVIGATION_CLUSTER_SET_TRUE
-        } else {
-          KEYBOARD_NAVIGATION_CLUSTER_SET_FALSE
-        }
+    getOrCreateBinderMigratedNodeInfo().setKeyboardNavigationCluster(isKeyboardNavigationCluster)
   }
 
   /**
@@ -619,22 +640,18 @@ class NodeInfo : Equivalence<NodeInfo> {
     if (this.flags != other.flags) {
       return false
     }
+
+    // Non-migrated comparisons
     if (!equals(this.accessibilityRole, other.accessibilityRole)) {
       return false
     }
-    if (this.alpha != other.alpha) {
+    if (!equals(this.accessibilityRoleDescription, other.accessibilityRoleDescription)) {
       return false
     }
-    if (!isEquivalentTo(this.clickHandler, other.clickHandler)) {
+    if (!equals(this.labeledBy, other.labeledBy)) {
       return false
     }
-    if (this.clipToOutline != other.clipToOutline) {
-      return false
-    }
-    if (this.clipChildren != other.clipChildren) {
-      return false
-    }
-    if (!equals(this.contentDescription, other.contentDescription)) {
+    if (this.accessibilityHeadingState != other.accessibilityHeadingState) {
       return false
     }
     if (!equals(this.accessibilityPaneTitle, other.accessibilityPaneTitle)) {
@@ -646,19 +663,18 @@ class NodeInfo : Equivalence<NodeInfo> {
     if (!equals(this.stateDescription, other.stateDescription)) {
       return false
     }
-
-    if (!equals(this.tooltipText, other.tooltipText)) {
+    if (!equals(this.contentDescription, other.contentDescription)) {
       return false
     }
-    if (!isEquivalentTo(
-        this.dispatchPopulateAccessibilityEventHandler,
-        other.dispatchPopulateAccessibilityEventHandler)) {
+    if (
+        !isEquivalentTo(
+            this.dispatchPopulateAccessibilityEventHandler,
+            other.dispatchPopulateAccessibilityEventHandler,
+        )
+    ) {
       return false
     }
     if (this.enabledState != other.enabledState) {
-      return false
-    }
-    if (!isEquivalentTo(this.focusChangeHandler, other.focusChangeHandler)) {
       return false
     }
     if (this.focusState != other.focusState) {
@@ -670,48 +686,52 @@ class NodeInfo : Equivalence<NodeInfo> {
     if (this.initialFocusState != other.initialFocusState) {
       return false
     }
-    if (!isEquivalentTo(this.interceptTouchHandler, other.interceptTouchHandler)) {
+    if (
+        !isEquivalentTo(
+            this.onInitializeAccessibilityEventHandler,
+            other.onInitializeAccessibilityEventHandler,
+        )
+    ) {
       return false
     }
-    if (!isEquivalentTo(this.longClickHandler, other.longClickHandler)) {
+    if (
+        !isEquivalentTo(
+            this.onInitializeAccessibilityNodeInfoHandler,
+            other.onInitializeAccessibilityNodeInfoHandler,
+        )
+    ) {
       return false
     }
-    if (!isEquivalentTo(
-        this.onInitializeAccessibilityEventHandler, other.onInitializeAccessibilityEventHandler)) {
+    if (
+        !isEquivalentTo(
+            this.onPopulateAccessibilityEventHandler,
+            other.onPopulateAccessibilityEventHandler,
+        )
+    ) {
       return false
     }
-    if (!isEquivalentTo(
-        this.onInitializeAccessibilityNodeInfoHandler,
-        other.onInitializeAccessibilityNodeInfoHandler)) {
+    if (
+        !isEquivalentTo(
+            this.onPopulateAccessibilityNodeHandler,
+            other.onPopulateAccessibilityNodeHandler,
+        )
+    ) {
       return false
     }
-    if (!isEquivalentTo(
-        this.onPopulateAccessibilityEventHandler, other.onPopulateAccessibilityEventHandler)) {
+    if (
+        !isEquivalentTo(
+            this.onRequestSendAccessibilityEventHandler,
+            other.onRequestSendAccessibilityEventHandler,
+        )
+    ) {
       return false
     }
-    if (!isEquivalentTo(
-        this.onPopulateAccessibilityNodeHandler, other.onPopulateAccessibilityNodeHandler)) {
-      return false
-    }
-    if (!isEquivalentTo(
-        this.onRequestSendAccessibilityEventHandler,
-        other.onRequestSendAccessibilityEventHandler)) {
-      return false
-    }
-    if (!equals(this.outlineProvider, other.outlineProvider)) {
-      return false
-    }
-    if (!equals(this.renderEffect, other.renderEffect)) {
-      return false
-    }
-    if (!isEquivalentTo(
-        this.performAccessibilityActionHandler, other.performAccessibilityActionHandler)) {
-      return false
-    }
-    if (this.rotation != other.rotation) {
-      return false
-    }
-    if (this.scale != other.scale) {
+    if (
+        !isEquivalentTo(
+            this.performAccessibilityActionHandler,
+            other.performAccessibilityActionHandler,
+        )
+    ) {
       return false
     }
     if (this.selectedState != other.selectedState) {
@@ -723,77 +743,59 @@ class NodeInfo : Equivalence<NodeInfo> {
     if (!isEquivalentTo(this.sendAccessibilityEventHandler, other.sendAccessibilityEventHandler)) {
       return false
     }
-    if (!isEquivalentTo(
-        this.sendAccessibilityEventUncheckedHandler,
-        other.sendAccessibilityEventUncheckedHandler)) {
+    if (
+        !isEquivalentTo(
+            this.sendAccessibilityEventUncheckedHandler,
+            other.sendAccessibilityEventUncheckedHandler,
+        )
+    ) {
       return false
     }
-    if (!isEquivalentTo(
-        this.onPerformActionForVirtualViewHandler, other.onPerformActionForVirtualViewHandler)) {
+    if (
+        !isEquivalentTo(
+            this.onPerformActionForVirtualViewHandler,
+            other.onPerformActionForVirtualViewHandler,
+        )
+    ) {
       return false
     }
-    if (!isEquivalentTo(
-        this.onVirtualViewKeyboardFocusChangedHandler,
-        other.onVirtualViewKeyboardFocusChangedHandler)) {
+    if (
+        !isEquivalentTo(
+            this.onVirtualViewKeyboardFocusChangedHandler,
+            other.onVirtualViewKeyboardFocusChangedHandler,
+        )
+    ) {
       return false
     }
-    if (this.shadowElevation != other.shadowElevation) {
-      return false
-    }
-    if (this.ambientShadowColor != other.ambientShadowColor) {
-      return false
-    }
-    if (this.spotShadowColor != other.spotShadowColor) {
-      return false
-    }
-    if (!isEquivalentTo(this.touchHandler, other.touchHandler)) {
-      return false
-    }
-    if (!equals(this.viewTag, other.viewTag)) {
-      return false
-    }
-
-    if (!equals(this.viewId, other.viewId)) {
-      return false
-    }
-
     if (!equals(this.visibility, other.visibility)) {
       return false
     }
-
-    if (!equals(this.focusOrder, other.focusOrder)) {
+    // By key: useFocusOrder builds new models on every render, with the same keys.
+    if (!equals(this.focusOrder?.key, other.focusOrder?.key)) {
       return false
     }
-
-    if (!equals(
-        this.minDurationBetweenContentChangesMillis,
-        other.minDurationBetweenContentChangesMillis)) {
+    if (
+        !equals(
+            this.minDurationBetweenContentChangesMillis,
+            other.minDurationBetweenContentChangesMillis,
+        )
+    ) {
       return false
     }
-
     if (!equals(this.containerTitle, other.containerTitle)) {
       return false
     }
 
-    return equals(this.viewTags, other.viewTags)
+    // Migrated comparisons (delegated)
+    if (!equals(this.binderMigratedNodeInfo, other.binderMigratedNodeInfo)) {
+      return false
+    }
+
+    return true
   }
 
   fun copyInto(target: NodeInfo) {
-    if (flags and PFLAG_CLICK_HANDLER_IS_SET != 0L) {
-      target.clickHandler = _clickHandler
-    }
-    if (flags and PFLAG_LONG_CLICK_HANDLER_IS_SET != 0L) {
-      target.longClickHandler = _longClickHandler
-    }
-    if (flags and PFLAG_FOCUS_CHANGE_HANDLER_IS_SET != 0L) {
-      target.focusChangeHandler = _focusChangeHandler
-    }
-    if (flags and PFLAG_TOUCH_HANDLER_IS_SET != 0L) {
-      target.touchHandler = _touchHandler
-    }
-    if (flags and PFLAG_INTERCEPT_TOUCH_HANDLER_IS_SET != 0L) {
-      target.interceptTouchHandler = _interceptTouchHandler
-    }
+    // Non-migrated properties (inline, flag-guarded)
     if (flags and PFLAG_ACCESSIBILITY_ROLE_IS_SET != 0L) {
       target.accessibilityRole = _accessibilityRole
     }
@@ -833,9 +835,6 @@ class NodeInfo : Equivalence<NodeInfo> {
     if (flags and PFLAG_SEND_ACCESSIBILITY_EVENT_UNCHECKED_HANDLER_IS_SET != 0L) {
       target.sendAccessibilityEventUncheckedHandler = _sendAccessibilityEventUncheckedHandler
     }
-    if (flags and PFLAG_CONTENT_DESCRIPTION_IS_SET != 0L) {
-      target.contentDescription = _contentDescription
-    }
     if (flags and PFLAG_PANE_TITLE_IS_SET != 0L) {
       target.accessibilityPaneTitle = _accessibilityPaneTitle
     }
@@ -845,44 +844,11 @@ class NodeInfo : Equivalence<NodeInfo> {
     if (flags and PFLAG_STATE_DESCRIPTION_IS_SET != 0L) {
       target.stateDescription = _stateDescription
     }
-    if (flags and PFLAG_TOOLTIP_TEXT_IS_SET != 0L) {
-      target.tooltipText = _tooltipText
-    }
-    if (flags and PFLAG_SHADOW_ELEVATION_IS_SET != 0L) {
-      target.shadowElevation = _shadowElevation
-    }
-    if (flags and PFLAG_AMBIENT_SHADOW_COLOR_IS_SET != 0L) {
-      target.ambientShadowColor = _ambientShadowColor
-    }
-    if (flags and PFLAG_SPOT_SHADOW_COLOR_IS_SET != 0L) {
-      target.spotShadowColor = _spotShadowColor
-    }
-    if (flags and PFLAG_OUTINE_PROVIDER_IS_SET != 0L) {
-      target.outlineProvider = _outlineProvider
-    }
-    if (flags and PFLAG_RENDER_EFFECT_IS_SET != 0L) {
-      target.renderEffect = _renderEffect
-    }
-    if (flags and PFLAG_CLIP_TO_OUTLINE_IS_SET != 0L) {
-      target.clipToOutline = _clipToOutline
-    }
-    if (flags and PFLAG_CLIP_CHILDREN_IS_SET != 0L) {
-      target.clipChildren = _clipChildren
+    if (flags and PFLAG_CONTENT_DESCRIPTION_IS_SET != 0L) {
+      target.contentDescription = _contentDescription
     }
     if (flags and PFLAG_FOCUS_ORDER_IS_SET != 0L) {
       target.focusOrder = _focusOrder
-    }
-    if (hasViewId()) {
-      target.viewId = _viewId
-    }
-    if (_viewTag != null) {
-      target.viewTag = _viewTag
-    }
-    if (_viewTags != null) {
-      target.addViewTags(_viewTags)
-    }
-    if (transitionName != null) {
-      target.transitionName = transitionName
     }
     if (focusState != FOCUS_UNSET) {
       target.setFocusable(focusState == FOCUS_SET_TRUE)
@@ -907,22 +873,8 @@ class NodeInfo : Equivalence<NodeInfo> {
     }
     if (keyboardNavigationClusterState != KEYBOARD_NAVIGATION_CLUSTER_UNSET) {
       target.setKeyboardNavigationCluster(
-          keyboardNavigationClusterState == KEYBOARD_NAVIGATION_CLUSTER_SET_TRUE)
-    }
-    if (flags and PFLAG_SCALE_IS_SET != 0L) {
-      target.scale = _scale
-    }
-    if (flags and PFLAG_ALPHA_IS_SET != 0L) {
-      target.alpha = _alpha
-    }
-    if (flags and PFLAG_ROTATION_IS_SET != 0L) {
-      target.rotation = _rotation
-    }
-    if (flags and PFLAG_ROTATION_X_IS_SET != 0L) {
-      target.rotationX = _rotationX
-    }
-    if (flags and PFLAG_ROTATION_Y_IS_SET != 0L) {
-      target.rotationY = _rotationY
+          keyboardNavigationClusterState == KEYBOARD_NAVIGATION_CLUSTER_SET_TRUE,
+      )
     }
     if (flags and PFLAG_VISIBILITY_IS_SET != 0L) {
       target.visibility = visibility
@@ -936,24 +888,98 @@ class NodeInfo : Equivalence<NodeInfo> {
     if (flags and PFLAG_CONTAINER_TITLE_IS_SET != 0L) {
       target.containerTitle = _containerTitle
     }
+
+    // Migrated properties (read from delegated getters, write through target's setters to update
+    // target's flags)
+    if (flags and PFLAG_CLICK_HANDLER_IS_SET != 0L) {
+      target.clickHandler = clickHandler
+    }
+    // Copy additive click listeners AFTER the primary handler: assigning a non-null primary handler
+    // clears any extras on the target, so copying them earlier would be wiped out. Without this, a
+    // Wrapper's Style.additionalOnClick is silently dropped when merged into a delegate that
+    // already
+    // owns a NodeInfo with a click handler. The copyInto(ViewAttributes) overload has no such gap,
+    // as it delegates to binderMigratedNodeInfo.copyInto.
+    //
+    // De-dupe by key: this is a merge, so the target may already own an extra listener for a key
+    // that the source also registers (e.g. a delegate and its Wrapper both use the same
+    // additional-click key). Routing every source listener through addExtraClickListener would trip
+    // its duplicate-key check and crash the layout, so skip keys the target already has.
+    extraClickListeners?.forEach { holder ->
+      if (target.extraClickListeners?.any { it.key == holder.key } != true) {
+        target.addExtraClickListener(holder)
+      }
+    }
+    if (flags and PFLAG_LONG_CLICK_HANDLER_IS_SET != 0L) {
+      target.longClickHandler = longClickHandler
+    }
+    if (flags and PFLAG_FOCUS_CHANGE_HANDLER_IS_SET != 0L) {
+      target.focusChangeHandler = focusChangeHandler
+    }
+    if (flags and PFLAG_TOUCH_HANDLER_IS_SET != 0L) {
+      target.touchHandler = touchHandler
+    }
+    if (flags and PFLAG_INTERCEPT_TOUCH_HANDLER_IS_SET != 0L) {
+      target.interceptTouchHandler = interceptTouchHandler
+    }
+    if (flags and PFLAG_TOOLTIP_TEXT_IS_SET != 0L) {
+      target.tooltipText = tooltipText
+    }
+    if (flags and PFLAG_SHADOW_ELEVATION_IS_SET != 0L) {
+      target.shadowElevation = shadowElevation
+    }
+    if (flags and PFLAG_AMBIENT_SHADOW_COLOR_IS_SET != 0L) {
+      target.ambientShadowColor = ambientShadowColor
+    }
+    if (flags and PFLAG_SPOT_SHADOW_COLOR_IS_SET != 0L) {
+      target.spotShadowColor = spotShadowColor
+    }
+    if (flags and PFLAG_OUTINE_PROVIDER_IS_SET != 0L) {
+      target.outlineProvider = outlineProvider
+    }
+    if (flags and PFLAG_RENDER_EFFECT_IS_SET != 0L) {
+      target.renderEffect = renderEffect
+    }
+    if (flags and PFLAG_CLIP_TO_OUTLINE_IS_SET != 0L) {
+      target.clipToOutline = clipToOutline
+    }
+    if (flags and PFLAG_CLIP_CHILDREN_IS_SET != 0L) {
+      target.clipChildren = clipChildren
+    }
+    if (flags and PFLAG_DEFAULT_FOCUS_HIGHLIGHT_ENABLED_IS_SET != 0L) {
+      target.defaultFocusHighlightEnabled = defaultFocusHighlightEnabled
+    }
+    if (hasViewId()) {
+      target.viewId = viewId
+    }
+    if (viewTag != null) {
+      target.viewTag = viewTag
+    }
+    if (viewTags != null) {
+      target.addViewTags(viewTags)
+    }
+    if (transitionName != null) {
+      target.transitionName = transitionName
+    }
+    if (flags and PFLAG_SCALE_IS_SET != 0L) {
+      target.scale = scale
+    }
+    if (flags and PFLAG_ALPHA_IS_SET != 0L) {
+      target.alpha = alpha
+    }
+    if (flags and PFLAG_ROTATION_IS_SET != 0L) {
+      target.rotation = rotation
+    }
+    if (flags and PFLAG_ROTATION_X_IS_SET != 0L) {
+      target.rotationX = rotationX
+    }
+    if (flags and PFLAG_ROTATION_Y_IS_SET != 0L) {
+      target.rotationY = rotationY
+    }
   }
 
   fun copyInto(target: ViewAttributes) {
-    if (flags and PFLAG_CLICK_HANDLER_IS_SET != 0L) {
-      target.clickHandler = _clickHandler
-    }
-    if (flags and PFLAG_LONG_CLICK_HANDLER_IS_SET != 0L) {
-      target.longClickHandler = _longClickHandler
-    }
-    if (flags and PFLAG_FOCUS_CHANGE_HANDLER_IS_SET != 0L) {
-      target.focusChangeHandler = _focusChangeHandler
-    }
-    if (flags and PFLAG_TOUCH_HANDLER_IS_SET != 0L) {
-      target.touchHandler = _touchHandler
-    }
-    if (flags and PFLAG_INTERCEPT_TOUCH_HANDLER_IS_SET != 0L) {
-      target.interceptTouchHandler = _interceptTouchHandler
-    }
+    // Non-migrated properties (inline)
     if (flags and PFLAG_CONTENT_DESCRIPTION_IS_SET != 0L) {
       target.contentDescription = _contentDescription
     }
@@ -962,42 +988,6 @@ class NodeInfo : Equivalence<NodeInfo> {
     }
     if (flags and PFLAG_LIVE_REGION_IS_SET != 0L) {
       target.liveRegionMode = _liveRegionMode
-    }
-    if (flags and PFLAG_TOOLTIP_TEXT_IS_SET != 0L) {
-      target.tooltipText = _tooltipText
-    }
-    if (flags and PFLAG_SHADOW_ELEVATION_IS_SET != 0L) {
-      target.shadowElevation = _shadowElevation
-    }
-    if (flags and PFLAG_AMBIENT_SHADOW_COLOR_IS_SET != 0L) {
-      target.ambientShadowColor = _ambientShadowColor
-    }
-    if (flags and PFLAG_SPOT_SHADOW_COLOR_IS_SET != 0L) {
-      target.spotShadowColor = _spotShadowColor
-    }
-    if (flags and PFLAG_OUTINE_PROVIDER_IS_SET != 0L) {
-      target.outlineProvider = _outlineProvider
-    }
-    if (flags and PFLAG_RENDER_EFFECT_IS_SET != 0L) {
-      target.renderEffect = _renderEffect
-    }
-    if (flags and PFLAG_CLIP_TO_OUTLINE_IS_SET != 0L) {
-      target.clipToOutline = _clipToOutline
-    }
-    if (flags and PFLAG_CLIP_CHILDREN_IS_SET != 0L) {
-      target.clipChildren = _clipChildren
-    }
-    if (hasViewId()) {
-      target.viewId = _viewId
-    }
-    if (_viewTag != null) {
-      target.viewTag = _viewTag
-    }
-    if (_viewTags != null) {
-      target.addViewTags(_viewTags)
-    }
-    if (transitionName != null) {
-      target.transitionName = transitionName
     }
     if (focusState != FOCUS_UNSET) {
       target.isFocusable = focusState == FOCUS_SET_TRUE
@@ -1015,24 +1005,12 @@ class NodeInfo : Equivalence<NodeInfo> {
       target.isKeyboardNavigationCluster =
           keyboardNavigationClusterState == KEYBOARD_NAVIGATION_CLUSTER_SET_TRUE
     }
-    if (flags and PFLAG_SCALE_IS_SET != 0L) {
-      target.scale = _scale
-    }
-    if (flags and PFLAG_ALPHA_IS_SET != 0L) {
-      target.alpha = _alpha
-    }
-    if (flags and PFLAG_ROTATION_IS_SET != 0L) {
-      target.rotation = _rotation
-    }
-    if (flags and PFLAG_ROTATION_X_IS_SET != 0L) {
-      target.rotationX = _rotationX
-    }
-    if (flags and PFLAG_ROTATION_Y_IS_SET != 0L) {
-      target.rotationY = _rotationY
-    }
     if (flags and PFLAG_VISIBILITY_IS_SET != 0L) {
       target.visibility = visibility
     }
+
+    // Migrated properties (delegated)
+    binderMigratedNodeInfo?.copyInto(target)
   }
 
   companion object {
@@ -1178,5 +1156,8 @@ class NodeInfo : Equivalence<NodeInfo> {
 
     // When this flag is set, renderEffect was explicitly set on this node.
     private const val PFLAG_RENDER_EFFECT_IS_SET = 1L shl 43
+
+    // When this flag is set, defaultFocusHighlightEnabled was explicitly set on this node.
+    private const val PFLAG_DEFAULT_FOCUS_HIGHLIGHT_ENABLED_IS_SET = 1L shl 44
   }
 }

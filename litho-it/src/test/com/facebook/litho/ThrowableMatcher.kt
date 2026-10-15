@@ -22,7 +22,7 @@ import org.hamcrest.Description
 class ThrowableMatcher
 private constructor(
     private val classMatcher: Class<out Throwable>,
-    private val messageMatcher: String?
+    private val messageMatcher: String?,
 ) : BaseMatcher<Throwable?>() {
 
   override fun matches(item: Any): Boolean =
@@ -45,7 +45,7 @@ private constructor(
     @JvmStatic
     fun forClassWithMessage(
         classMatcher: Class<out Throwable>,
-        messageSubstring: String?
+        messageSubstring: String?,
     ): ThrowableMatcher = ThrowableMatcher(classMatcher, messageSubstring)
   }
 }

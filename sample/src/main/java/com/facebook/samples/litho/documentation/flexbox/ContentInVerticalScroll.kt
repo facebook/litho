@@ -16,7 +16,6 @@
 
 package com.facebook.samples.litho.documentation.flexbox
 
-import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
@@ -25,6 +24,7 @@ import com.facebook.litho.core.margin
 import com.facebook.litho.core.padding
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.kotlin.widget.VerticalScroll
+import com.facebook.litho.layout.flexbox.Column
 import com.facebook.rendercore.dp
 import com.facebook.rendercore.sp
 
@@ -40,7 +40,9 @@ class ContentInVerticalScroll : KComponent() {
                   style = Style.padding(16.dp).margin(top = 8.dp),
                   text = "Text counter = " + i,
                   textSize = 20.sp,
-                  maxLines = 1))
+                  maxLines = 1,
+              ),
+          )
         }
       }
     }

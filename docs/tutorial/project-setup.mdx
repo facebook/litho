@@ -6,67 +6,108 @@ title: Setting up the Project
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import VersionedCodeBlock from '@theme/VersionedCodeBlock';
+import {FbInternalOnly, OssOnly} from 'docusaurus-plugin-internaldocs-fb/internal';
+import FbSampleProjectSetup from './fb/_sample-project-setup.mdx';
 
-After creating an Android app project in Android Studio, take the steps detailed in this page to configure it with the correct settings and dependencies.
+We have set up a sample project for you to follow along with this tutorial. You can edit the file/s directly in the sample project and run the sample app to observe the changes.
 
-## 1. Add Litho core dependencies
+## 1. Get the sample project
 
-Add the following into the `dependencies` block of the `build.gradle` file:
+<OssOnly>
+
+- Clone [facebook/litho](https://github.com/facebook/litho) and open the repository root in Android Studio.
+- The starting point of your project is `sample/src/main/java/com/facebook/samples/litho/onboarding/MyActivity.kt`.
+
+</OssOnly>
+
+<FbInternalOnly>
+<FbSampleProjectSetup />
+</FbInternalOnly>
+
+## 2. Project dependencies
+
+<OssOnly>
+
+To use Litho in your own app, add the dependencies to your module's `build.gradle`:
 
 <VersionedCodeBlock language="groovy" code={`
 dependencies {
-  // Litho
   implementation 'com.facebook.litho:litho-core:{{site.lithoVersion}}'
-  implementation 'com.facebook.litho:litho-widget:{{site.lithoVersion}}'
   implementation 'com.facebook.litho:litho-widget-kotlin:{{site.lithoVersion}}'
-  kapt 'com.facebook.litho:litho-processor:{{site.lithoVersion}}'
-  // SoLoader
-  implementation 'com.facebook.soloader:soloader:{{site.soloaderVersion}}'
-  // Testing Litho
-  testImplementation 'com.facebook.litho:litho-testing:{{site.lithoVersion}}'
 }
 `} />
 
-## 2. Using the Annotation Processor (only for Spec API)
-
-:::info
-If you don't plan to create new Spec-based components and only will work with new Kotlin API, you don't need neither `kotlin-kapt` plugin nor `kapt 'com.facebook.litho:litho-processor:<version>'` dependency.
-:::
-
-The Annotation Processor is a part of the application build/compile process that generates code by reading annotations (such as `@Override` and `@SuppressWarnings`).
-The old Litho Spec API relies on annotation processing to generate real components implementations based on developer-written Specs.
-In order to enable Litho annotation processors in your project you need to apply the `kotlin-kapt` plugin at the top of your app's `build.gradle` file:
+From Litho 0.51.0, Kotlin code that calls Litho hooks also has to be built with the Litho Gradle plugin. Apply it with the same version as the Litho dependencies, and add `mavenCentral()` to `pluginManagement.repositories` in `settings.gradle`:
 
 ```groovy
-apply plugin: 'kotlin-kapt'
-```
-
-## 3. Wire up native libs
-
-Litho has a dependency on [SoLoader](https://github.com/facebook/SoLoader) to help load native libraries provided by the underlying layout engine, [Yoga](https://yogalayout.dev/docs/about-yoga)[^1].
-
-[^1]: Yoga is a cross-platform (usable on Android, iOS, and other platforms) implementation of the Flexbox layout system used in web browsers. Litho uses Yoga to enable layouts (positioning of elements in the screen) to be specified via the Flexbox layouting system.
-
-Your custom `Application` class is a good place to initialize SoLoader:
-
-```kotlin title="MyApplication.kt"
-class MyApplication: Application() {
-
-  override fun onCreate() {
-    super.onCreate()
-    SoLoader.init(this, false)
-  }
+plugins {
+  id 'com.facebook.litho' version '<Litho version>'
 }
 ```
 
-## Testing your setup
+</OssOnly>
 
-You can test the above setup steps by adding the following simple UI, created with Litho, that displays "Hello, World!" text to an activity:
+<FbInternalOnly>
+
+The following dependencies are generally required in your module's `BUCK` file to use Litho:
+
+<VersionedCodeBlock language="groovy" code={`
+deps = [
+    "//fbandroid/java/com/facebook/litho/sonar:sonar",
+    "//fbandroid/libraries/components/litho-core/src/main/java/com/facebook/litho:litho",
+    "//fbandroid/libraries/components/litho-widget/src/main/kotlin/com/facebook/litho/kotlin/widget:widget",
+    "//fbandroid/libraries/components/litho-widget/src/main/kotlin/com/facebook/litho/widget/canvas:canvas",
+    "//fbandroid/libraries/components/litho-widget/src/main/kotlin/com/facebook/litho/widget/collection:collection",
+]
+`} />
+
+</FbInternalOnly>
+
+The required dependencies are already set up for your sample project.
+
+## 3. Testing your setup
+
+:::info
+This tutorial is focused on Kotlin API using KComponents. Spec API is legacy and should only be considered to maintain existing code.
+:::
+
+<FbInternalOnly>
+
+You can navigate to the project by having Android Studio open with fbsource and clicking the icon below on the file preview.
+
+</FbInternalOnly>
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/onboarding/MyActivity.kt start=start_example end=end_example
 ```
 
-If you build and run the app you should see "Hello, World!" displayed on the screen. Project setup is complete!
+The command to build and install the app is:
+
+<OssOnly>
+
+```sh
+./gradlew :sample:installDebug
+```
+
+</OssOnly>
+
+<FbInternalOnly>
+
+```sh
+buck2 install -r litho
+```
+
+</FbInternalOnly>
+
+Running the app navigate to "Tutorial" -> "1. Hello World" where you'd see the preview of this activity.
+You can make changes to this file throughout the next sections and run the app to monitor changes.
+
+<FbInternalOnly>
+
+:::warning
+Do not land the changes made to the files in this directory, they are for local use only!
+:::
+
+</FbInternalOnly>
 
 ## What next?
 

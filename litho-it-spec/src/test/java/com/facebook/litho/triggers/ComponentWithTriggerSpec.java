@@ -22,7 +22,6 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnTrigger;
-import com.facebook.litho.annotations.Prop;
 
 @LayoutSpec
 public class ComponentWithTriggerSpec {
@@ -33,7 +32,7 @@ public class ComponentWithTriggerSpec {
   }
 
   @OnTrigger(TestEvent.class)
-  public static String testTriggerMethod(ComponentContext c, @Prop String uniqueString) {
-    return uniqueString;
+  public static String testTriggerMethod(ComponentContext c) {
+    return "A";
   }
 }

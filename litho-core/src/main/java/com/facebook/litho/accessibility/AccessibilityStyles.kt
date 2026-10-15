@@ -41,6 +41,7 @@ import com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT_FOR_AC
 import com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
 import com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_YES
 import com.facebook.litho.eventHandler
+import com.facebook.litho.eventHandlerWithReturn
 
 /** Enums for [AccessibilityStyleItem]. */
 @PublishedApi
@@ -75,7 +76,7 @@ internal enum class AccessibilityField : StyleItemField {
 @DataClassGenerate
 internal data class AccessibilityStyleItem(
     override val field: AccessibilityField,
-    override val value: Any?
+    override val value: Any?,
 ) : StyleItem<Any?> {
   override fun applyCommonProps(context: ComponentContext, commonProps: CommonProps) {
     when (field) {
@@ -90,34 +91,52 @@ internal data class AccessibilityStyleItem(
           commonProps.importantForAccessibility(value as Int)
       AccessibilityField.ON_INITIALIZE_ACCESSIBILITY_EVENT ->
           commonProps.onInitializeAccessibilityEventHandler(
-              eventHandler(value as (OnInitializeAccessibilityEventEvent) -> Unit))
+              eventHandler(value as (OnInitializeAccessibilityEventEvent) -> Unit, null, context),
+          )
       AccessibilityField.ON_INITIALIZE_ACCESSIBILITY_NODE_INFO ->
           commonProps.onInitializeAccessibilityNodeInfoHandler(
-              eventHandler(value as (OnInitializeAccessibilityNodeInfoEvent) -> Unit))
+              eventHandler(
+                  value as (OnInitializeAccessibilityNodeInfoEvent) -> Unit,
+                  null,
+                  context,
+              ),
+          )
       AccessibilityField.ON_POPULATE_ACCESSIBILITY_EVENT ->
           commonProps.onPopulateAccessibilityEventHandler(
-              eventHandler(value as (OnPopulateAccessibilityEventEvent) -> Unit))
+              eventHandler(value as (OnPopulateAccessibilityEventEvent) -> Unit, null, context),
+          )
       AccessibilityField.ON_POPULATE_ACCESSIBILITY_NODE ->
           commonProps.onPopulateAccessibilityNodeHandler(
-              eventHandler(value as (OnPopulateAccessibilityNodeEvent) -> Unit))
-      AccessibilityField.ON_REQUEST_SEND_ACCESSIBILITY_EVENT ->
-          commonProps.onRequestSendAccessibilityEventHandler(
-              eventHandler(value as (OnRequestSendAccessibilityEventEvent) -> Unit))
-      AccessibilityField.PERFORM_ACCESSIBILITY_ACTION ->
-          commonProps.performAccessibilityActionHandler(
-              eventHandler(value as (PerformAccessibilityActionEvent) -> Unit))
+              eventHandler(value as (OnPopulateAccessibilityNodeEvent) -> Unit, null, context),
+          )
+      AccessibilityField.ON_REQUEST_SEND_ACCESSIBILITY_EVENT -> {
+        // The value is always the non-null lambda passed to the Style function.
+        @Suppress("KotlinNullableVariableCastToNonnullType")
+        val handler = value as (OnRequestSendAccessibilityEventEvent) -> Boolean
+        commonProps.onRequestSendAccessibilityEventHandler(eventHandlerWithReturn(handler, context))
+      }
+      AccessibilityField.PERFORM_ACCESSIBILITY_ACTION -> {
+        @Suppress("KotlinNullableVariableCastToNonnullType")
+        val handler = value as (PerformAccessibilityActionEvent) -> Boolean
+        commonProps.performAccessibilityActionHandler(eventHandlerWithReturn(handler, context))
+      }
       AccessibilityField.SEND_ACCESSIBILITY_EVENT ->
           commonProps.sendAccessibilityEventHandler(
-              eventHandler(value as (SendAccessibilityEventEvent) -> Unit))
+              eventHandler(value as (SendAccessibilityEventEvent) -> Unit, null, context),
+          )
       AccessibilityField.SEND_ACCESSIBILITY_EVENT_UNCHECKED ->
           commonProps.sendAccessibilityEventUncheckedHandler(
-              eventHandler(value as (SendAccessibilityEventUncheckedEvent) -> Unit))
-      AccessibilityField.ON_PERFORM_ACTION_FOR_VIRTUAL_VIEW ->
-          commonProps.onPerformActionForVirtualViewHandler(
-              eventHandler(value as (PerformActionForVirtualViewEvent) -> Unit))
+              eventHandler(value as (SendAccessibilityEventUncheckedEvent) -> Unit, null, context),
+          )
+      AccessibilityField.ON_PERFORM_ACTION_FOR_VIRTUAL_VIEW -> {
+        @Suppress("KotlinNullableVariableCastToNonnullType")
+        val handler = value as (PerformActionForVirtualViewEvent) -> Boolean
+        commonProps.onPerformActionForVirtualViewHandler(eventHandlerWithReturn(handler, context))
+      }
       AccessibilityField.ON_VIRTUAL_VIEW_KEYBOARD_FOCUS_CHANGED ->
           commonProps.onVirtualViewKeyboardFocusChangedHandler(
-              eventHandler(value as (VirtualViewKeyboardFocusChangedEvent) -> Unit))
+              eventHandler(value as (VirtualViewKeyboardFocusChangedEvent) -> Unit, null, context),
+          )
       AccessibilityField.SCREEN_READER_FOCUSABLE ->
           commonProps.screenReaderFocusable(value as Boolean)
       AccessibilityField.MIN_DURATION_BETWEEN_CONTENT_CHANGES ->
@@ -141,14 +160,14 @@ internal data class AccessibilityStyleItem(
  *
  * See [android.view.View.setAccessibilityHeading].
  */
-inline fun Style.accessibilityHeading(isAccessibilityHeading: Boolean): Style =
+fun Style.accessibilityHeading(isAccessibilityHeading: Boolean): Style =
     this + AccessibilityStyleItem(AccessibilityField.ACCESSIBILITY_HEADING, isAccessibilityHeading)
 
 /**
  * The Android Talkback "role" this component has. This will be read out when the view is visited in
  * Talkback mode. See [AccessibilityRoleType] for possible roles.
  */
-inline fun Style.accessibilityRole(@AccessibilityRoleType accessibilityRole: String?): Style =
+fun Style.accessibilityRole(@AccessibilityRoleType accessibilityRole: String?): Style =
     this +
         accessibilityRole?.let { AccessibilityStyleItem(AccessibilityField.ACCESSIBILITY_ROLE, it) }
 
@@ -156,14 +175,14 @@ inline fun Style.accessibilityRole(@AccessibilityRoleType accessibilityRole: Str
  * The description for this Component's [accessibilityRole]. This will be read out when the view is
  * visited in Talkback mode.
  */
-inline fun Style.accessibilityRoleDescription(accessibilityRoleDescription: CharSequence?): Style =
+fun Style.accessibilityRoleDescription(accessibilityRoleDescription: CharSequence?): Style =
     this +
         accessibilityRoleDescription?.let {
           AccessibilityStyleItem(AccessibilityField.ACCESSIBILITY_ROLE_DESCRIPTION, it)
         }
 
 /** Sets the state description of the component associated to this [Style]. */
-inline fun Style.stateDescription(description: CharSequence?): Style =
+fun Style.stateDescription(description: CharSequence?): Style =
     this + description?.let { AccessibilityStyleItem(AccessibilityField.STATE_DESCRIPTION, it) }
 
 /**
@@ -171,13 +190,13 @@ inline fun Style.stateDescription(description: CharSequence?): Style =
  *
  * See [android.view.View.setContentDescription].
  */
-inline fun Style.contentDescription(contentDescription: CharSequence?): Style =
+fun Style.contentDescription(contentDescription: CharSequence?): Style =
     this +
         contentDescription?.let {
           AccessibilityStyleItem(AccessibilityField.CONTENT_DESCRIPTION, it)
         }
 
-inline fun Style.focusOrder(focusOrderModel: FocusOrderModel): Style =
+fun Style.focusOrder(focusOrderModel: FocusOrderModel): Style =
     this + AccessibilityStyleItem(AccessibilityField.FOCUS_ORDER, focusOrderModel)
 
 /**
@@ -187,12 +206,12 @@ inline fun Style.focusOrder(focusOrderModel: FocusOrderModel): Style =
  *
  * See [android.view.View.setImportantForAccessibility].
  */
-inline fun Style.importantForAccessibility(
-    importantForAccessibility: ImportantForAccessibility
-): Style =
+fun Style.importantForAccessibility(importantForAccessibility: ImportantForAccessibility): Style =
     this +
         AccessibilityStyleItem(
-            AccessibilityField.IMPORTANT_FOR_ACCESSIBILITY, importantForAccessibility.asInt)
+            AccessibilityField.IMPORTANT_FOR_ACCESSIBILITY,
+            importantForAccessibility.asInt,
+        )
 
 /**
  * Initializes an [AccessibilityEvent] with information about the the host View which dispatched the
@@ -201,12 +220,13 @@ inline fun Style.importantForAccessibility(
  * See [android.view.View.AccessibilityDelegateCompat#onInitializeAccessibilityEvent].
  */
 inline fun Style.onInitializeAccessibilityEvent(
-    noinline onInitializeAccessibilityEventHandler: (OnInitializeAccessibilityEventEvent) -> Unit
+    noinline onInitializeAccessibilityEventHandler: (OnInitializeAccessibilityEventEvent) -> Unit,
 ): Style =
     this +
         AccessibilityStyleItem(
             AccessibilityField.ON_INITIALIZE_ACCESSIBILITY_EVENT,
-            onInitializeAccessibilityEventHandler)
+            onInitializeAccessibilityEventHandler,
+        )
 
 /**
  * Gives a chance to the host View to populate the accessibility event with its text content.
@@ -214,45 +234,54 @@ inline fun Style.onInitializeAccessibilityEvent(
  * See [android.view.View.AccessibilityDelegateCompat#onPopulateAccessibilityEvent].
  */
 inline fun Style.onPopulateAccessibilityEvent(
-    noinline onPopulateAccessibilityEventHandler: (OnPopulateAccessibilityEventEvent) -> Unit
+    noinline onPopulateAccessibilityEventHandler: (OnPopulateAccessibilityEventEvent) -> Unit,
 ): Style =
     this +
         AccessibilityStyleItem(
-            AccessibilityField.ON_POPULATE_ACCESSIBILITY_EVENT, onPopulateAccessibilityEventHandler)
+            AccessibilityField.ON_POPULATE_ACCESSIBILITY_EVENT,
+            onPopulateAccessibilityEventHandler,
+        )
 
 /** Gives a chance to the component to implement its own accessibility support. */
 inline fun Style.onPopulateAccessibilityNode(
-    noinline onPopulateAccessibilityNodeHandler: (OnPopulateAccessibilityNodeEvent) -> Unit
+    noinline onPopulateAccessibilityNodeHandler: (OnPopulateAccessibilityNodeEvent) -> Unit,
 ): Style =
     this +
         AccessibilityStyleItem(
-            AccessibilityField.ON_POPULATE_ACCESSIBILITY_NODE, onPopulateAccessibilityNodeHandler)
+            AccessibilityField.ON_POPULATE_ACCESSIBILITY_NODE,
+            onPopulateAccessibilityNodeHandler,
+        )
 
 /**
- * Called when a child of the host View has requested sending an [AccessibilityEvent] and gives an
- * opportunity to the parent (the host) to augment the event.
+ * Called when a child of the host View requests sending an [AccessibilityEvent]. Return `true` to
+ * allow the event to propagate, or `false` to block it.
  *
  * See [android.view.View.AccessibilityDelegateCompat#onRequestSendAccessibilityEvent].
  */
-inline fun Style.onRequestSendAccessibilityEvent(
-    noinline onRequestSendAccessibilityEventHandler: (OnRequestSendAccessibilityEventEvent) -> Unit
+inline fun Style.onRequestSendAccessibilityEventWithResult(
+    noinline onRequestSendAccessibilityEventHandler:
+        (OnRequestSendAccessibilityEventEvent) -> Boolean,
 ): Style =
     this +
         AccessibilityStyleItem(
             AccessibilityField.ON_REQUEST_SEND_ACCESSIBILITY_EVENT,
-            onRequestSendAccessibilityEventHandler)
+            onRequestSendAccessibilityEventHandler,
+        )
 
 /**
- * Called when performs the specified accessibility action on the view.
+ * Called when performing the specified accessibility action on the view. Return `true` when the
+ * action was handled, or `false` otherwise.
  *
  * See [android.view.View.AccessibilityDelegateCompat#performAccessibilityAction].
  */
-inline fun Style.onPerformAccessibilityAction(
-    noinline onPerformAccessibilityActionHandler: (PerformAccessibilityActionEvent) -> Unit
+inline fun Style.onPerformAccessibilityActionWithResult(
+    noinline onPerformAccessibilityActionHandler: (PerformAccessibilityActionEvent) -> Boolean,
 ): Style =
     this +
         AccessibilityStyleItem(
-            AccessibilityField.PERFORM_ACCESSIBILITY_ACTION, onPerformAccessibilityActionHandler)
+            AccessibilityField.PERFORM_ACCESSIBILITY_ACTION,
+            onPerformAccessibilityActionHandler,
+        )
 
 /**
  * Called when Sends an accessibility event of the given type. If accessibility is not enabled this
@@ -261,11 +290,13 @@ inline fun Style.onPerformAccessibilityAction(
  * See [android.view.View.AccessibilityDelegateCompat#sendAccessibilityEvent].
  */
 inline fun Style.onSendAccessibilityEvent(
-    noinline onSendAccessibilityEventHandler: (SendAccessibilityEventEvent) -> Unit
+    noinline onSendAccessibilityEventHandler: (SendAccessibilityEventEvent) -> Unit,
 ): Style =
     this +
         AccessibilityStyleItem(
-            AccessibilityField.SEND_ACCESSIBILITY_EVENT, onSendAccessibilityEventHandler)
+            AccessibilityField.SEND_ACCESSIBILITY_EVENT,
+            onSendAccessibilityEventHandler,
+        )
 
 /**
  * Sends an accessibility event. This method behaves exactly as sendAccessibilityEvent() but takes
@@ -276,12 +307,13 @@ inline fun Style.onSendAccessibilityEvent(
  */
 inline fun Style.onSendAccessibilityEventUnchecked(
     noinline onSendAccessibilityEventUncheckedHandler:
-        (SendAccessibilityEventUncheckedEvent) -> Unit
+        (SendAccessibilityEventUncheckedEvent) -> Unit,
 ): Style =
     this +
         AccessibilityStyleItem(
             AccessibilityField.SEND_ACCESSIBILITY_EVENT_UNCHECKED,
-            onSendAccessibilityEventUncheckedHandler)
+            onSendAccessibilityEventUncheckedHandler,
+        )
 
 /**
  * Called when a virtual view child of the host View has changed keyboard focus and gives an
@@ -291,26 +323,28 @@ inline fun Style.onSendAccessibilityEventUnchecked(
  */
 inline fun Style.onVirtualViewKeyboardFocusChanged(
     noinline onVirtualViewKeyboardFocusChangedHandler:
-        (VirtualViewKeyboardFocusChangedEvent) -> Unit
+        (VirtualViewKeyboardFocusChangedEvent) -> Unit,
 ): Style =
     this +
         AccessibilityStyleItem(
             AccessibilityField.ON_VIRTUAL_VIEW_KEYBOARD_FOCUS_CHANGED,
-            onVirtualViewKeyboardFocusChangedHandler)
+            onVirtualViewKeyboardFocusChangedHandler,
+        )
 
 /**
- * Performs the specified accessibility action on a virtual view child of the host View and gives an
- * opportunity to the parent (the host) to implement the desired behavior.
+ * Performs the specified accessibility action on a virtual view child of the host View. Return
+ * `true` when the action was handled, or `false` otherwise.
  *
  * See [androidx.customview.widget.ExploreByTouchHelper#onPerformActionForVirtualView].
  */
-inline fun Style.onPerformActionForVirtualView(
-    noinline onPerformActionForVirtualViewHandler: (PerformActionForVirtualViewEvent) -> Unit
+inline fun Style.onPerformActionForVirtualViewWithResult(
+    noinline onPerformActionForVirtualViewHandler: (PerformActionForVirtualViewEvent) -> Boolean,
 ): Style =
     this +
         AccessibilityStyleItem(
             AccessibilityField.ON_PERFORM_ACTION_FOR_VIRTUAL_VIEW,
-            onPerformActionForVirtualViewHandler)
+            onPerformActionForVirtualViewHandler,
+        )
 
 /**
  * Initializes an [AccessibilityNodeInfoCompat] with information about the host view.
@@ -319,19 +353,20 @@ inline fun Style.onPerformActionForVirtualView(
  */
 inline fun Style.onInitializeAccessibilityNodeInfo(
     noinline onInitializeAccessibilityNodeInfoHandler:
-        (OnInitializeAccessibilityNodeInfoEvent) -> Unit
+        (OnInitializeAccessibilityNodeInfoEvent) -> Unit,
 ): Style =
     this +
         AccessibilityStyleItem(
             AccessibilityField.ON_INITIALIZE_ACCESSIBILITY_NODE_INFO,
-            onInitializeAccessibilityNodeInfoHandler)
+            onInitializeAccessibilityNodeInfoHandler,
+        )
 
 /**
  * Sets whether this View should be a focusable element for screen readers
  *
  * See [android.view.View.setScreenReaderFocusable].
  */
-inline fun Style.screenReaderFocusable(isFocusable: Boolean): Style =
+fun Style.screenReaderFocusable(isFocusable: Boolean): Style =
     this + AccessibilityStyleItem(AccessibilityField.SCREEN_READER_FOCUSABLE, isFocusable)
 
 /**
@@ -341,7 +376,7 @@ inline fun Style.screenReaderFocusable(isFocusable: Boolean): Style =
  * See
  * [androidx.core.view.accessibility.AccessibilityNodeInfoCompat.setMinDurationBetweenContentChangesMillis].
  */
-inline fun Style.minDurationBetweenContentChangesMillis(duration: Long): Style =
+fun Style.minDurationBetweenContentChangesMillis(duration: Long): Style =
     this + AccessibilityStyleItem(AccessibilityField.MIN_DURATION_BETWEEN_CONTENT_CHANGES, duration)
 
 /**
@@ -352,7 +387,7 @@ inline fun Style.minDurationBetweenContentChangesMillis(duration: Long): Style =
  *
  * See [android.view.accessibility.AccessibilityNodeInfo.setLabeledBy].
  */
-inline fun Style.labeledBy(viewTag: Any): Style =
+fun Style.labeledBy(viewTag: Any): Style =
     this + AccessibilityStyleItem(AccessibilityField.LABELED_BY, viewTag)
 
 /**
@@ -364,7 +399,7 @@ inline fun Style.labeledBy(viewTag: Any): Style =
  *
  * See [androidx.core.view.ViewCompat.setAccessibilityPaneTitle].
  */
-inline fun Style.paneTitle(accessibilityPaneTitle: CharSequence?): Style =
+fun Style.paneTitle(accessibilityPaneTitle: CharSequence?): Style =
     this + AccessibilityStyleItem(AccessibilityField.PANE_TITLE, accessibilityPaneTitle)
 
 /**
@@ -374,7 +409,7 @@ inline fun Style.paneTitle(accessibilityPaneTitle: CharSequence?): Style =
  *
  * See [android.view.View.setAccessibilityLiveRegion].
  */
-inline fun Style.liveRegion(@AccessibilityLiveRegion mode: Int): Style =
+fun Style.liveRegion(@AccessibilityLiveRegion mode: Int): Style =
     this + AccessibilityStyleItem(AccessibilityField.LIVE_REGION, mode)
 
 /**
@@ -383,13 +418,12 @@ inline fun Style.liveRegion(@AccessibilityLiveRegion mode: Int): Style =
  * See
  * [androidx.core.view.accessibility.AccessibilityNodeInfoCompat.setRequestInitialAccessibilityFocus].
  */
-inline fun Style.requestInitialAccessibilityFocus(
-    requestInitialAccessibilityFocus: Boolean
-): Style =
+fun Style.requestInitialAccessibilityFocus(requestInitialAccessibilityFocus: Boolean): Style =
     this +
         AccessibilityStyleItem(
             AccessibilityField.REQUEST_INITIAL_ACCESSIBILITY_FOCUS,
-            requestInitialAccessibilityFocus)
+            requestInitialAccessibilityFocus,
+        )
 
 /**
  * Sets the container title for app-developer-defined container which can be any type of ViewGroup
@@ -398,7 +432,7 @@ inline fun Style.requestInitialAccessibilityFocus(
  *
  * See [android.view.accessibility.AccessibilityNodeInfo.setContainerTitle].
  */
-inline fun Style.containerTitle(containerTitle: CharSequence?): Style =
+fun Style.containerTitle(containerTitle: CharSequence?): Style =
     this + AccessibilityStyleItem(AccessibilityField.CONTAINER_TITLE, containerTitle)
 
 /**
@@ -430,6 +464,7 @@ enum class ImportantForAccessibility(val asInt: Int) {
 @IntDef(
     View.ACCESSIBILITY_LIVE_REGION_NONE,
     View.ACCESSIBILITY_LIVE_REGION_POLITE,
-    View.ACCESSIBILITY_LIVE_REGION_ASSERTIVE)
+    View.ACCESSIBILITY_LIVE_REGION_ASSERTIVE,
+)
 @Retention(AnnotationRetention.SOURCE)
 private annotation class AccessibilityLiveRegion

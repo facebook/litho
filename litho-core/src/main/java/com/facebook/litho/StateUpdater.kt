@@ -16,6 +16,7 @@
 
 package com.facebook.litho
 
+import com.facebook.litho.animation.AnimationFrameInvalidation
 import com.facebook.litho.state.StateId
 
 /**
@@ -36,10 +37,10 @@ interface StateUpdater {
    * current run-loop. It is expected that the calling thread has an active Looper.
    */
   fun updateStateSync(
-      globalKey: String,
+      globalKey: GlobalKey,
       stateUpdate: StateContainer.StateUpdate,
       attribution: String?,
-      isLayoutState: Boolean
+      isLayoutState: Boolean,
   )
 
   /**
@@ -47,10 +48,10 @@ interface StateUpdater {
    * infrastructure.
    */
   fun updateStateAsync(
-      globalKey: String,
+      globalKey: GlobalKey,
       stateUpdate: StateContainer.StateUpdate,
       attribution: String?,
-      isLayoutState: Boolean
+      isLayoutState: Boolean,
   )
 
   /**
@@ -58,9 +59,9 @@ interface StateUpdater {
    * visible in Event Handlers and it will be visible in the next render phase.
    */
   fun updateStateLazy(
-      globalKey: String,
+      globalKey: GlobalKey,
       stateUpdate: StateContainer.StateUpdate,
-      isLayoutState: Boolean
+      isLayoutState: Boolean,
   )
 
   /** Same as updateStateAsync but for Hook State. */
@@ -68,7 +69,7 @@ interface StateUpdater {
       stateId: StateId,
       updateBlock: HookUpdater,
       attribution: String?,
-      isLayoutState: Boolean
+      isLayoutState: Boolean,
   )
 
   /** Same as updateStateSync but for Hook State. */
@@ -76,47 +77,77 @@ interface StateUpdater {
       stateId: StateId,
       updateBlock: HookUpdater,
       attribution: String?,
-      isLayoutState: Boolean
+      isLayoutState: Boolean,
   )
 
+  /**
+   * Applies a batch of animation-frame invalidations produced during a single `AnimationController`
+   * frame tick. Each invalidation re-renders the read-tracked consumers of its `stateId`; the
+   * animated value itself stays owned by its `AnimatedValue`.
+   *
+   * The default implementation preserves correctness by routing every invalidation through the
+   * existing, frame-deferred [updateHookStateSync] path, so integrations that do not implement a
+   * same-frame fast path keep working unchanged. [ComponentTree] overrides this with the same-frame
+   * path.
+   */
+  fun applyAnimationFrameUpdates(invalidations: List<AnimationFrameInvalidation>) {
+    for (invalidation in invalidations) {
+      updateHookStateSync(
+          invalidation.stateId,
+          HookUpdater.NoOp,
+          invalidation.attribution,
+          invalidation.isLayoutState,
+      )
+    }
+  }
+
+  /**
+   * Whether this updater implements the same-frame animation invalidation path.
+   *
+   * When false (the default), AnimatedValue keeps its pre-feature behavior — signaling re-renders
+   * directly through [updateHookStateSync] without routing frames through the invalidation
+   * dispatcher — so integrations that do not opt in pay no extra per-frame cost. [ComponentTree]
+   * enables it when its animation-frame-invalidation config is set.
+   */
+  val isAnimationFrameInvalidationEnabled: Boolean
+    get() = false
+
   fun applyLazyStateUpdatesForContainer(
-      globalKey: String,
+      globalKey: GlobalKey,
       container: StateContainer,
-      isLayoutState: Boolean
+      isLayoutState: Boolean,
   ): StateContainer
 
   /** Returns a Cached value that is accessible across all re-render operations. */
   fun getCachedValue(
-      globalKey: String,
-      index: Int,
+      cacheKey: HookGlobalKey,
       cachedValueInputs: Any,
-      isLayoutState: Boolean
+      isLayoutState: Boolean,
   ): Any?
 
   /** Stores a Cached value that will be accessible across all re-render operations. */
   fun putCachedValue(
-      globalKey: String,
-      index: Int,
+      cacheKey: HookGlobalKey,
       cachedValueInputs: Any,
       cachedValue: Any?,
-      isLayoutState: Boolean
+      isLayoutState: Boolean,
   )
 
   /**
    * Removes a state update that was previously enqueued if the state update has not been processed
    * yet.
    */
-  fun removePendingStateUpdate(key: String, isLayoutState: Boolean)
+  fun removePendingStateUpdate(key: GlobalKey, isLayoutState: Boolean)
 
   fun <T> canSkipStateUpdate(stateId: StateId, newValue: T?, isLayoutState: Boolean): Boolean
 
   fun <T> canSkipStateUpdate(
       newValueFunction: (T) -> T,
       stateId: StateId,
-      isLayoutState: Boolean
+      isLayoutState: Boolean,
   ): Boolean
 
-  fun getEventTrigger(key: String): EventTrigger<*>?
+  fun getEventTrigger(key: Any): EventTrigger<*>?
 
   fun getEventTrigger(handle: Handle, id: Int): EventTrigger<*>?
 }

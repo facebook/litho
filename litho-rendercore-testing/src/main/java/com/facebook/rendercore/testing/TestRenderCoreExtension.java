@@ -27,8 +27,8 @@ import java.util.function.Supplier;
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class TestRenderCoreExtension extends RenderCoreExtension {
 
-  private final LayoutResultVisitor mLayoutResultVisitor;
-  private final MountExtension mMountExtension;
+  @Nullable private final LayoutResultVisitor mLayoutResultVisitor;
+  @Nullable private final MountExtension mMountExtension;
   @Nullable private final Supplier mInputSupplier;
 
   public TestRenderCoreExtension() {
@@ -49,9 +49,7 @@ public class TestRenderCoreExtension extends RenderCoreExtension {
       final @Nullable LayoutResultVisitor layoutResultVisitor,
       final @Nullable MountExtension mountExtension,
       final @Nullable Supplier inputSupplier) {
-    // NULLSAFE_FIXME[Field Not Nullable]
     mLayoutResultVisitor = layoutResultVisitor;
-    // NULLSAFE_FIXME[Field Not Nullable]
     mMountExtension = mountExtension;
     mInputSupplier = inputSupplier;
   }

@@ -16,6 +16,7 @@
 
 package com.facebook.litho.testing.subcomponents;
 
+import static com.facebook.litho.testing.assertj.ComponentConditions.inspectedTypeIs;
 import static com.facebook.litho.testing.assertj.LegacyLithoAssertions.assertThat;
 import static com.facebook.litho.testing.assertj.SubComponentExtractor.subComponentWith;
 import static org.hamcrest.CoreMatchers.is;
@@ -25,11 +26,12 @@ import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.Row;
+import com.facebook.litho.StyleCompat;
+import com.facebook.litho.Transition;
 import com.facebook.litho.config.LithoDebugConfigurations;
 import com.facebook.litho.testing.LithoTestRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
-import com.facebook.litho.widget.Card;
-import com.facebook.litho.widget.TestCard;
+import com.facebook.litho.widget.PrimitiveCard;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -55,9 +57,15 @@ public class CommonPropMatcherTest {
     final String key = "nocolusion";
 
     final Component component =
-        Row.create(c).child(Card.create(c).transitionKey(key).content(Column.create(c))).build();
+        Row.create(c)
+            .child(
+                new PrimitiveCard.Builder(Column.create(c).build())
+                    .style(
+                        StyleCompat.transitionKey(c, key, Transition.TransitionKeyType.LOCAL)
+                            .build())
+                    .build())
+            .build();
 
-    assertThat(c, component)
-        .has(subComponentWith(c, TestCard.matcher(c).transitionKey(key).build()));
+    assertThat(c, component).has(subComponentWith(c, inspectedTypeIs(PrimitiveCard.class)));
   }
 }

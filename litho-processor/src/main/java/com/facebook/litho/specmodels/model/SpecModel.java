@@ -25,6 +25,7 @@ import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
 import java.util.EnumSet;
 import java.util.List;
+import javax.annotation.Nullable;
 
 /** A model that represents a ComponentSpec. */
 public interface SpecModel {
@@ -74,6 +75,7 @@ public interface SpecModel {
   /**
    * @return the working range register method defined by the spec.
    */
+  @Nullable
   SpecMethodModel<EventMethod, Void> getWorkingRangeRegisterMethod();
 
   /**
@@ -164,6 +166,7 @@ public interface SpecModel {
   /**
    * @return the javadoc for this spec.
    */
+  @Nullable
   String getClassJavadoc();
 
   /**

@@ -20,6 +20,8 @@ import android.annotation.SuppressLint
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnTouchListener
+import com.facebook.litho.debug.LithoTouchEventDebugger
+import com.facebook.litho.debug.TouchEventType
 
 /** Touch listener that triggers its underlying event handler. */
 class ComponentTouchListener : OnTouchListener {
@@ -29,7 +31,13 @@ class ComponentTouchListener : OnTouchListener {
   @SuppressLint("ClickableViewAccessibility")
   override fun onTouch(v: View, event: MotionEvent): Boolean {
     return eventHandler?.let { handler ->
+      LithoTouchEventDebugger.report(
+          type = TouchEventType.Touch,
+          view = v,
+          handler = handler,
+          event = event,
+      )
       return@let EventDispatcherUtils.dispatchOnTouch(handler, v, event)
-    } ?: false
+    } == true
   }
 }

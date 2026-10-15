@@ -22,6 +22,7 @@ import com.facebook.litho.specmodels.generator.ClassAnnotationsGenerator;
 import com.facebook.litho.specmodels.generator.ComponentBodyGenerator;
 import com.facebook.litho.specmodels.generator.DelegateMethodGenerator;
 import com.facebook.litho.specmodels.generator.EventGenerator;
+import com.facebook.litho.specmodels.generator.HasIntrinsicSizeGenerator;
 import com.facebook.litho.specmodels.generator.JavadocGenerator;
 import com.facebook.litho.specmodels.generator.MountSpecGenerator;
 import com.facebook.litho.specmodels.generator.PreambleGenerator;
@@ -87,7 +88,8 @@ public class DefaultMountSpecGenerator implements SpecGenerator<MountSpecModel> 
         .addTypeSpecDataHolder(MountSpecGenerator.generateHasChildLithoViews(mountSpecModel))
         .addTypeSpecDataHolder(MountSpecGenerator.generateIsMountSizeDependent(mountSpecModel))
         .addTypeSpecDataHolder(PureRenderGenerator.generate(mountSpecModel))
-        .addTypeSpecDataHolder(EventGenerator.generate(mountSpecModel))
+        .addTypeSpecDataHolder(HasIntrinsicSizeGenerator.generate(mountSpecModel))
+        .addTypeSpecDataHolder(EventGenerator.generate(mountSpecModel, runMode))
         .addTypeSpecDataHolder(TriggerGenerator.generate(mountSpecModel))
         .addTypeSpecDataHolder(WorkingRangeGenerator.generate(mountSpecModel))
         .addTypeSpecDataHolder(StateGenerator.generate(mountSpecModel))

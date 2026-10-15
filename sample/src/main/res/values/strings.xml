@@ -18,4 +18,14 @@
 <resources>
   <string name="app_name">Litho Sample</string>
   <string name="name_string" description="name string for documentation example">Rohit Sharma</string>
+  <string name="view_model_playground_title" translatable="false">Litho state</string>
+  <string name="view_model_playground_count" translatable="false">ViewModel Count: %d</string>
+  <string name="view_model_playground_creation_thread" translatable="false">Created on: %s</string>
+  <string name="view_model_playground_increment" translatable="false">Increment</string>
+  <string name="view_model_playground_remove_component" translatable="false">Remove counter component</string>
+  <string name="view_model_playground_restore_component" translatable="false">Restore counter component</string>
+  <string name="view_model_playground_component_removed" translatable="false">Counter component is not in the tree</string>
+  <string name="view_model_playground_recreate" translatable="false">Recreate Activity</string>
+  <string name="view_model_playground_scroll_position" translatable="false">Scroll position in saved state: %d px</string>
+  <string name="view_model_playground_scroll_item" translatable="false">Item %d</string>
 </resources>

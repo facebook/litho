@@ -20,6 +20,7 @@ import android.content.Context;
 import android.view.View;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.ContentAllocator;
+import com.facebook.rendercore.RenderType;
 import com.facebook.rendercore.RenderUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -31,7 +32,7 @@ public class TestRenderUnit extends RenderUnit implements ContentAllocator<View>
   private long mId;
 
   public TestRenderUnit(final long id) {
-    super(RenderType.VIEW);
+    super();
     mId = id;
   }
 
@@ -42,6 +43,11 @@ public class TestRenderUnit extends RenderUnit implements ContentAllocator<View>
   @Override
   public View createContent(Context c) {
     return new View(c);
+  }
+
+  @Override
+  public RenderType getRenderType() {
+    return RenderType.VIEW;
   }
 
   @Override

@@ -21,6 +21,7 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.MountSpecInterStagePropsTester
 import com.facebook.litho.widget.SimpleStateUpdateEmulator
 import com.facebook.litho.widget.SimpleStateUpdateEmulatorSpec
+import com.facebook.rendercore.extensions.VisibilityChangeReason
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
@@ -54,14 +55,15 @@ class InterStagePropsTest {
     testLithoView.attachToWindow()
     val config = testLithoView.lithoView.configuration
     if (config != null && config.enableFixForIM) {
-      testLithoView.lithoView.notifyVisibleBoundsChanged()
+      testLithoView.lithoView.notifyVisibleBoundsChanged(VisibilityChangeReason.UNKNOWN)
       assertThat(lifecycleTracker.steps)
           .describedAs("On Bind should be called")
           .containsExactly(
               LifecycleStep.ON_UNBIND,
               LifecycleStep.ON_UNMOUNT,
               LifecycleStep.ON_MOUNT,
-              LifecycleStep.ON_BIND)
+              LifecycleStep.ON_BIND,
+          )
     } else {
       assertThat(lifecycleTracker.steps)
           .describedAs("On Bind should be called")
@@ -108,7 +110,7 @@ class InterStagePropsTest {
 
   private fun createComponent(
       lifecycleTracker: LifecycleTracker,
-      stateUpdater: SimpleStateUpdateEmulatorSpec.Caller
+      stateUpdater: SimpleStateUpdateEmulatorSpec.Caller,
   ): Component =
       Column.create(context)
           .child(MountSpecInterStagePropsTester.create(context).lifecycleTracker(lifecycleTracker))

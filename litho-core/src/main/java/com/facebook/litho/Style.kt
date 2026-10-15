@@ -59,17 +59,49 @@ open class Style(
 ) {
 
   operator fun plus(other: Style?): Style {
-    if (other == null) {
+    if (this === Style && other != null) {
+      // avoid creating CombinedStyle
+      return other
+    }
+
+    if (other == null || other === Style) {
       return this
     }
+
     return CombinedStyle(if (this === Style) null else this, other)
   }
 
-  inline operator fun plus(nextItem: StyleItem<*>?): Style {
+  operator fun plus(nextItem: StyleItem<*>?): Style {
     if (nextItem == null) {
       return this
     }
     return Style(if (this === Style) null else this, nextItem)
+  }
+
+  /**
+   * Appends [styleProvider] to the current style if [condition] is true.
+   *
+   * @return `this` if [condition] is false or `this` + [styleProvider] when [condition] is true.
+   */
+  inline fun plusIf(condition: Boolean, styleProvider: () -> Style): Style {
+    return if (condition) {
+      this + styleProvider()
+    } else {
+      this
+    }
+  }
+
+  /**
+   * Appends [styleProvider] to the current style if [value] is not null.
+   *
+   * @return `this` if [value] is `null` or `this` + [styleProvider] when [value] is not null.
+   */
+  inline fun <T> plusIfNotNull(value: T?, styleProvider: (T) -> Style): Style {
+    return if (value != null) {
+      this + styleProvider(value)
+    } else {
+      this
+    }
   }
 
   open fun forEach(lambda: (StyleItem<*>) -> Unit) {

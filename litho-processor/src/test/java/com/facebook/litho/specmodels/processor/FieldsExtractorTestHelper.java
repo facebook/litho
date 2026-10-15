@@ -16,31 +16,32 @@
 
 package com.facebook.litho.specmodels.processor;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.FieldModel;
 import com.squareup.javapoet.FieldSpec;
 import javax.lang.model.element.Modifier;
-import org.junit.Assert;
 
 public class FieldsExtractorTestHelper {
 
   static void fieldExtraction(ImmutableList<FieldModel> fieldModels) {
-    Assert.assertEquals(2, fieldModels.size());
+    assertThat(fieldModels.size()).isEqualTo(2);
 
     FieldSpec extractedIntField = fieldModels.get(0).field;
-    Assert.assertEquals("intField", extractedIntField.name);
-    Assert.assertEquals(3, extractedIntField.modifiers.size());
-    Assert.assertTrue(extractedIntField.hasModifier(Modifier.PRIVATE));
-    Assert.assertTrue(extractedIntField.hasModifier(Modifier.STATIC));
-    Assert.assertTrue(extractedIntField.hasModifier(Modifier.FINAL));
+    assertThat(extractedIntField.name).isEqualTo("intField");
+    assertThat(extractedIntField.modifiers.size()).isEqualTo(3);
+    assertThat(extractedIntField.hasModifier(Modifier.PRIVATE)).isTrue();
+    assertThat(extractedIntField.hasModifier(Modifier.STATIC)).isTrue();
+    assertThat(extractedIntField.hasModifier(Modifier.FINAL)).isTrue();
 
     FieldSpec extractedFloatField = fieldModels.get(1).field;
-    Assert.assertEquals("floatField", extractedFloatField.name);
-    Assert.assertEquals(1, extractedFloatField.modifiers.size());
-    Assert.assertTrue(extractedFloatField.hasModifier(Modifier.STATIC));
+    assertThat(extractedFloatField.name).isEqualTo("floatField");
+    assertThat(extractedFloatField.modifiers.size()).isEqualTo(1);
+    assertThat(extractedFloatField.hasModifier(Modifier.STATIC)).isTrue();
   }
 
   static void noFieldExtraction(ImmutableList<FieldModel> fieldModels) {
-    Assert.assertTrue(fieldModels.isEmpty());
+    assertThat(fieldModels.isEmpty()).isTrue();
   }
 }

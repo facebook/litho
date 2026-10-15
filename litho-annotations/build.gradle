@@ -22,8 +22,8 @@ if (isDokkaBuild) {
   apply plugin: 'org.jetbrains.dokka'
 }
 
-targetCompatibility = rootProject.targetCompatibilityVersion
-sourceCompatibility = rootProject.sourceCompatibilityVersion
+java.targetCompatibility = rootProject.targetCompatibilityVersion
+java.sourceCompatibility = rootProject.sourceCompatibilityVersion
 
 dependencies {
     // Android Support Library

@@ -22,8 +22,6 @@ import android.util.AttributeSet
 import android.view.KeyEvent
 import android.view.MotionEvent
 import androidx.recyclerview.widget.RecyclerView
-import com.facebook.litho.config.ComponentsConfiguration
-import com.facebook.litho.widget.collection.RecyclerKeyboardEventsHelper.dispatchKeyEvent
 
 /** Extension of [RecyclerView] that allows to add more features needed for [Recycler] */
 open class LithoRecyclerView
@@ -94,16 +92,7 @@ constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) :
   }
 
   override fun dispatchKeyEvent(event: KeyEvent?): Boolean {
-    if (!ComponentsConfiguration.enableKeyboardNavigationForHScroll) {
-      return super.dispatchKeyEvent(event)
-    }
-
-    // Let child to dispatch first, then handle ours if child didn't do it.
-    if (super.dispatchKeyEvent(event)) {
-      return true
-    }
-
-    return event != null && dispatchKeyEvent(this, event)
+    return super.dispatchKeyEvent(event)
   }
 
   public override fun dispatchDraw(canvas: Canvas) {

@@ -40,7 +40,7 @@ constructor(private val deltaJumpThreshold: Int, private val isStrictMode: Boole
   override fun findTargetSnapPosition(
       layoutManager: RecyclerView.LayoutManager,
       velocityX: Int,
-      velocityY: Int
+      velocityY: Int,
   ): Int {
     if (layoutManager !is RecyclerView.SmoothScroller.ScrollVectorProvider) {
       return RecyclerView.NO_POSITION
@@ -81,7 +81,11 @@ constructor(private val deltaJumpThreshold: Int, private val isStrictMode: Boole
     if (layoutManager.canScrollHorizontally()) {
       hDeltaJump =
           estimateNextPositionDiffForFling(
-              layoutManager, OrientationHelper.createHorizontalHelper(layoutManager), velocityX, 0)
+              layoutManager,
+              OrientationHelper.createHorizontalHelper(layoutManager),
+              velocityX,
+              0,
+          )
       // set a threshold to the jump
       if (hDeltaJump > deltaJumpThreshold) {
         hDeltaJump = deltaJumpThreshold
@@ -98,7 +102,11 @@ constructor(private val deltaJumpThreshold: Int, private val isStrictMode: Boole
     if (layoutManager.canScrollVertically()) {
       vDeltaJump =
           estimateNextPositionDiffForFling(
-              layoutManager, OrientationHelper.createVerticalHelper(layoutManager), 0, velocityY)
+              layoutManager,
+              OrientationHelper.createVerticalHelper(layoutManager),
+              0,
+              velocityY,
+          )
       if (vectorForEnd.y < 0) {
         vDeltaJump = -vDeltaJump
       }
@@ -125,7 +133,7 @@ constructor(private val deltaJumpThreshold: Int, private val isStrictMode: Boole
       layoutManager: RecyclerView.LayoutManager,
       helper: OrientationHelper,
       velocityX: Int,
-      velocityY: Int
+      velocityY: Int,
   ): Int {
     val distances = calculateScrollDistance(velocityX, velocityY)
     val distancePerChild = computeDistancePerChild(layoutManager, helper)
@@ -143,7 +151,7 @@ constructor(private val deltaJumpThreshold: Int, private val isStrictMode: Boole
 
     private fun computeDistancePerChild(
         layoutManager: RecyclerView.LayoutManager,
-        helper: OrientationHelper
+        helper: OrientationHelper,
     ): Float {
       var minPosView: View? = null
       var maxPosView: View? = null
@@ -177,16 +185,16 @@ constructor(private val deltaJumpThreshold: Int, private val isStrictMode: Boole
       if (minPosView == null || maxPosView == null) {
         return INVALID_DISTANCE
       }
-      val start =
-          min(
-                  helper.getDecoratedStart(minPosView).toDouble(),
-                  helper.getDecoratedStart(maxPosView).toDouble())
-              .toInt()
-      val end =
-          max(
-                  helper.getDecoratedEnd(minPosView).toDouble(),
-                  helper.getDecoratedEnd(maxPosView).toDouble())
-              .toInt()
+      val start = min(
+          helper.getDecoratedStart(minPosView).toDouble(),
+          helper.getDecoratedStart(maxPosView).toDouble(),
+      )
+          .toInt()
+      val end = max(
+          helper.getDecoratedEnd(minPosView).toDouble(),
+          helper.getDecoratedEnd(maxPosView).toDouble(),
+      )
+          .toInt()
       val distance = end - start
       if (distance == 0) {
         return INVALID_DISTANCE

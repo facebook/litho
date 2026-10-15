@@ -29,6 +29,9 @@ import com.facebook.rendercore.TestBinder.TestBinder3
 import com.facebook.rendercore.TestBinderWithBindData.TestBinderWithBindData1
 import com.facebook.rendercore.TestBinderWithBindData.TestBinderWithBindData2
 import com.facebook.rendercore.TestBinderWithBindData.TestBinderWithBindData3
+import com.facebook.rendercore.extensions.ExtensionState
+import com.facebook.rendercore.extensions.MountExtension
+import com.facebook.rendercore.extensions.OnItemCallbacks
 import com.facebook.rendercore.renderunits.HostRenderUnit
 import com.facebook.rendercore.testing.LayoutResultWrappingNode
 import com.facebook.rendercore.testing.RenderCoreTestRule
@@ -38,7 +41,7 @@ import com.facebook.rendercore.testing.TestHostView
 import com.facebook.rendercore.testing.TestNode
 import com.facebook.rendercore.testing.TestRenderUnit
 import com.facebook.rendercore.testing.ViewWrapperUnit
-import org.assertj.core.api.Java6Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExpectedException
@@ -50,6 +53,63 @@ import org.robolectric.RuntimeEnvironment
 class MountStateTest {
   @Rule @JvmField val renderCoreTestRule: RenderCoreTestRule = RenderCoreTestRule()
   @Rule @JvmField val expectedException: ExpectedException = ExpectedException.none()
+
+  @Test
+  @android.annotation.SuppressLint("DeprecatedMethod")
+  fun unmountAllItems_callsBeforeUnmountBeforePhysicalUnmountAndOnUnmountAfter() {
+    val c: Context = RuntimeEnvironment.application
+    val root = TestNode()
+    val leaf = TestNode(0, 0, 10, 10)
+    root.addChild(leaf)
+    val renderUnit = TestRenderUnit()
+    leaf.setRenderUnit(renderUnit)
+    val renderTree = createRenderTree(c, root)
+    val mountState = MountState(RootHostView(c))
+    val events = ArrayList<String>()
+    mountState.registerMountExtension(UnmountLifecycleTrackingExtension(events))
+    mountState.mount(renderTree)
+    events.clear()
+
+    mountState.unmountAllItems()
+
+    val firstPhysicalUnmount = events.indexOfFirst { it.startsWith("unmountItem:") }
+    assertThat(firstPhysicalUnmount).isGreaterThanOrEqualTo(0)
+    assertThat(events.indexOf("beforeUnmount")).isBetween(0, firstPhysicalUnmount - 1)
+    assertThat(events.last()).isEqualTo("onUnmount")
+  }
+
+  @Test
+  @android.annotation.SuppressLint("DeprecatedMethod")
+  fun unmountAllItemsWithNoRenderTree_callsBeforeUnmountBeforeRemovingExtensions() {
+    val c: Context = RuntimeEnvironment.application
+    val mountState = MountState(RootHostView(c))
+    val events = ArrayList<String>()
+    mountState.registerMountExtension(UnmountLifecycleTrackingExtension(events))
+
+    mountState.unmountAllItems()
+
+    assertThat(events).containsExactly("beforeUnmount", "onUnmount")
+    assertThat(events.none { it.startsWith("unmountItem:") }).isTrue()
+    checkNotNull(mountState.getMountDelegate()).onBeforeUnmountAllItems()
+    assertThat(events).containsExactly("beforeUnmount", "onUnmount")
+  }
+
+  @Test
+  @android.annotation.SuppressLint("DeprecatedMethod")
+  fun onBeforeUnmountAllItems_closesVisibleBoundsSectionWhenExtensionThrows() {
+    val c: Context = RuntimeEnvironment.application
+    val mountState = MountState(RootHostView(c))
+    mountState.registerMountExtension(
+        UnmountLifecycleTrackingExtension(mutableListOf(), throwOnBeforeUnmount = true),
+    )
+    val mountDelegate = checkNotNull(mountState.getMountDelegate())
+    mountDelegate.setCollectVisibleBoundsChangedCalls(true)
+
+    val result = runCatching { mountDelegate.onBeforeUnmountAllItems() }
+
+    assertThat(result.exceptionOrNull()).isInstanceOf(IllegalStateException::class.java)
+    assertThat(notifyVisibleBoundsChangedNestCount(mountDelegate)).isZero()
+  }
 
   @Test
   fun testUnmountAll() {
@@ -64,9 +124,11 @@ class MountStateTest {
     val testBinderOne = TestBinder<Any>()
     val testBinderTwo = TestBinder<Any>()
     testRenderUnitOne.addOptionalMountBinder(
-        DelegateBinder.createDelegateBinder<Any, View, Any>(testRenderUnitOne, testBinderOne))
+        DelegateBinder.createDelegateBinder<Any, View, Any>(testRenderUnitOne, testBinderOne),
+    )
     testRenderUnitTwo.addOptionalMountBinder(
-        DelegateBinder.createDelegateBinder<Any, View, Any>(testRenderUnitTwo, testBinderTwo))
+        DelegateBinder.createDelegateBinder<Any, View, Any>(testRenderUnitTwo, testBinderTwo),
+    )
     leaf.setRenderUnit(testRenderUnitOne)
     leafTwo.setRenderUnit(testRenderUnitTwo)
     val renderTree = createRenderTree(c, root)
@@ -96,7 +158,8 @@ class MountStateTest {
         }
     val testBinderOne = TestBinder<Any>()
     testRenderUnitOne.addOptionalMountBinder(
-        DelegateBinder.createDelegateBinder<Any, View, Any>(testRenderUnitOne, testBinderOne))
+        DelegateBinder.createDelegateBinder<Any, View, Any>(testRenderUnitOne, testBinderOne),
+    )
     leaf.setRenderUnit(testRenderUnitOne)
     val renderTree = createRenderTree(c, root)
     val mountState = createMountState(c)
@@ -106,7 +169,8 @@ class MountStateTest {
     val innerRenderUnit = TestRenderUnit()
     val innerBinder = TestBinder<Any>()
     innerRenderUnit.addOptionalMountBinder(
-        DelegateBinder.createDelegateBinder<Any, View, Any>(innerRenderUnit, innerBinder))
+        DelegateBinder.createDelegateBinder<Any, View, Any>(innerRenderUnit, innerBinder),
+    )
     innerLeaf.setRenderUnit(innerRenderUnit)
     val innerRenderTree = createRenderTree(c, innerTreeRoot)
     val innerMountState = MountState(innerTestHost)
@@ -136,12 +200,14 @@ class MountStateTest {
     val renderUnit = TestRenderUnit()
     renderUnit.addAttachBinders(
         DelegateBinder.createDelegateBinder<Any, View, Any>(renderUnit, attachBinderOne),
-        DelegateBinder.createDelegateBinder<Any, View, Any>(renderUnit, attachBinderTwo))
+        DelegateBinder.createDelegateBinder<Any, View, Any>(renderUnit, attachBinderTwo),
+    )
     val mountBinderOne = object : TestBinder<Any>(bindOrder, unbindOrder) {}
     val mountBinderTwo = TestBinder<Any>(bindOrder, unbindOrder)
     renderUnit.addOptionalMountBinders(
         DelegateBinder.createDelegateBinder<Any, View, Any>(renderUnit, mountBinderOne),
-        DelegateBinder.createDelegateBinder<Any, View, Any>(renderUnit, mountBinderTwo))
+        DelegateBinder.createDelegateBinder<Any, View, Any>(renderUnit, mountBinderTwo),
+    )
     leaf.setRenderUnit(renderUnit)
     val renderTree = createRenderTree(c, root)
     val host = TestHostView(c, bindOrder, unbindOrder)
@@ -208,9 +274,11 @@ class MountStateTest {
       val attachBinder = TestBinder<Any>(bindOrder, unbindOrder)
       val newRenderUnit = TestRenderUnit()
       newRenderUnit.addOptionalMountBinder(
-          DelegateBinder.createDelegateBinder<Any, View, Any>(newRenderUnit, mountBinder))
+          DelegateBinder.createDelegateBinder<Any, View, Any>(newRenderUnit, mountBinder),
+      )
       newRenderUnit.addAttachBinder(
-          DelegateBinder.createDelegateBinder<Any, View, Any>(newRenderUnit, attachBinder))
+          DelegateBinder.createDelegateBinder<Any, View, Any>(newRenderUnit, attachBinder),
+      )
       newRenderUnit.setId(id)
       newLeaf.setRenderUnit(newRenderUnit)
       val newRenderTree = createRenderTree(c, newRoot)
@@ -234,7 +302,8 @@ class MountStateTest {
       root.addChild(leaf)
       val renderUnit = TestRenderUnit()
       renderUnit.addOptionalMountBinder(
-          DelegateBinder.createDelegateBinder(renderUnit, mountBinder))
+          DelegateBinder.createDelegateBinder(renderUnit, mountBinder),
+      )
       renderUnit.addAttachBinder(DelegateBinder.createDelegateBinder(renderUnit, attachBinder))
       id = renderUnit.id
       leaf.setRenderUnit(renderUnit)
@@ -260,11 +329,13 @@ class MountStateTest {
       val newRenderUnit = TestRenderUnit()
       newRenderUnit.addOptionalMountBinders(
           DelegateBinder.createDelegateBinder(newRenderUnit, mountBinder1),
-          DelegateBinder.createDelegateBinder(newRenderUnit, mountBinder2))
+          DelegateBinder.createDelegateBinder(newRenderUnit, mountBinder2),
+      )
       newRenderUnit.addAttachBinders(
           DelegateBinder.createDelegateBinder(newRenderUnit, attachBinder1),
           DelegateBinder.createDelegateBinder(newRenderUnit, attachBinder2),
-          DelegateBinder.createDelegateBinder(newRenderUnit, attachBinder3))
+          DelegateBinder.createDelegateBinder(newRenderUnit, attachBinder3),
+      )
       newRenderUnit.setId(id)
       newLeaf.setRenderUnit(newRenderUnit)
       val newRenderTree = createRenderTree(c, newRoot)
@@ -293,9 +364,11 @@ class MountStateTest {
         val leaf1 = TestNode(0, 0, 10, 10)
         val renderUnit1 = TestRenderUnit()
         renderUnit1.addOptionalMountBinder(
-            DelegateBinder.createDelegateBinder<Any, View, Any>(renderUnit1, currentMountBinder1))
+            DelegateBinder.createDelegateBinder<Any, View, Any>(renderUnit1, currentMountBinder1),
+        )
         renderUnit1.addAttachBinder(
-            DelegateBinder.createDelegateBinder<Any, View, Any>(renderUnit1, currentAttachBinder1))
+            DelegateBinder.createDelegateBinder<Any, View, Any>(renderUnit1, currentAttachBinder1),
+        )
         id1 = renderUnit1.id
         leaf1.setRenderUnit(renderUnit1)
         root.addChild(leaf1)
@@ -308,9 +381,11 @@ class MountStateTest {
         val leaf2 = TestNode(10, 10, 10, 10)
         val renderUnit2 = TestRenderUnit()
         renderUnit2.addOptionalMountBinder(
-            DelegateBinder.createDelegateBinder<Any, View, Any>(renderUnit2, mountBinder2))
+            DelegateBinder.createDelegateBinder<Any, View, Any>(renderUnit2, mountBinder2),
+        )
         renderUnit2.addAttachBinder(
-            DelegateBinder.createDelegateBinder<Any, View, Any>(renderUnit2, attachBinder2))
+            DelegateBinder.createDelegateBinder<Any, View, Any>(renderUnit2, attachBinder2),
+        )
         id2 = renderUnit2.id
         leaf2.setRenderUnit(renderUnit2)
         root.addChild(leaf2)
@@ -338,9 +413,11 @@ class MountStateTest {
         newLeaf1.setLayoutData(Any()) // makes should update return true
         val newRenderUnit = TestRenderUnit()
         newRenderUnit.addOptionalMountBinder(
-            DelegateBinder.createDelegateBinder<Any, View, Any>(newRenderUnit, newMountBinder1))
+            DelegateBinder.createDelegateBinder<Any, View, Any>(newRenderUnit, newMountBinder1),
+        )
         newRenderUnit.addAttachBinder(
-            DelegateBinder.createDelegateBinder<Any, View, Any>(newRenderUnit, newAttachBinder1))
+            DelegateBinder.createDelegateBinder<Any, View, Any>(newRenderUnit, newAttachBinder1),
+        )
         newRenderUnit.setId(id1)
         newLeaf1.setRenderUnit(newRenderUnit)
         newRoot.addChild(newLeaf1)
@@ -351,9 +428,11 @@ class MountStateTest {
         val newLeaf2 = TestNode(10, 10, 10, 10)
         val newRenderUnit = TestRenderUnit()
         newRenderUnit.addOptionalMountBinder(
-            DelegateBinder.createDelegateBinder<Any, View, Any>(newRenderUnit, mountBinder2))
+            DelegateBinder.createDelegateBinder<Any, View, Any>(newRenderUnit, mountBinder2),
+        )
         newRenderUnit.addAttachBinder(
-            DelegateBinder.createDelegateBinder<Any, View, Any>(newRenderUnit, attachBinder2))
+            DelegateBinder.createDelegateBinder<Any, View, Any>(newRenderUnit, attachBinder2),
+        )
         newRenderUnit.setId(id2)
         newLeaf2.setRenderUnit(newRenderUnit)
         newRoot.addChild(newLeaf2)
@@ -378,9 +457,11 @@ class MountStateTest {
     val mountBinder = TestBinder<Any>(bindOrder, unbindOrder)
     val attachDetachBinder = TestBinder<Any>(bindOrder, unbindOrder)
     rootRenderUnit.addOptionalMountBinder(
-        DelegateBinder.createDelegateBinder<Any, View, Any>(rootRenderUnit, mountBinder))
+        DelegateBinder.createDelegateBinder<Any, View, Any>(rootRenderUnit, mountBinder),
+    )
     rootRenderUnit.addAttachBinder(
-        DelegateBinder.createDelegateBinder<Any, View, Any>(rootRenderUnit, attachDetachBinder))
+        DelegateBinder.createDelegateBinder<Any, View, Any>(rootRenderUnit, attachDetachBinder),
+    )
     val mountState: MountState = createMountState(c)
     mountState.mount(tree)
     assertThat(bindOrder).containsExactly(mountBinder, attachDetachBinder)
@@ -441,9 +522,10 @@ class MountStateTest {
     assertThat(mountState.getContentById(1)).describedAs("1st item").isNull()
     assertThat(mountState.getContentById(3)).describedAs("3rd item").isNull()
     assertThat(mountState.getHosts()).describedAs("Number of Hosts").hasSize(0)
-    val tree =
-        createRenderTree(
-            c, LayoutResultWrappingNode(SimpleLayoutResult.create().width(100).height(100).build()))
+    val tree = createRenderTree(
+        c,
+        LayoutResultWrappingNode(SimpleLayoutResult.create().width(100).height(100).build()),
+    )
     mountState.mount(tree)
     assertThat(mountState.getMountItemCount()).describedAs("Number of mounted items").isEqualTo(1)
     assertThat(mountState.isRootItem(0)).describedAs("0th item should be root").isTrue
@@ -467,7 +549,8 @@ class MountStateTest {
                 SimpleLayoutResult.create()
                     .renderUnit(ViewWrapperUnit(TextView(c), 1))
                     .width(100)
-                    .height(100))
+                    .height(100),
+            )
             .child(
                 SimpleLayoutResult.create()
                     .y(100)
@@ -479,7 +562,8 @@ class MountStateTest {
                             .x(100)
                             .y(100)
                             .width(100)
-                            .height(100))
+                            .height(100),
+                    )
                     .child(
                         SimpleLayoutResult.create()
                             .renderUnit(HostRenderUnit(3))
@@ -493,7 +577,10 @@ class MountStateTest {
                                     .x(100)
                                     .y(100)
                                     .width(100)
-                                    .height(100))))
+                                    .height(100),
+                            ),
+                    ),
+            )
             .child(
                 SimpleLayoutResult.create()
                     .renderUnit(HostRenderUnit(5))
@@ -506,7 +593,8 @@ class MountStateTest {
                             .x(100)
                             .y(100)
                             .width(100)
-                            .height(100))
+                            .height(100),
+                    )
                     .child(
                         SimpleLayoutResult.create()
                             .renderUnit(HostRenderUnit(7))
@@ -520,7 +608,10 @@ class MountStateTest {
                                     .x(100)
                                     .y(100)
                                     .width(100)
-                                    .height(100))))
+                                    .height(100),
+                            ),
+                    ),
+            )
             .build()
     val renderTree = createRenderTree(c, LayoutResultWrappingNode(root))
     val mountState = createMountState(c)
@@ -569,11 +660,15 @@ class MountStateTest {
                     .renderUnit(
                         ViewWrapperUnit(TextView(c), 1)
                             .addBindBinders(
-                                bindBinder as RenderUnit.Binder<ViewWrapperUnit, View, Any>)
+                                bindBinder as RenderUnit.Binder<ViewWrapperUnit, View, Any>,
+                            )
                             .addMounBinders(
-                                mountBinder as RenderUnit.Binder<ViewWrapperUnit, View, Any>))
+                                mountBinder as RenderUnit.Binder<ViewWrapperUnit, View, Any>,
+                            ),
+                    )
                     .width(100)
-                    .height(100))
+                    .height(100),
+            )
             .build()
     val renderTree = createRenderTree(c, LayoutResultWrappingNode(root))
     val mountState = createMountState(c)
@@ -609,11 +704,15 @@ class MountStateTest {
                     .renderUnit(
                         ViewWrapperUnit(TextView(c), 1)
                             .addBindBinders(
-                                attachBinder as RenderUnit.Binder<ViewWrapperUnit, View, Any>)
+                                attachBinder as RenderUnit.Binder<ViewWrapperUnit, View, Any>,
+                            )
                             .addMounBinders(
-                                mountBinder as RenderUnit.Binder<ViewWrapperUnit, View, Any>))
+                                mountBinder as RenderUnit.Binder<ViewWrapperUnit, View, Any>,
+                            ),
+                    )
                     .width(100)
-                    .height(100))
+                    .height(100),
+            )
             .build()
     val rootHost = RootHostView(c)
     renderCoreTestRule.useRootHost(rootHost).useRootNode(LayoutResultWrappingNode(root)).render()
@@ -655,11 +754,15 @@ class MountStateTest {
                     .renderUnit(
                         ViewWrapperUnit(TextView(c), 1)
                             .addBindBinders(
-                                attachBinder as RenderUnit.Binder<ViewWrapperUnit, View, Any>)
+                                attachBinder as RenderUnit.Binder<ViewWrapperUnit, View, Any>,
+                            )
                             .addMounBinders(
-                                mountBinder as RenderUnit.Binder<ViewWrapperUnit, View, Any>))
+                                mountBinder as RenderUnit.Binder<ViewWrapperUnit, View, Any>,
+                            ),
+                    )
                     .width(100)
-                    .height(100))
+                    .height(100),
+            )
             .build()
     val rootHost = RenderTreeHostView(c)
     renderCoreTestRule
@@ -698,28 +801,32 @@ class MountStateTest {
                 SimpleLayoutResult.create()
                     .renderUnit(ViewWrapperUnit(TextView(c), 1))
                     .width(100)
-                    .height(100))
+                    .height(100),
+            )
             .child(
                 SimpleLayoutResult.create()
                     .renderUnit(ViewWrapperUnit(TextView(c), 2))
                     .x(200)
                     .y(200)
                     .width(100)
-                    .height(100))
+                    .height(100),
+            )
             .child(
                 SimpleLayoutResult.create()
                     .renderUnit(ViewWrapperUnit(TextView(c), 3))
                     .x(300)
                     .y(300)
                     .width(100)
-                    .height(100))
+                    .height(100),
+            )
             .child(
                 SimpleLayoutResult.create()
                     .renderUnit(ViewWrapperUnit(TextView(c), 4))
                     .x(400)
                     .y(400)
                     .width(100)
-                    .height(100))
+                    .height(100),
+            )
             .build()
     val renderTree = createRenderTree(c, LayoutResultWrappingNode(root))
     val mountState = createMountState(c)
@@ -755,11 +862,12 @@ class MountStateTest {
     expectedException.expect(RuntimeException::class.java)
     expectedException.expectMessage(
         """
-              Trying to mount a RenderTreeNode, its parent should be a Host, but was 'LinearLayout'.
-              Parent RenderUnit: id=1; poolKey='class android.widget.LinearLayout'.
-              Child RenderUnit: id=2; poolKey='class android.view.View'.
-              """
-            .trimIndent())
+        Trying to mount a RenderTreeNode, its parent should be a Host, but was 'LinearLayout'.
+        Parent RenderUnit: id=1; poolKey='class android.widget.LinearLayout'.
+        Child RenderUnit: id=2; poolKey='class android.view.View'.
+        """
+            .trimIndent(),
+    )
     val c = renderCoreTestRule.context
     val root: LayoutResult =
         SimpleLayoutResult.create()
@@ -770,7 +878,8 @@ class MountStateTest {
                 SimpleLayoutResult.create()
                     .renderUnit(ViewWrapperUnit(View(c), 2))
                     .width(100)
-                    .height(100))
+                    .height(100),
+            )
             .build()
     val renderTree = createRenderTree(c, LayoutResultWrappingNode(root))
     val mountState = createMountState(c)
@@ -794,11 +903,15 @@ class MountStateTest {
                     .renderUnit(
                         ViewWrapperUnit(TextView(c), 1)
                             .addBindBinders(
-                                bindBinder as RenderUnit.Binder<ViewWrapperUnit, View, Any>)
+                                bindBinder as RenderUnit.Binder<ViewWrapperUnit, View, Any>,
+                            )
                             .addMounBinders(
-                                mountBinder as RenderUnit.Binder<ViewWrapperUnit, View, Any>))
+                                mountBinder as RenderUnit.Binder<ViewWrapperUnit, View, Any>,
+                            ),
+                    )
                     .width(100)
-                    .height(100))
+                    .height(100),
+            )
             .build()
     val renderTree = createRenderTree(c, LayoutResultWrappingNode(root))
     val mountState = createMountState(c)
@@ -839,7 +952,8 @@ class MountStateTest {
       root.addChild(leaf)
       val renderUnit = TestRenderUnit()
       renderUnit.addOptionalMountBinder(
-          DelegateBinder.createDelegateBinder(renderUnit, mountBinder))
+          DelegateBinder.createDelegateBinder(renderUnit, mountBinder),
+      )
       renderUnit.addAttachBinder(DelegateBinder.createDelegateBinder(renderUnit, attachBinder))
       id = renderUnit.id
       leaf.setRenderUnit(renderUnit)
@@ -870,11 +984,13 @@ class MountStateTest {
       val newRenderUnit = TestRenderUnit()
       newRenderUnit.addOptionalMountBinders(
           DelegateBinder.createDelegateBinder(newRenderUnit, mountBinder1),
-          DelegateBinder.createDelegateBinder(newRenderUnit, mountBinder2))
+          DelegateBinder.createDelegateBinder(newRenderUnit, mountBinder2),
+      )
       newRenderUnit.addAttachBinders(
           DelegateBinder.createDelegateBinder(newRenderUnit, attachBinder1),
           DelegateBinder.createDelegateBinder(newRenderUnit, attachBinder2),
-          DelegateBinder.createDelegateBinder(newRenderUnit, attachBinder3))
+          DelegateBinder.createDelegateBinder(newRenderUnit, attachBinder3),
+      )
       newRenderUnit.setId(id)
       newLeaf.setRenderUnit(newRenderUnit)
       val newRenderTree = createRenderTree(c, newRoot)
@@ -899,6 +1015,77 @@ class MountStateTest {
     }
   }
 
+  private class UnmountLifecycleTrackingExtension(
+      private val events: MutableList<String>,
+      private val throwOnBeforeUnmount: Boolean = false,
+  ) : MountExtension<Any?, Unit>(), OnItemCallbacks<Unit> {
+
+    override fun createState() = Unit
+
+    override fun onBeforeUnmount(extensionState: ExtensionState<Unit>) {
+      if (throwOnBeforeUnmount) {
+        throw IllegalStateException("expected")
+      }
+      events.add("beforeUnmount")
+    }
+
+    override fun onUnmount(extensionState: ExtensionState<Unit>) {
+      events.add("onUnmount")
+    }
+
+    override fun beforeMountItem(
+        extensionState: ExtensionState<Unit>,
+        renderTreeNode: RenderTreeNode,
+        index: Int,
+    ) = Unit
+
+    override fun onMountItem(
+        extensionState: ExtensionState<Unit>,
+        renderUnit: RenderUnit<*>,
+        content: Any,
+        layoutData: Any?,
+    ) = Unit
+
+    override fun shouldUpdateItem(
+        extensionState: ExtensionState<Unit>,
+        previousRenderUnit: RenderUnit<*>,
+        previousLayoutData: Any?,
+        nextRenderUnit: RenderUnit<*>,
+        nextLayoutData: Any?,
+    ): Boolean = false
+
+    override fun onBindItem(
+        extensionState: ExtensionState<Unit>,
+        renderUnit: RenderUnit<*>,
+        content: Any,
+        layoutData: Any?,
+    ) = Unit
+
+    override fun onUnbindItem(
+        extensionState: ExtensionState<Unit>,
+        renderUnit: RenderUnit<*>,
+        content: Any,
+        layoutData: Any?,
+    ) = Unit
+
+    override fun onUnmountItem(
+        extensionState: ExtensionState<Unit>,
+        renderUnit: RenderUnit<*>,
+        content: Any,
+        layoutData: Any?,
+    ) {
+      events.add("unmountItem:${renderUnit.id}")
+    }
+
+    override fun onBoundsAppliedToItem(
+        extensionState: ExtensionState<Unit>,
+        renderUnit: RenderUnit<*>,
+        content: Any,
+        layoutData: Any?,
+        changed: Boolean,
+    ) = Unit
+  }
+
   companion object {
     private fun createRenderTree(c: Context, root: Node<Any?>): RenderTree {
       val sizeConstraints = SizeConstraints.exact(200, 200)
@@ -909,6 +1096,12 @@ class MountStateTest {
 
     private fun createMountState(c: Context): MountState {
       return MountState(TestHostView(c))
+    }
+
+    private fun notifyVisibleBoundsChangedNestCount(delegate: MountDelegate): Int {
+      val field = delegate.javaClass.getDeclaredField("notifyVisibleBoundsChangedNestCount")
+      field.isAccessible = true
+      return field.getInt(delegate)
     }
   }
 }

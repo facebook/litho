@@ -20,6 +20,7 @@ import android.util.SparseArray
 import com.facebook.litho.annotations.ImportantForAccessibility
 import com.facebook.rendercore.MountItem
 import com.facebook.rendercore.RenderTreeNode
+import com.facebook.rendercore.RenderType
 import com.facebook.rendercore.RenderUnit
 import com.facebook.rendercore.transitions.TransitionRenderUnit
 
@@ -31,18 +32,20 @@ protected constructor(
     val nodeInfo: NodeInfo?,
     val flags: Int,
     importantForAccessibility: Int,
-    renderType: RenderType,
     @field:JvmField val componentContext: ComponentContext,
-    private val _debugKey: String?
-) : RenderUnit<Any>(renderType), TransitionRenderUnit {
+    private val _debugKey: String?,
+    @JvmField val excludesFromIncrementalMount: Boolean,
+) : RenderUnit<Any>(), TransitionRenderUnit {
 
   override val debugKey: String
-    get() = _debugKey ?: componentContext.globalKey
+    get() = _debugKey ?: componentContext.globalKey.toString()
 
   // the A11Y prop for descendants has been corrected
   val importantForAccessibility: Int =
-      if (importantForAccessibility ==
-          ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_YES_HIDE_DESCENDANTS) {
+      if (
+          importantForAccessibility ==
+              ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_YES_HIDE_DESCENDANTS
+      ) {
         ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_YES
       } else {
         importantForAccessibility
@@ -71,6 +74,18 @@ protected constructor(
     const val LAYOUT_FLAG_DRAWABLE_OUTPUTS_DISABLED = 1 shl 3
     const val LAYOUT_FLAG_DUPLICATE_CHILDREN_STATES = 1 shl 4
     const val LAYOUT_FLAG_HAS_TOUCH_EVENT_HANDLERS = 1 shl 5
+    /**
+     * A view-mounting primitive that legacy drawable Text would have wrapped in its own host. Only
+     * read by test lookups (`ComponentQueries`), so they return the same view for primitive Text as
+     * for legacy Text.
+     *
+     * TODO(fabiocarballo): Migration scaffolding for `ComponentsConfiguration.usePrimitiveText`.
+     *   Once legacy Text is removed, update the tests that click or check the view returned by a
+     *   text lookup to target the view that owns the handler, then delete this flag,
+     *   [LithoNode.needsHostViewAsAccessibleDrawable] and
+     *   [RCTextViewTextContent.isMatchedThroughHost].
+     */
+    const val LAYOUT_FLAG_NEEDS_HOST_VIEW_AS_DRAWABLE = 1 shl 6
 
     @JvmStatic
     fun getComponentContext(item: MountItem): ComponentContext =

@@ -16,7 +16,7 @@
 
 package com.facebook.litho.stateupdates
 
-import com.facebook.litho.Column
+import com.facebook.litho.Column as ColumnBuilder
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.StateValue
@@ -39,7 +39,7 @@ object ComponentWithStateCrashOnUpdateStateSpec {
   @JvmStatic
   @OnCreateLayout
   fun onCreateLayout(c: ComponentContext, @State count: Int): Component =
-      Column.create(c).child(Text.create(c).text("Count: $count")).build()
+      ColumnBuilder.create(c).child(Text.create(c).text("Count: $count")).build()
 
   @JvmStatic
   @OnUpdateState

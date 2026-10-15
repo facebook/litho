@@ -23,47 +23,35 @@ import com.facebook.rendercore.RenderUnit
 object ViewAttributesViewBinder : RenderUnit.Binder<ViewAttributesViewBinder.Model, View, Int> {
 
   data class Model(
-      val renderUnit: RenderUnit<*>,
+      val nodeInfo: NodeInfo?,
       val viewAttributes: ViewAttributes,
       val isRootHost: Boolean,
-      val cloneStateListAnimators: Boolean,
-      val isEventHandlerRedesignEnabled: Boolean,
   )
 
   fun create(
       model: Model,
   ): RenderUnit.DelegateBinder<Any?, Any, Any> {
     return RenderUnit.DelegateBinder.createDelegateBinder(
-        model = model, binder = ViewAttributesViewBinder)
-        as RenderUnit.DelegateBinder<Any?, Any, Any>
+        model = model,
+        binder = ViewAttributesViewBinder,
+    ) as RenderUnit.DelegateBinder<Any?, Any, Any>
   }
 
   override fun shouldUpdate(
       currentModel: Model,
       newModel: Model,
       currentLayoutData: Any?,
-      nextLayoutData: Any?
+      nextLayoutData: Any?,
   ): Boolean {
-    return if (newModel.isEventHandlerRedesignEnabled) {
-      currentModel.viewAttributes != newModel.viewAttributes
-    } else {
-      val currentRenderUnit = currentModel.renderUnit
-      val newRenderUnit = newModel.renderUnit
-
-      if (currentRenderUnit === newRenderUnit) {
-        false
-      } else {
-        (currentRenderUnit is MountSpecLithoRenderUnit &&
-            newRenderUnit is MountSpecLithoRenderUnit &&
-            MountSpecLithoRenderUnit.shouldUpdateMountItem(
-                currentRenderUnit,
-                newRenderUnit,
-                currentLayoutData,
-                nextLayoutData,
-            )) || currentModel.viewAttributes != newModel.viewAttributes
-      }
-    }
+    // The bind also installs the render unit's NodeInfo, which the accessibility delegate reads and
+    // ViewAttributes does not hold: a heading, a state description or a focus order that changed on
+    // its own must rebind as well, or the delegate keeps describing the old one.
+    return currentModel.viewAttributes != newModel.viewAttributes ||
+        !isNodeInfoEquivalent(currentModel.nodeInfo, newModel.nodeInfo)
   }
+
+  private fun isNodeInfoEquivalent(current: NodeInfo?, next: NodeInfo?): Boolean =
+      if (current == null || next == null) current === next else current.isEquivalentTo(next)
 
   override fun bind(context: Context, content: View, model: Model, layoutData: Any?): Int {
     val flags =
@@ -73,11 +61,11 @@ object ViewAttributesViewBinder : RenderUnit.Binder<ViewAttributesViewBinder.Mod
           LithoMountData.getViewAttributeFlags(content)
         }
 
-    ViewAttributes.setViewAttributes(
+    ViewAttributes.setViewAttributesWithNodeInfo(
         content = content,
         attributes = model.viewAttributes,
-        unit = model.renderUnit,
-        cloneStateListAnimators = model.cloneStateListAnimators)
+        nodeInfo = model.nodeInfo,
+    )
 
     return flags
   }
@@ -87,7 +75,7 @@ object ViewAttributesViewBinder : RenderUnit.Binder<ViewAttributesViewBinder.Mod
       content: View,
       model: Model,
       layoutData: Any?,
-      bindData: Int?
+      bindData: Int?,
   ) {
     if (bindData == null) {
       throw IllegalStateException("Bind data should not be null")

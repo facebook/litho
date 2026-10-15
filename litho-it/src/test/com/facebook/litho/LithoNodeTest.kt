@@ -23,13 +23,13 @@ import android.util.SparseArray
 import androidx.core.view.ViewCompat
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.layout.LayoutDirection
+import com.facebook.litho.layout.flexbox.Column
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.Whitebox
 import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.logging.TestComponentsReporter
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.testing.unspecified
-import com.facebook.litho.widget.ComponentWithState
 import com.facebook.litho.widget.Text
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -323,7 +323,7 @@ class LithoNodeTest {
   @Test
   fun testComponentCreateAndRetrieveCachedLayoutLS_measure() {
     val baseContext = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    val componentTree = ComponentTree.create(baseContext).build()
+    val componentTree = ComponentTree.create(baseContext).enableChildClipping(true).build()
     val c = componentTree.context
     val resolveContext = c.setRenderStateContextForTests()
     val resultCache = resolveContext.cache
@@ -344,7 +344,7 @@ class LithoNodeTest {
   @Test
   fun testComponentCreateAndRetrieveCachedLayoutLS_measureMightNotCacheInternalNode() {
     val baseContext = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    val componentTree = ComponentTree.create(baseContext).build()
+    val componentTree = ComponentTree.create(baseContext).enableChildClipping(true).build()
     val c = componentTree.context
     val resolveContext = c.setRenderStateContextForTests()
     val resultCache = resolveContext.cache
@@ -364,30 +364,43 @@ class LithoNodeTest {
 
   @Test
   fun testMeasureMightNotCacheInternalNode_ContextWithoutStateHandler_returnsMeasurement() {
-    val c = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    c.setRenderStateContextForTests()
-    val component =
-        Column.create(c)
-            .child(Text.create(c).textSizePx(16).text("test"))
-            .child(ComponentWithState.create(c))
-            .build()
+    val lithoTestView = lithoTestRule.render {
+      Column.create(context)
+          .child(Text.create(context).textSizePx(16).text("test"))
+          .child(ComponentWithState())
+          .build()
+    }
+
+    val component = lithoTestView.componentTree.root
     val textSize = Size()
-    component.measureMightNotCacheInternalNode(c, exactly(50), unspecified(0), textSize)
+    component?.measureMightNotCacheInternalNode(
+        lithoTestView.context,
+        exactly(50),
+        unspecified(0),
+        textSize,
+    )
     assertThat(textSize.width).isEqualTo(50)
     assertThat(textSize.height).isGreaterThan(0)
   }
 
   @Test
   fun testMeasureMightNotCacheInternalNode_ContextWithoutLayoutStateContextOrStateHandler_returnsMeasurement() {
-    val c = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    c.setRenderStateContextForTests()
-    val component =
-        Column.create(c)
-            .child(Text.create(c).textSizePx(16).text("test"))
-            .child(ComponentWithState.create(c))
-            .build()
+    val lithoTestView = lithoTestRule.render {
+      Column.create(context)
+          .child(Text.create(context).textSizePx(16).text("test"))
+          .child(ComponentWithState())
+          .build()
+    }
+
+    val component = lithoTestView.componentTree.root
+
     val textSize = Size()
-    component.measureMightNotCacheInternalNode(c, exactly(50), unspecified(0), textSize)
+    component?.measureMightNotCacheInternalNode(
+        lithoTestView.componentTree.context,
+        exactly(50),
+        unspecified(0),
+        textSize,
+    )
     assertThat(textSize.width).isEqualTo(50)
     assertThat(textSize.height).isGreaterThan(0)
   }
@@ -410,6 +423,13 @@ class LithoNodeTest {
 
     private fun assertEmptyFlags(node: LithoNode) {
       assertThat(Whitebox.getInternalState<Any>(node, "privateFlags") as Long).isEqualTo(0L)
+    }
+  }
+
+  private class ComponentWithState : KComponent() {
+    override fun ComponentScope.render(): Component {
+      val someState = useState<String> { "hello world" }
+      return Column { child(Text.create(context).text(someState.value).build()) }
     }
   }
 }

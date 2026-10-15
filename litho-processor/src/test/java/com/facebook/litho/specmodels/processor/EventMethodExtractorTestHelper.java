@@ -16,8 +16,7 @@
 
 package com.facebook.litho.specmodels.processor;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
@@ -33,46 +32,47 @@ import javax.lang.model.element.Modifier;
 public class EventMethodExtractorTestHelper {
   static void assertMethodExtraction(
       List<SpecMethodModel<EventMethod, EventDeclarationModel>> methods) {
-    assertEquals(methods.size(), 1);
+    assertThat(methods.size()).isEqualTo(1);
 
     SpecMethodModel<EventMethod, EventDeclarationModel> eventMethod = methods.iterator().next();
 
     ImmutableList<TypeVariableName> typeVariables = eventMethod.typeVariables;
-    assertEquals(1, typeVariables.size());
+    assertThat(typeVariables.size()).isEqualTo(1);
     TypeVariableName typeVariable = typeVariables.get(0);
-    assertEquals("T", typeVariable.name);
-    assertEquals(1, typeVariable.bounds.size());
-    assertEquals("java.lang.Integer", typeVariable.bounds.get(0).toString());
+    assertThat(typeVariable.name).isEqualTo("T");
+    assertThat(typeVariable.bounds.size()).isEqualTo(1);
+    assertThat(typeVariable.bounds.get(0).toString()).isEqualTo("java.lang.Integer");
 
-    assertNotNull(eventMethod.typeModel);
-    assertEquals(eventMethod.typeModel.name, ClassName.bestGuess("java.lang.Object"));
+    assertThat(eventMethod.typeModel).isNotNull();
+    assertThat(eventMethod.typeModel.name).isEqualTo(ClassName.bestGuess("java.lang.Object"));
 
-    assertEquals(eventMethod.modifiers.size(), 1);
-    assertEquals(eventMethod.modifiers.get(0), Modifier.PUBLIC);
+    assertThat(eventMethod.modifiers.size()).isEqualTo(1);
+    assertThat(eventMethod.modifiers.get(0)).isEqualTo(Modifier.PUBLIC);
 
-    assertEquals(eventMethod.name.toString(), "testMethod");
+    assertThat(eventMethod.name.toString()).isEqualTo("testMethod");
 
-    assertEquals(eventMethod.returnType, TypeName.VOID);
+    assertThat(eventMethod.returnType).isEqualTo(TypeName.VOID);
 
-    assertEquals(eventMethod.methodParams.size(), 5);
+    assertThat(eventMethod.methodParams.size()).isEqualTo(5);
 
     MethodParamModel testProp = eventMethod.methodParams.get(0);
-    assertEquals(testProp.getName(), "testProp");
-    assertEquals(testProp.getTypeName(), TypeName.BOOLEAN);
-    assertEquals(testProp.getAnnotations().size(), 1);
+    assertThat(testProp.getName()).isEqualTo("testProp");
+    assertThat(testProp.getTypeName()).isEqualTo(TypeName.BOOLEAN);
+    assertThat(testProp.getAnnotations().size()).isEqualTo(1);
 
     MethodParamModel testState = eventMethod.methodParams.get(1);
-    assertEquals(testState.getName(), "testState");
-    assertEquals(testState.getTypeName(), TypeName.INT);
-    assertEquals(testState.getAnnotations().size(), 1);
+    assertThat(testState.getName()).isEqualTo("testState");
+    assertThat(testState.getTypeName()).isEqualTo(TypeName.INT);
+    assertThat(testState.getAnnotations().size()).isEqualTo(1);
 
     MethodParamModel testPermittedAnnotation = eventMethod.methodParams.get(2);
-    assertEquals(testPermittedAnnotation.getName(), "testPermittedAnnotation");
-    assertEquals(testPermittedAnnotation.getTypeName(), ClassName.bestGuess("java.lang.Object"));
-    assertEquals(1, testPermittedAnnotation.getAnnotations().size());
+    assertThat(testPermittedAnnotation.getName()).isEqualTo("testPermittedAnnotation");
+    assertThat(testPermittedAnnotation.getTypeName())
+        .isEqualTo(ClassName.bestGuess("java.lang.Object"));
+    assertThat(testPermittedAnnotation.getAnnotations().size()).isEqualTo(1);
 
     MethodParamModel testNotPermittedAnnotation = eventMethod.methodParams.get(3);
-    assertEquals(testNotPermittedAnnotation.getName(), "testNotPermittedAnnotation");
-    assertEquals(0, testNotPermittedAnnotation.getAnnotations().size());
+    assertThat(testNotPermittedAnnotation.getName()).isEqualTo("testNotPermittedAnnotation");
+    assertThat(testNotPermittedAnnotation.getAnnotations().size()).isEqualTo(0);
   }
 }

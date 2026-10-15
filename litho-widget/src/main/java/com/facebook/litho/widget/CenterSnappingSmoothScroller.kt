@@ -21,25 +21,31 @@ import android.util.DisplayMetrics
 import androidx.recyclerview.widget.LinearSmoothScroller
 
 /** LinearSmoothScroller subclass that snaps the target position to center. */
-class CenterSnappingSmoothScroller(context: Context, private val offset: Int) :
-    LinearSmoothScroller(context) {
+class CenterSnappingSmoothScroller(
+    context: Context,
+    private val offset: Int,
+    private val overrideMSecPerInch: Float = MILLISECONDS_PER_INCH,
+) : LinearSmoothScroller(context) {
 
   override fun calculateDtToFit(
       viewStart: Int,
       viewEnd: Int,
       boxStart: Int,
       boxEnd: Int,
-      snapPreference: Int
+      snapPreference: Int,
   ): Int {
     val result = (boxStart + (boxEnd - boxStart) / 2) - (viewStart + (viewEnd - viewStart) / 2)
     return result + offset
   }
 
-  override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics): Float {
-    return MILLISECONDS_PER_INCH / displayMetrics.densityDpi
+  override fun calculateSpeedPerPixel(
+      displayMetrics: DisplayMetrics,
+  ): Float {
+    val msecPerInch = overrideMSecPerInch
+    return msecPerInch / displayMetrics.densityDpi
   }
 
   companion object {
-    private const val MILLISECONDS_PER_INCH = 100f
+    private const val MILLISECONDS_PER_INCH: Float = 100f
   }
 }

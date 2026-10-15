@@ -50,7 +50,11 @@ class MountStateViewClickTest {
         ComponentTree.create(context)
             .componentsConfiguration(
                 context.lithoConfiguration.componentsConfig.copy(
-                    incrementalMountEnabled = false, visibilityProcessingEnabled = false))
+                    incrementalMountEnabled = false,
+                    visibilityProcessingEnabled = false,
+                ),
+            )
+            .enableChildClipping(true)
             .build()
   }
 
@@ -104,10 +108,12 @@ class MountStateViewClickTest {
               override fun onCreateLayout(c: ComponentContext): Component =
                   Column.create(c)
                       .clickHandler(
-                          EventHandlerTestHelper.create(c, 1) as? EventHandler<ClickEvent>)
-                      .child(SimpleMountSpecTester.create(c))
+                          EventHandlerTestHelper.create(c, 1) as? EventHandler<ClickEvent>,
+                      )
+                      .child(SimpleMountSpecTester())
                       .build()
-            })
+            },
+        )
     assertThat(lithoView.childCount).isEqualTo(1)
     assertThat(lithoView.getChildAt(0).isClickable).isTrue
   }
@@ -121,10 +127,12 @@ class MountStateViewClickTest {
               override fun onCreateLayout(c: ComponentContext): Component =
                   Column.create(c)
                       .longClickHandler(
-                          EventHandlerTestHelper.create(c, 1) as? EventHandler<LongClickEvent>)
-                      .child(SimpleMountSpecTester.create(c))
+                          EventHandlerTestHelper.create(c, 1) as? EventHandler<LongClickEvent>,
+                      )
+                      .child(SimpleMountSpecTester())
                       .build()
-            })
+            },
+        )
     assertThat(lithoView.childCount).isEqualTo(1)
     assertThat(lithoView.getChildAt(0).isLongClickable).isTrue
   }
@@ -133,7 +141,7 @@ class MountStateViewClickTest {
   fun testRootHostClickableUnmount() {
     val testLithoView =
         lithoViewRule.render(componentTree = componentTree) {
-          SimpleLayoutSpecWithClickHandlersTester.create(context).build()
+          SimpleLayoutSpecWithClickHandlersTester()
         }
     val rootHost = testLithoView.lithoView.getChildAt(0)
     assertThat(rootHost.isClickable).isTrue

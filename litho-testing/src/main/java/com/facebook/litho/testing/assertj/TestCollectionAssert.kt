@@ -19,8 +19,8 @@ package com.facebook.litho.testing.assertj
 import android.content.Context
 import androidx.annotation.StringRes
 import androidx.test.core.app.ApplicationProvider
+import com.facebook.litho.BaseMountingView
 import com.facebook.litho.Component
-import com.facebook.litho.LithoView
 import com.facebook.litho.testing.TestCollection
 import com.facebook.litho.testing.TestCollectionItem
 import com.facebook.litho.testing.viewtree.ViewPredicates
@@ -30,7 +30,9 @@ import org.assertj.core.api.Assertions
 
 class TestCollectionAssert(testCollection: TestCollection) :
     AbstractAssert<TestCollectionAssert, TestCollection>(
-        testCollection, TestCollectionAssert::class.java) {
+        testCollection,
+        TestCollectionAssert::class.java,
+    ) {
 
   /** Assert the number of items in the collection. */
   fun hasSize(size: Int): TestCollectionAssert {
@@ -71,7 +73,7 @@ class TestCollectionAssert(testCollection: TestCollection) :
   /** Assert a condition on all items filtered by the given predicate. */
   fun onChildren(
       matching: (TestCollectionItem) -> Boolean,
-      condition: (List<TestCollectionItem>) -> Boolean
+      condition: (List<TestCollectionItem>) -> Boolean,
   ): TestCollectionAssert {
     Assertions.assertThat(condition(actual.items.filter(matching))).isTrue
     return this
@@ -83,7 +85,8 @@ class TestCollectionAssert(testCollection: TestCollection) :
    */
   fun containsComponents(vararg components: Component): TestCollectionAssert {
     components.forEach { component ->
-      val equivalentComponent = actual.items.firstOrNull { it.component.isEquivalentTo(component) }
+      val equivalentComponent =
+          actual.items.firstOrNull { it.component?.isEquivalentTo(component) == true }
       Assertions.assertThat(equivalentComponent).isNotNull
     }
     return this
@@ -95,7 +98,8 @@ class TestCollectionAssert(testCollection: TestCollection) :
    */
   fun doesNotContainComponents(vararg components: Component): TestCollectionAssert {
     components.forEach { component ->
-      val equivalentComponent = actual.items.firstOrNull { it.component.isEquivalentTo(component) }
+      val equivalentComponent =
+          actual.items.firstOrNull { it.component?.isEquivalentTo(component) == true }
       Assertions.assertThat(equivalentComponent).isNull()
     }
     return this
@@ -107,7 +111,7 @@ class TestCollectionAssert(testCollection: TestCollection) :
    */
   fun containsExactlyComponents(vararg components: Component): TestCollectionAssert {
     actual.items.zip(components).forEach { (a, b) ->
-      Assertions.assertThat(a.component.isEquivalentTo(b)).isTrue
+      Assertions.assertThat(a.component?.isEquivalentTo(b) == true).isTrue
     }
     return this
   }
@@ -121,9 +125,9 @@ class TestCollectionAssert(testCollection: TestCollection) :
   }
 
   /** Assert visible views within the collection has the [textRes]'s text as its text. */
-  fun hasVisibleText(@StringRes textRes: Int): TestCollectionAssert =
-      hasVisibleText(
-          ApplicationProvider.getApplicationContext<Context>().resources.getString(textRes))
+  fun hasVisibleText(@StringRes textRes: Int): TestCollectionAssert = hasVisibleText(
+      ApplicationProvider.getApplicationContext<Context>().resources.getString(textRes),
+  )
 
   /** Assert visible views within the collection does not have the [text] as its text. */
   fun doesNotHaveVisibleText(text: String): TestCollectionAssert {
@@ -134,18 +138,20 @@ class TestCollectionAssert(testCollection: TestCollection) :
   }
 
   /** Assert visible views within the collection does not have the [textRes]'s text as its text. */
-  fun doesNotHaveVisibleText(@StringRes textRes: Int): TestCollectionAssert =
-      doesNotHaveVisibleText(
-          ApplicationProvider.getApplicationContext<Context>().resources.getString(textRes))
+  fun doesNotHaveVisibleText(
+      @StringRes textRes: Int,
+  ): TestCollectionAssert = doesNotHaveVisibleText(
+      ApplicationProvider.getApplicationContext<Context>().resources.getString(textRes),
+  )
 
-  private fun LithoView.hasVisibleText(text: String): Boolean {
+  private fun BaseMountingView.hasVisibleText(text: String): Boolean {
     val viewTree = ViewTree.of(this)
     val children =
         viewTree.findChild(ViewPredicates.hasVisibleText(text), ViewPredicates.isVisible())
     return children?.isNotEmpty() == true
   }
 
-  private fun List<LithoView>.hasVisibleText(text: String): Boolean {
+  private fun List<BaseMountingView>.hasVisibleText(text: String): Boolean {
     for (view in this) {
       if (view.hasVisibleText(text)) {
         return true
@@ -153,8 +159,6 @@ class TestCollectionAssert(testCollection: TestCollection) :
     }
     return false
   }
-
-  companion object {
-    fun assertThat(actual: TestCollection): TestCollectionAssert = TestCollectionAssert(actual)
-  }
 }
+
+fun assertThat(actual: TestCollection): TestCollectionAssert = TestCollectionAssert(actual)

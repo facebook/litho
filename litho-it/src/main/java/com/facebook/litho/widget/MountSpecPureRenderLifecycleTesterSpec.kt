@@ -59,7 +59,7 @@ object MountSpecPureRenderLifecycleTesterSpec {
   fun onCreateInitialState(
       context: ComponentContext,
       dummyState: StateValue<Any?>,
-      @Prop lifecycleTracker: LifecycleTracker
+      @Prop lifecycleTracker: LifecycleTracker,
   ) {
     dummyState.set(Any())
     lifecycleTracker.addStep(LifecycleStep.ON_CREATE_INITIAL_STATE)
@@ -71,7 +71,7 @@ object MountSpecPureRenderLifecycleTesterSpec {
       c: ComponentContext,
       @Prop lifecycleTracker: LifecycleTracker,
       @State dummyState: Any?,
-      @CachedValue expensiveValue: Int
+      @CachedValue expensiveValue: Int,
   ) {
     lifecycleTracker.addStep(LifecycleStep.ON_PREPARE)
   }
@@ -85,7 +85,7 @@ object MountSpecPureRenderLifecycleTesterSpec {
       heightSpec: Int,
       size: Size,
       @Prop lifecycleTracker: LifecycleTracker,
-      @Prop(optional = true) intrinsicSize: Size?
+      @Prop(optional = true) intrinsicSize: Size?,
   ) {
     val width = SizeSpec.getSize(widthSpec)
     val height = SizeSpec.getSize(heightSpec)
@@ -104,7 +104,7 @@ object MountSpecPureRenderLifecycleTesterSpec {
   fun onBoundsDefined(
       c: ComponentContext,
       layout: ComponentLayout,
-      @Prop lifecycleTracker: LifecycleTracker
+      @Prop lifecycleTracker: LifecycleTracker,
   ) {
     val bounds = Rect(layout.x, layout.y, layout.x + layout.width, layout.y + layout.height)
     lifecycleTracker.addStep(LifecycleStep.ON_BOUNDS_DEFINED, bounds)
@@ -127,7 +127,6 @@ object MountSpecPureRenderLifecycleTesterSpec {
   @UiThread
   @OnMount
   fun onMount(context: ComponentContext, view: View, @Prop lifecycleTracker: LifecycleTracker) {
-    // TODO: (T64290961) Remove the StaticContainer hack for tracing OnCreateMountContent callback.
     if (view === StaticContainer.sLastCreatedView) {
       lifecycleTracker.addStep(LifecycleStep.ON_CREATE_MOUNT_CONTENT)
       StaticContainer.sLastCreatedView = null
@@ -186,7 +185,7 @@ object MountSpecPureRenderLifecycleTesterSpec {
   @ShouldUpdate
   fun shouldUpdate(
       @Prop(optional = true) shouldUpdate: Diff<Boolean>?,
-      @Prop lifecycleTracker: Diff<LifecycleTracker>
+      @Prop lifecycleTracker: Diff<LifecycleTracker>,
   ): Boolean {
     lifecycleTracker.next!!.addStep(LifecycleStep.SHOULD_UPDATE)
     return shouldUpdate?.next ?: true

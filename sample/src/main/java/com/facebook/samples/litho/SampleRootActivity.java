@@ -19,11 +19,10 @@ package com.facebook.samples.litho;
 import android.graphics.Color;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
-import com.facebook.litho.AOSPLithoVisibilityEventsController;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.LithoView;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
+import com.facebook.litho.surface.LithoSurface;
 
 public class SampleRootActivity extends AppCompatActivity {
 
@@ -31,17 +30,16 @@ public class SampleRootActivity extends AppCompatActivity {
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    final ComponentContext componentContext = new ComponentContext(this);
-    setContentView(
-        LithoView.create(
-            this,
-            RecyclerCollectionComponent.create(componentContext)
-                .disablePTR(true)
-                .section(
-                    SampleRootSection.create(new SectionContext(componentContext))
-                        .dataModels(Demos.DEMOS))
-                .backgroundColor(Color.WHITE)
-                .build(),
-            new AOSPLithoVisibilityEventsController(this)));
+    LithoSurface.setLithoContent(
+        this,
+        () -> {
+          final ComponentContext componentContext = new ComponentContext(this);
+          return RecyclerCollectionComponent.create(componentContext)
+              .disablePTR(true)
+              .section(SampleRootSection.create(new SectionContext(componentContext)))
+              .backgroundColor(Color.WHITE)
+              .build();
+        });
+    setContentView(LithoSurface.getLithoView(this));
   }
 }

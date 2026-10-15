@@ -22,14 +22,26 @@ android {
     compileSdkVersion rootProject.compileSdkVersion
     buildToolsVersion rootProject.buildToolsVersion
 
-    targetCompatibility = rootProject.targetCompatibilityVersion
-    sourceCompatibility = rootProject.sourceCompatibilityVersion
+    compileOptions {
+        targetCompatibility = rootProject.targetCompatibilityVersion
+        sourceCompatibility = rootProject.sourceCompatibilityVersion
+    }
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
 
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+    }
+    // Buck splits the samples into libraries that share the app's resources; one app module is simpler.
+    sourceSets {
+        main.java.srcDirs += [
+            '../playground/src/main/java',
+            '../sample-common/src/main/java',
+            '../sample-java/src/main/java',
+            '../sample-kotlin/src/main/java',
+        ]
+        test.java.srcDirs += ['../sample-kotlin/src/test']
     }
     namespace 'com.facebook.samples.litho'
     lint {
@@ -55,6 +67,15 @@ dependencies {
     implementation project(':litho-sections-widget')
     implementation project(':litho-widget')
     implementation project(':litho-widget-kotlin')
+    implementation project(':litho-primitive-canvas')
+    implementation project(':litho-primitive-utils')
+    implementation project(':litho-rangemanager')
+    implementation project(':litho-rendercore')
+    implementation project(':litho-rendercore-primitives')
+    implementation project(':litho-surface')
+    implementation project(':litho-widget-material')
+    implementation project(':range-manager')
+    implementation project(':yoga')
     implementation project(':litho-rendercore-text')
 
     kapt project(':litho-processor')
@@ -86,7 +107,9 @@ dependencies {
     implementation deps.supportFragment
     implementation deps.supportRecyclerView
     implementation deps.supportSwipeRefresh
+    implementation deps.supportDynamicAnimations
     implementation deps.supportTransition
+    implementation deps.supportViewPager2
 
 
     // Integration test only

@@ -25,7 +25,9 @@ import com.facebook.litho.widget.Text
 import com.facebook.rendercore.Reducer
 import com.facebook.rendercore.RenderTree
 import com.facebook.rendercore.RenderTreeNode
+import com.facebook.rendercore.visibility.VisibilityExtensionInput
 import com.facebook.rendercore.visibility.VisibilityMountExtension
+import com.facebook.rendercore.visibility.VisibleEvent
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -66,7 +68,7 @@ class VisibilityEventsWithVisibilityExtensionTest {
     whenever(rootNode.renderUnit).thenReturn(Reducer.ROOT_HOST_RENDER_UNIT)
     testLithoView.lithoView.setMountStateDirty()
     val visibilityExtension: VisibilityMountExtension<*> =
-        spy(VisibilityMountExtension.getInstance())
+        spy(VisibilityMountExtension.getInstance<VisibilityExtensionInput>())
     useVisibilityOutputsExtension(testLithoView.lithoView, visibilityExtension)
     testLithoView.lithoView.unmountAllItems()
     verify(visibilityExtension).onUnbind(any())
@@ -75,11 +77,13 @@ class VisibilityEventsWithVisibilityExtensionTest {
 
   private fun useVisibilityOutputsExtension(
       lithoView: LithoView,
-      visibilityOutputsExtension: VisibilityMountExtension<*>
+      visibilityOutputsExtension: VisibilityMountExtension<*>,
   ) {
     val lithoHostListenerCoordinator =
         Whitebox.getInternalState<LithoHostListenerCoordinator>(
-            lithoView, "lithoHostListenerCoordinator")
+            lithoView,
+            "lithoHostListenerCoordinator",
+        )
     lithoHostListenerCoordinator.useVisibilityExtension(visibilityOutputsExtension)
   }
 }

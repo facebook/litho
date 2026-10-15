@@ -25,10 +25,10 @@ import com.facebook.litho.LithoView
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent
 import com.facebook.samples.litho.NavigatableDemoActivity
+import com.facebook.samples.litho.java.sections.LithoFeedSection
 import com.facebook.samples.litho.kotlin.lithography.data.DataFetcher
 import com.facebook.samples.litho.kotlin.lithography.data.DecadeViewModel
 import com.facebook.samples.litho.kotlin.lithography.data.Model
-import com.facebook.samples.litho.kotlin.lithography.sections.LithoFeedSection
 import kotlin.LazyThreadSafetyMode.NONE
 
 class LithographyKotlinActivity : NavigatableDemoActivity() {
@@ -56,7 +56,8 @@ class LithographyKotlinActivity : NavigatableDemoActivity() {
                   .decades(model.decades)
                   .fetcher(fetcher)
                   .loading(model.isLoading)
-                  .build())
+                  .build(),
+          )
           .disablePTR(true)
           .build()
 }

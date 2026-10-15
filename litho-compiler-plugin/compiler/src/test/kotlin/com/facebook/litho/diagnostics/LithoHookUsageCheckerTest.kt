@@ -18,24 +18,23 @@ package com.facebook.litho.diagnostics
 
 import com.facebook.litho.AbstractCompilerTest
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.junit.runners.Parameterized
-import org.junit.runners.Parameterized.Parameters
 
-@RunWith(Parameterized::class)
-class LithoHookUsageCheckerTest(private val useK2: Boolean) : AbstractCompilerTest() {
+class LithoHookUsageCheckerTest : AbstractCompilerTest() {
 
-  companion object {
-    @JvmStatic @Parameters(name = "useK2={0}") fun useK2() = listOf(false, true)
-  }
-
+  /**
+   * `Hooks.misuse.kt` is also the regression test for what hook identity made legal. Its expected
+   * output lists exactly one diagnostic — the hook called from a plain helper — while the file
+   * still contains hooks in `if`, `when`, `for`, `while`, `forEach` and `try`/`catch`. If the
+   * conditional checks deleted in D120344640 ever come back, those produce diagnostics that are not
+   * in the expected output and this fails.
+   */
   @Test
   fun hooks_misuse() {
-    runTest("test-data/Hooks.misuse.kt", useK2 = useK2)
+    runHookIdentityTest("test-data/Hooks.misuse.kt")
   }
 
   @Test
   fun hooks_good_use() {
-    runTest("test-data/Hooks.good.kt", useK2 = useK2)
+    runHookIdentityTest("test-data/Hooks.good.kt")
   }
 }

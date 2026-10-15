@@ -57,7 +57,7 @@ object DebugHierarchy {
       @JvmField val parent: Node?,
       @JvmField val component: Component,
       @JvmField val components: List<Component>,
-      @OutputUnitType @JvmField val type: Int
+      @OutputUnitType @JvmField val type: Int,
   ) {
 
     fun mutateType(type: Int): Node =

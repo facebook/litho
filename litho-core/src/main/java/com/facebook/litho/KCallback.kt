@@ -193,7 +193,7 @@ private value class MemoizedCallback2<A, B, R>(val callbackHolder: CallbackHolde
 
 @JvmInline
 private value class MemoizedCallback3<A, B, C, R>(
-    val callbackHolder: CallbackHolder<(A, B, C) -> R>
+    val callbackHolder: CallbackHolder<(A, B, C) -> R>,
 ) : (A, B, C) -> R {
   override fun invoke(p1: A, p2: B, p3: C): R {
     ThreadUtils.assertMainThread()
@@ -203,7 +203,7 @@ private value class MemoizedCallback3<A, B, C, R>(
 
 @JvmInline
 private value class MemoizedCallback4<A, B, C, D, R>(
-    val callbackHolder: CallbackHolder<(A, B, C, D) -> R>
+    val callbackHolder: CallbackHolder<(A, B, C, D) -> R>,
 ) : (A, B, C, D) -> R {
   override fun invoke(p1: A, p2: B, p3: C, p4: D): R {
     ThreadUtils.assertMainThread()
@@ -213,7 +213,7 @@ private value class MemoizedCallback4<A, B, C, D, R>(
 
 @JvmInline
 private value class MemoizedCallback5<A, B, C, D, E, R>(
-    val callbackHolder: CallbackHolder<(A, B, C, D, E) -> R>
+    val callbackHolder: CallbackHolder<(A, B, C, D, E) -> R>,
 ) : (A, B, C, D, E) -> R {
   override fun invoke(p1: A, p2: B, p3: C, p4: D, p5: E): R {
     ThreadUtils.assertMainThread()
@@ -223,7 +223,7 @@ private value class MemoizedCallback5<A, B, C, D, E, R>(
 
 @JvmInline
 private value class MemoizedCallback6<A, B, C, D, E, F, R>(
-    val callbackHolder: CallbackHolder<(A, B, C, D, E, F) -> R>
+    val callbackHolder: CallbackHolder<(A, B, C, D, E, F) -> R>,
 ) : (A, B, C, D, E, F) -> R {
   override fun invoke(p1: A, p2: B, p3: C, p4: D, p5: E, p6: F): R {
     ThreadUtils.assertMainThread()
@@ -233,7 +233,7 @@ private value class MemoizedCallback6<A, B, C, D, E, F, R>(
 
 @JvmInline
 private value class MemoizedCallback7<A, B, C, D, E, F, G, R>(
-    val callbackHolder: CallbackHolder<(A, B, C, D, E, F, G) -> R>
+    val callbackHolder: CallbackHolder<(A, B, C, D, E, F, G) -> R>,
 ) : (A, B, C, D, E, F, G) -> R {
   override fun invoke(p1: A, p2: B, p3: C, p4: D, p5: E, p6: F, p7: G): R {
     ThreadUtils.assertMainThread()

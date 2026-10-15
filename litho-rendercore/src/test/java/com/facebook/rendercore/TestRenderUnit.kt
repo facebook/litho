@@ -22,30 +22,30 @@ import android.view.View
 
 internal class TestRenderUnit : RenderUnit<View>, ContentAllocator<View> {
 
-  constructor() : super(RenderType.VIEW)
+  constructor() : super()
 
   constructor(
-      fixedMountBinders: List<DelegateBinder<*, in View, *>>?
+      fixedMountBinders: List<DelegateBinder<*, in View, *>>?,
   ) : super(
-      RenderType.VIEW,
       fixedMountBinders,
       emptyList<DelegateBinder<*, in View, *>>(),
-      emptyList<DelegateBinder<*, in View, *>>())
+      emptyList<DelegateBinder<*, in View, *>>(),
+  )
 
   constructor(
       fixedMountBinders: List<DelegateBinder<*, in View, *>>?,
       optionalMountBinders: List<DelegateBinder<*, in View, *>>,
-      attachBinder: List<DelegateBinder<*, in View, *>>
-  ) : super(RenderType.VIEW, fixedMountBinders, optionalMountBinders, attachBinder)
+      attachBinder: List<DelegateBinder<*, in View, *>>,
+  ) : super(fixedMountBinders, optionalMountBinders, attachBinder)
 
   constructor(
-      extras: SparseArray<Any?>?
+      extras: SparseArray<Any?>?,
   ) : super(
-      RenderType.VIEW,
       emptyList<DelegateBinder<*, in View, *>>(),
       emptyList<DelegateBinder<*, in View, *>>(),
       emptyList<DelegateBinder<*, in View, *>>(),
-      extras)
+      extras,
+  )
 
   override fun createContent(context: Context): View {
     return View(context)
@@ -54,6 +54,8 @@ internal class TestRenderUnit : RenderUnit<View>, ContentAllocator<View> {
   override val contentAllocator: ContentAllocator<View>
     get() = this
 
+  override val renderType: RenderType = RenderType.VIEW
+
   override val id: Long
-    get() = 0
+    get() = 1
 }

@@ -56,7 +56,7 @@ class MapEditorInstance : Editor {
     val newMap = mutableMapOf<Any?, Any?>()
     newMap.putAll(oldMap)
 
-    for ((key, value) in newMap) {
+    for ((key, _) in newMap) {
 
       if (editedParams.containsKey(key.toString())) {
         // There is a new value. Overwrite it.

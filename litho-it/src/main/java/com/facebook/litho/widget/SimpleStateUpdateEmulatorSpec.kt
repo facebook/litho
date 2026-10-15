@@ -16,7 +16,7 @@
 
 package com.facebook.litho.widget
 
-import com.facebook.litho.Column
+import com.facebook.litho.Column as ColumnBuilder
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.StateValue
@@ -48,11 +48,11 @@ object SimpleStateUpdateEmulatorSpec {
       c: ComponentContext,
       @Prop caller: Caller,
       @Prop(optional = true) prefix: String?,
-      @State count: Int
+      @State count: Int,
   ): Component? {
     caller.set(c)
     return if (count > 0) {
-      Column.create(c).child(Text.create(c).text((prefix ?: "Text: ") + count)).build()
+      ColumnBuilder.create(c).child(Text.create(c).text((prefix ?: "Text: ") + count)).build()
     } else {
       null
     }

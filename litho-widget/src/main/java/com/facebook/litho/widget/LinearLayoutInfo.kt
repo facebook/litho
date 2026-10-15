@@ -35,7 +35,7 @@ open class LinearLayoutInfo(private val linearLayoutManager: LinearLayoutManager
       context: ComponentContext?,
       orientation: Int,
       reverseLayout: Boolean,
-      stackFromEnd: Boolean = false
+      stackFromEnd: Boolean = false,
   ) : this(context?.androidContext, orientation, reverseLayout, stackFromEnd)
 
   @JvmOverloads
@@ -43,7 +43,7 @@ open class LinearLayoutInfo(private val linearLayoutManager: LinearLayoutManager
       context: Context?,
       orientation: Int,
       reverseLayout: Boolean,
-      stackFromEnd: Boolean = false
+      stackFromEnd: Boolean = false,
   ) : this(InternalLinearLayoutManager(context, orientation, reverseLayout, stackFromEnd)) {
     linearLayoutManager.isMeasurementCacheEnabled = false
   }
@@ -78,7 +78,7 @@ open class LinearLayoutInfo(private val linearLayoutManager: LinearLayoutManager
       firstMeasuredItemWidth: Int,
       firstMeasuredItemHeight: Int,
       recyclerMeasuredWidth: Int,
-      recyclerMeasuredHeight: Int
+      recyclerMeasuredHeight: Int,
   ): Int {
     var approximateRange: Int
 
@@ -90,8 +90,8 @@ open class LinearLayoutInfo(private val linearLayoutManager: LinearLayoutManager
 
           else ->
               ceil(
-                      (recyclerMeasuredHeight.toFloat() / firstMeasuredItemHeight.toFloat())
-                          .toDouble())
+                  (recyclerMeasuredHeight.toFloat() / firstMeasuredItemHeight.toFloat()).toDouble(),
+              )
                   .toInt()
         }
 
@@ -123,16 +123,19 @@ open class LinearLayoutInfo(private val linearLayoutManager: LinearLayoutManager
 
   override fun computeWrappedHeight(
       maxHeight: Int,
-      componentTreeHolders: List<ComponentTreeHolder>
+      componentTreeHolders: List<ComponentTreeHolder>,
   ): Int =
       LayoutInfoUtils.computeLinearLayoutWrappedHeight(
-          linearLayoutManager, maxHeight, componentTreeHolders)
+          linearLayoutManager,
+          maxHeight,
+          componentTreeHolders,
+      )
 
   private class InternalLinearLayoutManager(
       context: Context?,
       orientation: Int,
       reverseLayout: Boolean,
-      stackFromEnd: Boolean
+      stackFromEnd: Boolean,
   ) : LinearLayoutManager(context, orientation, reverseLayout) {
     init {
       setStackFromEnd(stackFromEnd)
@@ -141,10 +144,14 @@ open class LinearLayoutInfo(private val linearLayoutManager: LinearLayoutManager
     override fun generateDefaultLayoutParams(): RecyclerView.LayoutParams =
         if (orientation == OrientationHelper.VERTICAL)
             RecyclerView.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+            )
         else
             RecyclerView.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT)
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.MATCH_PARENT,
+            )
 
     override fun supportsPredictiveItemAnimations(): Boolean =
         // Predictive animation in RecyclerView has some bugs that surface occasionally when one
@@ -163,7 +170,7 @@ open class LinearLayoutInfo(private val linearLayoutManager: LinearLayoutManager
   class ViewportFiller(
       private val width: Int,
       private val height: Int,
-      private val orientation: Int
+      private val orientation: Int,
   ) : LayoutInfo.ViewportFiller {
     private var _fill = 0
 

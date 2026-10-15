@@ -25,6 +25,7 @@ import com.facebook.litho.EventDispatchInfo;
 import com.facebook.litho.EventDispatcher;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.EventTrigger;
+import com.facebook.litho.EventTriggerKey;
 import com.facebook.litho.EventTriggerTarget;
 import com.facebook.litho.EventTriggersContainer;
 import com.facebook.litho.Handle;
@@ -238,12 +239,8 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
         new EventHandler<>(id, mode, new EventDispatchInfo(section, c), params);
     final ChangeSetCalculationState calculationState = c.getChangeSetCalculationState();
     if (calculationState != null && calculationState.isActive()) {
-      if (c.shouldUseNonRebindingEventHandlers()) {
-        if (mode == EventHandlerRebindMode.REBIND) {
-          calculationState.recordEventHandler(c.getGlobalKey(), eventHandler);
-        }
-      } else {
-        calculationState.recordEventHandler(c.getGlobalKey(), eventHandler);
+      if (mode == EventHandlerRebindMode.REBIND) {
+        calculationState.recordEventHandler(c.getGlobalKey().toString(), eventHandler);
       }
     }
     return eventHandler;
@@ -275,7 +272,8 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
     }
 
     EventTrigger trigger =
-        c.getSectionTree().getEventTrigger(c.getSectionScope().getGlobalKey() + id + key);
+        c.getSectionTree()
+            .getEventTrigger(new EventTriggerKey(c.getSectionScope().getGlobalKey(), id, key));
 
     if (trigger == null) {
       return null;

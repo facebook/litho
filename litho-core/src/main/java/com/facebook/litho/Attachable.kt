@@ -22,8 +22,12 @@ package com.facebook.litho
  */
 interface Attachable {
 
-  /** @return an id that can uniquely identify an Attachable between different layouts */
-  val uniqueId: String
+  /**
+   * @return an id that can uniquely identify an Attachable between different layouts. This can be a
+   *   [String] (for legacy/Spec components) or a [HookGlobalKey] (for hook-identity-enabled Kotlin
+   *   components). Implementations must provide proper [equals]/[hashCode].
+   */
+  val uniqueId: Any
 
   /**
    * Will be invoked when this Attachable becomes a committed part of the ComponentTree. E.g. for a

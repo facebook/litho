@@ -31,10 +31,13 @@ import com.facebook.litho.annotations.ResType
 /**
  * A component that is able to display drawable resources. It takes a drawable resource ID as prop.
  *
+ * @deprecated Use [PrimitiveImage] directly instead. For Kotlin files in ResourcesScope context,
+ *   use the Image() function from com.facebook.litho.kotlin.widget.Image.
  * @uidocs
  * @prop drawable Drawable to display.
  * @prop scaleType Scale type for the drawable within the container.
  */
+@Deprecated("Use PrimitiveImage instead")
 @ExcuseMySpec(reason = Reason.J2K_CONVERSION)
 @LayoutSpec
 object ImageSpec {
@@ -44,11 +47,14 @@ object ImageSpec {
   @OnCreateLayout
   fun onCreateLayout(
       c: ComponentContext,
-      @Prop(resType = ResType.DRAWABLE) drawable: Drawable?,
+      @Prop(optional = true, resType = ResType.DRAWABLE) drawable: Drawable?,
       @Prop(optional = true) scaleType: ImageView.ScaleType?,
       @Prop(optional = true) useIntrinsicSize: Boolean,
   ): Component {
-    return ExperimentalImage(
-        drawable, scaleType ?: ImageView.ScaleType.FIT_CENTER, useIntrinsicSize)
+    return PrimitiveImage(
+        drawable,
+        scaleType ?: ImageView.ScaleType.FIT_CENTER,
+        useIntrinsicSize,
+    )
   }
 }

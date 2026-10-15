@@ -1,0 +1,21 @@
+name: Set up Litho build
+description: JDKs, Android SDK with the NDK and CMake that the Yoga native build needs, and Gradle caching.
+
+runs:
+  using: composite
+  steps:
+    - name: Set up JDK
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        # 17 builds the code; Robolectric tests run on 21.
+        java-version: |
+          21
+          17
+    - name: Set up Android SDK
+      uses: android-actions/setup-android@v3
+    - name: Install NDK and CMake
+      shell: bash
+      run: sdkmanager "ndk;27.1.12297006" "cmake;3.22.1"
+    - name: Set up Gradle
+      uses: gradle/actions/setup-gradle@v4

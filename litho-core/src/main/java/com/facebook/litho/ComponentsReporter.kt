@@ -25,6 +25,10 @@ import com.facebook.rendercore.ErrorReporterDelegate
  * simply calls `android.util.Log` (see [DefaultComponentsReporter]). You may supply your own with
  * [ComponentsReporter.provide].
  */
+@Deprecated(
+    "Use DebugInfoReporter instead",
+    ReplaceWith("DebugInfoReporter", "com.facebook.litho.debug.DebugInfoReporter"),
+)
 object ComponentsReporter {
 
   @JvmStatic
@@ -49,9 +53,15 @@ object ComponentsReporter {
       categoryKey: String,
       message: String,
       samplingFrequency: Int = 0,
-      metadata: Map<String, Any>? = null
+      metadata: Map<String, Any>? = null,
   ) {
-    ErrorReporter.report(map(level), categoryKey, message, null, samplingFrequency, metadata)
+    ErrorReporter.report(
+        map(level),
+        categoryKey,
+        message,
+        samplingFrequency = samplingFrequency,
+        metadata = metadata,
+    )
   }
 
   @JvmStatic
@@ -66,6 +76,6 @@ object ComponentsReporter {
   enum class LogLevel {
     WARNING,
     ERROR,
-    FATAL
+    FATAL,
   }
 }

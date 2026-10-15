@@ -16,7 +16,6 @@
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'com.facebook.kotlin.compilerplugins.dataclassgenerate'
 
 project.group = GROUP
 version = VERSION_NAME
@@ -27,9 +26,6 @@ android {
 
     useLibrary 'org.apache.http.legacy'
 
-    kotlinOptions {
-        freeCompilerArgs = ['-Xjvm-default=all']
-    }
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
@@ -59,6 +55,8 @@ android {
 }
 
 dependencies {
+    api project(':systrace')
+    api deps.supportCollection
   api project(":litho-rendercore-thread-utils")
 
   // Annotations

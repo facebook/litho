@@ -21,7 +21,6 @@ import static com.facebook.litho.SizeSpec.EXACTLY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-import android.os.Looper;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
@@ -29,17 +28,15 @@ import com.facebook.litho.EventHandler;
 import com.facebook.litho.RenderCompleteEvent;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
-import com.facebook.litho.TreeState;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.viewcompat.ViewBinder;
 import com.facebook.litho.viewcompat.ViewCreator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.Shadows;
 import org.robolectric.annotation.LooperMode;
+import org.robolectric.shadow.api.Shadow;
 import org.robolectric.shadows.ShadowLooper;
 
 /** Tests for {@link ComponentTreeHolder} */
@@ -53,15 +50,15 @@ public class ComponentTreeHolderTest {
   private ComponentRenderInfo mComponentRenderInfo;
   private ViewRenderInfo mViewRenderInfo;
   private ShadowLooper mLayoutThreadShadowLooper;
-  private int mWidthSpec = SizeSpec.makeSizeSpec(100, EXACTLY);
-  private int mHeightSpec = SizeSpec.makeSizeSpec(100, EXACTLY);
-  private int mWidthSpec2 = SizeSpec.makeSizeSpec(101, EXACTLY);
-  private int mHeightSpec2 = SizeSpec.makeSizeSpec(101, EXACTLY);
+  private final int mWidthSpec = SizeSpec.makeSizeSpec(100, EXACTLY);
+  private final int mHeightSpec = SizeSpec.makeSizeSpec(100, EXACTLY);
+  private final int mWidthSpec2 = SizeSpec.makeSizeSpec(101, EXACTLY);
+  private final int mHeightSpec2 = SizeSpec.makeSizeSpec(101, EXACTLY);
 
   @Before
   public void setUp() throws Exception {
     mContext = new ComponentContext(getApplicationContext());
-    mComponent = SimpleMountSpecTester.create(mContext).build();
+    mComponent = new SimpleMountSpecTester();
     mRenderCompleteEventHandler = (EventHandler<RenderCompleteEvent>) mock(EventHandler.class);
     mComponentRenderInfo =
         ComponentRenderInfo.create()
@@ -74,9 +71,7 @@ public class ComponentTreeHolderTest {
             .viewBinder(mock(ViewBinder.class))
             .viewCreator(mock(ViewCreator.class))
             .build();
-    mLayoutThreadShadowLooper =
-        Shadows.shadowOf(
-            (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultLayoutThreadLooper"));
+    mLayoutThreadShadowLooper = Shadow.extract(ComponentTree.getDefaultLayoutThreadLooper());
   }
 
   private void runToEndOfTasks() {
@@ -90,30 +85,21 @@ public class ComponentTreeHolderTest {
   }
 
   @Test
-  public void testRetainAnimationStateAfterExitingRange() {
-    final ComponentRenderInfo renderInfo =
-        ComponentRenderInfo.create()
-            .customAttribute(ComponentTreeHolder.ACQUIRE_STATE_HANDLER_ON_RELEASE, true)
-            .component(mComponent)
-            .build();
-    ComponentTreeHolder holder = createComponentTreeHolder(renderInfo);
+  public void testRetainComponentTreeIdAfterExitAndReenterRange() {
+    ComponentTreeHolder holder = createComponentTreeHolder(mComponentRenderInfo);
     holder.computeLayoutSync(mContext, mWidthSpec, mHeightSpec, new Size());
-    assertThat(holder.getComponentTree().hasMounted()).isFalse();
-    TreeState treeState = holder.getComponentTree().getTreeState();
-    if (treeState == null) {
-      treeState = new TreeState();
-    }
-    TreeState.TreeMountInfo treeMountInfo = treeState.getMountInfo();
-    treeMountInfo.hasMounted = true;
-    Whitebox.setInternalState(holder.getComponentTree(), "mTreeState", treeState);
 
-    // component goes out of range
-    holder.acquireStateAndReleaseTree();
+    assertThat(holder.getComponentTree()).isNotNull();
+    assertThat(holder.getComponentTree().getId()).isEqualTo(holder.getId());
+
+    // Component goes out of range
+    holder.releaseTree();
     assertThat(holder.getComponentTree()).isNull();
 
-    // component comes back within range
+    // Component re-enters range
     holder.computeLayoutSync(mContext, mWidthSpec, mHeightSpec, new Size());
-    assertThat(holder.getComponentTree().hasMounted()).isTrue();
+    assertThat(holder.getComponentTree()).isNotNull();
+    assertThat(holder.getComponentTree().getId()).isEqualTo(holder.getId());
   }
 
   @Test
@@ -162,6 +148,38 @@ public class ComponentTreeHolderTest {
     holder.acquireStateAndReleaseTree();
     assertThat(holder.getComponentTree()).isNull();
     assertThat(holder.getTreeState()).isNotNull();
+  }
+
+  /**
+   * A ComponentTree can be released without going through {@link ComponentTreeHolder#releaseTree()}
+   * (for instance {@code ComponentWarmer.cancelPrepare} releases {@code holder.componentTree}
+   * directly), which leaves the holder pointing at a released tree that it keeps reporting as
+   * valid.
+   */
+  @Test
+  public void testAcquireStateAndReleaseTreeWhenTreeAlreadyReleased() {
+    final ComponentRenderInfo renderInfo =
+        ComponentRenderInfo.create()
+            .customAttribute(ComponentTreeHolder.ACQUIRE_STATE_HANDLER_ON_RELEASE, true)
+            .component(mComponent)
+            .build();
+    ComponentTreeHolder holder = createComponentTreeHolder(renderInfo);
+    holder.computeLayoutSync(mContext, mWidthSpec, mHeightSpec, new Size());
+    final ComponentTree tree = holder.getComponentTree();
+
+    tree.release();
+    // Re-entering the prepared range marks the released tree valid again, so the binder still asks
+    // the holder to acquire its state once the item leaves the range.
+    holder.computeLayoutSync(mContext, mWidthSpec, mHeightSpec, new Size());
+
+    assertThat(holder.getComponentTree()).isSameAs(tree);
+    assertThat(holder.isTreeValid()).isTrue();
+
+    // Component goes out of range
+    holder.acquireStateAndReleaseTree();
+
+    assertThat(holder.getComponentTree()).isNull();
+    assertThat(holder.isTreeValid()).isFalse();
   }
 
   @Test

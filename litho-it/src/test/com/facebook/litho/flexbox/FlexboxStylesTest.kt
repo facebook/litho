@@ -24,7 +24,6 @@ import com.facebook.litho.ComponentHost
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.LithoView
-import com.facebook.litho.Row
 import com.facebook.litho.Style
 import com.facebook.litho.YogaLayoutOutput.Companion.getYogaNode
 import com.facebook.litho.assertMatches
@@ -41,6 +40,8 @@ import com.facebook.litho.core.padding
 import com.facebook.litho.core.paddingPercent
 import com.facebook.litho.core.width
 import com.facebook.litho.core.widthPercent
+import com.facebook.litho.layout.flexbox.Column
+import com.facebook.litho.layout.flexbox.Row
 import com.facebook.litho.match
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -63,6 +64,14 @@ class FlexboxStylesTest {
   @Rule @JvmField val lithoTestRule = LithoTestRule()
 
   @Test
+  fun customSimpleName_whenUnset_usesDefault_whenSet_overrides() {
+    assertThat(Row().getSimpleName()).isEqualTo("Row")
+    assertThat(Column().getSimpleName()).isEqualTo("Column")
+    assertThat(Row(customSimpleName = "MyRow").getSimpleName()).isEqualTo("MyRow")
+    assertThat(Column(customSimpleName = "MyColumn").getSimpleName()).isEqualTo("MyColumn")
+  }
+
+  @Test
   fun widthAndHeight_whenSet_isRespected() {
     lithoTestRule
         .render(widthSpec = unspecified(), heightSpec = unspecified()) {
@@ -83,7 +92,8 @@ class FlexboxStylesTest {
             match<LithoView> {
               bounds(0, 0, 100, 100)
               child<ComponentHost> { bounds(0, 0, 50, 50) }
-            })
+            },
+        )
   }
 
   @Test
@@ -138,7 +148,8 @@ class FlexboxStylesTest {
             match<LithoView> {
               bounds(0, 0, 100, 100)
               child<ComponentHost> { bounds(0, 0, 50, 100) }
-            })
+            },
+        )
   }
 
   @Test
@@ -153,7 +164,8 @@ class FlexboxStylesTest {
             match<LithoView> {
               bounds(0, 0, 200, 100)
               child<ComponentHost> { bounds(0, 0, 100, 100) }
-            })
+            },
+        )
   }
 
   @Test
@@ -168,7 +180,8 @@ class FlexboxStylesTest {
             match<LithoView> {
               bounds(0, 0, 100, 100)
               child<ComponentHost> { bounds(0, 0, 100, 100) }
-            })
+            },
+        )
   }
 
   @Test
@@ -183,7 +196,8 @@ class FlexboxStylesTest {
             match<LithoView> {
               bounds(0, 0, 100, 100)
               child<ComponentHost> { bounds(0, 0, 50, 100) }
-            })
+            },
+        )
   }
 
   @Test
@@ -198,7 +212,8 @@ class FlexboxStylesTest {
             match<LithoView> {
               bounds(0, 0, 100, 100)
               child<ComponentHost> { bounds(0, 0, 100, 100) }
-            })
+            },
+        )
   }
 
   @Test
@@ -215,16 +230,17 @@ class FlexboxStylesTest {
               style =
                   Style.width(100.px)
                       .height(100.px)
-                      .padding(
-                          left = left.px, top = top.px, right = right.px, bottom = bottom.px)) {
-                child(Row(style = Style.flex(grow = 1f).wrapInView()))
-              }
+                      .padding(left = left.px, top = top.px, right = right.px, bottom = bottom.px),
+          ) {
+            child(Row(style = Style.flex(grow = 1f).wrapInView()))
+          }
         }
         .assertMatches(
             match<LithoView> {
               bounds(0, 0, 100, 100)
               child<ComponentHost> { bounds(left, top, 100 - left - right, 100 - top - bottom) }
-            })
+            },
+        )
   }
 
   @Test
@@ -236,15 +252,17 @@ class FlexboxStylesTest {
         .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(
               alignItems = YogaAlign.STRETCH,
-              style = Style.width(100.px).height(100.px).padding(start = start.px, end = end.px)) {
-                child(Row(style = Style.flex(grow = 1f).wrapInView()))
-              }
+              style = Style.width(100.px).height(100.px).padding(start = start.px, end = end.px),
+          ) {
+            child(Row(style = Style.flex(grow = 1f).wrapInView()))
+          }
         }
         .assertMatches(
             match<LithoView> {
               bounds(0, 0, 100, 100)
               child<ComponentHost> { bounds(start, 0, 100 - start - end, 100) }
-            })
+            },
+        )
   }
 
   @Test
@@ -256,15 +274,17 @@ class FlexboxStylesTest {
         .render(widthPx = 100, heightPx = 100) {
           Row(
               alignItems = YogaAlign.STRETCH,
-              style = Style.width(100.px).height(100.px).paddingPercent(start = start, end = end)) {
-                child(Row(style = Style.flex(grow = 1f).wrapInView()))
-              }
+              style = Style.width(100.px).height(100.px).paddingPercent(start = start, end = end),
+          ) {
+            child(Row(style = Style.flex(grow = 1f).wrapInView()))
+          }
         }
         .assertMatches(
             match<LithoView> {
               bounds(0, 0, 100, 100)
               child<ComponentHost> { bounds(start.toInt(), 0, (100 - start - end).toInt(), 100) }
-            })
+            },
+        )
   }
 
   @Test
@@ -279,9 +299,10 @@ class FlexboxStylesTest {
               style =
                   Style.width(100.px)
                       .height(100.px)
-                      .padding(horizontal = horizontal.px, vertical = vertical.px)) {
-                child(Row(style = Style.flex(grow = 1f).wrapInView()))
-              }
+                      .padding(horizontal = horizontal.px, vertical = vertical.px),
+          ) {
+            child(Row(style = Style.flex(grow = 1f).wrapInView()))
+          }
         }
         .assertMatches(
             match<LithoView> {
@@ -289,7 +310,8 @@ class FlexboxStylesTest {
               child<ComponentHost> {
                 bounds(horizontal, vertical, 100 - 2 * horizontal, 100 - 2 * vertical)
               }
-            })
+            },
+        )
   }
 
   @Test
@@ -303,9 +325,10 @@ class FlexboxStylesTest {
               style =
                   Style.width(100.px)
                       .height(100.px)
-                      .paddingPercent(horizontal = horizontal, vertical = vertical)) {
-                child(Row(style = Style.flex(grow = 1f).wrapInView()))
-              }
+                      .paddingPercent(horizontal = horizontal, vertical = vertical),
+          ) {
+            child(Row(style = Style.flex(grow = 1f).wrapInView()))
+          }
         }
         .assertMatches(
             match<LithoView> {
@@ -315,9 +338,11 @@ class FlexboxStylesTest {
                     horizontal.toInt(),
                     vertical.toInt(),
                     (100 - 2 * horizontal).toInt(),
-                    (100 - 2 * vertical).toInt())
+                    (100 - 2 * vertical).toInt(),
+                )
               }
-            })
+            },
+        )
   }
 
   @Test
@@ -328,9 +353,10 @@ class FlexboxStylesTest {
         .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(
               alignItems = YogaAlign.STRETCH,
-              style = Style.width(100.px).height(100.px).padding(padding.px)) {
-                child(Row(style = Style.flex(grow = 1f).wrapInView()))
-              }
+              style = Style.width(100.px).height(100.px).padding(padding.px),
+          ) {
+            child(Row(style = Style.flex(grow = 1f).wrapInView()))
+          }
         }
         .assertMatches(
             match<LithoView> {
@@ -338,7 +364,8 @@ class FlexboxStylesTest {
               child<ComponentHost> {
                 bounds(padding, padding, 100 - 2 * padding, 100 - 2 * padding)
               }
-            })
+            },
+        )
   }
 
   @Test
@@ -349,9 +376,10 @@ class FlexboxStylesTest {
         .render(widthPx = 100, heightPx = 100) {
           Row(
               alignItems = YogaAlign.STRETCH,
-              style = Style.width(100.px).height(100.px).paddingPercent(all = padding)) {
-                child(Row(style = Style.flex(grow = 1f).wrapInView()))
-              }
+              style = Style.width(100.px).height(100.px).paddingPercent(all = padding),
+          ) {
+            child(Row(style = Style.flex(grow = 1f).wrapInView()))
+          }
         }
         .assertMatches(
             match<LithoView> {
@@ -361,9 +389,11 @@ class FlexboxStylesTest {
                     padding.toInt(),
                     padding.toInt(),
                     (100 - 2 * padding).toInt(),
-                    (100 - 2 * padding).toInt())
+                    (100 - 2 * padding).toInt(),
+                )
               }
-            })
+            },
+        )
   }
 
   @Test
@@ -380,16 +410,23 @@ class FlexboxStylesTest {
                 Row(
                     style =
                         Style.margin(
-                                left = left.px, top = top.px, right = right.px, bottom = bottom.px)
+                                left = left.px,
+                                top = top.px,
+                                right = right.px,
+                                bottom = bottom.px,
+                            )
                             .flex(grow = 1f)
-                            .wrapInView()))
+                            .wrapInView(),
+                ),
+            )
           }
         }
         .assertMatches(
             match<LithoView> {
               bounds(0, 0, 100, 100)
               child<ComponentHost> { bounds(left, top, 100 - left - right, 100 - top - bottom) }
-            })
+            },
+        )
   }
 
   @Test
@@ -407,7 +444,9 @@ class FlexboxStylesTest {
                     style =
                         Style.marginPercent(left = left, top = top, right = right, bottom = bottom)
                             .flex(grow = 1f)
-                            .wrapInView()))
+                            .wrapInView(),
+                ),
+            )
           }
         }
         .assertMatches(
@@ -418,9 +457,11 @@ class FlexboxStylesTest {
                     left.toInt(),
                     top.toInt(),
                     (100 - left - right).toInt(),
-                    (100 - top - bottom).toInt())
+                    (100 - top - bottom).toInt(),
+                )
               }
-            })
+            },
+        )
   }
 
   @Test
@@ -434,14 +475,17 @@ class FlexboxStylesTest {
             child(
                 Row(
                     style =
-                        Style.margin(start = start.px, end = end.px).flex(grow = 1f).wrapInView()))
+                        Style.margin(start = start.px, end = end.px).flex(grow = 1f).wrapInView(),
+                ),
+            )
           }
         }
         .assertMatches(
             match<LithoView> {
               bounds(0, 0, 100, 100)
               child<ComponentHost> { bounds(start, 0, 100 - start - end, 100) }
-            })
+            },
+        )
   }
 
   @Test
@@ -455,14 +499,17 @@ class FlexboxStylesTest {
             child(
                 Row(
                     style =
-                        Style.marginPercent(start = start, end = end).flex(grow = 1f).wrapInView()))
+                        Style.marginPercent(start = start, end = end).flex(grow = 1f).wrapInView(),
+                ),
+            )
           }
         }
         .assertMatches(
             match<LithoView> {
               bounds(0, 0, 100, 100)
               child<ComponentHost> { bounds(start.toInt(), 0, (100 - start - end).toInt(), 100) }
-            })
+            },
+        )
   }
 
   @Test
@@ -478,7 +525,9 @@ class FlexboxStylesTest {
                     style =
                         Style.margin(horizontal = horizontal.px, vertical = vertical.px)
                             .flex(grow = 1f)
-                            .wrapInView()))
+                            .wrapInView(),
+                ),
+            )
           }
         }
         .assertMatches(
@@ -487,7 +536,8 @@ class FlexboxStylesTest {
               child<ComponentHost> {
                 bounds(horizontal, vertical, 100 - 2 * horizontal, 100 - 2 * vertical)
               }
-            })
+            },
+        )
   }
 
   @Test
@@ -503,7 +553,9 @@ class FlexboxStylesTest {
                     style =
                         Style.marginPercent(horizontal = horizontal, vertical = vertical)
                             .flex(grow = 1f)
-                            .wrapInView()))
+                            .wrapInView(),
+                ),
+            )
           }
         }
         .assertMatches(
@@ -514,9 +566,11 @@ class FlexboxStylesTest {
                     horizontal.toInt(),
                     vertical.toInt(),
                     (100 - 2 * horizontal).toInt(),
-                    (100 - 2 * vertical).toInt())
+                    (100 - 2 * vertical).toInt(),
+                )
               }
-            })
+            },
+        )
   }
 
   @Test
@@ -533,7 +587,8 @@ class FlexboxStylesTest {
             match<LithoView> {
               bounds(0, 0, 100, 100)
               child<ComponentHost> { bounds(margin, margin, 100 - 2 * margin, 100 - 2 * margin) }
-            })
+            },
+        )
   }
 
   @Test
@@ -554,9 +609,11 @@ class FlexboxStylesTest {
                     margin.toInt(),
                     margin.toInt(),
                     (100 - 2 * margin).toInt(),
-                    (100 - 2 * margin).toInt())
+                    (100 - 2 * margin).toInt(),
+                )
               }
-            })
+            },
+        )
   }
 
   @Test
@@ -574,15 +631,22 @@ class FlexboxStylesTest {
                     style =
                         Style.positionType(YogaPositionType.ABSOLUTE)
                             .position(
-                                left = left.px, top = top.px, right = right.px, bottom = bottom.px)
-                            .wrapInView()))
+                                left = left.px,
+                                top = top.px,
+                                right = right.px,
+                                bottom = bottom.px,
+                            )
+                            .wrapInView(),
+                ),
+            )
           }
         }
         .assertMatches(
             match<LithoView> {
               bounds(0, 0, 100, 100)
               child<ComponentHost> { bounds(left, top, 100 - left - right, 100 - top - bottom) }
-            })
+            },
+        )
   }
 
   @Test
@@ -600,7 +664,9 @@ class FlexboxStylesTest {
                     style =
                         Style.positionType(YogaPositionType.ABSOLUTE)
                             .positionPercent(left = left, top = top, right = right, bottom = bottom)
-                            .wrapInView()))
+                            .wrapInView(),
+                ),
+            )
           }
         }
         .assertMatches(
@@ -611,9 +677,11 @@ class FlexboxStylesTest {
                     left.toInt(),
                     top.toInt(),
                     (100 - left - right).toInt(),
-                    (100 - top - bottom).toInt())
+                    (100 - top - bottom).toInt(),
+                )
               }
-            })
+            },
+        )
   }
 
   @Test
@@ -631,15 +699,22 @@ class FlexboxStylesTest {
                     style =
                         Style.positionType(YogaPositionType.ABSOLUTE)
                             .position(
-                                start = start.px, top = top.px, end = end.px, bottom = bottom.px)
-                            .wrapInView()))
+                                start = start.px,
+                                top = top.px,
+                                end = end.px,
+                                bottom = bottom.px,
+                            )
+                            .wrapInView(),
+                ),
+            )
           }
         }
         .assertMatches(
             match<LithoView> {
               bounds(0, 0, 100, 100)
               child<ComponentHost> { bounds(start, top, 100 - start - end, 100 - top - bottom) }
-            })
+            },
+        )
   }
 
   @Test
@@ -657,7 +732,9 @@ class FlexboxStylesTest {
                     style =
                         Style.positionType(YogaPositionType.ABSOLUTE)
                             .positionPercent(start = start, top = top, end = end, bottom = bottom)
-                            .wrapInView()))
+                            .wrapInView(),
+                ),
+            )
           }
         }
         .assertMatches(
@@ -668,9 +745,11 @@ class FlexboxStylesTest {
                     start.toInt(),
                     top.toInt(),
                     (100 - start - end).toInt(),
-                    (100 - top - bottom).toInt())
+                    (100 - top - bottom).toInt(),
+                )
               }
-            })
+            },
+        )
   }
 
   @Test
@@ -685,14 +764,17 @@ class FlexboxStylesTest {
                     style =
                         Style.positionType(YogaPositionType.ABSOLUTE)
                             .position(all = all.px)
-                            .wrapInView()))
+                            .wrapInView(),
+                ),
+            )
           }
         }
         .assertMatches(
             match<LithoView> {
               bounds(0, 0, 100, 100)
               child<ComponentHost> { bounds(all, all, 100 - 2 * all, 100 - 2 * all) }
-            })
+            },
+        )
   }
 
   @Test
@@ -707,7 +789,9 @@ class FlexboxStylesTest {
                     style =
                         Style.positionType(YogaPositionType.ABSOLUTE)
                             .positionPercent(all = all)
-                            .wrapInView()))
+                            .wrapInView(),
+                ),
+            )
           }
         }
         .assertMatches(
@@ -716,7 +800,8 @@ class FlexboxStylesTest {
               child<ComponentHost> {
                 bounds(all.toInt(), all.toInt(), (100 - 2 * all).toInt(), (100 - 2 * all).toInt())
               }
-            })
+            },
+        )
   }
 
   @Test
@@ -732,7 +817,9 @@ class FlexboxStylesTest {
                     style =
                         Style.positionType(YogaPositionType.ABSOLUTE)
                             .position(all = all.px, horizontal = horizontal.px)
-                            .wrapInView()))
+                            .wrapInView(),
+                ),
+            )
           }
         }
         .assertMatches(
@@ -741,7 +828,8 @@ class FlexboxStylesTest {
               child<ComponentHost> {
                 bounds(horizontal, 100 - all, 100 - 2 * horizontal, 100 - 2 * all)
               }
-            })
+            },
+        )
   }
 
   @Test
@@ -757,7 +845,9 @@ class FlexboxStylesTest {
                     style =
                         Style.positionType(YogaPositionType.ABSOLUTE)
                             .positionPercent(all = all, horizontal = horizontal)
-                            .wrapInView()))
+                            .wrapInView(),
+                ),
+            )
           }
         }
         .assertMatches(
@@ -768,9 +858,11 @@ class FlexboxStylesTest {
                     horizontal.toInt(),
                     (100 - all).toInt(),
                     (100 - 2 * horizontal).toInt(),
-                    (100 - 2 * all).toInt())
+                    (100 - 2 * all).toInt(),
+                )
               }
-            })
+            },
+        )
   }
 
   @Test
@@ -786,14 +878,17 @@ class FlexboxStylesTest {
                     style =
                         Style.positionType(YogaPositionType.ABSOLUTE)
                             .position(vertical = vertical.px, all = all.px)
-                            .wrapInView()))
+                            .wrapInView(),
+                ),
+            )
           }
         }
         .assertMatches(
             match<LithoView> {
               bounds(0, 0, 100, 100)
               child<ComponentHost> { bounds(all, vertical, 100 - 2 * all, 100 - 2 * vertical) }
-            })
+            },
+        )
   }
 
   @Test
@@ -809,7 +904,9 @@ class FlexboxStylesTest {
                     style =
                         Style.positionType(YogaPositionType.ABSOLUTE)
                             .positionPercent(all = all, vertical = vertical)
-                            .wrapInView()))
+                            .wrapInView(),
+                ),
+            )
           }
         }
         .assertMatches(
@@ -820,9 +917,11 @@ class FlexboxStylesTest {
                     all.toInt(),
                     vertical.toInt(),
                     (100 - 2 * all).toInt(),
-                    (100 - 2 * vertical).toInt())
+                    (100 - 2 * vertical).toInt(),
+                )
               }
-            })
+            },
+        )
   }
 
   @Test
@@ -840,8 +939,7 @@ class FlexboxStylesTest {
   /**
    * Test is using [Layout] and [NodeInfo] classes as a workaround for the issue with 'libyoga.so
    * already loaded in another classloader exception' caused by multiple ClassLoaders trying to load
-   * Yoga when using @Config to specify a different target sdk. See:
-   * https://www.internalfb.com/intern/staticdocs/litho/docs/testing/unit-testing/
+   * Yoga when using @Config to specify a different target sdk.
    */
   @Test
   fun border_whenSet_isRespected() {
@@ -859,7 +957,9 @@ class FlexboxStylesTest {
                         .radiusDip(Border.Corner.TOP_RIGHT, 6f)
                         .radiusDip(Border.Corner.BOTTOM_RIGHT, 7f)
                         .radiusDip(Border.Corner.BOTTOM_LEFT, 8f)
-                        .build()))
+                        .build(),
+                ),
+        )
       }
     }
 
@@ -878,7 +978,8 @@ class FlexboxStylesTest {
                   Style.width(100.px)
                       .height(100.px)
                       .marginAuto(YogaEdge.LEFT)
-                      .marginAuto(YogaEdge.TOP))
+                      .marginAuto(YogaEdge.TOP),
+          )
         }
 
     assertThat(testLithoView.currentRootNode?.getYogaNode()?.getMargin(YogaEdge.LEFT).toString())
@@ -915,7 +1016,7 @@ class FlexboxStylesTest {
 
     lithoTestRule
         .render(widthSpec = unspecified(), heightSpec = unspecified()) {
-          Row(style = Style.width(100.px).height(100.px).gap(all = gap.px)) {
+          Row(gap = gap.px, style = Style.width(100.px).height(100.px)) {
             child(Row(style = Style.width(10.px).height(10.px).wrapInView()))
             child(Row(style = Style.width(20.px).height(20.px).wrapInView()))
           }
@@ -925,6 +1026,7 @@ class FlexboxStylesTest {
               bounds(0, 0, 100, 100)
               child<ComponentHost> { bounds(0, 0, 10, 10) }
               child<ComponentHost> { bounds(10 + gap, 0, 20, 20) }
-            })
+            },
+        )
   }
 }

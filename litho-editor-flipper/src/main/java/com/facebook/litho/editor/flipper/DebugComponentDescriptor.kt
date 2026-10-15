@@ -47,8 +47,6 @@ import com.facebook.yoga.YogaFlexDirection
 import com.facebook.yoga.YogaJustify
 import com.facebook.yoga.YogaPositionType
 import com.facebook.yoga.YogaValue
-import java.text.DateFormat
-import java.text.SimpleDateFormat
 import java.util.Arrays
 import java.util.Locale
 
@@ -56,7 +54,9 @@ import java.util.Locale
 class DebugComponentDescriptor : NodeDescriptor<DebugComponent>() {
   private val overrides:
       MutableMap<
-          String, MutableList<Pair<Array<String>, Pair<FlipperValueHint?, FlipperDynamic>>>> =
+          String,
+          MutableList<Pair<Array<String>, Pair<FlipperValueHint?, FlipperDynamic>>>,
+      > =
       HashMap()
 
   private val overrider: Overrider =
@@ -67,18 +67,26 @@ class DebugComponentDescriptor : NodeDescriptor<DebugComponent>() {
           for (override in overrides) {
             if (override.first[0] == "Props") {
               applyReflectiveOverride(
-                  component, override.first, override.second.first, override.second.second)
+                  component,
+                  override.first,
+                  override.second.first,
+                  override.second.second,
+              )
             }
           }
         }
 
-        override fun applyStateOverrides(key: String, stateContainer: StateContainer) {
+        override fun applyStateOverrides(key: String, state: StateContainer) {
           val overrides = overrides[key] ?: return
 
           for (override in overrides) {
             if (override.first[0] == "State") {
               applyReflectiveOverride(
-                  stateContainer, override.first, override.second.first, override.second.second)
+                  state,
+                  override.first,
+                  override.second.first,
+                  override.second.second,
+              )
             }
           }
         }
@@ -92,7 +100,8 @@ class DebugComponentDescriptor : NodeDescriptor<DebugComponent>() {
                 applyLayoutOverride(
                     node,
                     Arrays.copyOfRange(override.first, 1, override.first.size),
-                    override.second.second)
+                    override.second.second,
+                )
               } catch (ignored: Exception) {}
             }
           }
@@ -172,7 +181,7 @@ class DebugComponentDescriptor : NodeDescriptor<DebugComponent>() {
       node: DebugComponent?,
       path: Array<String>,
       kind: FlipperValueHint?,
-      value: FlipperDynamic
+      value: FlipperDynamic,
   ) {
     node ?: return
     var overrides = overrides[node.globalKey]
@@ -219,7 +228,6 @@ class DebugComponentDescriptor : NodeDescriptor<DebugComponent>() {
       }
     } else if (lithoView != null) {
       try {
-        // NULLSAFE_FIXME[Nullable Dereference]
         extraInfo.put("linkedNode", descriptor?.getId(lithoView)).put("expandWithParent", true)
       } catch (ignored: Exception) {
         // doesn't add linked node descriptor
@@ -249,18 +257,19 @@ class DebugComponentDescriptor : NodeDescriptor<DebugComponent>() {
               layout?.getLayoutMargin(YogaEdge.START)?.toInt() ?: 0,
               layout?.getLayoutMargin(YogaEdge.TOP)?.toInt() ?: 0,
               layout?.getLayoutMargin(YogaEdge.END)?.toInt() ?: 0,
-              layout?.getLayoutMargin(YogaEdge.BOTTOM)?.toInt() ?: 0)
+              layout?.getLayoutMargin(YogaEdge.BOTTOM)?.toInt() ?: 0,
+          )
         } else {
           // Margin not applied if you're at the root
           Rect()
         }
 
-    val padding =
-        Rect(
-            layout?.getLayoutPadding(YogaEdge.START)?.toInt() ?: 0,
-            layout?.getLayoutPadding(YogaEdge.TOP)?.toInt() ?: 0,
-            layout?.getLayoutPadding(YogaEdge.END)?.toInt() ?: 0,
-            layout?.getLayoutPadding(YogaEdge.BOTTOM)?.toInt() ?: 0)
+    val padding = Rect(
+        layout?.getLayoutPadding(YogaEdge.START)?.toInt() ?: 0,
+        layout?.getLayoutPadding(YogaEdge.TOP)?.toInt() ?: 0,
+        layout?.getLayoutPadding(YogaEdge.END)?.toInt() ?: 0,
+        layout?.getLayoutPadding(YogaEdge.BOTTOM)?.toInt() ?: 0,
+    )
 
     val contentBounds = node.boundsInLithoView
     HighlightedOverlay.setHighlighted(lithoView, margin, padding, contentBounds, isAlignmentMode)
@@ -333,43 +342,71 @@ class DebugComponentDescriptor : NodeDescriptor<DebugComponent>() {
           InspectorValue.mutable(
               InspectorValue.Type.Picker,
               InspectorValue.Picker(
-                  enumToSet(YogaDirection.entries.toTypedArray()), layout.layoutDirection.name)))
+                  enumToSet(YogaDirection.entries.toTypedArray()),
+                  layout.layoutDirection.name,
+              ),
+          ),
+      )
       data.put(
           "flex-direction",
           InspectorValue.mutable(
               InspectorValue.Type.Picker,
               InspectorValue.Picker(
-                  enumToSet(YogaFlexDirection.entries.toTypedArray()), layout.flexDirection.name)))
+                  enumToSet(YogaFlexDirection.entries.toTypedArray()),
+                  layout.flexDirection.name,
+              ),
+          ),
+      )
       data.put(
           "justify-content",
           InspectorValue.mutable(
               InspectorValue.Type.Picker,
               InspectorValue.Picker(
-                  enumToSet(YogaJustify.entries.toTypedArray()), layout.justifyContent.name)))
+                  enumToSet(YogaJustify.entries.toTypedArray()),
+                  layout.justifyContent.name,
+              ),
+          ),
+      )
       data.put(
           "align-items",
           InspectorValue.mutable(
               InspectorValue.Type.Picker,
               InspectorValue.Picker(
-                  enumToSet(YogaAlign.entries.toTypedArray()), layout.alignItems.name)))
+                  enumToSet(YogaAlign.entries.toTypedArray()),
+                  layout.alignItems.name,
+              ),
+          ),
+      )
       data.put(
           "align-self",
           InspectorValue.mutable(
               InspectorValue.Type.Picker,
               InspectorValue.Picker(
-                  enumToSet(YogaAlign.entries.toTypedArray()), layout.alignSelf.name)))
+                  enumToSet(YogaAlign.entries.toTypedArray()),
+                  layout.alignSelf.name,
+              ),
+          ),
+      )
       data.put(
           "align-content",
           InspectorValue.mutable(
               InspectorValue.Type.Picker,
               InspectorValue.Picker(
-                  enumToSet(YogaAlign.entries.toTypedArray()), layout.alignContent.name)))
+                  enumToSet(YogaAlign.entries.toTypedArray()),
+                  layout.alignContent.name,
+              ),
+          ),
+      )
       data.put(
           "position-type",
           InspectorValue.mutable(
               InspectorValue.Type.Picker,
               InspectorValue.Picker(
-                  enumToSet(YogaPositionType.entries.toTypedArray()), layout.positionType.name)))
+                  enumToSet(YogaPositionType.entries.toTypedArray()),
+                  layout.positionType.name,
+              ),
+          ),
+      )
 
       data.put("flex-grow", fromFloat(layout.flexGrow))
       data.put("flex-shrink", fromFloat(layout.flexShrink))
@@ -396,7 +433,8 @@ class DebugComponentDescriptor : NodeDescriptor<DebugComponent>() {
               .put("end", fromYogaValue(layout.getMargin(YogaEdge.END)))
               .put("horizontal", fromYogaValue(layout.getMargin(YogaEdge.HORIZONTAL)))
               .put("vertical", fromYogaValue(layout.getMargin(YogaEdge.VERTICAL)))
-              .put("all", fromYogaValue(layout.getMargin(YogaEdge.ALL))))
+              .put("all", fromYogaValue(layout.getMargin(YogaEdge.ALL))),
+      )
 
       data.put(
           "padding",
@@ -409,7 +447,8 @@ class DebugComponentDescriptor : NodeDescriptor<DebugComponent>() {
               .put("end", fromYogaValue(layout.getPadding(YogaEdge.END)))
               .put("horizontal", fromYogaValue(layout.getPadding(YogaEdge.HORIZONTAL)))
               .put("vertical", fromYogaValue(layout.getPadding(YogaEdge.VERTICAL)))
-              .put("all", fromYogaValue(layout.getPadding(YogaEdge.ALL))))
+              .put("all", fromYogaValue(layout.getPadding(YogaEdge.ALL))),
+      )
 
       data.put(
           "border",
@@ -422,7 +461,8 @@ class DebugComponentDescriptor : NodeDescriptor<DebugComponent>() {
               .put("end", fromFloat(layout.getBorderWidth(YogaEdge.END)))
               .put("horizontal", fromFloat(layout.getBorderWidth(YogaEdge.HORIZONTAL)))
               .put("vertical", fromFloat(layout.getBorderWidth(YogaEdge.VERTICAL)))
-              .put("all", fromFloat(layout.getBorderWidth(YogaEdge.ALL))))
+              .put("all", fromFloat(layout.getBorderWidth(YogaEdge.ALL))),
+      )
 
       data.put(
           "position",
@@ -435,11 +475,13 @@ class DebugComponentDescriptor : NodeDescriptor<DebugComponent>() {
               .put("end", fromYogaValue(layout.getPosition(YogaEdge.END)))
               .put("horizontal", fromYogaValue(layout.getPosition(YogaEdge.HORIZONTAL)))
               .put("vertical", fromYogaValue(layout.getPosition(YogaEdge.VERTICAL)))
-              .put("all", fromYogaValue(layout.getPosition(YogaEdge.ALL))))
+              .put("all", fromYogaValue(layout.getPosition(YogaEdge.ALL))),
+      )
 
       data.put(
           "hasViewOutput",
-          InspectorValue.immutable(InspectorValue.Type.Boolean, layout.hasViewOutput()))
+          InspectorValue.immutable(InspectorValue.Type.Boolean, layout.hasViewOutput()),
+      )
       if (layout.hasViewOutput()) {
         data.put("alpha", fromFloat(layout.alpha))
         data.put("scale", fromFloat(layout.scale))
@@ -479,44 +521,58 @@ class DebugComponentDescriptor : NodeDescriptor<DebugComponent>() {
     private fun applyLayoutOverride(
         node: DebugLayoutNodeEditor,
         path: Array<String>,
-        value: FlipperDynamic
+        value: FlipperDynamic,
     ) {
       when (path[0]) {
         "background" -> node.setBackgroundColor(value.asInt())
         "foreground" -> node.setForegroundColor(value.asInt())
         "direction" ->
             node.setLayoutDirection(
-                YogaDirection.valueOf(value.asString()!!.uppercase(Locale.getDefault())))
+                YogaDirection.valueOf(value.asString()!!.uppercase(Locale.getDefault())),
+            )
         "flex-direction" ->
             node.setFlexDirection(
-                YogaFlexDirection.valueOf(value.asString()!!.uppercase(Locale.getDefault())))
+                YogaFlexDirection.valueOf(value.asString()!!.uppercase(Locale.getDefault())),
+            )
         "justify-content" ->
             node.setJustifyContent(
-                YogaJustify.valueOf(value.asString()!!.uppercase(Locale.getDefault())))
+                YogaJustify.valueOf(value.asString()!!.uppercase(Locale.getDefault())),
+            )
         "align-items" ->
             node.setAlignItems(YogaAlign.valueOf(value.asString()!!.uppercase(Locale.getDefault())))
         "align-self" ->
             node.setAlignSelf(YogaAlign.valueOf(value.asString()!!.uppercase(Locale.getDefault())))
         "align-content" ->
             node.setAlignContent(
-                YogaAlign.valueOf(value.asString()!!.uppercase(Locale.getDefault())))
+                YogaAlign.valueOf(value.asString()!!.uppercase(Locale.getDefault())),
+            )
         "position-type" ->
             node.setPositionType(
-                YogaPositionType.valueOf(value.asString()!!.uppercase(Locale.getDefault())))
+                YogaPositionType.valueOf(value.asString()!!.uppercase(Locale.getDefault())),
+            )
         "flex-grow" -> node.setFlexGrow(value.asFloat())
         "flex-shrink" -> node.setFlexShrink(value.asFloat())
-        "flex-basis" -> node.setFlexBasis(YogaValue.parse(value.asString()))
-        "width" -> node.setWidth(YogaValue.parse(value.asString()))
-        "min-width" -> node.setMinWidth(YogaValue.parse(value.asString()))
-        "max-width" -> node.setMaxWidth(YogaValue.parse(value.asString()))
-        "height" -> node.setHeight(YogaValue.parse(value.asString()))
-        "min-height" -> node.setMinHeight(YogaValue.parse(value.asString()))
-        "max-height" -> node.setMaxHeight(YogaValue.parse(value.asString()))
+        "flex-basis" -> node.setFlexBasis(checkNotNull(YogaValue.parse(value.asString())))
+        "width" -> node.setWidth(checkNotNull(YogaValue.parse(value.asString())))
+        "min-width" -> node.setMinWidth(checkNotNull(YogaValue.parse(value.asString())))
+        "max-width" -> node.setMaxWidth(checkNotNull(YogaValue.parse(value.asString())))
+        "height" -> node.setHeight(checkNotNull(YogaValue.parse(value.asString())))
+        "min-height" -> node.setMinHeight(checkNotNull(YogaValue.parse(value.asString())))
+        "max-height" -> node.setMaxHeight(checkNotNull(YogaValue.parse(value.asString())))
         "aspect-ratio" -> node.setAspectRatio(value.asFloat())
-        "margin" -> node.setMargin(edgeFromString(path[1]), YogaValue.parse(value.asString()))
-        "padding" -> node.setPadding(edgeFromString(path[1]), YogaValue.parse(value.asString()))
+        "margin" ->
+            node.setMargin(edgeFromString(path[1]), checkNotNull(YogaValue.parse(value.asString())))
+        "padding" ->
+            node.setPadding(
+                edgeFromString(path[1]),
+                checkNotNull(YogaValue.parse(value.asString())),
+            )
         "border" -> node.setBorderWidth(edgeFromString(path[1]), value.asFloat())
-        "position" -> node.setPosition(edgeFromString(path[1]), YogaValue.parse(value.asString()))
+        "position" ->
+            node.setPosition(
+                edgeFromString(path[1]),
+                checkNotNull(YogaValue.parse(value.asString())),
+            )
         "alpha" -> node.setAlpha(value.asFloat())
         "scale" -> node.setScale(value.asFloat())
         "rotation" -> node.setRotation(value.asFloat())
@@ -532,7 +588,7 @@ class DebugComponentDescriptor : NodeDescriptor<DebugComponent>() {
         o: Any,
         path: Array<String>,
         hint: FlipperValueHint?,
-        dynamic: FlipperDynamic
+        dynamic: FlipperDynamic,
     ) {
       try {
         val field = o.javaClass.getDeclaredField(path[1])
@@ -551,8 +607,5 @@ class DebugComponentDescriptor : NodeDescriptor<DebugComponent>() {
       // TODO add support for Type.Dimension or similar
       return InspectorValue.mutable(InspectorValue.Type.Enum, v.toString())
     }
-
-    private val REVISION_DATE_FORMAT: DateFormat =
-        SimpleDateFormat("hh:mm:ss.SSS", Locale.getDefault())
   }
 }

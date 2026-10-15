@@ -26,4 +26,7 @@ interface LithoTreeLifecycleProvider {
   val isReleased: Boolean
 
   fun addOnReleaseListener(listener: OnReleaseListener)
+
+  /** Removes a previously-added listener. Providers that never retain listeners may no-op. */
+  fun removeOnReleaseListener(listener: OnReleaseListener)
 }

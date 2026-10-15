@@ -31,14 +31,14 @@ import org.robolectric.annotation.LooperMode
 @LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(LithoTestRunner::class)
 class ClickEventHandlerUpdateTest {
-  @JvmField @Rule val mLithoTestRule = LithoTestRule()
+  @JvmField @Rule val lithoTestRule = LithoTestRule()
   @JvmField
   @Rule
   val manualResizeLithoTestRule = LithoTestRule(resizeMode = LithoTestRuleResizeMode.MANUAL)
 
   @Test
   fun `click event handler on host should update`() {
-    val context = mLithoTestRule.context
+    val context = lithoTestRule.context
     val tracker = mutableListOf<String>()
     val clickObserver: (String) -> Unit = { s: String -> tracker.add(s) }
 
@@ -47,7 +47,7 @@ class ClickEventHandlerUpdateTest {
         manualResizeLithoTestRule.render(widthPx = 1000, heightPx = 1000) {
           Row.create(context)
               .wrapInView()
-              .child(ClickEventTrackingRow.create(context).id("0").clickObserver(clickObserver))
+              .child(ClickEventTrackingRow(id = "0", clickObserver = clickObserver))
               .build()
         }
 
@@ -71,8 +71,9 @@ class ClickEventHandlerUpdateTest {
     testView.setRoot(
         Row.create(context)
             .wrapInView()
-            .child(ClickEventTrackingRow.create(context).id("1").clickObserver(clickObserver))
-            .build())
+            .child(ClickEventTrackingRow(id = "1", clickObserver = clickObserver))
+            .build(),
+    )
     testView.attachToWindow().measure().layout()
 
     // Make sure we use the same host - otherwise this isn't testing what we want
@@ -85,8 +86,9 @@ class ClickEventHandlerUpdateTest {
     testView.setRoot(
         Row.create(context)
             .wrapInView()
-            .child(ClickEventTrackingRow.create(context).id("2").clickObserver(clickObserver))
-            .build())
+            .child(ClickEventTrackingRow(id = "2", clickObserver = clickObserver))
+            .build(),
+    )
 
     assertThat(testView.findViewWithTag("clickable")).isSameAs(hostView)
 
@@ -102,17 +104,17 @@ class ClickEventHandlerUpdateTest {
       // be the same
       return
     }
-    val context = mLithoTestRule.context
+    val context = lithoTestRule.context
     val tracker = mutableListOf<String>()
 
     val clickObserver: (String) -> Unit = { s: String -> tracker.add(s) }
 
     // render with tag 0
     val testView =
-        mLithoTestRule.render(widthPx = 1000, heightPx = 1000) {
+        lithoTestRule.render(widthPx = 1000, heightPx = 1000) {
           Row.create(context)
               .wrapInView()
-              .child(ClickEventTrackingImage.create(context).id("0").clickObserver(clickObserver))
+              .child(ClickEventTrackingImage(id = "0", clickObserver = clickObserver))
               .build()
         }
 
@@ -134,8 +136,9 @@ class ClickEventHandlerUpdateTest {
     testView.setRoot(
         Row.create(context)
             .wrapInView()
-            .child(ClickEventTrackingImage.create(context).id("1").clickObserver(clickObserver))
-            .build())
+            .child(ClickEventTrackingImage(id = "1", clickObserver = clickObserver))
+            .build(),
+    )
     testView.attachToWindow().measure().layout()
 
     assertThat(testView.findViewWithTag("clickable")).isSameAs(hostView) // use the same host
@@ -147,8 +150,9 @@ class ClickEventHandlerUpdateTest {
     testView.setRoot(
         Row.create(context)
             .wrapInView()
-            .child(ClickEventTrackingImage.create(context).id("2").clickObserver(clickObserver))
-            .build())
+            .child(ClickEventTrackingImage(id = "2", clickObserver = clickObserver))
+            .build(),
+    )
 
     assertThat(testView.findViewWithTag("clickable")).isSameAs(hostView) // use the same host
 
@@ -159,15 +163,15 @@ class ClickEventHandlerUpdateTest {
 
   @Test
   fun `click event handler on root host should update`() {
-    val context = mLithoTestRule.context
+    val context = lithoTestRule.context
     val tracker = mutableListOf<String>()
 
     val clickObserver: (String) -> Unit = { s: String -> tracker.add(s) }
 
     // render with tag 0
     val testView =
-        mLithoTestRule.render(widthPx = 1000, heightPx = 1000) {
-          ClickEventTrackingRow.create(context).id("0").clickObserver(clickObserver).build()
+        lithoTestRule.render(widthPx = 1000, heightPx = 1000) {
+          ClickEventTrackingRow(id = "0", clickObserver = clickObserver)
         }
 
     val hostView = testView.findViewWithTag("clickable")
@@ -186,8 +190,7 @@ class ClickEventHandlerUpdateTest {
     testView.detachFromWindow()
     testView.setRoot(Row.create(context))
     // render with tag 1
-    testView.setRoot(
-        ClickEventTrackingRow.create(context).id("1").clickObserver(clickObserver).build())
+    testView.setRoot(ClickEventTrackingRow(id = "1", clickObserver = clickObserver))
     testView.attachToWindow().measure().layout()
 
     assertThat(testView.findViewWithTag("clickable")).isSameAs(hostView) // use the same host
@@ -196,8 +199,7 @@ class ClickEventHandlerUpdateTest {
     assertThat(tracker).containsExactly("0", "1")
 
     // render with tag 2
-    testView.setRoot(
-        ClickEventTrackingRow.create(context).id("2").clickObserver(clickObserver).build())
+    testView.setRoot(ClickEventTrackingRow(id = "2", clickObserver = clickObserver))
 
     assertThat(testView.findViewWithTag("clickable")).isSameAs(hostView) // use the same host
 

@@ -29,7 +29,10 @@ class VariableArgumentPropParentKComponent(private val useVarArgWithResType: Boo
     if (useVarArgWithResType) {
       // start_var_arg_res_type_usage
       return VariableArgumentPropKComponent(
-          "One", stringRes(R.string.app_name), stringRes(R.string.name_string))
+          "One",
+          stringRes(R.string.app_name),
+          stringRes(R.string.name_string),
+      )
       // end_var_arg_res_type_usage
     } else {
       // start_var_arg_usage

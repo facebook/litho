@@ -147,27 +147,27 @@ class EdgesTest {
   @Test
   fun testDifferentObjectWithSameContentEquivalentTo() {
     edges[YogaEdge.TOP] = 1f
-    val mEdges2 = Edges()
-    mEdges2[YogaEdge.TOP] = 1f
-    assertThat(edges.isEquivalentTo(mEdges2)).isEqualTo(true)
+    val edges2 = Edges()
+    edges2[YogaEdge.TOP] = 1f
+    assertThat(edges.isEquivalentTo(edges2)).isEqualTo(true)
   }
 
   @Test
   fun testDifferentObjectWithDifferentContentEquivalentTo() {
     edges[YogaEdge.LEFT] = 1f
-    var mEdges2 = Edges()
-    mEdges2[YogaEdge.TOP] = 1f
-    assertThat(edges.isEquivalentTo(mEdges2)).isEqualTo(false)
+    var edges2 = Edges()
+    edges2[YogaEdge.TOP] = 1f
+    assertThat(edges.isEquivalentTo(edges2)).isEqualTo(false)
     edges = Edges()
     edges[YogaEdge.TOP] = 1f
-    mEdges2 = Edges()
-    mEdges2[YogaEdge.TOP] = 2f
-    assertThat(edges.isEquivalentTo(mEdges2)).isEqualTo(false)
+    edges2 = Edges()
+    edges2[YogaEdge.TOP] = 2f
+    assertThat(edges.isEquivalentTo(edges2)).isEqualTo(false)
   }
 
   private val edgesToValuesIndex: Long
-    private get() = Whitebox.getInternalState<Any>(edges, "edgesToValuesIndex") as Long
+    get() = Whitebox.getInternalState<Any>(edges, "edgesToValuesIndex") as Long
 
   private val valuesArray: FloatArray
-    private get() = Whitebox.getInternalState<Any>(edges, "values") as FloatArray
+    get() = Whitebox.getInternalState<Any>(edges, "values") as FloatArray
 }

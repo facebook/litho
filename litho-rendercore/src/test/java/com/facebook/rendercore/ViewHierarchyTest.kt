@@ -23,6 +23,7 @@ import android.graphics.drawable.Drawable
 import android.view.View
 import android.widget.TextView
 import com.facebook.rendercore.extensions.RenderCoreExtension
+import com.facebook.rendercore.geometry.Position
 import com.facebook.rendercore.renderunits.HostRenderUnit
 import com.facebook.rendercore.testing.DrawableWrapperUnit
 import com.facebook.rendercore.testing.LayoutResultWrappingNode
@@ -34,7 +35,8 @@ import com.facebook.rendercore.testing.TestRenderCoreExtension
 import com.facebook.rendercore.testing.ViewAssertions
 import com.facebook.rendercore.testing.ViewWrapperUnit
 import com.facebook.rendercore.testing.match.ViewMatchNode
-import org.assertj.core.api.Java6Assertions
+import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -57,7 +59,8 @@ class ViewHierarchyTest {
     ViewAssertions.assertThat(renderCoreTestRule.rootHost as View)
         .matches(
             ViewMatchNode.forType(Host::class.java)
-                .child(ViewMatchNode.forType(TextView::class.java).bounds(0, 0, 100, 100)))
+                .child(ViewMatchNode.forType(TextView::class.java).bounds(0, 0, 100, 100)),
+        )
   }
 
   @Test
@@ -72,9 +75,9 @@ class ViewHierarchyTest {
     ViewAssertions.assertThat(renderCoreTestRule.rootHost as View)
         .matches(ViewMatchNode.forType(Host::class.java).bounds(0, 0, 100, 100))
     val host = renderCoreTestRule.rootHost as HostView
-    Java6Assertions.assertThat(host.mountItemCount).describedAs("Number mounted items").isEqualTo(1)
+    Assertions.assertThat(host.mountItemCount).describedAs("Number mounted items").isEqualTo(1)
     val item = host.getMountItemAt(0)
-    Java6Assertions.assertThat(item.content)
+    Assertions.assertThat(item.content)
         .describedAs("Mounted item")
         .isInstanceOf(ColorDrawable::class.java)
   }
@@ -90,13 +93,15 @@ class ViewHierarchyTest {
                 SimpleLayoutResult.create()
                     .renderUnit(ViewWrapperUnit(TextView(c), 2))
                     .width(100)
-                    .height(100))
+                    .height(100),
+            )
             .child(
                 SimpleLayoutResult.create()
                     .renderUnit(ViewWrapperUnit(TextView(c), 3))
                     .x(100)
                     .width(100)
-                    .height(100))
+                    .height(100),
+            )
             .child(
                 SimpleLayoutResult.create()
                     .x(50)
@@ -107,7 +112,9 @@ class ViewHierarchyTest {
                         SimpleLayoutResult.create()
                             .renderUnit(ViewWrapperUnit(TextView(c), 4))
                             .width(100)
-                            .height(100)))
+                            .height(100),
+                    ),
+            )
             .build()
     renderCoreTestRule.useRootNode(LayoutResultWrappingNode(root)).render()
     ViewAssertions.assertThat(renderCoreTestRule.rootHost as View)
@@ -116,15 +123,19 @@ class ViewHierarchyTest {
                 .child(
                     ViewMatchNode.forType(TextView::class.java)
                         .bounds(0, 0, 100, 100)
-                        .absoluteBoundsForRootType(0, 0, 100, 100, RootHost::class.java))
+                        .absoluteBoundsForRootType(0, 0, 100, 100, RootHost::class.java),
+                )
                 .child(
                     ViewMatchNode.forType(TextView::class.java)
                         .bounds(100, 0, 100, 100)
-                        .absoluteBoundsForRootType(100, 0, 100, 100, RootHost::class.java))
+                        .absoluteBoundsForRootType(100, 0, 100, 100, RootHost::class.java),
+                )
                 .child(
                     ViewMatchNode.forType(TextView::class.java)
                         .bounds(50, 100, 100, 100)
-                        .absoluteBoundsForRootType(50, 100, 100, 100, RootHost::class.java)))
+                        .absoluteBoundsForRootType(50, 100, 100, 100, RootHost::class.java),
+                ),
+        )
   }
 
   @Test
@@ -139,28 +150,32 @@ class ViewHierarchyTest {
                     .renderUnit(DrawableWrapperUnit(ColorDrawable(Color.BLACK), 2))
                     .padding(5, 5, 5, 5)
                     .width(120)
-                    .height(120))
+                    .height(120),
+            )
             .child(
                 SimpleLayoutResult.create()
                     .renderUnit(DrawableWrapperUnit(ColorDrawable(Color.BLUE), 3))
                     .x(5)
                     .y(5)
                     .width(110)
-                    .height(110))
+                    .height(110),
+            )
             .child(
                 SimpleLayoutResult.create()
                     .renderUnit(ViewWrapperUnit(TextView(c), 4))
                     .x(10)
                     .y(10)
                     .width(100)
-                    .height(100))
+                    .height(100),
+            )
             .child(
                 SimpleLayoutResult.create()
                     .renderUnit(DrawableWrapperUnit(ColorDrawable(Color.BLUE), 5))
                     .x(15)
                     .y(15)
                     .width(95)
-                    .height(95))
+                    .height(95),
+            )
             .build()
     renderCoreTestRule.useRootNode(LayoutResultWrappingNode(root)).render()
     ViewAssertions.assertThat(renderCoreTestRule.rootHost as View)
@@ -169,19 +184,21 @@ class ViewHierarchyTest {
                 .child(
                     ViewMatchNode.forType(TextView::class.java)
                         .bounds(10, 10, 100, 100)
-                        .absoluteBoundsForRootType(10, 10, 100, 100, RootHost::class.java)))
+                        .absoluteBoundsForRootType(10, 10, 100, 100, RootHost::class.java),
+                ),
+        )
     val host = renderCoreTestRule.rootHost as HostView
-    Java6Assertions.assertThat(host.mountItemCount).describedAs("Number mounted items").isEqualTo(4)
-    Java6Assertions.assertThat(host.getMountItemAt(0).content)
+    Assertions.assertThat(host.mountItemCount).describedAs("Number mounted items").isEqualTo(4)
+    Assertions.assertThat(host.getMountItemAt(0).content)
         .describedAs("Mounted item")
         .isInstanceOf(ColorDrawable::class.java)
-    Java6Assertions.assertThat((host.getMountItemAt(0).content as Drawable).bounds)
+    Assertions.assertThat((host.getMountItemAt(0).content as Drawable).bounds)
         .describedAs("Drawable bounds are")
         .isEqualTo(Rect(5, 5, 115, 115))
-    Java6Assertions.assertThat(host.getMountItemAt(1).content)
+    Assertions.assertThat(host.getMountItemAt(1).content)
         .describedAs("Mounted item")
         .isInstanceOf(ColorDrawable::class.java)
-    Java6Assertions.assertThat(host.getMountItemAt(3).content)
+    Assertions.assertThat(host.getMountItemAt(3).content)
         .describedAs("Mounted item")
         .isInstanceOf(ColorDrawable::class.java)
   }
@@ -197,13 +214,15 @@ class ViewHierarchyTest {
                 SimpleLayoutResult.create()
                     .renderUnit(ViewWrapperUnit(TextView(c), 2))
                     .width(100)
-                    .height(100))
+                    .height(100),
+            )
             .child(
                 SimpleLayoutResult.create()
                     .renderUnit(ViewWrapperUnit(TextView(c), 3))
                     .x(100)
                     .width(100)
-                    .height(100))
+                    .height(100),
+            )
             .child(
                 SimpleLayoutResult.create()
                     .renderUnit(HostRenderUnit(4))
@@ -215,7 +234,9 @@ class ViewHierarchyTest {
                         SimpleLayoutResult.create()
                             .renderUnit(ViewWrapperUnit(TextView(c), 5))
                             .width(100)
-                            .height(100)))
+                            .height(100),
+                    ),
+            )
             .build()
     renderCoreTestRule.useRootNode(LayoutResultWrappingNode(root)).render()
     ViewAssertions.assertThat(renderCoreTestRule.rootHost as View)
@@ -224,19 +245,23 @@ class ViewHierarchyTest {
                 .child(
                     ViewMatchNode.forType(TextView::class.java)
                         .bounds(0, 0, 100, 100)
-                        .absoluteBoundsForRootType(0, 0, 100, 100, RootHost::class.java))
+                        .absoluteBoundsForRootType(0, 0, 100, 100, RootHost::class.java),
+                )
                 .child(
                     ViewMatchNode.forType(TextView::class.java)
                         .bounds(100, 0, 100, 100)
-                        .absoluteBoundsForRootType(100, 0, 100, 100, RootHost::class.java))
+                        .absoluteBoundsForRootType(100, 0, 100, 100, RootHost::class.java),
+                )
                 .child(
                     ViewMatchNode.forType(Host::class.java)
                         .bounds(50, 100, 100, 100)
                         .child(
                             ViewMatchNode.forType(TextView::class.java)
                                 .bounds(0, 0, 100, 100)
-                                .absoluteBoundsForRootType(
-                                    50, 100, 100, 100, RootHost::class.java))))
+                                .absoluteBoundsForRootType(50, 100, 100, 100, RootHost::class.java),
+                        ),
+                ),
+        )
   }
 
   @Test
@@ -250,7 +275,8 @@ class ViewHierarchyTest {
                 SimpleLayoutResult.create()
                     .renderUnit(ViewWrapperUnit(TextView(c), 1))
                     .width(100)
-                    .height(100))
+                    .height(100),
+            )
             .child(
                 SimpleLayoutResult.create()
                     .y(100)
@@ -262,7 +288,8 @@ class ViewHierarchyTest {
                             .x(100)
                             .y(100)
                             .width(100)
-                            .height(100))
+                            .height(100),
+                    )
                     .child(
                         SimpleLayoutResult.create()
                             .renderUnit(HostRenderUnit(3))
@@ -276,7 +303,10 @@ class ViewHierarchyTest {
                                     .x(100)
                                     .y(100)
                                     .width(100)
-                                    .height(100))))
+                                    .height(100),
+                            ),
+                    ),
+            )
             .child(
                 SimpleLayoutResult.create()
                     .renderUnit(HostRenderUnit(5))
@@ -289,7 +319,8 @@ class ViewHierarchyTest {
                             .x(100)
                             .y(100)
                             .width(100)
-                            .height(100))
+                            .height(100),
+                    )
                     .child(
                         SimpleLayoutResult.create()
                             .renderUnit(HostRenderUnit(7))
@@ -303,7 +334,10 @@ class ViewHierarchyTest {
                                     .x(100)
                                     .y(100)
                                     .width(100)
-                                    .height(100))))
+                                    .height(100),
+                            ),
+                    ),
+            )
             .build()
     val extension = TestRenderCoreExtension()
     renderCoreTestRule
@@ -317,7 +351,8 @@ class ViewHierarchyTest {
                 .child(
                     ViewMatchNode.forType(TextView::class.java)
                         .bounds(100, 200, 100, 100)
-                        .absoluteBoundsForRootType(100, 200, 100, 100, RootHost::class.java))
+                        .absoluteBoundsForRootType(100, 200, 100, 100, RootHost::class.java),
+                )
                 .child(
                     ViewMatchNode.forType(Host::class.java)
                         .bounds(200, 300, 200, 200)
@@ -326,7 +361,14 @@ class ViewHierarchyTest {
                             ViewMatchNode.forType(TextView::class.java)
                                 .bounds(100, 100, 100, 100)
                                 .absoluteBoundsForRootType(
-                                    300, 400, 100, 100, RootHost::class.java)))
+                                    300,
+                                    400,
+                                    100,
+                                    100,
+                                    RootHost::class.java,
+                                ),
+                        ),
+                )
                 .child(
                     ViewMatchNode.forType(Host::class.java)
                         .bounds(0, 400, 400, 400)
@@ -335,7 +377,13 @@ class ViewHierarchyTest {
                             ViewMatchNode.forType(TextView::class.java)
                                 .bounds(100, 100, 100, 100)
                                 .absoluteBoundsForRootType(
-                                    100, 500, 100, 100, RootHost::class.java))
+                                    100,
+                                    500,
+                                    100,
+                                    100,
+                                    RootHost::class.java,
+                                ),
+                        )
                         .child(
                             ViewMatchNode.forType(Host::class.java)
                                 .bounds(200, 200, 200, 200)
@@ -344,34 +392,134 @@ class ViewHierarchyTest {
                                     ViewMatchNode.forType(TextView::class.java)
                                         .bounds(100, 100, 100, 100)
                                         .absoluteBoundsForRootType(
-                                            300, 700, 100, 100, RootHost::class.java)))))
+                                            300,
+                                            700,
+                                            100,
+                                            100,
+                                            RootHost::class.java,
+                                        ),
+                                ),
+                        ),
+                ),
+        )
     val e = extension.getMountExtension() as TestMountExtension?
-    Java6Assertions.assertThat(e).isNotNull
-    Java6Assertions.assertThat(e?.input).isNotNull
-    Java6Assertions.assertThat(e?.input as List<*>).hasSize(11)
+    Assertions.assertThat(e).isNotNull
+    Assertions.assertThat(e?.input).isNotNull
+    Assertions.assertThat(e?.input as List<*>).hasSize(11)
     val results: List<TestLayoutResultVisitor.Result> =
         e.input as List<TestLayoutResultVisitor.Result>
-    Java6Assertions.assertThat(results[0].x).isEqualTo(0)
-    Java6Assertions.assertThat(results[0].y).isEqualTo(0)
-    Java6Assertions.assertThat(results[1].x).isEqualTo(0)
-    Java6Assertions.assertThat(results[1].y).isEqualTo(0)
-    Java6Assertions.assertThat(results[2].x).isEqualTo(0)
-    Java6Assertions.assertThat(results[2].y).isEqualTo(0)
-    Java6Assertions.assertThat(results[3].x).isEqualTo(0)
-    Java6Assertions.assertThat(results[3].y).isEqualTo(100)
-    Java6Assertions.assertThat(results[4].x).isEqualTo(100)
-    Java6Assertions.assertThat(results[4].y).isEqualTo(200)
-    Java6Assertions.assertThat(results[5].x).isEqualTo(200)
-    Java6Assertions.assertThat(results[5].y).isEqualTo(300)
-    Java6Assertions.assertThat(results[6].x).isEqualTo(300)
-    Java6Assertions.assertThat(results[6].y).isEqualTo(400)
-    Java6Assertions.assertThat(results[7].x).isEqualTo(0)
-    Java6Assertions.assertThat(results[7].y).isEqualTo(400)
-    Java6Assertions.assertThat(results[8].x).isEqualTo(100)
-    Java6Assertions.assertThat(results[8].y).isEqualTo(500)
-    Java6Assertions.assertThat(results[9].x).isEqualTo(200)
-    Java6Assertions.assertThat(results[9].y).isEqualTo(600)
-    Java6Assertions.assertThat(results[10].x).isEqualTo(300)
-    Java6Assertions.assertThat(results[10].y).isEqualTo(700)
+    Assertions.assertThat(results[0].x).isEqualTo(0)
+    Assertions.assertThat(results[0].y).isEqualTo(0)
+    Assertions.assertThat(results[1].x).isEqualTo(0)
+    Assertions.assertThat(results[1].y).isEqualTo(0)
+    Assertions.assertThat(results[2].x).isEqualTo(0)
+    Assertions.assertThat(results[2].y).isEqualTo(0)
+    Assertions.assertThat(results[3].x).isEqualTo(0)
+    Assertions.assertThat(results[3].y).isEqualTo(100)
+    Assertions.assertThat(results[4].x).isEqualTo(100)
+    Assertions.assertThat(results[4].y).isEqualTo(200)
+    Assertions.assertThat(results[5].x).isEqualTo(200)
+    Assertions.assertThat(results[5].y).isEqualTo(300)
+    Assertions.assertThat(results[6].x).isEqualTo(300)
+    Assertions.assertThat(results[6].y).isEqualTo(400)
+    Assertions.assertThat(results[7].x).isEqualTo(0)
+    Assertions.assertThat(results[7].y).isEqualTo(400)
+    Assertions.assertThat(results[8].x).isEqualTo(100)
+    Assertions.assertThat(results[8].y).isEqualTo(500)
+    Assertions.assertThat(results[9].x).isEqualTo(200)
+    Assertions.assertThat(results[9].y).isEqualTo(600)
+    Assertions.assertThat(results[10].x).isEqualTo(300)
+    Assertions.assertThat(results[10].y).isEqualTo(700)
+  }
+
+  @Test
+  fun `when getting the relative position of a LayoutResult then it should return the correct Position`() {
+    val c = renderCoreTestRule.context
+    val target: LayoutResult =
+        SimpleLayoutResult.create()
+            .renderUnit(ViewWrapperUnit(TextView(c), 3))
+            .x(100)
+            .y(100)
+            .width(100)
+            .height(100)
+            .build()
+    val root: LayoutResult =
+        SimpleLayoutResult.create()
+            .width(500)
+            .height(500)
+            .child(
+                SimpleLayoutResult.create()
+                    .renderUnit(ViewWrapperUnit(TextView(c), 2))
+                    .width(100)
+                    .height(100),
+            )
+            .child(SimpleLayoutResult.create().x(100).y(100).width(300).height(300).child(target))
+            .child(
+                SimpleLayoutResult.create()
+                    .renderUnit(HostRenderUnit(4))
+                    .y(400)
+                    .width(100)
+                    .height(100)
+                    .child(
+                        SimpleLayoutResult.create()
+                            .renderUnit(ViewWrapperUnit(TextView(c), 5))
+                            .width(100)
+                            .height(100),
+                    ),
+            )
+            .build()
+
+    val position = root.getRelativePositionOf(target = target)
+
+    assertThat(position).isEqualTo(Position(200f, 200f))
+  }
+
+  @Test
+  fun `when getting the relative position of the root then it should return Zero`() {
+    val c = renderCoreTestRule.context
+    val target: LayoutResult =
+        SimpleLayoutResult.create()
+            .renderUnit(ViewWrapperUnit(TextView(c), 3))
+            .x(100)
+            .y(100)
+            .width(100)
+            .height(100)
+            .build()
+
+    val position = target.getRelativePositionOf(target = target)
+
+    assertThat(position).isEqualTo(Position.Zero)
+  }
+
+  @Test
+  fun `when getting the relative position of non existent LayoutResult then it should throw an error`() {
+    val c = renderCoreTestRule.context
+    val target: LayoutResult =
+        SimpleLayoutResult.create()
+            .renderUnit(ViewWrapperUnit(TextView(c), 3))
+            .x(100)
+            .y(100)
+            .width(100)
+            .height(100)
+            .build()
+
+    val root: LayoutResult =
+        SimpleLayoutResult.create()
+            .renderUnit(ViewWrapperUnit(TextView(c), 3))
+            .x(100)
+            .y(100)
+            .width(100)
+            .height(100)
+            .build()
+
+    var e: Exception? = null
+    try {
+      root.getRelativePositionOf(target = target)
+    } catch (ex: Exception) {
+      e = ex
+    }
+
+    assertThat(e).isNotNull
+    assertThat(e?.message).isEqualTo(LayoutResultPositionCalculator.TARGET_NOT_FOUND_MESSAGE)
   }
 }

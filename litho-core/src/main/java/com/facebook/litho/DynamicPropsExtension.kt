@@ -18,6 +18,7 @@ package com.facebook.litho
 
 import android.graphics.Rect
 import androidx.annotation.VisibleForTesting
+import androidx.collection.LongObjectMap
 import com.facebook.litho.DynamicPropsExtension.DynamicPropsExtensionState
 import com.facebook.rendercore.RenderTreeNode
 import com.facebook.rendercore.RenderUnit
@@ -36,7 +37,7 @@ object DynamicPropsExtension :
   override fun beforeMount(
       extensionState: ExtensionState<DynamicPropsExtensionState>,
       input: DynamicPropsExtensionInput?,
-      localVisibleRect: Rect?
+      localVisibleRect: Rect?,
   ) {
     val state: DynamicPropsExtensionState = extensionState.state
     state.previousInput = state.currentInput
@@ -68,7 +69,7 @@ object DynamicPropsExtension :
       extensionState: ExtensionState<DynamicPropsExtensionState>,
       renderUnit: RenderUnit<*>,
       content: Any,
-      layoutData: Any?
+      layoutData: Any?,
   ) {
     val state: DynamicPropsExtensionState = extensionState.state
     val dynamicValueOutput: DynamicValueOutput? = state.currentInput?.get(renderUnit.id)
@@ -77,7 +78,8 @@ object DynamicPropsExtension :
           dynamicValueOutput.component,
           dynamicValueOutput.scopedContext,
           dynamicValueOutput.commonDynamicProps,
-          content)
+          content,
+      )
     }
   }
 
@@ -85,7 +87,7 @@ object DynamicPropsExtension :
       extensionState: ExtensionState<DynamicPropsExtensionState>,
       renderUnit: RenderUnit<*>,
       content: Any,
-      layoutData: Any?
+      layoutData: Any?,
   ) {
     val state: DynamicPropsExtensionState = extensionState.state
     val dynamicValueOutput: DynamicValueOutput? =
@@ -94,7 +96,10 @@ object DynamicPropsExtension :
             ?: state.disappearingHostInput?.get(renderUnit.id)
     if (dynamicValueOutput != null) {
       state.dynamicPropsManager.onUnbindComponent(
-          dynamicValueOutput.component, dynamicValueOutput.commonDynamicProps, content)
+          dynamicValueOutput.component,
+          dynamicValueOutput.commonDynamicProps,
+          content,
+      )
     }
   }
 
@@ -103,27 +108,27 @@ object DynamicPropsExtension :
       previousRenderUnit: RenderUnit<*>,
       previousLayoutData: Any?,
       nextRenderUnit: RenderUnit<*>,
-      nextLayoutData: Any?
+      nextLayoutData: Any?,
   ): Boolean = true
 
   override fun beforeMountItem(
       extensionState: ExtensionState<DynamicPropsExtensionState>,
       renderTreeNode: RenderTreeNode,
-      index: Int
+      index: Int,
   ): Unit = Unit
 
   override fun onMountItem(
       extensionState: ExtensionState<DynamicPropsExtensionState>,
       renderUnit: RenderUnit<*>,
       content: Any,
-      layoutData: Any?
+      layoutData: Any?,
   ): Unit = Unit
 
   override fun onUnmountItem(
       extensionState: ExtensionState<DynamicPropsExtensionState>,
       renderUnit: RenderUnit<*>,
       content: Any,
-      layoutData: Any?
+      layoutData: Any?,
   ): Unit = Unit
 
   override fun onBoundsAppliedToItem(
@@ -131,13 +136,13 @@ object DynamicPropsExtension :
       renderUnit: RenderUnit<*>,
       content: Any,
       layoutData: Any?,
-      changed: Boolean
+      changed: Boolean,
   ): Unit = Unit
 
   class DynamicPropsExtensionState {
     @get:VisibleForTesting val dynamicPropsManager: DynamicPropsManager = DynamicPropsManager()
-    internal var currentInput: Map<Long, DynamicValueOutput>? = null
-    internal var previousInput: Map<Long, DynamicValueOutput>? = null
-    internal var disappearingHostInput: Map<Long, DynamicValueOutput>? = null
+    internal var currentInput: LongObjectMap<DynamicValueOutput>? = null
+    internal var previousInput: LongObjectMap<DynamicValueOutput>? = null
+    internal var disappearingHostInput: LongObjectMap<DynamicValueOutput>? = null
   }
 }

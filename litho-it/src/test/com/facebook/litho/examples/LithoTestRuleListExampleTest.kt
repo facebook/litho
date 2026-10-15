@@ -39,7 +39,7 @@ import org.robolectric.annotation.LooperMode
 @RunWith(LithoTestRunner::class)
 class LithoTestRuleListExampleTest {
 
-  @Rule @JvmField val mLithoTestRule = LithoTestRule()
+  @Rule @JvmField val lithoTestRule = LithoTestRule()
 
   @Test
   fun `test child is present in LazyList`() {
@@ -54,7 +54,7 @@ class LithoTestRuleListExampleTest {
     }
 
     val testView =
-        mLithoTestRule.render(widthPx = exactly(100), heightPx = exactly(100)) { TestComponent() }
+        lithoTestRule.render(widthPx = exactly(100), heightPx = exactly(100)) { TestComponent() }
 
     assertThat(testView).isNotNull()
 
@@ -69,8 +69,10 @@ class LithoTestRuleListExampleTest {
         .hasFieldOrPropertyWithValue("text", "child3")
 
     assertThat(
-            listComponent.items.slice(
-                listComponent.firstVisibleIndex..listComponent.lastVisibleIndex))
+        listComponent.items.slice(
+            listComponent.firstVisibleIndex..listComponent.lastVisibleIndex,
+        ),
+    )
         .hasSize(3)
 
     val component = listComponent.findFirstItem(Text::class)?.component
@@ -83,13 +85,12 @@ class LithoTestRuleListExampleTest {
 
     @DataClassGenerate data class Item(val id: Int, val name: String, val quantity: Int)
 
-    val items =
-        listOf(
-            Item(1, "Flour", 2),
-            Item(2, "Cinnamon", 3),
-            Item(3, "Salt", 100),
-            Item(4, "Butter", 1),
-        )
+    val items = listOf(
+        Item(1, "Flour", 2),
+        Item(2, "Cinnamon", 3),
+        Item(3, "Salt", 100),
+        Item(4, "Butter", 1),
+    )
 
     class ItemComponent(val model: Item) : KComponent() {
       override fun ComponentScope.render(): Component? {
@@ -109,7 +110,7 @@ class LithoTestRuleListExampleTest {
     }
 
     val testView =
-        mLithoTestRule.render(widthPx = exactly(100), heightPx = exactly(100)) { TestComponent() }
+        lithoTestRule.render(widthPx = exactly(100), heightPx = exactly(100)) { TestComponent() }
 
     assertThat(testView.findViewWithTextOrNull("Flour: 2")).isNotNull()
     assertThat(testView.findAllComponents(Text::class))
@@ -136,13 +137,13 @@ class LithoTestRuleListExampleTest {
     }
 
     val testView =
-        mLithoTestRule.render(widthPx = exactly(100), heightPx = exactly(100)) { TestComponent() }
+        lithoTestRule.render(widthPx = exactly(100), heightPx = exactly(100)) { TestComponent() }
 
     val listComponent = testView.findCollectionComponent()
     assertThat(listComponent).isNotNull
     listComponent ?: return
 
-    val testComponentScope = ComponentScope(context = mLithoTestRule.context)
+    val testComponentScope = ComponentScope(context = lithoTestRule.context)
     val zeroTextComponent = with(testComponentScope) { Text("0") }
     val fourTextComponent = with(testComponentScope) { Text("4") }
     val helloTextComponent = with(testComponentScope) { Text("Hello") }
@@ -151,7 +152,7 @@ class LithoTestRuleListExampleTest {
 
     LithoAssertions.assertThat(listComponent)
         .onFirstChild { it.isVisible }
-        .onLastChild { it.component.isEquivalentTo(fourTextComponent) }
+        .onLastChild { it.component?.isEquivalentTo(fourTextComponent) == true }
         .onChild(withIndex = 2) { it.isVisible }
         .onChild(withId = 3) { !it.isFullyVisible }
         .hasSize(5)
@@ -189,7 +190,7 @@ class LithoTestRuleListExampleTest {
     }
 
     val testView =
-        mLithoTestRule.render(widthPx = exactly(100), heightPx = exactly(100)) { TestComponent() }
+        lithoTestRule.render(widthPx = exactly(100), heightPx = exactly(100)) { TestComponent() }
 
     val listComponent = testView.findCollectionComponent()
     assertThat(listComponent).isNotNull

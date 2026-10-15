@@ -28,18 +28,25 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.text.Editable
 import android.text.InputFilter
+import android.text.Selection
+import android.text.SpannableString
 import android.text.SpannableStringBuilder
+import android.text.Spanned
 import android.text.TextUtils
 import android.text.TextWatcher
 import android.text.method.ArrowKeyMovementMethod
 import android.text.method.KeyListener
 import android.text.method.MovementMethod
+import android.text.method.TransformationMethod
 import android.text.style.SuggestionRangeSpan
 import android.util.TypedValue
 import android.view.ActionMode
 import android.view.Gravity
 import android.view.KeyEvent
 import android.view.View
+import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.view.ViewTreeObserver
 import android.view.accessibility.AccessibilityNodeInfo
 import android.view.inputmethod.EditorInfo
@@ -48,7 +55,9 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.TextView
 import androidx.annotation.ColorInt
+import androidx.annotation.DrawableRes
 import androidx.annotation.GravityInt
+import androidx.core.text.toSpanned
 import androidx.core.util.ObjectsCompat
 import androidx.core.view.ViewCompat
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
@@ -63,8 +72,11 @@ import com.facebook.litho.ThreadUtils.assertMainThread
 import com.facebook.litho.annotations.Hook
 import com.facebook.litho.annotations.OnTrigger
 import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.debug.DebugInfoReporter
 import com.facebook.litho.useCached
+import com.facebook.litho.useEffect
 import com.facebook.litho.useState
+import com.facebook.rendercore.LogLevel
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.primitives.LayoutBehavior
 import com.facebook.rendercore.primitives.LayoutScope
@@ -72,7 +84,9 @@ import com.facebook.rendercore.primitives.PrimitiveLayoutResult
 import com.facebook.rendercore.primitives.ViewAllocator
 import com.facebook.rendercore.toHeightSpec
 import com.facebook.rendercore.toWidthSpec
+import com.facebook.rendercore.utils.areObjectsEquivalent
 import java.util.concurrent.atomic.AtomicReference
+import kotlin.math.max
 import kotlin.math.min
 
 /**
@@ -174,6 +188,12 @@ import kotlin.math.min
  *   mount.
  * @property textInputController The controller for invoking actions on the component. Use
  *   [useTextInputController] for creating an instance of the controller.
+ * @property shouldUseMatchParentLayoutParams If set, the mounted [EditText] gets MATCH_PARENT
+ *   layout params instead of the WRAP_CONTENT ones its host adds by default. With WRAP_CONTENT,
+ *   every edit requests a layout that climbs to the window root. Litho already sizes the EditText
+ *   exactly and remeasures it when the line count changes, so that layout changes nothing.
+ *   Replacing the text with `setText` without changing the line count does not remeasure the input,
+ *   so the input keeps its size until the line count changes.
  * @property onTextChanged A callback that will be called when the text gets changed.
  * @property onTextPasted A callback that will be called when the text gets pasted.
  * @property onSelectionChanged A callback that will be called when the text selection changes.
@@ -193,15 +213,15 @@ class ExperimentalTextInput(
     private val shadowRadius: Float = 0f,
     private val shadowDx: Float = 0f,
     private val shadowDy: Float = 0f,
-    @ColorInt private val shadowColor: Int = Color.GRAY,
+    @param:ColorInt private val shadowColor: Int = Color.GRAY,
     private val textColorStateList: ColorStateList = ColorStateList.valueOf(Color.BLACK),
     private val hintColorStateList: ColorStateList = ColorStateList.valueOf(Color.LTGRAY),
-    @ColorInt private val highlightColor: Int? = null,
+    @param:ColorInt private val highlightColor: Int? = null,
     private val textSize: Int = TextComponentSpec.UNSET,
     private val typeface: Typeface = Typeface.DEFAULT,
     private val textStyle: TextStyle = TextStyle.Normal,
     private val textAlignment: Int = View.TEXT_ALIGNMENT_GRAVITY,
-    @GravityInt private val gravity: Int = Gravity.CENTER_VERTICAL or Gravity.START,
+    @param:GravityInt private val gravity: Int = Gravity.CENTER_VERTICAL or Gravity.START,
     private val editable: Boolean = true,
     private val cursorVisible: Boolean = true,
     private val inputType: Int = EditorInfo.TYPE_CLASS_TEXT,
@@ -213,7 +233,7 @@ class ExperimentalTextInput(
     private val ellipsize: TextUtils.TruncateAt? = null,
     private val minLines: Int = 1,
     private val maxLines: Int = Int.MAX_VALUE,
-    private val cursorDrawableRes: Int = -1,
+    @param:DrawableRes private val cursorDrawableRes: Int = -1,
     private val error: CharSequence? = null,
     private val errorDrawable: Drawable? = null,
     private val keyListener: KeyListener? = null,
@@ -226,6 +246,9 @@ class ExperimentalTextInput(
     private val insertionActionModeCallback: ActionMode.Callback? = null,
     private val excludeFromIncrementalMount: Boolean = false,
     private val textInputController: TextInputController? = null,
+    private val transformationMethod: TransformationMethod? = null,
+    private val useTransformationMethod: Boolean = false,
+    private val shouldUseMatchParentLayoutParams: Boolean = false,
     private val onTextChanged: ((EditText, String) -> Unit)? = null,
     private val onTextPasted: ((EditText, String) -> Unit)? = null,
     private val onSelectionChanged: ((Int, Int) -> Unit)? = null,
@@ -234,13 +257,35 @@ class ExperimentalTextInput(
     private val onKeyPreImeEvent: ((KeyEvent, Int) -> Boolean)? = null,
     private val onEditorAction: ((TextView, KeyEvent?, Int) -> Boolean)? = null,
     private val onInputConnection: ((InputConnection?, EditorInfo) -> InputConnection?)? = null,
-    private val style: Style? = null,
+    private val style: Style = Style,
 ) : PrimitiveComponent() {
   override fun PrimitiveComponentScope.render(): LithoPrimitive {
     val mountedView = useState { AtomicReference<EditTextWithEventHandlers?>() }
     val savedText = useState { AtomicReference(initialText) }
     val savedTextWithoutSpans = useState { AtomicReference(initialText.toString() as CharSequence) }
+    val savedTextWithSpans = useState { AtomicReference(initialText.toSpanned()) }
     val measureSeqNumber = useState { 0 }
+    // Hand the committed input's text state to the controller, so triggers work before it mounts.
+    useEffect(
+        textInputController,
+        savedText.value,
+        savedTextWithoutSpans.value,
+        savedTextWithSpans.value,
+        measureSeqNumber,
+    ) {
+      textInputController?.attachState(
+          savedText.value,
+          savedTextWithoutSpans.value,
+          savedTextWithSpans.value,
+          measureSeqNumber,
+      )
+      null
+    }
+
+    val useTextWithSpansForMeasure = useState {
+      ComponentsConfiguration.useTextWithSpansForMeasure
+    }
+        .value
 
     val resolvedHighlightColor = useCached {
       if (highlightColor != null) {
@@ -293,7 +338,9 @@ class ExperimentalTextInput(
                 movementMethod = movementMethod,
                 savedText = savedText.value,
                 savedTextWithoutSpans = savedTextWithoutSpans.value,
+                savedTextWithSpans = savedTextWithSpans.value,
                 measureSeqNumber = measureSeqNumber.value,
+                useTextWithSpansForMeasure = useTextWithSpansForMeasure,
             ),
         mountBehavior =
             MountBehavior(
@@ -303,164 +350,216 @@ class ExperimentalTextInput(
                   // SpannableStringBuilder#setSpan with additional information. This should cause
                   // no functional changes.
                   editText.setEditableFactory(SafeSetSpanEditableFactory())
+                  if (ComponentsConfiguration.textInputUsesMatchParentLayoutParams) {
+                    editText.layoutParams = ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT)
+                  }
                   editText
-                }) {
-                  shouldExcludeFromIncrementalMount = excludeFromIncrementalMount
-
-                  // Controller
-                  withDescription("text-input-controller") {
-                    bind(
-                        textInputController,
-                        savedText.value,
-                        savedTextWithoutSpans.value,
-                        measureSeqNumber.value,
-                    ) { editText ->
-                      textInputController?.bind(
-                          editText,
-                          savedText.value,
-                          savedTextWithoutSpans.value,
-                          measureSeqNumber,
-                      )
-                      onUnbind { textInputController?.unbind() }
-                    }
-                  }
-                  // OnMount
-                  withDescription("text-input-equivalent-mount") {
-                    bind(
-                        measureSeqNumber.value,
-                        initialText,
-                        hint,
-                        shadowRadius,
-                        shadowDx,
-                        shadowDy,
-                        shadowColor,
-                        textColorStateList,
-                        hintColorStateList,
-                        resolvedHighlightColor,
-                        textSize,
-                        typeface,
-                        textStyle,
-                        textAlignment,
-                        gravity,
-                        editable,
-                        cursorVisible,
-                        inputType,
-                        rawInputType,
-                        keyListener,
-                        imeOptions,
-                        privateImeOptions,
-                        InputFiltersComparator(inputFilters),
-                        ellipsize,
-                        multiline,
-                        LineRangeComparator(minLines, maxLines, multiline),
-                        cursorDrawableRes,
-                        movementMethod,
-                        error,
-                        // Note, these are purposefully just comparing the containers, not the
-                        // contents!
-                        mountedView.value,
-                        savedText.value,
-                        savedTextWithoutSpans.value,
-                        InputBackgroundComparator(inputBackground),
-                        excludeFromIncrementalMount,
-                    ) { editText ->
-                      mountedView.value.set(editText)
-
-                      setParams(
-                          editText,
-                          hint,
-                          getBackgroundOrDefault(androidContext, inputBackground),
-                          shadowRadius,
-                          shadowDx,
-                          shadowDy,
-                          shadowColor,
-                          textColorStateList,
-                          hintColorStateList,
-                          resolvedHighlightColor,
-                          textSize,
-                          typeface,
-                          textStyle,
-                          textAlignment,
-                          gravity,
-                          editable,
-                          cursorVisible,
-                          inputType,
-                          rawInputType,
-                          keyListener,
-                          imeOptions,
-                          privateImeOptions,
-                          inputFilters,
-                          multiline,
-                          ellipsize,
-                          minLines,
-                          maxLines,
-                          cursorDrawableRes,
-                          movementMethod,
-                          // onMount happens:
-                          // 1. After initState: savedText = initText.
-                          // 2. After onUnmount: savedText preserved from underlying editText.
-                          savedText.value.get(),
-                          error,
-                          errorDrawable,
-                          false,
-                          importantForAutofill,
-                          autofillHints)
-                      editText.setDisableAutofill(disableAutofill)
-                      editText.setTextState(savedText.value)
-                      editText.setTextWithoutSpansState(savedTextWithoutSpans.value)
-
-                      onUnbind {
-                        if (keyListener != null) {
-                          editText.keyListener = null // Clear any KeyListener
-                          editText.inputType =
-                              TextInputSpec.inputType // Set the input type back to default.
-                        }
-                        editText.movementMethod = null
-                        editText.setTextState(null)
-                        editText.setTextWithoutSpansState(null)
-                        editText.removeOnWindowFocusChangeListener()
-                        editText.privateImeOptions = null
-                        mountedView.value.set(null)
-                      }
-                    }
-                  }
-
-                  // OnBind
-                  withDescription("text-input-equivalent-bind") {
-                    bind(Any()) { editText ->
-                      editText.attachWatchers(textWatchers)
-                      editText.customSelectionActionModeCallback = selectionActionModeCallback
-                      editText.customInsertionActionModeCallback = insertionActionModeCallback
-                      editText.componentContext = context
-                      editText.onTextChanged = onTextChanged
-                      editText.onSelectionChanged = onSelectionChanged
-                      editText.onInputFocusChanged = onInputFocusChanged
-                      editText.onKeyUp = onKeyUp
-                      editText.onKeyPreImeEvent = onKeyPreImeEvent
-                      editText.onEditorAction = onEditorAction
-                      editText.onInputConnection = onInputConnection
-                      editText.onTextPasted = onTextPasted
-                      editText.measureSeqNumber = measureSeqNumber
-
-                      onUnbind {
-                        editText.detachWatchers()
-                        editText.componentContext = null
-                        editText.onTextChanged = null
-                        editText.onSelectionChanged = null
-                        editText.onInputFocusChanged = null
-                        editText.onKeyUp = null
-                        editText.onKeyPreImeEvent = null
-                        editText.onEditorAction = null
-                        editText.onInputConnection = null
-                        editText.customSelectionActionModeCallback = null
-                        editText.customInsertionActionModeCallback = null
-                        editText.onTextPasted = null
-                        editText.measureSeqNumber = null
-                      }
-                    }
-                  }
                 },
-        style = style)
+            ) {
+              shouldExcludeFromIncrementalMount = excludeFromIncrementalMount
+
+              // Controller
+              withDescription("text-input-controller") {
+                bind(
+                    textInputController,
+                    savedText.value,
+                    savedTextWithoutSpans.value,
+                    savedTextWithSpans.value,
+                    measureSeqNumber.value,
+                ) { editText ->
+                  textInputController?.bind(
+                      editText,
+                      savedText.value,
+                      savedTextWithoutSpans.value,
+                      savedTextWithSpans.value,
+                      measureSeqNumber,
+                  )
+                  onUnbind { textInputController?.unbind() }
+                }
+              }
+              // OnMount
+              withDescription("text-input-equivalent-mount") {
+                bind(
+                    measureSeqNumber.value,
+                    initialText,
+                    hint,
+                    shadowRadius,
+                    shadowDx,
+                    shadowDy,
+                    shadowColor,
+                    textColorStateList,
+                    hintColorStateList,
+                    resolvedHighlightColor,
+                    textSize,
+                    typeface,
+                    textStyle,
+                    textAlignment,
+                    gravity,
+                    editable,
+                    cursorVisible,
+                    inputType,
+                    rawInputType,
+                    keyListener,
+                    imeOptions,
+                    privateImeOptions,
+                    InputFiltersComparator(inputFilters),
+                    ellipsize,
+                    multiline,
+                    LineRangeComparator(minLines, maxLines, multiline),
+                    cursorDrawableRes,
+                    movementMethod,
+                    error,
+                    // Note, these are purposefully just comparing the containers, not the
+                    // contents!
+                    mountedView.value,
+                    savedText.value,
+                    savedTextWithoutSpans.value,
+                    savedTextWithSpans.value,
+                    InputBackgroundComparator(inputBackground),
+                    excludeFromIncrementalMount,
+                    transformationMethod,
+                    useTransformationMethod,
+                ) { editText ->
+                  mountedView.value.set(editText)
+
+                  setParams(
+                      editText,
+                      hint,
+                      getBackgroundOrDefault(androidContext, inputBackground),
+                      shadowRadius,
+                      shadowDx,
+                      shadowDy,
+                      shadowColor,
+                      textColorStateList,
+                      hintColorStateList,
+                      resolvedHighlightColor,
+                      textSize,
+                      typeface,
+                      textStyle,
+                      textAlignment,
+                      gravity,
+                      editable,
+                      cursorVisible,
+                      inputType,
+                      rawInputType,
+                      keyListener,
+                      imeOptions,
+                      privateImeOptions,
+                      inputFilters,
+                      multiline,
+                      ellipsize,
+                      minLines,
+                      maxLines,
+                      cursorDrawableRes,
+                      movementMethod,
+                      // onMount happens:
+                      // 1. After initState: savedText = initText.
+                      // 2. After onUnmount: savedText preserved from underlying editText.
+                      savedText.value.get(),
+                      error,
+                      errorDrawable,
+                      false,
+                      importantForAutofill,
+                      autofillHints,
+                      onInputConnection,
+                      transformationMethod,
+                      useTransformationMethod,
+                  )
+                  editText.setDisableAutofill(disableAutofill)
+                  editText.setTextState(savedText.value)
+                  editText.setTextWithoutSpansState(savedTextWithoutSpans.value)
+                  editText.setTextWithSpansState(savedTextWithSpans.value)
+
+                  onUnbind {
+                    if (keyListener != null) {
+                      editText.keyListener = null // Clear any KeyListener
+                      editText.inputType =
+                          TextInputSpec.inputType // Set the input type back to default.
+                    }
+                    editText.movementMethod = null
+                    editText.setTextState(null)
+                    editText.setTextWithoutSpansState(null)
+                    editText.setTextWithSpansState(null)
+                    editText.removeOnWindowFocusChangeListener()
+                    editText.resetSoftInputState()
+                    if (ComponentsConfiguration.enableInputConnectionFix) {
+                      editText.onInputConnection = null
+                    }
+                    editText.privateImeOptions = null
+                    editText.filters = NO_FILTERS
+                    mountedView.value.set(null)
+                  }
+                }
+              }
+
+              withDescription("transformationMethod") {
+                bind(transformationMethod, useTransformationMethod) { content ->
+                  if (useTransformationMethod) {
+                    content.transformationMethod = transformationMethod
+                  }
+                  onUnbind {
+                    if (useTransformationMethod) {
+                      content.transformationMethod = null
+                    }
+                  }
+                }
+              }
+
+              withDescription("layoutParams") {
+                bind(shouldUseMatchParentLayoutParams) { content ->
+                  if (shouldUseMatchParentLayoutParams) {
+                    content.layoutParams = ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT)
+                  }
+                  onUnbind {
+                    // With the flag, MATCH_PARENT is what the view was created with.
+                    if (
+                        shouldUseMatchParentLayoutParams &&
+                            !ComponentsConfiguration.textInputUsesMatchParentLayoutParams
+                    ) {
+                      // The host default, so the pooled view matches a fresh one.
+                      content.layoutParams = ViewGroup.LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
+                    }
+                  }
+                }
+              }
+
+              // OnBind
+              withDescription("text-input-equivalent-bind") {
+                bind(Any()) { editText ->
+                  editText.attachWatchers(textWatchers)
+                  editText.customSelectionActionModeCallback = selectionActionModeCallback
+                  editText.customInsertionActionModeCallback = insertionActionModeCallback
+                  editText.componentContext = context
+                  editText.onTextChanged = onTextChanged
+                  editText.onSelectionChanged = onSelectionChanged
+                  editText.onInputFocusChanged = onInputFocusChanged
+                  editText.onKeyUp = onKeyUp
+                  editText.onKeyPreImeEvent = onKeyPreImeEvent
+                  editText.onEditorAction = onEditorAction
+                  editText.onInputConnection = onInputConnection
+                  editText.onTextPasted = onTextPasted
+                  editText.measureSeqNumber = measureSeqNumber
+
+                  onUnbind {
+                    editText.detachWatchers()
+                    editText.componentContext = null
+                    editText.onTextChanged = null
+                    editText.onSelectionChanged = null
+                    editText.onInputFocusChanged = null
+                    editText.onKeyUp = null
+                    editText.onKeyPreImeEvent = null
+                    editText.onEditorAction = null
+                    editText.onInputConnection = null
+                    editText.customSelectionActionModeCallback = null
+                    editText.customInsertionActionModeCallback = null
+                    editText.onTextPasted = null
+                    editText.measureSeqNumber = null
+                  }
+                }
+              }
+            },
+        style = style,
+    )
   }
 }
 
@@ -470,15 +569,15 @@ internal class TextInputLayoutBehavior(
     private val shadowRadius: Float,
     private val shadowDx: Float,
     private val shadowDy: Float,
-    @ColorInt private val shadowColor: Int,
+    @param:ColorInt private val shadowColor: Int,
     private val textColorStateList: ColorStateList,
     private val hintColorStateList: ColorStateList,
-    @ColorInt private val highlightColor: Int?,
+    @param:ColorInt private val highlightColor: Int?,
     private val textSize: Int,
     private val typeface: Typeface,
     private val textStyle: TextStyle,
     private val textAlignment: Int,
-    @GravityInt private val gravity: Int,
+    @param:GravityInt private val gravity: Int,
     private val editable: Boolean,
     private val cursorVisible: Boolean,
     private val inputType: Int,
@@ -501,7 +600,64 @@ internal class TextInputLayoutBehavior(
     private val measureSeqNumber: Int,
     private val savedText: AtomicReference<CharSequence?>,
     private val savedTextWithoutSpans: AtomicReference<CharSequence?>?,
+    private val savedTextWithSpans: AtomicReference<Spanned?>?,
+    private val useTextWithSpansForMeasure: Boolean,
 ) : LayoutBehavior {
+  /**
+   * Whether the previous measurement can be reused. Written out, rather than Litho's default
+   * field-by-field equals, so the background and input filters compare like the legacy TextInput's
+   * `@ShouldUpdate` instead of by identity: an equal one built on each render keeps the
+   * measurement. A new field must be added here too; `TextInputLayoutBehaviorTest` fails until it
+   * is.
+   */
+  override fun isEquivalentTo(other: LayoutBehavior): Boolean {
+    if (this === other) {
+      return true
+    }
+    if (other !is TextInputLayoutBehavior) {
+      return false
+    }
+    return areObjectsEquivalent(hint, other.hint) &&
+        InputBackgroundComparator(inputBackground) ==
+            InputBackgroundComparator(other.inputBackground) &&
+        shadowRadius == other.shadowRadius &&
+        shadowDx == other.shadowDx &&
+        shadowDy == other.shadowDy &&
+        shadowColor == other.shadowColor &&
+        textColorStateList == other.textColorStateList &&
+        hintColorStateList == other.hintColorStateList &&
+        highlightColor == other.highlightColor &&
+        textSize == other.textSize &&
+        typeface == other.typeface &&
+        textStyle == other.textStyle &&
+        textAlignment == other.textAlignment &&
+        gravity == other.gravity &&
+        editable == other.editable &&
+        cursorVisible == other.cursorVisible &&
+        inputType == other.inputType &&
+        rawInputType == other.rawInputType &&
+        imeOptions == other.imeOptions &&
+        privateImeOptions == other.privateImeOptions &&
+        InputFiltersComparator(inputFilters) == InputFiltersComparator(other.inputFilters) &&
+        multiline == other.multiline &&
+        ellipsize == other.ellipsize &&
+        minLines == other.minLines &&
+        maxLines == other.maxLines &&
+        cursorDrawableRes == other.cursorDrawableRes &&
+        areObjectsEquivalent(error, other.error) &&
+        errorDrawable == other.errorDrawable &&
+        keyListener == other.keyListener &&
+        importantForAutofill == other.importantForAutofill &&
+        areObjectsEquivalent(autofillHints, other.autofillHints) &&
+        disableAutofill == other.disableAutofill &&
+        movementMethod == other.movementMethod &&
+        measureSeqNumber == other.measureSeqNumber &&
+        savedText === other.savedText &&
+        savedTextWithoutSpans === other.savedTextWithoutSpans &&
+        savedTextWithSpans === other.savedTextWithSpans &&
+        useTextWithSpansForMeasure == other.useTextWithSpansForMeasure
+  }
+
   override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
     // When input type has NO_SUGGESTIONS flag set then suggestion spans are removed when
     // setText is called. This causes that SpanWatcher is invoked and TextView listens to
@@ -512,44 +668,45 @@ internal class TextInputLayoutBehavior(
     val inputTypeForMeasure = removeNoSuggestionsFlagIfExists(inputType)
     val rawInputTypeForMeasure = removeNoSuggestionsFlagIfExists(rawInputType)
 
-    val forMeasure =
-        createAndMeasureEditText(
-            MeasureContext(androidContext),
-            sizeConstraints,
-            hint,
-            inputBackground,
-            shadowRadius,
-            shadowDx,
-            shadowDy,
-            shadowColor,
-            textColorStateList,
-            hintColorStateList,
-            highlightColor,
-            textSize,
-            typeface,
-            textStyle,
-            textAlignment,
-            gravity,
-            editable,
-            cursorVisible,
-            inputTypeForMeasure,
-            rawInputTypeForMeasure,
-            keyListener,
-            imeOptions,
-            privateImeOptions,
-            inputFilters,
-            multiline,
-            ellipsize,
-            minLines,
-            maxLines,
-            cursorDrawableRes,
-            error,
-            errorDrawable,
-            importantForAutofill,
-            autofillHints,
-            disableAutofill,
-            savedTextWithoutSpans?.get(),
-        )
+    val forMeasure = createAndMeasureEditText(
+        MeasureContext(androidContext),
+        sizeConstraints,
+        hint,
+        inputBackground,
+        shadowRadius,
+        shadowDx,
+        shadowDy,
+        shadowColor,
+        textColorStateList,
+        hintColorStateList,
+        highlightColor,
+        textSize,
+        typeface,
+        textStyle,
+        textAlignment,
+        gravity,
+        editable,
+        cursorVisible,
+        inputTypeForMeasure,
+        rawInputTypeForMeasure,
+        keyListener,
+        imeOptions,
+        privateImeOptions,
+        inputFilters,
+        multiline,
+        ellipsize,
+        minLines,
+        maxLines,
+        cursorDrawableRes,
+        error,
+        errorDrawable,
+        importantForAutofill,
+        autofillHints,
+        disableAutofill,
+        savedTextWithoutSpans?.get(),
+        savedTextWithSpans?.get(),
+        useTextWithSpansForMeasure,
+    )
 
     return PrimitiveLayoutResult(
         height = forMeasure.measuredHeight,
@@ -559,7 +716,8 @@ internal class TextInputLayoutBehavior(
               0
             } else {
               min(sizeConstraints.maxWidth, forMeasure.measuredWidth)
-            })
+            },
+    )
   }
 }
 
@@ -619,8 +777,15 @@ internal fun createAndMeasureEditText(
     autofillHints: Array<String?>?,
     disableAutofill: Boolean,
     textWithoutSpans: CharSequence?,
+    textWithSpans: Spanned?,
+    useTextWithSpansForMeasure: Boolean,
 ): EditText {
-  val textToMeasure = textWithoutSpans
+  val textToMeasure =
+      if (useTextWithSpansForMeasure) {
+        textWithSpans
+      } else {
+        textWithoutSpans
+      }
 
   val forMeasure = ForMeasureEditText(context)
 
@@ -634,7 +799,8 @@ internal fun createAndMeasureEditText(
               forMeasure.background
             } else {
               inputBackground
-            }),
+            },
+        ),
         shadowRadius,
         shadowDx,
         shadowDy,
@@ -666,7 +832,10 @@ internal fun createAndMeasureEditText(
         errorDrawable,
         true,
         importantForAutofill,
-        autofillHints)
+        autofillHints,
+        null,
+        transformationMethod = null, // Not needed for measurement
+    )
   }
   forMeasure.setDisableAutofill(disableAutofill)
   forMeasure.measure(sizeConstraints.toWidthSpec(), sizeConstraints.toHeightSpec())
@@ -720,12 +889,17 @@ fun setParams(
     errorDrawable: Drawable?,
     isForMeasure: Boolean,
     importantForAutofill: Int,
-    autofillHints: Array<String?>?
+    autofillHints: Array<String?>?,
+    onInputConnection: ((InputConnection?, EditorInfo) -> InputConnection?)?,
+    transformationMethod: TransformationMethod?,
+    useTransformationMethod: Boolean = false,
 ) {
   var inputTypeToSet = inputType
   if (textSize == TextComponentSpec.UNSET) {
     editText.setTextSize(
-        TypedValue.COMPLEX_UNIT_SP, TextComponentSpec.DEFAULT_TEXT_SIZE_SP.toFloat())
+        TypedValue.COMPLEX_UNIT_SP,
+        TextComponentSpec.DEFAULT_TEXT_SIZE_SP.toFloat(),
+    )
   } else {
     editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize.toFloat())
   }
@@ -744,11 +918,22 @@ fun setParams(
     inputTypeToSet = EditorInfo.TYPE_NULL
   }
 
+  // Save current selection before changing inputType
+  val currentSelectionStart = editText.selectionStart
+  val currentSelectionEnd = editText.selectionEnd
+  val hadSelection = currentSelectionStart >= 0 && currentSelectionEnd >= 0
+
+  // Set transformationMethod BEFORE inputType so the inputType setter can override
+  // for callers that have password flags in inputType (non-gated path)
+  if (useTransformationMethod) {
+    editText.transformationMethod = transformationMethod
+  }
+
   if (rawInputType != EditorInfo.TYPE_NULL) {
     editText.setRawInputType(rawInputType)
   } else {
     // Only set inputType if rawInputType is not specified.
-    setInputTypeAndKeyListenerIfChanged(editText, inputTypeToSet, keyListener)
+    setInputTypeAndKeyListenerIfChanged(editText, inputTypeToSet, keyListener, onInputConnection)
   }
 
   // Needs to be set before the text so it would apply to the current text
@@ -821,6 +1006,15 @@ fun setParams(
     if (!isForMeasure) {
       editText.setSelection(editText.text.toString().length)
     }
+  } else if (!isForMeasure && hadSelection) {
+    // Restore selection after inputType change if text didn't change
+    val textLength = editText.text.length
+    val restoredStart = min(currentSelectionStart, textLength)
+    val restoredEnd = min(currentSelectionEnd, textLength)
+    editText.setSelection(
+        restoredStart,
+        if (restoredEnd < restoredStart) restoredStart else restoredEnd,
+    )
   }
 
   Api26Utils.setAutoFillProps(editText, importantForAutofill, autofillHints)
@@ -829,10 +1023,18 @@ fun setParams(
 private fun setInputTypeAndKeyListenerIfChanged(
     editText: EditText,
     inputType: Int,
-    keyListener: KeyListener?
+    keyListener: KeyListener?,
+    onInputConnection: ((InputConnection?, EditorInfo) -> InputConnection?)?,
 ) {
   // Avoid redundant call to InputMethodManager#restartInput.
   if (inputType != editText.inputType) {
+    // CRITICAL: Set inputConnectionEventHandler BEFORE setParams to avoid race condition
+    // When setParams changes inputType, Android may immediately call onCreateInputConnection
+    // If inputConnectionEventHandler is null at that moment, the custom InputConnection won't be
+    // created
+    if (ComponentsConfiguration.enableInputConnectionFix) {
+      (editText as? EditTextWithEventHandlers)?.onInputConnection = onInputConnection
+    }
     editText.inputType = inputType
   }
 
@@ -856,6 +1058,7 @@ internal class EditTextWithEventHandlers(context: Context?) :
   var measureSeqNumber: State<Int>? = null
   private var textState: AtomicReference<CharSequence?>? = null
   private var textWithoutSpansState: AtomicReference<CharSequence?>? = null
+  private var textWithSpansState: AtomicReference<Spanned?>? = null
   private var textLineCount = UNMEASURED_LINE_COUNT
   private var textWatcher: TextWatcher? = null
   private var isSoftInputRequested = false
@@ -875,6 +1078,17 @@ internal class EditTextWithEventHandlers(context: Context?) :
     super.onTextChanged(text, start, lengthBefore, lengthAfter)
     textState?.set(text)
     textWithoutSpansState?.set(text.toString())
+    // SpannableString IS Spannable; SpannedString is NOT. Some Samsung devices invoke
+    // sendSpanChanged during construction and fail the (Spannable) this cast on SpannedString —
+    // so prefer SpannableString when the gate is on. See logview MID
+    // d449ed32ffc1c654c444e8fd18765ff1.
+    textWithSpansState?.set(
+        if (ComponentsConfiguration.useSpannableStringInTextInput) {
+          SpannableString(text)
+        } else {
+          text.toSpanned()
+        },
+    )
 
     onTextChanged?.invoke(this@EditTextWithEventHandlers, text.toString())
 
@@ -884,10 +1098,15 @@ internal class EditTextWithEventHandlers(context: Context?) :
     }
     // Line count of changed text.
     val lineCount = lineCount
-    if (this.textLineCount != UNMEASURED_LINE_COUNT &&
-        (this.textLineCount != lineCount) &&
-        (componentContext != null)) {
+    if (
+        this.textLineCount != UNMEASURED_LINE_COUNT &&
+            (this.textLineCount != lineCount) &&
+            (componentContext != null)
+    ) {
       measureSeqNumber?.update { it + 1 }
+      // MATCH_PARENT params mean edits request no layout, so nothing measures the view (which
+      // refreshes textLineCount) before this async remeasure mounts.
+      if (layoutParams?.width == MATCH_PARENT) textLineCount = lineCount
     }
   }
 
@@ -915,10 +1134,8 @@ internal class EditTextWithEventHandlers(context: Context?) :
   }
 
   override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
-    if (onKeyUp != null) {
-      onKeyUp?.invoke(event, keyCode) ?: super.onKeyUp(keyCode, event)
-    }
-    return super.onKeyUp(keyCode, event)
+    // As KeyUpEvent documents: true consumes the key; false lets the EditText handle it as well.
+    return onKeyUp?.invoke(event, keyCode) == true || super.onKeyUp(keyCode, event)
   }
 
   override fun onKeyPreIme(keyCode: Int, event: KeyEvent): Boolean {
@@ -957,6 +1174,11 @@ internal class EditTextWithEventHandlers(context: Context?) :
   /** Sets reference to keep current text without spans up to date. */
   fun setTextWithoutSpansState(savedTextWithoutSpans: AtomicReference<CharSequence?>?) {
     textWithoutSpansState = savedTextWithoutSpans
+  }
+
+  /** Sets reference to keep current text with spans up to date. */
+  fun setTextWithSpansState(savedTextWithSpans: AtomicReference<Spanned?>?) {
+    textWithSpansState = savedTextWithSpans
   }
 
   fun attachWatchers(textWatchers: List<TextWatcher?>?) {
@@ -1005,13 +1227,12 @@ internal class EditTextWithEventHandlers(context: Context?) :
     } else {
       // We need to wait until the window gets focus.
       // https://developer.android.com/develop/ui/views/touch-and-input/keyboard-input/visibility#ShowReliably
-      onWindowFocusChangeListener =
-          ViewTreeObserver.OnWindowFocusChangeListener { hasFocus ->
-            if (hasFocus) {
-              showKeyboard(imm)
-              removeOnWindowFocusChangeListener()
-            }
-          }
+      onWindowFocusChangeListener = ViewTreeObserver.OnWindowFocusChangeListener { hasFocus ->
+        if (hasFocus) {
+          showKeyboard(imm)
+          removeOnWindowFocusChangeListener()
+        }
+      }
       viewTreeObserver.addOnWindowFocusChangeListener(onWindowFocusChangeListener)
     }
   }
@@ -1044,10 +1265,17 @@ internal class EditTextWithEventHandlers(context: Context?) :
     isSoftInputRequested = false
   }
 
+  fun resetSoftInputState() {
+    isSoftInputRequested = false
+  }
+
   fun performAccessibilityFocus() {
     try {
       ViewCompat.performAccessibilityAction(
-          this, AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS, null)
+          this,
+          AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS,
+          null,
+      )
     } catch (npe: NullPointerException) {
       // do nothing
     }
@@ -1096,7 +1324,16 @@ internal class ForMeasureEditText(context: Context?) : EditText(context) {
 
   override fun setBackground(background: Drawable?) {
     background?.mutate()
-    super.setBackground(background)
+    try {
+      super.setBackground(background)
+    } catch (e: NullPointerException) {
+      // DrawableContainer$DrawableContainerState.createAllFutures() can NPE when a
+      // ConstantState entry is null due to a race condition between concurrent background-thread
+      // ForMeasureEditText constructions sharing the same default EditText drawable state.
+      // Falling back to null background is safe because this view is only used for measurement
+      // and the background is re-applied immediately after construction via setParams().
+      super.setBackground(null)
+    }
   }
 
   override fun clearFocus() {
@@ -1122,7 +1359,7 @@ private object Api26Utils {
   fun setAutoFillProps(
       editText: EditText,
       importantForAutofill: Int,
-      autofillHints: Array<String?>?
+      autofillHints: Array<String?>?,
   ) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       editText.importantForAutofill = importantForAutofill
@@ -1138,15 +1375,56 @@ private object Api26Utils {
 private class SafeSetSpanEditableFactory : Editable.Factory() {
   override fun newEditable(source: CharSequence): Editable {
     return object : SpannableStringBuilder(source) {
+      /**
+       * Re-entrancy guard to prevent cascading emoji processing (T268141878).
+       *
+       * When super.setSpan() is called, Android's TypefaceEmojiUtilBase may intercept the call to
+       * process emoji characters. This processing calls setSpan() again for each EmojiSpan it
+       * creates, which re-enters this override and can trigger another round of emoji processing.
+       * On slow devices with emoji-heavy text, this cascading behavior blocks the main thread
+       * for >5 seconds, causing an ANR.
+       *
+       * The guard ensures that re-entrant setSpan() calls (from emoji processing) go directly to
+       * super.setSpan() without additional overhead or risk of further cascading.
+       */
+      private var isSettingSpan = false
+
       override fun setSpan(what: Any?, start: Int, end: Int, flags: Int) {
+        if (isSettingSpan) {
+          // Re-entrant call (e.g. from TypefaceEmojiUtilBase emoji processing).
+          // Delegate directly to super to avoid cascading emoji reprocessing.
+          super.setSpan(what, start, end, flags)
+          return
+        }
         /*
           Fix for a crash in the Android Framework when deleting a character while the spell checker popup shows.
           Prevent setting a SuggestionRangeSpan with end past the Editable length using Math.min
           (https://issuetracker.google.com/issues/314288203)
         */
+        isSettingSpan = true
         try {
-          val spanEnd = if (shouldUseSafeSpanEnd(what)) min(end, length) else end
-          super.setSpan(what, start, spanEnd, flags)
+          val spanStart: Int
+          val spanEnd: Int
+          if (shouldClampSelectionMarkerBounds(what)) {
+            spanStart = min(max(0, start), length)
+            spanEnd = max(spanStart, min(end, length))
+            if (spanStart != start || spanEnd != end) {
+              DebugInfoReporter.report(
+                  category = "TextInputSetSpan:SelectionMarkerBoundsClamped",
+                  level = LogLevel.WARNING,
+              ) {
+                this["originalStart"] = start
+                this["originalEnd"] = end
+                this["spanClass"] = what?.javaClass?.name ?: "null"
+                this["flags"] = flags
+                this["length"] = length
+              }
+            }
+          } else {
+            spanStart = start
+            spanEnd = if (shouldUseSafeSpanEnd(what)) min(end, length) else end
+          }
+          super.setSpan(what, spanStart, spanEnd, flags)
         } catch (e: IndexOutOfBoundsException) {
           /*
            Catching and rethrowing IndexOutOfBoundsExceptions with additional info. One known source
@@ -1155,13 +1433,26 @@ private class SafeSetSpanEditableFactory : Editable.Factory() {
           */
           throw IndexOutOfBoundsException(
               String.format(
-                  "%s | span=%s | flags=%d", e.message, what?.javaClass ?: "Unknown", flags))
+                  "%s | span=%s | flags=%d",
+                  e.message,
+                  what?.javaClass ?: "Unknown",
+                  flags,
+              ),
+          )
+        } finally {
+          isSettingSpan = false
         }
       }
 
       private fun shouldUseSafeSpanEnd(span: Any?): Boolean {
         return (SuggestionRangeSpanApi33Util.isSuggestionRangeSpan(span) &&
             ComponentsConfiguration.useSafeSpanEndInTextInputSpec)
+      }
+
+      // Orthogonal to shouldUseSafeSpanEnd to preserve D54969262's narrow scope.
+      private fun shouldClampSelectionMarkerBounds(span: Any?): Boolean {
+        return ComponentsConfiguration.clampSelectionMarkerBoundsInTextInput &&
+            (span === Selection.SELECTION_START || span === Selection.SELECTION_END)
       }
     }
   }
@@ -1189,18 +1480,38 @@ class TextInputController internal constructor() {
   private var editText: EditTextWithEventHandlers? = null
   private var savedText: AtomicReference<CharSequence?>? = null
   private var savedTextWithoutSpans: AtomicReference<CharSequence?>? = null
+  private var savedTextWithSpans: AtomicReference<Spanned?>? = null
   private var measureSeqNumber: State<Int>? = null
+  private var pendingFocus: Boolean? = null
+
+  internal fun attachState(
+      savedText: AtomicReference<CharSequence?>,
+      savedTextWithoutSpans: AtomicReference<CharSequence?>?,
+      savedTextWithSpans: AtomicReference<Spanned?>?,
+      measureSeqNumber: State<Int>,
+  ) {
+    this.savedText = savedText
+    this.savedTextWithoutSpans = savedTextWithoutSpans
+    this.savedTextWithSpans = savedTextWithSpans
+    this.measureSeqNumber = measureSeqNumber
+  }
 
   internal fun bind(
       editText: EditTextWithEventHandlers,
       savedText: AtomicReference<CharSequence?>,
       savedTextWithoutSpans: AtomicReference<CharSequence?>?,
+      savedTextWithSpans: AtomicReference<Spanned?>?,
       measureSeqNumber: State<Int>?,
   ) {
     this.editText = editText
     this.savedText = savedText
     this.savedTextWithoutSpans = savedTextWithoutSpans
+    this.savedTextWithSpans = savedTextWithSpans
     this.measureSeqNumber = measureSeqNumber
+    pendingFocus?.let { withKeyboard ->
+      pendingFocus = null
+      if (withKeyboard) requestFocus() else requestFocusWithoutKeyboard()
+    }
   }
 
   internal fun unbind() {
@@ -1212,15 +1523,27 @@ class TextInputController internal constructor() {
     if (view != null) {
       if (view.requestFocus()) {
         view.setSoftInputVisibility(true)
-        // Force request of accessibility focus because in some cases if something else is
-        // requesting accessibility focus, it can lead to race condition with taking the focus from
-        // view.requestFocus and input will not be highlighted by TalkBack
         view.performAccessibilityFocus()
       }
+    } else {
+      pendingFocus = true
+    }
+  }
+
+  fun requestFocusWithoutKeyboard() {
+    val view = editText
+    if (view != null) {
+      if (view.requestFocus()) {
+        view.performAccessibilityFocus()
+        view.setSoftInputVisibility(false)
+      }
+    } else {
+      pendingFocus = false
     }
   }
 
   fun clearFocus() {
+    pendingFocus = null
     val view = editText
     if (view != null) {
       view.clearFocus()
@@ -1252,7 +1575,8 @@ class TextInputController internal constructor() {
   }
 
   fun setText(text: CharSequence?) {
-    val shouldRemeasure = setTextEditText(savedText, savedTextWithoutSpans, text)
+    val shouldRemeasure =
+        setTextEditText(savedText, savedTextWithoutSpans, savedTextWithSpans, text)
     if (shouldRemeasure) {
       remeasureForUpdatedTextSync()
     }
@@ -1276,8 +1600,12 @@ class TextInputController internal constructor() {
             SpannableStringBuilder()
                 .append(currentSavedText.subSequence(0, startIndex))
                 .append(text)
-                .append(currentSavedText.subSequence(endIndex, currentSavedText.length)))
-    savedText?.get()?.let { savedTextWithoutSpans?.set(it.toString()) }
+                .append(currentSavedText.subSequence(endIndex, currentSavedText.length)),
+    )
+    savedText?.get()?.let { retrievedText ->
+      savedTextWithoutSpans?.set(retrievedText.toString())
+      savedTextWithSpans?.set(retrievedText.toSpanned())
+    }
 
     remeasureForUpdatedTextSync()
   }
@@ -1321,14 +1649,16 @@ class TextInputController internal constructor() {
   private fun setTextEditText(
       savedText: AtomicReference<CharSequence?>?,
       savedTextWithoutSpans: AtomicReference<CharSequence?>?,
-      text: CharSequence?
+      savedTextWithSpans: AtomicReference<Spanned?>?,
+      text: CharSequence?,
   ): Boolean {
     assertMainThread()
 
     val view = editText
     if (view == null) {
       savedText?.set(text)
-      savedTextWithoutSpans?.set(text.toString())
+      savedTextWithoutSpans?.set(text?.toString())
+      savedTextWithSpans?.set(text?.toSpanned())
       return true
     }
 
@@ -1349,7 +1679,7 @@ class TextInputController internal constructor() {
 private class LineRangeComparator(
     private val minLines: Int,
     private val maxLines: Int,
-    private val multiline: Boolean
+    private val multiline: Boolean,
 ) {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
@@ -1390,6 +1720,15 @@ private class InputBackgroundComparator(private val inputBackground: Drawable?) 
     val previousBackground = inputBackground
     val nextBackground = other.inputBackground
 
+    if (previousBackground === nextBackground) {
+      return true
+    }
+    // The default is a transparent ColorDrawable, but it's measured with the themed EditText
+    // background and its padding, so it only matches itself.
+    if (previousBackground === UNSET_DRAWABLE || nextBackground === UNSET_DRAWABLE) {
+      return false
+    }
+
     if (previousBackground == null && nextBackground != null) {
       return false
     } else if (previousBackground != null && nextBackground == null) {
@@ -1404,8 +1743,10 @@ private class InputBackgroundComparator(private val inputBackground: Drawable?) 
       } else {
         // The best we can do here is compare getConstantState. This can result in spurious updates;
         // they might be different objects representing the same drawable. But it's the best we can
-        // do without actually comparing bitmaps (which is too expensive).
-        if (previousBackground.constantState != nextBackground.constantState) {
+        // do without actually comparing bitmaps (which is too expensive). A drawable without a
+        // ConstantState says nothing about what it draws or its padding, so it only matches itself.
+        val previousState = constantStateOrNull(previousBackground) ?: return false
+        if (previousState != constantStateOrNull(nextBackground)) {
           return false
         }
       }
@@ -1421,7 +1762,7 @@ private class InputBackgroundComparator(private val inputBackground: Drawable?) 
 
 /** A class that exists only to have a custom compare logic for inputFilters. */
 private class InputFiltersComparator(
-    private val inputFilters: List<@JvmSuppressWildcards InputFilter?>?
+    private val inputFilters: List<@JvmSuppressWildcards InputFilter?>?,
 ) {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
@@ -1466,6 +1807,18 @@ private class InputFiltersComparator(
     return inputFilters?.hashCode() ?: 0
   }
 }
+
+/**
+ * This also runs on the layout thread, where getConstantState() on a DrawableContainer can NPE
+ * while another thread creates its children's states (see [ForMeasureEditText.setBackground]).
+ * Treating that as "no state" makes the input measure again rather than crash.
+ */
+private fun constantStateOrNull(drawable: Drawable): Drawable.ConstantState? =
+    try {
+      drawable.constantState
+    } catch (e: NullPointerException) {
+      null
+    }
 
 /**
  * A custom context that is used only during TextInput component measurement.

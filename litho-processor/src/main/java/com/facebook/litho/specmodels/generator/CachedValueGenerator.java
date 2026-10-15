@@ -121,12 +121,13 @@ public class CachedValueGenerator {
       String cachedValueName,
       int methodIndex) {
     final TypeName cachedValueType = onCalculateCachedValueMethod.returnType;
+    final ClassName globalKeyClass = ClassName.get("com.facebook.litho", "GlobalKey");
     MethodSpec.Builder methodSpec =
         MethodSpec.methodBuilder(getCachedValueGetterName(cachedValueName))
             .addModifiers(Modifier.PRIVATE)
             .addParameter(specModel.getContextClass(), "c")
             .returns(cachedValueType)
-            .addStatement("String globalKey = c.getGlobalKey()");
+            .addStatement("$T globalKey = c.getGlobalKey()", globalKeyClass);
 
     final CodeBlock.Builder codeBlock = CodeBlock.builder();
     codeBlock
@@ -149,14 +150,19 @@ public class CachedValueGenerator {
 
     final int paramSize = onCalculateCachedValueMethod.methodParams.size();
 
+    final ClassName hookGlobalKeyClass = ClassName.get("com.facebook.litho", "HookGlobalKey");
     methodSpec
         .addCode(codeBlock.build())
         .addStatement(
-            "$T $L = ($T) c.getCachedValue(globalKey, $L, inputs)",
+            "$T cacheKey = $T.createForResolveScope(globalKey, $L)",
+            hookGlobalKeyClass,
+            hookGlobalKeyClass,
+            methodIndex)
+        .addStatement(
+            "$T $L = ($T) c.getCachedValue(cacheKey, inputs)",
             cachedValueType.box(),
             cachedValueName,
-            cachedValueType.box(),
-            methodIndex)
+            cachedValueType.box())
         .beginControlFlow("if ($L == null)", cachedValueName);
 
     final CodeBlock.Builder delegation = CodeBlock.builder();
@@ -190,7 +196,7 @@ public class CachedValueGenerator {
 
     methodSpec
         .addCode(delegation.unindent().build())
-        .addStatement("c.putCachedValue(globalKey, $L, inputs, $L)", methodIndex, cachedValueName)
+        .addStatement("c.putCachedValue(cacheKey, inputs, $L)", cachedValueName)
         .endControlFlow()
         .addStatement("return $L", cachedValueName);
 
@@ -354,7 +360,7 @@ public class CachedValueGenerator {
 
     @Override
     public TypeName getTypeName() {
-      return ClassName.bestGuess("String");
+      return ClassName.get("com.facebook.litho", "GlobalKey");
     }
 
     @Override

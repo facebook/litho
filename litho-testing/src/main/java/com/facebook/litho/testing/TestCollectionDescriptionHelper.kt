@@ -45,7 +45,7 @@ object TestCollectionDescriptionHelper {
         "\n└── index ${item.index}: Collection Item (id: ${item.id}, visibility: ${getVisibility(item)})"
 
     val itemDescription =
-        if (item.renderInfo.rendersView()) getViewInfo(item, item.recyclerView)
+        if (item.renderInfo?.rendersView() == true) getViewInfo(item, item.recyclerView)
         else getComponentInfo(item)
     return "$testCollectionItemHeader${itemDescription}"
   }
@@ -53,14 +53,13 @@ object TestCollectionDescriptionHelper {
   private fun getComponentInfo(item: TestCollectionItem): String {
     val debugComponent =
         DebugComponent.getRootInstance(item.componentTree)
-            ?: return fallbackComponentPrintInfo(item.component)
+            ?: return item.component?.let { fallbackComponentPrintInfo(it) } ?: ""
 
     return LithoViewTestHelper.rootInstanceToString(debugComponent, false, ITEM_STARTING_DEPTH)
   }
 
   private fun fallbackComponentPrintInfo(component: Component): String {
-    // This can be null when working with a mock, so we fallback in that case to the class name info
-    val componentString = component.toString() ?: component::class.java.simpleName
+    val componentString = component.toString()
     return "\n$DEPTH_3_LEADING_SPACE$componentString{${component.hashCode()}}\n"
   }
 

@@ -16,12 +16,12 @@
 
 package com.facebook.samples.litho.documentation.treeprops
 
-import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.TreePropProvider
 import com.facebook.litho.getTreeProp
+import com.facebook.litho.layout.flexbox.Column
 
 // start_example
 class BottomGroupKComponent : KComponent() {

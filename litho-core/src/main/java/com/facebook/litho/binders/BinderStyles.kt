@@ -75,7 +75,7 @@ inline fun Style.onBindWithDescription(
  * @param deps the dependencies that will be compared to check if the binder should be rerun.
  * @param func the [RenderUnit.Binder] to be used to bind the model to the View content.
  */
-inline fun Style.onBind(vararg deps: Any?, func: BindFunc<Any>): Style =
+fun Style.onBind(vararg deps: Any?, func: BindFunc<Any>): Style =
     this +
         ObjectStyleItem(
             BinderObjectField.MOUNT_BINDER,
@@ -84,13 +84,12 @@ inline fun Style.onBind(vararg deps: Any?, func: BindFunc<Any>): Style =
 
 @Deprecated(ON_BIND_NO_DEPS_ERROR, level = DeprecationLevel.ERROR)
 @Suppress("unused", "UNUSED_PARAMETER")
-inline fun Style.onBindWithDescription(name: String, func: BindFunc<Any>): Style =
+fun Style.onBindWithDescription(name: String, func: BindFunc<Any>): Style =
     throw IllegalArgumentException(ON_BIND_NO_DEPS_ERROR)
 
 @Deprecated(ON_BIND_NO_DEPS_ERROR, level = DeprecationLevel.ERROR)
 @Suppress("unused", "UNUSED_PARAMETER")
-inline fun Style.onBind(func: BindFunc<Any>): Style =
-    throw IllegalArgumentException(ON_BIND_NO_DEPS_ERROR)
+fun Style.onBind(func: BindFunc<Any>): Style = throw IllegalArgumentException(ON_BIND_NO_DEPS_ERROR)
 
 /**
  * Use this [Style] instead of [onBind] to force the binder to be applied on a [View]; for example
@@ -144,7 +143,7 @@ inline fun Style.onBindViewWithDescription(
  * @param deps the dependencies that will be compared to check if the binder should be rerun.
  * @param func the [RenderUnit.Binder] to be used to bind the model to the View content.
  */
-inline fun Style.onBindView(vararg deps: Any?, func: BindFunc<View>): Style =
+fun Style.onBindView(vararg deps: Any?, func: BindFunc<View>): Style =
     this +
         ObjectStyleItem(
             BinderObjectField.VIEW_MOUNT_BINDER,
@@ -153,12 +152,12 @@ inline fun Style.onBindView(vararg deps: Any?, func: BindFunc<View>): Style =
 
 @Deprecated(ON_BIND_NO_DEPS_ERROR, level = DeprecationLevel.ERROR)
 @Suppress("unused", "UNUSED_PARAMETER")
-inline fun Style.onBindViewWithDescription(name: String, func: BindFunc<View>): Style =
+fun Style.onBindViewWithDescription(name: String, func: BindFunc<View>): Style =
     throw IllegalArgumentException(ON_BIND_NO_DEPS_ERROR)
 
 @Deprecated(ON_BIND_NO_DEPS_ERROR, level = DeprecationLevel.ERROR)
 @Suppress("unused", "UNUSED_PARAMETER")
-inline fun Style.onBindView(func: BindFunc<View>): Style =
+fun Style.onBindView(func: BindFunc<View>): Style =
     throw IllegalArgumentException(ON_BIND_NO_DEPS_ERROR)
 
 /**
@@ -217,7 +216,7 @@ inline fun Style.onBindHostViewWithDescription(
  * @param deps the dependencies that will be compared to check if the binder should be rerun.
  * @param func the [RenderUnit.Binder] to be used to bind the model to the View content.
  */
-inline fun Style.onBindHostView(vararg deps: Any?, func: BindFunc<View>): Style =
+fun Style.onBindHostView(vararg deps: Any?, func: BindFunc<View>): Style =
     this +
         ObjectStyleItem(
             BinderObjectField.HOST_VIEW_MOUNT_BINDER,
@@ -226,12 +225,12 @@ inline fun Style.onBindHostView(vararg deps: Any?, func: BindFunc<View>): Style 
 
 @Deprecated(ON_BIND_NO_DEPS_ERROR, level = DeprecationLevel.ERROR)
 @Suppress("unused", "UNUSED_PARAMETER")
-inline fun Style.onBindHostViewWithDescription(name: String, func: BindFunc<View>): Style =
+fun Style.onBindHostViewWithDescription(name: String, func: BindFunc<View>): Style =
     throw IllegalArgumentException(ON_BIND_NO_DEPS_ERROR)
 
 @Deprecated(ON_BIND_NO_DEPS_ERROR, level = DeprecationLevel.ERROR)
 @Suppress("unused", "UNUSED_PARAMETER")
-inline fun Style.onBindHostView(func: BindFunc<View>): Style =
+fun Style.onBindHostView(func: BindFunc<View>): Style =
     throw IllegalArgumentException(ON_BIND_NO_DEPS_ERROR)
 
 /**
@@ -261,9 +260,9 @@ inline fun Style.onBindHostView(func: BindFunc<View>): Style =
  * @param binder the [RenderUnit.Binder] to be used to bind the model to the View content.
  * @param model the current model to bind.
  */
-inline fun <ModelT, BindDataT : Any> Style.viewBinder(
+fun <ModelT, BindDataT : Any> Style.viewBinder(
     binder: RenderUnit.Binder<ModelT, View, BindDataT>,
-    model: ModelT
+    model: ModelT,
 ): Style =
     this + ObjectStyleItem(BinderObjectField.VIEW_MOUNT_BINDER, createDelegateBinder(model, binder))
 
@@ -273,9 +272,8 @@ inline fun <ModelT, BindDataT : Any> Style.viewBinder(
  *
  * @param binder the [RenderUnit.Binder] to be used to bind the model to the View content.
  */
-inline fun <BindDataT : Any> Style.viewBinder(
-    binder: RenderUnit.Binder<Unit, View, BindDataT>
-): Style = this.viewBinder(binder, model = Unit)
+fun <BindDataT : Any> Style.viewBinder(binder: RenderUnit.Binder<Unit, View, BindDataT>): Style =
+    this.viewBinder(binder, model = Unit)
 
 @Deprecated("use parameterized viewBinder methods above")
 fun Style.viewBinder(binder: DelegateBinder<*, View, Any>): Style =
@@ -292,7 +290,7 @@ internal enum class BinderObjectField : StyleItemField {
 @DataClassGenerate
 internal data class ObjectStyleItem(
     override val field: BinderObjectField,
-    override val value: Any?
+    override val value: Any?,
 ) : StyleItem<Any?> {
   @Suppress("UNCHECKED_CAST")
   override fun applyCommonProps(context: ComponentContext, commonProps: CommonProps) {
@@ -315,7 +313,7 @@ internal data class ObjectStyleItem(
 internal class DeferredBinderData(
     val description: (() -> String)?,
     val deps: Array<*>,
-    val func: BindFunc<View>
+    val func: BindFunc<View>,
 )
 
 /**

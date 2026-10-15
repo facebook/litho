@@ -18,6 +18,7 @@ package com.facebook.rendercore
 
 import android.view.View
 import android.view.View.MeasureSpec
+import com.facebook.rendercore.SizeConstraints.Companion.Infinity
 
 /** Creates [SizeConstraints] from the provided values. */
 fun SizeConstraints(
@@ -27,7 +28,8 @@ fun SizeConstraints(
     maxHeight: Int = SizeConstraints.Infinity,
 ): SizeConstraints {
   return SizeConstraints(
-      SizeConstraints.Helper.sizeConstraints(minWidth, maxWidth, minHeight, maxHeight))
+      SizeConstraints.Helper.sizeConstraints(minWidth, maxWidth, minHeight, maxHeight),
+  )
 }
 
 /**
@@ -73,7 +75,7 @@ val SizeConstraints.MaxPossibleHeightValue: Int
   get() = SizeConstraints.Helper.Mode.forRange(minHeight, maxHeight).supportedRange.last
 
 /** Returns true if the size fits within the given constraints, otherwise returns false. */
-fun Size.fitsWithin(sizeConstraints: SizeConstraints): Boolean {
+fun IntSize.fitsWithin(sizeConstraints: SizeConstraints): Boolean {
   return (width in sizeConstraints.minWidth..sizeConstraints.maxWidth) &&
       (height in sizeConstraints.minHeight..sizeConstraints.maxHeight)
 }
@@ -85,7 +87,7 @@ fun Size.fitsWithin(sizeConstraints: SizeConstraints): Boolean {
  * Knowing that a Size that was measured with one SizeConstraints wouldn't change if it was measured
  * with other SizeConstraints may be used to avoid unnecessary measurements.
  */
-fun SizeConstraints.areCompatible(otherConstraints: SizeConstraints, size: Size): Boolean {
+fun SizeConstraints.areCompatible(otherConstraints: SizeConstraints, size: IntSize): Boolean {
   // exactly the same constraints, return early
   if (encodedValue == otherConstraints.encodedValue) {
     return true
@@ -182,7 +184,7 @@ value class SizeConstraints internal constructor(val encodedValue: Long) {
       minWidth: Int = this.minWidth,
       maxWidth: Int = this.maxWidth,
       minHeight: Int = this.minHeight,
-      maxHeight: Int = this.maxHeight
+      maxHeight: Int = this.maxHeight,
   ): SizeConstraints {
     return SizeConstraints(minWidth, maxWidth, minHeight, maxHeight)
   }
@@ -202,6 +204,8 @@ value class SizeConstraints internal constructor(val encodedValue: Long) {
      */
     const val Infinity: Int = Int.MAX_VALUE
 
+    val Unspecified: SizeConstraints = SizeConstraints(maxWidth = Infinity, maxHeight = Infinity)
+
     /**
      * Creates [SizeConstraints] with exact size in both dimension using the provided width and
      * height.
@@ -212,12 +216,12 @@ value class SizeConstraints internal constructor(val encodedValue: Long) {
 
     /** Creates [SizeConstraints] with exact width and unbounded height. */
     fun fixedWidth(width: Int): SizeConstraints {
-      return SizeConstraints(width, width, 0, Infinity)
+      return SizeConstraints(width, width, maxHeight = Infinity)
     }
 
     /** Creates [SizeConstraints] with exact height and unbounded width. */
     fun fixedHeight(height: Int): SizeConstraints {
-      return SizeConstraints(0, Infinity, height, height)
+      return SizeConstraints(maxWidth = Infinity, minHeight = height, maxHeight = height)
     }
 
     /** Creates encoded [Long] from the provided width and height [View.MeasureSpec]s. */
@@ -349,35 +353,43 @@ value class SizeConstraints internal constructor(val encodedValue: Long) {
     ) {
       if (minWidth < 0) {
         throw IllegalArgumentException(
-            "minWidth must be >= 0, but was: $minWidth. minWidth=$minWidth, maxWidth=$maxWidth, minHeight=$minHeight, maxHeight=$maxHeight")
+            "minWidth must be >= 0, but was: $minWidth. minWidth=$minWidth, maxWidth=$maxWidth, minHeight=$minHeight, maxHeight=$maxHeight",
+        )
       }
       if (minHeight < 0) {
         throw IllegalArgumentException(
-            "minHeight must be >= 0, but was: $minHeight. minWidth=$minWidth, maxWidth=$maxWidth, minHeight=$minHeight, maxHeight=$maxHeight")
+            "minHeight must be >= 0, but was: $minHeight. minWidth=$minWidth, maxWidth=$maxWidth, minHeight=$minHeight, maxHeight=$maxHeight",
+        )
       }
       if (minWidth > maxSupportedMinWidth && minWidth != SizeConstraints.Infinity) {
         throw IllegalArgumentException(
-            "minWidth must be <= ${maxSupportedMinWidth}, but was: $minWidth. Components this big may affect performance and lead to out of memory errors. minWidth=$minWidth, maxWidth=$maxWidth, minHeight=$minHeight, maxHeight=$maxHeight")
+            "minWidth must be <= ${maxSupportedMinWidth}, but was: $minWidth. Components this big may affect performance and lead to out of memory errors. minWidth=$minWidth, maxWidth=$maxWidth, minHeight=$minHeight, maxHeight=$maxHeight",
+        )
       }
       if (maxWidth > maxSupportedMaxWidth && maxWidth != SizeConstraints.Infinity) {
         throw IllegalArgumentException(
-            "maxWidth must be <= ${maxSupportedMaxWidth}, but was: $maxWidth. Components this big may affect performance and lead to out of memory errors. minWidth=$minWidth, maxWidth=$maxWidth, minHeight=$minHeight, maxHeight=$maxHeight")
+            "maxWidth must be <= ${maxSupportedMaxWidth}, but was: $maxWidth. Components this big may affect performance and lead to out of memory errors. minWidth=$minWidth, maxWidth=$maxWidth, minHeight=$minHeight, maxHeight=$maxHeight",
+        )
       }
       if (minHeight > maxSupportedMinHeight && minHeight != SizeConstraints.Infinity) {
         throw IllegalArgumentException(
-            "minHeight must be <= ${maxSupportedMinHeight}, but was: $minHeight. Components this big may affect performance and lead to out of memory errors. minWidth=$minWidth, maxWidth=$maxWidth, minHeight=$minHeight, maxHeight=$maxHeight")
+            "minHeight must be <= ${maxSupportedMinHeight}, but was: $minHeight. Components this big may affect performance and lead to out of memory errors. minWidth=$minWidth, maxWidth=$maxWidth, minHeight=$minHeight, maxHeight=$maxHeight",
+        )
       }
       if (maxHeight > maxSupportedMaxHeight && maxHeight != SizeConstraints.Infinity) {
         throw IllegalArgumentException(
-            "maxHeight must be <= ${maxSupportedMaxHeight}, but was: $maxHeight. Components this big may affect performance and lead to out of memory errors. minWidth=$minWidth, maxWidth=$maxWidth, minHeight=$minHeight, maxHeight=$maxHeight")
+            "maxHeight must be <= ${maxSupportedMaxHeight}, but was: $maxHeight. Components this big may affect performance and lead to out of memory errors. minWidth=$minWidth, maxWidth=$maxWidth, minHeight=$minHeight, maxHeight=$maxHeight",
+        )
       }
       if (minWidth > maxWidth) {
         throw IllegalArgumentException(
-            "maxWidth must be >= minWidth, but was: maxWidth=$maxWidth; minWidth=$minWidth. minWidth=$minWidth, maxWidth=$maxWidth, minHeight=$minHeight, maxHeight=$maxHeight")
+            "maxWidth must be >= minWidth, but was: maxWidth=$maxWidth; minWidth=$minWidth. minWidth=$minWidth, maxWidth=$maxWidth, minHeight=$minHeight, maxHeight=$maxHeight",
+        )
       }
       if (minHeight > maxHeight) {
         throw IllegalArgumentException(
-            "maxHeight must be >= minHeight, but was: maxHeight=$maxHeight; minHeight=$minHeight. minWidth=$minWidth, maxWidth=$maxWidth, minHeight=$minHeight, maxHeight=$maxHeight")
+            "maxHeight must be >= minHeight, but was: maxHeight=$maxHeight; minHeight=$minHeight. minWidth=$minWidth, maxWidth=$maxWidth, minHeight=$minHeight, maxHeight=$maxHeight",
+        )
       }
     }
 

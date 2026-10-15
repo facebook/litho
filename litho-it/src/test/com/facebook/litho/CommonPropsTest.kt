@@ -29,6 +29,12 @@ import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.TestViewComponent
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.Text
+import com.facebook.rendercore.visibility.FocusedVisibleEvent
+import com.facebook.rendercore.visibility.FullImpressionVisibleEvent
+import com.facebook.rendercore.visibility.InvisibleEvent
+import com.facebook.rendercore.visibility.UnfocusedVisibleEvent
+import com.facebook.rendercore.visibility.VisibilityChangedEvent
+import com.facebook.rendercore.visibility.VisibleEvent
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaDirection
 import com.facebook.yoga.YogaEdge
@@ -49,11 +55,16 @@ class CommonPropsTest {
   private lateinit var commonProps: CommonProps
   private lateinit var componentContext: ComponentContext
 
+  private lateinit var content: Component
+  private lateinit var dispatchInfo: EventDispatchInfo
+
   @Before
   fun setup() {
     node = LithoNode()
-    commonProps = CommonProps()
     componentContext = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
+    content = TestViewComponent.create(componentContext).build()
+    dispatchInfo = EventDispatchInfo(content as HasEventDispatcher, componentContext)
+    commonProps = CommonProps()
   }
 
   @Test
@@ -78,7 +89,8 @@ class CommonPropsTest {
         Border.create(componentContext)
             .widthPx(YogaEdge.ALL, 1)
             .color(YogaEdge.ALL, Color.RED)
-            .build())
+            .build(),
+    )
     commonProps.positionPx(YogaEdge.ALL, 11)
     commonProps.positionPx(YogaEdge.RIGHT, 12)
     commonProps.positionPercent(YogaEdge.VERTICAL, 17f)
@@ -185,7 +197,7 @@ class CommonPropsTest {
     val output: LayoutProps = YogaLayoutProps(yogaNode)
 
     commonProps.copyInto(componentContext, node)
-    commonProps.copyLayoutProps(output)
+    commonProps.copyLayoutProps(output, componentContext.resourceResolver)
 
     assertThat(yogaNode.layoutDirection).isEqualTo(YogaDirection.INHERIT)
     assertThat(yogaNode.alignSelf).isEqualTo(YogaAlign.AUTO)
@@ -318,7 +330,8 @@ class CommonPropsTest {
                     .paddingPx(YogaEdge.LEFT, 8)
                     .paddingPx(YogaEdge.RIGHT, 8)
                     .paddingPx(YogaEdge.TOP, 8)
-                    .paddingPx(YogaEdge.BOTTOM, 8))
+                    .paddingPx(YogaEdge.BOTTOM, 8),
+            )
             .build()
     val testLithoView = lithoTestRule.render { component }
     val result = testLithoView.currentRootNode!!.getChildAt(0)
@@ -341,24 +354,73 @@ class CommonPropsTest {
   @Test
   fun testDifferentObjectWithSameContentEquivalentTo() {
     commonProps = CommonProps()
-    setCommonProps(commonProps)
+    setCommonProps(commonProps, dispatchInfo)
     val commonProps2 = CommonProps()
-    setCommonProps(commonProps2)
+    setCommonProps(commonProps2, dispatchInfo)
     assertThat(commonProps.isEquivalentTo(commonProps2)).isEqualTo(true)
+  }
+
+  @Test
+  fun testMultipleGapGuttersPreservedThroughCopyLayoutProps() {
+    val props = CommonProps()
+    props.gap(YogaGutter.COLUMN, 10)
+    props.gap(YogaGutter.ROW, 20)
+
+    val yogaNode = NodeConfig.createYogaNode()
+    val output: LayoutProps = YogaLayoutProps(yogaNode)
+    props.copyLayoutProps(output, componentContext.resourceResolver)
+
+    assertThat(yogaNode.getGap(YogaGutter.COLUMN).value).isEqualTo(10f)
+    assertThat(yogaNode.getGap(YogaGutter.ROW).value).isEqualTo(20f)
+  }
+
+  @Test
+  fun testGapAllAndPerAxisPreservedThroughCopyLayoutProps() {
+    val props = CommonProps()
+    props.gap(YogaGutter.ALL, 5)
+    props.gap(YogaGutter.ROW, 15)
+
+    val yogaNode = NodeConfig.createYogaNode()
+    val output: LayoutProps = YogaLayoutProps(yogaNode)
+    props.copyLayoutProps(output, componentContext.resourceResolver)
+
+    assertThat(yogaNode.getGap(YogaGutter.ALL).value).isEqualTo(5f)
+    assertThat(yogaNode.getGap(YogaGutter.ROW).value).isEqualTo(15f)
+  }
+
+  @Test
+  fun testMultipleGapGuttersEquivalence() {
+    val props1 = CommonProps()
+    props1.gap(YogaGutter.COLUMN, 10)
+    props1.gap(YogaGutter.ROW, 20)
+
+    val props2 = CommonProps()
+    props2.gap(YogaGutter.COLUMN, 10)
+    props2.gap(YogaGutter.ROW, 20)
+
+    assertThat(props1.isEquivalentTo(props2)).isTrue
+
+    val props3 = CommonProps()
+    props3.gap(YogaGutter.COLUMN, 10)
+    // Only COLUMN, no ROW — should differ
+    assertThat(props1.isEquivalentTo(props3)).isFalse
   }
 
   @Test
   fun testDifferentObjectWithDifferentContentEquivalentTo() {
     commonProps = CommonProps()
-    setCommonProps(commonProps)
+    setCommonProps(commonProps, dispatchInfo)
     commonProps.duplicateParentState(false)
     val commonProps2 = CommonProps()
-    setCommonProps(commonProps2)
+    setCommonProps(commonProps2, dispatchInfo)
     commonProps2.duplicateParentState(true)
     assertThat(commonProps.isEquivalentTo(commonProps2)).isEqualTo(false)
   }
 
-  private fun setCommonProps(commonProps: CommonProps) {
+  private fun setCommonProps(
+      commonProps: CommonProps,
+      dispatchInfo: EventDispatchInfo,
+  ) {
     commonProps.layoutDirection(YogaDirection.INHERIT.toLayoutDirection())
     commonProps.alignSelf(YogaAlign.AUTO)
     commonProps.positionType(YogaPositionType.ABSOLUTE)
@@ -389,7 +451,8 @@ class CommonPropsTest {
         Border.create(componentContext)
             .widthPx(YogaEdge.ALL, 1)
             .color(YogaEdge.ALL, Color.RED)
-            .build())
+            .build(),
+    )
     commonProps.positionPx(YogaEdge.ALL, 11)
     commonProps.positionPx(YogaEdge.RIGHT, 12)
     commonProps.positionPx(YogaEdge.LEFT, 13)
@@ -417,12 +480,12 @@ class CommonPropsTest {
     val foreground = ComparableColorDrawable.create(Color.BLACK)
     commonProps.foreground(foreground)
     commonProps.wrapInView()
-    val content = TestViewComponent.create(componentContext).build()
-    val clickHandler = EventHandlerTestUtil.create<ClickEvent>(3, content)
-    val longClickHandler = EventHandlerTestUtil.create<LongClickEvent>(3, content)
-    val touchHandler = EventHandlerTestUtil.create<TouchEvent>(3, content)
-    val interceptTouchHandler = EventHandlerTestUtil.create<InterceptTouchEvent>(3, content)
-    val focusChangedHandler = EventHandlerTestUtil.create<FocusChangedEvent>(3, content)
+
+    val clickHandler = EventHandlerTestUtil.create<ClickEvent>(3, dispatchInfo)
+    val longClickHandler = EventHandlerTestUtil.create<LongClickEvent>(3, dispatchInfo)
+    val touchHandler = EventHandlerTestUtil.create<TouchEvent>(3, dispatchInfo)
+    val interceptTouchHandler = EventHandlerTestUtil.create<InterceptTouchEvent>(3, dispatchInfo)
+    val focusChangedHandler = EventHandlerTestUtil.create<FocusChangedEvent>(3, dispatchInfo)
     commonProps.clickHandler(clickHandler)
     commonProps.focusChangeHandler(focusChangedHandler)
     commonProps.longClickHandler(longClickHandler)
@@ -439,12 +502,14 @@ class CommonPropsTest {
     commonProps.tooltipText("test")
     commonProps.renderEffect(LithoRenderEffect.Blur(1f, 1f, Shader.TileMode.CLAMP))
     commonProps.screenReaderFocusable(true)
-    val visibleHandler = EventHandlerTestUtil.create<VisibleEvent>(3, content)
-    val focusedHandler = EventHandlerTestUtil.create<FocusedVisibleEvent>(3, content)
-    val unfocusedHandler = EventHandlerTestUtil.create<UnfocusedVisibleEvent>(3, content)
-    val fullImpressionHandler = EventHandlerTestUtil.create<FullImpressionVisibleEvent>(3, content)
-    val invisibleHandler = EventHandlerTestUtil.create<InvisibleEvent>(3, content)
-    val visibleRectChangedHandler = EventHandlerTestUtil.create<VisibilityChangedEvent>(3, content)
+    val visibleHandler = EventHandlerTestUtil.create<VisibleEvent>(3, dispatchInfo)
+    val focusedHandler = EventHandlerTestUtil.create<FocusedVisibleEvent>(3, dispatchInfo)
+    val unfocusedHandler = EventHandlerTestUtil.create<UnfocusedVisibleEvent>(3, dispatchInfo)
+    val fullImpressionHandler =
+        EventHandlerTestUtil.create<FullImpressionVisibleEvent>(3, dispatchInfo)
+    val invisibleHandler = EventHandlerTestUtil.create<InvisibleEvent>(3, dispatchInfo)
+    val visibleRectChangedHandler =
+        EventHandlerTestUtil.create<VisibilityChangedEvent>(3, dispatchInfo)
     commonProps.visibleHandler(visibleHandler)
     commonProps.focusedHandler(focusedHandler)
     commonProps.unfocusedHandler(unfocusedHandler)
@@ -458,27 +523,27 @@ class CommonPropsTest {
     commonProps.transitionKey("transitionKey", "")
     commonProps.testKey("testKey")
     val dispatchPopulateAccessibilityEventHandler =
-        EventHandlerTestUtil.create<DispatchPopulateAccessibilityEventEvent>(3, content)
+        EventHandlerTestUtil.create<DispatchPopulateAccessibilityEventEvent>(3, dispatchInfo)
     val onInitializeAccessibilityEventHandler =
-        EventHandlerTestUtil.create<OnInitializeAccessibilityEventEvent>(3, content)
+        EventHandlerTestUtil.create<OnInitializeAccessibilityEventEvent>(3, dispatchInfo)
     val onInitializeAccessibilityNodeInfoHandler =
-        EventHandlerTestUtil.create<OnInitializeAccessibilityNodeInfoEvent>(3, content)
+        EventHandlerTestUtil.create<OnInitializeAccessibilityNodeInfoEvent>(3, dispatchInfo)
     val onPopulateAccessibilityEventHandler =
-        EventHandlerTestUtil.create<OnPopulateAccessibilityEventEvent>(3, content)
+        EventHandlerTestUtil.create<OnPopulateAccessibilityEventEvent>(3, dispatchInfo)
     val onPopulateAccessibilityNodeHandler =
-        EventHandlerTestUtil.create<OnPopulateAccessibilityNodeEvent>(3, content)
+        EventHandlerTestUtil.create<OnPopulateAccessibilityNodeEvent>(3, dispatchInfo)
     val onRequestSendAccessibilityEventHandler =
-        EventHandlerTestUtil.create<OnRequestSendAccessibilityEventEvent>(3, content)
+        EventHandlerTestUtil.create<OnRequestSendAccessibilityEventEvent>(3, dispatchInfo)
     val performAccessibilityActionHandler =
-        EventHandlerTestUtil.create<PerformAccessibilityActionEvent>(3, content)
+        EventHandlerTestUtil.create<PerformAccessibilityActionEvent>(3, dispatchInfo)
     val sendAccessibilityEventHandler =
-        EventHandlerTestUtil.create<SendAccessibilityEventEvent>(3, content)
+        EventHandlerTestUtil.create<SendAccessibilityEventEvent>(3, dispatchInfo)
     val sendAccessibilityEventUncheckedHandler =
-        EventHandlerTestUtil.create<SendAccessibilityEventUncheckedEvent>(3, content)
+        EventHandlerTestUtil.create<SendAccessibilityEventUncheckedEvent>(3, dispatchInfo)
     val onPerformActionForVirtualViewHandler =
-        EventHandlerTestUtil.create<PerformActionForVirtualViewEvent>(3, content)
+        EventHandlerTestUtil.create<PerformActionForVirtualViewEvent>(3, dispatchInfo)
     val onVirtualViewKeyboardFocusChangedHandler =
-        EventHandlerTestUtil.create<VirtualViewKeyboardFocusChangedEvent>(3, content)
+        EventHandlerTestUtil.create<VirtualViewKeyboardFocusChangedEvent>(3, dispatchInfo)
 
     commonProps.accessibilityRole(AccessibilityRole.BUTTON)
     commonProps.accessibilityRoleDescription("Test Role Description")
@@ -494,9 +559,6 @@ class CommonPropsTest {
     commonProps.onPerformActionForVirtualViewHandler(onPerformActionForVirtualViewHandler)
     commonProps.onVirtualViewKeyboardFocusChangedHandler(onVirtualViewKeyboardFocusChangedHandler)
 
-    /*
-         Copied from ViewNodeInfo class TODO: (T33421916) We need compare StateListAnimators more accurately
-    */
     //    final StateListAnimator stateListAnimator = mock(StateListAnimator.class);
     //    commonProps.stateListAnimator(stateListAnimator);
     commonProps.copyInto(componentContext, node)

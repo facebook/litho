@@ -36,7 +36,7 @@ abstract class AccessibleClickableSpan : ClickableSpan {
   @JvmOverloads
   constructor(
       accessibilityDescription: String? = null,
-      @AccessibilityRoleType accessibilityRole: String? = null
+      @AccessibilityRoleType accessibilityRole: String? = null,
   ) : super() {
     this.accessibilityDescription = accessibilityDescription
     this.accessibilityRole = accessibilityRole
@@ -45,7 +45,7 @@ abstract class AccessibleClickableSpan : ClickableSpan {
   constructor(
       accessibilityDescription: String?,
       @AccessibilityRoleType accessibilityRole: String?,
-      roleDescription: String?
+      roleDescription: String?,
   ) : super() {
     this.accessibilityDescription = accessibilityDescription
     this.accessibilityRole = accessibilityRole

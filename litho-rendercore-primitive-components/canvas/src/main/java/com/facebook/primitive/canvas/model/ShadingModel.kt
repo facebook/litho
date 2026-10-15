@@ -21,7 +21,7 @@ import android.graphics.RadialGradient
 import android.graphics.Shader
 import androidx.annotation.ColorInt
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
-import com.facebook.primitive.utils.types.Point
+import com.facebook.rendercore.geometry.Point
 
 sealed interface CanvasShadingModel
 
@@ -31,7 +31,7 @@ sealed interface CanvasShadingModel
  * @property color The color (including alpha)
  */
 @DataClassGenerate
-data class CanvasSolidColorShading(@ColorInt val color: Int) : CanvasShadingModel
+data class CanvasSolidColorShading(@param:ColorInt val color: Int) : CanvasShadingModel
 
 /**
  * A definition for a gradient shading.
@@ -59,7 +59,7 @@ data class CanvasLinearGradient(
     val gradient: CanvasGradient,
     val startPoint: Point,
     val endPoint: Point,
-    val tileMode: Shader.TileMode
+    val tileMode: Shader.TileMode,
 ) : CanvasGradientModel {
   override fun toShader(): Shader {
     return LinearGradient(
@@ -69,7 +69,8 @@ data class CanvasLinearGradient(
         endPoint.y,
         gradient.colors,
         gradient.positions,
-        tileMode)
+        tileMode,
+    )
   }
 }
 
@@ -86,7 +87,7 @@ data class CanvasRadialGradient(
     val gradient: CanvasGradient,
     val center: Point,
     val radius: Float,
-    val tileMode: Shader.TileMode
+    val tileMode: Shader.TileMode,
 ) : CanvasGradientModel {
   override fun toShader(): Shader {
     return RadialGradient(center.x, center.y, radius, gradient.colors, gradient.positions, tileMode)
@@ -101,7 +102,7 @@ data class CanvasRadialGradient(
  *   array. If this is null, the the colors are distributed evenly along the gradient
  */
 @DataClassGenerate
-data class CanvasGradient(@ColorInt val colors: IntArray, val positions: FloatArray?) {
+data class CanvasGradient(@param:ColorInt val colors: IntArray, val positions: FloatArray?) {
   override fun equals(other: Any?): Boolean {
     if (this === other) {
       return true

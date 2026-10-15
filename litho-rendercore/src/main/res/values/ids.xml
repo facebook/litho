@@ -17,4 +17,5 @@
 
 <resources>
   <item type="id" name="rc_pooling_container"/>
+  <item type="id" name="visibility_bounds_change_notifier_tag"/>
 </resources>

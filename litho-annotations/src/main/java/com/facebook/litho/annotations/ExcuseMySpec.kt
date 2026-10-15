@@ -44,7 +44,8 @@ enum class Reason {
    * API or change [USES_ON_UPDATE_STATE_WITH_TRANSITION] to other appropriate [Reason].
    */
   @Deprecated(
-      "Convert to Litho Kotlin API: https://fblitho.com/docs/kotlin/kotlin-transitions/, or change it to other appropriate `reason`")
+      "Convert to Litho Kotlin API: https://fblitho.com/docs/kotlin/kotlin-transitions/, or change it to other appropriate `reason`",
+  )
   USES_ON_UPDATE_STATE_WITH_TRANSITION,
 
   /**
@@ -66,6 +67,7 @@ enum class Reason {
    * change [LEGACY] to other appropriate [Reason].
    */
   @Deprecated(
-      "Convert to Litho Kotlin API: https://fblitho.com/docs/kotlin/kotlin-intro/, or change it to other appropriate `reason`")
+      "Convert to Litho Kotlin API: https://fblitho.com/docs/kotlin/kotlin-intro/, or change it to other appropriate `reason`",
+  )
   LEGACY,
 }

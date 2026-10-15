@@ -104,4 +104,8 @@
           <item name="android:duplicateParentState">true</item>
     </style>
 
+    <style name="ProgressStyleTest">
+          <item name="android:indeterminateDrawable">@drawable/test_bg</item>
+    </style>
+
 </resources>

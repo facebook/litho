@@ -42,7 +42,7 @@ class TreePropsTest {
 
   @Test
   fun `when ComponentTree is created with TreeProps then component should receive tree props`() {
-    val tree = ComponentTree.create(parentContext).build()
+    val tree = ComponentTree.create(parentContext).enableChildClipping(true).build()
     val assertion = AtomicReference<ComponentScope.() -> Unit>()
     val component = TestComponent { assertion.get().invoke(this) }
 
@@ -65,7 +65,7 @@ class TreePropsTest {
     parentTreeProps.put(TestAnyTreeProp, "not-string")
     val parentContext = ComponentContext(lithoTestRule.context, parentTreeProps)
 
-    val tree = ComponentTree.create(parentContext).build()
+    val tree = ComponentTree.create(parentContext).enableChildClipping(true).build()
     val assertion = AtomicReference<ComponentScope.() -> Unit>()
     val component = TestComponent { assertion.get().invoke(this) }
 
@@ -82,8 +82,6 @@ class TreePropsTest {
     assertion.set {
       didRun = true
       assertThat(TestIntTreeProp.value).isEqualTo(2)
-      /* TODO(T192860025): This will fail because the tree prop input will override component tree tree props */
-      // assertThat(TestAnyTreeProp.value).isEqualTo("not-string")
     }
 
     // just to set tree props
@@ -91,18 +89,18 @@ class TreePropsTest {
     treeprops.put(TestIntTreeProp, 2)
     tree.setRootAndSizeSpecSync(
         component,
-        /* TODO(T192860025): This is required because LayoutState::isCompatibleComponentAndSpec doesn't compare tree props */
         exactly(100),
         exactly(100),
         Size(),
-        treeprops)
+        treeprops,
+    )
 
     assertThat(didRun).describedAs("resolves the component again").isTrue
   }
 
   @Test
   fun `when TreeProps do not change then component should not resolve again`() {
-    val tree = ComponentTree.create(parentContext).build()
+    val tree = ComponentTree.create(parentContext).enableChildClipping(true).build()
     val assertion = AtomicReference<ComponentScope.() -> Unit>()
     val component = TestComponent { assertion.get().invoke(this) }
 
@@ -129,11 +127,11 @@ class TreePropsTest {
     treeprops.put(TestAnyTreeProp, TestAnyTreeProp.defaultValue)
     tree.setRootAndSizeSpecSync(
         component,
-        /* TODO(T192860025): This is required because LayoutState::isCompatibleComponentAndSpec doesn't compare tree props */
         exactly(200),
         exactly(200),
         Size(),
-        treeprops)
+        treeprops,
+    )
 
     assertThat(didRun).describedAs("does not resolve the component again").isFalse()
   }

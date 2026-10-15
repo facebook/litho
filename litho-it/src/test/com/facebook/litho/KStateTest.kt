@@ -23,6 +23,7 @@ import com.facebook.litho.annotations.Hook
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.kotlin.widget.Text
+import com.facebook.litho.layout.flexbox.Row
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -69,7 +70,8 @@ class KStateTest {
             style =
                 Style.height(100.dp).width(100.dp).viewTag("test_view").onClick {
                   state.update("world")
-                })
+                },
+        )
       }
     }
 
@@ -103,7 +105,8 @@ class KStateTest {
                   // update
                   state1.update("world")
                   state2.update { value -> value + 1 }
-                })
+                },
+        )
       }
     }
 
@@ -130,7 +133,8 @@ class KStateTest {
       view.setRootAndSizeSpecSync(
           CountDownLatchComponent(firstCountDownLatch, secondCountDownLatch, initCounter),
           SizeSpec.makeSizeSpec(100, EXACTLY),
-          SizeSpec.makeSizeSpec(100, EXACTLY))
+          SizeSpec.makeSizeSpec(100, EXACTLY),
+      )
       countDownLatch.countDown()
     }
     val thread2 = Thread {
@@ -138,7 +142,8 @@ class KStateTest {
       view.setRootAndSizeSpecSync(
           CountDownLatchComponent(secondCountDownLatch, null, initCounter),
           SizeSpec.makeSizeSpec(200, EXACTLY),
-          SizeSpec.makeSizeSpec(200, EXACTLY))
+          SizeSpec.makeSizeSpec(200, EXACTLY),
+      )
       countDownLatch.countDown()
     }
 
@@ -150,16 +155,16 @@ class KStateTest {
 
     assertThat(initCounter.get()).describedAs("initCounter is initialized only once").isEqualTo(1)
     val componentTree = view.componentTree
-    assertThat(getStateHandler(componentTree)?.initialState?.states)
+    assertThat(getStateHandler(componentTree)?.initialState?.isCacheEmpty())
         .describedAs("Initial hook state container is empty")
-        .isEmpty()
+        .isTrue
     assertThat(getStateHandler(componentTree)?.initialState?.pendingStateHandlers)
         .describedAs("No pending StateHandlers")
         .isEmpty()
   }
 
   fun getStateHandler(componentTree: ComponentTree): StateHandler? {
-    return componentTree.treeState?.resolveState
+    return componentTree.committedTreeState?.resolveState
   }
 
   @Test
@@ -169,12 +174,15 @@ class KStateTest {
         val counter = useState { 0 }
 
         return Row(
-            style = Style.viewTag("test_view").onClick { counter.update { value -> value + 1 } }) {
-              child(
-                  Text(
-                      style = Style.viewTag("Counter: ${counter.value}"),
-                      text = "Counter: ${counter.value}"))
-            }
+            style = Style.viewTag("test_view").onClick { counter.update { value -> value + 1 } },
+        ) {
+          child(
+              Text(
+                  style = Style.viewTag("Counter: ${counter.value}"),
+                  text = "Counter: ${counter.value}",
+              ),
+          )
+        }
       }
     }
 
@@ -202,7 +210,8 @@ class KStateTest {
             style =
                 Style.height(100.dp).width(100.dp).viewTag("test_view").onClick {
                   state.updateSync("world")
-                })
+                },
+        )
       }
     }
 
@@ -295,7 +304,8 @@ class KStateTest {
             style =
                 Style.height(100.dp).width(100.dp).viewTag("test_view").onClick {
                   state.update("world")
-                })
+                },
+        )
       }
     }
 
@@ -330,7 +340,8 @@ class KStateTest {
                   // update
                   state1.update("world")
                   state2.update { value -> value + 1 }
-                })
+                },
+        )
       }
     }
 
@@ -344,6 +355,7 @@ class KStateTest {
     assertThat(state2Ref.get().value).describedAs("Int state is updated").isEqualTo(21)
   }
 
+  @Test
   fun useState_calculateLayoutInTwoThreadsConcurrently_stateIsInitializedOnlyOnce_forPrimitive() {
     val initCounter = AtomicInteger(0)
     val countDownLatch = CountDownLatch(2)
@@ -356,7 +368,8 @@ class KStateTest {
       view.setRootAndSizeSpecSync(
           CountDownLatchPrimitiveComponent(firstCountDownLatch, secondCountDownLatch, initCounter),
           SizeSpec.makeSizeSpec(100, EXACTLY),
-          SizeSpec.makeSizeSpec(100, EXACTLY))
+          SizeSpec.makeSizeSpec(100, EXACTLY),
+      )
       countDownLatch.countDown()
     }
     val thread2 = Thread {
@@ -364,7 +377,8 @@ class KStateTest {
       view.setRootAndSizeSpecSync(
           CountDownLatchPrimitiveComponent(secondCountDownLatch, null, initCounter),
           SizeSpec.makeSizeSpec(200, EXACTLY),
-          SizeSpec.makeSizeSpec(200, EXACTLY))
+          SizeSpec.makeSizeSpec(200, EXACTLY),
+      )
       countDownLatch.countDown()
     }
 
@@ -376,9 +390,9 @@ class KStateTest {
 
     assertThat(initCounter.get()).describedAs("initCounter is initialized only once").isEqualTo(1)
     val componentTree = view.componentTree
-    assertThat(getStateHandler(componentTree)?.initialState?.states)
+    assertThat(getStateHandler(componentTree)?.initialState?.isCacheEmpty())
         .describedAs("Initial hook state container is empty")
-        .isEmpty()
+        .isTrue
     assertThat(getStateHandler(componentTree)?.initialState?.pendingStateHandlers)
         .describedAs("No pending StateHandlers")
         .isEmpty()
@@ -392,11 +406,14 @@ class KStateTest {
 
         return LithoPrimitive(
             TestTextPrimitive(
-                text = "Counter: ${counter.value}", tag = "Counter: ${counter.value}"),
+                text = "Counter: ${counter.value}",
+                tag = "Counter: ${counter.value}",
+            ),
             style =
                 Style.viewTag("Counter: ${counter.value}").onClick {
                   counter.update { value -> value + 1 }
-                })
+                },
+        )
       }
     }
 
@@ -427,7 +444,8 @@ class KStateTest {
             style =
                 Style.height(100.dp).width(100.dp).viewTag("test_view").onClick {
                   state.updateSync("world")
-                })
+                },
+        )
       }
     }
 
@@ -553,7 +571,8 @@ class KStateTest {
             style =
                 Style.height(100.dp).width(100.dp).viewTag("test_view").onClick {
                   state.update { null }
-                })
+                },
+        )
       }
     }
 
@@ -569,7 +588,7 @@ class KStateTest {
   private class CountDownLatchComponent(
       val countDownLatch: CountDownLatch,
       val awaitable: CountDownLatch?,
-      val initCounter: AtomicInteger
+      val initCounter: AtomicInteger,
   ) : KComponent() {
     override fun ComponentScope.render(): Component? {
       countDownLatch.countDown()
@@ -588,7 +607,9 @@ class KStateTest {
         child(
             Text(
                 style = Style.viewTag("Counter: ${counter.value}"),
-                text = "Counter: ${counter.value}"))
+                text = "Counter: ${counter.value}",
+            ),
+        )
       }
     }
   }
@@ -603,7 +624,7 @@ class KStateTest {
   private class CountDownLatchPrimitiveComponent(
       val countDownLatch: CountDownLatch,
       val awaitable: CountDownLatch?,
-      val initCounter: AtomicInteger
+      val initCounter: AtomicInteger,
   ) : PrimitiveComponent() {
     override fun PrimitiveComponentScope.render(): LithoPrimitive {
       countDownLatch.countDown()
@@ -630,7 +651,8 @@ class KStateTest {
 
       return LithoPrimitive(
           TestTextPrimitive(text = "Counter: ${counter.value}", tag = "Counter: ${counter.value}"),
-          style = style)
+          style = style,
+      )
     }
   }
 
@@ -644,8 +666,36 @@ class KStateTest {
           style =
               Style.viewTag(tag ?: "Counter: ${counter.value}").contentDescription(tag).onClick {
                 counter.updateSync { value -> value + 1 }
-              })
+              },
+      )
     }
+  }
+
+  @Test
+  fun useStateWithDeps_reInitsOnDepChange_preservesValueOtherwise() {
+    lateinit var valueRef: AtomicReference<Int>
+
+    class TestComponent(private val dep: Int) : KComponent() {
+      override fun ComponentScope.render(): Component {
+        val state = useStateWithDeps(dep) { dep * 10 }
+        valueRef = AtomicReference(state.value)
+        return Row(style = Style.width(10.dp).height(10.dp))
+      }
+    }
+
+    val testLithoView = mLithoTestRule.render { TestComponent(1) }
+    assertThat(valueRef.get()).isEqualTo(10)
+
+    // Same dep: the initializer must not run again, so an intervening update survives.
+    mLithoTestRule.act(testLithoView) { testLithoView.setRoot(TestComponent(1)) }
+    assertThat(valueRef.get()).isEqualTo(10)
+
+    // Changed dep: state is re-initialised from the new dep.
+    mLithoTestRule.act(testLithoView) { testLithoView.setRoot(TestComponent(2)) }
+    assertThat(valueRef.get()).isEqualTo(20)
+
+    mLithoTestRule.act(testLithoView) { testLithoView.setRoot(TestComponent(2)) }
+    assertThat(valueRef.get()).isEqualTo(20)
   }
 
   private class CountRendersPrimitiveComponent(private val renderCount: AtomicInteger) :

@@ -50,12 +50,12 @@ public class SubComponent {
   }
 
   @Override
-  public boolean equals(Object o) {
-    if (!(o instanceof SubComponent)) {
+  public boolean equals(Object other) {
+    if (!(other instanceof SubComponent)) {
       return false;
     }
 
-    SubComponent that = (SubComponent) o;
+    SubComponent that = (SubComponent) other;
     return that.mComponentType.equals(mComponentType) && arePropsEqual(that.mComponent, mComponent);
   }
 

@@ -42,7 +42,7 @@ import com.facebook.rendercore.utils.areObjectsEquivalent
 fun ComponentScope.useEffect(vararg deps: Any?, onAttach: () -> CleanupFunc?) {
   val entries = useEffectEntries ?: ArrayList()
   useEffectEntries = entries
-  val uniqueId = "${context.globalKey}:${entries.size}"
+  val uniqueId: Any = HookGlobalKey(context.globalKey, requireCurrentHookKey(), RenderScope.Resolve)
   entries.add(UseEffectAttachable(uniqueId, deps, onAttach))
 }
 
@@ -79,15 +79,15 @@ class CleanupFunc @PublishedApi internal constructor(private val cleanupFunc: ()
 }
 
 internal class UseEffectAttachable(
-    private val id: String,
+    private val id: Any,
     private val deps: Array<out Any?>?,
-    private val attachCallback: () -> CleanupFunc?
+    private val attachCallback: () -> CleanupFunc?,
 ) : Attachable {
 
   @ThreadConfined(ThreadConfined.UI) var detachHandler: CleanupFunc? = null
   @ThreadConfined(ThreadConfined.UI) var isAttached: Boolean = false
 
-  override val uniqueId: String = id
+  override val uniqueId: Any = id
 
   override fun useLegacyUpdateBehavior(): Boolean = false
 

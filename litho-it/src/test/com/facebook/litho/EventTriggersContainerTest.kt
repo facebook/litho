@@ -90,8 +90,8 @@ class EventTriggersContainerTest {
   }
 
   companion object {
-    private const val TEST_KEY_1 = "test_key_1"
-    private const val TEST_KEY_2 = "test_key_2"
+    private val TEST_KEY_1 = EventTriggerKey("parent1", 1, "child1")
+    private val TEST_KEY_2 = EventTriggerKey("parent2", 2, "child2")
     private const val METHOD_ID_1 = 1
     private const val METHOD_ID_2 = 2
   }

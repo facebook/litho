@@ -18,6 +18,7 @@ package com.facebook.litho
 
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
+import com.facebook.litho.layout.flexbox.Row
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -35,7 +36,7 @@ import org.robolectric.annotation.LooperMode
 @RunWith(LithoTestRunner::class)
 class ManualKeyTest {
 
-  @Rule @JvmField val mLithoTestRule = LithoTestRule()
+  @Rule @JvmField val lithoTestRule = LithoTestRule()
 
   private class KeyTestParentComponent(val manualKey: String, val i: Int) : KComponent() {
     override fun ComponentScope.render(): Component? {
@@ -54,7 +55,7 @@ class ManualKeyTest {
   @Test
   fun useState_createNewLayoutWithSameManualKey_stateIsSame() {
     val testLithoView =
-        mLithoTestRule.render(widthPx = exactly(100), heightPx = exactly(100)) {
+        lithoTestRule.render(widthPx = exactly(100), heightPx = exactly(100)) {
           KeyTestParentComponent(manualKey = "my_key", i = 0)
         }
 
@@ -69,7 +70,7 @@ class ManualKeyTest {
   @Test
   fun useState_createNewLayoutWithDifferentManualKey_stateIsRecreated() {
     val testLithoView =
-        mLithoTestRule.render(widthPx = exactly(100), heightPx = exactly(100)) {
+        lithoTestRule.render(widthPx = exactly(100), heightPx = exactly(100)) {
           KeyTestParentComponent(manualKey = "my_key", i = 0)
         }
 

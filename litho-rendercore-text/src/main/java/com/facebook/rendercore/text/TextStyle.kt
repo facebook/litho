@@ -59,7 +59,24 @@ class TextStyle : Cloneable {
   @JvmField var hyphenationFrequency: Int = 0
   @JvmField var justificationMode: Int = 0
   @JvmField var textDirection: TextDirectionHeuristicCompat? = null
-  @JvmField var clipToBounds: Boolean = true
+  /**
+   * Clips drawn text to the view's bounds, like Litho's legacy `Text`. Off by default: Bloks, FOA,
+   * Showreel and others draw past their bounds today (e.g. cap-height trimmed text), so turning it
+   * on for them would cut glyphs.
+   */
+  @JvmField var clipToBounds: Boolean = false
+  /**
+   * Marks the text as belonging to its parent host view, the way Litho's legacy Text draws into its
+   * host. Test lookups then find the host (the clickable, selectable container) rather than the
+   * text view. Set by Litho's `Text`; off for direct primitive users, whose tests expect the text
+   * view.
+   */
+  @JvmField var textBelongsToHost: Boolean = false
+  /**
+   * Exposes each clickable span to screen readers as its own node. On by default; Litho's `Text`
+   * turns it off unless `accessibleClickableSpans` is set, matching its legacy implementation.
+   */
+  @JvmField var exposeClickableSpansToAccessibility: Boolean = true
   @JvmField var verticalGravity: VerticalGravity = VerticalGravity.TOP
   @ColorInt @JvmField var highlightColor: Int = Color.TRANSPARENT
   @ColorInt @JvmField var keyboardHighlightColor: Int = Color.TRANSPARENT
@@ -85,7 +102,18 @@ class TextStyle : Cloneable {
   @ColorInt @JvmField var outlineColor: Int = Color.TRANSPARENT
   @JvmField var roundedBackgroundProps: RoundedBackgroundProps? = null
   @JvmField var accessibilityLabel: String? = null
+  @JvmField var isTextSelectable: Boolean = false
+  @ColorInt @JvmField var selectionHandleColor: Int = Color.TRANSPARENT
+
   @JvmField var truncationStyle: TruncationStyle = TruncationStyle.USE_MAX_LINES
+
+  /**
+   * The layout direction the host resolved for this text (e.g. Litho's Yoga direction), or `null`
+   * to use the locale's. When set, it replaces the locale for the default FIRSTSTRONG text
+   * direction and for [TextAlignment.LAYOUT_START]/[TextAlignment.LAYOUT_END], and
+   * [TextAlignment.TEXT_START] aligns to the text's own start, as Litho's legacy Text does.
+   */
+  @JvmField var resolvedLayoutDirectionRtl: Boolean? = null
 
   @ColorInt private var _textColor: Int = Color.BLACK
   private var _textColorStateList: ColorStateList? = null
@@ -112,11 +140,76 @@ class TextStyle : Cloneable {
     }
   }
 
+  /**
+   * Whether every value matches [other]'s, for deciding if a layout measured with one can be reused
+   * for the other. Typeface, text direction and the colour state list compare by identity: they're
+   * shared framework objects, and their toString() doesn't tell different behaviour apart. The
+   * custom ellipsis compares by its characters; callers compare its spans separately.
+   */
+  fun hasSameValuesAs(other: TextStyle): Boolean =
+      this === other ||
+          (TextUtils.equals(customEllipsisText, other.customEllipsisText) &&
+              typeface === other.typeface &&
+              textDirection === other.textDirection &&
+              _textColorStateList === other._textColorStateList &&
+              ellipsize == other.ellipsize &&
+              includeFontPadding == other.includeFontPadding &&
+              minLines == other.minLines &&
+              maxLines == other.maxLines &&
+              minEms == other.minEms &&
+              maxEms == other.maxEms &&
+              minTextWidth == other.minTextWidth &&
+              maxTextWidth == other.maxTextWidth &&
+              shadowRadius == other.shadowRadius &&
+              shadowDx == other.shadowDx &&
+              shadowDy == other.shadowDy &&
+              shadowColor == other.shadowColor &&
+              isSingleLine == other.isSingleLine &&
+              linkColor == other.linkColor &&
+              textSize == other.textSize &&
+              shouldAddSpacingExtraToFirstLine == other.shouldAddSpacingExtraToFirstLine &&
+              lineSpacingExtra == other.lineSpacingExtra &&
+              lineHeight == other.lineHeight &&
+              lineHeightMultiplier == other.lineHeightMultiplier &&
+              letterSpacing == other.letterSpacing &&
+              textStyle == other.textStyle &&
+              alignment == other.alignment &&
+              breakStrategy == other.breakStrategy &&
+              hyphenationFrequency == other.hyphenationFrequency &&
+              justificationMode == other.justificationMode &&
+              clipToBounds == other.clipToBounds &&
+              textBelongsToHost == other.textBelongsToHost &&
+              exposeClickableSpansToAccessibility == other.exposeClickableSpansToAccessibility &&
+              verticalGravity == other.verticalGravity &&
+              highlightColor == other.highlightColor &&
+              keyboardHighlightColor == other.keyboardHighlightColor &&
+              highlightStartOffset == other.highlightStartOffset &&
+              highlightEndOffset == other.highlightEndOffset &&
+              highlightCornerRadius == other.highlightCornerRadius &&
+              shouldLayoutEmptyText == other.shouldLayoutEmptyText &&
+              minimallyWide == other.minimallyWide &&
+              minimallyWideThreshold == other.minimallyWideThreshold &&
+              clickableSpanExpandedOffset == other.clickableSpanExpandedOffset &&
+              shouldTruncateTextUsingConstraints == other.shouldTruncateTextUsingConstraints &&
+              manualBaselineSpacing == other.manualBaselineSpacing &&
+              manualCapSpacing == other.manualCapSpacing &&
+              extraSpacingLeft == other.extraSpacingLeft &&
+              extraSpacingRight == other.extraSpacingRight &&
+              outlineWidth == other.outlineWidth &&
+              outlineColor == other.outlineColor &&
+              roundedBackgroundProps == other.roundedBackgroundProps &&
+              accessibilityLabel == other.accessibilityLabel &&
+              isTextSelectable == other.isTextSelectable &&
+              selectionHandleColor == other.selectionHandleColor &&
+              truncationStyle == other.truncationStyle &&
+              resolvedLayoutDirectionRtl == other.resolvedLayoutDirectionRtl &&
+              _textColor == other._textColor)
+
   @DataClassGenerate
   data class RoundedBackgroundProps(
       @JvmField val padding: RectF,
       @JvmField val cornerRadius: Float,
-      @field:ColorInt @JvmField val backgroundColor: Int
+      @field:ColorInt @JvmField val backgroundColor: Int,
   )
 
   companion object {
@@ -179,7 +272,7 @@ class TextStyle : Cloneable {
     fun maybeSetLineHeightMultiplier(
         textStyle: TextStyle,
         lineHeightMultiplier: Float,
-        applyToFirstLine: Boolean = true
+        applyToFirstLine: Boolean = true,
     ) {
       if (lineHeightMultiplier > 0) {
         // This is a special behavior to match Bloks classic and the iOS behavior.
@@ -192,5 +285,72 @@ class TextStyle : Cloneable {
     fun addThemedTextStyleForContextToCache(context: Context) {
       TextStylesAttributeHelper.addThemedTextStyleForContext(context)
     }
+  }
+
+  override fun toString(): String = buildString {
+    append("TextStyle(")
+    append("ellipsize=").append(ellipsize).append(", ")
+    append("customEllipsisText=").append(customEllipsisText).append(", ")
+    append("includeFontPadding=").append(includeFontPadding).append(", ")
+    append("minLines=").append(minLines).append(", ")
+    append("maxLines=").append(maxLines).append(", ")
+    append("minEms=").append(minEms).append(", ")
+    append("maxEms=").append(maxEms).append(", ")
+    append("minTextWidth=").append(minTextWidth).append(", ")
+    append("maxTextWidth=").append(maxTextWidth).append(", ")
+    append("shadowRadius=").append(shadowRadius).append(", ")
+    append("shadowDx=").append(shadowDx).append(", ")
+    append("shadowDy=").append(shadowDy).append(", ")
+    append("shadowColor=").append(shadowColor).append(", ")
+    append("isSingleLine=").append(isSingleLine).append(", ")
+    append("linkColor=").append(linkColor).append(", ")
+    append("textSize=").append(textSize).append(", ")
+    append("shouldAddSpacingExtraToFirstLine=")
+        .append(shouldAddSpacingExtraToFirstLine)
+        .append(", ")
+    append("lineSpacingExtra=").append(lineSpacingExtra).append(", ")
+    append("lineHeight=").append(lineHeight).append(", ")
+    append("lineHeightMultiplier=").append(lineHeightMultiplier).append(", ")
+    append("letterSpacing=").append(letterSpacing).append(", ")
+    append("textStyle=").append(textStyle).append(", ")
+    append("typeface=").append(typeface).append(", ")
+    append("alignment=").append(alignment).append(", ")
+    append("breakStrategy=").append(breakStrategy).append(", ")
+    append("hyphenationFrequency=").append(hyphenationFrequency).append(", ")
+    append("justificationMode=").append(justificationMode).append(", ")
+    append("textDirection=").append(textDirection).append(", ")
+    append("clipToBounds=").append(clipToBounds).append(", ")
+    append("textBelongsToHost=").append(textBelongsToHost).append(", ")
+    append("exposeClickableSpansToAccessibility=")
+        .append(exposeClickableSpansToAccessibility)
+        .append(", ")
+    append("verticalGravity=").append(verticalGravity).append(", ")
+    append("highlightColor=").append(highlightColor).append(", ")
+    append("keyboardHighlightColor=").append(keyboardHighlightColor).append(", ")
+    append("highlightStartOffset=").append(highlightStartOffset).append(", ")
+    append("highlightEndOffset=").append(highlightEndOffset).append(", ")
+    append("highlightCornerRadius=").append(highlightCornerRadius).append(", ")
+    append("shouldLayoutEmptyText=").append(shouldLayoutEmptyText).append(", ")
+    append("minimallyWide=").append(minimallyWide).append(", ")
+    append("minimallyWideThreshold=").append(minimallyWideThreshold).append(", ")
+    append("clickableSpanExpandedOffset=").append(clickableSpanExpandedOffset).append(", ")
+    append("shouldTruncateTextUsingConstraints=")
+        .append(shouldTruncateTextUsingConstraints)
+        .append(", ")
+    append("manualBaselineSpacing=").append(manualBaselineSpacing).append(", ")
+    append("manualCapSpacing=").append(manualCapSpacing).append(", ")
+    append("extraSpacingLeft=").append(extraSpacingLeft).append(", ")
+    append("extraSpacingRight=").append(extraSpacingRight).append(", ")
+    append("outlineWidth=").append(outlineWidth).append(", ")
+    append("outlineColor=").append(outlineColor).append(", ")
+    append("roundedBackgroundProps=").append(roundedBackgroundProps).append(", ")
+    append("accessibilityLabel=").append(accessibilityLabel).append(", ")
+    append("isTextSelectable=").append(isTextSelectable).append(", ")
+    append("selectionHandleColor=").append(selectionHandleColor).append(", ")
+    append("truncationStyle=").append(truncationStyle).append(", ")
+    append("resolvedLayoutDirectionRtl=").append(resolvedLayoutDirectionRtl).append(", ")
+    append("textColor=").append(textColor).append(", ")
+    append("textColorStateList=").append(textColorStateList)
+    append(")")
   }
 }

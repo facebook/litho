@@ -16,427 +16,220 @@
 
 package com.facebook.litho
 
-import android.content.Context
-import androidx.collection.mutableScatterSetOf
-import com.facebook.litho.transition.MutableTransitionData
-import com.facebook.rendercore.LayoutCache
-import com.facebook.rendercore.LayoutContext
-import com.facebook.rendercore.SizeConstraints
-import com.facebook.rendercore.utils.MeasureSpecUtils
+import com.facebook.litho.Resolver.resolveDeferred
+import com.facebook.litho.annotations.ExperimentalLithoApi
+import com.facebook.litho.layout.LayoutFunction
+import com.facebook.litho.layout.LayoutFunction1
+import com.facebook.litho.layout.LayoutFunction2
+import com.facebook.litho.layout.LayoutFunction3
+import com.facebook.litho.layout.LayoutFunctionN
+import com.facebook.rendercore.utils.areObjectsEquivalent
 
-internal object Layout {
-
-  @JvmStatic
-  fun measureTree(
-      lithoLayoutContext: LithoLayoutContext,
-      androidContext: Context,
-      node: LithoNode? = null,
-      widthSpec: Int,
-      heightSpec: Int,
-  ): LithoLayoutResult? {
-    return measureTree(
-        lithoLayoutContext = lithoLayoutContext,
-        androidContext = androidContext,
-        node = node,
-        sizeConstraints =
-            SizeConstraints.fromMeasureSpecs(
-                widthSpec = widthSpec,
-                heightSpec = heightSpec,
-            ))
-  }
-
-  fun measureTree(
-      lithoLayoutContext: LithoLayoutContext,
-      androidContext: Context,
-      node: LithoNode? = null,
-      sizeConstraints: SizeConstraints,
-  ): LithoLayoutResult? {
-    if (node == null) {
-      return null
-    }
-
-    val context: LayoutContext<LithoLayoutContext> =
-        LayoutContext(androidContext, lithoLayoutContext, 0, lithoLayoutContext.layoutCache, null)
-
-    val result: LithoLayoutResult = node.calculateLayout(context, sizeConstraints)
-
-    return if (result !is NullLithoLayoutResult) {
-      result
-    } else {
-      null
-    }
-  }
-
-  @JvmStatic
-  fun measure(
-      lithoLayoutContext: LithoLayoutContext,
-      parentContext: ComponentContext,
-      holder: DeferredLithoLayoutResult,
-      widthSpec: Int,
-      heightSpec: Int
-  ): LithoLayoutResult? {
-    val layout: LithoLayoutResult? =
-        measureDeferredNode(lithoLayoutContext, parentContext, holder, widthSpec, heightSpec)
-    val currentLayout: LithoLayoutResult? = holder.result
-    // Set new created LayoutResult for future access
-    if (layout != null && layout !== currentLayout) {
-      holder.layoutOutput._actualDeferredNodeResult = layout
-    }
-    return layout
-  }
+/**
+ * A container component that owns the children it is given.
+ *
+ * A `Row` or a `Column` hands its children to flexbox. A `Layout` positions them itself: [layout]
+ * measures the children, gives the container a size and places each child. Use it for layouts
+ * flexbox cannot express, such as a pager whose pages sit at a computed stride, a split pane sized
+ * by a dragged divider, or a header that collapses as another child scrolls.
+ *
+ * It is an ordinary component, returned from `render`:
+ * ```kotlin
+ * class MyRow(private val header: Component, private val body: Component) : KComponent() {
+ *   override fun ComponentScope.render(): Component =
+ *       Layout(header, body) { header, body, c -> … }
+ * }
+ * ```
+ *
+ * Use [components] for children that come from data. The one-, two- and three-child constructors
+ * build the same container and let a fixed set of children be named at the call site:
+ * ```kotlin
+ * Layout(items.map { Page(it).key(it.id) }) { measurables, c -> … }   // N children
+ * Layout(avatar, name, timestamp) { avatar, name, timestamp, c -> … } // three, named
+ * ```
+ *
+ * **A container is unchanged only when its layout function is the same one.** It is compared with
+ * `equals`, never by class. An `object`, or a lambda that captures nothing, is the same instance on
+ * every render and lets an unchanged container skip its layout. A lambda that captures values is a
+ * new instance each render, so the container lays out again every time, which is always correct and
+ * costs only the layout.
+ *
+ * A null child, or one that renders nothing, keeps its slot as an empty child that measures 0x0, so
+ * every child has the index it was declared at and a function naming its children always gets them
+ * all.
+ *
+ * Give children a stable `key` when they come from data. Without one, a child's state is keyed by
+ * its position among its same-type siblings, so inserting at the front hands the second child the
+ * first child's state. That shows up as a video resuming at the wrong timestamp rather than as
+ * something that looks like a bug.
+ *
+ * Children resolve into the parent's Litho tree rather than a nested one, so hook identity, prop
+ * reconciliation, incremental mount and visibility keep working across them without forwarding
+ * anything by hand.
+ *
+ * A `Layout` mounts no content, so it gets a host of its own only when a [style] needs one.
+ * `onClick`, `viewTag`, `focusable`, a shadow and a transition name each create a host, as on any
+ * other component. Intercepting touch, cooperating with a nested scroll, or transforming children
+ * per frame still needs whatever mechanism you use today.
+ *
+ * @param components the children, in the order they are laid out
+ * @param style what this container tells its own parent, and the props the framework applies to any
+ *   node: size, padding, margin, background, and so on. Its padding and border are the one way it
+ *   reaches the children: the layout function works inside them, so they narrow the constraints it
+ *   receives. Anything else that configures the arrangement — spacing, alignment — the layout
+ *   function captures, or the component returning this `Layout` takes as a prop.
+ * @param layout measures and places the children
+ */
+@ExperimentalLithoApi
+class Layout
+private constructor(
+    private val layoutFunction: LayoutFunction,
+    private val components: List<Component?>,
+    private val style: Style,
+) : Component() {
 
   /**
-   * In order to reuse render unit, we have to make sure layout data which render unit relies on is
-   * determined before collecting layout results. So we're doing three things here:<br></br>
-   * 1. Resolve DeferredNode.<br></br>
-   * 2. Measure Primitive that were skipped due to fixed size.<br></br>
-   * 3. Invoke OnBoundsDefined for all MountSpecs.<br></br>
+   * A container over a list of children, for a count that is not known until runtime.
+   *
+   * @param components the children, in the order they are laid out
+   * @param style applied to the container itself
+   * @param layout measures and places the children, receiving them as a list
    */
-  @JvmStatic
-  fun measurePendingSubtrees(
+  constructor(
+      components: List<Component?>,
+      style: Style = Style,
+      layout: LayoutFunctionN,
+  ) : this(layout, components, style)
+
+  /**
+   * A container over one child, which [layout] receives by name rather than by index.
+   *
+   * @param component1 the only child
+   * @param style applied to the container itself
+   * @param layout measures and places the child
+   */
+  constructor(
+      component1: Component?,
+      style: Style = Style,
+      layout: LayoutFunction1,
+  ) : this(layout, listOf(component1), style)
+
+  /**
+   * A container over two children, which [layout] receives by name rather than by index.
+   *
+   * @param component1 the first child
+   * @param component2 the second child
+   * @param style applied to the container itself
+   * @param layout measures and places the children
+   */
+  constructor(
+      component1: Component?,
+      component2: Component?,
+      style: Style = Style,
+      layout: LayoutFunction2,
+  ) : this(layout, listOf(component1, component2), style)
+
+  /**
+   * A container over three children, which [layout] receives by name rather than by index. Past
+   * three, use the [components] list.
+   *
+   * @param component1 the first child
+   * @param component2 the second child
+   * @param component3 the third child
+   * @param style applied to the container itself
+   * @param layout measures and places the children
+   */
+  constructor(
+      component1: Component?,
+      component2: Component?,
+      component3: Component?,
+      style: Style = Style,
+      layout: LayoutFunction3,
+  ) : this(layout, listOf(component1, component2, component3), style)
+
+  override fun resolve(
+      resolveContext: ResolveContext,
+      scopedComponentInfo: ScopedComponentInfo,
+      parentWidthSpec: Int,
+      parentHeightSpec: Int,
+  ): ComponentResolveResult {
+    val c = scopedComponentInfo.context
+    val node = LayoutNode()
+    for (child in components) {
+      // Resolve can be abandoned or handed back to the main thread between any two children, and a
+      // container that keeps descending defeats both: a released future's tree is thrown away, and
+      // an interrupted one is finished by `Resolver.resumeResolvingTree`, which can only resume the
+      // children stashed here. A null is stashed as an empty child, so resuming keeps every slot.
+      if (resolveContext.isFutureReleased) {
+        return ComponentResolveResult(null, null)
+      }
+      if (resolveContext.isResolveInterrupted) {
+        node.appendUnresolvedComponent(child ?: EmptyComponent())
+      } else {
+        node.child(resolveContext, c, child)
+      }
+    }
+    node.layoutFunction = layoutFunction
+    return ComponentResolveResult(node, createCommonProps(c))
+  }
+
+  override fun resolveDeferred(
+      calculationContext: CalculationContext,
+      componentContext: ComponentContext,
       parentContext: ComponentContext,
-      lithoLayoutContext: LithoLayoutContext,
-      reductionState: ReductionState,
-      result: LithoLayoutResult,
-  ) {
-    if (lithoLayoutContext.isFutureReleased || result.measureHadExceptions) {
-      // Exit early if the layout future as been released or if this result had exceptions.
-      return
-    }
-    val lithoNode: LithoNode = result.node
-    val component: Component = lithoNode.tailComponent
-    val isTracing: Boolean = ComponentsSystrace.isTracing
-
-    if (result is DeferredLithoLayoutResult) {
-      // If the deferred node is defined, it has been resolved during a measure call during
-      // layout calculation.
-      if (isTracing) {
-        ComponentsSystrace.beginSectionWithArgs("resolveDeferredNode:${component.simpleName}")
-            .arg("widthSpec", "EXACTLY ${result.width}")
-            .arg("heightSpec", "EXACTLY ${result.height}")
-            .arg("rootComponentId", lithoNode.tailComponent.instanceId)
-            .flush()
-      }
-      val size: Int = lithoNode.componentCount
-      val immediateParentContext: ComponentContext =
-          if (size == 1) {
-            parentContext
-          } else {
-            lithoNode.getComponentContextAt(1)
-          }
-      val actualLayoutResult: LithoLayoutResult? =
-          measure(
-              lithoLayoutContext = lithoLayoutContext,
-              parentContext = immediateParentContext,
-              holder = result,
-              widthSpec = MeasureSpecUtils.exactly(result.width),
-              heightSpec = MeasureSpecUtils.exactly(result.height))
-
-      if (isTracing) {
-        ComponentsSystrace.endSection()
-      }
-
-      if (actualLayoutResult == null) {
-        return
-      }
-
-      Resolver.collectOutputs(actualLayoutResult.node)?.let { outputs ->
-        reductionState.attachables
-            .getOrCreate {
-              ArrayList<Attachable>(outputs.attachables.size).also {
-                reductionState.attachables = it
-              }
-            }
-            .apply {
-              addAll(outputs.attachables)
-              actualLayoutResult.effects?.let { addAll(it) }
-            }
-
-        reductionState.transitionData
-            .getOrCreate { MutableTransitionData().also { reductionState.transitionData = it } }
-            .add(outputs.transitionData)
-        for ((state, readers) in outputs.stateReads) reductionState.stateReads
-            .getOrPut(state) { mutableScatterSetOf() }
-            .addAll(readers)
-      }
-
-      try {
-        measurePendingSubtrees(
-            parentContext = parentContext,
-            lithoLayoutContext = lithoLayoutContext,
-            reductionState = reductionState,
-            result = actualLayoutResult)
-      } catch (e: Exception) {
-        throw ComponentUtils.wrapWithMetadata(parentContext, e)
-      }
-      return
-    } else if (result.childrenCount > 0) {
-      val context: ComponentContext = result.node.tailComponentContext
-      for (i in 0 until result.childCount) {
-        val child: LithoLayoutResult = result.getChildAt(i)
-        try {
-          measurePendingSubtrees(
-              parentContext = context,
-              lithoLayoutContext = lithoLayoutContext,
-              reductionState = reductionState,
-              result = child)
-        } catch (e: Exception) {
-          throw ComponentUtils.wrapWithMetadata(context, e)
-        }
-      }
-    }
-
-    LithoYogaLayoutFunction.onBoundsDefined(result)
-
-    registerWorkingRange(reductionState, result)
-  }
-
-  /** Register working range for each node */
-  @JvmStatic
-  fun registerWorkingRange(reductionState: ReductionState, result: LithoLayoutResult) {
-    val registrations: List<WorkingRangeContainer.Registration> =
-        result.node.workingRangeRegistrations ?: return
-    if (CollectionsUtils.isEmpty(registrations)) {
-      return
-    }
-
-    val workingRange: WorkingRangeContainer =
-        reductionState.workingRangeContainer.getOrCreate {
-          WorkingRangeContainer().also { reductionState.workingRangeContainer = it }
-        }
-    val component: Component = result.node.tailComponent
-    for (registration in registrations) {
-      val interStagePropsContainer: InterStagePropsContainer? =
-          if (component is SpecGeneratedComponent) {
-            result.layoutData as InterStagePropsContainer?
-          } else {
-            null
-          }
-      workingRange.registerWorkingRange(
-          registration.name,
-          registration.workingRange,
-          registration.scopedComponentInfo,
-          interStagePropsContainer)
-    }
-  }
-
-  @JvmStatic
-  fun shouldComponentUpdate(layoutNode: LithoNode, diffNode: DiffNode? = null): Boolean {
-    if (diffNode == null) {
-      return true
-    }
-    val component: Component = layoutNode.tailComponent
-    val scopedContext: ComponentContext = layoutNode.tailComponentContext
-
-    // return true for primitives to exit early
-    if (Component.isPrimitive(component)) {
-      return true
-    }
-
-    try {
-      return component.shouldComponentUpdate(
-          getDiffNodeScopedContext(diffNode), diffNode.component, scopedContext, component)
-    } catch (e: Exception) {
-      ComponentUtils.handleWithHierarchy(scopedContext, component, e)
-    }
-    return true
-  }
-
-  private fun measureDeferredNode(
-      lithoLayoutContext: LithoLayoutContext,
-      parentContext: ComponentContext,
-      holderResult: DeferredLithoLayoutResult,
-      widthSpec: Int,
-      heightSpec: Int
-  ): LithoLayoutResult? {
-
-    // 1. Check if current layout result is compatible with size spec and can be reused or not
-    val currentLayout: LithoLayoutResult? = holderResult.result
-    if (currentLayout != null &&
-        MeasureComparisonUtils.hasCompatibleSizeSpec(
-            currentLayout.widthSpec,
-            currentLayout.heightSpec,
-            widthSpec,
-            heightSpec,
-            currentLayout.width,
-            currentLayout.height)) {
-      // Tell TreeState to keep state containers for the cache of DeferredNode, otherwise we'll end
-      // up getting lost state containers when we commit layout state.
-      Resolver.commitToLayoutStateRecursively(lithoLayoutContext.treeState, currentLayout.node)
-      return currentLayout
-    }
-
-    // 2. Check if cached layout result is compatible and can be reused or not.
-    val node: DeferredLithoNode = holderResult.node
-    consumeAndGetCachedLayout(lithoLayoutContext, node, holderResult, widthSpec, heightSpec)?.let {
-        cachedLayout ->
-      // Tell TreeState to keep state containers for the cache of DeferredNode, otherwise we'll end
-      // up getting lost state containers when we commit layout state.
-      Resolver.commitToLayoutStateRecursively(lithoLayoutContext.treeState, cachedLayout.node)
-      return cachedLayout
-    }
-
-    // 3. If component is not using OnCreateLayoutWithSizeSpec, we don't have to resolve it again
-    // and we can simply re-measure the tree. This is for cases where component was measured with
-    // Component.measure API but we could not find the cached layout result or cached layout result
-    // was not compatible with given size spec.
-    val component: Component = node.tailComponent
-    if (currentLayout != null && !Component.isLayoutSpecWithSizeSpec(component)) {
-      return measureTree(
-          lithoLayoutContext = lithoLayoutContext,
-          androidContext = currentLayout.context.androidContext,
-          node = currentLayout.node,
-          sizeConstraints = SizeConstraints.fromMeasureSpecs(widthSpec, heightSpec))
-    }
-
-    // 4. If current layout result is not available or component uses OnCreateLayoutWithSizeSpec
-    // then resolve the tree and measure it. At this point we know that current layout result and
-    // cached layout result are not available or are not compatible with given size spec.
-
-    // DeferredNode is used for two purposes i.e for components measured using Component.measure API
-    // and for components which are OnCreateLayoutWithSizeSpec.
-    // For components measured with measure API, we want to reuse the same global key calculated
-    // during measure API call and for that we are using the cached node and accessing the global
-    // key from it since DeferredNode will have incorrect global key for it.
-    val globalKeyToReuse: String
-    val treePropsToReuse: TreePropContainer?
-    if (Component.isLayoutSpecWithSizeSpec(component)) {
-      globalKeyToReuse = node.tailComponentKey
-      treePropsToReuse = node.tailComponentContext.treePropContainer
-    } else {
-      globalKeyToReuse = checkNotNull(node.cachedNode).tailComponentKey
-      treePropsToReuse = checkNotNull(node.cachedNode).tailComponentContext.treePropContainer
-    }
-
-    // 4.a Apply state updates early for layout phase
-    lithoLayoutContext.treeState.applyStateUpdatesEarly(parentContext, component, null, true)
-    val prevContext = parentContext.calculationStateContext
-
-    return try {
-      val nestedRsc =
-          ResolveContext(
-              treeId = lithoLayoutContext.treeId,
-              cache = lithoLayoutContext.cache,
-              treeState = lithoLayoutContext.treeState,
-              layoutVersion = lithoLayoutContext.layoutVersion,
-              rootComponentId = lithoLayoutContext.rootComponentId,
-              isAccessibilityEnabled = lithoLayoutContext.isAccessibilityEnabled,
-              treeFuture = null,
-              currentRoot = null,
-              isInLayout = true)
-      parentContext.renderStateContext = nestedRsc
-
-      // 4.b Create a new layout.
-      val newNode: LithoNode? =
-          Resolver.resolveImpl(
-              nestedRsc,
-              parentContext,
-              widthSpec,
-              heightSpec,
-              component,
-              true,
-              globalKeyToReuse,
-              treePropsToReuse)
-
-      if (newNode == null) {
-        // mark as error to prevent from resolving it again.
-        holderResult.layoutOutput._measureHadExceptions = true
-        return null
-      }
-
-      // TODO (T151239896): Revaluate copy into and freeze after common props are refactored
-      holderResult.node.copyInto(newNode)
-      newNode.applyParentDependentCommonProps(
-          context = lithoLayoutContext,
-          parentLayoutDirection = holderResult.node.layoutDirection,
+  ): ComponentResolveResult =
+      this.resolveDeferred(
+          calculationContext,
+          componentContext,
+          parentContext,
+          createCommonProps(componentContext),
       )
 
-      val nestedLsc =
-          LithoLayoutContext(
-              treeId = nestedRsc.treeId,
-              cache = nestedRsc.cache,
-              rootContext = parentContext,
-              treeState = nestedRsc.treeState,
-              layoutVersion = nestedRsc.layoutVersion,
-              rootComponentId = nestedRsc.rootComponentId,
-              isAccessibilityEnabled = lithoLayoutContext.isAccessibilityEnabled,
-              layoutCache = LayoutCache(), // disable caching deferred node results
-              currentDiffTree = lithoLayoutContext.currentDiffTree,
-              layoutStateFuture = null)
-
-      // Set the DiffNode for the deferred node's result to consume during measurement.
-      nestedLsc.setDiffNodeForDeferredNode(holderResult.diffNode)
-      parentContext.setLithoLayoutContext(nestedLsc)
-
-      // 4.b Measure the tree
-      val result =
-          measureTree(
-              lithoLayoutContext = nestedLsc,
-              androidContext = parentContext.androidContext,
-              node = newNode,
-              sizeConstraints = SizeConstraints.fromMeasureSpecs(widthSpec, heightSpec))
-
-      CalculationContext.recordEventHandlers(nestedRsc, prevContext)
-      CalculationContext.recordEventHandlers(nestedLsc, prevContext)
-
-      result
-    } finally {
-      parentContext.calculationStateContext = prevContext
-    }
-  }
-
-  private fun consumeAndGetCachedLayout(
-      lithoLayoutContext: LithoLayoutContext,
-      holder: DeferredLithoNode,
-      holderResult: DeferredLithoLayoutResult,
-      widthSpec: Int,
-      heightSpec: Int
-  ): LithoLayoutResult? {
-    val cachedNode: LithoNode = holder.cachedNode ?: return null
-    val resultCache: MeasuredResultCache = lithoLayoutContext.cache
-    val component: Component = holder.tailComponent
-    val cachedLayout: LithoLayoutResult = resultCache.getCachedResult(cachedNode) ?: return null
-
-    // Consume the cached result
-    resultCache.removeCachedResult(cachedNode)
-    val hasValidDirection: Boolean =
-        hasValidLayoutDirectionInActualLayoutResult(holderResult, cachedLayout)
-
-    // Transfer the cached layout to the node it if it's compatible.
-    if (hasValidDirection) {
-      val hasCompatibleSizeSpec: Boolean =
-          MeasureComparisonUtils.hasCompatibleSizeSpec(
-              oldWidthSpec = cachedLayout.widthSpec,
-              oldHeightSpec = cachedLayout.heightSpec,
-              newWidthSpec = widthSpec,
-              newHeightSpec = heightSpec,
-              oldMeasuredWidth = cachedLayout.width,
-              oldMeasuredHeight = cachedLayout.height)
-      if (hasCompatibleSizeSpec) {
-        return cachedLayout
-      } else if (!Component.isLayoutSpecWithSizeSpec(component)) {
-        return measureTree(
-            lithoLayoutContext = lithoLayoutContext,
-            androidContext = cachedLayout.context.androidContext,
-            node = cachedLayout.node,
-            sizeConstraints = SizeConstraints.fromMeasureSpecs(widthSpec, heightSpec))
-      }
-    }
-    return null
-  }
+  private fun createCommonProps(c: ComponentContext): CommonProps? =
+      if (style !== Style) CommonProps().apply { style.applyCommonProps(c, this) } else null
 
   /**
-   * Check that the root of the deferred node we are going to use, has valid layout directions with
-   * its main tree holder node.
+   * Compares the children, the style and the layout function, by `equals`.
+   *
+   * Inheriting the default would compare nothing. [Component.isEquivalentProps] defers to
+   * `ComponentUtils.hasEquivalentFields`, which only looks at fields annotated `@Comparable`, and
+   * the Spec API's processor is what generates those onto `@Prop`s. A Kotlin component has none, so
+   * every container would be equivalent to every other and a changed child would never reach the
+   * screen. `KComponent` overrides this for the same reason.
+   *
+   * The layout function is never compared by class. Two renders of one call site share a class even
+   * when what the lambda captured changed, so class identity would keep a container laid out
+   * against a stale value. Comparing the instance is always correct: a lambda that captures values
+   * is a new instance each render, so its container lays out again.
    */
-  private fun hasValidLayoutDirectionInActualLayoutResult(
-      deferred: DeferredLithoLayoutResult,
-      actual: LithoLayoutResult
-  ): Boolean =
-      actual.node.layoutDirection.isInherit ||
-          actual.node.layoutDirection == deferred.node.layoutDirection
+  override fun isEquivalentProps(other: Component?): Boolean {
+    if (this === other) {
+      return true
+    }
+    if (other !is Layout || javaClass != other.javaClass) {
+      return false
+    }
+    if (instanceId == other.instanceId) {
+      return true
+    }
+    return layoutFunction == other.layoutFunction &&
+        areObjectsEquivalent(components, other.components) &&
+        areObjectsEquivalent(style, other.style)
+  }
 
-  /** DiffNode state should be retrieved from the committed LayoutState. */
-  private fun getDiffNodeScopedContext(diffNode: DiffNode): ComponentContext =
-      diffNode.scopedComponentInfo.context
+  override fun isPureRender(): Boolean = true
+}
+
+/**
+ * The node of a `Layout`, whose children keep their declared slots: one that is null, or resolves
+ * to no node, holds its slot as an empty node, which lays out at 0x0.
+ */
+internal class LayoutNode : LithoNode() {
+
+  override fun child(resolveContext: ResolveContext, c: ComponentContext, child: Component?) {
+    child(
+        child?.let { Resolver.resolve(resolveContext, c, it) }
+            ?: Resolver.resolve(resolveContext, c, EmptyComponent()),
+    )
+  }
 }

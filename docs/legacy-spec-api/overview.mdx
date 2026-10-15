@@ -1,0 +1,29 @@
+---
+id: overview
+title: Introduction
+keywords:
+    - spec
+---
+
+:::danger DEPRECATED API
+This documentation describes the **legacy Spec API (Codegen)** which is **deprecated and maintained only for existing code**.
+
+**For new development:**
+- Use **[KComponents](../migrating-to-kcomponents/kotlin-api-basics.mdx)** instead of `@LayoutSpec`
+- Use **[Primitive Components](../primitives/overview.mdx)** instead of `@MountSpec`
+- See **[Migration Strategies](../adopting-litho/migration-strategies.mdx)** for converting existing Spec components
+
+**Support Status:** Bug fixes only. No new features will be added to the Spec API.
+:::
+
+The documentation for Spec APIs includes the following pages:
+
+* [Layout Specs](layout-specs.mdx) - the logical equivalents of composite views on Android.
+* [Mount Specs](mount-specs.md) - components that can render views or drawables.
+* [Dynamic Props](dynamic-props.mdx) - illustrates properties that are applied directly to a View or Drawable and are updated without computing a layout or remounting.
+* [Accessibility](accessibility-overview.md) - explains why accessibility is important and how to implement accessibility features, and lists the supported accessibility events of the `Style` object.
+* [Sections API](sections/start.mdx) - documentation for the Sections API for writing lists.
+* [Props](passing-data-to-components/props.md) and [TreeProps](passing-data-to-components/treeprops.mdx) - the ways you can pass data to components.
+* [State in Specs](passing-data-to-components/state-for-specs.md) - data that is encapsulated and managed within the component and is transparent to its parent.
+* [Events for Specs](passing-data-to-components/events-for-specs.md) - a general-purpose API to connect components with one another.
+* [Triggering Events with Handles](passing-data-to-components/trigger-events.md) - how to use a `Handle` to trigger events on components.

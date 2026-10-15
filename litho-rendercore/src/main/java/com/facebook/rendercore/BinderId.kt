@@ -29,7 +29,8 @@ import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClas
  */
 @DataClassGenerate
 data class BinderId(val renderUnitId: Long, val type: BinderType, val key: BinderKey) {
-  var renderUnitDebugDescription: (() -> String?)? = null
+  var renderUnitDebugDescription: String? = null
+  var binderDebugDescription: String? = null
 }
 
 /**
@@ -38,5 +39,5 @@ data class BinderId(val renderUnitId: Long, val type: BinderType, val key: Binde
  */
 enum class BinderType {
   MOUNT,
-  ATTACH
+  ATTACH,
 }

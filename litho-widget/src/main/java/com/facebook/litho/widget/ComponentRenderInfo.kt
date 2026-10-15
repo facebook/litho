@@ -18,7 +18,6 @@ package com.facebook.litho.widget
 
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentTreeDebugEventListener
-import com.facebook.litho.ComponentsLogger
 import com.facebook.litho.EmptyComponent
 import com.facebook.litho.EventHandler
 import com.facebook.litho.RenderCompleteEvent
@@ -30,7 +29,6 @@ class ComponentRenderInfo private constructor(builder: Builder) : BaseRenderInfo
       checkNotNull(builder.component) { "Component must be provided." }
   override val renderCompleteEventHandler: EventHandler<RenderCompleteEvent>? =
       builder.renderCompleteEventEventHandler
-  override val componentsLogger: ComponentsLogger? = builder.componentsLogger
   override val logTag: String? = builder.logTag
   override val debugEventListener: ComponentTreeDebugEventListener? = builder.debugEventListener
 
@@ -42,7 +40,6 @@ class ComponentRenderInfo private constructor(builder: Builder) : BaseRenderInfo
   class Builder : BaseRenderInfo.Builder<Builder>() {
     var component: Component? = null
     var renderCompleteEventEventHandler: EventHandler<RenderCompleteEvent>? = null
-    var componentsLogger: ComponentsLogger? = null
     var logTag: String? = null
     var debugEventListener: ComponentTreeDebugEventListener? = null
 
@@ -50,15 +47,11 @@ class ComponentRenderInfo private constructor(builder: Builder) : BaseRenderInfo
     fun component(component: Component?): Builder = also { this.component = component }
 
     fun renderCompleteHandler(
-        renderCompleteEventHandler: EventHandler<RenderCompleteEvent>?
+        renderCompleteEventHandler: EventHandler<RenderCompleteEvent>?,
     ): Builder = also { this.renderCompleteEventEventHandler = renderCompleteEventHandler }
 
     fun component(builder: Component.Builder<*>): Builder {
       return component(builder.build())
-    }
-
-    fun componentsLogger(componentsLogger: ComponentsLogger?): Builder = also {
-      this.componentsLogger = componentsLogger
     }
 
     fun logTag(logTag: String?): Builder = also { this.logTag = logTag }

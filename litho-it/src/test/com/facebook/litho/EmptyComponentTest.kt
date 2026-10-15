@@ -32,7 +32,7 @@ import org.robolectric.shadows.ShadowLooper
 @RunWith(LithoTestRunner::class)
 class EmptyComponentTest {
 
-  @Rule @JvmField val mLithoTestRule = LithoTestRule()
+  @Rule @JvmField val lithoTestRule = LithoTestRule()
 
   @Test
   fun `two EmptyComponents should be equivalent and have equivalent props`() {
@@ -49,12 +49,12 @@ class EmptyComponentTest {
 
   @Test
   fun `setting a null root renders an empty component`() {
-    val lithoView = mLithoTestRule.render { Text.create(context).text("Hello World").build() }
+    val lithoView = lithoTestRule.render { Text.create(context).text("Hello World").build() }
     lithoView.setSizeSpecs(exactly(1000), unspecified())
 
     LithoViewAssert.assertThat(lithoView.lithoView).hasVisibleText("Hello World")
 
-    mLithoTestRule.act(lithoView) { lithoView.setRoot(null) }
+    lithoTestRule.act(lithoView) { lithoView.setRoot(null) }
     lithoView.measure().layout()
     ShadowLooper.idleMainLooper()
 

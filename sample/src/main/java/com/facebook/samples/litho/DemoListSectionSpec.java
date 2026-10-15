@@ -16,10 +16,15 @@
 
 package com.facebook.samples.litho;
 
+import static com.facebook.litho.core.CoreStylesKt.widthPercent;
+
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.widget.ImageView.ScaleType;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Column;
+import com.facebook.litho.JavaStyle;
+import com.facebook.litho.Style;
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.Param;
@@ -32,7 +37,7 @@ import com.facebook.litho.sections.common.DataDiffSection;
 import com.facebook.litho.sections.common.RenderEvent;
 import com.facebook.litho.sections.common.SingleComponentSection;
 import com.facebook.litho.widget.ComponentRenderInfo;
-import com.facebook.litho.widget.Image;
+import com.facebook.litho.widget.PrimitiveImage;
 import com.facebook.litho.widget.RenderInfo;
 import com.facebook.litho.widget.TouchableFeedback;
 import com.facebook.yoga.YogaEdge;
@@ -79,11 +84,15 @@ class DemoListSectionSpec {
                     .child(SingleDemoComponent.create(c).title(model.getName()))
                     .child(
                         index != groupSize - 1
-                            ? Image.create(c)
-                                .drawable(new ColorDrawable(Color.BLACK))
-                                .paddingDip(YogaEdge.LEFT, 16)
-                                .widthPercent(100)
-                                .heightPx(1)
+                            ? PrimitiveImage.create(
+                                new ColorDrawable(Color.BLACK),
+                                ScaleType.FIT_CENTER,
+                                true,
+                                null,
+                                1,
+                                new JavaStyle(widthPercent(Style.Companion, 100f))
+                                    .paddingDip(YogaEdge.LEFT, 16f)
+                                    .build())
                             : null)
                     .clickHandler(DemoListSection.onClickEvent(c, newIndices, model))
                     .build(),

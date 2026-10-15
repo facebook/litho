@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@file:Suppress("UNCHECKED_CAST")
+
 package com.facebook.rendercore
 
 import android.graphics.Rect
@@ -26,9 +28,11 @@ import com.facebook.rendercore.extensions.InformsMountCallback
 import com.facebook.rendercore.extensions.MountExtension
 import com.facebook.rendercore.extensions.OnItemCallbacks
 import com.facebook.rendercore.extensions.RenderCoreExtension
+import com.facebook.rendercore.extensions.VisibilityChangeReason
 import com.facebook.rendercore.extensions.VisibleBoundsCallbacks
+import com.meta.systrace.Systracer
 import java.util.ArrayList
-import java.util.HashSet
+import java.util.LinkedHashMap
 
 /**
  * Can be passed to a MountState to override default mounting behaviour and control which items get
@@ -44,7 +48,8 @@ class MountDelegate(val mountDelegateTarget: MountDelegateTarget, val tracer: Sy
   private var referenceCountingEnabled: Boolean = false
   private var collectVisibleBoundsChangedCalls: Boolean = false
   private var notifyVisibleBoundsChangedNestCount: Int = 0
-  private val notifyVisibleBoundsChangedItems: MutableSet<Any?> = HashSet()
+  private val notifyVisibleBoundsChangedItems: LinkedHashMap<Any?, VisibilityChangeReason> =
+      LinkedHashMap()
   private var mountStateListener: RenderTreeUpdateListener? = null
 
   fun setCollectVisibleBoundsChangedCalls(value: Boolean) {
@@ -60,7 +65,8 @@ class MountDelegate(val mountDelegateTarget: MountDelegateTarget, val tracer: Sy
           val extensionState = extension.createExtensionState(this) as ExtensionState<Any>
           if (extension is UnmountDelegateExtension<*>) {
             mountDelegateTarget.setUnmountDelegateExtension(
-                (extension as UnmountDelegateExtension<*>))
+                (extension as UnmountDelegateExtension<*>),
+            )
             unmountDelegateExtensionState = extensionState
           }
           referenceCountingEnabled =
@@ -107,8 +113,10 @@ class MountDelegate(val mountDelegateTarget: MountDelegateTarget, val tracer: Sy
       unmountDelegateExtensionState = null
     }
     checkNotNull(mountExtension) { { "Could not find the extension $toRemove" } }
-    if (mountExtension is InformsMountCallback &&
-        (mountExtension as InformsMountCallback).canPreventMount()) {
+    if (
+        mountExtension is InformsMountCallback &&
+            (mountExtension as InformsMountCallback).canPreventMount()
+    ) {
       updateRefCountEnabled()
     }
   }
@@ -125,7 +133,9 @@ class MountDelegate(val mountDelegateTarget: MountDelegateTarget, val tracer: Sy
       val extension = _extensionStates[i].extension
       if (extension is GapWorkerCallbacks<*>) {
         (extension as GapWorkerCallbacks<Any>).onRegisterForPremount(
-            _extensionStates[i] as ExtensionState<Any>, frameTimeMs)
+            _extensionStates[i],
+            frameTimeMs,
+        )
       }
     }
   }
@@ -134,8 +144,7 @@ class MountDelegate(val mountDelegateTarget: MountDelegateTarget, val tracer: Sy
     for (i in 0 until _extensionStates.size) {
       val extension = _extensionStates[i].extension
       if (extension is GapWorkerCallbacks<*>) {
-        (extension as GapWorkerCallbacks<Any>).onUnregisterForPremount(
-            _extensionStates[i] as ExtensionState<Any>)
+        (extension as GapWorkerCallbacks<Any>).onUnregisterForPremount(_extensionStates[i])
       }
     }
   }
@@ -152,13 +161,14 @@ class MountDelegate(val mountDelegateTarget: MountDelegateTarget, val tracer: Sy
       val input = entry.second
       if (entry.first.getMountExtension() != null) {
         val extension = entry.first.getMountExtension() as MountExtension<Any, Any>
-        val current = _extensionStates[i] as ExtensionState<Any>
+        val current = _extensionStates[i]
         check(current.extension === extension) {
           String.format(
               "state for %s was not found at expected index %d. Found %s at index instead.",
               entry.first,
               i,
-              current.extension)
+              current.extension,
+          )
         }
         extension.beforeMount(current, input, rect)
         i++
@@ -166,32 +176,38 @@ class MountDelegate(val mountDelegateTarget: MountDelegateTarget, val tracer: Sy
     }
   }
 
-  fun afterMount() {
+  fun afterMount(reason: VisibilityChangeReason) {
     startNotifyVisibleBoundsChangedSection()
     for (i in 0 until _extensionStates.size) {
-      _extensionStates[i].afterMount()
+      _extensionStates[i].afterMount(reason)
     }
     endNotifyVisibleBoundsChangedSection()
   }
 
-  fun notifyVisibleBoundsChanged(rect: Rect?) {
+  fun notifyVisibleBoundsChanged(
+      rect: Rect?,
+      reason: VisibilityChangeReason,
+  ) {
     startNotifyVisibleBoundsChangedSection()
     for (i in 0 until _extensionStates.size) {
-      val state = _extensionStates[i] as ExtensionState<Any>
+      val state = _extensionStates[i]
       val extension = state.extension
       if (extension is VisibleBoundsCallbacks<*>) {
-        (extension as VisibleBoundsCallbacks<Any>).onVisibleBoundsChanged(state, rect)
+        (extension as VisibleBoundsCallbacks<Any>).onVisibleBoundsChanged(state, rect, reason)
       }
     }
     endNotifyVisibleBoundsChangedSection()
   }
 
-  fun notifyVisibleBoundsChangedForItem(item: Any?) {
+  fun notifyVisibleBoundsChangedForItem(
+      item: Any?,
+      reason: VisibilityChangeReason,
+  ) {
     if (!collectVisibleBoundsChangedCalls) {
-      RenderCoreExtension.recursivelyNotifyVisibleBoundsChanged(item, tracer)
+      RenderCoreExtension.recursivelyNotifyVisibleBoundsChanged(item, tracer, reason)
       return
     }
-    notifyVisibleBoundsChangedItems.add(item)
+    notifyVisibleBoundsChangedItems[item] = reason
   }
 
   fun startNotifyVisibleBoundsChangedSection() {
@@ -208,11 +224,12 @@ class MountDelegate(val mountDelegateTarget: MountDelegateTarget, val tracer: Sy
     notifyVisibleBoundsChangedNestCount--
     if (notifyVisibleBoundsChangedNestCount < 0) {
       throw RuntimeException(
-          "notifyVisibleBoundsChangedNestCount should not be decremented below zero!")
+          "notifyVisibleBoundsChangedNestCount should not be decremented below zero!",
+      )
     }
     if (notifyVisibleBoundsChangedNestCount == 0) {
-      for (item in notifyVisibleBoundsChangedItems) {
-        RenderCoreExtension.recursivelyNotifyVisibleBoundsChanged(item, tracer)
+      for ((item, reason) in notifyVisibleBoundsChangedItems) {
+        RenderCoreExtension.recursivelyNotifyVisibleBoundsChanged(item, tracer, reason)
       }
       notifyVisibleBoundsChangedItems.clear()
     }
@@ -239,6 +256,17 @@ class MountDelegate(val mountDelegateTarget: MountDelegateTarget, val tracer: Sy
     endNotifyVisibleBoundsChangedSection()
   }
 
+  fun onBeforeUnmountAllItems() {
+    startNotifyVisibleBoundsChangedSection()
+    try {
+      for (i in 0 until _extensionStates.size) {
+        _extensionStates[i].onBeforeUnmount()
+      }
+    } finally {
+      endNotifyVisibleBoundsChangedSection()
+    }
+  }
+
   fun unMount() {
     startNotifyVisibleBoundsChangedSection()
     for (i in 0 until _extensionStates.size) {
@@ -250,7 +278,7 @@ class MountDelegate(val mountDelegateTarget: MountDelegateTarget, val tracer: Sy
   fun onBindItem(renderUnit: RenderUnit<*>, content: Any, layoutData: Any?, tracer: Systracer) {
     startNotifyVisibleBoundsChangedSection()
     for (i in 0 until _extensionStates.size) {
-      val state = _extensionStates[i] as ExtensionState<Any>
+      val state = _extensionStates[i]
       val extension = state.extension
       if (extension is OnItemCallbacks<*>) {
         val isTracing = tracer.isTracing()
@@ -269,7 +297,7 @@ class MountDelegate(val mountDelegateTarget: MountDelegateTarget, val tracer: Sy
   fun onUnbindItem(renderUnit: RenderUnit<*>, content: Any, layoutData: Any?, tracer: Systracer) {
     startNotifyVisibleBoundsChangedSection()
     for (i in 0 until _extensionStates.size) {
-      val state = _extensionStates[i] as ExtensionState<Any>
+      val state = _extensionStates[i]
       val extension = state.extension
       if (extension is OnItemCallbacks<*>) {
         val isTracing = tracer.isTracing()
@@ -294,11 +322,11 @@ class MountDelegate(val mountDelegateTarget: MountDelegateTarget, val tracer: Sy
       previousLayoutData: Any?,
       nextRenderUnit: RenderUnit<*>,
       nextLayoutData: Any?,
-      tracer: Systracer
+      tracer: Systracer,
   ): List<ExtensionState<*>>? {
     var extensionStatesToUpdate: MutableList<ExtensionState<*>>? = null
     for (i in 0 until _extensionStates.size) {
-      val state = _extensionStates[i] as ExtensionState<Any>
+      val state = _extensionStates[i]
       val extension = state.extension
       if (extension is OnItemCallbacks<*>) {
         val isTracing = tracer.isTracing()
@@ -307,7 +335,12 @@ class MountDelegate(val mountDelegateTarget: MountDelegateTarget, val tracer: Sy
         }
         val shouldUpdate: Boolean =
             (extension as OnItemCallbacks<Any>).shouldUpdateItem(
-                state, previousRenderUnit, previousLayoutData, nextRenderUnit, nextLayoutData)
+                state,
+                previousRenderUnit,
+                previousLayoutData,
+                nextRenderUnit,
+                nextLayoutData,
+            )
         if (isTracing) {
           tracer.endSection()
         }
@@ -325,7 +358,7 @@ class MountDelegate(val mountDelegateTarget: MountDelegateTarget, val tracer: Sy
   fun onMountItem(renderUnit: RenderUnit<*>, content: Any, layoutData: Any?, tracer: Systracer) {
     startNotifyVisibleBoundsChangedSection()
     for (i in 0 until _extensionStates.size) {
-      val state = _extensionStates[i] as ExtensionState<Any>
+      val state = _extensionStates[i]
       val extension = state.extension
       if (extension is OnItemCallbacks<*>) {
         val isTracing = tracer.isTracing()
@@ -344,7 +377,7 @@ class MountDelegate(val mountDelegateTarget: MountDelegateTarget, val tracer: Sy
   fun onUnmountItem(renderUnit: RenderUnit<*>, content: Any, layoutData: Any?, tracer: Systracer) {
     startNotifyVisibleBoundsChangedSection()
     for (i in 0 until _extensionStates.size) {
-      val state = _extensionStates[i] as ExtensionState<Any>
+      val state = _extensionStates[i]
       val extension = state.extension
       if (extension is OnItemCallbacks<*>) {
         val isTracing = tracer.isTracing()
@@ -364,11 +397,11 @@ class MountDelegate(val mountDelegateTarget: MountDelegateTarget, val tracer: Sy
       node: RenderTreeNode,
       content: Any,
       changed: Boolean,
-      tracer: Systracer
+      tracer: Systracer,
   ) {
     startNotifyVisibleBoundsChangedSection()
     for (i in 0 until _extensionStates.size) {
-      val state = _extensionStates[i] as ExtensionState<Any>
+      val state = _extensionStates[i]
       val extension = state.extension
       if (extension is OnItemCallbacks<*>) {
         val isTracing = tracer.isTracing()
@@ -376,7 +409,12 @@ class MountDelegate(val mountDelegateTarget: MountDelegateTarget, val tracer: Sy
           tracer.beginSection("Extension:onBoundsAppliedToItem ${extension.name}")
         }
         (extension as OnItemCallbacks<Any>).onBoundsAppliedToItem(
-            state, node.renderUnit, content, node.layoutData, changed)
+            state,
+            node.renderUnit,
+            content,
+            node.layoutData,
+            changed,
+        )
         if (isTracing) {
           tracer.endSection()
         }
@@ -401,7 +439,10 @@ class MountDelegate(val mountDelegateTarget: MountDelegateTarget, val tracer: Sy
       val extension = _extensionStates[i].extension
       if (extension is OnItemCallbacks<*>) {
         (extension as OnItemCallbacks<Any>).beforeMountItem(
-            _extensionStates[i] as ExtensionState<Any>, renderTreeNode, index)
+            _extensionStates[i],
+            renderTreeNode,
+            index,
+        )
       }
     }
     endNotifyVisibleBoundsChangedSection()
@@ -444,12 +485,27 @@ class MountDelegate(val mountDelegateTarget: MountDelegateTarget, val tracer: Sy
     mountDelegateTarget.notifyMount(id)
   }
 
+  fun getGapWorkerExtensionState(): ExtensionState<Any>? {
+    var gapWorkerExtensionState: ExtensionState<Any>? = null
+    for (i in 0 until _extensionStates.size) {
+      val state = _extensionStates[i]
+      if (state.extension is GapWorkerCallbacks<*>) {
+        check(gapWorkerExtensionState == null) {
+          "Multiple GapWorkerCallbacks extensions are registered on one MountDelegate."
+        }
+        gapWorkerExtensionState = state
+      }
+    }
+    return gapWorkerExtensionState
+  }
+
   fun hasItemToMount(): Boolean {
     for (i in 0 until _extensionStates.size) {
       val extension = _extensionStates[i].extension
-      if (extension is GapWorkerCallbacks<*> &&
-          (extension as GapWorkerCallbacks<Any>).hasItemToMount(
-              _extensionStates[i] as ExtensionState<Any>)) {
+      if (
+          extension is GapWorkerCallbacks<*> &&
+              (extension as GapWorkerCallbacks<Any>).hasItemToMount(_extensionStates[i])
+      ) {
         return true
       }
     }
@@ -461,8 +517,7 @@ class MountDelegate(val mountDelegateTarget: MountDelegateTarget, val tracer: Sy
     for (i in 0 until _extensionStates.size) {
       val extension = _extensionStates[i].extension
       if (extension is GapWorkerCallbacks<*>) {
-        (extension as GapWorkerCallbacks<Any>).premountNext(
-            _extensionStates[i] as ExtensionState<Any>)
+        (extension as GapWorkerCallbacks<Any>).premountNext(_extensionStates[i])
       }
     }
     endNotifyVisibleBoundsChangedSection()
@@ -500,9 +555,6 @@ class MountDelegate(val mountDelegateTarget: MountDelegateTarget, val tracer: Sy
   }
 
   private fun incrementExtensionRefCount(renderUnitId: Long) {
-    if (!referenceCountingEnabled) {
-      return
-    }
     var refCount = referenceCountMap[renderUnitId]
     if (refCount == null) {
       refCount = 0
@@ -511,9 +563,6 @@ class MountDelegate(val mountDelegateTarget: MountDelegateTarget, val tracer: Sy
   }
 
   private fun decrementExtensionRefCount(renderUnitId: Long) {
-    if (!referenceCountingEnabled) {
-      return
-    }
     val refCount = referenceCountMap[renderUnitId]
     check(!(refCount == null || refCount == 0)) {
       "Trying to decrement reference count for an item you don't own."
@@ -544,7 +593,7 @@ class MountDelegate(val mountDelegateTarget: MountDelegateTarget, val tracer: Sy
         nextRenderUnit: RenderUnit<*>?,
         nextLayoutData: Any?,
         content: Any,
-        tracer: Systracer
+        tracer: Systracer,
     ) {
       if (!extensionStatesToUpdate.isEmpty()) {
         val size = extensionStatesToUpdate.size
@@ -557,7 +606,11 @@ class MountDelegate(val mountDelegateTarget: MountDelegateTarget, val tracer: Sy
               tracer.beginSection("Extension:onUnbindItem ${extension.name}")
             }
             (extension as OnItemCallbacks<Any>).onUnbindItem(
-                state, previousRenderUnit, content, previousLayoutData)
+                state,
+                previousRenderUnit,
+                content,
+                previousLayoutData,
+            )
             if (isTracing) {
               tracer.endSection()
             }
@@ -574,7 +627,7 @@ class MountDelegate(val mountDelegateTarget: MountDelegateTarget, val tracer: Sy
         nextRenderUnit: RenderUnit<*>?,
         nextLayoutData: Any?,
         content: Any,
-        tracer: Systracer
+        tracer: Systracer,
     ) {
       if (!extensionStatesToUpdate.isEmpty()) {
         val size = extensionStatesToUpdate.size
@@ -587,7 +640,11 @@ class MountDelegate(val mountDelegateTarget: MountDelegateTarget, val tracer: Sy
               tracer.beginSection("Extension:onUnmountItem ${extension.name}")
             }
             (extension as OnItemCallbacks<Any>).onUnmountItem(
-                state, previousRenderUnit, content, previousLayoutData)
+                state,
+                previousRenderUnit,
+                content,
+                previousLayoutData,
+            )
             if (isTracing) {
               tracer.endSection()
             }
@@ -604,7 +661,7 @@ class MountDelegate(val mountDelegateTarget: MountDelegateTarget, val tracer: Sy
         nextRenderUnit: RenderUnit<*>,
         nextLayoutData: Any?,
         content: Any,
-        tracer: Systracer
+        tracer: Systracer,
     ) {
       if (!extensionStatesToUpdate.isEmpty()) {
         val size = extensionStatesToUpdate.size
@@ -617,7 +674,11 @@ class MountDelegate(val mountDelegateTarget: MountDelegateTarget, val tracer: Sy
               tracer.beginSection("Extension:onMountItem ${extension.name}")
             }
             (extension as OnItemCallbacks<Any>).onMountItem(
-                state, nextRenderUnit, content, nextLayoutData)
+                state,
+                nextRenderUnit,
+                content,
+                nextLayoutData,
+            )
             if (isTracing) {
               tracer.endSection()
             }
@@ -634,7 +695,7 @@ class MountDelegate(val mountDelegateTarget: MountDelegateTarget, val tracer: Sy
         nextRenderUnit: RenderUnit<*>,
         nextLayoutData: Any?,
         content: Any,
-        tracer: Systracer
+        tracer: Systracer,
     ) {
       if (!extensionStatesToUpdate.isEmpty()) {
         val size = extensionStatesToUpdate.size
@@ -647,7 +708,11 @@ class MountDelegate(val mountDelegateTarget: MountDelegateTarget, val tracer: Sy
               tracer.beginSection("Extension:onBindItem ${extension.name}")
             }
             (extension as OnItemCallbacks<Any>).onBindItem(
-                state, nextRenderUnit, content, nextLayoutData)
+                state,
+                nextRenderUnit,
+                content,
+                nextLayoutData,
+            )
             if (isTracing) {
               tracer.endSection()
             }

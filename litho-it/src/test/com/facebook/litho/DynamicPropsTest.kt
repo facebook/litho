@@ -16,25 +16,25 @@
 
 package com.facebook.litho
 
-import android.annotation.TargetApi
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
-import android.os.Build
 import android.util.SparseArray
 import android.view.View
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.animated.alpha
+import com.facebook.litho.animated.useBinding
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
+import com.facebook.litho.layout.flexbox.Column
+import com.facebook.litho.layout.flexbox.Row
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.helper.ComponentTestHelper
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.backgroundColor
-import com.facebook.litho.widget.DynamicPropsResetValueTester
-import com.facebook.litho.widget.DynamicPropsResetValueTesterSpec
+import com.facebook.litho.widget.Text
 import com.facebook.rendercore.MountItem
 import com.facebook.rendercore.primitives.ExactSizeConstraintsLayoutBehavior
 import com.facebook.rendercore.primitives.ViewAllocator
@@ -45,7 +45,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.annotation.Config
 import org.robolectric.annotation.LooperMode
 
 @LooperMode(LooperMode.Mode.LEGACY)
@@ -68,10 +67,9 @@ class DynamicPropsTest {
   fun testDynamicAlphaApplied() {
     val startValue = 0.8f
     val alphaDV = DynamicValue(startValue)
-    val testLithoView =
-        lithoTestRule.render {
-          Column.create(context).widthPx(80).heightPx(80).alpha(alphaDV).build()
-        }
+    val testLithoView = lithoTestRule.render {
+      Column.create(context).widthPx(80).heightPx(80).alpha(alphaDV).build()
+    }
     assertThat(testLithoView.lithoView.childCount).isEqualTo(1)
     val hostView = testLithoView.lithoView.getChildAt(0)
     assertThat(hostView.alpha).isEqualTo(startValue)
@@ -139,15 +137,14 @@ class DynamicPropsTest {
     val startValueY = -100f
     val translationXDV = DynamicValue(startValueX)
     val translationYDV = DynamicValue(startValueY)
-    val testLithoView =
-        lithoTestRule.render {
-          Column.create(context)
-              .widthPx(80)
-              .heightPx(80)
-              .translationX(translationXDV)
-              .translationY(translationYDV)
-              .build()
-        }
+    val testLithoView = lithoTestRule.render {
+      Column.create(context)
+          .widthPx(80)
+          .heightPx(80)
+          .translationX(translationXDV)
+          .translationY(translationYDV)
+          .build()
+    }
     assertThat(testLithoView.lithoView.childCount).isEqualTo(1)
     val hostView = testLithoView.lithoView.getChildAt(0)
     assertThat(hostView.translationX).isEqualTo(startValueX)
@@ -172,10 +169,9 @@ class DynamicPropsTest {
     val startValueY = -1.5f
     val scaleXDV = DynamicValue(startValueX)
     val scaleYDV = DynamicValue(startValueY)
-    val testLithoView =
-        lithoTestRule.render {
-          Column.create(context).widthPx(80).heightPx(80).scaleX(scaleXDV).scaleY(scaleYDV).build()
-        }
+    val testLithoView = lithoTestRule.render {
+      Column.create(context).widthPx(80).heightPx(80).scaleX(scaleXDV).scaleY(scaleYDV).build()
+    }
     assertThat(testLithoView.lithoView.childCount).isEqualTo(1)
     val hostView = testLithoView.lithoView.getChildAt(0)
     assertThat(hostView.scaleX).isEqualTo(startValueX)
@@ -198,10 +194,9 @@ class DynamicPropsTest {
   fun testDynamicBackgroundColorApplied() {
     val startValue = Color.RED
     val backgroundColorDV = DynamicValue(startValue)
-    val testLithoView =
-        lithoTestRule.render {
-          Column.create(context).widthPx(80).heightPx(80).backgroundColor(backgroundColorDV).build()
-        }
+    val testLithoView = lithoTestRule.render {
+      Column.create(context).widthPx(80).heightPx(80).backgroundColor(backgroundColorDV).build()
+    }
     assertThat(testLithoView.lithoView.childCount).isEqualTo(1)
     val hostView = testLithoView.lithoView.getChildAt(0)
     assertThat(hostView.background).isInstanceOf(ColorDrawable::class.java)
@@ -220,16 +215,15 @@ class DynamicPropsTest {
     val rotation = DynamicValue(startValue)
     val rotationX = DynamicValue(startValue)
     val rotationY = DynamicValue(startValue)
-    val testLithoView =
-        lithoTestRule.render {
-          Column.create(context)
-              .widthPx(80)
-              .heightPx(80)
-              .rotation(rotation)
-              .rotationX(rotationX)
-              .rotationY(rotationY)
-              .build()
-        }
+    val testLithoView = lithoTestRule.render {
+      Column.create(context)
+          .widthPx(80)
+          .heightPx(80)
+          .rotation(rotation)
+          .rotationX(rotationX)
+          .rotationY(rotationY)
+          .build()
+    }
     assertThat(testLithoView.lithoView.childCount).isEqualTo(1)
     val hostView = testLithoView.lithoView.getChildAt(0)
     assertThat(hostView.rotation).isEqualTo(startValue)
@@ -266,7 +260,8 @@ class DynamicPropsTest {
                 .heightPx(80)
                 .backgroundColor(nullIntegerValue)
                 .rotation(nullFloatValue)
-                .build())
+                .build(),
+        )
     assertThat(lithoView.background).isEqualTo(null)
     assertThat(lithoView.rotation).isEqualTo(0.0f)
   }
@@ -275,7 +270,7 @@ class DynamicPropsTest {
       c: ComponentContext,
       defStyleAttr: Int,
       defStyleRes: Int,
-      private var _component: SpecGeneratedComponent
+      private var _component: SpecGeneratedComponent,
   ) : Component.Builder<DynamicElevationBuilder?>(c, defStyleAttr, defStyleRes, _component) {
     override fun build(): SpecGeneratedComponent = _component
 
@@ -287,28 +282,27 @@ class DynamicPropsTest {
   }
 
   @Test
-  @Config(sdk = [Build.VERSION_CODES.LOLLIPOP])
-  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   fun testDynamicElevationApplied() {
     val lithoView = LithoView(context)
     val startValue = 1f
     val elevationDV = DynamicValue(startValue)
-    val component =
-        DynamicElevationBuilder(
-                context,
-                -1,
-                -1,
-                object : SpecGeneratedComponent("DynamicElevationTestComponent") {
-                  override fun getMountType(): MountType = MountType.VIEW
-                })
-            .shadowElevation(elevationDV)
-            .build()
+    val component = DynamicElevationBuilder(
+        context,
+        -1,
+        -1,
+        object : SpecGeneratedComponent("DynamicElevationTestComponent") {
+          override fun getMountType(): MountType = MountType.VIEW
+        },
+    )
+        .shadowElevation(elevationDV)
+        .build()
     val dynamicPropsManager = DynamicPropsManager()
     dynamicPropsManager.onBindComponentToContent(
         component,
         context,
         component.commonDynamicProps as SparseArray<out DynamicValue<Any?>>,
-        lithoView)
+        lithoView,
+    )
     assertThat(lithoView.elevation).isEqualTo(startValue)
     elevationDV.set(50f)
     assertThat(lithoView.elevation).isEqualTo(50f)
@@ -320,10 +314,9 @@ class DynamicPropsTest {
   fun testDynamicTranslationZApplied() {
     val startValue = 100f
     val translationZDV = DynamicValue(startValue)
-    val testLithoView =
-        lithoTestRule.render {
-          Column.create(context).widthPx(80).heightPx(80).translationZ(translationZDV).build()
-        }
+    val testLithoView = lithoTestRule.render {
+      Column.create(context).widthPx(80).heightPx(80).translationZ(translationZDV).build()
+    }
     assertThat(testLithoView.lithoView.childCount).isEqualTo(1)
     val hostView = testLithoView.lithoView.getChildAt(0)
     assertThat(hostView.translationZ).isEqualTo(startValue)
@@ -336,8 +329,8 @@ class DynamicPropsTest {
 
   @Test
   fun commonDynamicProps_unbindAndRebindContent_resetValues() {
-    val stateUpdateCaller = DynamicPropsResetValueTesterSpec.Caller()
-    val component = DynamicPropsResetValueTester.create(context).caller(stateUpdateCaller).build()
+    val stateUpdateCaller = DynamicPropsResetValueTester.Caller()
+    val component = DynamicPropsResetValueTester(caller = stateUpdateCaller)
     val testLithoView = lithoTestRule.render { component }
     val mountDelegateTarget = testLithoView.lithoView.mountDelegateTarget
     var text1HostId: Long = -1
@@ -375,9 +368,9 @@ class DynamicPropsTest {
       }
     }
     assertThat(text1HostComponent.hasCommonDynamicProps()).isTrue
-    assertThat(text1Host.alpha).isEqualTo(DynamicPropsResetValueTesterSpec.ALPHA_TRANSPARENT)
+    assertThat(text1Host.alpha).isEqualTo(DynamicPropsResetValueTester.ALPHA_TRANSPARENT)
     assertThat(text2HostComponent.hasCommonDynamicProps()).isFalse
-    assertThat(text2Host.alpha).isEqualTo(DynamicPropsResetValueTesterSpec.ALPHA_OPAQUE)
+    assertThat(text2Host.alpha).isEqualTo(DynamicPropsResetValueTester.ALPHA_OPAQUE)
     stateUpdateCaller.toggleShowChild()
     lateinit var stateUpdateText1HostComponent: HostComponent
     lateinit var stateUpdateText2HostComponent: HostComponent
@@ -400,21 +393,20 @@ class DynamicPropsTest {
     assertThat(stateUpdateText1Host).isEqualTo(text1Host)
     assertThat(stateUpdateText2Host).isEqualTo(text2Host)
     assertThat(stateUpdateText1HostComponent.hasCommonDynamicProps()).isFalse
-    assertThat(stateUpdateText1Host.alpha).isEqualTo(DynamicPropsResetValueTesterSpec.ALPHA_OPAQUE)
+    assertThat(stateUpdateText1Host.alpha).isEqualTo(DynamicPropsResetValueTester.ALPHA_OPAQUE)
     assertThat(stateUpdateText2HostComponent.hasCommonDynamicProps()).isFalse
-    assertThat(stateUpdateText2Host.alpha).isEqualTo(DynamicPropsResetValueTesterSpec.ALPHA_OPAQUE)
+    assertThat(stateUpdateText2Host.alpha).isEqualTo(DynamicPropsResetValueTester.ALPHA_OPAQUE)
   }
 
   @Test
   fun testDynamicPropsAddedToSpecGeneratedComponentUsingWrapper() {
     val alphaDV = DynamicValue(0.5f)
-    val testLithoview =
-        lithoTestRule.render {
-          Wrapper.create(context)
-              .delegate(Row.create(context).widthPx(80).heightPx(80).build())
-              .kotlinStyle(Style.alpha(alphaDV))
-              .build()
-        }
+    val testLithoview = lithoTestRule.render {
+      Wrapper.create(context)
+          .delegate(Row.create(context).widthPx(80).heightPx(80).build())
+          .kotlinStyle(Style.alpha(alphaDV))
+          .build()
+    }
     assertThat(testLithoview.lithoView.childCount).isEqualTo(1)
     val hostView = testLithoview.lithoView.getChildAt(0)
     assertThat(hostView.alpha).isEqualTo(0.5f)
@@ -425,13 +417,12 @@ class DynamicPropsTest {
   @Test
   fun testDynamicPropsAddedToPrimitiveComponentUsingWrapper() {
     val alphaDV = DynamicValue(0.5f)
-    val testLithoview =
-        lithoTestRule.render {
-          Wrapper.create(context)
-              .delegate(SimpleTestPrimitiveComponent(style = Style.width(80.px).height(80.px)))
-              .kotlinStyle(Style.alpha(alphaDV))
-              .build()
-        }
+    val testLithoview = lithoTestRule.render {
+      Wrapper.create(context)
+          .delegate(SimpleTestPrimitiveComponent(style = Style.width(80.px).height(80.px)))
+          .kotlinStyle(Style.alpha(alphaDV))
+          .build()
+    }
     assertThat(testLithoview.lithoView.childCount).isEqualTo(1)
     val hostView = testLithoview.lithoView.getChildAt(0)
     assertThat(hostView.alpha).isEqualTo(0.5f)
@@ -449,7 +440,8 @@ class DynamicPropsTest {
                     .widthPx(80)
                     .heightPx(80)
                     .backgroundColor(Color.RED)
-                    .build())
+                    .build(),
+            )
             .build()
     val component2 =
         Column.create(context)
@@ -461,7 +453,9 @@ class DynamicPropsTest {
                             .widthPx(80)
                             .heightPx(80)
                             .backgroundColor(Color.RED)
-                            .build()))
+                            .build(),
+                    ),
+            )
             .build()
 
     val testLithoView =
@@ -470,9 +464,13 @@ class DynamicPropsTest {
         }
     val lithoView = testLithoView.lithoView
 
-    assertThat(lithoView.componentTree!!.committedLayoutState!!.dynamicValueOutputs)
+    assertThat(
+        requireNotNull(requireNotNull(lithoView.componentTree).getCommittedLayoutState())
+            .dynamicValueOutputs
+            ?.size ?: 0,
+    )
         .describedAs("We should not collect empty dynamic values output for each component")
-        .isEmpty()
+        .isEqualTo(0)
   }
 
   @Test
@@ -486,7 +484,8 @@ class DynamicPropsTest {
                     .widthPx(80)
                     .heightPx(80)
                     .backgroundColor(Color.RED)
-                    .build())
+                    .build(),
+            )
             .kotlinStyle(Style.alpha(alphaDV))
             .build()
     val component2 =
@@ -497,7 +496,8 @@ class DynamicPropsTest {
                     .widthPx(80)
                     .heightPx(80)
                     .backgroundColor(Color.RED)
-                    .build())
+                    .build(),
+            )
             .kotlinStyle(Style.alpha(alphaDV))
             .build()
     val testLithoView = lithoTestRule.render(widthPx = 80, heightPx = 80) { component1 }
@@ -537,7 +537,9 @@ class DynamicPropsTest {
             .delegate(
                 SimpleTestPrimitiveComponent(
                     contentDescription = "A",
-                    style = Style.width(80.px).height(80.px).backgroundColor(Color.RED)))
+                    style = Style.width(80.px).height(80.px).backgroundColor(Color.RED),
+                ),
+            )
             .kotlinStyle(Style.alpha(alphaDV))
             .build()
     val component2 =
@@ -545,7 +547,9 @@ class DynamicPropsTest {
             .delegate(
                 SimpleTestPrimitiveComponent(
                     contentDescription = "B",
-                    style = Style.width(80.px).height(80.px).backgroundColor(Color.RED)))
+                    style = Style.width(80.px).height(80.px).backgroundColor(Color.RED),
+                ),
+            )
             .kotlinStyle(Style.alpha(alphaDV))
             .build()
     val testLithoView = lithoTestRule.render(widthPx = 80, heightPx = 80) { component1 }
@@ -580,10 +584,9 @@ class DynamicPropsTest {
   @Test
   fun testPrimitiveWithDynamicValueIsCorrectlyUnsubscribed() {
     val alphaDV1 = DynamicValue(1f)
-    val testLithoView =
-        lithoTestRule.render {
-          SimpleTestPrimitiveComponent(style = Style.width(80.px).height(80.px).alpha(alphaDV1))
-        }
+    val testLithoView = lithoTestRule.render {
+      SimpleTestPrimitiveComponent(style = Style.width(80.px).height(80.px).alpha(alphaDV1))
+    }
     lithoTestRule.idle()
 
     assertThat(alphaDV1.numberOfListeners).isEqualTo(1)
@@ -592,7 +595,8 @@ class DynamicPropsTest {
     val alphaDV2 = DynamicValue(1f)
     testLithoView
         .setRoot(
-            SimpleTestPrimitiveComponent(style = Style.width(80.px).height(80.px).alpha(alphaDV2)))
+            SimpleTestPrimitiveComponent(style = Style.width(80.px).height(80.px).alpha(alphaDV2)),
+        )
         .measure()
         .layout()
     lithoTestRule.idle()
@@ -613,13 +617,12 @@ class DynamicPropsTest {
   @Test
   fun testWrappedPrimitiveWithDynamicValueIsCorrectlyUnsubscribed() {
     val alphaDV1 = DynamicValue(1f)
-    val testLithoView =
-        lithoTestRule.render {
-          Wrapper.create(context)
-              .delegate(SimpleTestPrimitiveComponent(style = Style.width(80.px).height(80.px)))
-              .kotlinStyle(Style.alpha(alphaDV1))
-              .build()
-        }
+    val testLithoView = lithoTestRule.render {
+      Wrapper.create(context)
+          .delegate(SimpleTestPrimitiveComponent(style = Style.width(80.px).height(80.px)))
+          .kotlinStyle(Style.alpha(alphaDV1))
+          .build()
+    }
     lithoTestRule.idle()
 
     assertThat(alphaDV1.numberOfListeners).isEqualTo(1)
@@ -631,7 +634,8 @@ class DynamicPropsTest {
             Wrapper.create(context)
                 .delegate(SimpleTestPrimitiveComponent(style = Style.width(80.px).height(80.px)))
                 .kotlinStyle(Style.alpha(alphaDV2))
-                .build())
+                .build(),
+        )
         .measure()
         .layout()
     lithoTestRule.idle()
@@ -659,7 +663,9 @@ class DynamicPropsTest {
             return Column {
               child(
                   SimpleTestPrimitiveComponent(
-                      style = Style.width(10.px).height(10.px).alpha(alphaDV1)))
+                      style = Style.width(10.px).height(10.px).alpha(alphaDV1),
+                  ),
+              )
               child(Row(style = Style.width(10.px).height(10.px).alpha(alphaDV2)) {})
             }
           }
@@ -692,22 +698,64 @@ class DynamicPropsTest {
     assertThat(alphaDV1.numberOfListeners).isEqualTo(0)
     assertThat(alphaDV2.numberOfListeners).isEqualTo(0)
   }
-}
 
-private class SimpleTestPrimitiveComponent(
-    private val contentDescription: String? = null,
-    private val style: Style? = null,
-) : PrimitiveComponent() {
-  override fun PrimitiveComponentScope.render(): LithoPrimitive {
-    return LithoPrimitive(
-        layoutBehavior = ExactSizeConstraintsLayoutBehavior,
-        mountBehavior =
-            MountBehavior(ViewAllocator { context -> View(context) }) {
-              bind(contentDescription) { content ->
-                content.contentDescription = contentDescription
-                onUnbind { content.contentDescription = null }
-              }
-            },
-        style)
+  private class SimpleTestPrimitiveComponent(
+      private val contentDescription: String? = null,
+      private val style: Style? = null,
+  ) : PrimitiveComponent() {
+    override fun PrimitiveComponentScope.render(): LithoPrimitive {
+      return LithoPrimitive(
+          layoutBehavior = ExactSizeConstraintsLayoutBehavior,
+          mountBehavior =
+              MountBehavior(ViewAllocator { context -> View(context) }) {
+                bind(contentDescription) { content ->
+                  content.contentDescription = contentDescription
+                  onUnbind { content.contentDescription = null }
+                }
+              },
+          style,
+      )
+    }
+  }
+
+  private class DynamicPropsResetValueTester(
+      private val caller: DynamicPropsResetValueTester.Caller,
+  ) : KComponent() {
+
+    companion object {
+      const val ALPHA_OPAQUE = 1f
+      const val ALPHA_TRANSPARENT = 0f
+    }
+
+    override fun ComponentScope.render(): Component {
+
+      val setDynamicAlphaState = useState<Boolean> { true }
+      val dynamicAlpha = useBinding<Float>(ALPHA_TRANSPARENT)
+
+      useEffect(caller, setDynamicAlphaState) {
+        caller.set(setDynamicAlphaState)
+        onCleanup { caller.set(null) }
+      }
+      val textChild = Text.create(context).text("Child 1").viewTag("vt1")
+      if (setDynamicAlphaState.value) {
+        textChild.alpha(dynamicAlpha)
+      }
+      return Row {
+        child(Column { child(textChild.build()) })
+        child(Row { child(Text.create(context).text("Child 2").viewTag("vt2").build()) })
+      }
+    }
+
+    class Caller {
+      @JvmField var setDynamicAlphaState: State<Boolean>? = null
+
+      fun set(setDynamicAlphaState: State<Boolean>?) {
+        this.setDynamicAlphaState = setDynamicAlphaState
+      }
+
+      fun toggleShowChild() {
+        setDynamicAlphaState?.updateSync { !it }
+      }
+    }
   }
 }

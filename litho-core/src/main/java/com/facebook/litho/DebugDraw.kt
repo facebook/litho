@@ -74,8 +74,10 @@ internal object DebugDraw {
     for (i in host.mountItemCount - 1 downTo 0) {
       val item = host.getMountItemAt(i)
       val component = LithoRenderUnit.getRenderUnit(item).component
-      if (!LithoRenderUnit.isMountableView(item.renderTreeNode.renderUnit) ||
-          Component.isHostSpec(component)) {
+      if (
+          !LithoRenderUnit.isMountableView(item.renderTreeNode.renderUnit) ||
+              Component.isHostSpec(component)
+      ) {
         continue
       }
       val view = item.content as View
@@ -87,7 +89,8 @@ internal object DebugDraw {
           view.top.toFloat(),
           view.right.toFloat(),
           view.bottom.toFloat(),
-          touchDelegatePaint)
+          touchDelegatePaint,
+      )
     }
 
     // 3. Highlight expanded touch bounds.
@@ -120,7 +123,9 @@ internal object DebugDraw {
           mountBoundsCornerPaint.strokeWidth.toInt(),
           Math.min(
               Math.min(mountBoundsRect.width(), mountBoundsRect.height()) / 3,
-              dipToPixels(resources, 12)))
+              dipToPixels(resources, 12),
+          ),
+      )
     }
   }
 
@@ -135,13 +140,20 @@ internal object DebugDraw {
       paint: Paint,
       bounds: Rect,
       cornerLength: Int,
-      cornerWidth: Int
+      cornerWidth: Int,
   ) {
     drawCorner(canvas, paint, bounds.left, bounds.top, cornerLength, cornerLength, cornerWidth)
     drawCorner(canvas, paint, bounds.left, bounds.bottom, cornerLength, -cornerLength, cornerWidth)
     drawCorner(canvas, paint, bounds.right, bounds.top, -cornerLength, cornerLength, cornerWidth)
     drawCorner(
-        canvas, paint, bounds.right, bounds.bottom, -cornerLength, -cornerLength, cornerWidth)
+        canvas,
+        paint,
+        bounds.right,
+        bounds.bottom,
+        -cornerLength,
+        -cornerLength,
+        cornerWidth,
+    )
   }
 
   private fun shouldHighlight(component: Component): Boolean =
@@ -168,7 +180,7 @@ internal object DebugDraw {
       y: Int,
       dx: Int,
       dy: Int,
-      cornerWidth: Int
+      cornerWidth: Int,
   ) {
     drawCornerLine(c, paint, x, y, x + dx, y + cornerWidth * sign(dy.toFloat()))
     drawCornerLine(c, paint, x, y, x + cornerWidth * sign(dx.toFloat()), y + dy)
@@ -180,7 +192,7 @@ internal object DebugDraw {
       left: Int,
       top: Int,
       right: Int,
-      bottom: Int
+      bottom: Int,
   ) {
     var left = left
     var top = top

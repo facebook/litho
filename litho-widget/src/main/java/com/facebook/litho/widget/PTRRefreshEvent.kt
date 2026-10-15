@@ -19,4 +19,7 @@ package com.facebook.litho.widget
 import com.facebook.litho.annotations.Event
 
 /** An event that is triggered when a pull-to-refresh action is performed. */
-@Event(returnType = Boolean::class) class PTRRefreshEvent
+// Uses explicit Java class reference (java.lang.CharSequence::class) instead of Kotlin's to ensure
+// kapt generates correct Java stubs. Kotlin type references like cause kapt to generate invalid
+// annotations (kotlin.CharSequence.class) that the Litho annotation processor cannot handle.
+@Event(returnType = java.lang.Boolean::class) class PTRRefreshEvent

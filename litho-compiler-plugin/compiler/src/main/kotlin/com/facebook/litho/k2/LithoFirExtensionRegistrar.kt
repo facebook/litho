@@ -16,19 +16,25 @@
 
 package com.facebook.litho.k2
 
+import com.facebook.litho.LithoCompilerPlugin
+import org.jetbrains.kotlin.fir.FirSession
+import org.jetbrains.kotlin.fir.analysis.extensions.FirAdditionalCheckersExtension
 import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrar
+import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrar.ExtensionRegistrarContext
 
 /**
- * Responsible for registering all FIR specific extensions for Litho to the compiler.
+ * Registers the FIR checkers of every [LithoCompilerPlugin] that has any.
  *
- * It exposes a shorthand API that makes it easy to register extensions correctly. The API
- * implicitly passes an [FirSession] object to the extension constructor, and also provides
- * mechanisms to pass explicit dependencies as necessary.
- *
- * @see [LithoFirCheckersExtension]
+ * Each plugin contributes its own [FirAdditionalCheckersExtension] rather than adding to a shared
+ * one, so a plugin's checkers and the declaration predicates they run under stay together.
  */
-class LithoFirExtensionRegistrar : FirExtensionRegistrar() {
+class LithoFirExtensionRegistrar(
+    private val checkers: List<(FirSession) -> FirAdditionalCheckersExtension>,
+) : FirExtensionRegistrar() {
+
   override fun ExtensionRegistrarContext.configurePlugin() {
-    +::LithoFirCheckersExtension
+    for (factory in checkers) {
+      +factory
+    }
   }
 }

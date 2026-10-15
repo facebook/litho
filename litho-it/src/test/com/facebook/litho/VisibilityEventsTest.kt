@@ -26,6 +26,7 @@ import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.LithoTestRuleResizeMode
 import com.facebook.litho.testing.TestDrawableComponent
+import com.facebook.litho.testing.TestLithoView
 import com.facebook.litho.testing.TestViewComponent
 import com.facebook.litho.testing.ViewGroupWithLithoViewChildren
 import com.facebook.litho.testing.Whitebox
@@ -37,11 +38,19 @@ import com.facebook.litho.widget.ComponentWrapperTester
 import com.facebook.litho.widget.HorizontalScroll
 import com.facebook.litho.widget.LayoutSpecLifecycleTester
 import com.facebook.litho.widget.LayoutSpecVisibilityEventTester
+import com.facebook.litho.widget.MountSpecLifecycleTester
 import com.facebook.litho.widget.TextDrawable
 import com.facebook.rendercore.extensions.ExtensionState
+import com.facebook.rendercore.extensions.VisibilityChangeReason
+import com.facebook.rendercore.visibility.FocusedVisibleEvent
+import com.facebook.rendercore.visibility.FullImpressionVisibleEvent
+import com.facebook.rendercore.visibility.InvisibleEvent
+import com.facebook.rendercore.visibility.UnfocusedVisibleEvent
+import com.facebook.rendercore.visibility.VisibilityChangedEvent
 import com.facebook.rendercore.visibility.VisibilityItem
 import com.facebook.rendercore.visibility.VisibilityMountExtension
 import com.facebook.rendercore.visibility.VisibilityMountExtension.VisibilityMountExtensionState
+import com.facebook.rendercore.visibility.VisibleEvent
 import com.facebook.yoga.YogaEdge
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
@@ -73,7 +82,8 @@ class VisibilityEventsTest {
                   .steps(steps)
                   .widthPx(10)
                   .heightPx(5)
-                  .marginPx(YogaEdge.TOP, 5))
+                  .marginPx(YogaEdge.TOP, 5),
+          )
           .build()
     }
     assertThat(LifecycleStep.getSteps(steps))
@@ -92,7 +102,8 @@ class VisibilityEventsTest {
                     .steps(steps)
                     .widthPx(10)
                     .heightPx(5)
-                    .marginPx(YogaEdge.TOP, 5))
+                    .marginPx(YogaEdge.TOP, 5),
+            )
             .build()
     val testLithoView =
         lithoTestRule
@@ -107,10 +118,187 @@ class VisibilityEventsTest {
         .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE)
 
     // invoke notifyVisibleBoundsChanged, but pass 'false' to process visibility outputs.
-    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 0, 20, 20), false)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(
+        Rect(0, 0, 20, 20),
+        false,
+        VisibilityChangeReason.UNKNOWN,
+    )
     assertThat(LifecycleStep.getSteps(steps))
         .describedAs("Visible event should still not be dispatched")
         .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE)
+  }
+
+  /**
+   * Lays a view out past the bottom of its parent, the state RecyclerView puts an item in to answer
+   * a focus search that runs off the edge of a list. Nothing but the root host is mounted.
+   */
+  private fun layOutOffScreen(steps: MutableList<StepInfo>): TestLithoView {
+    val c = lithoTestRule.context
+    val component =
+        Column.create(c)
+            .child(LayoutSpecLifecycleTester.create(c).steps(steps).widthPx(10).heightPx(10))
+            .build()
+
+    val parent = FrameLayout(lithoTestRule.context.androidContext)
+    parent.measure(exactly(10), exactly(10))
+    parent.layout(0, 0, parent.measuredWidth, parent.measuredHeight)
+
+    val testLithoView =
+        lithoTestRule
+            .createTestLithoView()
+            .setSizePx(exactly(10), exactly(10))
+            .attachToWindow()
+            .measure()
+            .layout()
+
+    testLithoView.lithoView.translationY = 10f
+    parent.addView(testLithoView.lithoView)
+    testLithoView.setRoot(component)
+    steps.clear()
+    return testLithoView
+  }
+
+  /** [layOutOffScreen] with the focus search's mount already done. */
+  private fun mountOffScreenForFocusSearch(steps: MutableList<StepInfo>): TestLithoView {
+    val testLithoView = layOutOffScreen(steps)
+    testLithoView.lithoView.addFocusables(ArrayList(), View.FOCUS_DOWN, View.FOCUSABLES_ALL)
+    return testLithoView
+  }
+
+  /**
+   * A probe must not spend the tree's first mount. `hasMounted` gates the root appear transition
+   * and `isFirstMount` gates transition collection, and a mount nobody saw is not the display those
+   * are waiting for.
+   *
+   * Committing a root already records a mount for this tree, so the flag is cleared by hand: the
+   * case under test is a focus search reaching a view whose first mount is still unspent.
+   */
+  @Test
+  fun testMountingForFocusSearchDoesNotConsumeFirstMount() {
+    val c = lithoTestRule.context
+    val tracker = LifecycleTracker()
+    val component =
+        Column.create(c)
+            .child(
+                MountSpecLifecycleTester.create(c)
+                    .widthPx(10)
+                    .heightPx(10)
+                    .lifecycleTracker(tracker),
+            )
+            .build()
+
+    val parent = FrameLayout(lithoTestRule.context.androidContext)
+    parent.measure(exactly(10), exactly(10))
+    parent.layout(0, 0, parent.measuredWidth, parent.measuredHeight)
+
+    val testLithoView =
+        lithoTestRule
+            .createTestLithoView()
+            .setSizePx(exactly(10), exactly(10))
+            .attachToWindow()
+            .measure()
+            .layout()
+
+    testLithoView.lithoView.translationY = 10f
+    parent.addView(testLithoView.lithoView)
+    testLithoView.setRoot(component)
+    tracker.reset()
+
+    val mountInfo = requireNotNull(testLithoView.componentTree.uiTreeState).mountInfo
+    mountInfo.hasMounted = false
+
+    testLithoView.lithoView.addFocusables(ArrayList(), View.FOCUS_DOWN, View.FOCUSABLES_ALL)
+
+    assertThat(tracker.steps)
+        .describedAs("the probe must actually have mounted, or this proves nothing")
+        .contains(LifecycleStep.ON_MOUNT)
+    assertThat(mountInfo.hasMounted)
+        .describedAs("A focus search must not count as the tree's first mount")
+        .isFalse
+  }
+
+  /**
+   * Mount bounds matching the view's full size read downstream as "fully visible and already
+   * completely mounted", so a focus search must not record them for content nobody has seen.
+   */
+  @Test
+  fun testMountingForFocusSearchRecordsNoMountBounds() {
+    val steps = mutableListOf<StepInfo>()
+    val testLithoView = mountOffScreenForFocusSearch(steps)
+
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Mounting for a focus search must not dispatch a visible event")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE)
+    assertThat(testLithoView.lithoView.previousMountBounds.isEmpty)
+        .describedAs("A focus search must not record mount bounds for content nobody has seen")
+        .isTrue
+  }
+
+  /**
+   * Pins the cost of mounting early: the probe consumes the tree's one full mount pass, so becoming
+   * visible later goes through incremental mount and never mounts again. Anything the framework
+   * only does on a full mount -- notably `TransitionsExtension.beforeMount`, which is what collects
+   * appear transitions -- therefore does not get a second chance once a probe has run.
+   */
+  @Test
+  fun testMountingForFocusSearchConsumesTheFullMountPass() {
+    val c = lithoTestRule.context
+    val tracker = LifecycleTracker()
+    val component =
+        Column.create(c)
+            .child(
+                MountSpecLifecycleTester.create(c)
+                    .widthPx(10)
+                    .heightPx(10)
+                    .lifecycleTracker(tracker),
+            )
+            .build()
+
+    val parent = FrameLayout(lithoTestRule.context.androidContext)
+    parent.measure(exactly(10), exactly(10))
+    parent.layout(0, 0, parent.measuredWidth, parent.measuredHeight)
+
+    val testLithoView =
+        lithoTestRule
+            .createTestLithoView()
+            .setSizePx(exactly(10), exactly(10))
+            .attachToWindow()
+            .measure()
+            .layout()
+
+    testLithoView.lithoView.translationY = 10f
+    parent.addView(testLithoView.lithoView)
+    testLithoView.setRoot(component)
+    tracker.reset()
+
+    testLithoView.lithoView.addFocusables(ArrayList(), View.FOCUS_DOWN, View.FOCUSABLES_ALL)
+
+    assertThat(tracker.steps)
+        .describedAs("The probe mounts content the user cannot see")
+        .contains(LifecycleStep.ON_MOUNT)
+
+    tracker.reset()
+    testLithoView.lithoView.translationY = 0f
+
+    assertThat(tracker.steps)
+        .describedAs("Becoming visible does not mount again -- the probe already did it")
+        .doesNotContain(LifecycleStep.ON_MOUNT)
+  }
+
+  /**
+   * The item goes from off-screen to fully on-screen in a single step, with no intervening
+   * partially visible frame, as a fling or an instant scroll does. Its impression must still fire.
+   */
+  @Test
+  fun testVisibleEventAfterMountingForFocusSearch() {
+    val steps = mutableListOf<StepInfo>()
+    val testLithoView = mountOffScreenForFocusSearch(steps)
+
+    testLithoView.lithoView.translationY = 0f
+
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("The visible event must still be dispatched when the item is really shown")
+        .contains(LifecycleStep.ON_EVENT_VISIBLE)
   }
 
   @Test
@@ -122,9 +310,10 @@ class VisibilityEventsTest {
             .child(
                 LayoutSpecLifecycleTester.create(c)
                     .steps(steps)
-                    .visibleHeightRatio(0.5f)
+                    .visibleHandler(/* visibleWidthRatio */ 0f, /* visibleHeightRatio */ 0.5f, null)
                     .widthPx(10)
-                    .heightPx(10))
+                    .heightPx(10),
+            )
             .build()
 
     val parent = FrameLayout(lithoTestRule.context.androidContext)
@@ -193,10 +382,11 @@ class VisibilityEventsTest {
             .child(
                 LayoutSpecLifecycleTester.create(c)
                     .steps(steps)
-                    .visibleWidthRatio(0.4f)
+                    .visibleHandler(/* visibleWidthRatio */ 0.4f, /* visibleHeightRatio */ 0f, null)
                     .widthPx(10)
                     .heightPx(5)
-                    .marginPx(YogaEdge.TOP, 5))
+                    .marginPx(YogaEdge.TOP, 5),
+            )
             .build()
     val testLithoView =
         lithoTestRule
@@ -209,11 +399,19 @@ class VisibilityEventsTest {
     assertThat(LifecycleStep.getSteps(steps))
         .describedAs("Visible event should not be dispatched")
         .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE)
-    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 0, 3, 10), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(
+        Rect(0, 0, 3, 10),
+        true,
+        VisibilityChangeReason.UNKNOWN,
+    )
     assertThat(LifecycleStep.getSteps(steps))
         .describedAs("Visible event should not be dispatched")
         .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE)
-    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 0, 5, 10), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(
+        Rect(0, 0, 5, 10),
+        true,
+        VisibilityChangeReason.UNKNOWN,
+    )
     assertThat(LifecycleStep.getSteps(steps))
         .describedAs("Visible event should be dispatched")
         .contains(LifecycleStep.ON_EVENT_VISIBLE)
@@ -228,10 +426,14 @@ class VisibilityEventsTest {
             .child(
                 LayoutSpecLifecycleTester.create(c)
                     .steps(steps)
-                    .visibleWidthRatio(0.5f)
-                    .visibleHeightRatio(0.5f)
+                    .visibleHandler(
+                        /* visibleWidthRatio */ 0.5f, /* visibleHeightRatio */
+                        0.5f,
+                        null,
+                    )
                     .widthPx(10)
-                    .heightPx(10))
+                    .heightPx(10),
+            )
             .build()
 
     val parent = FrameLayout(lithoTestRule.context.androidContext)
@@ -359,7 +561,8 @@ class VisibilityEventsTest {
                     .unfocusedHandler(unfocusedHandler)
                     .widthPx(15)
                     .heightPx(5)
-                    .marginPx(YogaEdge.TOP, 8))
+                    .marginPx(YogaEdge.TOP, 8),
+            )
             .build()
     val testLithoView =
         lithoTestRule
@@ -375,26 +578,46 @@ class VisibilityEventsTest {
     frameLayout.measure(unspecified(), unspecified())
     frameLayout.layout(0, 0, frameLayout.measuredWidth, frameLayout.measuredHeight)
 
-    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 0, 0, 0), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(
+        Rect(0, 0, 0, 0),
+        true,
+        VisibilityChangeReason.UNKNOWN,
+    )
 
     // Mount test view in the middle of the view port (focused)
     content.dispatchedEventHandlers.clear()
-    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 8, 15, 13), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(
+        Rect(0, 8, 15, 13),
+        true,
+        VisibilityChangeReason.UNKNOWN,
+    )
     assertThat(content.dispatchedEventHandlers).containsOnly(focusedHandler)
 
     // Mount test view on the edge of the viewport (not focused)
     content.dispatchedEventHandlers.clear()
-    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 14, 15, 19), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(
+        Rect(0, 14, 15, 19),
+        true,
+        VisibilityChangeReason.UNKNOWN,
+    )
     assertThat(content.dispatchedEventHandlers).containsOnly(unfocusedHandler)
 
     // Mount test view in the middle of the view port (focused)
     content.dispatchedEventHandlers.clear()
-    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 8, 15, 14), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(
+        Rect(0, 8, 15, 14),
+        true,
+        VisibilityChangeReason.UNKNOWN,
+    )
     assertThat(content.dispatchedEventHandlers).containsOnly(focusedHandler)
 
     // Mount test view on the edge of the viewport (not focused)
     content.dispatchedEventHandlers.clear()
-    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 1, 15, 6), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(
+        Rect(0, 1, 15, 6),
+        true,
+        VisibilityChangeReason.UNKNOWN,
+    )
     assertThat(content.dispatchedEventHandlers).containsOnly(unfocusedHandler)
   }
 
@@ -429,7 +652,7 @@ class VisibilityEventsTest {
     val component =
         LayoutSpecLifecycleTester.create(c)
             .steps(steps)
-            .visibleHeightRatio(1f)
+            .visibleHandler(/* visibleWidthRatio */ 0f, /* visibleHeightRatio */ 1f, null)
             .widthPx(10)
             .heightPx(5)
             .marginPx(YogaEdge.TOP, 5)
@@ -454,7 +677,7 @@ class VisibilityEventsTest {
     val component =
         LayoutSpecLifecycleTester.create(c)
             .steps(steps)
-            .visibleHeightRatio(1f)
+            .visibleHandler(/* visibleWidthRatio */ 0f, /* visibleHeightRatio */ 1f, null)
             .widthPx(10)
             .heightPx(5)
             .build()
@@ -482,7 +705,8 @@ class VisibilityEventsTest {
                     .steps(steps)
                     .widthPx(10)
                     .heightPx(5)
-                    .marginPx(YogaEdge.TOP, 5))
+                    .marginPx(YogaEdge.TOP, 5),
+            )
             .build()
     val testLithoView =
         lithoTestRule
@@ -495,7 +719,11 @@ class VisibilityEventsTest {
     assertThat(LifecycleStep.getSteps(steps))
         .describedAs("Invisible event should not be dispatched")
         .doesNotContain(LifecycleStep.ON_EVENT_INVISIBLE)
-    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 0, 15, 5), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(
+        Rect(0, 0, 15, 5),
+        true,
+        VisibilityChangeReason.UNKNOWN,
+    )
     assertThat(LifecycleStep.getSteps(steps))
         .describedAs("Invisible event should be dispatched")
         .contains(LifecycleStep.ON_EVENT_INVISIBLE)
@@ -513,7 +741,8 @@ class VisibilityEventsTest {
                     .delegate(content)
                     .visibilityChangedHandler(visibilityChangedHandler)
                     .widthPx(10)
-                    .heightPx(10))
+                    .heightPx(10),
+            )
             .build()
     val testLithoView =
         lithoTestRule
@@ -530,7 +759,11 @@ class VisibilityEventsTest {
     assertThat(visibilityChangedEvent?.percentVisibleHeight).isEqualTo(100f)
     assertThat(visibilityChangedEvent?.percentVisibleWidth).isEqualTo(100f)
     content.dispatchedEventHandlers.clear()
-    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 0, 15, 4), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(
+        Rect(0, 0, 15, 4),
+        true,
+        VisibilityChangeReason.UNKNOWN,
+    )
     assertThat(content.dispatchedEventHandlers).contains(visibilityChangedHandler)
     visibilityChangedEvent =
         content.getEventState(visibilityChangedHandler) as VisibilityChangedEvent?
@@ -538,7 +771,11 @@ class VisibilityEventsTest {
     assertThat(visibilityChangedEvent?.visibleWidth).isEqualTo(10)
     assertThat(visibilityChangedEvent?.percentVisibleHeight).isEqualTo(40f)
     assertThat(visibilityChangedEvent?.percentVisibleWidth).isEqualTo(100f)
-    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 0, 15, 5), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(
+        Rect(0, 0, 15, 5),
+        true,
+        VisibilityChangeReason.UNKNOWN,
+    )
     assertThat(content.dispatchedEventHandlers).contains(visibilityChangedHandler)
     visibilityChangedEvent =
         content.getEventState(visibilityChangedHandler) as VisibilityChangedEvent?
@@ -561,7 +798,8 @@ class VisibilityEventsTest {
                     .visibilityChangedHandler(visibilityChangedHandler)
                     .widthPx(10)
                     .heightPx(5)
-                    .marginPx(YogaEdge.TOP, 5))
+                    .marginPx(YogaEdge.TOP, 5),
+            )
             .build()
     val testLithoView =
         lithoTestRule
@@ -572,7 +810,11 @@ class VisibilityEventsTest {
             .measure()
             .layout()
     content.dispatchedEventHandlers.clear()
-    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 0, 15, 5), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(
+        Rect(0, 0, 15, 5),
+        true,
+        VisibilityChangeReason.UNKNOWN,
+    )
     assertThat(content.dispatchedEventHandlers).contains(visibilityChangedHandler)
     val visibilityChangedEvent =
         content.getEventState(visibilityChangedHandler) as VisibilityChangedEvent?
@@ -594,7 +836,8 @@ class VisibilityEventsTest {
                     .delegate(content)
                     .visibilityChangedHandler(visibilityChangedHandler)
                     .widthPx(10)
-                    .heightPx(10))
+                    .heightPx(10),
+            )
             .build()
     val testLithoView =
         lithoTestRule
@@ -626,7 +869,8 @@ class VisibilityEventsTest {
                     .delegate(content)
                     .visibilityChangedHandler(visibilityChangedHandler)
                     .widthPx(10)
-                    .heightPx(10))
+                    .heightPx(10),
+            )
             .build()
     val testLithoView =
         lithoTestRule
@@ -645,7 +889,11 @@ class VisibilityEventsTest {
     assertThat(visibilityChangedEvent?.percentVisibleHeight).isEqualTo(100f)
     assertThat(visibilityChangedEvent?.percentVisibleWidth).isEqualTo(100f)
     content.dispatchedEventHandlers.clear()
-    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 0, 15, 4), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(
+        Rect(0, 0, 15, 4),
+        true,
+        VisibilityChangeReason.UNKNOWN,
+    )
     assertThat(content.dispatchedEventHandlers).contains(visibilityChangedHandler)
     visibilityChangedEvent =
         content.getEventState(visibilityChangedHandler) as VisibilityChangedEvent?
@@ -653,7 +901,11 @@ class VisibilityEventsTest {
     assertThat(visibilityChangedEvent?.visibleWidth).isEqualTo(10)
     assertThat(visibilityChangedEvent?.percentVisibleHeight).isEqualTo(40f)
     assertThat(visibilityChangedEvent?.percentVisibleWidth).isEqualTo(100f)
-    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 0, 15, 5), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(
+        Rect(0, 0, 15, 5),
+        true,
+        VisibilityChangeReason.UNKNOWN,
+    )
     assertThat(content.dispatchedEventHandlers).contains(visibilityChangedHandler)
     visibilityChangedEvent =
         content.getEventState(visibilityChangedHandler) as VisibilityChangedEvent?
@@ -661,7 +913,11 @@ class VisibilityEventsTest {
     assertThat(visibilityChangedEvent?.visibleWidth).isEqualTo(10)
     assertThat(visibilityChangedEvent?.percentVisibleHeight).isEqualTo(50f)
     assertThat(visibilityChangedEvent?.percentVisibleWidth).isEqualTo(100f)
-    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(5, 5, 10, 10), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(
+        Rect(5, 5, 10, 10),
+        true,
+        VisibilityChangeReason.UNKNOWN,
+    )
     assertThat(content.dispatchedEventHandlers).contains(visibilityChangedHandler)
     visibilityChangedEvent =
         content.getEventState(visibilityChangedHandler) as VisibilityChangedEvent?
@@ -684,7 +940,8 @@ class VisibilityEventsTest {
                     .steps(steps)
                     .widthPx(10)
                     .heightPx(5)
-                    .marginPx(YogaEdge.TOP, 5))
+                    .marginPx(YogaEdge.TOP, 5),
+            )
             .build()
     val testLithoView =
         lithoTestRule
@@ -701,7 +958,11 @@ class VisibilityEventsTest {
         .describedAs("Invisible event should be dispatched")
         .doesNotContain(LifecycleStep.ON_EVENT_INVISIBLE)
     steps.clear()
-    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 0, 15, 5), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(
+        Rect(0, 0, 15, 5),
+        true,
+        VisibilityChangeReason.UNKNOWN,
+    )
     assertThat(LifecycleStep.getSteps(steps))
         .describedAs("Invisible event should be dispatched")
         .contains(LifecycleStep.ON_EVENT_INVISIBLE)
@@ -709,7 +970,11 @@ class VisibilityEventsTest {
         .describedAs("Visible event should not be dispatched")
         .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE)
     steps.clear()
-    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 3, 15, 9), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(
+        Rect(0, 3, 15, 9),
+        true,
+        VisibilityChangeReason.UNKNOWN,
+    )
     assertThat(LifecycleStep.getSteps(steps))
         .describedAs("Visible event should be dispatched")
         .contains(LifecycleStep.ON_EVENT_VISIBLE)
@@ -717,7 +982,11 @@ class VisibilityEventsTest {
         .describedAs("Invisible event should not be dispatched")
         .doesNotContain(LifecycleStep.ON_EVENT_INVISIBLE)
     steps.clear()
-    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 10, 15, 15), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(
+        Rect(0, 10, 15, 15),
+        true,
+        VisibilityChangeReason.UNKNOWN,
+    )
     assertThat(LifecycleStep.getSteps(steps))
         .describedAs("Invisible event should be dispatched")
         .contains(LifecycleStep.ON_EVENT_INVISIBLE)
@@ -763,7 +1032,11 @@ class VisibilityEventsTest {
     steps1.clear()
     steps2.clear()
     steps3.clear()
-    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 0, 15, 0), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(
+        Rect(0, 0, 15, 0),
+        true,
+        VisibilityChangeReason.UNKNOWN,
+    )
     assertThat(LifecycleStep.getSteps(steps1))
         .describedAs("Visible event should not be dispatched")
         .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE)
@@ -779,7 +1052,11 @@ class VisibilityEventsTest {
     steps1.clear()
     steps2.clear()
     steps3.clear()
-    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 0, 15, 3), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(
+        Rect(0, 0, 15, 3),
+        true,
+        VisibilityChangeReason.UNKNOWN,
+    )
     assertThat(LifecycleStep.getSteps(steps1))
         .describedAs("Visible event should be dispatched")
         .contains(LifecycleStep.ON_EVENT_VISIBLE)
@@ -794,7 +1071,11 @@ class VisibilityEventsTest {
         .doesNotContain(LifecycleStep.ON_VISIBILITY_CHANGED)
     steps1.clear()
     steps2.clear()
-    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 3, 15, 11), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(
+        Rect(0, 3, 15, 11),
+        true,
+        VisibilityChangeReason.UNKNOWN,
+    )
     assertThat(LifecycleStep.getSteps(steps1))
         .describedAs("Visible event should not be dispatched")
         .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE)
@@ -852,7 +1133,11 @@ class VisibilityEventsTest {
     steps1.clear()
     steps2.clear()
     steps3.clear()
-    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 0, 15, 15), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(
+        Rect(0, 0, 15, 15),
+        true,
+        VisibilityChangeReason.UNKNOWN,
+    )
     assertThat(LifecycleStep.getSteps(steps1))
         .describedAs("Visible event should not be dispatched")
         .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE)
@@ -874,7 +1159,11 @@ class VisibilityEventsTest {
     steps1.clear()
     steps2.clear()
     steps3.clear()
-    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 0, 15, 0), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(
+        Rect(0, 0, 15, 0),
+        true,
+        VisibilityChangeReason.UNKNOWN,
+    )
     assertThat(LifecycleStep.getSteps(steps1))
         .describedAs("Visible event should not be dispatched")
         .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE)
@@ -896,7 +1185,11 @@ class VisibilityEventsTest {
     steps1.clear()
     steps2.clear()
     steps3.clear()
-    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 0, 15, 0), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(
+        Rect(0, 0, 15, 0),
+        true,
+        VisibilityChangeReason.UNKNOWN,
+    )
     assertThat(LifecycleStep.getSteps(steps1))
         .describedAs("Visible event should not be dispatched")
         .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE)
@@ -918,7 +1211,11 @@ class VisibilityEventsTest {
     steps1.clear()
     steps2.clear()
     steps3.clear()
-    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 0, 15, 3), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(
+        Rect(0, 0, 15, 3),
+        true,
+        VisibilityChangeReason.UNKNOWN,
+    )
     assertThat(LifecycleStep.getSteps(steps1))
         .describedAs("Visible event should be dispatched")
         .contains(LifecycleStep.ON_EVENT_VISIBLE)
@@ -940,7 +1237,11 @@ class VisibilityEventsTest {
     steps1.clear()
     steps2.clear()
     steps3.clear()
-    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 3, 15, 11), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(
+        Rect(0, 3, 15, 11),
+        true,
+        VisibilityChangeReason.UNKNOWN,
+    )
     assertThat(LifecycleStep.getSteps(steps1))
         .describedAs("Visible event should not be dispatched")
         .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE)
@@ -962,7 +1263,11 @@ class VisibilityEventsTest {
     steps1.clear()
     steps2.clear()
     steps3.clear()
-    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 5, 15, 11), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(
+        Rect(0, 5, 15, 11),
+        true,
+        VisibilityChangeReason.UNKNOWN,
+    )
     assertThat(LifecycleStep.getSteps(steps1))
         .describedAs("Visible event should not be dispatched")
         .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE)
@@ -1005,7 +1310,7 @@ class VisibilityEventsTest {
             .setSizeSpecs(exactly(15), exactly(15))
             .measure()
             .layout()
-    var visibilityItemMap: Map<String?, VisibilityItem?>? =
+    var visibilityItemMap: Map<Any, VisibilityItem>? =
         getCurrentVisibilityToItemMap(testLithoView.lithoView)
     visibilityItemMap?.keys?.forEach { key ->
       val item = visibilityItemMap?.get(key)
@@ -1032,7 +1337,11 @@ class VisibilityEventsTest {
     steps1.clear()
     steps2.clear()
     steps3.clear()
-    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 0, 15, 15), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(
+        Rect(0, 0, 15, 15),
+        true,
+        VisibilityChangeReason.UNKNOWN,
+    )
     assertThat(LifecycleStep.getSteps(steps1))
         .describedAs("Visible event should not be dispatched")
         .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE)
@@ -1061,7 +1370,11 @@ class VisibilityEventsTest {
     steps1.clear()
     steps2.clear()
     steps3.clear()
-    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 3, 15, 12), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(
+        Rect(0, 3, 15, 12),
+        true,
+        VisibilityChangeReason.UNKNOWN,
+    )
     assertThat(LifecycleStep.getSteps(steps1))
         .describedAs("Visible event should not be dispatched")
         .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE)
@@ -1091,7 +1404,11 @@ class VisibilityEventsTest {
     steps1.clear()
     steps2.clear()
     steps3.clear()
-    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 0, 15, 0), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(
+        Rect(0, 0, 15, 0),
+        true,
+        VisibilityChangeReason.UNKNOWN,
+    )
     assertThat(LifecycleStep.getSteps(steps1))
         .describedAs("Visible event should not be dispatched")
         .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE)
@@ -1115,7 +1432,11 @@ class VisibilityEventsTest {
     steps1.clear()
     steps2.clear()
     steps3.clear()
-    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 0, 15, 0), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(
+        Rect(0, 0, 15, 0),
+        true,
+        VisibilityChangeReason.UNKNOWN,
+    )
     assertThat(LifecycleStep.getSteps(steps1))
         .describedAs("Visible event should not be dispatched")
         .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE)
@@ -1137,7 +1458,11 @@ class VisibilityEventsTest {
     steps1.clear()
     steps2.clear()
     steps3.clear()
-    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 3, 15, 12), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(
+        Rect(0, 3, 15, 12),
+        true,
+        VisibilityChangeReason.UNKNOWN,
+    )
     assertThat(LifecycleStep.getSteps(steps1))
         .describedAs("Visible event should be dispatched")
         .contains(LifecycleStep.ON_EVENT_VISIBLE)
@@ -1167,7 +1492,11 @@ class VisibilityEventsTest {
     steps1.clear()
     steps2.clear()
     steps3.clear()
-    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 0, 15, 15), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(
+        Rect(0, 0, 15, 15),
+        true,
+        VisibilityChangeReason.UNKNOWN,
+    )
     assertThat(LifecycleStep.getSteps(steps1))
         .describedAs("Visible event should not be dispatched")
         .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE)
@@ -1218,7 +1547,7 @@ class VisibilityEventsTest {
     frameLayout.measure(unspecified(), unspecified())
     frameLayout.layout(0, 0, frameLayout.measuredWidth, frameLayout.measuredHeight)
 
-    val visibilityItemLongSparseArray: Map<String?, VisibilityItem?>? =
+    val visibilityItemLongSparseArray: Map<Any, VisibilityItem>? =
         getCurrentVisibilityToItemMap(testLithoView.lithoView)
     visibilityItemLongSparseArray?.keys?.forEach { key ->
       val item = visibilityItemLongSparseArray?.get(key)
@@ -1245,7 +1574,11 @@ class VisibilityEventsTest {
     steps1.clear()
     steps2.clear()
     steps3.clear()
-    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 4, 15, 15), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(
+        Rect(0, 4, 15, 15),
+        true,
+        VisibilityChangeReason.UNKNOWN,
+    )
     assertThat(LifecycleStep.getSteps(steps1))
         .describedAs("Focused visible event should not be dispatched")
         .doesNotContain(LifecycleStep.ON_FOCUSED_EVENT_VISIBLE)
@@ -1267,7 +1600,11 @@ class VisibilityEventsTest {
     steps1.clear()
     steps2.clear()
     steps3.clear()
-    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 0, 15, 15), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(
+        Rect(0, 0, 15, 15),
+        true,
+        VisibilityChangeReason.UNKNOWN,
+    )
     assertThat(LifecycleStep.getSteps(steps1))
         .describedAs("Focused visible event should be dispatched")
         .contains(LifecycleStep.ON_FOCUSED_EVENT_VISIBLE)
@@ -1300,7 +1637,8 @@ class VisibilityEventsTest {
                     .delegate(content)
                     .invisibleHandler(invisibleEventHandler)
                     .widthPx(10)
-                    .heightPx(10))
+                    .heightPx(10),
+            )
             .build()
     val testLithoView =
         lithoTestRule
@@ -1310,7 +1648,11 @@ class VisibilityEventsTest {
             .setSizeSpecs(exactly(100), exactly(100))
             .measure()
             .layout()
-    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 0, 15, 10), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(
+        Rect(0, 0, 15, 10),
+        true,
+        VisibilityChangeReason.UNKNOWN,
+    )
     testLithoView.lithoView.release()
     assertThat(content.dispatchedEventHandlers).contains(invisibleEventHandler)
   }
@@ -1333,7 +1675,8 @@ class VisibilityEventsTest {
                     .focusedHandler(focusedEventHandler1)
                     .unfocusedHandler(unfocusedEventHandler1)
                     .widthPx(10)
-                    .heightPx(10))
+                    .heightPx(10),
+            )
             .build()
     val testLithoView = lithoTestRule.createTestLithoView(widthPx = 100, heightPx = 100) { root }
     // FocusedVisible requires a measured parent
@@ -1353,7 +1696,8 @@ class VisibilityEventsTest {
                     .delegate(component2)
                     .visibleHandler(visibleEventHandler2)
                     .widthPx(10)
-                    .heightPx(10))
+                    .heightPx(10),
+            )
             .build()
     testLithoView.setRoot(newRoot)
     ComponentTestHelper.measureAndLayout(testLithoView.lithoView)
@@ -1379,7 +1723,8 @@ class VisibilityEventsTest {
                     .visibleHandler(visibleEventHandler1)
                     .invisibleHandler(invisibleEventHandler1)
                     .widthPx(10)
-                    .heightPx(10))
+                    .heightPx(10),
+            )
             .build()
     val testLithoView =
         lithoTestRule
@@ -1399,10 +1744,11 @@ class VisibilityEventsTest {
                     .visibleHandler(visibleEventHandler2)
                     .invisibleHandler(invisibleEventHandler2)
                     .widthPx(10)
-                    .heightPx(10))
+                    .heightPx(10),
+            )
             .build()
     testLithoView
-        .useComponentTree(ComponentTree.create(context).build())
+        .useComponentTree(ComponentTree.create(context).enableChildClipping(true).build())
         .setRoot(newRoot)
         .attachToWindow()
         .setSizeSpecs(exactly(100), exactly(100))
@@ -1426,7 +1772,8 @@ class VisibilityEventsTest {
                     .visibleHandler(visibleEventHandler)
                     .invisibleHandler(invisibleEventHandler)
                     .widthPx(10)
-                    .heightPx(10))
+                    .heightPx(10),
+            )
             .build()
     val testLithoView =
         lithoTestRule
@@ -1454,7 +1801,8 @@ class VisibilityEventsTest {
                     .delegate(content)
                     .visibleHandler(visibleEventHandler)
                     .widthPx(10)
-                    .heightPx(10))
+                    .heightPx(10),
+            )
             .build()
     val testLithoView =
         lithoTestRule
@@ -1464,12 +1812,20 @@ class VisibilityEventsTest {
             .setSizeSpecs(exactly(100), exactly(100))
             .measure()
             .layout()
-    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, -10, 10, -5), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(
+        Rect(0, -10, 10, -5),
+        true,
+        VisibilityChangeReason.UNKNOWN,
+    )
     content.dispatchedEventHandlers.clear()
     testLithoView.lithoView.setHasTransientState(true)
     assertThat(content.dispatchedEventHandlers).doesNotContain(visibleEventHandler)
     testLithoView.lithoView.setMountStateDirty()
-    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, -10, 10, -5), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(
+        Rect(0, -10, 10, -5),
+        true,
+        VisibilityChangeReason.UNKNOWN,
+    )
     assertThat(content.dispatchedEventHandlers).doesNotContain(visibleEventHandler)
     testLithoView.lithoView.setHasTransientState(false)
     assertThat(content.dispatchedEventHandlers).contains(visibleEventHandler)
@@ -1487,13 +1843,14 @@ class VisibilityEventsTest {
                     .delegate(content)
                     .visibleHandler(visibleEventHandler)
                     .widthPx(10)
-                    .heightPx(10))
+                    .heightPx(10),
+            )
             .build()
 
     val testLithoView =
         lithoTestRule
             .createTestLithoView()
-            .useComponentTree(ComponentTree.create(context).build())
+            .useComponentTree(ComponentTree.create(context).enableChildClipping(true).build())
             .setRoot(root)
             .attachToWindow()
             .setSizeSpecs(exactly(100), exactly(100))
@@ -1505,12 +1862,20 @@ class VisibilityEventsTest {
     frameLayout.layout(0, 0, frameLayout.measuredWidth, frameLayout.measuredHeight)
     val view = testLithoView.lithoView.parent as View
     view.setHasTransientState(true)
-    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, -10, 10, -5), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(
+        Rect(0, -10, 10, -5),
+        true,
+        VisibilityChangeReason.UNKNOWN,
+    )
     content.dispatchedEventHandlers.clear()
     testLithoView.lithoView.setHasTransientState(true)
     assertThat(content.dispatchedEventHandlers).doesNotContain(visibleEventHandler)
     testLithoView.lithoView.setMountStateDirty()
-    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, -10, 10, -5), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(
+        Rect(0, -10, 10, -5),
+        true,
+        VisibilityChangeReason.UNKNOWN,
+    )
     assertThat(content.dispatchedEventHandlers).doesNotContain(visibleEventHandler)
     testLithoView.lithoView.setHasTransientState(false)
     assertThat(content.dispatchedEventHandlers).contains(visibleEventHandler)
@@ -1535,7 +1900,7 @@ class VisibilityEventsTest {
     val testLithoView =
         lithoTestRule
             .createTestLithoView()
-            .useComponentTree(ComponentTree.create(context).build())
+            .useComponentTree(ComponentTree.create(context).enableChildClipping(true).build())
             .setRoot(root)
             .attachToWindow()
             .setSizeSpecs(exactly(10), exactly(10))
@@ -1559,21 +1924,18 @@ class VisibilityEventsTest {
     val lifecycleTracker1 = LifecycleTracker()
     val lifecycleTracker2 = LifecycleTracker()
     val lifecycleTracker3 = LifecycleTracker()
-    val content1 =
-        ComponentWrapperTester.create(context)
-            .content(Column.create(context).build())
-            .lifecycleTracker(lifecycleTracker1)
-            .build()
-    val content2 =
-        ComponentWrapperTester.create(context)
-            .content(content1)
-            .lifecycleTracker(lifecycleTracker2)
-            .build()
-    val content3 =
-        ComponentWrapperTester.create(context)
-            .content(content2)
-            .lifecycleTracker(lifecycleTracker3)
-            .build()
+    val content1 = ComponentWrapperTester(
+        content = Column.create(context).build(),
+        lifecycleTracker = lifecycleTracker1,
+    )
+    val content2 = ComponentWrapperTester(
+        content = content1,
+        lifecycleTracker = lifecycleTracker2,
+    )
+    val content3 = ComponentWrapperTester(
+        content = content2,
+        lifecycleTracker = lifecycleTracker3,
+    )
     val testLithoView = lithoTestRule.createTestLithoView(widthPx = 10, heightPx = 10) { content3 }
     // FocusedVisible requires a measured parent
     val frameLayout = FrameLayout(lithoTestRule.context.androidContext)
@@ -1653,7 +2015,8 @@ class VisibilityEventsTest {
                     .unfocusedHandler(unfocusedEventHandler)
                     .fullImpressionHandler(fullImpressionHandler)
                     .widthPx(10)
-                    .heightPx(10))
+                    .heightPx(10),
+            )
             .build()
     val testLithoView = lithoTestRule.createTestLithoView(widthPx = 100, heightPx = 100) { root }
     // FocusedVisible requires a measured parent
@@ -1680,7 +2043,6 @@ class VisibilityEventsTest {
 
   @Test
   fun testSetVisibilityHintRecursive() {
-    // TODO(festevezga, T68365308) - replace with SimpleMountSpecTesterSpec
     val context = lithoTestRule.context
     val testComponentInner = TestDrawableComponent.create(context).build()
     val visibleEventHandlerInner = EventHandlerTestUtil.create<VisibleEvent>(1, testComponentInner)
@@ -1694,12 +2056,13 @@ class VisibilityEventsTest {
                     .visibleHandler(visibleEventHandlerInner)
                     .invisibleHandler(invisibleEventHandlerInner)
                     .widthPx(10)
-                    .heightPx(10))
+                    .heightPx(10),
+            )
             .build()
     val testLithoView =
         lithoTestRule
             .createTestLithoView()
-            .useComponentTree(ComponentTree.create(context).build())
+            .useComponentTree(ComponentTree.create(context).enableChildClipping(true).build())
             .setRoot(mountedTestComponentInner)
             .attachToWindow()
             .setSizeSpecs(exactly(100), exactly(100))
@@ -1708,6 +2071,7 @@ class VisibilityEventsTest {
     val child = ComponentTestHelper.mountComponent(context, mountedTestComponentInner, true, true)
     assertThat(testComponentInner.dispatchedEventHandlers.size).isEqualTo(1)
     assertThat(testComponentInner.dispatchedEventHandlers.contains(visibleEventHandlerInner))
+        .isTrue()
     testComponentInner.dispatchedEventHandlers.clear()
     val viewGroup = ViewGroupWithLithoViewChildren(context.androidContext)
     val parent = child.parent as ViewGroup
@@ -1715,14 +2079,20 @@ class VisibilityEventsTest {
     viewGroup.addView(child)
     val parentView =
         ComponentTestHelper.mountComponent(
-            context, TestViewComponent.create(context).testView(viewGroup).build(), true, true)
+            context,
+            TestViewComponent.create(context).testView(viewGroup).build(),
+            true,
+            true,
+        )
     parentView.setVisibilityHint(false, false)
     assertThat(testComponentInner.dispatchedEventHandlers.size).isEqualTo(1)
     assertThat(testComponentInner.dispatchedEventHandlers.contains(invisibleEventHandlerInner))
+        .isTrue()
     testComponentInner.dispatchedEventHandlers.clear()
     parentView.setVisibilityHint(true, false)
     assertThat(testComponentInner.dispatchedEventHandlers.size).isEqualTo(1)
     assertThat(testComponentInner.dispatchedEventHandlers.contains(visibleEventHandlerInner))
+        .isTrue()
   }
 
   @Test
@@ -1742,25 +2112,33 @@ class VisibilityEventsTest {
                     .delegate(content1)
                     .visibleHandler(visibleEventHandler1)
                     .widthPx(10)
-                    .heightPx(5))
+                    .heightPx(5),
+            )
             .child(
                 Wrapper.create(context)
                     .delegate(content2)
                     .visibleHandler(visibleEventHandler2)
                     .widthPx(10)
-                    .heightPx(5))
+                    .heightPx(5),
+            )
             .child(
                 Wrapper.create(context)
                     .delegate(content3)
                     .visibleHandler(visibleEventHandler3)
                     .visibilityChangedHandler(visibilityChangedHandler)
                     .widthPx(10)
-                    .heightPx(5))
+                    .heightPx(5),
+            )
             .build()
     val testLithoView =
         lithoTestRule
             .createTestLithoView()
-            .useComponentTree(ComponentTree.create(context).incrementalMount(false).build())
+            .useComponentTree(
+                ComponentTree.create(context)
+                    .incrementalMount(false)
+                    .enableChildClipping(true)
+                    .build(),
+            )
             .setRoot(root)
             .attachToWindow()
             .setSizeSpecs(exactly(10), exactly(10))
@@ -1773,7 +2151,11 @@ class VisibilityEventsTest {
     content1.dispatchedEventHandlers.clear()
     content2.dispatchedEventHandlers.clear()
     content3.dispatchedEventHandlers.clear()
-    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 0, 15, 0), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(
+        Rect(0, 0, 15, 0),
+        true,
+        VisibilityChangeReason.UNKNOWN,
+    )
     assertThat(content1.dispatchedEventHandlers).doesNotContain(visibleEventHandler1)
     assertThat(content2.dispatchedEventHandlers).doesNotContain(visibleEventHandler2)
     assertThat(content3.dispatchedEventHandlers).doesNotContain(visibleEventHandler3)
@@ -1781,14 +2163,22 @@ class VisibilityEventsTest {
     content1.dispatchedEventHandlers.clear()
     content2.dispatchedEventHandlers.clear()
     content3.dispatchedEventHandlers.clear()
-    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 0, 15, 3), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(
+        Rect(0, 0, 15, 3),
+        true,
+        VisibilityChangeReason.UNKNOWN,
+    )
     assertThat(content1.dispatchedEventHandlers).contains(visibleEventHandler1)
     assertThat(content2.dispatchedEventHandlers).doesNotContain(visibleEventHandler2)
     assertThat(content3.dispatchedEventHandlers).doesNotContain(visibleEventHandler3)
     assertThat(content3.dispatchedEventHandlers).doesNotContain(visibilityChangedHandler)
     content1.dispatchedEventHandlers.clear()
     content2.dispatchedEventHandlers.clear()
-    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 3, 15, 11), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(
+        Rect(0, 3, 15, 11),
+        true,
+        VisibilityChangeReason.UNKNOWN,
+    )
     assertThat(content1.dispatchedEventHandlers).doesNotContain(visibleEventHandler1)
     assertThat(content2.dispatchedEventHandlers).contains(visibleEventHandler2)
     assertThat(content3.dispatchedEventHandlers).contains(visibleEventHandler3)
@@ -1816,15 +2206,21 @@ class VisibilityEventsTest {
                     .unfocusedHandler(unfocusedEventHandler)
                     .fullImpressionHandler(fullImpressionHandler)
                     .widthPx(10)
-                    .heightPx(10))
+                    .heightPx(10),
+            )
             .build()
     val testLithoView =
         lithoTestRule.createTestLithoView(
-            componentTree = ComponentTree.create(context).incrementalMount(false).build(),
+            componentTree =
+                ComponentTree.create(context)
+                    .incrementalMount(false)
+                    .enableChildClipping(true)
+                    .build(),
             widthPx = 100,
-            heightPx = 100) {
-              root
-            }
+            heightPx = 100,
+        ) {
+          root
+        }
     // FocusedVisible requires a measured parent
     val frameLayout = FrameLayout(lithoTestRule.context.androidContext)
     frameLayout.addView(testLithoView.lithoView)
@@ -1860,12 +2256,18 @@ class VisibilityEventsTest {
                     .visibleHandler(visibleEventHandler)
                     .widthPx(10)
                     .heightPx(5)
-                    .marginPx(YogaEdge.TOP, 5))
+                    .marginPx(YogaEdge.TOP, 5),
+            )
             .build()
     val testLithoView =
         lithoTestRule
             .createTestLithoView()
-            .useComponentTree(ComponentTree.create(context).incrementalMount(false).build())
+            .useComponentTree(
+                ComponentTree.create(context)
+                    .incrementalMount(false)
+                    .enableChildClipping(true)
+                    .build(),
+            )
             .setRoot(root)
             .attachToWindow()
             .setSizeSpecs(exactly(10), exactly(5))
@@ -1892,14 +2294,15 @@ class VisibilityEventsTest {
                     .invisibleHandler(invisibleEventHandler)
                     .widthPx(10)
                     .heightPx(5)
-                    .marginPx(YogaEdge.TOP, 5))
+                    .marginPx(YogaEdge.TOP, 5),
+            )
             .build()
-    val componentTree = ComponentTree.create(context, root).build()
+    val componentTree = ComponentTree.create(context, root).enableChildClipping(true).build()
     val testLithoView = lithoTestRule.createTestLithoView()
     testLithoView.lithoView.componentTree = componentTree
     assertThat(content.dispatchedEventHandlers).doesNotContain(visibleEventHandler)
     content.dispatchedEventHandlers.clear()
-    val newComponentTree = ComponentTree.create(context, root).build()
+    val newComponentTree = ComponentTree.create(context, root).enableChildClipping(true).build()
     testLithoView.lithoView.componentTree = newComponentTree
     assertThat(content.dispatchedEventHandlers).doesNotContain(invisibleEventHandler)
     assertThat(content.dispatchedEventHandlers).doesNotContain(visibleEventHandler)
@@ -1908,16 +2311,18 @@ class VisibilityEventsTest {
   @Test
   fun processVisibility_componentIsMounted() {
     val context = lithoTestRule.context
-    val textDrawableOutput = Output<Any>()
-    val viewOutput = Output<Any>()
-    val nullOutput = Output<Any>()
+    val textDrawableOutput = Output<Any?>()
+    val viewOutput = Output<Any?>()
+    val nullOutput = Output<Any?>()
     val root: Component =
         Column.create(context)
             .child(
-                LayoutSpecVisibilityEventTester.create(context)
-                    .textOutput(textDrawableOutput)
-                    .viewOutput(viewOutput)
-                    .nullOutput(nullOutput))
+                LayoutSpecVisibilityEventTester(
+                    textOutput = textDrawableOutput,
+                    viewOutput = viewOutput,
+                    nullOutput = nullOutput,
+                ),
+            )
             .build()
     val testLithoView =
         lithoTestRule
@@ -1934,11 +2339,11 @@ class VisibilityEventsTest {
     assertThat(nullOutput.get()).isNull()
   }
 
-  private fun getCurrentVisibilityToItemMap(lithoView: LithoView): Map<String?, VisibilityItem?>? {
+  private fun getCurrentVisibilityToItemMap(lithoView: LithoView): Map<Any, VisibilityItem>? {
     val lithoHostListenerCoordinator: LithoHostListenerCoordinator? =
         Whitebox.getInternalState(lithoView, "lithoHostListenerCoordinator")
     val extensionState: ExtensionState<VisibilityMountExtensionState>? =
-        Whitebox.getInternalState(lithoHostListenerCoordinator, "mVisibilityExtensionState")
+        Whitebox.getInternalState(lithoHostListenerCoordinator, "visibilityExtensionState")
     return if (extensionState != null) {
       VisibilityMountExtension.getVisibilityIdToItemMap(extensionState)
     } else {
@@ -1951,11 +2356,10 @@ class VisibilityEventsTest {
     val c = lithoTestRule.context
     val stepsList: MutableList<List<StepInfo>> = mutableListOf()
     val numberOfItems = 2
-    val component =
-        HorizontalScroll.create(c)
-            .incrementalMountEnabled(true)
-            .contentProps(createHorizontalScrollChildren(c, numberOfItems, stepsList))
-            .build()
+    val component = HorizontalScroll(
+        child = createHorizontalScrollChildren(c, numberOfItems, stepsList),
+        incrementalMountEnabled = true,
+    )
     val testLithoView =
         lithoTestRule
             .createTestLithoView()
@@ -1974,7 +2378,7 @@ class VisibilityEventsTest {
     ReflectionHelpers.setField(lScrollView, "mScrollX", 10)
     ReflectionHelpers.setField(lScrollView, "mScrollY", 0)
     lScrollView.scrollBy(10, 0)
-    testLithoView.lithoView.notifyVisibleBoundsChanged()
+    testLithoView.lithoView.notifyVisibleBoundsChanged(VisibilityChangeReason.UNKNOWN)
     assertThat(LifecycleStep.getSteps(stepsList[1]))
         .describedAs("Visible event should be dispatched")
         .contains(LifecycleStep.ON_EVENT_VISIBLE)
@@ -1983,7 +2387,7 @@ class VisibilityEventsTest {
   private fun createHorizontalScrollChildren(
       c: ComponentContext,
       numberOfItems: Int,
-      stepsList: MutableList<List<StepInfo>>
+      stepsList: MutableList<List<StepInfo>>,
   ): Component {
     val rowBuilder = Row.create(c)
     for (i in 0 until numberOfItems) {

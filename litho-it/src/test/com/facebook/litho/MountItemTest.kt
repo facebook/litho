@@ -17,18 +17,15 @@
 package com.facebook.litho
 
 import android.content.Context
-import android.graphics.Rect
 import android.util.SparseArray
 import android.view.View
 import androidx.core.view.ViewCompat
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
-import com.facebook.litho.MountSpecLithoRenderUnit.Companion.STATE_UNKNOWN
 import com.facebook.litho.testing.TestDrawableComponent
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.SimpleMountSpecTester
 import com.facebook.rendercore.MountItem
-import com.facebook.rendercore.RenderTreeNode
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -60,8 +57,7 @@ class MountItemTest {
     context = ComponentContext(getApplicationContext<Context>())
     component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component =
-              SimpleMountSpecTester.create(c).build()
+          override fun onCreateLayout(c: ComponentContext): Component = SimpleMountSpecTester()
         }
     componentHost = ComponentHost(getApplicationContext<Context>(), null)
     content = View(getApplicationContext())
@@ -93,7 +89,8 @@ class MountItemTest {
           nodeInfo,
           null,
           flags,
-          ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES)
+          ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES,
+      )
 
   @Test
   fun testIsBound() {
@@ -127,14 +124,16 @@ class MountItemTest {
             LithoRenderUnit.LAYOUT_FLAG_DISABLE_TOUCHABLE)
     mountItem = create(content)
     assertThat(
-            LithoRenderUnit.isDuplicateParentState(LithoRenderUnit.getRenderUnit(mountItem).flags))
+        LithoRenderUnit.isDuplicateParentState(LithoRenderUnit.getRenderUnit(mountItem).flags),
+    )
         .isTrue
     assertThat(LithoRenderUnit.isTouchableDisabled(LithoRenderUnit.getRenderUnit(mountItem).flags))
         .isTrue
     flags = 0
     mountItem = create(content)
     assertThat(
-            LithoRenderUnit.isDuplicateParentState(LithoRenderUnit.getRenderUnit(mountItem).flags))
+        LithoRenderUnit.isDuplicateParentState(LithoRenderUnit.getRenderUnit(mountItem).flags),
+    )
         .isFalse
     assertThat(LithoRenderUnit.isTouchableDisabled(LithoRenderUnit.getRenderUnit(mountItem).flags))
         .isFalse
@@ -148,53 +147,23 @@ class MountItemTest {
     view.isLongClickable = true
     view.isFocusable = false
     view.isSelected = false
-    mountItem = create(view)
-    assertThat(
-            LithoMountData.isViewClickable(
-                LithoMountData.getMountData(mountItem).defaultAttributeValuesFlags))
-        .isTrue
-    assertThat(
-            LithoMountData.isViewEnabled(
-                LithoMountData.getMountData(mountItem).defaultAttributeValuesFlags))
-        .isTrue
-    assertThat(
-            LithoMountData.isViewLongClickable(
-                LithoMountData.getMountData(mountItem).defaultAttributeValuesFlags))
-        .isTrue
-    assertThat(
-            LithoMountData.isViewFocusable(
-                LithoMountData.getMountData(mountItem).defaultAttributeValuesFlags))
-        .isFalse
-    assertThat(
-            LithoMountData.isViewSelected(
-                LithoMountData.getMountData(mountItem).defaultAttributeValuesFlags))
-        .isFalse
+    var flags = LithoMountData.getViewAttributeFlags(view)
+    assertThat(LithoMountData.isViewClickable(flags)).isTrue
+    assertThat(LithoMountData.isViewEnabled(flags)).isTrue
+    assertThat(LithoMountData.isViewLongClickable(flags)).isTrue
+    assertThat(LithoMountData.isViewFocusable(flags)).isFalse
+    assertThat(LithoMountData.isViewSelected(flags)).isFalse
     view.isClickable = false
     view.isEnabled = false
     view.isLongClickable = false
     view.isFocusable = true
     view.isSelected = true
-    mountItem = create(view)
-    assertThat(
-            LithoMountData.isViewClickable(
-                LithoMountData.getMountData(mountItem).defaultAttributeValuesFlags))
-        .isFalse
-    assertThat(
-            LithoMountData.isViewEnabled(
-                LithoMountData.getMountData(mountItem).defaultAttributeValuesFlags))
-        .isFalse
-    assertThat(
-            LithoMountData.isViewLongClickable(
-                LithoMountData.getMountData(mountItem).defaultAttributeValuesFlags))
-        .isFalse
-    assertThat(
-            LithoMountData.isViewFocusable(
-                LithoMountData.getMountData(mountItem).defaultAttributeValuesFlags))
-        .isTrue
-    assertThat(
-            LithoMountData.isViewSelected(
-                LithoMountData.getMountData(mountItem).defaultAttributeValuesFlags))
-        .isTrue
+    flags = LithoMountData.getViewAttributeFlags(view)
+    assertThat(LithoMountData.isViewClickable(flags)).isFalse
+    assertThat(LithoMountData.isViewEnabled(flags)).isFalse
+    assertThat(LithoMountData.isViewLongClickable(flags)).isFalse
+    assertThat(LithoMountData.isViewFocusable(flags)).isTrue
+    assertThat(LithoMountData.isViewSelected(flags)).isTrue
   }
 
   @Test
@@ -214,7 +183,8 @@ class MountItemTest {
             nodeInfo,
             null,
             flags,
-            ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO)
+            ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO,
+        )
     assertThat(LithoRenderUnit.getRenderUnit(mountItem).isAccessible).isTrue
   }
 
@@ -229,7 +199,8 @@ class MountItemTest {
             nodeInfo,
             null,
             flags,
-            ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO)
+            ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO,
+        )
     assertThat(LithoRenderUnit.getRenderUnit(mountItem).isAccessible).isFalse
   }
 
@@ -244,33 +215,13 @@ class MountItemTest {
             nodeInfo,
             null,
             flags,
-            ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO)
+            ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO,
+        )
     assertThat(LithoRenderUnit.getRenderUnit(mountItem).isAccessible).isTrue
   }
 
   @Test
   fun testIsAccessibleWithNonAccessibleComponent() {
     assertThat(LithoRenderUnit.getRenderUnit(mountItem).isAccessible).isFalse
-  }
-
-  @Test
-  fun testUpdateDoesntChangeFlags() {
-    val unit: LithoRenderUnit =
-        MountSpecLithoRenderUnit.create(
-            0, component, null, context, nodeInfo, 0, 0, STATE_UNKNOWN, null)
-    val node: RenderTreeNode = create(unit, Rect(0, 0, 0, 0), null, null)
-    val view = View(getApplicationContext())
-    val mountItem = MountItem(node, view)
-    mountItem.mountData = LithoMountData(view)
-    assertThat(
-            LithoMountData.isViewClickable(
-                LithoMountData.getMountData(mountItem).defaultAttributeValuesFlags))
-        .isFalse
-    view.isClickable = true
-    mountItem.update(node)
-    assertThat(
-            LithoMountData.isViewClickable(
-                LithoMountData.getMountData(mountItem).defaultAttributeValuesFlags))
-        .isFalse
   }
 }

@@ -33,7 +33,6 @@ import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.SpecGeneratedComponent;
 import com.facebook.litho.testing.ThreadTestingUtils;
-import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.rendercore.RunnableHandler;
@@ -43,8 +42,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.Shadows;
 import org.robolectric.annotation.LooperMode;
+import org.robolectric.shadow.api.Shadow;
 import org.robolectric.shadows.ShadowLooper;
 
 @LooperMode(LEGACY)
@@ -63,16 +62,12 @@ public class ComponentWarmerTest {
     mContext = new ComponentContext(getApplicationContext());
     mComponentRenderInfo =
         ComponentRenderInfo.create()
-            .component(SimpleMountSpecTester.create(mContext).build())
+            .component(new SimpleMountSpecTester())
             .customAttribute(ComponentWarmer.COMPONENT_WARMER_TAG, "tag1")
             .build();
     mPrepareComponentRenderInfo =
-        ComponentRenderInfo.create()
-            .component(SimpleMountSpecTester.create(mContext).build())
-            .build();
-    mLayoutThreadShadowLooper =
-        Shadows.shadowOf(
-            (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultLayoutThreadLooper"));
+        ComponentRenderInfo.create().component(new SimpleMountSpecTester()).build();
+    mLayoutThreadShadowLooper = Shadow.extract(ComponentTree.getDefaultLayoutThreadLooper());
     mWidthSpec = SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY);
     mHeightSpec = SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY);
   }
@@ -100,6 +95,23 @@ public class ComponentWarmerTest {
 
     assertThat(warmer.consume("tag1")).isNotNull();
     assertThat(warmer.consume("tag1")).isNull();
+  }
+
+  @Test
+  public void testIsCachedReflectsCacheStateNonDestructively() {
+    final RecyclerBinder binder = new RecyclerBinder.Builder().build(mContext);
+
+    final ComponentWarmer warmer = new ComponentWarmer(binder);
+
+    assertThat(warmer.isCached("tag1")).isFalse();
+
+    warmer.prepare("tag1", mPrepareComponentRenderInfo, null);
+
+    assertThat(warmer.isCached("tag1")).isTrue();
+    // Non-destructive: repeated checks keep the entry, and it is still consumable.
+    assertThat(warmer.isCached("tag1")).isTrue();
+    assertThat(warmer.consume("tag1")).isNotNull();
+    assertThat(warmer.isCached("tag1")).isFalse();
   }
 
   @Test
@@ -228,7 +240,7 @@ public class ComponentWarmerTest {
     final ComponentWarmer warmer = new ComponentWarmer();
     final ComponentRenderInfo renderInfo =
         ComponentRenderInfo.create()
-            .component(SimpleMountSpecTester.create(mContext).build())
+            .component(new SimpleMountSpecTester())
             .customAttribute(ComponentWarmer.COMPONENT_WARMER_TAG, "tag1")
             .build();
 
@@ -246,7 +258,7 @@ public class ComponentWarmerTest {
     final ComponentWarmer warmer = new ComponentWarmer();
     final ComponentRenderInfo renderInfo =
         ComponentRenderInfo.create()
-            .component(SimpleMountSpecTester.create(mContext).build())
+            .component(new SimpleMountSpecTester())
             .customAttribute(ComponentWarmer.COMPONENT_WARMER_TAG, "tag1")
             .build();
     final RunnableHandler handler = new RunnableHandler.DefaultHandler(Looper.myLooper());
@@ -267,7 +279,7 @@ public class ComponentWarmerTest {
 
     final ComponentRenderInfo renderInfo =
         ComponentRenderInfo.create()
-            .component(SimpleMountSpecTester.create(mContext).build())
+            .component(new SimpleMountSpecTester())
             .customAttribute(ComponentWarmer.COMPONENT_WARMER_TAG, "tag1")
             .build();
 
@@ -367,7 +379,7 @@ public class ComponentWarmerTest {
 
     assertThat(warmer.getPending()).isEmpty();
 
-    ShadowLooper shadowLooper = Shadows.shadowOf(looper);
+    ShadowLooper shadowLooper = Shadow.extract(looper);
     shadowLooper.runToEndOfTasks();
 
     final ComponentTreeHolder holder1 = warmer.getCache().get("tag1");

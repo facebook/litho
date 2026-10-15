@@ -18,9 +18,14 @@ package com.facebook.litho.testing.assertj;
 
 import static org.hamcrest.core.Is.is;
 
+import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.Row;
+import com.facebook.litho.layout.flexbox.KColumn;
+import com.facebook.litho.layout.flexbox.KRow;
 import com.facebook.litho.testing.subcomponents.InspectableComponent;
+import javax.annotation.Nullable;
 import kotlin.jvm.JvmClassMappingKt;
 import kotlin.reflect.KClass;
 import kotlin.reflect.KProperty1;
@@ -62,8 +67,7 @@ public final class ComponentConditions {
         new TextDescription("Component with type <%s>", clazz)) {
       @Override
       public boolean matches(InspectableComponent value) {
-        final Class component = value.getComponentClass();
-        return component != null && component.equals(clazz);
+        return classMatches(value.getComponentClass(), clazz);
       }
     };
   }
@@ -91,8 +95,7 @@ public final class ComponentConditions {
     return new Condition<Component>(new TextDescription("Component with type <%s>", clazz)) {
       @Override
       public boolean matches(Component value) {
-        Class componentClass = value.getClass();
-        return componentClass != null && componentClass.equals(clazz);
+        return matchesClass(value, clazz);
       }
     };
   }
@@ -101,11 +104,40 @@ public final class ComponentConditions {
     return new Condition<Component>(new TextDescription("Component with type <%s>", clazz)) {
       @Override
       public boolean matches(Component value) {
-        Class componentClass = value.getClass();
-        return componentClass != null
-            && componentClass.equals(JvmClassMappingKt.getJavaClass(clazz));
+        return matchesClass(value, JvmClassMappingKt.getJavaClass(clazz));
       }
     };
+  }
+
+  /**
+   * Aliases the legacy Spec-gen {@link Column} / {@link Row} classes onto their Kotlin replacements
+   * ({@link KColumn} / {@link KRow}) so existing test assertions on {@code Column.class} keep
+   * working after the {@code useKFlexboxContainerComponent} default flipped to {@code true} and the
+   * DSL now constructs KColumn / KRow. Mirrors the same alias used by {@code
+   * com.facebook.litho.componentsfinder.matchesClass}; if you update one you must update the other.
+   */
+  private static boolean matchesClass(Component value, Class<?> clazz) {
+    return value != null && classMatches(value.getClass(), clazz);
+  }
+
+  /**
+   * Class-level equivalent of {@link #matchesClass(Component, Class)} — applied directly on a
+   * {@link Class} (e.g., from {@link InspectableComponent#getComponentClass()}).
+   */
+  private static boolean classMatches(@Nullable Class<?> actual, Class<?> expected) {
+    if (actual == null) {
+      return false;
+    }
+    if (actual.equals(expected)) {
+      return true;
+    }
+    if (actual.equals(KColumn.class)) {
+      return expected.equals(Column.class);
+    }
+    if (actual.equals(KRow.class)) {
+      return expected.equals(Row.class);
+    }
+    return false;
   }
 
   /**
@@ -126,6 +158,7 @@ public final class ComponentConditions {
    *          hasProp(Favicon::uri, FAVICON_URI))));
    * </code></pre>
    */
+  @SuppressWarnings("unchecked") // Safe: TComponent is the component type from the caller's context
   public static <TComponent, TValue> Condition<InspectableComponent> hasProps(
       KProperty1<TComponent, TValue> property, TValue expectedValue) {
     return new Condition<InspectableComponent>(

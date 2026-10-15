@@ -14,24 +14,21 @@
  * limitations under the License.
  */
 
+@file:JvmName("ComponentContextUtils")
+
 package com.facebook.litho
 
-import android.content.Context
 import com.facebook.litho.config.ComponentsConfiguration
-
-object ComponentContextUtils {
-  @JvmStatic
-  fun buildDefaultLithoConfiguration(
-      context: Context,
-      componentsConfig: ComponentsConfiguration = ComponentsConfiguration.defaultInstance,
-      renderUnitIdGenerator: RenderUnitIdGenerator? = null,
-  ): LithoConfiguration {
-    return LithoConfiguration(
-        componentsConfig = componentsConfig,
-        areTransitionsEnabled = AnimationsDebug.areTransitionsEnabled(context),
-        renderUnitIdGenerator = renderUnitIdGenerator)
-  }
-}
+import com.facebook.litho.state.UiStateReadRecords
 
 val ComponentContext.componentsConfig: ComponentsConfiguration
   get() = lithoConfiguration.componentsConfig
+
+internal val ComponentContext.isReadTrackingEnabled: Boolean
+  get() = lithoTree?.isReadTrackingEnabled == true
+
+internal val ComponentContext.uiStateReadRecords: UiStateReadRecords
+  get() =
+      checkNotNull(lithoTree?.uiStateReadRecordsProvider?.getUiStateReadRecords()) {
+        "Could not retrieve the UI state read records. This is likely because the LithoTree is not initialized."
+      }

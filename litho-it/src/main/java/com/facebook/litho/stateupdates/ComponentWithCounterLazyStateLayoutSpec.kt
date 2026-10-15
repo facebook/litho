@@ -16,7 +16,7 @@
 
 package com.facebook.litho.stateupdates
 
-import com.facebook.litho.Column
+import com.facebook.litho.Column as ColumnBuilder
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.StateValue
@@ -46,10 +46,10 @@ object ComponentWithCounterLazyStateLayoutSpec {
   fun onCreateLayout(
       c: ComponentContext,
       @Prop(optional = true) caller: Caller?,
-      @State(canUpdateLazily = true) count: Int
+      @State(canUpdateLazily = true) count: Int,
   ): Component {
     caller?.set(c)
-    return Column.create(c).child(Text.create(c).text("Count: $count")).build()
+    return ColumnBuilder.create(c).child(Text.create(c).text("Count: $count")).build()
   }
 
   @JvmStatic
@@ -58,7 +58,7 @@ object ComponentWithCounterLazyStateLayoutSpec {
       c: ComponentContext,
       @Prop listener: TestEventListener,
       @FromEvent expectedValue: Int,
-      @State(canUpdateLazily = true) count: Int
+      @State(canUpdateLazily = true) count: Int,
   ) {
     listener.onTestEventCalled(count, expectedValue)
   }

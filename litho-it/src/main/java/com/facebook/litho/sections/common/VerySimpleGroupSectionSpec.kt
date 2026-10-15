@@ -30,7 +30,7 @@ import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.annotations.GroupSectionSpec
 import com.facebook.litho.sections.annotations.OnCreateChildren
 import com.facebook.litho.sections.annotations.OnDataBound
-import com.facebook.litho.widget.Image
+import com.facebook.litho.widget.PrimitiveImage
 import com.facebook.litho.widget.Text
 
 /** Dummy [GroupSectionSpec] to illustrate how to test sections. */
@@ -48,20 +48,21 @@ object VerySimpleGroupSectionSpec {
   fun onCreateChildren(
       c: SectionContext,
       @State(canUpdateLazily = true) extra: Int,
-      @Prop numberOfDummy: Int
+      @Prop numberOfDummy: Int,
   ): Children {
     val builder = Children.create()
     if (extra > 0) {
       builder.child(
-          SingleComponentSection.create(c)
-              .component(Image.create(c).drawable(ColorDrawable()).build()))
+          SingleComponentSection.create(c).component(PrimitiveImage(drawable = ColorDrawable())),
+      )
     }
     for (i in 0 until numberOfDummy + extra) {
       builder.child(
           SingleComponentSection.create(c)
               .component(Text.create(c).text("Lol hi $i").build())
               .key("key$i")
-              .build())
+              .build(),
+      )
     }
     return builder.build()
   }
@@ -71,7 +72,7 @@ object VerySimpleGroupSectionSpec {
   fun onDataBound(
       c: SectionContext,
       @Prop numberOfDummy: Int,
-      @State(canUpdateLazily = true) extra: Int
+      @State(canUpdateLazily = true) extra: Int,
   ) {
     VerySimpleGroupSection.lazyUpdateExtra(c, extra - numberOfDummy)
   }

@@ -97,6 +97,7 @@ public class InteractionUtil {
     private int mScrollPositionX;
     private int mScrollPositionY;
 
+    @SuppressWarnings("this-escape")
     public Scroller(RecyclerView recyclerView) {
       mRecyclerView = recyclerView;
       recyclerView.addOnScrollListener(this);

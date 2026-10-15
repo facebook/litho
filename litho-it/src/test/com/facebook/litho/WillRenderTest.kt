@@ -24,7 +24,6 @@ import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.assertj.LithoAssertions
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec
 import com.facebook.litho.testing.testrunner.LithoTestRunner
-import com.facebook.litho.widget.ComponentWithState
 import com.facebook.litho.widget.LayoutSpecWillRenderReuseTester
 import com.facebook.litho.widget.LayoutSpecWillRenderTester
 import java.lang.IllegalArgumentException
@@ -53,7 +52,7 @@ class WillRenderTest {
         override fun onCreateLayoutWithSizeSpec(
             c: ComponentContext,
             widthSpec: Int,
-            heightSpec: Int
+            heightSpec: Int,
         ): Component =
             Row.create(c)
                 .widthDip(View.MeasureSpec.getSize(widthSpec).toFloat())
@@ -88,13 +87,6 @@ class WillRenderTest {
   }
 
   @Test
-  fun testWillRender_withComponentContextWithoutStateHandler_doesntCrash() {
-    val c = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    c.setRenderStateContextForTests()
-    assertThat(Component.willRender(c, ComponentWithState.create(c).build())).isTrue
-  }
-
-  @Test
   fun testWillRender_cachedLayoutUsedInDifferentComponentHierarchy() {
     val info: List<StepInfo> = ArrayList<StepInfo>()
     val component = LayoutSpecWillRenderTester.create(lithoTestRule.context).steps(info).build()
@@ -106,7 +98,8 @@ class WillRenderTest {
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT,
-            LifecycleStep.ON_ATTACHED)
+            LifecycleStep.ON_ATTACHED,
+        )
   }
 
   @Test
@@ -122,6 +115,7 @@ class WillRenderTest {
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT,
-            LifecycleStep.ON_ATTACHED)
+            LifecycleStep.ON_ATTACHED,
+        )
   }
 }

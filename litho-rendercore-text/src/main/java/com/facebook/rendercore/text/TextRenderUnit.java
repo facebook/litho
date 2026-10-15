@@ -17,12 +17,12 @@
 package com.facebook.rendercore.text;
 
 import static com.facebook.rendercore.RenderUnit.DelegateBinder.createDelegateBinder;
-import static com.facebook.rendercore.RenderUnit.RenderType.VIEW;
 
 import android.content.Context;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.ContentAllocator;
+import com.facebook.rendercore.RenderType;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.text.TextMeasurementUtils.TextLayout;
 
@@ -30,8 +30,9 @@ import com.facebook.rendercore.text.TextMeasurementUtils.TextLayout;
 public class TextRenderUnit extends RenderUnit<RCTextView> implements ContentAllocator<RCTextView> {
   private long mId;
 
+  @SuppressWarnings("this-escape")
   public TextRenderUnit(long id) {
-    super(VIEW);
+    super();
     mId = id;
     addOptionalMountBinder(createDelegateBinder(this, sMountUnmount));
   }
@@ -44,6 +45,11 @@ public class TextRenderUnit extends RenderUnit<RCTextView> implements ContentAll
   @Override
   public ContentAllocator<RCTextView> getContentAllocator() {
     return this;
+  }
+
+  @Override
+  public RenderType getRenderType() {
+    return RenderType.VIEW;
   }
 
   @Override

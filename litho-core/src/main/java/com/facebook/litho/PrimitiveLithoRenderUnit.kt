@@ -18,7 +18,9 @@ package com.facebook.litho
 
 import android.util.SparseArray
 import androidx.annotation.IdRes
+import androidx.collection.ScatterSet
 import com.facebook.rendercore.BindData
+import com.facebook.rendercore.BinderId
 import com.facebook.rendercore.BinderKey
 import com.facebook.rendercore.ContentAllocator
 import com.facebook.rendercore.MountContext
@@ -35,7 +37,8 @@ private constructor(
     importantForAccessibility: Int,
     val primitiveRenderUnit: PrimitiveRenderUnit<Any>,
     context: ComponentContext,
-    debugKey: String?
+    debugKey: String?,
+    excludesFromIncrementalMount: Boolean,
 ) :
     LithoRenderUnit(
         primitiveRenderUnit.id,
@@ -44,9 +47,10 @@ private constructor(
         nodeInfo,
         flags,
         importantForAccessibility,
-        primitiveRenderUnit.renderType,
         context,
-        debugKey) {
+        debugKey,
+        excludesFromIncrementalMount,
+    ) {
 
   override val contentAllocator: ContentAllocator<Any> = primitiveRenderUnit.contentAllocator
 
@@ -62,40 +66,93 @@ private constructor(
       context: MountContext,
       content: Any,
       layoutData: Any?,
-      bindData: BindData
+      bindData: BindData,
   ) {
-    primitiveRenderUnit.mountBinders(
-        context, content, (layoutData as? LithoLayoutData)?.layoutData, bindData)
+    try {
+      primitiveRenderUnit.mountBinders(
+          context,
+          content,
+          (layoutData as? LithoLayoutData)?.layoutData,
+          bindData,
+      )
+    } catch (e: Exception) {
+      // Error boundary will handle component removal; partial binder state is acceptable
+      ComponentUtils.handle(componentContext, e)
+    }
   }
 
   override fun unmountBinders(
       context: MountContext,
       content: Any,
       layoutData: Any?,
-      bindData: BindData
+      bindData: BindData,
   ) {
-    primitiveRenderUnit.unmountBinders(
-        context, content, (layoutData as? LithoLayoutData)?.layoutData, bindData)
+    try {
+      primitiveRenderUnit.unmountBinders(
+          context,
+          content,
+          (layoutData as? LithoLayoutData)?.layoutData,
+          bindData,
+      )
+    } catch (e: Exception) {
+      ComponentUtils.handle(componentContext, e)
+    }
   }
 
   override fun attachBinders(
       context: MountContext,
       content: Any,
       layoutData: Any?,
-      bindData: BindData
+      bindData: BindData,
   ) {
-    primitiveRenderUnit.attachBinders(
-        context, content, (layoutData as? LithoLayoutData)?.layoutData, bindData)
+    try {
+      primitiveRenderUnit.attachBinders(
+          context,
+          content,
+          (layoutData as? LithoLayoutData)?.layoutData,
+          bindData,
+      )
+    } catch (e: Exception) {
+      ComponentUtils.handle(componentContext, e)
+    }
   }
 
   override fun detachBinders(
       context: MountContext,
       content: Any,
       layoutData: Any?,
-      bindData: BindData
+      bindData: BindData,
   ) {
-    primitiveRenderUnit.detachBinders(
-        context, content, (layoutData as? LithoLayoutData)?.layoutData, bindData)
+    try {
+      primitiveRenderUnit.detachBinders(
+          context,
+          content,
+          (layoutData as? LithoLayoutData)?.layoutData,
+          bindData,
+      )
+    } catch (e: Exception) {
+      ComponentUtils.handle(componentContext, e)
+    }
+  }
+
+  override fun rebindBinders(
+      context: MountContext,
+      binderIds: ScatterSet<BinderId>,
+      content: Any,
+      layoutData: Any?,
+      bindData: BindData,
+  ) {
+    try {
+      primitiveRenderUnit.rebindBinders(
+          context,
+          binderIds,
+          content,
+          (layoutData as? LithoLayoutData)?.layoutData,
+          bindData,
+      )
+    } catch (e: Exception) {
+      ComponentUtils.handle(componentContext, e)
+    }
   }
 
   override fun updateBinders(
@@ -106,20 +163,29 @@ private constructor(
       newLayoutData: Any?,
       mountDelegate: MountDelegate?,
       bindData: BindData,
-      isAttached: Boolean
+      isAttached: Boolean,
+      extraBindersToUpdate: ScatterSet<BinderId>,
   ) {
-    primitiveRenderUnit.updateBinders(
-        context,
-        content,
-        (currentRenderUnit as PrimitiveLithoRenderUnit).primitiveRenderUnit,
-        (currentLayoutData as? LithoLayoutData)?.layoutData,
-        (newLayoutData as? LithoLayoutData)?.layoutData,
-        mountDelegate,
-        bindData,
-        isAttached)
+    try {
+      primitiveRenderUnit.updateBinders(
+          context,
+          content,
+          (currentRenderUnit as? PrimitiveLithoRenderUnit
+                  ?: error("Expected PrimitiveLithoRenderUnit for currentRenderUnit"))
+              .primitiveRenderUnit,
+          (currentLayoutData as? LithoLayoutData)?.layoutData,
+          (newLayoutData as? LithoLayoutData)?.layoutData,
+          mountDelegate,
+          bindData,
+          isAttached,
+          extraBindersToUpdate,
+      )
+    } catch (e: Exception) {
+      ComponentUtils.handle(componentContext, e)
+    }
   }
 
-  override fun <T : BinderWithContext<*, *, *>?> findAttachBinderByKey(key: BinderKey): T? {
+  override fun <T : Binder<*, *, *>?> findAttachBinderByKey(key: BinderKey): T? {
     return primitiveRenderUnit.findAttachBinderByKey(key)
   }
 
@@ -146,7 +212,8 @@ private constructor(
         flags: Int,
         importantForAccessibility: Int,
         primitiveRenderUnit: PrimitiveRenderUnit<Any>,
-        debugKey: String?
+        debugKey: String?,
+        excludesFromIncrementalMount: Boolean,
     ): PrimitiveLithoRenderUnit {
       return PrimitiveLithoRenderUnit(
           component,
@@ -156,7 +223,9 @@ private constructor(
           importantForAccessibility,
           primitiveRenderUnit,
           context,
-          debugKey)
+          debugKey,
+          excludesFromIncrementalMount,
+      )
     }
   }
 }

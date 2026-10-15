@@ -1,0 +1,221 @@
+---
+id: layout-intro
+title: Layout & Styling Overview
+keywords:
+    - understanding layout
+    - layout
+    - common props
+    - style api
+    - litho layout
+    - Style
+    - flexbox
+    - margin
+    - padding
+    - width
+    - height
+    - Row
+    - Column
+api_category: layout
+related_docs: [core-styles, flexbox-styles, view-styles, common-props]
+api_names: [Style, Row, Column, width, height, margin, padding, onClick, backgroundColor, alpha, elevation]
+---
+
+Layout in Litho is controlled through the **Style API**, also known as **Common Props**. These are props that can be applied to any component to control its appearance, behavior, and position within its parent container.
+
+## What are Common Props?
+
+Common props are a set of properties defined by the `Style` API that work across all Litho components. Unlike component-specific props (like `text` on a `Text` component), common props provide a unified way to configure layout, view behavior, and Litho-specific features.
+
+The `Style` API provides a way to provide common configuration to components.
+
+Any Litho Component can accept a `Style` prop. A `Style` can contain common layout properties, such as height or padding, and View properties, such as background or click handling.
+
+### The Style API
+
+Components pass the `Style` they receive as the style for one or more of the child components they create. Eventually, **Primitive Components**, which are the leaf nodes of a component hierarchy responsible for rendering a View or a Drawable to screen, consume the `Style` and materialize the props they support.
+
+`Style` objects are created via the `Style` top-level property and calls to prop functions that extend it. For example:
+
+```kotlin
+import com.facebook.litho.Style
+import com.facebook.litho.core.height
+import com.facebook.litho.core.width
+import com.facebook.litho.view.onClick
+import com.facebook.rendercore.dp
+
+val style =
+    Style.width(100.dp)
+        .height(100.dp)
+        .onClick { /* handle click */ }
+```
+
+This `style` can then be passed to any component that accepts a `Style` prop:
+
+```kotlin
+Row(style = style) {
+  // children
+}
+```
+
+You can then accept a style in your custom components and pass it on to your children:
+
+```kotlin
+class MyComponent(val style: Style = Style) : KComponent() {
+  override fun ComponentScope.render(): Component {
+    return Column(style = style) {
+      child(Text(text = "Hello"))
+    }
+  }
+}
+```
+
+### Combining Styles
+
+Two `Style` objects can be added together to produce a new combined `Style`:
+
+```kotlin
+import com.facebook.litho.Style
+import com.facebook.litho.core.padding
+import com.facebook.litho.view.alpha
+import com.facebook.rendercore.dp
+
+val style1 = Style.alpha(1f)
+val style2 = Style.padding(all = 8.dp)
+val combined = style1 + style2
+```
+
+When the same prop is set on both styles, the **prop that appears last (right-most) wins**. For example:
+
+```kotlin
+import com.facebook.litho.Style
+import com.facebook.litho.view.alpha
+
+val style1 = Style.alpha(1f)
+val style2 = Style.alpha(0.5f)
+val combined = style1 + style2 // alpha will be 0.5f
+```
+
+This is useful for customizing default styles in components:
+
+```kotlin
+class CustomComponent(val style: Style = Style) : KComponent() {
+  override fun ComponentScope.render(): Component {
+    val defaultStyle = Style.alpha(0.8f).padding(all = 4.dp)
+
+    // Callers can override default alpha or padding by passing their own style
+    return Row(style = defaultStyle + style) {
+      // children
+    }
+  }
+}
+```
+
+## Style Categories
+
+Common props are organized into three main categories:
+
+### 1. Layout APIs
+
+These control the size and spacing of components:
+
+- **[Core Styles](core-styles.mdx)** - Set component's width, height, margin, padding, and their min/max/percentage variants.
+- **[Flexbox Styles](flexbox-styles.mdx)** - Control how Components flex & position themselves using properties like `flex`, `alignSelf`, `position`.
+- **[Flexbox Yoga](flexbox-yoga.mdx)** - Control how child components are distributed and aligned within their parent container using Flexbox layout properties like `justifyContent`, `alignItems`.
+
+### 2. View Behavior APIs
+
+These affect how components behave as Android Views:
+
+- **[View Styles](view-styles.mdx)** - Visual properties (background, alpha, rotation), interaction (onClick, onTouch), and View-level behavior
+- **[Accessibility Styles](../accessibility/accessibility.mdx)** - Accessibility properties like content descriptions, roles, and accessibility events
+
+### 3. Litho-Specific APIs
+
+These provide Litho framework features:
+
+- **[Visibility Styles](visibility-styles.mdx)** - Track when components become visible, focused, or gain full impressions
+- **[Dynamic Value Styles](dynamic-value-styles.mdx)** - Bind dynamic values that can change without re-rendering. Uses for animation, and changing values alpha, elevation, background color etc.
+- **Transition Styles** - Animate layout changes between states (coming soon)
+- **[Binder Styles](binder-styles.mdx)** - Advanced mount-time customization  allowing you to execute custom code when a component is mounted to the screen or unmounted from the screen.
+
+## Common Layout Patterns
+
+### Full-width card with padding
+
+```kotlin
+import com.facebook.litho.Style
+import com.facebook.litho.core.padding
+import com.facebook.litho.core.width
+import com.facebook.litho.view.backgroundColor
+import com.facebook.litho.view.elevation
+import com.facebook.rendercore.dp
+import com.facebook.litho.core.widthPercent
+import android.graphics.Color
+
+val cardStyle = Style
+    .widthPercent(100f)
+    .padding(all = 16.dp)
+    .backgroundColor(Color.WHITE)
+    .elevation(4.dp)
+```
+
+### Centered square image
+
+```kotlin
+import com.facebook.litho.Style
+import com.facebook.litho.core.height
+import com.facebook.litho.core.margin
+import com.facebook.litho.core.width
+import com.facebook.rendercore.dp
+
+val imageStyle = Style
+    .width(100.dp)
+    .height(100.dp)
+    .margin(horizontal = 8.dp)
+```
+
+### Clickable button with touch expansion
+
+```kotlin
+import com.facebook.litho.Style
+import com.facebook.litho.core.padding
+import com.facebook.litho.view.backgroundColor
+import com.facebook.litho.view.onClick
+import com.facebook.litho.view.touchExpansion
+import com.facebook.rendercore.dp
+import android.graphics.Color
+
+val buttonStyle = Style
+    .padding(horizontal = 16.dp, vertical = 8.dp)
+    .onClick { /* handle click */ }
+    .touchExpansion(all = 8.dp)
+    .backgroundColor(Color.BLUE)
+```
+
+## Important Concepts
+
+### View Mounting
+
+Not all components create Android Views. Litho avoids creating Views for performance reasons when possible. Setting certain View Styles (like `backgroundColor`, `onClick`) will force a component to mount as a View. Core Styles like `margin` and `padding` do not require Views.
+
+### RTL Support
+
+Always prefer `start`/`end` over `left`/`right` for margins and padding to support right-to-left languages and make your UI internationalization-friendly.
+
+### Performance
+
+Visibility events like `onVisibilityChanged` can impact performance as they're called on every frame while scrolling. Use simpler alternatives like `onVisible` or `onInvisible` when possible.
+
+## Learn More
+
+- **[Core Styles](core-styles.mdx)** - Sizing and spacing properties
+- **[View Styles](view-styles.mdx)** - View-level visual and interaction properties
+- **[Visibility Styles](visibility-styles.mdx)** - Track component visibility
+- **[Primitive Components](../primitives/overview.mdx)** - Learn how common props are materialized by primitive components
+- **[Flexbox Yoga](flexbox-yoga.mdx)** - Deep dive into Litho's flexbox layout system
+- **[Troubleshooting](troubleshooting.mdx)** - Common layout issues and how to resolve them
+
+## See Also
+
+- **[Tree Props](../props/treeprops.mdx)** - Pass contextual data (like themes) down the component tree without manual prop passing
+- **[Components Basics](../components-basics.mdx)** - Understanding Litho components and their props

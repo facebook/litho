@@ -6,6 +6,8 @@ _release-date_
 
 * [NEW] Add new `useFirstDrawReporter` hook together with `Style.reportFirstContentDraw` for executing actions when related Component is fully rendered on the screen. Can be used to mark the end of TTRC or TTI markers.
 * [BREAKING] Remove `LegacyLithoViewRule` from `com.facebook.litho.testing`, please use `LithoTestRule` and `TestLithoView` instead.
+* [BREAKING] Replace `ComponentsConfiguration.useIncrementalMountGapWorker` and `enableGapWorkerIncrementalUnmount` with a single `gapWorkerMode: GapWorkerMode` (default `OFF`). Migrate `useIncrementalMountGapWorker(true)` to `gapWorkerMode(GapWorkerMode.PREMOUNT)`, or `COST_AWARE_PREMOUNT` / `COST_AWARE_PREMOUNT_WITH_INCREMENTAL_UNMOUNT`. `IncrementalMountExtensionConfigs.useGapWorker` and `useCostAwareGapWorkerPremount` are removed: the tree's mode alone decides the route.
+* [BREAKING] Remove the Unit-returning `Style.onPerformAccessibilityAction`, `Style.onRequestSendAccessibilityEvent` and `Style.onPerformActionForVirtualView`, please use `onPerformAccessibilityActionWithResult`, `onRequestSendAccessibilityEventWithResult` and `onPerformActionForVirtualViewWithResult` instead.
 
 ## Version 0.50.2
 _2024-10-07_
@@ -66,7 +68,7 @@ For more details, see the [full diff](https://github.com/facebook/litho/compare/
 _2023-08-25_
 
 * [NEW] Lots more code in Kotlin.
-* [NEW] Adds new [Primitive APIs](https://fblitho.com/docs/mainconcepts/primitivecomponents/overview/) (Kotlin APIs that replace MountSpecs) .
+* [NEW] Adds new [Primitive APIs](https://fblitho.com/docs/primitivecomponents/overview/) (Kotlin APIs that replace MountSpecs) .
 * [NEW] Bumps compile, min, target SDK, and builds tools versions.
 * [NEW] Bumps Yoga to version 2.0.0.
 * [NEW] Add litho-rendercore-glide package.

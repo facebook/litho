@@ -23,6 +23,7 @@ import com.facebook.litho.config.TempComponentsConfigurations
 import com.facebook.litho.testing.helper.ComponentTestHelper
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec
 import com.facebook.litho.testing.testrunner.LithoTestRunner
+import com.facebook.litho.view.viewTags
 import com.facebook.litho.widget.SimpleMountSpecTester
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
@@ -63,12 +64,14 @@ class MountStateViewTagsTest {
                       .child(
                           Column.create(c)
                               .viewTags(tags1)
-                              .child(SimpleMountSpecTester.create(c))
-                              .child(SimpleMountSpecTester.create(c)))
-                      .child(SimpleMountSpecTester.create(c))
-                      .child(SimpleMountSpecTester.create(c).viewTags(tags2))
+                              .child(SimpleMountSpecTester())
+                              .child(SimpleMountSpecTester()),
+                      )
+                      .child(SimpleMountSpecTester())
+                      .child(SimpleMountSpecTester(style = Style.viewTags(tags2)))
                       .build()
-            })
+            },
+        )
     val innerHost1 = lithoView.getChildAt(0)
     val innerHost2 = lithoView.getChildAt(1)
     assertThat(innerHost1.getTag(DUMMY_ID)).isEqualTo(tag1)
@@ -87,10 +90,11 @@ class MountStateViewTagsTest {
               override fun onCreateLayout(c: ComponentContext): Component =
                   Column.create(c)
                       .viewTags(tags)
-                      .child(SimpleMountSpecTester.create(c))
-                      .child(SimpleMountSpecTester.create(c))
+                      .child(SimpleMountSpecTester())
+                      .child(SimpleMountSpecTester())
                       .build()
-            })
+            },
+        )
     val innerHost = lithoView.getChildAt(0)
     assertThat(innerHost.getTag(DUMMY_ID)).isEqualTo(tag)
   }

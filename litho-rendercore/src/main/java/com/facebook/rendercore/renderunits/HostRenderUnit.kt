@@ -23,11 +23,15 @@ import android.view.View.OnFocusChangeListener
 import androidx.annotation.IntDef
 import com.facebook.rendercore.ContentAllocator
 import com.facebook.rendercore.HostView
+import com.facebook.rendercore.RenderType
 import com.facebook.rendercore.RenderUnit
 import com.facebook.rendercore.RenderUnit.DelegateBinder.Companion.createDelegateBinder
 
 open class HostRenderUnit(override val id: Long) :
-    RenderUnit<HostView>(RenderType.VIEW), ContentAllocator<HostView> {
+    RenderUnit<HostView>(), ContentAllocator<HostView> {
+
+  override val renderType: RenderType = RenderType.VIEW
+
   @IntDef(value = [UNSET, SET_FALSE, SET_TRUE])
   @Retention(AnnotationRetention.SOURCE)
   internal annotation class TriState
@@ -63,7 +67,9 @@ open class HostRenderUnit(override val id: Long) :
         createDelegateBinder(this, backgroundBindFunction),
         createDelegateBinder(this, foregroundBindFunction),
         createDelegateBinder(this, touchHandlersBindFunction),
-        createDelegateBinder(this, layerTypeBindFunction))
+        createDelegateBinder(this, focusabilityBindFunction),
+        createDelegateBinder(this, layerTypeBindFunction),
+    )
   }
 
   companion object {
@@ -73,13 +79,13 @@ open class HostRenderUnit(override val id: Long) :
     val backgroundBindFunction: Binder<HostRenderUnit, HostView, Any> =
         object : Binder<HostRenderUnit, HostView, Any> {
           override fun shouldUpdate(
-              currentValue: HostRenderUnit,
-              newValue: HostRenderUnit,
+              currentModel: HostRenderUnit,
+              newModel: HostRenderUnit,
               currentLayoutData: Any?,
-              nextLayoutData: Any?
+              nextLayoutData: Any?,
           ): Boolean {
-            val currentBackground = currentValue.background
-            val newBackground = newValue.background
+            val currentBackground = currentModel.background
+            val newBackground = newModel.background
             return if (currentBackground == null) {
               newBackground != null
             } else {
@@ -89,34 +95,34 @@ open class HostRenderUnit(override val id: Long) :
 
           override fun bind(
               context: Context,
-              hostView: HostView,
-              hostRenderUnit: HostRenderUnit,
-              layoutData: Any?
+              content: HostView,
+              model: HostRenderUnit,
+              layoutData: Any?,
           ): Any? {
-            hostView.background = hostRenderUnit.background
+            content.background = model.background
             return null
           }
 
           override fun unbind(
               context: Context,
-              hostView: HostView,
-              hostRenderUnit: HostRenderUnit,
+              content: HostView,
+              model: HostRenderUnit,
               layoutData: Any?,
-              bindData: Any?
+              bindData: Any?,
           ) {
-            hostView.background = null
+            content.background = null
           }
         }
     val foregroundBindFunction: Binder<HostRenderUnit, HostView, Any> =
         object : Binder<HostRenderUnit, HostView, Any> {
           override fun shouldUpdate(
-              currentValue: HostRenderUnit,
-              newValue: HostRenderUnit,
+              currentModel: HostRenderUnit,
+              newModel: HostRenderUnit,
               currentLayoutData: Any?,
-              nextLayoutData: Any?
+              nextLayoutData: Any?,
           ): Boolean {
-            val currentForeground = currentValue.foreground
-            val newForeground = newValue.foreground
+            val currentForeground = currentModel.foreground
+            val newForeground = newModel.foreground
             return if (currentForeground == null) {
               newForeground != null
             } else {
@@ -126,22 +132,22 @@ open class HostRenderUnit(override val id: Long) :
 
           override fun bind(
               context: Context,
-              hostView: HostView,
-              hostRenderUnit: HostRenderUnit,
-              layoutData: Any?
+              content: HostView,
+              model: HostRenderUnit,
+              layoutData: Any?,
           ): Any? {
-            hostView.setForegroundCompat(hostRenderUnit.foreground)
+            content.setForegroundCompat(model.foreground)
             return null
           }
 
           override fun unbind(
               context: Context,
-              hostView: HostView,
-              hostRenderUnit: HostRenderUnit,
+              content: HostView,
+              model: HostRenderUnit,
               layoutData: Any?,
-              bindData: Any?
+              bindData: Any?,
           ) {
-            hostView.setForegroundCompat(null)
+            content.setForegroundCompat(null)
           }
         }
     val layerTypeBindFunction: Binder<HostRenderUnit, HostView, Any> =
@@ -150,38 +156,38 @@ open class HostRenderUnit(override val id: Long) :
               currentModel: HostRenderUnit,
               newModel: HostRenderUnit,
               currentLayoutData: Any?,
-              nextLayoutData: Any?
+              nextLayoutData: Any?,
           ): Boolean {
             return currentModel.layerType != newModel.layerType
           }
 
           override fun bind(
               context: Context,
-              hostView: HostView,
-              hostRenderUnit: HostRenderUnit,
-              layoutData: Any?
+              content: HostView,
+              model: HostRenderUnit,
+              layoutData: Any?,
           ): Any? {
-            hostView.setLayerType(hostRenderUnit.layerType, null)
+            content.setLayerType(model.layerType, null)
             return null
           }
 
           override fun unbind(
               context: Context,
-              hostView: HostView,
-              hostRenderUnit: HostRenderUnit,
+              content: HostView,
+              model: HostRenderUnit,
               layoutData: Any?,
-              bindData: Any?
+              bindData: Any?,
           ) {
-            hostView.setLayerType(View.LAYER_TYPE_NONE, null)
+            content.setLayerType(View.LAYER_TYPE_NONE, null)
           }
         }
     val touchHandlersBindFunction: Binder<HostRenderUnit, HostView, Any> =
         object : Binder<HostRenderUnit, HostView, Any> {
           override fun shouldUpdate(
-              currentValue: HostRenderUnit,
-              newValue: HostRenderUnit,
+              currentModel: HostRenderUnit,
+              newModel: HostRenderUnit,
               currentLayoutData: Any?,
-              nextLayoutData: Any?
+              nextLayoutData: Any?,
           ): Boolean {
             // Updating touch and click listeners is not an expensive operation.
             return true
@@ -189,38 +195,68 @@ open class HostRenderUnit(override val id: Long) :
 
           override fun bind(
               context: Context,
-              hostView: HostView,
-              hostRenderUnit: HostRenderUnit,
-              layoutData: Any?
+              content: HostView,
+              model: HostRenderUnit,
+              layoutData: Any?,
           ): Any? {
-            val onClickListener = hostRenderUnit.onClickListener
+            val onClickListener = model.onClickListener
             if (onClickListener != null) {
-              hostView.setOnClickListener(onClickListener)
+              content.setOnClickListener(onClickListener)
             }
-            val onFocusChangeListener = hostRenderUnit.onFocusChangeListener
-            hostView.onFocusChangeListener = onFocusChangeListener
-            hostView.isFocusable = hostRenderUnit.isFocusable
-            hostView.isFocusableInTouchMode = hostRenderUnit.isFocusableInTouchMode
-            hostView.isEnabled = hostRenderUnit.isEnabled
-            @TriState val clickable = hostRenderUnit.clickable
+            val onFocusChangeListener = model.onFocusChangeListener
+            content.onFocusChangeListener = onFocusChangeListener
+            content.isEnabled = model.isEnabled
+            @TriState val clickable = model.clickable
             if (clickable != UNSET) {
-              hostView.isClickable = clickable == SET_TRUE
+              content.isClickable = clickable == SET_TRUE
             }
             return null
           }
 
           override fun unbind(
               context: Context,
-              hostView: HostView,
-              hostRenderUnit: HostRenderUnit,
+              content: HostView,
+              model: HostRenderUnit,
               layoutData: Any?,
-              bindData: Any?
+              bindData: Any?,
           ) {
-            hostView.setOnClickListener(null)
-            hostView.isClickable = false
-            hostView.onFocusChangeListener = null
-            hostView.isFocusable = false
-            hostView.isFocusableInTouchMode = false
+            content.setOnClickListener(null)
+            content.isClickable = false
+            content.onFocusChangeListener = null
+          }
+        }
+    val focusabilityBindFunction: Binder<HostRenderUnit, HostView, Any> =
+        object : Binder<HostRenderUnit, HostView, Any> {
+          override fun shouldUpdate(
+              currentModel: HostRenderUnit,
+              newModel: HostRenderUnit,
+              currentLayoutData: Any?,
+              nextLayoutData: Any?,
+          ): Boolean {
+            return currentModel.isFocusable != newModel.isFocusable ||
+                currentModel.isFocusableInTouchMode != newModel.isFocusableInTouchMode
+          }
+
+          override fun bind(
+              context: Context,
+              content: HostView,
+              model: HostRenderUnit,
+              layoutData: Any?,
+          ): Any? {
+            content.isFocusable = model.isFocusable
+            content.isFocusableInTouchMode = model.isFocusableInTouchMode
+            return null
+          }
+
+          override fun unbind(
+              context: Context,
+              content: HostView,
+              model: HostRenderUnit,
+              layoutData: Any?,
+              bindData: Any?,
+          ) {
+            content.isFocusable = false
+            content.isFocusableInTouchMode = false
           }
         }
   }

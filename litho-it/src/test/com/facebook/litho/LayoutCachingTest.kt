@@ -60,7 +60,8 @@ class LayoutCachingTest {
                     .prefix("\n\n\n")
                     .initialCount(0)
                     .caller(caller)
-                    .build())
+                    .build(),
+            )
             .build()
 
     val testLithoView = lithoTestRule.render { component }
@@ -121,7 +122,8 @@ class LayoutCachingTest {
             LifecycleStep.ON_UNBIND,
             LifecycleStep.ON_UNMOUNT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
   }
 
   @Test
@@ -145,7 +147,8 @@ class LayoutCachingTest {
             LifecycleStep.ON_BOUNDS_DEFINED,
             LifecycleStep.ON_CREATE_MOUNT_CONTENT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
   }
 
   @Test
@@ -157,7 +160,8 @@ class LayoutCachingTest {
         Column.create(c)
             .child(SimpleStateUpdateEmulator.create(c).caller(caller).build())
             .child(
-                MountSpecInterStagePropsTester.create(c).lifecycleTracker(lifecycleTracker).build())
+                MountSpecInterStagePropsTester.create(c).lifecycleTracker(lifecycleTracker).build(),
+            )
             .build()
 
     lithoTestRule.render { component }
@@ -167,13 +171,15 @@ class LayoutCachingTest {
             LifecycleStep.ON_PREPARE,
             LifecycleStep.ON_MEASURE,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
 
     lifecycleTracker.reset()
     caller.increment()
     Assertions.assertThat(lifecycleTracker.steps)
         .describedAs(
-            "Node with inter stage props doesn't need re-measurement and rebinding if layout caching is turned on")
+            "Node with inter stage props doesn't need re-measurement and rebinding if layout caching is turned on",
+        )
         .isEmpty()
   }
 
@@ -191,7 +197,8 @@ class LayoutCachingTest {
                     .lifecycleTracker(lifecycleTracker)
                     .paddingPx(YogaEdge.ALL, 5)
                     .border(Border.create(c).widthPx(YogaEdge.ALL, 5).build())
-                    .build())
+                    .build(),
+            )
             .build()
 
     lithoTestRule.render { component }
@@ -206,13 +213,15 @@ class LayoutCachingTest {
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_CREATE_MOUNT_CONTENT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
 
     lifecycleTracker.reset()
     caller.increment()
     Assertions.assertThat(lifecycleTracker.steps)
         .describedAs(
-            "Node without inter stage props doesn't need rebinding if layout caching is turned on")
+            "Node without inter stage props doesn't need rebinding if layout caching is turned on",
+        )
         .isEmpty()
   }
 
@@ -222,7 +231,7 @@ class LayoutCachingTest {
     val lifecycleTracker1 = LifecycleTracker()
     val lifecycleTracker2 = LifecycleTracker()
     val caller: SimpleStateUpdateEmulatorSpec.Caller = SimpleStateUpdateEmulatorSpec.Caller()
-    val component: Column =
+    val component: Component =
         Column.create(c)
             .child(SimpleStateUpdateEmulator.create(c).caller(caller))
             .child(
@@ -230,13 +239,17 @@ class LayoutCachingTest {
                     .child(
                         MountSpecPureRenderLifecycleTester.create(c)
                             .intrinsicSize(Size(100, 100))
-                            .lifecycleTracker(lifecycleTracker1))
+                            .lifecycleTracker(lifecycleTracker1),
+                    )
                     .child(
                         Column.create(c)
                             .child(
                                 MountSpecPureRenderLifecycleTester.create(c)
                                     .intrinsicSize(Size(200, 200))
-                                    .lifecycleTracker(lifecycleTracker2))))
+                                    .lifecycleTracker(lifecycleTracker2),
+                            ),
+                    ),
+            )
             .build()
 
     lithoTestRule.render { component }
@@ -251,7 +264,8 @@ class LayoutCachingTest {
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_CREATE_MOUNT_CONTENT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
     Assertions.assertThat(lifecycleTracker2.steps)
         .containsExactly(
             LifecycleStep.ON_CREATE_INITIAL_STATE,
@@ -263,7 +277,8 @@ class LayoutCachingTest {
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_CREATE_MOUNT_CONTENT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
 
     lifecycleTracker1.reset()
     lifecycleTracker2.reset()
@@ -296,7 +311,8 @@ class LayoutCachingTest {
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_CREATE_MOUNT_CONTENT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
 
     lifecycleTracker.reset()
     testLithoView.setSizeSpecs(exactly(200), unspecified()).measure().layout()
@@ -315,7 +331,8 @@ class LayoutCachingTest {
             .child(
                 MountSpecInterStagePropsTester.create(c)
                     .lifecycleTracker(lifecycleTracker)
-                    .viewTag("test"))
+                    .viewTag("test"),
+            )
             .build()
 
     lithoTestRule.render { component }
@@ -325,7 +342,8 @@ class LayoutCachingTest {
             LifecycleStep.ON_PREPARE,
             LifecycleStep.ON_MEASURE,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
 
     lifecycleTracker.reset()
     caller.increment()
@@ -346,7 +364,8 @@ class LayoutCachingTest {
                 MountSpecPureRenderLifecycleTester.create(c)
                     .lifecycleTracker(lifecycleTracker)
                     .maxWidthPx(200)
-                    .maxHeightPx(200))
+                    .maxHeightPx(200),
+            )
             .build()
 
     val testLithoView =
@@ -362,7 +381,8 @@ class LayoutCachingTest {
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_CREATE_MOUNT_CONTENT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
 
     lifecycleTracker.reset()
     testLithoView.setSizeSpecs(exactly(200), exactly(200)).measure().layout()
@@ -442,25 +462,29 @@ class LayoutCachingTest {
             LifecycleStep.ON_MEASURE,
             LifecycleStep.ON_BOUNDS_DEFINED,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
     Assertions.assertThat(lifecycleTracker2.steps)
         .contains(
             LifecycleStep.ON_MEASURE,
             LifecycleStep.ON_BOUNDS_DEFINED,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
     Assertions.assertThat(lifecycleTracker3.steps)
         .contains(
             LifecycleStep.ON_MEASURE,
             LifecycleStep.ON_BOUNDS_DEFINED,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
     Assertions.assertThat(lifecycleTracker4.steps)
         .contains(
             LifecycleStep.ON_MEASURE,
             LifecycleStep.ON_BOUNDS_DEFINED,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
 
     val lithoView = testLithoView.lithoView
     val component_child1 = testLithoView.findViewWithTag("child1")
@@ -504,7 +528,8 @@ class LayoutCachingTest {
             LifecycleStep.ON_UNBIND,
             LifecycleStep.ON_UNMOUNT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
     Assertions.assertThat(lifecycleTracker2.steps)
         .describedAs("Child2 should NOT be re-measured because nothing changed")
         .doesNotContain(
@@ -513,7 +538,8 @@ class LayoutCachingTest {
             LifecycleStep.ON_UNBIND,
             LifecycleStep.ON_UNMOUNT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
     Assertions.assertThat(lifecycleTracker3.steps)
         .describedAs("Child3 should NOT be re-measured because nothing changed")
         .doesNotContain(
@@ -522,7 +548,8 @@ class LayoutCachingTest {
             LifecycleStep.ON_UNBIND,
             LifecycleStep.ON_UNMOUNT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
     Assertions.assertThat(lifecycleTracker4.steps)
         .describedAs("Child4 should NOT be re-measured because nothing changed")
         .doesNotContain(
@@ -531,7 +558,8 @@ class LayoutCachingTest {
             LifecycleStep.ON_UNBIND,
             LifecycleStep.ON_UNMOUNT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
 
     lifecycleTracker1.reset()
     lifecycleTracker2.reset()
@@ -552,44 +580,52 @@ class LayoutCachingTest {
         .isEqualTo(35)
     Assertions.assertThat(lifecycleTracker1.steps)
         .describedAs(
-            "Child1 should NOT be re-measured because the root width is compatible with its size")
+            "Child1 should NOT be re-measured because the root width is compatible with its size",
+        )
         .doesNotContain(
             LifecycleStep.ON_MEASURE,
             LifecycleStep.ON_BOUNDS_DEFINED,
             LifecycleStep.ON_UNBIND,
             LifecycleStep.ON_UNMOUNT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
     Assertions.assertThat(lifecycleTracker2.steps)
         .describedAs(
-            "Child2 should NOT be re-measured because the root width is compatible with its size")
+            "Child2 should NOT be re-measured because the root width is compatible with its size",
+        )
         .doesNotContain(
             LifecycleStep.ON_MEASURE,
             LifecycleStep.ON_BOUNDS_DEFINED,
             LifecycleStep.ON_UNBIND,
             LifecycleStep.ON_UNMOUNT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
     Assertions.assertThat(lifecycleTracker3.steps)
         .describedAs(
-            "Child3 should NOT be re-measured because the root width is compatible with its size")
+            "Child3 should NOT be re-measured because the root width is compatible with its size",
+        )
         .doesNotContain(
             LifecycleStep.ON_MEASURE,
             LifecycleStep.ON_BOUNDS_DEFINED,
             LifecycleStep.ON_UNBIND,
             LifecycleStep.ON_UNMOUNT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
     Assertions.assertThat(lifecycleTracker4.steps)
         .describedAs(
-            "Child4 should NOT be re-measured because the root width is compatible with its size")
+            "Child4 should NOT be re-measured because the root width is compatible with its size",
+        )
         .doesNotContain(
             LifecycleStep.ON_MEASURE,
             LifecycleStep.ON_BOUNDS_DEFINED,
             LifecycleStep.ON_UNBIND,
             LifecycleStep.ON_UNMOUNT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
 
     lifecycleTracker1.reset()
     lifecycleTracker2.reset()
@@ -610,24 +646,28 @@ class LayoutCachingTest {
         .isEqualTo(35)
     Assertions.assertThat(lifecycleTracker1.steps)
         .describedAs(
-            "Child1 should be re-measured because the root width is NOT compatible with its size")
+            "Child1 should be re-measured because the root width is NOT compatible with its size",
+        )
         .contains(
             LifecycleStep.ON_MEASURE,
             LifecycleStep.ON_BOUNDS_DEFINED,
             LifecycleStep.ON_UNBIND,
             LifecycleStep.ON_UNMOUNT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
     Assertions.assertThat(lifecycleTracker2.steps)
         .describedAs(
-            "Child2 should be re-measured because the root width is NOT compatible with its size")
+            "Child2 should be re-measured because the root width is NOT compatible with its size",
+        )
         .contains(
             LifecycleStep.ON_MEASURE,
             LifecycleStep.ON_BOUNDS_DEFINED,
             LifecycleStep.ON_UNBIND,
             LifecycleStep.ON_UNMOUNT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
     Assertions.assertThat(lifecycleTracker3.steps)
         .describedAs("Child3 should be re-measured because we need to shrink its width")
         .contains(
@@ -636,17 +676,20 @@ class LayoutCachingTest {
             LifecycleStep.ON_UNBIND,
             LifecycleStep.ON_UNMOUNT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
     Assertions.assertThat(lifecycleTracker4.steps)
         .describedAs(
-            "Child4 should NOT be re-measured because we need to respect its shrink settings")
+            "Child4 should NOT be re-measured because we need to respect its shrink settings",
+        )
         .doesNotContain(
             LifecycleStep.ON_MEASURE,
             LifecycleStep.ON_BOUNDS_DEFINED,
             LifecycleStep.ON_UNBIND,
             LifecycleStep.ON_UNMOUNT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
   }
 
   @Test
@@ -663,7 +706,8 @@ class LayoutCachingTest {
                     .shouldUpdate(false)
                     .paddingPx(YogaEdge.ALL, 5)
                     .border(Border.create(c).widthPx(YogaEdge.ALL, 5).build())
-                    .widthPercent(90f)) // equivalent to exactly(972)
+                    .widthPercent(90f),
+            ) // equivalent to exactly(972)
             .build()
 
     // initial mount
@@ -685,10 +729,12 @@ class LayoutCachingTest {
                         .lifecycleTracker(lifecycleTracker)
                         .shouldUpdate(false)
                         .paddingPx(YogaEdge.ALL, 5)
-                        .border(Border.create(c).widthPx(YogaEdge.ALL, 5).build()))
+                        .border(Border.create(c).widthPx(YogaEdge.ALL, 5).build()),
+                )
                 .build(),
             exactly(972),
-            unspecified(0))
+            unspecified(0),
+        )
         .measure()
         .layout()
     Assertions.assertThat(lifecycleTracker.steps)
@@ -725,8 +771,10 @@ class LayoutCachingTest {
                         .paddingPx(YogaEdge.ALL, 5)
                         .border(Border.create(c).widthPx(YogaEdge.ALL, 5).build())
                         .widthPx(972)
-                        .heightPx(20))
-                .build())
+                        .heightPx(20),
+                )
+                .build(),
+        )
         .measure()
         .layout()
     Assertions.assertThat(lifecycleTracker.steps)
@@ -760,22 +808,28 @@ class LayoutCachingTest {
     val lifecycleTracker2 = LifecycleTracker()
     val lifecycleTracker3 = LifecycleTracker()
 
-    val component =
-        buildRecyclerCollectionComponent(
-            context, lifecycleTracker1, lifecycleTracker2, lifecycleTracker3)
+    val component = buildRecyclerCollectionComponent(
+        context,
+        lifecycleTracker1,
+        lifecycleTracker2,
+        lifecycleTracker3,
+    )
 
     // Set LithoView with height so that it can fully show all the items
     val testLithoView =
         lithoTestRule.render(widthSpec = exactly(100), heightSpec = unspecified()) { component }
 
     Assertions.assertThat(
-            getCountOfLifecycleSteps(lifecycleTracker1.steps, LifecycleStep.ON_MEASURE))
+            getCountOfLifecycleSteps(lifecycleTracker1.steps, LifecycleStep.ON_MEASURE),
+        )
         .isEqualTo(5)
     Assertions.assertThat(
-            getCountOfLifecycleSteps(lifecycleTracker2.steps, LifecycleStep.ON_MEASURE))
+            getCountOfLifecycleSteps(lifecycleTracker2.steps, LifecycleStep.ON_MEASURE),
+        )
         .isEqualTo(5)
     Assertions.assertThat(
-            getCountOfLifecycleSteps(lifecycleTracker3.steps, LifecycleStep.ON_MEASURE))
+            getCountOfLifecycleSteps(lifecycleTracker3.steps, LifecycleStep.ON_MEASURE),
+        )
         .isEqualTo(5)
 
     val height = testLithoView.lithoView.height
@@ -788,17 +842,426 @@ class LayoutCachingTest {
     testLithoView.lithoView.componentTree?.setSizeSpec(exactly(200), unspecified(), measuredSize)
     Assertions.assertThat(measuredSize.height).isEqualTo(height)
     Assertions.assertThat(
-            getCountOfLifecycleSteps(lifecycleTracker1.steps, LifecycleStep.ON_MEASURE))
+            getCountOfLifecycleSteps(lifecycleTracker1.steps, LifecycleStep.ON_MEASURE),
+        )
         .describedAs("Ensure that all children are re-measured")
         .isEqualTo(5)
     Assertions.assertThat(
-            getCountOfLifecycleSteps(lifecycleTracker2.steps, LifecycleStep.ON_MEASURE))
+            getCountOfLifecycleSteps(lifecycleTracker2.steps, LifecycleStep.ON_MEASURE),
+        )
         .describedAs("Ensure that all children are re-measured")
         .isEqualTo(5)
     Assertions.assertThat(
-            getCountOfLifecycleSteps(lifecycleTracker3.steps, LifecycleStep.ON_MEASURE))
+            getCountOfLifecycleSteps(lifecycleTracker3.steps, LifecycleStep.ON_MEASURE),
+        )
         .describedAs("Ensure that all children are re-measured")
         .isEqualTo(5)
+  }
+
+  @Test
+  fun `verify root component with maxWidth constraint is properly reset when re-measuring`() {
+    val c = lithoTestRule.context
+    val lifecycleTracker = LifecycleTracker()
+    val component =
+        MountSpecPureRenderLifecycleTester.create(c)
+            .lifecycleTracker(lifecycleTracker)
+            .maxWidthPx(200)
+            .intrinsicSize(Size(200, 50))
+            .build()
+
+    val testLithoView =
+        lithoTestRule.render(widthSpec = atMost(180), heightSpec = unspecified()) { component }
+    val initialWidth = testLithoView.lithoView.measuredWidth
+    Assertions.assertThat(initialWidth)
+        .describedAs("Width should be 180px (capped by size spec, below maxWidth)")
+        .isEqualTo(180)
+
+    lifecycleTracker.reset()
+    testLithoView.setSizeSpecs(atMost(250), unspecified()).measure().layout()
+    val newWidth = testLithoView.lithoView.measuredWidth
+    Assertions.assertThat(newWidth)
+        .describedAs("Width should be capped at maxWidth constraint of 200px")
+        .isEqualTo(200)
+  }
+
+  @Test
+  fun `verify root component with maxHeight constraint is properly reset when re-measuring`() {
+    val c = lithoTestRule.context
+    val lifecycleTracker = LifecycleTracker()
+    val component =
+        MountSpecPureRenderLifecycleTester.create(c)
+            .lifecycleTracker(lifecycleTracker)
+            .maxHeightPx(200)
+            .intrinsicSize(Size(50, 200))
+            .build()
+
+    val testLithoView =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = atMost(180)) { component }
+    val initialHeight = testLithoView.lithoView.measuredHeight
+    Assertions.assertThat(initialHeight)
+        .describedAs("Height should be 180px (capped by size spec, below maxHeight)")
+        .isEqualTo(180)
+
+    lifecycleTracker.reset()
+    testLithoView.setSizeSpecs(unspecified(), atMost(250)).measure().layout()
+    val newHeight = testLithoView.lithoView.measuredHeight
+    Assertions.assertThat(newHeight)
+        .describedAs("Height should be capped at maxHeight constraint of 200px")
+        .isEqualTo(200)
+  }
+
+  @Test
+  fun `verify size constraints are properly reset when re-measuring with different size specs`() {
+    val c = lithoTestRule.context
+    val lifecycleTracker = LifecycleTracker()
+    val component =
+        MountSpecPureRenderLifecycleTester.create(c)
+            .lifecycleTracker(lifecycleTracker)
+            .minWidthPx(100)
+            .maxWidthPx(300)
+            .intrinsicSize(Size(300, 100))
+            .build()
+
+    val testLithoView =
+        lithoTestRule.render(widthSpec = atMost(250), heightSpec = unspecified()) { component }
+    val initialWidth = testLithoView.lithoView.measuredWidth
+    Assertions.assertThat(initialWidth)
+        .describedAs("Initial width should be 250px (capped by size spec, below maxWidth)")
+        .isEqualTo(250)
+
+    lifecycleTracker.reset()
+    // Size spec is atMost(350) but should be capped at maxWidth of 300
+    testLithoView.setSizeSpecs(atMost(350), unspecified()).measure().layout()
+    val newWidth = testLithoView.lithoView.measuredWidth
+    Assertions.assertThat(newWidth)
+        .describedAs("Width should be capped at maxWidth constraint of 300px")
+        .isEqualTo(300)
+
+    lifecycleTracker.reset()
+    // Size spec is atMost(80), size spec takes precedence
+    testLithoView.setSizeSpecs(atMost(80), unspecified()).measure().layout()
+    val minWidth = testLithoView.lithoView.measuredWidth
+    Assertions.assertThat(minWidth)
+        .describedAs("Width should be capped at 80px by atMost(80) size spec")
+        .isEqualTo(80)
+  }
+
+  @Test
+  fun `verify root component with combined min and max constraints resets properly`() {
+    val c = lithoTestRule.context
+    val lifecycleTracker = LifecycleTracker()
+    val component =
+        MountSpecPureRenderLifecycleTester.create(c)
+            .lifecycleTracker(lifecycleTracker)
+            .minWidthPx(100)
+            .maxWidthPx(200)
+            .minHeightPx(50)
+            .maxHeightPx(100)
+            .intrinsicSize(Size(200, 100))
+            .build()
+
+    val testLithoView =
+        lithoTestRule.render(widthSpec = atMost(150), heightSpec = atMost(75)) { component }
+    val initialWidth = testLithoView.lithoView.measuredWidth
+    val initialHeight = testLithoView.lithoView.measuredHeight
+    Assertions.assertThat(initialWidth).isEqualTo(150)
+    Assertions.assertThat(initialHeight).isEqualTo(75)
+
+    lifecycleTracker.reset()
+    // Test that maxWidth constraint is enforced (size spec is atMost(250) but should be capped at
+    // 200)
+    testLithoView.setSizeSpecs(atMost(250), atMost(120)).measure().layout()
+    val newWidth = testLithoView.lithoView.measuredWidth
+    val newHeight = testLithoView.lithoView.measuredHeight
+    Assertions.assertThat(newWidth)
+        .describedAs("Width should be capped at maxWidth of 200px")
+        .isEqualTo(200)
+    Assertions.assertThat(newHeight)
+        .describedAs("Height should be capped at maxHeight of 100px")
+        .isEqualTo(100)
+
+    lifecycleTracker.reset()
+    // Test that minWidth constraint is enforced (size spec is atMost(80) but should be enforced to
+    // 100)
+    testLithoView.setSizeSpecs(atMost(80), atMost(40)).measure().layout()
+    val minWidth = testLithoView.lithoView.measuredWidth
+    val minHeight = testLithoView.lithoView.measuredHeight
+    Assertions.assertThat(minWidth)
+        .describedAs("Width should be enforced to minWidth of 80px")
+        .isEqualTo(80)
+    Assertions.assertThat(minHeight)
+        .describedAs("Height should be enforced to minHeight of 40px")
+        .isEqualTo(40)
+  }
+
+  @Test
+  fun `verify root component with percentage-based constraints resets properly`() {
+    val c = lithoTestRule.context
+    val lifecycleTracker = LifecycleTracker()
+    val component =
+        MountSpecPureRenderLifecycleTester.create(c)
+            .lifecycleTracker(lifecycleTracker)
+            .minWidthPercent(30f)
+            .maxWidthPercent(70f)
+            .intrinsicSize(Size(1000, 50))
+            .build()
+
+    val testLithoView =
+        lithoTestRule.render(widthSpec = atMost(500), heightSpec = unspecified()) { component }
+    val initialWidth = testLithoView.lithoView.measuredWidth
+    Assertions.assertThat(initialWidth)
+        .describedAs("Width should be capped at maxWidthPercent (70% of 500 = 350px)")
+        .isEqualTo(350)
+
+    lifecycleTracker.reset()
+    testLithoView.setSizeSpecs(atMost(600), unspecified()).measure().layout()
+    val newWidth = testLithoView.lithoView.measuredWidth
+    Assertions.assertThat(newWidth)
+        .describedAs("Width should be capped at maxWidthPercent (70% of 600 = 420px)")
+        .isEqualTo(420)
+  }
+
+  @Test
+  fun `verify root component with percentage-based height constraints resets properly`() {
+    val c = lithoTestRule.context
+    val lifecycleTracker = LifecycleTracker()
+    val component =
+        MountSpecPureRenderLifecycleTester.create(c)
+            .lifecycleTracker(lifecycleTracker)
+            .minHeightPercent(30f)
+            .maxHeightPercent(70f)
+            .intrinsicSize(Size(50, 1000))
+            .build()
+
+    val testLithoView =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = atMost(500)) { component }
+    val initialHeight = testLithoView.lithoView.measuredHeight
+    Assertions.assertThat(initialHeight)
+        .describedAs("Height should be capped at maxHeightPercent (70% of 500 = 350px)")
+        .isEqualTo(350)
+
+    lifecycleTracker.reset()
+    testLithoView.setSizeSpecs(unspecified(), atMost(600)).measure().layout()
+    val newHeight = testLithoView.lithoView.measuredHeight
+    Assertions.assertThat(newHeight)
+        .describedAs("Height should be capped at maxHeightPercent (70% of 600 = 420px)")
+        .isEqualTo(420)
+  }
+
+  @Test
+  fun `verify width and maxWidth both applied when both are set on root`() {
+    val c = lithoTestRule.context
+    val lifecycleTracker = LifecycleTracker()
+    val component =
+        MountSpecPureRenderLifecycleTester.create(c)
+            .lifecycleTracker(lifecycleTracker)
+            .widthPercent(100f)
+            .maxWidthPx(200)
+            .intrinsicSize(Size(300, 50))
+            .build()
+
+    val testLithoView =
+        lithoTestRule.render(widthSpec = atMost(500), heightSpec = unspecified()) { component }
+    val initialWidth = testLithoView.lithoView.measuredWidth
+    val initialHeight = testLithoView.lithoView.measuredHeight
+    Assertions.assertThat(initialWidth)
+        .describedAs("Width should be 200px (widthPercent would be 500px but capped by maxWidth)")
+        .isEqualTo(200)
+    Assertions.assertThat(initialHeight)
+        .describedAs("Height should be 50px (intrinsic size)")
+        .isEqualTo(50)
+
+    lifecycleTracker.reset()
+    testLithoView.setSizeSpecs(atMost(150), unspecified()).measure().layout()
+    val newWidth = testLithoView.lithoView.measuredWidth
+    val newHeight = testLithoView.lithoView.measuredHeight
+    Assertions.assertThat(newWidth)
+        .describedAs("Width should be 150px (widthPercent 100% of 150, below maxWidth)")
+        .isEqualTo(150)
+    Assertions.assertThat(newHeight)
+        .describedAs("Height should remain 50px (intrinsic size)")
+        .isEqualTo(50)
+  }
+
+  @Test
+  fun `verify height and maxHeight both applied when both are set on root`() {
+    val c = lithoTestRule.context
+    val lifecycleTracker = LifecycleTracker()
+    val component =
+        MountSpecPureRenderLifecycleTester.create(c)
+            .lifecycleTracker(lifecycleTracker)
+            .heightPercent(100f)
+            .maxHeightPx(200)
+            .intrinsicSize(Size(50, 300))
+            .build()
+
+    val testLithoView =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = atMost(500)) { component }
+    val initialWidth = testLithoView.lithoView.measuredWidth
+    val initialHeight = testLithoView.lithoView.measuredHeight
+    Assertions.assertThat(initialWidth)
+        .describedAs("Width should be 50px (intrinsic size)")
+        .isEqualTo(50)
+    Assertions.assertThat(initialHeight)
+        .describedAs(
+            "Height should be 200px (heightPercent would be 500px but capped by maxHeight)",
+        )
+        .isEqualTo(200)
+
+    lifecycleTracker.reset()
+    testLithoView.setSizeSpecs(unspecified(), atMost(150)).measure().layout()
+    val newWidth = testLithoView.lithoView.measuredWidth
+    val newHeight = testLithoView.lithoView.measuredHeight
+    Assertions.assertThat(newWidth)
+        .describedAs("Width should remain 50px (intrinsic size)")
+        .isEqualTo(50)
+    Assertions.assertThat(newHeight)
+        .describedAs("Height should be 150px (heightPercent 100% of 150, below maxHeight)")
+        .isEqualTo(150)
+  }
+
+  @Test
+  fun `verify minWidth overrides maxWidth when minWidth is larger`() {
+    val c = lithoTestRule.context
+    val lifecycleTracker = LifecycleTracker()
+    val component =
+        MountSpecPureRenderLifecycleTester.create(c)
+            .lifecycleTracker(lifecycleTracker)
+            .minWidthPx(300)
+            .maxWidthPx(200)
+            .intrinsicSize(Size(250, 50))
+            .build()
+
+    val testLithoView =
+        lithoTestRule.render(widthSpec = atMost(500), heightSpec = unspecified()) { component }
+    val initialWidth = testLithoView.lithoView.measuredWidth
+    Assertions.assertThat(initialWidth)
+        .describedAs("Width should be 300px (minWidth overrides maxWidth)")
+        .isEqualTo(300)
+
+    lifecycleTracker.reset()
+    testLithoView.setSizeSpecs(atMost(400), unspecified()).measure().layout()
+    val newWidth = testLithoView.lithoView.measuredWidth
+    Assertions.assertThat(newWidth)
+        .describedAs("Width should still be 300px (minWidth still overrides maxWidth)")
+        .isEqualTo(300)
+  }
+
+  @Test
+  fun `verify exactly size spec overrides min and max constraints`() {
+    val c = lithoTestRule.context
+    val lifecycleTracker = LifecycleTracker()
+    val component =
+        MountSpecPureRenderLifecycleTester.create(c)
+            .lifecycleTracker(lifecycleTracker)
+            .minWidthPx(200)
+            .maxWidthPx(400)
+            .intrinsicSize(Size(300, 50))
+            .build()
+
+    val testLithoView =
+        lithoTestRule.render(widthSpec = exactly(100), heightSpec = unspecified()) { component }
+    val initialWidth = testLithoView.lithoView.measuredWidth
+    Assertions.assertThat(initialWidth)
+        .describedAs("Width should be 100px (exactly() overrides minWidth of 200)")
+        .isEqualTo(100)
+
+    lifecycleTracker.reset()
+    testLithoView.setSizeSpecs(exactly(500), unspecified()).measure().layout()
+    val newWidth = testLithoView.lithoView.measuredWidth
+    Assertions.assertThat(newWidth)
+        .describedAs("Width should be 500px (exactly() overrides maxWidth of 400)")
+        .isEqualTo(500)
+  }
+
+  @Test
+  fun `verify minWidth and maxWidth work together for content sizing`() {
+    val c = lithoTestRule.context
+    val lifecycleTracker = LifecycleTracker()
+
+    // Test case 1: Small intrinsic size - minWidth should be enforced
+    val componentSmall =
+        MountSpecPureRenderLifecycleTester.create(c)
+            .lifecycleTracker(lifecycleTracker)
+            .minWidthPx(100)
+            .maxWidthPx(300)
+            .intrinsicSize(Size(50, 50))
+            .build()
+
+    val testLithoView1 =
+        lithoTestRule.render(widthSpec = atMost(500), heightSpec = unspecified()) { componentSmall }
+    val width1 = testLithoView1.lithoView.measuredWidth
+    Assertions.assertThat(width1)
+        .describedAs("Width should be 100px (minWidth enforced for small content)")
+        .isEqualTo(100)
+
+    // Test case 2: Large intrinsic size - maxWidth should be enforced
+    lifecycleTracker.reset()
+    val componentLarge =
+        MountSpecPureRenderLifecycleTester.create(c)
+            .lifecycleTracker(lifecycleTracker)
+            .minWidthPx(100)
+            .maxWidthPx(300)
+            .intrinsicSize(Size(400, 50))
+            .build()
+
+    val testLithoView2 =
+        lithoTestRule.render(widthSpec = atMost(500), heightSpec = unspecified()) { componentLarge }
+    val width2 = testLithoView2.lithoView.measuredWidth
+    Assertions.assertThat(width2)
+        .describedAs("Width should be 300px (maxWidth enforced for large content)")
+        .isEqualTo(300)
+
+    // Test case 3: Content within range - intrinsic size should be used
+    lifecycleTracker.reset()
+    val componentMedium =
+        MountSpecPureRenderLifecycleTester.create(c)
+            .lifecycleTracker(lifecycleTracker)
+            .minWidthPx(100)
+            .maxWidthPx(300)
+            .intrinsicSize(Size(200, 50))
+            .build()
+
+    val testLithoView3 =
+        lithoTestRule.render(widthSpec = atMost(500), heightSpec = unspecified()) {
+          componentMedium
+        }
+    val width3 = testLithoView3.lithoView.measuredWidth
+    Assertions.assertThat(width3)
+        .describedAs("Width should be 200px (intrinsic size within min/max range)")
+        .isEqualTo(200)
+  }
+
+  @Test
+  fun `verify unspecified size spec with maxWidth uses FitContent sizing`() {
+    val c = lithoTestRule.context
+    val lifecycleTracker = LifecycleTracker()
+    val component =
+        MountSpecPureRenderLifecycleTester.create(c)
+            .lifecycleTracker(lifecycleTracker)
+            .maxWidthPx(200)
+            .intrinsicSize(Size(300, 50))
+            .build()
+
+    val testLithoView =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) { component }
+    val initialWidth = testLithoView.lithoView.measuredWidth
+    Assertions.assertThat(initialWidth)
+        .describedAs("Width should be 200px (capped by maxWidth in FitContent mode)")
+        .isEqualTo(200)
+
+    lifecycleTracker.reset()
+    val component2 =
+        MountSpecPureRenderLifecycleTester.create(c)
+            .lifecycleTracker(lifecycleTracker)
+            .maxWidthPx(200)
+            .intrinsicSize(Size(100, 50))
+            .build()
+    testLithoView.setRoot(component2).measure().layout()
+    val newWidth = testLithoView.lithoView.measuredWidth
+    Assertions.assertThat(newWidth)
+        .describedAs("Width should be 100px (intrinsic size, below maxWidth)")
+        .isEqualTo(100)
   }
 
   private fun buildRecyclerCollectionComponent(
@@ -835,16 +1298,15 @@ class LayoutCachingTest {
             .recyclerBinderConfiguration(
                 RecyclerBinderConfiguration.create()
                     .recyclerBinderConfig(RecyclerBinderConfig(wrapContent = true))
-                    .build())
+                    .build(),
+            )
             .build()
     val sectionContext = SectionContext(context)
     return RecyclerCollectionComponent.create(context)
         .recyclerConfiguration(config)
         .section(
-            DynamicComponentGroupSection.create(sectionContext)
-                .component(item)
-                .totalItems(5)
-                .build())
+            DynamicComponentGroupSection.create(sectionContext).component(item).build(),
+        )
         .maxHeightDip(300f)
         .build()
   }

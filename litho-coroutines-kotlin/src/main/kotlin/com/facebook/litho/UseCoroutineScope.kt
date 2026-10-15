@@ -47,13 +47,14 @@ import kotlinx.coroutines.cancel
  */
 @Hook
 fun ComponentScope.useComponentCoroutineScope(
-    coroutineContext: CoroutineContext = EmptyCoroutineContext
+    coroutineContext: CoroutineContext = EmptyCoroutineContext,
 ): CoroutineScope {
   if (coroutineContext[Job] != null) {
     // We want to make sure that Litho fully controls the lifecycle of the scope, so we don't allow
     // for passing a parent Job.
     throw IllegalArgumentException(
-        "CoroutineContext passed to useComponentCoroutineScope can't contain a Job.")
+        "CoroutineContext passed to useComponentCoroutineScope can't contain a Job.",
+    )
   }
 
   val lithoTreeCoroutineContext = checkNotNull(context.lithoTree).lithoTreeScope.coroutineContext

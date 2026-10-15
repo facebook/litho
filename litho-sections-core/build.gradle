@@ -16,6 +16,7 @@
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 
 project.group = GROUP
 version = VERSION_NAME
@@ -35,7 +36,7 @@ dependencies {
     compileOnly project(':litho-sections-annotations')
     implementation project(':litho-core')
     implementation project(':litho-widget')
-    annotationProcessor project(':litho-sections-processor')
+    kapt project(':litho-sections-processor')
 
     // compileOnly dependencies
     compileOnly deps.jsr305

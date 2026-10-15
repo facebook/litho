@@ -38,6 +38,8 @@ import com.facebook.litho.core.widthPercent
 import com.facebook.litho.flexbox.alignSelf
 import com.facebook.litho.flexbox.border
 import com.facebook.litho.flexbox.flex
+import com.facebook.litho.flexbox.layoutDirection
+import com.facebook.litho.flexbox.marginAuto
 import com.facebook.litho.flexbox.position
 import com.facebook.litho.flexbox.positionType
 import com.facebook.litho.transition.transitionKey
@@ -53,6 +55,7 @@ import com.facebook.litho.view.wrapInView
 import com.facebook.rendercore.dp
 import com.facebook.rendercore.px
 import com.facebook.yoga.YogaAlign
+import com.facebook.yoga.YogaDirection
 import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaPositionType
 
@@ -62,8 +65,28 @@ import com.facebook.yoga.YogaPositionType
  * defines.
  */
 fun <T : Component.Builder<T>> Component.Builder<T>.kotlinStyle(style: Style?): T {
+  if (style == null || style === Style) {
+    // Skip if style is null or empty
+    return getThis()
+  }
+  // The legacy Row/Column builders accumulate a Style and build a KRow/KColumn; their scratch
+  // CommonProps is dropped. Merge into that Style instead of writing the scratch (which would be
+  // silently lost).
+  val legacyBuilder = this as? FlexboxLegacyContainerBuilder<*>
+  if (legacyBuilder != null) {
+    legacyBuilder.mergeKotlinStyle(style)
+    return getThis()
+  }
   val context = context ?: error("Context should not be null")
-  style?.applyCommonProps(context, (component as SpecGeneratedComponent).getOrCreateCommonProps())
+  val specComponent =
+      component as? SpecGeneratedComponent
+          ?: error(
+              "kotlinStyle can only be applied to SpecGeneratedComponent builders, " +
+                  "but the builder's component is ${component.javaClass.name}. " +
+                  "For KComponent-style construction, pass the Style directly into the component " +
+                  "constructor instead of using kotlinStyle on a Builder.",
+          )
+  style.applyCommonProps(context, specComponent.getOrCreateCommonProps())
   return getThis()
 }
 
@@ -95,11 +118,14 @@ object StyleCompat {
   /** @see [JavaStyle.flexGrow] */
   @JvmStatic fun flexGrow(value: Float): JavaStyle = JavaStyle().flexGrow(value)
 
-  /** @see [JavaStyle.flexBasisDip]] */
-  @JvmStatic fun flexBasisPx(value: Float): JavaStyle = JavaStyle().flexBasisDip(value)
+  /** @see [JavaStyle.flexBasisDip] */
+  @JvmStatic fun flexBasisDip(value: Float): JavaStyle = JavaStyle().flexBasisDip(value)
 
   /** @see [JavaStyle.flexBasisPx] */
   @JvmStatic fun flexBasisPx(value: Int): JavaStyle = JavaStyle().flexBasisPx(value)
+
+  /** @see [JavaStyle.flexBasisPercent] */
+  @JvmStatic fun flexBasisPercent(value: Float): JavaStyle = JavaStyle().flexBasisPercent(value)
 
   /** @see [JavaStyle.widthDip] */
   @JvmStatic fun widthDip(value: Float): JavaStyle = JavaStyle().widthDip(value)
@@ -152,6 +178,9 @@ object StyleCompat {
   @JvmStatic
   fun marginPx(yogaEdge: YogaEdge, value: Int): JavaStyle = JavaStyle().marginPx(yogaEdge, value)
 
+  /** @see [JavaStyle.marginAuto] */
+  @JvmStatic fun marginAuto(edge: YogaEdge): JavaStyle = JavaStyle().marginAuto(edge)
+
   /** @see [JavaStyle.paddingDip] */
   @JvmStatic
   fun paddingDip(yogaEdge: YogaEdge, value: Float): JavaStyle =
@@ -176,7 +205,7 @@ object StyleCompat {
   fun transitionKey(
       context: ComponentContext,
       transitionKey: String?,
-      transitionKeyType: Transition.TransitionKeyType = Transition.TransitionKeyType.LOCAL
+      transitionKeyType: Transition.TransitionKeyType = Transition.TransitionKeyType.LOCAL,
   ): JavaStyle = JavaStyle().transitionKey(context, transitionKey, transitionKeyType)
 
   /** @see [JavaStyle.wrapInView] */
@@ -213,6 +242,10 @@ object StyleCompat {
   /** @see [JavaStyle.positionType] */
   @JvmStatic fun positionType(value: YogaPositionType): JavaStyle = JavaStyle().positionType(value)
 
+  /** @see [JavaStyle.layoutDirection] */
+  @JvmStatic
+  fun layoutDirection(value: YogaDirection): JavaStyle = JavaStyle().layoutDirection(value)
+
   /** @see [JavaStyle.border] */
   @JvmStatic fun border(border: Border): JavaStyle = JavaStyle().border(border)
 
@@ -233,13 +266,19 @@ object StyleCompat {
   fun touchExpansionDip(yogaEdge: YogaEdge, value: Float): JavaStyle =
       JavaStyle().touchExpansionDip(yogaEdge, value)
 
+  /** @see [JavaStyle.touchExpansionPx] */
+  @JvmStatic
+  fun touchExpansionPx(yogaEdge: YogaEdge, value: Int): JavaStyle =
+      JavaStyle().touchExpansionPx(yogaEdge, value)
+
   /** @see [JavaStyle.alpha] */
-  fun alpha(value: Float): JavaStyle = JavaStyle().alpha(value)
+  @JvmStatic fun alpha(value: Float): JavaStyle = JavaStyle().alpha(value)
+
+  /** Creates a [JavaStyle] initialized from an existing [Style]. */
+  @JvmStatic fun plus(style: Style): JavaStyle = JavaStyle(style)
 }
 
-class JavaStyle {
-
-  private var style: Style = Style
+class JavaStyle @JvmOverloads constructor(private var style: Style = Style) {
 
   fun background(value: Drawable): JavaStyle {
     style = style.background(background = value)
@@ -268,6 +307,11 @@ class JavaStyle {
 
   fun flexBasisPx(value: Int): JavaStyle {
     style = style.flex(basis = value.px)
+    return this
+  }
+
+  fun flexBasisPercent(value: Float): JavaStyle {
+    style = style.flex(basisPercent = value)
     return this
   }
 
@@ -356,6 +400,11 @@ class JavaStyle {
     return this
   }
 
+  fun layoutDirection(value: YogaDirection): JavaStyle {
+    style = style.layoutDirection(value)
+    return this
+  }
+
   fun border(border: Border): JavaStyle {
     style = style.border(border)
     return this
@@ -368,7 +417,8 @@ class JavaStyle {
               Style.onTouch { touchEvent -> touchHandler.dispatchEvent(touchEvent) as Boolean }
             } else {
               Style
-            })
+            },
+        )
 
     return this
   }
@@ -402,6 +452,11 @@ class JavaStyle {
       YogaEdge.HORIZONTAL -> style = style.margin(horizontal = valuePx)
       YogaEdge.ALL -> style = style.margin(all = valuePx)
     }
+    return this
+  }
+
+  fun marginAuto(edge: YogaEdge): JavaStyle {
+    style = style.marginAuto(edge)
     return this
   }
 
@@ -469,10 +524,11 @@ class JavaStyle {
     return this
   }
 
+  @Suppress("DEPRECATION")
   fun transitionKey(
       context: ComponentContext,
       key: String?,
-      keyType: Transition.TransitionKeyType
+      keyType: Transition.TransitionKeyType,
   ): JavaStyle {
     style = style.transitionKey(context, key, keyType)
     return this
@@ -535,8 +591,30 @@ class JavaStyle {
     return this
   }
 
+  fun touchExpansionPx(yogaEdge: YogaEdge, value: Int): JavaStyle {
+    val valuePx = value.px
+    style =
+        when (yogaEdge) {
+          YogaEdge.LEFT -> style.touchExpansion(left = valuePx)
+          YogaEdge.VERTICAL -> style.touchExpansion(vertical = valuePx)
+          YogaEdge.TOP -> style.touchExpansion(top = valuePx)
+          YogaEdge.RIGHT -> style.touchExpansion(right = valuePx)
+          YogaEdge.BOTTOM -> style.touchExpansion(bottom = valuePx)
+          YogaEdge.START -> style.touchExpansion(start = valuePx)
+          YogaEdge.END -> style.touchExpansion(end = valuePx)
+          YogaEdge.HORIZONTAL -> style.touchExpansion(horizontal = valuePx)
+          YogaEdge.ALL -> style.touchExpansion(all = valuePx)
+        }
+    return this
+  }
+
   fun alpha(value: Float): JavaStyle {
     style = style.alpha(value)
+    return this
+  }
+
+  fun plus(other: Style): JavaStyle {
+    style = style.plus(other)
     return this
   }
 

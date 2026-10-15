@@ -18,12 +18,14 @@ package com.facebook.litho.animated
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.view.View
 import com.facebook.litho.DynamicValue
-import com.facebook.litho.Row
 import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
+import com.facebook.litho.layout.flexbox.Row
 import com.facebook.litho.testing.LithoTestRule
+import com.facebook.litho.visibility.Visibility
 import com.facebook.rendercore.px
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
@@ -37,17 +39,16 @@ import org.robolectric.annotation.LooperMode
 @RunWith(RobolectricTestRunner::class)
 class DynamicValueStylesTest {
 
-  @Rule @JvmField val mLithoTestRule = LithoTestRule()
+  @Rule @JvmField val lithoTestRule = LithoTestRule()
 
   @Test
   fun dynamic_backgroundColor_whenSet_isRespected() {
     val startValue: Int = Color.RED
     val backgroundColorDV: DynamicValue<Int> = DynamicValue<Int>(startValue)
 
-    val testLithoView =
-        mLithoTestRule.render {
-          Row(style = Style.width(100.px).height(100.px).backgroundColor(backgroundColorDV))
-        }
+    val testLithoView = lithoTestRule.render {
+      Row(style = Style.width(100.px).height(100.px).backgroundColor(backgroundColorDV))
+    }
 
     assertThat(testLithoView.lithoView.background).isInstanceOf(ColorDrawable::class.java)
     assertThat((testLithoView.lithoView.background as ColorDrawable).color).isEqualTo(Color.RED)
@@ -65,8 +66,9 @@ class DynamicValueStylesTest {
     val alpha = 0.5f
     val alphaDV: DynamicValue<Float> = DynamicValue<Float>(alpha)
 
-    val testLithoView =
-        mLithoTestRule.render { Row(style = Style.width(100.px).height(100.px).alpha(alphaDV)) }
+    val testLithoView = lithoTestRule.render {
+      Row(style = Style.width(100.px).height(100.px).alpha(alphaDV))
+    }
 
     assertThat(testLithoView.lithoView.alpha).isEqualTo(alpha)
 
@@ -81,15 +83,15 @@ class DynamicValueStylesTest {
     val translationXDV: DynamicValue<Float> = DynamicValue<Float>(10f)
     val translationYDV: DynamicValue<Float> = DynamicValue<Float>(10f)
 
-    val testLithoView =
-        mLithoTestRule.render {
-          Row(
-              style =
-                  Style.width(100.px)
-                      .height(100.px)
-                      .translationX(translationXDV)
-                      .translationY(translationYDV))
-        }
+    val testLithoView = lithoTestRule.render {
+      Row(
+          style =
+              Style.width(100.px)
+                  .height(100.px)
+                  .translationX(translationXDV)
+                  .translationY(translationYDV),
+      )
+    }
 
     assertThat(testLithoView.lithoView.translationX).isEqualTo(10f)
     assertThat(testLithoView.lithoView.translationY).isEqualTo(10f)
@@ -109,10 +111,9 @@ class DynamicValueStylesTest {
   fun dynamic_rotation_whenSet_isRespected() {
     val rotationDV: DynamicValue<Float> = DynamicValue<Float>(10f)
 
-    val testLithoView =
-        mLithoTestRule.render {
-          Row(style = Style.width(100.px).height(100.px).rotation(rotationDV))
-        }
+    val testLithoView = lithoTestRule.render {
+      Row(style = Style.width(100.px).height(100.px).rotation(rotationDV))
+    }
 
     assertThat(testLithoView.lithoView.rotation).isEqualTo(10f)
 
@@ -128,10 +129,9 @@ class DynamicValueStylesTest {
     val scaleXDV: DynamicValue<Float> = DynamicValue<Float>(10f)
     val scaleYDV: DynamicValue<Float> = DynamicValue<Float>(10f)
 
-    val testLithoView =
-        mLithoTestRule.render {
-          Row(style = Style.width(100.px).height(100.px).scaleX(scaleXDV).scaleY(scaleYDV))
-        }
+    val testLithoView = lithoTestRule.render {
+      Row(style = Style.width(100.px).height(100.px).scaleX(scaleXDV).scaleY(scaleYDV))
+    }
 
     assertThat(testLithoView.lithoView.scaleX).isEqualTo(10f)
     assertThat(testLithoView.lithoView.scaleY).isEqualTo(10f)
@@ -145,5 +145,22 @@ class DynamicValueStylesTest {
     scaleYDV.set(0.7f)
     assertThat(testLithoView.lithoView.scaleX).isEqualTo(0.5f)
     assertThat(testLithoView.lithoView.scaleY).isEqualTo(0.7f)
+  }
+
+  @Test
+  fun dynamic_visibility_whenSet_isRespected() {
+    val visibilityDV: DynamicValue<Visibility> = DynamicValue<Visibility>(Visibility.Visible)
+
+    val testLithoView = lithoTestRule.render {
+      Row(style = Style.width(100.px).height(100.px).visibility(visibilityDV))
+    }
+
+    assertThat(testLithoView.lithoView.visibility).isEqualTo(View.VISIBLE)
+
+    visibilityDV.set(Visibility.Invisible)
+    assertThat(testLithoView.lithoView.visibility).isEqualTo(View.INVISIBLE)
+
+    visibilityDV.set(Visibility.Visible)
+    assertThat(testLithoView.lithoView.visibility).isEqualTo(View.VISIBLE)
   }
 }

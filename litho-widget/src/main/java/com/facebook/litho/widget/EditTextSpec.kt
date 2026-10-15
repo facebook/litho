@@ -35,7 +35,6 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
-import androidx.core.view.ViewCompat
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentLayout
 import com.facebook.litho.EventHandler
@@ -132,7 +131,9 @@ import java.util.concurrent.atomic.AtomicReference
             TextChangedEvent::class,
             SelectionChangedEvent::class,
             KeyUpEvent::class,
-            SetTextEvent::class])
+            SetTextEvent::class,
+        ],
+)
 @Deprecated("")
 internal object EditTextSpec {
 
@@ -209,7 +210,7 @@ internal object EditTextSpec {
       shadowColor: Output<Int?>,
       gravity: Output<Int?>,
       inputType: Output<Int?>,
-      imeOptions: Output<Int?>
+      imeOptions: Output<Int?>,
   ) {
     val a = c.obtainStyledAttributes(R.styleable.Text, 0)
 
@@ -292,7 +293,6 @@ internal object EditTextSpec {
       @Prop(optional = true) hintColorStateList: ColorStateList?,
       @Prop(optional = true, resType = ResType.COLOR) linkColor: Int,
       @Prop(optional = true, resType = ResType.COLOR) highlightColor: Int,
-      @Prop(optional = true) tintColorStateList: ColorStateList?,
       @Prop(optional = true, resType = ResType.DIMEN_TEXT) textSize: Int,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) extraSpacing: Float,
       @Prop(optional = true, resType = ResType.FLOAT) spacingMultiplier: Float,
@@ -311,7 +311,7 @@ internal object EditTextSpec {
       @Prop(optional = true) cursorDrawableRes: Int,
       @Prop(optional = true, varArg = "inputFilter")
       inputFilters: MutableList<@JvmSuppressWildcards InputFilter>?,
-      @State(canUpdateLazily = true) input: CharSequence?
+      @State(canUpdateLazily = true) input: CharSequence?,
   ) {
     // TODO(11759579) - don't allocate a new EditText in every measure.
 
@@ -340,7 +340,6 @@ internal object EditTextSpec {
         hintColorStateList,
         linkColor,
         highlightColor,
-        tintColorStateList,
         textSize,
         extraSpacing,
         spacingMultiplier,
@@ -356,7 +355,8 @@ internal object EditTextSpec {
         editorActionListener,
         isSingleLineWrap,
         requestFocus,
-        cursorDrawableRes)
+        cursorDrawableRes,
+    )
 
     val background: Drawable? = layout.background
 
@@ -373,7 +373,9 @@ internal object EditTextSpec {
     }
 
     editText.measure(
-        MeasureUtils.getViewMeasureSpec(widthSpec), MeasureUtils.getViewMeasureSpec(heightSpec))
+        MeasureUtils.getViewMeasureSpec(widthSpec),
+        MeasureUtils.getViewMeasureSpec(heightSpec),
+    )
 
     size.width = editText.measuredWidth
     size.height = editText.measuredHeight
@@ -406,7 +408,6 @@ internal object EditTextSpec {
       @Prop(optional = true) hintColorStateList: ColorStateList?,
       @Prop(optional = true, resType = ResType.COLOR) linkColor: Int,
       @Prop(optional = true, resType = ResType.COLOR) highlightColor: Int,
-      @Prop(optional = true) tintColorStateList: ColorStateList?,
       @Prop(optional = true, resType = ResType.DIMEN_TEXT) textSize: Int,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) extraSpacing: Float,
       @Prop(optional = true, resType = ResType.FLOAT) spacingMultiplier: Float,
@@ -427,7 +428,7 @@ internal object EditTextSpec {
       inputFilters: MutableList<@JvmSuppressWildcards InputFilter>?,
       @State mountedView: AtomicReference<EditTextWithEventHandlers?>,
       @State configuredInitialText: AtomicBoolean,
-      @State(canUpdateLazily = true) input: CharSequence?
+      @State(canUpdateLazily = true) input: CharSequence?,
   ) {
     mountedView.set(editText)
 
@@ -452,7 +453,6 @@ internal object EditTextSpec {
         hintColorStateList,
         linkColor,
         highlightColor,
-        tintColorStateList,
         textSize,
         extraSpacing,
         spacingMultiplier,
@@ -468,7 +468,8 @@ internal object EditTextSpec {
         editorActionListener,
         isSingleLineWrap,
         requestFocus,
-        cursorDrawableRes)
+        cursorDrawableRes,
+    )
   }
 
   @OnBind
@@ -477,7 +478,7 @@ internal object EditTextSpec {
       editText: EditTextWithEventHandlers,
       @Prop(optional = true) stateUpdatePolicy: EditTextStateUpdatePolicy?,
       @Prop(optional = true, varArg = "textWatcher")
-      textWatchers: List<@JvmSuppressWildcards TextWatcher>?
+      textWatchers: List<@JvmSuppressWildcards TextWatcher>?,
   ) {
     editText.setComponentContext(c)
     editText.setTextChangedEventHandler(EditText.getTextChangedEventHandler(c))
@@ -497,7 +498,7 @@ internal object EditTextSpec {
   fun onUnmount(
       c: ComponentContext?,
       editText: EditTextWithEventHandlers?,
-      @State mountedView: AtomicReference<EditTextWithEventHandlers?>
+      @State mountedView: AtomicReference<EditTextWithEventHandlers?>,
   ) {
     mountedView.set(null)
   }
@@ -505,7 +506,7 @@ internal object EditTextSpec {
   @OnTrigger(RequestFocusEvent::class)
   fun requestFocus(
       c: ComponentContext,
-      @State mountedView: AtomicReference<EditTextWithEventHandlers?>
+      @State mountedView: AtomicReference<EditTextWithEventHandlers?>,
   ) {
     val eventHandler = mountedView.get()
     if (eventHandler != null) {
@@ -520,7 +521,7 @@ internal object EditTextSpec {
   @OnTrigger(ClearFocusEvent::class)
   fun clearFocus(
       c: ComponentContext,
-      @State mountedView: AtomicReference<EditTextWithEventHandlers?>
+      @State mountedView: AtomicReference<EditTextWithEventHandlers?>,
   ) {
     val eventHandler = mountedView.get()
     if (eventHandler != null) {
@@ -535,7 +536,7 @@ internal object EditTextSpec {
   fun setText(
       c: ComponentContext?,
       @State mountedView: AtomicReference<EditTextWithEventHandlers?>,
-      @FromTrigger text: CharSequence?
+      @FromTrigger text: CharSequence?,
   ) {
     ThreadUtils.assertMainThread()
 
@@ -553,7 +554,7 @@ internal object EditTextSpec {
   @OnCreateInitialState
   fun onCreateInitialState(
       mountedView: StateValue<AtomicReference<EditTextWithEventHandlers?>?>,
-      configuredInitialText: StateValue<AtomicBoolean?>
+      configuredInitialText: StateValue<AtomicBoolean?>,
   ) {
     mountedView.set(AtomicReference())
     configuredInitialText.set(AtomicBoolean())
@@ -580,7 +581,6 @@ internal object EditTextSpec {
       hintColorStateList: ColorStateList?,
       linkColor: Int,
       highlightColor: Int,
-      tintColorStateList: ColorStateList?,
       textSize: Int,
       extraSpacing: Float,
       spacingMultiplier: Float,
@@ -596,13 +596,15 @@ internal object EditTextSpec {
       editorActionListener: TextView.OnEditorActionListener?,
       isSingleLineWrap: Boolean,
       requestFocus: Boolean,
-      cursorDrawableRes: Int
+      cursorDrawableRes: Int,
   ) {
     var inputFiltersToUse = inputFilters
     var inputTypeToUse = inputType
     if (textSize == TextComponentSpec.UNSET) {
       editText.setTextSize(
-          TypedValue.COMPLEX_UNIT_SP, TextComponentSpec.DEFAULT_TEXT_SIZE_SP.toFloat())
+          TypedValue.COMPLEX_UNIT_SP,
+          TextComponentSpec.DEFAULT_TEXT_SIZE_SP.toFloat(),
+      )
     } else {
       editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize.toFloat())
     }
@@ -694,10 +696,6 @@ internal object EditTextSpec {
       editText.setHintTextColor(hintColorStateList)
     }
 
-    if (tintColorStateList != null) {
-      ViewCompat.setBackgroundTintList(editText, tintColorStateList)
-    }
-
     if (requestFocus) {
       editText.requestFocus()
     }
@@ -786,9 +784,11 @@ internal object EditTextSpec {
             delegates[i].onTextChanged(s, start, before, count)
           }
         }
-        if ((stateUpdatePolicy == EditTextStateUpdatePolicy.UPDATE_ON_LINE_COUNT_CHANGE &&
-            prevLineCount != lineCount) ||
-            stateUpdatePolicy == EditTextStateUpdatePolicy.UPDATE_ON_TEXT_CHANGE) {
+        if (
+            (stateUpdatePolicy == EditTextStateUpdatePolicy.UPDATE_ON_LINE_COUNT_CHANGE &&
+                prevLineCount != lineCount) ||
+                stateUpdatePolicy == EditTextStateUpdatePolicy.UPDATE_ON_TEXT_CHANGE
+        ) {
           EditText.updateInputSync(componentContext, s.toString())
         } else if (stateUpdatePolicy != EditTextStateUpdatePolicy.NO_UPDATES) {
           EditText.lazyUpdateInput(componentContext, s.toString())
@@ -804,7 +804,10 @@ internal object EditTextSpec {
         }
         if (textChangedEventHandler != null) {
           EditText.dispatchTextChangedEvent(
-              textChangedEventHandler, this@EditTextWithEventHandlers, s.toString())
+              textChangedEventHandler,
+              this@EditTextWithEventHandlers,
+              s.toString(),
+          )
         }
       }
     }

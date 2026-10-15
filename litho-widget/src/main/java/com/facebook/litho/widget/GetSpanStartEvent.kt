@@ -19,7 +19,10 @@ package com.facebook.litho.widget
 import com.facebook.litho.annotations.Event
 
 /** Return the beginning of the range of text to which the specified markup object is attached. */
-@Event(returnType = Int::class)
+// Uses explicit Java class reference (java.lang.CharSequence::class) instead of Kotlin's to ensure
+// kapt generates correct Java stubs. Kotlin type references like cause kapt to generate invalid
+// annotations (kotlin.CharSequence.class) that the Litho annotation processor cannot handle.
+@Event(returnType = java.lang.Integer::class)
 class GetSpanStartEvent {
   lateinit var what: Any
 }

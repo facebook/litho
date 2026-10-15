@@ -33,10 +33,12 @@ import com.facebook.litho.DynamicPropsManager.Companion.KEY_SCALE_Y
 import com.facebook.litho.DynamicPropsManager.Companion.KEY_TRANSLATION_X
 import com.facebook.litho.DynamicPropsManager.Companion.KEY_TRANSLATION_Y
 import com.facebook.litho.DynamicPropsManager.Companion.KEY_TRANSLATION_Z
+import com.facebook.litho.DynamicPropsManager.Companion.KEY_VISIBILITY
 import com.facebook.litho.DynamicValue
 import com.facebook.litho.Style
 import com.facebook.litho.StyleItem
 import com.facebook.litho.StyleItemField
+import com.facebook.litho.visibility.Visibility
 
 /** Enums for [DynamicStyleItem]. */
 @PublishedApi
@@ -54,6 +56,7 @@ internal enum class DynamicField : StyleItemField {
   TRANSLATION_X,
   TRANSLATION_Y,
   TRANSLATION_Z,
+  VISIBILITY,
 }
 
 /**
@@ -63,7 +66,7 @@ internal enum class DynamicField : StyleItemField {
 @DataClassGenerate
 internal data class DynamicStyleItem(
     override val field: DynamicField,
-    override val value: DynamicValue<*>
+    override val value: DynamicValue<*>,
 ) : StyleItem<DynamicValue<*>> {
   override fun applyCommonProps(context: ComponentContext, commonProps: CommonProps) {
     val commonDynamicProps = commonProps.getOrCreateDynamicProps()
@@ -81,45 +84,55 @@ internal data class DynamicStyleItem(
       DynamicField.TRANSLATION_X -> commonDynamicProps.put(KEY_TRANSLATION_X, value)
       DynamicField.TRANSLATION_Y -> commonDynamicProps.put(KEY_TRANSLATION_Y, value)
       DynamicField.TRANSLATION_Z -> commonDynamicProps.put(KEY_TRANSLATION_Z, value)
+      DynamicField.VISIBILITY -> commonDynamicProps.put(KEY_VISIBILITY, value)
     }
   }
 }
 
-inline fun Style.alpha(alpha: DynamicValue<Float>): Style =
+fun Style.alpha(alpha: DynamicValue<Float>): Style =
     this + DynamicStyleItem(DynamicField.ALPHA, alpha)
 
-inline fun Style.background(background: DynamicValue<out Drawable>): Style =
+fun Style.background(background: DynamicValue<out Drawable>): Style =
     this + DynamicStyleItem(DynamicField.BACKGROUND_DRAWABLE, background)
 
-inline fun Style.backgroundColor(background: DynamicValue<Int>): Style =
+fun Style.backgroundColor(background: DynamicValue<Int>): Style =
     this + DynamicStyleItem(DynamicField.BACKGROUND_COLOR, background)
 
-inline fun Style.foregroundColor(foreground: DynamicValue<Int>): Style =
+fun Style.foregroundColor(foreground: DynamicValue<Int>): Style =
     this + DynamicStyleItem(DynamicField.FOREGROUND, foreground)
 
-inline fun Style.elevation(elevation: DynamicValue<Float>): Style =
+fun Style.elevation(elevation: DynamicValue<Float>): Style =
     this + DynamicStyleItem(DynamicField.ELEVATION, elevation)
 
-inline fun Style.rotation(rotation: DynamicValue<Float>): Style =
+fun Style.rotation(rotation: DynamicValue<Float>): Style =
     this + DynamicStyleItem(DynamicField.ROTATION, rotation)
 
-inline fun Style.rotationX(rotationX: DynamicValue<Float>): Style =
+fun Style.rotationX(rotationX: DynamicValue<Float>): Style =
     this + DynamicStyleItem(DynamicField.ROTATION_X, rotationX)
 
-inline fun Style.rotationY(rotationY: DynamicValue<Float>): Style =
+fun Style.rotationY(rotationY: DynamicValue<Float>): Style =
     this + DynamicStyleItem(DynamicField.ROTATION_Y, rotationY)
 
-inline fun Style.scaleX(scaleX: DynamicValue<Float>): Style =
+fun Style.scaleX(scaleX: DynamicValue<Float>): Style =
     this + DynamicStyleItem(DynamicField.SCALE_X, scaleX)
 
-inline fun Style.scaleY(scaleY: DynamicValue<Float>): Style =
+fun Style.scaleY(scaleY: DynamicValue<Float>): Style =
     this + DynamicStyleItem(DynamicField.SCALE_Y, scaleY)
 
-inline fun Style.translationX(translationX: DynamicValue<Float>): Style =
+fun Style.translationX(translationX: DynamicValue<Float>): Style =
     this + DynamicStyleItem(DynamicField.TRANSLATION_X, translationX)
 
-inline fun Style.translationY(translationY: DynamicValue<Float>): Style =
+fun Style.translationY(translationY: DynamicValue<Float>): Style =
     this + DynamicStyleItem(DynamicField.TRANSLATION_Y, translationY)
 
-inline fun Style.translationZ(translationZ: DynamicValue<Float>): Style =
+fun Style.translationZ(translationZ: DynamicValue<Float>): Style =
     this + DynamicStyleItem(DynamicField.TRANSLATION_Z, translationZ)
+
+/**
+ * Sets the visibility of the View rendered by this Component using a [DynamicValue]. The value
+ * should be one of [Visibility.Visible] or [Visibility.Invisible].
+ *
+ * This allows changing the visibility at runtime without triggering a new layout.
+ */
+fun Style.visibility(visibility: DynamicValue<Visibility>): Style =
+    this + DynamicStyleItem(DynamicField.VISIBILITY, visibility)

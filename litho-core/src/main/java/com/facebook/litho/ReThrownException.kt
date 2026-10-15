@@ -23,5 +23,5 @@ import kotlin.jvm.JvmField
 class ReThrownException
 internal constructor(
     @JvmField val original: Exception,
-    @JvmField val lastHandler: EventHandler<ErrorEvent>
+    @JvmField val lastHandler: EventHandler<ErrorEvent>,
 ) : RuntimeException()

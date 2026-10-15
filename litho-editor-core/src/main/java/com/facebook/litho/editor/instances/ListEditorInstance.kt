@@ -28,15 +28,14 @@ class ListEditorInstance : Editor {
   override fun read(f: Field, node: Any?): EditorValue {
     val list = Reflection.getValueUNSAFE<List<Any?>?>(f, node) ?: return EditorValue.string("null")
 
-    val resolvedList =
-        list.map {
-          when (it) {
-            null -> EditorValue.string("null")
-            else ->
-                EditorRegistry.readValueThatIsNotAField(it.javaClass, it)
-                    ?: EditorValue.string(it.javaClass.toString())
-          }
-        }
+    val resolvedList = list.map {
+      when (it) {
+        null -> EditorValue.string("null")
+        else ->
+            EditorRegistry.readValueThatIsNotAField(it.javaClass, it)
+                ?: EditorValue.string(it.javaClass.toString())
+      }
+    }
 
     return EditorValue.array(resolvedList)
   }

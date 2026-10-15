@@ -1,0 +1,101 @@
+---
+id: components-basics
+title: Components
+keywords:
+    - component
+    - component litho
+    - litho component
+    - litho kcomponent
+    - KComponent
+    - render function
+    - props
+    - immutable
+    - declarative
+    - ComponentScope
+api_category: core
+related_docs: [hooks-intro, common-props, treeprops, use-state]
+api_names: [KComponent, Component, ComponentScope, render, Text, Image, Row, Column]
+---
+
+import VersionedCodeBlock from '@theme/VersionedCodeBlock';
+
+:::info API Quick Reference
+**Component Declaration:**
+```kotlin
+class MyComponent(private val myProp: String) : KComponent() {
+  override fun ComponentScope.render(): Component {
+    // Return child components here
+  }
+}
+```
+
+| Concept | Description |
+|---------|-------------|
+| **KComponent** | Base class for Kotlin components |
+| **render()** | Pure function returning child components |
+| **Props** | Immutable `val` properties passed via constructor |
+| **ComponentScope** | Receiver providing access to hooks and context |
+
+**Import:**
+```kotlin
+import com.facebook.litho.Component
+import com.facebook.litho.ComponentScope
+import com.facebook.litho.KComponent
+```
+:::
+
+## What is a component?
+
+**Components** are the fundamental building blocks of UIs in Litho. They consist of a render function that can use the component's **props** and **state** to configure and return other components. The returned components are further resolved by recursively calling `render` on them until the process results in **primitives** like `Text` or `Image`, which can be positioned and materialized on the screen.
+
+The following example shows a component that takes a name as a prop and renders a greeting with a `Text` component.
+
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/documentation/HelloComponent.kt start=start_simple_example end=end_simple_example
+```
+
+If you need to integrate your own views/drawables with Litho, please see [Primitive Components](../primitives/overview/)
+
+:::info
+**What's the relationship between a component and a view?**
+
+In practice, a component is just a type and a bag of props and is cheap to instantiate. Instantiating a component does not instantiate a View. At **mount** time, only primitive components that mount Views or have View properties (such as `viewTag`) will materialize Views in the final layout.
+:::
+
+## Declaring a Component
+
+A component is declared as a simple sub-class of `KComponent`, overriding a single function: `render`. You can declare the **props** a component takes as standard `val` properties; as is normal in Kotlin, these may be declared as optional by providing a default value.
+
+To instantiate an existing component, specify the props in the constructor of that component. By convention, named arguments are used for clarity, even if the prop is required:
+
+```kotlin
+import com.facebook.litho.kotlin.widget.Text
+
+Text(text = "Hello $name!")
+```
+
+:::caution
+KComponents are only supported in Kotlin. The [legacy Spec API](/legacy-spec-api/layout-specs.mdx) is **deprecated and should only be used for maintaining existing code**. For new development, convert Java code to Kotlin to use KComponents, or consider using the Primitive Component API if you need to integrate custom Views.
+:::
+
+### Rules for components
+
+For correctness, Litho components must follow two functional-programming rules:
+
+1. **Components must be immutable** - they only support `val` properties (no `var` properties!). Components are re-used across threads, so mutability can introduce subtle but aggravating correctness issues.
+2. **`render` must be a pure function without side-effects** - if render is called with the same props and state, it should always return the same result without modifying other app state.
+
+### Other ways to configure components
+
+Following are some other ways you can affect your component's rendering:
+
+- **[Common Props](../props/common-props)** - uses the `Style` object to configure built-in behavior on a component, like click handling and background color.
+- **[Tree Props](/props/treeprops.mdx)** - provides a way to give access to contextual objects, like a theme or logging utility, to all components in a sub-tree without having to manually pass them.
+- **[State](/state-and-side-effects/use-state.mdx)** - allows a component to persist private state across updates to the tree.
+
+## See Also
+
+- [What is Litho?](intro/what-is-litho.md) - Introduction to Litho framework
+- [Main Concepts](mainconcepts.mdx) - Overview of key Litho concepts
+- [Introduction to Hooks](state-and-side-effects/hooks-intro.mdx) - State and lifecycle management
+- [Common Props](props/common-props.mdx) - Style and behavior configuration
+- [Primitive Components](primitives/overview.mdx) - Integrate custom Views/Drawables

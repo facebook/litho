@@ -17,6 +17,7 @@
 package com.facebook.litho
 
 import android.graphics.Color
+import com.facebook.litho.layout.flexbox.Row
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.testing.unspecified
@@ -49,14 +50,16 @@ class StyleCompatTest {
         .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(style = StyleCompat.widthPx(100).heightPx(100).build()) {
             child(
-                Row(style = StyleCompat.heightPercent(50f).widthPercent(50f).wrapInView().build()))
+                Row(style = StyleCompat.heightPercent(50f).widthPercent(50f).wrapInView().build()),
+            )
           }
         }
         .assertMatches(
             match<LithoView> {
               bounds(0, 0, 100, 100)
               child<ComponentHost> { bounds(0, 0, 50, 50) }
-            })
+            },
+        )
   }
 
   @Test
@@ -111,7 +114,8 @@ class StyleCompatTest {
             match<LithoView> {
               bounds(0, 0, 100, 100)
               child<ComponentHost> { bounds(0, 0, 50, 100) }
-            })
+            },
+        )
   }
 
   @Test
@@ -126,7 +130,8 @@ class StyleCompatTest {
             match<LithoView> {
               bounds(0, 0, 100, 100)
               child<ComponentHost> { bounds(0, 0, 100, 100) }
-            })
+            },
+        )
   }
 
   @Test
@@ -135,22 +140,26 @@ class StyleCompatTest {
         .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(
               alignItems = YogaAlign.STRETCH,
-              style = StyleCompat.widthPx(100).heightPx(100).build()) {
-                child(
-                    Row(
-                        style =
-                            StyleCompat.heightPx(100)
-                                .minWidthPx(50)
-                                .flexShrink(1f)
-                                .wrapInView()
-                                .build()))
-              }
+              style = StyleCompat.widthPx(100).heightPx(100).build(),
+          ) {
+            child(
+                Row(
+                    style =
+                        StyleCompat.heightPx(100)
+                            .minWidthPx(50)
+                            .flexShrink(1f)
+                            .wrapInView()
+                            .build(),
+                ),
+            )
+          }
         }
         .assertMatches(
             match<LithoView> {
               bounds(0, 0, 100, 100)
               child<ComponentHost> { bounds(0, 0, 50, 100) }
-            })
+            },
+        )
   }
 
   @Test
@@ -161,14 +170,17 @@ class StyleCompatTest {
             child(
                 Row(
                     style =
-                        StyleCompat.widthPx(100).alignSelf(YogaAlign.STRETCH).wrapInView().build()))
+                        StyleCompat.widthPx(100).alignSelf(YogaAlign.STRETCH).wrapInView().build(),
+                ),
+            )
           }
         }
         .assertMatches(
             match<LithoView> {
               bounds(0, 0, 100, 100)
               child<ComponentHost> { bounds(0, 0, 100, 100) }
-            })
+            },
+        )
   }
 
   @Test
@@ -189,15 +201,17 @@ class StyleCompatTest {
                       .paddingPx(YogaEdge.TOP, top)
                       .paddingPx(YogaEdge.END, right)
                       .paddingPx(YogaEdge.BOTTOM, bottom)
-                      .build()) {
-                child(Row(style = StyleCompat.flexGrow(1f).wrapInView().build()))
-              }
+                      .build(),
+          ) {
+            child(Row(style = StyleCompat.flexGrow(1f).wrapInView().build()))
+          }
         }
         .assertMatches(
             match<LithoView> {
               bounds(0, 0, 100, 100)
               child<ComponentHost> { bounds(left, top, 100 - left - right, 100 - top - bottom) }
-            })
+            },
+        )
   }
 
   @Test
@@ -214,9 +228,10 @@ class StyleCompatTest {
                       .heightPx(100)
                       .paddingPx(YogaEdge.HORIZONTAL, horizontal)
                       .paddingPx(YogaEdge.VERTICAL, vertical)
-                      .build()) {
-                child(Row(style = StyleCompat.flexGrow(1f).wrapInView().build()))
-              }
+                      .build(),
+          ) {
+            child(Row(style = StyleCompat.flexGrow(1f).wrapInView().build()))
+          }
         }
         .assertMatches(
             match<LithoView> {
@@ -224,7 +239,8 @@ class StyleCompatTest {
               child<ComponentHost> {
                 bounds(horizontal, vertical, 100 - 2 * horizontal, 100 - 2 * vertical)
               }
-            })
+            },
+        )
   }
 
   @Test
@@ -236,9 +252,10 @@ class StyleCompatTest {
           Row(
               alignItems = YogaAlign.STRETCH,
               style =
-                  StyleCompat.widthPx(100).heightPx(100).paddingPx(YogaEdge.ALL, padding).build()) {
-                child(Row(style = StyleCompat.flexGrow(1f).wrapInView().build()))
-              }
+                  StyleCompat.widthPx(100).heightPx(100).paddingPx(YogaEdge.ALL, padding).build(),
+          ) {
+            child(Row(style = StyleCompat.flexGrow(1f).wrapInView().build()))
+          }
         }
         .assertMatches(
             match<LithoView> {
@@ -246,7 +263,8 @@ class StyleCompatTest {
               child<ComponentHost> {
                 bounds(padding, padding, 100 - 2 * padding, 100 - 2 * padding)
               }
-            })
+            },
+        )
   }
 
   @Test
@@ -260,24 +278,28 @@ class StyleCompatTest {
         .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(
               alignItems = YogaAlign.STRETCH,
-              style = StyleCompat.widthPx(100).heightPx(100).build()) {
-                child(
-                    Row(
-                        style =
-                            StyleCompat.marginPx(YogaEdge.START, left)
-                                .marginPx(YogaEdge.TOP, top)
-                                .marginPx(YogaEdge.END, right)
-                                .marginPx(YogaEdge.BOTTOM, bottom)
-                                .flexGrow(1f)
-                                .wrapInView()
-                                .build()))
-              }
+              style = StyleCompat.widthPx(100).heightPx(100).build(),
+          ) {
+            child(
+                Row(
+                    style =
+                        StyleCompat.marginPx(YogaEdge.START, left)
+                            .marginPx(YogaEdge.TOP, top)
+                            .marginPx(YogaEdge.END, right)
+                            .marginPx(YogaEdge.BOTTOM, bottom)
+                            .flexGrow(1f)
+                            .wrapInView()
+                            .build(),
+                ),
+            )
+          }
         }
         .assertMatches(
             match<LithoView> {
               bounds(0, 0, 100, 100)
               child<ComponentHost> { bounds(left, top, 100 - left - right, 100 - top - bottom) }
-            })
+            },
+        )
   }
 
   @Test
@@ -289,16 +311,19 @@ class StyleCompatTest {
         .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(
               alignItems = YogaAlign.STRETCH,
-              style = StyleCompat.widthPx(100).heightPx(100).build()) {
-                child(
-                    Row(
-                        style =
-                            StyleCompat.marginPx(YogaEdge.HORIZONTAL, horizontal)
-                                .marginPx(YogaEdge.VERTICAL, vertical)
-                                .flexGrow(1f)
-                                .wrapInView()
-                                .build()))
-              }
+              style = StyleCompat.widthPx(100).heightPx(100).build(),
+          ) {
+            child(
+                Row(
+                    style =
+                        StyleCompat.marginPx(YogaEdge.HORIZONTAL, horizontal)
+                            .marginPx(YogaEdge.VERTICAL, vertical)
+                            .flexGrow(1f)
+                            .wrapInView()
+                            .build(),
+                ),
+            )
+          }
         }
         .assertMatches(
             match<LithoView> {
@@ -306,7 +331,8 @@ class StyleCompatTest {
               child<ComponentHost> {
                 bounds(horizontal, vertical, 100 - 2 * horizontal, 100 - 2 * vertical)
               }
-            })
+            },
+        )
   }
 
   @Test
@@ -317,21 +343,54 @@ class StyleCompatTest {
         .render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(
               alignItems = YogaAlign.STRETCH,
-              style = StyleCompat.widthPx(100).heightPx(100).build()) {
-                child(
-                    Row(
-                        style =
-                            StyleCompat.marginPx(YogaEdge.ALL, margin)
-                                .flexGrow(1f)
-                                .wrapInView()
-                                .build()))
-              }
+              style = StyleCompat.widthPx(100).heightPx(100).build(),
+          ) {
+            child(
+                Row(
+                    style =
+                        StyleCompat.marginPx(YogaEdge.ALL, margin)
+                            .flexGrow(1f)
+                            .wrapInView()
+                            .build(),
+                ),
+            )
+          }
         }
         .assertMatches(
             match<LithoView> {
               bounds(0, 0, 100, 100)
               child<ComponentHost> { bounds(margin, margin, 100 - 2 * margin, 100 - 2 * margin) }
-            })
+            },
+        )
+  }
+
+  @Test
+  fun marginAuto_whenSet_centersChild() {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
+          Row(
+              alignItems = YogaAlign.STRETCH,
+              style = StyleCompat.widthPx(100).heightPx(100).build(),
+          ) {
+            child(
+                Row(
+                    style =
+                        StyleCompat.widthPx(20)
+                            .heightPx(20)
+                            .marginAuto(YogaEdge.LEFT)
+                            .marginAuto(YogaEdge.RIGHT)
+                            .wrapInView()
+                            .build(),
+                ),
+            )
+          }
+        }
+        .assertMatches(
+            match<LithoView> {
+              bounds(0, 0, 100, 100)
+              child<ComponentHost> { bounds(40, 0, 20, 20) }
+            },
+        )
   }
 
   @Test
@@ -353,21 +412,23 @@ class StyleCompatTest {
                             .positionPx(YogaEdge.END, right)
                             .positionPx(YogaEdge.BOTTOM, bottom)
                             .wrapInView()
-                            .build()))
+                            .build(),
+                ),
+            )
           }
         }
         .assertMatches(
             match<LithoView> {
               bounds(0, 0, 100, 100)
               child<ComponentHost> { bounds(left, top, 100 - left - right, 100 - top - bottom) }
-            })
+            },
+        )
   }
 
   /**
    * Test is using [Layout] and [NodeInfo] classes as a workaround for the issue with 'libyoga.so
    * already loaded in another classloader exception' caused by multiple ClassLoaders trying to load
-   * Yoga when using @Config to specify a different target sdk. See:
-   * https://www.internalfb.com/intern/staticdocs/litho/docs/testing/unit-testing/
+   * Yoga when using @Config to specify a different target sdk.
    */
   @Test
   fun border_whenSet_isRespected() {
@@ -385,8 +446,10 @@ class StyleCompatTest {
                             .radiusDip(Border.Corner.TOP_RIGHT, 6f)
                             .radiusDip(Border.Corner.BOTTOM_RIGHT, 7f)
                             .radiusDip(Border.Corner.BOTTOM_LEFT, 8f)
-                            .build())
-                    .build())
+                            .build(),
+                    )
+                    .build(),
+        )
       }
     }
 
@@ -404,12 +467,107 @@ class StyleCompatTest {
         return Row(
             style =
                 StyleCompat.transitionKey(context, "test", Transition.TransitionKeyType.GLOBAL)
-                    .build())
+                    .build(),
+        )
       }
     }
 
     val node = lithoTestRule.render { ComponentWithTransition() }.currentRootNode?.node
     assertThat(node?.transitionKeyType).isEqualTo(Transition.TransitionKeyType.GLOBAL)
     assertThat(node?.transitionKey).isEqualTo("test")
+  }
+
+  @Test
+  fun plus_preservesExistingStyle() {
+    val existingStyle = StyleCompat.widthPx(100).heightPx(50).build()
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
+          Row(style = StyleCompat.plus(existingStyle).build())
+        }
+        .assertMatches(match<LithoView> { bounds(0, 0, 100, 50) })
+  }
+
+  @Test
+  fun plus_chainsNewPropsOntoExistingStyle() {
+    val existingStyle = StyleCompat.widthPx(100).build()
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
+          Row(style = StyleCompat.plus(existingStyle).heightPx(200).build())
+        }
+        .assertMatches(match<LithoView> { bounds(0, 0, 100, 200) })
+  }
+
+  @Test
+  fun javaStylePlus_combinesStyles() {
+    val firstStyle = StyleCompat.widthPx(100).build()
+    val secondStyle = StyleCompat.heightPx(50).build()
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
+          Row(style = JavaStyle(firstStyle).plus(secondStyle).build())
+        }
+        .assertMatches(match<LithoView> { bounds(0, 0, 100, 50) })
+  }
+
+  @Test
+  fun javaStylePlus_chainsWithOtherProps() {
+    val existingStyle = StyleCompat.widthPx(100).build()
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
+          Row(style = JavaStyle(existingStyle).plus(StyleCompat.heightPx(200).build()).build())
+        }
+        .assertMatches(match<LithoView> { bounds(0, 0, 100, 200) })
+  }
+
+  @Test
+  fun flexBasisDip_whenSet_becomesChildWidth() {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
+          Row(style = StyleCompat.widthPx(100).heightPx(100).build()) {
+            child(Row(style = StyleCompat.flexBasisDip(50f).wrapInView().build()))
+          }
+        }
+        .assertMatches(
+            match<LithoView> {
+              bounds(0, 0, 100, 100)
+              child<ComponentHost> { bounds(0, 0, 50, 100) }
+            },
+        )
+  }
+
+  @Test
+  fun flexBasisPercent_whenSet_becomesChildWidth() {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
+          Row(style = StyleCompat.widthPx(200).heightPx(100).build()) {
+            child(Row(style = StyleCompat.flexBasisPercent(50f).wrapInView().build()))
+          }
+        }
+        .assertMatches(
+            match<LithoView> {
+              bounds(0, 0, 200, 100)
+              child<ComponentHost> { bounds(0, 0, 100, 100) }
+            },
+        )
+  }
+
+  @Test
+  fun touchExpansionPx_whenSet_isApplied() {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
+          Row(
+              style =
+                  StyleCompat.widthPx(100).heightPx(100).touchExpansionPx(YogaEdge.ALL, 10).build(),
+          )
+        }
+        .assertMatches(match<LithoView> { bounds(0, 0, 100, 100) })
+  }
+
+  @Test
+  fun alpha_whenSetViaStyleCompat_isApplied() {
+    lithoTestRule
+        .render(widthSpec = unspecified(), heightSpec = unspecified()) {
+          Row(style = StyleCompat.alpha(0.5f).widthPx(100).heightPx(100).build())
+        }
+        .assertMatches(match<LithoView> { bounds(0, 0, 100, 100) })
   }
 }

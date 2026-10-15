@@ -20,13 +20,14 @@ import android.content.Context
 import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.facebook.litho.ComponentContext
-import com.facebook.litho.ComponentContextUtils
 import com.facebook.litho.EventDispatchInfo
 import com.facebook.litho.EventHandler
 import com.facebook.litho.EventTrigger
+import com.facebook.litho.GlobalKey
 import com.facebook.litho.Handle
 import com.facebook.litho.LithoConfiguration
 import com.facebook.litho.StateContainer
+import com.facebook.litho.StringGlobalKey
 import com.facebook.litho.TreePropContainer
 import com.facebook.litho.allNotNull
 import com.facebook.litho.annotations.EventHandlerRebindMode
@@ -37,12 +38,12 @@ class SectionContext
 @JvmOverloads
 constructor(
     context: Context,
-    config: LithoConfiguration? = ComponentContextUtils.buildDefaultLithoConfiguration(context),
-    treeProps: TreePropContainer? = null
+    config: LithoConfiguration? = LithoConfiguration(context),
+    treeProps: TreePropContainer? = null,
 ) : ComponentContext(context, config, treeProps) {
 
   constructor(
-      context: ComponentContext
+      context: ComponentContext,
   ) : this(context.androidContext, context.lithoConfiguration, context.treePropContainerCopy)
 
   val keyHandler: KeyHandler = KeyHandler()
@@ -68,7 +69,8 @@ constructor(
       if (SectionsDebug.ENABLED) {
         Log.d(
             SectionsDebug.TAG,
-            "(${sectionTree.hashCode()}) updateState from ${stateUpdate.javaClass.name}")
+            "(${sectionTree.hashCode()}) updateState from ${stateUpdate.javaClass.name}",
+        )
       }
       sectionTree.updateState(section.globalKey, stateUpdate, attribution)
     }
@@ -91,7 +93,8 @@ constructor(
       if (SectionsDebug.ENABLED) {
         Log.d(
             SectionsDebug.TAG,
-            "(${sectionTree.hashCode()}) updateStateAsync from ${stateUpdate.javaClass.name}")
+            "(${sectionTree.hashCode()}) updateStateAsync from ${stateUpdate.javaClass.name}",
+        )
       }
       sectionTree.updateStateAsync(section.globalKey, stateUpdate, attribution)
     }
@@ -105,24 +108,32 @@ constructor(
   }
 
   /** @return New instance of [EventTrigger] that is created by the current mScope. */
-  fun <E> newEventTrigger(id: Int, childKey: String, handle: Handle?): EventTrigger<E> {
+  override fun <E> newEventTrigger(id: Int, childKey: String, handle: Handle?): EventTrigger<E> {
     val parentKey = scope?.get()?.globalKey ?: ""
     return EventTrigger(parentKey, id, childKey, handle)
   }
 
-  override fun getGlobalKey(): String {
-    val section =
-        scope?.get()
-            ?: throw IllegalStateException(
-                "getGlobalKey cannot be accessed from a SectionContext without a scope")
-    return section.globalKey
-  }
+  // Section's globalKey is set once during construction, so the wrapper can be cached for the
+  // lifetime of this SectionContext.
+  @Volatile private var _cachedGlobalKey: StringGlobalKey? = null
+
+  override val globalKey: GlobalKey
+    get() {
+      _cachedGlobalKey?.let {
+        return it
+      }
+      val section =
+          scope?.get()
+              ?: throw IllegalStateException(
+                  "globalKey cannot be accessed from a SectionContext without a scope",
+              )
+      val newKey = StringGlobalKey(section.globalKey)
+      _cachedGlobalKey = newKey
+      return newKey
+    }
 
   val sectionScope: Section?
     get() = scope?.get()
-
-  @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-  override fun getTreePropContainer(): TreePropContainer? = super.getTreePropContainer()
 
   companion object {
     const val NO_SCOPE_EVENT_HANDLER: String = "SectionContext:NoScopeEventHandler"

@@ -17,6 +17,7 @@
 package com.facebook.litho
 
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.util.SparseArray
 import androidx.core.util.isNotEmpty
 import androidx.core.view.ViewCompat
@@ -27,6 +28,7 @@ import com.facebook.litho.annotations.ImportantForAccessibility
 import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.drawable.BorderColorDrawable
 import com.facebook.litho.host.HostViewAttributesCleanupBinder
+import com.facebook.litho.utils.VersionedAndroidApis
 import com.facebook.rendercore.BinderKey
 import com.facebook.rendercore.MountState
 import com.facebook.rendercore.RenderUnit
@@ -56,7 +58,7 @@ object LithoNodeUtils {
       return null
     }
 
-    val componentKey: String = node.tailComponentKey
+    val componentKey = node.tailComponentKey
     val context: ComponentContext = node.tailComponentContext
     var previousId: Long = -1
 
@@ -103,7 +105,8 @@ object LithoNodeUtils {
                   willMountView = true,
                   importantForAccessibility = node.importantForAccessibility,
               )
-            })
+            },
+    )
   }
 
   /** Creates a [LithoRenderUnit] for the host output iff the result needs a host view. */
@@ -154,7 +157,8 @@ object LithoNodeUtils {
                 component = hostComponent,
                 willMountView = true,
                 importantForAccessibility = node.importantForAccessibility,
-            ))
+            ),
+    )
   }
 
   /** Creates a [LithoRenderUnit] for the root host */
@@ -200,7 +204,8 @@ object LithoNodeUtils {
                 component = hostComponent,
                 willMountView = true,
                 importantForAccessibility = node.importantForAccessibility,
-            ))
+            ),
+    )
   }
 
   /** Creates a [LithoRenderUnit] for the background output iff the result has a background. */
@@ -234,7 +239,9 @@ object LithoNodeUtils {
 
     /// Only create a foreground output when the component does not mount a View because
     // the foreground has already been set in the output of the component.
-    return if (foreground != null && (!node.willMountView)) {
+    return if (
+        foreground != null && (!node.willMountView || Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
+    ) {
       createDrawableRenderUnit(node, foreground, width, height, OutputUnitType.FOREGROUND, diffNode)
     } else {
       null
@@ -268,7 +275,7 @@ object LithoNodeUtils {
   ): LithoRenderUnit {
     val component: DrawableComponent = DrawableComponent.create(drawable, width, height)
     val context: ComponentContext = node.tailComponentContext
-    val componentKey: String = node.tailComponentKey
+    val componentKey = node.tailComponentKey
     val recycle: LithoRenderUnit? =
         if (diffNode != null) {
           when (outputType) {
@@ -300,7 +307,7 @@ object LithoNodeUtils {
     return createRenderUnit(
         id = id,
         component = component,
-        commonDynamicProps = null, /* Drawables don't bind dynamic props */
+        /* Drawables don't bind dynamic props */
         context = context,
         node = node,
         importantForAccessibility = ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO,
@@ -315,7 +322,8 @@ object LithoNodeUtils {
         duplicateParentState = node.isDuplicateParentStateEnabled,
         hasHostView = node.needsHostView(),
         debugKey = getLithoNodeDebugKey(node, outputType),
-        viewAttributes = null)
+        viewAttributes = null,
+    )
   }
 
   /** Generic method to create a [LithoRenderUnit]. */
@@ -335,7 +343,7 @@ object LithoNodeUtils {
       customDelegateBindersForMountSpec: Map<BinderKey, RenderUnit.DelegateBinder<Any, Any, Any>>? =
           null,
       debugKey: String? = null,
-      viewAttributes: ViewAttributes?
+      viewAttributes: ViewAttributes?,
   ): LithoRenderUnit {
     var flags = 0
     val nodeInfo: NodeInfo? = node.nodeInfo
@@ -364,8 +372,10 @@ object LithoNodeUtils {
     if (hasHostView) {
       flags = flags or LithoRenderUnit.LAYOUT_FLAG_MATCH_HOST_BOUNDS
     }
-    if (ComponentContext.getComponentsConfig(node.headComponentContext)
-        .shouldAddRootHostViewOrDisableBgFgOutputs) {
+    if (
+        ComponentContext.getComponentsConfig(node.headComponentContext)
+            .shouldAddRootHostViewOrDisableBgFgOutputs
+    ) {
       flags = flags or LithoRenderUnit.LAYOUT_FLAG_DRAWABLE_OUTPUTS_DISABLED
     }
     if (nodeInfo?.hasTouchEventHandlers() == true) {
@@ -373,6 +383,12 @@ object LithoNodeUtils {
     }
 
     val primitive: Primitive? = node.primitive
+    // TODO(fabiocarballo): Remove with legacy Text; see LAYOUT_FLAG_NEEDS_HOST_VIEW_AS_DRAWABLE.
+    if (
+        primitive != null && node.willMountView && LithoNode.needsHostViewAsAccessibleDrawable(node)
+    ) {
+      flags = flags or LithoRenderUnit.LAYOUT_FLAG_NEEDS_HOST_VIEW_AS_DRAWABLE
+    }
     if (primitive != null && Component.isPrimitive(component)) {
       @Suppress("UNCHECKED_CAST")
       return PrimitiveLithoRenderUnit.create(
@@ -383,7 +399,9 @@ object LithoNodeUtils {
           flags,
           importantForAccessibility,
           primitive.renderUnit as PrimitiveRenderUnit<Any>,
-          debugKey)
+          debugKey,
+          node.primitiveExcludesFromIncrementalMount,
+      )
     }
     @Suppress("UNCHECKED_CAST")
     val renderUnit: LithoRenderUnit =
@@ -396,7 +414,8 @@ object LithoNodeUtils {
             flags,
             importantForAccessibility,
             updateState,
-            debugKey)
+            debugKey,
+        )
 
     if (customDelegateBindersForMountSpec != null) {
       for (binder in customDelegateBindersForMountSpec.values) {
@@ -410,12 +429,12 @@ object LithoNodeUtils {
       renderUnit.addOptionalMountBinder(
           ViewAttributesViewBinder.create(
               ViewAttributesViewBinder.Model(
-                  renderUnit = renderUnit,
+                  nodeInfo = renderUnit.nodeInfo,
                   viewAttributes = viewAttributes,
-                  cloneStateListAnimators = config.cloneStateListAnimators,
                   isRootHost = id == MountState.ROOT_HOST_ID,
-                  isEventHandlerRedesignEnabled = config.useNonRebindingEventHandlers,
-              )))
+              ),
+          ),
+      )
     }
 
     if (config.isHostViewAttributesCleanUpEnabled && component is HostComponent) {
@@ -430,9 +449,9 @@ object LithoNodeUtils {
     return renderUnit
   }
 
-  private fun mergeCommonDynamicProps(
+  internal fun mergeCommonDynamicProps(
       infos: List<ScopedComponentInfo>,
-      hasCustomDynamicProps: Boolean = false
+      hasCustomDynamicProps: Boolean = false,
   ): SparseArray<DynamicValue<*>>? {
     val mergedDynamicProps = SparseArray<DynamicValue<*>>()
     for (info in infos) {
@@ -457,7 +476,15 @@ object LithoNodeUtils {
   }
 
   private fun getLithoNodeDebugKey(node: LithoNode, @OutputUnitType outputUnitType: Int): String? =
-      getDebugKey(node.tailComponentKey, outputUnitType)
+      // Guard before stringifying: node.tailComponentKey.toString() would otherwise be evaluated
+      // eagerly as a call argument even though getDebugKey() returns null when debug mode is off.
+      // With structural GlobalKeys, toString() recursively rebuilds the full ancestor-path string,
+      // so this would allocate a large transient string per render unit on every layout reduce.
+      if (!LithoDebugConfigurations.isDebugModeEnabled) {
+        null
+      } else {
+        getDebugKey(node.tailComponentKey.toString(), outputUnitType)
+      }
 
   @JvmStatic
   fun getDebugKey(componentKey: String?, @OutputUnitType outputUnitType: Int): String? =
@@ -483,7 +510,8 @@ object LithoNodeUtils {
             node.transitionKey,
             node.transitionKeyType,
             node.transitionOwnerKey,
-            node.transitionGlobalKey)
+            node.transitionGlobalKey,
+        )
       }
 
   /**
@@ -518,7 +546,9 @@ object LithoNodeUtils {
     // will be created for backgrounds and foreground.
     if (disableBgFgOutputs || !attrs.isHostSpec) {
       attrs.background = lithoNode.background
-      attrs.foreground = lithoNode.foreground
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        VersionedAndroidApis.M.setForeground(attrs, lithoNode.foreground)
+      }
     }
     attrs.layoutDirection = lithoNode.layoutDirection
     attrs.layerType = lithoNode.layerType

@@ -24,7 +24,7 @@ import java.lang.reflect.Modifier.PROTECTED
  * An event handler that takes two event handlers and calls both of them when an event is
  * dispatched.
  */
-class DelegatingEventHandler<E>
+class DelegatingEventHandler<E : Any>
 @VisibleForTesting(otherwise = PROTECTED)
 constructor(eventHandler1: EventHandler<E>, eventHandler2: EventHandler<E>) :
     EventHandler<E>(-1, EventHandlerRebindMode.NONE, EventDispatchInfo(null, null), null) {

@@ -35,7 +35,7 @@ import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
-import com.facebook.litho.widget.ExperimentalImage
+import com.facebook.litho.widget.PrimitiveImage
 import com.facebook.rendercore.px
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
@@ -43,7 +43,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.mock
 
-/** Tests for [ExperimentalImage] */
+/** Tests for [PrimitiveImage] */
 @RunWith(LithoTestRunner::class)
 class ImageTest {
 
@@ -54,14 +54,14 @@ class ImageTest {
   fun `Image should render`() {
     lithoViewRule
         .render {
-          ExperimentalImage(
+          PrimitiveImage(
               drawable = ColorDrawable(Color.RED),
               style = Style.width(100.px).height(100.px),
           )
         }
         .apply {
           // should find an Image in the tree
-          findComponent(ExperimentalImage::class)
+          findComponent(PrimitiveImage::class)
 
           // should mount an Image
           assertThat(lithoView.mountItemCount).isEqualTo(1)
@@ -86,7 +86,7 @@ class ImageTest {
     val node =
         lithoViewRule
             .render {
-              ExperimentalImage(
+              PrimitiveImage(
                   drawable = ColorDrawable(Color.RED),
                   style =
                       Style.width(100.px)
@@ -100,7 +100,7 @@ class ImageTest {
             }
             .apply {
               // should find an Image in the tree
-              findComponent(ExperimentalImage::class)
+              findComponent(PrimitiveImage::class)
 
               // verify a11y properties are correctly set on the View
               assertThat(lithoView.contentDescription).isEqualTo("Accessibility Test")

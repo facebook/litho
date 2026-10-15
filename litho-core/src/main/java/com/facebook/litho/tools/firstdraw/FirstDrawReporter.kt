@@ -69,7 +69,7 @@ fun ComponentScope.useFirstDrawReporter(onDrawn: () -> Unit): FirstDrawReporter 
  */
 fun Style.reportFirstContentDraw(
     isContentReady: Boolean = true,
-    reporter: FirstDrawReporter
+    reporter: FirstDrawReporter,
 ): Style = if (isContentReady) this.viewBinder(reporter) else this
 
 class FirstDrawReporter internal constructor(private val onDrawn: () -> Unit) :
@@ -81,7 +81,7 @@ class FirstDrawReporter internal constructor(private val onDrawn: () -> Unit) :
       currentModel: Unit,
       newModel: Unit,
       currentLayoutData: Any?,
-      nextLayoutData: Any?
+      nextLayoutData: Any?,
   ): Boolean {
     return false
   }
@@ -90,7 +90,7 @@ class FirstDrawReporter internal constructor(private val onDrawn: () -> Unit) :
       context: Context,
       view: View,
       model: Unit,
-      layoutData: Any?
+      layoutData: Any?,
   ): ViewTreeObserver.OnDrawListener? {
     if (isReported) {
       return null
@@ -105,7 +105,7 @@ class FirstDrawReporter internal constructor(private val onDrawn: () -> Unit) :
       view: View,
       model: Unit,
       layoutData: Any?,
-      bindData: ViewTreeObserver.OnDrawListener?
+      bindData: ViewTreeObserver.OnDrawListener?,
   ) {
     if (bindData != null && view.viewTreeObserver.isAlive) {
       view.viewTreeObserver.removeOnDrawListener(bindData)

@@ -32,5 +32,5 @@ data class CanvasShadowModel(
     val dx: Float,
     val dy: Float,
     val radius: Float,
-    @ColorInt val color: Int
+    @param:ColorInt val color: Int,
 )

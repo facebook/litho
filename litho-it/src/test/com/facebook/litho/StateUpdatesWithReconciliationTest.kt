@@ -20,6 +20,7 @@ import com.facebook.litho.LifecycleStep.StepInfo
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.kotlin.widget.Text
+import com.facebook.litho.layout.flexbox.Column
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.assertj.LithoViewAssert.Companion.assertThat
@@ -30,8 +31,6 @@ import com.facebook.litho.widget.NestedTreeComponentWithChildState
 import com.facebook.litho.widget.SimpleStateUpdateEmulator
 import com.facebook.litho.widget.SimpleStateUpdateEmulatorSpec
 import com.facebook.litho.widget.SimpleStateUpdateEmulatorWillRender
-import com.facebook.litho.widget.SimpleStateUpdateEmulatorWillRenderSpec
-import com.facebook.litho.widget.TestWrapperComponent
 import com.facebook.litho.widget.Text
 import com.facebook.rendercore.px
 import java.util.ArrayList
@@ -105,7 +104,8 @@ class StateUpdatesWithReconciliationTest {
                   .widthPx(100)
                   .heightPx(100)
                   .prefix("Count: ")
-                  .build())
+                  .build(),
+          )
         }
       }
     }
@@ -137,7 +137,8 @@ class StateUpdatesWithReconciliationTest {
                   .widthPx(100)
                   .heightPx(100)
                   .prefix("Count: ")
-                  .build())
+                  .build(),
+          )
         }
       }
     }
@@ -166,14 +167,16 @@ class StateUpdatesWithReconciliationTest {
               LayoutSpecLifecycleTester.create(context)
                   .steps(lifecycleSteps)
                   .body(Text(text = "hello world"))
-                  .build())
+                  .build(),
+          )
           child(
               SimpleStateUpdateEmulator.create(context)
                   .caller(stateUpdater)
                   .widthPx(100)
                   .heightPx(100)
                   .prefix("Count: ")
-                  .build())
+                  .build(),
+          )
         }
       }
     }
@@ -208,7 +211,8 @@ class StateUpdatesWithReconciliationTest {
                   .widthPx(100)
                   .heightPx(100)
                   .prefix("Count: ")
-                  .build())
+                  .build(),
+          )
         }
       }
     }
@@ -230,19 +234,19 @@ class StateUpdatesWithReconciliationTest {
 
   @Test
   fun `should reuse unaffected part of layout when async state update occurs child component using will render`() {
-    val stateUpdater = SimpleStateUpdateEmulatorWillRenderSpec.Caller()
+    val stateUpdater = SimpleStateUpdateEmulatorWillRender.Caller()
     val lifecycleSteps: MutableList<StepInfo> = mutableListOf()
     class TestComponent : KComponent() {
       override fun ComponentScope.render(): Component {
         return Column {
           child(LayoutSpecLifecycleTester.create(context).steps(lifecycleSteps).build())
           child(
-              SimpleStateUpdateEmulatorWillRender.create(context)
-                  .caller(stateUpdater)
-                  .widthPx(100)
-                  .heightPx(100)
-                  .prefix("Count: ")
-                  .build())
+              SimpleStateUpdateEmulatorWillRender(
+                  caller = stateUpdater,
+                  prefix = "Count: ",
+                  style = Style.width(100.px).height(100.px),
+              ),
+          )
         }
       }
     }
@@ -272,14 +276,16 @@ class StateUpdatesWithReconciliationTest {
           child(
               com.facebook.litho.widget.LayoutSpecLifecycleTester.create(context)
                   .steps(lifecycleSteps)
-                  .build())
+                  .build(),
+          )
           child(
               SimpleStateUpdateEmulator.create(context)
                   .caller(stateUpdater)
                   .widthPx(100)
                   .heightPx(100)
                   .prefix("Count: ")
-                  .build())
+                  .build(),
+          )
         }
       }
     }
@@ -312,14 +318,16 @@ class StateUpdatesWithReconciliationTest {
           child(
               com.facebook.litho.widget.LayoutSpecLifecycleTester.create(context)
                   .steps(lifecycleSteps)
-                  .build())
+                  .build(),
+          )
           child(
               SimpleStateUpdateEmulator.create(context)
                   .caller(stateUpdater)
                   .widthPx(100)
                   .heightPx(100)
                   .prefix("Count: ")
-                  .build())
+                  .build(),
+          )
         }
       }
     }
@@ -363,13 +371,16 @@ class StateUpdatesWithReconciliationTest {
                               .caller(stateUpdater1)
                               .widthPx(100)
                               .heightPx(100)
-                              .prefix("First: "))
+                              .prefix("First: "),
+                      )
                       .child(
                           SimpleStateUpdateEmulator.create(c)
                               .caller(stateUpdater2)
                               .widthPx(100)
                               .heightPx(100)
-                              .prefix("Second: ")))
+                              .prefix("Second: "),
+                      ),
+              )
               .build()
         }
     lithoViewRule.idle()
@@ -406,13 +417,16 @@ class StateUpdatesWithReconciliationTest {
                               .caller(stateUpdater1)
                               .widthPx(100)
                               .heightPx(100)
-                              .prefix("First: "))
+                              .prefix("First: "),
+                      )
                       .child(
                           SimpleStateUpdateEmulator.create(c)
                               .caller(stateUpdater2)
                               .widthPx(100)
                               .heightPx(100)
-                              .prefix("Second: ")))
+                              .prefix("Second: "),
+                      ),
+              )
               .build()
         }
     lithoViewRule.idle()
@@ -448,21 +462,23 @@ class StateUpdatesWithReconciliationTest {
   fun `should reconcile when setRoot called with delegating Component with pending update`() {
     val c = lithoViewRule.context
     val info: MutableList<StepInfo> = ArrayList()
-    val initial: Component =
-        TestWrapperComponent.create(c)
-            .delegate(
-                Column.create(c)
-                    .child(ImmediateLazyStateUpdateDispatchingComponent.create(c))
-                    .child(LayoutSpecLifecycleTester.create(c).steps(info)))
-            .build()
+    val initial: Component = TestWrapperComponent(
+        delegate =
+            Column.create(c)
+                .child(ImmediateLazyStateUpdateDispatchingComponent.create(c))
+                .child(LayoutSpecLifecycleTester.create(c).steps(info))
+                .build(),
+    )
+
     val testLithoView = lithoViewRule.render { initial }
-    val updated: Component =
-        TestWrapperComponent.create(c)
-            .delegate(
-                Column.create(c)
-                    .child(ImmediateLazyStateUpdateDispatchingComponent.create(c))
-                    .child(LayoutSpecLifecycleTester.create(c).steps(info)))
-            .build()
+    val updated: Component = TestWrapperComponent(
+        delegate =
+            Column.create(c)
+                .child(ImmediateLazyStateUpdateDispatchingComponent.create(c))
+                .child(LayoutSpecLifecycleTester.create(c).steps(info))
+                .build(),
+    )
+
     info.clear()
     testLithoView.setRoot(updated)
 
@@ -551,7 +567,7 @@ class StateUpdatesWithReconciliationTest {
       override fun ComponentScope.render(): Component {
         return Column(style = Style.width(100.px).height(100.px)) {
           child(LayoutSpecLifecycleTester.create(context).steps(lifecycleSteps).build())
-          child(NestedTreeComponentWithChildState.create(context).caller(stateUpdater).build())
+          child(NestedTreeComponentWithChildState(caller = stateUpdater))
         }
       }
     }
@@ -580,9 +596,9 @@ class StateUpdatesWithReconciliationTest {
               SimpleStateUpdateEmulator.create(context)
                   .caller(stateUpdater)
                   .prefix("SimpleTextCount: ")
-                  .build())
-          child(
-              NestedTreeComponentWithChildState.create(context).caller(nestedStateUpdater).build())
+                  .build(),
+          )
+          child(NestedTreeComponentWithChildState(caller = nestedStateUpdater))
         }
       }
     }
@@ -599,5 +615,11 @@ class StateUpdatesWithReconciliationTest {
     assertThat(testLithoView.lithoView).hasVisibleText("Count: 2")
     // main tree counter remains same
     assertThat(testLithoView.lithoView).hasVisibleText("SimpleTextCount: 2")
+  }
+
+  private class TestWrapperComponent(private val delegate: Component) : KComponent() {
+    override fun ComponentScope.render(): Component {
+      return delegate
+    }
   }
 }

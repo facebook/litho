@@ -19,6 +19,7 @@ package com.facebook.litho
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import com.facebook.litho.kotlin.widget.Text
+import com.facebook.litho.layout.flexbox.Row
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.TestLithoView
@@ -32,22 +33,22 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class UnregisterLocalTreeStateInResolveTest {
 
-  @get:Rule val mLithoTestRule: LithoTestRule = LithoTestRule()
+  @get:Rule val lithoTestRule: LithoTestRule = LithoTestRule()
 
   @get:Rule
   val backgroundLayoutLooperRule: BackgroundLayoutLooperRule = BackgroundLayoutLooperRule()
 
   /**
-   * This test describes a bug we have found that led to a new [Component] to not re-calculate its
-   * initial state and to use a previous redundant one.
+   * This test describes a bug we found that caused a new [Component] not to recalculate its initial
+   * state and to use a previous redundant one.
    *
    * This happened because we were not unregistering pending state handlers whenever a "resolve" or
    * "layout" state handler was not completed.
    */
   @Test
-  fun `the initial state container is cleaned on non-commited resolves`() {
+  fun `the initial state container is cleaned on non-committed resolves`() {
     val lithoView = createEmptyLithoView()
-    mLithoTestRule.idle()
+    lithoTestRule.idle()
 
     val componentTree = lithoView.componentTree
     componentTree.setFutureExecutionListener(
@@ -55,7 +56,7 @@ class UnregisterLocalTreeStateInResolveTest {
           override fun onPreExecution(
               version: Int,
               futureExecutionType: TreeFuture.FutureExecutionType,
-              attribution: String
+              attribution: String,
           ) {
             if (version == 1 && attribution == "resolve") {
               componentTree.setRootSync(TestCounterComponent(initialCounter = 2))
@@ -63,10 +64,11 @@ class UnregisterLocalTreeStateInResolveTest {
           }
 
           override fun onPostExecution(version: Int, released: Boolean, attribution: String) {}
-        })
+        },
+    )
 
     componentTree.setRootAsync(TestCounterComponent(initialCounter = 1))
-    mLithoTestRule.idle()
+    lithoTestRule.idle()
     LithoAssertions.assertThat(lithoView).hasVisibleText("Counter: 2")
 
     componentTree.setRootSync(EmptyComponent())
@@ -80,13 +82,16 @@ class UnregisterLocalTreeStateInResolveTest {
     val context = getApplicationContext<Context>()
     val componentContext = ComponentContext(context)
 
-    val componentTree = ComponentTree.create(componentContext).build()
+    val componentTree = ComponentTree.create(componentContext).enableChildClipping(true).build()
 
     val lithoView =
-        mLithoTestRule.createTestLithoView(
-            componentTree = componentTree, widthPx = 1080, heightPx = 840) {
-              EmptyComponent()
-            }
+        lithoTestRule.createTestLithoView(
+            componentTree = componentTree,
+            widthPx = 1080,
+            heightPx = 840,
+        ) {
+          EmptyComponent()
+        }
     lithoView.attachToWindow().measure().layout()
     return lithoView
   }

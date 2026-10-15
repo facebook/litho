@@ -31,5 +31,5 @@ enum class MainAxisWrapMode {
    * This behavior ensures that the layout remains within the specified bounds while still providing
    * access to all content.
    */
-  Wrap
+  Wrap,
 }

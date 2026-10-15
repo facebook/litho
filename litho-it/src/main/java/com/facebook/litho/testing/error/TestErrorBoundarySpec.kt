@@ -39,13 +39,13 @@ object TestErrorBoundarySpec {
   fun onCreateLayout(
       c: ComponentContext,
       @Prop child: Component,
-      @State error: Optional<String>
+      @State error: Optional<String>,
   ): Component =
       if (error.isPresent) {
         Text.create(c)
             .marginDip(YogaEdge.ALL, 8f)
             .textSizeSp(24f)
-            .text(String.format("A WILD ERROR APPEARS:\n%s", error.get()))
+            .text("A WILD ERROR APPEARS:\n${error.get()}")
             .build()
       } else {
         child
@@ -68,10 +68,12 @@ object TestErrorBoundarySpec {
   fun onError(
       c: ComponentContext,
       e: Exception,
-      @Prop(optional = true) errorOutput: MutableList<Exception?>?
+      @Prop(optional = true) errorOutput: MutableList<Exception?>?,
   ) {
     errorOutput?.add(e)
         ?: TestErrorBoundary.updateErrorAsync(
-            c, String.format("Error caught from boundary: %s", e.message))
+            c,
+            "Error caught from boundary: ${e.message}",
+        )
   }
 }

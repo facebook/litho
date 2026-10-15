@@ -29,7 +29,7 @@ class BoundaryWorkingRange @JvmOverloads constructor(private val offset: Int = O
       firstVisibleIndex: Int,
       lastVisibleIndex: Int,
       firstFullyVisibleIndex: Int,
-      lastFullyVisibleIndex: Int
+      lastFullyVisibleIndex: Int,
   ): Boolean = isInRange(position, firstVisibleIndex, lastVisibleIndex, offset)
 
   override fun shouldExitRange(
@@ -37,7 +37,7 @@ class BoundaryWorkingRange @JvmOverloads constructor(private val offset: Int = O
       firstVisibleIndex: Int,
       lastVisibleIndex: Int,
       firstFullyVisibleIndex: Int,
-      lastFullyVisibleIndex: Int
+      lastFullyVisibleIndex: Int,
   ): Boolean = !isInRange(position, firstVisibleIndex, lastVisibleIndex, offset)
 
   companion object {
@@ -47,7 +47,7 @@ class BoundaryWorkingRange @JvmOverloads constructor(private val offset: Int = O
         position: Int,
         firstVisiblePosition: Int,
         lastVisiblePosition: Int,
-        offset: Int
+        offset: Int,
     ): Boolean {
       val lowerBound = firstVisiblePosition - offset
       val upperBound = lastVisiblePosition + offset

@@ -32,6 +32,13 @@ class HooksStateHandlerTest {
 
   private val c = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
 
+  // One key per hook call site the tests model. Entries keep insertion order, so the positional
+  // assertions below still read left-to-right.
+  private val hookKey0 = HookKey.create(callSiteId = 0, index = 0, parent = null)
+  private val hookKey1 = HookKey.create(callSiteId = 1, index = 0, parent = null)
+  private val hookKey2 = HookKey.create(callSiteId = 2, index = 0, parent = null)
+  private val hookKey3 = HookKey.create(callSiteId = 3, index = 0, parent = null)
+
   @Test
   fun copyHandler_copyingEmptyStateHandler_createsEmptyStateHandler() {
     val first = StateHandler()
@@ -43,17 +50,18 @@ class HooksStateHandlerTest {
   @Test
   fun `when copying StateHandler and applying updates on new StateHandler then state updates should be applied`() {
     val bazState = Any()
-    var kStateContainer = KStateContainer.withNewState(null, "test")
-    kStateContainer = KStateContainer.withNewState(kStateContainer, 4)
-    kStateContainer = KStateContainer.withNewState(kStateContainer, bazState)
+    var kStateContainer = KStateContainer.withNewStateByHookKey(null, hookKey0, "test")
+    kStateContainer = KStateContainer.withNewStateByHookKey(kStateContainer, hookKey1, 4)
+    kStateContainer = KStateContainer.withNewStateByHookKey(kStateContainer, hookKey2, bazState)
     val first = StateHandler()
     first.addState(GLOBAL_KEY, ComponentState(value = kStateContainer))
     first.queueHookStateUpdate(
-        StateId(-1, GLOBAL_KEY, 0),
+        StateId(-1, HookGlobalKey(GLOBAL_KEY, 0, RenderScope.Resolve)),
         object : HookUpdater {
           override fun getUpdatedStateContainer(currentState: KStateContainer): KStateContainer =
-              KStateContainer.withNewState(currentState, "newValue")
-        })
+              KStateContainer.withNewStateByHookKey(currentState, hookKey3, "newValue")
+        },
+    )
     assertThat(first.hasUncommittedUpdates()).isTrue
     val second = StateHandler(first)
     second.applyStateUpdatesEarly(context = c, component = null, prevTreeRootNode = null)
@@ -76,23 +84,29 @@ class HooksStateHandlerTest {
   fun `when copying StateHandler and applying multiple updates on new StateHandler then all state updates should be applied`() {
     val bazState = Any()
     val first = StateHandler()
-    var kStateContainer = KStateContainer.withNewState(null, "test")
-    kStateContainer = KStateContainer.withNewState(kStateContainer, 4)
-    kStateContainer = KStateContainer.withNewState(kStateContainer, bazState)
+    var kStateContainer = KStateContainer.withNewStateByHookKey(null, hookKey0, "test")
+    kStateContainer = KStateContainer.withNewStateByHookKey(kStateContainer, hookKey1, 4)
+    kStateContainer = KStateContainer.withNewStateByHookKey(kStateContainer, hookKey2, bazState)
     first.addState(GLOBAL_KEY, ComponentState(value = kStateContainer))
-    val stateId = StateId(-1, GLOBAL_KEY, 0)
+    val stateId = StateId(-1, HookGlobalKey(GLOBAL_KEY, 0, RenderScope.Resolve))
     first.queueHookStateUpdate(
         stateId,
         object : HookUpdater {
           override fun getUpdatedStateContainer(currentState: KStateContainer): KStateContainer =
-              KStateContainer.withNewState(currentState, "newValue").copyAndMutate(1, 5)
-        })
+              KStateContainer.withNewStateByHookKey(currentState, hookKey3, "newValue")
+                  .copyAndMutateByHookKey(hookKey1, 5)
+        },
+    )
     first.queueHookStateUpdate(
         stateId,
         object : HookUpdater {
           override fun getUpdatedStateContainer(currentState: KStateContainer): KStateContainer =
-              currentState.copyAndMutate(1, 1 + currentState.states.map { it.value }[1] as Int)
-        })
+              currentState.copyAndMutateByHookKey(
+                  hookKey1,
+                  1 + currentState.getByHookKey(hookKey1)!!.value as Int,
+              )
+        },
+    )
     assertThat(first.hasUncommittedUpdates()).isTrue
     val second = StateHandler(first)
     second.applyStateUpdatesEarly(context = c, component = null, prevTreeRootNode = null)
@@ -116,31 +130,41 @@ class HooksStateHandlerTest {
   fun `when copying StateHandler multiple times with multiple updates then all state updates should be applied`() {
     val bazState = Any()
     val first = StateHandler()
-    var kStateContainer = KStateContainer.withNewState(null, "test")
-    kStateContainer = KStateContainer.withNewState(kStateContainer, 4)
-    kStateContainer = KStateContainer.withNewState(kStateContainer, bazState)
+    var kStateContainer = KStateContainer.withNewStateByHookKey(null, hookKey0, "test")
+    kStateContainer = KStateContainer.withNewStateByHookKey(kStateContainer, hookKey1, 4)
+    kStateContainer = KStateContainer.withNewStateByHookKey(kStateContainer, hookKey2, bazState)
     first.addState(GLOBAL_KEY, ComponentState(value = kStateContainer))
-    val stateId = StateId(-1, GLOBAL_KEY, 0)
+    val stateId = StateId(-1, HookGlobalKey(GLOBAL_KEY, 0, RenderScope.Resolve))
     first.queueHookStateUpdate(
         stateId,
         object : HookUpdater {
           override fun getUpdatedStateContainer(currentState: KStateContainer): KStateContainer =
-              KStateContainer.withNewState(currentState, "newValue").copyAndMutate(1, 5)
-        })
+              KStateContainer.withNewStateByHookKey(currentState, hookKey3, "newValue")
+                  .copyAndMutateByHookKey(hookKey1, 5)
+        },
+    )
     first.queueHookStateUpdate(
         stateId,
         object : HookUpdater {
           override fun getUpdatedStateContainer(currentState: KStateContainer): KStateContainer =
-              currentState.copyAndMutate(1, currentState.states.map { it.value }[1] as Int + 1)
-        })
+              currentState.copyAndMutateByHookKey(
+                  hookKey1,
+                  currentState.getByHookKey(hookKey1)!!.value as Int + 1,
+              )
+        },
+    )
     val second = StateHandler(first)
     second.applyStateUpdatesEarly(context = c, component = null, prevTreeRootNode = null)
     first.queueHookStateUpdate(
         stateId,
         object : HookUpdater {
           override fun getUpdatedStateContainer(currentState: KStateContainer): KStateContainer =
-              currentState.copyAndMutate(1, currentState.states.map { it.value }[1] as Int + 1)
-        })
+              currentState.copyAndMutateByHookKey(
+                  hookKey1,
+                  currentState.getByHookKey(hookKey1)!!.value as Int + 1,
+              )
+        },
+    )
     val third = StateHandler(first)
     third.applyStateUpdatesEarly(context = c, component = null, prevTreeRootNode = null)
     third.markStateInUse(GLOBAL_KEY)
@@ -170,14 +194,15 @@ class HooksStateHandlerTest {
     val newInput = "new-input"
     val value = "value"
     val newValue = "new-value"
-    handler.putCachedValue(GLOBAL_KEY, 0, input, value)
-    assertThat(handler.getCachedValue(GLOBAL_KEY, 0, input)).isEqualTo(value)
-    handler.putCachedValue(GLOBAL_KEY, 0, newInput, newValue)
-    assertThat(handler.getCachedValue(GLOBAL_KEY, 0, input)).isNull()
-    assertThat(handler.getCachedValue(GLOBAL_KEY, 0, newInput)).isEqualTo(newValue)
+    val cacheKey = HookGlobalKey(GLOBAL_KEY, 0, RenderScope.Resolve)
+    handler.putCachedValue(cacheKey, input, value)
+    assertThat(handler.getCachedValue(cacheKey, input)).isEqualTo(value)
+    handler.putCachedValue(cacheKey, newInput, newValue)
+    assertThat(handler.getCachedValue(cacheKey, input)).isNull()
+    assertThat(handler.getCachedValue(cacheKey, newInput)).isEqualTo(newValue)
   }
 
   companion object {
-    private const val GLOBAL_KEY = "globalKey"
+    private val GLOBAL_KEY: GlobalKey = StringGlobalKey("globalKey")
   }
 }

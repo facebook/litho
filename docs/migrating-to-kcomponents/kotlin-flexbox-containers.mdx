@@ -1,0 +1,97 @@
+---
+id: kotlin-flexbox-containers
+title: Flexbox Containers
+---
+
+import useBaseUrl from '@docusaurus/useBaseUrl';
+import VersionedCodeBlock from '@theme/VersionedCodeBlock';
+
+:::note
+This page covers how to convert existing code from the Spec API to the Kotlin API.
+
+For the main Flexbox documentation, refer to the [Layout System with Flexbox](/docs/layout/flexbox-yoga) page.
+:::
+
+## Rows and Columns, revisited
+
+As with the Spec API, `Row` and `Column` are the primary layout containers used in the Kotlin API.
+
+<img src={useBaseUrl('/images/litho-layout-row-column-simple.png')} />
+
+### Differences between the Kotlin API and the Spec API
+
+When using `Row` and `Column`, there are a few important differences between the Spec API and the Kotlin API:
+
+1. **Props of Rows and Columns** - props that configure the `Row`/`Column` itself, like `alignItems` or `justifyContent`, now appear as props directly on the container component. In this way, there is no difference from setting props on any other component.
+2. **Common Props** - props that configure a particular child's positioning within the context of a `Row`/`Column`, like `alignSelf` or `flex`, now appear with other [common props](kotlin-api-basics.mdx#common-props) on the `Style` passed to that child. This is akin to `LayoutParams` in vanilla Android in that they must be able to go on any component and are read by the parent.
+3. **Children** - children are added within a trailing lambda using the `child()` calls.
+
+The following snippet illustrates the points above:
+
+ ```kotlin
+  Column(alignItems = YogaAlign.CENTER, style = Style.padding(all = 8.dp)) {
+    child(Text(text = "Foo", style = Style.flex(grow = 1f)))
+    child(Text(text = "Bar"))
+  }
+ ```
+
+:::caution child() is a DSL function
+The `child()` function is **only available inside the trailing lambda** of `Row`, `Column`, or LazyCollections (`LazyList`, `LazyGrid`, `LazyStaggeredGrid`). It is not a standalone function or method that can be called elsewhere.
+
+```kotlin
+// ✅ CORRECT - child() inside trailing lambda
+Column {
+  child(Text(text = "Hello"))
+}
+
+// ❌ WRONG - child() is not a standalone function
+child(Text(text = "Hello"))  // Error: unresolved reference
+
+// ❌ WRONG - child() is not a method on components
+myComponent.child(Text(text = "Hello"))  // Error: unresolved reference
+```
+:::
+
+## Migrating from the Spec API
+
+:::note Why are Layout Props Now Defined in Two Different Ways?
+
+Without code-generated builders, Litho had to make a distinction between props of the container itself and common props that can be set on children of the container.
+
+For example, `alignItems` configures the default alignment for children in this container and is only valid on a flexbox container. It's set like a normal component prop on `Row`/`Column`.
+
+On the other hand, `alignSelf` can be respected on any child of a container, whether it's a Text, a Switch, or some custom Component: it's therefore exposed as a common prop via `Style`.
+
+The benefit of this is that developers can now statically verify all required props are set instead of verifying at runtime (as well as not rely on codegen!).
+:::
+
+### Flexbox properties cheatsheet
+
+The following table helps to identify whether to set a layout property directly on the `Row`/`Column` or on the `Style`:
+
+| Flexbox Property   | Configures a Specific Child? | Example Kotlin API Usage                   |
+| :--                | :-:                          | :--                                        |
+| `justifyContent`   | No                           | `Row(justifyContent = YogaJustify.CENTER)` |
+| `alignContent`     | No                           | `Row(alignContent = YogaAlign.CENTER)`     |
+| `alignItems`       | No                           | `Row(alignItems = YogaAlign.CENTER)`       |
+| `wrap`             | No                           | `Row(wrap = YogaWrap.NO_WRAP)`             |
+| `alignSelf`        | Yes                          | `Style.alignSelf(YogaAlign.CENTER)`        |
+| `flexBasis`        | Yes                          | `Style.flex(basis = 8.dp)`                 |
+| `flexBasisPercent` | Yes                          | `Style.flex(basisPercent = 25f)`           |
+| `flexGrow`         | Yes                          | `Style.flex(grow = 1f)`                    |
+| `flexShrink`       | Yes                          | `Style.flex(shrink = 1f)`                  |
+| `margin`           | Yes                          | `Style.margin(8.dp)`                       |
+| `padding`          | Yes                          | `Style.padding(8.dp)`                      |
+| `width`            | Yes                          | `Style.width(50.dp)`                       |
+| `height`           | Yes                          | `Style.height(50.dp)`                      |
+
+:::note
+A property is set via `Style` if and only if it configures a specific child!
+:::
+
+### Example migration
+
+Below is an example of a simple `Component` using various layout properties, converted to an equivalent KComponent:
+
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/documentation/FlexboxComponent.kt start=start_example end=end_example
+```

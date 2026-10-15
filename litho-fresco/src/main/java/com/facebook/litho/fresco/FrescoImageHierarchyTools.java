@@ -25,20 +25,22 @@ import androidx.annotation.Nullable;
 import com.facebook.drawee.drawable.ScalingUtils;
 import com.facebook.drawee.generic.GenericDraweeHierarchy;
 import com.facebook.drawee.generic.RoundingParams;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.annotations.Prop;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class FrescoImageHierarchyTools {
 
   public static void setupHierarchy(
       @Prop(optional = true) ScalingUtils.ScaleType actualImageScaleType,
-      @Prop(optional = true) PointF actualImageFocusPoint,
+      @Nullable @Prop(optional = true) PointF actualImageFocusPoint,
       @Prop(optional = true) int fadeDuration,
-      @Prop(optional = true, resType = DRAWABLE) Drawable failureImage,
+      @Nullable @Prop(optional = true, resType = DRAWABLE) Drawable failureImage,
       @Prop(optional = true) ScalingUtils.ScaleType failureImageScaleType,
-      @Prop(optional = true, resType = DRAWABLE) Drawable placeholderImage,
+      @Nullable @Prop(optional = true, resType = DRAWABLE) Drawable placeholderImage,
       @Prop(optional = true) PointF placeholderImageFocusPoint,
       @Prop(optional = true) ScalingUtils.ScaleType placeholderImageScaleType,
-      @Prop(optional = true, resType = DRAWABLE) Drawable progressBarImage,
+      @Nullable @Prop(optional = true, resType = DRAWABLE) Drawable progressBarImage,
       @Prop(optional = true) ScalingUtils.ScaleType progressBarImageScaleType,
       @Prop(optional = true, resType = DRAWABLE) @Nullable Drawable retryImage,
       @Prop(optional = true) ScalingUtils.ScaleType retryImageScaleType,

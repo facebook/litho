@@ -16,18 +16,20 @@
 
 package com.facebook.litho.widget
 
-import com.facebook.litho.Column
+import android.annotation.SuppressLint
+import com.facebook.litho.Column as ColumnBuilder
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
-import com.facebook.litho.LifecycleStep
-import com.facebook.litho.LifecycleStep.StepInfo
 import com.facebook.litho.StateValue
+import com.facebook.litho.annotations.ExcuseMySpec
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateInitialState
 import com.facebook.litho.annotations.OnCreateLayout
-import com.facebook.litho.annotations.Prop
+import com.facebook.litho.annotations.Reason
 import com.facebook.litho.annotations.State
 
+@ExcuseMySpec(reason = Reason.LEGACY)
+@SuppressLint("DeprecatedLayoutSpecApiInKotlin")
 @LayoutSpec
 internal object ImmediateLazyStateUpdateDispatchingComponentSpec {
 
@@ -41,11 +43,9 @@ internal object ImmediateLazyStateUpdateDispatchingComponentSpec {
   @OnCreateLayout
   fun onCreateLayout(
       c: ComponentContext,
-      @Prop(optional = true) steps: MutableList<StepInfo>?,
-      @State(canUpdateLazily = true) count: Int
+      @State(canUpdateLazily = true) count: Int,
   ): Component {
-    steps?.add(StepInfo(LifecycleStep.ON_CREATE_LAYOUT))
     ImmediateLazyStateUpdateDispatchingComponent.lazyUpdateCount(c, count + 1)
-    return Column.create(c).child(Text.create(c).text("count:$count")).build()
+    return ColumnBuilder.create(c).child(Text.create(c).text("count:$count")).build()
   }
 }

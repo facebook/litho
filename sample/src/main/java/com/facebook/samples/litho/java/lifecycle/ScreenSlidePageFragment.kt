@@ -23,12 +23,12 @@ import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
-import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.LithoView
 import com.facebook.litho.LithoVisibilityEventsController
 import com.facebook.litho.LithoVisibilityEventsControllerDelegate
+import com.facebook.litho.layout.flexbox.Column
 import com.facebook.litho.widget.Text
 import com.facebook.samples.litho.R
 import com.facebook.samples.litho.java.lifecycle.ConsoleView.LogRunnable
@@ -48,13 +48,15 @@ class ScreenSlidePageFragment : Fragment(R.layout.screen_slide_fragment) {
             type: Int,
             thread: Thread,
             timestamp: Long,
-            id: String
+            id: String,
         ) {
           consoleView?.post(
               LogRunnable(
                   consoleView,
                   LifecycleDelegateLog.prefix(thread, timestamp, id),
-                  LifecycleDelegateLog.log(type)))
+                  LifecycleDelegateLog.log(type),
+              ),
+          )
         }
 
         override fun setRootComponent(isSync: Boolean) = Unit
@@ -71,18 +73,20 @@ class ScreenSlidePageFragment : Fragment(R.layout.screen_slide_fragment) {
     if (isVisibleToUser) {
       wasVisible = true
       delegate.moveToVisibilityState(
-          LithoVisibilityEventsController.LithoVisibilityState.HINT_VISIBLE)
+          LithoVisibilityEventsController.LithoVisibilityState.HINT_VISIBLE,
+      )
     } else {
       wasVisible = false
       delegate.moveToVisibilityState(
-          LithoVisibilityEventsController.LithoVisibilityState.HINT_INVISIBLE)
+          LithoVisibilityEventsController.LithoVisibilityState.HINT_INVISIBLE,
+      )
     }
   }
 
   override fun onCreateView(
       inflater: LayoutInflater,
       container: ViewGroup?,
-      savedInstanceState: Bundle?
+      savedInstanceState: Bundle?,
   ): View {
     val parent = inflater.inflate(R.layout.screen_slide_fragment, container, false) as ViewGroup
     val c = ComponentContext(requireContext())
@@ -90,7 +94,9 @@ class ScreenSlidePageFragment : Fragment(R.layout.screen_slide_fragment) {
         LithoView.create(
             c,
             getComponent(c),
-            delegate /* The LithoVisibilityEventsController delegate for this LithoView */)
+            delegate, /* The LithoVisibilityEventsController delegate for this LithoView */
+            null,
+        )
 
     // end_example_lifecycleprovider
     val params1 = LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT)
@@ -105,16 +111,16 @@ class ScreenSlidePageFragment : Fragment(R.layout.screen_slide_fragment) {
     return parent
   }
 
-  private fun getComponent(c: ComponentContext): Component =
-      Column.create(c)
-          .child(Text.create(c).text(position.toString()).alignSelf(YogaAlign.CENTER))
-          .child(
-              LifecycleDelegateComponent.create(c)
-                  .id(atomicId.getAndIncrement().toString())
-                  .delegateListener(delegateListener)
-                  .consoleDelegateListener(consoleDelegateListener)
-                  .build())
-          .build()
+  private fun getComponent(c: ComponentContext): Component = Column {
+    child(Text.create(c).text(position.toString()).alignSelf(YogaAlign.CENTER).build())
+    child(
+        LifecycleDelegateComponent.create(c)
+            .id(atomicId.getAndIncrement().toString())
+            .delegateListener(delegateListener)
+            .consoleDelegateListener(consoleDelegateListener)
+            .build(),
+    )
+  }
 
   private fun setPosition(position: Int) {
     this.position = position

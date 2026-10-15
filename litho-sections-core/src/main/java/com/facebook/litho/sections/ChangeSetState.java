@@ -131,22 +131,22 @@ public class ChangeSetState {
       String thread,
       boolean enableStats) {
 
-    boolean currentRootIsNull = currentRoot == null;
-    boolean newRootIsNull = newRoot == null;
-
-    if (currentRootIsNull && newRootIsNull) {
+    if (currentRoot == null && newRoot == null) {
       throw new IllegalStateException("Both currentRoot and newRoot are null.");
     }
 
-    if (newRootIsNull) {
+    if (newRoot == null) {
+      if (currentRoot == null) {
+        throw new IllegalStateException("currentRoot is null when newRoot is null.");
+      }
+
+      final Section currentRootSection = currentRoot;
       // The new tree doesn't have this component. We only need to remove all its children from
       // the list.
-      // NULLSAFE_FIXME[Nullable Dereference]
-      final int currentItemsCount = currentRoot.getCount();
-      removedComponents.add(currentRoot);
+      final int currentItemsCount = currentRootSection.getCount();
+      removedComponents.add(currentRootSection);
       final ChangeSet changeSet =
-          // NULLSAFE_FIXME[Nullable Dereference]
-          ChangeSet.acquireChangeSet(currentRoot.getCount(), newRoot, enableStats);
+          ChangeSet.acquireChangeSet(currentRootSection.getCount(), newRoot, enableStats);
 
       for (int i = 0; i < currentItemsCount; i++) {
         changeSet.addChange(Change.remove(0));
@@ -155,31 +155,28 @@ public class ChangeSetState {
       return changeSet;
     }
 
-    final SectionLifecycle lifecycle = newRoot;
+    final Section newRootSection = newRoot;
+    final SectionLifecycle lifecycle = newRootSection;
     final String updateCurrentPrefix = updatePrefix(currentRoot, currentPrefix);
-    final String updateNewPrefix = updatePrefix(newRoot, newPrefix);
+    final String updateNewPrefix = updatePrefix(newRootSection, newPrefix);
 
     // Check the count of children to prevent from developers updating section based on
     // some variables other than props and state, which could lead us to generate a bad diff
     // later because a section is considered unchanged if the old one and the new one have
     // the same props and state.
     final boolean isChildrenOfSectionConsistent =
-        // NULLSAFE_FIXME[Nullable Dereference]
-        !currentRootIsNull && (currentRoot.getCount() == newRoot.getCount());
+        currentRoot != null && (currentRoot.getCount() == newRootSection.getCount());
     // Components both exist and don't need to update.
-    // NULLSAFE_FIXME[Nullable Dereference, Parameter Not Nullable]
-    if (isChildrenOfSectionConsistent && !lifecycle.shouldComponentUpdate(currentRoot, newRoot)) {
+    if (isChildrenOfSectionConsistent
+        && currentRoot != null
+        && !lifecycle.shouldComponentUpdate(currentRoot, newRootSection)) {
       final ChangeSet changeSet =
-          // NULLSAFE_FIXME[Nullable Dereference]
-          ChangeSet.acquireChangeSet(currentRoot.getCount(), newRoot, enableStats);
-      // NULLSAFE_FIXME[Nullable Dereference]
-      newRoot.setCount(changeSet.getCount());
+          ChangeSet.acquireChangeSet(currentRoot.getCount(), newRootSection, enableStats);
+      newRootSection.setCount(changeSet.getCount());
       sectionsDebugLogger.logShouldUpdate(
           sectionTreeTag,
-          // NULLSAFE_FIXME[Parameter Not Nullable]
           currentRoot,
-          // NULLSAFE_FIXME[Parameter Not Nullable]
-          newRoot,
+          newRootSection,
           updateCurrentPrefix,
           updateNewPrefix,
           false,
@@ -188,31 +185,33 @@ public class ChangeSetState {
     }
 
     sectionsDebugLogger.logShouldUpdate(
+        sectionTreeTag,
         // NULLSAFE_FIXME[Parameter Not Nullable]
-        sectionTreeTag, currentRoot, newRoot, updateCurrentPrefix, updateNewPrefix, true, thread);
+        currentRoot,
+        newRootSection,
+        updateCurrentPrefix,
+        updateNewPrefix,
+        true,
+        thread);
 
     // Component(s) can generate changeSets and will generate the changeset.
     // Add the startCount to the changeSet.
-    // NULLSAFE_FIXME[Nullable Dereference]
     if (lifecycle.isDiffSectionSpec()) {
       final boolean isTracing = ComponentsSystrace.isTracing();
       if (isTracing) {
-        ComponentsSystrace.beginSectionWithArgs("generateChangeSet")
-            // NULLSAFE_FIXME[Nullable Dereference]
-            .arg("current_root", currentRootIsNull ? "<null>" : currentRoot.getKey())
+        final String currentRootKey = currentRoot == null ? "<null>" : currentRoot.getKey();
+        ComponentsSystrace.beginSectionWithArgs("sections.generateChangeSet")
+            .arg("current_root", currentRootKey)
             .arg("update_prefix", updateCurrentPrefix)
             .flush();
       }
 
       final ChangeSet changeSet =
           ChangeSet.acquireChangeSet(
-              // NULLSAFE_FIXME[Nullable Dereference]
-              currentRootIsNull ? 0 : currentRoot.getCount(), newRoot, enableStats);
-      // NULLSAFE_FIXME[Nullable Dereference]
-      final SectionContext newRootScopedContext = newRoot.getScopedContext();
+              currentRoot == null ? 0 : currentRoot.getCount(), newRootSection, enableStats);
+      final SectionContext newRootScopedContext = newRootSection.getScopedContext();
       final SectionContext currentRootScopedContext =
           currentRoot == null ? null : currentRoot.getScopedContext();
-      // NULLSAFE_FIXME[Nullable Dereference]
       lifecycle.generateChangeSet(
           newRootScopedContext,
           changeSet,
@@ -221,10 +220,8 @@ public class ChangeSetState {
           // NULLSAFE_FIXME[Parameter Not Nullable]
           currentRoot,
           newRootScopedContext,
-          // NULLSAFE_FIXME[Parameter Not Nullable]
-          newRoot);
-      // NULLSAFE_FIXME[Nullable Dereference]
-      newRoot.setCount(changeSet.getCount());
+          newRootSection);
+      newRootSection.setCount(changeSet.getCount());
 
       if (isTracing) {
         ComponentsSystrace.endSection();
@@ -233,10 +230,10 @@ public class ChangeSetState {
       return changeSet;
     }
 
-    ChangeSet resultChangeSet = ChangeSet.acquireChangeSet(newRoot, enableStats);
+    ChangeSet resultChangeSet = ChangeSet.acquireChangeSet(newRootSection, enableStats);
 
     final Map<String, Pair<Section, Integer>> currentChildren = acquireChildrenMap(currentRoot);
-    final Map<String, Pair<Section, Integer>> newChildren = acquireChildrenMap(newRoot);
+    final Map<String, Pair<Section, Integer>> newChildren = acquireChildrenMap(newRootSection);
 
     final List<Section> currentChildrenList;
     if (currentRoot == null || currentRoot.getChildren() == null) {
@@ -246,12 +243,11 @@ public class ChangeSetState {
     }
 
     final List<Section> newChildrenList;
-    // NULLSAFE_FIXME[Nullable Dereference]
-    if (newRoot.getChildren() == null) {
+    final List<Section> newRootChildren = newRootSection.getChildren();
+    if (newRootChildren == null) {
       newChildrenList = sEmptyList;
     } else {
-      // NULLSAFE_FIXME[Nullable Dereference]
-      newChildrenList = newRoot.getChildren();
+      newChildrenList = newRootChildren;
     }
 
     // Determine Move Changes.
@@ -284,9 +280,7 @@ public class ChangeSetState {
             final Pair<Section, Integer> valueAndIndex =
                 currentChildren.get(section.getGlobalKey());
 
-            // NULLSAFE_FIXME[Nullable Dereference]
-            if (valueAndIndex.second != j) {
-              // NULLSAFE_FIXME[Nullable Dereference]
+            if (valueAndIndex != null && valueAndIndex.second != j) {
               currentChildren.put(section.getGlobalKey(), new Pair<>(valueAndIndex.first, j));
             }
           }
@@ -320,8 +314,7 @@ public class ChangeSetState {
       resultChangeSet = ChangeSet.merge(resultChangeSet, changeSet);
     }
 
-    // NULLSAFE_FIXME[Nullable Dereference]
-    newRoot.setCount(resultChangeSet.getCount());
+    newRootSection.setCount(resultChangeSet.getCount());
 
     return resultChangeSet;
   }
@@ -459,6 +452,7 @@ public class ChangeSetState {
     if (currentRoot == null) {
       message.append("null; ");
     } else {
+      final List<Section> currentRootChildren = currentRoot.getChildren();
       message.append(
           currentRoot.getSimpleName()
               + " , key="
@@ -466,8 +460,7 @@ public class ChangeSetState {
               + ", count="
               + currentRoot.getCount()
               + ", childrenSize="
-              // NULLSAFE_FIXME[Nullable Dereference]
-              + currentRoot.getChildren().size()
+              + (currentRootChildren == null ? "null" : currentRootChildren.size())
               + "; ");
     }
 
@@ -475,6 +468,7 @@ public class ChangeSetState {
     if (newRoot == null) {
       message.append("null; ");
     } else {
+      final List<Section> newRootChildren = newRoot.getChildren();
       message.append(
           newRoot.getSimpleName()
               + " , key="
@@ -482,18 +476,28 @@ public class ChangeSetState {
               + ", count="
               + newRoot.getCount()
               + ", childrenSize="
-              // NULLSAFE_FIXME[Nullable Dereference]
-              + newRoot.getChildren().size()
+              + (newRootChildren == null ? "null" : newRootChildren.size())
               + "; ");
     }
 
-    message.append("Changes: [");
-
+    message.append("Changes (finalCount=");
     final ChangeSet changeSet = changeSetState.mChangeSet;
-    for (int i = 0; i < changeSet.getCount(); i++) {
+    message.append(changeSet.getCount());
+    message.append("): [");
+
+    for (int i = 0; i < changeSet.getChangeCount(); i++) {
       final Change change = changeSet.getChangeAt(i);
-      message.append(change.getType() + " " + change.getIndex() + " " + change.getToIndex());
-      message.append(", ");
+      message.append(
+          Change.changeTypeToString(change.getType())
+              + " idx="
+              + change.getIndex()
+              + " toIdx="
+              + change.getToIndex()
+              + " cnt="
+              + change.getCount());
+      if (i < changeSet.getChangeCount() - 1) {
+        message.append(", ");
+      }
     }
 
     message.append("]");

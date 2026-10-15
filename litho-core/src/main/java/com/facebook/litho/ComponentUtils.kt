@@ -16,12 +16,14 @@
 
 package com.facebook.litho
 
-import com.facebook.litho.ComponentsSystrace.isTracing
+import androidx.annotation.VisibleForTesting
+import com.facebook.litho.ComponentsSystrace.trace
 import com.facebook.litho.annotations.Comparable
 import com.facebook.litho.annotations.EventHandlerRebindMode
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.drawable.ComparableDrawable
 import com.facebook.rendercore.Equivalence
+import com.facebook.rendercore.RenderUnitUpdateException
 import com.facebook.rendercore.utils.areObjectsEquivalent
 import com.facebook.rendercore.utils.isEquivalentTo
 import java.lang.reflect.Field
@@ -31,6 +33,7 @@ import java.lang.reflect.WildcardType
 import java.util.Arrays
 import java.util.Deque
 import java.util.LinkedList
+import java.util.concurrent.ConcurrentHashMap
 
 object ComponentUtils {
 
@@ -54,19 +57,12 @@ object ComponentUtils {
    * @return `true` iff the component fields are equivalent.
    */
   @JvmStatic
-  fun isEquivalent(
-      current: Component?,
-      next: Component?,
-      shouldCompareCommonProps: Boolean =
-          ComponentsConfiguration.shouldCompareCommonPropsInIsEquivalentTo
-  ): Boolean {
+  fun isEquivalent(current: Component?, next: Component?): Boolean {
     if (current === next) {
       return true
     }
     return if (current == null || next == null) {
       false
-    } else if (current is SpecGeneratedComponent && next is SpecGeneratedComponent) {
-      current.isEquivalentTo(next, shouldCompareCommonProps)
     } else {
       current.isEquivalentTo(next)
     }
@@ -75,7 +71,7 @@ object ComponentUtils {
   @JvmStatic
   fun hasEquivalentState(
       stateContainer1: StateContainer?,
-      stateContainer2: StateContainer?
+      stateContainer2: StateContainer?,
   ): Boolean {
     if (stateContainer1 == null && stateContainer2 == null) {
       return true
@@ -88,19 +84,14 @@ object ComponentUtils {
   }
 
   @JvmStatic
-  fun arePropsEquivalent(
-      props1: Array<*>,
-      props2: Array<*>,
-      shouldCompareCommonProps: Boolean =
-          ComponentsConfiguration.shouldCompareCommonPropsInIsEquivalentTo
-  ): Boolean {
+  fun arePropsEquivalent(props1: Array<*>, props2: Array<*>): Boolean {
     if (props1.size != props2.size) return false
 
     for (i in props1.indices) {
       val prop1 = props1[i]
       val prop2 = props2[i]
       if (prop1 is Component && prop2 is Component) {
-        if (!isEquivalent(prop1, prop2, shouldCompareCommonProps)) return false
+        if (!isEquivalent(prop1, prop2)) return false
       } else if (!areObjectsEquivalent(prop1, prop2)) {
         return false
       }
@@ -121,6 +112,40 @@ object ComponentUtils {
   @JvmStatic
   fun hasEquivalentFields(obj1: Any, obj2: Any): Boolean {
     require(obj1.javaClass == obj2.javaClass) { "The input is invalid." }
+    if (ComponentsConfiguration.cacheComparableFields) {
+      comparedFieldsOf(obj1.javaClass)?.let {
+        return hasEquivalentFieldsFrom(it, obj1, obj2)
+      }
+    }
+    return hasEquivalentDeclaredFields(obj1, obj2)
+  }
+
+  private fun hasEquivalentFieldsFrom(
+      comparedFields: Array<ComparedField>,
+      obj1: Any,
+      obj2: Any,
+  ): Boolean {
+    for (compared in comparedFields) {
+      if (compared.comparableType == COMPARABLE_TYPE_UNREADABLE) {
+        return false
+      }
+      val field = compared.field
+      val val1: Any?
+      val val2: Any?
+      try {
+        val1 = field[obj1]
+        val2 = field[obj2]
+      } catch (e: IllegalAccessException) {
+        throw IllegalStateException("Unable to get fields by reflection.", e)
+      }
+      if (!isEquivalentUtil(compared.comparableType, compared.classType, val1, val2)) {
+        return false
+      }
+    }
+    return true
+  }
+
+  private fun hasEquivalentDeclaredFields(obj1: Any, obj2: Any): Boolean {
     for (field in obj1.javaClass.declaredFields) {
       if (!field.isAnnotationPresent(Comparable::class.java)) {
         continue
@@ -136,31 +161,100 @@ object ComponentUtils {
       } catch (e: IllegalAccessException) {
         throw IllegalStateException("Unable to get fields by reflection.", e)
       }
-      val intermediateResult = isEquivalentUtil(field, classType, val1, val2)
-      if (!intermediateResult) {
+      @Comparable.Type val comparableType = comparableTypeOf(field)
+      if (comparableType == COMPARABLE_TYPE_UNREADABLE) {
+        return false
+      }
+      if (!isEquivalentUtil(comparableType, classType, val1, val2)) {
         return false
       }
     }
     return true
   }
 
-  private fun isEquivalentUtil(field: Field, classType: Class<*>, val1: Any?, val2: Any?): Boolean {
-    @Comparable.Type
-    val comparableType =
-        try {
-          field.getAnnotation(Comparable::class.java)?.type ?: return false
-        } catch (ignore: IncompatibleClassChangeError) {
-          /*
-           * Libraries which uses annotations is facing this intermittently in Lollypop 5.0, 5.0.1 &
-           * 5.0.2). Google closed this saying it is infeasible to fix this in older OS versions.
-           *
-           * <p>https://issuetracker.google.com/issues/37045084
-           * https://github.com/google/gson/issues/726
-           */
-          return false
-        } catch (ignore: NullPointerException) {
-          return false
-        }
+  /** A field annotated [Comparable] whose annotation could not be read. */
+  private const val COMPARABLE_TYPE_UNREADABLE = -1
+
+  private class ComparedField(
+      val field: Field,
+      val classType: Class<*>,
+      @Comparable.Type val comparableType: Int,
+  )
+
+  /**
+   * Ceiling on [comparedFieldsByClass], as a backstop against pathological class generation rather
+   * than a working limit. Real hosts stay far below it — see the measurement in the diff that
+   * introduced this.
+   */
+  private const val DEFAULT_MAX_CACHED_CLASSES = 16384
+
+  @JvmStatic @VisibleForTesting var maxCachedClasses: Int = DEFAULT_MAX_CACHED_CLASSES
+
+  private val comparedFieldsByClass = ConcurrentHashMap<Class<*>, Array<ComparedField>>()
+
+  @JvmStatic @VisibleForTesting fun cachedClassCountForTesting(): Int = comparedFieldsByClass.size
+
+  @JvmStatic
+  @VisibleForTesting
+  fun clearComparedFieldCacheForTesting() {
+    comparedFieldsByClass.clear()
+  }
+
+  /**
+   * The [Comparable]-annotated fields of [cls], paired with their comparison type and with
+   * accessibility already forced, or null if [cls] is not cached and the cache is full.
+   *
+   * All three of the reflective steps this replaces — [Class.getDeclaredFields], which clones the
+   * array and every [Field]; the [Field.isAnnotationPresent] filter; and the [Field.getAnnotation]
+   * read that follows it and allocates an annotation proxy — depend only on the class, but used to
+   * run on every comparison.
+   *
+   * Entries are never evicted; on Android the classes reaching them are loaded by the app's own
+   * class loader and live for the process. Growth is bounded by [maxCachedClasses], past which
+   * callers resolve the fields themselves. The size check races with concurrent inserts, so the map
+   * may overshoot by the number of threads in flight — this is a ceiling, not an exact size.
+   */
+  private fun comparedFieldsOf(cls: Class<*>): Array<ComparedField>? {
+    comparedFieldsByClass[cls]?.let {
+      return it
+    }
+    if (comparedFieldsByClass.size >= maxCachedClasses) {
+      return null
+    }
+    val fields =
+        cls.declaredFields
+            .filter { it.isAnnotationPresent(Comparable::class.java) }
+            .map { field ->
+              field.isAccessible = true
+              ComparedField(field, field.type, comparableTypeOf(field))
+            }
+            .toTypedArray()
+    return comparedFieldsByClass.putIfAbsent(cls, fields) ?: fields
+  }
+
+  @Comparable.Type
+  private fun comparableTypeOf(field: Field): Int =
+      try {
+        field.getAnnotation(Comparable::class.java)?.type ?: COMPARABLE_TYPE_UNREADABLE
+      } catch (ignore: IncompatibleClassChangeError) {
+        /*
+         * Libraries which uses annotations is facing this intermittently in Lollypop 5.0, 5.0.1 &
+         * 5.0.2). Google closed this saying it is infeasible to fix this in older OS versions.
+         *
+         * <p>https://issuetracker.google.com/issues/37045084
+         * https://github.com/google/gson/issues/726
+         */
+        COMPARABLE_TYPE_UNREADABLE
+      } catch (ignore: NullPointerException) {
+        COMPARABLE_TYPE_UNREADABLE
+      }
+
+  private fun isEquivalentUtil(
+      @Comparable.Type comparableType: Int,
+      classType: Class<*>,
+      val1: Any?,
+      val2: Any?,
+  ): Boolean {
     when (comparableType) {
       Comparable.FLOAT ->
           if ((val1 as Float).compareTo(val2 as Float) != 0) {
@@ -200,8 +294,10 @@ object ComponentUtils {
         }
       }
       Comparable.COMPONENT ->
-          if (if (val1 != null) !(val1 as Component).isEquivalentTo(val2 as Component?)
-          else val2 != null) {
+          if (
+              if (val1 != null) !(val1 as Component).isEquivalentTo(val2 as Component?)
+              else val2 != null
+          ) {
             return false
           }
       Comparable.SECTION ->
@@ -210,12 +306,18 @@ object ComponentUtils {
           }
       Comparable.EVENT_HANDLER,
       Comparable.EVENT_HANDLER_IN_PARAMETERIZED_TYPE ->
-          if (if (val1 != null) !(val1 as EventHandler<*>).isEquivalentTo(val2 as EventHandler<*>?)
-          else val2 != null) {
+          if (
+              if (val1 != null) !(val1 as EventHandler<*>).isEquivalentTo(val2 as EventHandler<*>?)
+              else val2 != null
+          ) {
             return false
           }
       Comparable.OTHER ->
           if (if (val1 != null) val1 != val2 else val2 != null) {
+            return false
+          }
+      Comparable.CHARSEQUENCE ->
+          if (!areObjectsEquivalent(val1, val2)) {
             return false
           }
       else -> {}
@@ -290,7 +392,7 @@ object ComponentUtils {
   private fun areComponentCollectionsEquals(
       level: Int,
       c1: Collection<*>?,
-      c2: Collection<*>?
+      c2: Collection<*>?,
   ): Boolean {
     require(level >= 1) { "Level cannot be < 1" }
     if (c1 === c2) {
@@ -307,8 +409,13 @@ object ComponentUtils {
           return false
         }
       } else {
-        if (!areComponentCollectionsEquals(
-            level - 1, i1.next() as Collection<*>?, i2.next() as Collection<*>?)) {
+        if (
+            !areComponentCollectionsEquals(
+                level - 1,
+                i1.next() as Collection<*>?,
+                i2.next() as Collection<*>?,
+            )
+        ) {
           return false
         }
       }
@@ -451,31 +558,25 @@ object ComponentUtils {
    */
   @JvmStatic
   fun handle(c: ComponentContext, exception: Exception) {
-    val isTracing = isTracing
-    try {
-      if (isTracing) {
-        ComponentsSystrace.beginSection("handleError")
-      }
-      if (c.componentScope != null) {
-        // acquire component hierarchy metadata leveraging the global key
-        val metadataExceptionWrapper = wrapWithMetadata(c, exception)
-        val hierarchy = Component.generateHierarchy(c.globalKey)
-        for (componentName in hierarchy) {
-          metadataExceptionWrapper.addComponentNameForLayoutStack(componentName)
+    trace({ "handleError" }) {
+      try {
+        if (c.componentScope != null) {
+          // acquire component hierarchy metadata leveraging the global key
+          val metadataExceptionWrapper = wrapWithMetadata(c, exception)
+          val hierarchy = Component.generateHierarchy(c.globalKey)
+          for (componentName in hierarchy) {
+            metadataExceptionWrapper.addComponentNameForLayoutStack(componentName)
+          }
+          dispatchErrorEvent(c, metadataExceptionWrapper)
+        } else {
+          // we're not able to get global key hierarchy metadata from a ComponentContext without a
+          // scope
+          dispatchErrorEvent(c, exception)
         }
-        dispatchErrorEvent(c, metadataExceptionWrapper)
-      } else {
-        // we're not able to get global key hierarchy metadata from a ComponentContext without a
-        // scope
-        dispatchErrorEvent(c, exception)
-      }
-    } catch (re: ReThrownException) {
-      throw wrapWithMetadata(c, exception)
-    } catch (e: Exception) {
-      throw wrapWithMetadata(c, e)
-    } finally {
-      if (isTracing) {
-        ComponentsSystrace.endSection()
+      } catch (re: ReThrownException) {
+        throw wrapWithMetadata(c, exception)
+      } catch (e: Exception) {
+        throw wrapWithMetadata(c, e)
       }
     }
   }
@@ -509,7 +610,6 @@ object ComponentUtils {
   fun wrapWithMetadata(view: BaseMountingView, e: Exception): LithoMetadataExceptionWrapper =
       when (view) {
         is LithoView -> wrapWithMetadata(view.componentTree, e)
-        // TODO T149859358 support other implementations of BaseMountingView
         else -> LithoMetadataExceptionWrapper(cause = e)
       }
 
@@ -521,6 +621,12 @@ object ComponentUtils {
   fun wrapWithMetadata(c: ComponentTree?, e: Exception): LithoMetadataExceptionWrapper =
       when (e) {
         is LithoMetadataExceptionWrapper -> e
+        is RenderUnitUpdateException ->
+            LithoMetadataExceptionWrapper(c, e).also { w ->
+              e.renderUnitDebugKey?.let {
+                Component.generateHierarchy(it).forEach(w::addComponentNameForLayoutStack)
+              }
+            }
         else -> LithoMetadataExceptionWrapper(c, e)
       }
 
@@ -528,14 +634,15 @@ object ComponentUtils {
   fun createOrGetErrorEventHandler(
       component: Component?,
       parentContext: ComponentContext,
-      scopedContext: ComponentContext?
+      scopedContext: ComponentContext?,
   ): EventHandler<ErrorEvent> =
       if (component is SpecGeneratedComponent && component.hasOwnErrorHandler()) {
         EventHandler(
             Component.ERROR_EVENT_HANDLER_ID,
             EventHandlerRebindMode.NONE,
             EventDispatchInfo(component as SpecGeneratedComponent?, scopedContext),
-            null)
+            null,
+        )
       } else {
         parentContext.errorEventHandler
       }

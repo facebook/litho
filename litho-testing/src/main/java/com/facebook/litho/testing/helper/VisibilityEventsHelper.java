@@ -18,14 +18,15 @@ package com.facebook.litho.testing.helper;
 
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.ComponentTree;
-import com.facebook.litho.FocusedVisibleEvent;
-import com.facebook.litho.FullImpressionVisibleEvent;
-import com.facebook.litho.InvisibleEvent;
-import com.facebook.litho.UnfocusedVisibleEvent;
-import com.facebook.litho.VisibleEvent;
 import com.facebook.litho.testing.Whitebox;
+import com.facebook.rendercore.extensions.VisibilityChangeReason;
+import com.facebook.rendercore.visibility.FocusedVisibleEvent;
+import com.facebook.rendercore.visibility.FullImpressionVisibleEvent;
+import com.facebook.rendercore.visibility.InvisibleEvent;
+import com.facebook.rendercore.visibility.UnfocusedVisibleEvent;
 import com.facebook.rendercore.visibility.VisibilityEventCallbackData;
 import com.facebook.rendercore.visibility.VisibilityUtils;
+import com.facebook.rendercore.visibility.VisibleEvent;
 
 /**
  * Allows calling visibility events manually which is useful in automated tests
@@ -53,27 +54,34 @@ public class VisibilityEventsHelper {
       if (visibilityEventType == VisibleEvent.class
           && getEventHandler(visibilityOutput, "Visible") != null) {
         VisibilityUtils.dispatchOnVisible(
-            getEventHandler(visibilityOutput, "Visible").getCallback(), null);
+            getEventHandler(visibilityOutput, "Visible").getCallback(),
+            null,
+            VisibilityChangeReason.UNKNOWN);
         return true;
       } else if (visibilityEventType == InvisibleEvent.class
           && getEventHandler(visibilityOutput, "Invisible") != null) {
         VisibilityUtils.dispatchOnInvisible(
-            getEventHandler(visibilityOutput, "Invisible").getCallback());
+            getEventHandler(visibilityOutput, "Invisible").getCallback(),
+            VisibilityChangeReason.UNKNOWN);
         return true;
       } else if (visibilityEventType == FocusedVisibleEvent.class
           && getEventHandler(visibilityOutput, "FocusedVisible") != null) {
         VisibilityUtils.dispatchOnFocused(
-            getEventHandler(visibilityOutput, "FocusedVisible").getCallback());
+            getEventHandler(visibilityOutput, "FocusedVisible").getCallback(),
+            VisibilityChangeReason.UNKNOWN);
         return true;
       } else if (visibilityEventType == UnfocusedVisibleEvent.class
           && getEventHandler(visibilityOutput, "UnfocusedVisible") != null) {
         VisibilityUtils.dispatchOnUnfocused(
-            getEventHandler(visibilityOutput, "UnfocusedVisible").getCallback());
+            getEventHandler(visibilityOutput, "UnfocusedVisible").getCallback(),
+            VisibilityChangeReason.UNKNOWN);
         return true;
       } else if (visibilityEventType == FullImpressionVisibleEvent.class
           && getEventHandler(visibilityOutput, "FullImpression") != null) {
         VisibilityUtils.dispatchOnFullImpression(
-            getEventHandler(visibilityOutput, "FullImpression").getCallback());
+            getEventHandler(visibilityOutput, "FullImpression").getCallback(),
+            null,
+            VisibilityChangeReason.UNKNOWN);
         return true;
       }
     }

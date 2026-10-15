@@ -88,8 +88,7 @@ public class RenderSectionEvent {
   public @Nullable Object lastNonNullModel;
   // NULLSAFE_FIXME[Field Not Initialized]
   public FetchState state;
-  // NULLSAFE_FIXME[Field Not Initialized]
-  public Throwable error;
+  public @Nullable Throwable error;
   // NULLSAFE_FIXME[Field Not Initialized]
   public DataSource dataSource;
   public @Nullable FetchType fetchType;

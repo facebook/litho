@@ -27,8 +27,8 @@ import com.facebook.litho.core.width
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.assertj.LithoAssertions.assertThat
 import com.facebook.litho.testing.testrunner.LithoTestRunner
-import com.facebook.litho.widget.ExperimentalImage
 import com.facebook.litho.widget.HorizontalScrollLithoView
+import com.facebook.litho.widget.PrimitiveImage
 import com.facebook.rendercore.px
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
@@ -45,7 +45,7 @@ class HorizontalScrollTest {
   fun `HorizontalScroll Component should render`() {
     val component =
         HorizontalScroll(style = Style.width(100.px).height(500.px)) {
-          ExperimentalImage(
+          PrimitiveImage(
               drawable = ColorDrawable(Color.RED),
               style = Style.width(100.px).height(500.px),
           )

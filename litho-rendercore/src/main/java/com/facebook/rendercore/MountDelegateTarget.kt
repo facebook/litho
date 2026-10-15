@@ -16,6 +16,8 @@
 
 package com.facebook.rendercore
 
+import androidx.collection.ScatterSet
+import androidx.collection.emptyScatterSet
 import com.facebook.rendercore.extensions.ExtensionState
 import com.facebook.rendercore.extensions.MountExtension
 import com.facebook.rendercore.extensions.RenderCoreExtension
@@ -30,7 +32,7 @@ interface MountDelegateTarget {
 
   fun needsRemount(): Boolean
 
-  fun mount(renderTree: RenderTree?)
+  fun mount(renderTree: RenderTree, extraBindersToUpdate: ScatterSet<BinderId> = emptyScatterSet())
 
   fun attach()
 
@@ -68,7 +70,7 @@ interface MountDelegateTarget {
 
   @Deprecated("Only used for Litho's integration. Marked for removal.")
   fun <Input, State> registerMountExtension(
-      mountExtension: MountExtension<Input, State>
+      mountExtension: MountExtension<Input, State>,
   ): ExtensionState<State>
 
   /** Returns the id for the [RenderState] */

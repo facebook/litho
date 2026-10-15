@@ -54,7 +54,7 @@ object CrashingMountableSpec {
       widthSpec: Int,
       heightSpec: Int,
       size: Size,
-      @Prop lifecycle: LifecycleStep
+      @Prop lifecycle: LifecycleStep,
   ) {
     size.height = 200
     size.width = 600
@@ -79,7 +79,7 @@ object CrashingMountableSpec {
       context: ComponentContext,
       textView: TextView,
       @Prop someStringProp: String?,
-      @Prop lifecycle: LifecycleStep
+      @Prop lifecycle: LifecycleStep,
   ) {
     if (lifecycle == LifecycleStep.ON_MOUNT) {
       throw MountPhaseException(LifecycleStep.ON_MOUNT)
@@ -124,7 +124,7 @@ object CrashingMountableSpec {
   fun onBoundsDefined(
       c: ComponentContext,
       layout: ComponentLayout,
-      @Prop lifecycle: LifecycleStep
+      @Prop lifecycle: LifecycleStep,
   ) {
     if (lifecycle == LifecycleStep.ON_BOUNDS_DEFINED) {
       throw MountPhaseException(LifecycleStep.ON_BOUNDS_DEFINED)
@@ -143,10 +143,12 @@ object CrashingMountableSpec {
   @ShouldUpdate(onMount = true)
   fun shouldUpdate(
       @Prop someStringProp: Diff<String>,
-      @Prop lifecycle: Diff<LifecycleStep>
+      @Prop lifecycle: Diff<LifecycleStep>,
   ): Boolean {
-    if (lifecycle.previous == LifecycleStep.SHOULD_UPDATE ||
-        lifecycle.next == LifecycleStep.SHOULD_UPDATE) {
+    if (
+        lifecycle.previous == LifecycleStep.SHOULD_UPDATE ||
+            lifecycle.next == LifecycleStep.SHOULD_UPDATE
+    ) {
       throw MountPhaseException(LifecycleStep.SHOULD_UPDATE)
     }
     return someStringProp.previous != someStringProp.next

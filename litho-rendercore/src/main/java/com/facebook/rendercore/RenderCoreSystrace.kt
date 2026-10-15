@@ -18,7 +18,9 @@ package com.facebook.rendercore
 
 import android.os.Build
 import android.os.Trace
-import kotlin.concurrent.Volatile
+import com.meta.systrace.Systracer
+
+private const val MAX_SECTION_NAME_LENGTH = 127
 
 object RenderCoreSystrace {
 
@@ -121,8 +123,14 @@ object RenderCoreSystrace {
 
   private class DefaultTrace : Systracer {
     override fun beginSection(name: String) {
-      if (BuildConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-        Trace.beginSection(name)
+      if (BuildConfig.DEBUG) {
+        val truncatedName =
+            if (name.length > MAX_SECTION_NAME_LENGTH) {
+              name.take(MAX_SECTION_NAME_LENGTH)
+            } else {
+              name
+            }
+        Trace.beginSection(truncatedName)
       }
     }
 
@@ -140,7 +148,7 @@ object RenderCoreSystrace {
     }
 
     override fun endSection() {
-      if (BuildConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+      if (BuildConfig.DEBUG) {
         Trace.endSection()
       }
     }
@@ -154,9 +162,7 @@ object RenderCoreSystrace {
     }
 
     override fun isTracing(): Boolean =
-        BuildConfig.DEBUG &&
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 &&
-            (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q || Trace.isEnabled())
+        BuildConfig.DEBUG && (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q || Trace.isEnabled())
   }
 
   private class NoOpArgsBuilder : Systracer.ArgsBuilder {

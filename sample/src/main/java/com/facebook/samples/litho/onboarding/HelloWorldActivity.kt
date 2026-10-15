@@ -17,7 +17,8 @@ package com.facebook.samples.litho.onboarding
 
 import android.os.Bundle
 import com.facebook.litho.ComponentContext
-import com.facebook.litho.LithoView
+import com.facebook.litho.surface.getLithoView
+import com.facebook.litho.surface.setLithoContent
 import com.facebook.litho.widget.Text
 import com.facebook.samples.litho.NavigatableDemoActivity
 
@@ -26,8 +27,8 @@ class HelloWorldActivity : NavigatableDemoActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    val c = ComponentContext(this)
-    setContentView(LithoView.create(this, Text.create(c).text("Hello World!").build()))
+    setLithoContent { Text.create(ComponentContext(this)).text("Hello World!").build() }
+    setContentView(getLithoView())
   }
   // end_example
 }

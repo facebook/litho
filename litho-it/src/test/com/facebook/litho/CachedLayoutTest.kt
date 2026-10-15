@@ -17,6 +17,7 @@
 package com.facebook.litho
 
 import com.facebook.litho.LifecycleStep.StepInfo
+import com.facebook.litho.layout.flexbox.Column
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.LayoutSpecLifecycleTester
@@ -36,7 +37,7 @@ class CachedLayoutTest {
 
   @Rule @JvmField val lithoTestRule = LithoTestRule()
 
-  val commonAssertion =
+  val commonAssertion: (List<StepInfo>) -> Unit =
       fun(steps: List<StepInfo>) {
         assertThat(LifecycleStep.getSteps(steps))
             .describedAs("cached layout spec should be resolved only once")
@@ -44,7 +45,8 @@ class CachedLayoutTest {
                 LifecycleStep.ON_CREATE_INITIAL_STATE,
                 LifecycleStep.ON_CREATE_TREE_PROP,
                 LifecycleStep.ON_CALCULATE_CACHED_VALUE,
-                LifecycleStep.ON_CREATE_LAYOUT)
+                LifecycleStep.ON_CREATE_LAYOUT,
+            )
       }
 
   @Test
@@ -92,7 +94,8 @@ class CachedLayoutTest {
                 LayoutWithSizeSpecLifecycleTester.create(c)
                     .steps(mutableListOf<StepInfo>())
                     .causeYogaRemeasure(true)
-                    .body(TrackingComponent(tracker, steps, size, commonAssertion)))
+                    .body(TrackingComponent(tracker, steps, size, commonAssertion)),
+            )
             .child(Text.create(c).text("Hello World"))
             .build()
 
@@ -107,7 +110,7 @@ class CachedLayoutTest {
       private val tracker: LifecycleTracker,
       private val steps: List<StepInfo>,
       private val sizeSpec: Size,
-      private val assertion: ((List<StepInfo>) -> Unit)?
+      private val assertion: ((List<StepInfo>) -> Unit)?,
   ) : KComponent() {
     override fun ComponentScope.render(): Component {
       val mountSpec =

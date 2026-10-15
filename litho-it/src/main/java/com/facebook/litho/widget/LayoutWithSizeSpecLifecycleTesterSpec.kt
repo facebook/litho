@@ -17,14 +17,15 @@
 package com.facebook.litho.widget
 
 import android.graphics.Color
-import com.facebook.litho.Column
+import com.facebook.litho.Column as ColumnBuilder
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.LifecycleStep
 import com.facebook.litho.LifecycleStep.StepInfo
-import com.facebook.litho.Row
+import com.facebook.litho.Row as RowBuilder
 import com.facebook.litho.SizeSpec
 import com.facebook.litho.StateValue
+import com.facebook.litho.Style
 import com.facebook.litho.Wrapper
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateInitialState
@@ -32,6 +33,8 @@ import com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec
 import com.facebook.litho.annotations.Prop
 import com.facebook.litho.annotations.PropDefault
 import com.facebook.litho.annotations.State
+import com.facebook.litho.core.width
+import com.facebook.rendercore.px
 
 @LayoutSpec
 internal object LayoutWithSizeSpecLifecycleTesterSpec {
@@ -43,7 +46,7 @@ internal object LayoutWithSizeSpecLifecycleTesterSpec {
   fun onCreateInitialState(
       c: ComponentContext,
       state: StateValue<String?>,
-      @Prop steps: MutableList<StepInfo>
+      @Prop steps: MutableList<StepInfo>,
   ) {
     steps.add(StepInfo(LifecycleStep.ON_CREATE_INITIAL_STATE))
     state.set("hello world")
@@ -58,21 +61,23 @@ internal object LayoutWithSizeSpecLifecycleTesterSpec {
       @Prop steps: MutableList<StepInfo>,
       @Prop(optional = true) body: Component?,
       @Prop(optional = true) causeYogaRemeasure: Boolean,
-      @State state: String?
+      @State state: String?,
   ): Component {
     steps.add(StepInfo(LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC))
     checkNotNull(state) { "OnCreateLayout called without initialised state." }
-    return Column.create(c)
+    return ColumnBuilder.create(c)
         .heightPx(100)
         .child(
             Wrapper.create(c)
                 .delegate(
                     body
-                        ?: SolidColor.create(c)
-                            .color(Color.BLACK)
-                            .widthPx(SizeSpec.getSize(w))
-                            .build()))
-        .child(if (causeYogaRemeasure) Row.create(c).heightPx(SizeSpec.getSize(h)) else null)
+                        ?: SolidColor(
+                            color = Color.BLACK,
+                            style = Style.width(SizeSpec.getSize(w).px),
+                        ),
+                ),
+        )
+        .child(if (causeYogaRemeasure) RowBuilder.create(c).heightPx(SizeSpec.getSize(h)) else null)
         .build()
   }
 }

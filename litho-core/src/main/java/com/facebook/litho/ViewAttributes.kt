@@ -33,393 +33,411 @@ import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.annotation.IdRes
 import androidx.core.view.ViewCompat
-import com.facebook.litho.drawable.DrawableUtils
+import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.debug.DebugInfoReporter
 import com.facebook.litho.layout.LayoutDirection
 import com.facebook.litho.utils.VersionedAndroidApis
+import com.facebook.litho.view.ClickListenerHolder
 import com.facebook.litho.visibility.Visibility
+import com.facebook.rendercore.LogLevel
 import com.facebook.rendercore.RenderUnit
 import com.facebook.rendercore.utils.equals
-import com.facebook.rendercore.utils.isEquivalentTo
 
 class ViewAttributes {
 
+  // ---- Properties with framework plumbing (not candidates for binder migration) ----
+
   var isHostSpec: Boolean = false
   var componentName: String = ""
-  var importantForAccessibility: Int = 0
   var disableDrawableOutputs: Boolean = false
 
-  var contentDescription: CharSequence? = null
-  var accessibilityPaneTitle: CharSequence? = null
-  var liveRegionMode: Int? = null
-  var tooltipText: String? = null
-  var viewId: Int = View.NO_ID
+  var visibility: Visibility?
+    get() = binderMigratedAttributes?.visibility
     set(value) {
-      field = value
-      flags = flags or FLAG_VIEW_ID
+      getOrCreateBinderMigratedAttributes().visibility = value
     }
-
-  var viewTag: Any? = null
-    set(value) {
-      field = value
-      flags = flags or FLAG_VIEW_TAG
-    }
-
-  var transitionName: String? = null
-  var outlineProvider: ViewOutlineProvider? = null
-  var renderEffect: LithoRenderEffect? = null
-  var clickHandler: EventHandler<ClickEvent>? = null
-  var longClickHandler: EventHandler<LongClickEvent>? = null
-  var focusChangeHandler: EventHandler<FocusChangedEvent>? = null
-  var touchHandler: EventHandler<TouchEvent>? = null
-  var interceptTouchHandler: EventHandler<InterceptTouchEvent>? = null
-
-  var background: Drawable? = null
-  var foreground: Drawable? = null
-  var layoutDirection: LayoutDirection = LayoutDirection.INHERIT
-  var stateListAnimator: StateListAnimator? = null
-  @DrawableRes var stateListAnimatorRes: Int = 0
-  @LayerType var layerType: Int = LayerType.LAYER_TYPE_NOT_SET
-  var layoutPaint: Paint? = null
-  var visibility: Visibility? = null
 
   internal var flags: Int = 0
     private set
 
-  var scale: Float = 1f
+  var isFocusable: Boolean
+    get() = binderMigratedAttributes?.isFocusable ?: false
     set(value) {
-      field = value
-      flags =
-          if (value == 1f) {
-            flags and FLAG_SCALE.inv()
-          } else {
-            flags or FLAG_SCALE
-          }
-    }
-
-  var alpha: Float = 1f
-    set(value) {
-      field = value
-      flags =
-          if (value == 1f) {
-            flags and FLAG_ALPHA.inv()
-          } else {
-            flags or FLAG_ALPHA
-          }
-    }
-
-  var rotation: Float = 0f
-    set(value) {
-      field = value
-      flags =
-          if (value == 0f) {
-            flags and FLAG_ROTATION.inv()
-          } else {
-            flags or FLAG_ROTATION
-          }
-    }
-
-  var rotationX: Float = 0f
-    set(value) {
-      field = value
-      flags = flags or FLAG_ROTATION_X
-    }
-
-  var rotationY: Float = 0f
-    set(value) {
-      field = value
-      flags = flags or FLAG_ROTATION_Y
-    }
-
-  var clipChildren: Boolean = true // Default value for ViewGroup
-    set(value) {
-      field = value
-      flags = flags or FLAG_CLIP_CHILDREN
-    }
-
-  var clipToOutline: Boolean = false
-    set(value) {
-      field = value
-      flags = flags or FLAG_CLIP_TO_OUTLINE
-    }
-
-  var isFocusable: Boolean = false
-    set(value) {
-      field = value
       flags = flags or FLAG_FOCUS
+      getOrCreateBinderMigratedAttributes().isFocusable = value
     }
 
-  var isClickable: Boolean = false
+  var isClickable: Boolean
+    get() = binderMigratedAttributes?.isClickable ?: false
     set(value) {
-      field = value
       flags = flags or FLAG_CLICKABLE
+      getOrCreateBinderMigratedAttributes().isClickable = value
     }
 
-  var isEnabled: Boolean = false
+  var isEnabled: Boolean
+    get() = binderMigratedAttributes?.isEnabled ?: false
     set(value) {
-      field = value
       flags = flags or FLAG_ENABLED
+      getOrCreateBinderMigratedAttributes().isEnabled = value
     }
 
-  var isSelected: Boolean = false
+  var isSelected: Boolean
+    get() = binderMigratedAttributes?.isSelected ?: false
     set(value) {
-      field = value
       flags = flags or FLAG_SELECTED
+      getOrCreateBinderMigratedAttributes().isSelected = value
     }
 
-  var isKeyboardNavigationCluster: Boolean = false
+  var isKeyboardNavigationCluster: Boolean
+    get() = binderMigratedAttributes?.isKeyboardNavigationCluster ?: false
     set(value) {
-      field = value
       flags = flags or FLAG_KEYBOARD_NAVIGATION_CLUSTER
+      getOrCreateBinderMigratedAttributes().isKeyboardNavigationCluster = value
     }
 
-  var shadowElevation: Float = 0f
+  @LayerType
+  var layerType: Int
+    get() = binderMigratedAttributes?.layerType ?: LayerType.LAYER_TYPE_NOT_SET
     set(value) {
-      field = value
-      flags = flags or FLAG_SHADOW_ELEVATION
+      getOrCreateBinderMigratedAttributes().layerType = value
     }
 
-  @ColorInt
-  var ambientShadowColor: Int = Color.BLACK
+  var layoutPaint: Paint?
+    get() = binderMigratedAttributes?.layoutPaint
     set(value) {
-      field = value
-      flags = flags or FLAG_AMBIENT_SHADOW_COLOR
+      getOrCreateBinderMigratedAttributes().layoutPaint = value
     }
-
-  @ColorInt
-  var spotShadowColor: Int = Color.BLACK
-    set(value) {
-      field = value
-      flags = flags or FLAG_SPOT_SHADOW_COLOR
-    }
-
-  val isClipChildrenSet: Boolean
-    get() = flags and FLAG_CLIP_CHILDREN != 0
 
   val isFocusableSet: Boolean
-    get() = flags and FLAG_FOCUS != 0
+    get() = binderMigratedAttributes?.isFocusableSet ?: false
 
   val isClickableSet: Boolean
-    get() = flags and FLAG_CLICKABLE != 0
+    get() = binderMigratedAttributes?.isClickableSet ?: false
 
   val isEnabledSet: Boolean
-    get() = flags and FLAG_ENABLED != 0
+    get() = binderMigratedAttributes?.isEnabledSet ?: false
 
   val isSelectedSet: Boolean
-    get() = flags and FLAG_SELECTED != 0
+    get() = binderMigratedAttributes?.isSelectedSet ?: false
 
   val isKeyboardNavigationClusterSet: Boolean
-    get() = flags and FLAG_KEYBOARD_NAVIGATION_CLUSTER != 0
+    get() = binderMigratedAttributes?.isKeyboardNavigationClusterSet ?: false
 
-  val isScaleSet: Boolean
-    get() = flags and FLAG_SCALE != 0
+  var contentDescription: CharSequence? = null
+  var importantForAccessibility: Int = 0
+  var accessibilityPaneTitle: CharSequence? = null
+  var liveRegionMode: Int? = null
+  var layoutDirection: LayoutDirection = LayoutDirection.INHERIT
+  @DrawableRes var stateListAnimatorRes: Int = 0
 
-  val isAlphaSet: Boolean
-    get() = flags and FLAG_ALPHA != 0
-
-  val isRotationSet: Boolean
-    get() = flags and FLAG_ROTATION != 0
-
-  val isRotationXSet: Boolean
-    get() = flags and FLAG_ROTATION_X != 0
-
-  val isRotationYSet: Boolean
-    get() = flags and FLAG_ROTATION_Y != 0
-
-  val isTagSet: Boolean
-    get() = flags and FLAG_VIEW_TAG != 0
-
-  val isViewIdSet: Boolean
-    get() = flags and FLAG_VIEW_ID != 0
+  // ---- Layout-bounds dependent properties ----
+  // These need resolved layout bounds at bind time, preventing straightforward binder migration.
 
   var systemGestureExclusionZones: List<(Rect) -> Rect>? = null
 
-  var viewTags: SparseArray<Any>? = null
+  // ---- Migrated properties: delegating to binderMigratedAttributes ----
+  // These properties have been migrated to the onBindViewWithDescription binder pattern behind
+  // the useViewStyleBinders config flag. When the binder migration is fully rolled out, these
+  // delegating accessors (along with BinderMigratedViewAttributes) can be deleted.
+
+  var binderMigratedAttributes: BinderMigratedViewAttributes? = null
+    private set
+
+  private fun getOrCreateBinderMigratedAttributes(): BinderMigratedViewAttributes {
+    var attrs = binderMigratedAttributes
+    if (attrs == null) {
+      if (ComponentsConfiguration.defaultInstance.useViewStyleBinders) {
+        DebugInfoReporter.report(
+            category = "BinderMigratedViewAttributes",
+            level = LogLevel.ERROR,
+        ) {
+          put("message", "Creating BinderMigratedViewAttributes while useViewStyleBinders is true")
+        }
+      }
+      attrs = BinderMigratedViewAttributes()
+      binderMigratedAttributes = attrs
+    }
+    return attrs
+  }
+
+  var clickHandler: EventHandler<ClickEvent>?
+    get() = binderMigratedAttributes?.clickHandler
+    set(value) {
+      getOrCreateBinderMigratedAttributes().clickHandler = value
+    }
+
+  /**
+   * Additive click listeners registered via `Style.clickListener(key, …)`. Composed with
+   * [clickHandler] into a single [ComponentClickListener] (with the extras passed alongside the
+   * primary [EventHandler]) and installed at mount.
+   */
+  internal var extraClickListeners: MutableList<ClickListenerHolder>?
+    get() = binderMigratedAttributes?.extraClickListeners
+    set(value) {
+      getOrCreateBinderMigratedAttributes().extraClickListeners = value
+    }
+
+  var longClickHandler: EventHandler<LongClickEvent>?
+    get() = binderMigratedAttributes?.longClickHandler
+    set(value) {
+      getOrCreateBinderMigratedAttributes().longClickHandler = value
+    }
+
+  var focusChangeHandler: EventHandler<FocusChangedEvent>?
+    get() = binderMigratedAttributes?.focusChangeHandler
+    set(value) {
+      getOrCreateBinderMigratedAttributes().focusChangeHandler = value
+    }
+
+  var touchHandler: EventHandler<TouchEvent>?
+    get() = binderMigratedAttributes?.touchHandler
+    set(value) {
+      getOrCreateBinderMigratedAttributes().touchHandler = value
+    }
+
+  var interceptTouchHandler: EventHandler<InterceptTouchEvent>?
+    get() = binderMigratedAttributes?.interceptTouchHandler
+    set(value) {
+      getOrCreateBinderMigratedAttributes().interceptTouchHandler = value
+    }
+
+  var tooltipText: String?
+    get() = binderMigratedAttributes?.tooltipText
+    set(value) {
+      getOrCreateBinderMigratedAttributes().tooltipText = value
+    }
+
+  var viewId: Int
+    get() = binderMigratedAttributes?.viewId ?: View.NO_ID
+    set(value) {
+      getOrCreateBinderMigratedAttributes().viewId = value
+    }
+
+  var viewTag: Any?
+    get() = binderMigratedAttributes?.viewTag
+    set(value) {
+      getOrCreateBinderMigratedAttributes().viewTag = value
+    }
+
+  var transitionName: String?
+    get() = binderMigratedAttributes?.transitionName
+    set(value) {
+      getOrCreateBinderMigratedAttributes().transitionName = value
+    }
+
+  var outlineProvider: ViewOutlineProvider?
+    get() = binderMigratedAttributes?.outlineProvider
+    set(value) {
+      getOrCreateBinderMigratedAttributes().outlineProvider = value
+    }
+
+  var renderEffect: LithoRenderEffect?
+    get() = binderMigratedAttributes?.renderEffect
+    set(value) {
+      getOrCreateBinderMigratedAttributes().renderEffect = value
+    }
+
+  var background: Drawable?
+    get() = binderMigratedAttributes?.background
+    set(value) {
+      getOrCreateBinderMigratedAttributes().background = value
+    }
+
+  var foreground: Drawable?
+    get() = binderMigratedAttributes?.foreground
+    set(value) {
+      getOrCreateBinderMigratedAttributes().foreground = value
+    }
+
+  var stateListAnimator: StateListAnimator?
+    get() = binderMigratedAttributes?.stateListAnimator
+    set(value) {
+      getOrCreateBinderMigratedAttributes().stateListAnimator = value
+    }
+
+  var scale: Float
+    get() = binderMigratedAttributes?.scale ?: 1f
+    set(value) {
+      getOrCreateBinderMigratedAttributes().scale = value
+    }
+
+  var alpha: Float
+    get() = binderMigratedAttributes?.alpha ?: 1f
+    set(value) {
+      getOrCreateBinderMigratedAttributes().alpha = value
+    }
+
+  var rotation: Float
+    get() = binderMigratedAttributes?.rotation ?: 0f
+    set(value) {
+      getOrCreateBinderMigratedAttributes().rotation = value
+    }
+
+  var rotationX: Float
+    get() = binderMigratedAttributes?.rotationX ?: 0f
+    set(value) {
+      getOrCreateBinderMigratedAttributes().rotationX = value
+    }
+
+  var rotationY: Float
+    get() = binderMigratedAttributes?.rotationY ?: 0f
+    set(value) {
+      getOrCreateBinderMigratedAttributes().rotationY = value
+    }
+
+  var clipChildren: Boolean
+    get() = binderMigratedAttributes?.clipChildren ?: true
+    set(value) {
+      getOrCreateBinderMigratedAttributes().clipChildren = value
+    }
+
+  var defaultFocusHighlightEnabled: Boolean
+    get() = binderMigratedAttributes?.defaultFocusHighlightEnabled ?: true
+    set(value) {
+      getOrCreateBinderMigratedAttributes().defaultFocusHighlightEnabled = value
+    }
+
+  var clipToOutline: Boolean
+    get() = binderMigratedAttributes?.clipToOutline ?: false
+    set(value) {
+      getOrCreateBinderMigratedAttributes().clipToOutline = value
+    }
+
+  var shadowElevation: Float
+    get() = binderMigratedAttributes?.shadowElevation ?: 0f
+    set(value) {
+      getOrCreateBinderMigratedAttributes().shadowElevation = value
+    }
+
+  @get:ColorInt
+  var ambientShadowColor: Int
+    get() = binderMigratedAttributes?.ambientShadowColor ?: Color.BLACK
+    set(value) {
+      getOrCreateBinderMigratedAttributes().ambientShadowColor = value
+    }
+
+  @get:ColorInt
+  var spotShadowColor: Int
+    get() = binderMigratedAttributes?.spotShadowColor ?: Color.BLACK
+    set(value) {
+      getOrCreateBinderMigratedAttributes().spotShadowColor = value
+    }
+
+  var viewTags: SparseArray<Any>?
+    get() = binderMigratedAttributes?.viewTags
+    set(value) {
+      getOrCreateBinderMigratedAttributes().viewTags = value
+    }
 
   fun addViewTags(viewTags: SparseArray<Any>?) {
-    if (this.viewTags == null) {
-      this.viewTags = viewTags
-    } else {
-      this.viewTags = CollectionsUtils.mergeSparseArrays(this.viewTags, viewTags)
-    }
+    getOrCreateBinderMigratedAttributes().addViewTags(viewTags)
   }
+
+  val isClipChildrenSet: Boolean
+    get() = binderMigratedAttributes?.isClipChildrenSet ?: false
+
+  val isDefaultFocusHighlightEnabledSet: Boolean
+    get() = binderMigratedAttributes?.isDefaultFocusHighlightEnabledSet ?: false
+
+  val isScaleSet: Boolean
+    get() = binderMigratedAttributes?.isScaleSet ?: false
+
+  val isAlphaSet: Boolean
+    get() = binderMigratedAttributes?.isAlphaSet ?: false
+
+  val isRotationSet: Boolean
+    get() = binderMigratedAttributes?.isRotationSet ?: false
+
+  val isRotationXSet: Boolean
+    get() = binderMigratedAttributes?.isRotationXSet ?: false
+
+  val isRotationYSet: Boolean
+    get() = binderMigratedAttributes?.isRotationYSet ?: false
+
+  val isTagSet: Boolean
+    get() = binderMigratedAttributes?.isTagSet ?: false
+
+  val isViewIdSet: Boolean
+    get() = binderMigratedAttributes?.isViewIdSet ?: false
+
+  // ---- equals / hashCode / copyInto ----
 
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (other !is ViewAttributes) return false
 
+    // Properties with framework plumbing
     if (isHostSpec != other.isHostSpec) return false
     if (componentName != other.componentName) return false
-    if (importantForAccessibility != other.importantForAccessibility) return false
     if (disableDrawableOutputs != other.disableDrawableOutputs) return false
-
     if (flags != other.flags) return false
-    if (alpha != other.alpha) return false
-    if (!isEquivalentTo(clickHandler, other.clickHandler)) return false
-    if (clipToOutline != other.clipToOutline) return false
-    if (clipChildren != other.clipChildren) return false
     if (!equals(contentDescription, other.contentDescription)) return false
+    if (importantForAccessibility != other.importantForAccessibility) return false
     if (!equals(accessibilityPaneTitle, other.accessibilityPaneTitle)) return false
     if (!equals(liveRegionMode, other.liveRegionMode)) return false
-    if (!equals(tooltipText, other.tooltipText)) return false
-    if (isEnabled != other.isEnabled) return false
-    if (!isEquivalentTo(focusChangeHandler, other.focusChangeHandler)) return false
-    if (isFocusable != other.isFocusable) return false
-    if (!isEquivalentTo(interceptTouchHandler, other.interceptTouchHandler)) return false
-    if (!isEquivalentTo(longClickHandler, other.longClickHandler)) return false
-    if (!equals(outlineProvider, other.outlineProvider)) return false
-    if (!equals(renderEffect, other.renderEffect)) return false
-    if (rotation != other.rotation) return false
-    if (rotationX != other.rotationX) return false
-    if (rotationY != other.rotationY) return false
-    if (scale != other.scale) return false
-    if (isSelected != other.isSelected) return false
-    if (isKeyboardNavigationCluster != other.isKeyboardNavigationCluster) return false
-    if (isClickable != other.isClickable) return false
-    if (shadowElevation != other.shadowElevation) return false
-    if (ambientShadowColor != other.ambientShadowColor) return false
-    if (spotShadowColor != other.spotShadowColor) return false
-    if (!isEquivalentTo(touchHandler, other.touchHandler)) return false
-    if (viewId != other.viewId) return false
-    if (!equals(viewTag, other.viewTag)) return false
-    if (!equals(viewTags, other.viewTags)) return false
-
-    if (!DrawableUtils.isEquivalentTo(background, other.background)) return false
-    if (!DrawableUtils.isEquivalentTo(foreground, other.foreground)) return false
     if (!equals(layoutDirection, other.layoutDirection)) return false
     if (stateListAnimatorRes != other.stateListAnimatorRes) return false
-    // TODO: (T33421916) We need compare StateListAnimators more accurately
-    if (!equals(stateListAnimator, other.stateListAnimator)) return false
 
-    if (transitionName != other.transitionName) return false
-    if (layerType != other.layerType) return false
-    if (layoutPaint != other.layoutPaint) return false
+    // Migrated (delegated to binderMigratedAttributes)
+    if (binderMigratedAttributes != other.binderMigratedAttributes) return false
 
     return true
   }
 
   override fun hashCode(): Int {
+    // Properties with framework plumbing
     var result = isHostSpec.hashCode()
     result = 31 * result + componentName.hashCode()
-    result = 31 * result + importantForAccessibility
     result = 31 * result + disableDrawableOutputs.hashCode()
+    result = 31 * result + flags
     result = 31 * result + (contentDescription?.hashCode() ?: 0)
+    result = 31 * result + importantForAccessibility
     result = 31 * result + (accessibilityPaneTitle?.hashCode() ?: 0)
     result = 31 * result + (liveRegionMode?.hashCode() ?: 0)
-    result = 31 * result + (viewId.hashCode())
-    result = 31 * result + (viewTag?.hashCode() ?: 0)
-    result = 31 * result + (transitionName?.hashCode() ?: 0)
-    result = 31 * result + (viewTags?.hashCode() ?: 0)
-    result = 31 * result + (outlineProvider?.hashCode() ?: 0)
-    result = 31 * result + (renderEffect?.hashCode() ?: 0)
-    result = 31 * result + (clickHandler?.hashCode() ?: 0)
-    result = 31 * result + (longClickHandler?.hashCode() ?: 0)
-    result = 31 * result + (focusChangeHandler?.hashCode() ?: 0)
-    result = 31 * result + (touchHandler?.hashCode() ?: 0)
-    result = 31 * result + (interceptTouchHandler?.hashCode() ?: 0)
-    result = 31 * result + (background?.hashCode() ?: 0)
-    result = 31 * result + (foreground?.hashCode() ?: 0)
     result = 31 * result + layoutDirection.hashCode()
-    result = 31 * result + (stateListAnimator?.hashCode() ?: 0)
     result = 31 * result + stateListAnimatorRes
-    result = 31 * result + layerType
-    result = 31 * result + (layoutPaint?.hashCode() ?: 0)
-    result = 31 * result + flags
-    result = 31 * result + scale.hashCode()
-    result = 31 * result + alpha.hashCode()
-    result = 31 * result + rotation.hashCode()
-    result = 31 * result + rotationX.hashCode()
-    result = 31 * result + rotationY.hashCode()
-    result = 31 * result + clipChildren.hashCode()
-    result = 31 * result + clipToOutline.hashCode()
-    result = 31 * result + isFocusable.hashCode()
-    result = 31 * result + isClickable.hashCode()
-    result = 31 * result + isEnabled.hashCode()
-    result = 31 * result + isSelected.hashCode()
-    result = 31 * result + isKeyboardNavigationCluster.hashCode()
-    result = 31 * result + shadowElevation.hashCode()
-    result = 31 * result + ambientShadowColor
-    result = 31 * result + spotShadowColor
-    result = 31 * result + (tooltipText?.hashCode() ?: 0)
+
+    // Migrated (delegated to binderMigratedAttributes)
+    result = 31 * result + (binderMigratedAttributes?.hashCode() ?: 0)
     return result
   }
 
   fun copyInto(target: ViewAttributes) {
+    // Properties with framework plumbing
     target.isHostSpec = isHostSpec
     target.componentName = componentName
-    target.importantForAccessibility = importantForAccessibility
     target.disableDrawableOutputs = disableDrawableOutputs
-
     contentDescription?.let { target.contentDescription = it }
+    target.importantForAccessibility = importantForAccessibility
     accessibilityPaneTitle?.let { target.accessibilityPaneTitle = it }
     liveRegionMode?.let { target.liveRegionMode = it }
-    tooltipText?.let { target.tooltipText = it }
-    target.viewId = viewId
-    viewTag?.let { target.viewTag = it }
-    transitionName?.let { target.transitionName = it }
-    viewTags?.let { target.viewTags = it }
-    outlineProvider?.let { target.outlineProvider = it }
-    renderEffect?.let { target.renderEffect = it }
-    clickHandler?.let { target.clickHandler = it }
-    longClickHandler?.let { target.longClickHandler = it }
-    focusChangeHandler?.let { target.focusChangeHandler = it }
-    touchHandler?.let { target.touchHandler = it }
-    interceptTouchHandler?.let { target.interceptTouchHandler = it }
-
-    background?.let { target.background = it }
-    foreground?.let { target.foreground = it }
     target.layoutDirection = layoutDirection
-    stateListAnimator?.let { target.stateListAnimator = it }
     target.stateListAnimatorRes = stateListAnimatorRes
-    target.layerType = layerType
-    layoutPaint?.let { target.layoutPaint = it }
 
-    if (isScaleSet) target.scale = scale
-    if (isAlphaSet) target.alpha = alpha
-    if (isRotationSet) target.rotation = rotation
-    if (isRotationXSet) target.rotationX = rotationX
-    if (isRotationYSet) target.rotationY = rotationY
-    if (isClipChildrenSet) target.clipChildren = clipChildren
-    target.clipToOutline = clipToOutline
-    if (isFocusableSet) target.isFocusable = isFocusable
-    if (isClickableSet) target.isClickable = isClickable
-    if (isEnabledSet) target.isEnabled = isEnabled
-    if (isSelectedSet) target.isSelected = isSelected
-    if (isKeyboardNavigationClusterSet)
-        target.isKeyboardNavigationCluster = isKeyboardNavigationCluster
-    if (flags and FLAG_SHADOW_ELEVATION != 0) target.shadowElevation = shadowElevation
-    if (flags and FLAG_AMBIENT_SHADOW_COLOR != 0) target.ambientShadowColor = ambientShadowColor
-    if (flags and FLAG_SPOT_SHADOW_COLOR != 0) target.spotShadowColor = spotShadowColor
+    // Migrated (delegated to binderMigratedAttributes)
+    binderMigratedAttributes?.copyInto(target.getOrCreateBinderMigratedAttributes())
   }
 
   companion object {
-    private const val FLAG_SCALE = 1 shl 1
-    private const val FLAG_ALPHA = 1 shl 2
-    private const val FLAG_ROTATION = 1 shl 3
-    private const val FLAG_ROTATION_X = 1 shl 4
-    private const val FLAG_ROTATION_Y = 1 shl 5
-
-    private const val FLAG_CLIP_CHILDREN = 1 shl 6
-    private const val FLAG_CLIP_TO_OUTLINE = 1 shl 7
-    private const val FLAG_FOCUS = 1 shl 8
-    private const val FLAG_CLICKABLE = 1 shl 9
-    private const val FLAG_ENABLED = 1 shl 10
-    private const val FLAG_SELECTED = 1 shl 11
-
-    private const val FLAG_SHADOW_ELEVATION = 1 shl 12
-    private const val FLAG_AMBIENT_SHADOW_COLOR = 1 shl 13
-    private const val FLAG_SPOT_SHADOW_COLOR = 1 shl 14
-
-    private const val FLAG_VIEW_TAG = 1 shl 15
-    private const val FLAG_VIEW_ID = 1 shl 16
-
-    private const val FLAG_KEYBOARD_NAVIGATION_CLUSTER = 1 shl 17
+    private const val FLAG_FOCUS = 1 shl 0
+    private const val FLAG_CLICKABLE = 1 shl 1
+    private const val FLAG_ENABLED = 1 shl 2
+    private const val FLAG_SELECTED = 1 shl 3
+    private const val FLAG_KEYBOARD_NAVIGATION_CLUSTER = 1 shl 4
 
     @JvmStatic
     fun setViewAttributes(
         content: Any?,
         attributes: ViewAttributes,
         unit: RenderUnit<*>?,
-        cloneStateListAnimators: Boolean = false
+    ) {
+      setViewAttributesWithNodeInfo(content, attributes, (unit as? LithoRenderUnit)?.nodeInfo)
+    }
+
+    internal fun setViewAttributesWithNodeInfo(
+        content: Any?,
+        attributes: ViewAttributes,
+        nodeInfo: NodeInfo?,
     ) {
       if (content !is View) {
         return
@@ -431,15 +449,12 @@ class ViewAttributes {
 
       attributes.visibility?.let { content.visibility = it.toViewVisibility() }
 
-      setClickHandler(attributes.clickHandler, content)
+      setClickHandler(attributes.clickHandler, attributes.extraClickListeners, content)
       setLongClickHandler(attributes.longClickHandler, content)
       setFocusChangeHandler(attributes.focusChangeHandler, content)
       setTouchHandler(attributes.touchHandler, content)
       setInterceptTouchHandler(attributes.interceptTouchHandler, content)
-      if (unit is LithoRenderUnit) {
-        val nodeInfo = unit.nodeInfo
-        if (nodeInfo != null) setAccessibilityDelegate(content, nodeInfo)
-      }
+      if (nodeInfo != null) setAccessibilityDelegate(content, nodeInfo)
       setViewId(content, attributes.viewId)
       if (attributes.isTagSet) {
         setViewTag(content, attributes.viewTag)
@@ -452,6 +467,7 @@ class ViewAttributes {
       setRenderEffect(content, attributes.renderEffect)
       setClipToOutline(content, attributes.clipToOutline)
       setClipChildren(content, attributes)
+      setDefaultFocusHighlightEnabled(content, attributes)
       setContentDescription(content, attributes.contentDescription)
       setPaneTitle(content, attributes.accessibilityPaneTitle)
       setLiveRegion(content, attributes.liveRegionMode)
@@ -470,10 +486,10 @@ class ViewAttributes {
       setImportantForAccessibility(content, attributes.importantForAccessibility)
       val isHostSpec = attributes.isHostSpec
       setViewLayerType(content, attributes)
-      setViewStateListAnimator(content, attributes, cloneStateListAnimators)
+      setViewStateListAnimator(content, attributes)
       if (attributes.disableDrawableOutputs) {
         setViewBackground(content, attributes)
-        setViewForeground(content, attributes)
+        setViewForeground(content, attributes.foreground)
 
         // when background outputs are disabled, they are wrapped by a ComponentHost.
         // A background can set the padding of a view, but ComponentHost should not have
@@ -487,9 +503,11 @@ class ViewAttributes {
         // Set view background, if applicable.  Do this before padding
         // as it otherwise overrides the padding.
         setViewBackground(content, attributes)
-        setViewForeground(content, attributes)
+        setViewForeground(content, attributes.foreground)
         setViewLayoutDirection(content, attributes)
       }
+
+      setSystemGestureExclusionZones(content, attributes.systemGestureExclusionZones)
 
       if (content is ComponentHost) {
         content.setSafeViewModificationsEnabled(false)
@@ -525,7 +543,7 @@ class ViewAttributes {
         content.visibility = LithoMountData.getOriginalVisibility(mountFlags)
       }
 
-      if (attributes.clickHandler != null) {
+      if (attributes.clickHandler != null || !attributes.extraClickListeners.isNullOrEmpty()) {
         unsetClickHandler(content)
       }
       if (attributes.longClickHandler != null) {
@@ -556,7 +574,8 @@ class ViewAttributes {
       unsetOutlineProvider(content, attributes.outlineProvider)
       unsetRenderEffect(content, attributes.renderEffect)
       unsetClipToOutline(content, attributes.clipToOutline)
-      unsetClipChildren(content, attributes.clipChildren)
+      unsetClipChildren(content, attributes, mountFlags)
+      unsetDefaultFocusHighlightEnabled(content, attributes)
       if (!attributes.contentDescription.isNullOrEmpty()) {
         unsetContentDescription(content)
       }
@@ -601,9 +620,7 @@ class ViewAttributes {
         content.setSafeViewModificationsEnabled(false)
       }
 
-      if (!attributes.systemGestureExclusionZones.isNullOrEmpty()) {
-        ViewCompat.setSystemGestureExclusionRects(content, emptyList())
-      }
+      unsetSystemGestureExclusionZones(content, attributes.systemGestureExclusionZones)
     }
 
     /**
@@ -619,6 +636,9 @@ class ViewAttributes {
         return
       }
       view.setTag(ComponentHost.COMPONENT_NODE_INFO_ID, nodeInfo)
+      if (view !is ComponentHost && AccessibilityUtils.isAccessibilityEnabled(view.context)) {
+        ComponentHost.registerAccessibilityDelegateOnView(view, nodeInfo)
+      }
     }
 
     fun unsetAccessibilityDelegate(view: View) {
@@ -627,19 +647,48 @@ class ViewAttributes {
       }
       view.setTag(ComponentHost.COMPONENT_NODE_INFO_ID, null)
       if (view !is ComponentHost) {
-        ViewCompat.setAccessibilityDelegate(view, null)
+        ComponentHost.unregisterAccessibilityDelegateOnView(view)
       }
     }
 
     /**
-     * Installs the click listeners that will dispatch the click handler defined in the component's
-     * props. Unconditionally set the clickable flag on the view.
+     * Installs the click listener for this view. The listener is composed at render time (when
+     * [ViewAttributes] are assembled) from the optional primary [clickHandler] and any extra
+     * listeners registered via `Style.clickListener(key, …)`. At mount this method just installs
+     * the pre-composed listener atomically — there is no per-binder mutation of a shared composite.
+     *
+     * - Primary (with or without extras) → [ComponentClickListener]. Extras dispatch inside the
+     *   same `ComponentsSystrace` + touch-event debugger envelope as the primary.
+     * - Extras only (no primary) → an inline [View.OnClickListener] that builds a [ClickEvent] and
+     *   dispatches each extra in order.
      */
-    private fun setClickHandler(clickHandler: EventHandler<ClickEvent>?, view: View) {
-      if (clickHandler == null) {
+    private fun setClickHandler(
+        clickHandler: EventHandler<ClickEvent>?,
+        extra: List<ClickListenerHolder>?,
+        view: View,
+    ) {
+      val hasExtra = !extra.isNullOrEmpty()
+      if (clickHandler == null && !hasExtra) {
         return
       }
-      view.setOnClickListener(ComponentClickListener(clickHandler))
+      val listener: View.OnClickListener =
+          if (clickHandler != null) {
+            ComponentClickListener(
+                clickHandler,
+                if (hasExtra) extra!!.map { it.onClick } else emptyList(),
+            )
+          } else {
+            // Extras-only path — no primary to trace through. A plain [View.OnClickListener]
+            // builds the [ClickEvent] and fans out to each extra in insertion order.
+            val extraLambdas = extra!!.map { it.onClick }
+            View.OnClickListener { v ->
+              val event = ClickEvent().apply { this.view = v }
+              for (i in extraLambdas.indices) {
+                extraLambdas[i](event)
+              }
+            }
+          }
+      view.setOnClickListener(listener)
       view.isClickable = true
     }
 
@@ -695,7 +744,7 @@ class ViewAttributes {
      */
     private fun setFocusChangeHandler(
         focusChangeHandler: EventHandler<FocusChangedEvent>?,
-        view: View
+        view: View,
     ) {
       if (focusChangeHandler == null) {
         return
@@ -758,7 +807,7 @@ class ViewAttributes {
     /** Sets the intercept touch handler defined in the component's props. */
     private fun setInterceptTouchHandler(
         interceptTouchHandler: EventHandler<InterceptTouchEvent>?,
-        view: View
+        view: View,
     ) {
       if (interceptTouchHandler == null) {
         return
@@ -908,12 +957,36 @@ class ViewAttributes {
       }
     }
 
-    private fun unsetClipChildren(view: View, clipChildren: Boolean) {
-      if (!clipChildren && view is ViewGroup) {
-        // Default value for clipChildren is 'true'.
-        // If this ViewGroup had clipChildren set to 'false' before mounting we would reset this
-        // property here on recycling.
-        view.clipChildren = true
+    private fun unsetClipChildren(view: View, attributes: ViewAttributes, flags: Int) {
+      if (attributes.isClipChildrenSet && view is ViewGroup) {
+        // There is no single default to restore: a ComponentHost is created not clipping, while a
+        // plain ViewGroup follows the platform default of clipping. Restore whatever the content
+        // itself had before this component wrote to it.
+        view.clipChildren = LithoMountData.isViewClipChildren(flags)
+      }
+    }
+
+    private fun setDefaultFocusHighlightEnabled(view: View, attributes: ViewAttributes) {
+      if (
+          attributes.isDefaultFocusHighlightEnabledSet &&
+              Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+      ) {
+        VersionedAndroidApis.O.setDefaultFocusHighlightEnabled(
+            view,
+            attributes.defaultFocusHighlightEnabled,
+        )
+      }
+    }
+
+    private fun unsetDefaultFocusHighlightEnabled(view: View, attributes: ViewAttributes) {
+      // Platform default for defaultFocusHighlightEnabled is 'true'. If it was set to a non-default
+      // value before mounting, reset it here on recycling.
+      if (
+          attributes.isDefaultFocusHighlightEnabledSet &&
+              !attributes.defaultFocusHighlightEnabled &&
+              Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+      ) {
+        VersionedAndroidApis.O.setDefaultFocusHighlightEnabled(view, true)
       }
     }
 
@@ -1017,7 +1090,9 @@ class ViewAttributes {
 
     private fun unsetKeyboardNavigationCluster(view: View, flags: Int) {
       ViewCompat.setKeyboardNavigationCluster(
-          view, LithoMountData.isViewKeyboardNavigationCluster(flags))
+          view,
+          LithoMountData.isViewKeyboardNavigationCluster(flags),
+      )
     }
 
     private fun setTooltipText(view: View, tooltipText: String?) {
@@ -1114,9 +1189,12 @@ class ViewAttributes {
       view.background = drawable
     }
 
-    private fun setViewForeground(view: View, attributes: ViewAttributes) {
-      val foreground = attributes.foreground
+    private fun setViewForeground(view: View, foreground: Drawable?) {
       if (foreground != null) {
+        check(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+          ("MountState has a ViewAttributes with foreground however the current Android version doesn't support foreground on Views")
+        }
+        //noinspection AndroidLintNewApi
         view.foreground = foreground
       }
     }
@@ -1124,8 +1202,16 @@ class ViewAttributes {
     private fun unsetViewForeground(view: View, attributes: ViewAttributes) {
       val foreground = attributes.foreground
       if (foreground != null) {
-        view.foreground = null
+        unsetForeground(view)
       }
+    }
+
+    fun unsetForeground(view: View) {
+      check(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        ("MountState has a ViewAttributes with foreground however the current Android version doesn't support foreground on Views")
+      }
+      //noinspection AndroidLintNewApi
+      view.foreground = null
     }
 
     private fun setViewLayoutDirection(view: View, attributes: ViewAttributes) {
@@ -1139,27 +1225,15 @@ class ViewAttributes {
     private fun setViewStateListAnimator(
         view: View,
         attributes: ViewAttributes,
-        cloneStateListAnimators: Boolean
     ) {
-      var stateListAnimator = attributes.stateListAnimator
+      val stateListAnimator = attributes.stateListAnimator
       val stateListAnimatorRes = attributes.stateListAnimatorRes
       if (stateListAnimator == null && stateListAnimatorRes == 0) {
         return
       }
-      if (stateListAnimator == null) {
-        stateListAnimator =
-            AnimatorInflater.loadStateListAnimator(view.context, stateListAnimatorRes)
-      }
-      if (cloneStateListAnimators) {
-        stateListAnimator =
-            try {
-              stateListAnimator?.clone()
-            } catch (e: CloneNotSupportedException) {
-              // If we fail to clone, just fallback to the original animator
-              stateListAnimator
-            }
-      }
-      view.stateListAnimator = stateListAnimator
+      view.stateListAnimator =
+          stateListAnimator
+              ?: AnimatorInflater.loadStateListAnimator(view.context, stateListAnimatorRes)
     }
 
     private fun unsetViewStateListAnimator(view: View, attributes: ViewAttributes) {
@@ -1179,7 +1253,14 @@ class ViewAttributes {
     private fun setViewLayerType(view: View, attributes: ViewAttributes) {
       val type = attributes.layerType
       if (type != LayerType.LAYER_TYPE_NOT_SET) {
-        view.setLayerType(attributes.layerType, attributes.layoutPaint)
+        // Guard against the uncatchable hwui "Unable to create layer ... max size N" native abort
+        // when a HARDWARE layer exceeds the device's GL_MAX_TEXTURE_SIZE (see
+        // LayerType.guardHardwareLayerForSize). No-op unless LayerType.maxHardwareLayerSizePx is
+        // set.
+        view.setLayerType(
+            LayerTypeGuard.guardHardwareLayerForSize(view, type),
+            attributes.layoutPaint,
+        )
       }
     }
 
@@ -1188,6 +1269,28 @@ class ViewAttributes {
       if (type != LayerType.LAYER_TYPE_NOT_SET) {
         view.setLayerType(type, null)
       }
+    }
+
+    private fun setSystemGestureExclusionZones(
+        view: View,
+        zones: List<(Rect) -> Rect>?,
+    ) {
+      if (zones.isNullOrEmpty()) {
+        return
+      }
+      val bounds = Rect(0, 0, view.width, view.height)
+      val exclusionRects = zones.map { it(bounds) }
+      ViewCompat.setSystemGestureExclusionRects(view, exclusionRects)
+    }
+
+    private fun unsetSystemGestureExclusionZones(
+        view: View,
+        zones: List<(Rect) -> Rect>?,
+    ) {
+      if (zones.isNullOrEmpty()) {
+        return
+      }
+      ViewCompat.setSystemGestureExclusionRects(view, emptyList())
     }
   }
 }

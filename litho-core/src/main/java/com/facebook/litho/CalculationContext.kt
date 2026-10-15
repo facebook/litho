@@ -17,24 +17,26 @@
 package com.facebook.litho
 
 import android.util.Pair
+import com.facebook.litho.state.DirtyScopeIndex
 
 interface CalculationContext {
 
   val treeId: Int
   val cache: MeasuredResultCache
   val treeState: TreeState
+  val scopesToUpdate: DirtyScopeIndex
   val layoutVersion: Int
   val rootComponentId: Int
   val isFutureReleased: Boolean
   val treeFuture: TreeFuture<*>?
-  val eventHandlers: List<Pair<String, EventHandler<*>>>?
+  val eventHandlers: List<Pair<GlobalKey, EventHandler<*>>>?
   val isAccessibilityEnabled: Boolean
 
   /**
    * Records a Spec-generated EventHandler. This EventHandlers are an output of the calculation and
    * will be used by [EventHandlersController] to rebind existing EventHandlers.
    */
-  fun recordEventHandler(globalKey: String, eventHandler: EventHandler<*>)
+  fun recordEventHandler(globalKey: GlobalKey, eventHandler: EventHandler<*>)
 
   companion object {
     @JvmName("recordEventHandlers")

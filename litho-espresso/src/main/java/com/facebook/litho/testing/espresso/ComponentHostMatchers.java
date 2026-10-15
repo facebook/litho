@@ -90,11 +90,16 @@ public class ComponentHostMatchers {
           getMountItemCount.setAccessible(true);
           getMountItemAt.setAccessible(true);
 
-          // NULLSAFE_FIXME[Nullable Dereference]
-          int count = (int) getMountItemCount.invoke(host);
+          Object countResult = getMountItemCount.invoke(host);
+          if (countResult == null) {
+            return false;
+          }
+          int count = (int) countResult;
           for (int i = 0; i < count; i++) {
             Object mountItem = getMountItemAt.invoke(host, i);
-            // NULLSAFE_FIXME[Nullable Dereference]
+            if (mountItem == null) {
+              continue;
+            }
             Method getComponent = mountItem.getClass().getDeclaredMethod("getComponent");
             getComponent.setAccessible(true);
             Component component = (Component) getComponent.invoke(mountItem);
@@ -102,8 +107,9 @@ public class ComponentHostMatchers {
             if (lifecycleMatcher.matches(component)) {
               return true;
             }
-            // NULLSAFE_FIXME[Nullable Dereference]
-            mTypes.append(" " + component.getClass().getName());
+            if (component != null) {
+              mTypes.append(" " + component.getClass().getName());
+            }
           }
 
           return false;

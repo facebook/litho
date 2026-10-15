@@ -36,25 +36,26 @@ import org.json.JSONObject
 object DebugComponentDescriptionHelper {
 
   /** Fields to ignore when dumping extra props */
-  private val IGNORE_PROP_FIELDS =
-      HashSet(
-          listOf(
-              "delegate",
-              "feedPrefetcher",
-              "parentFeedContextChain",
-              "child",
-              "children",
-              "childComponent",
-              "trackingCode",
-              "eventsController",
-              "itemAnimator",
-              "onScrollListeners",
-              "recyclerConfiguration",
-              "threadTileViewData",
-              "textColorStateList",
-              "typeface",
-              "text",
-              "params"))
+  private val IGNORE_PROP_FIELDS = HashSet(
+      listOf(
+          "delegate",
+          "feedPrefetcher",
+          "parentFeedContextChain",
+          "child",
+          "children",
+          "childComponent",
+          "trackingCode",
+          "eventsController",
+          "itemAnimator",
+          "onScrollListeners",
+          "recyclerConfiguration",
+          "threadTileViewData",
+          "textColorStateList",
+          "typeface",
+          "text",
+          "params",
+      ),
+  )
 
   @JvmStatic
   fun addViewDescription(
@@ -63,7 +64,7 @@ object DebugComponentDescriptionHelper {
       leftOffset: Int,
       topOffset: Int,
       embedded: Boolean,
-      withProps: Boolean
+      withProps: Boolean,
   ) {
     addViewDescription(debugComponent, sb, leftOffset, topOffset, embedded, withProps, null)
   }
@@ -71,7 +72,7 @@ object DebugComponentDescriptionHelper {
   private fun writeViewFlags(
       sb: StringBuilder,
       layout: DebugLayoutNode?,
-      lithoView: BaseMountingView?
+      lithoView: BaseMountingView?,
   ) {
     sb.append(" ")
     sb.append(if (lithoView != null && lithoView.visibility == View.VISIBLE) "V" else ".")
@@ -81,7 +82,9 @@ object DebugComponentDescriptionHelper {
     sb.append(if (lithoView != null && lithoView.isHorizontalScrollBarEnabled) "H" else ".")
     sb.append(if (lithoView != null && lithoView.isVerticalScrollBarEnabled) "V" else ".")
     sb.append(if (layout?.clickHandler != null) "C" else ".")
-    sb.append(". ..")
+    sb.append(".")
+    sb.append(if (layout?.touchHandler != null) "T" else ".")
+    sb.append(" ..")
   }
 
   /**
@@ -112,7 +115,7 @@ object DebugComponentDescriptionHelper {
       topOffset: Int,
       embedded: Boolean,
       withProps: Boolean,
-      extraDescription: ExtraDescription?
+      extraDescription: ExtraDescription?,
   ) {
     sb.append("litho.")
     sb.append(debugComponent.component.simpleName)
@@ -132,12 +135,13 @@ object DebugComponentDescriptionHelper {
     sb.append(bounds.right - leftOffset)
     sb.append(",")
     sb.append(bounds.bottom - topOffset)
+    appendPaintedBounds(sb, debugComponent, bounds, leftOffset, topOffset)
     val testKey = debugComponent.testKey
-    if (testKey != null && !testKey.isNullOrEmpty()) {
+    if (testKey != null && !testKey.isEmpty()) {
       sb.append(" litho:id/").append(testKey.replace(' ', '_'))
     }
     val textContent = debugComponent.textContent
-    if (textContent != null && !textContent.isNullOrEmpty()) {
+    if (textContent != null && !textContent.isEmpty()) {
       sb.append(" text=\"").append(fixString(textContent, 200)).append("\"")
     }
     if (withProps) {
@@ -147,20 +151,56 @@ object DebugComponentDescriptionHelper {
     if (!embedded && layout?.clickHandler != null) {
       sb.append(" [clickable]")
     }
+    if (!embedded && layout?.touchHandler != null) {
+      sb.append(" [touchable]")
+    }
     sb.append('}')
+  }
+
+  /**
+   * Appends the rect the drawable actually painted into, when it differs from the layout box. A
+   * scale type such as CENTER_INSIDE leaves an under-sized drawable painting a small rect inside a
+   * much larger measured box, and the layout bounds above report only the box.
+   *
+   * Emitted only on a mismatch so the common case keeps its existing format.
+   */
+  private fun appendPaintedBounds(
+      sb: StringBuilder,
+      debugComponent: DebugComponent,
+      bounds: Rect,
+      leftOffset: Int,
+      topOffset: Int,
+  ) {
+    val drawable = debugComponent.mountedDrawable as? MatrixDrawable<*> ?: return
+    val layoutBounds = drawable.bounds
+    val visualBounds = drawable.getVisualBounds()
+    if (visualBounds == layoutBounds) {
+      return
+    }
+    val left = bounds.left - leftOffset + visualBounds.left - layoutBounds.left
+    val top = bounds.top - topOffset + visualBounds.top - layoutBounds.top
+    sb.append(" painted=")
+    sb.append(left)
+    sb.append(",")
+    sb.append(top)
+    sb.append("-")
+    sb.append(left + visualBounds.width())
+    sb.append(",")
+    sb.append(top + visualBounds.height())
   }
 
   fun getSyntheticViewDescriptions(debugComponent: DebugComponent): List<String> {
     val lithoView = debugComponent.lithoView ?: return emptyList()
     val result = mutableListOf<String>()
     val mountDelegateTarget = lithoView.mountDelegateTarget
-    for (i in 0 until mountDelegateTarget.getMountItemCount()) {
-      val mountItem = mountDelegateTarget.getMountItemAt(i)
-      val mountItemComponent = mountItem?.let { getRenderUnit(it).component }
-      if (mountItemComponent?.instanceId == debugComponent.component.instanceId) {
+    for (i in 0 until mountDelegateTarget.getRenderUnitCount()) {
+      val mountItem = mountDelegateTarget.getMountItemAt(i) ?: continue
+      val mountItemComponent = getRenderUnit(mountItem).component
+      if (mountItemComponent.instanceId == debugComponent.component.instanceId) {
         val content = mountItem.content
-        if (content is TextContent) {
-          for (item in content.items) {
+        val textContent = ComponentHostUtils.asTextContent(content)
+        if (textContent != null) {
+          for (item in textContent.items) {
             for (spannable in item.spannables) {
               result.add(
                   buildString {
@@ -170,13 +210,15 @@ object DebugComponentDescriptionHelper {
                     writeViewFlags(this, debugComponent.layoutNode, lithoView)
                     val spanBounds = spannable.bounds
                     append(
-                        " ${spanBounds.left},${spanBounds.top}-${spanBounds.right},${spanBounds.bottom}")
+                        " ${spanBounds.left},${spanBounds.top}-${spanBounds.right},${spanBounds.bottom}",
+                    )
                     append(" text=\"")
                     append(spannable.text)
                     append("\"")
                     append(" props=\"{\"synthetic\":true}\"")
                     append("}")
-                  })
+                  },
+              )
             }
           }
         } else if (content is RCTextView) {
@@ -193,7 +235,8 @@ object DebugComponentDescriptionHelper {
                 append(content.text)
                 append("\"")
                 append("}")
-              })
+              },
+          )
         }
       }
     }

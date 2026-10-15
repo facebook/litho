@@ -1,0 +1,67 @@
+---
+id: flipper-plugins
+title: Flipper Plugins
+---
+
+import VersionedCodeBlock from '@theme/VersionedCodeBlock';
+
+When you create or debug standard Android Views, you can use the 'Layout Preview' and the 'Layout Inspector' tools from Android Studio. However, since Litho operates with different UI primitives, such as 'Components' and 'Sections', those standard tools are not very useful in such cases.
+
+Fortunately, there is [Flipper](https://fbflipper.com), an extensible mobile app debugger whose Layout Inspector plugin gives you an ability to tweak and inspect your UI in runtime and supports Litho.
+
+With Flipper, you'll be able to:
+
+* Access the full UI hierarchy.
+* Inspect Litho Components as well as Views.
+* Change values for View attributes or Component props in a currently running app without rebuilding it.
+
+The following screenshot shows the Flipper plugin in action.
+
+![Flipper Layout plugin](/images/flipper-layout-plugin.png)
+
+## Adding Flipper and Litho Layout plugins to your project
+
+To add Flipper and Litho plugins to your app, you need to take the following steps:
+
+<VersionedCodeBlock language="groovy" code={`
+dependencies {
+  debugImplementation 'com.facebook.flipper:flipper:{{site.flipperVersion}}'
+  debugImplementation 'com.facebook.flipper:flipper-litho-plugin:{{site.flipperVersion}}'
+}
+`} />
+
+Init `FlipperClient` with the Inspector plugin, which is typically done in the custom `Application` class:
+
+```java
+final FlipperClient client = AndroidFlipperClient.getInstance(mApplicationContext);
+final DescriptorMapping descriptorMapping = DescriptorMapping.withDefaults();
+LithoFlipperDescriptors.add(descriptorMapping);
+client.addPlugin(new InspectorFlipperPlugin(mApplicationContext, descriptorMapping));
+client.start();
+```
+
+You can read more about the Layout Inspector in the [Layout Plugin Setup](https://fbflipper.com/docs/setup/layout-plugin) page of the Flipper Documentation web site.
+
+## Sections plugin
+
+Another Litho plugin that is useful for debugging legacy Sections-based lists is the 'Sections' plugin.
+
+With Sections, you can:
+
+* Uncover the flow of state changes for lists backed by the legacy Sections API.
+* Visualise these changes such as which items were added, reused, or deleted.
+* Show the data corresponding to the specific Section.
+
+:::note
+For modern Lazy Collections (`LazyList`, `LazyGrid`), use the standard Layout Inspector. The Sections plugin is specifically for legacy Sections-based lists. For more information on Sections, see [Sections Basics](../../legacy-spec-api/sections/start.mdx).
+:::
+
+The following screenshot shows the Sections plugin in action.
+
+![Flipper Sections plugin](/images/flipper-sections-plugin.png)
+
+To enable the Sections plugin in your app, you need to add the following line in addition to the general Flipper configuration:
+
+```java
+client.addPlugin(new SectionsFlipperPlugin(true));
+```

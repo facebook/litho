@@ -22,11 +22,12 @@ package com.facebook.litho
  */
 @Deprecated(
     """Use ComponentAssert APIs instead. Because this isn't generated with codegen, it can
-      have subtle issues in tests.""")
+      have subtle issues in tests.""",
+)
 class TestComponent internal constructor(val wrappedComponent: Component) :
     SpecGeneratedComponent("TestComponent(" + wrappedComponent.simpleName + ")") {
 
-  override fun isEquivalentProps(other: Component?, shouldCompareCommonProps: Boolean): Boolean {
+  override fun isEquivalentProps(other: Component?): Boolean {
     return this === other
   }
 }

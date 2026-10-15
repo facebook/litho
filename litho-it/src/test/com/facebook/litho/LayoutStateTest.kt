@@ -20,6 +20,7 @@ import com.facebook.litho.SizeSpec.makeSizeSpec
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.TestLayoutComponent
 import com.facebook.litho.testing.testrunner.LithoTestRunner
+import com.facebook.rendercore.SizeConstraints
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
@@ -33,7 +34,7 @@ class LayoutStateTest {
   @Test
   fun toRenderTree_emptyMountableOutputs_hasPositionForRoot() {
     val baseContext = lithoTestRule.context
-    val context = ComponentTree.create(baseContext).build().context
+    val context = ComponentTree.create(baseContext).enableChildClipping(true).build().context
     val result =
         ResolveTreeFuture.resolve(
             context,
@@ -43,18 +44,22 @@ class LayoutStateTest {
             -1,
             null,
             null,
-            null)
+            null,
+        )
     val layoutState =
         LayoutTreeFuture.layout(
             result,
-            makeSizeSpec(20, SizeSpec.EXACTLY),
-            makeSizeSpec(20, SizeSpec.EXACTLY),
+            SizeConstraints.fromMeasureSpecs(
+                makeSizeSpec(20, SizeSpec.EXACTLY),
+                makeSizeSpec(20, SizeSpec.EXACTLY),
+            ),
             -1,
             -1,
+            TreeState(result.treeState),
             null,
             null,
             null,
-            null)
+        )
     layoutState.toRenderTree()
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(1)
     val renderTreeNode = layoutState.getMountableOutputAt(0)

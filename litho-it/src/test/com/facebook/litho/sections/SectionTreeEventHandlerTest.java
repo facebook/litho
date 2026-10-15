@@ -24,6 +24,8 @@ import static org.mockito.Mockito.when;
 import android.util.Pair;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.EventHandlersController;
+import com.facebook.litho.GlobalKey;
+import com.facebook.litho.StringGlobalKey;
 import com.facebook.litho.annotations.EventHandlerRebindMode;
 import com.facebook.litho.testing.sections.TestTarget;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
@@ -71,7 +73,7 @@ public class SectionTreeEventHandlerTest {
             null,
             EventHandlerRebindMode.REBIND);
 
-    assertThat(eventHandlersController.getDispatchInfos().size()).isEqualTo(0);
+    assertThat(eventHandlersController.getDispatchInfos()).isNullOrEmpty();
 
     EventHandler eventHandler2 =
         Section.newEventHandler(
@@ -82,12 +84,12 @@ public class SectionTreeEventHandlerTest {
             null,
             EventHandlerRebindMode.REBIND);
 
-    assertThat(eventHandlersController.getDispatchInfos().size()).isEqualTo(0);
+    assertThat(eventHandlersController.getDispatchInfos()).isNullOrEmpty();
     assertThat(eventHandler1.dispatchInfo).isNotSameAs(eventHandler2.dispatchInfo);
 
-    final ArrayList<Pair<String, EventHandler<?>>> eventHandlers = new ArrayList<>();
-    eventHandlers.add(new Pair<>(SECTION1_GLOBAL_KEY, eventHandler1));
-    eventHandlers.add(new Pair<>(SECTION1_GLOBAL_KEY, eventHandler2));
+    final ArrayList<Pair<GlobalKey, EventHandler<?>>> eventHandlers = new ArrayList<>();
+    eventHandlers.add(new Pair<>(new StringGlobalKey(SECTION1_GLOBAL_KEY), eventHandler1));
+    eventHandlers.add(new Pair<>(new StringGlobalKey(SECTION1_GLOBAL_KEY), eventHandler2));
 
     eventHandlersController.canonicalizeEventDispatchInfos(eventHandlers);
 
@@ -99,7 +101,7 @@ public class SectionTreeEventHandlerTest {
     SectionContext newScopedContext = SectionContext.withScope(mContext, newSection);
 
     eventHandlersController.updateEventDispatchInfoForGlobalKey(
-        newScopedContext, newSection, mSection.getGlobalKey());
+        newScopedContext, newSection, new StringGlobalKey(mSection.getGlobalKey()));
     eventHandlersController.clearUnusedEventDispatchInfos();
 
     assertThat(eventHandlersController.getDispatchInfos().size()).isEqualTo(1);
@@ -140,9 +142,9 @@ public class SectionTreeEventHandlerTest {
             null,
             EventHandlerRebindMode.REBIND);
 
-    final ArrayList<Pair<String, EventHandler<?>>> eventHandlers = new ArrayList<>();
-    eventHandlers.add(new Pair<>(SECTION1_GLOBAL_KEY, eventHandler1));
-    eventHandlers.add(new Pair<>(SECTION2_GLOBAL_KEY, eventHandler2));
+    final ArrayList<Pair<GlobalKey, EventHandler<?>>> eventHandlers = new ArrayList<>();
+    eventHandlers.add(new Pair<>(new StringGlobalKey(SECTION1_GLOBAL_KEY), eventHandler1));
+    eventHandlers.add(new Pair<>(new StringGlobalKey(SECTION2_GLOBAL_KEY), eventHandler2));
 
     eventHandlersController.canonicalizeEventDispatchInfos(eventHandlers);
 
@@ -153,11 +155,15 @@ public class SectionTreeEventHandlerTest {
     assertThat(eventHandler2.dispatchInfo.hasEventDispatcher).isSameAs(section2);
 
     eventHandlersController.updateEventDispatchInfoForGlobalKey(
-        scopedContext2_2, section2_2, SECTION2_GLOBAL_KEY);
+        scopedContext2_2, section2_2, new StringGlobalKey(SECTION2_GLOBAL_KEY));
     eventHandlersController.clearUnusedEventDispatchInfos();
 
     assertThat(eventHandlersController.getDispatchInfos().size()).isEqualTo(1);
-    assertThat(eventHandlersController.getDispatchInfos().get(SECTION2_GLOBAL_KEY)).isNotNull();
+    assertThat(
+            eventHandlersController
+                .getDispatchInfos()
+                .get(new StringGlobalKey(SECTION2_GLOBAL_KEY)))
+        .isNotNull();
 
     eventHandlersController.clearUnusedEventDispatchInfos();
     assertThat(eventHandlersController.getDispatchInfos().size()).isEqualTo(0);

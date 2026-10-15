@@ -117,7 +117,9 @@ import kotlin.Unit;
  *     RecyclerBinderConfiguration} allows to make {@link Recycler} circular.
  * @see Section
  * @see GroupSectionSpec
+ * @deprecated Use LazyCollections instead.
  */
+@Deprecated
 @Nullsafe(Nullsafe.Mode.LOCAL)
 @LayoutSpec(events = PTRRefreshEvent.class)
 public class RecyclerCollectionComponentSpec {
@@ -148,6 +150,7 @@ public class RecyclerCollectionComponentSpec {
   @PropDefault public static final boolean isRightFadingEnabled = true;
   @PropDefault public static final boolean isTopFadingEnabled = true;
   @PropDefault public static final boolean isBottomFadingEnabled = true;
+  @PropDefault public static final boolean removeAccessibilityListRole = false;
 
   @OnCreateLayout
   static @Nullable Component onCreateLayout(
@@ -200,6 +203,7 @@ public class RecyclerCollectionComponentSpec {
           LithoRecyclerView.OnBeforeLayoutListener onBeforeLayoutListener,
       @Prop(optional = true) @Nullable
           LithoRecyclerView.OnAfterLayoutListener onAfterLayoutListener,
+      @Prop(optional = true) boolean removeAccessibilityListRole,
       @State(canUpdateLazily = true) boolean hasSetSectionTreeRoot,
       @State RecyclerCollectionEventsController internalEventsController,
       @State LayoutInfo layoutInfo,
@@ -212,10 +216,12 @@ public class RecyclerCollectionComponentSpec {
     recyclerCollectionLoadEventsHandler.setLoadEventsHandler(loadEventsHandler);
 
     // More side effects in OnCreateLayout. Watch out:
-    if (hasSetSectionTreeRoot && setRootAsync) {
+    if (!hasSetSectionTreeRoot) {
+      RecyclerCollectionComponent.lazyUpdateHasSetSectionTreeRoot(c, true);
+    }
+    if (setRootAsync && hasSetSectionTreeRoot) {
       sectionTree.setRootAsync(section);
     } else {
-      RecyclerCollectionComponent.lazyUpdateHasSetSectionTreeRoot(c, true);
       sectionTree.setRoot(section);
     }
 
@@ -237,7 +243,7 @@ public class RecyclerCollectionComponentSpec {
     ComponentsConfiguration componentsConfiguration = recyclerBinderConfig.componentsConfiguration;
 
     if (componentsConfiguration == null) {
-      componentsConfiguration = c.mLithoConfiguration.componentsConfig;
+      componentsConfiguration = c.getLithoConfiguration().componentsConfig;
     }
 
     PrimitiveRecyclerBinderStrategy primitiveRecyclerBinderStrategy =
@@ -322,6 +328,7 @@ public class RecyclerCollectionComponentSpec {
             disableAddingPadding,
             onBeforeLayoutListener,
             onAfterLayoutListener,
+            removeAccessibilityListRole,
             javaStyle.build());
 
     final ContainerBuilder containerBuilder =

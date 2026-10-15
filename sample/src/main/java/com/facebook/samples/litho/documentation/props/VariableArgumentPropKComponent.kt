@@ -16,11 +16,11 @@
 
 package com.facebook.samples.litho.documentation.props
 
-import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.kotlin.widget.Text
+import com.facebook.litho.layout.flexbox.Column
 import com.facebook.rendercore.sp
 
 // start_example

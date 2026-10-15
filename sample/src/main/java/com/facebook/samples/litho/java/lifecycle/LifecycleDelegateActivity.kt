@@ -39,13 +39,15 @@ class LifecycleDelegateActivity : NavigatableDemoActivity() {
             type: Int,
             thread: Thread,
             timestamp: Long,
-            id: String
+            id: String,
         ) {
           consoleView?.post(
               LogRunnable(
                   consoleView,
                   LifecycleDelegateLog.prefix(thread, timestamp, id),
-                  LifecycleDelegateLog.log(type)))
+                  LifecycleDelegateLog.log(type),
+              ),
+          )
         }
 
         override fun setRootComponent(isSync: Boolean) {
@@ -73,7 +75,9 @@ class LifecycleDelegateActivity : NavigatableDemoActivity() {
     parent.orientation = LinearLayout.VERTICAL
     parent.layoutParams =
         LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT,
+        )
 
     // start_example_lifecycleprovider
     val lifecycleProvider = AOSPLithoVisibilityEventsController(this)
@@ -86,18 +90,24 @@ class LifecycleDelegateActivity : NavigatableDemoActivity() {
                 .delegateListener(delegateListener)
                 .consoleDelegateListener(consoleDelegateListener)
                 .build(),
-            lifecycleProvider /* The LithoVisibilityEventsController for this LithoView */)
+            lifecycleProvider, /* The LithoVisibilityEventsController for this LithoView */
+            this,
+        )
     // end_example_lifecycleprovider
     val params1 =
         LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT,
+        )
     params1.weight = 1f
     lithoView?.layoutParams = params1
     parent.addView(lithoView)
     consoleView = ConsoleView(this)
     val params2 =
         LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT,
+        )
     params2.weight = 1f
     consoleView?.layoutParams = params2
     parent.addView(consoleView)

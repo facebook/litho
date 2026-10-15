@@ -89,6 +89,6 @@ class DefaultContentPoolTest {
     override fun createContent(context: Context): TextView =
         TextView(context).also { numberAllocations++ }
 
-    override val renderType: RenderUnit.RenderType = RenderUnit.RenderType.VIEW
+    override val renderType: RenderType = RenderType.VIEW
   }
 }

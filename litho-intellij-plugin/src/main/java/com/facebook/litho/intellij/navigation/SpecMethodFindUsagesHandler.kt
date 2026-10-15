@@ -1,0 +1,69 @@
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.facebook.litho.intellij.navigation
+
+import com.facebook.litho.intellij.extensions.EventLogger
+import com.facebook.litho.intellij.logging.LithoLoggerProvider
+import com.intellij.find.findUsages.FindUsagesHandler
+import com.intellij.psi.PsiClass
+import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiMethod
+import com.intellij.psi.PsiModifier
+import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.util.ArrayUtil
+import java.util.function.Function
+
+/**
+ * Adds usages of corresponding Generated class's methods to the search results of the Spec class's
+ * method.
+ */
+class SpecMethodFindUsagesHandler(
+    psiElement: PsiElement,
+    private val findGeneratedClass: Function<PsiClass, PsiClass>,
+) : FindUsagesHandler(psiElement) {
+
+  override fun getPrimaryElements(): Array<PsiElement> {
+    val element = psiElement
+    if (element is PsiMethod) {
+      val methods = findComponentMethods(element)
+      val data = HashMap<String, String>()
+      data[EventLogger.KEY_TARGET] = EventLogger.VALUE_NAVIGATION_TARGET_METHOD
+      data[EventLogger.KEY_TYPE] = EventLogger.VALUE_NAVIGATION_TYPE_FIND_USAGES
+      LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_NAVIGATION, data)
+      return ArrayUtil.mergeArrays(methods, super.getPrimaryElements())
+    }
+    return super.getPrimaryElements()
+  }
+
+  private fun findComponentMethods(method: PsiMethod): Array<PsiMethod> {
+    val parent = PsiTreeUtil.findFirstParent(method) { it is PsiClass } as? PsiClass
+    if (parent != null) {
+      val component = findGeneratedClass.apply(parent)
+      if (component != null) {
+        return component.findMethodsByName(method.name, true)
+      }
+    }
+    return PsiMethod.EMPTY_ARRAY
+  }
+
+  companion object {
+    @JvmStatic
+    fun canFindUsages(element: PsiElement): Boolean {
+      return element is PsiMethod && element.modifierList.hasModifierProperty(PsiModifier.STATIC)
+    }
+  }
+}

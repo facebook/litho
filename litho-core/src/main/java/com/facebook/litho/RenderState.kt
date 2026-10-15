@@ -27,7 +27,11 @@ import com.facebook.litho.internal.HookKey
 class RenderState(from: RenderState? = null) {
 
   private var layoutStateId: Int = from?.layoutStateId ?: LayoutState.NO_PREVIOUS_LAYOUT_STATE_ID
-  private val renderData: MutableMap<HookKey, RenderData> = HashMap(from?.renderData.orEmpty())
+  private var renderData: MutableMap<HookKey, RenderData>? =
+      from?.renderData?.let { if (it.isNotEmpty()) HashMap(it) else null }
+
+  private fun getOrCreateRenderData(): MutableMap<HookKey, RenderData> =
+      renderData ?: HashMap<HookKey, RenderData>().also { renderData = it }
 
   fun recordRenderData(layoutState: LayoutState) {
     // Record the layout state id for the next layout calculation.
@@ -41,13 +45,14 @@ class RenderState(from: RenderState? = null) {
       if (!seenHookKeys.add(hookKey)) {
         // We found two components with the same global key.
         throw RuntimeException(
-            "Cannot record render data for KComponent, found another Component with the same key: ${hookKey.globalKey}")
+            "Cannot record render data for KComponent, found another Component with the same key: ${hookKey.globalKey}",
+        )
       }
-      renderData[hookKey] = creator.recordRenderData()
+      getOrCreateRenderData()[hookKey] = creator.recordRenderData()
     }
   }
 
-  internal fun getPreviousRenderData(hookKey: HookKey): RenderData? = renderData[hookKey]
+  internal fun getPreviousRenderData(hookKey: HookKey): RenderData? = renderData?.get(hookKey)
 
   fun getPreviousLayoutStateId(): Int = layoutStateId
 }

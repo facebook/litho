@@ -1,0 +1,333 @@
+---
+id: use-state
+title: Persisting Values Across Renders
+keywords:
+    - useState
+    - State<T>
+    - batch updates
+    - persistent state
+    - component state
+    - update
+    - updateSync
+    - state management
+    - reactive state
+    - state value
+api_category: hooks
+related_docs: [use-effect, use-cached, use-ref, use-callback, props-vs-state]
+api_names: [useState, useStateWithDeps, State, update, updateSync, value]
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import VersionedCodeBlock from '@theme/VersionedCodeBlock';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+:::info API Quick Reference
+**Signature:** `fun <T> ComponentScope.useState(initializer: () -> T): State<T>`
+
+| Method | Signature | Description |
+|--------|-----------|-------------|
+| `value` | `State<T>.value: T` | Get current state value (snapshot for this render) |
+| `update` | `update(newValue: T)` | Async state update with direct value |
+| `update` | `update(updater: (T) -> T)` | Async update with lambda (use for dependent updates) |
+| `updateSync` | `updateSync(newValue: T)` | Synchronous state update with direct value |
+| `updateSync` | `updateSync(updater: (T) -> T)` | Synchronous update with lambda |
+
+**Variant with Dependencies:**
+```kotlin
+fun <T> ComponentScope.useStateWithDeps(vararg deps: Any?, initializer: () -> T): State<T>
+```
+`useStateWithDeps` re-initializes the state when any dependency changes (without triggering re-render).
+
+**Import:**
+```kotlin
+import com.facebook.litho.useState
+import com.facebook.litho.useStateWithDeps
+```
+:::
+
+`useState` is a hook that allows a component to persist and update a single value across renders and is the most common hook you'll encounter.
+
+To familiarize yourself with the concept and rules for hooks, see the [Introduction to Hooks](hooks-intro.mdx) page.
+
+## Declaring and Using State
+
+Declare state with `useState`, passing an initial value. `useState` will always return a `State<T>` holding whatever the current value of that state is. On the first render, this is the initial value, however in subsequent renders it will include any updates that have been committed for that state variable.
+
+The following code shows an example of a component that renders a counter that increments when it is clicked. `useState` is used to track the value of that counter over time:
+
+```kotlin
+import com.facebook.litho.ClickEvent
+import com.facebook.litho.Component
+import com.facebook.litho.ComponentScope
+import com.facebook.litho.KComponent
+import com.facebook.litho.Style
+import com.facebook.litho.kotlin.widget.Text
+import com.facebook.litho.useCallback
+import com.facebook.litho.useState
+import com.facebook.litho.view.onClick
+
+class CounterComponent : KComponent() {
+  override fun ComponentScope.render(): Component {
+    val clicks = useState { 0 }
+    val onClick = useCallback<ClickEvent, Unit> { clicks.update { c -> c + 1 } }
+    return Text(
+        style = Style.onClick(action = onClick),
+        text = "Clicks: ${clicks.value}")
+  }
+}
+```
+
+Because the click handler captures state, `useCallback` preserves its identity across renders while
+keeping the captured state current. Pass the typed callback directly to `Style.onClick` instead of
+wrapping it in another lambda.
+
+## Updating State
+
+:::note
+`update` causes the re-render to be **async by default**. If you need to perform a synchronous state update (that is, one which will cause a re-render synchronously on the current thread), use `updateSync`.
+:::
+
+To update state, use the `update` method on the `State<T>` returned from `useState`. This will trigger a render pass with the new state value:
+
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/documentation/CheckboxComponent.kt start=start_example end=end_example
+```
+
+### Value vs. Lambda variants
+
+`update` and `updateSync` have two variants:
+
+1. **Value variant** - takes a determined value, such as `myState.update(1)`.
+2. **Lambda variant** - takes a lambda receiving the old value which can be used to compute a new value, such as `myState.update { c -> c + 1 }`.
+
+**The basic rule of thumb is: use the lambda variant when you need to perform an update that depends on the old state value.** This is because `value` on `State` is a snapshot of that state for the current render and may not reflect any renders that have occurred since (or are currently occurring on other threads).
+
+For example, if your state update increments a counter, then using the function version of `update` with `count -> count + 1` enables you to account for updates that are in flight but not yet applied (such as if the user has tapped a button triggering the update multiple times in succession).
+
+## Using state in child components
+
+*Avoid passing a State directly to the child component*. Instead, pass a lambda to the child which it can invoke to notify the parent to update the state:
+
+```kotlin {3,5} file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/state/StateParentChildComponent.kt start=start_example_parent end=end_example_parent
+```
+
+And then in the child component:
+
+```kotlin {1,4} file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/state/ChildComponent.kt start=start_example_child end=end_example_child
+```
+
+## Batching Updates
+
+Litho has an internal mechanism where it batches state updates to avoid the scenario of doing one layout re-calculation per state update (and corresponding mount) and, therefore
+become more performant.
+
+Internally, Litho achieves this by leveraging the lifecycle of the `Choreographer` API and how it breaks down its different work phases. Whenever the `Choreographer` receives a VSYNC signal,
+it starts a cycle to prepare the next Frame. In this cycle, it goes through 3 main phases:
+
+1. Input handling
+2. Animation (which layouts, measures, and draws)
+3. Traversals
+
+When Litho enqueues a new state update, it will schedule its layout calculation on the `Choreographer`'s next animation phase. This way, any subsequent state update enqueued before the next animation phase will
+be taken into account in the following layout calculation (and not re-schedule any more work).
+
+<img src={useBaseUrl('/images/batched_updates.png')} alt='Batched Updates Process' className="white-background" />
+
+## Common Patterns
+
+:::tip Pattern: Lambda Updates for Dependent State
+Use the lambda variant of `update` when the new value depends on the old value:
+```kotlin
+// ✅ Correct - accounts for concurrent updates
+count.update { c -> c + 1 }
+```
+:::
+
+:::caution Anti-Pattern: Value Updates for Dependent State
+Don't use `value` for dependent updates - may miss concurrent updates:
+```kotlin
+// ❌ Incorrect - may miss updates if called rapidly
+count.update(count.value + 1)
+```
+:::
+
+:::tip Pattern: Pass Callbacks to Children
+Pass update lambdas to children instead of State objects:
+```kotlin
+// ✅ Correct - child receives callback
+ChildComponent(onUpdate = { newValue -> myState.update(newValue) })
+```
+:::
+
+:::tip Pattern: Pass Lambdas That Read State
+For optimal read tracking, pass lambdas that read state inside the child:
+```kotlin
+// ✅ Optimal - state read occurs in proper phase when lambda is invoked
+ChildComponent(
+  getCount = { count.value },  // State read deferred until invocation
+  onIncrement = { count.update { c -> c + 1 } }
+)
+```
+This allows the state read to happen at the appropriate time during rendering, which can improve performance with read tracking.
+:::
+
+:::caution Anti-Pattern: Passing State to Children
+Don't pass State directly to child components:
+```kotlin
+// ❌ Incorrect - breaks encapsulation
+ChildComponent(state = myState)
+```
+:::
+
+## State with Dependencies (useStateWithDeps)
+
+`useStateWithDeps` extends `useState` by re-initializing state when any of its dependencies change. This is useful for derived or dependent state that should reset when inputs change.
+
+### Key Differences from useState
+
+| Feature | `useState` | `useStateWithDeps` |
+|---------|-----------|-------------------|
+| **Initialization** | Only on first render | On first render + when deps change |
+| **Dependencies** | None | Requires one or more deps |
+| **Auto-reset** | No | Yes, when deps change |
+| **Triggers re-render** | Only via `update()` | Only via `update()` (not from re-init) |
+
+### When to Use
+
+**Use `useStateWithDeps` when:**
+- State should reset/clear when any dependencies change
+- Implementing "derived state" that depends on other values
+
+**Use `useState` when:**
+- State is independent of other values
+- You want manual control over all state updates
+- State should persist across prop changes
+
+### Basic Example
+
+The following example shows a search interface where the result message automatically resets when the search text changes:
+
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/state/UseStateWithDepsExampleComponent.kt start=start_example end=end_example
+```
+
+### How It Works
+
+1. **Declaration**: Pass dependencies as varargs before the initializer:
+   ```kotlin
+   val state = useStateWithDeps(dep1, dep2) { initialValue }
+   ```
+
+2. **Re-initialization**: When any dependency changes (checked with `areObjectsEquivalent`), the initializer runs again and state is set to the new value.
+
+3. **No Auto Re-render**: Re-initialization updates the state value but doesn't trigger a re-render by itself. Re-renders happen from:
+   - Explicit `state.update()` calls
+   - Parent component re-renders
+   - Other state changes
+
+### Multiple Dependencies
+
+You can pass multiple dependencies. State re-initializes when *any* dependency changes:
+
+```kotlin
+val state = useStateWithDeps(userId, filter, sortOrder) {
+  // Re-initializes whenever userId, filter, or sortOrder changes
+  loadInitialData(userId, filter, sortOrder)
+}
+```
+
+### Common Patterns
+
+:::tip Pattern: Auto-clearing Error Messages
+Automatically clear error messages when user changes input:
+```kotlin
+val userInput = useState { "" }
+// Error message clears when input changes
+val errorMessage = useStateWithDeps(userInput.value) { "" }
+
+// Later: set error on validation
+if (!isValid(userInput.value)) {
+  errorMessage.update("Invalid input")
+}
+// When user types again, errorMessage automatically resets to ""
+```
+:::
+
+:::tip Pattern: Dependent Derived State
+Initialize state based on props that may change:
+```kotlin
+@Prop val userId: String
+
+override fun ComponentScope.render(): Component {
+  // When userId changes, userProfile resets to loading state
+  val userProfile = useStateWithDeps(userId) {
+    ProfileData(status = Status.LOADING)
+  }
+
+  // Trigger load on userId change via useEffect
+  useEffect(userId) {
+    loadProfile(userId) { profile ->
+      userProfile.update(profile)
+    }
+  }
+  // ...
+}
+```
+:::
+
+:::caution Anti-Pattern: Using for All State
+Don't use `useStateWithDeps` when `useState` suffices:
+```kotlin
+// ❌ Unnecessary - no dependencies needed
+val count = useStateWithDeps() { 0 }
+
+// ✅ Correct - use useState for independent state
+val count = useState { 0 }
+```
+:::
+
+:::caution Anti-Pattern: Depending on State.value for Simple Updates
+Don't use dependencies just to trigger updates you could do manually:
+```kotlin
+// ❌ Complicated - unnecessary dependency
+val input = useState { "" }
+val upper = useStateWithDeps(input.value) { input.value.uppercase() }
+
+// ✅ Better - use useCached for pure computations
+val upper = useCached(input.value) { it.uppercase() }
+```
+For pure computations on state, prefer [useCached](use-cached.mdx) instead.
+:::
+
+### Side Effects vs. Re-initialization
+
+**`useStateWithDeps`** is for *state re-initialization*, not side effects:
+
+```kotlin
+// ✅ Correct use: re-initialize state when userId changes
+val profileData = useStateWithDeps(userId) {
+  ProfileData(status = Status.LOADING)
+}
+
+// ❌ Incorrect: side effects belong in useEffect
+val data = useStateWithDeps(userId) {
+  fetchData(userId) // Don't do this!
+  Data()
+}
+
+// ✅ Correct: use useEffect for side effects
+useEffect(userId) {
+  fetchData(userId) { result ->
+    profileData.update(result)
+  }
+}
+```
+
+Use [useEffect](use-effect.mdx) for side effects that should run when dependencies change.
+
+## See Also
+
+- [Introduction to Hooks](hooks-intro.mdx) - Hook fundamentals and rules
+- [useEffect](use-effect.mdx) - Side effects and lifecycle management
+- [useCached](use-cached.mdx) - Cache expensive computations
+- [useRef](use-ref.mdx) - Mutable references without re-renders
+- [Props vs State](../best-practices/props-vs-state.md) - When to use state vs props

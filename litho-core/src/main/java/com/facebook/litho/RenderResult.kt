@@ -27,7 +27,7 @@ class RenderResult<T>
 internal constructor(
     @JvmField internal val value: T,
     @JvmField internal val transitionData: TransitionData?,
-    @JvmField internal val useEffectEntries: List<Attachable>?
+    @JvmField internal val useEffectEntries: List<Attachable>?,
 ) {
   constructor(value: T) : this(value, null, null)
 }

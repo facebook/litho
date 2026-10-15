@@ -49,7 +49,10 @@ object AnimationsDebug {
     }
     val animatorDurationScale =
         Settings.Global.getFloat(
-            context.contentResolver, Settings.Global.ANIMATOR_DURATION_SCALE, 1f)
+            context.contentResolver,
+            Settings.Global.ANIMATOR_DURATION_SCALE,
+            1f,
+        )
     return (ComponentsConfiguration.forceEnableTransitionsForInstrumentationTests ||
         animatorDurationScale != 0f)
   }

@@ -39,13 +39,6 @@ module.exports = {
   organizationName: 'facebook',
   projectName: 'litho',
   themeConfig: {
-    announcementBar: {
-      id: 'support_ukraine',
-      content:
-        'Support Ukraine 🇺🇦 <a target="_blank" rel="noopener noreferrer" href="https://opensource.facebook.com/support-ukraine">Help Provide Humanitarian Aid to Ukraine</a>',
-      textColor: '#091E42',
-      isCloseable: false,
-    },
     navbar: {
       title: siteTitle,
       logo: {
@@ -55,7 +48,7 @@ module.exports = {
       items: [
         {
           label: 'Docs',
-          to: 'docs/mainconcepts/components-basics',
+          to: 'docs/components-basics',
           position: 'right',
         },
         {
@@ -100,8 +93,8 @@ module.exports = {
           title: 'Open Source',
           items: [
             {
-              label: 'How To Contribute',
-              to: 'docs/contributing',
+              label: 'Where To Contribute',
+              href: repoUrl,
             },
             {
               label: 'Open Source Projects',
@@ -173,58 +166,295 @@ module.exports = {
             from: ['/docs'],
           },
           {
-            to: '/docs/codegen/dynamic-props',
+            to: '/docs/legacy-spec-api/dynamic-props',
             from: [
               '/docs/dynamic-props',
-              '/docs/mainconcepts/coordinate-state-actions/dynamic-props',
+              '/docs/coordinate-state-actions/dynamic-props',
+              '/docs/codegen/dynamic-props',
             ],
           },
           {
-            to: '/docs/sections/start',
-            from: ['/docs/sections-intro'],
+            to: '/docs/legacy-spec-api/sections/start',
+            from: ['/docs/sections-intro', '/docs/sections/start'],
           },
           {
-            to: '/docs/sections/recycler-collection-component',
-            from: ['/docs/recycler-collection-component', '/docs/hscrolls'],
+            to: '/docs/legacy-spec-api/sections/recycler-collection-component',
+            from: ['/docs/recycler-collection-component', '/docs/hscrolls', '/docs/sections/recycler-collection-component'],
           },
           {
-            to: '/docs/sections/services',
-            from: ['/docs/services'],
+            to: '/docs/legacy-spec-api/sections/advanced/services',
+            from: ['/docs/services', '/docs/sections/services'],
           },
           {
-            to: '/docs/animations/transition-basics',
-            from: ['/docs/transition-basics'],
+            to: '/docs/transitions/transition-basics',
+            from: ['/docs/transition-basics', '/docs/animations/transition-basics'],
           },
           {
-            to: '/docs/animations/transition-types',
-            from: ['/docs/transition-types'],
+            to: '/docs/transitions/transition-types',
+            from: ['/docs/transition-types', '/docs/animations/transition-types'],
           },
           {
-            to: '/docs/animations/transition-choreography',
-            from: ['/docs/transition-choreography'],
+            to: '/docs/transitions/transition-choreography',
+            from: ['/docs/transition-choreography', '/docs/animations/transition-choreography'],
           },
           {
-            to: '/docs/animations/transition-all-layout',
-            from: ['/docs/transition-all-layout'],
+            to: '/docs/transitions/transition-all-layout',
+            from: ['/docs/transition-all-layout', '/docs/animations/transition-all-layout'],
           },
           {
-            to: '/docs/codegen/transition-definitions',
+            to: '/docs/legacy-spec-api/transition-definitions',
             from: [
               '/docs/transition-definitions',
               '/docs/animations/transition-definitions',
+              '/docs/codegen/transition-definitions',
             ],
           },
           {
-            to: '/docs/animations/transition-key-types',
-            from: ['/docs/transition-key-types'],
+            to: '/docs/transitions/transition-key-types',
+            from: ['/docs/transition-key-types', '/docs/animations/transition-key-types'],
           },
           {
-            to: '/docs/codegen/coding-style',
-            from: ['/docs/best-practices/coding-style'],
+            to: '/docs/legacy-spec-api/coding-style',
+            from: ['/docs/best-practices/coding-style', '/docs/codegen/coding-style'],
           },
           {
-            to: '/docs/kotlin/kotlin-api-cheatsheet',
-            from: ['/docs/kotlin/kotlin-api-cheatsheet-primitives'],
+            to: '/docs/migrating-to-kcomponents/kotlin-api-cheatsheet',
+            from: ['/docs/kotlin/kotlin-api-cheatsheet-primitives', '/docs/kotlin/kotlin-api-cheatsheet', '/docs/kotlin/cheatsheet'],
+          },
+          // kotlin/ → migrating-to-kcomponents/
+          {
+            to: '/docs/migrating-to-kcomponents/kotlin-api-basics',
+            from: ['/docs/kotlin/basics'],
+          },
+          {
+            to: '/docs/migrating-to-kcomponents/event-handling',
+            from: ['/docs/kotlin/event-handling'],
+          },
+          {
+            to: '/docs/migrating-to-kcomponents/kotlin-flexbox-containers',
+            from: ['/docs/kotlin/flexbox-containers'],
+          },
+          {
+            to: '/docs/migrating-to-kcomponents/hooks-for-spec-developers',
+            from: ['/docs/kotlin/hooks-for-spec-developers'],
+          },
+          {
+            to: '/docs/migrating-to-kcomponents/kotlin-transitions',
+            from: ['/docs/kotlin/kotlin-transitions'],
+          },
+          {
+            to: '/docs/migrating-to-kcomponents/migrating-from-mountspecs-to-primitives',
+            from: ['/docs/kotlin/migrating-from-mountspecs-to-primitives'],
+          },
+          {
+            to: '/docs/migrating-to-kcomponents/migrate-layout-spec',
+            from: ['/docs/kotlin/migrating-layout-spec'],
+          },
+          {
+            to: '/docs/migrating-to-kcomponents/kotlin-intro',
+            from: ['/docs/kotlin/setup-and-intro'],
+          },
+          // kotlin/ → adopting-litho/
+          {
+            to: '/docs/adopting-litho/migration-strategies',
+            from: ['/docs/kotlin/migration-strategies'],
+          },
+          // kotlin/ → legacy-spec-api/
+          {
+            to: '/docs/legacy-spec-api/custom-view-compat',
+            from: ['/docs/kotlin/custom-view-compat', '/docs/adopting-litho/custom-view-compat'],
+          },
+          // kotlin/ → testing/
+          {
+            to: '/docs/testing/testing-getting-started',
+            from: ['/docs/kotlin/testing-getting-started'],
+          },
+          {
+            to: '/docs/testing/testing-actions',
+            from: ['/docs/kotlin/testing-actions'],
+          },
+          {
+            to: '/docs/testing/testing-assertions',
+            from: ['/docs/kotlin/testing-assertions'],
+          },
+          // kotlin/lazycollections/ → lazycollections/
+          {
+            to: '/docs/lazycollections',
+            from: ['/docs/kotlin/lazycollections/lazycollections'],
+          },
+          {
+            to: '/docs/lazycollections/lazycollections-interactions',
+            from: ['/docs/kotlin/lazycollections/lazycollections-interactions'],
+          },
+          {
+            to: '/docs/lazycollections/lazycollections-layout',
+            from: ['/docs/kotlin/lazycollections/lazycollections-layout'],
+          },
+          {
+            to: '/docs/lazycollections/lazycollections-working-with-updates',
+            from: ['/docs/kotlin/lazycollections/lazycollections-working-with-updates'],
+          },
+          {
+            to: '/docs/migrating-to-kcomponents/lazycollections-sections-migration',
+            from: ['/docs/kotlin/lazycollections/lazycollections-sections-migration'],
+          },
+          // primitivecomponents/ → primitives/
+          {
+            to: '/docs/primitives/overview',
+            from: ['/docs/primitivecomponents/overview'],
+          },
+          {
+            to: '/docs/primitives/primitive-component',
+            from: ['/docs/primitivecomponents/primitive-component'],
+          },
+          {
+            to: '/docs/primitives/primitive-controllers',
+            from: ['/docs/primitivecomponents/primitive-controllers'],
+          },
+          {
+            to: '/docs/primitives/primitive-measuring',
+            from: ['/docs/primitivecomponents/primitive-measuring'],
+          },
+          {
+            to: '/docs/primitives/primitive-preallocation',
+            from: ['/docs/primitivecomponents/primitive-preallocation'],
+          },
+          {
+            to: '/docs/primitives/primitive-tracing',
+            from: ['/docs/primitivecomponents/primitive-tracing'],
+          },
+          {
+            to: '/docs/primitives/primitive',
+            from: ['/docs/primitivecomponents/primitive'],
+          },
+          // hooks-and-state/ → state-and-side-effects/
+          {
+            to: '/docs/state-and-side-effects/hooks-intro',
+            from: ['/docs/hooks-and-state/hooks-intro'],
+          },
+          {
+            to: '/docs/state-and-side-effects/use-state',
+            from: ['/docs/hooks-and-state/use-state'],
+          },
+          {
+            to: '/docs/state-and-side-effects/use-effect',
+            from: ['/docs/hooks-and-state/use-effect'],
+          },
+          {
+            to: '/docs/state-and-side-effects/use-ref',
+            from: ['/docs/hooks-and-state/use-ref'],
+          },
+          {
+            to: '/docs/state-and-side-effects/use-cached',
+            from: ['/docs/hooks-and-state/use-cached'],
+          },
+          {
+            to: '/docs/state-and-side-effects/use-callback',
+            from: ['/docs/hooks-and-state/use-callback'],
+          },
+          {
+            to: '/docs/state-and-side-effects/use-error-boundary',
+            from: ['/docs/hooks-and-state/use-error-boundary'],
+          },
+          {
+            to: '/docs/state-and-side-effects/use-flow',
+            from: ['/docs/hooks-and-state/use-flow'],
+          },
+          {
+            to: '/docs/state-and-side-effects/use-live-data',
+            from: ['/docs/hooks-and-state/use-live-data'],
+          },
+          {
+            to: '/docs/state-and-side-effects/keys-and-identity',
+            from: ['/docs/coordinate-state-actions/keys-and-identity', '/docs/identity-and-visibility/keys-and-identity'],
+          },
+          // animations/ → transitions/
+          {
+            to: '/docs/transitions/dynamic-props-bindto',
+            from: ['/docs/animations/dynamic-props-bindto'],
+          },
+          // sections/ → legacy-spec-api/sections/
+          {
+            to: '/docs/legacy-spec-api/sections/advanced/architecture',
+            from: ['/docs/sections/architecture'],
+          },
+          {
+            to: '/docs/legacy-spec-api/sections/advanced/communicating-with-the-ui',
+            from: ['/docs/sections/communicating-with-the-ui'],
+          },
+          {
+            to: '/docs/legacy-spec-api/sections/advanced/diff-sections',
+            from: ['/docs/sections/diff-sections'],
+          },
+          {
+            to: '/docs/legacy-spec-api/sections/advanced/view-support',
+            from: ['/docs/sections/view-support'],
+          },
+          {
+            to: '/docs/legacy-spec-api/sections/advanced/working-ranges',
+            from: ['/docs/sections/working-ranges'],
+          },
+          {
+            to: '/docs/legacy-spec-api/sections/best-practices',
+            from: ['/docs/sections/best-practices'],
+          },
+          {
+            to: '/docs/legacy-spec-api/sections/hscrolls',
+            from: ['/docs/sections/hscrolls'],
+          },
+          // ide/ → tooling/android-studio/
+          {
+            to: '/docs/tooling/android-studio/android-studio-plugin',
+            from: ['/docs/ide/android-studio-plugin'],
+          },
+          // debugging/ → tooling/debugging/
+          {
+            to: '/docs/legacy-spec-api/sections/debugging-sections',
+            from: ['/docs/debugging/debugging-sections', '/docs/tooling/debugging/debugging-sections'],
+          },
+          {
+            to: '/docs/tooling/debugging/debugging-tips',
+            from: ['/docs/debugging/debugging-tips'],
+          },
+          // devtools/ → tooling/developer-tools/
+          {
+            to: '/docs/tooling/developer-tools/flipper-plugins',
+            from: ['/docs/devtools/flipper-plugins'],
+          },
+          // mainconcepts/mainconcepts → mainconcepts
+          {
+            to: '/docs/mainconcepts',
+            from: ['/docs/mainconcepts/mainconcepts'],
+          },
+          // coordinate-state-actions/ → various locations
+          {
+            to: '/docs/best-practices/hoisting-state',
+            from: ['/docs/coordinate-state-actions/hoisting-state'],
+          },
+          {
+            to: '/docs/best-practices/communicating-between-components',
+            from: ['/docs/coordinate-state-actions/communicating-between-components'],
+          },
+          {
+            to: '/docs/visibility/visibility-handling',
+            from: ['/docs/coordinate-state-actions/visibility-handling'],
+          },
+          // codegen/ → legacy-spec-api/
+          {
+            to: '/docs/legacy-spec-api/overview',
+            from: ['/docs/codegen/overview'],
+          },
+          {
+            to: '/docs/legacy-spec-api/layout-specs',
+            from: ['/docs/codegen/layout-specs'],
+          },
+          {
+            to: '/docs/legacy-spec-api/mount-specs',
+            from: ['/docs/codegen/mount-specs'],
+          },
+          {
+            to: '/docs/legacy-spec-api/accessibility-overview',
+            from: ['/docs/codegen/accessibility-overview'],
           },
         ],
       },
@@ -253,6 +483,7 @@ module.exports = {
           internal: 'top',
           external: true,
         }),
+        'internSearch': true,
         'staticDocsProject': 'litho',
         'trackingFile': 'fbcode/staticdocs/WATCHED_FILES',
         'googleAnalytics': fbContent({

@@ -34,8 +34,10 @@ import com.facebook.litho.EventHandler;
 import com.facebook.litho.EventTrigger;
 import com.facebook.litho.EventTriggerTarget;
 import com.facebook.litho.EventTriggersContainer;
+import com.facebook.litho.GlobalKey;
 import com.facebook.litho.Handle;
 import com.facebook.litho.HasEventDispatcher;
+import com.facebook.litho.HookGlobalKey;
 import com.facebook.litho.InterStagePropsContainer;
 import com.facebook.litho.Output;
 import com.facebook.litho.Size;
@@ -135,7 +137,7 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
   }
 
   @Override
-  public boolean isEquivalentProps(Component other, boolean shouldCompareCommonProps) {
+  public boolean isEquivalentProps(Component other) {
     if (this == other) {
       return true;
     }
@@ -703,7 +705,7 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
       return;
     }
     StateContainer.StateUpdate _stateUpdate = new StateContainer.StateUpdate(0, someParam);
-    c.updateStateAsync(_stateUpdate, "updateState:TestMount.updateCurrentState");
+    c.updateStateAsync(_stateUpdate, "updateState:TestMount.updateCurrentState", TestMount.class);
   }
 
   protected static void updateCurrentStateAsync(ComponentContext c, int someParam) {
@@ -712,7 +714,7 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
       return;
     }
     StateContainer.StateUpdate _stateUpdate = new StateContainer.StateUpdate(0, someParam);
-    c.updateStateAsync(_stateUpdate, "updateState:TestMount.updateCurrentState");
+    c.updateStateAsync(_stateUpdate, "updateState:TestMount.updateCurrentState", TestMount.class);
   }
 
   protected static void updateCurrentStateSync(ComponentContext c, int someParam) {
@@ -721,7 +723,7 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
       return;
     }
     StateContainer.StateUpdate _stateUpdate = new StateContainer.StateUpdate(0, someParam);
-    c.updateStateSync(_stateUpdate, "updateState:TestMount.updateCurrentState");
+    c.updateStateSync(_stateUpdate, "updateState:TestMount.updateCurrentState", TestMount.class);
   }
 
   protected static void lazyUpdateState1(ComponentContext c, final long lazyUpdateValue) {
@@ -731,7 +733,7 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
     }
     StateContainer.StateUpdate _stateUpdate =
         new StateContainer.StateUpdate(-2147483648, lazyUpdateValue);
-    c.updateStateLazy(_stateUpdate);
+    c.updateStateLazy(_stateUpdate, TestMount.class);
   }
 
   public static <S extends View> Builder<S> create(ComponentContext context) {
@@ -745,13 +747,14 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
   }
 
   private int getCached(ComponentContext c) {
-    String globalKey = c.getGlobalKey();
+    GlobalKey globalKey = c.getGlobalKey();
     final CachedInputs inputs =
         new CachedInputs(globalKey, prop3, prop5, getStateContainerImpl(c).state1);
-    Integer cached = (Integer) c.getCachedValue(globalKey, 0, inputs);
+    HookGlobalKey cacheKey = HookGlobalKey.createForResolveScope(globalKey, 0);
+    Integer cached = (Integer) c.getCachedValue(cacheKey, inputs);
     if (cached == null) {
       cached = TestMountSpec.onCalculateCached(prop3, prop5, getStateContainerImpl(c).state1);
-      c.putCachedValue(globalKey, 0, inputs, cached);
+      c.putCachedValue(cacheKey, inputs, cached);
     }
     return cached;
   }
@@ -961,7 +964,7 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
 
   @Generated
   private static class CachedInputs {
-    private final String globalKey;
+    private final GlobalKey globalKey;
 
     private final Object prop3;
 
@@ -969,7 +972,7 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
 
     private final long state1;
 
-    CachedInputs(String globalKey, Object prop3, char prop5, long state1) {
+    CachedInputs(GlobalKey globalKey, Object prop3, char prop5, long state1) {
       this.globalKey = globalKey;
       this.prop3 = prop3;
       this.prop5 = prop5;

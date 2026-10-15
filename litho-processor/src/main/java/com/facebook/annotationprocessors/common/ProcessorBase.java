@@ -20,6 +20,7 @@ import com.facebook.infer.annotation.Nullsafe;
 import java.util.Set;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
+import javax.lang.model.SourceVersion;
 import javax.lang.model.element.TypeElement;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
@@ -28,6 +29,11 @@ public abstract class ProcessorBase extends AbstractProcessor {
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
     return processImpl(annotations, roundEnv);
+  }
+
+  @Override
+  public SourceVersion getSupportedSourceVersion() {
+    return SourceVersion.latestSupported();
   }
 
   protected abstract boolean processImpl(

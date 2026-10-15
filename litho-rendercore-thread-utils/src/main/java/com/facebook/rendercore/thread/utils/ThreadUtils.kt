@@ -38,7 +38,8 @@ object ThreadUtils {
         Handler(
             HandlerThread(THREAD_NAME, DEFAULT_BACKGROUND_THREAD_PRIORITY)
                 .also { it.start() }
-                .looper)
+                .looper,
+        )
       }
 
   @JvmStatic
@@ -50,7 +51,8 @@ object ThreadUtils {
     if (!isMainThread) {
       throw IllegalStateException(
           message
-              ?: "This must run on the main thread; but is running on ${Thread.currentThread().name}")
+              ?: "This must run on the main thread; but is running on ${Thread.currentThread().name}",
+      )
     }
   }
 
@@ -88,10 +90,14 @@ object ThreadUtils {
           Process.setThreadPriority(runningThreadId, originalThreadPriority)
         } catch (e: IllegalArgumentException) {
           throw RuntimeException(
-              "Unable to restore priority: $runningThreadId, $originalThreadPriority", e)
+              "Unable to restore priority: $runningThreadId, $originalThreadPriority",
+              e,
+          )
         } catch (e: SecurityException) {
           throw RuntimeException(
-              "Unable to restore priority: $runningThreadId, $originalThreadPriority", e)
+              "Unable to restore priority: $runningThreadId, $originalThreadPriority",
+              e,
+          )
         }
       }
     }

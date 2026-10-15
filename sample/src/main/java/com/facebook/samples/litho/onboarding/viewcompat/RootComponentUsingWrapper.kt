@@ -30,7 +30,9 @@ class RootComponentUsingWrapper : KComponent() {
   // start_use_mount_spec
   override fun ComponentScope.render(): Component {
     return CircularImage(
-        url = "image/url", style = Style.width(100.dp).height(100.dp).margin(top = 10.dp))
+        url = "image/url",
+        style = Style.width(100.dp).height(100.dp).margin(top = 10.dp),
+    )
   }
   // end_use_mount_spec
 }

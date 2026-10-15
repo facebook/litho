@@ -16,13 +16,13 @@
 
 package com.facebook.samples.litho.documentation.treeprops
 
-import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.TreePropProvider
 import com.facebook.litho.core.height
+import com.facebook.litho.layout.flexbox.Column
 import com.facebook.litho.widget.collection.LazyList
 import com.facebook.rendercore.dp
 

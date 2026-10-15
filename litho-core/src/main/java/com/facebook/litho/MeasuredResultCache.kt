@@ -16,8 +16,8 @@
 
 package com.facebook.litho
 
+import androidx.collection.MutableScatterMap
 import androidx.collection.SparseArrayCompat
-import java.util.HashMap
 import kotlin.jvm.JvmField
 
 /**
@@ -32,8 +32,14 @@ class MeasuredResultCache
 @JvmOverloads
 constructor(private val delegateCache: MeasuredResultCache? = null) {
   private val componentIdToNodeCache = SparseArrayCompat<LithoNode>()
-  private val nodeToResultCache: MutableMap<LithoNode, LithoLayoutResult> = HashMap()
+
+  private var nodeToResultCache: MutableScatterMap<LithoNode, LithoLayoutResult>? = null
+
   private var isFrozen = false
+
+  private fun getOrCreateNodeToResultCache(): MutableScatterMap<LithoNode, LithoLayoutResult> =
+      nodeToResultCache
+          ?: MutableScatterMap<LithoNode, LithoLayoutResult>().also { nodeToResultCache = it }
 
   /**
    * Marks this cache as frozen, meaning it is illegal to write new values into it, and should be
@@ -65,7 +71,7 @@ constructor(private val delegateCache: MeasuredResultCache? = null) {
   fun addCachedResult(componentId: Int, node: LithoNode, layoutResult: LithoLayoutResult) {
     check(!isFrozen) { "Cannot write into a frozen cache." }
     componentIdToNodeCache.put(componentId, node)
-    nodeToResultCache[node] = layoutResult
+    getOrCreateNodeToResultCache()[node] = layoutResult
   }
 
   /** Return true if there exists a cached layout result for the given component. */
@@ -77,8 +83,10 @@ constructor(private val delegateCache: MeasuredResultCache? = null) {
           delegateCache?.hasCachedNode(componentId) == true
 
   /** Return true if there exists a cached layout result for the given LithoNode. */
-  fun hasCachedNode(node: LithoNode): Boolean =
-      nodeToResultCache.containsKey(node) || delegateCache?.hasCachedNode(node) == true
+  fun hasCachedNode(node: LithoNode): Boolean {
+    val containsLocally = nodeToResultCache?.containsKey(node) == true
+    return containsLocally || delegateCache?.hasCachedNode(node) == true
+  }
 
   /** Returns the cached LithoNode from a given component. */
   fun getCachedNode(component: Component): LithoNode? = getCachedNode(component.instanceId)
@@ -102,14 +110,14 @@ constructor(private val delegateCache: MeasuredResultCache? = null) {
 
   /** Returns the cached layout result for the given node, or null if it does not exist. */
   fun getCachedResult(node: LithoNode): LithoLayoutResult? {
-    val currentLayoutResult = nodeToResultCache[node]
+    val currentLayoutResult = nodeToResultCache?.get(node)
     return currentLayoutResult ?: delegateCache?.getCachedResult(node)
   }
 
   /** Remove the cached layout result for the given Node. */
   fun removeCachedResult(node: LithoNode) {
     // Should we also check for freezing here?
-    nodeToResultCache.remove(node)
+    nodeToResultCache?.remove(node)
     delegateCache?.removeCachedResult(node)
   }
 
@@ -122,7 +130,7 @@ constructor(private val delegateCache: MeasuredResultCache? = null) {
   fun clearCache(componentId: Int) {
     check(!isFrozen) { "Cannot delete from a frozen cache" }
     val node = componentIdToNodeCache[componentId] ?: return
-    nodeToResultCache.remove(node)
+    nodeToResultCache?.remove(node)
     componentIdToNodeCache.remove(componentId)
     delegateCache?.removeCachedResult(node)
   }

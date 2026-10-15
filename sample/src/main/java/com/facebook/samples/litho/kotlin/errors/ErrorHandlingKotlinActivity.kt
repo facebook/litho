@@ -17,28 +17,28 @@
 package com.facebook.samples.litho.kotlin.errors
 
 import android.os.Bundle
-import com.facebook.litho.ComponentContext
-import com.facebook.litho.LithoView
+import com.facebook.litho.surface.getLithoView
+import com.facebook.litho.surface.setLithoContent
 import com.facebook.samples.litho.NavigatableDemoActivity
 
 class ErrorHandlingKotlinActivity : NavigatableDemoActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    setContentView(
-        LithoView.create(
-            this, ErrorRootComponent.create(ComponentContext(this)).dataModels(DATA).build()))
+    setLithoContent { ErrorRootComponent(dataModels = Data) }
+    setContentView(getLithoView())
   }
 
   companion object {
-    private val DATA =
-        listOf(
-            ListRow("First Title", "First Subtitle"),
-            ListRow("Second Title", "Second Subtitle"),
-            ListRow("Third Title", "Third Subtitle"),
-            ListRow("Fourth Title", "Fourth Subtitle"),
-            ListRow("Fifth Title", "Fifth Subtitle"),
-            ListRow("Sixth Title", "Sixth Subtitle"),
-            ListRow("Seventh Title", "Seventh Subtitle"))
+    @JvmField
+    val Data = listOf(
+        ListRow("First Title", "First Subtitle"),
+        ListRow("Second Title", "Second Subtitle"),
+        ListRow("Third Title", "Third Subtitle"),
+        ListRow("Fourth Title", "Fourth Subtitle"),
+        ListRow("Fifth Title", "Fifth Subtitle"),
+        ListRow("Sixth Title", "Sixth Subtitle"),
+        ListRow("Seventh Title", "Seventh Subtitle"),
+    )
   }
 }

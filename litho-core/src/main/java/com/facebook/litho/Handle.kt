@@ -45,7 +45,7 @@ class Handle {
    */
   fun setStateUpdaterAndRootViewReference(
       stateUpdater: StateUpdater,
-      mountedViewReference: MountedViewReference
+      mountedViewReference: MountedViewReference,
   ) {
     this.stateUpdater = stateUpdater
     this.mountedViewReference = mountedViewReference

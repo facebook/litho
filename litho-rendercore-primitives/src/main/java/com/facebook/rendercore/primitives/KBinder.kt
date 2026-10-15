@@ -21,6 +21,7 @@ import com.facebook.rendercore.BinderId
 import com.facebook.rendercore.BinderKey
 import com.facebook.rendercore.BinderScope
 import com.facebook.rendercore.ClassBinderKey
+import com.facebook.rendercore.DepsModel
 import com.facebook.rendercore.RenderUnit
 import com.facebook.rendercore.utils.CommonUtils.getSectionNameForTracing
 import com.facebook.rendercore.utils.areObjectsEquivalent
@@ -32,6 +33,7 @@ fun <Model, Content> binder(
 ): RenderUnit.DelegateBinder<Model, Content, Any> =
     binder(description, dep, func as BindFuncWithLayoutData<Content>)
 
+@Suppress("UNCHECKED_CAST")
 fun <Model, Content> binder(
     description: (() -> String)? = null,
     dep: Model,
@@ -64,7 +66,7 @@ fun interface BindFunc<Content> : BindFuncWithLayoutData<Content> {
       currentModel: Any?,
       newModel: Any?,
       currentLayoutData: Any?,
-      nextLayoutData: Any?
+      nextLayoutData: Any?,
   ): Boolean = !areObjectsEquivalent(currentModel, newModel)
 }
 
@@ -76,7 +78,7 @@ fun interface BindFuncWithLayoutData<Content> {
       currentModel: Any?,
       newModel: Any?,
       currentLayoutData: Any?,
-      nextLayoutData: Any?
+      nextLayoutData: Any?,
   ): Boolean {
     return !areObjectsEquivalent(currentLayoutData, nextLayoutData) ||
         !areObjectsEquivalent(currentModel, newModel)
@@ -88,18 +90,25 @@ class UnbindFunc @PublishedApi internal constructor(val unbind: () -> Unit)
 class BindScope {
 
   private var delegate: BinderScope? = null
+  private var context: Context? = null
 
-  internal inline fun <T> withScope(scope: BinderScope, block: BindScope.() -> T): T {
+  internal inline fun <T> withScope(
+      scope: BinderScope,
+      context: Context,
+      block: BindScope.() -> T,
+  ): T {
     this.delegate = scope
+    this.context = context
     return try {
       block()
     } finally {
       this.delegate = null
+      this.context = null
     }
   }
 
   val androidContext: Context
-    get() = requireNotNull(delegate).androidContext
+    get() = requireNotNull(context)
 
   val binderId: BinderId
     get() = requireNotNull(delegate).binderId
@@ -111,40 +120,46 @@ class BindScope {
    * Defines the function that will be called when the content is unmounted. [func] should undo any
    * mutations to the content, cleanup any effects, and release resources.
    */
-  inline fun onUnbind(noinline func: () -> Unit): UnbindFunc = UnbindFunc(unbind = func)
+  fun onUnbind(func: () -> Unit): UnbindFunc = UnbindFunc(unbind = func)
 }
 
 internal class KBinder<Model, Content>(
     private val describe: () -> String,
     private val bindFunc: BindFuncWithLayoutData<Content>,
-) : RenderUnit.BinderWithContext<Model, Content, UnbindFunc> {
+) : RenderUnit.Binder<Model, Content, UnbindFunc>, DepsModel {
 
   val scope: BindScope = BindScope()
 
   override val description: String
     get() = "binder:${describe()}"
 
-  override val key: BinderKey = ClassBinderKey(bindFunc.javaClass)
+  override val key: BinderKey = ClassBinderKey.of(bindFunc.javaClass)
 
   override fun shouldUpdate(
       currentModel: Model,
       newModel: Model,
       currentLayoutData: Any?,
-      nextLayoutData: Any?
+      nextLayoutData: Any?,
   ): Boolean {
     return bindFunc.shouldUpdate(currentModel, newModel, currentLayoutData, nextLayoutData)
   }
 
-  override fun BinderScope.bind(content: Content, model: Model, layoutData: Any?): UnbindFunc {
-    return scope.withScope(this) { with(bindFunc) { bind(content, layoutData) } }
-  }
-
-  override fun BinderScope.unbind(
+  override fun BinderScope.bind(
+      context: Context,
       content: Content,
       model: Model,
       layoutData: Any?,
-      bindData: UnbindFunc?
+  ): UnbindFunc {
+    return scope.withScope(this, context) { with(bindFunc) { bind(content, layoutData) } }
+  }
+
+  override fun BinderScope.unbind(
+      context: Context,
+      content: Content,
+      model: Model,
+      layoutData: Any?,
+      bindData: UnbindFunc?,
   ) {
-    scope.withScope(this) { bindData?.unbind?.invoke() }
+    scope.withScope(this, context) { bindData?.unbind?.invoke() }
   }
 }

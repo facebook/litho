@@ -46,8 +46,8 @@ class StringAttributeMatcher(
     private vararg val toMatch: Pair<String, Any?>,
 ) : DebugEventAttributeMatcher {
   override fun matches(attributes: Map<String, Any?>): Boolean {
-    return toMatch.all {
-      val (attribute, value) = it
+    return toMatch.all { attributePair ->
+      val (attribute, value) = attributePair
       value == attributes[attribute]
     }
   }

@@ -16,6 +16,7 @@
 
 package com.facebook.litho
 
+import com.facebook.litho.animation.AnimationFrameInvalidation
 import com.facebook.litho.state.StateId
 
 /**
@@ -41,83 +42,88 @@ class StateUpdaterDelegator : StateUpdater {
     }
 
   override fun updateStateSync(
-      globalKey: String,
+      globalKey: GlobalKey,
       stateUpdate: StateContainer.StateUpdate,
       attribution: String?,
-      isLayoutState: Boolean
+      isLayoutState: Boolean,
   ) = applyOnStateUpdater { updateStateSync(globalKey, stateUpdate, attribution, isLayoutState) }
 
   override fun updateStateAsync(
-      globalKey: String,
+      globalKey: GlobalKey,
       stateUpdate: StateContainer.StateUpdate,
       attribution: String?,
-      isLayoutState: Boolean
+      isLayoutState: Boolean,
   ) = applyOnStateUpdater { updateStateAsync(globalKey, stateUpdate, attribution, isLayoutState) }
 
   override fun updateStateLazy(
-      globalKey: String,
+      globalKey: GlobalKey,
       stateUpdate: StateContainer.StateUpdate,
-      isLayoutState: Boolean
+      isLayoutState: Boolean,
   ) = applyOnStateUpdater { updateStateLazy(globalKey, stateUpdate, isLayoutState) }
 
   override fun updateHookStateAsync(
       stateId: StateId,
       updateBlock: HookUpdater,
       attribution: String?,
-      isLayoutState: Boolean
+      isLayoutState: Boolean,
   ) = applyOnStateUpdater { updateHookStateAsync(stateId, updateBlock, attribution, isLayoutState) }
 
   override fun updateHookStateSync(
       stateId: StateId,
       updateBlock: HookUpdater,
       attribution: String?,
-      isLayoutState: Boolean
+      isLayoutState: Boolean,
   ) = applyOnStateUpdater { updateHookStateSync(stateId, updateBlock, attribution, isLayoutState) }
 
+  override fun applyAnimationFrameUpdates(invalidations: List<AnimationFrameInvalidation>) =
+      applyOnStateUpdater {
+        applyAnimationFrameUpdates(invalidations)
+      }
+
+  override val isAnimationFrameInvalidationEnabled: Boolean
+    get() = applyOnStateUpdater { isAnimationFrameInvalidationEnabled }
+
   override fun applyLazyStateUpdatesForContainer(
-      globalKey: String,
+      globalKey: GlobalKey,
       container: StateContainer,
-      isLayoutState: Boolean
+      isLayoutState: Boolean,
   ): StateContainer = applyOnStateUpdater {
     applyLazyStateUpdatesForContainer(globalKey, container, isLayoutState)
   }
 
   override fun getCachedValue(
-      globalKey: String,
-      index: Int,
+      cacheKey: HookGlobalKey,
       cachedValueInputs: Any,
-      isLayoutState: Boolean
-  ): Any? = applyOnStateUpdater {
-    getCachedValue(globalKey, index, cachedValueInputs, isLayoutState)
-  }
+      isLayoutState: Boolean,
+  ): Any? = applyOnStateUpdater { getCachedValue(cacheKey, cachedValueInputs, isLayoutState) }
 
   override fun putCachedValue(
-      globalKey: String,
-      index: Int,
+      cacheKey: HookGlobalKey,
       cachedValueInputs: Any,
       cachedValue: Any?,
-      isLayoutState: Boolean
+      isLayoutState: Boolean,
   ) = applyOnStateUpdater {
-    putCachedValue(globalKey, index, cachedValueInputs, cachedValue, isLayoutState)
+    putCachedValue(cacheKey, cachedValueInputs, cachedValue, isLayoutState)
   }
 
-  override fun removePendingStateUpdate(key: String, isLayoutState: Boolean) = applyOnStateUpdater {
-    removePendingStateUpdate(key, isLayoutState)
-  }
+  override fun removePendingStateUpdate(key: GlobalKey, isLayoutState: Boolean) =
+      applyOnStateUpdater {
+        removePendingStateUpdate(key, isLayoutState)
+      }
 
   override fun <T> canSkipStateUpdate(
       stateId: StateId,
       newValue: T?,
-      isLayoutState: Boolean
+      isLayoutState: Boolean,
   ): Boolean = applyOnStateUpdater { canSkipStateUpdate(stateId, newValue, isLayoutState) }
 
   override fun <T> canSkipStateUpdate(
       newValueFunction: (T) -> T,
       stateId: StateId,
-      isLayoutState: Boolean
+      isLayoutState: Boolean,
   ): Boolean = applyOnStateUpdater { canSkipStateUpdate(newValueFunction, stateId, isLayoutState) }
 
-  override fun getEventTrigger(key: String): EventTrigger<*>? = applyOnStateUpdater {
+  override fun getEventTrigger(key: Any): EventTrigger<*>? = applyOnStateUpdater {
     getEventTrigger(key)
   }
 

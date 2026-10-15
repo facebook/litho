@@ -17,20 +17,20 @@
 package com.facebook.litho.widget
 
 import android.graphics.Color
-import com.facebook.litho.Column
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentTree
 import com.facebook.litho.LithoPrimitive
 import com.facebook.litho.LithoView
 import com.facebook.litho.PrimitiveComponent
 import com.facebook.litho.PrimitiveComponentScope
-import com.facebook.litho.Row
 import com.facebook.litho.StateCaller
 import com.facebook.litho.Style
 import com.facebook.litho.Transition
 import com.facebook.litho.animation.AnimatedProperties
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
+import com.facebook.litho.layout.flexbox.Column
+import com.facebook.litho.layout.flexbox.Row
 import com.facebook.litho.transition.transitionKey
 import com.facebook.litho.useCached
 import com.facebook.litho.view.backgroundColor
@@ -54,21 +54,24 @@ class TestAnimationMount(
               Transition.create(transitionKey)
                   .animator(Transition.timing(144))
                   .animate(AnimatedProperties.ALPHA)
-                  .disappearTo(0f)) { state ->
-                Column {
-                  child(Row(style = Style.height(50.dp).width(50.dp).backgroundColor(Color.YELLOW)))
-                  child(
-                      if (!state)
-                          Row(
-                              style =
-                                  Style.height(50.dp)
-                                      .width(50.dp)
-                                      .backgroundColor(Color.RED)
-                                      .transitionKey(context, transitionKey)
-                                      .viewTag("TestAnimationMount"))
-                      else null)
-                }
-              }
+                  .disappearTo(0f),
+          ) { state ->
+            Column {
+              child(Row(style = Style.height(50.dp).width(50.dp).backgroundColor(Color.YELLOW)))
+              child(
+                  if (!state)
+                      Row(
+                          style =
+                              Style.height(50.dp)
+                                  .width(50.dp)
+                                  .backgroundColor(Color.RED)
+                                  .transitionKey(context, transitionKey)
+                                  .viewTag("TestAnimationMount"),
+                      )
+                  else null,
+              )
+            }
+          }
         }
 
     return LithoPrimitive(
@@ -77,11 +80,14 @@ class TestAnimationMount(
             MountBehavior(ViewAllocator { context -> LithoView(context) }) {
               bind(component) { content ->
                 content.componentTree =
-                    ComponentTree.create(ComponentContext(androidContext), component).build()
+                    ComponentTree.create(ComponentContext(androidContext), component)
+                        .enableChildClipping(true)
+                        .build()
                 onUnbind { content.componentTree = null }
               }
             },
-        style = null)
+        style = null,
+    )
   }
 }
 

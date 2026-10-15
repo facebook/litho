@@ -33,7 +33,7 @@ object TreePropSectionTestMiddleGroupSpec {
   @OnCreateTreeProp
   fun onCreateTreePropB(
       c: SectionContext,
-      @TreeProp propB: TreePropStringType
+      @TreeProp propB: TreePropStringType,
   ): TreePropStringType = TreePropStringType("${propB.value}_changed")
 
   @JvmStatic
@@ -41,12 +41,13 @@ object TreePropSectionTestMiddleGroupSpec {
   fun onCreateChildren(
       c: SectionContext,
       @Prop resultPropALeaf1: TreePropSectionTestLeafGroupSpec.Result,
-      @Prop resultPropBLeaf1: TreePropSectionTestLeafGroupSpec.Result
+      @Prop resultPropBLeaf1: TreePropSectionTestLeafGroupSpec.Result,
   ): Children =
       Children.create()
           .child(
               TreePropSectionTestLeafGroup.create(c)
                   .resultPropA(resultPropALeaf1)
-                  .resultPropB(resultPropBLeaf1))
+                  .resultPropB(resultPropBLeaf1),
+          )
           .build()
 }

@@ -22,7 +22,6 @@ import androidx.annotation.Nullable;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentUtils;
 import com.facebook.litho.LithoView;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.TestCollection;
 import com.facebook.litho.testing.TestCollectionItem;
 import com.facebook.litho.testing.TestLithoView;
@@ -52,7 +51,7 @@ public class LithoAssertions {
   }
 
   public static TestCollectionAssert assertThat(TestCollection collection) {
-    return TestCollectionAssert.Companion.assertThat(collection);
+    return TestCollectionAssertKt.assertThat(collection);
   }
 
   public static TestCollectionItemAssert assertThat(TestCollectionItem collectionItem) {
@@ -63,7 +62,6 @@ public class LithoAssertions {
     return new ListAssert<Component>(componentsList);
   }
 
-  /** TODO: T106084343 deprecate currently existing usage of Component assert. */
   public static class LithoComponentAssert extends AbstractAssert<LithoComponentAssert, Component> {
 
     LithoComponentAssert(Component actual) {
@@ -71,7 +69,10 @@ public class LithoAssertions {
     }
 
     /** Assert that a given {@link Component} has a property equaling the provided value. */
-    public <T1, T2> LithoComponentAssert hasProps(Pair<KProperty1<T2, T1>, T1>... propsValuePairs) {
+    @SafeVarargs
+    @SuppressWarnings("unchecked") // Safe: T2 is the component type from the caller's context
+    public final <T1, T2> LithoComponentAssert hasProps(
+        Pair<KProperty1<T2, T1>, T1>... propsValuePairs) {
       for (Pair<KProperty1<T2, T1>, T1> pair : propsValuePairs) {
         MatcherAssert.assertThat(
             pair.getFirst().get((T2) actual), IsEqual.equalTo(pair.getSecond()));
@@ -80,7 +81,9 @@ public class LithoAssertions {
     }
 
     /** Assert that a given {@link Component} has a property matching the provided matcher. */
-    public <T1, T2> LithoComponentAssert hasPropsMatching(
+    @SafeVarargs
+    @SuppressWarnings("unchecked") // Safe: T2 is the component type from the caller's context
+    public final <T1, T2> LithoComponentAssert hasPropsMatching(
         Pair<KProperty1<T2, T1>, Matcher<T1>>... propsMatcherPairs) {
       for (Pair<KProperty1<T2, T1>, Matcher<T1>> pair : propsMatcherPairs) {
         MatcherAssert.assertThat(pair.getFirst().get((T2) actual), pair.getSecond());
@@ -89,22 +92,45 @@ public class LithoAssertions {
     }
 
     /**
-     * Assert that given {@Link Component} is equivalent to the provided one. This is the same check
-     * that will decide if we should skip rerendering of the component again.
+     * Assert that this {@link Component} is a Row/Column (built via the {@code
+     * com.facebook.litho.layout.flexbox} DSL) with exactly {@code count} children.
      */
-    public LithoComponentAssert isEquivalentTo(@Nullable Component other) {
-      isEquivalentTo(other, ComponentsConfiguration.shouldCompareCommonPropsInIsEquivalentTo);
+    public LithoComponentAssert hasChildren(int count) {
+      isNotNull();
+      Assertions.assertThat(requireFlexboxChildren())
+          .as("Row/Column children count")
+          .hasSize(count);
       return this;
     }
 
     /**
-     * Assert that given {@Link Component} is the same as the provided one including its props. This
-     * is the same check that will decide if we should skip remeasuring (if the default should
-     * update is not overridden) of the component again.
+     * Assert that this {@link Component} is a Row/Column whose children are exactly {@code
+     * components}, in order.
      */
-    public LithoComponentAssert isEquivalentTo(
-        @Nullable Component other, boolean shouldCompareCommonProps) {
-      Assertions.assertThat(ComponentUtils.isEquivalent(actual, other, shouldCompareCommonProps))
+    public LithoComponentAssert hasChild(Component... components) {
+      isNotNull();
+      Assertions.assertThat(requireFlexboxChildren())
+          .as("Row/Column children")
+          .containsExactly(components);
+      return this;
+    }
+
+    private List<Component> requireFlexboxChildren() {
+      final List<Component> children = FlexboxContainerAssertSupport.childrenOrNull(actual);
+      if (children == null) {
+        failWithMessage(
+            "Expected a Row/Column (FlexboxContainerComponent) but was <%s>",
+            actual == null ? "null" : actual.getSimpleName());
+      }
+      return children;
+    }
+
+    /**
+     * Assert that given {@Link Component} is equivalent to the provided one. This is the same check
+     * that will decide if we should skip rerendering of the component again.
+     */
+    public LithoComponentAssert isEquivalentTo(@Nullable Component other) {
+      Assertions.assertThat(ComponentUtils.isEquivalent(actual, other))
           .overridingErrorMessage(getCompareComponentsErrorMessage(actual, other))
           .isTrue();
       return this;

@@ -18,8 +18,27 @@ package com.facebook.litho.state
 
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
+import com.facebook.litho.GlobalKey
+import com.facebook.litho.HookGlobalKey
+import com.facebook.litho.RenderScope
 
 @DataClassGenerate(toString = Mode.KEEP)
-data class StateId(val treeId: Int, val globalKey: String, val index: Int) {
-  internal var ownerName: (() -> String?)? = null
+data class StateId(
+    val treeId: Int,
+    val hookGlobalKey: HookGlobalKey,
+) {
+  internal var ownerName: String? = null
+
+  val globalKey: GlobalKey
+    get() = hookGlobalKey.globalKey
+
+  val isSpecState: Boolean
+    get() = hookGlobalKey.hookKey is Int && (hookGlobalKey.hookKey as Int) == SPEC_STATE_INDEX
+
+  companion object {
+    const val SPEC_STATE_INDEX: Int = -1
+
+    fun forSpec(treeId: Int, globalKey: GlobalKey): StateId =
+        StateId(treeId, HookGlobalKey(globalKey, SPEC_STATE_INDEX, RenderScope.Resolve))
+  }
 }

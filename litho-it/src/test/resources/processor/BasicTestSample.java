@@ -71,7 +71,7 @@ public final class BasicTestSample implements BasicTestSampleSpec {
     }
 
     public Matcher child(org.hamcrest.Matcher<Component> matcher) {
-      mChildMatcher = (org.hamcrest.Matcher<com.facebook.litho.Component>) matcher;
+      mChildMatcher = matcher;
       return this;
     }
 
@@ -86,7 +86,7 @@ public final class BasicTestSample implements BasicTestSampleSpec {
     }
 
     public Matcher myDimenSizeProp(org.hamcrest.Matcher<Float> matcher) {
-      mMyDimenSizePropMatcher = (org.hamcrest.Matcher<java.lang.Float>) matcher;
+      mMyDimenSizePropMatcher = matcher;
       return this;
     }
 
@@ -121,7 +121,7 @@ public final class BasicTestSample implements BasicTestSampleSpec {
     }
 
     public Matcher myRequiredColorProp(org.hamcrest.Matcher<Integer> matcher) {
-      mMyRequiredColorPropMatcher = (org.hamcrest.Matcher<java.lang.Integer>) matcher;
+      mMyRequiredColorPropMatcher = matcher;
       return this;
     }
 
@@ -149,7 +149,7 @@ public final class BasicTestSample implements BasicTestSampleSpec {
     }
 
     public Matcher myStringProp(org.hamcrest.Matcher<String> matcher) {
-      mMyStringPropMatcher = (org.hamcrest.Matcher<java.lang.String>) matcher;
+      mMyStringPropMatcher = matcher;
       return this;
     }
 

@@ -27,5 +27,5 @@ data class ResolveResult<T : Node<*>?, State>
 constructor(
     @JvmField val resolvedNode: T,
     @JvmField val resolvedState: State? = null,
-    @JvmField val appliedStateUpdates: List<StateUpdate<*>>? = null
+    @JvmField val appliedStateUpdates: List<StateUpdate<*>>? = null,
 )

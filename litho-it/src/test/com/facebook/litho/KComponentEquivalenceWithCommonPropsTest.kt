@@ -17,15 +17,21 @@
 package com.facebook.litho
 
 import android.annotation.SuppressLint
-import com.facebook.litho.config.TempComponentsConfigurations
+import com.facebook.litho.core.heightPercent
+import com.facebook.litho.core.widthPercent
+import com.facebook.litho.flexbox.alignSelf
+import com.facebook.litho.flexbox.flex
+import com.facebook.litho.layout.flexbox.Column
+import com.facebook.litho.layout.flexbox.Row
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.alpha
 import com.facebook.litho.view.onClick
-import java.lang.Exception
+import com.facebook.litho.visibility.onVisible
+import com.facebook.rendercore.visibility.VisibleEvent
+import com.facebook.yoga.YogaAlign
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.After
-import org.junit.Before
+import org.assertj.core.api.SoftAssertions
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -35,18 +41,7 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class KComponentEquivalenceWithCommonPropsTest {
 
-  @Rule @JvmField val mLithoTestRule = LithoTestRule()
-
-  @Before
-  @Throws(Exception::class)
-  fun setup() {
-    TempComponentsConfigurations.setShouldCompareCommonPropsInIsEquivalentTo(true)
-  }
-
-  @After
-  fun restoreConfiguration() {
-    TempComponentsConfigurations.restoreShouldCompareCommonPropsInIsEquivalentTo()
-  }
+  @Rule @JvmField val lithoTestRule = LithoTestRule()
 
   @Test
   fun kcomponentWithCommonProps_isEquivalentTo_checksAllFields() {
@@ -58,16 +53,19 @@ class KComponentEquivalenceWithCommonPropsTest {
     val onClick: (ClickEvent) -> Unit = {}
 
     assertThat(
-            ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick))
-                .isEquivalentTo(ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick))))
+        ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick))
+            .isEquivalentTo(ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick))),
+    )
         .isTrue
     assertThat(
-            ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick))
-                .isEquivalentTo(ComponentWithStyleProp(Style.alpha(1f).onClick(action = onClick))))
+        ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick))
+            .isEquivalentTo(ComponentWithStyleProp(Style.alpha(1f).onClick(action = onClick))),
+    )
         .isFalse
     assertThat(
-            ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick))
-                .isEquivalentTo(ComponentWithStyleProp(Style.alpha(.5f).onClick {})))
+        ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick))
+            .isEquivalentTo(ComponentWithStyleProp(Style.alpha(.5f).onClick {})),
+    )
         .isFalse
   }
 
@@ -85,25 +83,35 @@ class KComponentEquivalenceWithCommonPropsTest {
     val onClick: (ClickEvent) -> Unit = {}
 
     assertThat(
-            ComponentWithComponentProp(
-                    ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick)))
-                .isEquivalentTo(
-                    ComponentWithComponentProp(
-                        ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick)))))
+        ComponentWithComponentProp(
+            ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick)),
+        )
+            .isEquivalentTo(
+                ComponentWithComponentProp(
+                    ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick)),
+                ),
+            ),
+    )
         .isTrue
     assertThat(
-            ComponentWithComponentProp(
-                    ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick)))
-                .isEquivalentTo(
-                    ComponentWithComponentProp(
-                        ComponentWithStyleProp(Style.alpha(1f).onClick(action = onClick)))))
+        ComponentWithComponentProp(
+            ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick)),
+        )
+            .isEquivalentTo(
+                ComponentWithComponentProp(
+                    ComponentWithStyleProp(Style.alpha(1f).onClick(action = onClick)),
+                ),
+            ),
+    )
         .isFalse
     assertThat(
-            ComponentWithComponentProp(
-                    ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick)))
-                .isEquivalentTo(
-                    ComponentWithComponentProp(
-                        ComponentWithStyleProp(Style.alpha(.5f).onClick {}))))
+        ComponentWithComponentProp(
+            ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick)),
+        )
+            .isEquivalentTo(
+                ComponentWithComponentProp(ComponentWithStyleProp(Style.alpha(.5f).onClick {})),
+            ),
+    )
         .isFalse
   }
 
@@ -116,25 +124,31 @@ class KComponentEquivalenceWithCommonPropsTest {
 
     val onClick: (ClickEvent) -> Unit = {}
 
-    with(ComponentScope(mLithoTestRule.context)) {
+    with(ComponentScope(lithoTestRule.context)) {
       assertThat(
-              Row { child(ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick))) }
-                  .isEquivalentTo(
-                      Row {
-                        child(ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick)))
-                      }))
+          Row { child(ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick))) }
+              .isEquivalentTo(
+                  Row {
+                    child(ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick)))
+                  },
+              ),
+      )
           .isTrue
       assertThat(
-              Row { child(ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick))) }
-                  .isEquivalentTo(
-                      Row {
-                        child(ComponentWithStyleProp(Style.alpha(.1f).onClick(action = onClick)))
-                      }))
+          Row { child(ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick))) }
+              .isEquivalentTo(
+                  Row {
+                    child(ComponentWithStyleProp(Style.alpha(.1f).onClick(action = onClick)))
+                  },
+              ),
+      )
           .isFalse
       assertThat(
-              Row { child(ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick))) }
-                  .isEquivalentTo(
-                      Row { child(ComponentWithStyleProp(Style.alpha(.5f).onClick {})) }))
+          Row { child(ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick))) }
+              .isEquivalentTo(
+                  Row { child(ComponentWithStyleProp(Style.alpha(.5f).onClick {})) },
+              ),
+      )
           .isFalse
     }
   }
@@ -143,18 +157,49 @@ class KComponentEquivalenceWithCommonPropsTest {
   fun rowWithCommonProps_isEquivalentToWithCommonProps_checksAllFields() {
     val onClick: (ClickEvent) -> Unit = {}
 
-    with(ComponentScope(mLithoTestRule.context)) {
+    with(ComponentScope(lithoTestRule.context)) {
       assertThat(
-              Row(style = Style.alpha(.5f).onClick(action = onClick)) {}
-                  .isEquivalentTo(Row(style = Style.alpha(.5f).onClick(action = onClick)) {}))
+          Row(style = Style.alpha(.5f).onClick(action = onClick)) {}
+              .isEquivalentTo(Row(style = Style.alpha(.5f).onClick(action = onClick)) {}),
+      )
           .isTrue
       assertThat(
-              Row(style = Style.alpha(.5f).onClick(action = onClick)) {}
-                  .isEquivalentTo(Row(style = Style.alpha(.1f).onClick(action = onClick)) {}))
+          Row(style = Style.alpha(.5f).onClick(action = onClick)) {}
+              .isEquivalentTo(Row(style = Style.alpha(.1f).onClick(action = onClick)) {}),
+      )
           .isFalse
       assertThat(
-              Row(style = Style.alpha(.5f).onClick(action = onClick)) {}
-                  .isEquivalentTo(Row(style = Style.alpha(.5f).onClick {}) {}))
+          Row(style = Style.alpha(.5f).onClick(action = onClick)) {}
+              .isEquivalentTo(Row(style = Style.alpha(.5f).onClick {}) {}),
+      )
+          .isFalse
+    }
+  }
+
+  @Test
+  fun rowWithValueStyles_isEquivalentToSameStylesBuiltAgain() {
+    val onVisible: (VisibleEvent) -> Unit = {}
+    val styles: Map<String, () -> Style> = mapOf(
+        "widthPercent" to { Style.widthPercent(100f) },
+        "heightPercent" to { Style.heightPercent(50f) },
+        "flex" to { Style.flex(grow = 1f, shrink = 0f) },
+        "alignSelf" to { Style.alignSelf(YogaAlign.CENTER) },
+        "onVisible ratio" to { Style.onVisible(visibleHeightRatio = 0.5f, callback = onVisible) },
+    )
+
+    with(ComponentScope(lithoTestRule.context)) {
+      SoftAssertions.assertSoftly { softly ->
+        styles.forEach { (name, style) ->
+          softly
+              .assertThat(Row(style = style()) {}.isEquivalentTo(Row(style = style()) {}))
+              .describedAs("a Row with $name built twice with the same values")
+              .isTrue
+        }
+      }
+      assertThat(
+          Row(style = Style.widthPercent(100f)) {}
+              .isEquivalentTo(Row(style = Style.widthPercent(50f)) {}),
+      )
           .isFalse
     }
   }
@@ -168,25 +213,31 @@ class KComponentEquivalenceWithCommonPropsTest {
 
     val onClick: (ClickEvent) -> Unit = {}
 
-    with(ComponentScope(mLithoTestRule.context)) {
+    with(ComponentScope(lithoTestRule.context)) {
       assertThat(
-              Column { child(ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick))) }
-                  .isEquivalentTo(
-                      Column {
-                        child(ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick)))
-                      }))
+          Column { child(ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick))) }
+              .isEquivalentTo(
+                  Column {
+                    child(ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick)))
+                  },
+              ),
+      )
           .isTrue
       assertThat(
-              Column { child(ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick))) }
-                  .isEquivalentTo(
-                      Column {
-                        child(ComponentWithStyleProp(Style.alpha(.1f).onClick(action = onClick)))
-                      }))
+          Column { child(ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick))) }
+              .isEquivalentTo(
+                  Column {
+                    child(ComponentWithStyleProp(Style.alpha(.1f).onClick(action = onClick)))
+                  },
+              ),
+      )
           .isFalse
       assertThat(
-              Column { child(ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick))) }
-                  .isEquivalentTo(
-                      Column { child(ComponentWithStyleProp(Style.alpha(.5f).onClick {})) }))
+          Column { child(ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick))) }
+              .isEquivalentTo(
+                  Column { child(ComponentWithStyleProp(Style.alpha(.5f).onClick {})) },
+              ),
+      )
           .isFalse
     }
   }
@@ -195,18 +246,21 @@ class KComponentEquivalenceWithCommonPropsTest {
   fun columnWithCommonProps_isEquivalentToWithCommonProps_checksAllFields() {
     val onClick: (ClickEvent) -> Unit = {}
 
-    with(ComponentScope(mLithoTestRule.context)) {
+    with(ComponentScope(lithoTestRule.context)) {
       assertThat(
-              Column(style = Style.alpha(.5f).onClick(action = onClick)) {}
-                  .isEquivalentTo(Column(style = Style.alpha(.5f).onClick(action = onClick)) {}))
+          Column(style = Style.alpha(.5f).onClick(action = onClick)) {}
+              .isEquivalentTo(Column(style = Style.alpha(.5f).onClick(action = onClick)) {}),
+      )
           .isTrue
       assertThat(
-              Column(style = Style.alpha(.5f).onClick(action = onClick)) {}
-                  .isEquivalentTo(Column(style = Style.alpha(.1f).onClick(action = onClick)) {}))
+          Column(style = Style.alpha(.5f).onClick(action = onClick)) {}
+              .isEquivalentTo(Column(style = Style.alpha(.1f).onClick(action = onClick)) {}),
+      )
           .isFalse
       assertThat(
-              Column(style = Style.alpha(.5f).onClick(action = onClick)) {}
-                  .isEquivalentTo(Column(style = Style.alpha(.5f).onClick {}) {}))
+          Column(style = Style.alpha(.5f).onClick(action = onClick)) {}
+              .isEquivalentTo(Column(style = Style.alpha(.5f).onClick {}) {}),
+      )
           .isFalse
     }
   }
@@ -220,22 +274,27 @@ class KComponentEquivalenceWithCommonPropsTest {
 
     val onClick: (ClickEvent) -> Unit = {}
 
-    fun Wrapper(style: Style? = null, delegate: () -> Component?): Component =
-        Wrapper.create(mLithoTestRule.context).delegate(delegate()).kotlinStyle(style).build()
+    fun Wrapper(style: Style = Style, delegate: () -> Component?): Component =
+        Wrapper.create(lithoTestRule.context).delegate(delegate()).kotlinStyle(style).build()
 
     assertThat(
-            Wrapper { ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick)) }
-                .isEquivalentTo(
-                    Wrapper { ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick)) }))
+        Wrapper { ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick)) }
+            .isEquivalentTo(
+                Wrapper { ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick)) },
+            ),
+    )
         .isTrue
     assertThat(
-            Wrapper { ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick)) }
-                .isEquivalentTo(
-                    Wrapper { ComponentWithStyleProp(Style.alpha(.1f).onClick(action = onClick)) }))
+        Wrapper { ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick)) }
+            .isEquivalentTo(
+                Wrapper { ComponentWithStyleProp(Style.alpha(.1f).onClick(action = onClick)) },
+            ),
+    )
         .isFalse
     assertThat(
-            Wrapper { ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick)) }
-                .isEquivalentTo(Wrapper { ComponentWithStyleProp(Style.alpha(.5f).onClick {}) }))
+        Wrapper { ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick)) }
+            .isEquivalentTo(Wrapper { ComponentWithStyleProp(Style.alpha(.5f).onClick {}) }),
+    )
         .isFalse
   }
 
@@ -243,20 +302,23 @@ class KComponentEquivalenceWithCommonPropsTest {
   fun kcomponentWithWrappedCommonProps_isEquivalentTo_checksAllFields() {
     val onClick: (ClickEvent) -> Unit = {}
 
-    fun Wrapper(style: Style? = null, delegate: () -> Component?): Component =
-        Wrapper.create(mLithoTestRule.context).delegate(delegate()).kotlinStyle(style).build()
+    fun Wrapper(style: Style = Style, delegate: () -> Component?): Component =
+        Wrapper.create(lithoTestRule.context).delegate(delegate()).kotlinStyle(style).build()
 
     assertThat(
-            Wrapper(Style.alpha(.5f).onClick(action = onClick)) { null }
-                .isEquivalentTo(Wrapper(Style.alpha(.5f).onClick(action = onClick)) { null }))
+        Wrapper(Style.alpha(.5f).onClick(action = onClick)) { null }
+            .isEquivalentTo(Wrapper(Style.alpha(.5f).onClick(action = onClick)) { null }),
+    )
         .isTrue
     assertThat(
-            Wrapper(Style.alpha(.5f).onClick(action = onClick)) { null }
-                .isEquivalentTo(Wrapper(Style.alpha(.1f).onClick(action = onClick)) { null }))
+        Wrapper(Style.alpha(.5f).onClick(action = onClick)) { null }
+            .isEquivalentTo(Wrapper(Style.alpha(.1f).onClick(action = onClick)) { null }),
+    )
         .isFalse
     assertThat(
-            Wrapper(Style.alpha(.5f).onClick(action = onClick)) { null }
-                .isEquivalentTo(Wrapper(Style.alpha(.5f).onClick {}) { null }))
+        Wrapper(Style.alpha(.5f).onClick(action = onClick)) { null }
+            .isEquivalentTo(Wrapper(Style.alpha(.5f).onClick {}) { null }),
+    )
         .isFalse
   }
 }

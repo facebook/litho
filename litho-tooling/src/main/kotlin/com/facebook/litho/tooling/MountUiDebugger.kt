@@ -41,7 +41,8 @@ class MountUiDebugger(private val view: LithoView) :
         DebugEvent.RenderTreeMounted,
         DebugEvent.RenderUnitMounted,
         DebugEvent.RenderUnitUnmounted,
-        DebugEvent.RenderUnitUpdated) {
+        DebugEvent.RenderUnitUpdated,
+    ) {
 
   override fun onEvent(event: DebugEvent) {
     val hostHashCode: Int = event.attribute(DebugEventAttribute.RootHostHashCode)

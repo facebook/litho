@@ -17,7 +17,7 @@
 package com.facebook.litho.intellij.completion;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 
 import com.facebook.litho.intellij.LithoPluginIntellijTest;
 import com.intellij.codeInsight.completion.CompletionContributor;

@@ -19,10 +19,12 @@ package com.facebook.litho
 import android.graphics.Rect
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.kotlin.widget.Text
+import com.facebook.litho.layout.RenderWithConstraints
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.testKey
-import com.facebook.litho.widget.ComponentContainerWithSize
+import com.facebook.rendercore.toHeightSpec
+import com.facebook.rendercore.toWidthSpec
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
@@ -36,7 +38,7 @@ class TestItemTest {
 
   private lateinit var testItem: TestItem
 
-  @get:Rule val mLithoTestRule = LithoTestRule()
+  @get:Rule val lithoTestRule = LithoTestRule()
 
   @Before
   fun setup() {
@@ -67,11 +69,7 @@ class TestItemTest {
     val isEnabled = ComponentsConfiguration.isEndToEndTestRun
     ComponentsConfiguration.isEndToEndTestRun = true
     val view =
-        mLithoTestRule
-            .render {
-              ComponentContainerWithSize.create(context).component(ParentComponent()).build()
-            }
-            .lithoView
+        lithoTestRule.render { ComponentContainerWithSize(component = ParentComponent()) }.lithoView
 
     assertThat(LithoViewTestHelper.findTestItem(view, "test-key")).isNotNull
     ComponentsConfiguration.isEndToEndTestRun = isEnabled
@@ -86,6 +84,21 @@ class TestItemTest {
   class TextHolderComponent : KComponent() {
     override fun ComponentScope.render(): Component {
       return Text(text = "hello", style = Style.testKey("test-key"))
+    }
+  }
+
+  private class ComponentContainerWithSize(private val component: Component) : KComponent() {
+    override fun ComponentScope.render(): Component {
+      return RenderWithConstraints { constraints ->
+        val outputSize = Size()
+        component.measure(
+            context,
+            constraints.toWidthSpec(),
+            constraints.toHeightSpec(),
+            outputSize,
+        )
+        component
+      }
     }
   }
 }

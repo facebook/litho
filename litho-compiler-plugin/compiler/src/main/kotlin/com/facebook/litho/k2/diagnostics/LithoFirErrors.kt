@@ -16,31 +16,37 @@
 
 package com.facebook.litho.k2.diagnostics
 
+import com.facebook.kotlin.compilercompat.KtDiagnosticsContainerCompat
+import com.facebook.kotlin.compilercompat.buildKtDiagnosticFactoryToRendererMap
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.diagnostics.KtDiagnosticFactory0
 import org.jetbrains.kotlin.diagnostics.KtDiagnosticFactoryToRendererMap
 import org.jetbrains.kotlin.diagnostics.SourceElementPositioningStrategies.NAME_IDENTIFIER
 import org.jetbrains.kotlin.diagnostics.error0
 import org.jetbrains.kotlin.diagnostics.rendering.BaseDiagnosticRendererFactory
-import org.jetbrains.kotlin.diagnostics.rendering.RootDiagnosticRendererFactory
 
-object LithoFirErrors : BaseDiagnosticRendererFactory() {
-  val HOOK_CONDITIONAL_MISUSE: KtDiagnosticFactory0 by error0<PsiElement>(NAME_IDENTIFIER)
+/**
+ * Diagnostics reported by [com.facebook.litho.k2.diagnostics.LithoFirHookUsageChecker].
+ *
+ * Only the call-site rule remains. The conditional, early-return and naming diagnostics were
+ * removed in D120344640 because structural hook identity makes those patterns safe; the
+ * `@Unconditional` variants moved to the `KComponentUnconditionalMisuseDetector` androidlint rule.
+ */
+object LithoFirErrors : KtDiagnosticsContainerCompat() {
   val HOOK_CALLSITE_MISUSE: KtDiagnosticFactory0 by error0<PsiElement>(NAME_IDENTIFIER)
 
-  override val MAP: KtDiagnosticFactoryToRendererMap =
-      KtDiagnosticFactoryToRendererMap("Litho").apply {
-        put(
-            HOOK_CONDITIONAL_MISUSE,
-            "Hooks should not be called from conditionals (if, for, while, or when). " +
-                "See: https://www.internalfb.com/intern/staticdocs/litho/docs/mainconcepts/hooks-intro/#rules-for-hooks")
-        put(
-            HOOK_CALLSITE_MISUSE,
-            "Hooks can be only called from render() or another @Hook annotated method. " +
-                "See: https://www.internalfb.com/intern/staticdocs/litho/docs/mainconcepts/hooks-intro/#rules-for-hooks")
-      }
+  override fun getRendererFactory(): BaseDiagnosticRendererFactory = LithoFirErrorMessages
+}
 
-  init {
-    RootDiagnosticRendererFactory.registerFactory(this)
-  }
+private object LithoFirErrorMessages : BaseDiagnosticRendererFactory() {
+  override val MAP: KtDiagnosticFactoryToRendererMap by
+      buildKtDiagnosticFactoryToRendererMap("Litho") { map ->
+        map.put(
+            LithoFirErrors.HOOK_CALLSITE_MISUSE,
+            "Hooks can only be called from render() or from another @Hook function. Either " +
+                "annotate this function @Hook, which makes its own call sites subject to the same " +
+                "rule, or hoist the hook into the caller and pass the value in. " +
+                "See: https://www.internalfb.com/intern/staticdocs/litho/docs/state-and-side-effects/hooks-intro#rules-for-hooks",
+        )
+      }
 }

@@ -352,6 +352,11 @@ public class GroupSectionSpecModel implements SpecModel, HasService {
   }
 
   @Override
+  public boolean shouldGenerateEventHandlerLambdaFactories() {
+    return true;
+  }
+
+  @Override
   public String toString() {
     return "GroupSectionSpecModel{"
         + "mSpecModel="

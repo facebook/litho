@@ -17,7 +17,11 @@
 package com.facebook.litho
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.ColorFilter
+import android.graphics.PixelFormat
 import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
@@ -25,19 +29,23 @@ import android.util.SparseArray
 import android.view.MotionEvent
 import android.view.View
 import androidx.collection.SparseArrayCompat
+import androidx.core.graphics.drawable.toDrawable
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.TestViewComponent
 import com.facebook.litho.testing.Whitebox
 import com.facebook.litho.testing.helper.ComponentTestHelper
 import com.facebook.litho.testing.testrunner.LithoTestRunner
+import com.facebook.litho.view.testKey
+import com.facebook.litho.view.viewTag
 import com.facebook.litho.widget.SimpleMountSpecTester
 import com.facebook.litho.widget.Text
 import com.facebook.litho.widget.TextInput
 import com.facebook.rendercore.MountItem
 import com.facebook.yoga.YogaEdge
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -68,7 +76,7 @@ class ComponentHostTest {
   fun setup() {
     context = lithoTestRule.context
     viewComponent = TestViewComponent.create(context).key(viewComponentKey).build()
-    drawableComponent = SimpleMountSpecTester.create(context).key(drawableComponentKey).build()
+    drawableComponent = SimpleMountSpecTester(style = Style.testKey(drawableComponentKey))
     host = TestableComponentHost(context)
     viewGroupHost = HostComponent.create(context)
   }
@@ -94,7 +102,8 @@ class ComponentHostTest {
     val v1Bounds = Rect(0, 0, 10, 10)
     v1.measure(
         View.MeasureSpec.makeMeasureSpec(v1Bounds.width(), View.MeasureSpec.EXACTLY),
-        View.MeasureSpec.makeMeasureSpec(v1Bounds.height(), View.MeasureSpec.EXACTLY))
+        View.MeasureSpec.makeMeasureSpec(v1Bounds.height(), View.MeasureSpec.EXACTLY),
+    )
     v1.layout(v1Bounds.left, v1Bounds.top, v1Bounds.right, v1Bounds.bottom)
     val mountItem3 = mount(2, v1)
     assertThat(host.invalidationCount).isEqualTo(3)
@@ -137,6 +146,33 @@ class ComponentHostTest {
     assertThat(host.mountItemCount).isEqualTo(1)
     unmount(1, mountItem4)
     assertThat(host.mountItemCount).isEqualTo(0)
+  }
+
+  @Test
+  fun testSafelyUnmountAllClearsMountItemsAndChildren() {
+    val drawable1 = Color.RED.toDrawable().apply { setBounds(0, 0, 1, 1) }
+    val drawable2 = Color.BLUE.toDrawable().apply { setBounds(0, 0, 2, 2) }
+    val view = View(context.androidContext)
+
+    mount(0, drawable1)
+    mount(1, view)
+    mount(2, drawable2)
+
+    assertThat(host.mountItemCount).isEqualTo(3)
+    assertThat(drawableItemsSize).isEqualTo(2)
+    assertThat(viewItemsSize).isEqualTo(1)
+    assertThat(host.childCount).isEqualTo(1)
+    assertThat(drawable1.callback).isEqualTo(host)
+    assertThat(drawable2.callback).isEqualTo(host)
+
+    host.safelyUnmountAll()
+
+    assertThat(host.mountItemCount).isEqualTo(0)
+    assertThat(drawableItemsSize).isEqualTo(0)
+    assertThat(viewItemsSize).isEqualTo(0)
+    assertThat(host.childCount).isEqualTo(0)
+    assertThat(drawable1.callback).isNull()
+    assertThat(drawable2.callback).isNull()
   }
 
   @Test
@@ -230,6 +266,47 @@ class ComponentHostTest {
   }
 
   @Test
+  fun testVisitMountItemsIncludesScrapAndCanStopEarly() {
+    val first = mount(1, ColorDrawable())
+    val displaced = mount(2, View(context.androidContext))
+    host.moveItem(first, 1, 2)
+
+    val visited = mutableListOf<MountItem>()
+    val completed = host.visitMountItems { item ->
+      visited.add(item)
+      true
+    }
+    assertThat(completed).isTrue()
+    assertThat(visited).containsExactly(first, displaced)
+    assertThat(host.snapshotMountItems()).containsExactly(first, displaced)
+
+    visited.clear()
+    val stopped = host.visitMountItems { item ->
+      visited.add(item)
+      false
+    }
+    assertThat(stopped).isFalse()
+    assertThat(visited).containsExactly(first)
+  }
+
+  @Test
+  fun testVisitMountItemsRejectsReentrantStructuralMutation() {
+    val first = mount(1, ColorDrawable())
+
+    assertThatThrownBy {
+          host.visitMountItems {
+            host.unmount(first)
+            true
+          }
+        }
+        .isInstanceOf(IllegalStateException::class.java)
+        .hasMessageContaining("Cannot mutate Host mount items")
+
+    assertThat(host.mountItemCount).isEqualTo(1)
+    assertThat(host.getMountItemAt(0)).isSameAs(first)
+  }
+
+  @Test
   fun testMoveItemWithoutTouchables() {
     val d1 = ColorDrawable(Color.BLACK)
     val mountItem1 = mount(1, d1)
@@ -256,7 +333,10 @@ class ComponentHostTest {
     whenever(d2.bounds).thenReturn(Rect())
     whenever(d2.isStateful).thenReturn(true)
     mount(0, d2, LithoRenderUnit.LAYOUT_FLAG_DUPLICATE_PARENT_STATE)
-    verify(d2, times(1)).state = eq(host.drawableState)
+    // In the full mount pipeline, initial drawable state is set by attach binders
+    // (e.g., RefreshDrawableStateBinder, MountSpecLithoRenderUnit.binderBinder), not by
+    // ComponentHost.mountDrawable(). This test exercises ComponentHost in isolation
+    // (without MountState), so no state is set during mount.
     host.isSelected = true
     verify(d2, times(1)).state = eq(host.drawableState)
   }
@@ -269,12 +349,47 @@ class ComponentHostTest {
     unmount(1, mountItem)
   }
 
+  /**
+   * Unlike [mountTouchExpansionItem], this sets real expanded touch bounds on the layout data, so
+   * the item actually reaches the touch-expansion path in ComponentHost.
+   */
+  private fun touchExpansionItem(content: Any): MountItem {
+    val unit =
+        MountSpecLithoRenderUnit.create(
+            0,
+            viewComponent,
+            null,
+            context,
+            null,
+            0,
+            View.IMPORTANT_FOR_ACCESSIBILITY_AUTO,
+            MountSpecLithoRenderUnit.STATE_UNKNOWN,
+            null,
+        )
+    val node = create(
+        unit,
+        Rect(0, 0, 10, 10),
+        null,
+        LithoLayoutData(10, 10, Rect(1, 1, 1, 1), null, null, false, null),
+        null,
+    )
+    return MountItem(node, content)
+  }
+
   @Test
-  @Ignore("This test is failing since we stopped running tests on API 16")
-  fun testRecursiveTouchExpansionItemShouldNotAddTouchDelegate() {
-    val mountItem = mountTouchExpansionItem(0, host)
-    assertThat(host.touchExpansionDelegate).isNull()
-    unmount(0, mountItem)
+  fun unmountingAnItemWhoseContentIsTheHostKeepsTheTouchExpansionDelegateIntact() {
+    val view = View(context.androidContext)
+    host.mount(0, touchExpansionItem(view), Rect())
+    assertThat(host.touchExpansionDelegate).isNotNull
+
+    // An item whose content is the host itself was never registered, so unregistering its index
+    // would evict whichever view legitimately holds that slot. It is never mounted here, so
+    // mountView() does not run and nothing overflows the stack.
+    host.unmount(0, touchExpansionItem(host))
+
+    assertThat(host.findExpandedTouchTarget(1, 1))
+        .describedAs("the real registration must survive")
+        .isEqualTo(view)
   }
 
   @Test
@@ -351,7 +466,7 @@ class ComponentHostTest {
   fun testViewTag() {
     val rootComponent =
         Column.create(context)
-            .child(SimpleMountSpecTester.create(context).viewTag("test_tag"))
+            .child(SimpleMountSpecTester(style = Style.viewTag("test_tag")))
             .build()
     val lithoView = ComponentTestHelper.mountComponent(context, rootComponent, false, false)
     assertThat(lithoView.findViewWithTag("test_tag") as View).isNotNull
@@ -422,31 +537,153 @@ class ComponentHostTest {
   }
 
   @Test
+  fun testAccessibleMountItemOfAViewChildIsItsOwnWhenADrawableIsMountedFirst() {
+    // A host's own background, or any drawable child, takes a mount index before the first View.
+    // Child-view index 0 then names the drawable's item, not the View's.
+    mount(0, Color.RED.toDrawable())
+    val view = View(context.androidContext)
+    val viewItem = mount(1, view)
+
+    assertThat(ComponentAccessibilityDelegate.getAccessibleMountItem(view)).isSameAs(viewItem)
+  }
+
+  @Test
+  fun testAccessibleMountItemOfAViewChildIsItsOwnWhenMountedOutOfOrder() {
+    // Incremental mount can mount a later index first, so the second View is child 0.
+    val second = View(context.androidContext)
+    val secondItem = mount(1, second)
+    val first = View(context.androidContext)
+    val firstItem = mount(0, first)
+
+    assertThat(ComponentAccessibilityDelegate.getAccessibleMountItem(first)).isSameAs(firstItem)
+    assertThat(ComponentAccessibilityDelegate.getAccessibleMountItem(second)).isSameAs(secondItem)
+  }
+
+  @Test
+  fun testAccessibleMountItemOfAViewChildIsItsOwnAfterAMove() {
+    // A move changes mount indices without re-adding the Views.
+    val first = View(context.androidContext)
+    val firstItem = mount(0, first)
+    val second = View(context.androidContext)
+    val secondItem = mount(1, second)
+    host.moveItem(secondItem, 1, 2)
+    host.moveItem(firstItem, 0, 1)
+    host.moveItem(secondItem, 2, 0)
+
+    assertThat(ComponentAccessibilityDelegate.getAccessibleMountItem(first)).isSameAs(firstItem)
+    assertThat(ComponentAccessibilityDelegate.getAccessibleMountItem(second)).isSameAs(secondItem)
+  }
+
+  @Test
   fun testGetChildDrawingOrder() {
-    val v1 = View(context.androidContext)
-    mount(2, v1)
-    val v2 = View(context.androidContext)
-    val mountItem2 = mount(0, v2)
-    assertThat(host.getChildDrawingOrder(host.childCount, 0)).isEqualTo(1)
-    assertThat(host.getChildDrawingOrder(host.childCount, 1)).isEqualTo(0)
-    val v3 = ComponentHost(context)
-    val mountItem3 = mount(1, v3)
-    assertThat(host.getChildDrawingOrder(host.childCount, 0)).isEqualTo(1)
-    assertThat(host.getChildDrawingOrder(host.childCount, 1)).isEqualTo(2)
-    assertThat(host.getChildDrawingOrder(host.childCount, 2)).isEqualTo(0)
-    host.unmount(1, mountItem3)
-    assertThat(host.getChildDrawingOrder(host.childCount, 0)).isEqualTo(1)
-    assertThat(host.getChildDrawingOrder(host.childCount, 1)).isEqualTo(0)
-    host.mount(1, mountItem3)
-    assertThat(host.getChildDrawingOrder(host.childCount, 0)).isEqualTo(1)
-    assertThat(host.getChildDrawingOrder(host.childCount, 1)).isEqualTo(2)
-    assertThat(host.getChildDrawingOrder(host.childCount, 2)).isEqualTo(0)
-    host.unmount(0, mountItem2)
-    assertThat(host.getChildDrawingOrder(host.childCount, 0)).isEqualTo(1)
-    assertThat(host.getChildDrawingOrder(host.childCount, 1)).isEqualTo(0)
-    host.moveItem(mountItem3, 1, 3)
-    assertThat(host.getChildDrawingOrder(host.childCount, 0)).isEqualTo(0)
-    assertThat(host.getChildDrawingOrder(host.childCount, 1)).isEqualTo(1)
+    assertChildDrawingOrderAfterMove(invalidateOnMove = true)
+  }
+
+  @Test
+  fun testGetChildDrawingOrderWithoutViewMoveInvalidation() {
+    assertChildDrawingOrderAfterMove(invalidateOnMove = false)
+  }
+
+  private fun assertChildDrawingOrderAfterMove(invalidateOnMove: Boolean) {
+    val originalValue = ComponentsConfiguration.enableComponentHostViewMoveInvalidation
+    ComponentsConfiguration.enableComponentHostViewMoveInvalidation = invalidateOnMove
+    try {
+      val v1 = View(context.androidContext)
+      mount(2, v1)
+      val v2 = View(context.androidContext)
+      val mountItem2 = mount(0, v2)
+      assertThat(host.getChildDrawingOrder(host.childCount, 0)).isEqualTo(1)
+      assertThat(host.getChildDrawingOrder(host.childCount, 1)).isEqualTo(0)
+      val v3 = ComponentHost(context)
+      val mountItem3 = mount(1, v3)
+      assertThat(host.getChildDrawingOrder(host.childCount, 0)).isEqualTo(1)
+      assertThat(host.getChildDrawingOrder(host.childCount, 1)).isEqualTo(2)
+      assertThat(host.getChildDrawingOrder(host.childCount, 2)).isEqualTo(0)
+      host.unmount(1, mountItem3)
+      assertThat(host.getChildDrawingOrder(host.childCount, 0)).isEqualTo(1)
+      assertThat(host.getChildDrawingOrder(host.childCount, 1)).isEqualTo(0)
+      host.mount(1, mountItem3)
+      assertThat(host.getChildDrawingOrder(host.childCount, 0)).isEqualTo(1)
+      assertThat(host.getChildDrawingOrder(host.childCount, 1)).isEqualTo(2)
+      assertThat(host.getChildDrawingOrder(host.childCount, 2)).isEqualTo(0)
+      host.unmount(0, mountItem2)
+      assertThat(host.getChildDrawingOrder(host.childCount, 0)).isEqualTo(1)
+      assertThat(host.getChildDrawingOrder(host.childCount, 1)).isEqualTo(0)
+      val invalidationCountBeforeMove = host.invalidationCount
+      host.moveItem(mountItem3, 1, 3)
+      assertThat(host.getChildDrawingOrder(host.childCount, 0)).isEqualTo(0)
+      assertThat(host.getChildDrawingOrder(host.childCount, 1)).isEqualTo(1)
+      assertThat(host.invalidationCount)
+          .isEqualTo(invalidationCountBeforeMove + if (invalidateOnMove) 1 else 0)
+    } finally {
+      ComponentsConfiguration.enableComponentHostViewMoveInvalidation = originalValue
+    }
+  }
+
+  @Test
+  fun testDrawableMoveInvalidatesWithViewMoveInvalidationDisabled() {
+    val originalValue = ComponentsConfiguration.enableComponentHostViewMoveInvalidation
+    ComponentsConfiguration.enableComponentHostViewMoveInvalidation = false
+    try {
+      val mountItem = mount(0, Color.RED.toDrawable())
+      val invalidationCountBeforeMove = host.invalidationCount
+
+      host.moveItem(mountItem, 0, 1)
+
+      assertThat(host.invalidationCount).isEqualTo(invalidationCountBeforeMove + 1)
+    } finally {
+      ComponentsConfiguration.enableComponentHostViewMoveInvalidation = originalValue
+    }
+  }
+
+  @Test
+  fun testDispatchDrawWithReentrantDispatchDrawDoesNotCrash() {
+    // Regression test for T227433009: a Drawable.draw() callback that re-enters
+    // host.dispatchDraw() resets and clears the shared InterleavedDispatchDraw state
+    // mid-pass. The outer pass must keep drawing with its entry canvas instead of
+    // throwing IllegalArgumentException ("Required value was null").
+    var reentered = false
+    val nestedCanvas = Canvas(Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888))
+    val reentrant =
+        object : Drawable() {
+          var draws = 0
+
+          override fun draw(canvas: Canvas) {
+            draws++
+            if (!reentered) {
+              reentered = true
+              host.dispatchDraw(nestedCanvas)
+            }
+          }
+
+          override fun setAlpha(alpha: Int) = Unit
+
+          override fun setColorFilter(colorFilter: ColorFilter?) = Unit
+
+          override fun getOpacity(): Int = PixelFormat.OPAQUE
+        }
+    val trailing =
+        object : Drawable() {
+          var draws = 0
+
+          override fun draw(canvas: Canvas) {
+            draws++
+          }
+
+          override fun setAlpha(alpha: Int) = Unit
+
+          override fun setColorFilter(colorFilter: ColorFilter?) = Unit
+
+          override fun getOpacity(): Int = PixelFormat.OPAQUE
+        }
+    mount(0, reentrant).isBound = true
+    mount(1, trailing).isBound = true
+
+    host.dispatchDraw(Canvas(Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888)))
+
+    assertThat(reentered).isTrue()
+    assertThat(reentrant.draws).isEqualTo(2)
+    assertThat(trailing.draws).isEqualTo(2)
   }
 
   @Test
@@ -482,7 +719,6 @@ class ComponentHostTest {
     assertThat(host.hasDisappearingItems()).isFalse
   }
 
-  @Ignore("t19681984")
   @Test
   fun testDisappearingItemDrawingOrder() {
     val v1 = View(context.androidContext)
@@ -509,14 +745,16 @@ class ComponentHostTest {
     assertThat(host.getChildDrawingOrder(host.childCount, 2)).isEqualTo(0)
     assertThat(host.getChildDrawingOrder(host.childCount, 3)).isEqualTo(2)
 
-    // mountItem4 started disappearing
+    // mountItem4 started disappearing. Mounted views draw in mount-index order, but
+    // updateChildDrawingOrderIfNeeded() appends disappearing items in the order they started
+    // disappearing, so mountItem3 stays behind mountItem4 even though its mount index is higher.
     host.startUnmountDisappearingItem(0, mountItem4)
     assertThat(host.mountItemCount).isEqualTo(2)
     assertThat(host.childCount).isEqualTo(4)
     assertThat(host.getChildDrawingOrder(host.childCount, 0)).isEqualTo(1)
     assertThat(host.getChildDrawingOrder(host.childCount, 1)).isEqualTo(0)
-    assertThat(host.getChildDrawingOrder(host.childCount, 2)).isEqualTo(3)
-    assertThat(host.getChildDrawingOrder(host.childCount, 3)).isEqualTo(2)
+    assertThat(host.getChildDrawingOrder(host.childCount, 2)).isEqualTo(2)
+    assertThat(host.getChildDrawingOrder(host.childCount, 3)).isEqualTo(3)
 
     // mountItem4 finished disappearing
     var wasRemoved: Boolean = host.finaliseDisappearingItem(mountItem4)
@@ -600,14 +838,17 @@ class ComponentHostTest {
                 Text.create(context)
                     .text("hello-world")
                     .touchExpansionPx(YogaEdge.ALL, 5)
-                    .clickHandler(NoOpEventHandler.getNoOpEventHandler()))
+                    .clickHandler(NoOpEventHandler.getNoOpEventHandler()),
+            )
             .child(
                 Row.create(context)
                     .wrapInView()
                     .child(
                         TextInput.create(context)
                             .touchExpansionPx(YogaEdge.ALL, 5)
-                            .clickHandler(NoOpEventHandler.getNoOpEventHandler())))
+                            .clickHandler(NoOpEventHandler.getNoOpEventHandler()),
+                    ),
+            )
             .build()
     val testLithoView = lithoTestRule.render { component }
     val delegate = testLithoView.lithoView.touchExpansionDelegate
@@ -631,6 +872,12 @@ class ComponentHostTest {
       return Whitebox.invokeMethod(drawableItems, "size")
     }
 
+  private val viewItemsSize: Int
+    get() {
+      val viewItems = Whitebox.getInternalState<SparseArrayCompat<*>>(host, "viewMountItems")
+      return Whitebox.invokeMethod(viewItems, "size")
+    }
+
   private fun getDrawableMountItemAt(index: Int): MountItem {
     val drawableItems = Whitebox.getInternalState<SparseArrayCompat<*>>(host, "drawableMountItems")
     return Whitebox.invokeMethod(drawableItems, "valueAt", index)
@@ -640,7 +887,7 @@ class ComponentHostTest {
       index: Int,
       content: Any,
       flags: Int = 0,
-      contentDescription: CharSequence? = null
+      contentDescription: CharSequence? = null,
   ): MountItem {
     val nodeInfo = NodeInfo()
     nodeInfo.contentDescription = contentDescription
@@ -652,7 +899,8 @@ class ComponentHostTest {
             nodeInfo,
             if (content is Drawable) content.bounds else null,
             flags,
-            View.IMPORTANT_FOR_ACCESSIBILITY_AUTO)
+            View.IMPORTANT_FOR_ACCESSIBILITY_AUTO,
+        )
     host.mount(index, mountItem, if (content is Drawable) content.bounds else Rect())
     return mountItem
   }
@@ -667,7 +915,8 @@ class ComponentHostTest {
             nodeInfo,
             null,
             flags,
-            View.IMPORTANT_FOR_ACCESSIBILITY_AUTO)
+            View.IMPORTANT_FOR_ACCESSIBILITY_AUTO,
+        )
     host.unmount(index, mountItem)
     return mountItem
   }
@@ -681,7 +930,8 @@ class ComponentHostTest {
             null,
             Rect(1, 1, 1, 1),
             0,
-            View.IMPORTANT_FOR_ACCESSIBILITY_AUTO)
+            View.IMPORTANT_FOR_ACCESSIBILITY_AUTO,
+        )
     host.mount(index, viewMountItem, Rect())
     return viewMountItem
   }

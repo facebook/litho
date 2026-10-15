@@ -38,6 +38,7 @@ class ComponentTreeEventHandlerTest {
   fun setup() {
     componentTree =
         ComponentTree.create(ComponentContext(ApplicationProvider.getApplicationContext<Context>()))
+            .enableChildClipping(true)
             .build()
     context = componentTree.context
   }
@@ -47,7 +48,7 @@ class ComponentTreeEventHandlerTest {
     val component = mock<SpecGeneratedComponent>()
     val componentGlobalKey = "component1"
     val scopedContext = ComponentContext.withComponentScope(context, component, componentGlobalKey)
-    val eventHandlersController = componentTree.eventHandlersController
+    val eventHandlersController = componentTree.getEventHandlersController()
     val eventHandler1: EventHandler<*> =
         Component.newEventHandler<Any>(
             component.javaClass,
@@ -55,8 +56,9 @@ class ComponentTreeEventHandlerTest {
             scopedContext,
             1,
             emptyArray(),
-            EventHandlerRebindMode.REBIND)
-    assertThat(eventHandlersController.dispatchInfos.size).isEqualTo(0)
+            EventHandlerRebindMode.REBIND,
+        )
+    assertThat(eventHandlersController.dispatchInfos?.size ?: 0).isEqualTo(0)
     val eventHandler2: EventHandler<*> =
         Component.newEventHandler<Any>(
             component.javaClass,
@@ -64,22 +66,26 @@ class ComponentTreeEventHandlerTest {
             scopedContext,
             1,
             emptyArray(),
-            EventHandlerRebindMode.REBIND)
-    assertThat(eventHandlersController.dispatchInfos.size).isEqualTo(0)
+            EventHandlerRebindMode.REBIND,
+        )
+    assertThat(eventHandlersController.dispatchInfos?.size ?: 0).isEqualTo(0)
     assertThat(eventHandler1.dispatchInfo).isNotSameAs(eventHandler2.dispatchInfo)
-    val eventHandlers = ArrayList<Pair<String, EventHandler<*>>>()
-    eventHandlers.add(Pair(componentGlobalKey, eventHandler1))
-    eventHandlers.add(Pair(componentGlobalKey, eventHandler2))
+    val eventHandlers = ArrayList<Pair<GlobalKey, EventHandler<*>>>()
+    eventHandlers.add(Pair(StringGlobalKey(componentGlobalKey), eventHandler1))
+    eventHandlers.add(Pair(StringGlobalKey(componentGlobalKey), eventHandler2))
     eventHandlersController.canonicalizeEventDispatchInfos(eventHandlers)
-    assertThat(eventHandlersController.dispatchInfos.size).isEqualTo(1)
+    assertThat(eventHandlersController.dispatchInfos?.size).isEqualTo(1)
     assertThat(eventHandler1.dispatchInfo).isSameAs(eventHandler2.dispatchInfo)
     val newComponent = mock<SpecGeneratedComponent>()
     val newScopedContext =
         ComponentContext.withComponentScope(context, newComponent, componentGlobalKey)
     eventHandlersController.updateEventDispatchInfoForGlobalKey(
-        newScopedContext, newComponent, componentGlobalKey)
+        newScopedContext,
+        newComponent,
+        StringGlobalKey(componentGlobalKey),
+    )
     eventHandlersController.clearUnusedEventDispatchInfos()
-    assertThat(eventHandlersController.dispatchInfos.size).isEqualTo(1)
+    assertThat(eventHandlersController.dispatchInfos?.size).isEqualTo(1)
     assertThat(eventHandler1.dispatchInfo.componentContext).isSameAs(newScopedContext)
     assertThat(eventHandler2.dispatchInfo.componentContext).isSameAs(newScopedContext)
     assertThat(eventHandler1.dispatchInfo.hasEventDispatcher).isSameAs(newComponent)
@@ -98,7 +104,7 @@ class ComponentTreeEventHandlerTest {
         ComponentContext.withComponentScope(context, component2, componentGlobalKey2)
     val scopedContext2_2 =
         ComponentContext.withComponentScope(context, component2_2, componentGlobalKey2)
-    val eventHandlersController = componentTree.eventHandlersController
+    val eventHandlersController = componentTree.getEventHandlersController()
     val eventHandler1: EventHandler<*> =
         Component.newEventHandler<Any>(
             component.javaClass,
@@ -106,7 +112,8 @@ class ComponentTreeEventHandlerTest {
             scopedContext,
             1,
             emptyArray(),
-            EventHandlerRebindMode.REBIND)
+            EventHandlerRebindMode.REBIND,
+        )
     val eventHandler2: EventHandler<*> =
         Component.newEventHandler<Any>(
             component2.javaClass,
@@ -114,23 +121,28 @@ class ComponentTreeEventHandlerTest {
             scopedContext2,
             1,
             emptyArray(),
-            EventHandlerRebindMode.REBIND)
-    val eventHandlers = ArrayList<Pair<String, EventHandler<*>>>()
-    eventHandlers.add(Pair(componentGlobalKey1, eventHandler1))
-    eventHandlers.add(Pair(componentGlobalKey2, eventHandler2))
+            EventHandlerRebindMode.REBIND,
+        )
+    val eventHandlers = ArrayList<Pair<GlobalKey, EventHandler<*>>>()
+    eventHandlers.add(Pair(StringGlobalKey(componentGlobalKey1), eventHandler1))
+    eventHandlers.add(Pair(StringGlobalKey(componentGlobalKey2), eventHandler2))
     eventHandlersController.canonicalizeEventDispatchInfos(eventHandlers)
-    assertThat(eventHandlersController.dispatchInfos.size).isEqualTo(2)
+    assertThat(eventHandlersController.dispatchInfos?.size).isEqualTo(2)
     assertThat(eventHandler1.dispatchInfo.componentContext).isSameAs(scopedContext)
     assertThat(eventHandler2.dispatchInfo.componentContext).isSameAs(scopedContext2)
     assertThat(eventHandler1.dispatchInfo.hasEventDispatcher).isSameAs(component)
     assertThat(eventHandler2.dispatchInfo.hasEventDispatcher).isSameAs(component2)
     eventHandlersController.updateEventDispatchInfoForGlobalKey(
-        scopedContext2_2, component2_2, componentGlobalKey2)
+        scopedContext2_2,
+        component2_2,
+        StringGlobalKey(componentGlobalKey2),
+    )
     eventHandlersController.clearUnusedEventDispatchInfos()
-    assertThat(eventHandlersController.dispatchInfos.size).isEqualTo(1)
-    assertThat(eventHandlersController.dispatchInfos[componentGlobalKey2]).isNotNull
+    assertThat(eventHandlersController.dispatchInfos?.size).isEqualTo(1)
+    assertThat(eventHandlersController.dispatchInfos?.get(StringGlobalKey(componentGlobalKey2)))
+        .isNotNull
     eventHandlersController.clearUnusedEventDispatchInfos()
-    assertThat(eventHandlersController.dispatchInfos.size).isEqualTo(0)
+    assertThat(eventHandlersController.dispatchInfos?.size ?: 0).isEqualTo(0)
     assertThat(eventHandler1.dispatchInfo.componentContext).isSameAs(scopedContext)
     assertThat(eventHandler2.dispatchInfo.componentContext).isSameAs(scopedContext2_2)
     assertThat(eventHandler1.dispatchInfo.hasEventDispatcher).isSameAs(component)

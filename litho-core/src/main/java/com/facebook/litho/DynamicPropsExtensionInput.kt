@@ -16,6 +16,9 @@
 
 package com.facebook.litho
 
+import androidx.collection.LongObjectMap
+
 interface DynamicPropsExtensionInput {
-  val dynamicValueOutputs: Map<Long, DynamicValueOutput>
+  /** Primitive-keyed outputs for render units carrying common dynamic props. */
+  val dynamicValueOutputs: LongObjectMap<DynamicValueOutput>?
 }

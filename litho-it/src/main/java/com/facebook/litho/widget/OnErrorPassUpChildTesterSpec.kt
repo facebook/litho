@@ -18,11 +18,19 @@ package com.facebook.litho.widget
 
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
+import com.facebook.litho.ComponentScope
 import com.facebook.litho.ComponentUtils
+import com.facebook.litho.KComponent
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateLayout
 import com.facebook.litho.annotations.OnError
 import com.facebook.litho.annotations.Prop
+
+internal class ThrowExceptionGrandChildTester : KComponent() {
+  override fun ComponentScope.render(): Component {
+    throw RuntimeException("Exception from the ThrowExceptionGrandChildTesterSpec")
+  }
+}
 
 @LayoutSpec
 internal object OnErrorPassUpChildTesterSpec {
@@ -30,7 +38,7 @@ internal object OnErrorPassUpChildTesterSpec {
   @JvmStatic
   @OnCreateLayout
   fun onCreateLayout(c: ComponentContext, @Prop info: List<String>): Component =
-      ThrowExceptionGrandChildTester.create(c).build()
+      ThrowExceptionGrandChildTester()
 
   @JvmStatic
   @OnError

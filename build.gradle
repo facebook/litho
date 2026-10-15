@@ -14,22 +14,19 @@
  * limitations under the License.
  */
 
-def latestSdkVersion = 34
+def compileSdk = 37
 
 buildscript {
 
     repositories {
         google()
         mavenCentral()
-        maven { url "https://storage.googleapis.com/r8-releases/raw" }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.1.1'
+        classpath "com.android.tools.build:gradle:${ANDROID_GRADLE_PLUGIN_VERSION}"
         classpath "com.vanniktech:gradle-maven-publish-plugin:${MAVEN_PUBLISH_PLUGIN}"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${KOTLIN_VERSION}"
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:${DOKKA_VERSION}"
-        classpath "com.facebook.kotlin.compilerplugins.dataclassgenerate:gradleplugin:${DATA_CLASS_GENERATE_VERSION}"
-        classpath "com.android.tools:r8:8.5.35"
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -41,7 +38,6 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
     }
 
     tasks.withType(Javadoc).all {
@@ -52,15 +48,18 @@ allprojects {
         enabled = false
     }
     configurations.all {
-        // Temporarily exclude sample-barebones project from substitution in order to fix the gradle
-        // build.
-        if (project.name != "sample-barebones") {
-            // These are to prevent upgrade problems where second-party dependencies like Fresco may be
-            // depending on a specific, older version of Litho causing dex merging conflicts.
-            resolutionStrategy.dependencySubstitution {
-                substitute module('com.facebook.litho:litho-annotations') using project(':litho-annotations')
-                substitute module('com.facebook.litho:litho-widget') using project(':litho-widget')
-            }
+        // The POMs of com.facebook.fresco:vito reference modules that were never published to Maven
+        // Central, so resolution fails unless they are excluded.
+        exclude group: 'com.facebook.fresco', module: 'vito-core-common-impl'
+        exclude group: 'com.facebook.fresco', module: 'vito-core-java-impl'
+        exclude group: 'com.facebook.fresco', module: 'vito-native'
+
+        // These are to prevent upgrade problems where second-party dependencies like Fresco may be
+        // depending on a specific, older version of Litho causing dex merging conflicts.
+        resolutionStrategy.dependencySubstitution {
+            substitute module('com.facebook.litho:litho-annotations') using project(':litho-annotations')
+            substitute module('com.facebook.litho:litho-core') using project(':litho-core')
+            substitute module('com.facebook.litho:litho-widget') using project(':litho-widget')
         }
     }
 }
@@ -82,13 +81,29 @@ subprojects {
         dependsOn(tasks.withType(org.jetbrains.kotlin.gradle.internal.KaptWithoutKotlincTask))
     }
 
+    // Buck runs Robolectric tests on SDK 33, and text metrics differ on later SDKs.
+    ['com.android.library', 'com.android.application'].each { pluginId ->
+        plugins.withId(pluginId) {
+            android.sourceSets.test.resources.srcDir("${rootDir}/gradle/robolectric")
+        }
+    }
+
     tasks.withType(Test) {
-        systemProperty "robolectric.looperMode", "LEGACY"
+        // Robolectric needs Java 21 for the tests that ask for SDK 35+; the code itself still targets Java 17.
+        javaLauncher = javaToolchains.launcherFor {
+            languageVersion = JavaLanguageVersion.of(21)
+        }
+        // EquivalenceUtils reflects into JDK classes when comparing render units.
+        jvmArgs '--add-opens', 'java.base/java.lang=ALL-UNNAMED', '--add-opens', 'java.base/java.util=ALL-UNNAMED'
 
         testLogging {
             exceptionFormat = 'full'
             showStackTraces = true
         }
+    }
+
+    tasks.matching { it.name == 'testReleaseUnitTest' }.configureEach {
+        enabled = false
     }
 
     plugins.withType(org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin) {
@@ -97,13 +112,39 @@ subprojects {
         }
     }
 
+    // Same lambda and SAM codegen as the internal build, which Redex needs and some tests assert on.
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+        compilerOptions.freeCompilerArgs.addAll('-Xjvm-default=all', '-Xlambdas=class', '-Xsam-conversions=class')
+    }
+
+    // Internally every Kotlin target can use @DataClassGenerate; only the annotation is needed here.
+    plugins.withType(org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin) {
+        dependencies {
+            compileOnly deps.dataClassGenerateAnnotation
+            testCompileOnly deps.dataClassGenerateAnnotation
+        }
+    }
+
+    // Mirrors litho_hook_identity_decorator: Kotlin code that calls Litho hooks has to be built with
+    // the Litho compiler plugin, and opting in to @Hook is how a module says it is.
+    def withoutHookPlugin = [':yoga', ':systrace', ':range-manager']
+    plugins.withId('org.jetbrains.kotlin.android') {
+        if (path in withoutHookPlugin || name.startsWith('litho-rendercore') || name.startsWith('litho-primitive-')) {
+            return
+        }
+        dependencies {
+            kotlinCompilerPluginClasspath project(':litho-compiler-plugin')
+            if (path != ':litho-annotations') {
+                compileOnly project(':litho-annotations')
+            }
+        }
+        tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+            compilerOptions.optIn.add('com.facebook.litho.annotations.Hook')
+        }
+    }
+
     afterEvaluate {
         tasks.withType(Test) {
-            it.dependsOn copyYogaLibs
-            systemProperty 'java.library.path', "${rootDir}/build/jniLibs"
-            environment 'LD_LIBRARY_PATH', "${rootDir}/build/jniLibs"
-            environment 'DYLD_LIBRARY_PATH', "${rootDir}/build/jniLibs"
-
             def offlineDepsDir = System.getProperty('robolectric.dependency.dir')
             if (offlineDepsDir != null) {
                 systemProperty 'robolectric.dependency.dir', "${rootDir}/$offlineDepsDir"
@@ -119,15 +160,25 @@ tasks.withType(org.jetbrains.dokka.gradle.DokkaMultiModuleTask).configureEach {
     moduleName = "Litho"
 }
 
-project.gradle.startParameter.excludedTaskNames.add('testReleaseUnitTest')
-
 ext {
-    minSdkVersion = 24
-    targetSdkVersion = latestSdkVersion
-    compileSdkVersion = latestSdkVersion
-    buildToolsVersion = '34.0.0'
+    // FB Lite, the internal app with the lowest minSdk that ships Litho, requires libraries to support 23.
+    minSdkVersion = 23
+    targetSdkVersion = 36
+    compileSdkVersion = compileSdk
+    buildToolsVersion = '35.0.0'
+    ndkVersion = '27.1.12297006'
     sourceCompatibilityVersion = JavaVersion.VERSION_17
     targetCompatibilityVersion = JavaVersion.VERSION_17
+}
+
+// Mirrors Buck friend_paths: lets a module use `internal` declarations of another module.
+ext.addKotlinFriend = { Project target, String friendPath ->
+    target.tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach { task ->
+        def variant = task.name.replace('compile', '').replace('UnitTest', '').replace('Kotlin', '')
+        task.friendPaths.from(
+            target.project(friendPath).layout.buildDirectory.file(
+                "intermediates/compile_library_classes_jar/${variant.uncapitalize()}/bundleLibCompileToJar${variant}/classes.jar"))
+    }
 }
 
 ext.forceReleaseBuild = project.hasProperty('forceReleaseBuild')
@@ -138,52 +189,58 @@ ext.isDokkaBuild = getGradle().getStartParameter().getTaskNames().toString().toL
 
 ext.deps = [
         // Android support
-        supportAnnotations : 'androidx.annotation:annotation:1.0.0',
-        supportAppCompat   : 'androidx.appcompat:appcompat:1.6.1',
-        supportCollection  : 'androidx.collection:collection:1.4.0',
-        supportCore        : 'androidx.core:core-ktx:1.13.1',
-        supportFragment    : 'androidx.fragment:fragment:1.3.5',
-        supportCustomView  : 'androidx.customview:customview:1.0.0',
-        supportRecyclerView: 'androidx.recyclerview:recyclerview:1.2.0-beta01',
+        supportAnnotations : 'androidx.annotation:annotation:1.8.1',
+        supportAppCompat   : 'androidx.appcompat:appcompat:1.7.1',
+        supportCollection  : 'androidx.collection:collection:1.5.0',
+        supportCore        : 'androidx.core:core-ktx:1.16.0',
+        supportFragment    : 'androidx.fragment:fragment:1.8.9',
+        supportCustomView  : 'androidx.customview:customview:1.1.0',
+        supportRecyclerView: 'androidx.recyclerview:recyclerview:1.4.0',
         supportEspresso    : 'androidx.test.espresso:espresso-core:3.1.1',
         supportEspressoIntents : 'androidx.test.espresso:espresso-intents:3.1.1',
         supportTestCore    : 'androidx.test:core:1.4.0',
         supportTestRunner  : 'androidx.test:runner:1.1.1',
         supportTestRules   : 'androidx.test:rules:1.1.1',
         supportTestJunit   : 'androidx.test.ext:junit:1.1.2',
-        supportViewPager   : 'androidx.viewpager:viewpager:1.0.0',
+        supportViewPager   : 'androidx.viewpager:viewpager:1.1.0',
         supportViewPager2  : 'androidx.viewpager2:viewpager2:1.1.0',
         supportMaterial    : 'com.google.android.material:material:1.2.0',
-        supportTransition  : 'androidx.transition:transition:1.0.0',
+        supportTransition  : 'androidx.transition:transition:1.6.0',
         supportSwipeRefresh: 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0',
-        supportDynamicAnimations : 'androidx.dynamicanimation:dynamicanimation-ktx:1.0.0-alpha03',
+        supportDynamicAnimations : 'androidx.dynamicanimation:dynamicanimation:1.1.0',
         // lifecycle
-        lifecycle      : 'androidx.lifecycle:lifecycle-runtime:2.6.1',
-        lifecycleKtx       : 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.1',
-        viewModel      : 'androidx.lifecycle:lifecycle-viewmodel:2.3.1',
-        liveData           : 'androidx.lifecycle:lifecycle-livedata:2.6.1',
-        lifecycleService   : 'androidx.lifecycle:lifecycle-service:2.6.1',
+        activity           : 'androidx.activity:activity:1.10.1',
+        lifecycle      : 'androidx.lifecycle:lifecycle-runtime:2.9.4',
+        lifecycleCommon    : 'androidx.lifecycle:lifecycle-common:2.9.4',
+        savedState         : 'androidx.savedstate:savedstate:1.3.2',
+        lifecycleKtx       : 'androidx.lifecycle:lifecycle-runtime-ktx:2.9.4',
+        viewModel      : 'androidx.lifecycle:lifecycle-viewmodel:2.9.4',
+        liveData           : 'androidx.lifecycle:lifecycle-livedata:2.9.4',
+        lifecycleService   : 'androidx.lifecycle:lifecycle-service:2.9.4',
         // First-party
-        fresco             : 'com.facebook.fresco:fresco:3.0.0',
-        frescoVito         : 'com.facebook.fresco:vito:3.0.0',
-        frescoVitoLitho    : 'com.facebook.fresco:vito-litho:3.0.0',
-        frescoVitoOptions  : 'com.facebook.fresco:vito-options:3.0.0',
-        frescoVitoSource   : 'com.facebook.fresco:vito-source:3.0.0',
-        soloader           : 'com.facebook.soloader:soloader:0.10.5',
+        fresco             : 'com.facebook.fresco:fresco:3.9.0',
+        frescoVito         : 'com.facebook.fresco:vito:3.9.0',
+        frescoVitoLitho    : 'com.facebook.fresco:vito-litho:3.9.0',
+        frescoVitoOptions  : 'com.facebook.fresco:vito-options:3.9.0',
+        frescoVitoSource   : 'com.facebook.fresco:vito-source:3.9.0',
+        soloader           : 'com.facebook.soloader:soloader:0.12.1',
         textlayoutbuilder  : 'com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:1.7.0',
+        rebound            : 'com.facebook.rebound:rebound:0.3.8',
         screenshot         : 'com.facebook.testing.screenshot:core:0.5.0',
         flipper            : 'com.facebook.flipper:flipper:0.258.0',
         flipperLithoPlugin : 'com.facebook.flipper:flipper-litho-plugin:0.258.0',
         // Annotations
+        dataClassGenerateAnnotation : "com.facebook.kotlin.compilerplugins.dataclassgenerate:annotation:${DATA_CLASS_GENERATE_VERSION}",
+        javaxInject        : 'javax.inject:javax.inject:1',
         jsr305             : 'com.google.code.findbugs:jsr305:3.0.1',
         inferAnnotations   : 'com.facebook.infer.annotation:infer-annotation:0.18.0',
         // Debugging and testing
-        guava              : 'com.google.guava:guava:27.0.1-android',
-        robolectric        : 'org.robolectric:robolectric:4.11.1',
-        junit              : 'junit:junit:4.12',
+        guava              : 'com.google.guava:guava:33.4.0-android',
+        robolectric        : 'org.robolectric:robolectric:4.16.1',
+        junit              : 'junit:junit:4.13.2',
         hamcrestLibrary    : 'org.hamcrest:hamcrest-library:1.3',
         mockitoCore        : 'org.mockito:mockito-core:4.11.0',
-        assertjCore        : 'org.assertj:assertj-core:2.9.0',
+        assertjCore        : 'org.assertj:assertj-core:3.27.7',
         compileTesting     : 'com.google.testing.compile:compile-testing:0.14',
         mockitokotlin      : 'org.mockito.kotlin:mockito-kotlin:4.1.0',
         // Proguard annotations (published through Yoga)
@@ -198,23 +255,3 @@ ext.deps = [
         kotlinCoroutinesTest  : "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4",
         kotlinReflect      : "org.jetbrains.kotlin:kotlin-reflect:${KOTLIN_VERSION}"
 ]
-
-// For releases, we want to depend on a stable version of Yoga.
-ext.deps.yoga =
-    isSnapshot()
-        ? 'com.facebook.yoga:yoga:2.0.1' // can be a '-SNAPSHOT' release
-        : 'com.facebook.yoga:yoga:2.0.1'
-
-// This should hopefully only serve as a temporary measure until
-// we have a proper Gradle setup for Yoga and JNI.
-task copyYogaLibs(type: Copy, dependsOn: ':yoga:buckBuild') {
-    from 'buck-out/gen/lib/yogajni/jni#default,shared/'
-    include '*.so'
-    include '*.dylib'
-    include '*.dll'
-    into "$buildDir/jniLibs"
-    doLast {
-        def yoga_deps = "find ${rootDir}/build/jniLibs".execute().text.trim()
-        System.out.println("[Yoga Buck Build]: copied files:\n${yoga_deps}")
-    }
-}

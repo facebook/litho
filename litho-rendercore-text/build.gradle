@@ -16,7 +16,6 @@
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'com.facebook.kotlin.compilerplugins.dataclassgenerate'
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
@@ -54,8 +53,6 @@ dependencies {
 
     // Test project dependencies
     testImplementation project(':litho-rendercore-testing')
-    testImplementation project(':litho-rendercore-default-node')
-    testImplementation project(':litho-rendercore-default-text-node')
 
     // Testing deps
     testImplementation deps.assertjCore

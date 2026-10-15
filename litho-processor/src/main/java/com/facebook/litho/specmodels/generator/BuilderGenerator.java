@@ -1287,6 +1287,10 @@ public class BuilderGenerator {
             specModel.getComponentName(),
             eventTriggerName)
         .addAnnotation(java.lang.Deprecated.class)
+        .addAnnotation(
+            AnnotationSpec.builder(SuppressWarnings.class)
+                .addMember("value", "$S", "rawtypes")
+                .build())
         .returns(getBuilderType(specModel))
         .addParameter(ClassNames.EVENT_TRIGGER, eventTriggerName)
         .addStatement("this.$L.$L = $L", implMemberName, eventTriggerName, eventTriggerName)
@@ -1302,6 +1306,10 @@ public class BuilderGenerator {
 
     return MethodSpec.methodBuilder(getRegisterEventTriggerMethodName(triggerMethodModel.name))
         .addModifiers(Modifier.PRIVATE)
+        .addAnnotation(
+            AnnotationSpec.builder(SuppressWarnings.class)
+                .addMember("value", "$S", "rawtypes")
+                .build())
         .addStatement(
             "$L $L = this.$L.$L",
             ClassNames.EVENT_TRIGGER,

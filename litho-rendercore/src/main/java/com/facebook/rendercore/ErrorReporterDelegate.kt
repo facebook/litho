@@ -33,6 +33,6 @@ fun interface ErrorReporterDelegate {
       message: String,
       cause: Throwable?,
       samplingFrequency: Int,
-      metadata: Map<String, Any?>?
+      metadata: Map<String, Any?>?,
   )
 }

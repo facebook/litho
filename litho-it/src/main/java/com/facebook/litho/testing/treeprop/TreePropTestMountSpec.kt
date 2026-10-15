@@ -34,7 +34,7 @@ object TreePropTestMountSpec {
   fun onPrepare(
       c: ComponentContext,
       @TreeProp propA: TreePropNumberType?,
-      @Prop resultPropA: TreePropTestResult
+      @Prop resultPropA: TreePropTestResult,
   ) {
     resultPropA.mProp = propA
   }

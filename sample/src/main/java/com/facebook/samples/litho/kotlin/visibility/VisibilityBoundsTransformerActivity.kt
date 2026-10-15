@@ -32,7 +32,6 @@ import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewTreeObserver
 import android.widget.FrameLayout
 import android.widget.TextView
-import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentScope
@@ -44,50 +43,73 @@ import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.kotlin.widget.Text
+import com.facebook.litho.layout.flexbox.Column
 import com.facebook.litho.view.background
 import com.facebook.litho.visibility.onInvisible
 import com.facebook.litho.visibility.onVisible
 import com.facebook.litho.widget.collection.LazyList
 import com.facebook.rendercore.dp
+import com.facebook.rendercore.extensions.VisibilityChangeReason
 import com.facebook.rendercore.visibility.VisibilityBoundsTransformer
 import com.facebook.rendercore.visibility.VisibilityOutput
 import com.facebook.samples.litho.NavigatableDemoActivity
 
 class VisibilityBoundsTransformerActivity : NavigatableDemoActivity() {
   var occludingHeaderView: View? = null
+
+  private sealed class Occlusion {
+    object FullyOccluded : Occlusion()
+
+    object NotOccluded : Occlusion()
+
+    data class PartiallyOccluded(val occludedPixels: Int) : Occlusion()
+  }
+
+  private fun calculateOcclusion(hostBounds: Rect, headerBounds: Rect): Occlusion {
+    return when {
+      // Host is entirely behind the header
+      hostBounds.bottom <= headerBounds.bottom -> Occlusion.FullyOccluded
+      // Host's top is behind the header (partial overlap)
+      hostBounds.top < headerBounds.bottom -> {
+        val occludedPixels = headerBounds.bottom - hostBounds.top
+        Occlusion.PartiallyOccluded(occludedPixels)
+      }
+      // Host is fully below the header
+      else -> Occlusion.NotOccluded
+    }
+  }
+
   val visibilityBoundsTransformer: VisibilityBoundsTransformer =
       object : VisibilityBoundsTransformer {
-        override fun getTransformedLocalVisibleRect(host: ViewGroup): Rect? {
+        // Reusable Rect instances to avoid allocations during scroll
+        private val headerBounds = Rect()
+        private val hostBounds = Rect()
+
+        override fun getTransformedLocalVisibleRect(host: ViewGroup, outRect: Rect) {
           val header = occludingHeaderView
           requireNotNull(header) { "header view cannot be null" }
+
           if (!header.isLaidOut) {
-            // header is not laid out, returning empty rect
-            return Rect()
+            // Header not ready, treat as fully occluded
+            outRect.setEmpty()
+            return
           }
-          val globalOccludingRect = Rect()
-          val globalVisibleRect = Rect()
-          // get the global rect of the occluding header view
-          header.getGlobalVisibleRect(globalOccludingRect)
-          // get the global rect of a row
-          host.getGlobalVisibleRect(globalVisibleRect)
-          if (globalVisibleRect.bottom <= globalOccludingRect.bottom) {
-            // if the row is completely occluded, return an empty rect
-            return Rect()
+
+          header.getGlobalVisibleRect(headerBounds)
+          host.getGlobalVisibleRect(hostBounds)
+
+          when (val occlusion = calculateOcclusion(hostBounds, headerBounds)) {
+            Occlusion.FullyOccluded -> outRect.setEmpty()
+            Occlusion.NotOccluded -> host.getLocalVisibleRect(outRect)
+            is Occlusion.PartiallyOccluded -> {
+              host.getLocalVisibleRect(outRect)
+              outRect.top = occlusion.occludedPixels
+            }
           }
-          val localVisibleRect = Rect()
-          host.getLocalVisibleRect(localVisibleRect)
-          if (globalVisibleRect.top <= globalOccludingRect.bottom) {
-            // if the row is partially occluded, adjust the top of the local rect to be the
-            localVisibleRect.top = globalOccludingRect.bottom - globalVisibleRect.top
-            return localVisibleRect
-          }
-          return localVisibleRect
         }
 
-        override fun getViewportRect(view: View): Rect {
-          val viewportRect = Rect()
-          view.getGlobalVisibleRect(viewportRect)
-          return viewportRect
+        override fun getViewportRect(view: View, outRect: Rect) {
+          view.getGlobalVisibleRect(outRect)
         }
 
         override fun shouldUseTransformedVisibleRect(visibilityOutput: VisibilityOutput): Boolean {
@@ -104,8 +126,12 @@ class VisibilityBoundsTransformerActivity : NavigatableDemoActivity() {
             ComponentTree.create(ComponentContext(this), ParentComponent())
                 .componentsConfiguration(
                     ComponentsConfiguration.defaultInstance.copy(
-                        visibilityBoundsTransformer = visibilityBoundsTransformer))
-                .build())
+                        visibilityBoundsTransformer = visibilityBoundsTransformer,
+                    ),
+                )
+                .enableChildClipping(true)
+                .build(),
+        )
     occludingHeaderView =
         TextView(this).apply {
           setBackgroundColor(Color.parseColor("#80FF0000"))
@@ -122,11 +148,12 @@ class VisibilityBoundsTransformerActivity : NavigatableDemoActivity() {
             object : ViewTreeObserver.OnGlobalLayoutListener {
               override fun onGlobalLayout() {
                 // notify the LithoView that the visible bounds have changed when the header view is
-                // laid out
-                lithoView.notifyVisibleBoundsChanged()
+                // laid out (layout change = VISIBILITY_HINT as it's a programmatic trigger)
+                lithoView.notifyVisibleBoundsChanged(VisibilityChangeReason.VISIBILITY_HINT)
                 occludingHeaderView?.viewTreeObserver?.removeOnGlobalLayoutListener(this)
               }
-            })
+            },
+        )
   }
 
   private class ParentComponent : KComponent() {
@@ -149,9 +176,10 @@ class VisibilityBoundsTransformerActivity : NavigatableDemoActivity() {
                   .width(200.dp)
                   .background(StrokeBackgroundDrawable(boundaryStroke))
                   .onVisible { Log.d("VisibilityComponentLog", "$index onVisible") }
-                  .onInvisible { Log.d("VisibilityComponentLog", "$index onInvisible") }) {
-            child(Text("Hello World $index"))
-          }
+                  .onInvisible { Log.d("VisibilityComponentLog", "$index onInvisible") },
+      ) {
+        child(Text("Hello World $index"))
+      }
     }
   }
 

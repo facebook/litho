@@ -17,13 +17,19 @@
 package com.facebook.litho
 
 /**
+ * Composite key for [EventTrigger] lookup. Uses the parent's key (a [GlobalKey] for components, a
+ * [String] for sections), the trigger method ID, and the child key to form a unique identity.
+ */
+data class EventTriggerKey(val parentKey: Any, val id: Int, val childKey: String)
+
+/**
  * Allows a top-down communication with a component and its immediate parent. The component must be
  * able to handle [com.facebook.litho.annotations.OnTrigger] events in order to accept an
  * EventTrigger.
  */
-class EventTrigger<E>(parentKey: String, val id: Int, childKey: String, val handle: Handle?) {
+class EventTrigger<E>(parentKey: Any, val id: Int, childKey: String, val handle: Handle?) {
 
-  val key: String = parentKey + id + childKey
+  val key: EventTriggerKey = EventTriggerKey(parentKey, id, childKey)
   var triggerTarget: EventTriggerTarget? = null
   var componentContext: ComponentContext? = null
 

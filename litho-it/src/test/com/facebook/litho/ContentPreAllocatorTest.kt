@@ -31,9 +31,9 @@ import org.junit.runner.RunWith
 class ContentPreAllocatorTest {
 
   @Test
-  fun preAllocateMountContent_createsNewAllocation_whenInControlState() {
+  fun preAllocateMountContent_createsNewAllocation() {
     var allocations = 0
-    val preAllocator = getContentPreAllocator(false) { allocations++ }
+    val preAllocator = getContentPreAllocator { allocations++ }
     assertThat(allocations).isEqualTo(0)
 
     preAllocator.executeSync()
@@ -41,26 +41,11 @@ class ContentPreAllocatorTest {
 
     preAllocator.executeSync()
     preAllocator.executeSync()
-    assertThat(allocations).isEqualTo(3) // Extra allocation here
-  }
-
-  @Test
-  fun preAllocateMountContent_avoidsNewAllocation_whenPreviouslyPreAllocated() {
-    var allocations = 0
-    val preAllocator = getContentPreAllocator(true) { allocations++ }
-    assertThat(allocations).isEqualTo(0)
-
-    preAllocator.executeSync()
-    assertThat(allocations).isEqualTo(1)
-
-    preAllocator.executeSync()
-    preAllocator.executeSync()
-    assertThat(allocations).isEqualTo(1) // Extra allocation avoided
+    assertThat(allocations).isEqualTo(3)
   }
 
   private fun getContentPreAllocator(
-      avoidRedundantAllocation: Boolean,
-      onPreAllocate: () -> Unit
+      onPreAllocate: () -> Unit,
   ): ContentPreAllocator {
     val componentTree = getComponentTree()
     val mountHandler = RunnableHandler.DefaultHandler(ComponentTree.getDefaultLayoutThreadLooper())
@@ -69,14 +54,11 @@ class ContentPreAllocatorTest {
         treeId = componentTree.id,
         componentContext = componentTree.context,
         mountContentHandler = mountHandler,
-        avoidRedundantPreAllocations = avoidRedundantAllocation,
-        nodeSupplier = { componentTree.mainThreadLayoutState?.mountableOutputs.orEmpty() }) {
-            _,
-            _,
-            _ ->
-          onPreAllocate()
-          true
-        }
+        nodeSupplier = { componentTree.mainThreadLayoutState?.mountableOutputs.orEmpty() },
+    ) { _, _, _ ->
+      onPreAllocate()
+      true
+    }
   }
 }
 
@@ -93,7 +75,10 @@ private fun getComponentTree(): ComponentTree {
   }
 
   return ComponentTree.create(
-          ComponentContext(ApplicationProvider.getApplicationContext<Context>()), SimpleText())
+          ComponentContext(ApplicationProvider.getApplicationContext<Context>()),
+          SimpleText(),
+      )
+      .enableChildClipping(true)
       .build()
       .also(ComponentTree::layout)
 }

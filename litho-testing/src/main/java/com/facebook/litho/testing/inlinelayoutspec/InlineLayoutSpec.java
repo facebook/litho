@@ -49,7 +49,7 @@ public abstract class InlineLayoutSpec extends SpecGeneratedComponent {
   }
 
   @Override
-  public boolean isEquivalentProps(Component other, boolean shouldCompareCommonProps) {
+  public boolean isEquivalentProps(Component other) {
     return this == other;
   }
 

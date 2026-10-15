@@ -89,6 +89,15 @@ class TouchExpansionDelegate(host: ComponentHost?) : TouchDelegate(IGNORED_RECT,
     return false
   }
 
+  internal fun findDelegateViewAt(x: Int, y: Int): View? {
+    for (i in delegates.size() - 1 downTo 0) {
+      delegates.valueAt(i)?.findDelegateViewAt(x, y)?.let {
+        return it
+      }
+    }
+    return null
+  }
+
   /**
    * Called when the MountItem this Delegate is referred to is moved to another position to also
    * update the indexes of the TouchExpansionDelegate.
@@ -127,8 +136,12 @@ class TouchExpansionDelegate(host: ComponentHost?) : TouchDelegate(IGNORED_RECT,
           bounds.left - expansion.left,
           bounds.top - expansion.top,
           bounds.right + expansion.right,
-          bounds.bottom + expansion.bottom)
+          bounds.bottom + expansion.bottom,
+      )
     }
+
+    fun findDelegateViewAt(x: Int, y: Int): View? =
+        if (getDelegateBounds()?.contains(x, y) == true) delegateView else null
 
     fun onTouchEvent(event: MotionEvent): Boolean {
       val x = event.x.toInt()

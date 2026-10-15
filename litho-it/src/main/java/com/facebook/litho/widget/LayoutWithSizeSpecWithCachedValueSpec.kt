@@ -32,8 +32,8 @@ object LayoutWithSizeSpecWithCachedValueSpec {
   @JvmStatic
   @OnCalculateCachedValue(name = "expensiveValue")
   fun onCalculateExpensiveValue(
-      @Prop number: Int?,
-      @Prop counter: CalculateCachedValueCounter
+      @Prop(optional = true) number: Int?,
+      @Prop counter: CalculateCachedValueCounter,
   ): Int {
     counter.increment()
     return number ?: -1
@@ -45,7 +45,7 @@ object LayoutWithSizeSpecWithCachedValueSpec {
       c: ComponentContext,
       widthSpec: Int,
       heightSpec: Int,
-      @CachedValue expensiveValue: Int
+      @CachedValue expensiveValue: Int,
   ): Component =
       Text.create(c)
           .widthPx(SizeSpec.getSize(widthSpec))

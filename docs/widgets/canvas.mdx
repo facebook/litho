@@ -1,6 +1,18 @@
 ---
 id: canvas
 title: Canvas
+keywords:
+    - canvas
+    - 2d graphics
+    - drawing
+    - shapes
+    - path
+    - fill
+    - stroke
+    - gradient
+    - transform
+    - layer
+    - group
 ---
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
@@ -24,7 +36,7 @@ On Android, the following features are not hardware accelerated prior to API 28:
  - `BlendingMode.Overlay`
  - `Shadow`
 
-In order to turn off hardware acceleration, you can pass `CanvasLayerType.Software` as an argument to `CanvasComponent`. By default, `CanvasLayerType.Auto` is used,  which means that hardware acceleration will be automatically disabled on Android versions older than API 28 if any of the features from the list above is used. For more information about hardware acceleartion on Android, see the [Android drawing models](https://fburl.com/7nkyeyo7) page at developer.android.com.
+In order to turn off hardware acceleration, you can pass `CanvasLayerType.Software` as an argument to `CanvasComponent`. By default, `CanvasLayerType.Auto` is used,  which means that hardware acceleration will be automatically disabled on Android versions older than API 28 if any of the features from the list above is used. For more information about hardware acceleartion on Android, see the [Android drawing models](https://developer.android.com/topic/performance/hardware-accel#model) page at developer.android.com.
 
 #### Coordinate system
 
@@ -78,42 +90,42 @@ Canvas supports two shading variants:
 
 ### Fill shape with color and gradient
 
-```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/canvas/DrawShapeCanvasKComponent.kt start=start_example end=end_example
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/canvas/DrawShapeCanvasKComponent.kt start=start_example end=end_example
 ```
 
 <img width="300" src={useBaseUrl('images/litho-canvas-filled-circles.png')} />
 
 ### Fill path with color and gradient
 
-```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/canvas/DrawPathCanvasKComponent.kt start=start_example end=end_example
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/canvas/DrawPathCanvasKComponent.kt start=start_example end=end_example
 ```
 
 <img width="300" src={useBaseUrl('images/litho-canvas-filled-hearts.png')} />
 
 ### Stroke shape with color and gradient
 
-```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/canvas/DrawStrokedShapeCanvasKComponent.kt start=start_example end=end_example
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/canvas/DrawStrokedShapeCanvasKComponent.kt start=start_example end=end_example
 ```
 
 <img width="300" src={useBaseUrl('images/litho-canvas-stroked-dashed-ellipses.png')} />
 
 ### Rotate a Group
 
-```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/canvas/DrawRotatedGroupCanvasKComponent.kt start=start_example end=end_example
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/canvas/DrawRotatedGroupCanvasKComponent.kt start=start_example end=end_example
 ```
 
 <img width="300" src={useBaseUrl('images/litho-canvas-rotated-group.png')} />
 
 ### Cut a hole in a rectangle
 
-```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/canvas/DrawTransparentHoleCanvasKComponent.kt start=start_example end=end_example
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/canvas/DrawTransparentHoleCanvasKComponent.kt start=start_example end=end_example
 ```
 
 <img width="300" src={useBaseUrl('images/litho-canvas-layer-hole.png')} />
 
 ### Animations
 
-```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/canvas/DrawAnimatedSquareCanvasKComponent.kt start=start_example end=end_example
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/canvas/DrawAnimatedSquareCanvasKComponent.kt start=start_example end=end_example
 ```
 
 <img width="300" src={useBaseUrl('images/litho-canvas-rotating-square.gif')} />

@@ -19,6 +19,7 @@ package com.facebook.rendercore
 import android.content.Context
 import androidx.annotation.VisibleForTesting
 import com.facebook.rendercore.extensions.RenderCoreExtension
+import com.facebook.rendercore.extensions.VisibilityChangeReason
 
 open class LazyMeasureHostView(context: Context) : HostView(context), RenderCoreExtensionHost {
 
@@ -30,7 +31,7 @@ open class LazyMeasureHostView(context: Context) : HostView(context), RenderCore
   fun interface LazyRenderTreeProvider<RenderContext> {
     fun getRenderTreeForSize(
         sizeConstraints: SizeConstraints,
-        previousRenderResult: RenderResult<*, RenderContext>?
+        previousRenderResult: RenderResult<*, RenderContext>?,
     ): RenderResult<*, RenderContext>
   }
 
@@ -51,7 +52,7 @@ open class LazyMeasureHostView(context: Context) : HostView(context), RenderCore
     val renderTreeProvider = lazyRenderTreeProvider
     if (renderTreeProvider != null) {
       var lazyRenderTreeProvider: LazyRenderTreeProvider<Any?> = renderTreeProvider
-      currentRenderResult?.let { mountState.mount(it.renderTree) }
+      currentRenderResult?.let { result -> performMount(result.mountInput) }
       // We could run into the case that mounting a tree ends up requesting another mount.
       // We need to keep re-mounting until the mounted renderTree matches the currentRenderResult.
       var retries = 0
@@ -62,19 +63,26 @@ open class LazyMeasureHostView(context: Context) : HostView(context), RenderCore
               TAG,
               "More than " +
                   RootHostDelegate.MAX_REMOUNT_RETRIES +
-                  " recursive mount attempts. Skipping mounting the latest version.")
+                  " recursive mount attempts. Skipping mounting the latest version.",
+          )
           return
         }
         lazyRenderTreeProvider = renderTreeProvider
         val renderResult =
             lazyRenderTreeProvider.getRenderTreeForSize(
-                SizeConstraints.exact(r - l, b - t), currentRenderResult)
-        mountState.mount(renderResult.renderTree)
+                SizeConstraints.exact(r - l, b - t),
+                currentRenderResult,
+            )
+        performMount(renderResult.mountInput)
         currentRenderResult = renderResult
         retries++
       }
     }
     performLayoutOnChildrenIfNecessary(this)
+  }
+
+  protected open fun performMount(mountInput: MountInput) {
+    mountState.mount(mountInput.renderTree)
   }
 
   /**
@@ -107,8 +115,8 @@ open class LazyMeasureHostView(context: Context) : HostView(context), RenderCore
     mountState.attach()
   }
 
-  override fun notifyVisibleBoundsChanged() {
-    RenderCoreExtension.notifyVisibleBoundsChanged(mountState, this)
+  override fun notifyVisibleBoundsChanged(reason: VisibilityChangeReason) {
+    RenderCoreExtension.notifyVisibleBoundsChanged(mountState, this, reason)
   }
 
   override fun onRegisterForPremount(frameTimeMs: Long?) {
@@ -125,23 +133,33 @@ open class LazyMeasureHostView(context: Context) : HostView(context), RenderCore
 
   override fun offsetTopAndBottom(offset: Int) {
     super.offsetTopAndBottom(offset)
-    notifyVisibleBoundsChanged()
+    notifyVisibleBoundsChanged(VisibilityChangeReason.SCROLL)
   }
 
   override fun offsetLeftAndRight(offset: Int) {
     super.offsetLeftAndRight(offset)
-    notifyVisibleBoundsChanged()
+    notifyVisibleBoundsChanged(VisibilityChangeReason.SCROLL)
   }
 
   override fun setTranslationX(translationX: Float) {
     super.setTranslationX(translationX)
-    notifyVisibleBoundsChanged()
+    // setTranslation* can be called during animations or scroll. Use ANIMATION if view has
+    // transient state (indicates animation in progress), otherwise assume SCROLL.
+    val reason =
+        if (hasTransientState()) VisibilityChangeReason.ANIMATION else VisibilityChangeReason.SCROLL
+    notifyVisibleBoundsChanged(reason)
   }
 
   override fun setTranslationY(translationY: Float) {
     super.setTranslationY(translationY)
-    notifyVisibleBoundsChanged()
+    // setTranslation* can be called during animations or scroll. Use ANIMATION if view has
+    // transient state (indicates animation in progress), otherwise assume SCROLL.
+    val reason =
+        if (hasTransientState()) VisibilityChangeReason.ANIMATION else VisibilityChangeReason.SCROLL
+    notifyVisibleBoundsChanged(reason)
   }
+
+  protected fun getCurrentRenderTree(): RenderTree? = currentRenderResult?.renderTree
 
   companion object {
     private const val TAG = "LazyMeasureHostView"

@@ -17,19 +17,13 @@
 package com.facebook.litho.widget
 
 import android.graphics.Rect
-import com.facebook.litho.Column
+import com.facebook.litho.Column as ColumnBuilder
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
-import com.facebook.litho.FocusedVisibleEvent
-import com.facebook.litho.FullImpressionVisibleEvent
-import com.facebook.litho.InvisibleEvent
 import com.facebook.litho.LifecycleStep
 import com.facebook.litho.LifecycleStep.StepInfo
 import com.facebook.litho.StateValue
 import com.facebook.litho.Transition
-import com.facebook.litho.UnfocusedVisibleEvent
-import com.facebook.litho.VisibilityChangedEvent
-import com.facebook.litho.VisibleEvent
 import com.facebook.litho.annotations.CachedValue
 import com.facebook.litho.annotations.ExcuseMySpec
 import com.facebook.litho.annotations.FromEvent
@@ -49,6 +43,12 @@ import com.facebook.litho.annotations.Prop
 import com.facebook.litho.annotations.Reason
 import com.facebook.litho.annotations.State
 import com.facebook.litho.widget.events.EventWithoutAnnotation
+import com.facebook.rendercore.visibility.FocusedVisibleEvent
+import com.facebook.rendercore.visibility.FullImpressionVisibleEvent
+import com.facebook.rendercore.visibility.InvisibleEvent
+import com.facebook.rendercore.visibility.UnfocusedVisibleEvent
+import com.facebook.rendercore.visibility.VisibilityChangedEvent
+import com.facebook.rendercore.visibility.VisibleEvent
 
 @ExcuseMySpec(reason = Reason.USES_ON_UPDATE_STATE_WITH_TRANSITION)
 @LayoutSpec(events = [EventWithoutAnnotation::class])
@@ -59,7 +59,7 @@ object LayoutSpecLifecycleTesterSpec {
   fun onCreateInitialState(
       c: ComponentContext,
       state: StateValue<String?>,
-      @Prop steps: MutableList<StepInfo>
+      @Prop steps: MutableList<StepInfo>,
   ) {
     steps.add(StepInfo(LifecycleStep.ON_CREATE_INITIAL_STATE))
     state.set("hello world")
@@ -73,12 +73,12 @@ object LayoutSpecLifecycleTesterSpec {
       @Prop(optional = true) caller: Caller?,
       @Prop(optional = true) body: Component?,
       @State state: String?,
-      @CachedValue expensiveValue: Int
+      @CachedValue expensiveValue: Int,
   ): Component {
     steps.add(StepInfo(LifecycleStep.ON_CREATE_LAYOUT))
     checkNotNull(state) { "OnCreateLayout called without initialised state." }
     caller?.set(c, steps)
-    return Column.create(c)
+    return ColumnBuilder.create(c)
         .visibleHandler(LayoutSpecLifecycleTester.onVisible(c))
         .focusedHandler(LayoutSpecLifecycleTester.onFocusedVisible(c))
         .invisibleHandler(LayoutSpecLifecycleTester.onInvisible(c))
@@ -142,7 +142,7 @@ object LayoutSpecLifecycleTesterSpec {
       @Prop(optional = true) caller: Caller?,
       @FromEvent count: Int,
       @FromEvent isDirty: Boolean,
-      @FromEvent message: String?
+      @FromEvent message: String?,
   ) {
     caller?.eventWithoutAnnotation = EventWithoutAnnotation(count, isDirty, message)
   }

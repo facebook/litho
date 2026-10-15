@@ -16,6 +16,8 @@
 
 package com.facebook.litho.specmodels.processor;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.facebook.litho.annotations.OnUpdateState;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
@@ -26,41 +28,40 @@ import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.lang.model.element.Modifier;
-import org.junit.Assert;
 
 public class UpdateStateMethodExtractorTestHelper {
   static void assertMethodExtraction(
       ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> methods) {
-    Assert.assertEquals(1, methods.size());
+    assertThat(methods.size()).isEqualTo(1);
 
     SpecMethodModel<UpdateStateMethod, Void> updateStateMethod = methods.iterator().next();
     List<Annotation> onUpdateStateAnnotations =
         updateStateMethod.annotations.stream()
             .filter(x -> x instanceof OnUpdateState)
             .collect(Collectors.toList());
-    Assert.assertFalse(onUpdateStateAnnotations.isEmpty());
+    assertThat(onUpdateStateAnnotations.isEmpty()).isFalse();
 
-    Assert.assertEquals(1, updateStateMethod.modifiers.size());
-    Assert.assertTrue(updateStateMethod.modifiers.contains(Modifier.PUBLIC));
+    assertThat(updateStateMethod.modifiers.size()).isEqualTo(1);
+    assertThat(updateStateMethod.modifiers.contains(Modifier.PUBLIC)).isTrue();
 
-    Assert.assertEquals("testMethod", updateStateMethod.name.toString());
+    assertThat(updateStateMethod.name.toString()).isEqualTo("testMethod");
 
-    Assert.assertEquals(TypeName.VOID, updateStateMethod.returnType);
+    assertThat(updateStateMethod.returnType).isEqualTo(TypeName.VOID);
 
-    Assert.assertEquals(3, updateStateMethod.methodParams.size());
+    assertThat(updateStateMethod.methodParams.size()).isEqualTo(3);
 
-    Assert.assertEquals("testProp", updateStateMethod.methodParams.get(0).getName());
-    Assert.assertEquals(TypeName.BOOLEAN, updateStateMethod.methodParams.get(0).getTypeName());
-    Assert.assertEquals(1, updateStateMethod.methodParams.get(0).getAnnotations().size());
+    assertThat(updateStateMethod.methodParams.get(0).getName()).isEqualTo("testProp");
+    assertThat(updateStateMethod.methodParams.get(0).getTypeName()).isEqualTo(TypeName.BOOLEAN);
+    assertThat(updateStateMethod.methodParams.get(0).getAnnotations().size()).isEqualTo(1);
 
-    Assert.assertEquals("testState", updateStateMethod.methodParams.get(1).getName());
-    Assert.assertEquals(TypeName.INT, updateStateMethod.methodParams.get(1).getTypeName());
-    Assert.assertEquals(1, updateStateMethod.methodParams.get(1).getAnnotations().size());
+    assertThat(updateStateMethod.methodParams.get(1).getName()).isEqualTo("testState");
+    assertThat(updateStateMethod.methodParams.get(1).getTypeName()).isEqualTo(TypeName.INT);
+    assertThat(updateStateMethod.methodParams.get(1).getAnnotations().size()).isEqualTo(1);
 
-    Assert.assertEquals("testPermittedAnnotation", updateStateMethod.methodParams.get(2).getName());
-    Assert.assertEquals(
-        ClassName.bestGuess("java.lang.Object"),
-        updateStateMethod.methodParams.get(2).getTypeName());
-    Assert.assertEquals(1, updateStateMethod.methodParams.get(2).getAnnotations().size());
+    assertThat(updateStateMethod.methodParams.get(2).getName())
+        .isEqualTo("testPermittedAnnotation");
+    assertThat(updateStateMethod.methodParams.get(2).getTypeName())
+        .isEqualTo(ClassName.bestGuess("java.lang.Object"));
+    assertThat(updateStateMethod.methodParams.get(2).getAnnotations().size()).isEqualTo(1);
   }
 }

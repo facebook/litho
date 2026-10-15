@@ -41,7 +41,7 @@ interface OnItemCallbacks<State> {
   fun beforeMountItem(
       extensionState: ExtensionState<State>,
       renderTreeNode: RenderTreeNode,
-      index: Int
+      index: Int,
   )
 
   /** Called after an item is mounted. */
@@ -49,7 +49,7 @@ interface OnItemCallbacks<State> {
       extensionState: ExtensionState<State>,
       renderUnit: RenderUnit<*>,
       content: Any,
-      layoutData: Any?
+      layoutData: Any?,
   )
 
   /**
@@ -61,7 +61,7 @@ interface OnItemCallbacks<State> {
       previousRenderUnit: RenderUnit<*>,
       previousLayoutData: Any?,
       nextRenderUnit: RenderUnit<*>,
-      nextLayoutData: Any?
+      nextLayoutData: Any?,
   ): Boolean
 
   /** Called after an item is bound, after it gets mounted or updated. */
@@ -69,7 +69,7 @@ interface OnItemCallbacks<State> {
       extensionState: ExtensionState<State>,
       renderUnit: RenderUnit<*>,
       content: Any,
-      layoutData: Any?
+      layoutData: Any?,
   )
 
   /** Called after an item is unbound. */
@@ -77,7 +77,7 @@ interface OnItemCallbacks<State> {
       extensionState: ExtensionState<State>,
       renderUnit: RenderUnit<*>,
       content: Any,
-      layoutData: Any?
+      layoutData: Any?,
   )
 
   /** Called after an item is unmounted. */
@@ -85,7 +85,7 @@ interface OnItemCallbacks<State> {
       extensionState: ExtensionState<State>,
       renderUnit: RenderUnit<*>,
       content: Any,
-      layoutData: Any?
+      layoutData: Any?,
   )
 
   fun onBoundsAppliedToItem(
@@ -93,12 +93,16 @@ interface OnItemCallbacks<State> {
       renderUnit: RenderUnit<*>,
       content: Any,
       layoutData: Any?,
-      changed: Boolean
+      changed: Boolean,
   )
 }
 
 interface VisibleBoundsCallbacks<State> {
 
   /** Called when the visible bounds of the Host change. */
-  fun onVisibleBoundsChanged(extensionState: ExtensionState<State>, localVisibleRect: Rect?)
+  fun onVisibleBoundsChanged(
+      extensionState: ExtensionState<State>,
+      localVisibleRect: Rect?,
+      reason: VisibilityChangeReason,
+  )
 }

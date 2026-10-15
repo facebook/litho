@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
 import com.facebook.samples.litho.NavigatableDemoActivity;
+import com.facebook.samples.litho.samplekotlin.communicating.ParentComponentReceivesEventFromChildComponent;
 
 public class CommunicatingFromChildToParent extends NavigatableDemoActivity {
 
@@ -40,10 +41,6 @@ public class CommunicatingFromChildToParent extends NavigatableDemoActivity {
                             "Activity received event from child",
                             Toast.LENGTH_SHORT)
                         .show())));
-  }
-
-  public interface ComponentEventObserver {
-    void onComponentClicked();
   }
 
   // end_define_observer

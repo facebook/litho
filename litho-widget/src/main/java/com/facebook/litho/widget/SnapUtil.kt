@@ -49,7 +49,7 @@ object SnapUtil {
       deltaJumpThreshold: Int,
       snapToStartFlingOffset: Int,
       snapToStartOffset: Int,
-      useExactScrollPosition: Boolean
+      useExactScrollPosition: Boolean,
   ): SnapHelper? =
       when (snapMode) {
         SNAP_TO_CENTER -> PagerSnapHelper()
@@ -72,7 +72,7 @@ object SnapUtil {
   fun getSmoothScrollerWithOffset(
       context: Context,
       offset: Int,
-      type: SmoothScrollAlignmentType
+      type: SmoothScrollAlignmentType,
   ): RecyclerView.SmoothScroller =
       when (type) {
         SmoothScrollAlignmentType.SNAP_TO_ANY,
@@ -103,7 +103,8 @@ object SnapUtil {
       SNAP_TO_START,
       SNAP_TO_CENTER,
       SNAP_TO_CENTER_CHILD,
-      SNAP_TO_CENTER_CHILD_WITH_CUSTOM_SPEED)
+      SNAP_TO_CENTER_CHILD_WITH_CUSTOM_SPEED,
+  )
   @Retention(AnnotationRetention.SOURCE)
   annotation class SnapMode
 }

@@ -30,18 +30,20 @@ class KComponentEquivalenceTest {
   fun kcomponentWithPrivateProps_isEquivalentTo_checksAllFields() {
     class ComponentWithPrivateProps(private val counter: Int, private val name: String) :
         KComponent() {
-      override fun ComponentScope.render() = null
+      override fun ComponentScope.render(): Component? = null
     }
 
     assertThat(
-            ComponentWithPrivateProps(0, "Ada").isEquivalentTo(ComponentWithPrivateProps(0, "Ada")))
+        ComponentWithPrivateProps(0, "Ada").isEquivalentTo(ComponentWithPrivateProps(0, "Ada")),
+    )
         .isTrue()
     assertThat(
-            ComponentWithPrivateProps(0, "Ada").isEquivalentTo(ComponentWithPrivateProps(1, "Ada")))
+        ComponentWithPrivateProps(0, "Ada").isEquivalentTo(ComponentWithPrivateProps(1, "Ada")),
+    )
         .isFalse()
     assertThat(
-            ComponentWithPrivateProps(0, "Ada")
-                .isEquivalentTo(ComponentWithPrivateProps(0, "Grace")))
+        ComponentWithPrivateProps(0, "Ada").isEquivalentTo(ComponentWithPrivateProps(0, "Grace")),
+    )
         .isFalse()
   }
 
@@ -52,13 +54,16 @@ class KComponentEquivalenceTest {
     }
 
     assertThat(
-            ComponentWithPublicProps(0, "Ada").isEquivalentTo(ComponentWithPublicProps(0, "Ada")))
+        ComponentWithPublicProps(0, "Ada").isEquivalentTo(ComponentWithPublicProps(0, "Ada")),
+    )
         .isTrue()
     assertThat(
-            ComponentWithPublicProps(0, "Ada").isEquivalentTo(ComponentWithPublicProps(1, "Ada")))
+        ComponentWithPublicProps(0, "Ada").isEquivalentTo(ComponentWithPublicProps(1, "Ada")),
+    )
         .isFalse()
     assertThat(
-            ComponentWithPublicProps(0, "Ada").isEquivalentTo(ComponentWithPublicProps(0, "Grace")))
+        ComponentWithPublicProps(0, "Ada").isEquivalentTo(ComponentWithPublicProps(0, "Grace")),
+    )
         .isFalse()
   }
 
@@ -70,13 +75,16 @@ class KComponentEquivalenceTest {
     }
 
     assertThat(
-            ComponentWithPublicProps(0, "Ada").isEquivalentTo(ComponentWithPublicProps(0, "Ada")))
+        ComponentWithPublicProps(0, "Ada").isEquivalentTo(ComponentWithPublicProps(0, "Ada")),
+    )
         .isTrue()
     assertThat(
-            ComponentWithPublicProps(0, "Ada").isEquivalentTo(ComponentWithPublicProps(1, "Ada")))
+        ComponentWithPublicProps(0, "Ada").isEquivalentTo(ComponentWithPublicProps(1, "Ada")),
+    )
         .isFalse()
     assertThat(
-            ComponentWithPublicProps(0, "Ada").isEquivalentTo(ComponentWithPublicProps(0, "Grace")))
+        ComponentWithPublicProps(0, "Ada").isEquivalentTo(ComponentWithPublicProps(0, "Grace")),
+    )
         .isFalse()
   }
 
@@ -122,16 +130,19 @@ class KComponentEquivalenceTest {
     }
 
     assertThat(
-            ComponentWithComplexProps(Counter(0), Name("Ada"))
-                .isEquivalentTo(ComponentWithComplexProps(Counter(0), Name("Ada"))))
+        ComponentWithComplexProps(Counter(0), Name("Ada"))
+            .isEquivalentTo(ComponentWithComplexProps(Counter(0), Name("Ada"))),
+    )
         .isTrue()
     assertThat(
-            ComponentWithComplexProps(Counter(0), Name("Ada"))
-                .isEquivalentTo(ComponentWithComplexProps(Counter(1), Name("Ada"))))
+        ComponentWithComplexProps(Counter(0), Name("Ada"))
+            .isEquivalentTo(ComponentWithComplexProps(Counter(1), Name("Ada"))),
+    )
         .isFalse()
     assertThat(
-            ComponentWithComplexProps(Counter(0), Name("Ada"))
-                .isEquivalentTo(ComponentWithComplexProps(Counter(0), Name("Grace"))))
+        ComponentWithComplexProps(Counter(0), Name("Ada"))
+            .isEquivalentTo(ComponentWithComplexProps(Counter(0), Name("Grace"))),
+    )
         .isFalse()
   }
 }

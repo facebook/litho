@@ -1,1 +1,0 @@
-boolean IS_INTERNAL_BUILD = {{IS_DEBUG}}

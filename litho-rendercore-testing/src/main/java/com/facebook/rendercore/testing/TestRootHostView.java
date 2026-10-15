@@ -22,6 +22,7 @@ import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RootHostView;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nullable;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class TestRootHostView extends RootHostView {
@@ -55,7 +56,7 @@ public class TestRootHostView extends RootHostView {
   }
 
   @Override
-  public void moveItem(MountItem item, int oldIndex, int newIndex) {
+  public void moveItem(@Nullable MountItem item, int oldIndex, int newIndex) {
     super.moveItem(item, oldIndex, newIndex);
     mMoveCount++;
   }

@@ -22,17 +22,23 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.view.ContextThemeWrapper
 import androidx.test.core.app.ApplicationProvider
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.config.TempComponentsConfigurations
+import com.facebook.litho.core.height
+import com.facebook.litho.core.width
 import com.facebook.litho.it.R
+import com.facebook.litho.layout.flexbox.Row
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.TestViewComponent
 import com.facebook.litho.testing.ViewGroupWithLithoViewChildren
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec
 import com.facebook.litho.testing.testrunner.LithoTestRunner
+import com.facebook.litho.view.backgroundColor
 import com.facebook.litho.widget.MountSpecLifecycleTester
 import com.facebook.litho.widget.SolidColor
 import com.facebook.litho.widget.Text
 import com.facebook.litho.widget.TextInput
+import com.facebook.rendercore.px
 import com.facebook.yoga.YogaEdge
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -64,7 +70,8 @@ class MountStateViewTest {
                           .paddingPx(YogaEdge.TOP, 6)
                           .paddingPx(YogaEdge.RIGHT, 7)
                           .paddingPx(YogaEdge.BOTTOM, 8)
-                          .backgroundColor(color))
+                          .backgroundColor(color),
+                  )
                   .build()
         }
     val lithoView = lithoTestRule.render { component }.lithoView
@@ -80,11 +87,12 @@ class MountStateViewTest {
 
   @Test
   fun testSettingCustomPaddingOverridesDefaultBackgroundPadding() {
-    val c =
-        ComponentContext(
-            ContextThemeWrapper(
-                ApplicationProvider.getApplicationContext(),
-                R.style.TestTheme_BackgroundWithPadding))
+    val c = ComponentContext(
+        ContextThemeWrapper(
+            ApplicationProvider.getApplicationContext(),
+            R.style.TestTheme_BackgroundWithPadding,
+        ),
+    )
     val component = TextInput.create(c).paddingPx(YogaEdge.ALL, 9).build()
     lithoTestRule.useContext(c)
     val lithoView = lithoTestRule.render { component }.lithoView
@@ -97,11 +105,12 @@ class MountStateViewTest {
 
   @Test
   fun testSettingOneSidePaddingClearsTheRest() {
-    val c =
-        ComponentContext(
-            ContextThemeWrapper(
-                ApplicationProvider.getApplicationContext(),
-                R.style.TestTheme_BackgroundWithPadding))
+    val c = ComponentContext(
+        ContextThemeWrapper(
+            ApplicationProvider.getApplicationContext(),
+            R.style.TestTheme_BackgroundWithPadding,
+        ),
+    )
     val component = TextInput.create(c).paddingPx(YogaEdge.LEFT, 12).build()
     lithoTestRule.useContext(c)
     val lithoView = lithoTestRule.render { component }.lithoView
@@ -140,14 +149,15 @@ class MountStateViewTest {
     val component =
         Column.create(context)
             .child(TextInput.create(context).widthPx(100).heightPx(100))
-            .child(SolidColor.create(context).color(Color.BLACK).widthPx(100).heightPx(100))
+            .child(SolidColor(color = Color.BLACK, style = Style.width(100.px).height(100.px)))
             .child(
                 Text.create(context)
                     .text("hello world")
                     .widthPx(80)
                     .heightPx(80)
                     .paddingPx(YogaEdge.ALL, 10)
-                    .marginPx(YogaEdge.ALL, 10))
+                    .marginPx(YogaEdge.ALL, 10),
+            )
             .build()
     val root = lithoTestRule.render { component }.lithoView
     val view = root.getChildAt(0)
@@ -164,6 +174,30 @@ class MountStateViewTest {
     val textActualBounds = (item2.content as Drawable).bounds
     assertThat(textActualBounds.width()).isEqualTo(textOutputBounds.width())
     assertThat(textActualBounds.height()).isEqualTo(textOutputBounds.height())
+  }
+
+  @Test
+  fun shouldDisableBgFgOutputs_setsWhetherABackgroundMountsAHost() {
+    val withHosts = ComponentsConfiguration.create().shouldDisableBgFgOutputs(true).build()
+    val withoutHosts =
+        ComponentsConfiguration.create(withHosts).shouldDisableBgFgOutputs(false).build()
+
+    assertThat(withHosts.shouldAddHostViewForRootComponent).isFalse()
+    assertThat(countHostsForABackground(withHosts)).isEqualTo(1)
+    assertThat(countHostsForABackground(withoutHosts)).isEqualTo(0)
+  }
+
+  private fun countHostsForABackground(config: ComponentsConfiguration): Int {
+    val tree = ComponentTree.create(context).componentsConfiguration(config).build()
+    val lithoView =
+        lithoTestRule
+            .render(componentTree = tree) {
+              Row {
+                child(Row(style = Style.width(10.px).height(10.px).backgroundColor(Color.RED)))
+              }
+            }
+            .lithoView
+    return (0 until lithoView.childCount).count { lithoView.getChildAt(it) is ComponentHost }
   }
 
   @Test

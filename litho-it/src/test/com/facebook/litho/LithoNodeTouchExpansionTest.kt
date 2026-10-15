@@ -43,7 +43,8 @@ class LithoNodeTouchExpansionTest {
     val resolveContext = context.setRenderStateContextForTests()
     node =
         requireNotNull(
-            Resolver.resolveTree(resolveContext, context, Column.create(context).build()))
+            Resolver.resolveTree(resolveContext, context, Column.create(context).build()),
+        )
     node.mutableNodeInfo().touchHandler = EventHandlerTestUtil.create(1, null)
     lithoLayoutContext =
         LithoLayoutContext(
@@ -56,7 +57,8 @@ class LithoNodeTouchExpansionTest {
             resolveContext.isAccessibilityEnabled,
             LayoutCache(),
             null,
-            null)
+            null,
+        )
   }
 
   private fun setDirection(direction: LayoutDirection): LithoNodeTouchExpansionTest {

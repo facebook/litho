@@ -36,7 +36,7 @@ import org.robolectric.annotation.LooperMode
 class LithoVisibilityEventsControllerForNestedViewTest {
   @Rule
   @JvmField
-  val mLithoTestRule: LithoTestRule =
+  val lithoTestRule: LithoTestRule =
       LithoTestRule(lithoVisibilityEventsController = { lithoVisibilityEventsControllerDelegate })
   private val lithoVisibilityEventsControllerDelegate: LithoVisibilityEventsController =
       LithoVisibilityEventsControllerDelegate()
@@ -44,33 +44,34 @@ class LithoVisibilityEventsControllerForNestedViewTest {
 
   @Test
   fun `test visibility events for nested LithoView`() {
-    val testLithoView =
-        mLithoTestRule.render {
-          LazyList(style = Style.height(100.sp).width(100.sp)) {
-            for (i in 0 until 10) {
-              child(
-                  component =
-                      VisibilityTrackingComponent(tag = i, invisibleTracking = invisibleTags))
-            }
-          }
+    val testLithoView = lithoTestRule.render {
+      LazyList(style = Style.height(100.sp).width(100.sp), useLegacyInfra = true) {
+        for (i in 0 until 10) {
+          child(component = VisibilityTrackingComponent(tag = i, invisibleTracking = invisibleTags))
         }
+      }
+    }
     testLithoView.lithoView.subscribeComponentTreeToVisibilityEventsController(
-        lithoVisibilityEventsControllerDelegate)
+        lithoVisibilityEventsControllerDelegate,
+    )
 
     // testing initial state
     assertThat(
-            testLithoView.lithoView.componentTree?.lithoVisibilityEventsController?.visibilityState)
+        testLithoView.lithoView.componentTree?.lithoVisibilityEventsController?.visibilityState,
+    )
         .isEqualTo(LithoVisibilityEventsController.LithoVisibilityState.HINT_VISIBLE)
     assertThat(invisibleTags).isEmpty()
 
     // move to invisible
     lithoVisibilityEventsControllerDelegate.moveToVisibilityState(
-        LithoVisibilityEventsController.LithoVisibilityState.HINT_INVISIBLE)
+        LithoVisibilityEventsController.LithoVisibilityState.HINT_INVISIBLE,
+    )
     assertThat(invisibleTags).isEqualTo((0 until 10).toSet())
 
     // move to visible
     lithoVisibilityEventsControllerDelegate.moveToVisibilityState(
-        LithoVisibilityEventsController.LithoVisibilityState.HINT_VISIBLE)
+        LithoVisibilityEventsController.LithoVisibilityState.HINT_VISIBLE,
+    )
     assertThat(invisibleTags).isEmpty()
   }
 }
@@ -84,6 +85,7 @@ class VisibilityTrackingComponent(val invisibleTracking: MutableSet<Int>, val ta
         style =
             Style.height(5.sp)
                 .onVisible { invisibleTracking.remove(tag) }
-                .onInvisible { invisibleTracking.add(tag) })
+                .onInvisible { invisibleTracking.add(tag) },
+    )
   }
 }

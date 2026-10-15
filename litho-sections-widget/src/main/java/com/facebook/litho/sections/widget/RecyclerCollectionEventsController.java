@@ -79,6 +79,22 @@ public class RecyclerCollectionEventsController extends RecyclerEventsController
   }
 
   /**
+   * Send the {@link RecyclerCollectionComponent} a request to scroll the content to the next item
+   * in the binder.
+   *
+   * @param smoothScroller The provided smoothScroller is used to scroll to the target.
+   */
+  public void requestScrollToNextPositionWithSnap(RecyclerView.SmoothScroller smoothScroller) {
+    final int defaultTarget = Math.max(0, mLastCompletelyVisibleItemPosition + 1);
+    final int snapTarget = getSmoothScrollTarget(true, defaultTarget);
+    requestScrollToPositionInner(
+        true, // Animated has to be true, otherwise no need to apply customize Speed
+        defaultTarget,
+        snapTarget,
+        smoothScroller);
+  }
+
+  /**
    * Send the {@link RecyclerCollectionComponent} a request to scroll the content to the previous
    * item in the binder.
    *
@@ -158,13 +174,36 @@ public class RecyclerCollectionEventsController extends RecyclerEventsController
   }
 
   /**
+   * Send the {@link RecyclerCollectionComponent} a request to instantly scroll the content to the
+   * target with the given custom attribute {@link
+   * com.facebook.litho.widget.RecyclerBinder#ID_CUSTOM_ATTR_KEY "id"}.
+   */
+  public void requestScroll(Object id, int offset) {
+    if (mSectionTree != null) {
+      mSectionTree.requestFocusOnRoot(id, offset);
+    }
+  }
+
+  /**
+   * Send the {@link RecyclerCollectionComponent} a request to directly focus on the target with
+   * offset, used to trigger an update in {@link com.facebook.litho.widget.RecyclerBinder} without
+   * viewport change.
+   */
+  public void requestFocusOnRoot(int index, int offset) {
+    if (mSectionTree != null) {
+      mSectionTree.requestFocusOnRoot(index, offset);
+    }
+  }
+
+  /**
    * @param animated whether the scroll will happen with animation.
    * @param defaultTarget target to use as fallback.
    * @param snapTarget target that takes into account snapping behavior.
    */
   private void requestScrollToPositionInner(boolean animated, int defaultTarget, int snapTarget) {
-    // NULLSAFE_FIXME[Parameter Not Nullable]
-    requestScrollToPositionInner(animated, defaultTarget, snapTarget, null);
+    requestScrollToPositionInner(
+        animated, defaultTarget, snapTarget, null // smoothScroller
+        );
   }
 
   /**
@@ -177,7 +216,7 @@ public class RecyclerCollectionEventsController extends RecyclerEventsController
       boolean animated,
       int defaultTarget,
       int snapTarget,
-      RecyclerView.SmoothScroller smoothScroller) {
+      @Nullable RecyclerView.SmoothScroller smoothScroller) {
     final RecyclerView recyclerView = getRecyclerView();
     if (recyclerView == null) {
       return;
@@ -206,7 +245,9 @@ public class RecyclerCollectionEventsController extends RecyclerEventsController
     if (smoothScroller == null) {
       smoothScroller =
           SnapUtil.getSmoothScrollerWithOffset(
-              recyclerView.getContext(), 0, getSmoothScrollAlignmentTypeFrom(mSnapMode));
+              recyclerView.getContext(),
+              0, // offset
+              getSmoothScrollAlignmentTypeFrom(mSnapMode));
     }
 
     smoothScroller.setTargetPosition(snapTarget);

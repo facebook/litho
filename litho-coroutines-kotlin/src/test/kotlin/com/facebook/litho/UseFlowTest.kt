@@ -16,16 +16,21 @@
 
 package com.facebook.litho
 
+import android.view.View
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.lifecycle.LifecycleOwnerTreeProp
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.testing.unspecified
+import com.facebook.rendercore.primitives.LayoutBehavior
+import com.facebook.rendercore.primitives.PrimitiveLayoutResult
+import com.facebook.rendercore.primitives.ViewAllocator
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
@@ -69,7 +74,7 @@ class UseFlowTest {
       override fun ComponentScope.render(): Component {
         val value = useFlow(testFlow)
         stateRef.set(value)
-        return Row()
+        return EmptyComponent()
       }
     }
 
@@ -94,9 +99,9 @@ class UseFlowTest {
 
     class UseCollectAsStateComponent(val dep: Int) : KComponent() {
       override fun ComponentScope.render(): Component {
-        val value = useFlow(initialValue = { 0 }, Any()) { MutableStateFlow(dep) }
+        val value = useFlow(initialValue = { 0 }, dep) { MutableStateFlow(dep) }
         stateRef.set(value)
-        return Row()
+        return EmptyComponent()
       }
     }
 
@@ -128,7 +133,7 @@ class UseFlowTest {
             flowEvents.add("cancel $dep")
           }
         }
-        return Row()
+        return EmptyComponent()
       }
     }
 
@@ -166,7 +171,7 @@ class UseFlowTest {
             flowEvents.add("cancel $dep1:$dep2")
           }
         }
-        return Row()
+        return EmptyComponent()
       }
     }
 
@@ -211,11 +216,12 @@ class UseFlowTest {
           throw TimeoutException()
         }
         stateRef.set(value)
-        return Row()
+        return EmptyComponent()
       }
     }
 
-    val componentTree = ComponentTree.create(lithoViewRule.context).build()
+    val componentTree =
+        ComponentTree.create(lithoViewRule.context).enableChildClipping(true).build()
 
     val lithoView =
         lithoViewRule
@@ -225,7 +231,10 @@ class UseFlowTest {
             .layout()
 
     componentTree.setRootAndSizeSpecAsync(
-        UseCollectAsStateComponent(), unspecified(), unspecified())
+        UseCollectAsStateComponent(),
+        unspecified(),
+        unspecified(),
+    )
 
     assertThat(testFlow.subscriptionCount.value).isEqualTo(0)
 
@@ -235,6 +244,169 @@ class UseFlowTest {
     lithoViewRule.idle()
 
     assertThat(stateRef.get()).isTrue
+  }
+
+  @Test
+  fun `useFlowValue collects from a StateFlow`() {
+    val stateRef = AtomicReference<Boolean>()
+    val testFlow = MutableStateFlow(false)
+
+    class TestComponent : KComponent() {
+      override fun ComponentScope.render(): Component {
+        val value = useFlowValue(testFlow)
+        stateRef.set(value.value)
+        return EmptyComponent()
+      }
+    }
+
+    val lithoView = lithoViewRule.render { TestComponent() }
+    assertThat(stateRef.get()).isFalse
+
+    lithoViewRule.act(lithoView) { testDispatcher.scheduler.runCurrent() }
+
+    assertThat(stateRef.get()).isFalse
+
+    lithoViewRule.act(lithoView) {
+      testFlow.value = true
+      testDispatcher.scheduler.runCurrent()
+    }
+
+    assertThat(stateRef.get()).isTrue
+  }
+
+  @Test
+  fun `useFlowValue updates on subsequent emissions`() {
+    val stateRef = AtomicInteger()
+    val testFlow = MutableStateFlow(0)
+
+    class TestComponent : KComponent() {
+      override fun ComponentScope.render(): Component {
+        val value = useFlowValue(testFlow)
+        stateRef.set(value.value)
+        return EmptyComponent()
+      }
+    }
+
+    val lithoView = lithoViewRule.render { TestComponent() }
+    assertThat(stateRef.get()).isEqualTo(0)
+
+    lithoViewRule.act(lithoView) {
+      testFlow.value = 1
+      testDispatcher.scheduler.runCurrent()
+    }
+    assertThat(stateRef.get()).isEqualTo(1)
+
+    lithoViewRule.act(lithoView) {
+      testFlow.value = 2
+      testDispatcher.scheduler.runCurrent()
+    }
+    assertThat(stateRef.get()).isEqualTo(2)
+  }
+
+  @Test
+  fun `useFlowValue read can be deferred`() {
+    val renders = AtomicInteger(0)
+    val layoutValueRef = AtomicInteger(0)
+    val testFlow = MutableStateFlow(10)
+
+    class TestComponent : PrimitiveComponent() {
+      override fun PrimitiveComponentScope.render(): LithoPrimitive {
+        renders.incrementAndGet()
+        // counter.value is NOT read here (resolve phase)
+        val counter = useFlowValue(testFlow)
+        return LithoPrimitive(
+            layoutBehavior =
+                LayoutBehavior { sizeConstraints ->
+                  layoutValueRef.set(counter.value) // Read deferred to LAYOUT phase
+                  PrimitiveLayoutResult(width = counter.value, height = 0)
+                },
+            mountBehavior = MountBehavior(ViewAllocator { context -> View(context) }) {},
+            style = null,
+        )
+      }
+    }
+
+    val config = ComponentsConfiguration.defaultInstance.copy(enableStateReadTracking = true)
+    val tree =
+        ComponentTree.create(lithoViewRule.context)
+            .componentsConfiguration(config)
+            .enableChildClipping(true)
+            .build()
+
+    val lithoView = lithoViewRule.render(componentTree = tree) { TestComponent() }
+    lithoViewRule.act(lithoView) { testDispatcher.scheduler.runCurrent() }
+
+    // Initial render: both resolve and layout ran
+    assertThat(renders.get()).isEqualTo(1)
+    assertThat(layoutValueRef.get()).isEqualTo(10)
+
+    lithoViewRule.act(lithoView) {
+      testFlow.value = 42
+      testDispatcher.scheduler.runCurrent()
+    }
+
+    // Resolve was skipped (render not called again), but layout picked up the updated value
+    assertThat(renders.get()).isEqualTo(1)
+    assertThat(layoutValueRef.get()).isEqualTo(42)
+  }
+
+  @Test
+  fun `useFlowValueWithLifecycle stops collecting when lifecycle is below min state`() {
+    val renders = AtomicInteger(0)
+    class TestComponent(private val count: StateFlow<Int>) : KComponent() {
+      override fun ComponentScope.render(): Component {
+        val counter = useFlowValueWithLifecycle(count, Lifecycle.State.RESUMED)
+        renders.addAndGet(1)
+        return Text(text = "Counter: ${counter.value}")
+      }
+    }
+
+    val count = MutableStateFlow(0)
+    val component = TestComponent(count)
+    val lifecycleOwner = TestLifecycleOwner().apply { updateState(Lifecycle.State.STARTED) }
+
+    val tree =
+        ComponentTree.create(
+                ComponentContext(
+                    lithoViewRule.context,
+                    TreePropContainer().apply { put(LifecycleOwnerTreeProp, lifecycleOwner) },
+                ),
+            )
+            .build()
+
+    val handle = lithoViewRule.render(componentTree = tree) { component }
+    testDispatcher.scheduler.runCurrent()
+
+    assertThat(renders.get()).isEqualTo(1)
+
+    lifecycleOwner.updateState(Lifecycle.State.RESUMED)
+
+    lithoViewRule.act(handle) {
+      count.value = 1
+      testDispatcher.scheduler.runCurrent()
+    }
+
+    assertThat(renders.get()).isEqualTo(2) // should re-render
+
+    lifecycleOwner.updateState(Lifecycle.State.STARTED)
+    testDispatcher.scheduler.runCurrent()
+
+    lithoViewRule.act(handle) {
+      count.value = 2
+      testDispatcher.scheduler.runCurrent()
+    }
+
+    assertThat(renders.get()).isEqualTo(2) // should not re-render
+
+    lifecycleOwner.updateState(Lifecycle.State.RESUMED)
+    testDispatcher.scheduler.runCurrent()
+
+    lithoViewRule.act(handle) {
+      count.value = 3
+      testDispatcher.scheduler.runCurrent()
+    }
+
+    assertThat(renders.get()).isEqualTo(3) // should re-render
   }
 
   @Test
@@ -256,7 +428,9 @@ class UseFlowTest {
         ComponentTree.create(
                 ComponentContext(
                     lithoViewRule.context,
-                    TreePropContainer().apply { put(LifecycleOwnerTreeProp, lifecycleOwner) }))
+                    TreePropContainer().apply { put(LifecycleOwnerTreeProp, lifecycleOwner) },
+                ),
+            )
             .build()
 
     val handle = lithoViewRule.render(componentTree = tree) { component }

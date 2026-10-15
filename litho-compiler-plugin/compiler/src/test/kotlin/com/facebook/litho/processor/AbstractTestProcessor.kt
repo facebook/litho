@@ -93,7 +93,13 @@ abstract class AbstractTestProcessor {
     fun extractCompilerMessage(result: JvmCompilationResult): String {
       return result.messages
           .splitToSequence("\n")
-          .dropWhile { it.startsWith("w: Default scripting plugin is disabled") }
+          .filterNot { it.startsWith("w: Language version 1.9 is deprecated") }
+          .filterNot { it.startsWith("w: Default scripting plugin is disabled") }
+          // Ignore deprecation warnings from the legacy Row/Column -> layout.flexbox migration;
+          // these are orthogonal to the Litho compiler plugin diagnostics under test.
+          .filterNot {
+            it.contains("is deprecated") && it.contains("com.facebook.litho.layout.flexbox")
+          }
           .joinToString("\n") { it.replace(REGEX_FILENAME, "file:///$1.$2") }
     }
   }

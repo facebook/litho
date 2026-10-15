@@ -1,0 +1,651 @@
+---
+id: flexbox-styles
+title: Flex, Position & Alignment
+keywords:
+    - flexbox styles
+    - flex
+    - position
+    - alignment
+    - gap
+    - aspect ratio
+    - flex grow
+    - corner anchors
+    - nested alignment
+    - alignSelf override
+---
+
+Flexbox Styles are layout properties that control how components flex, position themselves, and align within their parent containers. These styles work with Litho's Yoga-based flexbox layout system to create responsive and flexible layouts.
+
+Flexbox Styles encompass:
+
+- **Flex**: Controls how components grow, shrink, and set their basis size
+- **Alignment**: Controls how components align themselves within their parent
+- **Position**: Controls absolute and relative positioning of components
+- **Aspect Ratio**: Maintains width-to-height proportions
+- **Gap**: Adds spacing between rows and columns in flex containers
+- **Border**: Defines borders around components
+- **Layout Direction**: Controls RTL/LTR text direction
+- **Baseline**: Controls baseline alignment behavior
+
+These styles work with Litho's layout system to determine how components flex, position, and align within their containers.
+
+## Flex
+
+Flex allows you to define how this component should take up space within its parent. It's comprised of the following properties:
+
+- **grow**: This component should take up remaining space in its parent. If multiple children of the parent have a flex-grow set, the extra space is divided up based on proportions of flex-grow values, i.e. a child with flex-grow of 2 will get twice as much of the space as its sibling with flex-grow of 1.
+
+- **shrink**: This component should shrink if necessary. Similar to flex-grow, the value determines the proportion of space taken from each child. Setting a flex-shrink of 0 means the child won't shrink.
+
+- **basis**: Defines the default size of the component before extra space is distributed. If omitted, the measured size of the content (or the width/height styles) will be used instead.
+
+- **basis-percent**: See flex-basis. Defines the default size as a percentage of its parent's size. Values should be from 0 to 100.
+
+**Defaults**: `flex-grow = 0, flex-shrink = 1, flex-basis = null, flex-basis-percent = null`
+
+### Flex Grow and Shrink
+
+```kotlin
+import com.facebook.litho.flexbox.flex
+
+// Component takes up remaining space
+MyComponent(style = Style.flex(grow = 1f))
+
+// Component takes up twice as much space as siblings with grow = 1
+MyComponent(style = Style.flex(grow = 2f))
+
+// Component won't shrink
+MyComponent(style = Style.flex(shrink = 0f))
+```
+
+### Flex Basis
+
+```kotlin
+import com.facebook.litho.flexbox.flex
+import com.facebook.rendercore.dp
+
+// Set default size before extra space is distributed
+MyComponent(style = Style.flex(basis = 100.dp))
+```
+
+### Flex Basis Percent
+
+```kotlin
+import com.facebook.litho.flexbox.flex
+
+// Set default size as 50% of parent
+MyComponent(style = Style.flex(basisPercent = 50f))
+```
+
+### Combining Flex Properties
+
+```kotlin
+import com.facebook.litho.flexbox.flex
+import com.facebook.rendercore.dp
+
+// Combine grow, shrink, and basis
+MyComponent(
+    style = Style.flex(
+        grow = 1f,
+        shrink = 0f,
+        basis = 100.dp
+    )
+)
+```
+
+## Align Self
+
+Defines how a child should be aligned within a Row or Column, overriding the parent's align-items property for this child.
+
+```kotlin
+import com.facebook.litho.flexbox.alignSelf
+import com.facebook.yoga.YogaAlign
+
+// Align to the start
+MyComponent(style = Style.alignSelf(YogaAlign.FLEX_START))
+
+// Center alignment
+MyComponent(style = Style.alignSelf(YogaAlign.CENTER))
+
+// Align to the end
+MyComponent(style = Style.alignSelf(YogaAlign.FLEX_END))
+
+// Stretch to fill container
+MyComponent(style = Style.alignSelf(YogaAlign.STRETCH))
+```
+
+### Nested Alignment Override
+
+A child's `alignSelf` overrides the parent's `alignItems` at any nesting depth. This is useful for layouts where most children share one alignment but a few need different alignment:
+
+```kotlin
+import com.facebook.litho.flexbox.alignSelf
+import com.facebook.yoga.YogaAlign
+
+Column(alignItems = YogaAlign.CENTER, style = Style.width(300.dp)) {
+  child(Text(text = "Centered by parent"))
+  child(Text(text = "Start-aligned override",
+      style = Style.alignSelf(YogaAlign.FLEX_START)))
+  child(Text(text = "End-aligned override",
+      style = Style.alignSelf(YogaAlign.FLEX_END)))
+  // Nested container with its own alignment
+  child(Column(
+      alignItems = YogaAlign.FLEX_END,
+      style = Style.alignSelf(YogaAlign.STRETCH)
+          .padding(all = 8.dp)
+          .backgroundColor(0xFFF5F5F5.toInt())
+  ) {
+    child(Text(text = "End-aligned by inner parent"))
+    child(Text(text = "Start override in end-aligned parent",
+        style = Style.alignSelf(YogaAlign.FLEX_START)))
+  })
+}
+```
+
+`alignSelf` on a child always wins over the parent's `alignItems`. The parent's `alignItems` is the default for children that don't specify `alignSelf`.
+
+## Aspect Ratio
+
+Defines an aspect ratio for this component as **width ÷ height**. For example, `aspectRatio(2f)` means the component is twice as wide as it is tall (landscape). `aspectRatio(0.5f)` means half as wide as tall (portrait).
+
+:::note
+This property is not part of the flexbox standard.
+:::
+
+```kotlin
+import com.facebook.litho.flexbox.aspectRatio
+
+// 16:9 aspect ratio (landscape, wider than tall — common for video/image boxes)
+MyComponent(style = Style.aspectRatio(16f / 9f))
+
+// Square aspect ratio
+MyComponent(style = Style.aspectRatio(1f))
+
+// 2:1 aspect ratio (twice as wide as tall)
+MyComponent(style = Style.aspectRatio(2f))
+```
+
+### Aspect Ratio with Flex Grow
+
+A common pattern is combining `aspectRatio` with `flex(grow = 1f)` so a component fills available width while maintaining its proportions. This is useful for image/video boxes alongside fixed-size siblings:
+
+```kotlin
+import android.graphics.Color
+import com.facebook.litho.Row
+import com.facebook.litho.Style
+import com.facebook.litho.core.height
+import com.facebook.litho.core.width
+import com.facebook.litho.flexbox.aspectRatio
+import com.facebook.litho.flexbox.flex
+import com.facebook.litho.kotlin.widget.Image
+import com.facebook.litho.view.backgroundColor
+import com.facebook.rendercore.dp
+import com.facebook.yoga.YogaAlign
+
+// 16:9 image box (flex-grow) next to a fixed-size item
+Row(alignItems = YogaAlign.FLEX_START) {
+    // Image box: grows to fill remaining width, height auto-calculated from 16:9 ratio
+    child(
+        Image(
+            drawable = imageDrawable,
+            style = Style
+                .flex(grow = 1f)
+                .aspectRatio(16f / 9f)  // width:height = 16:9 → landscape rectangle
+        )
+    )
+    // Fixed item: does not grow, stays square
+    child(
+        Row(
+            style = Style
+                .width(80.dp)
+                .height(80.dp)
+                .backgroundColor(Color.LTGRAY)
+        ) { child(Image(drawable = gearIcon)) }
+    )
+}
+```
+
+**Key points:**
+- `aspectRatio` = width / height. A 16:9 box is `aspectRatio(16f / 9f)` ≈ 1.78 — **wider than tall** (landscape).
+- When combined with `flex(grow = 1f)`, the component expands its width to fill space, and height is computed from the ratio.
+- When combined with a fixed `width`, height is computed: `height = width / aspectRatio`.
+- When combined with a fixed `height`, width is computed: `width = height * aspectRatio`.
+
+## Position Type
+
+Defines how a component should be positioned in its parent. Used in conjunction with the `position` style.
+
+```kotlin
+import com.facebook.litho.flexbox.positionType
+import com.facebook.yoga.YogaPositionType
+
+// Absolute positioning (removed from normal layout flow)
+MyComponent(style = Style.positionType(YogaPositionType.ABSOLUTE))
+
+// Relative positioning (offset from normal position)
+MyComponent(style = Style.positionType(YogaPositionType.RELATIVE))
+```
+
+## Position
+
+Used in conjunction with `positionType` to define how a component should be positioned in its parent.
+
+For **positionType of ABSOLUTE**: the values specified here will define how inset the child is from the same edge on its parent. E.g. for `position(all = 0.dp)`, it will be the full size of the parent (no insets). For `position(top = 10.dp, bottom = 10.dp)`, the child will be the full width of the parent, but inset by 10px on the top and bottom.
+
+For **positionType of RELATIVE**: the values specified here will define how the child is positioned relative to where that edge would have normally been positioned.
+
+### All edges
+
+```kotlin
+import com.facebook.litho.flexbox.position
+import com.facebook.rendercore.dp
+
+MyComponent(style = Style.position(all = 0.dp))
+```
+
+### Horizontal and vertical
+
+```kotlin
+import com.facebook.litho.flexbox.position
+import com.facebook.rendercore.dp
+
+MyComponent(style = Style.position(horizontal = 16.dp, vertical = 8.dp))
+```
+
+:::info start/end vs left/right
+- **Prefer `start`/`end`**: These automatically adapt to RTL (right-to-left) languages, making your UI internationalization-friendly.
+- **Use `left`/`right` only when**: You need absolute positioning regardless of text direction (rare cases).
+
+For most apps supporting international users, always use `start`/`end`.
+:::
+
+### Individual edges
+
+```kotlin
+import com.facebook.litho.flexbox.position
+import com.facebook.rendercore.dp
+
+MyComponent(
+    style = Style.position(
+        start = 16.dp,
+        top = 8.dp,
+        end = 16.dp,
+        bottom = 8.dp
+    )
+)
+```
+
+### Using left/right instead of start/end
+
+```kotlin
+import com.facebook.litho.flexbox.position
+import com.facebook.rendercore.dp
+
+MyComponent(
+    style = Style.position(
+        left = 16.dp,
+        top = 8.dp,
+        right = 16.dp,
+        bottom = 8.dp
+    )
+)
+```
+
+## Position Percent
+
+Used in conjunction with `positionType` to define how a component should be positioned in its parent, with a float value between 0 and 100.
+
+### All edges
+
+```kotlin
+import com.facebook.litho.flexbox.positionPercent
+
+MyComponent(style = Style.positionPercent(all = 5f))
+```
+
+### Per-edge percent positioning
+
+```kotlin
+import com.facebook.litho.flexbox.positionPercent
+
+MyComponent(
+    style = Style.positionPercent(
+        horizontal = 10f,
+        vertical = 5f
+    )
+)
+```
+
+### Individual edges
+
+```kotlin
+import com.facebook.litho.flexbox.positionPercent
+
+MyComponent(
+    style = Style.positionPercent(
+        start = 10f,
+        top = 5f,
+        end = 10f,
+        bottom = 5f
+    )
+)
+```
+
+## Using Position and Position Type Together
+
+The `position` and `positionType` styles work together to control component positioning. Here are practical examples of common positioning patterns.
+
+### Absolute Positioning - Overlay
+
+Position a component absolutely to cover its entire parent (useful for overlays, loading screens).
+
+```kotlin
+import com.facebook.litho.flexbox.position
+import com.facebook.litho.flexbox.positionType
+import com.facebook.rendercore.dp
+import com.facebook.yoga.YogaPositionType
+
+// Overlay that covers entire parent
+MyComponent(
+    style = Style
+        .positionType(YogaPositionType.ABSOLUTE)
+        .position(all = 0.dp)
+)
+```
+
+### Absolute Positioning - Corner Badge
+
+Position a badge in the top-right corner of a parent container.
+
+```kotlin
+import com.facebook.litho.flexbox.position
+import com.facebook.litho.flexbox.positionType
+import com.facebook.rendercore.dp
+import com.facebook.yoga.YogaPositionType
+
+// Badge in top-right corner
+MyComponent(
+    style = Style
+        .positionType(YogaPositionType.ABSOLUTE)
+        .position(
+            top = 8.dp,
+            end = 8.dp
+        )
+)
+```
+
+### Absolute Positioning - Centered
+
+Center a component within its parent using percentage positioning.
+
+```kotlin
+import com.facebook.litho.flexbox.positionPercent
+import com.facebook.litho.flexbox.positionType
+import com.facebook.yoga.YogaPositionType
+
+// Centered component using percentages
+MyComponent(
+    style = Style
+        .positionType(YogaPositionType.ABSOLUTE)
+        .positionPercent(
+            start = 50f,
+            top = 50f
+        )
+)
+```
+
+### Absolute Positioning - Bottom Sheet
+
+Position a component at the bottom of the screen with some inset from edges.
+
+```kotlin
+import com.facebook.litho.flexbox.position
+import com.facebook.litho.flexbox.positionType
+import com.facebook.rendercore.dp
+import com.facebook.yoga.YogaPositionType
+
+// Bottom sheet
+MyComponent(
+    style = Style
+        .positionType(YogaPositionType.ABSOLUTE)
+        .position(
+            start = 0.dp,
+            end = 0.dp,
+            bottom = 0.dp
+        )
+)
+```
+
+### Absolute Positioning - All Four Corners
+
+Place elements at each corner of a container:
+
+```kotlin
+import com.facebook.litho.flexbox.position
+import com.facebook.litho.flexbox.positionType
+import com.facebook.litho.layout.StackLayout
+import com.facebook.rendercore.dp
+import com.facebook.yoga.YogaPositionType
+
+StackLayout(style = Style.width(300.dp).height(300.dp)) {
+  child(component = Text("TL"), style = Style
+      .positionType(YogaPositionType.ABSOLUTE)
+      .position(top = 8.dp, start = 8.dp))
+  child(component = Text("TR"), style = Style
+      .positionType(YogaPositionType.ABSOLUTE)
+      .position(top = 8.dp, end = 8.dp))
+  child(component = Text("BL"), style = Style
+      .positionType(YogaPositionType.ABSOLUTE)
+      .position(bottom = 8.dp, start = 8.dp))
+  child(component = Text("BR"), style = Style
+      .positionType(YogaPositionType.ABSOLUTE)
+      .position(bottom = 8.dp, end = 8.dp))
+}
+```
+
+The parent container **must** have explicit dimensions or `flex(grow = 1f)`. Without bounded size, absolute children have no reference frame. Use `StackLayout` or `Column`/`Row` as the parent — `StackLayout` is preferred when children overlap.
+
+:::note z-index / zIndex
+Litho/Yoga has no `zIndex` property. Within a `StackLayout` (or any container with overlapping absolute children), **paint order is determined by child declaration order** — later children render on top of earlier ones. To put a component on top, declare it last.
+:::
+
+### Relative Positioning - Offset
+
+Offset a component from its normal position without affecting other components' layout.
+
+```kotlin
+import com.facebook.litho.flexbox.position
+import com.facebook.litho.flexbox.positionType
+import com.facebook.rendercore.dp
+import com.facebook.yoga.YogaPositionType
+
+// Shift component 10dp down from normal position
+MyComponent(
+    style = Style
+        .positionType(YogaPositionType.RELATIVE)
+        .position(top = 10.dp)
+)
+```
+
+### Relative Positioning - Floating Action Button
+
+Create a floating action button that's positioned relative to its container.
+
+```kotlin
+import com.facebook.litho.flexbox.position
+import com.facebook.litho.flexbox.positionType
+import com.facebook.rendercore.dp
+import com.facebook.yoga.YogaPositionType
+
+// FAB positioned at bottom-right
+MyComponent(
+    style = Style
+        .positionType(YogaPositionType.ABSOLUTE)
+        .position(
+            bottom = 16.dp,
+            end = 16.dp
+        )
+)
+```
+
+## Layout Direction
+
+Describes the RTL/LTR direction of component. Determines whether `YogaEdge.START` and `YogaEdge.END` will resolve to the left or right side, among other things. INHERIT indicates this setting will be inherited from this component's parent.
+
+:::caution View Mounting
+Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already, which may lose Litho's optimization benefits for mount-time performance.
+:::
+
+**Default**: `YogaDirection.INHERIT`
+
+```kotlin
+import com.facebook.litho.flexbox.layoutDirection
+import com.facebook.yoga.YogaDirection
+
+// Left-to-right layout
+MyComponent(style = Style.layoutDirection(YogaDirection.LTR))
+
+// Right-to-left layout
+MyComponent(style = Style.layoutDirection(YogaDirection.RTL))
+
+// Inherit from parent (default)
+MyComponent(style = Style.layoutDirection(YogaDirection.INHERIT))
+```
+
+### Children Order in RTL
+
+`layoutDirection(YogaDirection.RTL)` automatically reverses the visual order of children. **Do not manually reverse children order** — keep them in the same order as LTR and let `layoutDirection` handle the visual flipping. Reversing children AND applying RTL causes a double-reverse back to LTR order.
+
+```kotlin
+// LTR: children appear as [A] [B] [C] left-to-right
+Row(style = Style.layoutDirection(YogaDirection.LTR)) {
+  child(Text(text = "[A]"))
+  child(Text(text = "[B]"))
+  child(Text(text = "[C]"))
+}
+
+// RTL: SAME children order — they appear as [C] [B] [A] right-to-left
+Row(style = Style.layoutDirection(YogaDirection.RTL)) {
+  child(Text(text = "[A]"))
+  child(Text(text = "[B]"))
+  child(Text(text = "[C]"))
+}
+```
+
+**Key rules:**
+- **Always use `start`/`end` instead of `left`/`right`** for margin and padding — `left`/`right` are NOT affected by RTL
+- `margin(start = 16.dp)` becomes right margin in RTL, left margin in LTR
+- `position(start = 0.dp)` anchors to the right edge in RTL
+
+## Margin Auto
+
+Sets margin value for specified edge to auto. The item will extend the margin for this edge to occupy the extra space in the parent, depending on the direction (Row or Column).
+
+```kotlin
+import com.facebook.litho.flexbox.marginAuto
+import com.facebook.yoga.YogaEdge
+
+// Center horizontally in parent
+MyComponent(style = Style.marginAuto(YogaEdge.START))
+
+// Push to the end
+MyComponent(style = Style.marginAuto(YogaEdge.END))
+```
+
+## Gap
+
+Gap will add spacing between the rows and columns of a flex container. Use the `gap` parameter directly on `Row` or `Column` to specify the gap between children.
+
+### All gaps
+
+```kotlin
+import com.facebook.rendercore.dp
+
+// Equal gap between rows and columns
+Column(gap = 16.dp) {
+  child(ChildA())
+  child(ChildB())
+}
+```
+
+### Row gap
+
+```kotlin
+import com.facebook.rendercore.dp
+
+// Gap between items in a Row
+Row(gap = 8.dp) {
+  child(ChildA())
+  child(ChildB())
+}
+```
+
+### Column gap
+
+```kotlin
+import com.facebook.rendercore.dp
+
+// Gap between items in a Column
+Column(gap = 16.dp) {
+  child(ChildA())
+  child(ChildB())
+}
+```
+
+## Baseline Alignment
+
+### Is Reference Baseline
+
+Controls whether this component should be used as the reference baseline for its parent.
+
+```kotlin
+import com.facebook.litho.flexbox.isReferenceBaseline
+
+MyComponent(style = Style.isReferenceBaseline(true))
+```
+
+### Use Height As Baseline
+
+Controls whether the height should be used as the baseline instead of the actual baseline.
+
+```kotlin
+import com.facebook.litho.flexbox.useHeightAsBaseline
+
+MyComponent(style = Style.useHeightAsBaseline(true))
+```
+
+## Combining Flexbox Styles
+
+Flexbox Styles can be easily combined to create complex layouts:
+
+```kotlin
+import com.facebook.litho.flexbox.alignSelf
+import com.facebook.litho.flexbox.aspectRatio
+import com.facebook.litho.flexbox.flex
+import com.facebook.litho.flexbox.position
+import com.facebook.litho.flexbox.positionType
+import com.facebook.rendercore.dp
+import com.facebook.yoga.YogaAlign
+import com.facebook.yoga.YogaPositionType
+
+Column(gap = 16.dp) {
+  child(
+      MyComponent(
+          style = Style
+              .flex(grow = 1f, shrink = 0f)
+              .alignSelf(YogaAlign.CENTER)
+              .aspectRatio(16f / 9f)
+              .positionType(YogaPositionType.RELATIVE)
+              .position(top = 8.dp)
+      )
+  )
+}
+```
+
+## See also
+
+- **[Common Props](../props/common-props.mdx)** - Learn about the broader Style API and how to combine styles.
+- **[Core Styles](core-styles.mdx)** - Learn about fundamental sizing and spacing styles.
+- **[Flexbox Yoga](flexbox-yoga.mdx)** - Learn about the layout system that works with these flexbox styles.
+- **CSS Flexbox Guide**: https://css-tricks.com/snippets/css/a-guide-to-flexbox/
+- **Yoga Playground**: https://yogalayout.dev/

@@ -24,15 +24,16 @@ import android.graphics.Rect
  * immutable.
  */
 class VisibilityItem(
-    val key: String,
+    val key: Any,
     // The invisible event and unfocused event handlers are required to make it possible to dispatch
     // the corresponding event when unbind is called or when the MountState is reset.
     var invisibleHandler: VisibilityEventCallbackData?,
     var unfocusedHandler: VisibilityEventCallbackData?,
     val visibilityChangedHandler: VisibilityEventCallbackData?,
     val componentName: String,
+    val componentClassName: String? = null,
     val renderUnitId: Long,
-    val bounds: Rect
+    val bounds: Rect,
 ) {
 
   private var _doNotClearInThisPass = false

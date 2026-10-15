@@ -30,7 +30,7 @@ sealed class DebugEvent(
     val renderStateId: String,
     val threadName: String = Thread.currentThread().name,
     val logLevel: LogLevel = LogLevel.DEBUG,
-    val attributes: Map<String, Any?> = emptyMap()
+    val attributes: Map<String, Any?> = emptyMap(),
 ) {
 
   companion object {
@@ -45,6 +45,10 @@ sealed class DebugEvent(
     const val RenderUnitUpdated = "RenderCore.RenderUnit.Updated"
     const val RenderUnitOnVisible = "RenderCore.RenderUnit.OnVisible"
     const val RenderUnitOnInvisible = "RenderCore.RenderUnit.OnInvisible"
+    const val RenderUnitOnFocused = "RenderCore.RenderUnit.OnFocused"
+    const val RenderUnitOnUnfocused = "RenderCore.RenderUnit.OnUnfocused"
+    const val RenderUnitOnFullImpression = "RenderCore.RenderUnit.OnFullImpression"
+    const val RenderUnitOnVisibilityChanged = "RenderCore.RenderUnit.OnVisibilityChanged"
     const val ViewOnLayout = "RenderCore.View.OnLayout"
     const val IncrementalMountStart = "RenderCore.IncrementalMount.Start"
     const val IncrementalMountEnd = "RenderCore.IncrementalMount.End"
@@ -53,10 +57,10 @@ sealed class DebugEvent(
   }
 
   /** Returns the value of attribute with [name]. */
-  fun <T> attribute(name: String): T = attributes[name] as T
+  @Suppress("UNCHECKED_CAST") fun <T> attribute(name: String): T = attributes[name] as T
 
   /** Returns the value of attribute with [name] or `null` if not present. */
-  fun <T> attributeOrNull(name: String): T? = attributes[name] as? T
+  @Suppress("UNCHECKED_CAST") fun <T> attributeOrNull(name: String): T? = attributes[name] as? T
 
   /**
    * Returns the value of the attribute with [name]. If there is no value present, then it will
@@ -75,7 +79,7 @@ sealed class DebugEvent(
           prefix = "{\n",
           separator = ",\n",
           postfix = "\n|  }",
-          transform = { e -> "|    ${e.key} = ${e.value}" }
+          transform = { e -> "|    ${e.key} = ${e.value}" },
       )
     }
     """
@@ -110,6 +114,9 @@ object DebugEventAttribute {
   const val NumItemsUnmounted = "numItemsUnmounted"
   const val WasInterrupted = "wasInterrupted"
   const val ThreadPriority = "threadPriority"
+  const val CallbackType = "callbackType"
+  const val ComponentClassName = "componentClassName"
+  const val IsGapWorkerPremount = "isGapWorkerPremount"
 }
 
 /** Base class for marker events */
@@ -119,7 +126,7 @@ class DebugMarkerEvent(
     renderStateId: String,
     threadName: String = Thread.currentThread().name,
     logLevel: LogLevel = LogLevel.DEBUG,
-    attributes: Map<String, Any?> = emptyMap()
+    attributes: Map<String, Any?> = emptyMap(),
 ) :
     DebugEvent(
         type = type,
@@ -130,7 +137,8 @@ class DebugMarkerEvent(
             buildMap {
               put(DebugEventAttribute.Timestamp, timestamp)
               putAll(attributes)
-            })
+            },
+    )
 
 /** Base class for process events */
 class DebugProcessEvent(
@@ -140,7 +148,7 @@ class DebugProcessEvent(
     renderStateId: String,
     threadName: String = Thread.currentThread().name,
     logLevel: LogLevel = LogLevel.DEBUG,
-    attributes: Map<String, Any?> = emptyMap()
+    attributes: Map<String, Any?> = emptyMap(),
 ) :
     DebugEvent(
         type = type,
@@ -152,7 +160,8 @@ class DebugProcessEvent(
               put(DebugEventAttribute.Timestamp, timestamp)
               put(DebugEventAttribute.Duration, durationNs)
               putAll(attributes)
-            })
+            },
+    )
 
 /** Base class for event subscribers */
 abstract class DebugEventSubscriber(vararg val events: String) {
@@ -161,13 +170,18 @@ abstract class DebugEventSubscriber(vararg val events: String) {
 
 /**
  * Any [DebugEventSubscriber] that implements this interface will receive callbacks just before and
- * right after the a trace event. The subscriber can return a token from [onTraceStart] and the
+ * right after a trace event. The subscriber can return a token from [onTraceStart] and the
  * dispatcher will return the token in [onTraceEnd].
  */
 interface TraceListener<T : Any?> {
 
   // Called right before trace event starts
-  fun onTraceStart(type: String): T
+  fun onTraceStart(
+      type: String,
+      timestamp: Long,
+      renderStateId: String,
+      attributes: Map<String, Any?>,
+  ): T
 
   // Called after the trace event ends
   fun onTraceEnd(payload: T, event: DebugProcessEvent)
@@ -195,7 +209,7 @@ object DebugEventDispatcher {
   inline fun dispatch(
       type: String,
       renderStateId: () -> String,
-      timestamp: Long = System.currentTimeMillis(), // for calender time
+      timestamp: Long = System.currentTimeMillis(), // for calendar time
       logLevel: LogLevel = LogLevel.DEBUG,
       attributesAccumulator: (MutableMap<String, Any?>) -> Unit = {},
   ) {
@@ -203,22 +217,20 @@ object DebugEventDispatcher {
       return
     }
 
-    val subscribersToNotify =
-        subscribers.filterLikelyEmpty {
-          it.events.contains(type) || it.events.contains(DebugEvent.All)
-        }
+    val subscribersToNotify = subscribers.filterLikelyEmpty {
+      it.events.contains(type) || it.events.contains(DebugEvent.All)
+    }
     if (subscribersToNotify.isNotEmpty()) {
       val attributes = LinkedHashMap<String, Any?>()
       attributesAccumulator(attributes)
 
-      val event =
-          DebugMarkerEvent(
-              type = type,
-              renderStateId = renderStateId(),
-              attributes = attributes,
-              timestamp = timestamp,
-              logLevel = logLevel,
-          )
+      val event = DebugMarkerEvent(
+          type = type,
+          renderStateId = renderStateId(),
+          attributes = attributes,
+          timestamp = timestamp,
+          logLevel = logLevel,
+      )
       subscribersToNotify.forEach { subscriber -> subscriber.onEvent(event) }
     }
   }
@@ -227,12 +239,12 @@ object DebugEventDispatcher {
   inline fun dispatch(
       type: String,
       renderStateId: () -> String,
-      attributesAccumulator: (MutableMap<String, Any?>) -> Unit = {}
+      attributesAccumulator: (MutableMap<String, Any?>) -> Unit = {},
   ) {
     dispatch(
         type = type,
         renderStateId = renderStateId,
-        timestamp = System.currentTimeMillis(), // for calender time
+        timestamp = System.currentTimeMillis(), // for calendar time
         attributesAccumulator = attributesAccumulator,
     )
   }
@@ -242,12 +254,12 @@ object DebugEventDispatcher {
       type: String,
       renderStateId: () -> String,
       logLevel: LogLevel = LogLevel.DEBUG,
-      attributesAccumulator: (MutableMap<String, Any?>) -> Unit = {}
+      attributesAccumulator: (MutableMap<String, Any?>) -> Unit = {},
   ) {
     dispatch(
         type = type,
         renderStateId = renderStateId,
-        timestamp = System.currentTimeMillis(), // for calender time
+        timestamp = System.currentTimeMillis(), // for calendar time
         logLevel = logLevel,
         attributesAccumulator = attributesAccumulator,
     )
@@ -284,7 +296,8 @@ object DebugEventDispatcher {
         traceIdentifier = traceIdentifier,
         type = type,
         renderStateId = renderStateId,
-        attributes = attrs)
+        attributes = attrs,
+    )
   }
 
   /**
@@ -334,10 +347,9 @@ object DebugEventDispatcher {
     }
 
     // find the subscribers listening for this event
-    val subscribersToNotify =
-        subscribers.filterLikelyEmpty { subscriber ->
-          subscriber.events.contains(type) || subscriber.events.contains(DebugEvent.All)
-        }
+    val subscribersToNotify = subscribers.filterLikelyEmpty { subscriber ->
+      subscriber.events.contains(type) || subscriber.events.contains(DebugEvent.All)
+    }
 
     if (subscribersToNotify.isEmpty()) {
       return
@@ -345,14 +357,13 @@ object DebugEventDispatcher {
 
     val endTime = System.nanoTime()
 
-    val event =
-        DebugProcessEvent(
-            type = type,
-            timestamp = last.timestamp, // for calender time
-            renderStateId = last.renderStateId,
-            durationNs = Duration(value = endTime - last.startTime),
-            attributes = last.attributes + attributes,
-        )
+    val event = DebugProcessEvent(
+        type = type,
+        timestamp = last.timestamp, // for calendar time
+        renderStateId = last.renderStateId,
+        durationNs = Duration(value = endTime - last.startTime),
+        attributes = last.attributes + attributes,
+    )
 
     subscribersToNotify.forEach { it.onEvent(event) }
   }
@@ -369,16 +380,16 @@ object DebugEventDispatcher {
     }
 
     // find the subscribers listening for this event
-    val subscribersToNotify =
-        subscribers.filterLikelyEmpty { subscriber ->
-          subscriber.events.contains(type) || subscriber.events.contains(All)
-        }
+    val subscribersToNotify = subscribers.filterLikelyEmpty { subscriber ->
+      subscriber.events.contains(type) || subscriber.events.contains(All)
+    }
 
     // run the block if there are no subscribers
     if (subscribersToNotify.isEmpty()) {
       return block(null)
     }
 
+    @Suppress("UNCHECKED_CAST")
     val traceListeners =
         subscribersToNotify.filterLikelyEmpty { it is TraceListener<*> }
             as List<TraceListener<Any?>>
@@ -386,20 +397,22 @@ object DebugEventDispatcher {
     val attributes = LinkedHashMap<String, Any?>()
     attributesAccumulator(attributes)
 
-    val payloads: List<Any?> = traceListeners.map { it.onTraceStart(type) }
+    val renderStateId = renderStateId()
     val timestamp = System.currentTimeMillis()
     val startTime = System.nanoTime()
+    val payloads: List<Any?> = traceListeners.map {
+      it.onTraceStart(type, timestamp, renderStateId, attributes)
+    }
     val res = block(TraceScope(attributes = attributes))
     val endTime = System.nanoTime()
 
-    val event =
-        DebugProcessEvent(
-            type = type,
-            timestamp = timestamp,
-            renderStateId = renderStateId(),
-            durationNs = Duration(value = endTime - startTime),
-            attributes = attributes,
-        )
+    val event = DebugProcessEvent(
+        type = type,
+        timestamp = timestamp,
+        renderStateId = renderStateId,
+        durationNs = Duration(value = endTime - startTime),
+        attributes = attributes,
+    )
 
     traceListeners.forEachIndexed { i, it -> it.onTraceEnd(payload = payloads[i], event = event) }
     subscribersToNotify.forEach { it.onEvent(event) }
@@ -432,7 +445,7 @@ object DebugEventDispatcher {
       val renderStateId: String,
       val attributes: Map<String, Any?>,
       val timestamp: Long = System.currentTimeMillis(),
-      val startTime: Long = System.nanoTime()
+      val startTime: Long = System.nanoTime(),
   )
 }
 
@@ -448,7 +461,7 @@ internal inline fun <T> Iterable<T>.filterLikelyEmpty(predicate: (T) -> Boolean)
       if (result == null) {
         result = ArrayList()
       }
-      result?.add(it)
+      result.add(it)
     }
   }
   return result ?: listOf()
@@ -458,7 +471,7 @@ internal inline fun <T> Iterable<T>.filterLikelyEmpty(predicate: (T) -> Boolean)
 object DebugEventBus {
 
   @JvmStatic
-  inline fun subscribe(subscriber: DebugEventSubscriber) {
+  fun subscribe(subscriber: DebugEventSubscriber) {
     DebugEventDispatcher.subscribe(subscriber)
   }
 
@@ -483,5 +496,18 @@ value class Duration(val value: Long) {
     } else {
       "${TimeUnit.NANOSECONDS.toMillis(value)} ms"
     }
+  }
+}
+
+/**
+ * Formats the per-component mount stats into a string for debug logging. Format:
+ * {ComponentName:m=X/u=Y/r=Z/re=W,...}
+ */
+fun formatMountStatsSummary(
+    summary: Map<String, com.facebook.rendercore.MountStats.ComponentMountStats>,
+): String {
+  if (summary.isEmpty()) return "{}"
+  return summary.entries.joinToString(",", "{", "}") { (name, stats) ->
+    "$name:m=${stats.mounted}/u=${stats.updated}/r=${stats.reused}/re=${stats.remounted}"
   }
 }

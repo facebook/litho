@@ -38,7 +38,7 @@ interface RecyclerBinderAdapterDelegate<T : RecyclerBinderViewHolder> {
       viewHolder: T,
       position: Int,
       componentTree: ComponentTree?,
-      renderInfo: RenderInfo?
+      renderInfo: RenderInfo?,
   )
 
   /** The same function as [androidx.recyclerview.widget.RecyclerView.Adapter.onViewRecycled]. */

@@ -16,15 +16,14 @@
 
 package com.facebook.litho.transition
 
-import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.Transition
-import com.facebook.litho.Transition.SPRING_WITH_OVERSHOOT
 import com.facebook.litho.animation.AnimatedProperties
 import com.facebook.litho.core.height
+import com.facebook.litho.layout.flexbox.Column
 import com.facebook.litho.view.alpha
 import com.facebook.rendercore.dp
 
@@ -39,10 +38,12 @@ private const val EXPAND_TO_REVEAL_KEY = "expandToReveal"
  * @param component that will be revealed
  * @param transitionAnimator optional param for the custom [TransitionAnimator]
  */
+@Deprecated(LEGACY_TRANSITION_DEPRECATION)
 class ExpandToReveal(
     private val isExpanded: Boolean,
     private val component: Component,
-    private val transitionAnimator: Transition.TransitionAnimator = SPRING_WITH_OVERSHOOT
+    private val transitionAnimator: Transition.TransitionAnimator =
+        Transition.SPRING_WITH_OVERSHOOT,
 ) : KComponent() {
 
   override fun ComponentScope.render(): Component? {
@@ -53,16 +54,19 @@ class ExpandToReveal(
             Transition.create(EXPAND_TO_REVEAL_KEY)
                 .animate(AnimatedProperties.ALPHA)
                 .animator(transitionAnimator),
-            Transition.allLayout()))
+            Transition.allLayout(),
+        ),
+    )
     return Column(style = if (isExpanded) collapsedStyle else normalStyle) { child(component) }
   }
 }
 
+@Deprecated(LEGACY_TRANSITION_DEPRECATION)
 class CrossFade(
     private val showComponentB: Boolean,
     private val componentA: Component,
     private val componentB: Component,
-    private val transitionType: TransitionType = TransitionType.FADE_IN_FADE_OUT
+    private val transitionType: TransitionType = TransitionType.FADE_IN_FADE_OUT,
 ) : KComponent() {
   override fun ComponentScope.render(): Component? {
     useTransition(getAppearDisappearTransition(transitionType))
@@ -86,7 +90,8 @@ class CrossFade(
                     .animate(AnimatedProperties.ALPHA)
                     .appearFrom(0f)
                     .disappearTo(0f),
-                Transition.allLayout())
+                Transition.allLayout(),
+            )
       }
 }
 

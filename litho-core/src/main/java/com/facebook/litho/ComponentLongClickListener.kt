@@ -17,15 +17,21 @@
 package com.facebook.litho
 
 import android.view.View
+import com.facebook.litho.debug.LithoTouchEventDebugger
+import com.facebook.litho.debug.TouchEventType
 
 /** Long click listener that triggers its underlying event handler. */
 class ComponentLongClickListener : View.OnLongClickListener {
 
   var eventHandler: EventHandler<LongClickEvent>? = null
 
-  override fun onLongClick(view: View): Boolean =
-      when (val eventHandler = eventHandler) {
-        null -> false
-        else -> EventDispatcherUtils.dispatchOnLongClick(eventHandler, view)
-      }
+  override fun onLongClick(view: View): Boolean {
+    eventHandler?.let {
+      LithoTouchEventDebugger.report(type = TouchEventType.LongClick, view = view, handler = it)
+    }
+    return when (val eventHandler = eventHandler) {
+      null -> false
+      else -> EventDispatcherUtils.dispatchOnLongClick(eventHandler, view)
+    }
+  }
 }

@@ -27,6 +27,7 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoStartupLogger;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.Size;
+import com.facebook.litho.StyleCompat;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.ChangeSetCompleteCallback;
@@ -106,10 +107,8 @@ public class LithoStartupLoggerTest {
       components.add(
           ComponentRenderInfo.create()
               .component(
-                  SimpleMountSpecTester.create(mComponentContext)
-                      .widthPx(100)
-                      .heightPx(100)
-                      .build())
+                  new SimpleMountSpecTester(
+                      0, null, null, StyleCompat.widthPx(100).heightPx(100).build()))
               .build());
     }
     mRecyclerBinder.insertRangeAt(0, components);
@@ -130,10 +129,8 @@ public class LithoStartupLoggerTest {
       components.add(
           ComponentRenderInfo.create()
               .component(
-                  SimpleMountSpecTester.create(mComponentContext)
-                      .widthPx(100)
-                      .heightPx(100)
-                      .build())
+                  new SimpleMountSpecTester(
+                      0, null, null, StyleCompat.widthPx(100).heightPx(100).build()))
               .build());
     }
     mRecyclerBinder.insertRangeAt(0, components);
@@ -157,10 +154,8 @@ public class LithoStartupLoggerTest {
       components.add(
           ComponentRenderInfo.create()
               .component(
-                  SimpleMountSpecTester.create(mComponentContext)
-                      .widthPx(100)
-                      .heightPx(100)
-                      .build())
+                  new SimpleMountSpecTester(
+                      0, null, null, StyleCompat.widthPx(100).heightPx(100).build()))
               .build());
     }
     mRecyclerBinder.mount(recyclerView);
@@ -182,10 +177,8 @@ public class LithoStartupLoggerTest {
       components.add(
           ComponentRenderInfo.create()
               .component(
-                  SimpleMountSpecTester.create(mComponentContext)
-                      .widthPx(100)
-                      .heightPx(100)
-                      .build())
+                  new SimpleMountSpecTester(
+                      0, null, null, StyleCompat.widthPx(100).heightPx(100).build()))
               .build());
     }
     mRecyclerBinder.mount(recyclerView);
@@ -211,10 +204,8 @@ public class LithoStartupLoggerTest {
       components.add(
           ComponentRenderInfo.create()
               .component(
-                  SimpleMountSpecTester.create(mComponentContext)
-                      .widthPx(100)
-                      .heightPx(100)
-                      .build())
+                  new SimpleMountSpecTester(
+                      0, null, null, StyleCompat.widthPx(100).heightPx(100).build()))
               .build());
     }
     mRecyclerBinder.mount(recyclerView);
@@ -244,10 +235,8 @@ public class LithoStartupLoggerTest {
       components.add(
           ComponentRenderInfo.create()
               .component(
-                  SimpleMountSpecTester.create(mComponentContext)
-                      .widthPx(100)
-                      .heightPx(100)
-                      .build())
+                  new SimpleMountSpecTester(
+                      0, null, null, StyleCompat.widthPx(100).heightPx(100).build()))
               .build());
     }
     mRecyclerBinder.mount(recyclerView);

@@ -56,4 +56,16 @@ object LithoDebugConfigurations {
   @JvmField var isTimelineEnabled: Boolean = isDebugModeEnabled
 
   @JvmField var timelineDocsLink: String? = null
+
+  /** When `true`, enables logging for component host view wrapping decisions. */
+  @JvmField var isComponentHostLoggingEnabled: Boolean = false
+
+  @JvmField var isVisibilityCallbackCommonPropTrackerEnabled: Boolean = false
+
+  /**
+   * Controls whether [AccessibilityUtils] detects framework-level accessibility clients (e.g.
+   * UiAutomation). When false, only user-installed accessibility services (TalkBack, etc.) trigger
+   * accessibility host view creation.
+   */
+  @JvmField var enableFrameworkA11yClientDetection: Boolean = true
 }

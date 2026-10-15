@@ -29,7 +29,7 @@ class VisibilityOutput(
      * An identifier unique to this visibility output. This needs to be unique for every output in a
      * given [com.facebook.rendercore.RenderTree].
      */
-    val id: String,
+    val id: Any,
     /** A pretty name of this visibility output; does not need to be unique. */
     val key: String,
     val bounds: Rect,
@@ -38,16 +38,17 @@ class VisibilityOutput(
     val visibleHeightRatio: Float,
     val visibleWidthRatio: Float,
     val tag: String?,
+    val componentClassName: String? = null,
     val onVisible: VisibilityEventCallbackData?,
     val onInvisible: VisibilityEventCallbackData?,
     val onFocusedVisible: VisibilityEventCallbackData?,
     val onUnfocusedVisible: VisibilityEventCallbackData?,
     val onFullImpression: VisibilityEventCallbackData?,
-    val onVisibilityChange: VisibilityEventCallbackData?
+    val onVisibilityChange: VisibilityEventCallbackData?,
 ) {
 
   constructor(
-      id: String,
+      id: Any,
       key: String,
       bounds: Rect,
       visibleHeightRatio: Float,
@@ -58,22 +59,24 @@ class VisibilityOutput(
       onFocusedVisible: VisibilityEventCallbackData?,
       onUnfocusedVisible: VisibilityEventCallbackData?,
       onFullImpression: VisibilityEventCallbackData?,
-      onVisibilityChange: VisibilityEventCallbackData?
+      onVisibilityChange: VisibilityEventCallbackData?,
   ) : this(
-      id,
-      key,
-      bounds,
-      false,
-      0L,
-      visibleHeightRatio,
-      visibleWidthRatio,
-      tag,
-      onVisible,
-      onInvisible,
-      onFocusedVisible,
-      onUnfocusedVisible,
-      onFullImpression,
-      onVisibilityChange)
+      id = id,
+      key = key,
+      bounds = bounds,
+      hasMountableContent = false,
+      renderUnitId = 0L,
+      visibleHeightRatio = visibleHeightRatio,
+      visibleWidthRatio = visibleWidthRatio,
+      tag = tag,
+      componentClassName = null,
+      onVisible = onVisible,
+      onInvisible = onInvisible,
+      onFocusedVisible = onFocusedVisible,
+      onUnfocusedVisible = onUnfocusedVisible,
+      onFullImpression = onFullImpression,
+      onVisibilityChange = onVisibilityChange,
+  )
 
   /**
    * The factory that client frameworks must implement to enable [VisibilityExtension] to create a

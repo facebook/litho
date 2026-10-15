@@ -22,6 +22,8 @@ import com.facebook.infer.annotation.Nullsafe;
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class ViewForTestKeyNotFoundException extends RuntimeException {
 
+  private static final long serialVersionUID = 1L;
+
   public ViewForTestKeyNotFoundException(String testKey) {
     super("The view with the given test key was not found: " + testKey);
   }

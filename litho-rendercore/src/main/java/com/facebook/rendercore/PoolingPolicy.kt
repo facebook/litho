@@ -29,7 +29,7 @@ import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClas
 @DataClassGenerate
 sealed class PoolingPolicy(
     @JvmField val canAcquireContent: Boolean,
-    @JvmField val canReleaseContent: Boolean
+    @JvmField val canReleaseContent: Boolean,
 ) {
 
   data object Default : PoolingPolicy(canAcquireContent = true, canReleaseContent = true)

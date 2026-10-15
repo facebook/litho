@@ -37,6 +37,10 @@ value class Dimen @PublishedApi internal constructor(val encodedValue: Long) {
   fun toPixels(resourceResolver: ResourceResolver): Int =
       convertEncodedValueToPixels(resourceResolver, encodedValue)
 
+  /** Converts the given Dimen to pixels as a Float. */
+  fun toFloatPixels(resourceResolver: ResourceResolver): Float =
+      convertEncodedValueToPixels(resourceResolver, encodedValue).toFloat()
+
   override fun toString(): String {
     return when {
       // DP case
@@ -62,9 +66,11 @@ value class Dimen @PublishedApi internal constructor(val encodedValue: Long) {
           // SP case
           encodedValue and SP_FLAG == SP_FLAG ->
               encodeSpFloat(
-                  (intBitsToFloat((encodedValue and PAYLOAD_MASK).toInt()) * other).toFloat())
+                  (intBitsToFloat((encodedValue and PAYLOAD_MASK).toInt()) * other).toFloat(),
+              )
           else -> doubleToRawLongBits(Double.NaN)
-        })
+        },
+    )
   }
 
   operator fun times(other: Float): Dimen {
@@ -78,10 +84,10 @@ value class Dimen @PublishedApi internal constructor(val encodedValue: Long) {
               encodePxInt(((encodedValue and PAYLOAD_MASK).toInt() * other).toInt())
           // SP case
           encodedValue and SP_FLAG == SP_FLAG ->
-              encodeSpFloat(
-                  (intBitsToFloat((encodedValue and PAYLOAD_MASK).toInt()) * other).toFloat())
+              encodeSpFloat((intBitsToFloat((encodedValue and PAYLOAD_MASK).toInt()) * other))
           else -> doubleToRawLongBits(Double.NaN)
-        })
+        },
+    )
   }
 
   operator fun times(other: Int): Dimen {
@@ -97,7 +103,8 @@ value class Dimen @PublishedApi internal constructor(val encodedValue: Long) {
           encodedValue and SP_FLAG == SP_FLAG ->
               encodeSpFloat(intBitsToFloat(encodedValue.and(PAYLOAD_MASK).toInt()) * other)
           else -> doubleToRawLongBits(Double.NaN)
-        })
+        },
+    )
   }
 
   operator fun div(other: Double): Dimen = this * (1.0 / other)
@@ -117,7 +124,8 @@ value class Dimen @PublishedApi internal constructor(val encodedValue: Long) {
           encodedValue and SP_FLAG == SP_FLAG ->
               encodeSpFloat(intBitsToFloat(encodedValue.and(PAYLOAD_MASK).toInt()) / other)
           else -> doubleToRawLongBits(Double.NaN)
-        })
+        },
+    )
   }
 
   operator fun unaryMinus(): Dimen = this * -1
@@ -212,9 +220,9 @@ const val PAYLOAD_MASK = 0xFFFF_FFFFL
  *
  * Read more about quiet NaN's here: https://www.doc.ic.ac.uk/~eedwards/compsys/float/nan.html
  */
-private inline fun convertEncodedValueToPixels(
+private fun convertEncodedValueToPixels(
     resourceResolver: ResourceResolver,
-    encodedValue: Long
+    encodedValue: Long,
 ): Int =
     when {
       // DP case
@@ -231,11 +239,11 @@ private inline fun convertEncodedValueToPixels(
     }
 
 @PublishedApi
-internal inline fun encodePxInt(value: Int): Long {
+internal fun encodePxInt(value: Int): Long {
   return value.toLong() or PX_FLAG
 }
 
 @PublishedApi
-internal inline fun encodeSpFloat(value: Float): Long {
+internal fun encodeSpFloat(value: Float): Long {
   return value.toRawBits().toLong() or SP_FLAG
 }

@@ -32,13 +32,11 @@ import com.facebook.litho.widget.Text
 import com.facebook.yoga.YogaEdge
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(LithoTestRunner::class)
-@Ignore("t16280359")
 class ComponentStyleTest {
 
   private var dimen = 0
@@ -51,7 +49,8 @@ class ComponentStyleTest {
   fun setup() {
     context =
         ComponentContext(
-            ContextThemeWrapper(ApplicationProvider.getApplicationContext(), TestTheme))
+            ContextThemeWrapper(ApplicationProvider.getApplicationContext(), TestTheme),
+        )
     lithoTestRule.useContext(context)
     dimen = context.resources.getDimensionPixelSize(R.dimen.test_dimen)
     largeDimen = context.resources.getDimensionPixelSize(R.dimen.test_large_dimen)
@@ -79,7 +78,7 @@ class ComponentStyleTest {
               component
             }
             .currentRootNode
-    assertThat(result?.getYogaNode()?.getPadding(YogaEdge.LEFT)).isEqualTo(dimen)
+    assertThat(result?.getYogaNode()?.getPadding(YogaEdge.ALL)?.value).isEqualTo(dimen.toFloat())
   }
 
   @Test
@@ -95,7 +94,8 @@ class ComponentStyleTest {
               component
             }
             .currentRootNode
-    assertThat(result?.getYogaNode()?.getPadding(YogaEdge.LEFT)).isEqualTo(2 * dimen)
+    assertThat(result?.getYogaNode()?.getPadding(YogaEdge.ALL)?.value)
+        .isEqualTo((2 * dimen).toFloat())
   }
 
   @Test
@@ -120,7 +120,8 @@ class ComponentStyleTest {
               component
             }
             .currentRootNode
-    assertThat(result?.getYogaNode()?.getPadding(YogaEdge.LEFT)).isEqualTo(largeDimen)
+    assertThat(result?.getYogaNode()?.getPadding(YogaEdge.ALL)?.value)
+        .isEqualTo(largeDimen.toFloat())
   }
 
   @Test
@@ -136,7 +137,8 @@ class ComponentStyleTest {
               component
             }
             .currentRootNode
-    assertThat(result?.getYogaNode()?.getPadding(YogaEdge.LEFT)).isEqualTo(2 * dimen)
+    assertThat(result?.getYogaNode()?.getPadding(YogaEdge.ALL)?.value)
+        .isEqualTo((2 * dimen).toFloat())
   }
 
   @Test
@@ -154,6 +156,7 @@ class ComponentStyleTest {
               component
             }
             .currentRootNode
-    assertThat(result?.getYogaNode()?.getPadding(YogaEdge.LEFT)).isEqualTo(largeDimen)
+    assertThat(result?.getYogaNode()?.getPadding(YogaEdge.ALL)?.value)
+        .isEqualTo(largeDimen.toFloat())
   }
 }

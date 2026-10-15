@@ -60,7 +60,9 @@ class MountStateRemountTest {
     val component2 = TestDrawableComponent.create(context).build()
     val lithoView =
         ComponentTestHelper.mountComponent(
-            context, Column.create(context).child(component1).child(component2).build())
+            context,
+            Column.create(context).child(component1).child(component2).build(),
+        )
     assertThat(component1.isMounted).isTrue
     assertThat(component2.isMounted).isTrue
   }
@@ -71,15 +73,9 @@ class MountStateRemountTest {
     val component2 = TestDrawableComponent.create(context).build()
     val component3 = TestDrawableComponent.create(context).build()
     val component4 = TestDrawableComponent.create(context).build()
-    val testLithoView =
-        lithoTestRule.render {
-          Column.create(context)
-              .widthPx(100)
-              .heightPx(100)
-              .child(component1)
-              .child(component2)
-              .build()
-        }
+    val testLithoView = lithoTestRule.render {
+      Column.create(context).widthPx(100).heightPx(100).child(component1).child(component2).build()
+    }
     assertThat(component1.isMounted).isTrue
     assertThat(component2.isMounted).isTrue
     testLithoView.setRoot(
@@ -88,7 +84,8 @@ class MountStateRemountTest {
             .heightPx(100)
             .child(component3)
             .child(component4)
-            .build())
+            .build(),
+    )
     assertThat(component1.isMounted).isTrue
     assertThat(component2.isMounted).isTrue
     assertThat(component3.isMounted).isFalse
@@ -120,7 +117,10 @@ class MountStateRemountTest {
     testLithoView.setSizeSpecs(exactly(10), exactly(10))
     assertThat(testLithoView.lithoView.childCount).isEqualTo(1)
     testLithoView.setRootAndSizeSpecSync(
-        TestDrawableComponent.create(context).build(), exactly(10), exactly(5))
+        TestDrawableComponent.create(context).build(),
+        exactly(10),
+        exactly(5),
+    )
     assertThat(testLithoView.lithoView.drawables[0]).isNotNull
   }
 
@@ -132,11 +132,16 @@ class MountStateRemountTest {
     val component4 = TestDrawableComponent.create(context).color(Color.YELLOW).build()
     val lithoView =
         ComponentTestHelper.mountComponent(
-            context, Column.create(context).child(component1).child(component2).build())
+            context,
+            Column.create(context).child(component1).child(component2).build(),
+        )
     assertThat(component1.isMounted).isTrue
     assertThat(component2.isMounted).isTrue
     ComponentTestHelper.mountComponent(
-        context, lithoView, Column.create(context).child(component3).child(component4).build())
+        context,
+        lithoView,
+        Column.create(context).child(component3).child(component4).build(),
+    )
     assertThat(component1.isMounted).isFalse
     assertThat(component2.isMounted).isFalse
     assertThat(component3.isMounted).isTrue
@@ -154,11 +159,16 @@ class MountStateRemountTest {
             .build()
     val lithoView = LithoView(context)
     val componentTree =
-        ComponentTree.create(context, Column.create(context).child(component1).build()).build()
+        ComponentTree.create(context, Column.create(context).child(component1).build())
+            .enableChildClipping(true)
+            .build()
     ComponentTestHelper.mountComponent(lithoView, componentTree, exactly(100), exactly(100))
     assertThat(component1.isMounted).isTrue
     componentTree.setRootAndSizeSpecSync(
-        Column.create(context).child(component2).build(), exactly(50), exactly(50))
+        Column.create(context).child(component2).build(),
+        exactly(50),
+        exactly(50),
+    )
     componentTree.setSizeSpec(exactly(100), exactly(100))
     assertThat(component2.isMounted).isTrue
   }
@@ -169,15 +179,9 @@ class MountStateRemountTest {
     val component2 = TestDrawableComponent.create(context).build()
     val component3 = TestDrawableComponent.create(context).build()
     val component4 = TestDrawableComponent.create(context).build()
-    val testLithoView =
-        lithoTestRule.render {
-          Column.create(context)
-              .widthPx(100)
-              .heightPx(100)
-              .child(component1)
-              .child(component2)
-              .build()
-        }
+    val testLithoView = lithoTestRule.render {
+      Column.create(context).widthPx(100).heightPx(100).child(component1).child(component2).build()
+    }
     assertThat(component1.isMounted).isTrue
     assertThat(component2.isMounted).isTrue
     testLithoView.setRoot(
@@ -186,7 +190,8 @@ class MountStateRemountTest {
             .heightPx(100)
             .child(component3)
             .child(Column.create(context).wrapInView().child(component4))
-            .build())
+            .build(),
+    )
     assertThat(component1.isMounted).isTrue
     assertThat(component2.isMounted).isFalse
     assertThat(component3.isMounted).isFalse
@@ -204,13 +209,15 @@ class MountStateRemountTest {
                     .foregroundColor(Color.CYAN)
                     .initialText("Hello World")
                     .viewTag("Alpha")
-                    .contentDescription("some description"))
+                    .contentDescription("some description"),
+            )
             .build()
     val lithoView = LithoView(context)
     val componentTree =
         ComponentTree.create(context, oldComponent)
             .componentsConfiguration(config)
             .incrementalMount(false)
+            .enableChildClipping(true)
             .build()
     ComponentTestHelper.mountComponent(lithoView, componentTree, exactly(400), exactly(400))
     val oldHost = lithoView.getChildAt(0) as ViewGroup
@@ -227,7 +234,8 @@ class MountStateRemountTest {
                     .foregroundColor(Color.CYAN)
                     .initialText("Hello World")
                     .viewTag("Alpha")
-                    .contentDescription("some description"))
+                    .contentDescription("some description"),
+            )
             .build()
     componentTree.setRootAndSizeSpecSync(newComponent, exactly(400), exactly(400))
     componentTree.setSizeSpec(exactly(400), exactly(400))
@@ -255,13 +263,15 @@ class MountStateRemountTest {
                     .initialText("Hello World")
                     .textSizeSp(12f)
                     .viewTag("Alpha")
-                    .enabled(true))
+                    .enabled(true),
+            )
             .build()
     val lithoView = LithoView(context)
     val componentTree =
         ComponentTree.create(context, oldComponent)
             .componentsConfiguration(config)
             .incrementalMount(false)
+            .enableChildClipping(true)
             .build()
     ComponentTestHelper.mountComponent(lithoView, componentTree, exactly(400), exactly(400))
     val oldHost = lithoView.getChildAt(0) as ViewGroup
@@ -277,7 +287,8 @@ class MountStateRemountTest {
                     .initialText("Hello World")
                     .textSizeSp(12f)
                     .viewTag("Beta")
-                    .enabled(false))
+                    .enabled(false),
+            )
             .build()
     componentTree.setRootAndSizeSpecSync(newComponent, exactly(400), exactly(400))
     componentTree.setSizeSpec(exactly(400), exactly(400))
@@ -300,13 +311,15 @@ class MountStateRemountTest {
                 TextInput.create(context)
                     .initialText("Hello World")
                     .textSizeSp(12f)
-                    .backgroundColor(Color.RED))
+                    .backgroundColor(Color.RED),
+            )
             .build()
     val lithoView = LithoView(context)
     val componentTree =
         ComponentTree.create(context, oldComponent)
             .componentsConfiguration(config)
             .incrementalMount(false)
+            .enableChildClipping(true)
             .build()
     ComponentTestHelper.mountComponent(lithoView, componentTree, exactly(400), exactly(400))
     val oldHost = lithoView.getChildAt(0) as ViewGroup
@@ -320,7 +333,8 @@ class MountStateRemountTest {
                 TextInput.create(context)
                     .initialText("Hello World")
                     .textSizeSp(12f)
-                    .backgroundColor(Color.CYAN))
+                    .backgroundColor(Color.CYAN),
+            )
             .build()
     componentTree.setRootAndSizeSpecSync(newComponent, exactly(400), exactly(400))
     componentTree.setSizeSpec(exactly(400), exactly(400))

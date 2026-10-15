@@ -1,0 +1,47 @@
+---
+id: kotlin-api-cheatsheet
+title: Cheatsheet
+---
+
+:::note
+The following cheatsheet provides a set of links for the migration of individual aspects of existing code from the Spec API to the Kotlin API.
+:::
+
+| Spec API                                   | Kotlin API |
+| :--                                        | :-- |
+| `@LayoutSpec`                              | [KComponent and Props](kotlin-api-basics.mdx) |
+| `@OnCreateLayout`                          | [`ComponentScope.render()`](kotlin-api-basics.mdx) |
+| `@OnCreateTransition`                      | [`useTransition()`](/migrating-to-kcomponents/kotlin-transitions.mdx) |
+| `@OnCreateInitialState` / `@OnUpdateState` | [`useState()`](/state-and-side-effects/use-state.mdx) |
+| Lazy State                                 | [`useRef()`](state-and-side-effects/use-ref.mdx) |
+| `@OnError`                                 | [`useErrorBoundary()`](/state-and-side-effects/use-error-boundary.mdx) |
+| `@OnAttached` / `@OnDetached`              | [`useEffect()`](/state-and-side-effects/use-effect.mdx) |
+| `@OnEvent`                                 | [Event Handling](event-handling.mdx) |
+| `@OnCalculateCachedValue`                  | [`useCached()`](state-and-side-effects/use-cached.mdx) |
+| `@TreeProp`                                | [`getTreeProp()`](kotlin-api-basics.mdx#treeprops) |
+| `@OnCreateTreeProp`                        | [`TreePropProvider`](kotlin-api-basics.mdx#treeprops) |
+| Common Props                               | [`Style`](kotlin-api-basics.mdx#common-props) |
+| `Column.create(c)`                         | [`Column()`](kotlin-flexbox-containers.mdx); see [Flexbox Properties Cheatsheet](kotlin-flexbox-containers.mdx#flexbox-properties-cheatsheet) |
+| `Row.create(c)`                            | [`Row()`](kotlin-flexbox-containers.mdx); see [Flexbox Properties Cheatsheet](kotlin-flexbox-containers.mdx#flexbox-properties-cheatsheet) |
+| Manual Keys                                | [`key()`](../state-and-side-effects/keys-and-identity.md#assigning-manual-keys) |
+| `Handle`                                   | [`handle()`](kotlin-api-basics.mdx#handles) |
+| `@OnCreateLayoutWithSizeSpec`              | [`RenderWithConstraints`](../custom-layout.md#kotlin-integration)  | //TODO
+| `@MountSpec`                               | [`PrimitiveComponent()`](../primitives/overview.mdx)|
+| `@OnTrigger`                               | [Controllers pattern](../primitives/primitive-controllers.mdx) |
+| `@OnBind` / `@OnUnbind`                    | [`bindTo()` / `bind()` / `bindWithLayoutData()` + `onUnbind()`](https://github.com/facebook/litho/blob/75655943f348c0347d534e6931fb53b2f7f16195/sample/src/main/java/com/facebook/samples/litho/kotlin/primitives/SimpleImageViewPrimitiveComponent.kt#L41-L44) |
+| `@OnMount` / `@OnUnmount`                  | [`bindTo()` / `bind()` / `bindWithLayoutData()` + `onUnbind()`](https://github.com/facebook/litho/blob/75655943f348c0347d534e6931fb53b2f7f16195/sample/src/main/java/com/facebook/samples/litho/kotlin/primitives/SimpleImageViewPrimitiveComponent.kt#L41-L44) |
+| `@OnBindDynamicValue`                      | [`bindDynamic()` - Dynamic Values API](https://github.com/facebook/litho/blob/75655943f348c0347d534e6931fb53b2f7f16195/sample/src/main/java/com/facebook/samples/litho/kotlin/primitives/bindto/ImageViewComponent.kt#L53-L63) |
+| `@ShouldUpdate`                            | [`shouldUpdate()`](../primitives/primitive.mdx#mounting-and-unmounting-content-properties) |
+| `@OnCreateMountContent`                    | [`createContent()`](../primitives/primitive.mdx#content-creation) |
+| `@OnCreateMountContentPool`                | [`ViewAllocator` / `DrawableAllocator`](../primitives/primitive-preallocation.mdx)|
+| `@OnMeasure`                               | [`layout()`](../primitives/primitive-measuring.mdx) |
+| `@OnBoundsDefined`                         | [`layout()`](../primitives/primitive-measuring.mdx) |
+| `@OnPrepare`                               | [`PrimitiveComponentScope.render()`](../primitives/primitive-component.mdx) |
+| `@OnLoadStyle`                             | [`PrimitiveComponentScope.render()`](../primitives/primitive-component.mdx) |
+| Accessibility                              | [Accessibility](../accessibility/accessibility.mdx) (see: [`AccessibilityStyles`](https://github.com/facebook/litho/blob/master/litho-core/src/main/java/com/facebook/litho/accessibility/AccessibilityStyles.kt))|
+| `hasChildLithoViews`                       | [`doesMountRenderTreeHosts`](https://github.com/facebook/litho/blob/75655943f348c0347d534e6931fb53b2f7f16195/sample/src/main/java/com/facebook/samples/litho/kotlin/primitives/widgets/HorizontalScroll.kt#L111)|
+| `isPureRender`                             | Not needed in Kotlin APIs, `isPureRender=true` is the only mode. |
+| `RecyclerCollectionComponent`              | [`LazyList` / `LazyGrid`](lazycollections-sections-migration.mdx/#replace-the-recyclercollectioncomponent) |
+| `@GroupSectionSpec`                        | [`LazyList` / `LazyGrid`](lazycollections-sections-migration.mdx/#migrate-the-groupsectionspec) |
+| `SingleComponentSection`                   | [`LazyListScope.child()`](lazycollections-sections-migration.mdx/#replace-the-singlecomponentsections) |
+| `DataDiffSection`                          | [`LazyListScope.children()`](lazycollections-sections-migration.mdx/#replace-the-datadiffsections) |

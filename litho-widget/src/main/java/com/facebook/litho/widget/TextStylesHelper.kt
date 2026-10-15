@@ -19,6 +19,7 @@ package com.facebook.litho.widget
 import android.content.res.ColorStateList
 import android.content.res.TypedArray
 import android.graphics.Typeface
+import android.os.Build
 import android.text.TextUtils
 import android.view.Gravity
 import android.view.View
@@ -76,7 +77,7 @@ object TextStylesHelper {
       shadowDy: Output<Float>?,
       shadowColor: Output<Int>?,
       verticalGravity: Output<VerticalGravity>?,
-      typeface: Output<Typeface>?
+      typeface: Output<Typeface>?,
   ) {
     val theme = c.androidContext.theme
 
@@ -119,7 +120,8 @@ object TextStylesHelper {
           shadowDy,
           shadowColor,
           verticalGravity,
-          typeface)
+          typeface,
+      )
       a.recycle()
     }
 
@@ -153,7 +155,8 @@ object TextStylesHelper {
         shadowDy,
         shadowColor,
         verticalGravity,
-        typeface)
+        typeface,
+    )
 
     a.recycle()
   }
@@ -186,7 +189,7 @@ object TextStylesHelper {
       shadowDy: Output<Float>?,
       shadowColor: Output<Int>?,
       verticalGravity: Output<VerticalGravity>?,
-      typeface: Output<Typeface>?
+      typeface: Output<Typeface>?,
   ) {
     var viewTextAlignment = View.TEXT_ALIGNMENT_GRAVITY
     var gravity = Gravity.NO_GRAVITY
@@ -251,11 +254,17 @@ object TextStylesHelper {
       } else if (attr == R.styleable.Text_android_fontFamily) {
         fontFamily = a.getString(attr)
       } else if (attr == R.styleable.Text_android_breakStrategy) {
-        breakStrategy?.set(a.getInt(attr, DEFAULT_BREAK_STRATEGY))
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+          breakStrategy?.set(a.getInt(attr, DEFAULT_BREAK_STRATEGY))
+        }
       } else if (attr == R.styleable.Text_android_hyphenationFrequency) {
-        hyphenationFrequency?.set(a.getInt(attr, DEFAULT_HYPHENATION_FREQUENCY))
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+          hyphenationFrequency?.set(a.getInt(attr, DEFAULT_HYPHENATION_FREQUENCY))
+        }
       } else if (attr == R.styleable.Text_android_justificationMode) {
-        justificationMode?.set(a.getInt(attr, DEFAULT_JUSTIFICATION_MODE))
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+          justificationMode?.set(a.getInt(attr, DEFAULT_JUSTIFICATION_MODE))
+        }
       }
     }
 

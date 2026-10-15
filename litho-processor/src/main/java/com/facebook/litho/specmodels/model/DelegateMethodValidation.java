@@ -194,6 +194,7 @@ public class DelegateMethodValidation {
 
             final SpecMethodModel<DelegateMethod, Void> interStageOutputMethod =
                 SpecModelUtils.getMethodModelWithAnnotation(
+                    // NULLSAFE_FIXME[Parameter Not Nullable]
                     specModel, interStageOutputMethodAnnotation);
 
             if (interStageOutputMethod == null) {
@@ -231,6 +232,7 @@ public class DelegateMethodValidation {
             }
 
             validateUniqueInterStatePropNames(
+                // NULLSAFE_FIXME[Parameter Not Nullable]
                 interStageOutputMethodAnnotation,
                 delegateMethodParam.getName(),
                 specModel,
@@ -303,7 +305,7 @@ public class DelegateMethodValidation {
 
   static void validateDuplicateName(
       String fieldName,
-      List<? extends MethodParamModel> propModelList,
+      @Nullable List<? extends MethodParamModel> propModelList,
       Class existingAnnotation,
       Class expectedAnnotation,
       List<SpecModelValidationError> validationErrors) {

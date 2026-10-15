@@ -62,7 +62,10 @@ import java.util.HashMap
 @ThreadSafe
 class EventHandlersController {
 
-  private val _dispatchInfos: MutableMap<String, DispatchInfoWrapper> = HashMap()
+  private var _dispatchInfos: MutableMap<GlobalKey, DispatchInfoWrapper>? = null
+
+  private fun getOrCreateDispatchInfos(): MutableMap<GlobalKey, DispatchInfoWrapper> =
+      _dispatchInfos ?: HashMap<GlobalKey, DispatchInfoWrapper>().also { _dispatchInfos = it }
 
   /**
    * Updates the EventDispatchInfo for this global key with the latest context and
@@ -73,12 +76,12 @@ class EventHandlersController {
   fun updateEventDispatchInfoForGlobalKey(
       c: ComponentContext,
       dispatcher: HasEventDispatcher,
-      globalKey: String?
+      globalKey: GlobalKey?,
   ) {
     if (globalKey == null) {
       return
     }
-    val dispatchInfoWrapper = _dispatchInfos[globalKey] ?: return
+    val dispatchInfoWrapper = _dispatchInfos?.get(globalKey) ?: return
 
     // Mark that the list of event handlers for this component is still needed.
     dispatchInfoWrapper.usedInCurrentTree = true
@@ -96,7 +99,7 @@ class EventHandlersController {
    */
   @Synchronized
   fun clearUnusedEventDispatchInfos() {
-    val iterator = _dispatchInfos.entries.iterator()
+    val iterator = (_dispatchInfos ?: return).entries.iterator()
     while (iterator.hasNext()) {
       val (_, dispatchInfoWrapper) = iterator.next()
       if (!dispatchInfoWrapper.usedInCurrentTree) {
@@ -114,14 +117,14 @@ class EventHandlersController {
    * EventHandlers will also be updated.
    */
   @Synchronized
-  fun canonicalizeEventDispatchInfos(eventHandlers: List<Pair<String, EventHandler<*>>>) {
+  fun canonicalizeEventDispatchInfos(eventHandlers: List<Pair<GlobalKey, EventHandler<*>>>) {
     for (entry in eventHandlers) {
       val globalKey = entry.first
       val eventHandler = entry.second
-      var existingDispatchInfo = _dispatchInfos[globalKey]
+      var existingDispatchInfo = _dispatchInfos?.get(globalKey)
       if (existingDispatchInfo == null) {
         existingDispatchInfo = DispatchInfoWrapper(eventHandler.dispatchInfo)
-        _dispatchInfos[globalKey] = existingDispatchInfo
+        getOrCreateDispatchInfos()[globalKey] = existingDispatchInfo
       } else {
         eventHandler.dispatchInfo = existingDispatchInfo.dispatchInfo
       }
@@ -130,7 +133,7 @@ class EventHandlersController {
 
   @get:Synchronized
   @get:VisibleForTesting
-  val dispatchInfos: Map<String, DispatchInfoWrapper>
+  val dispatchInfos: Map<GlobalKey, DispatchInfoWrapper>?
     get() = _dispatchInfos
 
   @VisibleForTesting
@@ -140,6 +143,6 @@ class EventHandlersController {
 
   @Synchronized
   fun clear() {
-    _dispatchInfos.clear()
+    _dispatchInfos = null
   }
 }

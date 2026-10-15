@@ -21,7 +21,7 @@ import static com.facebook.litho.widget.ViewportInfo.State.SCROLLING;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
@@ -99,7 +99,7 @@ public class ViewportManagerTest {
     viewportManager.setShouldUpdate(false);
     viewportManager.onViewportChanged(SCROLLING);
 
-    verifyZeroInteractions(mViewportChangedListener);
+    verifyNoMoreInteractions(mViewportChangedListener);
   }
 
   @Test

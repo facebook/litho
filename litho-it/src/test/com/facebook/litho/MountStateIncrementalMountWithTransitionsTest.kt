@@ -93,7 +93,7 @@ class MountStateIncrementalMountWithTransitionsTest {
 
       RCMS, after the Recycler is mounted, but before being bound, and setting
       size, TE calls notify on it; this means that the size of the view is zero,
-      and when the AnimatedRootHost.notifyVisibleBoundsChanged() nothing is mounted
+      and when the AnimatedRootHost.notifyVisibleBoundsChanged(VisibilityChangeReason.UNKNOWN) nothing is mounted
       in the LV
     */
     val lifecycleTracker0 = LifecycleTracker()
@@ -110,12 +110,14 @@ class MountStateIncrementalMountWithTransitionsTest {
             .intrinsicSize(Size(40, 40))
             .widthPx(40)
             .heightPx(40)
-            .build())
+            .build(),
+    )
     val sectionContext = SectionContext(lithoTestRule.context)
     val binderConfig =
         RecyclerBinderConfiguration.create()
             .recyclerBinderConfig(
-                RecyclerBinderConfig.create().lithoViewFactory(lithoViewFactory).build())
+                RecyclerBinderConfig.create().lithoViewFactory(lithoViewFactory).build(),
+            )
             .build()
     val config =
         ListRecyclerConfiguration.create()
@@ -129,7 +131,8 @@ class MountStateIncrementalMountWithTransitionsTest {
             .section(
                 TestSingleComponentListSection.create(sectionContext)
                     .data(animatingComponents)
-                    .build())
+                    .build(),
+            )
             .recyclerConfiguration(config)
             .build()
     val partiallyVisibleAnimatingComponent: TestComponentProvider =
@@ -143,7 +146,8 @@ class MountStateIncrementalMountWithTransitionsTest {
                             .flexGrow(1f)
                             .child(component0)
                             .transitionKey("transitionkey_root")
-                            .build())
+                            .build(),
+                    )
                     .build()
               } else {
                 Column.create(componentContext)
@@ -154,19 +158,21 @@ class MountStateIncrementalMountWithTransitionsTest {
                             .child(component0)
                             .child(childOfAnimatingComponent)
                             .transitionKey("transitionkey_root")
-                            .build())
+                            .build(),
+                    )
                     .build()
               }
         }
-    val root =
-        TestAnimationsComponent(
-            stateCaller,
-            Transition.sequence(
-                Transition.create("transitionkey_root")
-                    .animator(Transition.timing(144))
-                    .animate(AnimatedProperties.X))) { state ->
-              requireNotNull(partiallyVisibleAnimatingComponent.getComponent(context, state))
-            }
+    val root = TestAnimationsComponent(
+        stateCaller,
+        Transition.sequence(
+            Transition.create("transitionkey_root")
+                .animator(Transition.timing(144))
+                .animate(AnimatedProperties.X),
+        ),
+    ) { state ->
+      requireNotNull(partiallyVisibleAnimatingComponent.getComponent(context, state))
+    }
     lithoTestRule.render(widthSpec = exactly(40), heightSpec = exactly(80)) { root }
     assertThat(lifecycleTracker0.isMounted).isTrue
     assertThat(lifecycleTracker1.isMounted).isFalse
@@ -176,7 +182,7 @@ class MountStateIncrementalMountWithTransitionsTest {
   }
 
   fun getPartiallyVisibleRootWithAnimatingComponents(
-      animatingComponentTrackers: List<LifecycleTracker>
+      animatingComponentTrackers: List<LifecycleTracker>,
   ): Component {
     val animatingComponents: MutableList<Component> = ArrayList()
     for (tracker in animatingComponentTrackers) {
@@ -184,7 +190,8 @@ class MountStateIncrementalMountWithTransitionsTest {
           MountSpecLifecycleTester.create(lithoTestRule.context)
               .lifecycleTracker(tracker)
               .intrinsicSize(Size(40, 40))
-              .build())
+              .build(),
+      )
     }
     val partiallyVisibleAnimatingComponent: TestComponentProvider =
         object : TestComponentProvider {
@@ -202,7 +209,8 @@ class MountStateIncrementalMountWithTransitionsTest {
                       .backgroundColor(Color.parseColor("#ee1111"))
                       .transitionKey("transitionkey_$i")
                       .viewTag(RED_TRANSITION_KEY)
-                      .build())
+                      .build(),
+              )
             }
             return builder.build()
           }
@@ -215,23 +223,27 @@ class MountStateIncrementalMountWithTransitionsTest {
               .animator(Transition.timing(144))
               .animate(AnimatedProperties.X)
     }
-    val component =
-        TestAnimationsComponent(stateCaller, Transition.sequence(*transitions)) { state ->
-          requireNotNull(partiallyVisibleAnimatingComponent.getComponent(context, state))
-        }
+    val component = TestAnimationsComponent(
+        stateCaller,
+        Transition.sequence(*transitions),
+    ) { state ->
+      requireNotNull(partiallyVisibleAnimatingComponent.getComponent(context, state))
+    }
     val data: MutableList<Component> = ArrayList()
     data.add(
         Row.create(lithoTestRule.context)
             .heightDip(40f)
             .widthDip(40f)
             .backgroundColor(Color.parseColor("#ee1111"))
-            .build())
+            .build(),
+    )
     data.add(component)
     val sectionContext = SectionContext(lithoTestRule.context)
     val binderConfig =
         RecyclerBinderConfiguration.create()
             .recyclerBinderConfig(
-                RecyclerBinderConfig.create().lithoViewFactory(lithoViewFactory).build())
+                RecyclerBinderConfig.create().lithoViewFactory(lithoViewFactory).build(),
+            )
             .build()
     val config =
         ListRecyclerConfiguration.create().recyclerBinderConfiguration(binderConfig).build()

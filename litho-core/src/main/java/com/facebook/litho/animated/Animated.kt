@@ -228,7 +228,8 @@ internal class AnimatorAnimation(val animator: ValueAnimator) : AnimatedAnimatio
           override fun onAnimationCancel(animation: Animator) {
             animatorFinishListener.onFinish(true)
           }
-        })
+        },
+    )
   }
 }
 
@@ -241,7 +242,7 @@ internal class AnimatorAnimation(val animator: ValueAnimator) : AnimatedAnimatio
  */
 class SpringConfig(
     var stiffness: Float = SpringForce.STIFFNESS_LOW,
-    var dampingRatio: Float = SpringForce.DAMPING_RATIO_MEDIUM_BOUNCY
+    var dampingRatio: Float = SpringForce.DAMPING_RATIO_MEDIUM_BOUNCY,
 )
 
 /** Bridge between Android [FloatValueHolder] and Litho DynamicValue<Float> */

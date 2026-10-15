@@ -21,6 +21,7 @@ import android.os.Build
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.kotlin.widget.Text
+import com.facebook.litho.layout.flexbox.Row
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.pivotPercent
@@ -29,7 +30,6 @@ import com.facebook.litho.view.wrapInView
 import com.facebook.rendercore.Dimen
 import com.facebook.rendercore.px
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -40,14 +40,13 @@ import org.robolectric.annotation.LooperMode
 @RunWith(LithoTestRunner::class)
 class PivotStyleTest {
 
-  @JvmField @Rule val mLithoTestRule = LithoTestRule()
+  @JvmField @Rule val lithoTestRule = LithoTestRule()
 
   @Test
   fun testPivotApplied() {
-    val testLithoView =
-        mLithoTestRule.render {
-          ComponentWithOptionalPivot(pivotXPercent = 75f, pivotYPercent = 75f)
-        }
+    val testLithoView = lithoTestRule.render {
+      ComponentWithOptionalPivot(pivotXPercent = 75f, pivotYPercent = 75f)
+    }
 
     with(testLithoView.findViewWithTag("test_view")) {
       assertThat(pivotX).isEqualTo(75f)
@@ -56,7 +55,12 @@ class PivotStyleTest {
 
     testLithoView.setRoot(
         ComponentWithOptionalPivot(
-            pivotXPercent = 75f, pivotYPercent = 75f, width = 300.px, height = 200.px))
+            pivotXPercent = 75f,
+            pivotYPercent = 75f,
+            width = 300.px,
+            height = 200.px,
+        ),
+    )
 
     with(testLithoView.findViewWithTag("test_view")) {
       assertThat(pivotX).isEqualTo(225f)
@@ -67,10 +71,9 @@ class PivotStyleTest {
   @TargetApi(Build.VERSION_CODES.P)
   @Test
   fun testPivotReset() {
-    val testLithoView =
-        mLithoTestRule.render {
-          ComponentWithOptionalPivot(pivotXPercent = 75f, pivotYPercent = 75f)
-        }
+    val testLithoView = lithoTestRule.render {
+      ComponentWithOptionalPivot(pivotXPercent = 75f, pivotYPercent = 75f)
+    }
 
     with(testLithoView.findViewWithTag("test_view")) {
       assertThat(pivotX).isEqualTo(75f)
@@ -88,7 +91,8 @@ class PivotStyleTest {
     }
 
     testLithoView.setRoot(
-        ComponentWithOptionalPivot(hasPivot = false, width = 300.px, height = 200.px))
+        ComponentWithOptionalPivot(hasPivot = false, width = 300.px, height = 200.px),
+    )
 
     with(testLithoView.findViewWithTag("test_view")) { ->
       assertThat(pivotX).isEqualTo(0f)
@@ -97,19 +101,12 @@ class PivotStyleTest {
     }
   }
 
-  /**
-   * Ignored until we have a way to run tests targeting different API versions in the same target.
-   * You can comment on @Ignore and run this test file locally to make sure this passes.
-   */
-  @Ignore
-  @Config(sdk = [Build.VERSION_CODES.LOLLIPOP])
-  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+  @Config(sdk = [Build.VERSION_CODES.O_MR1])
   @Test
   fun testPivotResetPreAPI28() {
-    val testLithoView =
-        mLithoTestRule.render {
-          ComponentWithOptionalPivot(pivotXPercent = 75f, pivotYPercent = 75f)
-        }
+    val testLithoView = lithoTestRule.render {
+      ComponentWithOptionalPivot(pivotXPercent = 75f, pivotYPercent = 75f)
+    }
 
     with(testLithoView.findViewWithTag("test_view")) {
       assertThat(pivotX).isEqualTo(75f)
@@ -124,7 +121,8 @@ class PivotStyleTest {
     }
 
     testLithoView.setRoot(
-        ComponentWithOptionalPivot(hasPivot = false, width = 300.px, height = 200.px))
+        ComponentWithOptionalPivot(hasPivot = false, width = 300.px, height = 200.px),
+    )
 
     with(testLithoView.findViewWithTag("test_view")) { ->
       assertThat(pivotX).isEqualTo(150f)
@@ -137,7 +135,7 @@ class PivotStyleTest {
       private val pivotYPercent: Float = 50f,
       private val width: Dimen = 100.px,
       private val height: Dimen = 100.px,
-      private val hasPivot: Boolean = true
+      private val hasPivot: Boolean = true,
   ) : KComponent() {
     override fun ComponentScope.render(): Component {
       val style =

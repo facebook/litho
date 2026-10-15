@@ -27,7 +27,7 @@ open class TestBinderWithBindData<MODEL> : RenderUnit.Binder<MODEL, View, Any> {
 
     constructor(
         bindOrder: MutableList<Any?>,
-        unbindOrder: MutableList<Any?>
+        unbindOrder: MutableList<Any?>,
     ) : super(bindOrder, unbindOrder)
 
     constructor(bindData: Any?) : super(bindData)
@@ -35,7 +35,7 @@ open class TestBinderWithBindData<MODEL> : RenderUnit.Binder<MODEL, View, Any> {
     constructor(
         bindOrder: MutableList<Any?>,
         unbindOrder: MutableList<Any?>,
-        bindData: Any?
+        bindData: Any?,
     ) : super(bindOrder, unbindOrder, bindData)
   }
 
@@ -44,7 +44,7 @@ open class TestBinderWithBindData<MODEL> : RenderUnit.Binder<MODEL, View, Any> {
 
     constructor(
         bindOrder: MutableList<Any?>,
-        unbindOrder: MutableList<Any?>
+        unbindOrder: MutableList<Any?>,
     ) : super(bindOrder, unbindOrder)
 
     constructor(bindData: Any?) : super(bindData)
@@ -52,7 +52,7 @@ open class TestBinderWithBindData<MODEL> : RenderUnit.Binder<MODEL, View, Any> {
     constructor(
         bindOrder: MutableList<Any?>,
         unbindOrder: MutableList<Any?>,
-        bindData: Any?
+        bindData: Any?,
     ) : super(bindOrder, unbindOrder, bindData)
   }
 
@@ -61,7 +61,7 @@ open class TestBinderWithBindData<MODEL> : RenderUnit.Binder<MODEL, View, Any> {
 
     constructor(
         bindOrder: MutableList<Any?>,
-        unbindOrder: MutableList<Any?>
+        unbindOrder: MutableList<Any?>,
     ) : super(bindOrder, unbindOrder)
 
     constructor(bindData: Any?) : super(bindData)
@@ -69,7 +69,7 @@ open class TestBinderWithBindData<MODEL> : RenderUnit.Binder<MODEL, View, Any> {
     constructor(
         bindOrder: MutableList<Any?>,
         unbindOrder: MutableList<Any?>,
-        bindData: Any?
+        bindData: Any?,
     ) : super(bindOrder, unbindOrder, bindData)
   }
 
@@ -78,7 +78,7 @@ open class TestBinderWithBindData<MODEL> : RenderUnit.Binder<MODEL, View, Any> {
 
     constructor(
         bindOrder: MutableList<Any?>,
-        unbindOrder: MutableList<Any?>
+        unbindOrder: MutableList<Any?>,
     ) : super(bindOrder, unbindOrder)
 
     constructor(bindData: Any?) : super(bindData)
@@ -86,7 +86,7 @@ open class TestBinderWithBindData<MODEL> : RenderUnit.Binder<MODEL, View, Any> {
     constructor(
         bindOrder: MutableList<Any?>,
         unbindOrder: MutableList<Any?>,
-        bindData: Any?
+        bindData: Any?,
     ) : super(bindOrder, unbindOrder, bindData)
   }
 
@@ -124,7 +124,7 @@ open class TestBinderWithBindData<MODEL> : RenderUnit.Binder<MODEL, View, Any> {
       currentModel: MODEL,
       newModel: MODEL,
       currentLayoutData: Any?,
-      nextLayoutData: Any?
+      nextLayoutData: Any?,
   ): Boolean {
     return currentLayoutData != nextLayoutData
   }
@@ -140,7 +140,7 @@ open class TestBinderWithBindData<MODEL> : RenderUnit.Binder<MODEL, View, Any> {
       content: View,
       model: MODEL,
       layoutData: Any?,
-      bindData: Any?
+      bindData: Any?,
   ) {
     unbindOrder.add(Pair<Any?, Any?>(this, bindData))
     wasUnbound = true

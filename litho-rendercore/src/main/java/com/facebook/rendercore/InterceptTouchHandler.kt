@@ -19,6 +19,6 @@ package com.facebook.rendercore
 import android.view.MotionEvent
 import android.view.View
 
-interface InterceptTouchHandler {
+fun interface InterceptTouchHandler {
   fun onInterceptTouchEvent(view: View, ev: MotionEvent): Boolean?
 }

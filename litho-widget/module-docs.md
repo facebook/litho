@@ -1,3 +1,3 @@
 # Module litho-widget
 
-Common widgets to build Litho UIs with, include `Text` and `Image`.
+Common widgets to build Litho UIs with, include `Text` and `Image`. Contains both Java and Kotlin widget implementations.

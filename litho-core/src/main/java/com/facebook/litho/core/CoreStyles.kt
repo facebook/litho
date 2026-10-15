@@ -16,6 +16,8 @@
 
 package com.facebook.litho.core
 
+import androidx.annotation.AttrRes
+import androidx.annotation.StyleRes
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.litho.CommonProps
 import com.facebook.litho.ComponentContext
@@ -23,13 +25,16 @@ import com.facebook.litho.Style
 import com.facebook.litho.StyleItem
 import com.facebook.litho.StyleItemField
 import com.facebook.rendercore.Dimen
+import com.facebook.rendercore.px
 import com.facebook.yoga.YogaEdge
 
 /** Enums for [CoreDimenStyleItem]. */
 @PublishedApi
 internal enum class CoreDimenField : StyleItemField {
   WIDTH,
+  WIDTH_AUTO,
   HEIGHT,
+  HEIGHT_AUTO,
   MIN_WIDTH,
   MAX_WIDTH,
   MIN_HEIGHT,
@@ -88,12 +93,11 @@ internal enum class CoreFloatField : StyleItemField {
 @DataClassGenerate
 internal data class CoreDimenStyleItem(
     override val field: CoreDimenField,
-    override val value: Dimen
+    override val value: Dimen,
 ) : StyleItem<Dimen> {
   override fun applyCommonProps(context: ComponentContext, commonProps: CommonProps) {
     val pixelValue = value.toPixels(context.resourceResolver)
     when (field) {
-      // TODO(t89044330): When yoga is decoupled from Litho, implement these more generically.
       CoreDimenField.WIDTH -> commonProps.widthPx(pixelValue)
       CoreDimenField.HEIGHT -> commonProps.heightPx(pixelValue)
       CoreDimenField.MIN_WIDTH -> commonProps.minWidthPx(pixelValue)
@@ -118,17 +122,21 @@ internal data class CoreDimenStyleItem(
       CoreDimenField.MARGIN_HORIZONTAL -> commonProps.marginPx(YogaEdge.HORIZONTAL, pixelValue)
       CoreDimenField.MARGIN_VERTICAL -> commonProps.marginPx(YogaEdge.VERTICAL, pixelValue)
       CoreDimenField.MARGIN_ALL -> commonProps.marginPx(YogaEdge.ALL, pixelValue)
+      CoreDimenField.WIDTH_AUTO -> commonProps.widthAuto()
+      CoreDimenField.HEIGHT_AUTO -> commonProps.heightAuto()
     }
   }
 }
 
 /** Common style item for all core float styles. See note on [CoreDimenField] about this pattern. */
 @PublishedApi
-internal class CoreFloatStyleItem(override val field: CoreFloatField, override val value: Float) :
-    StyleItem<Float> {
+@DataClassGenerate
+internal data class CoreFloatStyleItem(
+    override val field: CoreFloatField,
+    override val value: Float,
+) : StyleItem<Float> {
   override fun applyCommonProps(context: ComponentContext, commonProps: CommonProps) {
     when (field) {
-      // TODO(t89044330): When yoga is decoupled from Litho, implement these more generically.
       CoreFloatField.WIDTH_PERCENT -> commonProps.widthPercent(value)
       CoreFloatField.HEIGHT_PERCENT -> commonProps.heightPercent(value)
       CoreFloatField.MIN_WIDTH_PERCENT -> commonProps.minWidthPercent(value)
@@ -160,55 +168,123 @@ internal class CoreFloatStyleItem(override val field: CoreFloatField, override v
   }
 }
 
+/** Enum for [AndroidStyleItem]. */
+private enum class AndroidStyleField : StyleItemField {
+  ANDROID_STYLE,
+}
+
+@DataClassGenerate
+internal data class AndroidStyleItem(
+    @AttrRes val defStyleAttr: Int,
+    @StyleRes val defStyleRes: Int,
+) : StyleItem<Int> {
+  override fun applyCommonProps(context: ComponentContext, commonProps: CommonProps) {
+    commonProps.setStyle(defStyleAttr, defStyleRes)
+  }
+
+  override val value: Int = defStyleRes
+  override val field: StyleItemField = AndroidStyleField.ANDROID_STYLE
+}
+
+/**
+ * Applies the default styled attributes from an Android style/theme resource to this component's
+ * common view and layout properties — the `R.styleable.ComponentLayout` set, e.g. `background`,
+ * `foreground`, `padding`, `margin`, `minWidth`/`minHeight`, `contentDescription` and
+ * `importantForAccessibility`. This is the [Style] equivalent of the legacy Spec builder's
+ * `create(c, defStyleAttr, defStyleRes)` overload.
+ *
+ * Component-specific styled attributes (for example a progress bar's
+ * `android:indeterminateDrawable`) are not applied here; a component that needs them must read them
+ * itself. Explicit attributes set elsewhere in the [Style] chain take precedence over values coming
+ * from the resolved style.
+ *
+ * Passing 0 for both [defStyleAttr] and [defStyleRes] is a no-op that returns this [Style]
+ * unchanged.
+ *
+ * @param defStyleAttr An attribute in the current theme referencing a style resource that supplies
+ *   defaults, or 0 to skip.
+ * @param defStyleRes A style resource supplying defaults, used when [defStyleAttr] is 0 or is not
+ *   found in the theme; pass 0 to skip.
+ */
+fun Style.androidStyle(@AttrRes defStyleAttr: Int = 0, @StyleRes defStyleRes: Int = 0): Style =
+    if (defStyleAttr == 0 && defStyleRes == 0) this
+    else this + AndroidStyleItem(defStyleAttr, defStyleRes)
+
+/**
+ * Returns this Style if it's not null, otherwise returns the default empty Style singleton.
+ *
+ * This extension function provides a safe way to handle nullable Style objects by ensuring a
+ * non-null Style is always returned, making it easier to chain style operations without null
+ * checks.
+ *
+ * @return this Style if not null, or Style.Companion (the empty Style singleton) if null
+ * @receiver Style? A nullable Style instance
+ */
+fun Style?.orDefault(): Style = this ?: Style
+
 /** Sets a specific preferred width for this component when its parent lays it out. */
-inline fun Style.width(width: Dimen): Style = this + CoreDimenStyleItem(CoreDimenField.WIDTH, width)
+fun Style.width(width: Dimen): Style = this + CoreDimenStyleItem(CoreDimenField.WIDTH, width)
 
 /** Sets a specific preferred height for this component when its parent lays it out. */
-inline fun Style.height(height: Dimen): Style =
-    this + CoreDimenStyleItem(CoreDimenField.HEIGHT, height)
+fun Style.height(height: Dimen): Style = this + CoreDimenStyleItem(CoreDimenField.HEIGHT, height)
+
+/** auto width */
+fun Style.widthAuto(): Style = this + CoreDimenStyleItem(CoreDimenField.WIDTH_AUTO, 0.px)
+
+/** auto height */
+fun Style.heightAuto(): Style = this + CoreDimenStyleItem(CoreDimenField.HEIGHT_AUTO, 0.px)
+
+/** Sets both width and height to the same value. */
+fun Style.size(size: Dimen): Style = width(size).height(size)
 
 /** Sets a specific preferred percent width for this component when its parent lays it out. */
-inline fun Style.widthPercent(widthPercent: Float): Style =
+fun Style.widthPercent(widthPercent: Float): Style =
     this + CoreFloatStyleItem(CoreFloatField.WIDTH_PERCENT, widthPercent)
 
 /** Sets a specific preferred percent height for this component when its parent lays it out. */
-inline fun Style.heightPercent(heightPercent: Float): Style =
+fun Style.heightPercent(heightPercent: Float): Style =
     this + CoreFloatStyleItem(CoreFloatField.HEIGHT_PERCENT, heightPercent)
 
 /** Sets a preferred minimum width for this component when its parent lays it out. */
-inline fun Style.minWidth(minWidth: Dimen): Style =
+fun Style.minWidth(minWidth: Dimen): Style =
     this + CoreDimenStyleItem(CoreDimenField.MIN_WIDTH, minWidth)
 
 /** Sets a preferred maximum width for this component when its parent lays it out. */
-inline fun Style.maxWidth(maxWidth: Dimen): Style =
+fun Style.maxWidth(maxWidth: Dimen): Style =
     this + CoreDimenStyleItem(CoreDimenField.MAX_WIDTH, maxWidth)
 
+/** Sets minimum and maximum width constraints. */
+fun Style.widthIn(min: Dimen, max: Dimen): Style = minWidth(min).maxWidth(max)
+
 /** Sets a preferred minimum height for this component when its parent lays it out. */
-inline fun Style.minHeight(minHeight: Dimen): Style =
+fun Style.minHeight(minHeight: Dimen): Style =
     this + CoreDimenStyleItem(CoreDimenField.MIN_HEIGHT, minHeight)
 
 /** Sets a preferred maximum height for this component when its parent lays it out. */
-inline fun Style.maxHeight(maxHeight: Dimen): Style =
+fun Style.maxHeight(maxHeight: Dimen): Style =
     this + CoreDimenStyleItem(CoreDimenField.MAX_HEIGHT, maxHeight)
 
+/** Sets minimum and maximum height constraints. */
+fun Style.heightIn(min: Dimen, max: Dimen): Style = minHeight(min).maxHeight(max)
+
 /** Sets a specific minimum percent width for this component when its parent lays it out. */
-inline fun Style.minWidthPercent(minWidthPercent: Float): Style =
+fun Style.minWidthPercent(minWidthPercent: Float): Style =
     this + CoreFloatStyleItem(CoreFloatField.MIN_WIDTH_PERCENT, minWidthPercent)
 
 /** Sets a specific maximum percent width for this component when its parent lays it out. */
-inline fun Style.maxWidthPercent(maxWidthPercent: Float): Style =
+fun Style.maxWidthPercent(maxWidthPercent: Float): Style =
     this + CoreFloatStyleItem(CoreFloatField.MAX_WIDTH_PERCENT, maxWidthPercent)
 
 /** Sets a specific minimum percent height for this component when its parent lays it out. */
-inline fun Style.minHeightPercent(minHeightPercent: Float): Style =
+fun Style.minHeightPercent(minHeightPercent: Float): Style =
     this + CoreFloatStyleItem(CoreFloatField.MIN_HEIGHT_PERCENT, minHeightPercent)
 
 /** Sets a specific maximum percent height for this component when its parent lays it out. */
-inline fun Style.maxHeightPercent(maxHeightPercent: Float): Style =
+fun Style.maxHeightPercent(maxHeightPercent: Float): Style =
     this + CoreFloatStyleItem(CoreFloatField.MAX_HEIGHT_PERCENT, maxHeightPercent)
 
 /** Defines padding on the component on a per-edge basis. */
-inline fun Style.padding(
+fun Style.padding(
     all: Dimen? = null,
     horizontal: Dimen? = null,
     vertical: Dimen? = null,
@@ -236,7 +312,7 @@ inline fun Style.padding(
  * [https://www.yogalayout.dev/docs/styling/margin-padding-border](https://www.yogalayout.dev/docs/styling/margin-padding-border)
  * for more information.
  */
-inline fun Style.paddingPercent(
+fun Style.paddingPercent(
     all: Float? = null,
     horizontal: Float? = null,
     vertical: Float? = null,
@@ -259,7 +335,7 @@ inline fun Style.paddingPercent(
         right?.let { CoreFloatStyleItem(CoreFloatField.PADDING_RIGHT_PERCENT, it) }
 
 /** Defines margin around the component on a per-edge basis. */
-inline fun Style.margin(
+fun Style.margin(
     all: Dimen? = null,
     horizontal: Dimen? = null,
     vertical: Dimen? = null,
@@ -287,7 +363,7 @@ inline fun Style.margin(
  * [https://www.yogalayout.dev/docs/styling/margin-padding-border](https://www.yogalayout.dev/docs/styling/margin-padding-border)
  * for more information.
  */
-inline fun Style.marginPercent(
+fun Style.marginPercent(
     all: Float? = null,
     horizontal: Float? = null,
     vertical: Float? = null,

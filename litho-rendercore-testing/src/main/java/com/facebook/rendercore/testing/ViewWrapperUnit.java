@@ -25,6 +25,7 @@ import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.ContentAllocator;
 import com.facebook.rendercore.PoolingPolicy;
+import com.facebook.rendercore.RenderType;
 import com.facebook.rendercore.RenderUnit;
 import java.util.Collections;
 
@@ -39,12 +40,7 @@ public class ViewWrapperUnit extends RenderUnit<View> implements ContentAllocato
   }
 
   public ViewWrapperUnit(final View view, final long id, @Nullable SparseArray<Object> extras) {
-    super(
-        RenderType.VIEW,
-        Collections.emptyList(),
-        Collections.emptyList(),
-        Collections.emptyList(),
-        extras);
+    super(Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), extras);
     this.view = view;
     this.id = id;
   }
@@ -57,6 +53,11 @@ public class ViewWrapperUnit extends RenderUnit<View> implements ContentAllocato
   @Override
   public Object getPoolKey() {
     return view.getClass();
+  }
+
+  @Override
+  public RenderType getRenderType() {
+    return RenderType.VIEW;
   }
 
   @Override

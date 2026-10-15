@@ -25,13 +25,12 @@ import static com.facebook.litho.widget.RecyclerBinderTest.NO_OP_CHANGE_SET_COMP
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-import android.os.Looper;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
-import com.facebook.litho.testing.Whitebox;
+import com.facebook.litho.StyleCompat;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.collection.CrossAxisWrapMode;
 import java.util.ArrayList;
@@ -42,8 +41,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.robolectric.Shadows;
 import org.robolectric.annotation.LooperMode;
+import org.robolectric.shadow.api.Shadow;
 import org.robolectric.shadows.ShadowLooper;
 
 /** Tests for manually specifying estimatedViewportCount to {@link RecyclerBinder} */
@@ -60,9 +59,7 @@ public class RecyclerBinderManualRangeTest {
   public void setup() {
     mComponentContext = new ComponentContext(getApplicationContext());
     mComponentContext.getAndroidContext().setTheme(0);
-    mLayoutThreadShadowLooper =
-        Shadows.shadowOf(
-            (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultLayoutThreadLooper"));
+    mLayoutThreadShadowLooper = Shadow.extract(ComponentTree.getDefaultLayoutThreadLooper());
   }
 
   private void runToEndOfTasks() {
@@ -89,11 +86,7 @@ public class RecyclerBinderManualRangeTest {
     for (int i = 0; i < 10; i++) {
       initialComponents.add(
           create()
-              .component(
-                  SimpleMountSpecTester.create(mComponentContext)
-                      .widthPx(100)
-                      .heightPx(100)
-                      .build())
+              .component(new SimpleMountSpecTester(StyleCompat.widthPx(100).heightPx(100).build()))
               .build());
     }
     recyclerBinder.insertRangeAt(0, initialComponents);
@@ -140,11 +133,7 @@ public class RecyclerBinderManualRangeTest {
     for (int i = 0; i < 10; i++) {
       initialComponents.add(
           create()
-              .component(
-                  SimpleMountSpecTester.create(mComponentContext)
-                      .widthPx(100)
-                      .heightPx(100)
-                      .build())
+              .component(new SimpleMountSpecTester(StyleCompat.widthPx(100).heightPx(100).build()))
               .build());
     }
     recyclerBinder.insertRangeAt(0, initialComponents);

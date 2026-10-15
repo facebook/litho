@@ -77,7 +77,7 @@ object SimpleEditor {
   // Write data
   private fun <T> writeMutable(
       propertyEditor: MutablePropertyEditor<T>,
-      value: T
+      value: T,
   ): DefaultEditorVisitor {
     return object : DefaultEditorVisitor() {
       override fun isShape(shape: EditorShape): Void? {
@@ -115,7 +115,8 @@ object SimpleEditor {
                       propertyEditor.writePickProperty(value, key, pick.selected)
                       return false
                     }
-                  })
+                  },
+              )
             }
           }
         }
@@ -128,7 +129,7 @@ object SimpleEditor {
       f: Field,
       node: Any?,
       propertyEditor: ImmutablePropertyEditor<T>,
-      value: T
+      value: T,
   ): EditorValue.EditorVisitor<Void?> {
     return object : DefaultEditorVisitor() {
       override fun isShape(shape: EditorShape): Void? {
@@ -140,7 +141,13 @@ object SimpleEditor {
         for ((key, value1) in properties) {
           value1.value.whenPrimitive(
               classifyValue(
-                  key, stringProperties, numberProperties, boolProperties, pickProperties))
+                  key,
+                  stringProperties,
+                  numberProperties,
+                  boolProperties,
+                  pickProperties,
+              ),
+          )
         }
         val updates = shape.value
         for ((propertyKey, value1) in updates) {
@@ -155,13 +162,20 @@ object SimpleEditor {
                       stringProperties,
                       numberProperties,
                       boolProperties,
-                      pickProperties))
+                      pickProperties,
+                  ),
+              )
             }
           }
         }
         val newValue =
             propertyEditor.writeProperties(
-                value, stringProperties, numberProperties, boolProperties, pickProperties)
+                value,
+                stringProperties,
+                numberProperties,
+                boolProperties,
+                pickProperties,
+            )
         setValueUNSAFE(f, node, newValue)
         return null
       }
@@ -172,7 +186,7 @@ object SimpleEditor {
   // and we have to apply the value to the old Pick
   private fun maybePickFromString(
       oldValue: SimpleEditorValue,
-      newValue: SimpleEditorValue
+      newValue: SimpleEditorValue,
   ): SimpleEditorValue {
     if (oldValue.type != PRIMITIVE_TYPE_PICK || newValue.type != PRIMITIVE_TYPE_STRING) {
       return newValue
@@ -187,9 +201,11 @@ object SimpleEditor {
                     ref.set(SimpleEditorValue.pick(pick.values, string.value))
                     return null
                   }
-                })
+                },
+            )
           }
-        })
+        },
+    )
     return ref.get()
   }
 
@@ -198,7 +214,7 @@ object SimpleEditor {
       stringProperties: MutableMap<String, String>,
       numberProperties: MutableMap<String, Number>,
       boolProperties: MutableMap<String, Boolean>,
-      pickProperties: MutableMap<String, String>
+      pickProperties: MutableMap<String, String>,
   ): EditorPrimitiveVisitor {
     return object : EditorPrimitiveVisitor {
       override fun isNumber(path: Array<String>, number: EditorNumber): Boolean {
@@ -264,7 +280,7 @@ object SimpleEditor {
         newStringValues: Map<String, String>,
         newNumberValues: Map<String, Number>,
         newBoolValues: Map<String, Boolean>,
-        newPickValues: Map<String, String>
+        newPickValues: Map<String, String>,
     ): T
   }
 

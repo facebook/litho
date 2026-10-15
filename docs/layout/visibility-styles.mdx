@@ -1,0 +1,313 @@
+---
+id: visibility-styles
+title: Tracking Visibility & Impressions
+keywords:
+    - visibility styles
+    - visibility events
+    - litho visibility
+    - impression tracking
+---
+
+Visibility Styles enable you to observe and respond to visibility changes of components as they appear, scroll, or disappear from the viewport. These styles are essential for implementing features like impression tracking, lazy loading, analytics, and performance optimizations.
+
+All visibility callbacks receive an event whose `reason` field (of type `VisibilityChangeReason`) indicates **why** the visibility change occurred — such as `SCROLL`, `LIFECYCLE`, `ANIMATION`, `MOUNT`, or `VISIBILITY_HINT`. See [Visibility Handling](../visibility/visibility-handling.mdx#visibilitychangereason) for the full list of reason values.
+
+Visibility Styles encompass:
+
+- **Visibility Events**: Callbacks triggered when components become visible, invisible, focused, or unfocused
+- **Impression Tracking**: Detection of when a component has been fully viewed
+- **Visibility Thresholds**: Custom ratios to define what percentage of a component must be visible to trigger events
+- **Visibility State**: Control whether a component is visible or invisible (while still occupying space)
+
+These styles work with Litho's viewport tracking to efficiently detect when components enter or exit the visible area of the screen.
+
+## onVisible
+
+Registers a callback to be called when at least 1 pixel of the Component becomes visible on screen. If the component mounts some content, then `event.content` will be a reference to that content.
+
+```kotlin
+import com.facebook.litho.visibility.onVisible
+
+MyComponent(
+    style = Style.onVisible { event ->
+        // Component became visible (at least 1 pixel)
+        Log.d("Visibility", "Component is now visible")
+        // Access mounted content if available
+        val content = event.content
+    }
+)
+```
+
+## onInvisible
+
+Registers a callback to be called when a component that was previously visible becomes fully invisible (e.g. scrolled off screen or unmounted).
+
+**Important:** `onInvisible` is only called if the component was previously visible. If a component is unmounted without ever becoming visible, `onInvisible` will not be triggered.
+
+```kotlin
+import com.facebook.litho.visibility.onInvisible
+
+MyComponent(
+    style = Style.onInvisible { event ->
+        // Component became invisible after being visible
+        Log.d("Visibility", "Component is now invisible")
+    }
+)
+```
+
+## onFocusedVisible
+
+Registers a callback to be called when either the Component occupies at least half of the viewport, or, if the Component is smaller than half the viewport, when it is fully visible. This is useful for tracking when a component has the user's attention.
+
+```kotlin
+import com.facebook.litho.visibility.onFocusedVisible
+
+MyComponent(
+    style = Style.onFocusedVisible { event ->
+        // Component is focused (occupies significant viewport)
+        Analytics.trackFocus(componentId)
+    }
+)
+```
+
+## onUnfocusedVisible
+
+Registers a callback to be called when the Component is no longer focused, i.e. it is not fully visible and does not occupy at least half the viewport.
+
+```kotlin
+import com.facebook.litho.visibility.onUnfocusedVisible
+
+MyComponent(
+    style = Style.onUnfocusedVisible { event ->
+        // Component lost focus
+        Analytics.trackUnfocus(componentId)
+    }
+)
+```
+
+## onFullImpression
+
+Registers a callback to be called when all parts of a Component have been made visible at some point, termed a "full impression". A full impression is defined as:
+- If the Component is smaller than the viewport, when the entire Component is visible
+- If the Component is bigger than the viewport, when all the edges have passed through the viewport once
+
+This is particularly useful for ad impression tracking and content engagement metrics.
+
+```kotlin
+import com.facebook.litho.visibility.onFullImpression
+
+MyComponent(
+    style = Style.onFullImpression { event ->
+        // User has seen the entire component; event.reason indicates why (SCROLL, MOUNT, etc.)
+        Analytics.trackImpression(adId)
+    }
+)
+```
+
+## onVisibilityChanged
+
+Registers a callback to be called when the visible rect of a Component changes. This provides fine-grained control for tracking partial visibility.
+
+:::caution Performance Warning
+The `onVisibilityChanged` callback should be used with particular care since it's invoked on every frame while scrolling. No heavy work should be done inside this callback. Prefer `onVisible`, `onInvisible`, `onFocusedVisible`, `onUnfocusedVisible`, and `onFullImpression` over `onVisibilityChanged` whenever possible.
+:::
+
+```kotlin
+import com.facebook.litho.visibility.onVisibilityChanged
+
+MyComponent(
+    style = Style.onVisibilityChanged { event ->
+        // Log visibility changes for analytics
+        val visiblePercent = event.percentVisibleHeight * event.percentVisibleWidth / 100f
+
+        Analytics.logVisibilityChange(
+            componentId = componentId,
+            visiblePercentage = visiblePercent,
+            reason = event.reason.name,
+        )
+    }
+)
+```
+
+## Visible Height Ratio
+
+Defines a ratio of the Component height for the visibility callback to be dispatched. Use together with `onVisible` and/or `onInvisible` to customize when visibility events trigger.
+
+The ratio is a value between 0.0 and 1.0, where:
+- 0.0 means the callback triggers when any part is visible
+- 0.5 means at least 50% of the height must be visible
+- 1.0 means 100% of the height must be visible
+
+If not specified, the default ratio is 0.0 (triggers when at least 1 pixel is visible).
+
+```kotlin
+import com.facebook.litho.visibility.onVisible
+import com.facebook.litho.visibility.visibleHeightRatio
+
+MyComponent(
+    style = Style
+        .visibleHeightRatio(0.5f)  // 50% of height must be visible
+        .onVisible { event ->
+            // Triggered when 50% of component height is visible
+        }
+)
+```
+
+## Visible Width Ratio
+
+Defines a ratio of the Component width for the visibility callback to be dispatched. Use together with `onVisible` and/or `onInvisible` to customize when visibility events trigger.
+
+The ratio is a value between 0.0 and 1.0, where:
+- 0.0 means the callback triggers when any part is visible
+- 0.5 means at least 50% of the width must be visible
+- 1.0 means 100% of the width must be visible
+
+If not specified, the default ratio is 0.0 (triggers when at least 1 pixel is visible).
+
+```kotlin
+import com.facebook.litho.visibility.onVisible
+import com.facebook.litho.visibility.visibleWidthRatio
+
+MyComponent(
+    style = Style
+        .visibleWidthRatio(0.75f)  // 75% of width must be visible
+        .onVisible { event ->
+            // Triggered when 75% of component width is visible
+        }
+)
+```
+
+### Combining height and width ratios
+
+When both `visibleHeightRatio` and `visibleWidthRatio` are specified, the `onVisible` event is triggered when **both** conditions are met (at least X% of height **AND** at least Y% of width are visible). The `onInvisible` event is dispatched when either condition is no longer met.
+
+```kotlin
+import com.facebook.litho.visibility.onVisible
+import com.facebook.litho.visibility.onInvisible
+import com.facebook.litho.visibility.visibleHeightRatio
+import com.facebook.litho.visibility.visibleWidthRatio
+
+MyComponent(
+    style = Style
+        .visibleHeightRatio(0.8f)
+        .visibleWidthRatio(0.1f)
+        .onVisible { event ->
+            // Triggered when 80% of height AND 10% of width are visible
+        }
+        .onInvisible { event ->
+            // Triggered when less than 80% of height OR less than 10% of width is visible
+        }
+)
+```
+
+## Visibility
+
+Defines the visibility of the Component. The values can be `Visibility.Visible` or `Visibility.Invisible`. The default value `Visibility.Visible` means the component is visible. `Visibility.Invisible` means the component will be invisible but still occupy space (same as `View.INVISIBLE`).
+
+**Note:** Using this API will not change how Visibility Events are dispatched; `onVisible` and/or `onInvisible` will work as if this property was not in use.
+
+```kotlin
+import com.facebook.litho.visibility.visibility
+import com.facebook.litho.visibility.Visibility
+
+MyComponent(style = Style.visibility(Visibility.Invisible))
+```
+
+### Conditional visibility
+
+```kotlin
+import com.facebook.litho.visibility.visibility
+import com.facebook.litho.visibility.Visibility
+
+MyComponent(
+    style = Style.visibility(
+        if (shouldShow) Visibility.Visible else Visibility.Invisible
+    )
+)
+```
+
+## Practical Examples
+
+### Triggering an action when component becomes visible
+
+```kotlin
+import com.facebook.litho.visibility.onVisible
+
+class AutoplayVideoComponent(
+    private val videoId: String,
+    private val style: Style = Style
+) : KComponent() {
+  override fun ComponentScope.render(): Component {
+    val shouldPlay = useState { false }
+
+    return Column(
+        style = Style
+            .onVisible {
+                // Start playing when component becomes visible
+                shouldPlay.update(true)
+            }
+            + style
+    ) {
+      child(
+          VideoPlayer(
+              videoId = videoId,
+              isPlaying = shouldPlay.value
+          )
+      )
+    }
+  }
+}
+```
+
+### Tracking video impressions
+
+```kotlin
+import com.facebook.litho.visibility.onFullImpression
+
+MyComponent(
+    style = Style.onFullImpression { event ->
+        // Track that user has seen entire video thumbnail
+        Analytics.logVideoImpression(
+            videoId = video.id,
+            timestamp = System.currentTimeMillis()
+        )
+    }
+)
+```
+
+### Pausing video when scrolled away
+
+Using `event.reason`, you can differentiate between scroll-driven and lifecycle-driven visibility changes:
+
+```kotlin
+import com.facebook.litho.visibility.onVisible
+import com.facebook.litho.visibility.onInvisible
+import com.facebook.rendercore.visibility.VisibilityChangeReason
+
+MyComponent(
+    style = Style
+        .onVisible { event ->
+            // Start playback when visible
+            videoPlayer.play()
+        }
+        .onInvisible { event ->
+            when (event.reason) {
+                VisibilityChangeReason.LIFECYCLE -> {
+                    // App backgrounded — pause playback
+                    videoPlayer.pause()
+                }
+                VisibilityChangeReason.SCROLL -> {
+                    // Scrolled away — just pause
+                    videoPlayer.pause()
+                }
+                else -> {
+                    videoPlayer.pause()
+                }
+            }
+        }
+)
+```
+
+## See also
+
+- **[Visibility Handling](../visibility/visibility-handling.mdx)** - More details on visibility handling in Litho.

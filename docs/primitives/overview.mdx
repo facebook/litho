@@ -1,0 +1,33 @@
+---
+id: overview
+title: Custom Views & Drawables Overview
+keywords:
+    - primitive component
+    - custom view
+    - custom drawable
+---
+
+import {FbInternalOnly} from 'docusaurus-plugin-internaldocs-fb/internal'
+
+Primitive Components are used to render views or drawables, and should only be created when you need to integrate your own views/drawables with Litho.
+
+The Primitive Components section contains the following pages:
+
+* [Creating a Primitive Component](primitive-component.mdx) - details how to create a Primitive Component responsible for rendering a View or Drawable. Also, compares Primitive Components with KComponents.
+* [Lifecycle of a Primitive](primitive.mdx) - covers the purpose and creation of a Primitive in addition to how to create and mount its content.
+* [Measuring](primitive-measuring.mdx) - shows different strategies to measure the content the Primitive Component will render.
+* [Controllers Pattern](primitive-controllers.mdx) - illustrates the use of controllers by implementing a simple TimePicker that shows an arbitrary time.
+* [Content Pooling](primitive-preallocation.mdx) - details a strategy that can be used to populate the content pools to optimise first mount performance.
+* [Tracing](primitive-tracing.mdx) - shows how to customize [performance tracing](https://developer.android.com/topic/performance/tracing) information for Primitive Components.
+
+:::info
+Primitive Components provide the building blocks for creating components that render native Android Views or Drawables.
+
+If you have existing MountSpec components, see [Migrating MountSpecs](../migrating-to-kcomponents/migrating-from-mountspecs-to-primitives.mdx) for migration guidance.
+:::
+
+<FbInternalOnly>
+<p>Some of the above concepts have been explained in "Litho Primitives API: MountSpecs 2.0" talk presented during Mobile Developer Summit 2023:</p>
+
+<iframe width="675" height="380" src="https://drive.google.com/file/d/177UnJwZBnuemhUdYUZl669L5TlrXloY3/preview" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen />
+</FbInternalOnly>

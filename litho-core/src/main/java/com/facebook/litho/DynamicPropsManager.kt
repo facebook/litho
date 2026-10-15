@@ -16,6 +16,7 @@
 
 package com.facebook.litho
 
+import android.os.Build
 import android.util.Pair
 import android.util.SparseArray
 import android.view.View
@@ -23,7 +24,7 @@ import androidx.annotation.VisibleForTesting
 import com.facebook.litho.CollectionsUtils.isNotNullOrEmpty
 import com.facebook.litho.ComponentUtils.handle
 import com.facebook.litho.ComponentUtils.rethrow
-import com.facebook.litho.drawable.ComparableColorDrawable
+import com.facebook.litho.visibility.Visibility
 
 /**
  * Takes care of dynamic Props
@@ -41,7 +42,9 @@ import com.facebook.litho.drawable.ComparableColorDrawable
 class DynamicPropsManager : DynamicValue.OnValueChangeListener<Any?> {
   private val dependentComponents:
       MutableMap<
-          DynamicValue<Any?>, MutableSet<Pair<Component, SparseArray<out DynamicValue<Any?>>>>> =
+          DynamicValue<Any?>,
+          MutableSet<Pair<Component, SparseArray<out DynamicValue<Any?>>>>,
+      > =
       HashMap()
   private val affectingDynamicValues: MutableMap<Component, Set<DynamicValue<Any?>?>> = HashMap()
   private val contents: MutableMap<Component, Any> = HashMap()
@@ -50,7 +53,7 @@ class DynamicPropsManager : DynamicValue.OnValueChangeListener<Any?> {
       component: Component,
       scopedContext: ComponentContext?,
       commonDynamicProps: SparseArray<out DynamicValue<Any?>>?,
-      content: Any
+      content: Any,
   ) {
     val hasCommonDynamicPropsToBind = hasCommonDynamicPropsToBind(commonDynamicProps, content)
     if (!hasCommonDynamicPropsToBind && !component.hasCustomDynamicProps()) {
@@ -90,10 +93,12 @@ class DynamicPropsManager : DynamicValue.OnValueChangeListener<Any?> {
   fun onUnbindComponent(
       component: Component,
       commonDynamicProps: SparseArray<out DynamicValue<Any?>>?,
-      content: Any
+      content: Any,
   ) {
-    if (!hasCommonDynamicPropsToBind(commonDynamicProps, content) &&
-        !component.hasCustomDynamicProps()) {
+    if (
+        !hasCommonDynamicPropsToBind(commonDynamicProps, content) &&
+            !component.hasCustomDynamicProps()
+    ) {
       return
     }
     contents.remove(component)
@@ -114,7 +119,7 @@ class DynamicPropsManager : DynamicValue.OnValueChangeListener<Any?> {
 
   private fun addDependentComponentAndSubscribeIfNeeded(
       value: DynamicValue<Any?>?,
-      componentWithProps: Pair<Component, SparseArray<out DynamicValue<Any?>>>
+      componentWithProps: Pair<Component, SparseArray<out DynamicValue<Any?>>>,
   ) {
     if (value == null) {
       return
@@ -130,7 +135,7 @@ class DynamicPropsManager : DynamicValue.OnValueChangeListener<Any?> {
 
   private fun removeDependentComponentAndUnsubscribeIfNeeded(
       value: DynamicValue<Any?>?,
-      componentWithProps: Pair<Component, SparseArray<out DynamicValue<Any?>>>
+      componentWithProps: Pair<Component, SparseArray<out DynamicValue<Any?>>>,
   ) {
     if (value == null) {
       return
@@ -151,6 +156,9 @@ class DynamicPropsManager : DynamicValue.OnValueChangeListener<Any?> {
     val dependentComponentSnapshot: Array<Pair<Component, SparseArray<out DynamicValue<Any?>>>> =
         dependentComponents.toTypedArray()
     for (componentWithProps in dependentComponentSnapshot) {
+      if (componentWithProps == null) {
+        continue
+      }
       val component = componentWithProps.first
       val commonDynamicProps = componentWithProps.second
       val content = contents[component] ?: continue
@@ -189,6 +197,7 @@ class DynamicPropsManager : DynamicValue.OnValueChangeListener<Any?> {
     const val KEY_ROTATION_Y: Int = 11
     const val KEY_BACKGROUND_DRAWABLE: Int = 12
     const val KEY_FOREGROUND_COLOR: Int = 13
+    const val KEY_VISIBILITY: Int = 14
 
     private fun resetDynamicValues(key: Int, content: Any) {
       if (content !is View) {
@@ -241,8 +250,12 @@ class DynamicPropsManager : DynamicValue.OnValueChangeListener<Any?> {
               content.background = null
             }
         KEY_FOREGROUND_COLOR ->
-            if (content.foreground != null) {
-              content.foreground = null
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && content.foreground != null) {
+              setViewForeground(content, null)
+            }
+        KEY_VISIBILITY ->
+            if (content.visibility != View.VISIBLE) {
+              content.visibility = View.VISIBLE
             }
       }
     }
@@ -261,7 +274,8 @@ class DynamicPropsManager : DynamicValue.OnValueChangeListener<Any?> {
         KEY_ROTATION_X -> target.rotationX = resolve(value)
         KEY_ROTATION_Y -> target.rotationY = resolve(value)
         KEY_BACKGROUND_DRAWABLE -> target.background = resolve(value)
-        KEY_FOREGROUND_COLOR -> target.foreground = ComparableColorDrawable.create(resolve(value))
+        KEY_FOREGROUND_COLOR -> setViewForeground(target, resolve<Int>(value))
+        KEY_VISIBILITY -> target.visibility = resolve<Visibility>(value).toViewVisibility()
       }
     }
 
@@ -281,7 +295,7 @@ class DynamicPropsManager : DynamicValue.OnValueChangeListener<Any?> {
      */
     private fun hasCommonDynamicPropsToBind(
         commonDynamicProps: SparseArray<out DynamicValue<*>>?,
-        content: Any
+        content: Any,
     ): Boolean {
       return isNotNullOrEmpty(commonDynamicProps) && content is View
     }

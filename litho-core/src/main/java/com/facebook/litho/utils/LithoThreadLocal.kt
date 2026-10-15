@@ -24,7 +24,8 @@ import com.facebook.litho.ThreadUtils
  * clean up the reference and avoid it potentially getting pinned by the thread local causing a
  * leak.
  *
- * Implementation copied and modified from [AOSP](https://fburl.com/ug9ubgka)
+ * Implementation copied and modified from
+ * [AOSP](https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:compose/runtime/runtime/src/commonMain/kotlin/androidx/compose/runtime/internal/SnapshotThreadLocal.kt)
  */
 internal class LithoThreadLocal<T> {
   @Volatile private var map = emptyThreadMap
@@ -64,7 +65,7 @@ internal inline fun <T : Any> LithoThreadLocal<T>.getOrSet(default: () -> T): T 
 internal class ThreadMap(
     private val size: Int,
     private val keys: LongArray,
-    private val values: Array<Any?>
+    private val values: Array<Any?>,
 ) {
   fun get(key: Long): Any? {
     val index = find(key)

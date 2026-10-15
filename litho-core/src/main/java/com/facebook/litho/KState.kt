@@ -16,8 +16,8 @@
 
 package com.facebook.litho
 
-import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.annotations.Hook
+import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.state.ComponentState
 import com.facebook.litho.state.StateId
 import com.facebook.litho.state.StateProvider
@@ -28,54 +28,110 @@ import java.util.Objects
 
 internal fun <T> ComponentScope.getUpdatedState(
     vararg deps: Any? = NoDeps,
-    initializer: () -> T
+    initializer: () -> T,
+): T = getUpdatedStateByHookKey(requireCurrentHookKey(), deps, initializer)
+
+/**
+ * If [base] is the container this render already forked ([ComponentScope.ownedStateContainer]),
+ * mutate it in place; otherwise fork a single mutable copy off the committed/shared [base] and
+ * record it as this render's owned fork. Returns the same instance when mutated in place, so the
+ * caller re-publishes via addState only when the container actually changed. The identity check is
+ * what preserves copy-on-write safety: a committed/shared container is never `===` this render's
+ * private fork, so it is always copied.
+ */
+private fun ComponentScope.transientMutate(
+    base: KStateContainer,
+    hookKey: HookKey,
+    newValue: Any?,
+    deps: Array<*>?,
+): KStateContainer =
+    if (base === ownedStateContainer) {
+      base.mutateInPlace(hookKey, newValue, deps)
+    } else {
+      base.mutableForkWith(hookKey, newValue, deps).also { ownedStateContainer = it }
+    }
+
+/** State lookup using the [hookKey] captured by the caller. */
+private fun <T> ComponentScope.getUpdatedStateByHookKey(
+    hookKey: HookKey,
+    deps: Array<out Any?>,
+    initializer: () -> T,
 ): T {
   val key = context.globalKey
-  val index = useStateIndex++
   val treeState: TreeState = resolveContext.treeState
   val isLayoutState = context.isContextForLayout
   val existing = treeState.getState(key, isLayoutState) as ComponentState<KStateContainer>?
-  val deps: Array<Any?> = deps as Array<Any?> /* TODO: Can this cast be avoided? */
+
+  recordVisitedHookKey(hookKey)
+
+  @Suppress("UNCHECKED_CAST") val deps = deps as Array<Any?>
 
   val current: ComponentState<KStateContainer> =
-      if (existing == null || existing.value.states.size <= index) {
-        // Create the initial state for index since it hasn't been computed yet
-        treeState
-            .createOrGetInitialHookState(
+      if (existing != null && !existing.value.hasHookKey(hookKey)) {
+        // Prior committed state is missing this hookKey (a new/conditional hook). Get its initial
+        // value and merge into the EXISTING container (not InitialState's) to avoid the drain
+        // state-loss hazard (initialstate-drain-state-loss.md).
+        val entry: CachedValue =
+            treeState.peekOrSeedInitialHookStateByHookKey(
                 key,
-                index,
+                hookKey,
                 deps,
                 initializer,
                 isLayoutState,
                 context.scopedComponentInfo.component.simpleName,
             )
-            .apply {
-              // Put it in the current tree state from the InitialState
-              treeState.addState(key, this, isLayoutState)
+        val newContainer = transientMutate(existing.value, hookKey, entry.value, entry.deps)
+        if (newContainer === existing.value) {
+          existing
+        } else {
+          existing.copy(value = newContainer).also { treeState.addState(key, it, isLayoutState) }
+        }
+      } else if (existing == null) {
+        val createdState: ComponentState<KStateContainer> =
+            try {
+              treeState.createOrGetInitialHookStateByHookKey(
+                  key,
+                  hookKey,
+                  deps,
+                  initializer,
+                  isLayoutState,
+                  context.scopedComponentInfo.component.simpleName,
+              )
+            } catch (e: Exception) {
+              throw IllegalStateException(
+                  "KStateUnexpectedHookKeyException: HookKey: $hookKey, Key: $key, IsLayoutState: $isLayoutState",
+                  e,
+              )
             }
+        treeState.addState(key, createdState, isLayoutState)
+        createdState
       } else {
         existing
       }
 
+  val existingEntry = current.value.getByHookKey(hookKey)
   val updated: ComponentState<KStateContainer> =
-      if (areObjectsEquivalent(current.value.states[index].deps, deps)) {
+      if (existingEntry != null && areObjectsEquivalent(existingEntry.deps, deps)) {
         current
       } else {
-        current.copy(value = current.value.copyAndMutate(index, initializer(), deps)).apply {
-          // Put the updated state in the current tree state
-          treeState.addState(key, this, isLayoutState)
+        val newContainer = transientMutate(current.value, hookKey, initializer(), deps)
+        if (newContainer === current.value) {
+          current
+        } else {
+          current.copy(value = newContainer).also { treeState.addState(key, it, isLayoutState) }
         }
       }
 
   context.scopedComponentInfo.state = updated
 
-  // Only need to mark this global key as seen once
-  if (index == 0) {
+  // Mark state in use on first hook encountered for this key
+  if (!stateAlreadyMarkedAsUsed) {
     treeState.markStateInUse(key, isLayoutState)
+    stateAlreadyMarkedAsUsed = true
   }
 
   @Suppress("UNCHECKED_CAST")
-  return updated.value.states[index].value as T
+  return checkNotNull(updated.value.getByHookKey(hookKey)).value as T
 }
 
 /**
@@ -91,30 +147,11 @@ internal fun <T> ComponentScope.getUpdatedState(
  *
  * @see [State]
  */
-@ExperimentalLithoApi
 @Hook
 fun <T> ComponentScope.useStateWithDeps(
     vararg deps: Any? = NoDeps,
-    initializer: () -> T
-): State<T> {
-  val globalKey = context.globalKey
-  val hookIndex = useStateIndex
-  val lithoTree = context.lithoTree ?: error("LithoTree is null")
-  val isLayoutState = context.isContextForLayout
-
-  val result = getUpdatedState(deps = deps, initializer = initializer)
-
-  return State(
-      lithoTree.stateProvider,
-      lithoTree.stateUpdater,
-      hookIndex,
-      globalKey,
-      isLayoutState,
-      context.componentScope,
-      lithoTree.isReadTrackingEnabled,
-      result,
-  )
-}
+    initializer: () -> T,
+): State<T> = useStateImpl(deps as Array<Any?>, initializer)
 
 /**
  * Declares a state variable within a Component. The initializer will provide the initial value if
@@ -125,27 +162,52 @@ fun <T> ComponentScope.useStateWithDeps(
  */
 @Hook
 fun <T> ComponentScope.useState(initializer: () -> T): State<T> =
-    useStateWithDeps(deps = NoDeps, initializer = initializer)
+    useStateImpl(NoDeps as Array<Any?>, initializer)
+
+// Shared impl for useState / useStateWithDeps. Not @Hook -- reads the caller's currentHookKey
+// directly so the wrapper doesn't add another enterHook layer. This keeps the resulting HookKey
+// shape (depth) the same as useCached / useEffect for the same call context, eliminating a class
+// of state-loss bugs where useState's nested key shape didn't match useCached's top-level shape
+// in the same KStateContainer (paste P2291310265).
+private fun <T> ComponentScope.useStateImpl(
+    deps: Array<Any?>,
+    initializer: () -> T,
+): State<T> {
+  val lithoTree = context.lithoTree ?: error("LithoTree is null")
+  val hookKey = requireCurrentHookKey()
+  val result = getUpdatedStateByHookKey(hookKey, deps, initializer)
+
+  return State(
+      lithoTree.stateProvider,
+      lithoTree.stateUpdater,
+      HookGlobalKey(context.globalKey, hookKey, RenderScope.Resolve),
+      context.isContextForLayout,
+      context.componentScope,
+      lithoTree.isReadTrackingEnabled,
+      context.lithoConfiguration.componentsConfig.detachStateIdFromValue,
+      result,
+  )
+}
 
 /** Interface with which a component gets the value from a state or updates it. */
 class State<T>
 internal constructor(
     private val stateProvider: StateProvider,
     private val stateUpdater: StateUpdater,
-    private val hookStateIndex: Int,
-    private val globalKey: String,
+    private val hookGlobalKey: HookGlobalKey,
     internal val isLayoutContext: Boolean,
     private val componentScope: Component?,
     private val isReadTrackingEnabled: Boolean,
-    internal val fallback: T
-) {
+    private val detachStateIdFromValue: Boolean,
+    internal val fallback: T,
+) : Value<T> {
 
   internal val stateId: StateId =
-      StateId(stateProvider.treeId, globalKey, hookStateIndex).also {
-        it.ownerName = { componentScope?.simpleName }
+      StateId(stateProvider.treeId, hookGlobalKey).also {
+        if (LithoDebugConfigurations.isDebugModeEnabled) it.ownerName = componentScope?.simpleName
       }
 
-  val value: T
+  override val value: T
     get() {
       if (!isReadTrackingEnabled) return fallback
       return when {
@@ -163,8 +225,12 @@ internal constructor(
       return
     }
 
-    stateUpdater?.updateHookStateAsync(
-        stateId, HookUpdaterValue(newValue), componentScope?.simpleName ?: "hook", isLayoutContext)
+    stateUpdater.updateHookStateAsync(
+        stateId,
+        HookUpdaterValue(hookGlobalKey, newValue),
+        componentScope?.simpleName ?: "hook",
+        isLayoutContext,
+    )
   }
 
   /**
@@ -184,11 +250,13 @@ internal constructor(
       return
     }
 
+    val ownerName = componentScope?.simpleName
     stateUpdater.updateHookStateAsync(
         stateId,
-        HookUpdaterLambda(newValueFunction),
-        componentScope?.simpleName ?: "hook",
-        isLayoutContext)
+        HookUpdaterLambda(hookGlobalKey, newValueFunction),
+        ownerName ?: "hook",
+        isLayoutContext,
+    )
   }
 
   /**
@@ -206,7 +274,11 @@ internal constructor(
     }
 
     stateUpdater.updateHookStateSync(
-        stateId, HookUpdaterValue(newValue), componentScope?.simpleName ?: "hook", isLayoutContext)
+        stateId,
+        HookUpdaterValue(hookGlobalKey, newValue),
+        componentScope?.simpleName ?: "hook",
+        isLayoutContext,
+    )
   }
 
   /**
@@ -230,26 +302,13 @@ internal constructor(
       return
     }
 
+    val ownerName = componentScope?.simpleName
     stateUpdater.updateHookStateSync(
         stateId,
-        HookUpdaterLambda(newValueFunction),
-        componentScope?.simpleName ?: "hook",
-        isLayoutContext)
-  }
-
-  inner class HookUpdaterValue(val newValue: T) : HookUpdater {
-    override fun getUpdatedStateContainer(currentState: KStateContainer): KStateContainer {
-      return currentState.copyAndMutate(hookStateIndex, newValue)
-    }
-  }
-
-  inner class HookUpdaterLambda(val newValueFunction: (T) -> T) : HookUpdater {
-    override fun getUpdatedStateContainer(currentState: KStateContainer): KStateContainer {
-      return currentState.copyAndMutate(
-          hookStateIndex,
-          newValueFunction(currentState.states[hookStateIndex].value as T),
-      )
-    }
+        HookUpdaterLambda(hookGlobalKey, newValueFunction),
+        ownerName ?: "hook",
+        isLayoutContext,
+    )
   }
 
   private fun canSkip(newValue: T): Boolean {
@@ -261,8 +320,8 @@ internal constructor(
   }
 
   /**
-   * We consider two state objects equal if they 1) belong to the same Tree, 2) have the same global
-   * key and hook index, and 3) have the same value (according to its own .equals check)
+   * We consider two state objects equal if they 1) belong to the same Tree, 2) have the same
+   * [HookGlobalKey], and 3) have the same value (according to its own .equals check)
    */
   override fun equals(other: Any?): Boolean {
     if (this === other) {
@@ -273,12 +332,45 @@ internal constructor(
       return false
     }
 
-    return globalKey == other.globalKey &&
-        hookStateIndex == other.hookStateIndex &&
-        fallback == other.fallback
+    return hookGlobalKey == other.hookGlobalKey &&
+        if (detachStateIdFromValue) stateId.treeId == other.stateId.treeId
+        else fallback == other.fallback
   }
 
   override fun hashCode(): Int {
-    return Objects.hash(globalKey, hookStateIndex, fallback)
+    return Objects.hash(
+        hookGlobalKey,
+        if (detachStateIdFromValue) stateId.treeId else fallback,
+    )
+  }
+}
+
+private class HookUpdaterValue<T>(
+    private val hookGlobalKey: HookGlobalKey,
+    private val newValue: T,
+) : HookUpdater {
+  override fun getUpdatedStateContainer(currentState: KStateContainer): KStateContainer {
+    val hookKey = hookGlobalKey.hookKey as HookKey
+    return if (currentState.getByHookKey(hookKey) == null) {
+      // Hook was pruned; updating it is a no-op because re-appending would create zombie state.
+      currentState
+    } else {
+      currentState.copyAndMutateByHookKey(hookKey, newValue)
+    }
+  }
+}
+
+private class HookUpdaterLambda<T>(
+    private val hookGlobalKey: HookGlobalKey,
+    private val newValueFunction: (T) -> T,
+) : HookUpdater {
+  @Suppress("UNCHECKED_CAST")
+  override fun getUpdatedStateContainer(currentState: KStateContainer): KStateContainer {
+    val hookKey = hookGlobalKey.hookKey as HookKey
+    val cached = currentState.getByHookKey(hookKey) ?: return currentState
+    return currentState.copyAndMutateByHookKey(
+        hookKey,
+        newValueFunction(cached.value as T),
+    )
   }
 }

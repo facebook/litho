@@ -44,13 +44,14 @@ object TreePropSectionTestParentGroupSpec {
       c: SectionContext,
       @Prop resultPropALeaf1: TreePropSectionTestLeafGroupSpec.Result,
       @Prop resultPropBLeaf1: TreePropSectionTestLeafGroupSpec.Result,
-      @Prop resultPropBLeaf2: TreePropSectionTestLeafGroupSpec.Result
+      @Prop resultPropBLeaf2: TreePropSectionTestLeafGroupSpec.Result,
   ): Children =
       Children.create()
           .child(
               TreePropSectionTestMiddleGroup.create(c)
                   .resultPropALeaf1(resultPropALeaf1)
-                  .resultPropBLeaf1(resultPropBLeaf1))
+                  .resultPropBLeaf1(resultPropBLeaf1),
+          )
           .child(TreePropSectionTestLeafGroup.create(c).resultPropB(resultPropBLeaf2))
           .build()
 }

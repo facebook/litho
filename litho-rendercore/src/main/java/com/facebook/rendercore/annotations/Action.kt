@@ -21,6 +21,9 @@ package com.facebook.rendercore.annotations
  * RenderUnit from the UI thread.
  */
 @Target(
-    AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER)
+    AnnotationTarget.FUNCTION,
+    AnnotationTarget.PROPERTY_GETTER,
+    AnnotationTarget.PROPERTY_SETTER,
+)
 @Retention(AnnotationRetention.SOURCE)
 annotation class Action

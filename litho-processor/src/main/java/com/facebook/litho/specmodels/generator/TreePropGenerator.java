@@ -32,6 +32,7 @@ import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelUtils;
 import com.facebook.litho.specmodels.model.TreePropModel;
+import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.MethodSpec;
@@ -88,10 +89,13 @@ public class TreePropGenerator {
       return TypeSpecDataHolder.newBuilder().build();
     }
 
-    final String delegateName = SpecModelUtils.getSpecAccessor(specModel);
     final MethodSpec.Builder builder =
         MethodSpec.methodBuilder("getTreePropContainerForChildren")
             .addAnnotation(Override.class)
+            .addAnnotation(
+                AnnotationSpec.builder(SuppressWarnings.class)
+                    .addMember("value", "$S", "cast")
+                    .build())
             .addModifiers(Modifier.PROTECTED)
             .returns(ClassNames.TREE_PROPS)
             .addParameter(specModel.getContextClass(), "c")
@@ -114,6 +118,8 @@ public class TreePropGenerator {
     }
 
     for (SpecMethodModel<DelegateMethod, Void> onCreateTreePropsMethod : onCreateTreePropsMethods) {
+      final String delegateName =
+          SpecModelUtils.getSpecAccessor(specModel, onCreateTreePropsMethod);
       final CodeBlock.Builder block = CodeBlock.builder();
       block
           .add(

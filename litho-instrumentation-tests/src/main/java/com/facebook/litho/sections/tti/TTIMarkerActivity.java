@@ -24,8 +24,6 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
-import java.util.ArrayList;
-import java.util.List;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class TTIMarkerActivity extends Activity {
@@ -37,13 +35,8 @@ public class TTIMarkerActivity extends Activity {
     final ComponentContext c = new ComponentContext(this);
     final SectionContext sc = new SectionContext(this);
 
-    final List<String> data = new ArrayList<>();
-    data.add("Hello World");
-
     final Component component =
-        RecyclerCollectionComponent.create(c)
-            .section(TTIMarkerSection.create(sc).data(data))
-            .build();
+        RecyclerCollectionComponent.create(c).section(TTIMarkerSection.create(sc)).build();
     final LithoView lithoView = LithoView.create(c, component);
     setContentView(lithoView);
   }

@@ -20,9 +20,6 @@ object TempComponentsConfigurations {
 
   private val original: ComponentsConfiguration = ComponentsConfiguration.defaultInstance
 
-  private val shouldCompareCommonPropsInIsEquivalentTo =
-      ComponentsConfiguration.shouldCompareCommonPropsInIsEquivalentTo
-
   @JvmStatic
   fun setShouldAddHostViewForRootComponent(value: Boolean) {
     ComponentsConfiguration.defaultInstance =
@@ -32,19 +29,5 @@ object TempComponentsConfigurations {
   @JvmStatic
   fun restoreShouldAddHostViewForRootComponent() {
     ComponentsConfiguration.defaultInstance = original
-  }
-
-  @JvmStatic
-  fun setShouldCompareCommonPropsInIsEquivalentTo(
-      shouldCompareCommonPropsInIsEquivalentTo: Boolean
-  ) {
-    ComponentsConfiguration.shouldCompareCommonPropsInIsEquivalentTo =
-        shouldCompareCommonPropsInIsEquivalentTo
-  }
-
-  @JvmStatic
-  fun restoreShouldCompareCommonPropsInIsEquivalentTo() {
-    ComponentsConfiguration.shouldCompareCommonPropsInIsEquivalentTo =
-        shouldCompareCommonPropsInIsEquivalentTo
   }
 }

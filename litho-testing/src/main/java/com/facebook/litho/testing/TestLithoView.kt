@@ -16,11 +16,13 @@
 
 package com.facebook.litho.testing
 
+import android.app.Activity
 import android.content.Context
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
+import androidx.lifecycle.LifecycleOwner
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
@@ -28,8 +30,11 @@ import com.facebook.litho.ComponentTree
 import com.facebook.litho.LayoutState
 import com.facebook.litho.LithoLayoutResult
 import com.facebook.litho.LithoView
+import com.facebook.litho.LithoViewTestHelper
 import com.facebook.litho.LithoVisibilityEventsController
 import com.facebook.litho.NullNode
+import com.facebook.litho.ResourcesScope
+import com.facebook.litho.TestComponentScope
 import com.facebook.litho.componentsfinder.findAllComponentsInLithoView
 import com.facebook.litho.componentsfinder.findComponentInLithoView
 import com.facebook.litho.componentsfinder.findDirectComponentInLithoView
@@ -40,8 +45,8 @@ import com.facebook.litho.isNullNode
 import com.facebook.litho.measuredLayoutResult
 import com.facebook.litho.testing.viewtree.ViewPredicates
 import com.facebook.litho.testing.viewtree.ViewTree
-import com.facebook.litho.widget.LegacyRecycler
 import com.facebook.litho.widget.Recycler
+import com.facebook.litho.widget.collection.CollectionRecyclerComponent
 import com.facebook.litho.widget.collection.LazyCollection
 import com.google.common.base.Predicate
 import kotlin.reflect.KClass
@@ -80,8 +85,10 @@ internal constructor(
     val context: ComponentContext,
     val componentsConfiguration: ComponentsConfiguration? = null,
     private val lithoVisibilityEventsController: LithoVisibilityEventsController? = null,
+    private val lifecycleOwner: LifecycleOwner? = null,
     private val resizeMode: LithoTestRuleResizeMode,
     private val idleTask: () -> Unit,
+    private val attachToRealWindow: Boolean = false,
 ) {
   val componentTree: ComponentTree
     get() {
@@ -89,6 +96,7 @@ internal constructor(
         val builder =
             ComponentTree.create(context)
                 .withLithoVisibilityEventsController(lithoVisibilityEventsController)
+                .withLifecycleOwnerTreeProp(lifecycleOwner)
 
         if (componentsConfiguration != null) {
           builder.componentsConfiguration(componentsConfiguration)
@@ -116,7 +124,7 @@ internal constructor(
 
   val committedLayoutState: LayoutState?
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    get() = componentTree.committedLayoutState
+    get() = componentTree.getCommittedLayoutState()
 
   val currentRootNode: LithoLayoutResult?
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
@@ -132,7 +140,8 @@ internal constructor(
     _lithoView = lithoView
     if (lithoView.componentContext !== context) {
       throw RuntimeException(
-          "You must use the same ComponentContext for the LithoView as what is on the LithoTestRule @Rule!")
+          "You must use the same ComponentContext for the LithoView as what is on the LithoTestRule @Rule!",
+      )
     }
     lithoView.componentTree.let {
       if (it == null && _componentTree != null) {
@@ -149,6 +158,11 @@ internal constructor(
     _componentTree = componentTree
     lithoView.componentTree = componentTree
     return this
+  }
+
+  fun setRoot(componentFunction: ResourcesScope.() -> Component): TestLithoView {
+    val component = with(TestComponentScope(context)) { componentFunction() }
+    return setRoot(component)
   }
 
   /** Sets the new root [Component] to render. */
@@ -191,7 +205,7 @@ internal constructor(
   fun setRootAndSizeSpecSync(
       component: Component?,
       widthSpec: Int,
-      heightSpec: Int
+      heightSpec: Int,
   ): TestLithoView {
     this.widthSpec = widthSpec
     this.heightSpec = heightSpec
@@ -229,15 +243,42 @@ internal constructor(
     return this
   }
 
-  /** Explicitly attaches current root [LithoView] */
+  /**
+   * Explicitly attaches current root [LithoView].
+   *
+   * With [LithoTestRule.attachToRealWindow] the view joins the host Activity's window. Otherwise it
+   * only runs Litho's attach bookkeeping, without the view ever joining a real `ViewRootImpl`,
+   * which is enough for most tests but leaves framework behavior that a real window gates
+   * unreachable: `AccessibilityNodeInfo` is populated for a View in one and left empty otherwise,
+   * including for a plain [View] with `isClickable = true`.
+   */
   fun attachToWindow(): TestLithoView {
-    lithoView.onAttachedToWindowForTest()
+    if (!attachToRealWindow) {
+      lithoView.onAttachedToWindowForTest()
+      return this
+    }
+
+    val activity =
+        requireNotNull(context.androidContext as? Activity) {
+          "attachToRealWindow needs an Activity context, which LithoTestRule creates unless it was " +
+              "given an androidContext"
+        }
+    // Added to the Activity's own content view rather than a fresh one set via setContentView, so
+    // that a test rendering more than once keeps every LithoView attached instead of having each
+    // call displace the last.
+    val content: ViewGroup = activity.findViewById(android.R.id.content)
+    (lithoView.parent as? ViewGroup)?.removeView(lithoView)
+    content.addView(lithoView)
     return this
   }
 
   /** Explicitly detaches current root [LithoView] */
   fun detachFromWindow(): TestLithoView {
-    lithoView.onDetachedFromWindowForTest()
+    if (attachToRealWindow) {
+      (lithoView.parent as? ViewGroup)?.removeView(lithoView)
+    } else {
+      lithoView.onDetachedFromWindowForTest()
+    }
     return this
   }
 
@@ -301,6 +342,35 @@ internal constructor(
     return findViewWithTagOrNull(tag) ?: throw RuntimeException("Did not find view with tag '$tag'")
   }
 
+  /**
+   * Finds the first [View] for the component tagged with [testKey] in the rendered hierarchy,
+   * returning null if not found. Returns the test-keyed component's own mounted view (when it
+   * mounts as a View, e.g. a [com.facebook.litho.ComponentHost]); falls back to the parent host if
+   * the test-keyed component mounted as a non-View (e.g. a Drawable).
+   *
+   * Prefer this over [findViewWithTag] in new tests — `testKey` is the supported way to identify
+   * components for test targeting, and unlike `viewTag` it does not couple the component to a
+   * legacy View attribute (see `IgKtViewHandleDetector` lint).
+   *
+   * Requires [ComponentsConfiguration.isEndToEndTestRun] = true (otherwise the testKey registry is
+   * not populated). Callers typically set this in a `@Before` and restore in `@After`.
+   */
+  fun findViewWithTestKeyOrNull(testKey: String): View? {
+    val testItem = LithoViewTestHelper.findTestItem(lithoView, testKey) ?: return null
+    return (testItem.content as? View) ?: testItem.host
+  }
+
+  /**
+   * Finds the first [View] (the hosting [com.facebook.litho.ComponentHost]) for the component
+   * tagged with [testKey] in the rendered hierarchy, throwing if not found.
+   */
+  fun findViewWithTestKey(testKey: String): View {
+    return findViewWithTestKeyOrNull(testKey)
+        ?: throw RuntimeException(
+            "Did not find view with testKey '$testKey'. Did you set ComponentsConfiguration.isEndToEndTestRun = true?",
+        )
+  }
+
   private fun findViewWithTagTransversal(view: View?, tag: Any): View? {
     if (view == null || view.tag == tag) {
       return view
@@ -341,7 +411,9 @@ internal constructor(
   fun findViewWithContentDescriptionOrNull(contentDescription: String): View? {
     val viewTree = ViewTree.of(lithoView)
     return findViewWithPredicateOrNull(
-        viewTree, ViewPredicates.hasContentDescription(contentDescription))
+        viewTree,
+        ViewPredicates.hasContentDescription(contentDescription),
+    )
   }
 
   /**
@@ -378,16 +450,20 @@ internal constructor(
     val viewTree = ViewTree.of(lithoView)
     val contentDescription = getApplicationContext<Context>().resources.getString(resourceId)
     return findViewWithPredicateOrNull(
-        viewTree, ViewPredicates.hasContentDescription(contentDescription))
+        viewTree,
+        ViewPredicates.hasContentDescription(contentDescription),
+    )
   }
 
   /**
    * Finds the first [View] with the specified content description in the rendered hierarchy,
    * throwing if it doesn't exist.
    */
-  fun findViewWithContentDescription(@StringRes resourceId: Int): View =
-      findViewWithContentDescription(
-          getApplicationContext<Context>().resources.getString(resourceId))
+  fun findViewWithContentDescription(
+      @StringRes resourceId: Int,
+  ): View = findViewWithContentDescription(
+      getApplicationContext<Context>().resources.getString(resourceId),
+  )
 
   /** Returns a component of the given class only if it is a direct child of the root component */
   fun findDirectComponent(clazz: KClass<out Component>): Component? {
@@ -425,20 +501,26 @@ internal constructor(
     return findAllComponentsInLithoView(lithoView, *clazz)
   }
 
+  /** Returns a component with the given key or null if not found */
+  fun findComponentByKey(key: String): Component? {
+    return findComponentInLithoView(lithoView, key)
+  }
+
   private fun findViewWithPredicateOrNull(viewTree: ViewTree, predicate: Predicate<View>): View? {
     return viewTree.findChild(predicate)?.lastOrNull()
   }
 
   /** Returns the first [LazyCollection] from the ComponentTree, or null if not found. */
   fun findCollectionComponent(): TestCollection? {
-    val legacyRecycler = findComponent(LegacyRecycler::class.java) as LegacyRecycler?
-    if (legacyRecycler != null) {
-      return TestCollection(legacyRecycler)
-    }
-
     val recycler = findComponent(Recycler::class.java) as Recycler?
     if (recycler != null) {
       return TestCollection(recycler)
+    }
+
+    val collectionRecyclerComponent =
+        findComponent(CollectionRecyclerComponent::class.java) as CollectionRecyclerComponent?
+    if (collectionRecyclerComponent != null) {
+      return TestCollection(collectionRecyclerComponent, lithoView)
     }
 
     return null

@@ -26,8 +26,6 @@ import com.facebook.litho.specmodels.processor.testing.TestSpecModelFactory;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import javax.annotation.processing.SupportedSourceVersion;
-import javax.lang.model.SourceVersion;
 
 /**
  * A bare-minimum implementation of an {@link AbstractComponentsProcessor}. This allows testing
@@ -37,7 +35,6 @@ import javax.lang.model.SourceVersion;
  * use cases.
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
-@SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class TestingGenericComponentProcessor extends AbstractComponentsProcessor {
 
   public TestingGenericComponentProcessor() {

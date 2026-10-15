@@ -49,6 +49,8 @@ import com.facebook.litho.annotations.OnError;
 import com.facebook.litho.annotations.OnLoadStyle;
 import com.facebook.litho.annotations.OnMeasure;
 import com.facebook.litho.annotations.OnMeasureBaseline;
+import com.facebook.litho.annotations.OnMeasureIntrinsicHeight;
+import com.facebook.litho.annotations.OnMeasureIntrinsicWidth;
 import com.facebook.litho.annotations.OnMount;
 import com.facebook.litho.annotations.OnPerformActionForVirtualView;
 import com.facebook.litho.annotations.OnPopulateAccessibilityNode;
@@ -214,6 +216,36 @@ public final class DelegateMethodDescriptions {
               ImmutableList.of(PROP, TREE_PROP, STATE, INTER_STAGE_OUTPUT, CACHED_VALUE))
           .interStageInputAnnotations(
               ImmutableList.<Class<? extends Annotation>>of(FromPrepare.class))
+          .build();
+
+  public static final DelegateMethodDescription ON_MEASURE_INTRINSIC_WIDTH =
+      DelegateMethodDescription.newBuilder()
+          .annotations(ImmutableList.of(AnnotationSpec.builder(Override.class).build()))
+          .accessType(Modifier.PROTECTED)
+          .returnType(TypeName.INT)
+          .name("onMeasureIntrinsicWidth")
+          .lifecycleMethodArguments(
+              ImmutableList.of(
+                  new LifecycleMethodArgumentType(ClassNames.COMPONENT_CONTEXT),
+                  new LifecycleMethodArgumentType(ClassNames.COMPONENT_LAYOUT),
+                  new LifecycleMethodArgumentType(TypeName.INT),
+                  new LifecycleMethodArgumentType(TypeName.INT)))
+          .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE, CACHED_VALUE))
+          .build();
+
+  public static final DelegateMethodDescription ON_MEASURE_INTRINSIC_HEIGHT =
+      DelegateMethodDescription.newBuilder()
+          .annotations(ImmutableList.of(AnnotationSpec.builder(Override.class).build()))
+          .accessType(Modifier.PROTECTED)
+          .returnType(TypeName.INT)
+          .name("onMeasureIntrinsicHeight")
+          .lifecycleMethodArguments(
+              ImmutableList.of(
+                  new LifecycleMethodArgumentType(ClassNames.COMPONENT_CONTEXT),
+                  new LifecycleMethodArgumentType(ClassNames.COMPONENT_LAYOUT),
+                  new LifecycleMethodArgumentType(TypeName.INT),
+                  new LifecycleMethodArgumentType(TypeName.INT)))
+          .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE, CACHED_VALUE))
           .build();
 
   public static final DelegateMethodDescription ON_BOUNDS_DEFINED =
@@ -600,6 +632,8 @@ public final class DelegateMethodDescriptions {
     mountSpecDelegateMethodsMap.put(OnPrepare.class, ON_PREPARE);
     mountSpecDelegateMethodsMap.put(OnMeasure.class, ON_MEASURE);
     mountSpecDelegateMethodsMap.put(OnMeasureBaseline.class, ON_MEASURE_BASELINE);
+    mountSpecDelegateMethodsMap.put(OnMeasureIntrinsicWidth.class, ON_MEASURE_INTRINSIC_WIDTH);
+    mountSpecDelegateMethodsMap.put(OnMeasureIntrinsicHeight.class, ON_MEASURE_INTRINSIC_HEIGHT);
     mountSpecDelegateMethodsMap.put(OnBoundsDefined.class, ON_BOUNDS_DEFINED);
     mountSpecDelegateMethodsMap.put(OnCreateMountContent.class, ON_CREATE_MOUNT_CONTENT);
     mountSpecDelegateMethodsMap.put(OnCreateMountContentPool.class, ON_CREATE_MOUNT_CONTENT_POOL);

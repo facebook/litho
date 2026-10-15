@@ -17,14 +17,19 @@
 package com.facebook.rendercore
 
 import com.facebook.rendercore.extensions.RenderCoreExtension
+import com.facebook.rendercore.extensions.VisibilityChangeReason
 
 /**
  * This interface collates the APIs which maybe used by a [RenderCoreExtension]. This allow both
  * [RootHost] and [RenderTreeHost] remain distinct while sharing APIs common to between them.
  */
 interface RenderCoreExtensionHost {
-  /** Notifies the host the its visible bounds may have potentially changed. */
-  fun notifyVisibleBoundsChanged()
+  /**
+   * Notifies the host that its visible bounds may have potentially changed.
+   *
+   * @param reason the reason for the visibility change.
+   */
+  fun notifyVisibleBoundsChanged(reason: VisibilityChangeReason)
 
   /**
    * Notifies the host when its parent wants to start pre-mounting content.

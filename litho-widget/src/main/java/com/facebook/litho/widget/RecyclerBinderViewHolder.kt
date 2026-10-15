@@ -36,6 +36,6 @@ abstract class RecyclerBinderViewHolder(itemView: View) : RecyclerView.ViewHolde
       height: Int,
       widthSpec: Int,
       heightSpec: Int,
-      isFullSpan: Boolean
+      isFullSpan: Boolean,
   )
 }

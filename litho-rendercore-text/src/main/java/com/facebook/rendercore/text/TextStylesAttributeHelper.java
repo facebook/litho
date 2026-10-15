@@ -165,10 +165,8 @@ public class TextStylesAttributeHelper {
           textStyle.ellipsize = TRUNCATE_AT[index - 1];
         }
       } else if (attr == R.styleable.RenderCoreText_android_textAlignment) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-          viewTextAlignment = a.getInt(attr, -1);
-          textStyle.alignment = getTextAlignment(viewTextAlignment, gravity);
-        }
+        viewTextAlignment = a.getInt(attr, -1);
+        textStyle.alignment = getTextAlignment(viewTextAlignment, gravity);
       } else if (attr == R.styleable.RenderCoreText_android_gravity) {
         gravity = a.getInt(attr, -1);
         textStyle.alignment = getTextAlignment(viewTextAlignment, gravity);
