@@ -58,31 +58,10 @@
             android:name=".java.hscroll.HorizontalScrollWithSnapActivity"
             android:exported="true" />
         <activity
-            android:name=".java.animations.expandableelement.ExpandableElementActivity"
-            android:exported="true" />
-        <activity
-            android:name=".java.animations.commondynamicprops.CommonDynamicPropsAnimationActivity"
-            android:exported="true" />
-        <activity
-            android:name=".java.animations.animationcookbook.AnimationCookBookActivity"
-            android:exported="true" />
-        <activity
-            android:name=".java.animations.transitions.TransitionsActivity"
-            android:exported="true" />
-        <activity
             android:name=".playground.XMLPlaygroundActivity"
             android:exported="true" />
         <activity
             android:name=".playground.ViewModelPlaygroundActivity"
-            android:exported="true" />
-        <activity
-            android:name=".java.animations.animationcallbacks.AnimationCallbacksActivity"
-            android:exported="true" />
-        <activity
-            android:name=".java.animations.sharedelements.DetailActivity"
-            android:exported="true" />
-        <activity
-            android:name=".java.animations.sharedelements.SharedElementsFragmentActivity"
             android:exported="true" />
         <activity
             android:name=".java.dynamicprops.DynamicPropsActivity"
@@ -134,9 +113,6 @@
             android:exported="true" />
         <activity
             android:name=".java.lifecycle.LifecycleFragmentActivity"
-            android:exported="true" />
-        <activity
-            android:name=".java.animations.sharedelements.SharedDetailActivityElementsFragmentActivity"
             android:exported="true" />
         <activity
             android:name=".java.editor.SimpleEditorExampleActivity"

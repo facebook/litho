@@ -87,7 +87,52 @@ A transition where the target Component appears on screen is called an *Appear* 
 In order to run transitions, you need the *start* and *end* values of the `AnimatedProperty`. The framework provides the *end* value and the user provides the *start* value.
 The *start* value can be specified by using the `.appearFrom()` method when building a `Transition`, as shown in the following LayoutSpec:
 
-```java file=sample-java/src/main/java/com/facebook/samples/litho/animations/docs/AppearTransitionComponentSpec.java start=start end=end
+```java
+@LayoutSpec
+public class AppearTransitionComponentSpec {
+
+  private static final String SQUARE_KEY = "square";
+
+  @OnCreateLayout
+  static Component onCreateLayout(ComponentContext c, @State boolean shown) {
+    Component child;
+    if (shown) {
+      child =
+          Wrapper.create(c)
+              .delegate(SolidColor.createDp(YELLOW, -1.0f, 80f, 80f, null))
+              .transitionKey(SQUARE_KEY)
+              .build();
+    } else {
+      child = null;
+    }
+
+    return Column.create(c)
+        .heightPercent(100)
+        .child(child)
+        .clickHandler(AppearTransitionComponent.onClickEvent(c))
+        .alignItems(YogaAlign.FLEX_END)
+        .build();
+  }
+
+  @OnCreateTransition
+  static Transition onCreateTransition(ComponentContext c) {
+    return Transition.create(SQUARE_KEY)
+        .animate(AnimatedProperties.X)
+        .appearFrom(0f)
+        .animate(AnimatedProperties.ALPHA)
+        .appearFrom(0f);
+  }
+
+  @OnEvent(ClickEvent.class)
+  static void onClickEvent(ComponentContext c, @FromEvent View view) {
+    AppearTransitionComponent.onUpdateState(c);
+  }
+
+  @OnUpdateState
+  static void onUpdateState(StateValue<Boolean> shown) {
+    shown.set(!shown.get());
+  }
+}
 ```
 
 The following animation shows the *Appear* transition in action.

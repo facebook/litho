@@ -31,26 +31,6 @@ import com.facebook.samples.litho.integration.reactivebridge.CallbackBridgeCompo
 import com.facebook.samples.litho.integration.reactivebridge.SharedFlowEventComponent
 import com.facebook.samples.litho.integration.reactivebridge.UseFlowBridgeComponent
 import com.facebook.samples.litho.integration.uistate.UiStateComponent
-import com.facebook.samples.litho.java.animations.animatedbadge.AnimatedBadge
-import com.facebook.samples.litho.java.animations.animationcallbacks.AnimationCallbacksActivity
-import com.facebook.samples.litho.java.animations.animationcomposition.ComposedAnimationsComponent
-import com.facebook.samples.litho.java.animations.animationcookbook.AnimationCookBookActivity
-import com.facebook.samples.litho.java.animations.bounds.BoundsAnimationComponent as JavaBoundsAnimationComponent
-import com.facebook.samples.litho.java.animations.commondynamicprops.CommonDynamicPropsAnimationActivity
-import com.facebook.samples.litho.java.animations.docs.AlphaTransitionComponent
-import com.facebook.samples.litho.java.animations.docs.AppearTransitionComponent
-import com.facebook.samples.litho.java.animations.docs.ParallelTransitionWithAnimatorsComponent
-import com.facebook.samples.litho.java.animations.docs.SequenceTransitionLoopComponent
-import com.facebook.samples.litho.java.animations.docs.SimpleAllLayoutTransitionComponent
-import com.facebook.samples.litho.java.animations.docs.StaggerTransitionComponent
-import com.facebook.samples.litho.java.animations.docs.StaggerTransitionSameComponent
-import com.facebook.samples.litho.java.animations.docs.StaggerTransitionWithDelayComponent
-import com.facebook.samples.litho.java.animations.docs.keyscope.GlobalKeyParentComponent
-import com.facebook.samples.litho.java.animations.expandableelement.ExpandableElementActivity
-import com.facebook.samples.litho.java.animations.pageindicators.PageIndicatorsRootComponent
-import com.facebook.samples.litho.java.animations.sharedelements.SharedElementsComponent
-import com.facebook.samples.litho.java.animations.sharedelements.SharedElementsFragmentActivity
-import com.facebook.samples.litho.java.animations.transitions.TransitionsActivity
 import com.facebook.samples.litho.java.bordereffects.BorderEffectsComponent
 import com.facebook.samples.litho.java.changesetdebug.ItemsRerenderingActivity
 import com.facebook.samples.litho.java.changesetdebug.PropUpdatingActivity
@@ -749,79 +729,6 @@ class Demos {
         DemoList(
             name = "Java API Demos",
             listOf(
-                DemoGrouping(
-                    name = "Animations",
-                    listOf(
-                        SingleDemo(
-                            name = "Animations Composition",
-                        ) { context ->
-                          ComposedAnimationsComponent.create(context).build()
-                        },
-                        SingleDemo(
-                            name = "Expandable Element",
-                            ExpandableElementActivity::class.java,
-                        ),
-                        SingleDemo(name = "Animated Badge") { context ->
-                          AnimatedBadge.create(context).build()
-                        },
-                        SingleDemo(name = "Bounds Animation") { context ->
-                          JavaBoundsAnimationComponent.create(context).build()
-                        },
-                        SingleDemo(name = "Page Indicators") { context ->
-                          PageIndicatorsRootComponent.create(context).build()
-                        },
-                        SingleDemo(
-                            name = "Common Dynamic Props Animations",
-                            klass = CommonDynamicPropsAnimationActivity::class.java,
-                        ),
-                        SingleDemo(
-                            name = "Animation Cookbook",
-                            klass = AnimationCookBookActivity::class.java,
-                        ),
-                        SingleDemo(
-                            name = "Animation Callbacks",
-                            klass = AnimationCallbacksActivity::class.java,
-                        ),
-                        SingleDemo(name = "Activity Transition with Shared elements") { context ->
-                          SharedElementsComponent.create(context).build()
-                        },
-                        SingleDemo(
-                            name = "Fragments Transition with Shared elements",
-                            klass = SharedElementsFragmentActivity::class.java,
-                        ),
-                        SingleDemo(
-                            name = "Transitions",
-                            klass = TransitionsActivity::class.java,
-                        ),
-                        SingleDemo(name = "All Layout Transition") { context ->
-                          SimpleAllLayoutTransitionComponent.create(context).build()
-                        },
-                        SingleDemo(name = "Alpha Transition") { context ->
-                          AlphaTransitionComponent.create(context).build()
-                        },
-                        SingleDemo(name = "Appear Transition") { context ->
-                          AppearTransitionComponent.create(context).build()
-                        },
-                        SingleDemo(name = "Stagger Transition") { context ->
-                          StaggerTransitionComponent.create(context).build()
-                        },
-                        SingleDemo(name = "Stagger Transition on same Component") { context ->
-                          StaggerTransitionSameComponent.create(context).build()
-                        },
-                        SingleDemo(name = "Stagger Transition with Delay") { context ->
-                          StaggerTransitionWithDelayComponent.create(context).build()
-                        },
-                        SingleDemo(name = "Parallel Transition with Animators") { context ->
-                          ParallelTransitionWithAnimatorsComponent.create(context).build()
-                        },
-                        SingleDemo(name = "Sequence Transition loop") { context ->
-                          SequenceTransitionLoopComponent.create(context).build()
-                        },
-                        SingleDemo(name = "Global key Transition") { context ->
-                          GlobalKeyParentComponent.create(context).build()
-                        },
-                    ),
-                ),
                 DemoGrouping(
                     name = "Collections",
                     listOf(
