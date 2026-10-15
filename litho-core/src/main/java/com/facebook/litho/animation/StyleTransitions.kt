@@ -84,27 +84,36 @@ fun Style.transition(block: StyleTransitionScope.() -> Unit): Style =
 /** Transition recipe for style properties. */
 internal class StyleTransitionSpec
 constructor(
-    internal val changes: Map<StyleTransitionProperty, FiniteAnimationSpec<Float>>,
+    /** Declared properties; a `null` clears that property from the transitions composed before. */
+    internal val changes: Map<StyleTransitionProperty, FiniteAnimationSpec<Float>?>,
     /**
-     * True when a `bounds(..., reflow = true)` declared that the size change should drive a real
-     * per-frame Yoga relayout (siblings/nested content reflow to the interpolated size) rather than
-     * a visual-only mount animation. Only meaningful for the WIDTH/HEIGHT properties.
+     * True when `bounds(..., reflow = true)` or `size(..., reflow = true)` put the host in reflow
+     * mode. In reflow mode a position change caused by another host's reflow is left to that
+     * relayout rather than animated visually.
      */
-    internal val shouldLayout: Boolean = false,
+    internal val reflowMode: Boolean = false,
 ) {
+
+  /**
+   * True when a size change drives a real per-frame Yoga relayout (siblings/nested content reflow
+   * to the interpolated size) rather than a visual-only mount animation: the host is in reflow mode
+   * and still animates its width or height.
+   */
+  internal val shouldLayout: Boolean
+    get() = reflowMode && (changes[WIDTH] != null || changes[HEIGHT] != null)
 
   internal operator fun plus(other: StyleTransitionSpec): StyleTransitionSpec = StyleTransitionSpec(
       changes = changes + other.changes,
-      shouldLayout = shouldLayout || other.shouldLayout,
+      reflowMode = reflowMode || other.reflowMode,
   )
 
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (other !is StyleTransitionSpec) return false
-    return changes == other.changes && shouldLayout == other.shouldLayout
+    return changes == other.changes && reflowMode == other.reflowMode
   }
 
-  override fun hashCode(): Int = 31 * changes.hashCode() + shouldLayout.hashCode()
+  override fun hashCode(): Int = 31 * changes.hashCode() + reflowMode.hashCode()
 
   companion object {
     internal val Empty = StyleTransitionSpec(emptyMap())
@@ -116,11 +125,81 @@ constructor(
  *
  * Each property is optional. Set a property to an [AnimationSpec] to animate changes for that
  * property, or set it to `null` in a later composed transition to remove a previous declaration.
+ *
+ * Bounds animate per axis through [x], [y], [width], and [height], or as groups through [position],
+ * [size], and [bounds]. Whether a size change reflows siblings is a mode of the whole host, set
+ * only by [size] and [bounds]: their functions take `reflow`, and their properties are visual. The
+ * per-axis properties and [position] refine an axis's spec without changing that mode, so
+ * `size(spring(), reflow = true); height = tween()` still reflows, with height on the tween.
+ *
+ * Reading a group property returns its spec only when every axis it covers shares that spec, and
+ * `null` otherwise: after `bounds = spring(); height = tween()`, [bounds] and [size] read `null`
+ * while [position] still reads the spring.
  */
 @ExperimentalLithoApi
 class StyleTransitionScope internal constructor() {
-  private val changes = linkedMapOf<StyleTransitionProperty, FiniteAnimationSpec<Float>>()
-  private var shouldLayout: Boolean = false
+  private val changes = linkedMapOf<StyleTransitionProperty, FiniteAnimationSpec<Float>?>()
+  private var reflowMode: Boolean = false
+
+  /** Animates the host's mount-space x position. */
+  var x: FiniteAnimationSpec<Float>?
+    get() = changes[X]
+    set(value) {
+      setChange(value, X)
+    }
+
+  /** Animates the host's mount-space y position. */
+  var y: FiniteAnimationSpec<Float>?
+    get() = changes[Y]
+    set(value) {
+      setChange(value, Y)
+    }
+
+  /** Animates the host's mount-space width. */
+  var width: FiniteAnimationSpec<Float>?
+    get() = changes[WIDTH]
+    set(value) {
+      setChange(value, WIDTH)
+    }
+
+  /** Animates the host's mount-space height. */
+  var height: FiniteAnimationSpec<Float>?
+    get() = changes[HEIGHT]
+    set(value) {
+      setChange(value, HEIGHT)
+    }
+
+  /** Animates the host's mount-space position: `x` and `y`. */
+  var position: FiniteAnimationSpec<Float>?
+    get() = sharedChange(X, Y)
+    set(value) {
+      setChange(value, X, Y)
+    }
+
+  /**
+   * Animates the host's mount-space size: `width` and `height`.
+   *
+   * A visual mount animation, like the [bounds] property: layout is already final while the size
+   * animates. Use the [size] function with `reflow = true` when siblings should follow every frame.
+   */
+  var size: FiniteAnimationSpec<Float>?
+    get() = sharedChange(WIDTH, HEIGHT)
+    set(value) {
+      setChange(value, WIDTH, HEIGHT)
+      reflowMode = false
+    }
+
+  /**
+   * Animates the host's size with [spec], like the [size] property.
+   *
+   * When [reflow] is true, the size change drives a real per-frame Yoga relayout, as described for
+   * the [bounds] function. When [reflow] is false this is identical to setting the [size] property.
+   * Either way the host's own position is not animated; declare [position] too, or use [bounds].
+   */
+  fun size(spec: FiniteAnimationSpec<Float>, reflow: Boolean = false) {
+    setChange(spec, WIDTH, HEIGHT)
+    reflowMode = reflow
+  }
 
   /**
    * Animates mount-space host bounds: `x`, `y`, `width`, and `height`.
@@ -131,10 +210,10 @@ class StyleTransitionScope internal constructor() {
    * layout. Use state-based animated dimensions when the layout itself should change every frame.
    */
   var bounds: FiniteAnimationSpec<Float>?
-    get() = changes[X]
+    get() = sharedChange(X, Y, WIDTH, HEIGHT)
     set(value) {
       setChange(value, X, Y, WIDTH, HEIGHT)
-      shouldLayout = false
+      reflowMode = false
     }
 
   /**
@@ -152,7 +231,7 @@ class StyleTransitionScope internal constructor() {
    */
   fun bounds(spec: FiniteAnimationSpec<Float>, reflow: Boolean = false) {
     setChange(spec, X, Y, WIDTH, HEIGHT)
-    shouldLayout = reflow
+    reflowMode = reflow
   }
 
   /** Animates host alpha when the resolved opacity changes. */
@@ -191,18 +270,22 @@ class StyleTransitionScope internal constructor() {
     }
 
   internal fun build(): StyleTransitionSpec =
-      StyleTransitionSpec(changes = changes.toMap(), shouldLayout = shouldLayout)
+      StyleTransitionSpec(changes = changes.toMap(), reflowMode = reflowMode)
+
+  /** The spec every one of [properties] shares, or null when any differs or is unset. */
+  private fun sharedChange(
+      vararg properties: StyleTransitionProperty,
+  ): FiniteAnimationSpec<Float>? {
+    val spec = changes[properties.first()] ?: return null
+    return spec.takeIf { properties.all { changes[it] == spec } }
+  }
 
   private fun setChange(
       spec: FiniteAnimationSpec<Float>?,
       vararg properties: StyleTransitionProperty,
   ) {
     for (property in properties) {
-      if (spec == null) {
-        changes.remove(property)
-      } else {
-        changes[property] = spec
-      }
+      changes[property] = spec
     }
   }
 }
@@ -236,7 +319,7 @@ internal data class TransitionStyleItem(val spec: StyleTransitionSpec) :
   override fun applyCommonProps(context: ComponentContext, commonProps: CommonProps) {
     // Reflow rides the read pipeline; fail fast rather than silently not animating.
     check(!spec.shouldLayout || context.isReadTrackingEnabled) {
-      "Style.transition { bounds(reflow = true) } requires state read tracking " +
+      "Style.transition { size(reflow = true) / bounds(reflow = true) } requires state read tracking " +
           "(ComponentsConfiguration.enableStateReadTracking) to be enabled."
     }
     commonProps.styleTransition(StyleTransitionData(spec))

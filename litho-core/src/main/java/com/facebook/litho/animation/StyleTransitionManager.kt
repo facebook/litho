@@ -162,8 +162,10 @@ internal class StyleTransitionManager {
 
   private fun resetDeclaredProperties(content: Any, target: StyleTransitionTarget?) {
     val changes = target?.data?.spec?.changes ?: return
-    for (property in changes.keys) {
-      resetProperty(content, property)
+    for ((property, spec) in changes) {
+      if (spec != null) {
+        resetProperty(content, property)
+      }
     }
   }
 
@@ -314,13 +316,16 @@ internal object StyleTransitionPlanner {
       }
 
       val previousItem = previousTarget.animatableItem ?: continue
-      val shouldLayout = nextTarget.data.spec.shouldLayout
+      val reflowMode = nextTarget.data.spec.reflowMode
       val positionRelayoutDriven =
-          shouldLayout &&
+          reflowMode &&
               (resizedReflowCount > 1 ||
                   (resizedReflowCount == 1 && nextTarget.styleTransitionId != soleResizedReflowId))
       for ((property, animationSpec) in nextTarget.data.spec.changes) {
-        if (shouldLayout) {
+        if (animationSpec == null) {
+          continue
+        }
+        if (reflowMode) {
           // Width/height are always driven by the reflow relayout, not the visual manager.
           if (
               property == StyleTransitionProperty.WIDTH ||

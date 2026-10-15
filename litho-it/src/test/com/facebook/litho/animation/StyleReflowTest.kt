@@ -145,6 +145,32 @@ class StyleReflowTest {
   }
 
   @Test
+  fun reflowSize_withBothAxesCleared_laysOutAtNaturalSize() {
+    val stateCaller = StateCaller()
+    val component =
+        growComponent(stateCaller, collapsedHeight = 100, expandedHeight = 250) {
+          size(tween(duration = 144.ms, easing = Easing.Linear), reflow = true)
+          width = null
+          height = null
+        }
+
+    val testLithoView = lithoTestRule.render { component }
+    activityController.get().setContentView(testLithoView.lithoView)
+    activityController.resume().visible()
+
+    val grow = testLithoView.findViewWithTag(GROW_TAG)
+    val sibling = testLithoView.findViewWithTag(SIBLING_TAG)
+    assertThat(grow.height).isEqualTo(100)
+
+    stateCaller.update()
+    lithoTestRule.idle()
+
+    // No size spec is left to reflow, so nothing may pin the node at its old size.
+    assertThat(grow.height).isEqualTo(250)
+    assertThat(sibling.top).isEqualTo(250)
+  }
+
+  @Test
   fun reflowBounds_growThenShrinkWithStructuralChange_converges() {
     val stateCaller = StateCaller()
     // state=false -> collapsed (100, no banner); state=true -> expanded (250, banner present). The
@@ -410,6 +436,9 @@ class StyleReflowTest {
       stateCaller: StateCaller,
       collapsedHeight: Int,
       expandedHeight: Int,
+      transition: StyleTransitionScope.() -> Unit = {
+        bounds(tween(duration = 144.ms, easing = Easing.Linear), reflow = true)
+      },
   ) =
       TestAnimationsComponent(stateCaller, null) { state ->
         Column(style = Style.width(100.dp)) {
@@ -419,9 +448,7 @@ class StyleReflowTest {
                       Style.width(100.dp)
                           .height(if (state) expandedHeight.dp else collapsedHeight.dp)
                           .backgroundColor(Color.RED)
-                          .transition {
-                            bounds(tween(duration = 144.ms, easing = Easing.Linear), reflow = true)
-                          }
+                          .transition(transition)
                           .viewTag(GROW_TAG),
               ),
           )

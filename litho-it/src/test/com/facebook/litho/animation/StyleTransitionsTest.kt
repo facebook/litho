@@ -111,6 +111,98 @@ class StyleTransitionsTest {
   }
 
   @Test
+  fun styleTransition_perAxisAndGroupPropertiesMapToTheirAxes() {
+    val axisSpec = tween<Float>(120.ms)
+
+    assertThat(transitionSpec { x = axisSpec }.changes).containsOnlyKeys(StyleTransitionProperty.X)
+    assertThat(transitionSpec { y = axisSpec }.changes).containsOnlyKeys(StyleTransitionProperty.Y)
+    assertThat(transitionSpec { width = axisSpec }.changes)
+        .containsOnlyKeys(StyleTransitionProperty.WIDTH)
+    assertThat(transitionSpec { height = axisSpec }.changes)
+        .containsOnlyKeys(StyleTransitionProperty.HEIGHT)
+    assertThat(transitionSpec { position = axisSpec }.changes)
+        .containsOnlyKeys(StyleTransitionProperty.X, StyleTransitionProperty.Y)
+    assertThat(transitionSpec { size = axisSpec }.changes)
+        .containsOnlyKeys(StyleTransitionProperty.WIDTH, StyleTransitionProperty.HEIGHT)
+  }
+
+  @Test
+  fun styleTransition_groupGetters_readTheSpecOnlyWhenEveryAxisSharesIt() {
+    val groupSpec = spring<Float>()
+    val heightSpec = tween<Float>(120.ms)
+
+    transitionSpec {
+      bounds = groupSpec
+      assertThat(bounds).isSameAs(groupSpec)
+
+      // Height now differs, so the groups covering it read null; position is still uniform.
+      height = heightSpec
+      assertThat(bounds).isNull()
+      assertThat(size).isNull()
+      assertThat(position).isSameAs(groupSpec)
+      assertThat(height).isSameAs(heightSpec)
+    }
+    transitionSpec {
+      // An axis left unset means the group is not declared as a whole.
+      x = groupSpec
+      assertThat(position).isNull()
+    }
+  }
+
+  @Test
+  fun styleTransition_onlySizeAndBoundsSetTheReflowMode() {
+    val sizeSpec = spring<Float>()
+    val heightSpec = tween<Float>(120.ms)
+
+    val reflowRefined = transitionSpec {
+      size(sizeSpec, reflow = true)
+      height = heightSpec
+      position = heightSpec
+    }
+    val reflowCleared = transitionSpec {
+      size(sizeSpec, reflow = true)
+      size = sizeSpec
+    }
+
+    // Per-axis and position setters refine a spec without leaving reflow.
+    assertThat(reflowRefined.shouldLayout).isTrue()
+    assertThat(reflowRefined.changes)
+        .containsEntry(StyleTransitionProperty.WIDTH, sizeSpec)
+        .containsEntry(StyleTransitionProperty.HEIGHT, heightSpec)
+    // The size property is the visual group form, so it clears reflow like the bounds property.
+    assertThat(reflowCleared.shouldLayout).isFalse()
+    assertThat(transitionSpec { size(sizeSpec) }.shouldLayout).isFalse()
+  }
+
+  @Test
+  fun styleTransitionPlanner_singleAxis_animatesOnlyThatAxisWhenOthersChange() {
+    val transitionId = StructuralStyleTransitionId("globalKey")
+    val spec = transitionSpec { height = tween(120.ms) }
+    val previousTarget = styleTransitionTarget(
+        transitionId = transitionId,
+        spec = spec,
+        animatableItem = animatableItem(id = 1, bounds = Rect(0, 0, 40, 50)),
+    )
+    // x, y, width and height all change; only the declared height animates.
+    val nextTarget = styleTransitionTarget(
+        transitionId = transitionId,
+        spec = spec,
+        animatableItem = animatableItem(id = 2, bounds = Rect(10, 20, 70, 120)),
+    )
+
+    val plans =
+        StyleTransitionPlanner.createPlans(
+            previousTargets = listOf(previousTarget),
+            nextTargets = listOf(nextTarget),
+            runningKeys = emptySet(),
+        )
+
+    assertThat(plans.map { it.property }).containsExactly(StyleTransitionProperty.HEIGHT)
+    assertThat(plans.single().initialValue).isEqualTo(50f)
+    assertThat(plans.single().targetValue).isEqualTo(100f)
+  }
+
+  @Test
   fun styleTransition_plusComposesLayoutAffecting() {
     val visual = transitionSpec { bounds(tween(120.ms)) }
     val reflow = transitionSpec { bounds(tween(120.ms), reflow = true) }
@@ -119,6 +211,39 @@ class StyleTransitionsTest {
     assertThat((visual + reflow).shouldLayout).isTrue()
     assertThat((reflow + visual).shouldLayout).isTrue()
     assertThat((visual + visual).shouldLayout).isFalse()
+  }
+
+  @Test
+  fun styleTransition_plusCarriesRemovals() {
+    val motion = tween<Float>(120.ms)
+
+    val removed = transitionSpec { height = motion } + transitionSpec { height = null }
+    val redeclared = transitionSpec { height = null } + transitionSpec { height = motion }
+
+    assertThat(removed.changes[StyleTransitionProperty.HEIGHT]).isNull()
+    assertThat(redeclared.changes).containsEntry(StyleTransitionProperty.HEIGHT, motion)
+  }
+
+  @Test
+  fun styleTransition_reflowWithEverySizeAxisCleared_doesNotLayout() {
+    val motion = tween<Float>(120.ms)
+
+    val cleared = transitionSpec {
+      size(motion, reflow = true)
+      width = null
+      height = null
+    }
+    val clearedByComposition =
+        transitionSpec { size(motion, reflow = true) } +
+            transitionSpec {
+              width = null
+              height = null
+            }
+
+    for (spec in listOf(cleared, clearedByComposition)) {
+      assertThat(spec.shouldLayout).isFalse()
+      assertThat(spec.reflowMode).isTrue()
+    }
   }
 
   @Test
@@ -273,6 +398,51 @@ class StyleTransitionsTest {
     assertThat(plans.filter { it.key.styleTransitionId == idB }).isEmpty()
     assertThat(plans.filter { it.key.styleTransitionId == idA }.map { it.property })
         .containsExactly(StyleTransitionProperty.X)
+  }
+
+  @Test
+  fun styleTransitionPlanner_reflowModeWithoutSize_skipsPositionDrivenByOtherResizingNode() {
+    val idA = StructuralStyleTransitionId("A")
+    val idB = StructuralStyleTransitionId("B")
+    val spec = tween<Float>(120.ms)
+    val resizing = transitionSpec { bounds(spec, reflow = true) }
+    val positionOnly = transitionSpec {
+      bounds(spec, reflow = true)
+      width = null
+      height = null
+    }
+    val prevA = styleTransitionTarget(
+        transitionId = idA,
+        spec = resizing,
+        animatableItem = animatableItem(id = 1, bounds = Rect(0, 0, 40, 40)),
+    )
+    val nextA = styleTransitionTarget(
+        transitionId = idA,
+        spec = resizing,
+        animatableItem = animatableItem(id = 2, bounds = Rect(0, 0, 40, 100)),
+    )
+    val prevB = styleTransitionTarget(
+        transitionId = idB,
+        spec = positionOnly,
+        animatableItem = animatableItem(id = 3, bounds = Rect(0, 40, 40, 80)),
+    )
+    val nextB = styleTransitionTarget(
+        transitionId = idB,
+        spec = positionOnly,
+        animatableItem = animatableItem(id = 4, bounds = Rect(0, 100, 40, 140)),
+    )
+
+    val plans =
+        StyleTransitionPlanner.createPlans(
+            previousTargets = listOf(prevA, prevB),
+            nextTargets = listOf(nextA, nextB),
+            runningKeys = emptySet(),
+        )
+
+    // B no longer lays out, but A's reflow already moves it frame by frame; a transform on top
+    // would double the motion.
+    assertThat(positionOnly.shouldLayout).isFalse()
+    assertThat(plans.filter { it.key.styleTransitionId == idB }).isEmpty()
   }
 
   @Test

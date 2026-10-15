@@ -56,6 +56,9 @@ the animated value yourself — for example, driving `Style.height(...)` from
 | Property | What it animates |
 |----------|------------------|
 | `bounds` | Mount-space `x`, `y`, `width`, and `height` |
+| `position` | Mount-space `x` and `y` |
+| `size` | Mount-space `width` and `height` |
+| `x`, `y`, `width`, `height` | One mount-space axis each |
 | `alpha` | Host opacity |
 | `scale` | Uniform host `scaleX` and `scaleY` |
 | `rotation` | Host Z-axis rotation in degrees |
@@ -65,9 +68,15 @@ the animated value yourself — for example, driving `Style.height(...)` from
 All properties accept an `AnimationSpec<Float>` such as `spring()` or
 `tween(...)`.
 
-`bounds` also has a member-function form, `bounds(spec, reflow = ...)`, which
-can opt the size change into a real per-frame relayout. See
-[Reflowing bounds](#reflowing-bounds).
+Declare only the axes that should animate: `transition { height = spring() }`
+animates the height while the host's position snaps, even if both change in the
+same render.
+
+`bounds` and `size` also have member-function forms, `bounds(spec, reflow = ...)`
+and `size(spec, reflow = ...)`, which can opt the size change into a real
+per-frame relayout. Reflow is a mode of the whole host and only these two
+functions set it; the per-axis properties and `position` refine one axis's spec
+without turning reflow on or off. See [Reflowing bounds](#reflowing-bounds).
 
 ## Bounds animations
 
