@@ -29,9 +29,10 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 /** Model that is an abstract representation of a {@link MountSpec}. */
-public class MountSpecModel implements SpecModel, HasPureRender {
+public class MountSpecModel implements SpecModel, HasPureRender, HasIntrinsicSize {
   private final SpecModelImpl mSpecModel;
   private final boolean mIsPureRender;
+  private final boolean mHasIntrinsicSize;
   private final boolean mHasChildLithosViews;
   private final int mPoolSize;
   private final boolean mCanPreallocate;
@@ -58,6 +59,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
       ImmutableList<PropJavadocModel> propJavadocs,
       boolean isPublic,
       boolean isPureRender,
+      boolean hasIntrinsicSize,
       boolean hasChildLithosViews,
       int poolSize,
       boolean canPreallocate,
@@ -94,6 +96,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
             .bindDynamicValueMethods(bindDynamicValueMethods)
             .build();
     mIsPureRender = isPureRender;
+    mHasIntrinsicSize = hasIntrinsicSize;
     mHasChildLithosViews = hasChildLithosViews;
     mPoolSize = poolSize;
     mCanPreallocate = canPreallocate;
@@ -341,6 +344,11 @@ public class MountSpecModel implements SpecModel, HasPureRender {
     return mIsPureRender;
   }
 
+  @Override
+  public boolean hasIntrinsicSize() {
+    return mHasIntrinsicSize;
+  }
+
   public boolean canMountIncrementally() {
     return mHasChildLithosViews;
   }
@@ -378,6 +386,8 @@ public class MountSpecModel implements SpecModel, HasPureRender {
         + mSpecModel
         + ", mIsPureRender="
         + mIsPureRender
+        + ", mHasIntrinsicSize="
+        + mHasIntrinsicSize
         + ", mHasChildLithosViews="
         + mHasChildLithosViews
         + ", mPoolSize="

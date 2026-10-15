@@ -16,9 +16,11 @@
 
 package com.facebook.litho
 
+import androidx.collection.MutableScatterSet
+import androidx.collection.ScatterSet
 import com.facebook.litho.layout.LayoutDirection
+import com.facebook.litho.state.StateId
 import com.facebook.yoga.YogaAlign
-import com.facebook.yoga.YogaConstants
 import com.facebook.yoga.YogaDirection
 import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaFlexDirection
@@ -26,75 +28,101 @@ import com.facebook.yoga.YogaGutter
 import com.facebook.yoga.YogaJustify
 import com.facebook.yoga.YogaNode
 import com.facebook.yoga.YogaPositionType
+import com.facebook.yoga.YogaUnit
+import com.facebook.yoga.YogaValue
 import com.facebook.yoga.YogaWrap
-import kotlin.jvm.JvmField
 
 open class YogaLayoutProps(val node: YogaNode) : LayoutProps {
 
   @JvmField var isPaddingSet: Boolean = false
 
-  @JvmField var widthFromStyle: Float = YogaConstants.UNDEFINED
+  @JvmField var widthFromStyle: YogaValue = YogaValue.UNDEFINED
+  @JvmField var minWidthFromStyle: YogaValue = YogaValue.UNDEFINED
+  @JvmField var maxWidthFromStyle: YogaValue = YogaValue.UNDEFINED
+  @JvmField var heightFromStyle: YogaValue = YogaValue.UNDEFINED
+  @JvmField var minHeightFromStyle: YogaValue = YogaValue.UNDEFINED
+  @JvmField var maxHeightFromStyle: YogaValue = YogaValue.UNDEFINED
 
-  @JvmField var heightFromStyle: Float = YogaConstants.UNDEFINED
+  private var _stateReads: MutableScatterSet<StateId>? = null
+  val stateReads: ScatterSet<StateId>?
+    get() = _stateReads
+
+  internal fun addStateReads(stateIds: ScatterSet<StateId>) {
+    if (stateIds.isEmpty()) return
+    val stateReads = _stateReads ?: MutableScatterSet<StateId>().also { _stateReads = it }
+    stateReads.addAll(stateIds)
+  }
 
   override fun widthPx(width: Int) {
-    widthFromStyle = width.toFloat()
-    node.setWidth(widthFromStyle)
+    setPointSizeAndApply(width, node::setWidth) { yogaValue ->
+      widthFromStyle = yogaValue
+    }
   }
 
   override fun widthPercent(percent: Float) {
-    widthFromStyle = percent
-    node.setWidthPercent(widthFromStyle)
+    setPercentSizeAndApply(percent, node::setWidthPercent) { yogaValue ->
+      widthFromStyle = yogaValue
+    }
   }
 
   override fun minWidthPx(minWidth: Int) {
-    widthFromStyle = minWidth.toFloat()
-    node.setMinWidth(widthFromStyle)
-  }
-
-  override fun maxWidthPx(maxWidth: Int) {
-    widthFromStyle = maxWidth.toFloat()
-    node.setMaxWidth(widthFromStyle)
+    setPointSizeAndApply(minWidth, node::setMinWidth) { yogaValue ->
+      minWidthFromStyle = yogaValue
+    }
   }
 
   override fun minWidthPercent(percent: Float) {
-    widthFromStyle = percent
-    node.setMinWidthPercent(widthFromStyle)
+    setPercentSizeAndApply(percent, node::setMinWidthPercent) { yogaValue ->
+      minWidthFromStyle = yogaValue
+    }
+  }
+
+  override fun maxWidthPx(maxWidth: Int) {
+    setPointSizeAndApply(maxWidth, node::setMaxWidth) { yogaValue ->
+      maxWidthFromStyle = yogaValue
+    }
   }
 
   override fun maxWidthPercent(percent: Float) {
-    widthFromStyle = percent
-    node.setMaxWidthPercent(widthFromStyle)
+    setPercentSizeAndApply(percent, node::setMaxWidthPercent) { yogaValue ->
+      maxWidthFromStyle = yogaValue
+    }
   }
 
   override fun heightPx(height: Int) {
-    heightFromStyle = height.toFloat()
-    node.setHeight(heightFromStyle)
+    setPointSizeAndApply(height, node::setHeight) { yogaValue ->
+      heightFromStyle = yogaValue
+    }
   }
 
   override fun heightPercent(percent: Float) {
-    heightFromStyle = percent
-    node.setHeightPercent(heightFromStyle)
+    setPercentSizeAndApply(percent, node::setHeightPercent) { yogaValue ->
+      heightFromStyle = yogaValue
+    }
   }
 
   override fun minHeightPx(minHeight: Int) {
-    heightFromStyle = minHeight.toFloat()
-    node.setMinHeight(heightFromStyle)
-  }
-
-  override fun maxHeightPx(maxHeight: Int) {
-    heightFromStyle = maxHeight.toFloat()
-    node.setMaxHeight(heightFromStyle)
+    setPointSizeAndApply(minHeight, node::setMinHeight) { yogaValue ->
+      minHeightFromStyle = yogaValue
+    }
   }
 
   override fun minHeightPercent(percent: Float) {
-    heightFromStyle = percent
-    node.setMinHeightPercent(heightFromStyle)
+    setPercentSizeAndApply(percent, node::setMinHeightPercent) { yogaValue ->
+      minHeightFromStyle = yogaValue
+    }
+  }
+
+  override fun maxHeightPx(maxHeight: Int) {
+    setPointSizeAndApply(maxHeight, node::setMaxHeight) { yogaValue ->
+      maxHeightFromStyle = yogaValue
+    }
   }
 
   override fun maxHeightPercent(percent: Float) {
-    heightFromStyle = percent
-    node.setMaxHeightPercent(heightFromStyle)
+    setPercentSizeAndApply(percent, node::setMaxHeightPercent) { yogaValue ->
+      maxHeightFromStyle = yogaValue
+    }
   }
 
   override fun layoutDirection(direction: LayoutDirection) {
@@ -197,10 +225,39 @@ open class YogaLayoutProps(val node: YogaNode) : LayoutProps {
     node.alignItems = align
   }
 
+  override fun widthAuto() {
+    node.setWidthAuto()
+  }
+
+  override fun heightAuto() {
+    node.setHeightAuto()
+  }
+
   companion object {
     @JvmStatic
     fun setLayoutDirection(commonProps: CommonProps, direction: YogaDirection) {
       commonProps.layoutDirection(direction.toLayoutDirection())
+    }
+
+    private inline fun setPercentSizeAndApply(
+        value: Float,
+        styleProperty: (Float) -> Unit,
+        nodeOperation: (YogaValue) -> Unit,
+    ) = setStyleAndApply(YogaValue(value, YogaUnit.PERCENT), styleProperty, nodeOperation)
+
+    private inline fun setPointSizeAndApply(
+        value: Int,
+        styleProperty: (Float) -> Unit,
+        nodeOperation: (YogaValue) -> Unit,
+    ) = setStyleAndApply(YogaValue(value.toFloat(), YogaUnit.POINT), styleProperty, nodeOperation)
+
+    private inline fun setStyleAndApply(
+        yogaValue: YogaValue,
+        styleProperty: (Float) -> Unit,
+        nodeOperation: (YogaValue) -> Unit,
+    ) {
+      styleProperty(yogaValue.value)
+      nodeOperation(yogaValue)
     }
   }
 }

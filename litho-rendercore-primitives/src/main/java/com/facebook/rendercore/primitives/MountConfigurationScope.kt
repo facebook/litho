@@ -82,16 +82,18 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
    * @param bindCall A function that allows for applying properties to the content and accessing the
    *   layout data that was generated during the layout pass.
    */
+  @Suppress("UNCHECKED_CAST")
   fun <LayoutDataT> bindWithLayoutData(
       vararg deps: Any?,
-      bindCall: BindScope.(content: ContentType, layoutData: LayoutDataT) -> UnbindFunc
+      bindCall: BindScope.(content: ContentType, layoutData: LayoutDataT) -> UnbindFunc,
   ) {
     val fixedBinderIndex: Int = _fixedBinders.size
     val customDescription: String? = binderDescription
     _fixedBinders.add(
         binder({ "${customDescription ?: fixedBinderIndex}" }, dep = deps) { content, layoutData ->
           bindCall(content, layoutData as LayoutDataT)
-        })
+        },
+    )
   }
 
   /**
@@ -107,7 +109,8 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
         binder({ "${customDescription ?: fixedBinderIndex}" }, this) { content ->
           setter(content, this@bindTo)
           onUnbind { setter(content, defaultValue) }
-        })
+        },
+    )
   }
 
   /**
@@ -123,24 +126,25 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
         binder({ "${customDescription ?: fixedBinderIndex}" }, dep = this) { content ->
           setter.set(content, this@bindTo)
           onUnbind { setter.set(content, defaultValue) }
-        })
+        },
+    )
   }
 
   /**
-   * Creates a binding between the value, and the content’s property. The default value of the
+   * Creates a binding between the value, and the content's property. The default value of the
    * property is assumed to be null, so after unbind, null value will be set to the Content.
    *
    * @param setter function reference that will set the value on the content
    */
-  inline fun <T> T.bindTo(setter: KFunction2<ContentType, T?, *>) = bindTo(setter, null)
+  fun <T> T.bindTo(setter: KFunction2<ContentType, T?, *>) = bindTo(setter, null)
 
   /**
-   * Creates a binding between the value, and the content’s property. The default value of the
+   * Creates a binding between the value, and the content's property. The default value of the
    * property is assumed to be null, so after unbind, null value will be set to the Content.
    *
    * @param setter property reference that will set the value on the content
    */
-  inline fun <T> T.bindTo(setter: KMutableProperty1<ContentType, T?>) = bindTo(setter, null)
+  fun <T> T.bindTo(setter: KMutableProperty1<ContentType, T?>) = bindTo(setter, null)
 
   /**
    * Sets the description on the [RenderUnit.Binder] defined within [binderCall]. Descriptions are
@@ -149,7 +153,7 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
    */
   inline fun withDescription(
       description: String,
-      crossinline binderCall: MountConfigurationScope<ContentType>.() -> Unit
+      crossinline binderCall: MountConfigurationScope<ContentType>.() -> Unit,
   ) {
     try {
       binderDescription = description.take(RenderUnit.MAX_DESCRIPTION_LENGTH)

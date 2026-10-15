@@ -40,7 +40,7 @@ class LoadingEvent {
     INITIAL_LOAD,
     LOADING,
     SUCCEEDED,
-    FAILED
+    FAILED,
   }
 
   // Whether after this loading event the dataset is still empty

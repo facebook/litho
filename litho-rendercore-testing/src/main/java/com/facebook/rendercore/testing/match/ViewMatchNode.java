@@ -24,7 +24,7 @@ import android.view.ViewGroup;
 import com.facebook.infer.annotation.Nullsafe;
 import java.util.ArrayList;
 import javax.annotation.Nullable;
-import org.assertj.core.api.Java6Assertions;
+import org.assertj.core.api.Assertions;
 
 /**
  * This class can be used to make assertions about the structure and configuration of a View *
@@ -106,8 +106,7 @@ public class ViewMatchNode extends MatchNode {
     View view = (View) o;
 
     if (mBounds != null) {
-      // NULLSAFE_FIXME[Not Vetted Third-Party]
-      Java6Assertions.assertThat(
+      Assertions.assertThat(
               new Rect(view.getLeft(), view.getTop(), view.getWidth(), view.getHeight()))
           .describedAs(getDescription("Bounds on " + viewToString(view)))
           .isEqualTo(mBounds);
@@ -115,15 +114,13 @@ public class ViewMatchNode extends MatchNode {
 
     if (mAbsoluteBounds != null) {
       final Rect bounds = getAbsoluteBounds(view, mRootType);
-      // NULLSAFE_FIXME[Not Vetted Third-Party]
-      Java6Assertions.assertThat(bounds)
+      Assertions.assertThat(bounds)
           .describedAs(getDescription("Absolute bounds on " + viewToString(view)))
           .isEqualTo(mAbsoluteBounds);
     }
 
     if (mPadding != null) {
-      // NULLSAFE_FIXME[Not Vetted Third-Party]
-      Java6Assertions.assertThat(
+      Assertions.assertThat(
               new Rect(
                   view.getPaddingLeft(),
                   view.getPaddingTop(),
@@ -134,14 +131,12 @@ public class ViewMatchNode extends MatchNode {
     }
 
     if (!(view instanceof ViewGroup)) {
-      // NULLSAFE_FIXME[Not Vetted Third-Party]
-      Java6Assertions.assertThat(mChildren)
+      Assertions.assertThat(mChildren)
           .describedAs(getDescription("Child count on " + viewToString(view)))
           .isEmpty();
     } else {
       final ViewGroup viewGroup = (ViewGroup) view;
-      // NULLSAFE_FIXME[Not Vetted Third-Party]
-      Java6Assertions.assertThat(viewGroup.getChildCount())
+      Assertions.assertThat(viewGroup.getChildCount())
           .describedAs(getDescription("Child count on " + viewToString(view)))
           .isEqualTo(mChildren.size());
       for (int i = 0; i < viewGroup.getChildCount(); i++) {

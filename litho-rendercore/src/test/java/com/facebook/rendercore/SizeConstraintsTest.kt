@@ -45,20 +45,20 @@ class SizeConstraintsTest {
     assertThat(c.hasExactWidth).isTrue
     assertThat(c.hasExactHeight).isTrue
     assertThat(c.isZeroSize).isTrue
-    assertThat(Size(width = 0, height = 0).fitsWithin(c)).isTrue
-    assertThat(Size(width = 1, height = 0).fitsWithin(c)).isFalse
-    assertThat(Size(width = 0, height = 1).fitsWithin(c)).isFalse
-    assertThat(Size(width = 1, height = 1).fitsWithin(c)).isFalse
+    assertThat(IntSize(width = 0, height = 0).fitsWithin(c)).isTrue
+    assertThat(IntSize(width = 1, height = 0).fitsWithin(c)).isFalse
+    assertThat(IntSize(width = 0, height = 1).fitsWithin(c)).isFalse
+    assertThat(IntSize(width = 1, height = 1).fitsWithin(c)).isFalse
   }
 
   @Test
   fun `create - exact size constraints with maximum supported values - is successful`() {
-    val c =
-        SizeConstraints(
-            minWidth = maxValue30Bits,
-            maxWidth = maxValue30Bits,
-            minHeight = maxValue30Bits,
-            maxHeight = maxValue30Bits)
+    val c = SizeConstraints(
+        minWidth = maxValue30Bits,
+        maxWidth = maxValue30Bits,
+        minHeight = maxValue30Bits,
+        maxHeight = maxValue30Bits,
+    )
     assertThat(c).isNotNull
     assertThat(c.minWidth).isEqualTo(maxValue30Bits)
     assertThat(c.maxWidth).isEqualTo(maxValue30Bits)
@@ -69,10 +69,11 @@ class SizeConstraintsTest {
     assertThat(c.hasExactWidth).isTrue
     assertThat(c.hasExactHeight).isTrue
     assertThat(c.isZeroSize).isFalse
-    assertThat(Size(width = maxValue30Bits, height = maxValue30Bits).fitsWithin(c)).isTrue
-    assertThat(Size(width = maxValue30Bits + 1, height = maxValue30Bits).fitsWithin(c)).isFalse
-    assertThat(Size(width = maxValue30Bits, height = maxValue30Bits + 1).fitsWithin(c)).isFalse
-    assertThat(Size(width = maxValue30Bits + 1, height = maxValue30Bits + 1).fitsWithin(c)).isFalse
+    assertThat(IntSize(width = maxValue30Bits, height = maxValue30Bits).fitsWithin(c)).isTrue
+    assertThat(IntSize(width = maxValue30Bits + 1, height = maxValue30Bits).fitsWithin(c)).isFalse
+    assertThat(IntSize(width = maxValue30Bits, height = maxValue30Bits + 1).fitsWithin(c)).isFalse
+    assertThat(IntSize(width = maxValue30Bits + 1, height = maxValue30Bits + 1).fitsWithin(c))
+        .isFalse
   }
 
   @Test
@@ -82,7 +83,8 @@ class SizeConstraintsTest {
               minWidth = maxValue30Bits + 1,
               maxWidth = maxValue30Bits + 1,
               minHeight = maxValue30Bits,
-              maxHeight = maxValue30Bits)
+              maxHeight = maxValue30Bits,
+          )
         }
         .isInstanceOf(IllegalArgumentException::class.java)
         .hasMessageContaining("minWidth must be <= 1073741822")
@@ -95,7 +97,8 @@ class SizeConstraintsTest {
               minWidth = maxValue30Bits,
               maxWidth = maxValue30Bits,
               minHeight = maxValue30Bits + 1,
-              maxHeight = maxValue30Bits + 1)
+              maxHeight = maxValue30Bits + 1,
+          )
         }
         .isInstanceOf(IllegalArgumentException::class.java)
         .hasMessageContaining("minHeight must be <= 1073741822")
@@ -114,17 +117,20 @@ class SizeConstraintsTest {
     assertThat(c.hasExactWidth).isFalse
     assertThat(c.hasExactHeight).isFalse
     assertThat(c.isZeroSize).isFalse
-    assertThat(Size(width = 20, height = 200).fitsWithin(c)).isTrue
-    assertThat(Size(width = 100, height = 200).fitsWithin(c)).isFalse
-    assertThat(Size(width = 20, height = 400).fitsWithin(c)).isFalse
-    assertThat(Size(width = 100, height = 400).fitsWithin(c)).isFalse
+    assertThat(IntSize(width = 20, height = 200).fitsWithin(c)).isTrue
+    assertThat(IntSize(width = 100, height = 200).fitsWithin(c)).isFalse
+    assertThat(IntSize(width = 20, height = 400).fitsWithin(c)).isFalse
+    assertThat(IntSize(width = 100, height = 400).fitsWithin(c)).isFalse
   }
 
   @Test
   fun `create - bounded size constraints with zero min values and maximum supported max values - is successful`() {
-    val c =
-        SizeConstraints(
-            minWidth = 0, maxWidth = maxValue30Bits, minHeight = 0, maxHeight = maxValue30Bits)
+    val c = SizeConstraints(
+        minWidth = 0,
+        maxWidth = maxValue30Bits,
+        minHeight = 0,
+        maxHeight = maxValue30Bits,
+    )
     assertThat(c).isNotNull
     assertThat(c.minWidth).isEqualTo(0)
     assertThat(c.maxWidth).isEqualTo(maxValue30Bits)
@@ -135,10 +141,11 @@ class SizeConstraintsTest {
     assertThat(c.hasExactWidth).isFalse
     assertThat(c.hasExactHeight).isFalse
     assertThat(c.isZeroSize).isFalse
-    assertThat(Size(width = 20, height = 200).fitsWithin(c)).isTrue
-    assertThat(Size(width = maxValue30Bits + 1, height = 200).fitsWithin(c)).isFalse
-    assertThat(Size(width = 20, height = maxValue30Bits + 1).fitsWithin(c)).isFalse
-    assertThat(Size(width = maxValue30Bits + 1, height = maxValue30Bits + 1).fitsWithin(c)).isFalse
+    assertThat(IntSize(width = 20, height = 200).fitsWithin(c)).isTrue
+    assertThat(IntSize(width = maxValue30Bits + 1, height = 200).fitsWithin(c)).isFalse
+    assertThat(IntSize(width = 20, height = maxValue30Bits + 1).fitsWithin(c)).isFalse
+    assertThat(IntSize(width = maxValue30Bits + 1, height = maxValue30Bits + 1).fitsWithin(c))
+        .isFalse
   }
 
   @Test
@@ -148,7 +155,8 @@ class SizeConstraintsTest {
               minWidth = 0,
               maxWidth = maxValue30Bits + 1,
               minHeight = 0,
-              maxHeight = maxValue30Bits)
+              maxHeight = maxValue30Bits,
+          )
         }
         .isInstanceOf(IllegalArgumentException::class.java)
         .hasMessageContaining("maxWidth must be <= 1073741822")
@@ -161,7 +169,8 @@ class SizeConstraintsTest {
               minWidth = 0,
               maxWidth = maxValue30Bits,
               minHeight = 0,
-              maxHeight = maxValue30Bits + 1)
+              maxHeight = maxValue30Bits + 1,
+          )
         }
         .isInstanceOf(IllegalArgumentException::class.java)
         .hasMessageContaining("maxHeight must be <= 1073741822")
@@ -169,9 +178,12 @@ class SizeConstraintsTest {
 
   @Test
   fun `create - unbounded width size constraints with zero minWidth - is successful`() {
-    val c =
-        SizeConstraints(
-            minWidth = 0, maxWidth = SizeConstraints.Infinity, minHeight = 100, maxHeight = 300)
+    val c = SizeConstraints(
+        minWidth = 0,
+        maxWidth = SizeConstraints.Infinity,
+        minHeight = 100,
+        maxHeight = 300,
+    )
     assertThat(c).isNotNull
     assertThat(c.minWidth).isEqualTo(0)
     assertThat(c.maxWidth).isEqualTo(SizeConstraints.Infinity)
@@ -182,15 +194,18 @@ class SizeConstraintsTest {
     assertThat(c.hasExactWidth).isFalse
     assertThat(c.hasExactHeight).isFalse
     assertThat(c.isZeroSize).isFalse
-    assertThat(Size(width = 100, height = 200).fitsWithin(c)).isTrue
-    assertThat(Size(width = 100, height = 400).fitsWithin(c)).isFalse
+    assertThat(IntSize(width = 100, height = 200).fitsWithin(c)).isTrue
+    assertThat(IntSize(width = 100, height = 400).fitsWithin(c)).isFalse
   }
 
   @Test
   fun `create - unbounded height size constraints with zero minHeight - is successful`() {
-    val c =
-        SizeConstraints(
-            minWidth = 42, maxWidth = 84, minHeight = 0, maxHeight = SizeConstraints.Infinity)
+    val c = SizeConstraints(
+        minWidth = 42,
+        maxWidth = 84,
+        minHeight = 0,
+        maxHeight = SizeConstraints.Infinity,
+    )
     assertThat(c).isNotNull
     assertThat(c.minWidth).isEqualTo(42)
     assertThat(c.maxWidth).isEqualTo(84)
@@ -201,15 +216,18 @@ class SizeConstraintsTest {
     assertThat(c.hasExactWidth).isFalse
     assertThat(c.hasExactHeight).isFalse
     assertThat(c.isZeroSize).isFalse
-    assertThat(Size(width = 50, height = 100).fitsWithin(c)).isTrue
-    assertThat(Size(width = 100, height = 100).fitsWithin(c)).isFalse
+    assertThat(IntSize(width = 50, height = 100).fitsWithin(c)).isTrue
+    assertThat(IntSize(width = 100, height = 100).fitsWithin(c)).isFalse
   }
 
   @Test
   fun `create - unbounded width size constraints with non-zero minWidth - is successful`() {
-    val c =
-        SizeConstraints(
-            minWidth = 10, maxWidth = SizeConstraints.Infinity, minHeight = 100, maxHeight = 300)
+    val c = SizeConstraints(
+        minWidth = 10,
+        maxWidth = SizeConstraints.Infinity,
+        minHeight = 100,
+        maxHeight = 300,
+    )
     assertThat(c).isNotNull
     assertThat(c.minWidth).isEqualTo(10)
     assertThat(c.maxWidth).isEqualTo(SizeConstraints.Infinity)
@@ -220,17 +238,20 @@ class SizeConstraintsTest {
     assertThat(c.hasExactWidth).isFalse
     assertThat(c.hasExactHeight).isFalse
     assertThat(c.isZeroSize).isFalse
-    assertThat(Size(width = 20, height = 200).fitsWithin(c)).isTrue
-    assertThat(Size(width = 5, height = 200).fitsWithin(c)).isFalse
-    assertThat(Size(width = 20, height = 400).fitsWithin(c)).isFalse
-    assertThat(Size(width = 5, height = 400).fitsWithin(c)).isFalse
+    assertThat(IntSize(width = 20, height = 200).fitsWithin(c)).isTrue
+    assertThat(IntSize(width = 5, height = 200).fitsWithin(c)).isFalse
+    assertThat(IntSize(width = 20, height = 400).fitsWithin(c)).isFalse
+    assertThat(IntSize(width = 5, height = 400).fitsWithin(c)).isFalse
   }
 
   @Test
   fun `create - unbounded height size constraints with non-zero minHeight - is successful`() {
-    val c =
-        SizeConstraints(
-            minWidth = 42, maxWidth = 84, minHeight = 10, maxHeight = SizeConstraints.Infinity)
+    val c = SizeConstraints(
+        minWidth = 42,
+        maxWidth = 84,
+        minHeight = 10,
+        maxHeight = SizeConstraints.Infinity,
+    )
     assertThat(c).isNotNull
     assertThat(c.minWidth).isEqualTo(42)
     assertThat(c.maxWidth).isEqualTo(84)
@@ -241,20 +262,20 @@ class SizeConstraintsTest {
     assertThat(c.hasExactWidth).isFalse
     assertThat(c.hasExactHeight).isFalse
     assertThat(c.isZeroSize).isFalse
-    assertThat(Size(width = 50, height = 100).fitsWithin(c)).isTrue
-    assertThat(Size(width = 30, height = 100).fitsWithin(c)).isFalse
-    assertThat(Size(width = 50, height = 5).fitsWithin(c)).isFalse
-    assertThat(Size(width = 30, height = 5).fitsWithin(c)).isFalse
+    assertThat(IntSize(width = 50, height = 100).fitsWithin(c)).isTrue
+    assertThat(IntSize(width = 30, height = 100).fitsWithin(c)).isFalse
+    assertThat(IntSize(width = 50, height = 5).fitsWithin(c)).isFalse
+    assertThat(IntSize(width = 30, height = 5).fitsWithin(c)).isFalse
   }
 
   @Test
   fun `create - infinite size constraints - is successful`() {
-    val c =
-        SizeConstraints(
-            minWidth = SizeConstraints.Infinity,
-            maxWidth = SizeConstraints.Infinity,
-            minHeight = SizeConstraints.Infinity,
-            maxHeight = SizeConstraints.Infinity)
+    val c = SizeConstraints(
+        minWidth = SizeConstraints.Infinity,
+        maxWidth = SizeConstraints.Infinity,
+        minHeight = SizeConstraints.Infinity,
+        maxHeight = SizeConstraints.Infinity,
+    )
     assertThat(c).isNotNull
     assertThat(c.minWidth).isEqualTo(SizeConstraints.Infinity)
     assertThat(c.maxWidth).isEqualTo(SizeConstraints.Infinity)
@@ -266,19 +287,20 @@ class SizeConstraintsTest {
     assertThat(c.hasExactHeight).isTrue
     assertThat(c.isZeroSize).isFalse
     assertThat(
-            Size(width = SizeConstraints.Infinity, height = SizeConstraints.Infinity).fitsWithin(c))
+        IntSize(width = SizeConstraints.Infinity, height = SizeConstraints.Infinity).fitsWithin(c),
+    )
         .isTrue
-    assertThat(Size(width = 100, height = 100).fitsWithin(c)).isFalse
+    assertThat(IntSize(width = 100, height = 100).fitsWithin(c)).isFalse
   }
 
   @Test
   fun `create - range size constraints with maximum supported values - is successful`() {
-    val c =
-        SizeConstraints(
-            minWidth = maxValue13Bits,
-            maxWidth = maxValue18Bits,
-            minHeight = maxValue13Bits,
-            maxHeight = maxValue18Bits)
+    val c = SizeConstraints(
+        minWidth = maxValue13Bits,
+        maxWidth = maxValue18Bits,
+        minHeight = maxValue13Bits,
+        maxHeight = maxValue18Bits,
+    )
     assertThat(c).isNotNull
     assertThat(c.minWidth).isEqualTo(maxValue13Bits)
     assertThat(c.maxWidth).isEqualTo(maxValue18Bits)
@@ -289,10 +311,11 @@ class SizeConstraintsTest {
     assertThat(c.hasExactWidth).isFalse
     assertThat(c.hasExactHeight).isFalse
     assertThat(c.isZeroSize).isFalse
-    assertThat(Size(width = maxValue18Bits, height = maxValue18Bits).fitsWithin(c)).isTrue
-    assertThat(Size(width = maxValue18Bits + 1, height = maxValue18Bits).fitsWithin(c)).isFalse
-    assertThat(Size(width = maxValue18Bits, height = maxValue18Bits + 1).fitsWithin(c)).isFalse
-    assertThat(Size(width = maxValue18Bits + 1, height = maxValue18Bits + 1).fitsWithin(c)).isFalse
+    assertThat(IntSize(width = maxValue18Bits, height = maxValue18Bits).fitsWithin(c)).isTrue
+    assertThat(IntSize(width = maxValue18Bits + 1, height = maxValue18Bits).fitsWithin(c)).isFalse
+    assertThat(IntSize(width = maxValue18Bits, height = maxValue18Bits + 1).fitsWithin(c)).isFalse
+    assertThat(IntSize(width = maxValue18Bits + 1, height = maxValue18Bits + 1).fitsWithin(c))
+        .isFalse
   }
 
   @Test
@@ -302,7 +325,8 @@ class SizeConstraintsTest {
               minWidth = maxValue13Bits + 1,
               maxWidth = maxValue18Bits,
               minHeight = maxValue13Bits,
-              maxHeight = maxValue18Bits)
+              maxHeight = maxValue18Bits,
+          )
         }
         .isInstanceOf(IllegalArgumentException::class.java)
         .hasMessageContaining("minWidth must be <= 8190")
@@ -315,7 +339,8 @@ class SizeConstraintsTest {
               minWidth = maxValue13Bits,
               maxWidth = maxValue18Bits + 1,
               minHeight = maxValue13Bits,
-              maxHeight = maxValue18Bits)
+              maxHeight = maxValue18Bits,
+          )
         }
         .isInstanceOf(IllegalArgumentException::class.java)
         .hasMessageContaining("maxWidth must be <= 262142")
@@ -328,7 +353,8 @@ class SizeConstraintsTest {
               minWidth = maxValue13Bits,
               maxWidth = maxValue18Bits,
               minHeight = maxValue13Bits + 1,
-              maxHeight = maxValue18Bits)
+              maxHeight = maxValue18Bits,
+          )
         }
         .isInstanceOf(IllegalArgumentException::class.java)
         .hasMessageContaining("minHeight must be <= 8190")
@@ -341,7 +367,8 @@ class SizeConstraintsTest {
               minWidth = maxValue13Bits,
               maxWidth = maxValue18Bits,
               minHeight = maxValue13Bits,
-              maxHeight = maxValue18Bits + 1)
+              maxHeight = maxValue18Bits + 1,
+          )
         }
         .isInstanceOf(IllegalArgumentException::class.java)
         .hasMessageContaining("maxHeight must be <= 262142")
@@ -416,10 +443,10 @@ class SizeConstraintsTest {
     assertThat(c.hasExactWidth).isTrue
     assertThat(c.hasExactHeight).isTrue
     assertThat(c.isZeroSize).isFalse
-    assertThat(Size(width = 10, height = 10).fitsWithin(c)).isTrue
-    assertThat(Size(width = 20, height = 10).fitsWithin(c)).isFalse
-    assertThat(Size(width = 10, height = 20).fitsWithin(c)).isFalse
-    assertThat(Size(width = 20, height = 20).fitsWithin(c)).isFalse
+    assertThat(IntSize(width = 10, height = 10).fitsWithin(c)).isTrue
+    assertThat(IntSize(width = 20, height = 10).fitsWithin(c)).isFalse
+    assertThat(IntSize(width = 10, height = 20).fitsWithin(c)).isFalse
+    assertThat(IntSize(width = 20, height = 20).fitsWithin(c)).isFalse
   }
 
   @Test
@@ -430,7 +457,8 @@ class SizeConstraintsTest {
                 minWidth = maxValue30Bits,
                 maxWidth = maxValue30Bits,
                 minHeight = maxValue30Bits,
-                maxHeight = maxValue30Bits)
+                maxHeight = maxValue30Bits,
+            )
     assertThat(c).isNotNull
     assertThat(c.minWidth).isEqualTo(maxValue30Bits)
     assertThat(c.maxWidth).isEqualTo(maxValue30Bits)
@@ -441,10 +469,11 @@ class SizeConstraintsTest {
     assertThat(c.hasExactWidth).isTrue
     assertThat(c.hasExactHeight).isTrue
     assertThat(c.isZeroSize).isFalse
-    assertThat(Size(width = maxValue30Bits, height = maxValue30Bits).fitsWithin(c)).isTrue
-    assertThat(Size(width = maxValue30Bits + 1, height = maxValue30Bits).fitsWithin(c)).isFalse
-    assertThat(Size(width = maxValue30Bits, height = maxValue30Bits + 1).fitsWithin(c)).isFalse
-    assertThat(Size(width = maxValue30Bits + 1, height = maxValue30Bits + 1).fitsWithin(c)).isFalse
+    assertThat(IntSize(width = maxValue30Bits, height = maxValue30Bits).fitsWithin(c)).isTrue
+    assertThat(IntSize(width = maxValue30Bits + 1, height = maxValue30Bits).fitsWithin(c)).isFalse
+    assertThat(IntSize(width = maxValue30Bits, height = maxValue30Bits + 1).fitsWithin(c)).isFalse
+    assertThat(IntSize(width = maxValue30Bits + 1, height = maxValue30Bits + 1).fitsWithin(c))
+        .isFalse
   }
 
   @Test
@@ -455,7 +484,8 @@ class SizeConstraintsTest {
                   minWidth = maxValue30Bits + 1,
                   maxWidth = maxValue30Bits + 1,
                   minHeight = maxValue30Bits,
-                  maxHeight = maxValue30Bits)
+                  maxHeight = maxValue30Bits,
+              )
         }
         .isInstanceOf(IllegalArgumentException::class.java)
         .hasMessageContaining("minWidth must be <= 1073741822")
@@ -469,7 +499,8 @@ class SizeConstraintsTest {
                   minWidth = maxValue30Bits,
                   maxWidth = maxValue30Bits,
                   minHeight = maxValue30Bits + 1,
-                  maxHeight = maxValue30Bits + 1)
+                  maxHeight = maxValue30Bits + 1,
+              )
         }
         .isInstanceOf(IllegalArgumentException::class.java)
         .hasMessageContaining("minHeight must be <= 1073741822")
@@ -490,10 +521,10 @@ class SizeConstraintsTest {
     assertThat(c.hasExactWidth).isFalse
     assertThat(c.hasExactHeight).isFalse
     assertThat(c.isZeroSize).isFalse
-    assertThat(Size(width = 20, height = 200).fitsWithin(c)).isTrue
-    assertThat(Size(width = 5, height = 200).fitsWithin(c)).isFalse
-    assertThat(Size(width = 20, height = 400).fitsWithin(c)).isFalse
-    assertThat(Size(width = 5, height = 400).fitsWithin(c)).isFalse
+    assertThat(IntSize(width = 20, height = 200).fitsWithin(c)).isTrue
+    assertThat(IntSize(width = 5, height = 200).fitsWithin(c)).isFalse
+    assertThat(IntSize(width = 20, height = 400).fitsWithin(c)).isFalse
+    assertThat(IntSize(width = 5, height = 400).fitsWithin(c)).isFalse
   }
 
   @Test
@@ -501,7 +532,11 @@ class SizeConstraintsTest {
     val c =
         SizeConstraints(minWidth = 0, maxWidth = 0, minHeight = 0, maxHeight = 0)
             .copy(
-                minWidth = 0, maxWidth = maxValue30Bits, minHeight = 0, maxHeight = maxValue30Bits)
+                minWidth = 0,
+                maxWidth = maxValue30Bits,
+                minHeight = 0,
+                maxHeight = maxValue30Bits,
+            )
     assertThat(c).isNotNull
     assertThat(c.minWidth).isEqualTo(0)
     assertThat(c.maxWidth).isEqualTo(maxValue30Bits)
@@ -512,10 +547,11 @@ class SizeConstraintsTest {
     assertThat(c.hasExactWidth).isFalse
     assertThat(c.hasExactHeight).isFalse
     assertThat(c.isZeroSize).isFalse
-    assertThat(Size(width = 20, height = 200).fitsWithin(c)).isTrue
-    assertThat(Size(width = maxValue30Bits + 1, height = 200).fitsWithin(c)).isFalse
-    assertThat(Size(width = 20, height = maxValue30Bits + 1).fitsWithin(c)).isFalse
-    assertThat(Size(width = maxValue30Bits + 1, height = maxValue30Bits + 1).fitsWithin(c)).isFalse
+    assertThat(IntSize(width = 20, height = 200).fitsWithin(c)).isTrue
+    assertThat(IntSize(width = maxValue30Bits + 1, height = 200).fitsWithin(c)).isFalse
+    assertThat(IntSize(width = 20, height = maxValue30Bits + 1).fitsWithin(c)).isFalse
+    assertThat(IntSize(width = maxValue30Bits + 1, height = maxValue30Bits + 1).fitsWithin(c))
+        .isFalse
   }
 
   @Test
@@ -526,7 +562,8 @@ class SizeConstraintsTest {
                   minWidth = 0,
                   maxWidth = maxValue30Bits + 1,
                   minHeight = 0,
-                  maxHeight = maxValue30Bits)
+                  maxHeight = maxValue30Bits,
+              )
         }
         .isInstanceOf(IllegalArgumentException::class.java)
         .hasMessageContaining("maxWidth must be <= 1073741822")
@@ -540,7 +577,8 @@ class SizeConstraintsTest {
                   minWidth = 0,
                   maxWidth = maxValue30Bits,
                   minHeight = 0,
-                  maxHeight = maxValue30Bits + 1)
+                  maxHeight = maxValue30Bits + 1,
+              )
         }
         .isInstanceOf(IllegalArgumentException::class.java)
         .hasMessageContaining("maxHeight must be <= 1073741822")
@@ -551,7 +589,11 @@ class SizeConstraintsTest {
     val c =
         SizeConstraints(minWidth = 0, maxWidth = 0, minHeight = 0, maxHeight = 0)
             .copy(
-                minWidth = 0, maxWidth = SizeConstraints.Infinity, minHeight = 100, maxHeight = 300)
+                minWidth = 0,
+                maxWidth = SizeConstraints.Infinity,
+                minHeight = 100,
+                maxHeight = 300,
+            )
     assertThat(c).isNotNull
     assertThat(c.minWidth).isEqualTo(0)
     assertThat(c.maxWidth).isEqualTo(SizeConstraints.Infinity)
@@ -562,8 +604,8 @@ class SizeConstraintsTest {
     assertThat(c.hasExactWidth).isFalse
     assertThat(c.hasExactHeight).isFalse
     assertThat(c.isZeroSize).isFalse
-    assertThat(Size(width = 10, height = 200).fitsWithin(c)).isTrue
-    assertThat(Size(width = 10, height = 400).fitsWithin(c)).isFalse
+    assertThat(IntSize(width = 10, height = 200).fitsWithin(c)).isTrue
+    assertThat(IntSize(width = 10, height = 400).fitsWithin(c)).isFalse
   }
 
   @Test
@@ -581,8 +623,8 @@ class SizeConstraintsTest {
     assertThat(c.hasExactWidth).isFalse
     assertThat(c.hasExactHeight).isFalse
     assertThat(c.isZeroSize).isFalse
-    assertThat(Size(width = 50, height = 100).fitsWithin(c)).isTrue
-    assertThat(Size(width = 30, height = 100).fitsWithin(c)).isFalse
+    assertThat(IntSize(width = 50, height = 100).fitsWithin(c)).isTrue
+    assertThat(IntSize(width = 30, height = 100).fitsWithin(c)).isFalse
   }
 
   @Test
@@ -593,7 +635,8 @@ class SizeConstraintsTest {
                 minWidth = 10,
                 maxWidth = SizeConstraints.Infinity,
                 minHeight = 100,
-                maxHeight = 300)
+                maxHeight = 300,
+            )
     assertThat(c).isNotNull
     assertThat(c.minWidth).isEqualTo(10)
     assertThat(c.maxWidth).isEqualTo(SizeConstraints.Infinity)
@@ -604,10 +647,10 @@ class SizeConstraintsTest {
     assertThat(c.hasExactWidth).isFalse
     assertThat(c.hasExactHeight).isFalse
     assertThat(c.isZeroSize).isFalse
-    assertThat(Size(width = 20, height = 200).fitsWithin(c)).isTrue
-    assertThat(Size(width = 5, height = 200).fitsWithin(c)).isFalse
-    assertThat(Size(width = 20, height = 400).fitsWithin(c)).isFalse
-    assertThat(Size(width = 5, height = 400).fitsWithin(c)).isFalse
+    assertThat(IntSize(width = 20, height = 200).fitsWithin(c)).isTrue
+    assertThat(IntSize(width = 5, height = 200).fitsWithin(c)).isFalse
+    assertThat(IntSize(width = 20, height = 400).fitsWithin(c)).isFalse
+    assertThat(IntSize(width = 5, height = 400).fitsWithin(c)).isFalse
   }
 
   @Test
@@ -615,7 +658,11 @@ class SizeConstraintsTest {
     val c =
         SizeConstraints(minWidth = 0, maxWidth = 0, minHeight = 0, maxHeight = 0)
             .copy(
-                minWidth = 42, maxWidth = 84, minHeight = 10, maxHeight = SizeConstraints.Infinity)
+                minWidth = 42,
+                maxWidth = 84,
+                minHeight = 10,
+                maxHeight = SizeConstraints.Infinity,
+            )
     assertThat(c).isNotNull
     assertThat(c.minWidth).isEqualTo(42)
     assertThat(c.maxWidth).isEqualTo(84)
@@ -626,10 +673,10 @@ class SizeConstraintsTest {
     assertThat(c.hasExactWidth).isFalse
     assertThat(c.hasExactHeight).isFalse
     assertThat(c.isZeroSize).isFalse
-    assertThat(Size(width = 50, height = 100).fitsWithin(c)).isTrue
-    assertThat(Size(width = 30, height = 100).fitsWithin(c)).isFalse
-    assertThat(Size(width = 50, height = 5).fitsWithin(c)).isFalse
-    assertThat(Size(width = 30, height = 5).fitsWithin(c)).isFalse
+    assertThat(IntSize(width = 50, height = 100).fitsWithin(c)).isTrue
+    assertThat(IntSize(width = 30, height = 100).fitsWithin(c)).isFalse
+    assertThat(IntSize(width = 50, height = 5).fitsWithin(c)).isFalse
+    assertThat(IntSize(width = 30, height = 5).fitsWithin(c)).isFalse
   }
 
   @Test
@@ -640,7 +687,8 @@ class SizeConstraintsTest {
                 minWidth = SizeConstraints.Infinity,
                 maxWidth = SizeConstraints.Infinity,
                 minHeight = SizeConstraints.Infinity,
-                maxHeight = SizeConstraints.Infinity)
+                maxHeight = SizeConstraints.Infinity,
+            )
     assertThat(c).isNotNull
     assertThat(c.minWidth).isEqualTo(SizeConstraints.Infinity)
     assertThat(c.maxWidth).isEqualTo(SizeConstraints.Infinity)
@@ -652,9 +700,10 @@ class SizeConstraintsTest {
     assertThat(c.hasExactHeight).isTrue
     assertThat(c.isZeroSize).isFalse
     assertThat(
-            Size(width = SizeConstraints.Infinity, height = SizeConstraints.Infinity).fitsWithin(c))
+        IntSize(width = SizeConstraints.Infinity, height = SizeConstraints.Infinity).fitsWithin(c),
+    )
         .isTrue
-    assertThat(Size(width = 100, height = 100).fitsWithin(c)).isFalse
+    assertThat(IntSize(width = 100, height = 100).fitsWithin(c)).isFalse
   }
 
   @Test
@@ -665,7 +714,8 @@ class SizeConstraintsTest {
                 minWidth = maxValue13Bits,
                 maxWidth = maxValue18Bits,
                 minHeight = maxValue13Bits,
-                maxHeight = maxValue18Bits)
+                maxHeight = maxValue18Bits,
+            )
     assertThat(c).isNotNull
     assertThat(c.minWidth).isEqualTo(maxValue13Bits)
     assertThat(c.maxWidth).isEqualTo(maxValue18Bits)
@@ -676,10 +726,11 @@ class SizeConstraintsTest {
     assertThat(c.hasExactWidth).isFalse
     assertThat(c.hasExactHeight).isFalse
     assertThat(c.isZeroSize).isFalse
-    assertThat(Size(width = maxValue18Bits, height = maxValue18Bits).fitsWithin(c)).isTrue
-    assertThat(Size(width = maxValue18Bits + 1, height = maxValue18Bits).fitsWithin(c)).isFalse
-    assertThat(Size(width = maxValue18Bits, height = maxValue18Bits + 1).fitsWithin(c)).isFalse
-    assertThat(Size(width = maxValue18Bits + 1, height = maxValue18Bits + 1).fitsWithin(c)).isFalse
+    assertThat(IntSize(width = maxValue18Bits, height = maxValue18Bits).fitsWithin(c)).isTrue
+    assertThat(IntSize(width = maxValue18Bits + 1, height = maxValue18Bits).fitsWithin(c)).isFalse
+    assertThat(IntSize(width = maxValue18Bits, height = maxValue18Bits + 1).fitsWithin(c)).isFalse
+    assertThat(IntSize(width = maxValue18Bits + 1, height = maxValue18Bits + 1).fitsWithin(c))
+        .isFalse
   }
 
   @Test
@@ -690,7 +741,8 @@ class SizeConstraintsTest {
                   minWidth = maxValue13Bits + 1,
                   maxWidth = maxValue18Bits,
                   minHeight = maxValue13Bits,
-                  maxHeight = maxValue18Bits)
+                  maxHeight = maxValue18Bits,
+              )
         }
         .isInstanceOf(IllegalArgumentException::class.java)
         .hasMessageContaining("minWidth must be <= 8190")
@@ -704,7 +756,8 @@ class SizeConstraintsTest {
                   minWidth = maxValue13Bits,
                   maxWidth = maxValue18Bits + 1,
                   minHeight = maxValue13Bits,
-                  maxHeight = maxValue18Bits)
+                  maxHeight = maxValue18Bits,
+              )
         }
         .isInstanceOf(IllegalArgumentException::class.java)
         .hasMessageContaining("maxWidth must be <= 262142")
@@ -718,7 +771,8 @@ class SizeConstraintsTest {
                   minWidth = maxValue13Bits,
                   maxWidth = maxValue18Bits,
                   minHeight = maxValue13Bits + 1,
-                  maxHeight = maxValue18Bits)
+                  maxHeight = maxValue18Bits,
+              )
         }
         .isInstanceOf(IllegalArgumentException::class.java)
         .hasMessageContaining("minHeight must be <= 8190")
@@ -732,7 +786,8 @@ class SizeConstraintsTest {
                   minWidth = maxValue13Bits,
                   maxWidth = maxValue18Bits,
                   minHeight = maxValue13Bits,
-                  maxHeight = maxValue18Bits + 1)
+                  maxHeight = maxValue18Bits + 1,
+              )
         }
         .isInstanceOf(IllegalArgumentException::class.java)
         .hasMessageContaining("maxHeight must be <= 262142")
@@ -813,7 +868,9 @@ class SizeConstraintsTest {
   fun `create - size constraints with exact width and exact height measure specs with max supported values - is successful`() {
     val c =
         SizeConstraints.fromMeasureSpecs(
-            MeasureSpecUtils.exactly(maxValue30Bits), MeasureSpecUtils.exactly(maxValue30Bits))
+            MeasureSpecUtils.exactly(maxValue30Bits),
+            MeasureSpecUtils.exactly(maxValue30Bits),
+        )
     assertThat(c).isNotNull
     assertThat(c.minWidth).isEqualTo(maxValue30Bits)
     assertThat(c.maxWidth).isEqualTo(maxValue30Bits)
@@ -825,7 +882,9 @@ class SizeConstraintsTest {
   fun `create - size constraints with at most width and unspecified height measure specs - is successful`() {
     val c =
         SizeConstraints.fromMeasureSpecs(
-            MeasureSpecUtils.atMost(10), MeasureSpecUtils.unspecified())
+            MeasureSpecUtils.atMost(10),
+            MeasureSpecUtils.unspecified(),
+        )
     assertThat(c).isNotNull
     assertThat(c.minWidth).isEqualTo(0)
     assertThat(c.maxWidth).isEqualTo(10)
@@ -837,7 +896,9 @@ class SizeConstraintsTest {
   fun `create - size constraints with at most max supported value width and unspecified height measure specs - is successful`() {
     val c =
         SizeConstraints.fromMeasureSpecs(
-            MeasureSpecUtils.atMost(maxValue30Bits), MeasureSpecUtils.unspecified())
+            MeasureSpecUtils.atMost(maxValue30Bits),
+            MeasureSpecUtils.unspecified(),
+        )
     assertThat(c).isNotNull
     assertThat(c.minWidth).isEqualTo(0)
     assertThat(c.maxWidth).isEqualTo(maxValue30Bits)
@@ -849,7 +910,9 @@ class SizeConstraintsTest {
   fun `create - size constraints with unspecified width and at most height measure specs - is successful`() {
     val c =
         SizeConstraints.fromMeasureSpecs(
-            MeasureSpecUtils.unspecified(), MeasureSpecUtils.atMost(10))
+            MeasureSpecUtils.unspecified(),
+            MeasureSpecUtils.atMost(10),
+        )
     assertThat(c).isNotNull
     assertThat(c.minWidth).isEqualTo(0)
     assertThat(c.maxWidth).isEqualTo(SizeConstraints.Infinity)
@@ -861,7 +924,9 @@ class SizeConstraintsTest {
   fun `create - size constraints with unspecified width and at most max supported value height measure specs - is successful`() {
     val c =
         SizeConstraints.fromMeasureSpecs(
-            MeasureSpecUtils.unspecified(), MeasureSpecUtils.atMost(maxValue30Bits))
+            MeasureSpecUtils.unspecified(),
+            MeasureSpecUtils.atMost(maxValue30Bits),
+        )
     assertThat(c).isNotNull
     assertThat(c.minWidth).isEqualTo(0)
     assertThat(c.maxWidth).isEqualTo(SizeConstraints.Infinity)
@@ -873,7 +938,9 @@ class SizeConstraintsTest {
   fun `create - size constraints with at most max supported value width and at most max supported value height measure specs - is successful`() {
     val c =
         SizeConstraints.fromMeasureSpecs(
-            MeasureSpecUtils.atMost(maxValue30Bits), MeasureSpecUtils.atMost(maxValue30Bits))
+            MeasureSpecUtils.atMost(maxValue30Bits),
+            MeasureSpecUtils.atMost(maxValue30Bits),
+        )
     assertThat(c).isNotNull
     assertThat(c.minWidth).isEqualTo(0)
     assertThat(c.maxWidth).isEqualTo(maxValue30Bits)
@@ -894,12 +961,12 @@ class SizeConstraintsTest {
 
   @Test
   fun `convert - size constraints to unspecified width and unspecified height measure specs - is successful`() {
-    val c =
-        SizeConstraints(
-            minWidth = 0,
-            maxWidth = SizeConstraints.Infinity,
-            minHeight = 0,
-            maxHeight = SizeConstraints.Infinity)
+    val c = SizeConstraints(
+        minWidth = 0,
+        maxWidth = SizeConstraints.Infinity,
+        minHeight = 0,
+        maxHeight = SizeConstraints.Infinity,
+    )
     val widthSpec = c.toWidthSpec()
     val heightSpec = c.toHeightSpec()
     assertThat(MeasureSpecUtils.getMode(widthSpec)).isEqualTo(View.MeasureSpec.UNSPECIFIED)
@@ -932,12 +999,12 @@ class SizeConstraintsTest {
 
   @Test
   fun `convert - size constraints to unspecified width and unspecified height measure specs - is lossy`() {
-    val c =
-        SizeConstraints(
-            minWidth = 50,
-            maxWidth = SizeConstraints.Infinity,
-            minHeight = 120,
-            maxHeight = SizeConstraints.Infinity)
+    val c = SizeConstraints(
+        minWidth = 50,
+        maxWidth = SizeConstraints.Infinity,
+        minHeight = 120,
+        maxHeight = SizeConstraints.Infinity,
+    )
     val widthSpec = c.toWidthSpec()
     val heightSpec = c.toHeightSpec()
     assertThat(MeasureSpecUtils.getMode(widthSpec)).isEqualTo(View.MeasureSpec.UNSPECIFIED)
@@ -948,12 +1015,12 @@ class SizeConstraintsTest {
 
   @Test
   fun `subtract - one from infinite maxWidth - should throw`() {
-    val constraints =
-        SizeConstraints(
-            minWidth = 0,
-            maxWidth = SizeConstraints.Infinity,
-            minHeight = 0,
-            maxHeight = SizeConstraints.Infinity)
+    val constraints = SizeConstraints(
+        minWidth = 0,
+        maxWidth = SizeConstraints.Infinity,
+        minHeight = 0,
+        maxHeight = SizeConstraints.Infinity,
+    )
     assertThatThrownBy { constraints.copy(maxWidth = constraints.maxWidth - 1) }
         .isInstanceOf(IllegalArgumentException::class.java)
         .hasMessageContaining("maxWidth must be <= $maxValue30Bits")
@@ -961,12 +1028,12 @@ class SizeConstraintsTest {
 
   @Test
   fun `add - one to infinite maxWidth - should throw`() {
-    val constraints =
-        SizeConstraints(
-            minWidth = 0,
-            maxWidth = SizeConstraints.Infinity,
-            minHeight = 0,
-            maxHeight = SizeConstraints.Infinity)
+    val constraints = SizeConstraints(
+        minWidth = 0,
+        maxWidth = SizeConstraints.Infinity,
+        minHeight = 0,
+        maxHeight = SizeConstraints.Infinity,
+    )
     assertThatThrownBy { constraints.copy(maxWidth = constraints.maxWidth + 1) }
         .isInstanceOf(IllegalArgumentException::class.java)
         .hasMessageContaining("maxWidth must be >= minWidth")
@@ -974,12 +1041,12 @@ class SizeConstraintsTest {
 
   @Test
   fun `subtract - one from infinite maxHeight - should throw`() {
-    val constraints =
-        SizeConstraints(
-            minWidth = 0,
-            maxWidth = SizeConstraints.Infinity,
-            minHeight = 0,
-            maxHeight = SizeConstraints.Infinity)
+    val constraints = SizeConstraints(
+        minWidth = 0,
+        maxWidth = SizeConstraints.Infinity,
+        minHeight = 0,
+        maxHeight = SizeConstraints.Infinity,
+    )
     assertThatThrownBy { constraints.copy(maxHeight = constraints.maxHeight - 1) }
         .isInstanceOf(IllegalArgumentException::class.java)
         .hasMessageContaining("maxHeight must be <= $maxValue30Bits")
@@ -987,12 +1054,12 @@ class SizeConstraintsTest {
 
   @Test
   fun `add - one to infinite maxHeight - should throw`() {
-    val constraints =
-        SizeConstraints(
-            minWidth = 0,
-            maxWidth = SizeConstraints.Infinity,
-            minHeight = 0,
-            maxHeight = SizeConstraints.Infinity)
+    val constraints = SizeConstraints(
+        minWidth = 0,
+        maxWidth = SizeConstraints.Infinity,
+        minHeight = 0,
+        maxHeight = SizeConstraints.Infinity,
+    )
     assertThatThrownBy { constraints.copy(maxHeight = constraints.maxHeight + 1) }
         .isInstanceOf(IllegalArgumentException::class.java)
         .hasMessageContaining("maxHeight must be >= minHeight")
@@ -1004,7 +1071,7 @@ class SizeConstraintsTest {
         SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 0, maxHeight = 100)
     val newConstraints =
         SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 0, maxHeight = 100)
-    val size = Size(width = 10, height = 20)
+    val size = IntSize(width = 10, height = 20)
     assertThat(newConstraints.areCompatible(oldConstraints, size)).isTrue
   }
 
@@ -1014,7 +1081,7 @@ class SizeConstraintsTest {
         SizeConstraints(minWidth = 10, maxWidth = 10, minHeight = 0, maxHeight = 100)
     val newConstraints =
         SizeConstraints(minWidth = 10, maxWidth = 10, minHeight = 0, maxHeight = 100)
-    val size = Size(width = 10, height = 20)
+    val size = IntSize(width = 10, height = 20)
     assertThat(newConstraints.areCompatible(oldConstraints, size)).isTrue
   }
 
@@ -1024,7 +1091,7 @@ class SizeConstraintsTest {
         SizeConstraints(minWidth = 20, maxWidth = 20, minHeight = 0, maxHeight = 100)
     val newConstraints =
         SizeConstraints(minWidth = 10, maxWidth = 10, minHeight = 0, maxHeight = 100)
-    val size = Size(width = 10, height = 20)
+    val size = IntSize(width = 10, height = 20)
     assertThat(newConstraints.areCompatible(oldConstraints, size)).isTrue
   }
 
@@ -1034,7 +1101,7 @@ class SizeConstraintsTest {
         SizeConstraints(minWidth = 0, maxWidth = 10, minHeight = 0, maxHeight = 100)
     val newConstraints =
         SizeConstraints(minWidth = 10, maxWidth = 10, minHeight = 0, maxHeight = 100)
-    val size = Size(width = 10, height = 20)
+    val size = IntSize(width = 10, height = 20)
     assertThat(newConstraints.areCompatible(oldConstraints, size)).isTrue
   }
 
@@ -1044,75 +1111,99 @@ class SizeConstraintsTest {
         SizeConstraints(minWidth = 0, maxWidth = 10, minHeight = 0, maxHeight = 100)
     val newConstraints =
         SizeConstraints(minWidth = 10, maxWidth = 10, minHeight = 0, maxHeight = 100)
-    val size = Size(width = 5, height = 20)
+    val size = IntSize(width = 5, height = 20)
     assertThat(newConstraints.areCompatible(oldConstraints, size)).isFalse
   }
 
   @Test
   fun `compatibility - height fits, old and new max widths are unbounded and size width fits min width - are compatible`() {
-    val oldConstraints =
-        SizeConstraints(
-            minWidth = 0, maxWidth = SizeConstraints.Infinity, minHeight = 0, maxHeight = 100)
-    val newConstraints =
-        SizeConstraints(
-            minWidth = 0, maxWidth = SizeConstraints.Infinity, minHeight = 0, maxHeight = 100)
-    val size = Size(width = 10, height = 20)
+    val oldConstraints = SizeConstraints(
+        minWidth = 0,
+        maxWidth = SizeConstraints.Infinity,
+        minHeight = 0,
+        maxHeight = 100,
+    )
+    val newConstraints = SizeConstraints(
+        minWidth = 0,
+        maxWidth = SizeConstraints.Infinity,
+        minHeight = 0,
+        maxHeight = 100,
+    )
+    val size = IntSize(width = 10, height = 20)
     assertThat(newConstraints.areCompatible(oldConstraints, size)).isTrue
   }
 
   @Test
   fun `compatibility - height fits, old and new max widths are unbounded and size width doesn't fit min width - are not compatible`() {
-    val oldConstraints =
-        SizeConstraints(
-            minWidth = 0, maxWidth = SizeConstraints.Infinity, minHeight = 0, maxHeight = 100)
-    val newConstraints =
-        SizeConstraints(
-            minWidth = 20, maxWidth = SizeConstraints.Infinity, minHeight = 0, maxHeight = 100)
-    val size = Size(width = 10, height = 20)
+    val oldConstraints = SizeConstraints(
+        minWidth = 0,
+        maxWidth = SizeConstraints.Infinity,
+        minHeight = 0,
+        maxHeight = 100,
+    )
+    val newConstraints = SizeConstraints(
+        minWidth = 20,
+        maxWidth = SizeConstraints.Infinity,
+        minHeight = 0,
+        maxHeight = 100,
+    )
+    val size = IntSize(width = 10, height = 20)
     assertThat(newConstraints.areCompatible(oldConstraints, size)).isFalse
   }
 
   @Test
   fun `compatibility - height fits, new width is exact and matches size width - are compatible`() {
-    val oldConstraints =
-        SizeConstraints(
-            minWidth = 0, maxWidth = SizeConstraints.Infinity, minHeight = 0, maxHeight = 100)
+    val oldConstraints = SizeConstraints(
+        minWidth = 0,
+        maxWidth = SizeConstraints.Infinity,
+        minHeight = 0,
+        maxHeight = 100,
+    )
     val newConstraints =
         SizeConstraints(minWidth = 10, maxWidth = 10, minHeight = 0, maxHeight = 100)
-    val size = Size(width = 10, height = 20)
+    val size = IntSize(width = 10, height = 20)
     assertThat(newConstraints.areCompatible(oldConstraints, size)).isTrue
   }
 
   @Test
   fun `compatibility - height fits, old width is unbounded, new width is bounded and size width fits - are compatible`() {
-    val oldConstraints =
-        SizeConstraints(
-            minWidth = 0, maxWidth = SizeConstraints.Infinity, minHeight = 0, maxHeight = 100)
+    val oldConstraints = SizeConstraints(
+        minWidth = 0,
+        maxWidth = SizeConstraints.Infinity,
+        minHeight = 0,
+        maxHeight = 100,
+    )
     val newConstraints =
         SizeConstraints(minWidth = 5, maxWidth = 30, minHeight = 0, maxHeight = 100)
-    val size = Size(width = 10, height = 20)
+    val size = IntSize(width = 10, height = 20)
     assertThat(newConstraints.areCompatible(oldConstraints, size)).isTrue
   }
 
   @Test
   fun `compatibility - height fits, old width is unbounded, new width is bounded and size width doesn't fit min width - are not compatible`() {
-    val oldConstraints =
-        SizeConstraints(
-            minWidth = 0, maxWidth = SizeConstraints.Infinity, minHeight = 0, maxHeight = 100)
+    val oldConstraints = SizeConstraints(
+        minWidth = 0,
+        maxWidth = SizeConstraints.Infinity,
+        minHeight = 0,
+        maxHeight = 100,
+    )
     val newConstraints =
         SizeConstraints(minWidth = 15, maxWidth = 30, minHeight = 0, maxHeight = 100)
-    val size = Size(width = 10, height = 20)
+    val size = IntSize(width = 10, height = 20)
     assertThat(newConstraints.areCompatible(oldConstraints, size)).isFalse
   }
 
   @Test
   fun `compatibility - height fits, old width is unbounded, new width is bounded and size width doesn't fit max width - are not compatible`() {
-    val oldConstraints =
-        SizeConstraints(
-            minWidth = 0, maxWidth = SizeConstraints.Infinity, minHeight = 0, maxHeight = 100)
+    val oldConstraints = SizeConstraints(
+        minWidth = 0,
+        maxWidth = SizeConstraints.Infinity,
+        minHeight = 0,
+        maxHeight = 100,
+    )
     val newConstraints =
         SizeConstraints(minWidth = 5, maxWidth = 10, minHeight = 0, maxHeight = 100)
-    val size = Size(width = 15, height = 20)
+    val size = IntSize(width = 15, height = 20)
     assertThat(newConstraints.areCompatible(oldConstraints, size)).isFalse
   }
 
@@ -1122,7 +1213,7 @@ class SizeConstraintsTest {
         SizeConstraints(minWidth = 5, maxWidth = 20, minHeight = 0, maxHeight = 100)
     val newConstraints =
         SizeConstraints(minWidth = 5, maxWidth = 15, minHeight = 0, maxHeight = 100)
-    val size = Size(width = 10, height = 20)
+    val size = IntSize(width = 10, height = 20)
     assertThat(newConstraints.areCompatible(oldConstraints, size)).isTrue
   }
 
@@ -1132,7 +1223,7 @@ class SizeConstraintsTest {
         SizeConstraints(minWidth = 5, maxWidth = 20, minHeight = 0, maxHeight = 100)
     val newConstraints =
         SizeConstraints(minWidth = 10, maxWidth = 20, minHeight = 0, maxHeight = 100)
-    val size = Size(width = 15, height = 20)
+    val size = IntSize(width = 15, height = 20)
     assertThat(newConstraints.areCompatible(oldConstraints, size)).isTrue
   }
 
@@ -1142,7 +1233,7 @@ class SizeConstraintsTest {
         SizeConstraints(minWidth = 5, maxWidth = 20, minHeight = 0, maxHeight = 100)
     val newConstraints =
         SizeConstraints(minWidth = 10, maxWidth = 15, minHeight = 0, maxHeight = 100)
-    val size = Size(width = 15, height = 20)
+    val size = IntSize(width = 15, height = 20)
     assertThat(newConstraints.areCompatible(oldConstraints, size)).isTrue
   }
 
@@ -1152,7 +1243,7 @@ class SizeConstraintsTest {
         SizeConstraints(minWidth = 5, maxWidth = 20, minHeight = 0, maxHeight = 100)
     val newConstraints =
         SizeConstraints(minWidth = 10, maxWidth = 15, minHeight = 0, maxHeight = 100)
-    val size = Size(width = 5, height = 20)
+    val size = IntSize(width = 5, height = 20)
     assertThat(newConstraints.areCompatible(oldConstraints, size)).isFalse
   }
 
@@ -1162,7 +1253,7 @@ class SizeConstraintsTest {
         SizeConstraints(minWidth = 5, maxWidth = 20, minHeight = 0, maxHeight = 100)
     val newConstraints =
         SizeConstraints(minWidth = 10, maxWidth = 15, minHeight = 0, maxHeight = 100)
-    val size = Size(width = 20, height = 20)
+    val size = IntSize(width = 20, height = 20)
     assertThat(newConstraints.areCompatible(oldConstraints, size)).isFalse
   }
 
@@ -1172,7 +1263,7 @@ class SizeConstraintsTest {
         SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 10, maxHeight = 10)
     val newConstraints =
         SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 10, maxHeight = 10)
-    val size = Size(width = 20, height = 10)
+    val size = IntSize(width = 20, height = 10)
     assertThat(newConstraints.areCompatible(oldConstraints, size)).isTrue
   }
 
@@ -1182,7 +1273,7 @@ class SizeConstraintsTest {
         SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 20, maxHeight = 20)
     val newConstraints =
         SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 10, maxHeight = 10)
-    val size = Size(width = 20, height = 10)
+    val size = IntSize(width = 20, height = 10)
     assertThat(newConstraints.areCompatible(oldConstraints, size)).isTrue
   }
 
@@ -1192,7 +1283,7 @@ class SizeConstraintsTest {
         SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 0, maxHeight = 10)
     val newConstraints =
         SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 10, maxHeight = 10)
-    val size = Size(width = 20, height = 10)
+    val size = IntSize(width = 20, height = 10)
     assertThat(newConstraints.areCompatible(oldConstraints, size)).isTrue
   }
 
@@ -1202,75 +1293,99 @@ class SizeConstraintsTest {
         SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 0, maxHeight = 10)
     val newConstraints =
         SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 10, maxHeight = 10)
-    val size = Size(width = 20, height = 5)
+    val size = IntSize(width = 20, height = 5)
     assertThat(newConstraints.areCompatible(oldConstraints, size)).isFalse
   }
 
   @Test
   fun `compatibility - width fits, old and new max heights are unbounded and size height fits min height - are compatible`() {
-    val oldConstraints =
-        SizeConstraints(
-            minWidth = 0, maxWidth = 100, minHeight = 0, maxHeight = SizeConstraints.Infinity)
-    val newConstraints =
-        SizeConstraints(
-            minWidth = 0, maxWidth = 100, minHeight = 0, maxHeight = SizeConstraints.Infinity)
-    val size = Size(width = 20, height = 10)
+    val oldConstraints = SizeConstraints(
+        minWidth = 0,
+        maxWidth = 100,
+        minHeight = 0,
+        maxHeight = SizeConstraints.Infinity,
+    )
+    val newConstraints = SizeConstraints(
+        minWidth = 0,
+        maxWidth = 100,
+        minHeight = 0,
+        maxHeight = SizeConstraints.Infinity,
+    )
+    val size = IntSize(width = 20, height = 10)
     assertThat(newConstraints.areCompatible(oldConstraints, size)).isTrue
   }
 
   @Test
   fun `compatibility - width fits, old and new max heights are unbounded and size height doesn't fit min height - are not compatible`() {
-    val oldConstraints =
-        SizeConstraints(
-            minWidth = 0, maxWidth = 100, minHeight = 0, maxHeight = SizeConstraints.Infinity)
-    val newConstraints =
-        SizeConstraints(
-            minWidth = 0, maxWidth = 100, minHeight = 20, maxHeight = SizeConstraints.Infinity)
-    val size = Size(width = 20, height = 10)
+    val oldConstraints = SizeConstraints(
+        minWidth = 0,
+        maxWidth = 100,
+        minHeight = 0,
+        maxHeight = SizeConstraints.Infinity,
+    )
+    val newConstraints = SizeConstraints(
+        minWidth = 0,
+        maxWidth = 100,
+        minHeight = 20,
+        maxHeight = SizeConstraints.Infinity,
+    )
+    val size = IntSize(width = 20, height = 10)
     assertThat(newConstraints.areCompatible(oldConstraints, size)).isFalse
   }
 
   @Test
   fun `compatibility - width fits, new height is exact and matches size height - are compatible`() {
-    val oldConstraints =
-        SizeConstraints(
-            minWidth = 0, maxWidth = 100, minHeight = 0, maxHeight = SizeConstraints.Infinity)
+    val oldConstraints = SizeConstraints(
+        minWidth = 0,
+        maxWidth = 100,
+        minHeight = 0,
+        maxHeight = SizeConstraints.Infinity,
+    )
     val newConstraints =
         SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 10, maxHeight = 10)
-    val size = Size(width = 20, height = 10)
+    val size = IntSize(width = 20, height = 10)
     assertThat(newConstraints.areCompatible(oldConstraints, size)).isTrue
   }
 
   @Test
   fun `compatibility - width fits, old height is unbounded, new height is bounded and size height fits - are compatible`() {
-    val oldConstraints =
-        SizeConstraints(
-            minWidth = 0, maxWidth = 100, minHeight = 0, maxHeight = SizeConstraints.Infinity)
+    val oldConstraints = SizeConstraints(
+        minWidth = 0,
+        maxWidth = 100,
+        minHeight = 0,
+        maxHeight = SizeConstraints.Infinity,
+    )
     val newConstraints =
         SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 5, maxHeight = 30)
-    val size = Size(width = 20, height = 10)
+    val size = IntSize(width = 20, height = 10)
     assertThat(newConstraints.areCompatible(oldConstraints, size)).isTrue
   }
 
   @Test
   fun `compatibility - width fits, old height is unbounded, new height is bounded and size height doesn't fit min height - are not compatible`() {
-    val oldConstraints =
-        SizeConstraints(
-            minWidth = 0, maxWidth = 100, minHeight = 0, maxHeight = SizeConstraints.Infinity)
+    val oldConstraints = SizeConstraints(
+        minWidth = 0,
+        maxWidth = 100,
+        minHeight = 0,
+        maxHeight = SizeConstraints.Infinity,
+    )
     val newConstraints =
         SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 15, maxHeight = 30)
-    val size = Size(width = 20, height = 10)
+    val size = IntSize(width = 20, height = 10)
     assertThat(newConstraints.areCompatible(oldConstraints, size)).isFalse
   }
 
   @Test
   fun `compatibility - width fits, old height is unbounded, new height is bounded and size height doesn't fit max height - are not compatible`() {
-    val oldConstraints =
-        SizeConstraints(
-            minWidth = 0, maxWidth = 100, minHeight = 0, maxHeight = SizeConstraints.Infinity)
+    val oldConstraints = SizeConstraints(
+        minWidth = 0,
+        maxWidth = 100,
+        minHeight = 0,
+        maxHeight = SizeConstraints.Infinity,
+    )
     val newConstraints =
         SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 5, maxHeight = 10)
-    val size = Size(width = 20, height = 15)
+    val size = IntSize(width = 20, height = 15)
     assertThat(newConstraints.areCompatible(oldConstraints, size)).isFalse
   }
 
@@ -1280,7 +1395,7 @@ class SizeConstraintsTest {
         SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 5, maxHeight = 20)
     val newConstraints =
         SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 5, maxHeight = 15)
-    val size = Size(width = 20, height = 10)
+    val size = IntSize(width = 20, height = 10)
     assertThat(newConstraints.areCompatible(oldConstraints, size)).isTrue
   }
 
@@ -1290,7 +1405,7 @@ class SizeConstraintsTest {
         SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 5, maxHeight = 20)
     val newConstraints =
         SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 10, maxHeight = 20)
-    val size = Size(width = 20, height = 15)
+    val size = IntSize(width = 20, height = 15)
     assertThat(newConstraints.areCompatible(oldConstraints, size)).isTrue
   }
 
@@ -1300,7 +1415,7 @@ class SizeConstraintsTest {
         SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 5, maxHeight = 20)
     val newConstraints =
         SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 10, maxHeight = 15)
-    val size = Size(width = 20, height = 15)
+    val size = IntSize(width = 20, height = 15)
     assertThat(newConstraints.areCompatible(oldConstraints, size)).isTrue
   }
 
@@ -1310,7 +1425,7 @@ class SizeConstraintsTest {
         SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 5, maxHeight = 20)
     val newConstraints =
         SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 10, maxHeight = 15)
-    val size = Size(width = 20, height = 5)
+    val size = IntSize(width = 20, height = 5)
     assertThat(newConstraints.areCompatible(oldConstraints, size)).isFalse
   }
 
@@ -1320,7 +1435,7 @@ class SizeConstraintsTest {
         SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 5, maxHeight = 20)
     val newConstraints =
         SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 10, maxHeight = 15)
-    val size = Size(width = 20, height = 20)
+    val size = IntSize(width = 20, height = 20)
     assertThat(newConstraints.areCompatible(oldConstraints, size)).isFalse
   }
 }

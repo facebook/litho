@@ -18,8 +18,10 @@ package com.facebook.litho
 
 import android.util.Pair
 import androidx.annotation.VisibleForTesting
+import com.facebook.litho.state.DirtyScopeIndex
 
 class ResolveContext
+@JvmOverloads
 constructor(
     override val treeId: Int,
     override val cache: MeasuredResultCache,
@@ -28,17 +30,20 @@ constructor(
     override val rootComponentId: Int,
     override val isAccessibilityEnabled: Boolean,
     treeFuture: TreeFuture<*>?,
-    val currentRoot: LithoNode?,
+    val currentResolveResult: ResolveResult?,
     val isInLayout: Boolean,
+    override val scopesToUpdate: DirtyScopeIndex = DirtyScopeIndex.EMPTY,
+    enclosingLayoutContext: LithoLayoutContext? = null,
 ) : CalculationContext {
 
   private var _treeState: TreeState? = treeState
   private var _future: TreeFuture<*>? = treeFuture
+  private var _enclosingLayoutContext: LithoLayoutContext? = enclosingLayoutContext
 
   private var _isInterruptible: Boolean = treeFuture?.isInterruptible ?: false
 
   private var _cachedNodes: MutableMap<Int, LithoNode?>? = null
-  private var _eventHandlers: MutableList<Pair<String, EventHandler<*>>>? = null
+  private var _eventHandlers: MutableList<Pair<GlobalKey, EventHandler<*>>>? = null
 
   override val treeFuture: TreeFuture<*>?
     get() {
@@ -56,12 +61,15 @@ constructor(
       return checkNotNull(_treeState)
     }
 
-  override val eventHandlers: List<Pair<String, EventHandler<*>>>?
+  override val eventHandlers: List<Pair<GlobalKey, EventHandler<*>>>?
     get() {
       return _eventHandlers
     }
 
-  override fun recordEventHandler(globalKey: String, eventHandler: EventHandler<*>) {
+  internal val enclosingLayoutContext: LithoLayoutContext?
+    get() = _enclosingLayoutContext
+
+  override fun recordEventHandler(globalKey: GlobalKey, eventHandler: EventHandler<*>) {
     (_eventHandlers ?: ArrayList()).apply {
       _eventHandlers = this
       add(Pair(globalKey, eventHandler))
@@ -103,5 +111,6 @@ constructor(
     _cachedNodes = null
     _future = null
     _treeState = null
+    _enclosingLayoutContext = null
   }
 }

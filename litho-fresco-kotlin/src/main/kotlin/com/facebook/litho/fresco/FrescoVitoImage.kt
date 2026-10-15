@@ -27,7 +27,7 @@ inline fun ResourcesScope.FrescoVitoImage(
     imageSource: ImageSource,
     imageOptions: ImageOptions,
     callerContext: Any,
-    imageAspectRatio: Float
+    imageAspectRatio: Float,
 ): FrescoVitoImage2 =
     FrescoVitoImage2.create(context)
         .imageSource(imageSource)

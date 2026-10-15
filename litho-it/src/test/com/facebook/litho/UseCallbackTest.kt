@@ -18,6 +18,7 @@ package com.facebook.litho
 
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
+import com.facebook.litho.layout.flexbox.Row
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.onClick
@@ -36,7 +37,7 @@ import org.robolectric.annotation.LooperMode
 @RunWith(LithoTestRunner::class)
 class UseCallbackTest {
 
-  @Rule @JvmField val mLithoTestRule = LithoTestRule()
+  @Rule @JvmField val lithoTestRule = LithoTestRule()
 
   @Test
   fun useCallbackWithCollection_whenUseCallbackCapturesState_stateInCallbackIsUpToDate() {
@@ -67,7 +68,9 @@ class UseCallbackTest {
                         style = Style.viewTag("item_$item"),
                         item = item,
                         onRowClick = clickCallback,
-                        renderCount = renderCount))
+                        renderCount = renderCount,
+                    ),
+            )
           }
         }
       }
@@ -75,20 +78,21 @@ class UseCallbackTest {
 
     val selectionEvents = mutableListOf<List<Int>>()
     val lithoView =
-        mLithoTestRule.render(widthPx = 1000, heightPx = 1000) {
+        lithoTestRule.render(widthPx = 1000, heightPx = 1000) {
           CollectionWithSelectedRows(
               data = listOf(1, 2, 3, 4, 5),
               onSelectedChanged = { list -> selectionEvents.add(list) },
-              renderCount = renderCount)
+              renderCount = renderCount,
+          )
         }
 
     assertThat(renderCount.get()).isEqualTo(5)
 
-    mLithoTestRule.act(lithoView) { clickOnTag("item_1") }
+    lithoTestRule.act(lithoView) { clickOnTag("item_1") }
 
     assertThat(renderCount.get()).isEqualTo(5)
 
-    mLithoTestRule.act(lithoView) { clickOnTag("item_2") }
+    lithoTestRule.act(lithoView) { clickOnTag("item_2") }
 
     assertThat(selectionEvents).containsExactly(listOf(), listOf(1), listOf(1, 2))
     assertThat(renderCount.get()).isEqualTo(5)
@@ -114,7 +118,9 @@ class UseCallbackTest {
                         style = Style.viewTag("item_$item"),
                         item = item,
                         onRowClick = clickCallback,
-                        renderCount = renderCount))
+                        renderCount = renderCount,
+                    ),
+            )
           }
         }
       }
@@ -122,18 +128,19 @@ class UseCallbackTest {
 
     val rowClickedEvents = mutableListOf<String>()
     val lithoView =
-        mLithoTestRule.render(widthPx = 1000, heightPx = 1000) {
+        lithoTestRule.render(widthPx = 1000, heightPx = 1000) {
           CollectionWithUseCallback(
               data = listOf(1, 2, 3, 4, 5),
               rowClickedTag = "setRoot1",
               onRowClick = { data -> rowClickedEvents.add(data) },
-              renderCount = renderCount)
+              renderCount = renderCount,
+          )
         }
 
     assertThat(renderCount.get()).isEqualTo(5)
 
-    mLithoTestRule.act(lithoView) { clickOnTag("item_1") }
-    mLithoTestRule.act(lithoView) { clickOnTag("item_2") }
+    lithoTestRule.act(lithoView) { clickOnTag("item_1") }
+    lithoTestRule.act(lithoView) { clickOnTag("item_2") }
 
     assertThat(renderCount.get()).isEqualTo(5)
 
@@ -142,13 +149,15 @@ class UseCallbackTest {
             data = listOf(1, 2, 3, 4, 5),
             rowClickedTag = "setRoot2",
             onRowClick = { data -> rowClickedEvents.add(data) },
-            renderCount = renderCount))
-    mLithoTestRule.idle()
+            renderCount = renderCount,
+        ),
+    )
+    lithoTestRule.idle()
 
     assertThat(renderCount.get()).isEqualTo(5)
 
-    mLithoTestRule.act(lithoView) { clickOnTag("item_1") }
-    mLithoTestRule.act(lithoView) { clickOnTag("item_2") }
+    lithoTestRule.act(lithoView) { clickOnTag("item_1") }
+    lithoTestRule.act(lithoView) { clickOnTag("item_2") }
 
     assertThat(renderCount.get()).isEqualTo(5)
     assertThat(rowClickedEvents).containsExactly("setRoot1", "setRoot1", "setRoot2", "setRoot2")
@@ -187,7 +196,9 @@ class UseCallbackTest {
                         style = Style.viewTag("item_$item"),
                         item = item,
                         onRowClick = onClick,
-                        renderCount = renderCount))
+                        renderCount = renderCount,
+                    ),
+            )
           }
         }
       }
@@ -195,17 +206,18 @@ class UseCallbackTest {
 
     val selectionEvents = mutableListOf<List<Int>>()
     val lithoView =
-        mLithoTestRule.render(widthPx = 1000, heightPx = 1000) {
+        lithoTestRule.render(widthPx = 1000, heightPx = 1000) {
           CollectionWithSelectedRows(
               data = listOf(1, 2, 3, 4, 5),
               onSelectedChanged = { list -> selectionEvents.add(list) },
-              renderCount = renderCount)
+              renderCount = renderCount,
+          )
         }
 
     assertThat(renderCount.get()).isEqualTo(5)
 
-    mLithoTestRule.act(lithoView) { clickOnTag("item_1") }
-    mLithoTestRule.act(lithoView) { clickOnTag("item_2") }
+    lithoTestRule.act(lithoView) { clickOnTag("item_1") }
+    lithoTestRule.act(lithoView) { clickOnTag("item_2") }
 
     assertThat(renderCount.get()).isEqualTo(5)
     assertThat(selectionEvents).containsExactly(listOf(), listOf(1), listOf(1, 2))
@@ -216,11 +228,12 @@ private class CollectionRow(
     val style: Style,
     val item: Int,
     val onRowClick: ((Int) -> Unit)? = null,
-    val renderCount: AtomicInteger
+    val renderCount: AtomicInteger,
 ) : KComponent() {
   override fun ComponentScope.render(): Component? {
     renderCount.incrementAndGet()
     return Row(
-        style = Style.onClick { onRowClick?.invoke(item) }.width(100.px).height(100.px) + style)
+        style = Style.onClick { onRowClick?.invoke(item) }.width(100.px).height(100.px) + style,
+    )
   }
 }

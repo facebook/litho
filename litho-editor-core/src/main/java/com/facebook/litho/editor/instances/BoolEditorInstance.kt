@@ -37,7 +37,8 @@ class BoolEditorInstance : Editor {
             Reflection.setValueUNSAFE<Any>(f, node, bool.value)
             return null
           }
-        })
+        },
+    )
     return true
   }
 }

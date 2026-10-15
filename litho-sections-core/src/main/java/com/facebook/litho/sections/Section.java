@@ -82,10 +82,6 @@ public abstract class Section extends SectionLifecycle
     // Do nothing by default
   }
 
-  public boolean getShouldCompareCommonProps() {
-    return mShouldCompareCommonProps;
-  }
-
   /**
    * A builder to build a Section with a {@link SectionLifecycle} L. Generated lifecycle classes
    * will expose a create() method to access a builder and will add methods to the builder to set
@@ -117,11 +113,6 @@ public abstract class Section extends SectionLifecycle
 
     protected T loadingEventHandler(@Nullable EventHandler<LoadingEvent> loadingEventHandler) {
       mSection.loadingEventHandler = loadingEventHandler;
-      return getThis();
-    }
-
-    public T shouldCompareCommonProps(boolean shouldCompareCommonProps) {
-      mSection.mShouldCompareCommonProps = shouldCompareCommonProps;
       return getThis();
     }
 
@@ -164,7 +155,6 @@ public abstract class Section extends SectionLifecycle
   private String mGlobalKey;
   private String mKey;
   @Nullable private Handle mHandle;
-  private boolean mShouldCompareCommonProps;
 
   /**
    * @return a unique key for this {@link Section} within its tree.
@@ -357,7 +347,7 @@ public abstract class Section extends SectionLifecycle
     return mSimpleName;
   }
 
-  protected boolean isEquivalentProps(Section other, boolean shouldCompareCommonProps) {
+  protected boolean isEquivalentProps(Section other) {
     return this.equals(other);
   }
 
@@ -373,7 +363,7 @@ public abstract class Section extends SectionLifecycle
    */
   @Override
   public boolean isEquivalentTo(Section other) {
-    return isEquivalentProps(other, mShouldCompareCommonProps);
+    return isEquivalentProps(other);
   }
 
   @Nullable

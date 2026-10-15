@@ -62,11 +62,14 @@ class MeasureResult {
     fun fromSpecs(widthSpec: Int, heightSpec: Int): MeasureResult {
       check(
           (MeasureSpecUtils.getMode(widthSpec) != MeasureSpec.EXACTLY ||
-              MeasureSpecUtils.getMode(heightSpec) != MeasureSpec.EXACTLY)) {
-            ("The sizes must be exact, but width is ${MeasureSpecUtils.getMeasureSpecDescription(widthSpec)} and height is ${MeasureSpecUtils.getMeasureSpecDescription(heightSpec)}")
-          }
+              MeasureSpecUtils.getMode(heightSpec) != MeasureSpec.EXACTLY),
+      ) {
+        ("The sizes must be exact, but width is ${MeasureSpecUtils.getMeasureSpecDescription(widthSpec)} and height is ${MeasureSpecUtils.getMeasureSpecDescription(heightSpec)}")
+      }
       return MeasureResult(
-          MeasureSpecUtils.getSize(widthSpec), MeasureSpecUtils.getSize(heightSpec))
+          MeasureSpecUtils.getSize(widthSpec),
+          MeasureSpecUtils.getSize(heightSpec),
+      )
     }
 
     /**
@@ -137,12 +140,12 @@ class MeasureResult {
         heightSpec: Int,
         desiredWidthPx: Int,
         desiredHeightPx: Int,
-        layoutData: Any? = null
-    ): MeasureResult =
-        MeasureResult(
-            getResultSizePxWithSpecAndDesiredPx(widthSpec, desiredWidthPx),
-            getResultSizePxWithSpecAndDesiredPx(heightSpec, desiredHeightPx),
-            layoutData)
+        layoutData: Any? = null,
+    ): MeasureResult = MeasureResult(
+        getResultSizePxWithSpecAndDesiredPx(widthSpec, desiredWidthPx),
+        getResultSizePxWithSpecAndDesiredPx(heightSpec, desiredHeightPx),
+        layoutData,
+    )
 
     private fun getResultSizePxWithSpecAndDesiredPx(spec: Int, desiredSize: Int): Int {
       return when (MeasureSpecUtils.getMode(spec)) {
@@ -169,15 +172,19 @@ class MeasureResult {
         heightSpec: Int,
         intrinsicWidth: Int,
         intrinsicHeight: Int,
-        aspectRatio: Float
+        aspectRatio: Float,
     ): MeasureResult {
       var newWidthSpec = widthSpec
-      if (MeasureSpecUtils.getMode(widthSpec) == MeasureSpec.AT_MOST &&
-          MeasureSpecUtils.getSize(widthSpec) > intrinsicWidth) {
+      if (
+          MeasureSpecUtils.getMode(widthSpec) == MeasureSpec.AT_MOST &&
+              MeasureSpecUtils.getSize(widthSpec) > intrinsicWidth
+      ) {
         newWidthSpec = MeasureSpecUtils.atMost(intrinsicWidth)
       }
-      if (MeasureSpecUtils.getMode(heightSpec) == MeasureSpec.AT_MOST &&
-          MeasureSpecUtils.getSize(heightSpec) > intrinsicHeight) {
+      if (
+          MeasureSpecUtils.getMode(heightSpec) == MeasureSpec.AT_MOST &&
+              MeasureSpecUtils.getSize(heightSpec) > intrinsicHeight
+      ) {
         newWidthSpec = MeasureSpecUtils.atMost(intrinsicHeight)
       }
       return forAspectRatio(newWidthSpec, heightSpec, aspectRatio)
@@ -275,7 +282,7 @@ class MeasureResult {
         heightSpec: Int,
         widthFallback: Int,
         heightFallback: Int,
-        layoutData: Any?
+        layoutData: Any?,
     ): MeasureResult {
       val widthMode = MeasureSpec.getMode(widthSpec)
       val widthSize = MeasureSpec.getSize(widthSpec)

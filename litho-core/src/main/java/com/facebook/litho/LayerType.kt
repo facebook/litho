@@ -24,7 +24,8 @@ import androidx.annotation.IntDef
     LayerType.LAYER_TYPE_NOT_SET,
     LayerType.LAYER_TYPE_NONE,
     LayerType.LAYER_TYPE_SOFTWARE,
-    LayerType.LAYER_TYPE_HARDWARE)
+    LayerType.LAYER_TYPE_HARDWARE,
+)
 annotation class LayerType {
   companion object {
     const val LAYER_TYPE_NOT_SET = -1

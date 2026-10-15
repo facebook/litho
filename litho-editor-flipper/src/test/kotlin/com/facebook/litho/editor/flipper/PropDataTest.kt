@@ -103,11 +103,10 @@ class PropDataTest {
     }
 
     class MapDescription : PropWithDescription {
-      override val flipperLayoutInspectorPropDescription: Any? =
-          mapOf(
-              "Hello" to 1,
-              "World" to 2,
-          )
+      override val flipperLayoutInspectorPropDescription: Any? = mapOf(
+          "Hello" to 1,
+          "World" to 2,
+      )
     }
 
     class ComponentWithProps(
@@ -135,7 +134,7 @@ class PropDataTest {
 
   @Test
   fun `test LayoutSpec with no props does not create a Props section`() {
-    val component = LayoutNoProps.create(lithoViewRule.context).build()
+    val component = LayoutNoProps()
 
     val propData = DataUtils.getPropData(component)
     val props = propData.find { it.name == "Props" }
@@ -145,7 +144,7 @@ class PropDataTest {
 
   @Test
   fun `test LayoutSpec props included in Props scetion`() {
-    val component = LayoutWithBasicProps.create(lithoViewRule.context).a(null).b(2).c(true).build()
+    val component = LayoutWithBasicProps(a = null, b = 2, c = true)
     val propData = DataUtils.getPropData(component)
     val props = propData.find { it.name == "Props" }
 
@@ -214,11 +213,10 @@ class PropDataTest {
 
     val propWithMapOverride =
         object : PropWithDescription {
-          override val flipperLayoutInspectorPropDescription: Any? =
-              mapOf(
-                  "Hello" to 1,
-                  "World" to 2,
-              )
+          override val flipperLayoutInspectorPropDescription: Any? = mapOf(
+              "Hello" to 1,
+              "World" to 2,
+          )
         }
 
     val component =

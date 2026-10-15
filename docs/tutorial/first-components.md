@@ -3,15 +3,15 @@ id: first-components
 title: Components and Props
 ---
 
-In this section of the tutorial, you'll learn the basic Litho building blocks then create your first component that uses [props](../mainconcepts/props.mdx).
+In this section of the tutorial, you'll learn the basic Litho building blocks then create your first component that uses [props](../props/common-props.mdx).
 
 ## Basic Litho building blocks
 
 :::info Basic Terminology
 
-* **Component** - all user-interactable elements in the UI (such as buttons, checkboxes, scrollbars, lists, menus, and text fields) that you see in the application are components. To be used, a component must be placed in a container.  For more information, see the [Components](../mainconcepts/components-basics.mdx) page in the 'Main Concepts' section.
+* **Component** - all user-interactable elements in the UI (such as buttons, checkboxes, scrollbars, lists, menus, and text fields) that you see in the application are components. To be used, a component must be placed in a container.  For more information, see the [Components](../components-basics.mdx) page in the 'Main Concepts' section.
 * **Container component** - arranges groups of components in a [layout](introducing-layout.md).
-* **Prop** - an item of data that cannot be changed (making it 'immutable') during the associated component's lifecycle. For more information, see the [Types of Props](../mainconcepts/props.mdx) page in the 'Main Concepts' section.
+* **Prop** - an item of data that cannot be changed (making it 'immutable') during the associated component's lifecycle. For more information, see the [Types of Props](../props/common-props.mdx) page in the 'Main Concepts' section.
 :::
 
 To display the classic "Hello, World!" text on the screen with Litho, you need to integrate the Litho component hierarchy into your View hierarchy.
@@ -30,7 +30,7 @@ To illustrate this, the "Hello, World" code (`MyActivity.kt`), from the [Setting
 
 Previously, you used a built-in `Text` component. Now, you'll define your own using the following 'HelloComponent.kt' code. As with the above, your 'first' component can also declare **props**:
 
-```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/HelloComponent.kt start=start_simple_example end=end_simple_example
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/documentation/HelloComponent.kt start=start_simple_example end=end_simple_example
 ```
 
 ### Key Points in HelloComponent.kt
@@ -40,11 +40,7 @@ Previously, you used a built-in `Text` component. Now, you'll define your own us
 * `render` - function override that returns what your component should render.
 * `Text(...)` - returns an instance of the `Text` component with its `text` prop set to the string `"Hello $name'`.
 
-:::tip
-Lots of code autocompletion and class templates can be found in the [Litho Android Studio plugin](../devtools/android-studio-plugin.md)!
-:::
-
-### Use you first component
+### Use your first component
 
 To use your component, just replace the Text component in the "Hello, World!" example with an instance of your `HelloComponent`:
 
@@ -55,4 +51,4 @@ To use your component, just replace the Text component in the "Hello, World!" ex
 
 The next section of the tutorial [Introducing Layout](introducing-layout.md) helps you become familiar with building layouts using Flexbox.
 
-For more information, see the [Components](../mainconcepts/components-basics.mdx) and [Props](../mainconcepts/props.mdx) pages of the 'Main Concepts' section.
+For more information, see the [Components](../components-basics.mdx) and [Props](../props/common-props.mdx) pages of the 'Main Concepts' section.

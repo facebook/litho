@@ -26,6 +26,7 @@ import android.text.TextWatcher
 import android.text.method.ArrowKeyMovementMethod
 import android.text.method.KeyListener
 import android.text.method.MovementMethod
+import android.text.method.TransformationMethod
 import android.view.ActionMode
 import android.view.Gravity
 import android.view.KeyEvent
@@ -37,6 +38,7 @@ import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.Handle
 import com.facebook.litho.StateValue
+import com.facebook.litho.Style
 import com.facebook.litho.annotations.CachedValue
 import com.facebook.litho.annotations.ExcuseMySpec
 import com.facebook.litho.annotations.FromTrigger
@@ -137,6 +139,12 @@ import com.facebook.litho.config.ComponentsConfiguration
  *   error is null, the error message and icon will be cleared. See
  *   https://developer.android.com/reference/android/widget/TextView.html#setError for more details.
  * @prop errorDrawable Will show along with the error message when a message is set.
+ * @prop shouldUseMatchParentLayoutParams If set, the mounted [EditText] gets MATCH_PARENT layout
+ *   params instead of the WRAP_CONTENT ones its host adds by default. With WRAP_CONTENT, every edit
+ *   requests a layout that climbs to the window root. Litho already sizes the EditText exactly and
+ *   remeasures it when the line count changes, so that layout changes nothing. Replacing the text
+ *   with `setText` without changing the line count does not remeasure the input, so the input keeps
+ *   its size until the line count changes.
  */
 @ExcuseMySpec(reason = Reason.J2K_CONVERSION)
 @LayoutSpec(
@@ -150,7 +158,9 @@ import com.facebook.litho.config.ComponentsConfiguration
             EditorActionEvent::class,
             SetTextEvent::class,
             InputConnectionEvent::class,
-            TextPastedEvent::class])
+            TextPastedEvent::class,
+        ],
+)
 internal object TextInputSpec {
 
   @JvmField
@@ -183,6 +193,9 @@ internal object TextInputSpec {
   @JvmField @PropDefault val disableAutofill: Boolean = false
   @JvmField @PropDefault val movementMethod: MovementMethod = ArrowKeyMovementMethod.getInstance()
   @JvmField @PropDefault val shouldExcludeFromIncrementalMount: Boolean = false
+  @JvmField @PropDefault val transformationMethod: TransformationMethod? = null
+  @JvmField @PropDefault val useTransformationMethod: Boolean = false
+  @JvmField @PropDefault val shouldUseMatchParentLayoutParams: Boolean = false
 
   @OnCreateLayout
   fun onCreateLayout(
@@ -226,6 +239,10 @@ internal object TextInputSpec {
       @Prop(optional = true) selectionActionModeCallback: ActionMode.Callback?,
       @Prop(optional = true) insertionActionModeCallback: ActionMode.Callback?,
       @Prop(optional = true) shouldExcludeFromIncrementalMount: Boolean,
+      @Prop(optional = true) transformationMethod: TransformationMethod?,
+      @Prop(optional = true) useTransformationMethod: Boolean,
+      @Prop(optional = true) shouldUseMatchParentLayoutParams: Boolean,
+      @Prop(optional = true) externalTextInputController: TextInputController?,
       @State textInputHandle: Handle,
       @CachedValue textInputController: TextInputController?,
   ): Component {
@@ -270,6 +287,9 @@ internal object TextInputSpec {
           insertionActionModeCallback = insertionActionModeCallback,
           excludeFromIncrementalMount = shouldExcludeFromIncrementalMount,
           textInputController = textInputController,
+          transformationMethod = transformationMethod,
+          useTransformationMethod = useTransformationMethod,
+          shouldUseMatchParentLayoutParams = shouldUseMatchParentLayoutParams,
           onTextChanged =
               TextInput.getTextChangedEventHandler(c)?.let { handler ->
                 { editText, text ->
@@ -342,7 +362,7 @@ internal object TextInputSpec {
                   handler.dispatchEvent(event) as? InputConnection
                 }
               },
-          style = null,
+          style = Style,
       )
     } else {
       TextInputComponent.create(c)
@@ -384,6 +404,7 @@ internal object TextInputSpec {
           .selectionActionModeCallback(selectionActionModeCallback)
           .insertionActionModeCallback(insertionActionModeCallback)
           .shouldExcludeFromIncrementalMount(shouldExcludeFromIncrementalMount)
+          .shouldUseMatchParentLayoutParams(shouldUseMatchParentLayoutParams)
           .handle(textInputHandle)
           .selectionChangedEventHandler(TextInput.getSelectionChangedEventHandler(c))
           .inputFocusChangedEventHandler(TextInput.getInputFocusChangedEventHandler(c))
@@ -407,9 +428,10 @@ internal object TextInputSpec {
   @OnCalculateCachedValue(name = "textInputController")
   internal fun onCalculateTextInputController(
       c: ComponentContext,
+      @Prop(optional = true) externalTextInputController: TextInputController?,
   ): TextInputController? {
     return if (ComponentsConfiguration.usePrimitiveTextInput) {
-      TextInputController()
+      externalTextInputController ?: TextInputController()
     } else {
       null
     }
@@ -426,6 +448,20 @@ internal object TextInputSpec {
       textInputController?.requestFocus()
     } else {
       TextInputComponent.requestFocus(c, textInputHandle)
+    }
+  }
+
+  @JvmStatic
+  @OnTrigger(RequestFocusWithoutKeyboardEvent::class)
+  fun requestFocusWithoutKeyboard(
+      c: ComponentContext,
+      @State textInputHandle: Handle,
+      @CachedValue textInputController: TextInputController?,
+  ) {
+    if (ComponentsConfiguration.usePrimitiveTextInput) {
+      textInputController?.requestFocusWithoutKeyboard()
+    } else {
+      TextInputComponent.requestFocusWithoutKeyboard(c, textInputHandle)
     }
   }
 
@@ -522,7 +558,12 @@ internal object TextInputSpec {
       @CachedValue textInputController: TextInputController?,
   ) {
     if (ComponentsConfiguration.usePrimitiveTextInput) {
-      textInputController?.replaceText(text, startIndex, endIndex, skipSelection)
+      textInputController?.replaceText(
+          text,
+          startIndex,
+          endIndex,
+          skipSelection,
+      )
     } else {
       TextInputComponent.replaceText(c, textInputHandle, text, startIndex, endIndex, skipSelection)
     }

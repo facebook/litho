@@ -18,6 +18,7 @@ package com.facebook.litho
 
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
+import android.util.SparseArray
 import android.view.View
 import android.widget.TextView
 import com.facebook.litho.LithoRenderUnit.Companion.getRenderUnit
@@ -64,7 +65,7 @@ private constructor(
 
   /** @return The litho view hosting this component. */
   val lithoView: BaseMountingView?
-    get() = result.context?.mountedView as BaseMountingView?
+    get() = result.context.mountedView as BaseMountingView?
 
   /** @return If this debug component represents a layout node, return it. */
   val layoutNode: DebugLayoutNode?
@@ -106,7 +107,7 @@ private constructor(
     get() = node.getComponentAt(componentIndex)
 
   private val componentGlobalKey: String
-    get() = node.getComponentContextAt(componentIndex).globalKey
+    get() = node.getComponentContextAt(componentIndex).globalKey.toString()
 
   val stateContainer: StateContainer?
     get() = node.getComponentInfoAt(componentIndex).stateContainer
@@ -125,6 +126,9 @@ private constructor(
 
   val heightSpec: String
     get() = SizeSpec.toSimpleString(result.heightSpec)
+
+  val viewTags: SparseArray<Any>?
+    get() = node.nodeInfo?.viewTags
 
   fun setOverrider(overrider: Overrider) {
     overriders[globalKey] = overrider
@@ -152,15 +156,14 @@ private constructor(
               }
             }
             val index = (nestedResult.node.componentCount - 2).coerceAtLeast(0)
-            val component =
-                getInstance(
-                    nestedResult,
-                    index,
-                    result.getXForChildAtIndex(0),
-                    result.getYForChildAtIndex(0),
-                    xFromRoot,
-                    yFromRoot,
-                )
+            val component = getInstance(
+                nestedResult,
+                index,
+                result.getXForChildAtIndex(0),
+                result.getYForChildAtIndex(0),
+                xFromRoot,
+                yFromRoot,
+            )
             listOfNotNull(component)
           }
           else -> getChildren(result, xFromRoot, yFromRoot)
@@ -257,16 +260,14 @@ private constructor(
   val allTextContent: String?
     get() = buildString {
       val mountDelegateTarget = lithoView?.mountDelegateTarget ?: return null
-      for (i in 0 until mountDelegateTarget.getMountItemCount()) {
-        val mountItem = mountDelegateTarget.getMountItemAt(i)
-        val mountItemComponent = mountItem?.let { getRenderUnit(it).component }
-        if (mountItemComponent != null) {
-          val content = mountItem.content
-          if (content is TextContent) {
-            for (charSequence in content.textList) append(charSequence)
-          } else if (content is TextView) {
-            append(content.text)
-          }
+      for (i in 0 until mountDelegateTarget.getRenderUnitCount()) {
+        val mountItem = mountDelegateTarget.getMountItemAt(i) ?: continue
+        val content = mountItem.content
+        val textContent = ComponentHostUtils.asTextContent(content)
+        if (textContent != null) {
+          for (charSequence in textContent.textList) append(charSequence)
+        } else if (content is TextView) {
+          append(content.text)
         }
       }
     }
@@ -276,21 +277,37 @@ private constructor(
    *   TextContent/TextView are found.
    */
   val textContent: String?
+    get() = rawTextContent?.toString()
+
+  /**
+   * @return The raw text content as a [CharSequence], preserving any [android.text.Spanned] span
+   *   information (bold, color, clickable spans, mentions, etc.). Returns null if no
+   *   TextContent/TextView are found. Use this instead of [textContent] when span information
+   *   matters (e.g. rich text dumps).
+   */
+  val rawTextContent: CharSequence?
     get() {
       val mountDelegateTarget = lithoView?.mountDelegateTarget ?: return null
-      for (i in 0 until mountDelegateTarget.getMountItemCount()) {
-        val mountItem = mountDelegateTarget.getMountItemAt(i)
-        val mountItemComponent = mountItem?.let { getRenderUnit(it).component }
-        if (mountItemComponent?.instanceId == component.instanceId) {
+      for (i in 0 until mountDelegateTarget.getRenderUnitCount()) {
+        val mountItem = mountDelegateTarget.getMountItemAt(i) ?: continue
+        val mountItemComponent = getRenderUnit(mountItem).component
+        if (mountItemComponent.instanceId == component.instanceId) {
           val content = mountItem.content
-          val sb = StringBuilder()
-          if (content is TextContent) {
-            for (charSequence in content.textList) sb.append(charSequence)
+          val textContent = ComponentHostUtils.asTextContent(content)
+          if (textContent != null) {
+            val texts = textContent.textList
+            if (texts.isEmpty()) continue
+            if (texts.size == 1) {
+              val single = texts[0]
+              if (single.isNotEmpty()) return single
+            } else {
+              val sb = android.text.SpannableStringBuilder()
+              for (cs in texts) sb.append(cs)
+              if (sb.isNotEmpty()) return sb
+            }
           } else if (content is TextView) {
-            sb.append(content.text)
-          }
-          if (sb.isNotEmpty()) {
-            return sb.toString()
+            val text = content.text
+            if (!text.isNullOrEmpty()) return text
           }
         }
       }
@@ -301,10 +318,10 @@ private constructor(
   val componentHost: ComponentHost?
     get() {
       val mountDelegateTarget = lithoView?.mountDelegateTarget ?: return null
-      for (i in 0 until mountDelegateTarget.getMountItemCount()) {
-        val mountItem = mountDelegateTarget.getMountItemAt(i)
-        val mountItemComponent = mountItem?.let { getRenderUnit(it).component }
-        if (mountItemComponent?.isEquivalentTo(component) == true) {
+      for (i in 0 until mountDelegateTarget.getRenderUnitCount()) {
+        val mountItem = mountDelegateTarget.getMountItemAt(i) ?: continue
+        val mountItemComponent = getRenderUnit(mountItem).component
+        if (mountItemComponent.isEquivalentTo(component)) {
           return mountItem.host as ComponentHost?
         }
       }
@@ -327,10 +344,10 @@ private constructor(
       }
       val mountDelegateTarget = lithoView?.mountDelegateTarget
       if (mountDelegateTarget != null) {
-        for (i in 0 until mountDelegateTarget.getMountItemCount()) {
-          val mountItem = mountDelegateTarget.getMountItemAt(i)
-          val component = mountItem?.let { getRenderUnit(it).component }
-          if (component != null && component === node.tailComponent) {
+        for (i in 0 until mountDelegateTarget.getRenderUnitCount()) {
+          val mountItem = mountDelegateTarget.getMountItemAt(i) ?: continue
+          val component = getRenderUnit(mountItem).component
+          if (component === node.tailComponent) {
             return mountItem.content
           }
         }
@@ -356,7 +373,7 @@ private constructor(
       if (result is NullLithoLayoutResult || componentIndex >= node.componentCount) {
         return null
       }
-      val componentKey = node.getGlobalKeyAt(componentIndex)
+      val componentKey = node.getGlobalKeyAt(componentIndex).toString()
       return DebugComponent(
           globalKey = generateGlobalKey(context, componentKey),
           result = result,
@@ -406,14 +423,15 @@ private constructor(
     @JvmStatic
     fun isExcludedFromIncrementalMount(
         debugComponent: DebugComponent,
-        layoutState: LayoutState
+        layoutState: LayoutState,
     ): Boolean {
       val renderUnit = getRenderUnit(debugComponent, layoutState)
       val component = debugComponent.component
 
       val shouldExcludePrimitiveFromIncrementalMount: Boolean =
           renderUnit?.findAttachBinderByKey<ExcludeFromIncrementalMountBinder>(
-              ClassBinderKey(ExcludeFromIncrementalMountBinder::class.java)) != null
+              ClassBinderKey.of(ExcludeFromIncrementalMountBinder::class.java),
+          ) != null
       val shouldExcludeSpecGeneratedComponentFromIncrementalMount: Boolean =
           component is SpecGeneratedComponent && component.excludeFromIncrementalMount()
 
@@ -427,7 +445,7 @@ private constructor(
       for (i in 0 until layoutState.getMountableOutputCount()) {
         val renderTreeNode = layoutState.getMountableOutputAt(i)
         val lithoRenderUnit = renderTreeNode.renderUnit as LithoRenderUnit
-        if (lithoRenderUnit.componentContext?.componentScope === component) {
+        if (lithoRenderUnit.componentContext.componentScope === component) {
           return lithoRenderUnit
         }
       }
@@ -437,12 +455,12 @@ private constructor(
     @JvmStatic
     fun getVisibilityOutput(
         debugComponent: DebugComponent,
-        layoutState: LayoutState
+        layoutState: LayoutState,
     ): VisibilityOutput? {
       val componentGlobalKey = debugComponent.componentGlobalKey
       for (i in 0 until layoutState.visibilityOutputCount) {
         val visibilityOutput = layoutState.getVisibilityOutputAt(i)
-        if (visibilityOutput.id == componentGlobalKey) {
+        if (visibilityOutput.id.toString() == componentGlobalKey) {
           return visibilityOutput
         }
       }
@@ -452,8 +470,9 @@ private constructor(
     @JvmStatic
     fun isVisible(debugComponent: DebugComponent, lithoView: BaseMountingView): Boolean {
       val componentGlobalKey = debugComponent.componentGlobalKey
-      return lithoView.visibilityExtensionState?.let {
-        VisibilityMountExtension.isVisible(it, componentGlobalKey)
+      return lithoView.visibilityExtensionState?.let { state ->
+        val map = VisibilityMountExtension.getVisibilityIdToItemMap(state)
+        map.keys.any { it.toString() == componentGlobalKey }
       } ?: false
     }
 
@@ -482,7 +501,7 @@ private constructor(
       if (node.componentCount == 0) {
         return
       }
-      val componentKey = node.getGlobalKeyAt(0)
+      val componentKey = node.getGlobalKeyAt(0).toString()
       val key = generateGlobalKey(context, componentKey)
       val overrider = overriders[key]
       overrider?.applyLayoutOverrides(key, DebugLayoutNodeEditor(node))
@@ -493,13 +512,13 @@ private constructor(
         val childNode = result.getChildAt(i)
         val index = (childNode.node.componentCount - 1).coerceAtLeast(0)
         getInstance(
-                childNode,
-                index,
-                result.getXForChildAtIndex(i),
-                result.getYForChildAtIndex(i),
-                xOffset,
-                yOffset,
-            )
+            childNode,
+            index,
+            result.getXForChildAtIndex(i),
+            result.getYForChildAtIndex(i),
+            xOffset,
+            yOffset,
+        )
             ?.let { add(it) }
       }
     }

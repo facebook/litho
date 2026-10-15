@@ -16,7 +16,7 @@
 
 apply plugin: 'java'
 
-targetCompatibility = rootProject.targetCompatibilityVersion
-sourceCompatibility = rootProject.sourceCompatibilityVersion
+java.targetCompatibility = rootProject.targetCompatibilityVersion
+java.sourceCompatibility = rootProject.sourceCompatibilityVersion
 
 apply plugin: "com.vanniktech.maven.publish"

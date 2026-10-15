@@ -51,7 +51,7 @@ abstract class ItemDecorationWithMeasureFunction : ItemDecoration() {
       outRect: Rect,
       view: View,
       parent: RecyclerView,
-      state: RecyclerView.State
+      state: RecyclerView.State,
   ) {
 
     val measureFunctionToUse: View.() -> Unit =
@@ -80,7 +80,7 @@ abstract class ItemDecorationWithMeasureFunction : ItemDecoration() {
       view: View,
       parent: RecyclerView,
       state: RecyclerView.State,
-      measure: View.() -> Unit
+      measure: View.() -> Unit,
   )
 
   companion object {

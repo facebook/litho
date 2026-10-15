@@ -56,7 +56,11 @@ class LayoutDiffingTest {
     val testLithoView =
         lithoTestRule.render(widthPx = 100, heightPx = 100) {
           createRootComponentWithStateUpdater(
-              lithoTestRule.context, firstObjectForShouldUpdate, operations, stateUpdater)
+              lithoTestRule.context,
+              firstObjectForShouldUpdate,
+              operations,
+              stateUpdater,
+          )
         }
     assertThat(operations)
         .describedAs("Test setup, there should be an initial mount")
@@ -90,10 +94,12 @@ class LayoutDiffingTest {
 
     // Do two prop updates sequentially without draining the main thread queue
     testLithoView.setRootAsync(
-        createRootComponent(lithoTestRule.context, firstObjectForShouldUpdate, operations))
+        createRootComponent(lithoTestRule.context, firstObjectForShouldUpdate, operations),
+    )
     backgroundLayoutLooperRule.runToEndOfTasksSync()
     testLithoView.setRootAsync(
-        createRootComponent(lithoTestRule.context, firstObjectForShouldUpdate, operations))
+        createRootComponent(lithoTestRule.context, firstObjectForShouldUpdate, operations),
+    )
     backgroundLayoutLooperRule.runToEndOfTasksSync()
 
     // Now drain the main thread queue and mount the result
@@ -122,10 +128,12 @@ class LayoutDiffingTest {
 
     // Do two prop updates sequentially without draining the main thread queue
     testLithoView.setRootAsync(
-        createRootComponent(lithoTestRule.context, secondObjectForShouldUpdate, operations))
+        createRootComponent(lithoTestRule.context, secondObjectForShouldUpdate, operations),
+    )
     backgroundLayoutLooperRule.runToEndOfTasksSync()
     testLithoView.setRootAsync(
-        createRootComponent(lithoTestRule.context, secondObjectForShouldUpdate, operations))
+        createRootComponent(lithoTestRule.context, secondObjectForShouldUpdate, operations),
+    )
     backgroundLayoutLooperRule.runToEndOfTasksSync()
 
     // Now drain the main thread queue and mount the result
@@ -152,10 +160,12 @@ class LayoutDiffingTest {
 
     // Do two prop updates sequentially without draining the main thread queue
     testLithoView.setRootAsync(
-        createRootComponent(lithoTestRule.context, firstObjectForShouldUpdate, operations))
+        createRootComponent(lithoTestRule.context, firstObjectForShouldUpdate, operations),
+    )
     backgroundLayoutLooperRule.runToEndOfTasksSync()
     testLithoView.setRootAsync(
-        createRootComponent(lithoTestRule.context, secondObjectForShouldUpdate, operations))
+        createRootComponent(lithoTestRule.context, secondObjectForShouldUpdate, operations),
+    )
     backgroundLayoutLooperRule.runToEndOfTasksSync()
 
     // Now drain the main thread queue and mount the result
@@ -170,15 +180,14 @@ class LayoutDiffingTest {
   fun whenStateUpdateOnPureRenderMountSpec_shouldRemountItem() {
     val c = lithoTestRule.context
     val component =
-        Column.create(c)
-            .child(TextViewCounter.create(c).viewWidth(200).viewHeight(200).build())
-            .build()
+        Column.create(c).child(TextViewCounter(viewWidth = 200, viewHeight = 200)).build()
     val testLithoView = lithoTestRule.render { component }
     val view = testLithoView.lithoView.getChildAt(0)
     assertThat(view).isNotNull
     assertThat(view).isInstanceOf(TextView::class.java)
     assertThat((view as TextView).text).isEqualTo("0")
     view.callOnClick()
+    lithoTestRule.idle()
     assertThat(view.text).isEqualTo("1")
   }
 
@@ -195,11 +204,14 @@ class LayoutDiffingTest {
                         Row.create(c)
                             .widthPx(100)
                             .heightPx(100)
-                            .background(ColorDrawable(Color.RED)))
+                            .background(ColorDrawable(Color.RED)),
+                    )
                     .child(
                         MountSpecWithShouldUpdate.create(c)
                             .objectForShouldUpdate(objectForShouldUpdate)
-                            .operationsOutput(operations)))
+                            .operationsOutput(operations),
+                    ),
+            )
             .build()
     val testLithoView = lithoTestRule.render { component }
     assertThat(operations).containsExactly(LifecycleStep.ON_MEASURE, LifecycleStep.ON_MOUNT)
@@ -221,11 +233,14 @@ class LayoutDiffingTest {
                         Row.create(c)
                             .widthPx(100)
                             .heightPx(100)
-                            .background(ColorDrawable(Color.RED)))
+                            .background(ColorDrawable(Color.RED)),
+                    )
                     .child(
                         MountSpecWithShouldUpdate.create(c)
                             .objectForShouldUpdate(objectForShouldUpdate)
-                            .operationsOutput(operations)))
+                            .operationsOutput(operations),
+                    ),
+            )
             .build()
     val testLithoView = lithoTestRule.render { component }
     assertThat(operations).containsExactly(LifecycleStep.ON_MEASURE, LifecycleStep.ON_MOUNT)
@@ -238,11 +253,14 @@ class LayoutDiffingTest {
                         Row.create(c)
                             .widthPx(100)
                             .heightPx(100)
-                            .background(ColorDrawable(Color.RED)))
+                            .background(ColorDrawable(Color.RED)),
+                    )
                     .child(
                         MountSpecWithShouldUpdate.create(c)
                             .objectForShouldUpdate(objectForShouldUpdate)
-                            .operationsOutput(operations)))
+                            .operationsOutput(operations),
+                    ),
+            )
             .build()
     testLithoView.attachToWindow().setRoot(next).measure().layout()
     assertThat(operations).isEmpty()
@@ -261,11 +279,14 @@ class LayoutDiffingTest {
                         Row.create(c)
                             .widthPx(100)
                             .heightPx(100)
-                            .background(ColorDrawable(Color.RED)))
+                            .background(ColorDrawable(Color.RED)),
+                    )
                     .child(
                         MountSpecWithShouldUpdate.create(c)
                             .objectForShouldUpdate(objectForShouldUpdate)
-                            .operationsOutput(operations)))
+                            .operationsOutput(operations),
+                    ),
+            )
             .build()
     val testLithoView = lithoTestRule.render { component }
     assertThat(operations).containsExactly(LifecycleStep.ON_MEASURE, LifecycleStep.ON_MOUNT)
@@ -278,11 +299,14 @@ class LayoutDiffingTest {
                         Row.create(c)
                             .widthPx(100)
                             .heightPx(100)
-                            .background(ColorDrawable(Color.RED)))
+                            .background(ColorDrawable(Color.RED)),
+                    )
                     .child(
                         MountSpecWithShouldUpdate.create(c)
                             .objectForShouldUpdate(Any())
-                            .operationsOutput(operations)))
+                            .operationsOutput(operations),
+                    ),
+            )
             .build()
     testLithoView.attachToWindow().setRoot(next).measure().layout()
     assertThat(operations)
@@ -294,7 +318,7 @@ class LayoutDiffingTest {
         c: ComponentContext,
         objectForShouldUpdate: Any,
         operationsOutput: List<LifecycleStep>,
-        stateUpdateCaller: SimpleStateUpdateEmulatorSpec.Caller
+        stateUpdateCaller: SimpleStateUpdateEmulatorSpec.Caller,
     ): Component =
         Row.create(c)
             .child(
@@ -304,19 +328,22 @@ class LayoutDiffingTest {
                             .caller(stateUpdateCaller)
                             .widthPx(100)
                             .heightPx(100)
-                            .background(ColorDrawable(Color.RED)))
+                            .background(ColorDrawable(Color.RED)),
+                    )
                     .child(
                         MountSpecWithShouldUpdate.create(c)
                             .objectForShouldUpdate(objectForShouldUpdate)
                             .operationsOutput(operationsOutput)
                             .widthPx(10)
-                            .heightPx(10)))
+                            .heightPx(10),
+                    ),
+            )
             .build()
 
     private fun createRootComponent(
         c: ComponentContext,
         objectForShouldUpdate: Any,
-        operationsOutput: List<LifecycleStep>
+        operationsOutput: List<LifecycleStep>,
     ): Component =
         Row.create(c)
             .child(
@@ -325,13 +352,16 @@ class LayoutDiffingTest {
                         Row.create(c)
                             .widthPx(100)
                             .heightPx(100)
-                            .background(ColorDrawable(Color.RED)))
+                            .background(ColorDrawable(Color.RED)),
+                    )
                     .child(
                         MountSpecWithShouldUpdate.create(c)
                             .objectForShouldUpdate(objectForShouldUpdate)
                             .operationsOutput(operationsOutput)
                             .widthPx(10)
-                            .heightPx(10)))
+                            .heightPx(10),
+                    ),
+            )
             .build()
   }
 }

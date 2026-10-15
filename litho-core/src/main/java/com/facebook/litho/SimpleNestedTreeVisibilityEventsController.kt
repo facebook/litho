@@ -24,7 +24,7 @@ import com.facebook.litho.LithoVisibilityEventsController.LithoVisibilityState
  * is also subscribed to.
  */
 class SimpleNestedTreeVisibilityEventsController(
-    parentLifecycleProvider: LithoVisibilityEventsController?
+    parentLifecycleProvider: LithoVisibilityEventsController?,
 ) : LithoVisibilityEventsController, LithoVisibilityEventsListener {
 
   private val lithoLifecycleDelegate = LithoVisibilityEventsControllerDelegate()

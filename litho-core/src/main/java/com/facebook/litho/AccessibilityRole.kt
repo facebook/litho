@@ -94,6 +94,7 @@ object AccessibilityRole {
       NUMBER_PICKER,
       SCROLL_VIEW,
       HORIZONTAL_SCROLL_VIEW,
-      KEYBOARD_KEY)
+      KEYBOARD_KEY,
+  )
   annotation class AccessibilityRoleType
 }

@@ -22,29 +22,11 @@ import android.os.Build
 import android.view.View
 import android.view.View.MeasureSpec
 import com.facebook.rendercore.Host
-import com.facebook.rendercore.RenderTreeNode
-import com.facebook.rendercore.Systracer
+import com.facebook.rendercore.RenderCoreConfig
+import com.meta.systrace.Systracer
 import java.util.Locale
 
 object BoundsUtils {
-
-  /**
-   * Sets the bounds on the given content if the content doesn't already have those bounds (or if
-   * 'force' is supplied).
-   */
-  @JvmStatic
-  @JvmOverloads
-  fun applyBoundsToMountContent(
-      renderTreeNode: RenderTreeNode,
-      content: Any,
-      force: Boolean,
-      tracer: Systracer? = null
-  ): Boolean {
-    val bounds = renderTreeNode.bounds
-    val padding = renderTreeNode.resolvedPadding
-    return applyBoundsToMountContent(
-        bounds.left, bounds.top, bounds.right, bounds.bottom, padding, content, force, tracer)
-  }
 
   /**
    * Sets the bounds on the given content if the content doesn't already have those bounds (or if
@@ -60,11 +42,11 @@ object BoundsUtils {
       padding: Rect?,
       content: Any,
       force: Boolean,
-      tracer: Systracer? = null
+      tracer: Systracer? = null,
   ): Boolean {
     val isTracing = tracer?.isTracing() == true
     if (isTracing) {
-      tracer?.beginSection("applyBoundsToMountContent")
+      tracer.beginSection("applyBoundsToMountContent")
     }
     try {
       when (content) {
@@ -95,7 +77,7 @@ object BoundsUtils {
       }
     } finally {
       if (isTracing) {
-        tracer?.endSection()
+        tracer.endSection()
       }
     }
   }
@@ -112,29 +94,39 @@ object BoundsUtils {
       right: Int,
       bottom: Int,
       padding: Rect?,
-      force: Boolean
+      force: Boolean,
   ): Boolean {
     val width = right - left
     val height = bottom - top
     if (padding != null && view !is Host) {
-      view.setPadding(padding.left, padding.top, padding.right, padding.bottom)
+      if (
+          !RenderCoreConfig.skipRedundantSetPadding ||
+              view.paddingLeft != padding.left ||
+              view.paddingTop != padding.top ||
+              view.paddingRight != padding.right ||
+              view.paddingBottom != padding.bottom
+      ) {
+        view.setPadding(padding.left, padding.top, padding.right, padding.bottom)
+      }
     }
     if (force || view.measuredHeight != height || view.measuredWidth != width) {
       view.measure(
           MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
-          MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY))
+          MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY),
+      )
     }
-    if (force ||
-        view.left != left ||
-        view.top != top ||
-        view.right != right ||
-        view.bottom != bottom) {
+    if (
+        force ||
+            view.left != left ||
+            view.top != top ||
+            view.right != right ||
+            view.bottom != bottom
+    ) {
       try {
         view.layout(left, top, right, bottom)
       } catch (e: NullPointerException) {
         if ("huawei" == Build.BRAND.lowercase(Locale.US)) {
-          // Swallow the crash(https://fburl.com/logview/bk0z9v0t) on devices from Huawei because we
-          // can do nothing about that.
+          // Swallow the crash on devices from Huawei because we can do nothing about that.
           return false
         }
       }

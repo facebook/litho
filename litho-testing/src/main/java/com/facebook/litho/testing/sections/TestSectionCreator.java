@@ -208,12 +208,13 @@ public class TestSectionCreator {
     }
 
     @Override
-    public boolean equals(@Nullable Object o) {
+    public boolean equals(@Nullable Object other) {
       if (forceShouldUpdate) {
         return false;
       }
 
-      return o.getClass().equals(getClass()) && ((Section) o).getGlobalKey().equals(getGlobalKey());
+      return other.getClass().equals(getClass())
+          && ((Section) other).getGlobalKey().equals(getGlobalKey());
     }
 
     @Override

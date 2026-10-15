@@ -28,7 +28,8 @@ class LithoAnimtableItem(
     private val absoluteBounds: Rect,
     @field:OutputUnitType @param:OutputUnitType private val outputType: Int,
     private val nodeInfo: NodeInfo?,
-    private val transitionId: TransitionId?
+    private val transitionId: TransitionId?,
+    private val bounds: Rect = absoluteBounds,
 ) : AnimatableItem {
 
   override fun getId(): Long {
@@ -37,6 +38,10 @@ class LithoAnimtableItem(
 
   override fun getAbsoluteBounds(): Rect {
     return absoluteBounds
+  }
+
+  override fun getBounds(): Rect {
+    return bounds
   }
 
   override fun getOutputType(): Int {

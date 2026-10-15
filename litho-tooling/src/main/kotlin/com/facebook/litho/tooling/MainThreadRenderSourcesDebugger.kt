@@ -35,7 +35,7 @@ import com.facebook.rendercore.debug.DebugEventSubscriber
  * different features that use Litho due to the need to specify the size specs in advance.
  */
 class MainThreadRenderSourcesDebugger(
-    private val onMainThreadRenderDetected: OnMainThreadRenderDetected
+    private val onMainThreadRenderDetected: OnMainThreadRenderDetected,
 ) : DebugEventSubscriber(LithoDebugEvent.RenderOnMainThreadStarted) {
 
   override fun onEvent(event: DebugEvent) {
@@ -59,14 +59,19 @@ class MainThreadRenderSourcesDebugger(
             mainThreadLayoutRootId = event.attribute(CurrentRootId),
             measureSizeSpecs = event.attribute(SizeConstraint),
             rootId = event.attribute(RootId),
-            breadcrumb = breadcrumb))
+            breadcrumb = breadcrumb,
+        ),
+    )
   }
 
   private fun onMainThreadLayoutStateNotPresent(breadcrumb: String, event: DebugEvent) {
     onMainThreadRenderDetected.onMainThreadRenderDetected(
         breadcrumb,
         MainThreadRenderSource.NoMainThreadLayoutState(
-            root = event.attribute(Root), breadcrumb = breadcrumb))
+            root = event.attribute(Root),
+            breadcrumb = breadcrumb,
+        ),
+    )
   }
 
   fun interface OnMainThreadRenderDetected {
@@ -87,7 +92,7 @@ class MainThreadRenderSourcesDebugger(
         val mainThreadLayoutRootId: Int,
         val measureSizeSpecs: String,
         val rootId: Int,
-        val breadcrumb: String
+        val breadcrumb: String,
     ) : MainThreadRenderSource()
   }
 }

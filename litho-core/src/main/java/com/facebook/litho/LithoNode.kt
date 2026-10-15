@@ -24,35 +24,52 @@ import android.graphics.Paint
 import android.graphics.PathEffect
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
+import android.util.Log
 import android.view.View
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.annotation.Px
 import androidx.annotation.StyleRes
-import androidx.core.content.ContextCompat
+import androidx.collection.ScatterSet
+import androidx.collection.emptyScatterSet
+import androidx.collection.mutableScatterSetOf
 import androidx.core.view.ViewCompat
 import com.facebook.infer.annotation.ThreadConfined
 import com.facebook.litho.CommonProps.DefaultLayoutProps
 import com.facebook.litho.ComponentHostUtils.maybeSetDrawableState
+import com.facebook.litho.LithoLayoutData.Companion.NO_Z_INDEX
 import com.facebook.litho.Transition.TransitionKeyType
+import com.facebook.litho.animation.StyleTransitionData
+import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.annotations.ImportantForAccessibility
 import com.facebook.litho.config.LithoDebugConfigurations
+import com.facebook.litho.debug.DebugInfoReporter
 import com.facebook.litho.drawable.ComparableColorDrawable
 import com.facebook.litho.layout.LayoutDirection
 import com.facebook.litho.layout.LayoutDirection.Companion.INHERIT
 import com.facebook.litho.layout.LayoutDirection.Companion.isNullOrInherit
+import com.facebook.litho.layout.LayoutFunction
+import com.facebook.litho.state.StateId
+import com.facebook.litho.state.StateReadRecorder
 import com.facebook.litho.transition.MutableTransitionData
 import com.facebook.litho.transition.TransitionData
 import com.facebook.rendercore.BinderKey
 import com.facebook.rendercore.FastMath
 import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.Node
+import com.facebook.rendercore.RenderType
 import com.facebook.rendercore.RenderUnit
 import com.facebook.rendercore.RenderUnit.Binder
 import com.facebook.rendercore.RenderUnit.DelegateBinder
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.primitives.Primitive
+import com.facebook.rendercore.visibility.FocusedVisibleEvent
+import com.facebook.rendercore.visibility.FullImpressionVisibleEvent
+import com.facebook.rendercore.visibility.InvisibleEvent
+import com.facebook.rendercore.visibility.UnfocusedVisibleEvent
+import com.facebook.rendercore.visibility.VisibilityChangedEvent
+import com.facebook.rendercore.visibility.VisibleEvent
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaConstants
 import com.facebook.yoga.YogaEdge
@@ -79,6 +96,11 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
   var paddingFromBackground: Rect? = null
   var primitive: Primitive? = null
 
+  // Set by PrimitiveComponent.resolve when scope.shouldExcludeFromIncrementalMount is true.
+  // Read by LithoNodeUtils when constructing PrimitiveLithoRenderUnit so the unit doesn't
+  // have to walk the binder map to recover this boolean per construction.
+  internal var primitiveExcludesFromIncrementalMount: Boolean = false
+
   internal var id: Int = idGenerator.getAndIncrement()
   internal var children: MutableList<LithoNode> = ArrayList(4)
   internal var _layoutDirection: LayoutDirection? = null
@@ -87,10 +109,13 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
   internal var alignItems: YogaAlign? = null
   internal var flexDirection: YogaFlexDirection? = null
   internal var yogaWrap: YogaWrap? = null
-  internal var gapPx: Int? = null
-  internal var gapGutter: YogaGutter? = null
+  internal var columnGapPx: Int = 0
+  internal var rowGapPx: Int = 0
+  internal var allGapPx: Int = 0
   internal var yogaMeasureFunction: YogaMeasureFunction? = null
+  internal var yogaMinContentMeasureFunction: YogaMeasureFunction? = null
   internal var deferredNode: DeferredLithoNode? = null
+
   internal var _needsHostView: Boolean = false
   internal var paddingsFromDeferredNode: Edges? = null
   internal var paddingIsPercentFromDefferedNode: BooleanArray? = null
@@ -115,7 +140,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
       return debugLayoutProps
     }
 
-  val transitionGlobalKey: String
+  val transitionGlobalKey: Any
     get() = tailComponentKey
 
   val transitionId: TransitionId?
@@ -170,7 +195,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
   var transitionKey: String? = null
     internal set
 
-  var transitionOwnerKey: String? = null
+  var transitionOwnerKey: Any? = null
     internal set
 
   var transitionKeyType: TransitionKeyType? = null
@@ -205,6 +230,9 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
 
   @DrawableRes
   var stateListAnimatorRes: Int = 0
+    internal set
+
+  var zIndex: Int? = NO_Z_INDEX
     internal set
 
   var visibleHeightRatio: Float = 0f
@@ -254,6 +282,9 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
   internal var transitionData: MutableTransitionData? = null
     private set
 
+  internal var styleTransitionData: StyleTransitionData? = null
+    private set
+
   private var _workingRangeRegistrations: MutableList<WorkingRangeContainer.Registration>? = null
   val workingRangeRegistrations: MutableList<WorkingRangeContainer.Registration>?
     get() = _workingRangeRegistrations
@@ -272,11 +303,8 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
   val headComponent: Component
     get() = _scopedComponentInfos[_scopedComponentInfos.size - 1].component
 
-  val headComponentKey: String
-    get() =
-        checkNotNull(_scopedComponentInfos[_scopedComponentInfos.size - 1].context.globalKey) {
-          "Cannot have a null global key"
-        }
+  val headComponentKey: GlobalKey
+    get() = _scopedComponentInfos[_scopedComponentInfos.size - 1].context.globalKey
 
   val headComponentContext: ComponentContext
     get() = _scopedComponentInfos[_scopedComponentInfos.size - 1].context
@@ -284,9 +312,8 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
   val tailComponent: Component
     get() = _scopedComponentInfos[0].component
 
-  val tailComponentKey: String
-    get() =
-        checkNotNull(_scopedComponentInfos[0].context.globalKey) { "Cannot have a null global key" }
+  val tailComponentKey: GlobalKey
+    get() = _scopedComponentInfos[0].context.globalKey
 
   val tailComponentContext: ComponentContext
     get() = _scopedComponentInfos[0].context
@@ -295,6 +322,80 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
     get() = _scopedComponentInfos[0]
 
   // endregion
+
+  /**
+   * Replays this node's layout props into [props], in the order a writer for its node receives
+   * them: styled attributes, background padding, each component's common props, border, deferred
+   * padding and debug overrides. Yoga's writer and a `Layout`'s box-props recorder both read a
+   * node's props through it. It writes only to [props], so a node can be replayed into any number
+   * of sinks. It returns the state the components' props read.
+   */
+  internal fun copyLayoutPropsInto(
+      context: LayoutContext<LithoLayoutContext>,
+      props: LayoutProps,
+  ): ScatterSet<StateId> {
+    var stateReads: ScatterSet<StateId> = emptyScatterSet()
+    var wasDeferredBackgroundPaddingWritten = false
+    for (info in scopedComponentInfos) {
+      val component: Component = info.component
+
+      // The size-spec component's own props went to its holder, which handed its node props to
+      // this node when it was resolved (LayoutUtils.measureDeferredNode). Only the background
+      // padding it handed over is written here, at this point in the order.
+      if (deferredNode != null && Component.isLayoutSpecWithSizeSpec(component)) {
+        if (wasDeferredBackgroundPaddingWritten) {
+          continue
+        }
+        wasDeferredBackgroundPaddingWritten = true
+        paddingFromBackground?.let { props.setPaddingFromRect(it) }
+      } else {
+        info.commonProps?.let { commonProps ->
+          commonProps.writeStyledAttributesToLayoutProps(tailComponentContext.androidContext, props)
+          commonProps.paddingFromBackground?.let { padding ->
+            props.setPaddingFromRect(padding)
+          }
+          val reads =
+              StateReadRecorder.record(
+                  requireNotNull(context.renderContext).treeId,
+                  attribution("layout", component),
+              ) {
+                commonProps.copyLayoutProps(props, tailComponentContext.resourceResolver)
+              }
+          if (reads.isNotEmpty()) {
+            stateReads =
+                if (stateReads.isEmpty()) reads
+                else
+                    mutableScatterSetOf<StateId>().also { merged ->
+                      merged += stateReads
+                      merged += reads
+                    }
+          }
+        }
+      }
+    }
+
+    applyBorderWidth { yogaEdge, width -> props.setBorderWidth(yogaEdge, width) }
+
+    // Maybe apply the padding if parent is a Deferred Node
+    applyDeferredPadding(
+        { yogaEdge, paddingPx -> props.paddingPx(yogaEdge, paddingPx) },
+        { yogaEdge, paddingPercent -> props.paddingPercent(yogaEdge, paddingPercent) },
+    )
+
+    debugLayoutProps?.copyInto(props)
+    return stateReads
+  }
+
+  /**
+   * The layout function of a `Layout`, which measures and places this node's children; null for any
+   * other node, whose children flexbox lays out.
+   */
+  @OptIn(ExperimentalLithoApi::class) internal var layoutFunction: LayoutFunction? = null
+
+  /** The layout function this node lays itself and its subtree out with. */
+  internal open val customLayoutFunction: CustomLayoutFunction
+    get() =
+        if (layoutFunction != null) CustomLayoutFunction.Container else CustomLayoutFunction.Yoga
 
   override fun calculateLayout(
       context: LayoutContext<LithoLayoutContext>,
@@ -307,7 +408,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
       "Cannot calculate a layout with a released LayoutStateContext."
     }
 
-    return LithoYogaLayoutFunction.calculateLayout(context, sizeConstraints, this)
+    return customLayoutFunction.calculateLayout(context, this, sizeConstraints)
   }
 
   public override fun clone(): LithoNode {
@@ -323,7 +424,11 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
   }
 
   open fun createLayoutResult(layoutOutput: YogaLayoutOutput): LithoLayoutResult =
-      LithoLayoutResult(context = tailComponentContext, node = this, layoutOutput = layoutOutput)
+      if (layoutFunction != null) {
+        CustomLayoutResult(context = tailComponentContext, node = this, layoutOutput = layoutOutput)
+      } else {
+        LithoLayoutResult(context = tailComponentContext, node = this, layoutOutput = layoutOutput)
+      }
 
   open fun border(widths: IntArray, colors: IntArray, radii: FloatArray, effect: PathEffect?) {
     privateFlags = privateFlags or PFLAG_BORDER_IS_SET
@@ -346,7 +451,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
     if (resId == 0) {
       background()
     } else {
-      background(ContextCompat.getDrawable(context, resId))
+      background(tailComponentContext.resourceResolver.resolveDrawableRes(resId))
     }
   }
 
@@ -367,7 +472,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
     if (resId == 0) {
       foreground()
     } else {
-      foreground(ContextCompat.getDrawable(context, resId))
+      foreground(tailComponentContext.resourceResolver.resolveDrawableRes(resId))
     }
   }
 
@@ -395,7 +500,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
       parentImportantForAccessibility: Int =
           ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_AUTO,
       parentEnabledState: Int = NodeInfo.ENABLED_UNSET,
-      parentDuplicatesParentState: Boolean = true
+      parentDuplicatesParentState: Boolean = true,
   ) {
     if (frozen) {
       return
@@ -408,10 +513,13 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
       // If parents important for A11Y is YES_HIDE_DESCENDANTS then
       // child's important for A11Y needs to be NO_HIDE_DESCENDANTS
       @Suppress("DEPRECATION")
-      if (parentImportantForAccessibility ==
-          ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_YES_HIDE_DESCENDANTS) {
+      if (
+          parentImportantForAccessibility ==
+              ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_YES_HIDE_DESCENDANTS
+      ) {
         importantForAccessibility(
-            ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS)
+            ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS,
+        )
       }
 
       // If the parent of this node is disabled, this node has to be disabled too.
@@ -448,7 +556,8 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
               parentLayoutDirection = layoutDirection,
               parentImportantForAccessibility = importantForAccessibility,
               parentEnabledState = (nodeInfo?.enabledState ?: NodeInfo.ENABLED_UNSET),
-              parentDuplicatesParentState = isDuplicateParentStateEnabled)
+              parentDuplicatesParentState = isDuplicateParentStateEnabled,
+          )
     }
 
     addViewAttributesBinderIfForPrimitive()
@@ -488,16 +597,14 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
           )
 
       if (viewAttributes != null) {
-        val config = componentContext.lithoConfiguration.componentsConfig
         val viewAttributesBinder =
             ViewAttributesViewBinder.create(
                 ViewAttributesViewBinder.Model(
-                    renderUnit = nodePrimitive.renderUnit,
+                    nodeInfo = nodeInfo,
                     viewAttributes = viewAttributes,
                     isRootHost = false,
-                    cloneStateListAnimators = config.cloneStateListAnimators,
-                    isEventHandlerRedesignEnabled = config.useNonRebindingEventHandlers,
-                ))
+                ),
+            )
         nodePrimitive.renderUnit.addOptionalMountBinder(viewAttributesBinder)
       }
     }
@@ -533,6 +640,11 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
     transitionData
         .getOrCreate { MutableTransitionData().also { transitionData = it } }
         .addTransition(transition)
+  }
+
+  internal fun styleTransition(styleTransitionData: StyleTransitionData) {
+    this.styleTransitionData =
+        this.styleTransitionData?.plus(styleTransitionData) ?: styleTransitionData
   }
 
   internal fun addTransitionData(data: TransitionData) {
@@ -646,7 +758,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
         .putAll(binders)
   }
 
-  fun child(resolveContext: ResolveContext, c: ComponentContext, child: Component?) {
+  open fun child(resolveContext: ResolveContext, c: ComponentContext, child: Component?) {
     child?.let { child(Resolver.resolve(resolveContext, c, it)) }
   }
 
@@ -724,8 +836,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
 
   fun getComponentAt(index: Int): Component = getComponentInfoAt(index).component
 
-  fun getGlobalKeyAt(index: Int): String =
-      checkNotNull(getComponentContextAt(index).globalKey) { "Cannot have a null global key" }
+  fun getGlobalKeyAt(index: Int): GlobalKey = getComponentContextAt(index).globalKey
 
   fun setDeferredPadding(padding: Edges?, isPercentage: BooleanArray?) {
     paddingsFromDeferredNode = padding
@@ -751,6 +862,22 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
     yogaMeasureFunction = measureFunction
   }
 
+  /**
+   * Optional companion to [setMeasureFunction] used by the CSS Flexbox §4.5 automatic minimum
+   * sizing probe. When set, the underlying [com.facebook.yoga.YogaNode] will invoke this function
+   * instead of the regular measure function when sizing this node for its min-content contribution
+   * along the parent flex container's main axis.
+   *
+   * Use this from a Primitive when its min-content size is cheap to compute or differs from what
+   * the regular measure would return under `AtMost 0` — e.g. an image returning `(0, 0)` instead of
+   * doing a bitmap intrinsic size lookup, or a collection returning `0` along its scroll axis.
+   * Primitives without a min-content measure function fall back to the regular measure with `AtMost
+   * 0`, which text measurers naturally answer with longest-word width.
+   */
+  fun setMinContentMeasureFunction(measureFunction: YogaMeasureFunction) {
+    yogaMinContentMeasureFunction = measureFunction
+  }
+
   fun stateListAnimator(stateListAnimator: StateListAnimator?) {
     privateFlags = privateFlags or PFLAG_STATE_LIST_ANIMATOR_SET
     this.stateListAnimator = stateListAnimator
@@ -761,6 +888,10 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
     privateFlags = privateFlags or PFLAG_STATE_LIST_ANIMATOR_RES_SET
     stateListAnimatorRes = resId
     wrapInView()
+  }
+
+  fun zIndex(order: Int) {
+    zIndex = order
   }
 
   fun testKey(testKey: String?) {
@@ -775,7 +906,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
     this.touchExpansion?.set(edge, touchExpansion.toFloat())
   }
 
-  fun transitionKey(key: String?, ownerKey: String?) {
+  fun transitionKey(key: String?, ownerKey: Any?) {
     if (!key.isNullOrEmpty()) {
       privateFlags = privateFlags or PFLAG_TRANSITION_KEY_IS_SET
       transitionKey = key
@@ -835,6 +966,15 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
           onInvisible != null ||
           onVisibilityChanged != null
 
+  private fun reportNullVisibilityCallbackData(methodName: String) {
+    DebugInfoReporter.report("LithoNode:null_visibility_callback_data") {
+      put("method", methodName)
+      put("component", simpleName)
+      put("hasVisibilityHandlers", hasVisibilityHandlers())
+      put("thread", Thread.currentThread().name)
+    }
+  }
+
   fun visibilityOutputTag(visibilityOutputTag: String?) {
     this.visibilityOutputTag = visibilityOutputTag
   }
@@ -843,9 +983,13 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
     yogaWrap = wrap
   }
 
-  fun setGap(gutter: YogaGutter, gapPx: Int) {
-    this.gapPx = gapPx
-    this.gapGutter = gutter
+  fun setGap(gutter: YogaGutter, gap: Int) {
+    when (gutter) {
+      YogaGutter.COLUMN -> columnGapPx = gap
+      YogaGutter.ROW -> rowGapPx = gap
+      YogaGutter.ALL -> allGapPx = gap
+      else -> {}
+    }
   }
 
   fun addSystemGestureExclusionZones(zones: MutableList<(Rect) -> Rect>) {
@@ -924,14 +1068,6 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
         touchExpansion?.let { edges -> FastMath.round(edges[YogaEdge.BOTTOM]) } ?: 0
       } else 0
 
-  internal inline fun withValidGap(crossinline isValid: (Int, YogaGutter) -> Unit) {
-    val gap = gapPx
-    val gapGutter = gapGutter
-    if (gap != null && gapGutter != null) {
-      isValid(gap, gapGutter)
-    }
-  }
-
   private fun hasCustomBindersForMountSpec(): Boolean =
       customViewBindersForMountSpec?.isNotEmpty() == true
 
@@ -958,11 +1094,13 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
     internal const val PFLAG_DUPLICATE_CHILDREN_STATES_IS_SET: Long = 1L shl 33
     internal const val PFLAG_BINDER_IS_SET: Long = 1L shl 34
 
+    private const val COMPONENT_HOST_LOG: String = "LithoComponentHostLog"
+
     private inline fun readStyledAttributes(
         context: Context,
         styleAttr: Int,
         styleRes: Int,
-        block: (TypedArray) -> Unit
+        block: (TypedArray) -> Unit,
     ) {
       var attributes: TypedArray? = null
       try {
@@ -1029,7 +1167,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
 
     internal fun CommonProps.writeStyledAttributesToLayoutProps(
         context: Context,
-        layoutProps: LayoutProps
+        layoutProps: LayoutProps,
     ) {
       val styleAttr: Int = defStyleAttr
       val styleRes: Int = defStyleRes
@@ -1050,7 +1188,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
 
     internal inline fun LithoNode.applyDeferredPadding(
         paddingPx: YogaEdgeIntFunction,
-        paddingPercent: YogaEdgeFloatFunction
+        paddingPercent: YogaEdgeFloatFunction,
     ) {
       paddingsFromDeferredNode?.let { edges ->
         for (i in 0 until Edges.EDGES_LENGTH) {
@@ -1076,18 +1214,22 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
      * @return `true` iff the result will mount a view.
      */
     private fun willMountView(node: LithoNode): Boolean =
-        if (node.primitive?.renderUnit?.renderType == RenderUnit.RenderType.VIEW) {
+        if (node.primitive?.renderUnit?.renderType == RenderType.VIEW) {
           true
         } else {
           node.tailComponent.mountType == Component.MountType.VIEW
         }
 
     private fun willMountDrawable(node: LithoNode): Boolean =
-        if (node.primitive?.renderUnit?.renderType == RenderUnit.RenderType.DRAWABLE) {
+        if (node.primitive?.renderUnit?.renderType == RenderType.DRAWABLE) {
           true
         } else {
           node.tailComponent.mountType == Component.MountType.DRAWABLE
         }
+
+    private fun debugLog(tag: String, message: String) {
+      Log.d(tag, message)
+    }
 
     /**
      * Returns true if this is the root node (which always generates a matching layout output), if
@@ -1097,6 +1239,50 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
      * @param node The LithoNode to check
      */
     internal fun needsHostView(node: LithoNode): Boolean {
+      if (LithoDebugConfigurations.isComponentHostLoggingEnabled) {
+        debugLog(COMPONENT_HOST_LOG, "----------------------------------------------")
+        val infos: List<ScopedComponentInfo> = node.scopedComponentInfos
+        for (info in infos) {
+          debugLog(
+              COMPONENT_HOST_LOG,
+              "Component: " + info.component.toString() + "@" + info.component.hashCode(),
+          )
+        }
+        if (node.willMountView) {
+          debugLog(COMPONENT_HOST_LOG, "NeedsHostView: alreadyRepresentsView")
+        }
+        if (node.isForceViewWrapping) {
+          debugLog(COMPONENT_HOST_LOG, "NeedsHostView: isForceViewWrapping")
+        }
+        if (needsHostViewForCommonDynamicProps(node)) {
+          debugLog(COMPONENT_HOST_LOG, "NeedsHostView: needsHostViewForCommonDynamicProps")
+        }
+        if (needsHostViewForTransition(node)) {
+          debugLog(COMPONENT_HOST_LOG, "NeedsHostView: needsHostViewForTransition")
+        }
+        if (hasSelectedStateWhenDisablingDrawableOutputs(node)) {
+          debugLog(
+              COMPONENT_HOST_LOG,
+              "NeedsHostView: hasSelectedStateWhenDisablingDrawableOutputs",
+          )
+        }
+        if (Component.isLayoutSpec(node.tailComponent)) {
+          if (!node.systemGestureExclusionZones.isNullOrEmpty()) {
+            debugLog(COMPONENT_HOST_LOG, "NeedsHostView: gestureExclusionZones")
+          }
+          if (node.hasCustomBindersForMountSpec()) {
+            debugLog(COMPONENT_HOST_LOG, "NeedsHostView: hasCustomBindersForMountSpec")
+          }
+        }
+        if (
+            willMountDrawable(node) &&
+                (!node.systemGestureExclusionZones.isNullOrEmpty() ||
+                    node.hasCustomBindersForMountSpec())
+        ) {
+          debugLog(COMPONENT_HOST_LOG, "NeedsHostView: willMountDrawable")
+        }
+      }
+
       if (node.willMountView) {
         // Component already represents a View.
         return false
@@ -1120,9 +1306,11 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
         return true
       }
 
-      if (Component.isLayoutSpec(node.tailComponent) &&
-          (!node.systemGestureExclusionZones.isNullOrEmpty() ||
-              node.hasCustomBindersForMountSpec())) {
+      if (
+          Component.isLayoutSpec(node.tailComponent) &&
+              (!node.systemGestureExclusionZones.isNullOrEmpty() ||
+                  node.hasCustomBindersForMountSpec())
+      ) {
         return true
       }
       return willMountDrawable(node) &&
@@ -1151,6 +1339,58 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
       val hasTooltipText = nodeInfo.tooltipText != null
       val hasClipChildrenSet = nodeInfo.isClipChildrenSet
       val hasTransitionName = nodeInfo.transitionName != null
+
+      if (LithoDebugConfigurations.isComponentHostLoggingEnabled) {
+        if (hasFocusChangeHandler) {
+          debugLog(COMPONENT_HOST_LOG, "NeedsHostView: hasFocusChangeHandler")
+        }
+        if (hasEnabledTouchEventHandlers) {
+          debugLog(COMPONENT_HOST_LOG, "NeedsHostView: hasEnabledTouchEventHandlers")
+        }
+        if (hasViewId) {
+          debugLog(COMPONENT_HOST_LOG, "NeedsHostView: hasViewId")
+        }
+        if (hasViewTag) {
+          debugLog(COMPONENT_HOST_LOG, "NeedsHostView: hasViewTag")
+        }
+        if (hasViewTags) {
+          debugLog(COMPONENT_HOST_LOG, "NeedsHostView: hasViewTags")
+        }
+        if (hasShadowElevation) {
+          debugLog(COMPONENT_HOST_LOG, "NeedsHostView: hasShadowElevation")
+        }
+        if (hasAmbientShadowColor) {
+          debugLog(COMPONENT_HOST_LOG, "NeedsHostView: hasAmbientShadowColor")
+        }
+        if (hasSpotShadowColor) {
+          debugLog(COMPONENT_HOST_LOG, "NeedsHostView: hasSpotShadowColor")
+        }
+        if (hasOutlineProvider) {
+          debugLog(COMPONENT_HOST_LOG, "NeedsHostView: hasOutlineProvider")
+        }
+        if (hasClipToOutline) {
+          debugLog(COMPONENT_HOST_LOG, "NeedsHostView: hasClipToOutline")
+        }
+        if (hasClipChildrenSet) {
+          debugLog(COMPONENT_HOST_LOG, "NeedsHostView: hasClipChildrenSet")
+        }
+        if (isFocusableSetTrue) {
+          debugLog(COMPONENT_HOST_LOG, "NeedsHostView: isFocusableSetTrue")
+        }
+        if (isClickableSetTrue) {
+          debugLog(COMPONENT_HOST_LOG, "NeedsHostView: isClickableSetTrue")
+        }
+        if (isKeyboardNavigationClusterSetTrue) {
+          debugLog(COMPONENT_HOST_LOG, "NeedsHostView: isKeyboardNavigationClusterSetTrue")
+        }
+        if (hasTooltipText) {
+          debugLog(COMPONENT_HOST_LOG, "NeedsHostView: hasTooltipText")
+        }
+        if (hasTransitionName) {
+          debugLog(COMPONENT_HOST_LOG, "NeedsHostView: hasTransitionName")
+        }
+      }
+
       return hasFocusChangeHandler ||
           hasEnabledTouchEventHandlers ||
           hasViewId ||
@@ -1205,16 +1445,36 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
         !node.transitionKey.isNullOrEmpty() && !node.willMountView
 
     /**
+     * Whether [node] would get its own host view if it mounted an accessible drawable instead of a
+     * view, as legacy Text does. [needsHostView] is always false for a node that mounts a view.
+     */
+    internal fun needsHostViewAsAccessibleDrawable(node: LithoNode): Boolean =
+        node.isForceViewWrapping ||
+            hasViewContent(node, assumeImplementsAccessibility = true) ||
+            needsHostViewForCommonDynamicProps(node) ||
+            !node.transitionKey.isNullOrEmpty() ||
+            (ComponentContext.getComponentsConfig(node.headComponentContext)
+                .shouldAddHostViewForRootComponent &&
+                node.nodeInfo != null &&
+                node.nodeInfo?.selectedState != NodeInfo.SELECTED_UNSET) ||
+            !node.systemGestureExclusionZones.isNullOrEmpty() ||
+            node.hasCustomBindersForMountSpec()
+
+    /**
      * Determine if a given [LithoNode] within the context of a given [LayoutState] requires to be
      * wrapped inside a view.
      *
      * @see LithoNode.needsHostView
      */
-    private fun hasViewContent(node: LithoNode): Boolean {
+    private fun hasViewContent(
+        node: LithoNode,
+        assumeImplementsAccessibility: Boolean = false,
+    ): Boolean {
       val component: Component = node.tailComponent
       val nodeInfo: NodeInfo? = node.nodeInfo
       val implementsAccessibility =
-          nodeInfo?.needsAccessibilityDelegate() == true ||
+          assumeImplementsAccessibility ||
+              nodeInfo?.needsAccessibilityDelegate() == true ||
               (component is SpecGeneratedComponent && component.implementsAccessibility())
       val importantForAccessibility: Int = node.importantForAccessibility
       val c: ComponentContext = node.headComponentContext
@@ -1242,6 +1502,25 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
               (implementsAccessibility ||
                   !(nodeInfo?.contentDescription.isNullOrEmpty()) ||
                   (importantForAccessibility != ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO))
+
+      if (LithoDebugConfigurations.isComponentHostLoggingEnabled) {
+        if (hasBackgroundOrForeground) {
+          debugLog(COMPONENT_HOST_LOG, "NeedsHostView: hasBackgroundOrForeground")
+        }
+        if (hasAccessibilityContent) {
+          debugLog(COMPONENT_HOST_LOG, "NeedsHostView: hasAccessibilityContent")
+        }
+        if (node.isDuplicateChildrenStatesEnabled) {
+          debugLog(COMPONENT_HOST_LOG, "NeedsHostView: node.isDuplicateChildrenStatesEnabled")
+        }
+        if (node.layerType != LayerType.LAYER_TYPE_NOT_SET) {
+          debugLog(
+              COMPONENT_HOST_LOG,
+              "NeedsHostView: node.layerType != LayerType.LAYER_TYPE_NOT_SET",
+          )
+        }
+      }
+
       return hasBackgroundOrForeground ||
           hasAccessibilityContent ||
           node.isDuplicateChildrenStatesEnabled ||
@@ -1249,7 +1528,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
           node.layerType != LayerType.LAYER_TYPE_NOT_SET
     }
 
-    private fun <T> addVisibilityHandler(
+    private fun <T : Any> addVisibilityHandler(
         currentHandler: EventHandler<T>? = null,
         newHandler: EventHandler<T>? = null,
     ): EventHandler<T>? {

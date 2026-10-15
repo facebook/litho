@@ -16,7 +16,7 @@
 
 package com.facebook.litho.testing.treeprop
 
-import com.facebook.litho.Column
+import com.facebook.litho.Column as ColumnBuilder
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.annotations.LayoutSpec
@@ -46,16 +46,18 @@ object TreePropTestParentSpec {
       @Prop resultPropALeaf1: TreePropTestResult,
       @Prop resultPropBLeaf1: TreePropTestResult,
       @Prop resultPropBLeaf2: TreePropTestResult,
-      @Prop resultPropAMount: TreePropTestResult
+      @Prop resultPropAMount: TreePropTestResult,
   ): Component =
-      Column.create(c)
+      ColumnBuilder.create(c)
           .flexShrink(0f)
           .alignContent(YogaAlign.FLEX_START)
           .child(
-              TreePropTestMiddle.create(c)
-                  .resultPropALeaf1(resultPropALeaf1)
-                  .resultPropBLeaf1(resultPropBLeaf1))
+              TreePropTestMiddle(
+                  resultPropALeaf1 = resultPropALeaf1,
+                  resultPropBLeaf1 = resultPropBLeaf1,
+              ),
+          )
           .child(TreePropTestMount.create(c).resultPropA(resultPropAMount))
-          .child(TreePropTestLeaf.create(c).resultPropB(resultPropBLeaf2))
+          .child(TreePropTestLeaf(resultPropB = resultPropBLeaf2))
           .build()
 }

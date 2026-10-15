@@ -22,7 +22,7 @@ import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.assertj.LithoAssertions
 import com.facebook.litho.testing.testrunner.LithoTestRunner
-import com.facebook.rendercore.Size
+import com.facebook.rendercore.IntSize
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.primitives.LayoutBehavior
 import com.facebook.rendercore.primitives.LayoutScope
@@ -36,19 +36,20 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class DynamicPropsOnForcedRemountTest {
 
-  @get:Rule val mLithoTestRule: LithoTestRule = LithoTestRule()
+  @get:Rule val lithoTestRule: LithoTestRule = LithoTestRule()
 
   @Test
   fun `ensure that dynamic props still work after forced needs remount`() {
     val dynamicValue = DynamicValue("0001")
     val component = WrapperComponent(dynamicValue)
-    val lithoView = mLithoTestRule.render(widthPx = 1080, heightPx = 840) { component }
-    mLithoTestRule.idle()
+    val lithoView = lithoTestRule.render(widthPx = 1080, heightPx = 840) { component }
+    lithoTestRule.idle()
     LithoAssertions.assertThat(lithoView).hasVisibleText("0001")
     lithoView.detachFromWindow()
 
     val componentContext = ComponentContext(getApplicationContext() as Context)
-    val componentTree = ComponentTree.create(componentContext, component).build()
+    val componentTree =
+        ComponentTree.create(componentContext, component).enableChildClipping(true).build()
 
     lithoView.setComponentTree(componentTree)
     lithoView.attachToWindow().measure().layout()
@@ -77,7 +78,8 @@ private class TestPrimitiveComponent(
               // simple binding
               bindDynamic(tag, TextView::setText, "0000")
             },
-        null)
+        null,
+    )
   }
 }
 
@@ -87,9 +89,10 @@ private object TestLayoutBehavior : LayoutBehavior {
     return PrimitiveLayoutResult(
         size =
             if (!sizeConstraints.hasBoundedWidth && !sizeConstraints.hasBoundedHeight) {
-              Size(1080, 840)
+              IntSize(1080, 840)
             } else {
-              Size.withEqualDimensions(sizeConstraints)
-            })
+              IntSize.withEqualDimensions(sizeConstraints)
+            },
+    )
   }
 }

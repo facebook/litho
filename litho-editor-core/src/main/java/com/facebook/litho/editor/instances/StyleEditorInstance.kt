@@ -87,7 +87,7 @@ class StyleEditorInstance : Editor {
     return true
   }
 
-  private inline fun <reified T> copyDataClass(obj: T): T? {
-    return Reflection.invoke(obj, "copy")
+  private inline fun <reified T : Any> copyDataClass(obj: T): T? {
+    return Reflection.invoke(obj, "copy", T::class)
   }
 }

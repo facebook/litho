@@ -43,10 +43,8 @@ import com.facebook.primitive.canvas.model.CanvasTransformModel
  * to improve performance [Matrix] objects will be pooled and [Path] objects will be cached.
  *
  * In order to get the best performance, on instance of this class should be a component-scoped
- * object that survives state updates. When creating an instance of this class you should use:
- * - for Litho: [https://www.internalfb.com/intern/staticdocs/litho/docs/mainconcepts/use-cached/]
- * - for Bloks:
- *   [https://www.internalfb.com/intern/staticdocs/bloks/docs/bridging/android_binder_utils#controllerforcomponent]
+ * object that survives state updates. In Litho, create it with
+ * [useCached](https://fblitho.com/docs/state-and-side-effects/use-cached/).
  *
  * @param matrixPoolSize The Matrix pool max size
  * @param pathCacheSize The Path cache max size
@@ -86,7 +84,7 @@ class CanvasState(
   @SuppressLint("KotlinPreferElvis")
   internal fun getOrCreatePath(
       pathModel: CanvasPathModel,
-      transformModel: CanvasTransformModel? = null
+      transformModel: CanvasTransformModel? = null,
   ): Path {
     val fromCache = pathCache.get(Pair(pathModel, transformModel))
     return if (fromCache != null) {
@@ -164,13 +162,17 @@ class CanvasState(
               }
             }
 
-            if (newStrokeModel.lineWidth != strokeModel?.lineWidth &&
-                strokeWidth != newStrokeModel.lineWidth) {
+            if (
+                newStrokeModel.lineWidth != strokeModel?.lineWidth &&
+                    strokeWidth != newStrokeModel.lineWidth
+            ) {
               strokeWidth = newStrokeModel.lineWidth
             }
 
-            if (newStrokeModel.miterLimit != strokeModel?.miterLimit &&
-                strokeMiter != newStrokeModel.miterLimit) {
+            if (
+                newStrokeModel.miterLimit != strokeModel?.miterLimit &&
+                    strokeMiter != newStrokeModel.miterLimit
+            ) {
               strokeMiter = newStrokeModel.miterLimit
             }
 
@@ -184,8 +186,10 @@ class CanvasState(
 
             if (newStrokeModel.dashLengths != null) {
               val dashLengths = newStrokeModel.dashLengths
-              if (!dashLengths.contentEquals(strokeModel?.dashLengths) ||
-                  newStrokeModel.dashPhase != strokeModel?.dashPhase) {
+              if (
+                  !dashLengths.contentEquals(strokeModel?.dashLengths) ||
+                      newStrokeModel.dashPhase != strokeModel?.dashPhase
+              ) {
                 pathEffect = DashPathEffect(dashLengths, newStrokeModel.dashPhase)
               }
             } else if (pathEffect != null) {

@@ -24,13 +24,20 @@ class ComparableColorDrawable private constructor(@ColorInt color: Int) :
     ColorDrawable(color), ComparableDrawable {
 
   override fun isEquivalentTo(other: ComparableDrawable): Boolean {
+    return equals(other)
+  }
+
+  override fun equals(other: Any?): Boolean {
     if (this === other) {
       return true
     }
-    return if (other !is ComparableColorDrawable) {
-      false
-    } else color == other.color
+    if (other !is ComparableColorDrawable) {
+      return false
+    }
+    return color == other.color
   }
+
+  override fun hashCode(): Int = color
 
   companion object {
 

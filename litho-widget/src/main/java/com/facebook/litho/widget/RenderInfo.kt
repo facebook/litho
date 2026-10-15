@@ -18,7 +18,6 @@ package com.facebook.litho.widget
 
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentTreeDebugEventListener
-import com.facebook.litho.ComponentsLogger
 import com.facebook.litho.EventHandler
 import com.facebook.litho.RenderCompleteEvent
 import com.facebook.litho.viewcompat.ViewBinder
@@ -43,8 +42,6 @@ interface RenderInfo {
   fun rendersComponent(): Boolean
 
   val component: Component
-
-  val componentsLogger: ComponentsLogger?
 
   val logTag: String?
 

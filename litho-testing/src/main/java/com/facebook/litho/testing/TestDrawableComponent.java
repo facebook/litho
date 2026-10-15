@@ -35,6 +35,7 @@ import javax.annotation.Nullable;
  * @deprecated Use MountSpecLifecycleTester if lifecycle assertions are needed or
  *     SimpleMountSpecTester if not.
  */
+@Deprecated
 public class TestDrawableComponent extends TestComponent {
 
   public interface TestComponentListener {

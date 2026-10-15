@@ -35,15 +35,19 @@ import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
-import com.facebook.litho.Row
 import com.facebook.litho.Style
 import com.facebook.litho.accessibility.accessibilityRole
+import com.facebook.litho.core.height
 import com.facebook.litho.core.minHeight
 import com.facebook.litho.core.padding
+import com.facebook.litho.core.width
+import com.facebook.litho.flexbox.flex
+import com.facebook.litho.layout.flexbox.Row
 import com.facebook.litho.useCached
 import com.facebook.litho.useState
 import com.facebook.litho.view.background
 import com.facebook.litho.view.onClick
+import com.facebook.litho.view.scale
 import com.facebook.rendercore.dp
 import com.facebook.rendercore.drawableAttr
 import com.facebook.rendercore.sp
@@ -75,10 +79,10 @@ constructor(
     private val selectedOption: String,
     private val onItemSelected: (String) -> Unit,
     private val style: Style = Style,
-    @ColorInt private val selectedTextColor: Int = -0x22000000, // 87% Black
+    @param:ColorInt private val selectedTextColor: Int = -0x22000000, // 87% Black
     private val selectedTextSize: Float = -1f,
     private val caret: Drawable? = null,
-    @LayoutRes private val itemLayout: Int = android.R.layout.simple_dropdown_item_1line,
+    @param:LayoutRes private val itemLayout: Int = android.R.layout.simple_dropdown_item_1line,
 ) : KComponent() {
   override fun ComponentScope.render(): Component {
     val selection = useState { selectedOption }
@@ -123,34 +127,40 @@ constructor(
                   popup.setOnDismissListener { isShowingDropDown.update(false) }
                   popup.show()
                   isShowingDropDown.update(true)
-                }) {
-          child(
-              createSelectedItemText(
-                  context, selection.value, selectedTextSize.toInt(), selectedTextColor))
-          child(createCaret(context, caretDrawableToUse, isShowingDropDown.value))
-        }
+                },
+    ) {
+      child(
+          createSelectedItemText(
+              context,
+              selection.value,
+              selectedTextSize.toInt(),
+              selectedTextColor,
+          ),
+      )
+      child(createCaret(context, caretDrawableToUse, isShowingDropDown.value))
+    }
   }
 
   private fun createCaret(
       c: ComponentContext,
       icon: Drawable,
-      isShowingDropDown: Boolean
+      isShowingDropDown: Boolean,
   ): Component {
-    return Image.create(c)
-        .drawable(icon)
-        .widthDip(SPINNER_HEIGHT.toFloat())
-        .heightDip(SPINNER_HEIGHT.toFloat())
-        .flexShrink(0f)
-        .flexGrow(0f)
-        .scale((if (isShowingDropDown) -1 else 1).toFloat())
-        .build()
+    return PrimitiveImage(
+        drawable = icon,
+        style =
+            Style.width(SPINNER_HEIGHT.dp)
+                .height(SPINNER_HEIGHT.dp)
+                .flex(grow = 0f, shrink = 0f)
+                .scale((if (isShowingDropDown) -1 else 1).toFloat()),
+    )
   }
 
   private fun createSelectedItemText(
       c: ComponentContext,
       selection: String,
       textSizePx: Int,
-      @ColorInt textColor: Int
+      @ColorInt textColor: Int,
   ): Component {
     return Text.create(c)
         .text(selection)
@@ -224,7 +234,10 @@ private class CaretDrawable(context: Context, @ColorInt caretColor: Int) : Drawa
 
   private fun dpToPx(context: Context, dpValue: Int): Float {
     return TypedValue.applyDimension(
-        TypedValue.COMPLEX_UNIT_DIP, dpValue.toFloat(), context.resources.displayMetrics)
+        TypedValue.COMPLEX_UNIT_DIP,
+        dpValue.toFloat(),
+        context.resources.displayMetrics,
+    )
   }
 
   companion object {

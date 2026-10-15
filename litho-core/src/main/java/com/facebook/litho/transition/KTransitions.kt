@@ -29,11 +29,12 @@ import com.facebook.rendercore.transitions.TransitionUtils
 import com.facebook.rendercore.utils.areObjectsEquivalent
 
 /** Defines one or more [Transition] animations for the given component */
+@Deprecated(LEGACY_TRANSITION_DEPRECATION)
 @Hook
 fun ComponentScope.useTransition(transition: Transition?) {
   transition ?: return
   val data = transitionData ?: MutableTransitionData()
-  TransitionUtils.setOwnerKey(transition, context.globalKey)
+  TransitionUtils.setOwnerKey(transition, context.nullableGlobalKey)
   data.addTransition(transition)
   transitionData = data
 }
@@ -51,11 +52,12 @@ fun ComponentScope.useTransition(transition: Transition?) {
  * @param deps A list of dependencies that will trigger a re-evaluation of the transition.
  * @param createTransition A lambda that creates the [Transition] object.
  */
+@Deprecated(LEGACY_TRANSITION_DEPRECATION)
 @Hook
 @ExperimentalLithoApi
 fun ComponentScope.useTransition(
     vararg deps: Any?,
-    createTransition: UseTransitionScope.() -> Transition?
+    createTransition: UseTransitionScope.() -> Transition?,
 ) {
   val data = transitionData ?: MutableTransitionData()
   val identityKey = HookKey(context.globalKey, data.transitionCreators?.size ?: 0)
@@ -103,7 +105,7 @@ interface UseTransitionScope {
 private class KTransitionCreator(
     override val identityKey: HookKey,
     private val dependencies: Array<*>,
-    private val createTransition: UseTransitionScope.() -> Transition?
+    private val createTransition: UseTransitionScope.() -> Transition?,
 ) : TransitionCreator {
 
   private var diffInputs: List<Any?>? = null
@@ -156,3 +158,8 @@ private class UseTransitionScopeImpl(private val previousData: List<Any?>?) : Us
 
 private const val USE_TRANSITION_NO_DEPS_ERROR =
     "useTransition must provide 'deps' parameter that determines when the transition should be recalculated."
+
+internal const val LEGACY_TRANSITION_DEPRECATION =
+    "Legacy transition API. Use Style.transition { } to animate changes to a component's " +
+        "properties or bounds, and AnimatedVisibility or AnimatedContent for enter and exit " +
+        "animations, all in com.facebook.litho.animation."

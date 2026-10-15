@@ -187,13 +187,11 @@ class BatchedTarget implements SectionTree.Target {
 
   private void maybeLogRequestFocusWithOffset(int index, int offset) {
     if (ENABLE_LOGGER && mComponentInfoSparseArray.size() != 0) {
-      mSectionsDebugLogger.logRequestFocusWithOffset(
-          mSectionTreeTag,
-          index,
-          offset,
-          // NULLSAFE_FIXME[Parameter Not Nullable]
-          mComponentInfoSparseArray.get(index),
-          Thread.currentThread().getName());
+      final RenderInfo renderInfo = mComponentInfoSparseArray.get(index);
+      if (renderInfo != null) {
+        mSectionsDebugLogger.logRequestFocusWithOffset(
+            mSectionTreeTag, index, offset, renderInfo, Thread.currentThread().getName());
+      }
     }
   }
 

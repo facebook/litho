@@ -31,6 +31,7 @@ import static com.facebook.litho.specmodels.model.MethodParamModelUtils.isAnnota
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethod;
@@ -42,6 +43,7 @@ import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelUtils;
 import com.facebook.litho.specmodels.model.StateParamModel;
 import com.facebook.litho.specmodels.model.TreePropModel;
+import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.MethodSpec;
@@ -51,6 +53,7 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeVariableName;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,13 +66,22 @@ public class EventGenerator {
 
   private EventGenerator() {}
 
-  public static TypeSpecDataHolder generate(SpecModel specModel) {
+  public static TypeSpecDataHolder generate(SpecModel specModel, EnumSet<RunMode> runMode) {
     final TypeSpecDataHolder.Builder builder =
         TypeSpecDataHolder.newBuilder()
-            .addTypeSpecDataHolder(generateGetEventHandlerMethods(specModel))
-            .addTypeSpecDataHolder(generateEventDispatchers(specModel))
-            .addTypeSpecDataHolder(generateEventMethods(specModel))
-            .addTypeSpecDataHolder(generateEventHandlerFactories(specModel));
+            .addTypeSpecDataHolder(generateGetEventHandlerMethods(specModel));
+
+    // dispatch<X> takes one parameter per @Event field and returns the event's return type, neither
+    // of which an ABI run can read. Emitting it there can only produce a shape the library jar does
+    // not have; it is package-private, so omitting it leaves a same-package consumer in another
+    // target with a compile error instead of a NoSuchMethodError at runtime.
+    if (!runMode.contains(RunMode.ABI)) {
+      builder.addTypeSpecDataHolder(generateEventDispatchers(specModel));
+    }
+
+    builder
+        .addTypeSpecDataHolder(generateEventMethods(specModel))
+        .addTypeSpecDataHolder(generateEventHandlerFactories(specModel));
 
     if (!specModel.getEventMethods().isEmpty()) {
       builder.addMethod(generateDispatchOnEventImpl(specModel));
@@ -140,6 +152,10 @@ public class EventGenerator {
     MethodSpec.Builder eventDispatcherMethod =
         MethodSpec.methodBuilder("dispatch" + eventClassName.simpleName())
             .addModifiers(Modifier.STATIC)
+            .addAnnotation(
+                AnnotationSpec.builder(SuppressWarnings.class)
+                    .addMember("value", "{$S, $S}", "unchecked", "rawtypes")
+                    .build())
             .addParameter(ClassNames.EVENT_HANDLER, "_eventHandler");
 
     eventDispatcherMethod.addStatement(
@@ -202,6 +218,10 @@ public class EventGenerator {
             .addModifiers(Modifier.PRIVATE)
             .returns(eventMethodModel.returnType)
             .addTypeVariables(eventMethodModel.typeVariables)
+            .addAnnotation(
+                AnnotationSpec.builder(SuppressWarnings.class)
+                    .addMember("value", "$S", "cast")
+                    .build())
             .addParameter(ClassNames.HAS_EVENT_DISPATCHER_CLASSNAME, ABSTRACT_PARAM_NAME)
             .addStatement(
                 "$L $L = ($L) $L",
@@ -239,7 +259,8 @@ public class EventGenerator {
           "null");
     }
 
-    final String sourceDelegateAccessor = SpecModelUtils.getSpecAccessor(specModel);
+    final String sourceDelegateAccessor =
+        SpecModelUtils.getSpecAccessor(specModel, eventMethodModel);
     final boolean isErrorDelegation =
         eventMethodModel.name.toString().equals(EventCaseGenerator.INTERNAL_ON_ERROR_HANDLER_NAME);
 
@@ -354,6 +375,10 @@ public class EventGenerator {
         MethodSpec.methodBuilder("dispatchOnEventImpl")
             .addModifiers(Modifier.PROTECTED)
             .addAnnotation(Override.class)
+            .addAnnotation(
+                AnnotationSpec.builder(SuppressWarnings.class)
+                    .addMember("value", "{$S, $S, $S}", "unchecked", "cast", "rawtypes")
+                    .build())
             .returns(TypeName.OBJECT)
             .addParameter(
                 ParameterSpec.builder(EVENT_HANDLER, "eventHandler", Modifier.FINAL).build())
@@ -461,137 +486,41 @@ public class EventGenerator {
     final MethodSpec.Builder builder =
         MethodSpec.methodBuilder(eventMethodModel.name.toString() + "AsLambda")
             .addModifiers(Modifier.STATIC)
+            .addAnnotation(
+                AnnotationSpec.builder(SuppressWarnings.class)
+                    .addMember("value", "{$S, $S}", "unchecked", "cast")
+                    .build())
             .addTypeVariables(eventInfo.getValue())
             .addParameter(paramClass, "c", Modifier.FINAL)
             .returns(returnType);
 
+    // @Param values become extra parameters on the generated *AsLambda factory (matching the
+    // non-lambda on<Event>(c) factory) and are forwarded to it.
+    final CodeBlock.Builder factoryArgs = CodeBlock.builder().add("c");
     for (MethodParamModel methodParamModel : eventMethodModel.methodParams) {
       if (isAnnotatedWith(methodParamModel, Param.class)) {
         builder.addParameter(parameter(methodParamModel, ImmutableList.of(Modifier.FINAL)));
+        factoryArgs.add(", $L", methodParamModel.getName());
       }
     }
 
-    final String contextParamName = "c";
-    final boolean hasLazyStateParams = SpecMethodModelUtils.hasLazyStateParams(eventMethodModel);
-
-    final String componentName = specModel.getComponentName();
+    // Back the returned lambda with the real EventHandler from the sibling on<Event>(c) factory via
+    // EquivalentEventLambda, so its dispatch (live @Prop/@State/context, rebound to the latest
+    // committed owner every commit by EventHandlersController) and equivalence are inherited
+    // verbatim from a plain EventHandler. This replaces the previous per-render lambda that
+    // captured
+    // the owning component/section instance (_ref) and its context -- which pinned that instance
+    // (for @GroupSectionSpec / @DiffSectionSpec, its whole SectionTree generation) and broke
+    // equivalence every render. Applies to every spec that generates lambda factories (@LayoutSpec
+    // and @GroupSectionSpec / @DiffSectionSpec).
     builder.addStatement(
-        "final $L $L = ($L) $L.getComponentScope()",
-        componentName,
-        REF_VARIABLE_NAME,
-        componentName,
-        contextParamName);
-
-    if (hasLazyStateParams) {
-      builder.addStatement(
-          "final $L $L = $L.getStateContainerWithLazyStateUpdatesApplied(c, $L)",
-          StateContainerGenerator.getStateContainerClassName(specModel),
-          LOCAL_STATE_CONTAINER_NAME,
-          REF_VARIABLE_NAME,
-          REF_VARIABLE_NAME);
-    } else if (eventMethodModel.methodParams.stream().anyMatch(PREDICATE_NEEDS_STATE)) {
-      builder.addStatement(
-          "final $L $L = $L.$L",
-          StateContainerGenerator.getStateContainerClassName(specModel),
-          LOCAL_STATE_CONTAINER_NAME,
-          REF_VARIABLE_NAME,
-          STATE_CONTAINER_IMPL_GETTER + "(" + contextParamName + ")");
-    }
-
-    // Create a local variable for interstage props if they created or used.
-    if (ComponentBodyGenerator.requiresInterStatePropContainer(
-        eventMethodModel.methodParams, null)) {
-      builder.addStatement(
-          "final $L $L = $L",
-          ClassNames.INTER_STAGE_PROPS_CONTAINER,
-          ComponentBodyGenerator.LOCAL_INTER_STAGE_PROPS_CONTAINER_NAME,
-          "null");
-    }
-
-    final CodeBlock.Builder lambda = CodeBlock.builder();
-
-    lambda.add("return new $L() {\n", returnType);
-    lambda.indent();
-    lambda.add("@Override\n");
-    lambda.add("public $T invoke($T e) {\n", lambdaReturnType, eventInfo.getKey());
-    lambda.indent();
-
-    final String sourceDelegateAccessor = SpecModelUtils.getSpecAccessor(specModel);
-    if (eventMethodModel.returnType.equals(TypeName.VOID)) {
-      lambda.add("$L.$L(\n", sourceDelegateAccessor, eventMethodModel.name);
-    } else {
-      lambda.add(
-          "$T _result = ($T) $L.$L(\n",
-          lambdaReturnType,
-          lambdaReturnType,
-          sourceDelegateAccessor,
-          eventMethodModel.name);
-    }
-
-    lambda.indent();
-
-    for (int i = 0, size = eventMethodModel.methodParams.size(); i < size; i++) {
-      final MethodParamModel methodParamModel = eventMethodModel.methodParams.get(i);
-      if (isAnnotatedWith(methodParamModel, Param.class)) {
-        lambda.add(methodParamModel.getName());
-      } else if (isAnnotatedWith(methodParamModel, FromEvent.class)) {
-        lambda.add("($T) e.$L", methodParamModel.getTypeName(), methodParamModel.getName());
-      } else if (methodParamModel.getTypeName().equals(specModel.getContextClass())) {
-        lambda.add(contextParamName);
-      } else if (methodParamModel instanceof TreePropModel) {
-        if (specModel.isStateful()) {
-          lambda.add(
-              "(($T) $L.$L)",
-              methodParamModel.getTypeName(),
-              REF_VARIABLE_NAME,
-              methodParamModel.getName());
-        } else {
-          lambda.add(
-              "(($T) $L)",
-              methodParamModel.getTypeName(),
-              contextParamName
-                  + ".getParentTreeProp("
-                  + TreePropGenerator.findTypeByTypeName(methodParamModel.getTypeName())
-                  + ".class)");
-        }
-      } else if (methodParamModel instanceof StateParamModel) {
-        lambda.add(
-            "($T) $L",
-            methodParamModel.getTypeName(),
-            getImplAccessorFromContainer(
-                eventMethodModel.name.toString(),
-                specModel,
-                methodParamModel,
-                contextParamName,
-                LOCAL_STATE_CONTAINER_NAME));
-      } else {
-        lambda.add(
-            "($T) $L.$L",
-            methodParamModel.getTypeName(),
-            REF_VARIABLE_NAME,
-            getImplAccessor(
-                eventMethodModel.name.toString(), specModel, methodParamModel, contextParamName));
-      }
-
-      if (i < size - 1) {
-        lambda.add(",\n");
-      } else {
-        lambda.add(");\n");
-      }
-    }
-
-    lambda.unindent();
-
-    if (returnsUnit) {
-      lambda.addStatement("return $L.INSTANCE", ClassNames.Unit);
-    } else {
-      lambda.addStatement("return _result");
-    }
-    lambda.unindent().add("}\n");
-    lambda.unindent().addStatement("}");
-
-    builder.addCode(lambda.build());
-
+        "return new $T($L.$L($L), $L)",
+        ParameterizedTypeName.get(
+            ClassNames.EQUIVALENT_EVENT_LAMBDA, eventInfo.getKey(), lambdaReturnType),
+        specModel.getComponentName(),
+        eventMethodModel.name.toString(),
+        factoryArgs.build(),
+        returnsUnit);
     return builder.build();
   }
 

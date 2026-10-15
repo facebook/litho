@@ -78,7 +78,7 @@ sealed class LithoRenderEffect {
       val radiusX: Float,
       val radiusY: Float,
       val edgeTreatment: android.graphics.Shader.TileMode,
-      val inputEffect: LithoRenderEffect? = null
+      val inputEffect: LithoRenderEffect? = null,
   ) : LithoRenderEffect() {
     override fun toRenderEffect(): RenderEffect {
       return if (inputEffect != null) {
@@ -131,7 +131,7 @@ sealed class LithoRenderEffect {
   @RequiresApi(Build.VERSION_CODES.S)
   data class ColorFilter(
       val colorFilter: android.graphics.ColorFilter,
-      val renderEffect: LithoRenderEffect? = null
+      val renderEffect: LithoRenderEffect? = null,
   ) : LithoRenderEffect() {
     override fun toRenderEffect(): RenderEffect {
       val input = renderEffect
@@ -163,7 +163,10 @@ sealed class LithoRenderEffect {
   ) : LithoRenderEffect() {
     override fun toRenderEffect(): RenderEffect {
       return RenderEffect.createBlendModeEffect(
-          src.toRenderEffect(), dst.toRenderEffect(), blendMode)
+          src.toRenderEffect(),
+          dst.toRenderEffect(),
+          blendMode,
+      )
     }
   }
 

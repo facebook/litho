@@ -138,7 +138,6 @@ public class TestSpecModel implements SpecModel, HasEnclosedSpecModel {
 
   @Override
   @Nullable
-  // NULLSAFE_FIXME[Inconsistent Subclass Return Annotation]
   public SpecMethodModel<EventMethod, Void> getWorkingRangeRegisterMethod() {
     return mSpecModel.getWorkingRangeRegisterMethod();
   }
@@ -230,6 +229,7 @@ public class TestSpecModel implements SpecModel, HasEnclosedSpecModel {
   }
 
   @Override
+  @Nullable
   public String getClassJavadoc() {
     return mSpecModel.getClassJavadoc();
   }

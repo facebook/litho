@@ -48,8 +48,10 @@ class WorkingRangeContainerTest {
   fun setup() {
     workingRangeContainer = WorkingRangeContainer()
     workingRange = TestWorkingRange()
-    whenever(componentContext.globalKey).thenReturn("component")
-    whenever(componentContext2.globalKey).thenReturn("component2")
+    whenever(componentContext.globalKey).thenReturn(StringGlobalKey("component"))
+    whenever(componentContext.nullableGlobalKey).thenReturn(StringGlobalKey("component"))
+    whenever(componentContext2.globalKey).thenReturn(StringGlobalKey("component2"))
+    whenever(componentContext2.nullableGlobalKey).thenReturn(StringGlobalKey("component2"))
   }
 
   @Test
@@ -63,6 +65,56 @@ class WorkingRangeContainerTest {
     assertThat(rangeTuple!!.workingRange).isEqualTo(workingRange)
     assertThat(rangeTuple.scopedComponentInfos.size).isEqualTo(1)
     assertThat(rangeTuple.scopedComponentInfos[0]).isEqualTo(scopedComponentInfo)
+  }
+
+  @Test
+  fun testDuplicateRegistrationDispatchesOnEnteredRangeOnce() {
+    workingRangeContainer.registerWorkingRange(NAME, workingRange, scopedComponentInfo, null)
+    workingRangeContainer.registerWorkingRange(NAME, workingRange, scopedComponentInfo, null)
+
+    val rangeTuple = workingRangeContainer.workingRangesForTestOnly.values.single()
+    assertThat(rangeTuple.scopedComponentInfos).hasSize(2)
+
+    workingRangeContainer.checkWorkingRangeAndDispatch(0, 0, 1, 0, 1, WorkingRangeStatusHandler())
+
+    verify(component, times(1)).dispatchOnEnteredRange(componentContext, NAME, null)
+  }
+
+  @Test
+  fun testDuplicateRegistrationDispatchesOnExitedRangeOnceOnRelease() {
+    workingRangeContainer.registerWorkingRange(NAME, workingRange, scopedComponentInfo, null)
+    workingRangeContainer.registerWorkingRange(NAME, workingRange, scopedComponentInfo, null)
+
+    val statusHandler = WorkingRangeStatusHandler()
+    statusHandler.setStatus(
+        NAME,
+        StringGlobalKey("component"),
+        WorkingRangeStatusHandler.STATUS_IN_RANGE,
+    )
+
+    workingRangeContainer.dispatchOnExitedRangeIfNeeded(statusHandler)
+
+    verify(component, times(1)).dispatchOnExitedRange(componentContext, NAME, null)
+  }
+
+  @Test
+  fun testTwoRangeInstancesDispatchOnExitedRangeOnceOnRelease() {
+    // The tuple key embeds the WorkingRange instance hash, so two instances of the same named
+    // range for one component land in two RangeTuples.
+    workingRangeContainer.registerWorkingRange(NAME, TestWorkingRange(), scopedComponentInfo, null)
+    workingRangeContainer.registerWorkingRange(NAME, TestWorkingRange(), scopedComponentInfo, null)
+    assertThat(workingRangeContainer.workingRangesForTestOnly).hasSize(2)
+
+    val statusHandler = WorkingRangeStatusHandler()
+    statusHandler.setStatus(
+        NAME,
+        StringGlobalKey("component"),
+        WorkingRangeStatusHandler.STATUS_IN_RANGE,
+    )
+
+    workingRangeContainer.dispatchOnExitedRangeIfNeeded(statusHandler)
+
+    verify(component, times(1)).dispatchOnExitedRange(componentContext, NAME, null)
   }
 
   @Test
@@ -88,20 +140,30 @@ class WorkingRangeContainerTest {
     val workingRange2 = TestWorkingRange()
     workingRangeContainer.registerWorkingRange(NAME, workingRange2, scopedComponentInfo2, null)
     val statusHandler = WorkingRangeStatusHandler()
-    statusHandler.setStatus(NAME, "component", WorkingRangeStatusHandler.STATUS_IN_RANGE)
+    statusHandler.setStatus(
+        NAME,
+        StringGlobalKey("component"),
+        WorkingRangeStatusHandler.STATUS_IN_RANGE,
+    )
     doNothing()
         .`when`(component)
         .dispatchOnExitedRange(
             ArgumentMatchers.isA(ComponentContext::class.java),
             ArgumentMatchers.isA(String::class.java),
-            isNull())
-    statusHandler.setStatus(NAME, "component2", WorkingRangeStatusHandler.STATUS_OUT_OF_RANGE)
+            isNull(),
+        )
+    statusHandler.setStatus(
+        NAME,
+        StringGlobalKey("component2"),
+        WorkingRangeStatusHandler.STATUS_OUT_OF_RANGE,
+    )
     doNothing()
         .`when`(component2)
         .dispatchOnExitedRange(
             ArgumentMatchers.isA(ComponentContext::class.java),
             ArgumentMatchers.isA(String::class.java),
-            isNull())
+            isNull(),
+        )
     workingRangeContainer.dispatchOnExitedRangeIfNeeded(statusHandler)
     verify(component, times(1)).dispatchOnExitedRange(componentContext, NAME, null)
     verify(component2, times(0)).dispatchOnExitedRange(componentContext, NAME, null)
@@ -115,7 +177,7 @@ class WorkingRangeContainerTest {
         firstVisibleIndex: Int,
         lastVisibleIndex: Int,
         firstFullyVisibleIndex: Int,
-        lastFullyVisibleIndex: Int
+        lastFullyVisibleIndex: Int,
     ): Boolean = isInRange(position, firstVisibleIndex, lastVisibleIndex)
 
     override fun shouldExitRange(
@@ -123,7 +185,7 @@ class WorkingRangeContainerTest {
         firstVisibleIndex: Int,
         lastVisibleIndex: Int,
         firstFullyVisibleIndex: Int,
-        lastFullyVisibleIndex: Int
+        lastFullyVisibleIndex: Int,
     ): Boolean {
       isExitRangeCalled = true
       return !isInRange(position, firstVisibleIndex, lastVisibleIndex)

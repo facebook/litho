@@ -22,7 +22,6 @@ import com.facebook.litho.RenderCompleteEvent;
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.Param;
-import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.sections.Children;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.annotations.GroupSectionSpec;
@@ -32,7 +31,7 @@ import com.facebook.litho.sections.common.RenderEvent;
 import com.facebook.litho.widget.ComponentRenderInfo;
 import com.facebook.litho.widget.RenderInfo;
 import com.facebook.litho.widget.Text;
-import java.util.List;
+import java.util.Collections;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
 @GroupSectionSpec
@@ -41,11 +40,11 @@ public class TTIMarkerSectionSpec {
   static final String RENDER_MARKER = "renderMaker";
 
   @OnCreateChildren
-  static Children onCreateChildren(final SectionContext c, @Prop List<String> data) {
+  static Children onCreateChildren(final SectionContext c) {
     return Children.create()
         .child(
             DataDiffSection.<String>create(c)
-                .data(data)
+                .data(Collections.singletonList("Hello World"))
                 .renderEventHandler(TTIMarkerSection.onRender(c)))
         .build();
   }

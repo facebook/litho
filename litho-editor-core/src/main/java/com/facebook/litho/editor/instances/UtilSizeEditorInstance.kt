@@ -40,7 +40,9 @@ class UtilSizeEditorInstance : Editor {
               WIDTH_FIELD_STR,
               size.width,
               HEIGHT_FIELD_STR,
-              size.height))
+              size.height,
+          ),
+      )
     } catch (e: IllegalFormatException) {
       EditorValue.string("null")
     }
@@ -53,17 +55,19 @@ class UtilSizeEditorInstance : Editor {
   override fun write(f: Field, node: Any?, values: EditorValue): Boolean {
     values.`when`(
         object : EditorValue.DefaultEditorVisitor() {
-          override fun isString(editor: EditorString): Void? {
-            val tokens: Array<String> = editor.value.split("=|\\s").toTypedArray()
+          override fun isString(string: EditorString): Void? {
+            val tokens: Array<String> = string.value.split("=|\\s").toTypedArray()
             val components = ArrayList<String>()
             for (token in tokens) {
               if (token.isNotEmpty()) {
                 components.add(token)
               }
             }
-            if (components.size != 4 ||
-                (components[0] != WIDTH_FIELD_STR) ||
-                (components[2] != HEIGHT_FIELD_STR)) {
+            if (
+                components.size != 4 ||
+                    (components[0] != WIDTH_FIELD_STR) ||
+                    (components[2] != HEIGHT_FIELD_STR)
+            ) {
               return null
             }
             try {
@@ -75,7 +79,8 @@ class UtilSizeEditorInstance : Editor {
             }
             return null
           }
-        })
+        },
+    )
     return true
   }
 

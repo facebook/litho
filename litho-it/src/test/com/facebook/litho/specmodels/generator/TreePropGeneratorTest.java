@@ -218,6 +218,7 @@ public class TreePropGeneratorTest {
     assertThat(typeSpecDataHolder.getMethodSpecs().get(1).toString())
         .isEqualTo(
             "@java.lang.Override\n"
+                + "@java.lang.SuppressWarnings(\"cast\")\n"
                 + "protected com.facebook.litho.TreePropContainer"
                 + " getTreePropContainerForChildren(\n"
                 + "    com.facebook.litho.ComponentContext c,\n"
@@ -258,6 +259,7 @@ public class TreePropGeneratorTest {
     assertThat(typeSpecDataHolder.getMethodSpecs().get(1).toString())
         .isEqualTo(
             "@java.lang.Override\n"
+                + "@java.lang.SuppressWarnings(\"cast\")\n"
                 + "protected com.facebook.litho.TreePropContainer"
                 + " getTreePropContainerForChildren(\n"
                 + "    com.facebook.litho.ComponentContext c,\n"

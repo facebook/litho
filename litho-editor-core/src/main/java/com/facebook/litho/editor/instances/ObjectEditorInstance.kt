@@ -77,7 +77,7 @@ class ObjectEditorInstance : Editor {
     return true
   }
 
-  private inline fun <reified T> copyDataClass(obj: T): T {
-    return Reflection.invoke(obj, "copy") ?: obj
+  private inline fun <reified T : Any> copyDataClass(obj: T): T {
+    return Reflection.invoke(obj, "copy", T::class) ?: obj
   }
 }

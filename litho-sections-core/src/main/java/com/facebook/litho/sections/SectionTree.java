@@ -44,9 +44,11 @@ import com.facebook.litho.EventHandler;
 import com.facebook.litho.EventHandlersController;
 import com.facebook.litho.EventTrigger;
 import com.facebook.litho.EventTriggersContainer;
+import com.facebook.litho.GlobalKey;
 import com.facebook.litho.Handle;
 import com.facebook.litho.LithoStartupLogger;
 import com.facebook.litho.StateContainer;
+import com.facebook.litho.StringGlobalKey;
 import com.facebook.litho.ThreadTracingRunnable;
 import com.facebook.litho.ThreadUtils;
 import com.facebook.litho.TreePropContainer;
@@ -328,7 +330,7 @@ public class SectionTree {
   }
 
   @Nullable
-  synchronized EventTrigger getEventTrigger(String triggerKey) {
+  synchronized EventTrigger getEventTrigger(Object triggerKey) {
     return mEventTriggersContainer.getEventTrigger(triggerKey);
   }
 
@@ -377,7 +379,6 @@ public class SectionTree {
    *     UI.
    */
   public static Builder create(SectionContext context, Target target) {
-    // TODO use pools t11953296
     return new Builder(context, target);
   }
 
@@ -955,13 +956,10 @@ public class SectionTree {
   }
 
   private static Range acquireRange() {
-    // TODO use pools t11953296
     return new Range();
   }
 
-  private static void releaseRange(Range range) {
-    // TODO use pools t11953296
-  }
+  private static void releaseRange(Range range) {}
 
   /**
    * Call this when to release this SectionTree and make sure that all the Services in the tree get
@@ -980,7 +978,6 @@ public class SectionTree {
     mLastRanges.clear();
     mBoundSection = null;
     clearUnusedTriggerHandlers();
-    // TODO use pools t11953296
   }
 
   public boolean isReleased() {
@@ -1128,16 +1125,13 @@ public class SectionTree {
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
       if (attribution != null) {
-        ComponentsSystrace.beginSection("extra:" + attribution);
+        ComponentsSystrace.beginSection("sections:" + attribution);
       }
       final String name;
       synchronized (this) {
         name = mNextSection != null ? mNextSection.getSimpleName() : "<null>";
       }
-      ComponentsSystrace.beginSection(
-          name
-              + "_applyNewChangeSet_"
-              + SectionsLogEventUtils.applyNewChangeSetSourceToString(source));
+      ComponentsSystrace.beginSection("sections.applyNewChangeSet:" + name);
     }
 
     final @Nullable Integer traceId =
@@ -1195,8 +1189,16 @@ public class SectionTree {
       // Checking nextRoot is enough here since whenever we enqueue a new state update we also
       // re-assign nextRoot.
       while (nextRoot != null) {
+        // The tree can be released (e.g. CollectionRecycler teardown on the main thread) after the
+        // root snapshot is captured above but before this off-lock calculation runs. release()
+        // nulls both root fields under the monitor, so bail out instead of computing a degenerate
+        // change set against a torn-down tree. mReleased is volatile, so this lockless read is
+        // safe.
+        if (mReleased) {
+          return;
+        }
         if (isTracing) {
-          ComponentsSystrace.beginSection("calculateNewChangeSet");
+          ComponentsSystrace.beginSection("sections.calculateNewChangeSet");
         }
         final SectionContext contextForCalculation =
             SectionContext.forNewChangeSetCalculation(mContext);
@@ -1215,7 +1217,7 @@ public class SectionTree {
         final boolean changeSetIsValid;
         Section oldRoot = null;
         Section newRoot = null;
-        final List<Pair<String, EventHandler<?>>> createdEventHandlers;
+        final List<Pair<GlobalKey, EventHandler<?>>> createdEventHandlers;
         synchronized (this) {
           boolean currentNotNull = currentRoot != null;
           boolean instanceCurrentNotNull = mCurrentSection != null;
@@ -1387,7 +1389,7 @@ public class SectionTree {
   private void bindNewComponent(Section section) {
     section.bindService(section.getScopedContext());
     mEventHandlersController.updateEventDispatchInfoForGlobalKey(
-        section.getScopedContext(), section, section.getGlobalKey());
+        section.getScopedContext(), section, new StringGlobalKey(section.getGlobalKey()));
 
     if (!section.isDiffSectionSpec()) {
       final List<Section> children = section.getChildren();
@@ -1498,7 +1500,7 @@ public class SectionTree {
 
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
-      ComponentsSystrace.beginSection("applyChangeSetsToTargetBackgroundAllowed");
+      ComponentsSystrace.beginSection("sections.applyChangeSets");
     }
 
     try {
@@ -1548,7 +1550,7 @@ public class SectionTree {
 
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
-      ComponentsSystrace.beginSection("applyChangeSetsToTargetUIThreadOnly");
+      ComponentsSystrace.beginSection("sections.applyChangeSets");
     }
 
     try {
@@ -1596,7 +1598,7 @@ public class SectionTree {
     final boolean isTracing = ComponentsSystrace.isTracing();
 
     if (isTracing) {
-      ComponentsSystrace.beginSection("applyChangeSetToTarget");
+      ComponentsSystrace.beginSection("sections.applyChangeSetToTarget");
     }
     boolean appliedChanges = false;
     final List<Change> changes = new ArrayList<>();
@@ -1698,7 +1700,7 @@ public class SectionTree {
               }
 
               if (isTracing) {
-                ComponentsSystrace.beginSection("dataBound");
+                ComponentsSystrace.beginSection("sections.dataBound");
               }
               try {
                 dataBound(currentSection);
@@ -1711,6 +1713,9 @@ public class SectionTree {
 
             @Override
             public void onDataRendered(boolean isMounted, long uptimeMillis) {
+              if (mReleased) {
+                return;
+              }
               dataRendered(currentSection, isDataChanged, isMounted, uptimeMillis, changesInfo);
             }
           });
@@ -1732,7 +1737,7 @@ public class SectionTree {
 
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
-      ComponentsSystrace.beginSection("createTree");
+      ComponentsSystrace.beginSection("sections.createTree");
     }
     try {
       createNewTreeAndApplyStateUpdates(
@@ -1744,7 +1749,7 @@ public class SectionTree {
     }
 
     if (isTracing) {
-      ComponentsSystrace.beginSection("ChangeSetState.generateChangeSet");
+      ComponentsSystrace.beginSection("sections.generateChangeSet");
     }
     try {
       return ChangeSetState.generateChangeSet(
@@ -1773,7 +1778,7 @@ public class SectionTree {
 
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
-      ComponentsSystrace.beginSection("createChildren:" + nextRoot.getSimpleName());
+      ComponentsSystrace.beginSection("sections.createChildren:" + nextRoot.getSimpleName());
     }
 
     final @Nullable Integer traceId =
@@ -1829,7 +1834,6 @@ public class SectionTree {
         nextRoot.transferState(currentRoot.getStateContainer(), nextRoot.getStateContainer());
       }
 
-      // TODO: t18544409 Make sure this is absolutely the best solution as this is an anti-pattern
       final List<StateContainer.StateUpdate> stateUpdates =
           pendingStateUpdates.get(nextRoot.getGlobalKey());
       if (stateUpdates != null) {
@@ -1919,13 +1923,10 @@ public class SectionTree {
   }
 
   private static List<StateContainer.StateUpdate> acquireUpdatesList() {
-    // TODO use pools t11953296
     return new ArrayList<>();
   }
 
-  private static void releaseUpdatesList(List<StateContainer.StateUpdate> stateUpdates) {
-    // TODO use pools t11953296
-  }
+  private static void releaseUpdatesList(List<StateContainer.StateUpdate> stateUpdates) {}
 
   private static String getDebugInfo(SectionTree tree) {
     synchronized (tree) {

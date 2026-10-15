@@ -28,12 +28,11 @@ fun getAttribution(attribution: String?): String? {
   }
 
   val stack = RuntimeException().stackTrace
-  val frame =
-      stack.find { frame ->
-        !frame.className.contains("com.facebook.litho.ComponentTree") &&
-            !frame.className.contains("com.facebook.litho.debug.") &&
-            !frame.className.contains("com.facebook.rendercore.debug")
-      }
+  val frame = stack.find { frame ->
+    !frame.className.contains("com.facebook.litho.ComponentTree") &&
+        !frame.className.contains("com.facebook.litho.debug.") &&
+        !frame.className.contains("com.facebook.rendercore.debug")
+  }
 
   return frame?.toString() ?: attribution
 }

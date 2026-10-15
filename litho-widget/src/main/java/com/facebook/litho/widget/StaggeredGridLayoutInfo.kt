@@ -16,9 +16,12 @@
 
 package com.facebook.litho.widget
 
+import android.view.View
 import android.view.ViewGroup
+import android.view.accessibility.AccessibilityEvent
 import androidx.recyclerview.widget.OrientationHelper
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerViewAccessibilityDelegate
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.facebook.litho.LayoutManagerOverrideParams
 import com.facebook.litho.SizeSpec.EXACTLY
@@ -46,15 +49,16 @@ constructor(
     reverseLayout: Boolean,
     gapStrategy: Int,
     eagerlyClearsSpanAssignmentsOnUpdates: Boolean = false,
-    invalidatesItemDecorationsOnUpdates: Boolean = false
+    invalidatesItemDecorationsOnUpdates: Boolean = false,
 ) : LayoutInfo {
 
-  private val staggeredGridLayoutManager: StaggeredGridLayoutManager =
-      LithoStaggeredGridLayoutManager(
-          spanCount,
-          orientation,
-          eagerlyClearsSpanAssignmentsOnUpdates,
-          invalidatesItemDecorationsOnUpdates)
+  private val staggeredGridLayoutManager:
+      StaggeredGridLayoutManager = LithoStaggeredGridLayoutManager(
+      spanCount,
+      orientation,
+      eagerlyClearsSpanAssignmentsOnUpdates,
+      invalidatesItemDecorationsOnUpdates,
+  )
 
   init {
     staggeredGridLayoutManager.setReverseLayout(reverseLayout)
@@ -77,7 +81,7 @@ constructor(
       firstMeasuredItemWidth: Int,
       firstMeasuredItemHeight: Int,
       recyclerMeasuredWidth: Int,
-      recyclerMeasuredHeight: Int
+      recyclerMeasuredHeight: Int,
   ): Int {
     val spanCount = staggeredGridLayoutManager.spanCount
     when (staggeredGridLayoutManager.orientation) {
@@ -140,10 +144,13 @@ constructor(
 
   override fun createViewportFiller(
       measuredWidth: Int,
-      measuredHeight: Int
-  ): LayoutInfo.ViewportFiller =
-      ViewportFiller(
-          measuredWidth, measuredHeight, getScrollDirection(), staggeredGridLayoutManager.spanCount)
+      measuredHeight: Int,
+  ): LayoutInfo.ViewportFiller = ViewportFiller(
+      measuredWidth,
+      measuredHeight,
+      getScrollDirection(),
+      staggeredGridLayoutManager.spanCount,
+  )
 
   override fun findFirstVisibleItemPosition(): Int =
       findFirstVisibleItemPosition(staggeredGridLayoutManager)
@@ -161,7 +168,7 @@ constructor(
 
   override fun computeWrappedHeight(
       maxHeight: Int,
-      componentTreeHolders: List<ComponentTreeHolder>
+      componentTreeHolders: List<ComponentTreeHolder>,
   ): Int {
     val itemCount = componentTreeHolders.size
     val spanCount = staggeredGridLayoutManager.spanCount
@@ -193,7 +200,7 @@ constructor(
       spanCount: Int,
       orientation: Int,
       private val eagerlyClearsSpanAssignmentsOnUpdates: Boolean,
-      private val invalidatesItemDecorationsOnUpdates: Boolean
+      private val invalidatesItemDecorationsOnUpdates: Boolean,
   ) : StaggeredGridLayoutManager(spanCount, orientation) {
     // We hold this staggered grid result to avoid unnecessary int[] creations.
     private var _staggeredGridResult: IntArray? = null
@@ -208,6 +215,51 @@ constructor(
       } else {
         super.generateLayoutParams(lp)
       }
+    }
+
+    override fun onAttachedToWindow(view: RecyclerView) {
+      super.onAttachedToWindow(view)
+      val layoutManager = this
+      // Set a custom accessibility delegate that scrolls the focused item into
+      // a comfortable position when TalkBack focuses on items near the edges.
+      // StaggeredGridLayoutManager lacks proper accessibility scrolling support,
+      // so we ensure the focused item is fully visible with room for adjacent
+      // items, enabling continuous swipe navigation.
+      view.setAccessibilityDelegateCompat(
+          object : RecyclerViewAccessibilityDelegate(view) {
+            override fun onRequestSendAccessibilityEvent(
+                host: ViewGroup,
+                child: View,
+                event: AccessibilityEvent,
+            ): Boolean {
+              if (event.eventType == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED) {
+                val position = view.getChildAdapterPosition(child)
+                if (position != RecyclerView.NO_POSITION) {
+                  // If the focused child is near the trailing or leading edge of
+                  // the RecyclerView's scroll direction, scroll it to a comfortable
+                  // offset so adjacent items are revealed for the next swipe. Uses
+                  // instant scrollToPositionWithOffset to avoid animation race
+                  // conditions.
+                  val isVertical = layoutManager.orientation == VERTICAL
+                  val viewSize = if (isVertical) view.height else view.width
+                  val childStart = if (isVertical) child.top else child.left
+                  val childEnd = if (isVertical) child.bottom else child.right
+                  val childSize = if (isVertical) child.height else child.width
+                  val edgePadding = viewSize / 4
+                  if (childEnd >= viewSize - edgePadding) {
+                    layoutManager.scrollToPositionWithOffset(position, edgePadding)
+                  } else if (childStart <= edgePadding) {
+                    layoutManager.scrollToPositionWithOffset(
+                        position,
+                        viewSize - childSize - edgePadding,
+                    )
+                  }
+                }
+              }
+              return super.onRequestSendAccessibilityEvent(host, child, event)
+            }
+          },
+      )
     }
 
     override fun onItemsRemoved(recyclerView: RecyclerView, positionStart: Int, itemCount: Int) {
@@ -235,7 +287,7 @@ constructor(
         recyclerView: RecyclerView,
         positionStart: Int,
         itemCount: Int,
-        payload: Any?
+        payload: Any?,
     ) {
       invalidateSpanAssignmentsEagerlyIfNeeded(recyclerView)
       prepareToInvalidateItemDecorationsIfNeeded(recyclerView)
@@ -261,7 +313,8 @@ constructor(
 
                     recyclerViewToInvalidateItemDecorations.invalidateItemDecorations()
                   }
-                })
+                },
+            )
         this.recyclerViewToInvalidateItemDecorations.clear()
       }
     }
@@ -328,7 +381,7 @@ constructor(
       private val width: Int,
       private val height: Int,
       private val orientation: Int,
-      private val spanCount: Int
+      private val spanCount: Int,
   ) : LayoutInfo.ViewportFiller {
     private var indexOfSpan = 0
     private val fills: IntArray = IntArray(spanCount)

@@ -51,7 +51,7 @@ class IncrementalMountTest {
       lifecycleTracker2: LifecycleTracker,
       lifecycleTracker3: LifecycleTracker,
       childWidth: Int,
-      childHeight: Int
+      childHeight: Int,
   ): RecyclerCollectionComponent {
     val child1: Component =
         MountSpecLifecycleTester.create(context).lifecycleTracker(lifecycleTracker1).build()
@@ -64,21 +64,22 @@ class IncrementalMountTest {
     val item: Component =
         Column.create(context)
             .child(
-                Wrapper.create(context).delegate(child1).widthPx(childWidth).heightPx(childHeight))
+                Wrapper.create(context).delegate(child1).widthPx(childWidth).heightPx(childHeight),
+            )
             .child(
-                Wrapper.create(context).delegate(child2).widthPx(childWidth).heightPx(childHeight))
+                Wrapper.create(context).delegate(child2).widthPx(childWidth).heightPx(childHeight),
+            )
             .child(
-                Wrapper.create(context).delegate(child3).widthPx(childWidth).heightPx(childHeight))
+                Wrapper.create(context).delegate(child3).widthPx(childWidth).heightPx(childHeight),
+            )
             .build()
     val config: RecyclerConfiguration = ListRecyclerConfiguration.create().build()
     val sectionContext = SectionContext(context)
     return RecyclerCollectionComponent.create(context)
         .recyclerConfiguration(config)
         .section(
-            DynamicComponentGroupSection.create(sectionContext)
-                .component(item)
-                .totalItems(5)
-                .build())
+            DynamicComponentGroupSection.create(sectionContext).component(item).build(),
+        )
         .build()
   }
 
@@ -90,9 +91,13 @@ class IncrementalMountTest {
 
     val CHILD_HEIGHT = 10
 
-    val rcc: Component =
-        buildRecyclerCollectionComponent(
-            lifecycleTracker1, lifecycleTracker2, lifecycleTracker3, 10, CHILD_HEIGHT)
+    val rcc: Component = buildRecyclerCollectionComponent(
+        lifecycleTracker1,
+        lifecycleTracker2,
+        lifecycleTracker3,
+        10,
+        CHILD_HEIGHT,
+    )
 
     // Set LithoView with height so that it can fully show all the items
     lithoTestRule.render(widthPx = 100, heightPx = CHILD_HEIGHT * 15) { rcc }
@@ -112,9 +117,13 @@ class IncrementalMountTest {
 
     val CHILD_HEIGHT = 10
 
-    val rcc: Component =
-        buildRecyclerCollectionComponent(
-            lifecycleTracker1, lifecycleTracker2, lifecycleTracker3, 10, CHILD_HEIGHT)
+    val rcc: Component = buildRecyclerCollectionComponent(
+        lifecycleTracker1,
+        lifecycleTracker2,
+        lifecycleTracker3,
+        10,
+        CHILD_HEIGHT,
+    )
 
     // Set LithoView with height so that it can fully show all the items
     lithoTestRule.render(widthPx = 100, heightPx = 0) { rcc }
@@ -133,9 +142,13 @@ class IncrementalMountTest {
 
     val CHILD_HEIGHT = 10
 
-    val rcc: Component =
-        buildRecyclerCollectionComponent(
-            lifecycleTracker1, lifecycleTracker2, lifecycleTracker3, 10, CHILD_HEIGHT)
+    val rcc: Component = buildRecyclerCollectionComponent(
+        lifecycleTracker1,
+        lifecycleTracker2,
+        lifecycleTracker3,
+        10,
+        CHILD_HEIGHT,
+    )
 
     // Set LithoView with height so that it can fully show all the items
     lithoTestRule.render(widthPx = 100, heightPx = CHILD_HEIGHT * 9) { rcc }
@@ -155,9 +168,13 @@ class IncrementalMountTest {
 
     val CHILD_HEIGHT = 10
 
-    val rcc: Component =
-        buildRecyclerCollectionComponent(
-            lifecycleTracker1, lifecycleTracker2, lifecycleTracker3, 10, CHILD_HEIGHT)
+    val rcc: Component = buildRecyclerCollectionComponent(
+        lifecycleTracker1,
+        lifecycleTracker2,
+        lifecycleTracker3,
+        10,
+        CHILD_HEIGHT,
+    )
 
     // Set LithoView with height so that it can fully show all the items
     lithoTestRule.render(widthPx = 100, heightPx = CHILD_HEIGHT * 8 + (CHILD_HEIGHT / 2)) { rcc }
@@ -176,9 +193,13 @@ class IncrementalMountTest {
     val lifecycleTracker3: LifecycleTracker = LifecycleTracker()
     val CHILD_HEIGHT = 10
 
-    val rcc: Component =
-        buildRecyclerCollectionComponent(
-            lifecycleTracker1, lifecycleTracker2, lifecycleTracker3, 10, CHILD_HEIGHT)
+    val rcc: Component = buildRecyclerCollectionComponent(
+        lifecycleTracker1,
+        lifecycleTracker2,
+        lifecycleTracker3,
+        10,
+        CHILD_HEIGHT,
+    )
 
     // Set LithoView with height so that it can fully show exactly 3 items (3 children per item).
     val testLithoView = lithoTestRule.render(widthPx = 100, heightPx = CHILD_HEIGHT * 9) { rcc }

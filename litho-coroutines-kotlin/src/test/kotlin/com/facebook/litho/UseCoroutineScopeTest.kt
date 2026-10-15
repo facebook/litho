@@ -62,7 +62,7 @@ class UseCoroutineScopeTest {
       override fun ComponentScope.render(): Component {
         scope = useComponentCoroutineScope()
 
-        return Row()
+        return EmptyComponent()
       }
     }
 
@@ -97,7 +97,7 @@ class UseCoroutineScopeTest {
       override fun ComponentScope.render(): Component {
         scope = useComponentCoroutineScope()
 
-        return Row()
+        return EmptyComponent()
       }
     }
 
@@ -129,7 +129,7 @@ class UseCoroutineScopeTest {
           }
         }
 
-        return Row()
+        return EmptyComponent()
       }
     }
 
@@ -177,7 +177,7 @@ class UseCoroutineScopeTest {
           }
         }
 
-        return Row()
+        return EmptyComponent()
       }
     }
 
@@ -217,12 +217,13 @@ class UseCoroutineScopeTest {
               if (exception.message == "Test exception") {
                 coroutineCalls += "coroutine2: exception"
               }
-            }) {
-              coroutineCalls += "coroutine2: launch"
-              throw Exception("Test exception")
-            }
+            },
+        ) {
+          coroutineCalls += "coroutine2: launch"
+          throw Exception("Test exception")
+        }
 
-        return Row()
+        return EmptyComponent()
       }
     }
 
@@ -244,7 +245,7 @@ class UseCoroutineScopeTest {
     class UseCoroutineScopeComponent : KComponent() {
       override fun ComponentScope.render(): Component {
         val scope = useComponentCoroutineScope(coroutineContext = Job())
-        return Row()
+        return EmptyComponent()
       }
     }
 
@@ -266,7 +267,7 @@ class UseCoroutineScopeTest {
     class UseCoroutineScopeComponent(val prop: Int) : KComponent() {
       override fun ComponentScope.render(): Component {
         scopes.add(useComponentCoroutineScope())
-        return Row()
+        return EmptyComponent()
       }
     }
 

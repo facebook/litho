@@ -23,16 +23,14 @@ import androidx.collection.ScatterSet
 import androidx.collection.mutableScatterSetOf
 import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.debug.LithoDebugEvent
-import com.facebook.litho.debug.LithoDebugEventAttributes
 import com.facebook.litho.layout.LayoutDirection
+import com.facebook.litho.state.DirtyScopeIndex
 import com.facebook.litho.state.StateId
 import com.facebook.litho.transition.MutableTransitionData
 import com.facebook.litho.transition.TransitionData
 import com.facebook.rendercore.debug.DebugEventAttribute
 import com.facebook.rendercore.debug.DebugEventDispatcher.trace
 import com.facebook.rendercore.utils.MeasureSpecUtils
-import java.util.ArrayList
-import kotlin.jvm.JvmField
 import kotlin.math.max
 
 object Resolver {
@@ -43,60 +41,69 @@ object Resolver {
   fun resolveTree(
       resolveContext: ResolveContext,
       c: ComponentContext,
-      component: Component
+      component: Component,
   ): LithoNode? {
-    val current: LithoNode? = resolveContext.currentRoot
-    val isReconcilable: Boolean = isReconcilable(c, component, resolveContext.treeState, current)
+    val currentResult = resolveContext.currentResolveResult
+    val current: LithoNode? = currentResult?.node
+    val treeState = resolveContext.treeState
+    val isReconcilable: Boolean =
+        current != null &&
+            isReconcilable(
+                c,
+                component,
+                treeState,
+                current,
+                currentAccessibilityEnabled = resolveContext.isAccessibilityEnabled,
+                previousAccessibilityEnabled = currentResult.isAccessibilityEnabled,
+            )
 
     try {
-      resolveContext.treeState.applyStateUpdatesEarly(c, component, current, false)
+      treeState.applyStateUpdatesEarly(c, component, current, false)
     } catch (ex: Exception) {
       ComponentUtils.handleWithHierarchy(c, component, ex)
       return null
     }
 
-    val node: LithoNode?
     if (!isReconcilable) {
-      node = resolve(resolveContext, c, component)
-      if (node != null && !resolveContext.isResolveInterrupted) {
-        node.applyParentDependentCommonProps(
-            resolveContext, LayoutDirection.fromContext(c.androidContext))
-      }
-
-      // This needs to finish layout on the UI thread.
-      if (node != null && resolveContext.isResolveInterrupted) {
-        return node
-      } else {
-        // Layout is complete, disable interruption from this point on.
+      val node = resolve(resolveContext, c, component)
+      if (node == null) {
         resolveContext.markLayoutUninterruptible()
+        return null
       }
-    } else {
-      val globalKeyToReuse: String = checkNotNull(current).headComponentKey
-      node = reconcile(resolveContext, c, current, component, globalKeyToReuse)
+      if (resolveContext.isResolveInterrupted) {
+        return node
+      }
+      node.applyParentDependentCommonProps(
+          resolveContext,
+          LayoutDirection.fromContext(c.androidContext),
+      )
+      resolveContext.markLayoutUninterruptible()
+      return node
     }
 
-    return node
+    val globalKeyToReuse: GlobalKey = checkNotNull(current).headComponentContext.globalKey
+    return reconcile(resolveContext, c, current, component, globalKeyToReuse)
   }
 
   @JvmStatic
   fun resolve(
       resolveContext: ResolveContext,
       parent: ComponentContext,
-      component: Component
-  ): LithoNode? =
-      resolveImpl(
-          resolveContext = resolveContext,
-          parent = parent,
-          parentWidthSpec = MEASURE_SPEC_UNSPECIFIED,
-          parentHeightSpec = MEASURE_SPEC_UNSPECIFIED,
-          component = component)
+      component: Component,
+  ): LithoNode? = resolveImpl(
+      resolveContext = resolveContext,
+      parent = parent,
+      parentWidthSpec = MEASURE_SPEC_UNSPECIFIED,
+      parentHeightSpec = MEASURE_SPEC_UNSPECIFIED,
+      component = component,
+  )
 
   @JvmStatic
   fun resolveWithGlobalKey(
       resolveContext: ResolveContext,
       parent: ComponentContext,
       component: Component,
-      globalKeyToReuse: String?
+      globalKeyToReuse: GlobalKey?,
   ): LithoNode? {
     val prev = parent.renderStateContext
     parent.renderStateContext = resolveContext
@@ -107,7 +114,8 @@ object Resolver {
           parentWidthSpec = MEASURE_SPEC_UNSPECIFIED,
           parentHeightSpec = MEASURE_SPEC_UNSPECIFIED,
           component = component,
-          globalKeyToReuse = globalKeyToReuse)
+          globalKeyToReuse = globalKeyToReuse,
+      )
     } finally {
       parent.renderStateContext = prev
     }
@@ -121,191 +129,155 @@ object Resolver {
       parentHeightSpec: Int,
       component: Component,
       resolveDeferredNode: Boolean = false,
-      globalKeyToReuse: String? = null,
+      globalKeyToReuse: GlobalKey? = null,
       treePropsToReuse: TreePropContainer? = null,
   ): LithoNode? {
 
-    val isTracing = ComponentsSystrace.isTracing
-    if (isTracing) {
-      ComponentsSystrace.beginSection("resolve:${component.simpleName}")
-    }
+    return ComponentsSystrace.trace({ "resolve:${component.simpleName}" }) {
+      val lithoNode = trace(
+          LithoDebugEvent.ComponentResolved,
+          { resolveContext.treeId.toString() },
+          { attributes -> attributes[DebugEventAttribute.Name] = component.fullyQualifiedName },
+      ) {
+        val isDeferredNode: Boolean = Component.willDeferResolution(component)
+        val hasCachedNode: Boolean = Component.hasCachedNode(resolveContext, component)
+        val commonProps: CommonProps?
 
-    val lithoNode =
-        trace(
-            LithoDebugEvent.ComponentResolved,
-            { resolveContext.treeId.toString() },
-            { attributes ->
-              attributes[LithoDebugEventAttributes.Component] = component.simpleName
-              attributes[DebugEventAttribute.Name] = component.fullyQualifiedName
-            }) {
-              if (isTracing) {
-                ComponentsSystrace.beginSection("create-node:${component.simpleName}")
-              }
+        // 1. Consume the layout created in `willrender`.
+        val cached = component.consumeLayoutCreatedInWillRender(resolveContext, parent)
 
-              val node: LithoNode?
-              val c: ComponentContext
-              val globalKey: String
-              val isDeferredNode: Boolean = Component.willDeferResolution(component)
-              val hasCachedNode: Boolean = Component.hasCachedNode(resolveContext, component)
-              val scopedComponentInfo: ScopedComponentInfo
-              var commonProps: CommonProps? = null
-              try {
-                // 1. Consume the layout created in `willrender`.
-                val cached = component.consumeLayoutCreatedInWillRender(resolveContext, parent)
+        // 2. Return immediately if cached layout is available.
+        if (cached != null) {
+          return@trace cached
+        }
 
-                // 2. Return immediately if cached layout is available.
-                if (cached != null) {
-                  if (isTracing) {
-                    // end create-node
-                    ComponentsSystrace.endSection()
-                  }
-                  return@trace cached
-                }
+        ComponentsSystrace.trace({ "resolve.createNode:${component.simpleName}" }) {
+          val c: ComponentContext
+          val scopedComponentInfo: ScopedComponentInfo
+          val node: LithoNode
+          val shouldDeferResolution = (isDeferredNode || hasCachedNode) && !resolveDeferredNode
 
-                val shouldDeferResolution =
-                    (isDeferredNode || hasCachedNode) && !resolveDeferredNode
-
-                // 5. Get or create the scoped context component.
-                c =
-                    if (hasCachedNode) {
-                      val cache: MeasuredResultCache = resolveContext.cache
-                      checkNotNull(cache.getCachedNode(component)).headComponentContext
-                    } else {
-                      createScopedContext(
-                          resolveContext, parent, component, globalKeyToReuse, treePropsToReuse)
-                    }
-                globalKey = c.globalKey
-                scopedComponentInfo = c.scopedComponentInfo
-
-                // 6. Resolve the component into an InternalNode tree.
-                val resolveResult: ComponentResolveResult =
-                    if (shouldDeferResolution) {
-                      component.resolveDeferred(resolveContext, c, parent)
-                    } else {
-                      component.resolve(
-                          resolveContext,
-                          scopedComponentInfo,
-                          parentWidthSpec,
-                          parentHeightSpec,
-                      )
-                    }
-
-                node = resolveResult.lithoNode
-                commonProps = resolveResult.commonProps
-
-                // 7. If the layout is null then return immediately.
-                if (node == null) {
-                  if (isTracing) {
-                    // end create-node
-                    ComponentsSystrace.endSection()
-                  }
-                  return@trace null
-                }
-
-                if (isTracing) {
-                  // end create-node
-                  ComponentsSystrace.endSection()
-                }
-              } catch (e: Exception) {
-                ComponentUtils.handleWithHierarchy(parent, component, e)
-                if (isTracing) {
-                  // end create-node
-                  ComponentsSystrace.endSection()
-                }
-                return@trace null
-              }
-
-              if (isTracing) {
-                ComponentsSystrace.beginSection("after-create-node:${component.simpleName}")
-              }
-
-              checkNotNull(node)
-              // 8. Set the measure function
-              // Set measure func on the root node of the generated tree so that the mount calls use
-              // those (see Controller.mountNodeTree()). Handle the case where the component simply
-              // delegates its layout creation to another component, i.e. the root node belongs to
-              // another component.
-              if (node.componentCount == 0) {
-                val isMountSpecWithMeasure =
-                    component.canMeasure() && Component.isMountSpec(component)
-                if ((isMountSpecWithMeasure) ||
-                    (isDeferredNode || hasCachedNode) && (!resolveDeferredNode)) {
-                  node.setMeasureFunction(Component.sMeasureFunction)
-                }
-              }
-
-              // 9. Copy the common props
-              //    Skip if resolving a component that renders with constraints because
-              //    common props were copied in the previous layout pass.
-              if (commonProps == null && component is SpecGeneratedComponent) {
-                // this step is still needed to make OCLWSS case work
-                commonProps = component.commonProps
-              }
-              if (node !is NullNode) { // only if NOT a NullNode
-                if (commonProps != null &&
-                    !(Component.isLayoutSpecWithSizeSpec(component) && resolveDeferredNode)) {
-                  commonProps.copyInto(c, node)
-                }
-              }
-
-              // 10. Add the component to the InternalNode.
-              scopedComponentInfo.commonProps = commonProps
-              node.appendComponent(scopedComponentInfo)
-
-              // 11. Create and add transition to this component's InternalNode.
-              if (c.areTransitionsEnabled()) {
-                if (component is SpecGeneratedComponent && component.needsPreviousRenderData()) {
-                  node.addComponentNeedingPreviousRenderData(scopedComponentInfo)
+          try {
+            // 5. Get or create the scoped context component.
+            c =
+                if (hasCachedNode) {
+                  val cache: MeasuredResultCache = resolveContext.cache
+                  checkNotNull(cache.getCachedNode(component)).headComponentContext
                 } else {
-                  try {
-                    // Calls onCreateTransition on the Spec.
-                    val transition =
-                        if (component is SpecGeneratedComponent) {
-                          component.createTransition(c)
-                        } else {
-                          null
-                        }
-                    if (transition != null) {
-                      node.addTransition(transition)
-                    }
-                  } catch (e: Exception) {
-                    ComponentUtils.handleWithHierarchy(parent, component, e)
-                  }
+                  createScopedContext(
+                      resolveContext,
+                      parent,
+                      component,
+                      globalKeyToReuse,
+                      treePropsToReuse,
+                  )
                 }
-              }
+            scopedComponentInfo = c.scopedComponentInfo
 
-              // 12. Add attachable components
-              if (component is SpecGeneratedComponent && component.hasAttachDetachCallback()) {
-                // needs ComponentUtils.getGlobalKey?
-                node.addAttachable(LayoutSpecAttachable(globalKey, component, scopedComponentInfo))
-              }
+            // 6. Resolve the component into an InternalNode tree.
+            val resolveResult: ComponentResolveResult =
+                if (shouldDeferResolution) {
+                  component.resolveDeferred(resolveContext, c, parent)
+                } else {
+                  component.resolve(
+                      resolveContext,
+                      scopedComponentInfo,
+                      parentWidthSpec,
+                      parentHeightSpec,
+                  )
+                }
 
-              // 13. Add working ranges to the InternalNode.
-              scopedComponentInfo.addWorkingRangeToNode(node)
+            val n = resolveResult.lithoNode
+            commonProps = resolveResult.commonProps
 
-              /* 14. Add custom binders - the custom binders should be added to the RenderUnit as
-              soon as they are created. For Primitives, this happens during "prepare". However, for MountSpecs
-              the common props are only initialized later, and some needed LithoNode for tail components
-              is also filled later, and this is why we are moving the addition a bit below. */
-              if (commonProps != null) {
-                node.addViewCustomBinders(commonProps.viewBinders)
-                node.addCustomBinders(commonProps.mountBinders)
-                node.addHostViewCustomBinder(commonProps.hostViewBinders)
-              }
-
-              if (isTracing) {
-                // end of after-create-node
-                ComponentsSystrace.endSection()
-              }
-              node
+            // 7. If the layout is null then return immediately.
+            if (n == null) {
+              return@trace null
             }
 
-    if (isTracing) {
-      // end of resolve
-      ComponentsSystrace.endSection()
-    }
+            node = n
+          } catch (e: Exception) {
+            ComponentUtils.handleWithHierarchy(parent, component, e)
+            return@trace null
+          }
 
-    return lithoNode
+          ComponentsSystrace.trace({ "resolve.afterCreateNode:${component.simpleName}" }) {
+            // 8. Set the measure function
+            // Set measure func on the root node of the generated tree so that the mount calls
+            // use
+            // those (see Controller.mountNodeTree()). Handle the case where the component
+            // simply
+            // delegates its layout creation to another component, i.e. the root node belongs
+            // to
+            // another component.
+            if (node.componentCount == 0) {
+              val isMountSpecWithMeasure =
+                  component.canMeasure() && Component.isMountSpec(component)
+              if (isMountSpecWithMeasure || shouldDeferResolution) {
+                node.setMeasureFunction(Component.sMeasureFunction)
+                node.setMinContentMeasureFunction(Component.sMinContentMeasureFunction)
+              }
+            }
+
+            // 9. Add the component to the InternalNode.
+            scopedComponentInfo.commonProps = commonProps
+            node.appendComponent(scopedComponentInfo)
+
+            // 10. Copy the common props
+            //    Skip if resolving a component that renders with constraints because
+            //    common props were copied in the previous layout pass.
+            val specComponent = component as? SpecGeneratedComponent
+            if (node !is NullNode) { // only if NOT a NullNode
+              val props = commonProps
+              if (props != null && !(isDeferredNode && resolveDeferredNode)) {
+                props.copyInto(c, node)
+              }
+            }
+
+            // 11. Create and add transition to this component's InternalNode.
+            if (c.areTransitionsEnabled()) {
+              if (specComponent != null && specComponent.needsPreviousRenderData()) {
+                node.addComponentNeedingPreviousRenderData(scopedComponentInfo)
+              } else {
+                try {
+                  val transition = specComponent?.createTransition(c)
+                  if (transition != null) {
+                    node.addTransition(transition)
+                  }
+                } catch (e: Exception) {
+                  ComponentUtils.handleWithHierarchy(parent, component, e)
+                }
+              }
+            }
+
+            // 12. Add attachable components
+            if (specComponent != null && specComponent.hasAttachDetachCallback()) {
+              node.addAttachable(
+                  LayoutSpecAttachable(c.globalKey, specComponent, scopedComponentInfo),
+              )
+            }
+
+            // 13. Add working ranges to the InternalNode.
+            scopedComponentInfo.addWorkingRangeToNode(node)
+
+            /* 14. Add custom binders - the custom binders should be added to the RenderUnit
+            as soon as they are created. For Primitives, this happens during "prepare".
+            However, for MountSpecs the common props are only initialized later, and some
+            needed LithoNode for tail components is also filled later, and this is why we
+            are moving the addition a bit below. */
+            val props = commonProps
+            if (props != null) {
+              node.addViewCustomBinders(props.viewBinders)
+              node.addCustomBinders(props.mountBinders)
+              node.addHostViewCustomBinder(props.hostViewBinders)
+            }
+          }
+          node
+        }
+      }
+
+      lithoNode
+    }
   }
 
   @JvmStatic
@@ -325,7 +297,8 @@ object Resolver {
     root.applyParentDependentCommonProps(
         context = resolveContext,
         parentLayoutDirection =
-            LayoutDirection.fromContext(root.headComponentContext.androidContext))
+            LayoutDirection.fromContext(root.headComponentContext.androidContext),
+    )
 
     return root
   }
@@ -335,11 +308,11 @@ object Resolver {
       resolveContext: ResolveContext,
       parent: ComponentContext,
       component: Component,
-      globalKeyToReuse: String? = null,
+      globalKeyToReuse: GlobalKey? = null,
       treePropsToReuse: TreePropContainer? = null,
   ): ComponentContext {
 
-    val globalKey: String =
+    val globalKey: GlobalKey =
         globalKeyToReuse
             ?: ComponentKeyUtils.generateGlobalKey(parent, parent.componentScope, component)
     val c: ComponentContext = ComponentContext.withComponentScope(parent, component, globalKey)
@@ -360,7 +333,11 @@ object Resolver {
     }
 
     if (LithoDebugConfigurations.isDebugModeEnabled) {
-      DebugComponent.applyOverrides(c, component, c.globalKey)
+      DebugComponent.applyOverrides(
+          c,
+          component,
+          c.globalKey.toString(),
+      )
     }
     return c
   }
@@ -370,7 +347,7 @@ object Resolver {
   internal fun applyTransitionsAndUseEffectEntriesToNode(
       transitionData: TransitionData? = null,
       useEffectEntries: List<Attachable>? = null,
-      node: LithoNode
+      node: LithoNode,
   ) {
     if (transitionData != null) {
       node.addTransitionData(transitionData)
@@ -388,6 +365,8 @@ object Resolver {
       nextRootComponent: Component,
       treeState: TreeState,
       currentLayoutResult: LithoNode? = null,
+      currentAccessibilityEnabled: Boolean = false,
+      previousAccessibilityEnabled: Boolean? = null,
   ): Boolean {
 
     if (currentLayoutResult == null) {
@@ -395,6 +374,17 @@ object Resolver {
     }
 
     if (!treeState.hasUncommittedUpdates()) {
+      return false
+    }
+
+    // If the accessibility state has changed since the current layout was resolved,
+    // we cannot reconcile because needsHostView decisions depend on isAccessibilityEnabled.
+    // Reusing nodes resolved with a different accessibility state would produce a tree
+    // with incorrect host view assignments.
+    if (
+        previousAccessibilityEnabled != null &&
+            previousAccessibilityEnabled != currentAccessibilityEnabled
+    ) {
       return false
     }
 
@@ -417,11 +407,13 @@ object Resolver {
     }
     val collectedAttachables: MutableList<Attachable> = ArrayList()
     val collectedTransitionData = MutableTransitionData()
-    val collectedStateReads = mutableMapOf<StateId, MutableScatterSet<String>>()
+    val collectedStateReads = mutableMapOf<StateId, MutableScatterSet<GlobalKey>>()
     collectOutputs(node, collectedAttachables, collectedTransitionData, collectedStateReads)
-    return if (collectedAttachables.isEmpty() &&
-        collectedTransitionData.isEmpty() &&
-        collectedStateReads.isEmpty()) {
+    return if (
+        collectedAttachables.isEmpty() &&
+            collectedTransitionData.isEmpty() &&
+            collectedStateReads.isEmpty()
+    ) {
       null
     } else {
       Outputs(collectedAttachables, collectedTransitionData, collectedStateReads)
@@ -432,16 +424,20 @@ object Resolver {
       node: LithoNode,
       collectedAttachables: MutableList<Attachable>,
       collectedTransitionData: MutableTransitionData,
-      collectedStateReads: MutableMap<StateId, MutableScatterSet<String>>,
+      collectedStateReads: MutableMap<StateId, MutableScatterSet<GlobalKey>>,
   ) {
 
     // TODO(T143986616): optimise traversal for reused nodes
     for (i in 0 until node.childCount) {
       collectOutputs(
-          node.getChildAt(i), collectedAttachables, collectedTransitionData, collectedStateReads)
+          node.getChildAt(i),
+          collectedAttachables,
+          collectedTransitionData,
+          collectedStateReads,
+      )
     }
 
-    // We'll deduplicate attachable in [AttachDetachHandler]
+    // We'll deduplicate attachables in the EffectHandler.
     node.attachables?.let { attachables -> collectedAttachables.addAll(attachables) }
 
     val c: ComponentContext = node.tailComponentContext
@@ -463,17 +459,15 @@ object Resolver {
       c: ComponentContext,
       node: LithoNode,
       next: Component,
-      nextKey: String
+      nextKey: GlobalKey,
   ): LithoNode? {
-    val treeState: TreeState = resolveContext.treeState
-    val keys: Set<String> = treeState.keysForPendingStateUpdates
     return reconcile(
         resolveContext = resolveContext,
         parentContext = c,
         current = node,
         next = next,
         nextKey = nextKey,
-        keys = keys)
+    )
   }
 
   /**
@@ -484,7 +478,6 @@ object Resolver {
    * @param parentContext The ComponentContext.
    * @param current The current LithoNode which should be updated.
    * @param next The updated component to be used to reconcile this LithoNode.
-   * @param keys The keys of mutated components.
    * @return A new updated LithoNode.
    */
   private fun reconcile(
@@ -492,40 +485,54 @@ object Resolver {
       parentContext: ComponentContext,
       current: LithoNode,
       next: Component,
-      nextKey: String,
-      keys: Set<String>,
+      nextKey: GlobalKey,
       parent: LithoNode? = null,
   ): LithoNode? {
-    val mode: Int = getReconciliationMode(current, keys)
+    val mode: Int = getReconciliationMode(current, resolveContext.scopesToUpdate)
     val layout: LithoNode?
-    when (mode) {
-      ReconciliationMode.REUSE -> {
-        commitToLayoutStateRecursively(resolveContext.treeState, current)
-        layout = current
-      }
-      ReconciliationMode.RECONCILE -> {
-        layout = reconcile(resolveContext, current, next, keys)
-      }
-      ReconciliationMode.RECREATE -> {
-        layout = resolveWithGlobalKey(resolveContext, parentContext, next, nextKey)
-        if (layout != null) {
-          if (parent == null) {
-            layout.applyParentDependentCommonProps(
-                context = resolveContext,
-                parentLayoutDirection = LayoutDirection.fromContext(parentContext.androidContext),
-            )
-          } else {
-            layout.applyParentDependentCommonProps(
-                context = resolveContext,
-                parentLayoutDirection = parent.layoutDirection,
-                parentImportantForAccessibility = parent.importantForAccessibility,
-                parentEnabledState = parent.nodeInfo?.enabledState ?: NodeInfo.ENABLED_UNSET,
-                parentDuplicatesParentState = parent.isDuplicateParentStateEnabled,
-            )
+    ComponentsSystrace.traceWithArgs(
+        { "resolve.reconcile:${next.simpleName}" },
+        { scope ->
+          scope.attribute(
+              "mode",
+              when (mode) {
+                ReconciliationMode.REUSE -> "reuse"
+                ReconciliationMode.RECONCILE -> "reconcile"
+                ReconciliationMode.RECREATE -> "recreate"
+                else -> "unknown"
+              },
+          )
+        },
+    ) {
+      when (mode) {
+        ReconciliationMode.REUSE -> {
+          commitToLayoutStateRecursively(resolveContext.treeState, current)
+          layout = current
+        }
+        ReconciliationMode.RECONCILE -> {
+          layout = reconcile(resolveContext, current, next)
+        }
+        ReconciliationMode.RECREATE -> {
+          layout = resolveWithGlobalKey(resolveContext, parentContext, next, nextKey)
+          if (layout != null) {
+            if (parent == null) {
+              layout.applyParentDependentCommonProps(
+                  context = resolveContext,
+                  parentLayoutDirection = LayoutDirection.fromContext(parentContext.androidContext),
+              )
+            } else {
+              layout.applyParentDependentCommonProps(
+                  context = resolveContext,
+                  parentLayoutDirection = parent.layoutDirection,
+                  parentImportantForAccessibility = parent.importantForAccessibility,
+                  parentEnabledState = parent.nodeInfo?.enabledState ?: NodeInfo.ENABLED_UNSET,
+                  parentDuplicatesParentState = parent.isDuplicateParentStateEnabled,
+              )
+            }
           }
         }
+        else -> throw IllegalArgumentException("$mode is not a valid ReconciliationMode")
       }
-      else -> throw IllegalArgumentException("$mode is not a valid ReconciliationMode")
     }
     return layout
   }
@@ -536,49 +543,40 @@ object Resolver {
    *
    * @param current The current LithoNode which should be updated.
    * @param next The updated component to be used to reconcile this LithoNode.
-   * @param keys The keys of mutated components.
    * @return A new updated LithoNode.
    */
   private fun reconcile(
       resolveContext: ResolveContext,
       current: LithoNode,
       next: Component,
-      keys: Set<String>
   ): LithoNode {
-    val isTracing = ComponentsSystrace.isTracing
-    if (isTracing) {
-      ComponentsSystrace.beginSection("reconcile:${next.simpleName}")
+    return ComponentsSystrace.trace({ "reconcile:${next.simpleName}" }) {
+      // 2. Shallow copy this layout.
+      val layout: LithoNode = current.clone()
+      layout.children = ArrayList(current.childCount)
+      commitToLayoutState(resolveContext.treeState, current)
+
+      // 3. Iterate over children.
+      val parentContext: ComponentContext = layout.tailComponentContext
+      val count = current.childCount
+      for (i in 0 until count) {
+        val child: LithoNode = current.getChildAt(i)
+
+        // 3.1 Get the head component of the child layout.
+        val index = max(0, child.componentCount - 1)
+        val component: Component = child.getComponentAt(index)
+        val key: GlobalKey = child.getComponentContextAt(index).globalKey
+
+        // 3.2 Reconcile child layout.
+        val copy: LithoNode? =
+            reconcile(resolveContext, parentContext, child, component, key, current)
+
+        // 3.3 Add the child to the cloned yoga node
+        layout.child(copy)
+      }
+
+      layout
     }
-
-    // 2. Shallow copy this layout.
-    val layout: LithoNode = current.clone()
-    layout.children = ArrayList(current.childCount)
-    commitToLayoutState(resolveContext.treeState, current)
-
-    // 3. Iterate over children.
-    val parentContext: ComponentContext = layout.tailComponentContext
-    val count = current.childCount
-    for (i in 0 until count) {
-      val child: LithoNode = current.getChildAt(i)
-
-      // 3.1 Get the head component of the child layout.
-      val index = max(0, child.componentCount - 1)
-      val component: Component = child.getComponentAt(index)
-      val key: String = child.getGlobalKeyAt(index)
-
-      // 3.2 Reconcile child layout.
-      val copy: LithoNode? =
-          reconcile(resolveContext, parentContext, child, component, key, keys, current)
-
-      // 3.3 Add the child to the cloned yoga node
-      layout.child(copy)
-    }
-
-    if (isTracing) {
-      ComponentsSystrace.endSection()
-    }
-
-    return layout
   }
 
   /** Notify TreeState to keep state containers for the case where we reuse resolve results. */
@@ -607,7 +605,10 @@ object Resolver {
   @JvmStatic
   @VisibleForTesting
   @ReconciliationMode
-  fun getReconciliationMode(current: LithoNode, mutatedKeys: Set<String>): Int {
+  fun getReconciliationMode(
+      current: LithoNode,
+      scopesToUpdate: DirtyScopeIndex,
+  ): Int {
     val components = current.scopedComponentInfos
 
     // 1.0 check early exit conditions
@@ -617,20 +618,19 @@ object Resolver {
 
     // 1.1 Check if any component has mutations
     for (element in components) {
-      val key = element.context.globalKey
-      if (mutatedKeys.contains(key)) {
+      val key = element.context.nullableGlobalKey
+      if (key != null && key in scopesToUpdate) {
         return ReconciliationMode.RECREATE
       }
     }
 
     // 2.0 Check if any descendants have mutations
     val rootKey = current.headComponentKey
-    for (key in mutatedKeys) {
-      if (key.startsWith(rootKey)) {
-        return ReconciliationMode.RECONCILE
-      }
+    return if (scopesToUpdate.hasDescendant(rootKey)) {
+      ReconciliationMode.RECONCILE
+    } else {
+      ReconciliationMode.REUSE
     }
-    return ReconciliationMode.REUSE
   }
 
   @IntDef(ReconciliationMode.REUSE, ReconciliationMode.RECONCILE, ReconciliationMode.RECREATE)
@@ -646,7 +646,7 @@ object Resolver {
   internal constructor(
       @JvmField val attachables: List<Attachable>,
       @JvmField internal val transitionData: TransitionData,
-      @JvmField internal val stateReads: Map<StateId, ScatterSet<String>>,
+      @JvmField internal val stateReads: Map<StateId, ScatterSet<GlobalKey>>,
   )
 
   fun Component.resolveDeferred(
@@ -655,12 +655,11 @@ object Resolver {
       parentContext: ComponentContext,
       commonProps: CommonProps?,
   ): ComponentResolveResult {
-    val node =
-        DeferredLithoNode(
-            componentContext.treePropContainer,
-            calculationContext.cache.getCachedNode(this),
-            parentContext,
-        )
+    val node = DeferredLithoNode(
+        componentContext.treePropContainer,
+        calculationContext.cache.getCachedNode(this),
+        parentContext,
+    )
 
     return ComponentResolveResult(node, commonProps)
   }

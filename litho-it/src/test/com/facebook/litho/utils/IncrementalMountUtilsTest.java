@@ -32,6 +32,7 @@ import android.view.ViewGroup;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.utils.IncrementalMountUtils.WrapperView;
+import com.facebook.rendercore.extensions.VisibilityChangeReason;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -71,7 +72,7 @@ public class IncrementalMountUtilsTest {
               }
             })
         .when(mLithoView)
-        .notifyVisibleBoundsChanged((Rect) any(), eq(true));
+        .notifyVisibleBoundsChanged((Rect) any(), eq(true), (VisibilityChangeReason) any());
   }
 
   @Test
@@ -100,7 +101,8 @@ public class IncrementalMountUtilsTest {
 
     IncrementalMountUtils.performIncrementalMount(mViewGroup);
 
-    verify(mLithoView, never()).notifyVisibleBoundsChanged((Rect) any(), eq(true));
+    verify(mLithoView, never())
+        .notifyVisibleBoundsChanged((Rect) any(), eq(true), (VisibilityChangeReason) any());
   }
 
   @Test
@@ -120,7 +122,8 @@ public class IncrementalMountUtilsTest {
 
     IncrementalMountUtils.performIncrementalMount(mViewGroup);
 
-    verify(mLithoView, never()).notifyVisibleBoundsChanged((Rect) any(), eq(true));
+    verify(mLithoView, never())
+        .notifyVisibleBoundsChanged((Rect) any(), eq(true), (VisibilityChangeReason) any());
   }
 
   @Test
@@ -170,7 +173,8 @@ public class IncrementalMountUtilsTest {
 
     IncrementalMountUtils.performIncrementalMount(mViewGroup);
 
-    verify(mLithoView, never()).notifyVisibleBoundsChanged((Rect) any(), eq(true));
+    verify(mLithoView, never())
+        .notifyVisibleBoundsChanged((Rect) any(), eq(true), (VisibilityChangeReason) any());
   }
 
   @Test
@@ -181,7 +185,8 @@ public class IncrementalMountUtilsTest {
 
     IncrementalMountUtils.performIncrementalMount(mViewGroup);
 
-    verify(mLithoView, never()).notifyVisibleBoundsChanged((Rect) any(), eq(true));
+    verify(mLithoView, never())
+        .notifyVisibleBoundsChanged((Rect) any(), eq(true), (VisibilityChangeReason) any());
   }
 
   @Test
@@ -232,7 +237,8 @@ public class IncrementalMountUtilsTest {
 
     IncrementalMountUtils.performIncrementalMount(mViewGroup);
 
-    verify(mLithoView, never()).notifyVisibleBoundsChanged((Rect) any(), eq(true));
+    verify(mLithoView, never())
+        .notifyVisibleBoundsChanged((Rect) any(), eq(true), (VisibilityChangeReason) any());
   }
 
   private static void setupViewBounds(View view, int l, int t, int r, int b) {

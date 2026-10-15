@@ -198,7 +198,8 @@ class BorderColorDrawable private constructor(private val state: State) :
           bounds.top.toFloat(),
           min(bounds.left + state.borderLeftWidth, bounds.right.toFloat()),
           bounds.bottom.toFloat(),
-          true)
+          true,
+      )
     }
 
     // Draw right border.
@@ -211,7 +212,8 @@ class BorderColorDrawable private constructor(private val state: State) :
           bounds.top.toFloat(),
           bounds.right.toFloat(),
           bounds.bottom.toFloat(),
-          true)
+          true,
+      )
     }
 
     // Draw top border.
@@ -224,7 +226,8 @@ class BorderColorDrawable private constructor(private val state: State) :
           bounds.top.toFloat(),
           bounds.right.toFloat(),
           min(bounds.top + state.borderTopWidth, bounds.bottom.toFloat()),
-          false)
+          false,
+      )
     }
 
     // Draw bottom border.
@@ -237,7 +240,8 @@ class BorderColorDrawable private constructor(private val state: State) :
           max(bounds.bottom - state.borderBottomWidth, bounds.top.toFloat()),
           bounds.right.toFloat(),
           bounds.bottom.toFloat(),
-          false)
+          false,
+      )
     }
   }
 
@@ -249,7 +253,7 @@ class BorderColorDrawable private constructor(private val state: State) :
       top: Float,
       right: Float,
       bottom: Float,
-      insetHorizontal: Boolean
+      insetHorizontal: Boolean,
   ) {
     paint.strokeWidth = strokeWidth
     paint.color = color
@@ -438,7 +442,7 @@ class BorderColorDrawable private constructor(private val state: State) :
         bounds: RectF,
         path: Path?,
         radii: FloatArray?,
-        paint: Paint
+        paint: Paint,
     ) {
       if (radii == null) {
         return

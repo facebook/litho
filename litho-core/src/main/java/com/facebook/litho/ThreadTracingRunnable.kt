@@ -39,7 +39,7 @@ abstract class ThreadTracingRunnable : Runnable {
 
   // This Throwable is saving the call stack which created this Runnable. If null, we are not
   // tracing in this instance.
-  private var tracingThrowable: Throwable? =
+  private val tracingThrowable: Throwable? =
       if (isTracingEnabled) {
         val thread = Thread.currentThread()
         Throwable(
@@ -47,7 +47,8 @@ abstract class ThreadTracingRunnable : Runnable {
                 .append(thread.id)
                 .append(MESSAGE_PART_2)
                 .append(thread.name)
-                .toString())
+                .toString(),
+        )
       } else {
         null
       }

@@ -21,6 +21,7 @@ import static com.facebook.litho.Component.isLayoutSpecWithSizeSpec;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
+import com.facebook.litho.LayoutState;
 import com.facebook.litho.LithoTree;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.LithoViewTestHelper;
@@ -175,7 +176,7 @@ public final class StateUpdatesTestHelper {
     final ComponentTree componentTree =
         ComponentTree.create(context, component)
             .componentsConfiguration(
-                ComponentsConfiguration.create(context.mLithoConfiguration.componentsConfig)
+                ComponentsConfiguration.create(context.getLithoConfiguration().componentsConfig)
                     .incrementalMountEnabled(incrementalMountEnabled)
                     .enableVisibilityProcessing(visibilityProcessingEnabled)
                     .build())
@@ -186,10 +187,12 @@ public final class StateUpdatesTestHelper {
 
     Whitebox.setInternalState(component, "mId", 457282882);
 
-    Whitebox.setInternalState(context, "mGlobalKey", "$bogusKeyForTest");
-    Whitebox.setInternalState(context, "mComponentScope", component);
+    final LayoutState layoutState = componentTree.getMainThreadLayoutState();
     Whitebox.setInternalState(
-        context, "mLithoTree", LithoTree.Companion.create(componentTree, componentTree));
+        context, "_globalKey", layoutState.getResolveResult().node.getHeadComponentKey());
+    Whitebox.setInternalState(context, "componentScope", component);
+    Whitebox.setInternalState(
+        context, "lithoTree", LithoTree.Companion.create(componentTree, componentTree));
 
     if (isLayoutSpecWithSizeSpec(component)) {
       Whitebox.setInternalState(context, "isContextForLayout", true);

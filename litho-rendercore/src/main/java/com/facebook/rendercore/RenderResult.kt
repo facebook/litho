@@ -18,7 +18,17 @@ package com.facebook.rendercore
 
 import android.content.Context
 import androidx.annotation.VisibleForTesting
+import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.rendercore.extensions.RenderCoreExtension
+
+@DataClassGenerate
+data class MountInput(
+    @JvmField val renderTree: RenderTree,
+    @JvmField val continuationValues: ContinuationValues,
+) {
+  val width: Int = renderTree.width
+  val height: Int = renderTree.height
+}
 
 /**
  * Result from laying out and reducing a [ResolveResult]. A [RenderResult] from a previous
@@ -26,11 +36,12 @@ import com.facebook.rendercore.extensions.RenderCoreExtension
  * caching.
  */
 class RenderResult<State, RenderContext>(
-    val renderTree: RenderTree,
+    val mountInput: MountInput,
     val nodeTree: Node<RenderContext>,
-    val layoutCacheData: Map<Any, Any?>,
-    val state: State?
+    val layoutCacheData: LayoutCacheData,
+    val state: State?,
 ) {
+  val renderTree: RenderTree = mountInput.renderTree
 
   companion object {
 
@@ -44,7 +55,7 @@ class RenderResult<State, RenderContext>(
         previousResult: RenderResult<State, RenderContext>?,
         layoutVersion: Int,
         widthSpec: Int,
-        heightSpec: Int
+        heightSpec: Int,
     ): RenderResult<State, RenderContext> {
       return render(
           context,
@@ -53,7 +64,8 @@ class RenderResult<State, RenderContext>(
           extensions,
           previousResult,
           layoutVersion,
-          SizeConstraints.fromMeasureSpecs(widthSpec, heightSpec))
+          SizeConstraints.fromMeasureSpecs(widthSpec, heightSpec),
+      )
     }
 
     @JvmStatic
@@ -64,22 +76,33 @@ class RenderResult<State, RenderContext>(
         extensions: Array<RenderCoreExtension<*, *>>?,
         previousResult: RenderResult<State, RenderContext>?,
         layoutVersion: Int,
-        sizeConstraints: SizeConstraints
+        sizeConstraints: SizeConstraints,
     ): RenderResult<State, RenderContext> {
       RenderCoreSystrace.beginSection("RC Create Tree")
       val renderResult: RenderResult<State, RenderContext> =
-          if (previousResult != null &&
-              shouldReuseResult(result.resolvedNode, sizeConstraints, previousResult)) {
+          if (
+              previousResult != null &&
+                  shouldReuseResult(result.resolvedNode, sizeConstraints, previousResult)
+          ) {
             RenderResult(
-                previousResult.renderTree,
+                previousResult.mountInput,
                 result.resolvedNode,
                 previousResult.layoutCacheData,
-                result.resolvedState)
+                result.resolvedState,
+            )
           } else {
-            val layoutContext: LayoutContext<RenderContext> =
-                createLayoutContext(
-                    previousResult, renderContext, context, layoutVersion, extensions)
-            layout(layoutContext, result.resolvedNode, result.resolvedState, sizeConstraints)
+            val layoutContext: LayoutContext<RenderContext> = createLayoutContext(
+                previousResult,
+                renderContext,
+                context,
+                layoutVersion,
+                extensions,
+            )
+            try {
+              layout(layoutContext, result.resolvedNode, result.resolvedState, sizeConstraints)
+            } finally {
+              layoutContext.clearCache()
+            }
           }
       RenderCoreSystrace.endSection()
       return renderResult
@@ -91,11 +114,16 @@ class RenderResult<State, RenderContext>(
         renderContext: RenderContext?,
         context: Context,
         layoutVersion: Int,
-        extensions: Array<RenderCoreExtension<*, *>>?
+        extensions: Array<RenderCoreExtension<*, *>>?,
     ): LayoutContext<RenderContext> {
       val layoutCache = buildCache(previousResult?.layoutCacheData)
       return LayoutContext<RenderContext>(
-          context, renderContext, layoutVersion, layoutCache, extensions)
+          context,
+          renderContext,
+          layoutVersion,
+          layoutCache,
+          extensions,
+      )
     }
 
     @Deprecated(message = "Use layout function that accepts SizeConstraints")
@@ -105,10 +133,14 @@ class RenderResult<State, RenderContext>(
         node: Node<RenderContext>,
         state: State?,
         widthSpec: Int,
-        heightSpec: Int
+        heightSpec: Int,
     ): RenderResult<State, RenderContext> {
       return layout(
-          layoutContext, node, state, SizeConstraints.fromMeasureSpecs(widthSpec, heightSpec))
+          layoutContext,
+          node,
+          state,
+          SizeConstraints.fromMeasureSpecs(widthSpec, heightSpec),
+      )
     }
 
     @JvmStatic
@@ -116,7 +148,7 @@ class RenderResult<State, RenderContext>(
         layoutContext: LayoutContext<RenderContext>,
         node: Node<RenderContext>,
         state: State?,
-        sizeConstraints: SizeConstraints
+        sizeConstraints: SizeConstraints,
     ): RenderResult<State, RenderContext> {
       RenderCoreSystrace.beginSection("RC Layout")
       val layoutResult = node.calculateLayout(layoutContext, sizeConstraints)
@@ -125,7 +157,6 @@ class RenderResult<State, RenderContext>(
       val renderResult: RenderResult<State, RenderContext> =
           create(layoutContext, node, layoutResult, sizeConstraints, state)
       RenderCoreSystrace.endSection()
-      layoutContext.clearCache()
       return renderResult
     }
 
@@ -137,10 +168,15 @@ class RenderResult<State, RenderContext>(
         layoutResult: LayoutResult,
         widthSpec: Int,
         heightSpec: Int,
-        state: State?
+        state: State?,
     ): RenderResult<State, RenderContext> {
       return create(
-          c, node, layoutResult, SizeConstraints.fromMeasureSpecs(widthSpec, heightSpec), state)
+          c,
+          node,
+          layoutResult,
+          SizeConstraints.fromMeasureSpecs(widthSpec, heightSpec),
+          state,
+      )
     }
 
     @JvmStatic
@@ -149,20 +185,58 @@ class RenderResult<State, RenderContext>(
         node: Node<RenderContext>,
         layoutResult: LayoutResult,
         sizeConstraints: SizeConstraints,
-        state: State?
+        state: State?,
     ): RenderResult<State, RenderContext> {
+      val renderTree = Reducer.getReducedTree(c, layoutResult, sizeConstraints, c.layoutVersion)
       return RenderResult(
-          Reducer.getReducedTree(c, layoutResult, sizeConstraints, c.layoutVersion),
+          MountInput(renderTree, ContinuationValues.EMPTY),
           node,
-          c.layoutCache.writeCacheData,
-          state)
+          c.layoutCache.toCacheData(),
+          state,
+      )
+    }
+
+    @JvmStatic
+    fun <RenderContext> createMountInput(
+        c: LayoutContext<RenderContext>,
+        node: Node<RenderContext>,
+        sizeConstraints: SizeConstraints,
+    ): MountInput {
+      val layoutResult = node.calculateLayout(c, sizeConstraints)
+      return MountInput(
+          Reducer.getReducedTree(c, layoutResult, sizeConstraints, c.layoutVersion),
+          ContinuationValues.EMPTY,
+      )
+    }
+
+    @JvmStatic
+    fun <RenderContext> createMountInput(
+        c: LayoutContext<RenderContext>,
+        node: Node<RenderContext>,
+        widthSpec: Int,
+        heightSpec: Int,
+    ): MountInput {
+      return createMountInput(c, node, SizeConstraints.fromMeasureSpecs(widthSpec, heightSpec))
+    }
+
+    @JvmStatic
+    fun <RenderContext> createRootMountInput(
+        c: LayoutContext<RenderContext>,
+        node: Node<RenderContext>,
+        sizeConstraints: SizeConstraints,
+    ): MountInput {
+      val layoutResult = node.calculateLayout(c, sizeConstraints)
+      return MountInput(
+          Reducer.getReducedTree(c, layoutResult, sizeConstraints, c.layoutVersion),
+          ContinuationValues(c.layoutCache.continuationValues),
+      )
     }
 
     @JvmStatic
     fun <State, RenderContext> shouldReuseResult(
         node: Node<RenderContext>,
         sizeConstraints: SizeConstraints,
-        previousResult: RenderResult<State, RenderContext>?
+        previousResult: RenderResult<State, RenderContext>?,
     ): Boolean {
       if (previousResult == null) {
         return false
@@ -170,13 +244,15 @@ class RenderResult<State, RenderContext>(
       val prevRenderTree = previousResult.renderTree
       return (node === previousResult.nodeTree &&
           sizeConstraints.areCompatible(
-              prevRenderTree.sizeConstraints, Size(prevRenderTree.width, prevRenderTree.height)))
+              prevRenderTree.sizeConstraints,
+              IntSize(prevRenderTree.width, prevRenderTree.height),
+          ))
     }
 
     @VisibleForTesting
     @JvmStatic
-    fun buildCache(previousCache: Map<Any, Any?>?): LayoutCache {
-      return if (previousCache != null) LayoutCache(previousCache) else LayoutCache(null)
+    fun buildCache(previousData: LayoutCacheData?): LayoutCache {
+      return if (previousData != null) LayoutCache(previousData) else LayoutCache(null)
     }
   }
 }

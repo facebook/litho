@@ -20,10 +20,10 @@ import static com.facebook.litho.testing.espresso.ComponentHostMatchers.componen
 import static com.facebook.litho.testing.espresso.ComponentHostMatchers.componentHostWithText;
 import static com.facebook.litho.testing.espresso.ComponentHostMatchers.withContentDescription;
 import static com.facebook.litho.testing.espresso.ComponentHostMatchers.withText;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertThat;
 
 import android.widget.TextView;
 import androidx.test.InstrumentationRegistry;
@@ -35,6 +35,7 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.LithoView;
 import com.facebook.testing.screenshot.ViewHelpers;
+import org.assertj.core.api.HamcrestCondition;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,7 +56,8 @@ public class ComponentHostMatchersTest {
         new ComponentContext(InstrumentationRegistry.getTargetContext());
     final Component mTextComponent =
         MyComponent.create(mComponentContext).text("foobar").customViewTag("zoidberg").build();
-    final ComponentTree tree = ComponentTree.create(mComponentContext, mTextComponent).build();
+    final ComponentTree tree =
+        ComponentTree.create(mComponentContext, mTextComponent).enableChildClipping(true).build();
     mView = new LithoView(mComponentContext);
     mView.setComponentTree(tree);
     ViewHelpers.setupView(mView).setExactWidthPx(200).setExactHeightPx(100).layout();
@@ -63,26 +65,28 @@ public class ComponentHostMatchersTest {
 
   @Test
   public void testContentDescriptionMatching() throws Throwable {
-    assertThat(mView, componentHostWithText("foobar"));
-    assertThat(mView, not(componentHostWithText("bar")));
+    assertThat(mView).is(new HamcrestCondition<>(componentHostWithText("foobar")));
+    assertThat(mView).is(new HamcrestCondition<>(not(componentHostWithText("bar"))));
     // NULLSAFE_FIXME[Not Vetted Third-Party]
-    assertThat(mView, componentHostWithText(containsString("oob")));
+    assertThat(mView).is(new HamcrestCondition<>(componentHostWithText(containsString("oob"))));
   }
 
   @Test
   public void testIsComponentHost() throws Throwable {
-    assertThat(new TextView(InstrumentationRegistry.getTargetContext()), is(not(componentHost())));
-    assertThat(mView, is(componentHost()));
+    assertThat(new TextView(InstrumentationRegistry.getTargetContext()))
+        .is(new HamcrestCondition<>(is(not(componentHost()))));
+    assertThat(mView).is(new HamcrestCondition<>(is(componentHost())));
   }
 
   @Test
   public void testIsComponentHostWithMatcher() throws Throwable {
-    assertThat(mView, is(componentHost(withText("foobar"))));
-    assertThat(mView, is(not(componentHost(withText("blah")))));
+    assertThat(mView).is(new HamcrestCondition<>(is(componentHost(withText("foobar")))));
+    assertThat(mView).is(new HamcrestCondition<>(is(not(componentHost(withText("blah"))))));
   }
 
   @Test
   public void testContentDescription() throws Throwable {
-    assertThat(mView, is(componentHost(withContentDescription("foobar2"))));
+    assertThat(mView)
+        .is(new HamcrestCondition<>(is(componentHost(withContentDescription("foobar2")))));
   }
 }

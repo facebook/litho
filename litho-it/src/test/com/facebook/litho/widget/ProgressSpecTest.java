@@ -19,16 +19,22 @@ package com.facebook.litho.widget;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.view.View;
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
+import com.facebook.litho.it.R;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.shadow.api.Shadow;
+import org.robolectric.shadows.ShadowDrawable;
 
-/** Tests {@link ProgressSpec} */
+/** Tests {@link ProgressPrimitiveComponent} */
 @RunWith(LithoTestRunner.class)
 public class ProgressSpecTest {
   private ComponentContext mContext;
@@ -57,9 +63,34 @@ public class ProgressSpecTest {
     assertThat(view.getMeasuredHeight()).isEqualTo(ProgressPrimitiveComponent.DEFAULT_SIZE);
   }
 
-  private LithoView getMountedView() {
-    Progress.Builder progress = Progress.create(mContext);
+  @Test
+  public void testIndeterminateDrawableResolvedFromDefStyleRes() {
+    Component progress =
+        ProgressPrimitiveComponent.create(
+            Color.TRANSPARENT, null, null, null, null, 0, R.style.ProgressStyleTest);
+    LithoView view = ComponentTestHelper.mountComponent(mContext, progress);
 
-    return ComponentTestHelper.mountComponent(progress);
+    ProgressView progressView = findProgressView(view);
+    Drawable indeterminateDrawable = progressView.getIndeterminateDrawable();
+    assertThat(indeterminateDrawable).isNotNull();
+    ShadowDrawable shadowDrawable = Shadow.extract(indeterminateDrawable);
+    assertThat(shadowDrawable.getCreatedFromResId()).isEqualTo(R.drawable.test_bg);
+  }
+
+  private LithoView getMountedView() {
+    Component progress =
+        ProgressPrimitiveComponent.create(Color.TRANSPARENT, null, null, null, null);
+
+    return ComponentTestHelper.mountComponent(mContext, progress);
+  }
+
+  private static ProgressView findProgressView(LithoView view) {
+    for (int i = 0; i < view.getMountItemCount(); i++) {
+      Object content = view.getMountItemAt(i).getContent();
+      if (content instanceof ProgressView) {
+        return (ProgressView) content;
+      }
+    }
+    throw new AssertionError("No ProgressView was mounted");
   }
 }

@@ -19,6 +19,8 @@ package com.facebook.litho
 import android.content.Context
 import android.graphics.Rect
 import androidx.test.core.app.ApplicationProvider
+import com.facebook.litho.core.height
+import com.facebook.litho.core.width
 import com.facebook.litho.testing.TestViewComponent
 import com.facebook.litho.testing.helper.ComponentTestHelper
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec
@@ -26,6 +28,8 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.MountSpecLifecycleTester
 import com.facebook.litho.widget.SimpleMountSpecTester
 import com.facebook.rendercore.MountState
+import com.facebook.rendercore.px
+import com.facebook.rendercore.visibility.VisibilityChangeReason
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -54,7 +58,7 @@ class LithoViewMountTest {
     component =
         object : InlineLayoutSpec() {
           override fun onCreateLayout(c: ComponentContext): Component =
-              SimpleMountSpecTester.create(c).widthPx(100).heightPx(100).build()
+              SimpleMountSpecTester(style = Style.width(100.px).height(100.px))
         }
     componentTree =
         createComponentTree(useSpy = false, incMountEnabled = false, width = 100, height = 100)
@@ -70,10 +74,10 @@ class LithoViewMountTest {
     lithoView.componentTree = componentTree
     lithoView.onAttachedToWindow()
     lithoView.layout(0, 0, lithoView.measuredWidth, lithoView.measuredHeight)
-    verify(lithoView).notifyVisibleBoundsChanged(null)
+    verify(lithoView).mountComponentIfNeeded()
     lithoView.unmountAllItems()
     lithoView.performLayout(false, 0, 0, width, height)
-    verify(lithoView, times(2)).notifyVisibleBoundsChanged(null)
+    verify(lithoView, times(2)).mountComponentIfNeeded()
   }
 
   @Test
@@ -163,8 +167,9 @@ class LithoViewMountTest {
                       .build()
             },
             true,
-            true)
-    lithoView.notifyVisibleBoundsChanged(Rect(0, -10, 10, -5), true)
+            true,
+        )
+    lithoView.notifyVisibleBoundsChanged(Rect(0, -10, 10, -5), true, VisibilityChangeReason.UNKNOWN)
     assertThat(child1.isMounted).isFalse
     assertThat(lifecycleTracker2.isMounted).isFalse
     lithoView.setHasTransientState(true)
@@ -189,7 +194,8 @@ class LithoViewMountTest {
                       .build()
             },
             true,
-            true)
+            true,
+        )
     lithoView.performLayout(false, 0, 0, 100, 100)
     assertThat(child1.isMounted).isTrue
     assertThat(lifecycleTracker2.isMounted).isTrue
@@ -218,8 +224,9 @@ class LithoViewMountTest {
                       .build()
             },
             true,
-            true)
-    lithoView.notifyVisibleBoundsChanged(Rect(0, -10, 10, -5), true)
+            true,
+        )
+    lithoView.notifyVisibleBoundsChanged(Rect(0, -10, 10, -5), true, VisibilityChangeReason.UNKNOWN)
     assertThat(child1.isMounted).isFalse
     assertThat(lifecycleTracker2.isMounted).isFalse
     lithoView.performLayout(false, 0, 0, 200, 200)
@@ -232,17 +239,21 @@ class LithoViewMountTest {
       useSpy: Boolean,
       incMountEnabled: Boolean,
       width: Int,
-      height: Int
+      height: Int,
   ): ComponentTree {
     val componentTree =
-        ComponentTree.create(context, component).incrementalMount(incMountEnabled).build()
+        ComponentTree.create(context, component)
+            .incrementalMount(incMountEnabled)
+            .enableChildClipping(true)
+            .build()
     componentTree.setSizeSpec(
         SizeSpec.makeSizeSpec(width, SizeSpec.EXACTLY),
-        SizeSpec.makeSizeSpec(height, SizeSpec.EXACTLY))
+        SizeSpec.makeSizeSpec(height, SizeSpec.EXACTLY),
+    )
     return if (useSpy) spy(componentTree) else componentTree
   }
 
-  private open class TestLithoView(context: Context?) : LithoView(context) {
+  private open class TestLithoView(context: Context?) : LithoView(requireNotNull(context)) {
     var requestLayoutInvocationCount = 0
       private set
 

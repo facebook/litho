@@ -19,7 +19,12 @@ package com.facebook.rendercore
 import android.content.Context
 import com.facebook.rendercore.MountContentPools.ContentPool
 import com.facebook.rendercore.MountContentPools.DefaultContentPool
-import com.facebook.rendercore.RenderUnit.RenderType
+
+/** Defines whether the content is a View or a Drawable. */
+enum class RenderType {
+  DRAWABLE,
+  VIEW,
+}
 
 /**
  * Defines a class that can provide mountable content and have it be pooled.
@@ -29,10 +34,16 @@ import com.facebook.rendercore.RenderUnit.RenderType
  */
 interface ContentAllocator<Content : Any> {
 
-  /** Allocates the mountable content (View or Drawable). */
+  /**
+   * Allocates the mountable content (View or Drawable).
+   *
+   * **NOTE**: It is important that this method is idempotent and *only* dependent on the provided
+   * [Context] parameter. Modifications of the returned content should only happen in
+   * [RenderUnit.Binder]s where contextual information is available for mutating the content.
+   */
   fun createContent(context: Context): Content
 
-  /** Returns the [RenderUnit.RenderType] of the mountable content. */
+  /** Returns the [RenderType] of the mountable content. */
   val renderType: RenderType
 
   /** Returns the key that should be used for the pool for the mountable content. */
@@ -42,7 +53,7 @@ interface ContentAllocator<Content : Any> {
 
   /**
    * Returns the [PoolingPolicy] which defines the behavior allowed regarding releasing and
-   * acquiring
+   * acquiring this allocator's content.
    */
   val poolingPolicy: PoolingPolicy
     get() = PoolingPolicy.Default
@@ -59,10 +70,16 @@ interface ContentAllocator<Content : Any> {
   /** This API informs the framework about the size of the content pool. The default is 3. */
   fun poolSize(): Int = DEFAULT_MAX_PREALLOCATION
 
-  /** Creates the content pool the framework should use for this [ContentAllocator] */
+  /**
+   * Creates the content pool the framework should use for this [ContentAllocator].
+   *
+   * Note: [getPoolKey] is passed to [DefaultContentPool] so the pool's debug name reflects the
+   * concrete component type (e.g., "com.facebook.litho.widget.Image") rather than the allocator
+   * class name (e.g., "ViewAllocator"), which would be identical for all view-based components.
+   */
   fun onCreateMountContentPool(poolSizeOverride: Int = UNSET_POOL_SIZE): ContentPool? {
     val size = if (poolSizeOverride > UNSET_POOL_SIZE) poolSizeOverride else poolSize()
-    return DefaultContentPool(javaClass, size)
+    return DefaultContentPool(getPoolKey(), size)
   }
 
   /**

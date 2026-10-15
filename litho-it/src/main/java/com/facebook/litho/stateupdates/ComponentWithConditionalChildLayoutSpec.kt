@@ -16,7 +16,7 @@
 
 package com.facebook.litho.stateupdates
 
-import com.facebook.litho.Column
+import com.facebook.litho.Column as ColumnBuilder
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.StateValue
@@ -46,14 +46,15 @@ object ComponentWithConditionalChildLayoutSpec {
       c: ComponentContext,
       @Prop(optional = true) caller: Caller?,
       @Prop(optional = true) childCaller: ComponentWithCounterStateLayoutSpec.Caller?,
-      @State showChild: Boolean
+      @State showChild: Boolean,
   ): Component {
     caller?.set(c)
-    return Column.create(c)
+    return ColumnBuilder.create(c)
         .child(
             if (showChild)
                 ComponentWithCounterStateLayout.create(c).caller(childCaller).key("testKey")
-            else Text.create(c).text("Empty").key("testKey"))
+            else Text.create(c).text("Empty").key("testKey"),
+        )
         .build()
   }
 

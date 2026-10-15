@@ -24,6 +24,8 @@ import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.kotlin.widget.Image
 import com.facebook.litho.kotlin.widget.Text
+import com.facebook.litho.layout.flexbox.Column
+import com.facebook.litho.layout.flexbox.Row
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.TestLithoView
 import com.facebook.litho.testing.assertj.LithoAssertions
@@ -44,7 +46,7 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class HostRecyclingTest {
 
-  @get:Rule val mLithoTestRule = LithoTestRule()
+  @get:Rule val lithoTestRule = LithoTestRule()
 
   private lateinit var fakeMountItemPools: ComponentHostAcquireTrackingMountContentPools
 
@@ -113,19 +115,23 @@ class HostRecyclingTest {
   }
 
   private fun createLithoViewForTest(hostRecyclingEnabled: Boolean): TestLithoView {
-    return mLithoTestRule.render(
+    return lithoTestRule.render(
         heightPx = 400,
         widthPx = 400,
         componentTree =
-            ComponentTree.create(mLithoTestRule.context)
+            ComponentTree.create(lithoTestRule.context)
                 .componentsConfiguration(
                     ComponentsConfiguration.defaultInstance.copy(
                         componentHostPoolingPolicy =
                             if (hostRecyclingEnabled) PoolingPolicy.Default
-                            else PoolingPolicy.Disabled))
-                .build()) {
-          EmptyComponent()
-        }
+                            else PoolingPolicy.Disabled,
+                    ),
+                )
+                .enableChildClipping(true)
+                .build(),
+    ) {
+      EmptyComponent()
+    }
   }
 
   private class ComponentHostAcquireTrackingMountContentPools : MountContentPools.ContentPool {
@@ -149,6 +155,9 @@ class HostRecyclingTest {
       get() = _numComponentHostsAcquiredFromPool
 
     private val itemPool = MountContentPools.DefaultContentPool(HostComponent::class.java, 5)
+
+    override val pooledItemsCount: Int
+      get() = itemPool.pooledItemsCount
 
     override fun acquire(contentAllocator: ContentAllocator<*>): Any? {
       val poolKey = contentAllocator.getPoolKey()
@@ -174,7 +183,7 @@ class HostRecyclingTest {
 
     override fun maybePreallocateContent(
         c: Context,
-        contentAllocator: ContentAllocator<*>
+        contentAllocator: ContentAllocator<*>,
     ): Boolean = false
   }
 
@@ -186,7 +195,8 @@ class HostRecyclingTest {
         child(
             Row(style = Style.alpha(0.5f)) {
               child(Image(ColorDrawable(Color.RED), style = Style.width(10.dp).height(10.dp)))
-            })
+            },
+        )
       }
     }
   }

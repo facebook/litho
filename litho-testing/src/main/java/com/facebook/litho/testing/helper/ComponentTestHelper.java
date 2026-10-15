@@ -19,7 +19,6 @@ package com.facebook.litho.testing.helper;
 import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.UNSPECIFIED;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
-import static org.robolectric.Shadows.shadowOf;
 
 import android.graphics.Rect;
 import android.os.Looper;
@@ -32,24 +31,26 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.EventHandler;
-import com.facebook.litho.FocusedVisibleEvent;
-import com.facebook.litho.FullImpressionVisibleEvent;
 import com.facebook.litho.HasEventDispatcher;
-import com.facebook.litho.InvisibleEvent;
 import com.facebook.litho.LithoNode;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.ResolveContext;
 import com.facebook.litho.TestComponent;
 import com.facebook.litho.TestLayoutState;
 import com.facebook.litho.TreePropContainer;
-import com.facebook.litho.UnfocusedVisibleEvent;
-import com.facebook.litho.VisibleEvent;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.subcomponents.SubComponent;
+import com.facebook.rendercore.extensions.VisibilityChangeReason;
+import com.facebook.rendercore.visibility.FocusedVisibleEvent;
+import com.facebook.rendercore.visibility.FullImpressionVisibleEvent;
+import com.facebook.rendercore.visibility.InvisibleEvent;
+import com.facebook.rendercore.visibility.UnfocusedVisibleEvent;
+import com.facebook.rendercore.visibility.VisibleEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.robolectric.shadow.api.Shadow;
 import org.robolectric.shadows.ShadowLooper;
 
 /**
@@ -71,7 +72,7 @@ public final class ComponentTestHelper {
    * @param component The component builder to mount
    * @return A LithoView with the component mounted in it.
    */
-  public static LithoView mountComponent(Component.Builder component) {
+  public static LithoView mountComponent(Component.Builder<?> component) {
     return mountComponent(getContext(component), component.build());
   }
 
@@ -83,7 +84,7 @@ public final class ComponentTestHelper {
    * @return A LithoView with the component mounted in it.
    */
   public static LithoView mountComponent(
-      Component.Builder component,
+      Component.Builder<?> component,
       boolean incrementalMountEnabled,
       boolean visibilityProcessingEnabled) {
     ComponentContext context = getContext(component);
@@ -196,7 +197,7 @@ public final class ComponentTestHelper {
         lithoView,
         ComponentTree.create(context, component)
             .componentsConfiguration(
-                ComponentsConfiguration.create(context.mLithoConfiguration.componentsConfig)
+                ComponentsConfiguration.create(context.getLithoConfiguration().componentsConfig)
                     .incrementalMountEnabled(incrementalMountEnabled)
                     .enableVisibilityProcessing(visibilityProcessingEnabled)
                     .build())
@@ -289,7 +290,7 @@ public final class ComponentTestHelper {
     // Unmounting the component by running incremental mount to a Rect that we certain won't
     // contain the component.
     Rect rect = new Rect(99999, 99999, 999999, 999999);
-    lithoView.notifyVisibleBoundsChanged(rect, true);
+    lithoView.notifyVisibleBoundsChanged(rect, true, VisibilityChangeReason.UNKNOWN);
   }
 
   /**
@@ -313,7 +314,7 @@ public final class ComponentTestHelper {
    * @deprecated Use ComponentAssert#extractingSubComponents() instead.
    */
   @Deprecated
-  public static List<SubComponent> getSubComponents(Component.Builder component) {
+  public static List<SubComponent> getSubComponents(Component.Builder<?> component) {
     return getSubComponents(getContext(component), component.build());
   }
 
@@ -342,7 +343,7 @@ public final class ComponentTestHelper {
    */
   @Deprecated
   public static List<SubComponent> getSubComponents(
-      Component.Builder component, int widthSpec, int heightSpec) {
+      Component.Builder<?> component, int widthSpec, int heightSpec) {
     return getSubComponents(getContext(component), component.build(), widthSpec, heightSpec);
   }
 
@@ -395,7 +396,7 @@ public final class ComponentTestHelper {
    */
   @Deprecated
   public static <T extends Component> Component getSubComponent(
-      Component.Builder component, Class<T> componentClass) {
+      Component.Builder<?> component, Class<T> componentClass) {
     List<SubComponent> subComponents = getSubComponents(component);
 
     for (SubComponent subComponent : subComponents) {
@@ -485,7 +486,7 @@ public final class ComponentTestHelper {
     view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
   }
 
-  private static ComponentContext getContext(Component.Builder builder) {
+  private static ComponentContext getContext(Component.Builder<?> builder) {
     return Whitebox.getInternalState(builder, "mContext");
   }
 
@@ -493,7 +494,7 @@ public final class ComponentTestHelper {
    * Mounts the component & triggers the visibility event. Requires that the component supports
    * incremental mounting.
    *
-   * <p>{@link com.facebook.litho.VisibleEvent}
+   * <p>{@link com.facebook.rendercore.visibility.VisibleEvent}
    *
    * <p>DEPRECATED: Prefer using {@link #triggerVisibilityEvent(LithoView, Class)} instead
    *
@@ -504,7 +505,7 @@ public final class ComponentTestHelper {
    */
   @Deprecated
   public static LithoView dispatchOnVisibleEvent(
-      ComponentContext context, EventHandler onVisibleHandler, Component component) {
+      ComponentContext context, EventHandler<?> onVisibleHandler, Component component) {
     return dispatchVisibilityEvent(context, onVisibleHandler, new VisibleEvent(), component);
   }
 
@@ -523,7 +524,7 @@ public final class ComponentTestHelper {
    */
   @Deprecated
   public static LithoView dispatchOnFocusedVisibleEvent(
-      ComponentContext context, EventHandler onFocusedVisibleHandler, Component component) {
+      ComponentContext context, EventHandler<?> onFocusedVisibleHandler, Component component) {
     return dispatchVisibilityEvent(
         context, onFocusedVisibleHandler, new FocusedVisibleEvent(), component);
   }
@@ -543,7 +544,7 @@ public final class ComponentTestHelper {
    */
   @Deprecated
   public static LithoView dispatchOnInvisibleEvent(
-      ComponentContext context, EventHandler onInvisibleHandler, Component component) {
+      ComponentContext context, EventHandler<?> onInvisibleHandler, Component component) {
     return dispatchVisibilityEvent(context, onInvisibleHandler, new InvisibleEvent(), component);
   }
 
@@ -551,7 +552,7 @@ public final class ComponentTestHelper {
   @Deprecated
   private static LithoView dispatchVisibilityEvent(
       ComponentContext context,
-      EventHandler eventHandler,
+      EventHandler<?> eventHandler,
       Object eventInstance,
       Component component) {
     LithoView lithoView = new LithoView(context);
@@ -561,7 +562,7 @@ public final class ComponentTestHelper {
 
     mountComponent(context, lithoView, component, true, true, 100, 100);
 
-    lithoView.notifyVisibleBoundsChanged();
+    lithoView.notifyVisibleBoundsChanged(VisibilityChangeReason.UNKNOWN);
 
     if (!(component instanceof HasEventDispatcher)) {
       return lithoView;
@@ -600,7 +601,7 @@ public final class ComponentTestHelper {
    * Sets a TreeProp that will be visible to all Components which are created from the given Context
    * (unless a child overwrites its).
    */
-  public static void setTreeProp(ComponentContext context, Class propClass, Object prop) {
+  public static void setTreeProp(ComponentContext context, Class<?> propClass, Object prop) {
     TreePropContainer treePropContainer;
     try {
       treePropContainer = Whitebox.invokeMethod(context, "getTreePropContainer");
@@ -618,7 +619,7 @@ public final class ComponentTestHelper {
    * Sets a TreeProp that will be visible to all Components which are created from the given Context
    * (unless a child overwrites its).
    */
-  public static void setParentTreeProp(ComponentContext context, Class propClass, Object prop) {
+  public static void setParentTreeProp(ComponentContext context, Class<?> propClass, Object prop) {
     TreePropContainer treePropContainer;
     try {
       treePropContainer = Whitebox.invokeMethod(context, "getParentTreePropContainer");
@@ -650,12 +651,12 @@ public final class ComponentTestHelper {
 
   /** Access the default layout thread looper for testing purposes only. */
   public static Looper getDefaultLayoutThreadLooper() {
-    return (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultLayoutThreadLooper");
+    return ComponentTree.getDefaultLayoutThreadLooper();
   }
 
   /** Access the shadow of the default layout thread looper for testing purposes only. */
   public static ShadowLooper getDefaultLayoutThreadShadowLooper() {
-    return shadowOf(getDefaultLayoutThreadLooper());
+    return (ShadowLooper) Shadow.extract(getDefaultLayoutThreadLooper());
   }
 
   public static ShadowLooper[] getDefaultThreadShadowLoopers() {

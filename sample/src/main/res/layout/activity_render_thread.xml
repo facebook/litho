@@ -46,10 +46,10 @@
         />
 
         <ProgressBar
-                style="?android:attr/progressBarStyle"
+                android:id="@+id/progressBar"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyle"
         />
 
     </LinearLayout>

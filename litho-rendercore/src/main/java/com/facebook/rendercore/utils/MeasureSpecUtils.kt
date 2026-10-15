@@ -17,7 +17,6 @@
 package com.facebook.rendercore.utils
 
 import android.view.View.MeasureSpec
-import java.util.Locale
 
 /**
  * An utility class to verify that an old measured size is still compatible to be used with a new
@@ -52,17 +51,29 @@ object MeasureSpecUtils {
     return (oldSizeSpec == sizeSpec) ||
         (oldSpecMode == UNSPECIFIED && newSpecMode == UNSPECIFIED) ||
         newSizeIsExactAndMatchesOldMeasuredSize(
-            newSpecMode, newSpecSize, oldMeasuredSize.toFloat()) ||
+            newSpecMode,
+            newSpecSize,
+            oldMeasuredSize.toFloat(),
+        ) ||
         oldSizeIsUnspecifiedAndStillFits(
-            oldSpecMode, newSpecMode, newSpecSize, oldMeasuredSize.toFloat()) ||
+            oldSpecMode,
+            newSpecMode,
+            newSpecSize,
+            oldMeasuredSize.toFloat(),
+        ) ||
         newMeasureSizeIsStricterAndStillValid(
-            oldSpecMode, newSpecMode, oldSpecSize, newSpecSize, oldMeasuredSize.toFloat())
+            oldSpecMode,
+            newSpecMode,
+            oldSpecSize,
+            newSpecSize,
+            oldMeasuredSize.toFloat(),
+        )
   }
 
   private fun newSizeIsExactAndMatchesOldMeasuredSize(
       newSizeSpecMode: Int,
       newSizeSpecSize: Int,
-      oldMeasuredSize: Float
+      oldMeasuredSize: Float,
   ): Boolean =
       newSizeSpecMode == MeasureSpec.EXACTLY && Math.abs(newSizeSpecSize - oldMeasuredSize) < DELTA
 
@@ -70,7 +81,7 @@ object MeasureSpecUtils {
       oldSizeSpecMode: Int,
       newSizeSpecMode: Int,
       newSizeSpecSize: Int,
-      oldMeasuredSize: Float
+      oldMeasuredSize: Float,
   ): Boolean =
       newSizeSpecMode == MeasureSpec.AT_MOST &&
           oldSizeSpecMode == UNSPECIFIED &&
@@ -81,7 +92,7 @@ object MeasureSpecUtils {
       newSizeSpecMode: Int,
       oldSizeSpecSize: Int,
       newSizeSpecSize: Int,
-      oldMeasuredSize: Float
+      oldMeasuredSize: Float,
   ): Boolean =
       oldSizeSpecMode == MeasureSpec.AT_MOST &&
           newSizeSpecMode == MeasureSpec.AT_MOST &&
@@ -92,7 +103,7 @@ object MeasureSpecUtils {
   fun getMeasureSpecDescription(measureSpec: Int): String {
     val value = getSize(measureSpec)
     val mode = getModeDescription(getMode(measureSpec))
-    return String.format(Locale.US, "[%d, %s]", value, mode)
+    return "[$value, $mode]"
   }
 
   @JvmStatic

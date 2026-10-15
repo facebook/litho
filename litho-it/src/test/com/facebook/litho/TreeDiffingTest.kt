@@ -21,6 +21,7 @@ import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import androidx.collection.SparseArrayCompat
+import com.facebook.litho.LithoLayoutData.Companion.NO_Z_INDEX
 import com.facebook.litho.MountSpecLithoRenderUnit.UpdateState
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.drawable.ComparableColorDrawable
@@ -35,6 +36,7 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.Text
 import com.facebook.rendercore.MountItem
 import com.facebook.rendercore.RenderTreeNode
+import com.facebook.rendercore.SizeConstraints
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaEdge
 import java.lang.Exception
@@ -54,9 +56,9 @@ class TreeDiffingTest {
 
   @JvmField
   @Rule
-  val lithoTestRule =
-      LithoTestRule(
-          ComponentsConfiguration.defaultInstance.copy(shouldAddHostViewForRootComponent = true))
+  val lithoTestRule = LithoTestRule(
+      ComponentsConfiguration.defaultInstance.copy(shouldAddHostViewForRootComponent = true),
+  )
 
   @Before
   @Throws(Exception::class)
@@ -174,9 +176,13 @@ class TreeDiffingTest {
     val context = lithoTestRule.createTestLithoView().componentTree.context
     val prevLayoutState =
         calculateLayoutStateWithDiffing(context, component1, exactly(350), exactly(200), null)
-    val layoutState =
-        calculateLayoutStateWithDiffing(
-            context, component2, exactly(350), exactly(200), prevLayoutState)
+    val layoutState = calculateLayoutStateWithDiffing(
+        context,
+        component2,
+        exactly(350),
+        exactly(200),
+        prevLayoutState,
+    )
     assertThat(layoutState.getMountableOutputCount())
         .isEqualTo(prevLayoutState.getMountableOutputCount())
     var i = 0
@@ -215,12 +221,17 @@ class TreeDiffingTest {
     val context = lithoTestRule.createTestLithoView().componentTree.context
     val prevLayoutState =
         calculateLayoutStateWithDiffing(context, component1, exactly(350), exactly(200), null)
-    val layoutState =
-        calculateLayoutStateWithDiffing(
-            context, component2, exactly(350), exactly(200), prevLayoutState)
+    val layoutState = calculateLayoutStateWithDiffing(
+        context,
+        component2,
+        exactly(350),
+        exactly(200),
+        prevLayoutState,
+    )
     Assert.assertNotEquals(
         prevLayoutState.getMountableOutputCount().toLong(),
-        layoutState.getMountableOutputCount().toLong())
+        layoutState.getMountableOutputCount().toLong(),
+    )
     var i = 0
     val count = prevLayoutState.getMountableOutputCount()
     while (i < count) {
@@ -291,13 +302,15 @@ class TreeDiffingTest {
         .isEqualTo(
             (Whitebox.getInternalState<Any>(hostHolder, "scrapMountItemsArray")
                     as? SparseArrayCompat<MountItem?>)
-                ?.size())
+                ?.size(),
+        )
     hostHolder.unmount(0, mountItem)
     assertThat(2)
         .isEqualTo(
             (Whitebox.getInternalState<Any>(hostHolder, "mountItems")
                     as? SparseArrayCompat<MountItem?>)
-                ?.size())
+                ?.size(),
+        )
     assertThat(Whitebox.getInternalState<Any?>(hostHolder, "scrapMountItemsArray")).isNull()
   }
 
@@ -335,12 +348,16 @@ class TreeDiffingTest {
     val thirdState = testLithoView.componentTree.mainThreadLayoutState
     assertThat(thirdState?.getMountableOutputCount()).isEqualTo(4)
     assertThat(
-            MountSpecLithoRenderUnit.getUpdateState(
-                requireNotNull(thirdState?.getMountableOutputAt(2))))
+        MountSpecLithoRenderUnit.getUpdateState(
+            requireNotNull(thirdState?.getMountableOutputAt(2)),
+        ),
+    )
         .isEqualTo(MountSpecLithoRenderUnit.STATE_UPDATED)
     assertThat(
-            MountSpecLithoRenderUnit.getUpdateState(
-                requireNotNull(thirdState?.getMountableOutputAt(3))))
+        MountSpecLithoRenderUnit.getUpdateState(
+            requireNotNull(thirdState?.getMountableOutputAt(3)),
+        ),
+    )
         .isEqualTo(MountSpecLithoRenderUnit.STATE_UPDATED)
   }
 
@@ -354,28 +371,37 @@ class TreeDiffingTest {
         lithoTestRule.render(widthSpec = exactly(10), heightSpec = exactly(10)) { component1 }
     val state = testLithoView.componentTree.mainThreadLayoutState
     assertThat(
-            MountSpecLithoRenderUnit.getUpdateState(requireNotNull(state?.getMountableOutputAt(2))))
+        MountSpecLithoRenderUnit.getUpdateState(requireNotNull(state?.getMountableOutputAt(2))),
+    )
         .isEqualTo(MountSpecLithoRenderUnit.STATE_UNKNOWN)
     testLithoView.setRoot(component2)
     val secondState = testLithoView.componentTree.mainThreadLayoutState
     assertThat(
-            MountSpecLithoRenderUnit.getUpdateState(
-                requireNotNull(secondState?.getMountableOutputAt(2))))
+        MountSpecLithoRenderUnit.getUpdateState(
+            requireNotNull(secondState?.getMountableOutputAt(2)),
+        ),
+    )
         .isEqualTo(MountSpecLithoRenderUnit.STATE_UNKNOWN)
     assertThat(
-            MountSpecLithoRenderUnit.getUpdateState(
-                requireNotNull(secondState?.getMountableOutputAt(3))))
+        MountSpecLithoRenderUnit.getUpdateState(
+            requireNotNull(secondState?.getMountableOutputAt(3)),
+        ),
+    )
         .isEqualTo(MountSpecLithoRenderUnit.STATE_UPDATED)
     testLithoView.setRoot(component3)
     val thirdState = testLithoView.componentTree.mainThreadLayoutState
     assertThat(
-            MountSpecLithoRenderUnit.getUpdateState(
-                requireNotNull(thirdState?.getMountableOutputAt(2))))
+        MountSpecLithoRenderUnit.getUpdateState(
+            requireNotNull(thirdState?.getMountableOutputAt(2)),
+        ),
+    )
         .isEqualTo(MountSpecLithoRenderUnit.STATE_UNKNOWN)
     assertThat(
-            MountSpecLithoRenderUnit.getUpdateState(
-                requireNotNull(thirdState?.getMountableOutputAt(3))))
-        .isEqualTo(MountSpecLithoRenderUnit.STATE_UPDATED)
+        MountSpecLithoRenderUnit.getUpdateState(
+            requireNotNull(thirdState?.getMountableOutputAt(3)),
+        ),
+    )
+        .isEqualTo(MountSpecLithoRenderUnit.STATE_DIRTY)
   }
 
   @Test
@@ -392,27 +418,39 @@ class TreeDiffingTest {
     assertThat(MountSpecLithoRenderUnit.STATE_DIRTY)
         .isEqualTo(
             MountSpecLithoRenderUnit.getUpdateState(
-                requireNotNull(secondState?.getMountableOutputAt(0))))
+                requireNotNull(secondState?.getMountableOutputAt(0)),
+            ),
+        )
     assertThat(MountSpecLithoRenderUnit.STATE_UNKNOWN)
         .isEqualTo(
             MountSpecLithoRenderUnit.getUpdateState(
-                requireNotNull(secondState?.getMountableOutputAt(1))))
+                requireNotNull(secondState?.getMountableOutputAt(1)),
+            ),
+        )
     assertThat(MountSpecLithoRenderUnit.STATE_UPDATED)
         .isEqualTo(
             MountSpecLithoRenderUnit.getUpdateState(
-                requireNotNull(secondState?.getMountableOutputAt(2))))
+                requireNotNull(secondState?.getMountableOutputAt(2)),
+            ),
+        )
     assertThat(MountSpecLithoRenderUnit.STATE_UNKNOWN)
         .isEqualTo(
             MountSpecLithoRenderUnit.getUpdateState(
-                requireNotNull(secondState?.getMountableOutputAt(3))))
+                requireNotNull(secondState?.getMountableOutputAt(3)),
+            ),
+        )
     assertThat(MountSpecLithoRenderUnit.STATE_UNKNOWN)
         .isEqualTo(
             MountSpecLithoRenderUnit.getUpdateState(
-                requireNotNull(secondState?.getMountableOutputAt(4))))
+                requireNotNull(secondState?.getMountableOutputAt(4)),
+            ),
+        )
     assertThat(MountSpecLithoRenderUnit.STATE_UPDATED)
         .isEqualTo(
             MountSpecLithoRenderUnit.getUpdateState(
-                requireNotNull(secondState?.getMountableOutputAt(5))))
+                requireNotNull(secondState?.getMountableOutputAt(5)),
+            ),
+        )
   }
 
   @Test
@@ -426,7 +464,12 @@ class TreeDiffingTest {
     val secondComponent: TestComponent = TestDrawableComponent.create(c).color(Color.BLACK).build()
     val secondLayoutComponent: Component = TestSimpleContainerLayout2(secondComponent)
     calculateLayoutStateWithDiffing(
-        c, secondLayoutComponent, exactly(100), exactly(90), firstLayoutState)
+        c,
+        secondLayoutComponent,
+        exactly(100),
+        exactly(90),
+        firstLayoutState,
+    )
     assertThat(secondComponent.wasMeasureCalled()).isFalse
   }
 
@@ -441,7 +484,12 @@ class TreeDiffingTest {
     val secondComponent: TestComponent = TestDrawableComponent.create(c).color(Color.BLACK).build()
     val secondLayoutComponent: Component = TestSimpleContainerLayout(secondComponent, 0)
     calculateLayoutStateWithDiffing(
-        c, secondLayoutComponent, exactly(100), exactly(100), firstLayoutState)
+        c,
+        secondLayoutComponent,
+        exactly(100),
+        exactly(100),
+        firstLayoutState,
+    )
     assertThat(secondComponent.wasMeasureCalled()).isFalse
   }
 
@@ -452,9 +500,13 @@ class TreeDiffingTest {
     val context = lithoTestRule.createTestLithoView().componentTree.context
     val prevLayoutState =
         calculateLayoutStateWithDiffing(context, component1, exactly(350), exactly(200), null)
-    val layoutState =
-        calculateLayoutStateWithDiffing(
-            context, component2, exactly(350), exactly(200), prevLayoutState)
+    val layoutState = calculateLayoutStateWithDiffing(
+        context,
+        component2,
+        exactly(350),
+        exactly(200),
+        prevLayoutState,
+    )
 
     // The nested root measure() was called in the first layout calculation.
     val prevNestedRoot =
@@ -474,9 +526,13 @@ class TreeDiffingTest {
     val context = lithoTestRule.createTestLithoView().componentTree.context
     val prevLayoutState =
         calculateLayoutStateWithDiffing(context, component1, exactly(350), exactly(200), null)
-    val layoutState =
-        calculateLayoutStateWithDiffing(
-            context, component2, exactly(350), exactly(200), prevLayoutState)
+    val layoutState = calculateLayoutStateWithDiffing(
+        context,
+        component2,
+        exactly(350),
+        exactly(200),
+        prevLayoutState,
+    )
 
     // The nested root measure() was called in the first layout calculation.
     val prevMainTreeLeaf =
@@ -545,7 +601,8 @@ class TreeDiffingTest {
           .foregroundRes(R.drawable.btn_default)
           .child(
               TestDrawableComponent.create(c)
-                  .background(if (changeChildDrawable) RedDrawable else BlackDrawable))
+                  .background(if (changeChildDrawable) RedDrawable else BlackDrawable),
+          )
           .child(Column.create(c).child(TestDrawableComponent.create(c)))
           .build()
     }
@@ -572,7 +629,8 @@ class TreeDiffingTest {
               TestSizeDependentComponent.create(c)
                   .setDelegate(false)
                   .flexShrink(0f)
-                  .marginPx(YogaEdge.ALL, 11))
+                  .marginPx(YogaEdge.ALL, 11),
+          )
           .build()
     }
   }
@@ -594,7 +652,8 @@ class TreeDiffingTest {
               Column.create(c)
                   .wrapInView()
                   .child(TestDrawableComponent.create(c))
-                  .child(if (addChild) TestDrawableComponent.create(c) else null))
+                  .child(if (addChild) TestDrawableComponent.create(c) else null),
+          )
           .child(Column.create(c).wrapInView().child(TestDrawableComponent.create(c)))
           .build()
     }
@@ -611,7 +670,8 @@ class TreeDiffingTest {
             0,
             0,
             MountSpecLithoRenderUnit.STATE_UNKNOWN,
-            null)
+            null,
+        )
     return create(
         unit,
         Rect(),
@@ -619,17 +679,18 @@ class TreeDiffingTest {
         LithoLayoutData(
             0,
             0,
-            0,
-            0,
             null,
+            NO_Z_INDEX,
             null,
             if (component is SpecGeneratedComponent) {
               component.isMountSizeDependent
             } else {
               false
             },
-            null),
-        null)
+            null,
+        ),
+        null,
+    )
   }
 
   companion object {
@@ -653,11 +714,20 @@ class TreeDiffingTest {
         context: ComponentContext,
         component: Component,
         widthSpec: Int,
-        heightSpec: Int
+        heightSpec: Int,
     ): LayoutState {
       val result =
           ResolveTreeFuture.resolve(context, component, TreeState(), -1, -1, null, null, null)
-      return LayoutTreeFuture.layout(result, widthSpec, heightSpec, -1, -1, null, null, null, null)
+      return LayoutTreeFuture.layout(
+          result,
+          SizeConstraints.fromMeasureSpecs(widthSpec, heightSpec),
+          -1,
+          -1,
+          TreeState(result.treeState),
+          null,
+          null,
+          null,
+      )
     }
 
     private fun calculateLayoutStateWithDiffing(
@@ -665,33 +735,45 @@ class TreeDiffingTest {
         component: Component,
         widthSpec: Int,
         heightSpec: Int,
-        previousLayoutState: LayoutState?
+        previousLayoutState: LayoutState?,
     ): LayoutState {
       val result =
           ResolveTreeFuture.resolve(
-              context, component, TreeState(), -1, -1, previousLayoutState?.root, null, null)
+              context,
+              component,
+              TreeState(),
+              -1,
+              -1,
+              previousLayoutState?.resolveResult,
+              null,
+              null,
+          )
       return LayoutTreeFuture.layout(
           result,
-          widthSpec,
-          heightSpec,
+          SizeConstraints.fromMeasureSpecs(widthSpec, heightSpec),
           -1,
           -1,
+          TreeState(result.treeState),
           previousLayoutState,
           previousLayoutState?.diffTree,
           null,
-          null)
+      )
     }
 
     private fun assertOutputsState(layoutState: LayoutState?, @UpdateState state: Int) {
       assertThat(MountSpecLithoRenderUnit.STATE_DIRTY)
           .isEqualTo(
               MountSpecLithoRenderUnit.getUpdateState(
-                  requireNotNull(layoutState?.getMountableOutputAt(0))))
+                  requireNotNull(layoutState?.getMountableOutputAt(0)),
+              ),
+          )
       for (i in 1 until (layoutState?.getMountableOutputCount() ?: 0)) {
         assertThat(state)
             .isEqualTo(
                 MountSpecLithoRenderUnit.getUpdateState(
-                    requireNotNull(layoutState?.getMountableOutputAt(i))))
+                    requireNotNull(layoutState?.getMountableOutputAt(i)),
+                ),
+            )
       }
     }
 

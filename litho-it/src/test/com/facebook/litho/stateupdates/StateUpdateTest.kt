@@ -20,19 +20,20 @@ import android.content.Context
 import android.os.HandlerThread
 import android.os.Looper
 import androidx.test.core.app.ApplicationProvider
-import com.facebook.litho.Column
 import com.facebook.litho.Column.Companion.create
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentTree
 import com.facebook.litho.DeferredLithoLayoutResult
 import com.facebook.litho.ErrorEventHandler
+import com.facebook.litho.GlobalKey
 import com.facebook.litho.SizeSpec.EXACTLY
 import com.facebook.litho.SizeSpec.makeSizeSpec
 import com.facebook.litho.StateContainer
 import com.facebook.litho.StateHandler
 import com.facebook.litho.TreeState
 import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.layout.flexbox.Column
 import com.facebook.litho.state.ComponentState
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
 import com.facebook.litho.testing.LithoTestRule
@@ -56,7 +57,7 @@ class StateUpdateTest {
   private var widthSpec = 0
   private var heightSpec = 0
 
-  @Rule @JvmField val mLithoTestRule = LithoTestRule(resizeMode = LithoTestRuleResizeMode.MANUAL)
+  @Rule @JvmField val lithoTestRule = LithoTestRule(resizeMode = LithoTestRuleResizeMode.MANUAL)
 
   @Rule @JvmField val backgroundLayoutLooperRule = BackgroundLayoutLooperRule()
 
@@ -68,7 +69,7 @@ class StateUpdateTest {
   }
 
   private fun createTestLithoView(component: Component): TestLithoView {
-    return mLithoTestRule
+    return lithoTestRule
         .createTestLithoView()
         .setRoot(component)
         .setSizeSpecs(widthSpec, heightSpec)
@@ -78,22 +79,25 @@ class StateUpdateTest {
   }
 
   private fun getResolveState(componentTree: ComponentTree): StateHandler {
-    val treeState = Whitebox.getInternalState<TreeState>(componentTree, "mTreeState")
+    val treeState = componentTree.committedTreeState
     return Whitebox.getInternalState(treeState, "resolveState")
   }
 
   private fun getLayoutState(componentTree: ComponentTree): StateHandler {
-    val treeState = Whitebox.getInternalState<TreeState>(componentTree, "mTreeState")
+    val treeState = componentTree.committedTreeState
     return Whitebox.getInternalState(treeState, "layoutState")
   }
 
   private fun getTreeState(componentTree: ComponentTree): TreeState {
-    return Whitebox.getInternalState(componentTree, "mTreeState")
+    return checkNotNull(componentTree.committedTreeState)
   }
+
+  private fun getActualGlobalKey(context: ComponentContext): GlobalKey =
+      Whitebox.getInternalState(context, "_globalKey")
 
   private fun <T : StateContainer> getLayoutStateHandleStateContainer(
       componentTree: ComponentTree,
-      globalKey: String
+      globalKey: GlobalKey,
   ): T {
     val treeState = getTreeState(componentTree)
     val state =
@@ -108,7 +112,7 @@ class StateUpdateTest {
 
   private fun <T : StateContainer> getStateHandleStateContainer(
       componentTree: ComponentTree,
-      globalKey: String,
+      globalKey: GlobalKey,
   ): T {
     val treeState = getTreeState(componentTree)
     val state =
@@ -121,22 +125,27 @@ class StateUpdateTest {
     return state.value
   }
 
-  private fun <T> getInitialStateContainer(componentTree: ComponentTree, globalKey: String): T? {
+  private fun <T> getInitialStateContainer(componentTree: ComponentTree, globalKey: GlobalKey): T? {
     val stateHandler = getResolveState(componentTree)
     return stateHandler.initialState.states[globalKey] as T?
   }
 
   private fun <T> getLayoutInitialStateContainer(
       componentTree: ComponentTree,
-      globalKey: String
+      globalKey: GlobalKey,
   ): T? {
     val stateHandler = getLayoutState(componentTree)
     return stateHandler.initialState.states[globalKey] as T?
   }
 
-  private fun getInitialStates(componentTree: ComponentTree): Map<String, StateContainer> {
+  /**
+   * Whether the resolve-side initial-state cache has been fully drained. Asks [InitialState]
+   * directly rather than inspecting its backing map, so the assertion cannot go vacuous as hook
+   * seeds move out of that map.
+   */
+  private fun isInitialStateCacheEmpty(componentTree: ComponentTree): Boolean {
     val stateHandler = getResolveState(componentTree)
-    return stateHandler.initialState.states.mapValues { it.value.value }
+    return stateHandler.initialState.isCacheEmpty()
   }
 
   @Test
@@ -147,7 +156,7 @@ class StateUpdateTest {
     val componentTree = testLithoView.componentTree
     val context = testLithoView.currentRootNode!!.node.getChildAt(0).getComponentContextAt(1)
     assertThatStateContainerIsInStateHandler(componentTree, context, 0)
-    Assertions.assertThat(getInitialStates(componentTree).isEmpty()).isTrue
+    Assertions.assertThat(isInitialStateCacheEmpty(componentTree)).isTrue
   }
 
   @Test
@@ -192,7 +201,7 @@ class StateUpdateTest {
         testLithoView.currentRootNode!!.node.getChildAt(0).getComponentContextAt(1)
     ComponentWithCounterStateLayout.incrementCountSync(componentContext)
     assertThatStateContainerIsInStateHandler(componentTree, componentContext, 1)
-    Assertions.assertThat(getInitialStates(componentTree).isEmpty()).isTrue
+    Assertions.assertThat(isInitialStateCacheEmpty(componentTree)).isTrue
   }
 
   @Test
@@ -208,7 +217,9 @@ class StateUpdateTest {
                           override fun onTestEventCalled(actualCount: Int, expectedValue: Int) {
                             Assertions.assertThat(actualCount).isEqualTo(expectedValue)
                           }
-                        }))
+                        },
+                    ),
+            )
             .build()
     val testLithoView = createTestLithoView(component)
 
@@ -246,7 +257,7 @@ class StateUpdateTest {
             .getComponentContextAt(1)
     ComponentWithCounterStateLayout.incrementCountSync(componentContext)
     assertThatStateContainerIsInLayoutStateHandler(componentTree, componentContext, 1)
-    Assertions.assertThat(getInitialStates(componentTree).isEmpty()).isTrue
+    Assertions.assertThat(isInitialStateCacheEmpty(componentTree)).isTrue
   }
 
   @Test
@@ -265,7 +276,7 @@ class StateUpdateTest {
             .getComponentContextAt(1)
     ComponentWithCounterStateLayout.incrementCountSync(componentContext)
     assertThatStateContainerIsInLayoutStateHandler(componentTree, componentContext, 1)
-    Assertions.assertThat(getInitialStates(componentTree).isEmpty()).isTrue
+    Assertions.assertThat(isInitialStateCacheEmpty(componentTree)).isTrue
   }
 
   @Test
@@ -425,9 +436,13 @@ class StateUpdateTest {
     val component: Component =
         create(context).child(ComponentWithCounterStateNestedParent.create(context)).build()
     val looper = looper
-    var componentTree = ComponentTree.create(context, component).layoutThreadLooper(looper).build()
+    var componentTree =
+        ComponentTree.create(context, component)
+            .layoutThreadLooper(looper)
+            .enableChildClipping(true)
+            .build()
     val testLithoView =
-        mLithoTestRule
+        lithoTestRule
             .createTestLithoView(null, componentTree)
             .setSizeSpecs(widthSpec, heightSpec)
             .attachToWindow()
@@ -446,8 +461,12 @@ class StateUpdateTest {
     // correctly when we acquire state handler and again process the pending state update.
     looper.quit()
     val treeState = componentTree.acquireTreeState()
-    componentTree = ComponentTree.create(context, component).treeState(treeState).build()
-    mLithoTestRule
+    componentTree =
+        ComponentTree.create(context, component)
+            .treeState(treeState)
+            .enableChildClipping(true)
+            .build()
+    lithoTestRule
         .createTestLithoView(null, componentTree)
         .setSizeSpecs(widthSpec, heightSpec)
         .attachToWindow()
@@ -455,7 +474,7 @@ class StateUpdateTest {
         .layout()
     backgroundLayoutLooperRule.runToEndOfTasksSync()
     assertThatStateContainerIsInLayoutStateHandler(componentTree, componentContext, 1)
-    Assertions.assertThat(getInitialStates(componentTree).isEmpty()).isTrue
+    Assertions.assertThat(isInitialStateCacheEmpty(componentTree)).isTrue
   }
 
   @Test
@@ -476,15 +495,17 @@ class StateUpdateTest {
         ComponentTree.create(context)
             .componentsConfiguration(
                 context.lithoConfiguration.componentsConfig.copy(
-                    errorEventHandler = errorEventHandler))
+                    errorEventHandler = errorEventHandler,
+                ),
+            )
             .build()
 
-    mLithoTestRule.render(componentTree = componentTree) {
+    lithoTestRule.render(componentTree = componentTree) {
       Column { child(ComponentWithStateCrashOnUpdateState.create(context).build()) }
     }
 
     val testLithoView =
-        mLithoTestRule
+        lithoTestRule
             .createTestLithoView(null, componentTree)
             .setSizeSpecs(widthSpec, heightSpec)
             .attachToWindow()
@@ -521,7 +542,8 @@ class StateUpdateTest {
             .child(
                 ComponentWithMeasureCall.create(context)
                     .component(ComponentWithCounterStateLayout.create(context).caller(stateUpdater))
-                    .shouldCacheResult(shouldCacheResult))
+                    .shouldCacheResult(shouldCacheResult),
+            )
             .build()
     val testLithoView = createTestLithoView(component)
     stateUpdater.increment()
@@ -554,8 +576,10 @@ class StateUpdateTest {
             .child(
                 ComponentWithMeasureCall.create(context)
                     .component(
-                        ComponentWithCounterStateNestedParent.create(context).caller(stateUpdater))
-                    .shouldCacheResult(shouldCacheResult))
+                        ComponentWithCounterStateNestedParent.create(context).caller(stateUpdater),
+                    )
+                    .shouldCacheResult(shouldCacheResult),
+            )
             .build()
     val testLithoView = createTestLithoView(component)
     stateUpdater.increment()
@@ -593,8 +617,11 @@ class StateUpdateTest {
                         create(context)
                             .child(
                                 ComponentWithCounterStateNestedGrandParent.create(context)
-                                    .caller(stateUpdater)))
-                    .shouldCacheResult(shouldCacheResult))
+                                    .caller(stateUpdater),
+                            ),
+                    )
+                    .shouldCacheResult(shouldCacheResult),
+            )
             .build()
     val testLithoView = createTestLithoView(component)
     stateUpdater.increment()
@@ -624,7 +651,7 @@ class StateUpdateTest {
    * @param shouldCacheResult whether to cache the result measured or not
    */
   private fun testStateUpdateComponentMeasureNestedTreeWithNestedChildWithoutColumn(
-      shouldCacheResult: Boolean
+      shouldCacheResult: Boolean,
   ) {
     val stateUpdater = ComponentWithCounterStateLayoutSpec.Caller()
     val component: Component =
@@ -633,8 +660,10 @@ class StateUpdateTest {
                 ComponentWithMeasureCall.create(context)
                     .component(
                         ComponentWithCounterStateNestedGrandParent.create(context)
-                            .caller(stateUpdater))
-                    .shouldCacheResult(shouldCacheResult))
+                            .caller(stateUpdater),
+                    )
+                    .shouldCacheResult(shouldCacheResult),
+            )
             .build()
     val testLithoView = createTestLithoView(component)
     stateUpdater.increment()
@@ -650,7 +679,8 @@ class StateUpdateTest {
             .child(
                 ComponentWithConditionalChildLayout.create(context)
                     .caller(stateUpdater)
-                    .childCaller(childStateUpdater))
+                    .childCaller(childStateUpdater),
+            )
             .build()
     val testLithoView = createTestLithoView(component)
     childStateUpdater.increment()
@@ -664,16 +694,20 @@ class StateUpdateTest {
   private fun assertThatNestedGrandParentStateContainerIsInLayoutStateHandler(
       componentTree: ComponentTree,
       context: ComponentContext,
-      expectedStateValue: Int
+      expectedStateValue: Int,
   ) {
-    val stateHandlerStateContainerChild1 =
-        getLayoutStateHandleStateContainer<
-            ComponentWithStateAndChildWithStateNestedGrandParent.ComponentWithStateAndChildWithStateNestedGrandParentStateContainer>(
-            componentTree, context.globalKey)
-    val initialStateStateContainerChild1 =
-        getLayoutInitialStateContainer<
-            ComponentWithStateAndChildWithStateNestedGrandParent.ComponentWithStateAndChildWithStateNestedGrandParentStateContainer>(
-            componentTree, context.globalKey)
+    val stateHandlerStateContainerChild1 = getLayoutStateHandleStateContainer<
+        ComponentWithStateAndChildWithStateNestedGrandParent.ComponentWithStateAndChildWithStateNestedGrandParentStateContainer,
+    >(
+        componentTree,
+        getActualGlobalKey(context),
+    )
+    val initialStateStateContainerChild1 = getLayoutInitialStateContainer<
+        ComponentWithStateAndChildWithStateNestedGrandParent.ComponentWithStateAndChildWithStateNestedGrandParentStateContainer,
+    >(
+        componentTree,
+        getActualGlobalKey(context),
+    )
     Assertions.assertThat(stateHandlerStateContainerChild1).isNotNull
     Assertions.assertThat(stateHandlerStateContainerChild1.count).isEqualTo(expectedStateValue)
     Assertions.assertThat(initialStateStateContainerChild1).isNull()
@@ -682,16 +716,20 @@ class StateUpdateTest {
   private fun assertThatNestedGrandParentStateContainerIsInStateHandler(
       componentTree: ComponentTree,
       context: ComponentContext,
-      expectedStateValue: Int
+      expectedStateValue: Int,
   ) {
-    val stateHandlerStateContainerChild1 =
-        getStateHandleStateContainer<
-            ComponentWithStateAndChildWithStateNestedGrandParent.ComponentWithStateAndChildWithStateNestedGrandParentStateContainer>(
-            componentTree, context.globalKey)
-    val initialStateStateContainerChild1 =
-        getInitialStateContainer<
-            ComponentWithStateAndChildWithStateNestedGrandParent.ComponentWithStateAndChildWithStateNestedGrandParentStateContainer>(
-            componentTree, context.globalKey)
+    val stateHandlerStateContainerChild1 = getStateHandleStateContainer<
+        ComponentWithStateAndChildWithStateNestedGrandParent.ComponentWithStateAndChildWithStateNestedGrandParentStateContainer,
+    >(
+        componentTree,
+        getActualGlobalKey(context),
+    )
+    val initialStateStateContainerChild1 = getInitialStateContainer<
+        ComponentWithStateAndChildWithStateNestedGrandParent.ComponentWithStateAndChildWithStateNestedGrandParentStateContainer,
+    >(
+        componentTree,
+        getActualGlobalKey(context),
+    )
     Assertions.assertThat(stateHandlerStateContainerChild1).isNotNull
     Assertions.assertThat(stateHandlerStateContainerChild1.count).isEqualTo(expectedStateValue)
     Assertions.assertThat(initialStateStateContainerChild1).isNull()
@@ -700,16 +738,20 @@ class StateUpdateTest {
   private fun assertThatNestedParentStateContainerIsInLayoutStateHandler(
       componentTree: ComponentTree,
       context: ComponentContext,
-      expectedStateValue: Int
+      expectedStateValue: Int,
   ) {
-    val stateHandlerStateContainerChild1 =
-        getLayoutStateHandleStateContainer<
-            ComponentWithStateAndChildWithStateNestedParent.ComponentWithStateAndChildWithStateNestedParentStateContainer>(
-            componentTree, context.globalKey)
-    val initialStateStateContainerChild1 =
-        getLayoutInitialStateContainer<
-            ComponentWithStateAndChildWithStateNestedParent.ComponentWithStateAndChildWithStateNestedParentStateContainer>(
-            componentTree, context.globalKey)
+    val stateHandlerStateContainerChild1 = getLayoutStateHandleStateContainer<
+        ComponentWithStateAndChildWithStateNestedParent.ComponentWithStateAndChildWithStateNestedParentStateContainer,
+    >(
+        componentTree,
+        getActualGlobalKey(context),
+    )
+    val initialStateStateContainerChild1 = getLayoutInitialStateContainer<
+        ComponentWithStateAndChildWithStateNestedParent.ComponentWithStateAndChildWithStateNestedParentStateContainer,
+    >(
+        componentTree,
+        getActualGlobalKey(context),
+    )
     Assertions.assertThat(stateHandlerStateContainerChild1).isNotNull
     Assertions.assertThat(stateHandlerStateContainerChild1.count).isEqualTo(expectedStateValue)
     Assertions.assertThat(initialStateStateContainerChild1).isNull()
@@ -718,16 +760,20 @@ class StateUpdateTest {
   private fun assertThatNestedParentStateContainerIsInStateHandler(
       componentTree: ComponentTree,
       context: ComponentContext,
-      expectedStateValue: Int
+      expectedStateValue: Int,
   ) {
-    val stateHandlerStateContainerChild1 =
-        getStateHandleStateContainer<
-            ComponentWithStateAndChildWithStateNestedParent.ComponentWithStateAndChildWithStateNestedParentStateContainer>(
-            componentTree, context.globalKey)
-    val initialStateStateContainerChild1 =
-        getInitialStateContainer<
-            ComponentWithStateAndChildWithStateNestedParent.ComponentWithStateAndChildWithStateNestedParentStateContainer>(
-            componentTree, context.globalKey)
+    val stateHandlerStateContainerChild1 = getStateHandleStateContainer<
+        ComponentWithStateAndChildWithStateNestedParent.ComponentWithStateAndChildWithStateNestedParentStateContainer,
+    >(
+        componentTree,
+        getActualGlobalKey(context),
+    )
+    val initialStateStateContainerChild1 = getInitialStateContainer<
+        ComponentWithStateAndChildWithStateNestedParent.ComponentWithStateAndChildWithStateNestedParentStateContainer,
+    >(
+        componentTree,
+        getActualGlobalKey(context),
+    )
     Assertions.assertThat(stateHandlerStateContainerChild1).isNotNull
     Assertions.assertThat(stateHandlerStateContainerChild1.count).isEqualTo(expectedStateValue)
     Assertions.assertThat(initialStateStateContainerChild1).isNull()
@@ -736,16 +782,20 @@ class StateUpdateTest {
   private fun assertThatParentStateContainerIsInStateHandler(
       componentTree: ComponentTree,
       context: ComponentContext,
-      expectedStateValue: Int
+      expectedStateValue: Int,
   ) {
-    val stateHandlerStateContainerChild1 =
-        getStateHandleStateContainer<
-            ComponentWithStateAndChildWithState.ComponentWithStateAndChildWithStateStateContainer>(
-            componentTree, context.globalKey)
-    val initialStateStateContainerChild1 =
-        getInitialStateContainer<
-            ComponentWithStateAndChildWithState.ComponentWithStateAndChildWithStateStateContainer>(
-            componentTree, context.globalKey)
+    val stateHandlerStateContainerChild1 = getStateHandleStateContainer<
+        ComponentWithStateAndChildWithState.ComponentWithStateAndChildWithStateStateContainer,
+    >(
+        componentTree,
+        getActualGlobalKey(context),
+    )
+    val initialStateStateContainerChild1 = getInitialStateContainer<
+        ComponentWithStateAndChildWithState.ComponentWithStateAndChildWithStateStateContainer,
+    >(
+        componentTree,
+        getActualGlobalKey(context),
+    )
     Assertions.assertThat(stateHandlerStateContainerChild1).isNotNull
     Assertions.assertThat(stateHandlerStateContainerChild1.count).isEqualTo(expectedStateValue)
     Assertions.assertThat(initialStateStateContainerChild1).isNull()
@@ -754,16 +804,20 @@ class StateUpdateTest {
   private fun assertThatStateContainerIsInLayoutStateHandler(
       componentTree: ComponentTree,
       context: ComponentContext,
-      expectedStateValue: Int
+      expectedStateValue: Int,
   ) {
-    val stateHandlerStateContainerChild1 =
-        getLayoutStateHandleStateContainer<
-            ComponentWithCounterStateLayout.ComponentWithCounterStateLayoutStateContainer>(
-            componentTree, context.globalKey)
-    val initialStateStateContainerChild1 =
-        getLayoutInitialStateContainer<
-            ComponentWithCounterStateLayout.ComponentWithCounterStateLayoutStateContainer>(
-            componentTree, context.globalKey)
+    val stateHandlerStateContainerChild1 = getLayoutStateHandleStateContainer<
+        ComponentWithCounterStateLayout.ComponentWithCounterStateLayoutStateContainer,
+    >(
+        componentTree,
+        getActualGlobalKey(context),
+    )
+    val initialStateStateContainerChild1 = getLayoutInitialStateContainer<
+        ComponentWithCounterStateLayout.ComponentWithCounterStateLayoutStateContainer,
+    >(
+        componentTree,
+        getActualGlobalKey(context),
+    )
     Assertions.assertThat(stateHandlerStateContainerChild1).isNotNull
     Assertions.assertThat(stateHandlerStateContainerChild1.count).isEqualTo(expectedStateValue)
     Assertions.assertThat(initialStateStateContainerChild1).isNull()
@@ -772,23 +826,27 @@ class StateUpdateTest {
   private fun assertThatStateContainerIsInStateHandler(
       componentTree: ComponentTree,
       context: ComponentContext,
-      expectedStateValue: Int
+      expectedStateValue: Int,
   ) {
-    val stateHandlerStateContainerChild1 =
-        getStateHandleStateContainer<
-            ComponentWithCounterStateLayout.ComponentWithCounterStateLayoutStateContainer>(
-            componentTree, context.globalKey)
-    val initialStateStateContainerChild1 =
-        getInitialStateContainer<
-            ComponentWithCounterStateLayout.ComponentWithCounterStateLayoutStateContainer>(
-            componentTree, context.globalKey)
+    val stateHandlerStateContainerChild1 = getStateHandleStateContainer<
+        ComponentWithCounterStateLayout.ComponentWithCounterStateLayoutStateContainer,
+    >(
+        componentTree,
+        getActualGlobalKey(context),
+    )
+    val initialStateStateContainerChild1 = getInitialStateContainer<
+        ComponentWithCounterStateLayout.ComponentWithCounterStateLayoutStateContainer,
+    >(
+        componentTree,
+        getActualGlobalKey(context),
+    )
     Assertions.assertThat(stateHandlerStateContainerChild1).isNotNull
     Assertions.assertThat(stateHandlerStateContainerChild1.count).isEqualTo(expectedStateValue)
     Assertions.assertThat(initialStateStateContainerChild1).isNull()
   }
 
   private val looper: Looper
-    private get() {
+    get() {
       val defaultThread =
           HandlerThread("testThread", ComponentsConfiguration.DEFAULT_BACKGROUND_THREAD_PRIORITY)
       defaultThread.start()

@@ -50,7 +50,8 @@ class MountStateBoundsTest {
             object : InlineLayoutSpec() {
               override fun onCreateLayout(c: ComponentContext): Component =
                   TestDrawableComponent.create(c).widthPx(10).heightPx(10).build()
-            })
+            },
+        )
     assertThat(lithoView.drawables[0].bounds).isEqualTo(Rect(0, 0, 10, 10))
   }
 
@@ -62,7 +63,8 @@ class MountStateBoundsTest {
             object : InlineLayoutSpec() {
               override fun onCreateLayout(c: ComponentContext): Component =
                   TestViewComponent.create(c).widthPx(10).heightPx(10).build()
-            })
+            },
+        )
     val mountedView = lithoView.getChildAt(0)
     assertThat(Rect(mountedView.left, mountedView.top, mountedView.right, mountedView.bottom))
         .isEqualTo(Rect(0, 0, 10, 10))
@@ -81,9 +83,11 @@ class MountStateBoundsTest {
                               .widthPx(20)
                               .heightPx(20)
                               .wrapInView()
-                              .child(TestDrawableComponent.create(c).widthPx(10).heightPx(10)))
+                              .child(TestDrawableComponent.create(c).widthPx(10).heightPx(10)),
+                      )
                       .build()
-            })
+            },
+        )
     val host = lithoView.getChildAt(0) as ComponentHost
     assertThat(host.drawables[0].bounds).isEqualTo(Rect(0, 0, 10, 10))
     assertThat(Rect(host.left, host.top, host.right, host.bottom)).isEqualTo(Rect(0, 0, 20, 20))
@@ -114,11 +118,15 @@ class MountStateBoundsTest {
                                           TestDrawableComponent.create(c)
                                               .widthPx(20)
                                               .heightPx(20)
-                                              .marginPx(YogaEdge.ALL, 20))))
+                                              .marginPx(YogaEdge.ALL, 20),
+                                      ),
+                              ),
+                      )
                       .build()
             },
             200,
-            200)
+            200,
+        )
     val host = lithoView.getChildAt(0) as ComponentHost
     val nestedHost = host.getChildAt(0) as ComponentHost
     assertThat(Rect(host.left, host.top, host.right, host.bottom))

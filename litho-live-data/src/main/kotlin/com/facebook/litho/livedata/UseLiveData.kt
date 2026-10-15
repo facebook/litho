@@ -19,7 +19,6 @@ package com.facebook.litho.livedata
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
-import com.facebook.litho.AOSPLithoVisibilityEventsController
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.ComponentTree
 import com.facebook.litho.LithoView
@@ -33,9 +32,9 @@ import com.facebook.litho.useState
 /**
  * Uses the current value of a given [LiveData] in a Litho Kotlin component.
  *
- * The live data will be observed following the [AOSPLithoVisibilityEventsController] lifecycle
- * definition, and it's usage requires the [LithoView] or [ComponentTree] to be using the
- * [AOSPLithoVisibilityEventsController]
+ * The live data will be observed following the [LifecycleOwnerTreeProp] lifecycle definition, and
+ * it's usage requires the [LithoView] or [ComponentTree] to be using the setLifecycleOwnerTreeProp
+ * or withLifecycleOwnerTreeProp
  */
 @Hook
 fun <T> ComponentScope.useLiveData(liveData: LiveData<T>): T? {
@@ -45,9 +44,9 @@ fun <T> ComponentScope.useLiveData(liveData: LiveData<T>): T? {
 /**
  * Uses the current value of a given [LiveData] in a Litho Kotlin component.
  *
- * The live data will be observed following the [AOSPLithoVisibilityEventsController] lifecycle
- * definition, and it's usage requires the [LithoView] or [ComponentTree] to be using the
- * [AOSPLithoVisibilityEventsController].
+ * The live data will be observed following the [LifecycleOwnerTreeProp] lifecycle definition, and
+ * it's usage requires the [LithoView] or [ComponentTree] to be using the setLifecycleOwnerTreeProp
+ * or withLifecycleOwnerTreeProp
  *
  * This observation will also be canceled whenever [deps] change.
  */
@@ -55,12 +54,13 @@ fun <T> ComponentScope.useLiveData(liveData: LiveData<T>): T? {
 fun <T> ComponentScope.useLiveData(
     liveData: LiveData<T>,
     vararg deps: Any?,
-    initialValue: () -> T?
+    initialValue: () -> T?,
 ): T? {
   val lifecycleOwner: LifecycleOwner =
       LifecycleOwnerTreeProp.value
           ?: error(
-              "There is no lifecycle owner. Make you created your LithoView with an AOSPLithoVisibilityEventsController.")
+              "There is no lifecycle owner. Make sure you created your LithoView or ComponentTree with setLifecycleOwnerTreeProp or withLifecycleOwnerTreeProp.",
+          )
 
   val state: State<T?> = useState { initialValue() }
 

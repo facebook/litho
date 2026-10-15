@@ -38,6 +38,42 @@ object LithoStats {
   private val _resolveCancelledCount = AtomicLong(0)
   private val _layoutCancelledCount = AtomicLong(0)
 
+  /** Subtree caching counters (Phase 2). */
+  @JvmField val subtreeCacheHitCount: AtomicLong = AtomicLong(0)
+  /**
+   * Number of cached subtrees rejected by the splice gate ([directChildSizesMatch]). Counts only
+   * true rejections — nodes that were recorded as subtree roots in the previous pass but whose
+   * direct-child sizes changed in this pass (typically a `flex-grow` cascade). Nodes that were
+   * never recorded as subtree roots (e.g. below `MIN_SUBTREE_SCOPES`) are NOT counted here, since
+   * they were never eligible to splice in the first place.
+   */
+  @JvmField val subtreeCacheGateRejectCount: AtomicLong = AtomicLong(0)
+  @JvmField val subtreeCacheOutputsSplicedCount: AtomicLong = AtomicLong(0)
+  @JvmField val subtreeCacheOutputsTraversedCount: AtomicLong = AtomicLong(0)
+  /**
+   * Subset of [subtreeCacheGateRejectCount]: counts rejections (recording-time + splice-time) where
+   * the subtree's recording window walked through a [DeferredLithoLayoutResult] descendant. Used to
+   * quantify the cache-skip blast radius on `RenderWithConstraints`-rooted screens — every ancestor
+   * subtree above the deferred loses caching, so this counter is the canonical signal for whether
+   * the conservative gate is dominating cache-eligible records on a given workload.
+   */
+  @JvmField val subtreeCacheDeferredSkippedCount: AtomicLong = AtomicLong(0)
+
+  /** Runs of a `Layout`'s layout function. */
+  @JvmField val customLayoutFunctionRunCount: AtomicLong = AtomicLong(0)
+
+  /** Layouts of a `Layout`'s children, one per measurement. */
+  @JvmField val customLayoutChildLayoutCount: AtomicLong = AtomicLong(0)
+
+  /** Of [customLayoutChildLayoutCount], the `Layout`s laid out directly, without a Yoga root. */
+  @JvmField val customLayoutNestedContainerCount: AtomicLong = AtomicLong(0)
+
+  /** Of [customLayoutChildLayoutCount], the leaves laid out directly, without a Yoga pass. */
+  @JvmField val customLayoutLeafCount: AtomicLong = AtomicLong(0)
+
+  /** Measurements of a `Layout`'s child answered from an earlier one in the same pass. */
+  @JvmField val customLayoutAnswerReusedCount: AtomicLong = AtomicLong(0)
+
   @get:JvmStatic
   val componentAppliedStateUpdateCount: Long
     /**
@@ -190,7 +226,7 @@ object LithoStats {
   fun incrementComponentCalculateLayoutCount(): Long = _componentCalculateLayoutCount.addAndGet(1)
 
   /**
-   * Increment the count of UI Thread exectued layout calculations in Litho components (by one).
+   * Increment the count of UI Thread executed layout calculations in Litho components (by one).
    *
    * @return The new total number of UI Thread executed layout calculations recorded.
    */
@@ -218,7 +254,7 @@ object LithoStats {
   @JvmStatic fun incrementCancelledResolve(): Long = _resolveCancelledCount.addAndGet(1)
 
   /**
-   * @return increment and get the global count of all do resumes operations that have happened in
+   * @return increment and get the global count of all do resume operations that have happened in
    *   the process.
    */
   @JvmStatic fun incrementResumeCount(): Long = _resumeCount.addAndGet(1)
@@ -302,5 +338,15 @@ object LithoStats {
     _sectionTriggeredAsyncStateUpdateCount.set(0)
     _sectionCalculateNewChangesetCount.set(0)
     _sectionCalculateNewChangesetOnUICount.set(0)
+    subtreeCacheHitCount.set(0)
+    subtreeCacheGateRejectCount.set(0)
+    subtreeCacheOutputsSplicedCount.set(0)
+    subtreeCacheOutputsTraversedCount.set(0)
+    subtreeCacheDeferredSkippedCount.set(0)
+    customLayoutFunctionRunCount.set(0)
+    customLayoutChildLayoutCount.set(0)
+    customLayoutAnswerReusedCount.set(0)
+    customLayoutLeafCount.set(0)
+    customLayoutNestedContainerCount.set(0)
   }
 }

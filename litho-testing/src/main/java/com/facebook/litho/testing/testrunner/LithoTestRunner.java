@@ -21,6 +21,7 @@ import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.rendercore.MountContentPools;
 import com.google.common.base.Preconditions;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -43,6 +44,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.TestLifecycle;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
+import org.robolectric.internal.bytecode.InstrumentationConfiguration;
 import org.robolectric.internal.bytecode.Sandbox;
 import org.robolectric.util.ReflectionHelpers;
 
@@ -77,16 +79,36 @@ public class LithoTestRunner extends RobolectricTestRunner {
    */
   private List<? extends Class<? extends LithoTestRunConfiguration>> getGlobalConfigs() {
     return Arrays.asList(
-        EventHandlerRedesignTestConfig.class,
         IncrementalMountConfiguration.class,
-        StateReadTrackingConfiguration.class,
-        CachedValueFromStateConfiguration.class);
+        CachedValueFromStateConfiguration.class,
+        MemoryEfficientGlobalKeysConfiguration.class);
   }
 
   @Override
   protected Config buildGlobalConfig() {
     // NULLSAFE_FIXME[Not Vetted Third-Party]
     return Config.Builder.defaults().setSdk(Build.VERSION_CODES.TIRAMISU).build();
+  }
+
+  /**
+   * Exclude packages that load native libraries from Robolectric sandbox instrumentation.
+   *
+   * <p>Native libraries are pinned to the classloader that first loads them. When LithoTestRunner
+   * multiplies tests across configurations, Robolectric may create different sandbox classloaders.
+   * Without this exclusion, the second sandbox fails with "UnsatisfiedLinkError: Native Library
+   * libyoga.so already loaded in another classloader".
+   *
+   * <p>By excluding these packages, the classes are loaded by the parent (app) classloader instead,
+   * which is shared across all sandboxes. This matches the pattern used by WithTestDefaultsRunner.
+   */
+  @Override
+  protected InstrumentationConfiguration createClassLoaderConfig(FrameworkMethod method) {
+    InstrumentationConfiguration.Builder builder =
+        new InstrumentationConfiguration.Builder(super.createClassLoaderConfig(method));
+    builder.doNotAcquirePackage("com.facebook.yoga.");
+    builder.doNotAcquirePackage("com.facebook.jni.");
+    builder.doNotAcquirePackage("com.facebook.soloader.nativeloader.");
+    return builder.build();
   }
 
   @Override
@@ -286,14 +308,14 @@ public class LithoTestRunner extends RobolectricTestRunner {
     }
 
     @Override
-    public boolean equals(Object o) {
-      if (this == o) {
+    public boolean equals(Object other) {
+      if (this == other) {
         return true;
       }
-      if (o == null || getClass() != o.getClass() || !super.equals(o)) {
+      if (other == null || getClass() != other.getClass() || !super.equals(other)) {
         return false;
       }
-      LithoRobolectricFrameworkMethod that = (LithoRobolectricFrameworkMethod) o;
+      LithoRobolectricFrameworkMethod that = (LithoRobolectricFrameworkMethod) other;
       return Objects.equals(configurationClass, that.configurationClass)
           && Objects.equals(localConfigurationClass, that.localConfigurationClass);
     }
@@ -311,6 +333,16 @@ public class LithoTestRunner extends RobolectricTestRunner {
     public LithoTestLifecycle() {
       ComponentsSystrace.provide(NoOpComponentsSystrace.sInstance);
       mSavedComponentsConfiguration = recordComponentsConfiguration();
+    }
+
+    @Override
+    public void beforeTest(Method method) {
+      super.beforeTest(method);
+      // MountContentPools is process-global, so a test that mounts content without LithoTestRule
+      // leaves both pooled content and any installed Factory behind. Reset here so a test is
+      // isolated from whatever ran before it, rather than relying on the polluter to clean up.
+      MountContentPools.setMountContentPoolFactory(null);
+      MountContentPools.clear();
     }
 
     @Override

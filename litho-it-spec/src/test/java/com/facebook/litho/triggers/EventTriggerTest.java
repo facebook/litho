@@ -16,7 +16,7 @@
 
 package com.facebook.litho.triggers;
 
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
@@ -38,7 +38,7 @@ public class EventTriggerTest {
     final ComponentContext mComponentContext = mLithoTestRule.getContext();
     final Handle handle = new Handle();
     final ComponentWithTrigger component =
-        ComponentWithTrigger.create(mComponentContext).handle(handle).uniqueString("A").build();
+        ComponentWithTrigger.create(mComponentContext).handle(handle).build();
 
     TestLithoView lithoTestView = mLithoTestRule.render(componentScope -> component);
     final ComponentTree tree = lithoTestView.getComponentTree();
@@ -51,10 +51,7 @@ public class EventTriggerTest {
     final ComponentContext mComponentContext = mLithoTestRule.getContext();
     final Handle handle = new Handle();
     final ComponentContainer component =
-        ComponentContainer.create(mComponentContext)
-            .componentWithTriggerHandle(handle)
-            .uniqueString("A")
-            .build();
+        ComponentContainer.create(mComponentContext).componentWithTriggerHandle(handle).build();
 
     TestLithoView lithoTestView = mLithoTestRule.render(componentScope -> component);
     final ComponentTree tree = lithoTestView.getComponentTree();

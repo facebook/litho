@@ -22,10 +22,13 @@ import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.Row;
+import com.facebook.litho.Style;
+import com.facebook.litho.StyleCompat;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
-import com.facebook.litho.widget.Image;
+import com.facebook.litho.flexbox.FlexboxStyleKt;
+import com.facebook.litho.widget.PrimitiveImage;
 import com.facebook.litho.widget.Text;
 import com.facebook.samples.litho.onboarding.model.Post;
 import com.facebook.yoga.YogaAlign;
@@ -43,18 +46,24 @@ public class PostStyledSpec {
                 .paddingDip(YogaEdge.ALL, 8)
                 .alignItems(YogaAlign.CENTER)
                 .child(
-                    Image.create(c)
-                        .drawableRes(post.getUser().getAvatarRes())
-                        .widthDip(36)
-                        .heightDip(36)
-                        .marginDip(YogaEdge.START, 4)
-                        .marginDip(YogaEdge.END, 8))
+                    PrimitiveImage.createDp(
+                        c.getResourceResolver().resolveDrawableRes(post.getUser().getAvatarRes()),
+                        ImageView.ScaleType.FIT_CENTER,
+                        true,
+                        36f,
+                        36f,
+                        StyleCompat.marginDip(YogaEdge.START, 4)
+                            .marginDip(YogaEdge.END, 8)
+                            .build()))
                 .child(Text.create(c).text(post.getUser().getUsername()).textStyle(Typeface.BOLD)))
         .child(
-            Image.create(c)
-                .drawableRes(post.getImageRes())
-                .scaleType(ImageView.ScaleType.CENTER_CROP)
-                .aspectRatio(1))
+            PrimitiveImage.create(
+                c.getResourceResolver().resolveDrawableRes(post.getImageRes()),
+                ImageView.ScaleType.CENTER_CROP,
+                true,
+                null,
+                null,
+                FlexboxStyleKt.aspectRatio(Style.Companion, 1f)))
         .build();
   }
   // end_example

@@ -27,7 +27,9 @@ import com.facebook.litho.Component;
 import com.facebook.litho.Diff;
 import com.facebook.litho.EventDispatcher;
 import com.facebook.litho.EventHandler;
+import com.facebook.litho.GlobalKey;
 import com.facebook.litho.HasEventDispatcher;
+import com.facebook.litho.HookGlobalKey;
 import com.facebook.litho.StateContainer;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.TreeProps;
@@ -102,7 +104,7 @@ final class FullGroupSection<T> extends Section {
   }
 
   @Override
-  public boolean isEquivalentTo(Section other) {
+  protected boolean isEquivalentProps(Section other) {
     if (this == other) {
       return true;
     }
@@ -437,12 +439,13 @@ final class FullGroupSection<T> extends Section {
   }
 
   private int getCached(SectionContext c) {
-    String globalKey = c.getGlobalKey();
+    GlobalKey globalKey = c.getGlobalKey();
     final CachedInputs inputs = new CachedInputs(globalKey, prop1);
-    Integer cached = (Integer) c.getCachedValue(globalKey, 0, inputs);
+    HookGlobalKey cacheKey = HookGlobalKey.createForResolveScope(globalKey, 0);
+    Integer cached = (Integer) c.getCachedValue(cacheKey, inputs);
     if (cached == null) {
       cached = FullGroupSectionSpec.onCalculateCached(prop1);
-      c.putCachedValue(globalKey, 0, inputs, cached);
+      c.putCachedValue(cacheKey, inputs, cached);
     }
     return cached;
   }
@@ -613,11 +616,11 @@ final class FullGroupSection<T> extends Section {
 
   @Generated
   private static class CachedInputs {
-    private final String globalKey;
+    private final GlobalKey globalKey;
 
     private final int prop1;
 
-    CachedInputs(String globalKey, int prop1) {
+    CachedInputs(GlobalKey globalKey, int prop1) {
       this.globalKey = globalKey;
       this.prop1 = prop1;
     }

@@ -35,7 +35,7 @@ import kotlin.math.max
 class ViewportManager(
     private var currentFirstVisiblePosition: Int,
     private var currentLastVisiblePosition: Int,
-    private val layoutInfo: LayoutInfo
+    private val layoutInfo: LayoutInfo,
 ) {
 
   private var currentFirstFullyVisiblePosition: Int = layoutInfo.findFirstFullyVisibleItemPosition()
@@ -64,12 +64,14 @@ class ViewportManager(
       return
     }
 
-    if (firstVisiblePosition == currentFirstVisiblePosition &&
-        lastVisiblePosition == currentLastVisiblePosition &&
-        firstFullyVisibleItemPosition == currentFirstFullyVisiblePosition &&
-        lastFullyVisibleItemPosition == currentLastFullyVisiblePosition &&
-        totalItemCount == this.totalItemCount &&
-        state != ViewportInfo.State.DATA_CHANGES) {
+    if (
+        firstVisiblePosition == currentFirstVisiblePosition &&
+            lastVisiblePosition == currentLastVisiblePosition &&
+            firstFullyVisibleItemPosition == currentFirstFullyVisiblePosition &&
+            lastFullyVisibleItemPosition == currentLastFullyVisiblePosition &&
+            totalItemCount == this.totalItemCount &&
+            state != ViewportInfo.State.DATA_CHANGES
+    ) {
       return
     }
 
@@ -96,7 +98,8 @@ class ViewportManager(
           lastVisiblePosition,
           firstFullyVisibleItemPosition,
           lastFullyVisibleItemPosition,
-          state)
+          state,
+      )
     }
   }
 

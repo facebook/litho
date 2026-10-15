@@ -23,15 +23,35 @@ import java.util.concurrent.Callable
 
 class ResolveFuture<State, RenderContext, StateUpdateType : StateUpdate<*>>(
     resolveFunc: ResolveFunc<State, RenderContext, StateUpdateType>,
-    resolveContext: ResolveContext<RenderContext, StateUpdateType>,
+    stateUpdateReceiver: StateUpdateReceiver<StateUpdateType>,
     committedTree: Node<RenderContext>?,
     committedState: State?,
     val stateUpdatesToApply: List<StateUpdateType>,
     val version: Int,
     val frameId: Int,
+    val renderTrace: RCRenderTrace? = null,
 ) :
     PriorityInheritingFuture<ResolveResult<Node<RenderContext>, State>>(
         "ResolveFuture",
         Callable {
-          resolveFunc.resolve(resolveContext, committedTree, committedState, stateUpdatesToApply)
-        })
+          renderTrace?.markRunning()
+          renderTrace?.addPoint(RenderTraceManager.POINT_RESOLVE_START)
+          try {
+            val result =
+                resolveFunc.resolve(
+                    stateUpdateReceiver,
+                    committedTree,
+                    committedState,
+                    stateUpdatesToApply,
+                )
+            renderTrace?.addPoint(RenderTraceManager.POINT_RESOLVE_END)
+            result
+          } catch (e: Throwable) {
+            // Emit _end before cancelling so the trace ends cleanly; addPoint
+            // becomes a no-op once the trace is terminal.
+            renderTrace?.addPoint(RenderTraceManager.POINT_RESOLVE_END)
+            renderTrace?.markCancelled(RCRenderTrace.CANCEL_REASON_RESOLVE_FAILED)
+            throw e
+          }
+        },
+    )

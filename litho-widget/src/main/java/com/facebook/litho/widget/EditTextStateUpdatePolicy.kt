@@ -44,5 +44,5 @@ enum class EditTextStateUpdatePolicy {
    * `updateInput()` is called every time text changes, thus every change leads to recalculating
    * layout
    */
-  UPDATE_ON_TEXT_CHANGE
+  UPDATE_ON_TEXT_CHANGE,
 }

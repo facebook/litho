@@ -26,7 +26,7 @@ internal class LithoResolveTreeFuture(
     private val treeState: TreeState,
     private val previousResult: ResolveResult?,
     private val version: Int,
-    useCancellableFutures: Boolean
+    useCancellableFutures: Boolean,
 ) : TreeFuture<ResolveResult>(treeId, useCancellableFutures) {
 
   override fun getVersion(): Int = version
@@ -40,13 +40,14 @@ internal class LithoResolveTreeFuture(
         treeState,
         version,
         treeId,
-        previousResult?.node,
+        previousResult,
         DESCRIPTION,
-        this)
+        this,
+    )
   }
 
   override fun resumeCalculation(partialResult: ResolveResult?): ResolveResult {
-    return ResolveTreeFuture.resume(requireNotNull(partialResult), null)
+    return ResolveTreeFuture.resume(requireNotNull(partialResult), treeId, null)
   }
 
   override fun isEquivalentTo(that: TreeFuture<*>?): Boolean {
@@ -75,6 +76,7 @@ internal class LithoLayoutTreeFuture(
     private val resolveResult: ResolveResult,
     private val sizeConstraints: SizeConstraints,
     private val previousLayoutState: LayoutState?,
+    private val treeState: TreeState,
 ) : TreeFuture<LayoutState>(treeId, false) {
 
   override fun getDescription(): String = DESCRIPTION
@@ -87,9 +89,11 @@ internal class LithoLayoutTreeFuture(
         sizeConstraints,
         version,
         treeId,
+        treeState,
         previousLayoutState,
         previousLayoutState?.diffTree,
-        this)
+        this,
+    )
   }
 
   override fun resumeCalculation(partialResult: LayoutState?): LayoutState =

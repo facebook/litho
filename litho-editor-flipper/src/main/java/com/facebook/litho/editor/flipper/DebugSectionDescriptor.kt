@@ -77,7 +77,6 @@ class DebugSectionDescriptor : NodeDescriptor<DebugSection>() {
 
   @Throws(Exception::class)
   override fun getData(node: DebugSection?): List<Named<FlipperObject>> {
-    // TODO T39526148 add changeset info
     val data: MutableList<Named<FlipperObject>> = ArrayList()
 
     node ?: return data
@@ -100,14 +99,11 @@ class DebugSectionDescriptor : NodeDescriptor<DebugSection>() {
       node: DebugSection?,
       path: Array<String>,
       kind: FlipperValueHint?,
-      value: FlipperDynamic
-  ) {
-    // TODO T39526148
-  }
+      value: FlipperDynamic,
+  ) {}
 
   @Throws(Exception::class)
   override fun getAttributes(node: DebugSection?): List<Named<String>> {
-    // TODO T39526148
     val attrs: List<Named<String>> = ArrayList()
     return attrs
   }
@@ -155,12 +151,12 @@ class DebugSectionDescriptor : NodeDescriptor<DebugSection>() {
       return
     }
 
-    val padding =
-        Rect(
-            ViewCompat.getPaddingStart(node),
-            node.paddingTop,
-            ViewCompat.getPaddingEnd(node),
-            node.paddingBottom)
+    val padding = Rect(
+        ViewCompat.getPaddingStart(node),
+        node.paddingTop,
+        ViewCompat.getPaddingEnd(node),
+        node.paddingBottom,
+    )
 
     val margin: Rect
     val params = node.layoutParams
@@ -171,7 +167,8 @@ class DebugSectionDescriptor : NodeDescriptor<DebugSection>() {
               MarginLayoutParamsCompat.getMarginStart(marginParams),
               marginParams.topMargin,
               MarginLayoutParamsCompat.getMarginEnd(marginParams),
-              marginParams.bottomMargin)
+              marginParams.bottomMargin,
+          )
     } else {
       margin = Rect()
     }
@@ -225,7 +222,6 @@ class DebugSectionDescriptor : NodeDescriptor<DebugSection>() {
 
   @Throws(Exception::class)
   override fun getDecoration(node: DebugSection?): String? {
-    // TODO T39526148
     return null
   }
 

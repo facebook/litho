@@ -18,9 +18,8 @@ package com.facebook.litho.testing.espresso;
 
 import static com.facebook.litho.testing.espresso.LithoViewMatchers.lithoView;
 import static com.facebook.litho.testing.espresso.LithoViewMatchers.withTestKey;
-import static org.hamcrest.CoreMatchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertThat;
 
 import android.widget.TextView;
 import androidx.test.InstrumentationRegistry;
@@ -32,6 +31,7 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.testing.screenshot.ViewHelpers;
+import org.assertj.core.api.HamcrestCondition;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -59,13 +59,14 @@ public class LithoViewMatchersTest {
 
   @Test
   public void testIsLithoView() throws Throwable {
-    assertThat(new TextView(InstrumentationRegistry.getTargetContext()), is(not(lithoView())));
-    assertThat(mView, is(lithoView()));
+    assertThat(new TextView(InstrumentationRegistry.getTargetContext()))
+        .is(new HamcrestCondition<>(not(lithoView())));
+    assertThat(mView).is(new HamcrestCondition<>(lithoView()));
   }
 
   @Test
   public void testHasTestKey() throws Throwable {
-    assertThat(mView, is(withTestKey("my_test_key")));
-    assertThat(mView, is(not(withTestKey("my_non_existant_test_key"))));
+    assertThat(mView).is(new HamcrestCondition<>(withTestKey("my_test_key")));
+    assertThat(mView).is(new HamcrestCondition<>(not(withTestKey("my_non_existant_test_key"))));
   }
 }

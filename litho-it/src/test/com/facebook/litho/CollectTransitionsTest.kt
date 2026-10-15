@@ -28,7 +28,7 @@ import org.junit.runner.RunWith
 
 @RunWith(LithoTestRunner::class)
 class CollectTransitionsTest {
-  @JvmField @Rule val mLithoTestRule: LithoTestRule = LithoTestRule()
+  @JvmField @Rule val lithoTestRule: LithoTestRule = LithoTestRule()
   private val wrappingContentWithTransition: InlineLayoutSpec =
       object : InlineLayoutSpec() {
         protected override fun onCreateLayout(c: ComponentContext): Component {
@@ -63,7 +63,7 @@ class CollectTransitionsTest {
     try {
       ComponentsConfiguration.isAnimationDisabled = false
       val testLithoView =
-          mLithoTestRule.render(widthPx = 100, heightPx = 100) { wrappingContentWithTransition }
+          lithoTestRule.render(widthPx = 100, heightPx = 100) { wrappingContentWithTransition }
       Assertions.assertThat(testLithoView.componentTree.mainThreadLayoutState!!.transitions)
           .hasSize(2)
     } finally {

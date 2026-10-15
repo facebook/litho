@@ -18,5 +18,5 @@ package com.facebook.litho.dataflow
 
 /** Test node that only serves as an output node. */
 class OutputOnlyNode : ValueNode() {
-  override fun calculateValue(frameTimeNanos: Long): Float = input.value
+  override fun calculateValue(frameTimeNanos: Long): Float = getInput().value
 }

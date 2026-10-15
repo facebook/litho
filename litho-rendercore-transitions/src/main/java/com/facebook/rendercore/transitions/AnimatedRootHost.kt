@@ -17,6 +17,7 @@
 package com.facebook.rendercore.transitions
 
 import android.graphics.Rect
+import com.facebook.rendercore.extensions.VisibilityChangeReason
 
 /**
  * A root [com.facebook.rendercore.Host] using the transition extension would need to implement this
@@ -45,5 +46,9 @@ interface AnimatedRootHost {
    * This allows inner RootHosts to trigger a mount on a custom visibleRect. We need this to force
    * animated inner root hosts to be mounted for animation.
    */
-  fun notifyVisibleBoundsChanged(visibleRect: Rect, processVisibilityOutputs: Boolean)
+  fun notifyVisibleBoundsChanged(
+      visibleRect: Rect,
+      processVisibilityOutputs: Boolean,
+      reason: VisibilityChangeReason,
+  )
 }

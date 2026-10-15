@@ -42,7 +42,7 @@ class ExecutorLithoHandler
     }
 
     executor.execute {
-      var canRun: Boolean
+      val canRun: Boolean
       synchronized(pendingTasks) {
         var runCount: Int = pendingTasks[runnable] ?: 0
         canRun = runCount > 0

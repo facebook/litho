@@ -21,6 +21,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.facebook.litho.LithoView
 import com.facebook.litho.ThreadUtils
+import com.facebook.rendercore.extensions.VisibilityChangeReason
 import kotlin.math.max
 import kotlin.math.min
 
@@ -28,18 +29,27 @@ import kotlin.math.min
 object IncrementalMountUtils {
 
   /**
+   * When true, layout-triggered incremental mount is skipped in
+   * [com.facebook.litho.BaseMountingView.performLayout]. This avoids expensive mount passes during
+   * scroll where layout is triggered by RecyclerView/ViewPager but mount work should be deferred to
+   * idle. Callers should set this to true when scroll begins and false at IDLE.
+   */
+  @JvmStatic @Volatile var skipMountOnLayoutDuringScroll: Boolean = false
+
+  /**
    * Performs incremental mount on all [LithoView]s within the given View.
    *
    * @param view the view to process
+   * @param reason the reason for the visibility change
    */
   @JvmStatic
-  fun incrementallyMountLithoViews(view: View) {
+  fun incrementallyMountLithoViews(view: View, reason: VisibilityChangeReason) {
     if (view is LithoView) {
-      view.notifyVisibleBoundsChanged()
+      view.notifyVisibleBoundsChanged(reason)
     } else if (view is ViewGroup) {
       for (i in 0 until view.childCount) {
         val child = view.getChildAt(i)
-        incrementallyMountLithoViews(child)
+        incrementallyMountLithoViews(child, reason)
       }
     }
   }
@@ -56,14 +66,17 @@ object IncrementalMountUtils {
     val viewGroupHeight = scrollingViewParent.height
     for (i in 0 until scrollingViewParent.childCount) {
       maybePerformIncrementalMountOnView(
-          viewGroupWidth, viewGroupHeight, scrollingViewParent.getChildAt(i))
+          viewGroupWidth,
+          viewGroupHeight,
+          scrollingViewParent.getChildAt(i),
+      )
     }
   }
 
   private fun maybePerformIncrementalMountOnView(
       scrollingParentWidth: Int,
       scrollingParentHeight: Int,
-      view: View
+      view: View,
   ) {
     val underlyingView: View =
         if (view is WrapperView) {
@@ -86,26 +99,28 @@ object IncrementalMountUtils {
     val left = view.left + translationX
     val right = view.right + translationX
 
-    if (left >= 0 &&
-        top >= 0 &&
-        right <= scrollingParentWidth &&
-        bottom <= scrollingParentHeight &&
-        lithoView.previousMountBounds.width() == lithoView.width &&
-        lithoView.previousMountBounds.height() == lithoView.height) {
+    if (
+        left >= 0 &&
+            top >= 0 &&
+            right <= scrollingParentWidth &&
+            bottom <= scrollingParentHeight &&
+            lithoView.previousMountBounds.width() == lithoView.width &&
+            lithoView.previousMountBounds.height() == lithoView.height
+    ) {
       // View is fully visible, and has already been completely mounted.
       return
     }
-    val rect =
-        Rect(
-            max(0, -left),
-            max(0, -top),
-            min(right, scrollingParentWidth) - left,
-            min(bottom, scrollingParentHeight) - top)
+    val rect = Rect(
+        max(0, -left),
+        max(0, -top),
+        min(right, scrollingParentWidth) - left,
+        min(bottom, scrollingParentHeight) - top,
+    )
     if (rect.isEmpty) {
       // View is not visible at all, nothing to do.
       return
     }
-    lithoView.notifyVisibleBoundsChanged(rect, true)
+    lithoView.notifyVisibleBoundsChanged(rect, true, VisibilityChangeReason.SCROLL)
   }
 
   /**

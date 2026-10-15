@@ -30,10 +30,10 @@ internal object StateUpdateTestLayoutSpec {
   @OnCreateLayout
   fun onCreateLayout(
       c: ComponentContext,
-      @Prop awaitable: CountDownLatch?,
-      @Prop countDownLatch: CountDownLatch?,
+      @Prop(optional = true) awaitable: CountDownLatch?,
+      @Prop(optional = true) countDownLatch: CountDownLatch?,
       @Prop createStateCount: AtomicInteger,
-      @Prop outStateValue: AtomicInteger
+      @Prop outStateValue: AtomicInteger,
   ): Component {
     countDownLatch?.countDown()
     if (awaitable != null) {

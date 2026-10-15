@@ -22,13 +22,14 @@ import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.LayoutResult;
 import com.facebook.rendercore.Node;
+import com.facebook.rendercore.RCRenderTrace;
 import com.facebook.rendercore.RenderResult;
 import com.facebook.rendercore.RenderState;
 import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RenderTreeHost;
-import com.facebook.rendercore.ResolveContext;
 import com.facebook.rendercore.ResolveResult;
 import com.facebook.rendercore.RootHost;
+import com.facebook.rendercore.StateUpdateReceiver;
 import java.util.List;
 
 /**
@@ -143,17 +144,19 @@ public class RendercoreTestDriver {
               rootHostAsView.getContext(),
               new RenderState.Delegate() {
                 @Override
-                // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
                 public void commit(
                     int layoutVersion,
-                    RenderTree current,
+                    @Nullable RenderTree current,
                     RenderTree next,
-                    Object currentState,
-                    Object nextState) {}
+                    @Nullable Object currentState,
+                    @Nullable Object nextState) {}
 
                 @Override
                 public void commitToUI(
-                    @Nullable RenderTree tree, @Nullable Object o, int frameVersion) {}
+                    RenderTree tree,
+                    @Nullable Object o,
+                    int frameVersion,
+                    @Nullable RCRenderTrace renderTrace) {}
               },
               null,
               null);
@@ -181,7 +184,7 @@ public class RendercoreTestDriver {
           RenderResult.render(
               context, new ResolveResult(mRootNode), null, null, null, -1, mWidthSpec, mHeightSpec);
 
-      mRenderTreeHost.setRenderTree(renderResult.getRenderTree());
+      mRenderTreeHost.setMountInput(renderResult.getMountInput());
 
       rootHostAsView.measure(mWidthSpec, mHeightSpec);
       rootHostAsView.layout(
@@ -192,7 +195,7 @@ public class RendercoreTestDriver {
       return new RenderState.ResolveFunc() {
         @Override
         public ResolveResult resolve(
-            ResolveContext resolveContext,
+            StateUpdateReceiver stateUpdateReceiver,
             @Nullable Node committedTree,
             @Nullable Object committedState,
             List stateUpdatesToApply) {

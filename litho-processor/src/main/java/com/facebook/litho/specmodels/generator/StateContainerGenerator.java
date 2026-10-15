@@ -99,6 +99,10 @@ public class StateContainerGenerator {
           MethodSpec.methodBuilder(METHOD_NAME_APPLY_STATE_UPDATE_WITH_TRANSITION)
               .addModifiers(Modifier.PUBLIC)
               .addAnnotation(Override.class)
+              .addAnnotation(
+                  AnnotationSpec.builder(SuppressWarnings.class)
+                      .addMember("value", "$S", "unchecked")
+                      .build())
               .addParameter(ClassNames.COMPONENT_STATE_UPDATE, PARAM_NAME_STATE_UPDATE)
               .returns(ClassNames.TRANSITION);
     } else {
@@ -106,6 +110,10 @@ public class StateContainerGenerator {
           MethodSpec.methodBuilder(METHOD_NAME_APPLY_STATE_UPDATE)
               .addModifiers(Modifier.PUBLIC)
               .addAnnotation(Override.class)
+              .addAnnotation(
+                  AnnotationSpec.builder(SuppressWarnings.class)
+                      .addMember("value", "$S", "unchecked")
+                      .build())
               .addParameter(ClassNames.COMPONENT_STATE_UPDATE, PARAM_NAME_STATE_UPDATE)
               .returns(TypeName.VOID);
     }
@@ -188,7 +196,7 @@ public class StateContainerGenerator {
       args.add(GeneratorConstants.STATE_TRANSITION_FIELD_NAME);
     }
     format.append("$N.$N(");
-    args.add(SpecModelUtils.getSpecAccessor(specModel));
+    args.add(SpecModelUtils.getSpecAccessor(specModel, updateStateMethod));
     args.add(updateStateMethod.name);
 
     int paramIndex = 0;

@@ -18,7 +18,7 @@ package com.facebook.litho
 
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
-import org.assertj.core.api.Java6Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
@@ -29,7 +29,7 @@ class StyleTest {
 
   private class TestItemField : StyleItemField {
     companion object {
-      val instance = TestItemField()
+      val instance: TestItemField = TestItemField()
     }
   }
 
@@ -84,6 +84,24 @@ class StyleTest {
         .isNotEqualTo(Style.testStyleItem("B").testStyleItem("1"))
     assertThat(Style.testStyleItem("A").testStyleItem("1"))
         .isNotEqualTo(Style.testStyleItem("A").testStyleItem("2"))
+  }
+
+  @Test
+  fun style_plusIf_appendsStyle() {
+    val style1 = Style.testStyleItem("A").plusIf(true) { Style.testStyleItem("B") }
+    val style2 = Style.testStyleItem("A").plusIf(false) { Style.testStyleItem("B") }
+
+    assertThat(style1.toStringList()).containsExactly("A", "B")
+    assertThat(style2.toStringList()).containsExactly("A")
+  }
+
+  @Test
+  fun style_plusIfNotNull_appendsStyle() {
+    val style1 = Style.testStyleItem("A").plusIfNotNull("B") { Style.testStyleItem(it) }
+    val style2 = Style.testStyleItem("A").plusIfNotNull(null) { Style.testStyleItem(it) }
+
+    assertThat(style1.toStringList()).containsExactly("A", "B")
+    assertThat(style2.toStringList()).containsExactly("A")
   }
 
   private fun Style.toStringList(): List<String> {

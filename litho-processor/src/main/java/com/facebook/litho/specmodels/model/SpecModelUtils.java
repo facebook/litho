@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
@@ -43,9 +44,26 @@ import javax.lang.model.util.SimpleTypeVisitor6;
 public class SpecModelUtils {
 
   public static String getSpecAccessor(SpecModel specModel) {
+    return getSpecAccessor(specModel, null);
+  }
+
+  /**
+   * Returns the accessor to call methods on the spec.
+   *
+   * @param specModel The spec model
+   * @param methodModel Optional method model to check if the method is static. If null, uses
+   *     default behavior (INSTANCE for Kotlin singletons).
+   */
+  public static String getSpecAccessor(
+      SpecModel specModel, @Nullable SpecMethodModel<?, ?> methodModel) {
     if (specModel.getSpecElementType() == SpecElementType.KOTLIN_CLASS) {
       return specModel.getSpecName() + ".Companion";
     } else if (specModel.getSpecElementType() == SpecElementType.KOTLIN_SINGLETON) {
+      // For Kotlin singletons, check if the method is static (@JvmStatic annotated).
+      // If static, call on the class directly. If not static (or unknown), use INSTANCE.
+      if (methodModel != null && methodModel.modifiers.contains(Modifier.STATIC)) {
+        return specModel.getSpecName();
+      }
       return specModel.getSpecName() + ".INSTANCE";
     }
 

@@ -18,6 +18,7 @@ package com.facebook.litho.internal
 
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
+import com.facebook.litho.GlobalKey
 
 /**
  * A compound key composed of global key and hook index that uniquely identifies a hook.
@@ -26,4 +27,4 @@ import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
  * @param index The index of the hook in a component.
  */
 @DataClassGenerate(toString = Mode.KEEP)
-internal data class HookKey(val globalKey: String, val index: Int)
+internal data class HookKey(val globalKey: GlobalKey, val index: Int)

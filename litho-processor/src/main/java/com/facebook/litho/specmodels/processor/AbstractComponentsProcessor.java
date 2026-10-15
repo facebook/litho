@@ -31,13 +31,10 @@ import java.util.Map;
 import java.util.Set;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
-import javax.annotation.processing.SupportedSourceVersion;
-import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 
-@SupportedSourceVersion(SourceVersion.RELEASE_7)
 public abstract class AbstractComponentsProcessor extends ProcessorBase {
 
   private final List<SpecModelFactory> mSpecModelFactories;

@@ -13,11 +13,14 @@
     "@docusaurus/preset-classic": "^2.3.1",
     "clsx": "^1.1.1",
     "cookie": "^0.7.0",
-    "docusaurus-plugin-internaldocs-fb": "1.9.1",
+    "docusaurus-plugin-internaldocs-fb": "1.20.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
   },
   "devDependencies": {
     "prettier": "^2.0.2"
+  },
+  "resolutions": {
+    "cytoscape": "3.31.2"
   }
 }

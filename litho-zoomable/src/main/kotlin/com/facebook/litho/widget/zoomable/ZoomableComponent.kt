@@ -28,8 +28,8 @@ import com.facebook.litho.Style
 import com.facebook.litho.TouchEvent
 import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.bindToRenderTreeView
+import com.facebook.litho.layoutVersion
 import com.facebook.litho.useCached
-import com.facebook.litho.useEffect
 import com.facebook.litho.useNestedTree
 import com.facebook.litho.view.onInterceptTouch
 import com.facebook.litho.view.onTouch
@@ -43,10 +43,14 @@ import kotlin.math.max
 
 @ExperimentalLithoApi
 class ZoomableComponent(
+    private val poolSize: Int = 5,
     private val zoomableTouchGestureListener: ZoomableTouchGestureListener? = null,
     private val zoomableEventListener: ZoomableViewBaseController.Listener? = null,
+    private val excludeFromIncrementalMount: Boolean = false,
+    private val enableIncrementalMountForContent: Boolean = false,
+    private val forwardScrollChanges: Boolean = true,
     private val style: Style = Style,
-    private val child: () -> Component
+    private val child: () -> Component,
 ) : PrimitiveComponent() {
 
   override fun PrimitiveComponentScope.render(): LithoPrimitive {
@@ -57,17 +61,16 @@ class ZoomableComponent(
     ) = useNestedTree(
         root = child(),
         treeProps = context.treePropContainer,
-        config = context.lithoConfiguration.componentsConfig.copy(incrementalMountEnabled = false))
+        config =
+            context.lithoConfiguration.componentsConfig.copy(
+                incrementalMountEnabled = enableIncrementalMountForContent,
+            ),
+    )
 
     val lithoZoomableController = useCached { LithoZoomableController(androidContext) }
 
     val zoomableTouchGestureListener = useCached {
       zoomableTouchGestureListener ?: ZoomableTouchGestureListener()
-    }
-
-    useEffect(lithoZoomableController) {
-      lithoZoomableController.init()
-      null
     }
 
     val zoomableStyle =
@@ -77,37 +80,69 @@ class ZoomableComponent(
             .onInterceptTouch(true) { _ -> lithoZoomableController.interceptingTouch }
 
     return LithoPrimitive(
-        layoutBehavior =
-            ZoomableLayoutBehavior(
-                resolveResult = resolveResult,
-            ),
+        layoutBehavior = ZoomableLayoutBehavior(resolveResult = resolveResult),
         mountBehavior =
-            MountBehavior(ALLOCATOR) {
+            MountBehavior(ZoomableAllocatorCache.getAllocator(poolSize, forwardScrollChanges)) {
+              shouldExcludeFromIncrementalMount = excludeFromIncrementalMount
               bindToRenderTreeView(state = state) { renderTreeView }
 
-              bind(lithoZoomableController, zoomableEventListener) { content ->
+              // Lifecycle binder: init/destroy on mount/unmount only.
+              // Uses Unit dep so it never re-fires on prop changes.
+              bind(Unit) { content ->
+                lithoZoomableController.init()
                 lithoZoomableController.bindTo(content)
+
+                onUnbind { lithoZoomableController.destroy() }
+              }
+
+              // Listener binder: re-fires only when listener deps change.
+              bind(zoomableTouchGestureListener, zoomableEventListener) { _ ->
                 zoomableTouchGestureListener.addZoomableTouchListener(
-                    lithoZoomableController.zoomableTouchListener)
+                    lithoZoomableController.zoomableTouchListener,
+                )
                 zoomableEventListener?.let { lithoZoomableController.addZoomableEventListener(it) }
 
                 onUnbind {
                   zoomableTouchGestureListener.removeZoomableTouchListener(
-                      lithoZoomableController.zoomableTouchListener)
+                      lithoZoomableController.zoomableTouchListener,
+                  )
                   zoomableEventListener?.let {
                     lithoZoomableController.removeZoomableEventListener(it)
                   }
-                  lithoZoomableController.unbind()
                 }
               }
             },
         style = style.plus(zoomableStyle),
     )
   }
+}
 
-  companion object {
-    private val ALLOCATOR: ViewAllocator<LithoZoomableView> =
-        ViewAllocator(canPreallocate = true, poolSize = 5) { context -> LithoZoomableView(context) }
+private object ZoomableAllocatorCache {
+  private var cachedAllocator: ViewAllocator<LithoZoomableView>? = null
+  private var cachedPoolSize: Int = -1
+  private var cachedForwardScrollChanges: Boolean = true
+
+  @Synchronized
+  fun getAllocator(
+      poolSize: Int,
+      forwardScrollChanges: Boolean,
+  ): ViewAllocator<LithoZoomableView> {
+    val current = cachedAllocator
+    if (
+        current != null &&
+            cachedPoolSize == poolSize &&
+            cachedForwardScrollChanges == forwardScrollChanges
+    ) {
+      return current
+    }
+    val newAllocator =
+        ViewAllocator(canPreallocate = true, poolSize = poolSize) { context ->
+          LithoZoomableView(context, forwardScrollChanges = forwardScrollChanges)
+        }
+    cachedPoolSize = poolSize
+    cachedForwardScrollChanges = forwardScrollChanges
+    cachedAllocator = newAllocator
+    return newAllocator
   }
 }
 
@@ -118,11 +153,13 @@ internal class ZoomableLayoutBehavior(
 
     val constraints: SizeConstraints = sizeConstraints.copy(minWidth = 0, minHeight = 0)
 
+    // Use the parent's layout version to ensure version consistency during double measures
     val layoutState =
         NestedLithoTree.layout(
             result = resolveResult,
             sizeConstraints = constraints,
             current = previousLayoutData as LayoutState?,
+            version = layoutVersion,
         )
 
     // Ensure that width and height are not less than 0

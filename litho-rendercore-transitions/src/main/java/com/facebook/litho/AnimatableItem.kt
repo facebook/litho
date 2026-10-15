@@ -29,6 +29,16 @@ interface AnimatableItem {
 
   fun getAbsoluteBounds(): Rect
 
+  /**
+   * Returns the bounds of this item relative to its parent. Used by [AnimatedProperties.relative]
+   * to detect position changes that are invisible in absolute coordinates (e.g., when a child's
+   * absolute position is constant but its position within the parent changes because the parent
+   * moved).
+   *
+   * Defaults to [getAbsoluteBounds] for backward compatibility.
+   */
+  fun getBounds(): Rect = getAbsoluteBounds()
+
   fun getScale(): Float
 
   fun getAlpha(): Float

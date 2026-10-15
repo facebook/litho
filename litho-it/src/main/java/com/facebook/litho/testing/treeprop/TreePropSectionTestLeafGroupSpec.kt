@@ -36,7 +36,7 @@ object TreePropSectionTestLeafGroupSpec {
       @TreeProp propA: TreePropNumberType?,
       @TreeProp propB: TreePropStringType?,
       @Prop(optional = true) resultPropA: Result?,
-      @Prop resultPropB: Result
+      @Prop resultPropB: Result,
   ): Children {
     if (resultPropA != null) {
       resultPropA.prop = propA
@@ -46,9 +46,12 @@ object TreePropSectionTestLeafGroupSpec {
         .child(
             SingleComponentSection.create(c)
                 .component(
-                    TreePropSectionTestLeafLayout.create(c)
-                        .resultPropA(resultPropA)
-                        .resultPropB(resultPropB)))
+                    TreePropSectionTestLeafLayout(
+                        resultPropA = resultPropA,
+                        resultPropB = resultPropB,
+                    ),
+                ),
+        )
         .build()
   }
 

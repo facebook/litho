@@ -59,7 +59,9 @@ class LayoutWithSizeSpecLifecycleTest {
     assertThat(getSteps(info))
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
-            LifecycleStep.ON_CREATE_INITIAL_STATE, LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
+            LifecycleStep.ON_CREATE_INITIAL_STATE,
+            LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+        )
   }
 
   @Test
@@ -71,13 +73,16 @@ class LayoutWithSizeSpecLifecycleTest {
             .child(
                 LayoutWithSizeSpecLifecycleTester.create(c)
                     .steps(info)
-                    .importantForAccessibility(ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES))
+                    .importantForAccessibility(ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES),
+            )
             .build()
     lithoTestRule.render { component }
     assertThat(getSteps(info))
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
-            LifecycleStep.ON_CREATE_INITIAL_STATE, LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
+            LifecycleStep.ON_CREATE_INITIAL_STATE,
+            LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+        )
   }
 
   @Test
@@ -99,6 +104,7 @@ class LayoutWithSizeSpecLifecycleTest {
         .containsExactly(
             LifecycleStep.ON_CREATE_INITIAL_STATE,
             LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-            LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
+            LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+        )
   }
 }

@@ -24,6 +24,7 @@ import com.facebook.litho.testing.assertj.LithoViewAssert.Companion.assertThat
 import com.facebook.litho.testing.helper.ComponentTestHelper
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec
 import com.facebook.litho.testing.testrunner.LithoTestRunner
+import com.facebook.litho.view.testKey
 import com.facebook.litho.widget.SimpleMountSpecTester
 import com.facebook.litho.widget.Text
 import org.assertj.core.api.Assertions.assertThat
@@ -61,14 +62,16 @@ class MountStateTestItemTest {
                 return Column.create(c)
                     .child(
                         Column.create(c)
-                            .child(SimpleMountSpecTester.create(c))
-                            .child(SimpleMountSpecTester.create(c))
-                            .testKey(TEST_ID_1))
-                    .child(SimpleMountSpecTester.create(c))
-                    .child(SimpleMountSpecTester.create(c).testKey(TEST_ID_2))
+                            .child(SimpleMountSpecTester())
+                            .child(SimpleMountSpecTester())
+                            .testKey(TEST_ID_1),
+                    )
+                    .child(SimpleMountSpecTester())
+                    .child(SimpleMountSpecTester(style = Style.testKey(TEST_ID_2)))
                     .build()
               }
-            })
+            },
+        )
     assertThat(lithoView)
         .containsTestKey(TEST_ID_1)
         .containsTestKey(TEST_ID_2)
@@ -84,7 +87,8 @@ class MountStateTestItemTest {
               override fun onCreateLayout(c: ComponentContext): Component {
                 return Column.create(c).testKey(TEST_ID_1).build()
               }
-            })
+            },
+        )
     assertThat(lithoView).containsTestKey(TEST_ID_1)
   }
 
@@ -98,14 +102,16 @@ class MountStateTestItemTest {
                 return Column.create(c)
                     .child(
                         Column.create(c)
-                            .child(SimpleMountSpecTester.create(c))
-                            .child(SimpleMountSpecTester.create(c))
-                            .testKey(TEST_ID_1))
-                    .child(SimpleMountSpecTester.create(c))
-                    .child(SimpleMountSpecTester.create(c).testKey(TEST_ID_1))
+                            .child(SimpleMountSpecTester())
+                            .child(SimpleMountSpecTester())
+                            .testKey(TEST_ID_1),
+                    )
+                    .child(SimpleMountSpecTester())
+                    .child(SimpleMountSpecTester(style = Style.testKey(TEST_ID_1)))
                     .build()
               }
-            })
+            },
+        )
     assertThat(lithoView)
         .containsTestKey(TEST_ID_1, LithoViewAssert.times(2))
         .doesNotContainTestKey(TEST_ID_2)
@@ -121,15 +127,17 @@ class MountStateTestItemTest {
                 return Column.create(c)
                     .child(
                         Column.create(c)
-                            .child(SimpleMountSpecTester.create(c))
-                            .child(SimpleMountSpecTester.create(c))
-                            .testKey(""))
-                    .child(SimpleMountSpecTester.create(c))
-                    .child(SimpleMountSpecTester.create(c).testKey(null))
-                    .child(SimpleMountSpecTester.create(c).testKey(TEST_ID_1))
+                            .child(SimpleMountSpecTester())
+                            .child(SimpleMountSpecTester())
+                            .testKey(""),
+                    )
+                    .child(SimpleMountSpecTester())
+                    .child(SimpleMountSpecTester(style = Style.testKey(null)))
+                    .child(SimpleMountSpecTester(style = Style.testKey(TEST_ID_1)))
                     .build()
               }
-            })
+            },
+        )
     assertThat(lithoView).doesNotContainTestKey("").containsTestKey(TEST_ID_1)
   }
 
@@ -144,7 +152,8 @@ class MountStateTestItemTest {
                     .child(Text.create(c).text(MY_TEST_STRING_1).testKey(TEST_ID_1))
                     .build()
               }
-            })
+            },
+        )
     assertThat(lithoView).containsTestKey(TEST_ID_1)
     val item1 = LithoViewTestHelper.findTestItem(lithoView, TEST_ID_1)
     assertThat(item1?.textContent).isEqualTo(MY_TEST_STRING_1)
@@ -162,7 +171,8 @@ class MountStateTestItemTest {
                     .child(Text.create(c).text(MY_TEST_STRING_2).testKey(TEST_ID_2))
                     .build()
               }
-            })
+            },
+        )
     assertThat(lithoView).containsTestKey(TEST_ID_1)
     val item1 = LithoViewTestHelper.findTestItem(lithoView, TEST_ID_1)
     assertThat(item1?.textContent).isEqualTo(MY_TEST_STRING_1)
@@ -182,11 +192,13 @@ class MountStateTestItemTest {
                         Text.create(c)
                             .text(MY_TEST_STRING_1)
                             .clickHandler(mock<EventHandler<ClickEvent>>())
-                            .testKey(TEST_ID_1))
+                            .testKey(TEST_ID_1),
+                    )
                     .child(Text.create(c).text(MY_TEST_STRING_2).testKey(TEST_ID_2))
                     .build()
               }
-            })
+            },
+        )
     assertThat(lithoView).containsTestKey(TEST_ID_1)
     val item1 = LithoViewTestHelper.findTestItem(lithoView, TEST_ID_1)
     assertThat(item1?.textContent).isEqualTo(MY_TEST_STRING_1)

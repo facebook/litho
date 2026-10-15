@@ -36,8 +36,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.Shadows;
 import org.robolectric.annotation.LooperMode;
+import org.robolectric.shadow.api.Shadow;
 import org.robolectric.shadows.ShadowLooper;
 
 @LooperMode(LEGACY)
@@ -51,7 +51,7 @@ public class LithoStatsSectionsTest {
   public void setup() {
     mSectionContext = new SectionContext(getApplicationContext());
     mChangeSetThreadShadowLooper =
-        Shadows.shadowOf(
+        Shadow.extract(
             (Looper) Whitebox.invokeMethod(SectionTree.class, "getDefaultChangeSetThreadLooper"));
   }
 

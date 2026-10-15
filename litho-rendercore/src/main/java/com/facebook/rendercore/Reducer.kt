@@ -31,6 +31,7 @@ object Reducer {
   @JvmField @VisibleForTesting val ROOT_HOST_RENDER_UNIT: RenderUnit<Any> = RootHostRenderUnit()
 
   @JvmStatic
+  @Suppress("UNCHECKED_CAST")
   private fun reduceTree(
       context: Context,
       layoutResult: LayoutResult?,
@@ -38,7 +39,7 @@ object Reducer {
       x: Int,
       y: Int,
       flattenedTree: ArrayList<RenderTreeNode>,
-      extensions: List<Pair<RenderCoreExtension<*, *>, Any>>?
+      extensions: List<Pair<RenderCoreExtension<*, *>, Any>>?,
   ) {
     if (layoutResult == null) {
       return
@@ -98,7 +99,8 @@ object Reducer {
           layoutResult.getXForChildAtIndex(i) + xTranslation,
           layoutResult.getYForChildAtIndex(i) + yTranslation,
           flattenedTree,
-          extensions)
+          extensions,
+      )
     }
   }
 
@@ -107,7 +109,7 @@ object Reducer {
       layoutResult: LayoutResult,
       renderUnit: RenderUnit<Any>,
       bounds: Rect,
-      parent: RenderTreeNode?
+      parent: RenderTreeNode?,
   ): RenderTreeNode {
     val hasPadding =
         layoutResult.paddingLeft != 0 ||
@@ -120,12 +122,19 @@ object Reducer {
               layoutResult.paddingLeft,
               layoutResult.paddingTop,
               layoutResult.paddingRight,
-              layoutResult.paddingBottom)
+              layoutResult.paddingBottom,
+          )
         } else {
           null
         }
     return RenderTreeNode(
-        parent, renderUnit, layoutResult.layoutData, bounds, padding, parent?.childrenCount ?: 0)
+        parent,
+        renderUnit,
+        layoutResult.layoutData,
+        bounds,
+        padding,
+        parent?.childrenCount ?: 0,
+    )
   }
 
   @JvmStatic
@@ -157,12 +166,13 @@ object Reducer {
         renderStateId,
         results,
         layoutContext.renderContext,
-        debugData)
+        debugData,
+    )
   }
 
   @JvmStatic
   private fun populate(
-      extensions: Array<RenderCoreExtension<*, *>>?
+      extensions: Array<RenderCoreExtension<*, *>>?,
   ): List<Pair<RenderCoreExtension<*, *>, Any>>? {
     if (extensions.isNullOrEmpty()) {
       return null
@@ -184,7 +194,7 @@ object Reducer {
       absoluteX: Int,
       absoluteY: Int,
       size: Int,
-      extensions: List<Pair<RenderCoreExtension<*, *>, Any>>?
+      extensions: List<Pair<RenderCoreExtension<*, *>, Any>>?,
   ) {
     if (extensions != null) {
       for (entry in extensions) {
@@ -198,7 +208,9 @@ object Reducer {
     }
   }
 
-  private class RootHostRenderUnit : RenderUnit<Any>(RenderType.VIEW), ContentAllocator<Any> {
+  private class RootHostRenderUnit : RenderUnit<Any>(), ContentAllocator<Any> {
+    override val renderType: RenderType = RenderType.VIEW
+
     override fun createContent(context: Context): Any = Unit
 
     override fun getPoolKey(): Any = javaClass

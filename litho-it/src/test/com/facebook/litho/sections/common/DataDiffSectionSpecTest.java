@@ -24,15 +24,13 @@ import static com.facebook.litho.testing.sections.TestTarget.INSERT_RANGE;
 import static com.facebook.litho.testing.sections.TestTarget.MOVE;
 import static com.facebook.litho.testing.sections.TestTarget.UPDATE;
 import static com.facebook.litho.testing.sections.TestTarget.UPDATE_RANGE;
-import static junit.framework.Assert.assertEquals;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 
 import android.annotation.SuppressLint;
 import androidx.annotation.Nullable;
 import com.facebook.litho.ComponentsReporter;
 import com.facebook.litho.DefaultComponentsReporter;
-import com.facebook.litho.EventHandler;
-import com.facebook.litho.HasEventDispatcher;
 import com.facebook.litho.config.LithoDebugConfigurations;
 import com.facebook.litho.debug.LithoDebugEvent;
 import com.facebook.litho.sections.SectionContext;
@@ -61,7 +59,6 @@ import java.util.Queue;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.LooperMode;
 
@@ -74,10 +71,7 @@ public class DataDiffSectionSpecTest {
   private SectionTree mSectionTree;
   private TestTarget mTestTarget;
 
-  @Mock public EventHandler<OnCheckIsSameItemEvent<String>> mIsSameItemEventEventHandler;
-  @Mock public HasEventDispatcher mHasEventDispatcher;
-
-  private List<DebugEvent> mDebugEvents = new ArrayList<>();
+  private final List<DebugEvent> mDebugEvents = new ArrayList<>();
 
   @Before
   public void setup() throws Exception {

@@ -43,6 +43,7 @@ public @interface Comparable {
   int OTHER = 13;
   int STATE_CONTAINER = 14;
   int SECTION = 15;
+  int CHARSEQUENCE = 16;
 
   @Retention(RetentionPolicy.SOURCE)
   @IntDef({
@@ -61,7 +62,8 @@ public @interface Comparable {
     EVENT_HANDLER_IN_PARAMETERIZED_TYPE,
     OTHER,
     STATE_CONTAINER,
-    SECTION
+    SECTION,
+    CHARSEQUENCE
   })
   @interface Type {}
 

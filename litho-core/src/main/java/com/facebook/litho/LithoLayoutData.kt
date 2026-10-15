@@ -32,9 +32,8 @@ import com.facebook.rendercore.utils.isEqualOrEquivalentTo
 class LithoLayoutData(
     @field:JvmField val width: Int,
     @field:JvmField val height: Int,
-    @field:JvmField val currentLayoutStateId: Int,
-    @field:JvmField val previousLayoutStateId: Int,
     @field:JvmField val expandedTouchBounds: Rect?,
+    @field:JvmField val zIndex: Int?,
     @field:JvmField val layoutData: Any?,
     @field:JvmField val isSizeDependant: Boolean,
     val debugHierarchy: DebugHierarchy.Node?,
@@ -42,14 +41,24 @@ class LithoLayoutData(
 
   override fun isEquivalentTo(other: LithoLayoutData): Boolean {
     // check if the size has changed if the components were size dependant
-    if ((isSizeDependant && other.isSizeDependant) &&
-        (width != other.width || height != other.height)) {
+    if (
+        (isSizeDependant && other.isSizeDependant) &&
+            (width != other.width || height != other.height)
+    ) {
       return false
     }
+
+    if (zIndex != other.zIndex || expandedTouchBounds != other.expandedTouchBounds) {
+      return false
+    }
+
     return isEqualOrEquivalentTo(layoutData, other.layoutData)
   }
 
   companion object {
+
+    val NO_Z_INDEX: Int? = null
+
     /**
      * Helper method to throw exception if a provided layout-data is null or not a LithoLayoutData
      * instance. Will return a casted, non-null instance of LithoLayoutData otherwise.
@@ -61,7 +70,8 @@ class LithoLayoutData(
       }
       if (layoutData !is LithoLayoutData) {
         throw RuntimeException(
-            "RenderTreeNode layout data for Litho should be LithoLayoutData but was <cls>${layoutData.javaClass.name}</cls>")
+            "RenderTreeNode layout data for Litho should be LithoLayoutData but was <cls>${layoutData.javaClass.name}</cls>",
+        )
       }
       return layoutData
     }
@@ -74,7 +84,8 @@ class LithoLayoutData(
       }
       if (layoutData.layoutData !is InterStagePropsContainer) {
         throw RuntimeException(
-            "Layout data was not InterStagePropsContainer but was <cls>${layoutData.layoutData.javaClass.name}</cls>")
+            "Layout data was not InterStagePropsContainer but was <cls>${layoutData.layoutData.javaClass.name}</cls>",
+        )
       }
       return layoutData.layoutData
     }
@@ -82,6 +93,11 @@ class LithoLayoutData(
     @JvmStatic
     fun getExpandedTouchBounds(data: Any?): Rect? {
       return verifyAndGetLithoLayoutData(data).expandedTouchBounds
+    }
+
+    @JvmStatic
+    fun getZIndex(data: Any?): Int? {
+      return verifyAndGetLithoLayoutData(data).zIndex
     }
   }
 }

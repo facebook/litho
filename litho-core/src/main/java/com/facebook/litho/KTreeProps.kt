@@ -47,11 +47,12 @@ typealias TreePropValuePair<T> = Pair<TreeProp<T>, T>
 @Suppress("FunctionName")
 @Deprecated(
     "Please, use the new [TreePropProvider] with [TreePropValuePair] args. You can use " +
-        "[legacyTreePropOf] for interoperability with old API")
+        "[legacyTreePropOf] for interoperability with old API",
+)
 @JvmName("LegacyTreePropProvider") // avoid JVM declaration clash with the other TreePropProvider
 inline fun TreePropProvider(
     vararg props: ClassValuePair<*>,
-    crossinline component: () -> Component
+    crossinline component: () -> Component,
 ): KComponent {
   val resolvedComponent = component()
   return TreePropProviderImpl(classProps = props, child = resolvedComponent)
@@ -70,7 +71,7 @@ inline fun TreePropProvider(
 @Suppress("FunctionName")
 inline fun TreePropProvider(
     vararg props: TreePropValuePair<*>,
-    crossinline component: () -> Component
+    crossinline component: () -> Component,
 ): KComponent {
   val resolvedComponent = component()
   return TreePropProviderImpl(treeProps = props, child = resolvedComponent)
@@ -83,11 +84,12 @@ inline fun TreePropProvider(
 @Suppress("FunctionName")
 @Deprecated(
     "Please, use the new [NullableTreePropProvider] with [TreePropValuePair] args. You can use " +
-        "[legacyTreePropOf] for interoperability with old API")
+        "[legacyTreePropOf] for interoperability with old API",
+)
 @JvmName("NullableLegacyTreePropProvider") // avoid JVM declaration clash with overload
 inline fun NullableTreePropProvider(
     vararg props: ClassValuePair<*>,
-    crossinline component: () -> Component?
+    crossinline component: () -> Component?,
 ): KComponent? {
   val resolvedComponent = component() ?: return null
   return TreePropProviderImpl(classProps = props, child = resolvedComponent)
@@ -100,7 +102,7 @@ inline fun NullableTreePropProvider(
 @Suppress("FunctionName")
 inline fun NullableTreePropProvider(
     vararg props: TreePropValuePair<*>,
-    crossinline component: () -> Component?
+    crossinline component: () -> Component?,
 ): KComponent? {
   val resolvedComponent = component() ?: return null
   return TreePropProviderImpl(treeProps = props, child = resolvedComponent)
@@ -111,7 +113,7 @@ inline fun NullableTreePropProvider(
 internal class TreePropProviderImpl(
     private val classProps: Array<out ClassValuePair<*>>? = null,
     private val treeProps: Array<out TreePropValuePair<*>>? = null,
-    private val child: Component
+    private val child: Component,
 ) : KComponent() {
   override fun ComponentScope.render(): Component {
     classProps?.forEach { createTreeProp(it.first, it.second) }

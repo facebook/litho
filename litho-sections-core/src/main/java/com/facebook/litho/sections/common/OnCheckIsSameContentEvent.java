@@ -23,9 +23,6 @@ import com.facebook.litho.annotations.EventHandlerRebindMode;
 /**
  * This event is triggered by {@link DataDiffSectionSpec} when it needs to verify whether two model
  * objects that represent the same item also have the same content.
- *
- * <p>todo(t16485443): The generic type declaration(OnCheckIsSameContentEvent<TEdgeModel>) is
- * temporarily removed until the bug in the attached task is fixed.
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
 @Event(returnType = Boolean.class, mode = EventHandlerRebindMode.NONE)

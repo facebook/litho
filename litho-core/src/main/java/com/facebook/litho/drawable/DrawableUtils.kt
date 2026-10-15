@@ -16,9 +16,29 @@
 
 package com.facebook.litho.drawable
 
+import android.graphics.Rect
 import android.graphics.drawable.Drawable
 
 object DrawableUtils {
+
+  /**
+   * Returns the padding of [drawable], or null if it has none.
+   *
+   * [Drawable.getPadding] is not thread-safe: on a [android.graphics.drawable.DrawableContainer]
+   * the first call lazily inflates child drawables without synchronization. The same drawable can
+   * be read by overlapping resolves (e.g. a drawable held across renders), so reads are serialized
+   * on the drawable.
+   */
+  @JvmStatic
+  fun getPaddingOrNull(drawable: Drawable): Rect? {
+    val padding = Rect()
+    synchronized(drawable) { drawable.getPadding(padding) }
+    return if (padding.left != 0 || padding.top != 0 || padding.right != 0 || padding.bottom != 0) {
+      padding
+    } else {
+      null
+    }
+  }
 
   /** null safe utility method to check equality of 2 comparable drawables */
   @JvmStatic

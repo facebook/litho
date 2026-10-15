@@ -16,10 +16,10 @@
 
 package com.facebook.litho
 
+import com.facebook.litho.layout.flexbox.Row
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.transition.transitionKey
-import java.lang.RuntimeException
 import org.assertj.core.api.Assertions
 import org.junit.Rule
 import org.junit.Test
@@ -28,7 +28,7 @@ import org.junit.runner.RunWith
 
 @RunWith(LithoTestRunner::class)
 class UniqueTransitionKeysTest {
-  @JvmField @Rule val mLithoTestRule: LithoTestRule = LithoTestRule()
+  @JvmField @Rule val lithoTestRule: LithoTestRule = LithoTestRule()
   @JvmField @Rule var expectedException: ExpectedException = ExpectedException.none()
 
   @Test
@@ -38,43 +38,48 @@ class UniqueTransitionKeysTest {
         return Row {
           child(
               Row(
-                  style =
-                      Style.transitionKey(context, "test", Transition.TransitionKeyType.GLOBAL)))
+                  style = Style.transitionKey(context, "test", Transition.TransitionKeyType.GLOBAL),
+              ),
+          )
           child(
               Row(
                   style =
-                      Style.transitionKey(context, "test2", Transition.TransitionKeyType.GLOBAL)))
+                      Style.transitionKey(context, "test2", Transition.TransitionKeyType.GLOBAL),
+              ),
+          )
         }
       }
     }
 
     val testLithoView =
-        mLithoTestRule.render(widthPx = 100, heightPx = 100) { HasUniqueTransitionKeys() }
+        lithoTestRule.render(widthPx = 100, heightPx = 100) { HasUniqueTransitionKeys() }
     testLithoView.componentTree.mainThreadLayoutState!!.transitionIdMapping
   }
 
   @Test
   fun testThrowIfSameTransitionKeyAppearsMultipleTimes() {
-    expectedException.expect(RuntimeException::class.java)
-    expectedException.expectMessage(
-        "The transitionId 'TransitionId{\"test\", GLOBAL}' is defined multiple times in the same layout.")
+    // Changed from FATAL to ERROR - duplicate transition IDs now log an error instead of throwing
+    // This test now verifies that rendering completes successfully despite the duplicate
     class HasNonUniqueTransitionKeys : KComponent() {
       override fun ComponentScope.render(): Component {
         return Row {
           child(
               Row(
-                  style =
-                      Style.transitionKey(context, "test", Transition.TransitionKeyType.GLOBAL)))
+                  style = Style.transitionKey(context, "test", Transition.TransitionKeyType.GLOBAL),
+              ),
+          )
           child(
               Row(
-                  style =
-                      Style.transitionKey(context, "test", Transition.TransitionKeyType.GLOBAL)))
+                  style = Style.transitionKey(context, "test", Transition.TransitionKeyType.GLOBAL),
+              ),
+          )
         }
       }
     }
 
     val testLithoView =
-        mLithoTestRule.render(widthPx = 100, heightPx = 100) { HasNonUniqueTransitionKeys() }
+        lithoTestRule.render(widthPx = 100, heightPx = 100) { HasNonUniqueTransitionKeys() }
+    // Rendering should complete successfully - the error is now logged, not thrown
     Assertions.assertThat(testLithoView.componentTree.mainThreadLayoutState!!.transitionIdMapping)
         .isNotNull
   }

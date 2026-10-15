@@ -37,7 +37,8 @@ class StringEditorInstance : Editor {
 
             return null
           }
-        })
+        },
+    )
     return true
   }
 }

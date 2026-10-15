@@ -19,6 +19,10 @@ package com.facebook.litho
 import android.content.Context
 import android.view.ViewGroup
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
+import com.facebook.litho.core.height
+import com.facebook.litho.core.heightPercent
+import com.facebook.litho.core.width
+import com.facebook.litho.core.widthPercent
 import com.facebook.litho.testing.LithoStatsRule
 import com.facebook.litho.testing.assertj.LithoViewAssert.Companion.assertThat
 import com.facebook.litho.testing.atMost
@@ -27,6 +31,8 @@ import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.testing.unspecified
 import com.facebook.litho.widget.SimpleMountSpecTester
+import com.facebook.rendercore.extensions.VisibilityChangeReason
+import com.facebook.rendercore.px
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assumptions
 import org.junit.Before
@@ -34,13 +40,13 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExpectedException
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchers.anyBoolean
 import org.mockito.ArgumentMatchers.anyInt
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
-import org.robolectric.Shadows.shadowOf
+import org.robolectric.shadow.api.Shadow
 import org.robolectric.shadows.ShadowView
 
 @RunWith(LithoTestRunner::class)
@@ -57,7 +63,7 @@ class LithoViewTest {
     initialComponent =
         object : InlineLayoutSpec() {
           override fun onCreateLayout(c: ComponentContext): Component {
-            return SimpleMountSpecTester.create(c).widthPx(100).heightPx(100).build()
+            return SimpleMountSpecTester(style = Style.width(100.px).height(100.px))
           }
         }
     lithoView = LithoView(getApplicationContext<Context>())
@@ -74,7 +80,7 @@ class LithoViewTest {
     assertThat(lithoView.measuredHeight).isGreaterThan(0)
 
     // Attaching will automatically mount since we already have a layout fitting our size.
-    val shadow: ShadowView = shadowOf(lithoView)
+    val shadow: ShadowView = Shadow.extract(lithoView) as ShadowView
     shadow.callOnAttachedToWindow()
     assertThat(getInternalMountItems(lithoView)).isEqualTo(2)
   }
@@ -102,7 +108,7 @@ class LithoViewTest {
     lithoView.componentTree = mockComponentTree
     lithoView.suppressMeasureComponentTree(true)
     lithoView.measure(exactly(width), exactly(height))
-    verify(mockComponentTree, never()).measure(anyInt(), anyInt(), any(), anyBoolean())
+    verify(mockComponentTree, never()).measure(anyInt(), anyInt(), anyOrNull(), anyBoolean())
     assertThat(lithoView).hasMeasuredWidthOf(width).hasMeasuredHeightOf(height)
   }
 
@@ -111,7 +117,7 @@ class LithoViewTest {
     val mockComponentTree: ComponentTree = mock()
     lithoView.componentTree = mockComponentTree
     lithoView.requestLayout()
-    lithoView.notifyVisibleBoundsChanged()
+    lithoView.notifyVisibleBoundsChanged(VisibilityChangeReason.UNKNOWN)
   }
 
   /** This verifies that the width is 0 with normal layout params. */
@@ -120,7 +126,7 @@ class LithoViewTest {
     val component: Component =
         object : InlineLayoutSpec() {
           override fun onCreateLayout(c: ComponentContext): Component {
-            return SimpleMountSpecTester.create(c).widthPercent(100f).heightPx(100).build()
+            return SimpleMountSpecTester(style = Style.widthPercent(100f).height(100.px))
           }
         }
     lithoView = LithoView(getApplicationContext<Context>())
@@ -134,7 +140,7 @@ class LithoViewTest {
     assertThat(lithoView.measuredHeight).isEqualTo(200)
 
     // Attaching will not mount anything as we have no width.
-    val shadow: ShadowView = shadowOf(lithoView)
+    val shadow: ShadowView = Shadow.extract(lithoView) as ShadowView
     shadow.callOnAttachedToWindow()
 
     // With no volume, ensure the component is not mounted.
@@ -149,7 +155,7 @@ class LithoViewTest {
     val component: Component =
         object : InlineLayoutSpec() {
           override fun onCreateLayout(c: ComponentContext): Component {
-            return SimpleMountSpecTester.create(c).widthPercent(50f).heightPercent(10f).build()
+            return SimpleMountSpecTester(style = Style.widthPercent(50f).heightPercent(10f))
           }
         }
     lithoView = LithoView(getApplicationContext<Context>())
@@ -163,7 +169,7 @@ class LithoViewTest {
     assertThat(lithoView.measuredHeight).isEqualTo(20)
 
     // Attaching will automatically mount since we already have a layout fitting our size.
-    val shadow: ShadowView = shadowOf(lithoView)
+    val shadow: ShadowView = Shadow.extract(lithoView) as ShadowView
     shadow.callOnAttachedToWindow()
     assertThat(getInternalMountItems(lithoView)).isEqualTo(2)
   }
@@ -171,7 +177,7 @@ class LithoViewTest {
   @Test
   fun testMeasureDoesNotComputeLayoutStateWhenSpecsAreExact() {
     lithoView = LithoView(getApplicationContext<Context>())
-    lithoView.setComponent(SimpleMountSpecTester.create(lithoView.componentContext).build())
+    lithoView.setComponent(SimpleMountSpecTester())
     lithoView.measure(exactly(100), exactly(100))
     assertThat(lithoView.measuredWidth).isEqualTo(100)
     assertThat(lithoView.measuredHeight).isEqualTo(100)
@@ -185,8 +191,7 @@ class LithoViewTest {
   @Test
   fun testMeasureComputesLayoutStateWhenSpecsAreNotExact() {
     lithoView = LithoView(getApplicationContext<Context>())
-    lithoView.setComponent(
-        SimpleMountSpecTester.create(lithoView.componentContext).heightPx(100).build())
+    lithoView.setComponent(SimpleMountSpecTester(style = Style.height(100.px)))
     lithoView.measure(exactly(100), atMost(100))
     assertThat(lithoView.measuredWidth).isEqualTo(100)
     assertThat(lithoView.measuredHeight).isEqualTo(100)
@@ -250,8 +255,7 @@ class LithoViewTest {
   @Test
   fun rootComponent_returnsRootComponentWhenSet_viaSetComponent() {
     assertThat(lithoView.rootComponent).isEqualTo(initialComponent)
-    val newRootComponent: Component =
-        SimpleMountSpecTester.create(lithoView.componentContext).heightPx(12345).build()
+    val newRootComponent: Component = SimpleMountSpecTester(style = Style.height(12345.px))
     lithoView.setComponent(newRootComponent)
     assertThat(lithoView.rootComponent).isEqualTo(newRootComponent)
   }
@@ -260,8 +264,9 @@ class LithoViewTest {
   fun rootComponent_returnsRootComponentWhenSet_viaSetComponentTree() {
     assertThat(lithoView.rootComponent).isEqualTo(initialComponent)
     val c = lithoView.componentContext
-    val newRootComponent: Component = SimpleMountSpecTester.create(c).heightPx(12345).build()
-    lithoView.componentTree = ComponentTree.create(c, newRootComponent).build()
+    val newRootComponent: Component = SimpleMountSpecTester(style = Style.height(12345.px))
+    lithoView.componentTree =
+        ComponentTree.create(c, newRootComponent).enableChildClipping(true).build()
     assertThat(lithoView.rootComponent).isEqualTo(newRootComponent)
   }
 
@@ -295,7 +300,7 @@ class LithoViewTest {
 
   private class RecyclerViewLayoutManagerOverrideParams(
       _widthMeasureSpec: Int,
-      _heightMeasureSpec: Int
+      _heightMeasureSpec: Int,
   ) : ViewGroup.LayoutParams(WRAP_CONTENT, WRAP_CONTENT), LayoutManagerOverrideParams {
     override val widthMeasureSpec: Int = _widthMeasureSpec
     override val heightMeasureSpec: Int = _heightMeasureSpec

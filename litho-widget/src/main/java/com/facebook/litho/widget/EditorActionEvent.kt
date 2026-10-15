@@ -24,7 +24,10 @@ import com.facebook.litho.annotations.Event
  * Event sent by EditText when the return key is pressed or the IME signals an 'action'. Return true
  * if the handler consumed the event.
  */
-@Event(returnType = Boolean::class)
+// Uses explicit Java class reference (java.lang.CharSequence::class) instead of Kotlin's to ensure
+// kapt generates correct Java stubs. Kotlin type references like cause kapt to generate invalid
+// annotations (kotlin.CharSequence.class) that the Litho annotation processor cannot handle.
+@Event(returnType = java.lang.Boolean::class)
 class EditorActionEvent {
   lateinit var view: TextView
   @JvmField var actionId: Int = 0

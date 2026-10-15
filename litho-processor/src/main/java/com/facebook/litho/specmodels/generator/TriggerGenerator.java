@@ -34,6 +34,7 @@ import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelUtils;
 import com.facebook.litho.specmodels.model.TreePropModel;
+import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ArrayTypeName;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
@@ -79,6 +80,10 @@ public class TriggerGenerator {
         MethodSpec.methodBuilder("acceptTriggerEventImpl")
             .addModifiers(Modifier.PROTECTED)
             .addAnnotation(Override.class)
+            .addAnnotation(
+                AnnotationSpec.builder(SuppressWarnings.class)
+                    .addMember("value", "{$S, $S, $S}", "unchecked", "rawtypes", "cast")
+                    .build())
             .returns(TypeName.OBJECT)
             .addParameter(
                 ParameterSpec.builder(EVENT_TRIGGER, "eventTrigger", Modifier.FINAL).build())
@@ -142,6 +147,10 @@ public class TriggerGenerator {
         MethodSpec.methodBuilder("recordEventTrigger")
             .addModifiers(Modifier.PUBLIC)
             .addAnnotation(Override.class)
+            .addAnnotation(
+                AnnotationSpec.builder(SuppressWarnings.class)
+                    .addMember("value", "$S", "rawtypes")
+                    .build())
             .addParameter(ClassNames.COMPONENT_CONTEXT, "c")
             .addParameter(ParameterSpec.builder(EVENT_TRIGGER_CONTAINER, "container").build());
 
@@ -177,6 +186,10 @@ public class TriggerGenerator {
     final MethodSpec.Builder methodSpec =
         MethodSpec.methodBuilder(eventMethodModel.name.toString())
             .addModifiers(Modifier.PRIVATE)
+            .addAnnotation(
+                AnnotationSpec.builder(SuppressWarnings.class)
+                    .addMember("value", "$S", "cast")
+                    .build())
             .returns(eventMethodModel.returnType)
             .addParameter(specModel.getContextClass(), "c")
             .addParameter(ClassNames.EVENT_TRIGGER_TARGET, ABSTRACT_PARAM_NAME)
@@ -199,7 +212,8 @@ public class TriggerGenerator {
           "null");
     }
 
-    final String sourceDelegateAccessor = SpecModelUtils.getSpecAccessor(specModel);
+    final String sourceDelegateAccessor =
+        SpecModelUtils.getSpecAccessor(specModel, eventMethodModel);
     if (eventMethodModel.returnType.equals(TypeName.VOID)) {
       delegation.add("$L.$L(\n", sourceDelegateAccessor, eventMethodModel.name);
     } else {
@@ -311,6 +325,10 @@ public class TriggerGenerator {
                 + " the component a Handle and use {@link #$L(ComponentContext, Handle)}.\n",
             eventMethodModel.name.toString())
         .addAnnotation(java.lang.Deprecated.class)
+        .addAnnotation(
+            AnnotationSpec.builder(SuppressWarnings.class)
+                .addMember("value", "$S", "unchecked")
+                .build())
         .addParameter(contextClassName, "c")
         .addParameter(ClassNames.STRING, "key")
         .addStatement(
@@ -420,7 +438,11 @@ public class TriggerGenerator {
 
     MethodSpec.Builder triggerMethod =
         MethodSpec.methodBuilder(eventMethodModel.name.toString())
-            .addModifiers(Modifier.PUBLIC, Modifier.STATIC);
+            .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+            .addAnnotation(
+                AnnotationSpec.builder(SuppressWarnings.class)
+                    .addMember("value", "{$S, $S}", "unchecked", "rawtypes")
+                    .build());
 
     if (triggerLookup == TriggerLookup.KEY) {
       triggerMethod
@@ -463,7 +485,11 @@ public class TriggerGenerator {
         MethodSpec.methodBuilder(eventMethodModel.name.toString())
             .addJavadoc(DEPRECATED_METHOD_JAVADOC, eventMethodModel.name.toString())
             .addAnnotation(java.lang.Deprecated.class)
-            .addModifiers(Modifier.PUBLIC, Modifier.STATIC);
+            .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+            .addAnnotation(
+                AnnotationSpec.builder(SuppressWarnings.class)
+                    .addMember("value", "{$S, $S}", "unchecked", "rawtypes")
+                    .build());
 
     triggerMethod.addParameter(ClassNames.EVENT_TRIGGER, "trigger");
 

@@ -39,7 +39,8 @@ class ParallelAnimation(private val animators: Array<out AnimatedAnimation>) : A
               }
               animatorFinished(cancelled)
             }
-          })
+          },
+      )
     }
   }
 

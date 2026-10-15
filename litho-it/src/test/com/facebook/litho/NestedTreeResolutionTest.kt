@@ -16,21 +16,33 @@
 
 package com.facebook.litho
 
+import android.view.View
 import com.facebook.litho.LifecycleStep.StepInfo
 import com.facebook.litho.YogaLayoutOutput.Companion.getYogaNode
 import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.core.height
+import com.facebook.litho.core.orDefault
+import com.facebook.litho.core.padding
+import com.facebook.litho.core.width
+import com.facebook.litho.flexbox.flex
+import com.facebook.litho.flexbox.layoutDirection
+import com.facebook.litho.kotlin.widget.Text as KText
+import com.facebook.litho.layout.RenderWithConstraints
+import com.facebook.litho.layout.flexbox.Column
+import com.facebook.litho.layout.flexbox.Row
 import com.facebook.litho.stateupdates.ComponentWithMeasureCall
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.helper.ComponentTestHelper
 import com.facebook.litho.testing.testrunner.LithoTestRunner
+import com.facebook.litho.widget.CardClip
 import com.facebook.litho.widget.ComponentWithSizeSpecWithMeasureCall
 import com.facebook.litho.widget.LayoutSpecLifecycleTester
 import com.facebook.litho.widget.LayoutWithSizeSpecLifecycleTester
 import com.facebook.litho.widget.MountSpecPureRenderLifecycleTester
-import com.facebook.litho.widget.NestedTreeComponentSpec.ExtraProps
-import com.facebook.litho.widget.RootComponentWithTreeProps
 import com.facebook.litho.widget.Text
+import com.facebook.rendercore.dp
+import com.facebook.rendercore.px
 import com.facebook.yoga.YogaDirection
 import com.facebook.yoga.YogaEdge
 import java.util.ArrayList
@@ -55,7 +67,7 @@ class NestedTreeResolutionTest {
   @Test
   fun onRenderComponentWithSizeSpec_shouldContainNestTreeHolderAndNestedProps() {
     val c = lithoTestRule.context
-    val component = RootComponentWithTreeProps.create(c).build()
+    val component = RootComponentWithTreeProps()
     val testLithoView = lithoTestRule.render(widthPx = 100, heightPx = 100) { component }
 
     // At the end of layout calculation, the render & layout context container should be null
@@ -72,35 +84,40 @@ class NestedTreeResolutionTest {
   @Test
   fun onRenderComponentWithSizeSpecWithoutReuse_shouldCallOnCreateLayoutTwice() {
     val c = lithoTestRule.context
-    val component = RootComponentWithTreeProps.create(c).shouldNotUpdateState(true).build()
-    val props = ExtraProps()
+    val component = RootComponentWithTreeProps(shouldNotUpdateState = true)
+    val props = NestedTreeComponent.ExtraProps()
     props.steps = ArrayList()
     val testLithoView =
-        lithoTestRule.setTreeProp(ExtraProps::class.java, props).render(
-            widthPx = 100, heightPx = 100) {
-              component
-            }
+        lithoTestRule.setTreeProp(NestedTreeComponent.ExtraProps::class.java, props).render(
+            widthPx = 100,
+            heightPx = 100,
+        ) {
+          component
+        }
     val root = testLithoView.currentRootNode
     assertThat(root).isNotNull
     assertThat(root?.getChildAt(1)).isInstanceOf(DeferredLithoLayoutResult::class.java)
     assertThat(props.steps)
         .containsExactly(
             LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-            LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
+            LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+        )
   }
 
   @Test
   fun onRenderComponentWithSizeSpec_shouldNotTransferLayoutDirectionIfExplicitlySet() {
     val c = lithoTestRule.context
-    val component = RootComponentWithTreeProps.create(c).shouldNotUpdateState(true).build()
-    val props = ExtraProps()
+    val component = RootComponentWithTreeProps(shouldNotUpdateState = true)
+    val props = NestedTreeComponent.ExtraProps()
     props.steps = ArrayList()
-    props.mDirection = YogaDirection.RTL
+    props.direction = YogaDirection.RTL
     val testLithoView =
-        lithoTestRule.setTreeProp(ExtraProps::class.java, props).render(
-            widthPx = 100, heightPx = 100) {
-              component
-            }
+        lithoTestRule.setTreeProp(NestedTreeComponent.ExtraProps::class.java, props).render(
+            widthPx = 100,
+            heightPx = 100,
+        ) {
+          component
+        }
     val root = testLithoView.currentRootNode
     assertThat(root).isNotNull
     assertThat(root?.getChildAt(1)).isInstanceOf(DeferredLithoLayoutResult::class.java)
@@ -112,18 +129,19 @@ class NestedTreeResolutionTest {
   @Test
   fun onRenderComponentWithSizeSpec_shouldTransferLayoutDirectionIfNotExplicitlySet() {
     val c = lithoTestRule.context
-    val component =
-        RootComponentWithTreeProps.create(c)
-            .shouldNotUpdateState(true)
-            .layoutDirection(YogaDirection.RTL)
-            .build()
-    val props = ExtraProps()
+    val component = RootComponentWithTreeProps(
+        shouldNotUpdateState = true,
+        style = Style.layoutDirection(YogaDirection.RTL),
+    )
+    val props = NestedTreeComponent.ExtraProps()
     props.steps = ArrayList()
     val testLithoView =
-        lithoTestRule.setTreeProp(ExtraProps::class.java, props).render(
-            widthPx = 100, heightPx = 100) {
-              component
-            }
+        lithoTestRule.setTreeProp(NestedTreeComponent.ExtraProps::class.java, props).render(
+            widthPx = 100,
+            heightPx = 100,
+        ) {
+          component
+        }
     val root = testLithoView.currentRootNode
     assertThat(root).isNotNull
     assertThat(root?.getChildAt(1)).isInstanceOf(DeferredLithoLayoutResult::class.java)
@@ -150,7 +168,8 @@ class NestedTreeResolutionTest {
         .containsExactly(
             LifecycleStep.ON_CREATE_INITIAL_STATE,
             LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-            LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
+            LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+        )
     assertThat(tracker0.steps)
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
@@ -166,7 +185,8 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_ATTACHED, // Mount phase
             LifecycleStep.ON_CREATE_MOUNT_CONTENT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
     info0.clear()
     tracker0.reset()
     val info1: List<StepInfo> = ArrayList()
@@ -193,7 +213,8 @@ class NestedTreeResolutionTest {
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
             LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-            LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
+            LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+        )
     assertThat(tracker1.steps)
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
@@ -206,7 +227,8 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_PREPARE,
             LifecycleStep.SHOULD_UPDATE, // Called during layout diffing
             LifecycleStep.ON_BOUNDS_DEFINED, // Mount phase
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
   }
 
   @Test
@@ -222,7 +244,8 @@ class NestedTreeResolutionTest {
         Row.create(c)
             .heightPx(100) // Ensures that nested tree is resolved only twice
             .child(
-                LayoutWithSizeSpecLifecycleTester.create(c).steps(info0).body(layoutWithSizeSpec))
+                LayoutWithSizeSpecLifecycleTester.create(c).steps(info0).body(layoutWithSizeSpec),
+            )
             .child(Text.create(c).text("Hello World"))
             .build()
     val testLithoView = lithoTestRule.render { root0 }
@@ -231,13 +254,15 @@ class NestedTreeResolutionTest {
         .containsExactly(
             LifecycleStep.ON_CREATE_INITIAL_STATE,
             LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-            LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
+            LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+        )
     assertThat(LifecycleStep.getSteps(info0_nested))
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
             LifecycleStep.ON_CREATE_INITIAL_STATE,
             LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-            LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
+            LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+        )
     assertThat(tracker0.steps)
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
@@ -253,7 +278,8 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_ATTACHED, // Mount phase
             LifecycleStep.ON_CREATE_MOUNT_CONTENT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
     info0.clear()
     info0_nested.clear()
     tracker0.reset()
@@ -271,7 +297,8 @@ class NestedTreeResolutionTest {
         Row.create(c)
             .heightPx(100) // Ensures that nested tree is resolved only twice
             .child(
-                LayoutWithSizeSpecLifecycleTester.create(c).steps(info1).body(layoutWithSizeSpec1))
+                LayoutWithSizeSpecLifecycleTester.create(c).steps(info1).body(layoutWithSizeSpec1),
+            )
             .child(Text.create(c).text("Hello World"))
             .build()
     testLithoView.setRoot(root1)
@@ -285,12 +312,14 @@ class NestedTreeResolutionTest {
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
             LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-            LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
+            LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+        )
     assertThat(LifecycleStep.getSteps(info1_nested))
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
             LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-            LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
+            LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+        )
     assertThat(tracker1.steps)
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
@@ -303,7 +332,8 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_PREPARE,
             LifecycleStep.SHOULD_UPDATE, // Called during layout diffing
             LifecycleStep.ON_BOUNDS_DEFINED, // Mount phase
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
   }
 
   @Test
@@ -317,7 +347,9 @@ class NestedTreeResolutionTest {
     assertThat(LifecycleStep.getSteps(info0))
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
-            LifecycleStep.ON_CREATE_INITIAL_STATE, LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
+            LifecycleStep.ON_CREATE_INITIAL_STATE,
+            LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+        )
     assertThat(tracker0.steps)
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
@@ -330,7 +362,8 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_ATTACHED, // Mount phase
             LifecycleStep.ON_CREATE_MOUNT_CONTENT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
     info0.clear()
     tracker0.reset()
     val info1: MutableList<StepInfo> = ArrayList()
@@ -360,7 +393,8 @@ class NestedTreeResolutionTest {
             LifecycleStep.SHOULD_UPDATE, // Called during layout diffing,
             // Collect results phase
             LifecycleStep.ON_BOUNDS_DEFINED, // Mount phase
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
     info1.clear()
     tracker1.reset()
     val info2: List<StepInfo> = ArrayList()
@@ -379,7 +413,8 @@ class NestedTreeResolutionTest {
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
             LifecycleStep.ON_UNBIND,
-            LifecycleStep.ON_UNMOUNT /* Because shouldUpdate returns true */)
+            LifecycleStep.ON_UNMOUNT, /* Because shouldUpdate returns true */
+        )
     assertThat(LifecycleStep.getSteps(info2))
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
@@ -394,7 +429,8 @@ class NestedTreeResolutionTest {
             // Collect results phase
             LifecycleStep.ON_BOUNDS_DEFINED, // Mount phase
             LifecycleStep.ON_MOUNT, // Because shouldUpdate returns true
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
   }
 
   @Test
@@ -412,11 +448,15 @@ class NestedTreeResolutionTest {
     assertThat(LifecycleStep.getSteps(info0))
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
-            LifecycleStep.ON_CREATE_INITIAL_STATE, LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
+            LifecycleStep.ON_CREATE_INITIAL_STATE,
+            LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+        )
     assertThat(LifecycleStep.getSteps(info0_nested))
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
-            LifecycleStep.ON_CREATE_INITIAL_STATE, LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
+            LifecycleStep.ON_CREATE_INITIAL_STATE,
+            LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+        )
     assertThat(tracker0.steps)
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
@@ -429,7 +469,8 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_ATTACHED, // Mount phase
             LifecycleStep.ON_CREATE_MOUNT_CONTENT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
     info0.clear()
     info0_nested.clear()
     tracker0.reset()
@@ -470,7 +511,8 @@ class NestedTreeResolutionTest {
             LifecycleStep.SHOULD_UPDATE, // Called during layout diffing,
             // Collect results phase
             LifecycleStep.ON_BOUNDS_DEFINED, // Mount phase
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
     info1.clear()
     info1_nested.clear()
     tracker1.reset()
@@ -497,7 +539,8 @@ class NestedTreeResolutionTest {
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
             LifecycleStep.ON_UNBIND,
-            LifecycleStep.ON_UNMOUNT /* Because shouldUpdate returns true */)
+            LifecycleStep.ON_UNMOUNT, /* Because shouldUpdate returns true */
+        )
     assertThat(LifecycleStep.getSteps(info2))
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
@@ -515,18 +558,35 @@ class NestedTreeResolutionTest {
             // Collect results phase
             LifecycleStep.ON_BOUNDS_DEFINED, // Mount phase
             LifecycleStep.ON_MOUNT, // Because shouldUpdate returns true
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
+  }
+
+  @Test
+  fun `view-mounting component at the root of nested size-dependent layouts mounts`() {
+    // Two nested size-dependent layouts at the root put the View-mounting component behind two
+    // deferred results; the root host must still be allowed to wrap it.
+    val view = View(lithoTestRule.context.androidContext)
+    val root = RenderWithConstraints {
+      RenderWithConstraints {
+        TestViewPrimitiveComponent(view = view, style = Style.width(50.px).height(50.px))
+      }
+    }
+
+    val testLithoView = lithoTestRule.render(widthPx = 100, heightPx = 100) { root }
+
+    assertThat(view.parent).isNotNull
+    assertThat(testLithoView.lithoView.width).isEqualTo(100)
   }
 
   @Test
   fun LayoutWithSizeSpecUsingMeasureAPIShouldMountCorrectly() {
     val c = lithoTestRule.context
     val text_component = Text.create(c).text("sample_text").build()
-    val root =
-        ComponentWithSizeSpecWithMeasureCall.create(c)
-            .component(text_component)
-            .shouldCacheResult(true)
-            .build()
+    val root = ComponentWithSizeSpecWithMeasureCall(
+        component = text_component,
+        shouldCacheResult = true,
+    )
     val testLithoView = lithoTestRule.render { root }
     ComponentTestHelper.mountComponent(c, root)
     assertThat(testLithoView.findViewWithText("sample_text")).isNotNull
@@ -548,9 +608,13 @@ class NestedTreeResolutionTest {
     val mountableLifecycleTracker = LifecycleTracker()
     val widthSpec = exactly(500)
     val heightSpec = exactly(500)
-    val root =
-        createComponentMeasuringOCLComponent(
-            c, stepsInfo, mountableLifecycleTracker, widthSpec, heightSpec)
+    val root = createComponentMeasuringOCLComponent(
+        c,
+        stepsInfo,
+        mountableLifecycleTracker,
+        widthSpec,
+        heightSpec,
+    )
     val lithoViewWidthSpec = exactly(300)
     val lithoViewHeightSpec = exactly(300)
     lithoTestRule.render(widthSpec = lithoViewHeightSpec, heightSpec = lithoViewHeightSpec) { root }
@@ -567,7 +631,8 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_EVENT_VISIBLE,
             LifecycleStep.ON_FULL_IMPRESSION_VISIBLE_EVENT,
-            LifecycleStep.ON_VISIBILITY_CHANGED)
+            LifecycleStep.ON_VISIBILITY_CHANGED,
+        )
     assertThat(mountableLifecycleTracker.steps)
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
@@ -581,7 +646,8 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_CREATE_MOUNT_CONTENT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
   }
 
   /*
@@ -600,9 +666,13 @@ class NestedTreeResolutionTest {
     val mountableLifecycleTracker = LifecycleTracker()
     val widthSpec = exactly(500)
     val heightSpec = exactly(500)
-    val root =
-        createComponentMeasuringOCLComponent(
-            c, stepsInfo, mountableLifecycleTracker, widthSpec, heightSpec)
+    val root = createComponentMeasuringOCLComponent(
+        c,
+        stepsInfo,
+        mountableLifecycleTracker,
+        widthSpec,
+        heightSpec,
+    )
     val lithoViewWidthSpec = exactly(500)
     val lithoViewHeightSpec = exactly(500)
     lithoTestRule.render(widthSpec = lithoViewHeightSpec, heightSpec = lithoViewHeightSpec) { root }
@@ -616,7 +686,8 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_EVENT_VISIBLE,
             LifecycleStep.ON_FULL_IMPRESSION_VISIBLE_EVENT,
-            LifecycleStep.ON_VISIBILITY_CHANGED)
+            LifecycleStep.ON_VISIBILITY_CHANGED,
+        )
     assertThat(mountableLifecycleTracker.steps)
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
@@ -629,7 +700,8 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_CREATE_MOUNT_CONTENT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
   }
 
   /*
@@ -650,9 +722,13 @@ class NestedTreeResolutionTest {
     val mountableLifecycleTracker = LifecycleTracker()
     val widthSpec = exactly(500)
     val heightSpec = exactly(500)
-    val root =
-        createComponentMeasuringLayoutWithSizeSpecAsRoot(
-            c, layoutWithSizeSpecStepsInfo, mountableLifecycleTracker, widthSpec, heightSpec)
+    val root = createComponentMeasuringLayoutWithSizeSpecAsRoot(
+        c,
+        layoutWithSizeSpecStepsInfo,
+        mountableLifecycleTracker,
+        widthSpec,
+        heightSpec,
+    )
     val lithoViewWidthSpec = exactly(300)
     val lithoViewHeightSpec = exactly(300)
     lithoTestRule.render(widthSpec = lithoViewHeightSpec, heightSpec = lithoViewHeightSpec) { root }
@@ -661,7 +737,8 @@ class NestedTreeResolutionTest {
         .containsExactly(
             LifecycleStep.ON_CREATE_INITIAL_STATE,
             // OCLWSS gets resolved in measure phase
-            LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
+            LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+        )
     // we are resolving OCLWSS in measure phase it
     // gets resolved only once
     assertThat(mountableLifecycleTracker.steps)
@@ -676,7 +753,8 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_CREATE_MOUNT_CONTENT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
   }
 
   /*
@@ -697,9 +775,13 @@ class NestedTreeResolutionTest {
     val mountableLifecycleTracker = LifecycleTracker()
     val widthSpec = exactly(500)
     val heightSpec = exactly(500)
-    val root =
-        createComponentMeasuringLayoutWithSizeSpecAsRoot(
-            c, layoutWithSizeSpecStepsInfo, mountableLifecycleTracker, widthSpec, heightSpec)
+    val root = createComponentMeasuringLayoutWithSizeSpecAsRoot(
+        c,
+        layoutWithSizeSpecStepsInfo,
+        mountableLifecycleTracker,
+        widthSpec,
+        heightSpec,
+    )
     lithoTestRule.render(widthSpec = widthSpec, heightSpec = heightSpec) { root }
     val layoutWithSizeSpecSteps = LifecycleStep.getSteps(layoutWithSizeSpecStepsInfo)
 
@@ -708,7 +790,8 @@ class NestedTreeResolutionTest {
         .containsExactly(
             LifecycleStep.ON_CREATE_INITIAL_STATE,
             // OCLWSS gets resolved in measure phase
-            LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
+            LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+        )
     assertThat(mountableLifecycleTracker.steps)
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
@@ -721,7 +804,8 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_CREATE_MOUNT_CONTENT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
   }
 
   /*
@@ -743,14 +827,14 @@ class NestedTreeResolutionTest {
     val mountableLifecycleTracker = LifecycleTracker()
     val widthSpec = exactly(500)
     val heightSpec = exactly(500)
-    val root =
-        createComponentMeasuringLayoutWithSizeSpecAsChild(
-            c,
-            stepsInfo,
-            layoutWithSizeSpecStepsInfo,
-            mountableLifecycleTracker,
-            widthSpec,
-            heightSpec)
+    val root = createComponentMeasuringLayoutWithSizeSpecAsChild(
+        c,
+        stepsInfo,
+        layoutWithSizeSpecStepsInfo,
+        mountableLifecycleTracker,
+        widthSpec,
+        heightSpec,
+    )
     val lithoViewWidthSpec = exactly(300)
     val lithoViewHeightSpec = exactly(300)
     lithoTestRule.render(widthSpec = lithoViewHeightSpec, heightSpec = lithoViewHeightSpec) { root }
@@ -768,7 +852,8 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_EVENT_VISIBLE,
             LifecycleStep.ON_FULL_IMPRESSION_VISIBLE_EVENT,
-            LifecycleStep.ON_VISIBILITY_CHANGED)
+            LifecycleStep.ON_VISIBILITY_CHANGED,
+        )
 
     // Since OCLWSS is child of OCL which is being measured, we do not see ON_CREATE_INITIAL_STATE
     // called twice. OCL will get another ON_CREATE_INITIAL_STATE call after global key changes and
@@ -777,7 +862,8 @@ class NestedTreeResolutionTest {
         .containsExactly(
             LifecycleStep.ON_CREATE_INITIAL_STATE,
             LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-            LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
+            LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+        )
     assertThat(mountableLifecycleTracker.steps)
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
@@ -793,7 +879,8 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_CREATE_MOUNT_CONTENT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
   }
 
   /*
@@ -815,14 +902,14 @@ class NestedTreeResolutionTest {
     val mountableLifecycleTracker = LifecycleTracker()
     val widthSpec = exactly(500)
     val heightSpec = exactly(500)
-    val root =
-        createComponentMeasuringLayoutWithSizeSpecAsChild(
-            c,
-            stepsInfo,
-            layoutWithSizeSpecStepsInfo,
-            mountableLifecycleTracker,
-            widthSpec,
-            heightSpec)
+    val root = createComponentMeasuringLayoutWithSizeSpecAsChild(
+        c,
+        stepsInfo,
+        layoutWithSizeSpecStepsInfo,
+        mountableLifecycleTracker,
+        widthSpec,
+        heightSpec,
+    )
     val lithoViewWidthSpec = exactly(500)
     val lithoViewHeightSpec = exactly(500)
     lithoTestRule.render(widthSpec = lithoViewHeightSpec, heightSpec = lithoViewHeightSpec) { root }
@@ -837,10 +924,13 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_EVENT_VISIBLE,
             LifecycleStep.ON_FULL_IMPRESSION_VISIBLE_EVENT,
-            LifecycleStep.ON_VISIBILITY_CHANGED)
+            LifecycleStep.ON_VISIBILITY_CHANGED,
+        )
     assertThat(layoutWithSizeSpecSteps)
         .containsExactly(
-            LifecycleStep.ON_CREATE_INITIAL_STATE, LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
+            LifecycleStep.ON_CREATE_INITIAL_STATE,
+            LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+        )
     assertThat(mountableLifecycleTracker.steps)
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
@@ -853,7 +943,8 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_CREATE_MOUNT_CONTENT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
   }
 
   /*
@@ -887,7 +978,8 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_EVENT_VISIBLE,
             LifecycleStep.ON_FULL_IMPRESSION_VISIBLE_EVENT,
-            LifecycleStep.ON_VISIBILITY_CHANGED)
+            LifecycleStep.ON_VISIBILITY_CHANGED,
+        )
     assertThat(mountableLifecycleTracker.steps)
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
@@ -900,7 +992,8 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_CREATE_MOUNT_CONTENT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
   }
 
   /*
@@ -918,9 +1011,11 @@ class NestedTreeResolutionTest {
     val c = lithoTestRule.context
     val layoutWithSizeSpecStepsInfo: List<StepInfo> = ArrayList()
     val mountableLifecycleTracker = LifecycleTracker()
-    val root =
-        createComponentWithSizeSpecMeasuringComponentWithSizeSpecAsRoot(
-            c, layoutWithSizeSpecStepsInfo, mountableLifecycleTracker)
+    val root = createComponentWithSizeSpecMeasuringComponentWithSizeSpecAsRoot(
+        c,
+        layoutWithSizeSpecStepsInfo,
+        mountableLifecycleTracker,
+    )
     val lithoViewWidthSpec = exactly(500)
     val lithoViewHeightSpec = exactly(500)
     lithoTestRule.render(widthSpec = lithoViewHeightSpec, heightSpec = lithoViewHeightSpec) { root }
@@ -929,7 +1024,8 @@ class NestedTreeResolutionTest {
         .containsExactly(
             LifecycleStep.ON_CREATE_INITIAL_STATE,
             // OCLWSS gets resolved in measure phase
-            LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
+            LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+        )
     // we are resolving OCLWSS in measure phase it
     // gets resolved only once
     assertThat(mountableLifecycleTracker.steps)
@@ -944,7 +1040,8 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_CREATE_MOUNT_CONTENT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
   }
 
   /*
@@ -964,9 +1061,12 @@ class NestedTreeResolutionTest {
     val stepsInfo: List<StepInfo> = ArrayList()
     val layoutWithSizeSpecStepsInfo: List<StepInfo> = ArrayList()
     val mountableLifecycleTracker = LifecycleTracker()
-    val root =
-        createComponentWithSizeSpecMeasuringComponentWithSizeSpecAsChild(
-            c, stepsInfo, layoutWithSizeSpecStepsInfo, mountableLifecycleTracker)
+    val root = createComponentWithSizeSpecMeasuringComponentWithSizeSpecAsChild(
+        c,
+        stepsInfo,
+        layoutWithSizeSpecStepsInfo,
+        mountableLifecycleTracker,
+    )
     val lithoViewWidthSpec = exactly(500)
     val lithoViewHeightSpec = exactly(500)
     lithoTestRule.render(widthSpec = lithoViewHeightSpec, heightSpec = lithoViewHeightSpec) { root }
@@ -984,10 +1084,13 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_EVENT_VISIBLE,
             LifecycleStep.ON_FULL_IMPRESSION_VISIBLE_EVENT,
-            LifecycleStep.ON_VISIBILITY_CHANGED)
+            LifecycleStep.ON_VISIBILITY_CHANGED,
+        )
     assertThat(layoutWithSizeSpecSteps)
         .containsExactly(
-            LifecycleStep.ON_CREATE_INITIAL_STATE, LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
+            LifecycleStep.ON_CREATE_INITIAL_STATE,
+            LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+        )
     assertThat(mountableLifecycleTracker.steps)
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
@@ -1000,7 +1103,8 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_CREATE_MOUNT_CONTENT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
   }
 
   /*
@@ -1021,18 +1125,18 @@ class NestedTreeResolutionTest {
     val mountableLifecycleTracker = LifecycleTracker()
     val widthSpec = exactly(500)
     val heightSpec = exactly(500)
-    val root =
-        createComponent(
-            c,
-            layoutWithSizeSpecStepsInfo,
-            mountableLifecycleTracker,
-            widthSpec,
-            heightSpec,
-            widthSpec,
-            heightSpec,
-            true,
-            true,
-            true)
+    val root = createComponent(
+        c,
+        layoutWithSizeSpecStepsInfo,
+        mountableLifecycleTracker,
+        widthSpec,
+        heightSpec,
+        widthSpec,
+        heightSpec,
+        true,
+        true,
+        true,
+    )
     val lithoViewWidthSpec = exactly(500)
     val lithoViewHeightSpec = exactly(500)
     lithoTestRule.render(widthSpec = lithoViewHeightSpec, heightSpec = lithoViewHeightSpec) { root }
@@ -1046,7 +1150,8 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_EVENT_VISIBLE,
             LifecycleStep.ON_FULL_IMPRESSION_VISIBLE_EVENT,
-            LifecycleStep.ON_VISIBILITY_CHANGED)
+            LifecycleStep.ON_VISIBILITY_CHANGED,
+        )
     assertThat(mountableLifecycleTracker.steps)
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
@@ -1059,7 +1164,8 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_CREATE_MOUNT_CONTENT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
   }
 
   /*
@@ -1082,18 +1188,18 @@ class NestedTreeResolutionTest {
     val parentHeightSpec = exactly(500)
     val childWidthSpec = exactly(600)
     val childHeightSpec = exactly(600)
-    val root =
-        createComponent(
-            c,
-            lifecycleStepsInfo,
-            mountableLifecycleTracker,
-            parentWidthSpec,
-            parentHeightSpec,
-            childWidthSpec,
-            childHeightSpec,
-            true,
-            true,
-            true)
+    val root = createComponent(
+        c,
+        lifecycleStepsInfo,
+        mountableLifecycleTracker,
+        parentWidthSpec,
+        parentHeightSpec,
+        childWidthSpec,
+        childHeightSpec,
+        true,
+        true,
+        true,
+    )
     val lithoViewWidthSpec = exactly(300)
     val lithoViewHeightSpec = exactly(300)
     lithoTestRule.render(widthSpec = lithoViewHeightSpec, heightSpec = lithoViewHeightSpec) { root }
@@ -1107,7 +1213,8 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_EVENT_VISIBLE,
             LifecycleStep.ON_FULL_IMPRESSION_VISIBLE_EVENT,
-            LifecycleStep.ON_VISIBILITY_CHANGED)
+            LifecycleStep.ON_VISIBILITY_CHANGED,
+        )
     assertThat(mountableLifecycleTracker.steps)
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
@@ -1121,7 +1228,8 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_CREATE_MOUNT_CONTENT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
   }
 
   /*
@@ -1142,25 +1250,27 @@ class NestedTreeResolutionTest {
     val mountableLifecycleTracker = LifecycleTracker()
     val widthSpec = exactly(500)
     val heightSpec = exactly(500)
-    val root =
-        createComponent(
-            c,
-            layoutWithSizeSpecStepsInfo,
-            mountableLifecycleTracker,
-            widthSpec,
-            heightSpec,
-            widthSpec,
-            heightSpec,
-            true,
-            true,
-            false)
+    val root = createComponent(
+        c,
+        layoutWithSizeSpecStepsInfo,
+        mountableLifecycleTracker,
+        widthSpec,
+        heightSpec,
+        widthSpec,
+        heightSpec,
+        true,
+        true,
+        false,
+    )
     val lithoViewWidthSpec = exactly(500)
     val lithoViewHeightSpec = exactly(500)
     lithoTestRule.render(widthSpec = lithoViewHeightSpec, heightSpec = lithoViewHeightSpec) { root }
     val stepsInfo = LifecycleStep.getSteps(layoutWithSizeSpecStepsInfo)
     assertThat(stepsInfo)
         .containsExactly(
-            LifecycleStep.ON_CREATE_INITIAL_STATE, LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
+            LifecycleStep.ON_CREATE_INITIAL_STATE,
+            LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+        )
     assertThat(mountableLifecycleTracker.steps)
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
@@ -1173,7 +1283,8 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_CREATE_MOUNT_CONTENT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
   }
 
   /*
@@ -1194,25 +1305,27 @@ class NestedTreeResolutionTest {
     val mountableLifecycleTracker = LifecycleTracker()
     val widthSpec = exactly(500)
     val heightSpec = exactly(500)
-    val root =
-        createComponent(
-            c,
-            layoutWithSizeSpecStepsInfo,
-            mountableLifecycleTracker,
-            widthSpec,
-            heightSpec,
-            widthSpec,
-            heightSpec,
-            true,
-            true,
-            false)
+    val root = createComponent(
+        c,
+        layoutWithSizeSpecStepsInfo,
+        mountableLifecycleTracker,
+        widthSpec,
+        heightSpec,
+        widthSpec,
+        heightSpec,
+        true,
+        true,
+        false,
+    )
     val lithoViewWidthSpec = exactly(300)
     val lithoViewHeightSpec = exactly(300)
     lithoTestRule.render(widthSpec = lithoViewHeightSpec, heightSpec = lithoViewHeightSpec) { root }
     val stepsInfo = LifecycleStep.getSteps(layoutWithSizeSpecStepsInfo)
     assertThat(stepsInfo)
         .containsExactly(
-            LifecycleStep.ON_CREATE_INITIAL_STATE, LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
+            LifecycleStep.ON_CREATE_INITIAL_STATE,
+            LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+        )
     assertThat(mountableLifecycleTracker.steps)
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
@@ -1225,7 +1338,8 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_CREATE_MOUNT_CONTENT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
   }
 
   /*
@@ -1246,18 +1360,18 @@ class NestedTreeResolutionTest {
     val mountableLifecycleTracker = LifecycleTracker()
     val widthSpec = exactly(500)
     val heightSpec = exactly(500)
-    val root =
-        createComponent(
-            c,
-            layoutWithSizeSpecStepsInfo,
-            mountableLifecycleTracker,
-            widthSpec,
-            heightSpec,
-            widthSpec,
-            heightSpec,
-            true,
-            false,
-            true)
+    val root = createComponent(
+        c,
+        layoutWithSizeSpecStepsInfo,
+        mountableLifecycleTracker,
+        widthSpec,
+        heightSpec,
+        widthSpec,
+        heightSpec,
+        true,
+        false,
+        true,
+    )
     val lithoViewWidthSpec = exactly(500)
     val lithoViewHeightSpec = exactly(500)
     lithoTestRule.render(widthSpec = lithoViewHeightSpec, heightSpec = lithoViewHeightSpec) { root }
@@ -1271,7 +1385,8 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_EVENT_VISIBLE,
             LifecycleStep.ON_FULL_IMPRESSION_VISIBLE_EVENT,
-            LifecycleStep.ON_VISIBILITY_CHANGED)
+            LifecycleStep.ON_VISIBILITY_CHANGED,
+        )
     assertThat(mountableLifecycleTracker.steps)
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
@@ -1284,7 +1399,8 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_CREATE_MOUNT_CONTENT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
   }
 
   /*
@@ -1305,18 +1421,18 @@ class NestedTreeResolutionTest {
     val mountableLifecycleTracker = LifecycleTracker()
     val widthSpec = exactly(500)
     val heightSpec = exactly(500)
-    val root =
-        createComponent(
-            c,
-            layoutWithSizeSpecStepsInfo,
-            mountableLifecycleTracker,
-            widthSpec,
-            heightSpec,
-            widthSpec,
-            heightSpec,
-            true,
-            false,
-            true)
+    val root = createComponent(
+        c,
+        layoutWithSizeSpecStepsInfo,
+        mountableLifecycleTracker,
+        widthSpec,
+        heightSpec,
+        widthSpec,
+        heightSpec,
+        true,
+        false,
+        true,
+    )
     val lithoViewWidthSpec = exactly(300)
     val lithoViewHeightSpec = exactly(300)
     lithoTestRule.render(widthSpec = lithoViewHeightSpec, heightSpec = lithoViewHeightSpec) { root }
@@ -1330,7 +1446,8 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_EVENT_VISIBLE,
             LifecycleStep.ON_FULL_IMPRESSION_VISIBLE_EVENT,
-            LifecycleStep.ON_VISIBILITY_CHANGED)
+            LifecycleStep.ON_VISIBILITY_CHANGED,
+        )
     assertThat(mountableLifecycleTracker.steps)
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
@@ -1343,7 +1460,8 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_CREATE_MOUNT_CONTENT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
   }
 
   /*
@@ -1364,18 +1482,18 @@ class NestedTreeResolutionTest {
     val mountableLifecycleTracker = LifecycleTracker()
     val widthSpec = exactly(500)
     val heightSpec = exactly(500)
-    val root =
-        createComponent(
-            c,
-            layoutWithSizeSpecStepsInfo,
-            mountableLifecycleTracker,
-            widthSpec,
-            heightSpec,
-            widthSpec,
-            heightSpec,
-            false,
-            true,
-            true)
+    val root = createComponent(
+        c,
+        layoutWithSizeSpecStepsInfo,
+        mountableLifecycleTracker,
+        widthSpec,
+        heightSpec,
+        widthSpec,
+        heightSpec,
+        false,
+        true,
+        true,
+    )
     val lithoViewWidthSpec = exactly(500)
     val lithoViewHeightSpec = exactly(500)
     lithoTestRule.render(widthSpec = lithoViewHeightSpec, heightSpec = lithoViewHeightSpec) { root }
@@ -1389,7 +1507,8 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_EVENT_VISIBLE,
             LifecycleStep.ON_FULL_IMPRESSION_VISIBLE_EVENT,
-            LifecycleStep.ON_VISIBILITY_CHANGED)
+            LifecycleStep.ON_VISIBILITY_CHANGED,
+        )
     assertThat(mountableLifecycleTracker.steps)
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
@@ -1402,7 +1521,8 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_CREATE_MOUNT_CONTENT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
   }
 
   /*
@@ -1423,18 +1543,18 @@ class NestedTreeResolutionTest {
     val mountableLifecycleTracker = LifecycleTracker()
     val widthSpec = exactly(500)
     val heightSpec = exactly(500)
-    val root =
-        createComponent(
-            c,
-            layoutWithSizeSpecStepsInfo,
-            mountableLifecycleTracker,
-            widthSpec,
-            heightSpec,
-            widthSpec,
-            heightSpec,
-            false,
-            true,
-            true)
+    val root = createComponent(
+        c,
+        layoutWithSizeSpecStepsInfo,
+        mountableLifecycleTracker,
+        widthSpec,
+        heightSpec,
+        widthSpec,
+        heightSpec,
+        false,
+        true,
+        true,
+    )
     val lithoViewWidthSpec = exactly(300)
     val lithoViewHeightSpec = exactly(300)
     lithoTestRule.render(widthSpec = lithoViewHeightSpec, heightSpec = lithoViewHeightSpec) { root }
@@ -1448,7 +1568,8 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_EVENT_VISIBLE,
             LifecycleStep.ON_FULL_IMPRESSION_VISIBLE_EVENT,
-            LifecycleStep.ON_VISIBILITY_CHANGED)
+            LifecycleStep.ON_VISIBILITY_CHANGED,
+        )
     assertThat(mountableLifecycleTracker.steps)
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
@@ -1462,7 +1583,8 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_CREATE_MOUNT_CONTENT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
   }
 
   /*
@@ -1483,25 +1605,27 @@ class NestedTreeResolutionTest {
     val mountableLifecycleTracker = LifecycleTracker()
     val widthSpec = exactly(500)
     val heightSpec = exactly(500)
-    val root =
-        createComponent(
-            c,
-            layoutWithSizeSpecStepsInfo,
-            mountableLifecycleTracker,
-            widthSpec,
-            heightSpec,
-            widthSpec,
-            heightSpec,
-            true,
-            false,
-            false)
+    val root = createComponent(
+        c,
+        layoutWithSizeSpecStepsInfo,
+        mountableLifecycleTracker,
+        widthSpec,
+        heightSpec,
+        widthSpec,
+        heightSpec,
+        true,
+        false,
+        false,
+    )
     val lithoViewWidthSpec = exactly(500)
     val lithoViewHeightSpec = exactly(500)
     lithoTestRule.render(widthSpec = lithoViewHeightSpec, heightSpec = lithoViewHeightSpec) { root }
     val stepsInfo = LifecycleStep.getSteps(layoutWithSizeSpecStepsInfo)
     assertThat(stepsInfo)
         .containsExactly(
-            LifecycleStep.ON_CREATE_INITIAL_STATE, LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
+            LifecycleStep.ON_CREATE_INITIAL_STATE,
+            LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+        )
     assertThat(mountableLifecycleTracker.steps)
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
@@ -1514,7 +1638,8 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_CREATE_MOUNT_CONTENT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
   }
 
   /*
@@ -1535,25 +1660,27 @@ class NestedTreeResolutionTest {
     val mountableLifecycleTracker = LifecycleTracker()
     val widthSpec = exactly(500)
     val heightSpec = exactly(500)
-    val root =
-        createComponent(
-            c,
-            layoutWithSizeSpecStepsInfo,
-            mountableLifecycleTracker,
-            widthSpec,
-            heightSpec,
-            widthSpec,
-            heightSpec,
-            true,
-            false,
-            false)
+    val root = createComponent(
+        c,
+        layoutWithSizeSpecStepsInfo,
+        mountableLifecycleTracker,
+        widthSpec,
+        heightSpec,
+        widthSpec,
+        heightSpec,
+        true,
+        false,
+        false,
+    )
     val lithoViewWidthSpec = exactly(300)
     val lithoViewHeightSpec = exactly(300)
     lithoTestRule.render(widthSpec = lithoViewHeightSpec, heightSpec = lithoViewHeightSpec) { root }
     val stepsInfo = LifecycleStep.getSteps(layoutWithSizeSpecStepsInfo)
     assertThat(stepsInfo)
         .containsExactly(
-            LifecycleStep.ON_CREATE_INITIAL_STATE, LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
+            LifecycleStep.ON_CREATE_INITIAL_STATE,
+            LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+        )
     assertThat(mountableLifecycleTracker.steps)
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
@@ -1566,7 +1693,8 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_CREATE_MOUNT_CONTENT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
   }
 
   /*
@@ -1587,25 +1715,27 @@ class NestedTreeResolutionTest {
     val mountableLifecycleTracker = LifecycleTracker()
     val widthSpec = exactly(500)
     val heightSpec = exactly(500)
-    val root =
-        createComponent(
-            c,
-            layoutWithSizeSpecStepsInfo,
-            mountableLifecycleTracker,
-            widthSpec,
-            heightSpec,
-            widthSpec,
-            heightSpec,
-            false,
-            true,
-            false)
+    val root = createComponent(
+        c,
+        layoutWithSizeSpecStepsInfo,
+        mountableLifecycleTracker,
+        widthSpec,
+        heightSpec,
+        widthSpec,
+        heightSpec,
+        false,
+        true,
+        false,
+    )
     val lithoViewWidthSpec = exactly(500)
     val lithoViewHeightSpec = exactly(500)
     lithoTestRule.render(widthSpec = lithoViewHeightSpec, heightSpec = lithoViewHeightSpec) { root }
     val stepsInfo = LifecycleStep.getSteps(layoutWithSizeSpecStepsInfo)
     assertThat(stepsInfo)
         .containsExactly(
-            LifecycleStep.ON_CREATE_INITIAL_STATE, LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
+            LifecycleStep.ON_CREATE_INITIAL_STATE,
+            LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+        )
     assertThat(mountableLifecycleTracker.steps)
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
@@ -1618,7 +1748,8 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_CREATE_MOUNT_CONTENT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
   }
 
   /*
@@ -1639,25 +1770,27 @@ class NestedTreeResolutionTest {
     val mountableLifecycleTracker = LifecycleTracker()
     val widthSpec = exactly(500)
     val heightSpec = exactly(500)
-    val root =
-        createComponent(
-            c,
-            layoutWithSizeSpecStepsInfo,
-            mountableLifecycleTracker,
-            widthSpec,
-            heightSpec,
-            widthSpec,
-            heightSpec,
-            false,
-            true,
-            false)
+    val root = createComponent(
+        c,
+        layoutWithSizeSpecStepsInfo,
+        mountableLifecycleTracker,
+        widthSpec,
+        heightSpec,
+        widthSpec,
+        heightSpec,
+        false,
+        true,
+        false,
+    )
     val lithoViewWidthSpec = exactly(300)
     val lithoViewHeightSpec = exactly(300)
     lithoTestRule.render(widthSpec = lithoViewHeightSpec, heightSpec = lithoViewHeightSpec) { root }
     val stepsInfo = LifecycleStep.getSteps(layoutWithSizeSpecStepsInfo)
     assertThat(stepsInfo)
         .containsExactly(
-            LifecycleStep.ON_CREATE_INITIAL_STATE, LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
+            LifecycleStep.ON_CREATE_INITIAL_STATE,
+            LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+        )
     assertThat(mountableLifecycleTracker.steps)
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
@@ -1670,7 +1803,8 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_CREATE_MOUNT_CONTENT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
   }
 
   /*
@@ -1691,18 +1825,18 @@ class NestedTreeResolutionTest {
     val mountableLifecycleTracker = LifecycleTracker()
     val widthSpec = exactly(500)
     val heightSpec = exactly(500)
-    val root =
-        createComponent(
-            c,
-            layoutWithSizeSpecStepsInfo,
-            mountableLifecycleTracker,
-            widthSpec,
-            heightSpec,
-            widthSpec,
-            heightSpec,
-            false,
-            false,
-            true)
+    val root = createComponent(
+        c,
+        layoutWithSizeSpecStepsInfo,
+        mountableLifecycleTracker,
+        widthSpec,
+        heightSpec,
+        widthSpec,
+        heightSpec,
+        false,
+        false,
+        true,
+    )
     val lithoViewWidthSpec = exactly(500)
     val lithoViewHeightSpec = exactly(500)
     lithoTestRule.render(widthSpec = lithoViewHeightSpec, heightSpec = lithoViewHeightSpec) { root }
@@ -1716,7 +1850,8 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_EVENT_VISIBLE,
             LifecycleStep.ON_FULL_IMPRESSION_VISIBLE_EVENT,
-            LifecycleStep.ON_VISIBILITY_CHANGED)
+            LifecycleStep.ON_VISIBILITY_CHANGED,
+        )
     assertThat(mountableLifecycleTracker.steps)
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
@@ -1729,7 +1864,8 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_CREATE_MOUNT_CONTENT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
   }
 
   /*
@@ -1750,25 +1886,27 @@ class NestedTreeResolutionTest {
     val mountableLifecycleTracker = LifecycleTracker()
     val widthSpec = exactly(500)
     val heightSpec = exactly(500)
-    val root =
-        createComponent(
-            c,
-            layoutWithSizeSpecStepsInfo,
-            mountableLifecycleTracker,
-            widthSpec,
-            heightSpec,
-            widthSpec,
-            heightSpec,
-            false,
-            false,
-            false)
+    val root = createComponent(
+        c,
+        layoutWithSizeSpecStepsInfo,
+        mountableLifecycleTracker,
+        widthSpec,
+        heightSpec,
+        widthSpec,
+        heightSpec,
+        false,
+        false,
+        false,
+    )
     val lithoViewWidthSpec = exactly(500)
     val lithoViewHeightSpec = exactly(500)
     lithoTestRule.render(widthSpec = lithoViewHeightSpec, heightSpec = lithoViewHeightSpec) { root }
     val stepsInfo = LifecycleStep.getSteps(layoutWithSizeSpecStepsInfo)
     assertThat(stepsInfo)
         .containsExactly(
-            LifecycleStep.ON_CREATE_INITIAL_STATE, LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
+            LifecycleStep.ON_CREATE_INITIAL_STATE,
+            LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+        )
     assertThat(mountableLifecycleTracker.steps)
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
@@ -1781,7 +1919,8 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_CREATE_MOUNT_CONTENT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
   }
 
   companion object {
@@ -1790,7 +1929,7 @@ class NestedTreeResolutionTest {
         stepsInfo: List<StepInfo>,
         mountableLifecycleTracker: LifecycleTracker,
         widthSpec: Int,
-        heightSpec: Int
+        heightSpec: Int,
     ): Component {
       val mountable =
           MountSpecPureRenderLifecycleTester.create(c)
@@ -1811,7 +1950,7 @@ class NestedTreeResolutionTest {
         layoutWithSizeSpecStepsInfo: List<StepInfo>,
         mountableLifecycleTracker: LifecycleTracker,
         widthSpec: Int,
-        heightSpec: Int
+        heightSpec: Int,
     ): Component {
       val mountable =
           MountSpecPureRenderLifecycleTester.create(c)
@@ -1836,7 +1975,7 @@ class NestedTreeResolutionTest {
         layoutWithSizeSpecStepsInfo: List<StepInfo>,
         mountableLifecycleTracker: LifecycleTracker,
         widthSpec: Int,
-        heightSpec: Int
+        heightSpec: Int,
     ): Component {
       val mountable =
           MountSpecPureRenderLifecycleTester.create(c)
@@ -1860,7 +1999,7 @@ class NestedTreeResolutionTest {
     private fun createComponentWithSizeSpecMeasuringOCLComponent(
         c: ComponentContext,
         stepsInfo: List<StepInfo>,
-        mountableLifecycleTracker: LifecycleTracker
+        mountableLifecycleTracker: LifecycleTracker,
     ): Component {
       val mountable =
           MountSpecPureRenderLifecycleTester.create(c)
@@ -1868,16 +2007,16 @@ class NestedTreeResolutionTest {
               .build()
       val component_OCL =
           LayoutSpecLifecycleTester.create(c).steps(stepsInfo).body(mountable).build()
-      return ComponentWithSizeSpecWithMeasureCall.create(c)
-          .component(component_OCL)
-          .shouldCacheResult(true)
-          .build()
+      return ComponentWithSizeSpecWithMeasureCall(
+          component = component_OCL,
+          shouldCacheResult = true,
+      )
     }
 
     private fun createComponentWithSizeSpecMeasuringComponentWithSizeSpecAsRoot(
         c: ComponentContext,
         layoutWithSizeSpecStepsInfo: List<StepInfo>,
-        mountableLifecycleTracker: LifecycleTracker
+        mountableLifecycleTracker: LifecycleTracker,
     ): Component {
       val mountable =
           MountSpecPureRenderLifecycleTester.create(c)
@@ -1888,17 +2027,17 @@ class NestedTreeResolutionTest {
               .steps(layoutWithSizeSpecStepsInfo)
               .body(mountable)
               .build()
-      return ComponentWithSizeSpecWithMeasureCall.create(c)
-          .component(layoutWithSizeSpec)
-          .shouldCacheResult(true)
-          .build()
+      return ComponentWithSizeSpecWithMeasureCall(
+          component = layoutWithSizeSpec,
+          shouldCacheResult = true,
+      )
     }
 
     private fun createComponentWithSizeSpecMeasuringComponentWithSizeSpecAsChild(
         c: ComponentContext,
         stepsInfo: List<StepInfo>,
         layoutWithSizeSpecStepsInfo: List<StepInfo>,
-        mountableLifecycleTracker: LifecycleTracker
+        mountableLifecycleTracker: LifecycleTracker,
     ): Component {
       val mountable =
           MountSpecPureRenderLifecycleTester.create(c)
@@ -1911,10 +2050,10 @@ class NestedTreeResolutionTest {
               .build()
       val component_OCL =
           LayoutSpecLifecycleTester.create(c).steps(stepsInfo).body(layoutWithSizeSpec).build()
-      return ComponentWithSizeSpecWithMeasureCall.create(c)
-          .component(component_OCL)
-          .shouldCacheResult(true)
-          .build()
+      return ComponentWithSizeSpecWithMeasureCall(
+          component = component_OCL,
+          shouldCacheResult = true,
+      )
     }
 
     /**
@@ -1951,7 +2090,7 @@ class NestedTreeResolutionTest {
         midMeasureHeightSpec: Int,
         isRootOCL: Boolean,
         isMidOCL: Boolean,
-        isBottomOCL: Boolean
+        isBottomOCL: Boolean,
     ): Component {
       val mountable =
           MountSpecPureRenderLifecycleTester.create(c)
@@ -1970,10 +2109,10 @@ class NestedTreeResolutionTest {
                   .shouldCacheResult(true)
                   .build()
           else
-              ComponentWithSizeSpecWithMeasureCall.create(c)
-                  .component(bottomComponent)
-                  .shouldCacheResult(true)
-                  .build()
+              ComponentWithSizeSpecWithMeasureCall(
+                  component = bottomComponent,
+                  shouldCacheResult = true,
+              )
       return if (isRootOCL)
           ComponentWithMeasureCall.create(c)
               .component(midComponent)
@@ -1982,10 +2121,119 @@ class NestedTreeResolutionTest {
               .shouldCacheResult(true)
               .build()
       else
-          ComponentWithSizeSpecWithMeasureCall.create(c)
-              .component(midComponent)
-              .shouldCacheResult(true)
-              .build()
+          ComponentWithSizeSpecWithMeasureCall(
+              component = midComponent,
+              shouldCacheResult = true,
+          )
+    }
+  }
+
+  private class ChildComponentWithStateUpdate : KComponent() {
+    override fun ComponentScope.render(): Component {
+      val countState = useState<Int> { 0 }
+      if (countState.value == 0) {
+        countState.updateSync { it + 1 }
+      }
+      return Column {
+        child(
+            Text.create(context)
+                .text("click to dispatch")
+                .textSizeSp(18f)
+                .paddingDip(YogaEdge.ALL, 16f)
+                .build(),
+        )
+        child(Text.create(context).textSizeSp(18f).text(countState.value.toString()).build())
+      }
+    }
+  }
+
+  private class NestedTreeChildComponent : KComponent() {
+    override fun ComponentScope.render(): Component {
+      val a = getTreeProp<RootComponentWithTreeProps.A>()
+      val b = getTreeProp<NestedTreeParentComponent.B>()
+      val c = getTreeProp<NestedTreeComponent.C>()
+      checkNotNull(a) { "A is null" }
+      checkNotNull(b) { "B is null" }
+      checkNotNull(c) { "C is null" }
+      return key("Column") {
+        Column { child(key("CardClip") { CardClip(style = Style.width(10.dp).height(10.dp)) }) }
+      }
+    }
+  }
+
+  private class NestedTreeComponent(private val style: Style = Style) : KComponent() {
+    override fun ComponentScope.render(): Component {
+      return RenderWithConstraints(style) { constraints ->
+        val props = getTreeProp<ExtraProps>()
+        props?.steps?.add(LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
+        val style = props?.direction?.let { Style.layoutDirection(it) }.orDefault()
+        val row =
+            key("Row") {
+              Row(style = style) {
+                child(key("NestedTreeChildComponent") { NestedTreeChildComponent() })
+              }
+            }
+        TreePropProvider(legacyTreePropOf<C>() to C()) { row }
+      }
+    }
+
+    class C
+
+    class ExtraProps {
+      @JvmField var steps: MutableList<LifecycleStep>? = null
+      @JvmField var direction: YogaDirection? = null
+    }
+  }
+
+  private class NestedTreeParentComponent(private val style: Style = Style) : KComponent() {
+    companion object {
+      const val ROOT_KEY = "NestedTreeParentComponent"
+    }
+
+    override fun ComponentScope.render(): Component {
+      return TreePropProvider(legacyTreePropOf<B>() to B()) {
+        key("NestedTreeComponent") {
+          NestedTreeComponent(style = Style.padding(all = 5.px) + style)
+        }
+      }
+    }
+
+    class B
+  }
+
+  private class RootComponentWithTreeProps(
+      private val shouldNotUpdateState: Boolean = false,
+      private val style: Style = Style,
+  ) : KComponent() {
+    override fun ComponentScope.render(): Component {
+      return TreePropProvider(legacyTreePropOf<A>() to A()) {
+        key("Row") {
+          Row(style = style) {
+            child(
+                if (shouldNotUpdateState) KText("hello world") else ChildComponentWithStateUpdate(),
+            )
+            child(
+                key("NestedTreeParentComponent") {
+                  NestedTreeParentComponent(style = Style.flex(grow = 1f))
+                },
+            )
+          }
+        }
+      }
+    }
+
+    class A
+  }
+
+  private class TreePropTestContainerComponent : KComponent() {
+    companion object {
+      const val KEY = "TreePropTestContainerComponent"
+      const val EXPECTED_GLOBAL_KEY =
+          ("$${KEY},\$RootComponentWithTreeProps,\$Row,\$NestedTreeParentComponent,\$NestedTreeComponent,\$Row,\$NestedTreeChildComponent")
+    }
+
+    override fun ComponentScope.render(): Component {
+      return key("RootComponentWithTreeProps") { RootComponentWithTreeProps() }
     }
   }
 }

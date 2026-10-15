@@ -47,12 +47,11 @@ class ComponentsReporterTest {
 
   @Test
   fun testEmitFatalMessage() {
-    val throwable =
-        ThrowableAssert.catchThrowable {
-          ComponentsReporter.emitMessage(ComponentsReporter.LogLevel.FATAL, CATEGORY_KEY, FATAL_MSG)
-          assertThat(reporter.loggedMessages.size).isEqualTo(1)
-          assertThat(reporter.loggedMessages).contains(Pair(LogLevel.FATAL, FATAL_MSG))
-        }
+    val throwable = ThrowableAssert.catchThrowable {
+      ComponentsReporter.emitMessage(ComponentsReporter.LogLevel.FATAL, CATEGORY_KEY, FATAL_MSG)
+      assertThat(reporter.loggedMessages.size).isEqualTo(1)
+      assertThat(reporter.loggedMessages).contains(Pair(LogLevel.FATAL, FATAL_MSG))
+    }
     assertThat(throwable).isInstanceOf(RuntimeException::class.java)
     assertThat(throwable.message).isEqualTo(FATAL_MSG)
   }

@@ -43,6 +43,11 @@ abstract class ComparableDrawableWrapper protected constructor(wrappedDrawable: 
       field.callback = this
     }
 
+  init {
+    // The property initializer does not run the setter above.
+    wrappedDrawable.callback = this
+  }
+
   override fun onBoundsChange(bounds: Rect) {
     wrappedDrawable.bounds = bounds
   }

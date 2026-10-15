@@ -58,15 +58,15 @@ class GenericEditorInstance : Editor {
     return shape(map)
   }
 
-  override fun write(f: Field, node: Any?, v: EditorValue): Boolean {
+  override fun write(f: Field, node: Any?, values: EditorValue): Boolean {
     val parsedValue = getValueUNSAFE<Any?>(f, node)
-    v.whenPrimitive(
+    values.whenPrimitive(
         object : DefaultEditorPrimitiveVisitor() {
           fun write(
               obj: Any?,
               path: Array<String>,
               editorValue: EditorValue?,
-              writer: GenericEditorValueWriter
+              writer: GenericEditorValueWriter,
           ): Boolean {
             var obj = obj ?: return false
             var clazz: Class<*> = obj.javaClass
@@ -149,7 +149,8 @@ class GenericEditorInstance : Editor {
                 },
             )
           }
-        })
+        },
+    )
     return true
   }
 }

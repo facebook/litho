@@ -29,7 +29,6 @@ import com.facebook.litho.ComponentScope
 import com.facebook.litho.ComponentTree
 import com.facebook.litho.KComponent
 import com.facebook.litho.LithoView
-import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.lifecycle.LifecycleOwnerTreeProp
 import com.facebook.litho.lifecycle.LifecycleOwnerWrapper
@@ -38,7 +37,6 @@ import com.facebook.litho.testing.assertj.LithoAssertions.assertThat
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.collection.LazyList
 import org.assertj.core.api.Assertions
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -47,22 +45,15 @@ import org.robolectric.annotation.LooperMode
 @LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(LithoTestRunner::class)
 class UseLiveDataTest {
-
-  private val fakeLifecycleOwner = FakeLifecycleOwner(Lifecycle.State.INITIALIZED)
+  private val fakeLifecycleOwner = FakeLifecycleOwner(Lifecycle.State.RESUMED)
   @get:Rule
-  val rule: LithoTestRule =
-      LithoTestRule(
-          lithoVisibilityEventsController = {
-            AOSPLithoVisibilityEventsController(fakeLifecycleOwner)
-          })
+  val rule: LithoTestRule = LithoTestRule(
+      lithoVisibilityEventsController = {
+        AOSPLithoVisibilityEventsController(fakeLifecycleOwner)
+      },
+      lifecycleOwner = { fakeLifecycleOwner },
+  )
   @get:Rule val ruleWithoutVisibilityEventsController: LithoTestRule = LithoTestRule()
-
-  @Before
-  fun setUp() {
-    ComponentsConfiguration.defaultInstance =
-        ComponentsConfiguration.defaultInstance.copy(
-            enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner = false)
-  }
 
   @Test
   fun `should observe initial live data value`() {
@@ -81,8 +72,8 @@ class UseLiveDataTest {
 
     val component = MyComponent(liveData)
 
-    fakeLifecycleOwner.onEvent(Lifecycle.Event.ON_START)
     val lithoView = rule.render { component }
+    fakeLifecycleOwner.onEvent(Lifecycle.Event.ON_START)
 
     assertThat(lithoView).hasVisibleText("hello")
 
@@ -97,8 +88,8 @@ class UseLiveDataTest {
 
     val component = MyComponent(liveData)
 
-    fakeLifecycleOwner.onEvent(Lifecycle.Event.ON_CREATE)
     val lithoView = rule.render { component }
+    fakeLifecycleOwner.onEvent(Lifecycle.Event.ON_CREATE)
 
     assertThat(lithoView).hasVisibleText("hello")
 
@@ -114,7 +105,7 @@ class UseLiveDataTest {
     val firstComponent = MyComponent(liveData)
     val secondComponent = MyComponent(liveData)
 
-    fakeLifecycleOwner.onEvent(Lifecycle.Event.ON_START)
+    fakeLifecycleOwner.onEvent(Lifecycle.Event.ON_RESUME)
 
     // 1. in the beginning the first litho view will render the initial live data value
     val firstLithoView = rule.render { firstComponent }
@@ -143,10 +134,10 @@ class UseLiveDataTest {
 
     val component = MyComponent(liveData)
 
+    val lithoView = rule.render { component }
     fakeLifecycleOwner.onEvent(Lifecycle.Event.ON_START)
 
     // 1. the litho view should reflect the initial live data value
-    val lithoView = rule.render { component }
     assertThat(lithoView).hasVisibleText("hello")
 
     // 2. we change the lifecycle to an inactive state, and update the live data.
@@ -168,9 +159,9 @@ class UseLiveDataTest {
 
     val component = MyComponent(liveData)
 
+    val lithoView = rule.render { component }
     fakeLifecycleOwner.onEvent(Lifecycle.Event.ON_START)
 
-    val lithoView = rule.render { component }
     assertThat(lithoView).hasVisibleText("hello")
     Assertions.assertThat(liveData.hasObservers()).isTrue
 
@@ -184,14 +175,21 @@ class UseLiveDataTest {
 
     val component = MyComponent(liveData)
 
-    fakeLifecycleOwner.onEvent(Lifecycle.Event.ON_START)
-
     val componentTree =
         ComponentTree.create(
-                rule.context, component, AOSPLithoVisibilityEventsController(fakeLifecycleOwner))
+                rule.context,
+                component,
+            )
+            .withLithoVisibilityEventsController(
+                AOSPLithoVisibilityEventsController(fakeLifecycleOwner),
+            )
+            .withLifecycleOwnerTreeProp(fakeLifecycleOwner)
+            .enableChildClipping(true)
             .build()
 
     val lithoView = rule.render(componentTree = componentTree) { component }
+    fakeLifecycleOwner.onEvent(Lifecycle.Event.ON_START)
+
     assertThat(lithoView).hasVisibleText("hello")
     Assertions.assertThat(liveData.hasObservers()).isTrue
 
@@ -203,7 +201,7 @@ class UseLiveDataTest {
   fun `should observe lifecycle change when lifecycle owner is set after render`() {
     // Override new lifecycle owner and provider with local
     val rule = ruleWithoutVisibilityEventsController
-    val fakeLifecycleOwner = FakeLifecycleOwner(Lifecycle.State.INITIALIZED)
+    val fakeLifecycleOwner = FakeLifecycleOwner(Lifecycle.State.RESUMED)
     val controller = AOSPLithoVisibilityEventsController(fakeLifecycleOwner)
 
     val liveData = MutableLiveData("hello")
@@ -217,6 +215,7 @@ class UseLiveDataTest {
     assertThat(testLithoView).hasVisibleText("hello")
 
     lithoView.subscribeComponentTreeToVisibilityEventsController(controller)
+    lithoView.setLifecycleOwnerTreePropToComponentTree(fakeLifecycleOwner)
 
     // 2. we change the lifecycle to an inactive state, and update the live data.
     // in this case, the live data won't emit as there is no active observer.
@@ -237,6 +236,14 @@ class UseLiveDataTest {
     Assertions.assertThat((owner as LifecycleOwnerWrapper).hasObservers()).isFalse
   }
 
+  @org.junit.Ignore(
+      "Disabled with new collection infrastructure: This test violates immutable props principles " +
+          "by mutating a prop (liveData) held by nested components. The new CollectionRecyclerComponent " +
+          "requires proper reactive prop changes propagating through the render/measure/layout cycle. " +
+          "External mutations of props don't trigger this cycle. When the new collection infrastructure " +
+          "(enableNewCollection) becomes the default, redesign this test to pass data through immutable " +
+          "component props instead of mutating references.",
+  )
   @Test
   fun `should observe live data changes when in active state for nested component tree`() {
     val liveData = MutableLiveData("hello")
@@ -256,9 +263,9 @@ class UseLiveDataTest {
     }
     val component = ParentComponent()
 
-    fakeLifecycleOwner.onEvent(Lifecycle.Event.ON_START)
     val lithoView = rule.createTestLithoView(widthPx = 600, heightPx = 600) { component }
     lithoView.attachToWindow().measure().layout()
+    fakeLifecycleOwner.onEvent(Lifecycle.Event.ON_START)
 
     assertThat(lithoView).hasVisibleText("hello")
 

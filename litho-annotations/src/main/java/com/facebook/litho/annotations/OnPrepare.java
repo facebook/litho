@@ -39,7 +39,6 @@ import java.lang.annotation.RetentionPolicy;
  * <ul>
  *   <li>{@link Prop}
  *   <li>{@link TreeProp}
- *   <li>{@link InjectProp}
  *   <li>{@link State}
  *   <li>{@literal Output}
  * </ul>

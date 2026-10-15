@@ -18,7 +18,6 @@ package com.facebook.litho
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
-import com.facebook.litho.GetSimpleNameTest.TestWrapperComponent
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.SimpleMountSpecTester
 import org.assertj.core.api.Assertions.assertThat
@@ -43,20 +42,20 @@ class GetSimpleNameTest {
 
   @Test
   fun testGetSimpleName() {
-    val testComponent = SimpleMountSpecTester.create(context).build()
+    val testComponent = SimpleMountSpecTester()
     assertThat(testComponent.simpleName).isEqualTo("SimpleMountSpecTester")
   }
 
   @Test
   fun testGetSimpleNameWithOneWrapper() {
-    val inner = SimpleMountSpecTester.create(context).build()
+    val inner = SimpleMountSpecTester()
     val wrapper = TestWrapperComponent(inner)
     assertThat(wrapper.simpleName).isEqualTo("TestWrapper(SimpleMountSpecTester)")
   }
 
   @Test
   fun testGetSimpleNameWithMultipleWrapper() {
-    val inner = SimpleMountSpecTester.create(context).build()
+    val inner = SimpleMountSpecTester()
     val wrapper = TestWrapperComponent(inner)
     val wrapper2 = TestWrapperComponent(wrapper)
     val wrapper3 = TestWrapperComponent(wrapper2)

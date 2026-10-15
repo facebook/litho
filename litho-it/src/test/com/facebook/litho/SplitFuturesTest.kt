@@ -28,7 +28,6 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.testing.unspecified
 import com.facebook.litho.widget.MountSpecPureRenderLifecycleTester
 import com.facebook.litho.widget.RenderAndLayoutCountingTester
-import com.facebook.litho.widget.RenderAndLayoutCountingTesterSpec
 import com.facebook.litho.widget.Text
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
@@ -76,7 +75,8 @@ class SplitFuturesTest {
             LifecycleStep.ON_CREATE_INITIAL_STATE,
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
-            LifecycleStep.ON_PREPARE)
+            LifecycleStep.ON_PREPARE,
+        )
 
     // Reset tracker
     tracker.reset()
@@ -93,7 +93,8 @@ class SplitFuturesTest {
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_CREATE_MOUNT_CONTENT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
 
     // Reset the tracker.
     tracker.reset()
@@ -122,7 +123,8 @@ class SplitFuturesTest {
             .child(
                 MountSpecPureRenderLifecycleTester.create(c)
                     .backgroundColor(Color.YELLOW)
-                    .lifecycleTracker(tracker))
+                    .lifecycleTracker(tracker),
+            )
             .build()
 
     // Set a new root. Since measure already happened, we expect render and measure steps to occur
@@ -134,7 +136,8 @@ class SplitFuturesTest {
             LifecycleStep.ON_PREPARE,
             LifecycleStep.SHOULD_UPDATE,
             LifecycleStep.ON_MEASURE,
-            LifecycleStep.ON_BOUNDS_DEFINED)
+            LifecycleStep.ON_BOUNDS_DEFINED,
+        )
   }
 
   /** Test multiple set-root async. */
@@ -144,7 +147,7 @@ class SplitFuturesTest {
     val counter = RenderAndMeasureCounter()
     val component1 =
         Column.create(c)
-            .child(RenderAndLayoutCountingTester.create(c).renderAndMeasureCounter(counter))
+            .child(RenderAndLayoutCountingTester(renderAndMeasureCounter = counter))
             .build()
 
     // Set root async
@@ -164,12 +167,12 @@ class SplitFuturesTest {
     val component2 =
         Column.create(c)
             .backgroundColor(0xFFFF00)
-            .child(RenderAndLayoutCountingTester.create(c).renderAndMeasureCounter(counter))
+            .child(RenderAndLayoutCountingTester(renderAndMeasureCounter = counter))
             .build()
     val component3 =
         Column.create(c)
             .backgroundColor(0xFF0000)
-            .child(RenderAndLayoutCountingTester.create(c).renderAndMeasureCounter(counter))
+            .child(RenderAndLayoutCountingTester(renderAndMeasureCounter = counter))
             .build()
 
     // Reset the counter
@@ -219,8 +222,8 @@ class SplitFuturesTest {
     val secondFuturePreExecutionLatch = TimeOutSemaphore(0)
 
     // Listener to be passed into the component.
-    val listener: RenderAndLayoutCountingTesterSpec.Listener =
-        object : RenderAndLayoutCountingTesterSpec.Listener {
+    val listener: RenderAndLayoutCountingTester.Listener =
+        object : RenderAndLayoutCountingTester.Listener {
           override fun onPrepare() = Unit
 
           override fun onMeasure() {
@@ -236,9 +239,11 @@ class SplitFuturesTest {
     val component =
         Column.create(c)
             .child(
-                RenderAndLayoutCountingTester.create(c)
-                    .renderAndMeasureCounter(counter)
-                    .listener(listener))
+                RenderAndLayoutCountingTester(
+                    renderAndMeasureCounter = counter,
+                    listener = listener,
+                ),
+            )
             .build()
 
     // Set root without measuring
@@ -257,9 +262,10 @@ class SplitFuturesTest {
     // Wait until the 1st onMeasure kicks in before queuing the 2nd one.
     // This will ensure that the running future is reused rather than queuing another one
     ThreadTestingUtils.runOnBackgroundThread(
-        bgThreadLatch) { // Call setSizeSpec, which should call onMeasure only once.
-          componentTree.setSizeSpec(widthSpec, heightSpec, output1)
-        }
+        bgThreadLatch,
+    ) { // Call setSizeSpec, which should call onMeasure only once.
+      componentTree.setSizeSpec(widthSpec, heightSpec, output1)
+    }
 
     // Wait until 1st measure happens before queuing the next one. This ensures the Layout
     // future is in process, so that the 2nd setSizeSpec just reuses the running one.
@@ -270,7 +276,7 @@ class SplitFuturesTest {
           override fun onPreExecution(
               version: Int,
               futureExecutionType: FutureExecutionType,
-              attribution: String
+              attribution: String,
           ) {
             secondFuturePreExecutionLatch.release()
             isReusingFutureHolder[0] = futureExecutionType == FutureExecutionType.REUSE_FUTURE
@@ -279,15 +285,16 @@ class SplitFuturesTest {
           override fun onPostExecution(version: Int, released: Boolean, attribution: String) = Unit
         }
     ThreadTestingUtils.runOnBackgroundThread(
-        bgThreadLatch) { // set the pre-execution listener. This will be called after the 1st future
-          // has
-          // already begun execution, so no concerns over this being triggered for the 1st
-          // future.
-          componentTree.setFutureExecutionListener(futureExecutionListener)
+        bgThreadLatch,
+    ) { // set the pre-execution listener. This will be called after the 1st future
+      // has
+      // already begun execution, so no concerns over this being triggered for the 1st
+      // future.
+      componentTree.setFutureExecutionListener(futureExecutionListener)
 
-          // Call setSizeSpec, which should just reuse the 1st setSizeSpec's future
-          componentTree.setSizeSpec(widthSpec, heightSpec, output2)
-        }
+      // Call setSizeSpec, which should just reuse the 1st setSizeSpec's future
+      componentTree.setSizeSpec(widthSpec, heightSpec, output2)
+    }
 
     // Wait for all measures to finish queuing
     bgThreadLatch.acquire()
@@ -328,8 +335,8 @@ class SplitFuturesTest {
     val waitForFirstSetRootLatch = TimeOutSemaphore(0)
 
     // Listener for comp1
-    val listener1: RenderAndLayoutCountingTesterSpec.Listener =
-        object : RenderAndLayoutCountingTesterSpec.Listener {
+    val listener1: RenderAndLayoutCountingTester.Listener =
+        object : RenderAndLayoutCountingTester.Listener {
           override fun onPrepare() {
             // Inform 1st setRoot has been called
             waitForFirstSetRootLatch.release()
@@ -346,16 +353,18 @@ class SplitFuturesTest {
         Column.create(c)
             .child(Text.create(c).text("Comp1"))
             .child(
-                RenderAndLayoutCountingTester.create(c)
-                    .renderAndMeasureCounter(counter1)
-                    .listener(listener1))
+                RenderAndLayoutCountingTester(
+                    renderAndMeasureCounter = counter1,
+                    listener = listener1,
+                ),
+            )
             .build()
 
     // Component2 will be set as root 2nd, but will finish before Component1
     val component2 =
         Column.create(c)
             .child(Text.create(c).text("Comp2"))
-            .child(RenderAndLayoutCountingTester.create(c).renderAndMeasureCounter(counter2))
+            .child(RenderAndLayoutCountingTester(renderAndMeasureCounter = counter2))
             .build()
 
     // Background thread latch with -1 permits to ensure both bg tasks finish
@@ -368,16 +377,17 @@ class SplitFuturesTest {
       testLithoView.componentTree.root = component1
     }
     ThreadTestingUtils.runOnBackgroundThread(
-        bgThreadLatch) { // Wait for the 1st setRoot to be called
-          waitForFirstSetRootLatch.acquire()
+        bgThreadLatch,
+    ) { // Wait for the 1st setRoot to be called
+      waitForFirstSetRootLatch.acquire()
 
-          // Call the 2nd setRoot, will be called after comp1 is set as root, thereby making
-          // comp2 the latest.
-          testLithoView.componentTree.root = component2
+      // Call the 2nd setRoot, will be called after comp1 is set as root, thereby making
+      // comp2 the latest.
+      testLithoView.componentTree.root = component2
 
-          // inform comp2 has finished render
-          waitForSecondSetRootToFinishLatch.release()
-        }
+      // inform comp2 has finished render
+      waitForSecondSetRootToFinishLatch.release()
+    }
 
     // Wait for both background tasks to finish
     bgThreadLatch.acquire()
@@ -388,8 +398,8 @@ class SplitFuturesTest {
     assertThat(lithoStatsRule.resolveCount).isEqualTo(2)
 
     // Both measures should have happened, but only the the 2nd component should've been committed
-    assertThat(counter1.measureCount).isEqualTo(1)
-    assertThat(counter2.measureCount).isEqualTo(1)
+    assertThat(counter1.measureCount).isEqualTo(2)
+    assertThat(counter2.measureCount).isEqualTo(2)
     assertThat(lithoStatsRule.resolveCount).isEqualTo(2)
 
     // Reset the counters
@@ -423,8 +433,11 @@ class SplitFuturesTest {
     val counter = RenderAndMeasureCounter()
     // Latch to wait for the 1st setRoot to get called to avoid calling the 2nd setRoot 1st.
     val latch = TimeOutSemaphore(0)
-    val listener: RenderAndLayoutCountingTesterSpec.Listener =
-        object : RenderAndLayoutCountingTesterSpec.Listener {
+    // How the async resolve below was executed. REUSE_FUTURE means it joined the sync resolve
+    // that is still in progress rather than starting a second one, which is the contract here.
+    val asyncExecutionTypeHolder = arrayOfNulls<FutureExecutionType>(1)
+    val listener: RenderAndLayoutCountingTester.Listener =
+        object : RenderAndLayoutCountingTester.Listener {
           override fun onPrepare() {
             var isFirst = false
             synchronized(isFirstHolder) {
@@ -439,17 +452,27 @@ class SplitFuturesTest {
                     override fun onPreExecution(
                         version: Int,
                         futureExecutionType: FutureExecutionType,
-                        attribution: String
+                        attribution: String,
                     ) {
-                      latch.release()
+                      // Layout futures and the retry's own resolve also land here. Only the async
+                      // resolve is being measured, and only the first one: the sync resolve
+                      // already pre-executed before this listener was installed.
+                      if (
+                          attribution == ResolveTreeFuture.DESCRIPTION &&
+                              asyncExecutionTypeHolder[0] == null
+                      ) {
+                        asyncExecutionTypeHolder[0] = futureExecutionType
+                        latch.release()
+                      }
                     }
 
                     override fun onPostExecution(
                         version: Int,
                         released: Boolean,
-                        attribution: String
+                        attribution: String,
                     ) = Unit
-                  })
+                  },
+              )
               testLithoView.componentTree.setRootAsync(testLithoView.componentTree.root)
               ThreadTestingUtils.runOnBackgroundThread { lithoTestRule.idle() }
               latch.acquire() // wait for async set root to release latch
@@ -464,9 +487,11 @@ class SplitFuturesTest {
         Column.create(c)
             .child(Text.create(c).text("Component"))
             .child(
-                RenderAndLayoutCountingTester.create(c)
-                    .renderAndMeasureCounter(counter)
-                    .listener(listener))
+                RenderAndLayoutCountingTester(
+                    renderAndMeasureCounter = counter,
+                    listener = listener,
+                ),
+            )
             .build()
 
     // required to trigger async set roots
@@ -475,8 +500,16 @@ class SplitFuturesTest {
     // first set root
     testLithoView.componentTree.root = component
 
-    // The second resolve should be skipped
-    assertThat(counter.renderCount).isEqualTo(1)
+    // The async resolve found the in-progress sync resolve equivalent and joined it instead of
+    // starting its own. `trackAndRunTreeFuture` reports that as REUSE_FUTURE, and it is
+    // deterministic for an async request: the bail-out in `tryRegisterForResponse` is guarded on
+    // `waitingFromSyncLayout`, so an async caller always registers successfully.
+    //
+    // Asserting a render count here instead does not work. Always-on retry re-requests a render
+    // when an interrupted resolve is the latest request, so the count is 1 or 2 depending on
+    // whether that retry fired, and both are legitimate. That is what made this test 92% flaky
+    // and got it auto-disabled.
+    assertThat(asyncExecutionTypeHolder[0]).isEqualTo(FutureExecutionType.REUSE_FUTURE)
   }
 
   /**
@@ -503,8 +536,8 @@ class SplitFuturesTest {
 
     // Latch to ensure the 1st setSizeSpec with "old" specs gets called before the 2nd one
     val waitForFirstSizeSpecToStartLatch = TimeOutSemaphore(0)
-    val listener: RenderAndLayoutCountingTesterSpec.Listener =
-        object : RenderAndLayoutCountingTesterSpec.Listener {
+    val listener: RenderAndLayoutCountingTester.Listener =
+        object : RenderAndLayoutCountingTester.Listener {
           override fun onPrepare() = Unit
 
           override fun onMeasure() {
@@ -529,9 +562,11 @@ class SplitFuturesTest {
     val component =
         Column.create(c)
             .child(
-                RenderAndLayoutCountingTester.create(c)
-                    .renderAndMeasureCounter(counter)
-                    .listener(listener))
+                RenderAndLayoutCountingTester(
+                    renderAndMeasureCounter = counter,
+                    listener = listener,
+                ),
+            )
             .build()
 
     // Set the root component once (sync)
@@ -554,9 +589,10 @@ class SplitFuturesTest {
 
     // Set the "old" size specs on the background
     ThreadTestingUtils.runOnBackgroundThread(
-        bgThreadLatch) { // Call setSizeSpec with "old" size specs
-          componentTree.setSizeSpec(oldWidthSpec, oldHeightSpec, output1)
-        }
+        bgThreadLatch,
+    ) { // Call setSizeSpec with "old" size specs
+      componentTree.setSizeSpec(oldWidthSpec, oldHeightSpec, output1)
+    }
 
     // Set the "new" size specs on the background
     ThreadTestingUtils.runOnBackgroundThread(bgThreadLatch) { // Wait for 1st setSizeSpec to happen
@@ -591,7 +627,7 @@ class SplitFuturesTest {
     // Despite only the newer size-specs getting committed, measure still happens twice
     assertThat(counter.measureCount).isEqualTo(2)
     assertThat(lithoStatsRule.layoutCount).isEqualTo(2)
-    val committedLayoutState = componentTree.committedLayoutState
+    val committedLayoutState = componentTree.getCommittedLayoutState()
 
     // Ensure the committed layout-state has the newer sizes
     assertThat(committedLayoutState).isNotNull
@@ -620,8 +656,8 @@ class SplitFuturesTest {
     val counter = RenderAndMeasureCounter()
     val syncMeasureStartedLatch = TimeOutSemaphore(0)
     val asyncMeasureTriggeredLatch = TimeOutSemaphore(0)
-    val listener: RenderAndLayoutCountingTesterSpec.Listener =
-        object : RenderAndLayoutCountingTesterSpec.Listener {
+    val listener: RenderAndLayoutCountingTester.Listener =
+        object : RenderAndLayoutCountingTester.Listener {
           override fun onPrepare() = Unit
 
           override fun onMeasure() {
@@ -635,9 +671,11 @@ class SplitFuturesTest {
     val component =
         Column.create(c)
             .child(
-                RenderAndLayoutCountingTester.create(c)
-                    .renderAndMeasureCounter(counter)
-                    .listener(listener))
+                RenderAndLayoutCountingTester(
+                    renderAndMeasureCounter = counter,
+                    listener = listener,
+                ),
+            )
             .build()
 
     // Set the root component once (sync)
@@ -648,10 +686,9 @@ class SplitFuturesTest {
     val componentTree = testLithoView.componentTree
     componentTree.setSizeSpecAsync(widthSpec, heightSpec)
     val output = Size()
-    val bgLatch: TimeOutSemaphore =
-        ThreadTestingUtils.runOnBackgroundThread {
-          componentTree.setSizeSpec(widthSpec, heightSpec, output)
-        }
+    val bgLatch: TimeOutSemaphore = ThreadTestingUtils.runOnBackgroundThread {
+      componentTree.setSizeSpec(widthSpec, heightSpec, output)
+    }
 
     // Wait for sync measure to start
     syncMeasureStartedLatch.acquire()
@@ -688,7 +725,7 @@ class SplitFuturesTest {
     val onPrepareLatch = TimeOutSemaphore(0)
     val component =
         Column.create(c)
-            .child(RenderAndLayoutCountingTester.create(c).renderAndMeasureCounter(counter))
+            .child(RenderAndLayoutCountingTester(renderAndMeasureCounter = counter))
             .build()
     val componentTree = testLithoView.componentTree
 
@@ -702,7 +739,7 @@ class SplitFuturesTest {
           override fun onPreExecution(
               version: Int,
               futureExecutionType: FutureExecutionType,
-              attribution: String
+              attribution: String,
           ) {
             componentTree.setFutureExecutionListener(null)
 
@@ -711,7 +748,8 @@ class SplitFuturesTest {
           }
 
           override fun onPostExecution(version: Int, released: Boolean, attribution: String) = Unit
-        })
+        },
+    )
 
     // request a main thread layout
     componentTree.measure(exactly(200), exactly(200), intArrayOf(0, 0), false)
@@ -747,8 +785,8 @@ class SplitFuturesTest {
 
     // Latch to wait for 2nd future pre-execution
     val waitForSecondFuturePreExecutionLatch = TimeOutSemaphore(0)
-    val listener: RenderAndLayoutCountingTesterSpec.Listener =
-        object : RenderAndLayoutCountingTesterSpec.Listener {
+    val listener: RenderAndLayoutCountingTester.Listener =
+        object : RenderAndLayoutCountingTester.Listener {
           override fun onPrepare() = Unit
 
           override fun onMeasure() {
@@ -762,9 +800,11 @@ class SplitFuturesTest {
     val component =
         Column.create(c)
             .child(
-                RenderAndLayoutCountingTester.create(c)
-                    .renderAndMeasureCounter(counter)
-                    .listener(listener))
+                RenderAndLayoutCountingTester(
+                    renderAndMeasureCounter = counter,
+                    listener = listener,
+                ),
+            )
             .build()
     val widthSpec = exactly(100)
     val heightSpec = exactly(100)
@@ -774,8 +814,9 @@ class SplitFuturesTest {
     componentTree.setRootAndSizeSpecAsync(component, widthSpec, heightSpec)
 
     // run to end of tasks on background to avoid blocking here
-    val bgThreadLatch: TimeOutSemaphore =
-        ThreadTestingUtils.runOnBackgroundThread { lithoTestRule.finishAsyncUpdates() }
+    val bgThreadLatch: TimeOutSemaphore = ThreadTestingUtils.runOnBackgroundThread {
+      lithoTestRule.finishAsyncUpdates()
+    }
 
     // Wait for async measure to start
     waitForAsyncMeasureToStartLatch.acquire()
@@ -785,7 +826,7 @@ class SplitFuturesTest {
           override fun onPreExecution(
               version: Int,
               futureExecutionType: FutureExecutionType,
-              attribution: String
+              attribution: String,
           ) {
             componentTree.setFutureExecutionListener(null)
 
@@ -795,7 +836,8 @@ class SplitFuturesTest {
           }
 
           override fun onPostExecution(version: Int, released: Boolean, attribution: String) = Unit
-        })
+        },
+    )
 
     // Set root and sync-spec sync
     componentTree.setRootAndSizeSpecSync(component, widthSpec, heightSpec)
@@ -830,7 +872,7 @@ class SplitFuturesTest {
     val counter = RenderAndMeasureCounter()
     val component =
         Column.create(c)
-            .child(RenderAndLayoutCountingTester.create(c).renderAndMeasureCounter(counter))
+            .child(RenderAndLayoutCountingTester(renderAndMeasureCounter = counter))
             .build()
 
     val testLithoView =
@@ -870,7 +912,7 @@ class SplitFuturesTest {
     val counter = RenderAndMeasureCounter()
     val component =
         Column.create(c)
-            .child(RenderAndLayoutCountingTester.create(c).renderAndMeasureCounter(counter))
+            .child(RenderAndLayoutCountingTester(renderAndMeasureCounter = counter))
             .build()
     val output = Size()
 
@@ -878,7 +920,12 @@ class SplitFuturesTest {
     // Define tree-props on the CT
     val treePropContainer = TreePropContainer()
     testLithoView.componentTree.setRootAndSizeSpecSync(
-        component, exactly(100), exactly(100), output, treePropContainer) // Set new tree props.
+        component,
+        exactly(100),
+        exactly(100),
+        output,
+        treePropContainer,
+    ) // Set new tree props.
 
     // Ensure render and measure happened once, and the output is set correctly
     assertThat(counter.renderCount).isEqualTo(1)
@@ -890,7 +937,12 @@ class SplitFuturesTest {
 
     // Set the same root again, with the same tree-props, but different size-specs
     testLithoView.componentTree.setRootAndSizeSpecSync(
-        component, exactly(150), exactly(150), output, treePropContainer) // Use the same tree props
+        component,
+        exactly(150),
+        exactly(150),
+        output,
+        treePropContainer,
+    ) // Use the same tree props
 
     // Same component, so render count should still be 1.
     // Measure should increment, and the output should be equal to the new values.

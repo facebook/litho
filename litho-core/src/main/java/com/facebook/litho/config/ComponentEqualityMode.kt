@@ -47,5 +47,5 @@ enum class ComponentEqualityMode {
    * the equality check. The method returns a list of props that should be compared against those
    * from another spec component.
    */
-  SPECS
+  SPECS,
 }

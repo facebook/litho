@@ -16,14 +16,23 @@
 
 package com.facebook.litho
 
+import com.facebook.litho.layout.RenderWithConstraints
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.TestLayoutComponent
 import com.facebook.litho.testing.eventhandler.EventHandlerTestHelper
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec
 import com.facebook.litho.testing.testrunner.LithoTestRunner
+import com.facebook.litho.view.wrapInView
+import com.facebook.litho.visibility.onFocusedVisible
+import com.facebook.litho.visibility.onFullImpression
+import com.facebook.litho.visibility.onInvisible
+import com.facebook.litho.visibility.onVisible
 import com.facebook.litho.widget.SimpleMountSpecTester
-import com.facebook.litho.widget.TestNullLayoutComponent
 import com.facebook.rendercore.MountContentPools
+import com.facebook.rendercore.visibility.FocusedVisibleEvent
+import com.facebook.rendercore.visibility.FullImpressionVisibleEvent
+import com.facebook.rendercore.visibility.InvisibleEvent
+import com.facebook.rendercore.visibility.VisibleEvent
 import com.facebook.yoga.YogaEdge
 import java.lang.Exception
 import org.assertj.core.api.Assertions
@@ -36,7 +45,7 @@ import org.robolectric.annotation.LooperMode
 @LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(LithoTestRunner::class)
 class LayoutStateCalculateVisibilityOutputsTest {
-  @JvmField @Rule val mLithoTestRule: LithoTestRule = LithoTestRule()
+  @JvmField @Rule val lithoTestRule: LithoTestRule = LithoTestRule()
 
   @Before
   @Throws(Exception::class)
@@ -53,15 +62,26 @@ class LayoutStateCalculateVisibilityOutputsTest {
                 .child(
                     Column.create(c)
                         .child(
-                            SimpleMountSpecTester.create(c)
-                                .visibleHandler(
-                                    EventHandlerTestHelper.create(c, 1)
-                                        as EventHandler<VisibleEvent>)))
+                            SimpleMountSpecTester(
+                                style =
+                                    Style.onVisible {
+                                      (EventHandlerTestHelper.create(c, 1)
+                                              as EventHandler<VisibleEvent>)
+                                          .dispatchEvent(it)
+                                    },
+                            ),
+                        ),
+                )
                 .child(
-                    SimpleMountSpecTester.create(c)
-                        .invisibleHandler(
-                            EventHandlerTestHelper.create(c, 2) as EventHandler<InvisibleEvent>))
-                .child(SimpleMountSpecTester.create(c))
+                    SimpleMountSpecTester(
+                        style =
+                            Style.onInvisible {
+                              (EventHandlerTestHelper.create(c, 2) as EventHandler<InvisibleEvent>)
+                                  .dispatchEvent(it)
+                            },
+                    ),
+                )
+                .child(SimpleMountSpecTester())
                 .build()
           }
         }
@@ -78,16 +98,27 @@ class LayoutStateCalculateVisibilityOutputsTest {
                 .child(
                     Column.create(c)
                         .child(
-                            SimpleMountSpecTester.create(c)
-                                .visibleHandler(
-                                    EventHandlerTestHelper.create(c, 1)
-                                        as EventHandler<VisibleEvent>)))
+                            SimpleMountSpecTester(
+                                style =
+                                    Style.onVisible {
+                                      (EventHandlerTestHelper.create(c, 1)
+                                              as EventHandler<VisibleEvent>)
+                                          .dispatchEvent(it)
+                                    },
+                            ),
+                        ),
+                )
                 .child(
-                    SimpleMountSpecTester.create(c)
-                        .fullImpressionHandler(
-                            EventHandlerTestHelper.create(c, 3)
-                                as EventHandler<FullImpressionVisibleEvent>))
-                .child(SimpleMountSpecTester.create(c))
+                    SimpleMountSpecTester(
+                        style =
+                            Style.onFullImpression {
+                              (EventHandlerTestHelper.create(c, 3)
+                                      as EventHandler<FullImpressionVisibleEvent>)
+                                  .dispatchEvent(it)
+                            },
+                    ),
+                )
+                .child(SimpleMountSpecTester())
                 .build()
           }
         }
@@ -104,16 +135,27 @@ class LayoutStateCalculateVisibilityOutputsTest {
                 .child(
                     Column.create(c)
                         .child(
-                            SimpleMountSpecTester.create(c)
-                                .visibleHandler(
-                                    EventHandlerTestHelper.create(c, 1)
-                                        as EventHandler<VisibleEvent>)))
+                            SimpleMountSpecTester(
+                                style =
+                                    Style.onVisible {
+                                      (EventHandlerTestHelper.create(c, 1)
+                                              as EventHandler<VisibleEvent>)
+                                          .dispatchEvent(it)
+                                    },
+                            ),
+                        ),
+                )
                 .child(
-                    SimpleMountSpecTester.create(c)
-                        .focusedHandler(
-                            EventHandlerTestHelper.create(c, 4)
-                                as EventHandler<FocusedVisibleEvent>))
-                .child(SimpleMountSpecTester.create(c))
+                    SimpleMountSpecTester(
+                        style =
+                            Style.onFocusedVisible {
+                              (EventHandlerTestHelper.create(c, 4)
+                                      as EventHandler<FocusedVisibleEvent>)
+                                  .dispatchEvent(it)
+                            },
+                    ),
+                )
+                .child(SimpleMountSpecTester())
                 .build()
           }
         }
@@ -131,7 +173,9 @@ class LayoutStateCalculateVisibilityOutputsTest {
                 .child(
                     TestLayoutComponent.create(c, 0, 0, true, false, isDelegate)
                         .visibleHandler(
-                            EventHandlerTestHelper.create(c, 1) as EventHandler<VisibleEvent>))
+                            EventHandlerTestHelper.create(c, 1) as EventHandler<VisibleEvent>,
+                        ),
+                )
                 .wrapInView()
                 .build()
           }
@@ -152,18 +196,26 @@ class LayoutStateCalculateVisibilityOutputsTest {
                             TestLayoutComponent.create(c)
                                 .visibleHandler(
                                     EventHandlerTestHelper.create(c, 1)
-                                        as EventHandler<VisibleEvent>))
+                                        as EventHandler<VisibleEvent>,
+                                ),
+                        )
                         .invisibleHandler(
-                            EventHandlerTestHelper.create(c, 2) as EventHandler<InvisibleEvent>))
+                            EventHandlerTestHelper.create(c, 2) as EventHandler<InvisibleEvent>,
+                        ),
+                )
                 .child(
                     Column.create(c)
                         .child(
                             TestLayoutComponent.create(c)
                                 .invisibleHandler(
                                     EventHandlerTestHelper.create(c, 1)
-                                        as EventHandler<InvisibleEvent>))
+                                        as EventHandler<InvisibleEvent>,
+                                ),
+                        )
                         .visibleHandler(
-                            EventHandlerTestHelper.create(c, 2) as EventHandler<VisibleEvent>))
+                            EventHandlerTestHelper.create(c, 2) as EventHandler<VisibleEvent>,
+                        ),
+                )
                 .wrapInView()
                 .build()
           }
@@ -190,10 +242,16 @@ class LayoutStateCalculateVisibilityOutputsTest {
           protected override fun onCreateLayout(c: ComponentContext): Component {
             return Column.create(c)
                 .child(
-                    SimpleMountSpecTester.create(c)
-                        .visibleHandler(
-                            EventHandlerTestHelper.create(c, 1) as EventHandler<VisibleEvent>)
-                        .wrapInView())
+                    SimpleMountSpecTester(
+                        style =
+                            Style.onVisible {
+                                  (EventHandlerTestHelper.create(c, 1)
+                                          as EventHandler<VisibleEvent>)
+                                      .dispatchEvent(it)
+                                }
+                                .wrapInView(),
+                    ),
+                )
                 .build()
           }
         }
@@ -220,9 +278,10 @@ class LayoutStateCalculateVisibilityOutputsTest {
           protected override fun onCreateLayout(c: ComponentContext): Component {
             return Column.create(c)
                 .paddingPx(YogaEdge.ALL, 2)
-                .child(TestNullLayoutComponent.create(c))
+                .child(TestNullLayoutComponent())
                 .invisibleHandler(
-                    EventHandlerTestHelper.create(c, 2) as EventHandler<InvisibleEvent>)
+                    EventHandlerTestHelper.create(c, 2) as EventHandler<InvisibleEvent>,
+                )
                 .build()
           }
         }
@@ -231,7 +290,13 @@ class LayoutStateCalculateVisibilityOutputsTest {
   }
 
   private fun calculateLayoutState(component: Component, widthPx: Int, heightPx: Int): LayoutState {
-    val testLithoView = mLithoTestRule.render(widthPx = widthPx, heightPx = heightPx) { component }
+    val testLithoView = lithoTestRule.render(widthPx = widthPx, heightPx = heightPx) { component }
     return testLithoView.componentTree.mainThreadLayoutState!!
+  }
+
+  private class TestNullLayoutComponent : KComponent() {
+    override fun ComponentScope.render(): Component {
+      return RenderWithConstraints { null }
+    }
   }
 }

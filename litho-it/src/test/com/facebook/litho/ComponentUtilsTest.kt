@@ -18,22 +18,45 @@ package com.facebook.litho
 
 import com.facebook.litho.annotations.Comparable
 import com.facebook.litho.annotations.EventHandlerRebindMode
+import com.facebook.litho.config.ComponentsConfiguration
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
+import org.robolectric.ParameterizedRobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
-class ComponentUtilsTest {
+/**
+ * Every case runs under both settings of [ComponentsConfiguration.cacheComparableFields]: the
+ * cached per-class list of `@Comparable` fields and the per-comparison one. Both arms ship, so both
+ * have to be covered, and running the same assertions against each is also what makes them provably
+ * interchangeable.
+ */
+@RunWith(ParameterizedRobolectricTestRunner::class)
+class ComponentUtilsTest(private val cacheComparableFields: Boolean) {
+
+  companion object {
+    @JvmStatic
+    @ParameterizedRobolectricTestRunner.Parameters(name = "cacheComparableFields={0}")
+    fun settings(): Collection<Array<Any>> = listOf(arrayOf(false), arrayOf(true))
+  }
 
   private lateinit var c1: ComponentTest
   private lateinit var c2: ComponentTest
+  private var previousSetting: Boolean = false
 
   @Before
   fun setUp() {
+    previousSetting = ComponentsConfiguration.cacheComparableFields
+    ComponentsConfiguration.cacheComparableFields = cacheComparableFields
     c1 = ComponentTest()
     c2 = ComponentTest()
+  }
+
+  @After
+  fun tearDown() {
+    ComponentsConfiguration.cacheComparableFields = previousSetting
   }
 
   @Test
@@ -199,13 +222,29 @@ class ComponentUtilsTest {
   @Test
   fun hasEquivalentFieldsEventHandlerPropTest() {
     // The first item of the params is skipped as explained in the EventHandler class.
+    val eventDispatchInfo = EventDispatchInfo()
     c1.propEventHandler =
-        EventHandler<Any?>(3, EventHandlerRebindMode.REBIND, null, arrayOf<Any>("", "1"))
+        EventHandler<Any?>(
+            3,
+            EventHandlerRebindMode.REBIND,
+            eventDispatchInfo,
+            arrayOf<Any>("", "1"),
+        )
     c2.propEventHandler =
-        EventHandler<Any?>(3, EventHandlerRebindMode.REBIND, null, arrayOf<Any>("", "1"))
+        EventHandler<Any?>(
+            3,
+            EventHandlerRebindMode.REBIND,
+            eventDispatchInfo,
+            arrayOf<Any>("", "1"),
+        )
     assertThat(ComponentUtils.hasEquivalentFields(c1, c2)).isTrue
     c2.propEventHandler =
-        EventHandler<Any?>(3, EventHandlerRebindMode.REBIND, null, arrayOf<Any>("", "2"))
+        EventHandler<Any?>(
+            3,
+            EventHandlerRebindMode.REBIND,
+            eventDispatchInfo,
+            arrayOf<Any>("", "2"),
+        )
     assertThat(ComponentUtils.hasEquivalentFields(c1, c2)).isFalse
   }
 
@@ -216,6 +255,92 @@ class ComponentUtilsTest {
     assertThat(ComponentUtils.hasEquivalentFields(c1, c2)).isTrue
     c2.treePropObject = "2"
     assertThat(ComponentUtils.hasEquivalentFields(c1, c2)).isFalse
+  }
+
+  @Test
+  fun hasEquivalentFieldsIgnoresFieldsWithoutTheComparableAnnotation() {
+    c1.propInt = 1
+    c2.propInt = 1
+    c1.notAProp = "a"
+    c2.notAProp = "b"
+    assertThat(ComponentUtils.hasEquivalentFields(c1, c2)).isTrue
+  }
+
+  @Test
+  fun hasEquivalentFieldsKeepsClassesApart() {
+    // Two classes with overlapping field shapes, compared alternately, so a per-class field cache
+    // that collapsed to a single entry would hand one class's fields to the other's instance.
+    val s1 = StateTest(true, 3f)
+    val s2 = StateTest(true, 3f)
+    for (i in 0 until 10) {
+      c1.propInt = i
+      c2.propInt = i
+      assertThat(ComponentUtils.hasEquivalentFields(c1, c2)).isTrue
+      assertThat(ComponentUtils.hasEquivalentFields(s1, s2)).isTrue
+      c2.propInt = i + 1
+      assertThat(ComponentUtils.hasEquivalentFields(c1, c2)).isFalse
+      s2.state1 = !s1.state1
+      assertThat(ComponentUtils.hasEquivalentFields(s1, s2)).isFalse
+      s2.state1 = s1.state1
+    }
+  }
+
+  @Test
+  fun classesBeyondTheCacheCapStillCompareCorrectly() {
+    val previousCap = ComponentUtils.maxCachedClasses
+    ComponentUtils.clearComparedFieldCacheForTesting()
+    ComponentUtils.maxCachedClasses = 1
+    try {
+      // Takes the single slot; every class after it has to resolve its own fields, and still has
+      // to be right about them.
+      c1.propInt = 1
+      c2.propInt = 1
+      assertThat(ComponentUtils.hasEquivalentFields(c1, c2)).isTrue
+
+      val s1 = StateTest(true, 3f)
+      val s2 = StateTest(true, 3f)
+      assertThat(ComponentUtils.hasEquivalentFields(s1, s2)).isTrue
+      s2.state1 = false
+      assertThat(ComponentUtils.hasEquivalentFields(s1, s2)).isFalse
+      s2.state1 = true
+      s2.state2 = 4f
+      assertThat(ComponentUtils.hasEquivalentFields(s1, s2)).isFalse
+    } finally {
+      ComponentUtils.maxCachedClasses = previousCap
+      ComponentUtils.clearComparedFieldCacheForTesting()
+    }
+  }
+
+  @Test
+  fun theCacheStopsGrowingAtItsCap() {
+    // The cap has no observable effect on results, so entry count is the only thing that can pin
+    // it. Sets the flag itself rather than taking the parameter, so it also pins the gate
+    // direction: flag on has to mean cache on, or a QE would measure the two arms the wrong way
+    // round.
+    val previousCap = ComponentUtils.maxCachedClasses
+    val previousFlag = ComponentsConfiguration.cacheComparableFields
+    ComponentUtils.clearComparedFieldCacheForTesting()
+    ComponentsConfiguration.cacheComparableFields = true
+    ComponentUtils.maxCachedClasses = 1
+    try {
+      ComponentUtils.hasEquivalentFields(c1, c2)
+      assertThat(ComponentUtils.cachedClassCountForTesting()).isEqualTo(1)
+      ComponentUtils.hasEquivalentFields(StateTest(true, 3f), StateTest(true, 3f))
+      assertThat(ComponentUtils.cachedClassCountForTesting()).isEqualTo(1)
+    } finally {
+      ComponentUtils.maxCachedClasses = previousCap
+      ComponentsConfiguration.cacheComparableFields = previousFlag
+      ComponentUtils.clearComparedFieldCacheForTesting()
+    }
+  }
+
+  @Test
+  fun hasEquivalentFieldsRejectsMismatchedClasses() {
+    // Asserting the message too: without the explicit check, reflecting one class's fields off
+    // the other instance also throws IllegalArgumentException, so the type alone proves nothing.
+    assertThatThrownBy { ComponentUtils.hasEquivalentFields(c1, StateTest(true, 3f)) }
+        .isInstanceOf(IllegalArgumentException::class.java)
+        .hasMessage("The input is invalid.")
   }
 
   private class ComponentTest : Component() {
@@ -255,11 +380,14 @@ class ComponentUtilsTest {
 
     @field:Comparable(type = Comparable.OTHER) var treePropObject: Any? = null
 
+    /** Deliberately not annotated: `hasEquivalentFields` must not look at it. */
+    var notAProp: String? = null
+
     override fun resolve(
         resolveContext: ResolveContext,
         scopedComponentInfo: ScopedComponentInfo,
         parentWidthSpec: Int,
-        parentHeightSpec: Int
+        parentHeightSpec: Int,
     ): ComponentResolveResult {
       error("Not yet implemented")
     }
@@ -267,7 +395,7 @@ class ComponentUtilsTest {
     override fun resolveDeferred(
         calculationContext: CalculationContext,
         componentContext: ComponentContext,
-        parentContext: ComponentContext
+        parentContext: ComponentContext,
     ): ComponentResolveResult {
       error("Not yet implemented")
     }
@@ -275,7 +403,7 @@ class ComponentUtilsTest {
 
   private class StateTest(
       @field:Comparable(type = Comparable.PRIMITIVE) var state1: Boolean = false,
-      @field:Comparable(type = Comparable.FLOAT) var state2: Float = 0f
+      @field:Comparable(type = Comparable.FLOAT) var state2: Float = 0f,
   ) : StateContainer() {
     override fun applyStateUpdate(stateUpdate: StateUpdate) = Unit
   }

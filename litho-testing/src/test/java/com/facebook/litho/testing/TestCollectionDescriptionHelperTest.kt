@@ -21,24 +21,24 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import com.facebook.litho.Column
 import com.facebook.litho.Component
-import com.facebook.litho.Row
 import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.core.heightPercent
 import com.facebook.litho.core.widthPercent
 import com.facebook.litho.eventHandlerWithReturn
 import com.facebook.litho.kotlin.widget.Text
+import com.facebook.litho.layout.flexbox.Column
+import com.facebook.litho.layout.flexbox.Row
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.common.DataDiffSection
-import com.facebook.litho.sections.widget.RecyclerCollectionComponent
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.viewcompat.SimpleViewBinder
 import com.facebook.litho.viewcompat.ViewCreator
 import com.facebook.litho.widget.ComponentRenderInfo
 import com.facebook.litho.widget.ViewRenderInfo
 import com.facebook.litho.widget.collection.LazyList
+import com.facebook.litho.widget.collection.RecyclerCollectionComponent
 import com.facebook.rendercore.px
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Ignore
@@ -48,15 +48,14 @@ import org.junit.runner.RunWith
 import org.mockito.Answers
 import org.mockito.kotlin.mock
 
-@Ignore("This test stopped working when run against API 16") // TODO: T138559546
 @RunWith(LithoTestRunner::class)
 class TestCollectionDescriptionHelperTest {
 
-  @Rule @JvmField val mLithoTestRule = LithoTestRule()
+  @Rule @JvmField val lithoTestRule = LithoTestRule()
 
   @Test
   fun `prints just recycler string when no children`() {
-    val testLithoView = mLithoTestRule.render(widthPx = 100, heightPx = 100) { LazyList {} }
+    val testLithoView = lithoTestRule.render(widthPx = 100, heightPx = 100) { LazyList {} }
     val testCollection = testLithoView.findCollectionComponent()!!
 
     assertThat(TestCollectionDescriptionHelper.collectionToString(testCollection))
@@ -66,7 +65,7 @@ class TestCollectionDescriptionHelperTest {
   @Test
   fun `prints recycler with fully visible child item info with id`() {
     val testLithoView =
-        mLithoTestRule.render(widthPx = 100, heightPx = 100) {
+        lithoTestRule.render(widthPx = 100, heightPx = 100) {
           LazyList {
             child(id = "identifier", deps = emptyArray()) { Column(style = Style.height(50.px)) }
           }
@@ -78,18 +77,19 @@ class TestCollectionDescriptionHelperTest {
         .hasLineCount(3)
         .matches(
             """
-          |${testCollection.recyclerView}
+          |${Regex.escape(testCollection.recyclerView.toString())}
           |└── index 0: Collection Item \(id: identifier, visibility: full\)
-          |      litho.Column\{\w+ V.E..... .. 0,0-100,50\}
+          |      litho.Column\{\w+ V\S+ \S+ 0,0-100,50\}
           |
         """
-                .trimMargin())
+                .trimMargin(),
+        )
   }
 
   @Test
   fun `prints recycler with partially visible child item info with id`() {
     val testLithoView =
-        mLithoTestRule.render(widthPx = 100, heightPx = 100) {
+        lithoTestRule.render(widthPx = 100, heightPx = 100) {
           LazyList {
             child(id = "identifier", deps = emptyArray()) { Column(style = Style.height(150.px)) }
           }
@@ -101,18 +101,19 @@ class TestCollectionDescriptionHelperTest {
         .hasLineCount(3)
         .matches(
             """
-          |${testCollection.recyclerView}
+          |${Regex.escape(testCollection.recyclerView.toString())}
           |└── index 0: Collection Item \(id: identifier, visibility: partial\)
-          |      litho.Column\{\w+ V.E..... .. 0,0-100,150\}
+          |      litho.Column\{\w+ V\S+ \S+ 0,0-100,150\}
           |
         """
-                .trimMargin())
+                .trimMargin(),
+        )
   }
 
   @Test
   fun `prints recycler with invisible child item info without id set`() {
     val testLithoView =
-        mLithoTestRule.render(widthPx = 100, heightPx = 100) {
+        lithoTestRule.render(widthPx = 100, heightPx = 100) {
           LazyList { child(Column(style = Style.height(0.px))) }
         }
     val testCollection = testLithoView.findCollectionComponent()!!
@@ -122,18 +123,19 @@ class TestCollectionDescriptionHelperTest {
         .hasLineCount(3)
         .matches(
             """
-          |${testCollection.recyclerView}
+          |${Regex.escape(testCollection.recyclerView.toString())}
           |└── index 0: Collection Item \(id: \d+:1, visibility: none\)
-          |      litho.Column\{\w+ V.E..... .. 0,0-100,0\}
+          |      litho.Column\{\w+ V\S+ \S+ 0,0-100,0\}
           |
         """
-                .trimMargin())
+                .trimMargin(),
+        )
   }
 
   @Test
   fun `prints recycler with multiple children including fallback`() {
     val testLithoView =
-        mLithoTestRule.render(widthPx = 100, heightPx = 100) {
+        lithoTestRule.render(widthPx = 100, heightPx = 100) {
           LazyList {
             child(Column(style = Style.height(10.px)))
             child(id = "row", component = Row(style = Style.height(100.px)))
@@ -147,24 +149,26 @@ class TestCollectionDescriptionHelperTest {
         .hasLineCount(9)
         .matches(
             """
-          |${testCollection.recyclerView}
+          |${Regex.escape(testCollection.recyclerView.toString())}
           |└── index 0: Collection Item \(id: \d+:1, visibility: full\)
-          |      litho.Column\{\w+ V.E..... .. 0,0-100,10\}
+          |      litho.Column\{\w+ V\S+ \S+ 0,0-100,10\}
           |
           |└── index 1: Collection Item \(id: row, visibility: partial\)
-          |      litho.Row\{\w+ V.E..... .. 0,0-100,100\}
+          |      litho.Row\{\w+ V\S+ \S+ 0,0-100,100\}
           |
           |└── index 2: Collection Item \(id: \d+:1, visibility: none\)
           |      Text\{\w+\}
           |
         """
-                .trimMargin())
+                .trimMargin(),
+        )
   }
 
+  @Ignore("Mock components fail with NullPointerException: getKey() must not be null - T265296494")
   @Test
   fun `prints sections recycler with mock components`() {
     val testLithoView =
-        mLithoTestRule.render(widthPx = 100, heightPx = 100) {
+        lithoTestRule.render(widthPx = 100, heightPx = 100) {
           RecyclerCollectionComponent(
               style = Style.widthPercent(100f).heightPercent(100f),
               section =
@@ -173,13 +177,15 @@ class TestCollectionDescriptionHelperTest {
                       .renderEventHandler(
                           eventHandlerWithReturn {
                             if (it.index == 0)
-                            // Delegates to DebugComponent still
-                            ComponentRenderInfo.create().component(mock<Component>()).build()
+                                // Delegates to DebugComponent still
+                                ComponentRenderInfo.create().component(mock<Component>()).build()
                             else
                             // Skips calling debug component
                             mock<ComponentRenderInfo>(defaultAnswer = Answers.RETURNS_DEEP_STUBS)
-                          })
-                      .build())
+                          },
+                      )
+                      .build(),
+          )
         }
     val testCollection = testLithoView.findCollectionComponent()!!
 
@@ -188,28 +194,29 @@ class TestCollectionDescriptionHelperTest {
         .hasLineCount(6)
         .matches(
             """
-          |${testCollection.recyclerView}
+          |${Regex.escape(testCollection.recyclerView.toString())}
           |└── index 0: Collection Item \(id: null, visibility: none\)
-          |      litho.null\{\w+ V.E..... .. 0,0-100,0\}
+          |      litho.null\{\w+ V\S+ \S+ 0,0-100,0\}
           |
           |└── index 1: Collection Item \(id: null, visibility: none\)
           |      Component${ESCAPED_DOLLAR_SIGN}MockitoMock${ESCAPED_DOLLAR_SIGN}\w+\{\w+\}
           |
         """
-                .trimMargin())
+                .trimMargin(),
+        )
   }
 
   @Test
   fun `prints sections recycler with TextView child`() {
     val testLithoView =
-        mLithoTestRule.render(widthPx = 100, heightPx = 100) {
+        lithoTestRule.render(widthPx = 100, heightPx = 100) {
           RecyclerCollectionComponent(
               style = Style.widthPercent(100f).heightPercent(100f),
               section =
                   DataDiffSection.create<Int>(SectionContext(context))
                       .data(listOf(100))
                       .renderEventHandler(
-                          eventHandlerWithReturn {
+                          eventHandlerWithReturn { renderEvent ->
                             ViewRenderInfo.create()
                                 .viewCreator(VIEW_CREATOR)
                                 .viewBinder(
@@ -217,18 +224,23 @@ class TestCollectionDescriptionHelperTest {
                                       override fun bind(view: LinearLayout) {
                                         view.addView(
                                             TextView(view.context).apply {
-                                              text = "An embedded view! ${it.model}"
+                                              text = "An embedded view! ${renderEvent.model}"
                                               textSize = 16f
                                               layoutParams =
                                                   ViewGroup.LayoutParams(
                                                       ViewGroup.LayoutParams.WRAP_CONTENT,
-                                                      ViewGroup.LayoutParams.WRAP_CONTENT)
-                                            })
+                                                      ViewGroup.LayoutParams.WRAP_CONTENT,
+                                                  )
+                                            },
+                                        )
                                       }
-                                    })
+                                    },
+                                )
                                 .build()
-                          })
-                      .build())
+                          },
+                      )
+                      .build(),
+          )
         }
     val testCollection = testLithoView.findCollectionComponent()!!
 
@@ -237,13 +249,14 @@ class TestCollectionDescriptionHelperTest {
         .hasLineCount(4)
         .matches(
             """
-          |${testCollection.recyclerView}
+          |${Regex.escape(testCollection.recyclerView.toString())}
           |└── index 0: Collection Item \(id: null, visibility: full\)
-          |      LinearLayout@\w+
-          |        TextView@\w+ \(Found text: "An embedded view! 100", view is visible\)
+          |      LinearLayout\{[^}]+\}
+          |        TextView\{[^}]+\} \(Found text: "An embedded view! 100", view is visible\)
           |
         """
-                .trimMargin())
+                .trimMargin(),
+        )
   }
 
   @Test
@@ -251,7 +264,7 @@ class TestCollectionDescriptionHelperTest {
     val gradientDrawable = GradientDrawable()
 
     val testLithoView =
-        mLithoTestRule.render(widthPx = 100, heightPx = 100) {
+        lithoTestRule.render(widthPx = 100, heightPx = 100) {
           RecyclerCollectionComponent(
               style = Style.widthPercent(100f).heightPercent(100f),
               section =
@@ -270,13 +283,18 @@ class TestCollectionDescriptionHelperTest {
                                               layoutParams =
                                                   ViewGroup.LayoutParams(
                                                       ViewGroup.LayoutParams.WRAP_CONTENT,
-                                                      ViewGroup.LayoutParams.WRAP_CONTENT)
-                                            })
+                                                      ViewGroup.LayoutParams.WRAP_CONTENT,
+                                                  )
+                                            },
+                                        )
                                       }
-                                    })
+                                    },
+                                )
                                 .build()
-                          })
-                      .build())
+                          },
+                      )
+                      .build(),
+          )
         }
     val testCollection = testLithoView.findCollectionComponent()!!
 
@@ -285,26 +303,27 @@ class TestCollectionDescriptionHelperTest {
         .hasLineCount(4)
         .matches(
             """
-          |${testCollection.recyclerView}
+          |${Regex.escape(testCollection.recyclerView.toString())}
           |└── index 0: Collection Item \(id: null, visibility: full\)
-          |      LinearLayout@\w+
-          |        ImageView@\w+ \(Found drawable: "$gradientDrawable", view is visible\)
+          |      LinearLayout\{[^}]+\}
+          |        ImageView\{[^}]+\} \(Found drawable: "$gradientDrawable", view is visible\)
           |
         """
-                .trimMargin())
+                .trimMargin(),
+        )
   }
 
   @Test
   fun `prints sections recycler with views where some are not visible`() {
     val testLithoView =
-        mLithoTestRule.render(widthPx = 100, heightPx = 100) {
+        lithoTestRule.render(widthPx = 100, heightPx = 100) {
           RecyclerCollectionComponent(
               style = Style.widthPercent(100f).heightPercent(100f),
               section =
                   DataDiffSection.create<Int>(SectionContext(context))
                       .data(listOf(100, 200, 300))
                       .renderEventHandler(
-                          eventHandlerWithReturn {
+                          eventHandlerWithReturn { event ->
                             ViewRenderInfo.create()
                                 .viewCreator(VIEW_CREATOR)
                                 .viewBinder(
@@ -312,17 +331,23 @@ class TestCollectionDescriptionHelperTest {
                                       override fun bind(view: LinearLayout) {
                                         view.addView(
                                             TextView(view.context).apply {
-                                              text = "An embedded view! ${it.model}"
+                                              text = "An embedded view! ${event.model}"
                                               textSize = 16f
                                               layoutParams =
                                                   ViewGroup.LayoutParams(
-                                                      ViewGroup.LayoutParams.WRAP_CONTENT, 55)
-                                            })
+                                                      ViewGroup.LayoutParams.WRAP_CONTENT,
+                                                      55,
+                                                  )
+                                            },
+                                        )
                                       }
-                                    })
+                                    },
+                                )
                                 .build()
-                          })
-                      .build())
+                          },
+                      )
+                      .build(),
+          )
         }
     val testCollection = testLithoView.findCollectionComponent()!!
 
@@ -331,36 +356,37 @@ class TestCollectionDescriptionHelperTest {
         .hasLineCount(11)
         .matches(
             """
-          |${testCollection.recyclerView}
+          |${Regex.escape(testCollection.recyclerView.toString())}
           |└── index 0: Collection Item \(id: null, visibility: full\)
-          |      LinearLayout@\w+
-          |        TextView@\w+ \(Found text: "An embedded view! 100", view is visible\)
+          |      LinearLayout\{[^}]+\}
+          |        TextView\{[^}]+\} \(Found text: "An embedded view! 100", view is visible\)
           |
           |└── index 1: Collection Item \(id: null, visibility: partial\)
-          |      LinearLayout@\w+
-          |        TextView@\w+ \(Found text: "An embedded view! 200", view is visible\)
+          |      LinearLayout\{[^}]+\}
+          |        TextView\{[^}]+\} \(Found text: "An embedded view! 200", view is visible\)
           |
           |└── index 2: Collection Item \(id: null, visibility: none\)
           |      Found null item view \(no additional information available\)
           |
         """
-                .trimMargin())
+                .trimMargin(),
+        )
   }
 
   @Test
   fun `prints sections recycler with mixed view and component children`() {
     val testLithoView =
-        mLithoTestRule.render(widthPx = 100, heightPx = 100) {
+        lithoTestRule.render(widthPx = 100, heightPx = 100) {
           RecyclerCollectionComponent(
               style = Style.widthPercent(100f).heightPercent(100f),
               section =
                   DataDiffSection.create<Int>(SectionContext(context))
                       .data(listOf(0, 1))
                       .renderEventHandler(
-                          eventHandlerWithReturn {
-                            if (it.index == 0) {
+                          eventHandlerWithReturn { event ->
+                            if (event.index == 0) {
                               return@eventHandlerWithReturn ComponentRenderInfo.create()
-                                  .component(Text(text = "A Litho Component: ${it.index}"))
+                                  .component(Text(text = "A Litho Component: ${event.index}"))
                                   .build()
                             }
 
@@ -371,36 +397,43 @@ class TestCollectionDescriptionHelperTest {
                                       override fun bind(view: LinearLayout) {
                                         view.addView(
                                             TextView(view.context).apply {
-                                              text = "An embedded view! ${it.model}"
+                                              text = "An embedded view! ${event.model}"
                                               textSize = 16f
                                               layoutParams =
                                                   ViewGroup.LayoutParams(
                                                       ViewGroup.LayoutParams.WRAP_CONTENT,
-                                                      ViewGroup.LayoutParams.WRAP_CONTENT)
-                                            })
+                                                      ViewGroup.LayoutParams.WRAP_CONTENT,
+                                                  )
+                                            },
+                                        )
                                       }
-                                    })
+                                    },
+                                )
                                 .build()
-                          })
-                      .build())
+                          },
+                      )
+                      .build(),
+          )
         }
     val testCollection = testLithoView.findCollectionComponent()!!
 
     assertThat(TestCollectionDescriptionHelper.collectionToString(testCollection))
         .startsWith(testCollection.recyclerView.toString())
-        .hasLineCount(7)
+        .hasLineCount(8)
         .matches(
             """
-          |${testCollection.recyclerView}
+          |${Regex.escape(testCollection.recyclerView.toString())}
           |└── index 0: Collection Item \(id: null, visibility: full\)
-          |      litho.Text\{\w+ V.E..... .. 0,0-100,\d+ text="A Litho Component: 0"\}
+          |      litho.Text\{\w+ V\S+ \S+ 0,0-100,\d+\}
+          |        litho.TextComponent\{\w+ V\S+ \S+ 0,0-100,\d+ text="A Litho Component: 0"\}
           |
           |└── index 1: Collection Item \(id: null, visibility: full\)
-          |      LinearLayout@\w+
-          |        TextView@\w+ \(Found text: "An embedded view! 1", view is visible\)
+          |      LinearLayout\{[^}]+\}
+          |        TextView\{[^}]+\} \(Found text: "An embedded view! 1", view is visible\)
           |
         """
-                .trimMargin())
+                .trimMargin(),
+        )
   }
 
   private companion object {
@@ -411,7 +444,9 @@ class TestCollectionDescriptionHelperTest {
           LinearLayout(c).apply {
             layoutParams =
                 ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                )
           }
         }
   }

@@ -160,9 +160,9 @@ public abstract class TestComponent extends SpecGeneratedComponent {
   }
 
   @Override
-  public boolean isEquivalentProps(@Nullable Component other, boolean shouldCompareCommonProps) {
+  public boolean isEquivalentProps(@Nullable Component other) {
     mIsEquivalentToCalled = true;
-    return super.isEquivalentProps(other, shouldCompareCommonProps);
+    return super.isEquivalentProps(other);
   }
 
   /** Reset the tracking of which methods have been called on this component. */
@@ -178,6 +178,7 @@ public abstract class TestComponent extends SpecGeneratedComponent {
     mIsEquivalentToCalled = false;
   }
 
+  @SuppressWarnings({"rawtypes", "unchecked"})
   @Nullable
   @Override
   public Object dispatchOnEventImpl(EventHandler eventHandler, Object eventState) {
@@ -189,6 +190,7 @@ public abstract class TestComponent extends SpecGeneratedComponent {
     return mDispatchedEventHandlers.keySet();
   }
 
+  @SuppressWarnings("rawtypes")
   public @Nullable Object getEventState(EventHandler eventHandler) {
     return mDispatchedEventHandlers.get(eventHandler);
   }

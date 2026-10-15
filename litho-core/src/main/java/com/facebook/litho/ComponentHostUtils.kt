@@ -20,6 +20,7 @@ import android.graphics.drawable.Drawable
 import android.view.View
 import androidx.collection.SparseArrayCompat
 import com.facebook.rendercore.MountItem
+import com.facebook.rendercore.text.RCTextView
 import java.util.ArrayList
 
 internal object ComponentHostUtils {
@@ -35,7 +36,7 @@ internal object ComponentHostUtils {
       oldIndex: Int,
       newIndex: Int,
       items: SparseArrayCompat<T>,
-      scrapItems: SparseArrayCompat<T>?
+      scrapItems: SparseArrayCompat<T>?,
   ) {
     val itemToMove: T?
     if (existsScrapItemAt(oldIndex, scrapItems)) {
@@ -111,7 +112,22 @@ internal object ComponentHostUtils {
    * calls.
    */
   @JvmStatic
-  fun extractTextContent(items: List<*>): List<TextContent> = items.filterIsInstance<TextContent>()
+  fun extractTextContent(items: List<*>): List<TextContent> = items.mapNotNull(::asTextContent)
+
+  /**
+   * The mounted content as [TextContent]: legacy text drawables, and the text views of Litho's
+   * primitive Text. Other primitive text views (direct RichText users) are not part of their host's
+   * text, as before primitive Text existed.
+   */
+  @JvmStatic
+  @JvmOverloads
+  fun asTextContent(content: Any?, renderUnit: LithoRenderUnit? = null): TextContent? =
+      when {
+        content is TextContent -> content
+        content is RCTextView && content.textBelongsToHost() ->
+            RCTextViewTextContent(content, renderUnit)
+        else -> null
+      }
 
   @JvmStatic
   fun extractImageContent(items: List<*>): ImageContent =

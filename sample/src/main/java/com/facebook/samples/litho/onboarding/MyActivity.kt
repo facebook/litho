@@ -22,8 +22,9 @@ import androidx.appcompat.app.AppCompatActivity
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
-import com.facebook.litho.LithoView
 import com.facebook.litho.kotlin.widget.Text
+import com.facebook.litho.surface.getLithoView
+import com.facebook.litho.surface.setLithoContent
 import com.facebook.rendercore.dp
 
 class MyActivity : AppCompatActivity() {
@@ -31,8 +32,8 @@ class MyActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    val lithoView = LithoView.create(this /* context */, MyComponent())
-    setContentView(lithoView)
+    setLithoContent { MyComponent() }
+    setContentView(getLithoView())
   }
 }
 

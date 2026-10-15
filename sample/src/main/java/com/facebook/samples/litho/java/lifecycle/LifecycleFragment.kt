@@ -24,12 +24,12 @@ import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.Button
 import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
-import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.LithoView
 import com.facebook.litho.LithoVisibilityEventsController
 import com.facebook.litho.LithoVisibilityEventsControllerDelegate
+import com.facebook.litho.layout.flexbox.Column
 import com.facebook.samples.litho.R
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -44,7 +44,7 @@ class LifecycleFragment : Fragment(), View.OnClickListener {
             type: Int,
             thread: Thread,
             timestamp: Long,
-            id: String
+            id: String,
         ) {
           val prefix = LifecycleDelegateLog.prefix(thread, timestamp, id)
           val logRunnable =
@@ -66,13 +66,14 @@ class LifecycleFragment : Fragment(), View.OnClickListener {
 
     // inform the LithoView
     delegate.moveToVisibilityState(
-        LithoVisibilityEventsController.LithoVisibilityState.HINT_VISIBLE)
+        LithoVisibilityEventsController.LithoVisibilityState.HINT_VISIBLE,
+    )
   }
 
   override fun onCreateView(
       inflater: LayoutInflater,
       container: ViewGroup?,
-      savedInstanceState: Bundle?
+      savedInstanceState: Bundle?,
   ): View {
     val parent =
         inflater.inflate(R.layout.activity_fragment_transactions_lifecycle, container, false)
@@ -82,7 +83,9 @@ class LifecycleFragment : Fragment(), View.OnClickListener {
         LithoView.create(
             c,
             getComponent(c),
-            delegate /* The LithoVisibilityEventsController delegate for this LithoView */)
+            delegate, /* The LithoVisibilityEventsController delegate for this LithoView */
+            null,
+        )
 
     // end_example_lifecycleprovider
     val layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT)
@@ -102,15 +105,15 @@ class LifecycleFragment : Fragment(), View.OnClickListener {
     fragmentLithoView.addView(lithoView)
   }
 
-  private fun getComponent(c: ComponentContext): Component =
-      Column.create(c)
-          .child(
-              LifecycleDelegateComponent.create(c)
-                  .id(atomicId.getAndIncrement().toString())
-                  .delegateListener(delegateListener)
-                  .consoleDelegateListener(consoleDelegateListener)
-                  .build())
-          .build()
+  private fun getComponent(c: ComponentContext): Component = Column {
+    child(
+        LifecycleDelegateComponent.create(c)
+            .id(atomicId.getAndIncrement().toString())
+            .delegateListener(delegateListener)
+            .consoleDelegateListener(consoleDelegateListener)
+            .build(),
+    )
+  }
 
   private fun replaceFragment() {
     parentFragmentManager

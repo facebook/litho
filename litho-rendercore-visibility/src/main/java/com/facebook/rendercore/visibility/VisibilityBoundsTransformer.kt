@@ -22,9 +22,24 @@ import android.view.ViewGroup
 
 interface VisibilityBoundsTransformer {
 
-  fun getTransformedLocalVisibleRect(host: ViewGroup): Rect?
+  /**
+   * Transforms the local visible rect of the host view to account for occlusions.
+   *
+   * @param host The host ViewGroup whose visibility bounds should be transformed.
+   * @param outRect The output Rect to populate with transformed bounds. Implementations should
+   *   modify this Rect in-place. If the host is fully occluded, the Rect should be set to empty via
+   *   [Rect.setEmpty].
+   */
+  fun getTransformedLocalVisibleRect(host: ViewGroup, outRect: Rect)
 
-  fun getViewportRect(view: View): Rect
+  /**
+   * Gets the viewport rect of the view.
+   *
+   * @param view The view to get viewport for.
+   * @param outRect The output Rect to populate with viewport bounds. Implementations should modify
+   *   this Rect in-place.
+   */
+  fun getViewportRect(view: View, outRect: Rect)
 
   fun shouldUseTransformedVisibleRect(visibilityOutput: VisibilityOutput): Boolean
 }

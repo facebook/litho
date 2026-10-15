@@ -81,7 +81,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
   private final ImmutableList<EventDeclarationModel> mEventDeclarations;
   private final ImmutableList<BuilderMethodModel> mImplicitBuilderMethods;
   private final ImmutableList<RenderDataDiffModel> mDiffs;
-  private final String mClassJavadoc;
+  @Nullable private final String mClassJavadoc;
   private final ImmutableList<PropJavadocModel> mPropJavadocs;
   private final boolean mIsPublic;
   private final Object mRepresentedObject;
@@ -125,7 +125,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
       ImmutableList<EventDeclarationModel> eventDeclarations,
       ImmutableList<BuilderMethodModel> implicitBuilderMethods,
       ImmutableList<RenderDataDiffModel> diffs,
-      String classJavadoc,
+      @Nullable String classJavadoc,
       ImmutableList<PropJavadocModel> propJavadocs,
       boolean isPublic,
       Object representedObject,
@@ -230,7 +230,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
 
   @Override
   @Nullable
-  // NULLSAFE_FIXME[Inconsistent Subclass Return Annotation]
   public SpecMethodModel<EventMethod, Void> getWorkingRangeRegisterMethod() {
     return mWorkingRangeRegisterMethod;
   }
@@ -322,6 +321,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
   }
 
   @Override
+  @Nullable
   public String getClassJavadoc() {
     return mClassJavadoc;
   }
@@ -475,8 +475,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
     private ImmutableList<EventDeclarationModel> mEventDeclarations = ImmutableList.of();
     private ImmutableList<BuilderMethodModel> mImplicitBuilderMethods = ImmutableList.of();
     private ImmutableList<RenderDataDiffModel> mDiffs = ImmutableList.of();
-    // NULLSAFE_FIXME[Field Not Initialized]
-    private String mClassJavadoc;
+    @Nullable private String mClassJavadoc;
     private ImmutableList<PropJavadocModel> mPropJavadocs = ImmutableList.of();
     private boolean mIsPublic;
     // NULLSAFE_FIXME[Field Not Initialized]
@@ -628,7 +627,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
       return this;
     }
 
-    public Builder classJavadoc(String classJavadoc) {
+    public Builder classJavadoc(@Nullable String classJavadoc) {
       mClassJavadoc = classJavadoc;
       return this;
     }
@@ -776,10 +775,10 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
     }
 
     @Override
-    public boolean equals(@Nullable Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
-      final Builder builder = (Builder) o;
+    public boolean equals(@Nullable Object other) {
+      if (this == other) return true;
+      if (other == null || getClass() != other.getClass()) return false;
+      final Builder builder = (Builder) other;
       return mIsPublic == builder.mIsPublic
           && mHasDeepCopy == builder.mHasDeepCopy
           && mShouldCheckIdInIsEquivalentToMethod == builder.mShouldCheckIdInIsEquivalentToMethod

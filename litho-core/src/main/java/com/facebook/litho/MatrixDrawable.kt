@@ -49,15 +49,14 @@ class MatrixDrawable<T : Drawable?> : Drawable(), Drawable.Callback, Touchable, 
     if (mountedDrawable === drawable) {
       return
     }
-    mountedDrawable?.let {
+    mountedDrawable?.let { currentDrawable ->
       setDrawableVisibilitySafe(visible = false, restart = false)
-      it.callback = null
+      currentDrawable.callback = null
     }
-    mountedDrawable =
-        drawable?.also {
-          setDrawableVisibilitySafe(isVisible, restart = false)
-          it.callback = this
-        }
+    mountedDrawable = drawable?.also { newDrawable ->
+      setDrawableVisibilitySafe(isVisible, restart = false)
+      newDrawable.callback = this
+    }
     this.matrix = matrix
 
     // We should clip rect if either the transformation matrix needs so or
@@ -85,9 +84,9 @@ class MatrixDrawable<T : Drawable?> : Drawable(), Drawable.Callback, Touchable, 
   }
 
   fun unmount() {
-    mountedDrawable?.let {
+    mountedDrawable?.let { drawableToUnmount ->
       setDrawableVisibilitySafe(visible = false, restart = false)
-      it.callback = null
+      drawableToUnmount.callback = null
     }
     mountedDrawable = null
     matrix = null
@@ -97,15 +96,28 @@ class MatrixDrawable<T : Drawable?> : Drawable(), Drawable.Callback, Touchable, 
   }
 
   fun getVisualBounds(): Rect {
-    val untranslatedBounds = copyBounds()
-    val matrix = matrix ?: return untranslatedBounds
-    val translatedRectF = RectF(untranslatedBounds)
-    matrix.mapRect(translatedRectF)
+    val containerBounds = copyBounds()
+    val drawableBounds = mountedDrawable?.copyBounds() ?: return containerBounds
+    val translatedRectF = RectF(drawableBounds)
+    matrix?.mapRect(translatedRectF)
+    if (
+        shouldClipRect &&
+            !translatedRectF.intersect(
+                0f,
+                0f,
+                containerBounds.width().toFloat(),
+                containerBounds.height().toFloat(),
+            )
+    ) {
+      translatedRectF.setEmpty()
+    }
+    translatedRectF.offset(containerBounds.left.toFloat(), containerBounds.top.toFloat())
     return Rect(
         translatedRectF.left.roundToInt(),
         translatedRectF.top.roundToInt(),
         translatedRectF.right.roundToInt(),
-        translatedRectF.bottom.roundToInt())
+        translatedRectF.bottom.roundToInt(),
+    )
   }
 
   private fun setDrawableVisibilitySafe(visible: Boolean, restart: Boolean) {

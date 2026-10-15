@@ -1,0 +1,259 @@
+---
+id: layout-patterns
+title: Common Layout Patterns
+keywords:
+    - grid layout
+    - grid
+    - collection
+    - overlapping avatars
+    - avatar overlap
+    - negative margin
+    - multi-section screen
+    - horizontal scrolling
+    - pull to refresh
+---
+
+Common layout patterns for building UIs with Litho KComponents.
+
+## Grid Layout
+
+Build a fixed-column grid by chunking items into rows. Give each cell `flex(grow = 1f)` so columns share the width equally, and use the `gap` **constructor parameter** for even spacing between cells.
+
+:::important
+`gap` is a constructor parameter on `Row`/`Column` — it is **not** a `Style` extension (there is no `Style.gap()` to import). Put `gap` on the outer `Column` for row-to-row spacing and on each `Row` for cell-to-cell spacing. Prefer this over per-child `margin`, which easily produces uneven gaps (e.g. spacing between columns that doesn't match the spacing between rows, or extra spacing at the container edges). See "Spacing between children with `gap`" in [Row & Column Containers](flexbox-yoga.mdx).
+:::
+
+```kotlin
+import com.facebook.litho.Column
+import com.facebook.litho.Row
+import com.facebook.litho.Style
+import com.facebook.litho.core.height
+import com.facebook.litho.core.padding
+import com.facebook.litho.flexbox.flex
+import com.facebook.litho.kotlin.widget.Text
+import com.facebook.litho.view.backgroundColor
+import com.facebook.litho.view.clip
+import com.facebook.litho.view.Shape
+import com.facebook.rendercore.dp
+import com.facebook.rendercore.sp
+import com.facebook.yoga.YogaAlign
+import com.facebook.yoga.YogaJustify
+
+// 2-column grid with uniform 8.dp gaps between every cell
+Column(gap = 8.dp, style = Style.padding(all = 8.dp)) {
+  val items = listOf("A", "B", "C", "D", "E")
+  for (rowItems in items.chunked(2)) {
+    child(Row(gap = 8.dp) {
+      for (item in rowItems) {
+        child(Column(
+            alignItems = YogaAlign.CENTER,
+            justifyContent = YogaJustify.CENTER,
+            style = Style.flex(grow = 1f).height(100.dp)
+                .backgroundColor(0xFFE0E0E0.toInt())
+                .clip(Shape.RoundedRectangle(8.dp))
+        ) {
+          child(Text(text = item, textSize = 18.sp))
+        })
+      }
+      // Fill remaining space if odd item count so cells keep equal width
+      if (rowItems.size < 2) {
+        child(Column(style = Style.flex(grow = 1f)))
+      }
+    })
+  }
+}
+```
+
+For a 3-column grid, use `chunked(3)` and adjust the filler check to `rowItems.size < 3`.
+
+### Square grid cells
+
+To make cells **square** (e.g. a numbered tile grid), do **not** pair a flexible width with a fixed height — `flex(grow = 1f).height(100.dp)` renders rectangles whose shape changes with screen width. Instead, set `flex(grow = 1f)` for the shared width and `aspectRatio(1f)` so the height tracks the width. Add `justifyContent = YogaJustify.CENTER` on a `flex(grow = 1f)` outer `Column` when the grid should sit in the vertical center of the screen.
+
+```kotlin
+import com.facebook.litho.Column
+import com.facebook.litho.Row
+import com.facebook.litho.Style
+import com.facebook.litho.core.padding
+import com.facebook.litho.flexbox.aspectRatio
+import com.facebook.litho.flexbox.flex
+import com.facebook.litho.kotlin.widget.Text
+import com.facebook.litho.view.backgroundColor
+import com.facebook.rendercore.dp
+import com.facebook.rendercore.sp
+import com.facebook.yoga.YogaAlign
+import com.facebook.yoga.YogaJustify
+
+// Vertically-centered 3x3 grid of SQUARE cells (1..9)
+Column(
+    gap = 8.dp,
+    justifyContent = YogaJustify.CENTER, // center the grid vertically on screen
+    style = Style.flex(grow = 1f).padding(horizontal = 16.dp)
+) {
+  for (rowItems in (1..9).chunked(3)) {
+    child(Row(gap = 8.dp) {
+      for (n in rowItems) {
+        child(Column(
+            alignItems = YogaAlign.CENTER,
+            justifyContent = YogaJustify.CENTER,
+            // flex(grow=1f) shares width equally; aspectRatio(1f) makes height == width
+            style = Style.flex(grow = 1f).aspectRatio(1f)
+                .backgroundColor(0xFFE5E5E7.toInt())
+        ) {
+          child(Text(text = "$n", textSize = 32.sp))
+        })
+      }
+    })
+  }
+}
+```
+
+Key points:
+- Use `gap` for inter-cell spacing, not per-child `margin`.
+- Use `aspectRatio(1f)` for square cells; avoid `flex(grow = 1f)` combined with a fixed `height(...)`, which yields rectangles.
+- Center the grid vertically with `justifyContent = YogaJustify.CENTER` on a `flex(grow = 1f)` outer `Column`.
+
+## Horizontal Scrolling Collection
+
+When a row of cards or items is **wider than the screen** (e.g. a story tray or media carousel — often shown in a design with the last item partially clipped at the edge), use a horizontal `LazyList`, **not** a plain `Row`. A plain `Row` does not scroll: its children either overflow past the screen edge or get shrunk to fit, distorting their size. Use `LazyList` with `RecyclerView.HORIZONTAL` for horizontal scrolling cards or items:
+
+```kotlin
+import androidx.recyclerview.widget.RecyclerView
+import com.facebook.litho.widget.collection.LazyList
+
+LazyList(
+    orientation = RecyclerView.HORIZONTAL,
+    style = Style.height(120.dp)
+) {
+  for (i in 0 until 10) {
+    child(id = i, component = Column(
+        alignItems = YogaAlign.CENTER,
+        justifyContent = YogaJustify.CENTER,
+        style = Style.width(100.dp).height(100.dp)
+            .backgroundColor(0xFFBBDEFB.toInt())
+            .margin(end = 8.dp)
+            .clip(Shape.RoundedRectangle(12.dp))
+    ) {
+      child(Text(text = "Item $i"))
+    })
+  }
+}
+```
+
+A horizontal `LazyList` **must** have bounded height (`Style.height(N.dp)`) since it scrolls horizontally.
+
+## Multi-Section Screen
+
+Compose screens with multiple sections using a mix of headers, horizontal collections, and vertical lists:
+
+```kotlin
+Column(style = Style.flex(grow = 1f)) {
+  // Section header with action
+  child(Row(
+      alignItems = YogaAlign.CENTER,
+      justifyContent = YogaJustify.SPACE_BETWEEN,
+      style = Style.padding(all = 16.dp)
+  ) {
+    // Font sizing and weight: textSize controls font size; typeface controls font family / weight (bold here)
+    child(Text(text = "Section Title", textSize = 20.sp,
+        typeface = Typeface.DEFAULT_BOLD))
+    child(Text(text = "See All", textSize = 14.sp,
+        textColor = 0xFF1877F2.toInt()))
+  })
+  // Horizontal scrolling items
+  child(LazyList(
+      orientation = RecyclerView.HORIZONTAL,
+      style = Style.height(120.dp).padding(start = 16.dp)
+  ) {
+    for (i in 0 until 8) {
+      child(id = i, component = CardItem(
+          title = "Card $i",
+          style = Style.width(140.dp).margin(end = 12.dp)))
+    }
+  })
+  // Vertical list below
+  child(LazyList(style = Style.height(400.dp)) {
+    for (i in 0 until 20) {
+      child(id = i, component = ListRow(title = "Row $i"))
+    }
+  })
+}
+```
+
+## Overlapping Avatars (Composite Avatar / Profile Picture Stack)
+
+Build a *composite avatar* — also called an avatar stack or overlapping profile pictures — by overlapping circular images with negative margins. The second avatar shifts left with a negative `margin(start = ...)`. The same `Shape.Circle` clip works for any single profile picture.
+
+```kotlin
+import com.facebook.litho.Row
+import com.facebook.litho.Style
+import com.facebook.litho.core.height
+import com.facebook.litho.core.margin
+import com.facebook.litho.core.width
+import com.facebook.litho.kotlin.widget.Image
+import com.facebook.litho.view.Shape
+import com.facebook.litho.view.clip
+import com.facebook.rendercore.dp
+import com.facebook.yoga.YogaAlign
+
+// Dual overlapping circular avatars
+Row(alignItems = YogaAlign.CENTER) {
+  child(Image(
+      drawable = drawableRes(R.drawable.avatar_1),
+      scaleType = ImageView.ScaleType.CENTER_CROP,
+      style = Style.width(48.dp).height(48.dp).clip(Shape.Circle)
+  ))
+  child(Image(
+      drawable = drawableRes(R.drawable.avatar_2),
+      scaleType = ImageView.ScaleType.CENTER_CROP,
+      style = Style.width(48.dp).height(48.dp)
+          .clip(Shape.Circle)
+          .margin(start = (-12).dp)  // Negative margin creates overlap
+  ))
+}
+
+// Single larger avatar
+Image(
+    drawable = drawableRes(R.drawable.avatar_1),
+    scaleType = ImageView.ScaleType.CENTER_CROP,
+    style = Style.width(72.dp).height(72.dp).clip(Shape.Circle)
+)
+```
+
+Key points:
+- Always use equal `width` and `height` for circular clips
+- Use `ScaleType.CENTER_CROP` to fill the circle without distortion
+- Negative `margin(start = ...)` shifts the element left to overlap the previous sibling
+- For avatar stacks (3+), apply increasing negative margins or use `StackLayout` with `position()`
+
+## Pull-to-Refresh
+
+Use `LazyList` with `onPullToRefresh` and `useLazyCollectionController` to add pull-to-refresh:
+
+```kotlin
+import com.facebook.litho.widget.collection.LazyList
+import com.facebook.litho.widget.collection.useLazyCollectionController
+
+class RefreshableList(
+    private val items: List<String>,
+    private val onRefresh: () -> Unit
+) : KComponent() {
+  override fun ComponentScope.render(): Component {
+    val controller = useLazyCollectionController()
+    return LazyList(
+        lazyCollectionController = controller,
+        onPullToRefresh = {
+          onRefresh()
+          controller.setRefreshing(false)
+        },
+        style = Style.height(600.dp)
+    ) {
+      children(items = items, id = { it }) { item ->
+        Text(text = item, style = Style.padding(all = 16.dp))
+      }
+    }
+  }
+}
+```
+
+Call `controller.setRefreshing(false)` when the refresh completes to dismiss the spinner. Without it, the loading indicator stays indefinitely.

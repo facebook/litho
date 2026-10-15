@@ -19,12 +19,12 @@ package com.facebook.samples.litho.documentation.flexbox
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
-import com.facebook.litho.Row
 import com.facebook.litho.Style
 import com.facebook.litho.core.margin
 import com.facebook.litho.core.padding
 import com.facebook.litho.flexbox.flex
 import com.facebook.litho.kotlin.widget.Text
+import com.facebook.litho.layout.flexbox.Row
 import com.facebook.rendercore.dp
 import com.facebook.rendercore.sp
 
@@ -39,13 +39,17 @@ class TextInRow : KComponent() {
                   Style.flex(shrink = 0f), // If flexShrink is 1f then this text will be truncated
               text = "This is a really long text.",
               textSize = 20.sp,
-              maxLines = 1))
+              maxLines = 1,
+          ),
+      )
       child(
           Text(
               style = Style.margin(start = 8.dp),
               text = "Another long text",
               textSize = 20.sp,
-              maxLines = 1))
+              maxLines = 1,
+          ),
+      )
     }
   }
   // end_example

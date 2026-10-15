@@ -49,7 +49,7 @@ public class TestComponentsReporter implements ErrorReporterDelegate {
       String message,
       @Nullable Throwable cause,
       int samplingFrequency,
-      @Nullable Map metadata) {
+      @Nullable Map<String, ? extends Object> metadata) {
     mDefaultComponentsReporter.report(
         level, categoryKey, message, cause, samplingFrequency, metadata);
     mLoggedMessages.add(new Pair<>(level, message));

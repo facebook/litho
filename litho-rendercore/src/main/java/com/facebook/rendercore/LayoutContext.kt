@@ -29,18 +29,34 @@ class LayoutContext<RenderContext>(
     val androidContext: Context,
     val renderContext: RenderContext?,
     val layoutVersion: Int,
-    private var _layoutCache: LayoutCache?,
-    val extensions: Array<RenderCoreExtension<*, *>>?
+    layoutCache: LayoutCache?,
+    val extensions: Array<RenderCoreExtension<*, *>>?,
 ) {
 
   private var extraContextForCurrentNode: Any? = null
   private var previousLayoutData: Any? = null
 
-  val layoutCache: LayoutCache by
-      lazy(LazyThreadSafetyMode.NONE) {
-        checkNotNull(_layoutCache) { "Trying to access the LayoutCache from outside a layout call" }
-      }
+  /**
+   * Whether the current measurement is a min-content query from the flex layout algorithm. Scoped
+   * by the measure function — set to true before calling node.calculateLayout() for min-content,
+   * restored to the previous value after. Components should check this instead of consuming
+   * extraContextForCurrentNode.
+   */
+  var isMinContentMeasure: Boolean = false
 
+  private var _layoutCache: LayoutCache? = layoutCache
+
+  val layoutCache: LayoutCache
+    get() =
+        checkNotNull(_layoutCache) { "Trying to access the LayoutCache from outside a layout call" }
+
+  /**
+   * Disposes the layout cache for this context. Only the code that created this [LayoutContext]
+   * should call this, typically a root layout invoker after it has copied the cache data it needs.
+   *
+   * Dropping the reference ensures `clearCache()` propagates immediately to subsequent reads of
+   * [layoutCache], so a captured [LayoutContext] can't retain a prior pass's [LayoutCacheData].
+   */
   fun clearCache() {
     _layoutCache = null
   }

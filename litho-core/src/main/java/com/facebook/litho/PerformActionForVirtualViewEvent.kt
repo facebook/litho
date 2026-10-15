@@ -25,5 +25,5 @@ class PerformActionForVirtualViewEvent(
     nodeInfo: AccessibilityNodeInfoCompat,
     virtualViewId: Int,
     action: Int,
-    arguments: Bundle?
+    arguments: Bundle?,
 )

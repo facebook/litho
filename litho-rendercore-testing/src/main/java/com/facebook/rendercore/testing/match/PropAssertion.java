@@ -16,7 +16,10 @@
 
 package com.facebook.rendercore.testing.match;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /** Allows a test to perform a custom assertion on the actual value of a prop. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public interface PropAssertion<T> {
 
   /** This will be called with the actual value, any assertions can be made here. */

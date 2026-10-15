@@ -28,14 +28,7 @@ apply plugin: "org.jetbrains.intellij"
 
 group 'com.facebook.litho.intellij'
 
-sourceCompatibility = rootProject.sourceCompatibilityVersion
-
-compileKotlin {
-    kotlinOptions.jvmTarget = rootProject.targetCompatibilityVersion
-}
-compileTestKotlin {
-    kotlinOptions.jvmTarget = rootProject.targetCompatibilityVersion
-}
+java.sourceCompatibility = rootProject.sourceCompatibilityVersion
 
 sourceSets {
     test.java.srcDirs += project(':litho-processor').file("src/test/java")

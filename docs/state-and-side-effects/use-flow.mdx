@@ -1,0 +1,129 @@
+---
+id: use-flow
+title: Observing Kotlin Flow/StateFlow
+description: How to use Kotlin Flow with Litho components
+keywords:
+    - Flow
+    - StateFlow
+    - useFlow
+    - useFlowWithLifecycle
+    - Coroutines
+    - reactive
+    - Kotlin coroutines
+    - collectAsState
+api_category: hooks
+related_docs: [use-live-data, use-state, use-effect]
+api_names: [useFlow, useFlowWithLifecycle]
+---
+
+import VersionedCodeBlock from '@theme/VersionedCodeBlock';
+import {FbInternalOnly} from 'docusaurus-plugin-internaldocs-fb/internal'
+
+:::info API Quick Reference
+**Signatures:**
+- `fun <T> ComponentScope.useFlow(stateFlow: StateFlow<T>): T`
+- `fun <T> ComponentScope.useFlowWithLifecycle(stateFlow: StateFlow<T>, minActiveState: Lifecycle.State = RESUMED): T`
+
+| Hook | Lifecycle Aware | Auto-Pause |
+|------|-----------------|------------|
+| `useFlow` | No | No |
+| `useFlowWithLifecycle` | Yes | Pauses below `minActiveState` |
+
+**Requirement:** `useFlowWithLifecycle` requires LifecycleOwner via `withLifecycleOwnerTreeProp`
+
+**Import:**
+```kotlin
+import com.facebook.litho.useFlow
+import com.facebook.litho.useFlowWithLifecycle
+```
+
+**Dependency:** `com.facebook.litho:litho-coroutines-kotlin`
+:::
+
+The `useFlow` hook enables Litho components to observe and react to Kotlin `StateFlow` emissions, automatically triggering re-renders when the flow emits new values.
+
+This API is similar to Compose's [collectAsStateWithLifecycle](https://developer.android.com/reference/kotlin/androidx/lifecycle/compose/package-summary#extension-functions).
+
+To familiarize yourself with the concept and rules for hooks, see the [Introduction to Hooks](hooks-intro.mdx) page.
+
+## Basic Usage
+
+The simplest form of `useFlow` takes a `StateFlow` and returns its current value. The component will automatically re-render whenever the flow emits a new value:
+
+```kotlin
+import com.facebook.litho.Component
+import com.facebook.litho.ComponentScope
+import com.facebook.litho.KComponent
+import com.facebook.litho.kotlin.widget.Text
+import com.facebook.litho.useFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+
+class UserStatusComponent(private val statusFlow: StateFlow<String>) : KComponent() {
+  override fun ComponentScope.render(): Component {
+    val status = useFlow(statusFlow)
+    return Text(text = "Status: $status")
+  }
+}
+```
+
+The flow will be collected on the CoroutineScope provided by the component's tree prop, and collection will be automatically canceled when the component is detached from the tree.
+
+## Lifecycle-Aware Collection
+
+For scenarios where you need to pause flow collection based on the lifecycle state (for example, to avoid unnecessary updates when the UI is not visible), use `useFlowWithLifecycle`:
+
+```kotlin
+import com.facebook.litho.Component
+import com.facebook.litho.ComponentScope
+import com.facebook.litho.KComponent
+import com.facebook.litho.kotlin.widget.Text
+import com.facebook.litho.useFlowWithLifecycle
+import androidx.lifecycle.Lifecycle
+import kotlinx.coroutines.flow.StateFlow
+
+class LocationComponent(private val locationFlow: StateFlow<Location>) : KComponent() {
+  override fun ComponentScope.render(): Component {
+    val location = useFlowWithLifecycle(
+        stateFlow = locationFlow,
+        minActiveState = Lifecycle.State.STARTED
+    )
+    return Text(text = "Location: ${location.latitude}, ${location.longitude}")
+  }
+}
+```
+
+With `useFlowWithLifecycle`, the flow collection is paused when the lifecycle falls below the specified `minActiveState` (which defaults to `RESUMED`) and resumes when the lifecycle returns to that state. Collection is completely canceled when the component is detached.
+
+### Integrating Litho with the `LifecycleOwner`
+
+To use `useFlowWithLifecycle`, you **must** set the lifecycle owner using `withLifecycleOwnerTreeProp` when building the `ComponentTree` and pass the appropriate `LifecycleOwner` to it, or by calling `setLifecycleOwnerTreeProp` on LithoView. This can be done as shown in the sample below:
+
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/documentation/LithoViewWithLifecycleOwnerFragment.kt  start=start_example end=end_example
+```
+
+## Dependencies
+
+In Gradle, you should add the following dependency to the `build.gradle` file:
+
+<VersionedCodeBlock language="groovy" code={`
+dependencies {
+  implementation 'com.facebook.litho:litho-coroutines-kotlin:{{site.lithoVersion}}'
+}
+`} />
+
+<FbInternalOnly>
+
+In Buck, you should add the following dependency to your BUCK file:
+
+```buck
+//fbandroid/libraries/components/litho-coroutines-kotlin/src/main/kotlin/com/facebook/litho:litho-coroutines-kotlin
+```
+</FbInternalOnly>
+
+## See Also
+
+- [Introduction to Hooks](hooks-intro.mdx) - Hook fundamentals and rules
+- [useLiveData](use-live-data.mdx) - Observe Android LiveData
+- [useState](use-state.mdx) - Basic state management
+- [useEffect](use-effect.mdx) - Side effects and lifecycle

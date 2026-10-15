@@ -18,12 +18,16 @@ package com.facebook.rendercore
 
 import com.facebook.infer.annotation.ThreadConfined
 import com.facebook.rendercore.extensions.RenderCoreExtension
+import com.facebook.rendercore.extensions.VisibilityChangeReason
 
 open class RootHostDelegate(private val host: Host) : RenderState.HostListener, RootHost {
 
   protected open val mountState: MountState = MountState(host)
 
-  private var currentRenderTree: RenderTree? = null
+  private var currentMountInput: RootHostInput? = null
+
+  protected fun getCurrentMountInput(): RootHostInput? = currentMountInput
+
   private var doMeasureInLayout = false
 
   private var _renderState: RenderState<*, *, *>? = null
@@ -40,25 +44,27 @@ open class RootHostDelegate(private val host: Host) : RenderState.HostListener, 
     _renderState = renderState
     if (renderState != null) {
       renderState.attach(this)
-      onUIRenderTreeUpdated(renderState.uiRenderTree)
+      onMountInputUpdated(renderState.uiRootHostInput)
     } else {
-      onUIRenderTreeUpdated(null)
+      onMountInputUpdated(null)
     }
   }
 
-  override fun onUIRenderTreeUpdated(newRenderTree: RenderTree?) {
-    if (currentRenderTree == newRenderTree) {
+  override fun onMountInputUpdated(newMountInput: RootHostInput?) {
+    if (currentMountInput == newMountInput) {
       return
     }
-    if (newRenderTree == null) {
+
+    if (newMountInput == null) {
       mountState.unmountAllItems()
     }
-    currentRenderTree = newRenderTree
+
+    currentMountInput = newMountInput
     host.requestLayout()
   }
 
-  override fun notifyVisibleBoundsChanged() {
-    RenderCoreExtension.notifyVisibleBoundsChanged(mountState, host)
+  override fun notifyVisibleBoundsChanged(reason: VisibilityChangeReason) {
+    RenderCoreExtension.notifyVisibleBoundsChanged(mountState, host, reason)
   }
 
   override fun onRegisterForPremount(frameTimeMs: Long?) {
@@ -103,27 +109,38 @@ open class RootHostDelegate(private val host: Host) : RenderState.HostListener, 
       doMeasureInLayout = false
     }
 
-    if (currentRenderTree != null) {
-      var renderTree: RenderTree? = currentRenderTree
-      mountState.mount(renderTree)
+    val initialMountInput = this.currentMountInput
+    if (initialMountInput != null) {
+      var mountInput = initialMountInput
+      performMount(mountInput)
       // We could run into the case that mounting a tree ends up requesting another mount.
       // We need to keep re-mounting untile the mounted renderTree matches the mCurrentRenderTree.
       var retries = 0
-      while (renderTree != currentRenderTree) {
+      while (mountInput != this.currentMountInput) {
         if (retries > MAX_REMOUNT_RETRIES) {
           ErrorReporter.report(
               LogLevel.ERROR,
               TAG,
               "More than " +
                   MAX_REMOUNT_RETRIES +
-                  " recursive mount attempts. Skipping mounting the latest version.")
+                  " recursive mount attempts. Skipping mounting the latest version.",
+          )
           return
         }
-        renderTree = currentRenderTree
-        mountState.mount(renderTree)
+        mountInput = this.currentMountInput
+        if (mountInput == null) {
+          break
+        }
+        performMount(mountInput)
         retries++
       }
     }
+  }
+
+  protected open fun performMount(rootHostInput: RootHostInput) {
+    rootHostInput.commitToUI()
+    val mountInput = rootHostInput.mountInput
+    mountState.mount(mountInput.renderTree)
   }
 
   fun findMountContentById(id: Long): Any? {

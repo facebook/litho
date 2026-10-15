@@ -27,12 +27,14 @@ import com.facebook.litho.SizeSpec.UNSPECIFIED
 import com.facebook.litho.SizeSpec.getSize
 import com.facebook.litho.SizeSpec.makeSizeSpec
 import com.facebook.litho.widget.LayoutInfo.RenderInfoCollection
+import com.facebook.rendercore.SizeConstraints
 import kotlin.math.ceil
 import kotlin.math.max
 
 class GridLayoutInfo(private val gridLayoutManager: GridLayoutManager) : LayoutInfo {
 
   private var renderInfoCollection: RenderInfoCollection? = null
+  val sizeConstraintsCache: MutableMap<Any, SizeConstraints> = mutableMapOf()
 
   init {
     gridLayoutManager.spanSizeLookup = GridSpanSizeLookup()
@@ -44,11 +46,12 @@ class GridLayoutInfo(private val gridLayoutManager: GridLayoutManager) : LayoutI
       spanCount: Int,
       orientation: Int = OrientationHelper.VERTICAL,
       reverseLayout: Boolean = false,
-      allowGridMeasuresOverride: Boolean = false
+      allowGridMeasuresOverride: Boolean = false,
   ) : this(
       if (allowGridMeasuresOverride)
           GridLayoutManager(context, spanCount, orientation, reverseLayout)
-      else LithoGridLayoutManager(context, spanCount, orientation, reverseLayout))
+      else LithoGridLayoutManager(context, spanCount, orientation, reverseLayout),
+  )
 
   override fun getScrollDirection(): Int = gridLayoutManager.orientation
 
@@ -79,7 +82,7 @@ class GridLayoutInfo(private val gridLayoutManager: GridLayoutManager) : LayoutI
       firstMeasuredItemWidth: Int,
       firstMeasuredItemHeight: Int,
       recyclerMeasuredWidth: Int,
-      recyclerMeasuredHeight: Int
+      recyclerMeasuredHeight: Int,
   ): Int {
     val spanCount = gridLayoutManager.spanCount
     when (gridLayoutManager.orientation) {
@@ -150,14 +153,17 @@ class GridLayoutInfo(private val gridLayoutManager: GridLayoutManager) : LayoutI
 
   override fun createViewportFiller(
       measuredWidth: Int,
-      measuredHeight: Int
-  ): LayoutInfo.ViewportFiller? =
-      ViewportFiller(
-          measuredWidth, measuredHeight, getScrollDirection(), gridLayoutManager.spanCount)
+      measuredHeight: Int,
+  ): LayoutInfo.ViewportFiller? = ViewportFiller(
+      measuredWidth,
+      measuredHeight,
+      getScrollDirection(),
+      gridLayoutManager.spanCount,
+  )
 
   override fun computeWrappedHeight(
       maxHeight: Int,
-      componentTreeHolders: List<ComponentTreeHolder>
+      componentTreeHolders: List<ComponentTreeHolder>,
   ): Int {
     val itemCount = componentTreeHolders.size
     val spanCount = gridLayoutManager.spanCount
@@ -198,7 +204,7 @@ class GridLayoutInfo(private val gridLayoutManager: GridLayoutManager) : LayoutI
       context: Context?,
       spanCount: Int,
       orientation: Int,
-      reverseLayout: Boolean
+      reverseLayout: Boolean,
   ) : GridLayoutManager(context, spanCount, orientation, reverseLayout) {
     override fun generateLayoutParams(lp: ViewGroup.LayoutParams?): RecyclerView.LayoutParams? {
       return if (lp is RecyclerViewLayoutManagerOverrideParams) {
@@ -219,7 +225,7 @@ class GridLayoutInfo(private val gridLayoutManager: GridLayoutManager) : LayoutI
       private val width: Int,
       private val height: Int,
       private val orientation: Int,
-      private val spanCount: Int
+      private val spanCount: Int,
   ) : LayoutInfo.ViewportFiller {
     private var lastFill = 0
     private var maxFill = 0
@@ -234,7 +240,8 @@ class GridLayoutInfo(private val gridLayoutManager: GridLayoutManager) : LayoutI
       maxFill =
           max(
               maxFill,
-              (lastFill + (if (orientation == OrientationHelper.VERTICAL) height else width)))
+              (lastFill + (if (orientation == OrientationHelper.VERTICAL) height else width)),
+          )
 
       if (renderInfo.isFullSpan) {
         indexOfSpan = 0

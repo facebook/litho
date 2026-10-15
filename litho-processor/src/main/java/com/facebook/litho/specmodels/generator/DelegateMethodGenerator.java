@@ -32,6 +32,7 @@ import static com.facebook.litho.specmodels.model.DelegateMethodDescription.isAl
 
 import com.facebook.litho.annotations.OnAttached;
 import com.facebook.litho.annotations.OnCreateLayout;
+import com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec;
 import com.facebook.litho.annotations.OnDetached;
 import com.facebook.litho.annotations.OnPrepare;
 import com.facebook.litho.specmodels.internal.ImmutableList;
@@ -52,6 +53,7 @@ import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelUtils;
 import com.facebook.litho.specmodels.model.StateParamModel;
 import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
@@ -116,8 +118,32 @@ public class DelegateMethodGenerator {
             .addModifiers(methodDescription.accessType)
             .returns(methodDescription.returnType);
 
+    // Check if SuppressWarnings already exists, add "cast" to it
+    boolean hasSuppressWarnings = false;
     for (AnnotationSpec annotation : methodDescription.annotations) {
-      methodSpec.addAnnotation(annotation);
+      if (annotation.type.equals(ClassName.get(SuppressWarnings.class))) {
+        hasSuppressWarnings = true;
+        // Rebuild the annotation with "cast" added
+        AnnotationSpec.Builder builder = AnnotationSpec.builder(SuppressWarnings.class);
+        for (String member : annotation.members.keySet()) {
+          List<CodeBlock> values = annotation.members.get(member);
+          if (values != null) {
+            for (CodeBlock value : values) {
+              builder.addMember(member, value);
+            }
+          }
+        }
+        builder.addMember("value", "$S", "cast");
+        methodSpec.addAnnotation(builder.build());
+      } else {
+        methodSpec.addAnnotation(annotation);
+      }
+    }
+
+    // If no SuppressWarnings was found, add one for "cast"
+    if (!hasSuppressWarnings) {
+      methodSpec.addAnnotation(
+          AnnotationSpec.builder(SuppressWarnings.class).addMember("value", "$S", "cast").build());
     }
 
     final ImmutableList<LifecycleMethodArgumentType> lifecycleArgs =
@@ -136,7 +162,7 @@ public class DelegateMethodGenerator {
       final String name;
 
       if (!lifecycleArg.type.equals(ClassNames.OBJECT)
-          && !lifecycleArg.type.equals(delegateArgType)) {
+          && (delegateArgType == null || !lifecycleArg.type.equals(delegateArgType))) {
         name =
             lifecycleArg.argumentName != null
                 ? lifecycleArg.argumentName
@@ -205,6 +231,7 @@ public class DelegateMethodGenerator {
             runMode));
 
     if (SpecModelUtils.hasAnnotation(delegateMethod, OnCreateLayout.class)
+        || SpecModelUtils.hasAnnotation(delegateMethod, OnCreateLayoutWithSizeSpec.class)
         || SpecModelUtils.hasAnnotation(delegateMethod, OnPrepare.class)) {
       SpecMethodModel<EventMethod, Void> registerRangesModel =
           specModel.getWorkingRangeRegisterMethod();
@@ -214,7 +241,7 @@ public class DelegateMethodGenerator {
             CodeBlock.builder()
                 .add(
                     "$L.$L(\n",
-                    SpecModelUtils.getSpecAccessor(specModel),
+                    SpecModelUtils.getSpecAccessor(specModel, registerRangesModel),
                     registerRangesModel.name);
 
         registerDelegation.indent();
@@ -239,7 +266,7 @@ public class DelegateMethodGenerator {
     return methodSpec.build();
   }
 
-  static String getContextParamName(
+  static @Nullable String getContextParamName(
       SpecModel specModel,
       SpecMethodModel<DelegateMethod, Void> delegateMethod,
       DelegateMethodDescription methodDescription) {
@@ -445,7 +472,7 @@ public class DelegateMethodGenerator {
         .add(
             getDelegationMethod(
                 specModel,
-                delegateMethod.name,
+                delegateMethod,
                 methodDescription.returnType,
                 ImmutableList.copyOf(delegationParams)))
         .add(releaseStatements.build())
@@ -454,15 +481,16 @@ public class DelegateMethodGenerator {
 
   private static CodeBlock getDelegationMethod(
       SpecModel specModel,
-      CharSequence methodName,
+      SpecMethodModel<DelegateMethod, Void> delegateMethod,
       TypeName returnType,
       ImmutableList<ParamTypeAndName> methodParams) {
     final CodeBlock.Builder delegation = CodeBlock.builder();
-    final String sourceDelegateAccessor = SpecModelUtils.getSpecAccessor(specModel);
+    final String sourceDelegateAccessor = SpecModelUtils.getSpecAccessor(specModel, delegateMethod);
     if (returnType.equals(TypeName.VOID)) {
-      delegation.add("$L.$L(\n", sourceDelegateAccessor, methodName);
+      delegation.add("$L.$L(\n", sourceDelegateAccessor, delegateMethod.name);
     } else {
-      delegation.add("_result = ($T) $L.$L(\n", returnType, sourceDelegateAccessor, methodName);
+      delegation.add(
+          "_result = ($T) $L.$L(\n", returnType, sourceDelegateAccessor, delegateMethod.name);
     }
 
     delegation.indent();

@@ -18,21 +18,15 @@ package com.facebook.rendercore.utils
 
 import android.content.Context
 import android.content.pm.ApplicationInfo
-import android.os.Build.VERSION
-import android.os.Build.VERSION_CODES
 import android.view.View
-import androidx.annotation.RequiresApi
 
 object LayoutUtils {
 
-  /**
-   * @return whether the current Activity has RTL layout direction -- returns false in API <= 16.
-   */
+  /** @return whether the current Activity has RTL layout direction. */
   @JvmStatic
   fun isLayoutDirectionRTL(context: Context): Boolean {
     val applicationInfo = context.applicationInfo
-    if (VERSION.SDK_INT >= VERSION_CODES.JELLY_BEAN_MR1 &&
-        applicationInfo.flags and ApplicationInfo.FLAG_SUPPORTS_RTL != 0) {
+    if (applicationInfo.flags and ApplicationInfo.FLAG_SUPPORTS_RTL != 0) {
       val layoutDirection = API17LayoutUtils.getLayoutDirection(context)
       return layoutDirection == View.LAYOUT_DIRECTION_RTL
     }
@@ -41,7 +35,6 @@ object LayoutUtils {
 
   /** Separate class to limit scope of pre-verification failures on older devices. */
   private object API17LayoutUtils {
-    @RequiresApi(VERSION_CODES.JELLY_BEAN_MR1)
     @JvmStatic
     fun getLayoutDirection(context: Context): Int {
       return context.resources.configuration.layoutDirection

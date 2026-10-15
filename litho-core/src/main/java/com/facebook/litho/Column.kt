@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+@file:Suppress("DEPRECATION")
+
 package com.facebook.litho
 
-import androidx.annotation.Dimension
+import android.annotation.SuppressLint
 import com.facebook.litho.annotations.Prop
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaFlexDirection
@@ -25,6 +27,11 @@ import com.facebook.yoga.YogaJustify
 import com.facebook.yoga.YogaWrap
 
 /** A [Component] that renders its children in a column. */
+@SuppressLint("DeprecatedClass", "DeprecatedMethod")
+@Deprecated(
+    "The legacy Spec-generated Column component is deprecated and will be retired. " +
+        "Use Column from com.facebook.litho.layout.flexbox instead.",
+)
 class Column
 private constructor(
     customSimpleName: String?,
@@ -33,13 +40,15 @@ private constructor(
     @field:Prop(optional = true) private var justifyContent: YogaJustify?,
     @field:Prop(optional = true) private var wrap: YogaWrap?,
     @field:Prop(optional = true) private var reverse: Boolean,
-    @field:Prop(optional = true) private var gapPx: Int?,
     @field:Prop(optional = true) private var children: MutableList<Component>?,
+    @field:Prop(optional = true) private var gapPx: Int? = null,
+    @field:Prop(optional = true) private var mainAxisGapPx: Int? = null,
+    @field:Prop(optional = true) private var crossAxisGapPx: Int? = null,
 ) : SpecGeneratedComponent(customSimpleName ?: "Column") {
 
   constructor(
-      customSimpleName: String?
-  ) : this(customSimpleName, null, null, null, null, false, null, null)
+      customSimpleName: String?,
+  ) : this(customSimpleName, null, null, null, null, false, null)
 
   @JvmOverloads
   constructor(
@@ -48,9 +57,22 @@ private constructor(
       justifyContent: YogaJustify?,
       wrap: YogaWrap?,
       reverse: Boolean,
-      gapPx: Int?,
-      children: MutableList<Component>? = null
-  ) : this(null, alignContent, alignItems, justifyContent, wrap, reverse, gapPx, children)
+      children: MutableList<Component>? = null,
+      gapPx: Int? = null,
+      mainAxisGapPx: Int? = null,
+      crossAxisGapPx: Int? = null,
+  ) : this(
+      null,
+      alignContent,
+      alignItems,
+      justifyContent,
+      wrap,
+      reverse,
+      children,
+      gapPx,
+      mainAxisGapPx,
+      crossAxisGapPx,
+  )
 
   private fun resolve(resolveContext: ResolveContext, c: ComponentContext): LithoNode? {
     val node = LithoNode()
@@ -59,16 +81,27 @@ private constructor(
     alignContent?.let { node.alignContent(it) }
     justifyContent?.let { node.justifyContent(it) }
     wrap?.let { node.wrap(it) }
-    gapPx?.let { node.setGap(YogaGutter.COLUMN, it) }
-    children?.let { children ->
-      for (child in children) {
-        if (resolveContext.isFutureReleased) {
-          return null
-        }
-        if (resolveContext.isResolveInterrupted) {
-          node.appendUnresolvedComponent(child)
-        } else {
-          node.child(resolveContext, c, child)
+    // For Column: mainAxis = vertical (ROW), crossAxis = horizontal (COLUMN)
+    if (mainAxisGapPx != null || crossAxisGapPx != null) {
+      mainAxisGapPx?.let { node.setGap(YogaGutter.ROW, it) }
+      crossAxisGapPx?.let { node.setGap(YogaGutter.COLUMN, it) }
+    } else {
+      gapPx?.let { node.setGap(YogaGutter.ALL, it) }
+    }
+    val children = children ?: return node
+    val size = children.size
+    if (size == 0) return node
+    for (i in 0 until size) {
+      val child = children[i]
+      if (resolveContext.isFutureReleased) {
+        return null
+      }
+      if (resolveContext.isResolveInterrupted) {
+        node.appendUnresolvedComponent(child)
+      } else {
+        val resolved = Resolver.resolve(resolveContext, c, child)
+        if (resolved != null) {
+          node.children.add(resolved)
         }
       }
     }
@@ -79,13 +112,13 @@ private constructor(
       resolveContext: ResolveContext,
       scopedComponentInfo: ScopedComponentInfo,
       parentWidthSpec: Int,
-      parentHeightSpec: Int
+      parentHeightSpec: Int,
   ): ComponentResolveResult {
     val lithoNode = resolve(resolveContext, scopedComponentInfo.context)
     return ComponentResolveResult(lithoNode, commonProps)
   }
 
-  override fun isEquivalentProps(other: Component?, shouldCompareCommonProps: Boolean): Boolean {
+  override fun isEquivalentProps(other: Component?): Boolean {
     if (this === other) {
       return true
     }
@@ -102,7 +135,7 @@ private constructor(
         return false
       }
       children.forEachIndexed { index, child ->
-        if (!ComponentUtils.isEquivalent(child, otherChildren[index], shouldCompareCommonProps)) {
+        if (!ComponentUtils.isEquivalent(child, otherChildren[index])) {
           return false
         }
       }
@@ -118,80 +151,87 @@ private constructor(
     if (justifyContent != other.justifyContent) {
       return false
     }
+    if (gapPx != other.gapPx) {
+      return false
+    }
+    if (mainAxisGapPx != other.mainAxisGapPx) {
+      return false
+    }
+    if (crossAxisGapPx != other.crossAxisGapPx) {
+      return false
+    }
     return reverse == other.reverse
   }
 
   override fun usesLocalStateContainer(): Boolean = true
 
+  @Deprecated(
+      "The legacy Column.Builder API is deprecated and will be retired. " +
+          "Use Column from com.facebook.litho.layout.flexbox instead.",
+  )
   class Builder
   internal constructor(
       context: ComponentContext,
       defStyleAttr: Int,
       defStyleRes: Int,
-      @JvmField var column: Column
-  ) : ContainerBuilder<Builder>(context, defStyleAttr, defStyleRes, column) {
-    override fun setComponent(component: Component) {
-      column = component as Column
-    }
+      customSimpleName: String?,
+  ) :
+      FlexboxLegacyContainerBuilder<Builder>(
+          context,
+          defStyleAttr,
+          defStyleRes,
+          Column(customSimpleName),
+          customSimpleName,
+      ) {
+    override fun getThis(): Builder = this
+
+    override fun build(): Component = if (isKComponentEnabled()) buildKColumn() else buildLegacy()
+
+    // Leaf-owned, mirroring the pre-refactor base shape: child(Builder) must feed build() straight
+    // into the child(Component) sink. Redex's RemoveBuilderPatternPass strips the passed-in builder
+    // only if it can inline child() to expose the nested build(); a direct
+    // `children.add(child.build())` body compiles to getChildren()/checkNotNull/List.add, which the
+    // pass's restricted inliner refuses — the builder then escapes and is globally excluded.
+    override fun child(child: Component.Builder<*>?): Builder =
+        if (child == null) this else child(child.build())
 
     override fun child(child: Component?): Builder {
-      if (child == null) {
-        return this
-      }
-      val children = column.children ?: ArrayList<Component>().also { column.children = it }
-      children.add(child)
+      if (child != null) children.add(child)
       return this
     }
 
-    override fun child(child: Component.Builder<*>?): Builder =
-        if (child == null) {
-          this
-        } else {
-          child(child.build())
-        }
-
-    override fun alignContent(alignContent: YogaAlign?): Builder = apply {
-      column.alignContent = alignContent
+    override fun applyContainerProps(component: SpecGeneratedComponent) {
+      val column = component as Column
+      column.alignContent = alignContentValue
+      column.alignItems = alignItemsValue
+      column.justifyContent = justifyContentValue
+      column.wrap = wrapValue
+      column.reverse = reverseValue
+      column.children = children
+      column.gapPx = gapPxValue
     }
-
-    override fun alignItems(alignItems: YogaAlign?): Builder = apply {
-      column.alignItems = alignItems
-    }
-
-    override fun justifyContent(justifyContent: YogaJustify?): Builder = apply {
-      column.justifyContent = justifyContent
-    }
-
-    override fun gapDip(gutter: YogaGutter, @Dimension(unit = Dimension.DP) gap: Float): Builder =
-        apply {
-          column.orCreateCommonProps.gap(gutter, mResourceResolver.dipsToPixels(gap))
-        }
-
-    override fun gapPx(gutter: YogaGutter, px: Int): Builder = apply {
-      column.orCreateCommonProps.gap(gutter, px)
-    }
-
-    override fun wrap(wrap: YogaWrap?): Builder = apply { column.wrap = wrap }
-
-    override fun reverse(reverse: Boolean): Builder = apply { column.reverse = reverse }
-
-    override fun getThis(): Builder = this
-
-    override fun build(): Column = column
   }
 
   companion object {
+    @Deprecated(
+        "The legacy Column.create() builder API is deprecated and will be retired. " +
+            "Use Column from com.facebook.litho.layout.flexbox instead.",
+    )
     @JvmStatic
     fun create(context: ComponentContext?, simpleName: String?): Builder =
-        create(context, 0, 0, simpleName)
+        Builder(requireNotNull(context), 0, 0, simpleName)
 
+    @Deprecated(
+        "The legacy Column.create() builder API is deprecated and will be retired. " +
+            "Use Column from com.facebook.litho.layout.flexbox instead.",
+    )
     @JvmStatic
     @JvmOverloads
     fun create(
         context: ComponentContext?,
         defStyleAttr: Int = 0,
         defStyleRes: Int = 0,
-        simpleName: String? = null
-    ): Builder = Builder(requireNotNull(context), defStyleAttr, defStyleRes, Column(simpleName))
+        simpleName: String? = null,
+    ): Builder = Builder(requireNotNull(context), defStyleAttr, defStyleRes, simpleName)
   }
 }

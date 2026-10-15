@@ -18,9 +18,9 @@ package com.facebook.litho
 
 import android.view.View
 import androidx.annotation.IntDef
+import androidx.annotation.Px
 import com.facebook.rendercore.FastMath
 import com.facebook.yoga.YogaMeasureMode
-import java.lang.IllegalArgumentException
 import java.lang.IllegalStateException
 import kotlin.math.min
 
@@ -73,7 +73,7 @@ object SizeSpec {
    * @return the size specification based on size and mode
    */
   @JvmStatic
-  fun makeSizeSpec(size: Int, @MeasureSpecMode mode: Int): Int =
+  fun makeSizeSpec(@Px size: Int, @MeasureSpecMode mode: Int): Int =
       View.MeasureSpec.makeMeasureSpec(size, mode)
 
   /**
@@ -90,7 +90,7 @@ object SizeSpec {
    * @param sizeSpec the size specification to extract the size from
    * @return the size in pixels defined in the supplied size specification
    */
-  @JvmStatic fun getSize(sizeSpec: Int): Int = View.MeasureSpec.getSize(sizeSpec)
+  @JvmStatic @Px fun getSize(sizeSpec: Int): Int = View.MeasureSpec.getSize(sizeSpec)
 
   /**
    * Returns a String representation of the specified measure specification.
@@ -133,7 +133,8 @@ object SizeSpec {
    * @return The resolved size.
    */
   @JvmStatic
-  fun resolveSize(sizeSpec: Int, preferredSize: Int): Int =
+  @Px
+  fun resolveSize(sizeSpec: Int, @Px preferredSize: Int): Int =
       when (getMode(sizeSpec)) {
         EXACTLY -> getSize(sizeSpec)
         AT_MOST -> min(getSize(sizeSpec), preferredSize)
@@ -147,7 +148,6 @@ object SizeSpec {
         YogaMeasureMode.EXACTLY -> makeSizeSpec(FastMath.round(cssSize), EXACTLY)
         YogaMeasureMode.UNDEFINED -> makeSizeSpec(0, UNSPECIFIED)
         YogaMeasureMode.AT_MOST -> makeSizeSpec(FastMath.round(cssSize), AT_MOST)
-        else -> throw IllegalArgumentException("Unexpected YogaMeasureMode: $cssMode")
       }
 
   @IntDef(UNSPECIFIED, EXACTLY, AT_MOST)

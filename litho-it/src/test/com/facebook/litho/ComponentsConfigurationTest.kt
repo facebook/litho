@@ -27,6 +27,7 @@ import com.facebook.litho.sections.widget.RecyclerCollectionComponent
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.RecyclerBinderConfig
+import com.facebook.rendercore.incrementalmount.GapWorkerMode
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
@@ -51,8 +52,9 @@ class ComponentsConfigurationTest {
     val componentTree =
         ComponentTree.create(componentContext)
             .componentsConfiguration(ComponentsConfiguration.defaultInstance)
+            .enableChildClipping(true)
             .build()
-    val componentsConfiguration = componentTree.context.mLithoConfiguration.componentsConfig
+    val componentsConfiguration = componentTree.context.lithoConfiguration.componentsConfig
 
     assertThat(componentsConfiguration.incrementalMountEnabled).isTrue
     ComponentsConfiguration.defaultInstance = defaultConfiguration
@@ -69,7 +71,10 @@ class ComponentsConfigurationTest {
                 RecyclerBinderConfig(
                     componentsConfiguration =
                         ComponentsConfiguration.defaultInstance.copy(
-                            incrementalMountEnabled = true)))
+                            incrementalMountEnabled = true,
+                        ),
+                ),
+            )
             .build()
 
     val testLithoView =
@@ -78,21 +83,24 @@ class ComponentsConfigurationTest {
               .recyclerConfiguration(
                   ListRecyclerConfiguration.create()
                       .recyclerBinderConfiguration(recyclerBinderConfiguration)
-                      .build())
+                      .build(),
+              )
               .section(
                   SingleComponentSection.create(SectionContext(componentContext))
                       .component(
                           Row.create(componentContext)
                               .viewTag("rv_row")
                               .heightDip(100f)
-                              .widthDip(100f))
-                      .build())
+                              .widthDip(100f),
+                      )
+                      .build(),
+              )
               .build()
         }
     val childView = testLithoView.lithoView.findViewWithTag("rv_row") as LithoView?
     assertThat(childView).isNotNull
     val componentsConfiguration =
-        childView?.componentTree?.context?.mLithoConfiguration?.componentsConfig
+        childView?.componentTree?.context?.lithoConfiguration?.componentsConfig
     assertThat(componentsConfiguration?.incrementalMountEnabled).isTrue
     ComponentsConfiguration.defaultInstance = defaultConfiguration
   }
@@ -108,5 +116,45 @@ class ComponentsConfigurationTest {
     assertThat(ComponentsConfiguration.defaultInstance.incrementalMountEnabled).isFalse
 
     ComponentsConfiguration.defaultInstance = defaultConfiguration
+  }
+
+  @Test
+  fun gapWorkerModeDefaultsOffAndIsSetPerTree() {
+    assertThat(ComponentsConfiguration.defaultInstance.gapWorkerMode).isEqualTo(GapWorkerMode.OFF)
+
+    GapWorkerMode.entries.forEach { mode ->
+      val configuration =
+          ComponentsConfiguration.create(ComponentsConfiguration.defaultInstance)
+              .gapWorkerMode(mode)
+              .build()
+      assertThat(configuration.gapWorkerMode).isEqualTo(mode)
+    }
+  }
+
+  @Test
+  fun testEnableInputConnectionFixDefaultValue() {
+    assertThat(ComponentsConfiguration.enableInputConnectionFix).isFalse
+  }
+
+  @Test
+  fun testEnableInputConnectionFixCanBeEnabled() {
+    val originalValue = ComponentsConfiguration.enableInputConnectionFix
+    try {
+      ComponentsConfiguration.enableInputConnectionFix = true
+      assertThat(ComponentsConfiguration.enableInputConnectionFix).isTrue
+    } finally {
+      ComponentsConfiguration.enableInputConnectionFix = originalValue
+    }
+  }
+
+  @Test
+  fun testEnableInputConnectionFixCanBeDisabled() {
+    val originalValue = ComponentsConfiguration.enableInputConnectionFix
+    try {
+      ComponentsConfiguration.enableInputConnectionFix = false
+      assertThat(ComponentsConfiguration.enableInputConnectionFix).isFalse
+    } finally {
+      ComponentsConfiguration.enableInputConnectionFix = originalValue
+    }
   }
 }

@@ -68,7 +68,8 @@ class DynamicPropsExtensionTest {
             .child(
                 MountSpecLifecycleTester.create(c)
                     .intrinsicSize(Size(100, 100))
-                    .lifecycleTracker(LifecycleTracker()))
+                    .lifecycleTracker(LifecycleTracker()),
+            )
             .build()
 
     val testLithoView = lithoTestRule.render { root }

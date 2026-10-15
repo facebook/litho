@@ -17,13 +17,17 @@
 package com.facebook.litho
 
 import android.graphics.Rect
+import com.facebook.litho.core.height
+import com.facebook.litho.flexbox.position
+import com.facebook.litho.flexbox.positionType
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec
 import com.facebook.litho.testing.testrunner.LithoTestRunner
+import com.facebook.litho.view.wrapInView
 import com.facebook.litho.widget.SimpleMountSpecTester
 import com.facebook.rendercore.incrementalmount.IncrementalMountOutput
 import com.facebook.rendercore.incrementalmount.IncrementalMountRenderCoreExtension
-import com.facebook.yoga.YogaEdge
+import com.facebook.rendercore.px
 import com.facebook.yoga.YogaPositionType
 import java.util.ArrayList
 import java.util.Collections
@@ -34,7 +38,7 @@ import org.junit.runner.RunWith
 
 @RunWith(LithoTestRunner::class)
 class LayoutStateCalculateTopsAndBottomsTest {
-  @JvmField @Rule val mLithoTestRule: LithoTestRule = LithoTestRule()
+  @JvmField @Rule val lithoTestRule: LithoTestRule = LithoTestRule()
 
   @Test
   fun testCalculateTopsAndBottoms() {
@@ -44,37 +48,45 @@ class LayoutStateCalculateTopsAndBottomsTest {
             return Column.create(c)
                 .child(
                     Column.create(c)
-                        .child(SimpleMountSpecTester.create(c).wrapInView().heightPx(50)))
-                .child(SimpleMountSpecTester.create(c).heightPx(20))
+                        .child(SimpleMountSpecTester(style = Style.wrapInView().height(50.px))),
+                )
+                .child(SimpleMountSpecTester(style = Style.height(20.px)))
                 .child(
-                    SimpleMountSpecTester.create(c)
-                        .positionType(YogaPositionType.ABSOLUTE)
-                        .positionPx(YogaEdge.TOP, 10)
-                        .positionPx(YogaEdge.BOTTOM, 30))
+                    SimpleMountSpecTester(
+                        style =
+                            Style.positionType(YogaPositionType.ABSOLUTE)
+                                .position(top = 10.px, bottom = 30.px),
+                    ),
+                )
                 .build()
           }
         }
-    val testLithoView = mLithoTestRule.render(widthPx = 100, heightPx = 50 + 20) { component }
+    val testLithoView = lithoTestRule.render(widthPx = 100, heightPx = 50 + 20) { component }
     val layoutState = testLithoView.componentTree.mainThreadLayoutState!!
     Assertions.assertThat(layoutState.getMountableOutputCount()).isEqualTo(5)
-    Assertions.assertThat(layoutState.outputsOrderedByTopBounds[0].bounds.top).isEqualTo(0)
-    Assertions.assertThat(layoutState.outputsOrderedByTopBounds[1].bounds.top).isEqualTo(0)
-    Assertions.assertThat(layoutState.outputsOrderedByTopBounds[2].bounds.top).isEqualTo(0)
-    Assertions.assertThat(layoutState.outputsOrderedByTopBounds[3].bounds.top).isEqualTo(10)
-    Assertions.assertThat(layoutState.outputsOrderedByTopBounds[4].bounds.top).isEqualTo(50)
-    Assertions.assertThat(layoutState.outputsOrderedByBottomBounds[0].bounds.bottom).isEqualTo(40)
-    Assertions.assertThat(layoutState.outputsOrderedByBottomBounds[1].bounds.bottom).isEqualTo(50)
-    Assertions.assertThat(layoutState.outputsOrderedByBottomBounds[2].bounds.bottom).isEqualTo(50)
-    Assertions.assertThat(layoutState.outputsOrderedByBottomBounds[3].bounds.bottom).isEqualTo(70)
-    Assertions.assertThat(layoutState.outputsOrderedByBottomBounds[4].bounds.bottom).isEqualTo(70)
-    Assertions.assertThat(layoutState.outputsOrderedByTopBounds[2].index).isEqualTo(2)
-    Assertions.assertThat(layoutState.outputsOrderedByTopBounds[3].index).isEqualTo(4)
-    Assertions.assertThat(layoutState.outputsOrderedByTopBounds[4].index).isEqualTo(3)
-    Assertions.assertThat(layoutState.outputsOrderedByBottomBounds[0].index).isEqualTo(4)
-    Assertions.assertThat(layoutState.outputsOrderedByBottomBounds[1].index).isEqualTo(2)
-    Assertions.assertThat(layoutState.outputsOrderedByBottomBounds[2].index).isEqualTo(1)
-    Assertions.assertThat(layoutState.outputsOrderedByBottomBounds[3].index).isEqualTo(3)
-    Assertions.assertThat(layoutState.outputsOrderedByBottomBounds[4].index).isEqualTo(0)
+    Assertions.assertThat(layoutState.getOutputsOrderedByTopBounds()[0].bounds.top).isEqualTo(0)
+    Assertions.assertThat(layoutState.getOutputsOrderedByTopBounds()[1].bounds.top).isEqualTo(0)
+    Assertions.assertThat(layoutState.getOutputsOrderedByTopBounds()[2].bounds.top).isEqualTo(0)
+    Assertions.assertThat(layoutState.getOutputsOrderedByTopBounds()[3].bounds.top).isEqualTo(10)
+    Assertions.assertThat(layoutState.getOutputsOrderedByTopBounds()[4].bounds.top).isEqualTo(50)
+    Assertions.assertThat(layoutState.getOutputsOrderedByBottomBounds()[0].bounds.bottom)
+        .isEqualTo(40)
+    Assertions.assertThat(layoutState.getOutputsOrderedByBottomBounds()[1].bounds.bottom)
+        .isEqualTo(50)
+    Assertions.assertThat(layoutState.getOutputsOrderedByBottomBounds()[2].bounds.bottom)
+        .isEqualTo(50)
+    Assertions.assertThat(layoutState.getOutputsOrderedByBottomBounds()[3].bounds.bottom)
+        .isEqualTo(70)
+    Assertions.assertThat(layoutState.getOutputsOrderedByBottomBounds()[4].bounds.bottom)
+        .isEqualTo(70)
+    Assertions.assertThat(layoutState.getOutputsOrderedByTopBounds()[2].index).isEqualTo(2)
+    Assertions.assertThat(layoutState.getOutputsOrderedByTopBounds()[3].index).isEqualTo(4)
+    Assertions.assertThat(layoutState.getOutputsOrderedByTopBounds()[4].index).isEqualTo(3)
+    Assertions.assertThat(layoutState.getOutputsOrderedByBottomBounds()[0].index).isEqualTo(4)
+    Assertions.assertThat(layoutState.getOutputsOrderedByBottomBounds()[1].index).isEqualTo(2)
+    Assertions.assertThat(layoutState.getOutputsOrderedByBottomBounds()[2].index).isEqualTo(1)
+    Assertions.assertThat(layoutState.getOutputsOrderedByBottomBounds()[3].index).isEqualTo(3)
+    Assertions.assertThat(layoutState.getOutputsOrderedByBottomBounds()[4].index).isEqualTo(0)
   }
 
   @Test
@@ -83,35 +95,41 @@ class LayoutStateCalculateTopsAndBottomsTest {
         object : InlineLayoutSpec() {
           protected override fun onCreateLayout(c: ComponentContext): Component {
             return Column.create(c)
-                .child(SimpleMountSpecTester.create(c).heightPx(50))
+                .child(SimpleMountSpecTester(style = Style.height(50.px)))
                 .child(
-                    SimpleMountSpecTester.create(c)
-                        .wrapInView()
-                        .positionType(YogaPositionType.ABSOLUTE)
-                        .positionPx(YogaEdge.TOP, 0)
-                        .positionPx(YogaEdge.BOTTOM, 0))
+                    SimpleMountSpecTester(
+                        style =
+                            Style.wrapInView()
+                                .positionType(YogaPositionType.ABSOLUTE)
+                                .position(top = 0.px, bottom = 0.px),
+                    ),
+                )
                 .build()
           }
         }
-    val testLithoView = mLithoTestRule.render(widthPx = 100, heightPx = 50) { component }
+    val testLithoView = lithoTestRule.render(widthPx = 100, heightPx = 50) { component }
     val layoutState = testLithoView.componentTree.mainThreadLayoutState!!
     Assertions.assertThat(layoutState.getMountableOutputCount()).isEqualTo(4)
-    Assertions.assertThat(layoutState.outputsOrderedByTopBounds[0].bounds.top).isEqualTo(0)
-    Assertions.assertThat(layoutState.outputsOrderedByTopBounds[1].bounds.top).isEqualTo(0)
-    Assertions.assertThat(layoutState.outputsOrderedByTopBounds[2].bounds.top).isEqualTo(0)
-    Assertions.assertThat(layoutState.outputsOrderedByTopBounds[3].bounds.top).isEqualTo(0)
-    Assertions.assertThat(layoutState.outputsOrderedByBottomBounds[0].bounds.bottom).isEqualTo(50)
-    Assertions.assertThat(layoutState.outputsOrderedByBottomBounds[1].bounds.bottom).isEqualTo(50)
-    Assertions.assertThat(layoutState.outputsOrderedByBottomBounds[2].bounds.bottom).isEqualTo(50)
-    Assertions.assertThat(layoutState.outputsOrderedByBottomBounds[3].bounds.bottom).isEqualTo(50)
-    Assertions.assertThat(layoutState.outputsOrderedByTopBounds[0].index).isEqualTo(0)
-    Assertions.assertThat(layoutState.outputsOrderedByTopBounds[1].index).isEqualTo(1)
-    Assertions.assertThat(layoutState.outputsOrderedByTopBounds[2].index).isEqualTo(2)
-    Assertions.assertThat(layoutState.outputsOrderedByTopBounds[3].index).isEqualTo(3)
-    Assertions.assertThat(layoutState.outputsOrderedByBottomBounds[3].index).isEqualTo(0)
-    Assertions.assertThat(layoutState.outputsOrderedByBottomBounds[2].index).isEqualTo(1)
-    Assertions.assertThat(layoutState.outputsOrderedByBottomBounds[1].index).isEqualTo(2)
-    Assertions.assertThat(layoutState.outputsOrderedByBottomBounds[0].index).isEqualTo(3)
+    Assertions.assertThat(layoutState.getOutputsOrderedByTopBounds()[0].bounds.top).isEqualTo(0)
+    Assertions.assertThat(layoutState.getOutputsOrderedByTopBounds()[1].bounds.top).isEqualTo(0)
+    Assertions.assertThat(layoutState.getOutputsOrderedByTopBounds()[2].bounds.top).isEqualTo(0)
+    Assertions.assertThat(layoutState.getOutputsOrderedByTopBounds()[3].bounds.top).isEqualTo(0)
+    Assertions.assertThat(layoutState.getOutputsOrderedByBottomBounds()[0].bounds.bottom)
+        .isEqualTo(50)
+    Assertions.assertThat(layoutState.getOutputsOrderedByBottomBounds()[1].bounds.bottom)
+        .isEqualTo(50)
+    Assertions.assertThat(layoutState.getOutputsOrderedByBottomBounds()[2].bounds.bottom)
+        .isEqualTo(50)
+    Assertions.assertThat(layoutState.getOutputsOrderedByBottomBounds()[3].bounds.bottom)
+        .isEqualTo(50)
+    Assertions.assertThat(layoutState.getOutputsOrderedByTopBounds()[0].index).isEqualTo(0)
+    Assertions.assertThat(layoutState.getOutputsOrderedByTopBounds()[1].index).isEqualTo(1)
+    Assertions.assertThat(layoutState.getOutputsOrderedByTopBounds()[2].index).isEqualTo(2)
+    Assertions.assertThat(layoutState.getOutputsOrderedByTopBounds()[3].index).isEqualTo(3)
+    Assertions.assertThat(layoutState.getOutputsOrderedByBottomBounds()[3].index).isEqualTo(0)
+    Assertions.assertThat(layoutState.getOutputsOrderedByBottomBounds()[2].index).isEqualTo(1)
+    Assertions.assertThat(layoutState.getOutputsOrderedByBottomBounds()[1].index).isEqualTo(2)
+    Assertions.assertThat(layoutState.getOutputsOrderedByBottomBounds()[0].index).isEqualTo(3)
   }
 
   @Test
@@ -125,7 +143,8 @@ class LayoutStateCalculateTopsAndBottomsTest {
     // reflexive
     for (output in outputs) {
       Assertions.assertThat(
-              IncrementalMountRenderCoreExtension.sTopsComparator.compare(output, output))
+              IncrementalMountRenderCoreExtension.TopsComparator.compare(output, output),
+          )
           .isEqualTo(0)
     }
 
@@ -134,10 +153,14 @@ class LayoutStateCalculateTopsAndBottomsTest {
       for (j in i + 1..3) {
         Assertions.assertThat(
                 -1 *
-                    IncrementalMountRenderCoreExtension.sTopsComparator.compare(
-                        outputs[j], outputs[i]))
+                    IncrementalMountRenderCoreExtension.TopsComparator.compare(
+                        outputs[j],
+                        outputs[i],
+                    ),
+            )
             .isEqualTo(
-                IncrementalMountRenderCoreExtension.sTopsComparator.compare(outputs[i], outputs[j]))
+                IncrementalMountRenderCoreExtension.TopsComparator.compare(outputs[i], outputs[j]),
+            )
       }
     }
 
@@ -146,16 +169,28 @@ class LayoutStateCalculateTopsAndBottomsTest {
       for (j in 0..3) {
         for (k in 0..3) {
           if (i != j && j != k && i != k) {
-            if (IncrementalMountRenderCoreExtension.sTopsComparator.compare(
-                outputs[i], outputs[j]) ==
-                IncrementalMountRenderCoreExtension.sTopsComparator.compare(
-                    outputs[j], outputs[k])) {
+            if (
+                IncrementalMountRenderCoreExtension.TopsComparator.compare(
+                    outputs[i],
+                    outputs[j],
+                ) ==
+                    IncrementalMountRenderCoreExtension.TopsComparator.compare(
+                        outputs[j],
+                        outputs[k],
+                    )
+            ) {
               Assertions.assertThat(
-                      IncrementalMountRenderCoreExtension.sTopsComparator.compare(
-                          outputs[j], outputs[k]))
+                      IncrementalMountRenderCoreExtension.TopsComparator.compare(
+                          outputs[j],
+                          outputs[k],
+                      ),
+                  )
                   .isEqualTo(
-                      IncrementalMountRenderCoreExtension.sTopsComparator.compare(
-                          outputs[i], outputs[j]))
+                      IncrementalMountRenderCoreExtension.TopsComparator.compare(
+                          outputs[i],
+                          outputs[j],
+                      ),
+                  )
             }
           }
         }
@@ -174,7 +209,8 @@ class LayoutStateCalculateTopsAndBottomsTest {
     // reflexive
     for (output in outputs) {
       Assertions.assertThat(
-              IncrementalMountRenderCoreExtension.sBottomsComparator.compare(output, output))
+              IncrementalMountRenderCoreExtension.BottomsComparator.compare(output, output),
+          )
           .isEqualTo(0)
     }
 
@@ -183,11 +219,17 @@ class LayoutStateCalculateTopsAndBottomsTest {
       for (j in i + 1..3) {
         Assertions.assertThat(
                 -1 *
-                    IncrementalMountRenderCoreExtension.sBottomsComparator.compare(
-                        outputs[j], outputs[i]))
+                    IncrementalMountRenderCoreExtension.BottomsComparator.compare(
+                        outputs[j],
+                        outputs[i],
+                    ),
+            )
             .isEqualTo(
-                IncrementalMountRenderCoreExtension.sBottomsComparator.compare(
-                    outputs[i], outputs[j]))
+                IncrementalMountRenderCoreExtension.BottomsComparator.compare(
+                    outputs[i],
+                    outputs[j],
+                ),
+            )
       }
     }
 
@@ -196,16 +238,28 @@ class LayoutStateCalculateTopsAndBottomsTest {
       for (j in 0..3) {
         for (k in 0..3) {
           if (i != j && j != k && i != k) {
-            if (IncrementalMountRenderCoreExtension.sBottomsComparator.compare(
-                outputs[i], outputs[j]) ==
-                IncrementalMountRenderCoreExtension.sBottomsComparator.compare(
-                    outputs[j], outputs[k])) {
+            if (
+                IncrementalMountRenderCoreExtension.BottomsComparator.compare(
+                    outputs[i],
+                    outputs[j],
+                ) ==
+                    IncrementalMountRenderCoreExtension.BottomsComparator.compare(
+                        outputs[j],
+                        outputs[k],
+                    )
+            ) {
               Assertions.assertThat(
-                      IncrementalMountRenderCoreExtension.sBottomsComparator.compare(
-                          outputs[j], outputs[k]))
+                      IncrementalMountRenderCoreExtension.BottomsComparator.compare(
+                          outputs[j],
+                          outputs[k],
+                      ),
+                  )
                   .isEqualTo(
-                      IncrementalMountRenderCoreExtension.sBottomsComparator.compare(
-                          outputs[i], outputs[j]))
+                      IncrementalMountRenderCoreExtension.BottomsComparator.compare(
+                          outputs[i],
+                          outputs[j],
+                      ),
+                  )
             }
           }
         }
@@ -220,26 +274,28 @@ class LayoutStateCalculateTopsAndBottomsTest {
     val minIntTop: IncrementalMountOutput = createIncrementMountOutput(Int.MIN_VALUE, 20, 2)
     val largePositiveTop: IncrementalMountOutput = createIncrementMountOutput(2147483646, 20, 3)
     Assertions.assertThat(
-            IncrementalMountRenderCoreExtension.sTopsComparator.compare(
-                maxIntTop, largeNegativeTop))
+            IncrementalMountRenderCoreExtension.TopsComparator.compare(maxIntTop, largeNegativeTop),
+        )
         .isPositive()
     Assertions.assertThat(
-            IncrementalMountRenderCoreExtension.sTopsComparator.compare(
-                largeNegativeTop, maxIntTop))
+            IncrementalMountRenderCoreExtension.TopsComparator.compare(largeNegativeTop, maxIntTop),
+        )
         .isNegative()
     Assertions.assertThat(
-            IncrementalMountRenderCoreExtension.sTopsComparator.compare(
-                minIntTop, largePositiveTop))
+            IncrementalMountRenderCoreExtension.TopsComparator.compare(minIntTop, largePositiveTop),
+        )
         .isNegative()
     Assertions.assertThat(
-            IncrementalMountRenderCoreExtension.sTopsComparator.compare(
-                largePositiveTop, minIntTop))
+            IncrementalMountRenderCoreExtension.TopsComparator.compare(largePositiveTop, minIntTop),
+        )
         .isPositive()
     Assertions.assertThat(
-            IncrementalMountRenderCoreExtension.sTopsComparator.compare(minIntTop, maxIntTop))
+            IncrementalMountRenderCoreExtension.TopsComparator.compare(minIntTop, maxIntTop),
+        )
         .isNegative()
     Assertions.assertThat(
-            IncrementalMountRenderCoreExtension.sTopsComparator.compare(maxIntTop, minIntTop))
+            IncrementalMountRenderCoreExtension.TopsComparator.compare(maxIntTop, minIntTop),
+        )
         .isPositive()
   }
 
@@ -250,28 +306,46 @@ class LayoutStateCalculateTopsAndBottomsTest {
     val minIntBottom: IncrementalMountOutput = createIncrementMountOutput(20, Int.MIN_VALUE, 2)
     val largePositiveBottom: IncrementalMountOutput = createIncrementMountOutput(20, 2147483646, 3)
     Assertions.assertThat(
-            IncrementalMountRenderCoreExtension.sBottomsComparator.compare(
-                maxIntBottom, largeNegativeBottom))
+            IncrementalMountRenderCoreExtension.BottomsComparator.compare(
+                maxIntBottom,
+                largeNegativeBottom,
+            ),
+        )
         .isPositive()
     Assertions.assertThat(
-            IncrementalMountRenderCoreExtension.sBottomsComparator.compare(
-                largeNegativeBottom, maxIntBottom))
+            IncrementalMountRenderCoreExtension.BottomsComparator.compare(
+                largeNegativeBottom,
+                maxIntBottom,
+            ),
+        )
         .isNegative()
     Assertions.assertThat(
-            IncrementalMountRenderCoreExtension.sBottomsComparator.compare(
-                minIntBottom, largePositiveBottom))
+            IncrementalMountRenderCoreExtension.BottomsComparator.compare(
+                minIntBottom,
+                largePositiveBottom,
+            ),
+        )
         .isNegative()
     Assertions.assertThat(
-            IncrementalMountRenderCoreExtension.sBottomsComparator.compare(
-                largePositiveBottom, minIntBottom))
+            IncrementalMountRenderCoreExtension.BottomsComparator.compare(
+                largePositiveBottom,
+                minIntBottom,
+            ),
+        )
         .isPositive()
     Assertions.assertThat(
-            IncrementalMountRenderCoreExtension.sBottomsComparator.compare(
-                minIntBottom, maxIntBottom))
+            IncrementalMountRenderCoreExtension.BottomsComparator.compare(
+                minIntBottom,
+                maxIntBottom,
+            ),
+        )
         .isNegative()
     Assertions.assertThat(
-            IncrementalMountRenderCoreExtension.sBottomsComparator.compare(
-                maxIntBottom, minIntBottom))
+            IncrementalMountRenderCoreExtension.BottomsComparator.compare(
+                maxIntBottom,
+                minIntBottom,
+            ),
+        )
         .isPositive()
   }
 
@@ -311,7 +385,7 @@ class LayoutStateCalculateTopsAndBottomsTest {
     nodes.add(createIncrementMountOutput(-2147483612, 10, currentIndex++))
     nodes.add(createIncrementMountOutput(-2147483611, 10, currentIndex++))
     nodes.add(createIncrementMountOutput(2147483647, 20, currentIndex++))
-    Collections.sort(nodes, IncrementalMountRenderCoreExtension.sTopsComparator)
+    Collections.sort(nodes, IncrementalMountRenderCoreExtension.TopsComparator)
   }
 
   @Test
@@ -350,7 +424,7 @@ class LayoutStateCalculateTopsAndBottomsTest {
     nodes.add(createIncrementMountOutput(20, -2147483612, currentIndex++))
     nodes.add(createIncrementMountOutput(20, -2147483611, currentIndex++))
     nodes.add(createIncrementMountOutput(20, 2147483647, currentIndex++))
-    Collections.sort(nodes, IncrementalMountRenderCoreExtension.sBottomsComparator)
+    Collections.sort(nodes, IncrementalMountRenderCoreExtension.BottomsComparator)
   }
 
   companion object {
@@ -358,10 +432,18 @@ class LayoutStateCalculateTopsAndBottomsTest {
         top: Int,
         bottom: Int,
         index: Int,
-        hostId: Long = 0
+        hostId: Long = 0,
     ): IncrementalMountOutput {
       return IncrementalMountOutput(
-          (index + 1) * 1L, index, Rect(0, top, 10, bottom), false, "", null)
+          (index + 1) * 1L,
+          index,
+          Rect(0, top, 10, bottom),
+          false,
+          "",
+          null,
+          Any(),
+          IncrementalMountOutput.NO_HOST_ID,
+      )
     }
   }
 }

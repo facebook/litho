@@ -30,7 +30,7 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class LayoutStateEventHandlerTest {
 
-  @JvmField @Rule val mLithoTestRule: LithoTestRule = LithoTestRule()
+  @JvmField @Rule val lithoTestRule: LithoTestRule = LithoTestRule()
 
   private var rootComponent: Component? = null
   private var nestedComponent: Component? = null
@@ -59,14 +59,14 @@ class LayoutStateEventHandlerTest {
 
   @Test
   fun testNestedEventHandlerInput() {
-    mLithoTestRule.render { rootComponent }
+    lithoTestRule.render { rootComponent }
   }
 
   companion object {
     private fun assertCorrectEventHandler(
         eventHandler: EventHandler<*>,
         expectedId: Int,
-        expectedInput: Component?
+        expectedInput: Component?,
     ) {
       Assertions.assertThat(eventHandler.dispatchInfo.hasEventDispatcher).isEqualTo(expectedInput)
       Assertions.assertThat(eventHandler.id).isEqualTo(expectedId)

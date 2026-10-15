@@ -18,10 +18,10 @@ package com.facebook.primitive.canvas
 
 import com.facebook.primitive.canvas.model.CanvasModel
 import com.facebook.primitive.utils.types.CanvasLayerType
-import com.facebook.primitive.utils.types.Size as CanvasSize
+import com.facebook.rendercore.IntSize
 import com.facebook.rendercore.RenderUnit
-import com.facebook.rendercore.Size
 import com.facebook.rendercore.SizeConstraints
+import com.facebook.rendercore.geometry.Size as CanvasSize
 import com.facebook.rendercore.primitives.LayoutBehavior
 import com.facebook.rendercore.primitives.LayoutScope
 import com.facebook.rendercore.primitives.MountBehavior
@@ -46,7 +46,7 @@ import com.facebook.rendercore.utils.fillSpace
 fun CanvasPrimitive(
     id: Long,
     layerType: CanvasLayerType,
-    modelProvider: (canvasSize: CanvasSize) -> CanvasModel
+    modelProvider: (canvasSize: CanvasSize) -> CanvasModel,
 ): Primitive {
   return Primitive(
       layoutBehavior = CanvasLayoutBehavior(modelProvider),
@@ -68,14 +68,15 @@ fun CanvasPrimitive(
                 }
               }
             }
-          })
+          },
+  )
 }
 
 private class CanvasLayoutBehavior(
-    private val modelProvider: (canvasSize: CanvasSize) -> CanvasModel
+    private val modelProvider: (canvasSize: CanvasSize) -> CanvasModel,
 ) : LayoutBehavior {
   override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
-    val size = Size.fillSpace(sizeConstraints, fallbackWidth = 0, fallbackHeight = 0)
+    val size = IntSize.fillSpace(sizeConstraints, fallbackWidth = 0, fallbackHeight = 0)
     val canvasModel = modelProvider(CanvasSize(size.width.toFloat(), size.height.toFloat()))
     return PrimitiveLayoutResult(size = size, layoutData = canvasModel)
   }

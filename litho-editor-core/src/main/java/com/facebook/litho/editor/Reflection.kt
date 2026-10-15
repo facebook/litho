@@ -19,6 +19,7 @@ package com.facebook.litho.editor
 import java.lang.reflect.AccessibleObject
 import java.lang.reflect.Field
 import java.lang.reflect.Method
+import kotlin.reflect.KClass
 
 object Reflection {
   private val cache = mutableMapOf<String, AccessibleObject>()
@@ -53,14 +54,21 @@ object Reflection {
         }
   }
 
-  inline fun <reified T> invoke(
+  /**
+   * Invokes the method [name] on [obj] and returns its result if it is an instance of [returnType],
+   * or null if the method is missing, throws, or returns another type.
+   */
+  fun <T : Any> invoke(
       obj: Any?,
       name: String,
+      returnType: KClass<T>,
       types: Array<Class<*>> = emptyArray(),
-      vararg args: Any
+      vararg args: Any,
   ): T? =
       try {
-        getMethod(obj, name, *types)?.run { invoke(obj, *args) as? T }
+        val result = getMethod(obj, name, *types)?.invoke(obj, *args)
+        val resultClass = returnType.javaObjectType
+        if (resultClass.isInstance(result)) resultClass.cast(result) else null
       } catch (e: Exception) {
         null
       }

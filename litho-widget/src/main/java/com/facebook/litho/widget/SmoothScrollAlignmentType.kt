@@ -43,5 +43,5 @@ enum class SmoothScrollAlignmentType(val value: Int) {
   SNAP_TO_END(LinearSmoothScroller.SNAP_TO_END),
 
   /** Scroll the selected position to the center of the RecyclerView. */
-  SNAP_TO_CENTER(-6)
+  SNAP_TO_CENTER(-6),
 }

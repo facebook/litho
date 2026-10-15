@@ -16,7 +16,7 @@
 
 package com.facebook.litho.components
 
-import com.facebook.litho.Column
+import com.facebook.litho.Column as ColumnBuilder
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.StateValue
@@ -35,7 +35,7 @@ object StateUpdateTestInnerLayoutSpec {
   fun onCreateInitialState(
       c: ComponentContext,
       stateValue: StateValue<Int>,
-      @Prop createStateCount: AtomicInteger
+      @Prop createStateCount: AtomicInteger,
   ) {
     createStateCount.incrementAndGet()
     stateValue.set(10)
@@ -46,9 +46,9 @@ object StateUpdateTestInnerLayoutSpec {
   fun onCreateLayout(
       c: ComponentContext,
       @State stateValue: Int,
-      @Prop outStateValue: AtomicInteger
+      @Prop outStateValue: AtomicInteger,
   ): Component {
     outStateValue.set(stateValue)
-    return Column.create(c).build()
+    return ColumnBuilder.create(c).build()
   }
 }

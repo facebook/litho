@@ -16,9 +16,13 @@
 
 package com.facebook.litho
 
+import android.app.Activity
+import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.kotlin.widget.Text
+import com.facebook.litho.layout.flexbox.Column
+import com.facebook.litho.layout.flexbox.Row
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.LithoTestRuleResizeMode
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -26,7 +30,6 @@ import com.facebook.litho.view.alpha
 import com.facebook.litho.view.onClick
 import com.facebook.litho.view.viewTag
 import com.facebook.litho.view.wrapInView
-import com.facebook.litho.widget.ComponentWithTreeProp
 import com.facebook.litho.widget.TextDrawable
 import com.facebook.litho.widget.treeprops.SimpleTreeProp
 import com.facebook.rendercore.Dimen
@@ -36,22 +39,30 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.Robolectric
 import org.robolectric.annotation.LooperMode
 
 @LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(LithoTestRunner::class)
 class LithoTestRuleTest {
 
-  @JvmField @Rule val mLithoTestRule = LithoTestRule()
+  @JvmField @Rule val lithoTestRule = LithoTestRule()
   @JvmField
   @Rule
   val manualResizeLithoTestRule = LithoTestRule(resizeMode = LithoTestRuleResizeMode.MANUAL)
 
+  @JvmField
+  @Rule
+  val lithoTestRuleWithContextSpecified =
+      LithoTestRule(androidContext = Robolectric.buildActivity(Activity::class.java).create().get())
+
+  @JvmField @Rule val realWindowLithoTestRule = LithoTestRule(attachToRealWindow = true)
+
   @Test
   fun onLithoTestRuleWithTreeProp_shouldPropagateTreeProp() {
-    val component = ComponentWithTreeProp.create(mLithoTestRule.context).build()
+    val component = ComponentWithTreeProp()
     val testLithoView =
-        mLithoTestRule.setTreeProp(SimpleTreeProp::class.java, SimpleTreeProp("test")).render {
+        lithoTestRule.setTreeProp(SimpleTreeProp::class.java, SimpleTreeProp("test")).render {
           component
         }
 
@@ -62,8 +73,8 @@ class LithoTestRuleTest {
 
   @Test(expected = RuntimeException::class)
   fun onLithoTestRuleWithoutTreeProp_shouldThrowException() {
-    val component = ComponentWithTreeProp.create(mLithoTestRule.context).build()
-    mLithoTestRule.createTestLithoView().attachToWindow().setRoot(component).measure().layout()
+    val component = ComponentWithTreeProp()
+    lithoTestRule.createTestLithoView().attachToWindow().setRoot(component).measure().layout()
   }
 
   @Test
@@ -80,11 +91,10 @@ class LithoTestRuleTest {
       }
     }
 
-    val testLithoView = mLithoTestRule.render { TestComponent() }
-    val thrown: Throwable =
-        Assertions.catchThrowable {
-          mLithoTestRule.act(testLithoView) { clickOnText("some_other_text") }
-        }
+    val testLithoView = lithoTestRule.render { TestComponent() }
+    val thrown: Throwable = Assertions.catchThrowable {
+      lithoTestRule.act(testLithoView) { clickOnText("some_other_text") }
+    }
 
     assertThat(thrown).isInstanceOf(RuntimeException::class.java)
     assertThat((thrown.stackTraceToString()).contains("Timed out!")).isFalse
@@ -93,10 +103,9 @@ class LithoTestRuleTest {
 
   @Test
   fun `given dynamic size component when size is updated then view has updated size on resetting root`() {
-    val testLithoView =
-        mLithoTestRule.render {
-          ComponentWithDynamicSize(width = 100.px, height = 100.px, alpha = 1f)
-        }
+    val testLithoView = lithoTestRule.render {
+      ComponentWithDynamicSize(width = 100.px, height = 100.px, alpha = 1f)
+    }
 
     testLithoView.findViewWithTag(ComponentWithDynamicSize.VIEW_TAG).run {
       assertThat(width).isEqualTo(100)
@@ -109,7 +118,11 @@ class LithoTestRuleTest {
     val updatedAlpha = 0.5f
     testLithoView.setRoot(
         ComponentWithDynamicSize(
-            width = updatedWidth.px, height = updatedHeight.px, alpha = updatedAlpha))
+            width = updatedWidth.px,
+            height = updatedHeight.px,
+            alpha = updatedAlpha,
+        ),
+    )
 
     with(testLithoView.findViewWithTag(ComponentWithDynamicSize.VIEW_TAG)) {
       assertThat(width).isEqualTo(updatedWidth)
@@ -123,8 +136,9 @@ class LithoTestRuleTest {
     val width = 100
     val height = 200
     val alpha = 1f
-    val testLithoView =
-        manualResizeLithoTestRule.render { ComponentWithDynamicSize(width.px, height.px, alpha) }
+    val testLithoView = manualResizeLithoTestRule.render {
+      ComponentWithDynamicSize(width.px, height.px, alpha)
+    }
 
     with(testLithoView.findViewWithTag(ComponentWithDynamicSize.VIEW_TAG)) {
       assertThat(this.width).isEqualTo(width)
@@ -143,10 +157,9 @@ class LithoTestRuleTest {
 
   @Test
   fun `given dynamic size component when size is updated then view has updated size on resetting root async`() {
-    val testLithoView =
-        mLithoTestRule.render {
-          ComponentWithDynamicSize(width = 100.px, height = 100.px, alpha = 1f)
-        }
+    val testLithoView = lithoTestRule.render {
+      ComponentWithDynamicSize(width = 100.px, height = 100.px, alpha = 1f)
+    }
 
     testLithoView.findViewWithTag(ComponentWithDynamicSize.VIEW_TAG).run {
       assertThat(width).isEqualTo(100)
@@ -159,7 +172,11 @@ class LithoTestRuleTest {
     val updatedAlpha = 0.5f
     testLithoView.setRootAsync(
         ComponentWithDynamicSize(
-            width = updatedWidth.px, height = updatedHeight.px, alpha = updatedAlpha))
+            width = updatedWidth.px,
+            height = updatedHeight.px,
+            alpha = updatedAlpha,
+        ),
+    )
 
     with(testLithoView.findViewWithTag(ComponentWithDynamicSize.VIEW_TAG)) {
       assertThat(width).isEqualTo(updatedWidth)
@@ -173,8 +190,9 @@ class LithoTestRuleTest {
     val width = 100
     val height = 200
     val alpha = 1f
-    val testLithoView =
-        manualResizeLithoTestRule.render { ComponentWithDynamicSize(width.px, height.px, alpha) }
+    val testLithoView = manualResizeLithoTestRule.render {
+      ComponentWithDynamicSize(width.px, height.px, alpha)
+    }
 
     with(testLithoView.findViewWithTag(ComponentWithDynamicSize.VIEW_TAG)) {
       assertThat(this.width).isEqualTo(width)
@@ -183,7 +201,8 @@ class LithoTestRuleTest {
     }
 
     testLithoView.setRootAsync(
-        ComponentWithDynamicSize(width = 200.px, height = 300.px, alpha = .5f))
+        ComponentWithDynamicSize(width = 200.px, height = 300.px, alpha = .5f),
+    )
 
     with(testLithoView.findViewWithTag(ComponentWithDynamicSize.VIEW_TAG)) {
       assertThat(this.width).isEqualTo(width)
@@ -191,20 +210,77 @@ class LithoTestRuleTest {
       assertThat(this.alpha).isEqualTo(alpha)
     }
   }
-}
 
-private class ComponentWithDynamicSize(
-    private val width: Dimen,
-    private val height: Dimen,
-    private val alpha: Float,
-) : KComponent() {
-  override fun ComponentScope.render(): Component {
-    val style = Style.width(width).height(height).alpha(alpha).viewTag(VIEW_TAG)
-
-    return Row(style = Style.wrapInView()) { child(Row(style = style) { child(Text("test")) }) }
+  @Test
+  fun `provided android context is used as render context`() {
+    val testLithoView = lithoTestRuleWithContextSpecified.render { Text("test") }
+    assertThat(testLithoView.lithoView.context)
+        .isSameAs(lithoTestRuleWithContextSpecified.androidContext)
   }
 
-  companion object {
-    const val VIEW_TAG = "test_view"
+  @Test
+  fun `attachToRealWindow renders into a real window`() {
+    val testLithoView = realWindowLithoTestRule.render { Text("test") }
+
+    assertThat(testLithoView.lithoView.isAttachedToWindow).isTrue
+    assertThat(testLithoView.lithoView.windowToken).isNotNull
+  }
+
+  @Test
+  fun `attachToRealWindow keeps every rendered view attached`() {
+    val first = realWindowLithoTestRule.render { Text("first") }
+    val second = realWindowLithoTestRule.render { Text("second") }
+
+    // Rendering again must not displace what is already in the window.
+    assertThat(first.lithoView.isAttachedToWindow).isTrue
+    assertThat(second.lithoView.isAttachedToWindow).isTrue
+  }
+
+  @Test
+  fun `attachToRealWindow detaches on detachFromWindow`() {
+    val testLithoView = realWindowLithoTestRule.render { Text("test") }
+
+    testLithoView.detachFromWindow()
+
+    assertThat(testLithoView.lithoView.isAttachedToWindow).isFalse
+    assertThat(testLithoView.lithoView.parent).isNull()
+  }
+
+  @Test
+  fun `attachToRealWindow rejects a non-Activity android context`() {
+    Assertions.assertThatThrownBy {
+          LithoTestRule(
+              androidContext = ApplicationProvider.getApplicationContext(),
+              attachToRealWindow = true,
+          )
+        }
+        .isInstanceOf(IllegalArgumentException::class.java)
+        .hasMessageContaining("attachToRealWindow needs an Activity")
+  }
+
+  private class ComponentWithDynamicSize(
+      private val width: Dimen,
+      private val height: Dimen,
+      private val alpha: Float,
+  ) : KComponent() {
+    override fun ComponentScope.render(): Component {
+      val style = Style.width(width).height(height).alpha(alpha).viewTag(VIEW_TAG)
+
+      return Row(style = Style.wrapInView()) { child(Row(style = style) { child(Text("test")) }) }
+    }
+
+    companion object {
+      const val VIEW_TAG = "test_view"
+    }
+  }
+
+  private class ComponentWithTreeProp : KComponent() {
+    override fun ComponentScope.render(): Component {
+      val treeProp = getTreeProp<SimpleTreeProp>()
+      requireNotNull(treeProp) { "treeProp is a required prop for ComponentWithTreeProp." }
+      return Column {
+        child(com.facebook.litho.widget.Text.create(context).text(treeProp.name).build())
+      }
+    }
   }
 }

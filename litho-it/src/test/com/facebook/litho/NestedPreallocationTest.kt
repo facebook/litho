@@ -21,6 +21,7 @@ import android.widget.TextView
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.config.PreAllocationHandler
 import com.facebook.litho.kotlin.widget.Text
+import com.facebook.litho.layout.flexbox.Column
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.TestLithoView
@@ -79,7 +80,10 @@ class NestedPreallocationTest {
             .componentsConfiguration(
                 ComponentsConfiguration.defaultInstance.copy(
                     preAllocationHandler =
-                        if (preallocationEnabled) PreAllocationHandler.LayoutThread else null))
+                        if (preallocationEnabled) PreAllocationHandler.LayoutThread else null,
+                ),
+            )
+            .enableChildClipping(true)
             .build()
 
     return lithoRule.render(heightPx = 2040, componentTree = componentTree) { TestComponent() }
@@ -97,6 +101,9 @@ class NestedPreallocationTest {
 
     private val itemPool = MountContentPools.DefaultContentPool(TestComponent::class.java, 2)
 
+    override val pooledItemsCount: Int
+      get() = itemPool.pooledItemsCount
+
     override fun acquire(contentAllocator: ContentAllocator<*>): Any? {
       return itemPool.acquire(contentAllocator)
     }
@@ -107,7 +114,7 @@ class NestedPreallocationTest {
 
     override fun maybePreallocateContent(
         c: Context,
-        contentAllocator: ContentAllocator<*>
+        contentAllocator: ContentAllocator<*>,
     ): Boolean {
       preallocationsAttempted++
       return itemPool.maybePreallocateContent(c, contentAllocator)
@@ -121,7 +128,7 @@ class NestedPreallocationTest {
         child(Text("Title"))
 
         val items = (1..10).map { it }
-        child(LazyList { children(items, { it }) { MyPrimitive(it) } })
+        child(LazyList(useLegacyInfra = true) { children(items, { it }) { MyPrimitive(it) } })
       }
     }
   }
@@ -134,13 +141,15 @@ class NestedPreallocationTest {
           layoutBehavior = FixedSizeLayoutBehavior(100.dp, 24.dp),
           mountBehavior =
               MountBehavior(
-                  contentAllocator = ViewAllocator(canPreallocate = true) { TextView(it) }) {
-                    bind(number) { view ->
-                      view.text = "Number $number"
-                      onUnbind { view.text = null }
-                    }
-                  },
-          style)
+                  contentAllocator = ViewAllocator(canPreallocate = true) { TextView(it) },
+              ) {
+                bind(number) { view ->
+                  view.text = "Number $number"
+                  onUnbind { view.text = null }
+                }
+              },
+          style,
+      )
     }
   }
 }

@@ -17,7 +17,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'com.facebook.kotlin.compilerplugins.dataclassgenerate'
 
 // Dokka requires the kotlin plugin to be applied, however
 // since this module has no Kotlin, we make it conditional
@@ -32,6 +31,11 @@ android {
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
     }
+    sourceSets {
+        // src/main/kotlin is built by :litho-widget-kotlin.
+        main.java.srcDirs = ['src/main/java']
+        main.kotlin.srcDirs = ['src/main/java']
+    }
     namespace 'com.facebook.litho.widget'
     lint {
         abortOnError false
@@ -40,8 +44,14 @@ android {
     // TODO(#62): Re-enable abort on error.
 }
 
+// KGP adds src/main/kotlin to the Kotlin source set on its own; it belongs to :litho-widget-kotlin.
+kotlin {
+    sourceSets.main.kotlin.setSrcDirs(['src/main/java'])
+}
+
 dependencies {
     implementation project(':litho-core')
+    implementation project(':range-manager')
     implementation deps.supportRecyclerView
     implementation deps.supportSwipeRefresh
     implementation deps.supportCore

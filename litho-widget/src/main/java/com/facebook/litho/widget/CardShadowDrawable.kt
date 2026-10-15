@@ -201,7 +201,9 @@ class CardShadowDrawable : Drawable() {
             shadowCornerLeftRadius,
             intArrayOf(shadowStartColor, shadowStartColor, shadowEndColor),
             floatArrayOf(0f, .2f, 1f),
-            Shader.TileMode.CLAMP))
+            Shader.TileMode.CLAMP,
+        ),
+    )
 
     cornerShadowRightPaint.setShader(
         RadialGradient(
@@ -210,7 +212,9 @@ class CardShadowDrawable : Drawable() {
             shadowCornerRightRadius,
             intArrayOf(shadowStartColor, shadowStartColor, shadowEndColor),
             floatArrayOf(0f, .2f, 1f),
-            Shader.TileMode.CLAMP))
+            Shader.TileMode.CLAMP,
+        ),
+    )
 
     val shadowDx = if (shadowDx == UNDEFINED) 0f else shadowDx
     val shadowDy = if (shadowDy == UNDEFINED) getDefaultShadowDy(shadowSize) else shadowDy
@@ -236,7 +240,9 @@ class CardShadowDrawable : Drawable() {
             0f,
             intArrayOf(shadowStartColor, shadowStartColor, shadowEndColor),
             floatArrayOf(0f, .2f, 1f),
-            Shader.TileMode.CLAMP))
+            Shader.TileMode.CLAMP,
+        ),
+    )
 
     edgeShadowPaint.isAntiAlias = false
   }
@@ -297,7 +303,8 @@ class CardShadowDrawable : Drawable() {
             0f,
             bounds.width() - cornerRadius - paddingRight,
             paddingTop.toFloat(),
-            edgeShadowPaint)
+            edgeShadowPaint,
+        )
       }
     }
 
@@ -311,7 +318,8 @@ class CardShadowDrawable : Drawable() {
             0f,
             bounds.width() - cornerRadius - paddingLeft,
             paddingBottom.toFloat(),
-            edgeShadowPaint)
+            edgeShadowPaint,
+        )
       }
     }
 
@@ -324,7 +332,8 @@ class CardShadowDrawable : Drawable() {
           0f,
           bounds.height() - (if (hideTopShadow) 0f else cornerRadius + paddingTop),
           paddingLeft.toFloat(),
-          edgeShadowPaint)
+          edgeShadowPaint,
+      )
     }
 
     // right
@@ -336,7 +345,8 @@ class CardShadowDrawable : Drawable() {
           0f,
           bounds.height() - (if (hideBottomShadow) 0f else cornerRadius + paddingBottom),
           paddingRight.toFloat(),
-          edgeShadowPaint)
+          edgeShadowPaint,
+      )
     }
   }
 
@@ -444,12 +454,12 @@ class CardShadowDrawable : Drawable() {
     }
 
     private fun setPath(path: Path, shadowX: Int, shadowY: Int, cornerRadius: Float) {
-      val innerBounds =
-          RectF(
-              shadowX.toFloat(),
-              shadowY.toFloat(),
-              shadowX + 2 * cornerRadius,
-              shadowY + 2 * cornerRadius)
+      val innerBounds = RectF(
+          shadowX.toFloat(),
+          shadowY.toFloat(),
+          shadowX + 2 * cornerRadius,
+          shadowY + 2 * cornerRadius,
+      )
 
       val outerBounds = RectF(0f, 0f, 2 * cornerRadius, 2 * cornerRadius)
 

@@ -56,10 +56,12 @@ class DrawableMatrix private constructor() : Matrix() {
       val intrinsicWidth = d.intrinsicWidth
       val intrinsicHeight = d.intrinsicHeight
 
-      if (intrinsicWidth <= 0 ||
-          intrinsicHeight <= 0 ||
-          ScaleType.FIT_XY == scaleType ||
-          ScaleType.MATRIX == scaleType) {
+      if (
+          intrinsicWidth <= 0 ||
+              intrinsicHeight <= 0 ||
+              ScaleType.FIT_XY == scaleType ||
+              ScaleType.MATRIX == scaleType
+      ) {
         return null
       }
 
@@ -74,7 +76,8 @@ class DrawableMatrix private constructor() : Matrix() {
         // Center bitmap in view, no scaling.
         result.setTranslate(
             FastMath.round((width - intrinsicWidth) * 0.5f).toFloat(),
-            FastMath.round((height - intrinsicHeight) * 0.5f).toFloat())
+            FastMath.round((height - intrinsicHeight) * 0.5f).toFloat(),
+        )
 
         result.shouldClipRect = intrinsicWidth > width || intrinsicHeight > height
       } else if (ScaleType.CENTER_CROP == scaleType) {
@@ -101,7 +104,8 @@ class DrawableMatrix private constructor() : Matrix() {
             } else {
               min(
                   width.toFloat() / intrinsicWidth.toFloat(),
-                  height.toFloat() / intrinsicHeight.toFloat())
+                  height.toFloat() / intrinsicHeight.toFloat(),
+              )
             }
 
         val dx = FastMath.round((width - intrinsicWidth * scale) * 0.5f).toFloat()

@@ -23,6 +23,7 @@ import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.TextComponent
 import com.facebook.litho.widget.layoutstate.withoutdrawableoutput.RootComponent
+import com.facebook.rendercore.extensions.VisibilityChangeReason
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -39,7 +40,7 @@ class LayoutStateCalculationWithoutDrawableOutputsTest {
   fun before() {
     context = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
     lithoView = LithoView(context)
-    componentTree = ComponentTree.create(context).build()
+    componentTree = ComponentTree.create(context).enableChildClipping(true).build()
     lithoView.componentTree = componentTree
   }
 
@@ -50,7 +51,9 @@ class LayoutStateCalculationWithoutDrawableOutputsTest {
         ComponentTree.create(context)
             .componentsConfiguration(
                 ComponentsConfiguration.defaultInstance.copy(
-                    shouldAddHostViewForRootComponent = false))
+                    shouldAddHostViewForRootComponent = false,
+                ),
+            )
             .build()
     lithoView.componentTree = componentTree
     attach()
@@ -81,7 +84,9 @@ class LayoutStateCalculationWithoutDrawableOutputsTest {
         ComponentTree.create(context)
             .componentsConfiguration(
                 ComponentsConfiguration.defaultInstance.copy(
-                    shouldAddHostViewForRootComponent = false))
+                    shouldAddHostViewForRootComponent = false,
+                ),
+            )
             .build()
     lithoView.componentTree = componentTree
     componentTree.setRootSync(RootComponent.create(context).shouldWrapInView(true).build())
@@ -117,7 +122,9 @@ class LayoutStateCalculationWithoutDrawableOutputsTest {
         ComponentTree.create(context)
             .componentsConfiguration(
                 ComponentsConfiguration.defaultInstance.copy(
-                    shouldAddHostViewForRootComponent = true))
+                    shouldAddHostViewForRootComponent = true,
+                ),
+            )
             .build()
     lithoView.componentTree = componentTree
     componentTree.setRootSync(RootComponent.create(context).shouldWrapInView(false).build())
@@ -143,7 +150,9 @@ class LayoutStateCalculationWithoutDrawableOutputsTest {
         ComponentTree.create(context)
             .componentsConfiguration(
                 ComponentsConfiguration.defaultInstance.copy(
-                    shouldAddHostViewForRootComponent = true))
+                    shouldAddHostViewForRootComponent = true,
+                ),
+            )
             .build()
     lithoView.componentTree = componentTree
     componentTree.setRootSync(RootComponent.create(context).shouldWrapInView(true).build())
@@ -165,8 +174,9 @@ class LayoutStateCalculationWithoutDrawableOutputsTest {
     lithoView.onAttachedToWindow()
     lithoView.measure(
         View.MeasureSpec.makeMeasureSpec(1_080, View.MeasureSpec.EXACTLY),
-        View.MeasureSpec.makeMeasureSpec(1_920, View.MeasureSpec.UNSPECIFIED))
+        View.MeasureSpec.makeMeasureSpec(1_920, View.MeasureSpec.UNSPECIFIED),
+    )
     lithoView.layout(0, 0, 1_080, 1_920)
-    lithoView.notifyVisibleBoundsChanged()
+    lithoView.notifyVisibleBoundsChanged(VisibilityChangeReason.UNKNOWN)
   }
 }

@@ -18,7 +18,7 @@ package com.facebook.litho
 
 import com.facebook.litho.TransitionManager.AnimationCleanupTrigger
 import com.facebook.litho.TransitionManager.AnimationState
-import com.facebook.litho.TransitionManager.changeTypeToString
+import com.facebook.litho.TransitionManager.Companion.changeTypeToString
 
 /**
  * This class aids to collect information about which animation states were removed and where from.
@@ -35,7 +35,7 @@ internal class AnimationInconsistencyDebugger private constructor() {
   fun trackAnimationStateRemoved(
       transitionId: TransitionId,
       animationFinishTrigger: AnimationCleanupTrigger,
-      animationState: AnimationState?
+      animationState: AnimationState?,
   ) {
     removedInfo[transitionId] = RemovalInfo(transitionId, animationFinishTrigger, animationState)
   }
@@ -58,7 +58,7 @@ internal class AnimationInconsistencyDebugger private constructor() {
   class RemovalInfo(
       val transitionId: TransitionId,
       private val animationCleanupTrigger: AnimationCleanupTrigger,
-      private val animationState: AnimationState?
+      private val animationState: AnimationState?,
   ) {
 
     override fun toString(): String {
@@ -77,7 +77,8 @@ internal class AnimationInconsistencyDebugger private constructor() {
         if (animationState != null) {
           indentLine("changeType=${changeTypeToString(animationState.changeType)}")
           indentLine(
-              "shouldFinishUndeclaredAnimation=${animationState.shouldFinishUndeclaredAnimation}")
+              "shouldFinishUndeclaredAnimation=${animationState.shouldFinishUndeclaredAnimation}",
+          )
           indentLine("seenInLastTransition=${animationState.seenInLastTransition}")
           indentLine("hasDisappearingAnimation=${animationState.hasDisappearingAnimation}")
           if (animationState.propertyStates.isNotEmpty()) {

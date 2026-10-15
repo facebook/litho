@@ -1,19 +1,14 @@
 // @nolint
 // PROCESSOR: ErrorOnlyProcessor
 // EXPECTED:
-// e: file:///Hooks.kt:10:40 Hooks can be only called from render() or another @Hook annotated method. See: https://www.internalfb.com/intern/staticdocs/litho/docs/mainconcepts/hooks-intro/#rules-for-hooks
-// e: file:///Hooks.kt:17:7 Hooks should not be called from conditionals (if, for, while, or when). See: https://www.internalfb.com/intern/staticdocs/litho/docs/mainconcepts/hooks-intro/#rules-for-hooks
-// e: file:///Hooks.kt:29:15 Hooks should not be called from conditionals (if, for, while, or when). See: https://www.internalfb.com/intern/staticdocs/litho/docs/mainconcepts/hooks-intro/#rules-for-hooks
-// e: file:///Hooks.kt:37:20 Hooks should not be called from conditionals (if, for, while, or when). See: https://www.internalfb.com/intern/staticdocs/litho/docs/mainconcepts/hooks-intro/#rules-for-hooks
-// e: file:///Hooks.kt:53:28 Hooks should not be called from conditionals (if, for, while, or when). See: https://www.internalfb.com/intern/staticdocs/litho/docs/mainconcepts/hooks-intro/#rules-for-hooks
-// e: file:///Hooks.kt:61:21 Hooks should not be called from conditionals (if, for, while, or when). See: https://www.internalfb.com/intern/staticdocs/litho/docs/mainconcepts/hooks-intro/#rules-for-hooks
-// e: file:///Hooks.kt:68:22 Hooks should not be called from conditionals (if, for, while, or when). See: https://www.internalfb.com/intern/staticdocs/litho/docs/mainconcepts/hooks-intro/#rules-for-hooks
-// e: file:///Hooks.kt:74:22 Hooks should not be called from conditionals (if, for, while, or when). See: https://www.internalfb.com/intern/staticdocs/litho/docs/mainconcepts/hooks-intro/#rules-for-hooks
+// e: file:///Hooks.kt:10:40 Hooks can only be called from render() or from another @Hook function. Either annotate this function @Hook, which makes its own call sites subject to the same rule, or hoist the hook into the caller and pass the value in. See: https://www.internalfb.com/intern/staticdocs/litho/docs/state-and-side-effects/hooks-intro#rules-for-hooks
+// e: file:///Hooks.kt:94:20 Hooks can only be called from render() or from another @Hook function. Either annotate this function @Hook, which makes its own call sites subject to the same rule, or hoist the hook into the caller and pass the value in. See: https://www.internalfb.com/intern/staticdocs/litho/docs/state-and-side-effects/hooks-intro#rules-for-hooks
+// e: file:///Hooks.kt:102:23 Hooks can only be called from render() or from another @Hook function. Either annotate this function @Hook, which makes its own call sites subject to the same rule, or hoist the hook into the caller and pass the value in. See: https://www.internalfb.com/intern/staticdocs/litho/docs/state-and-side-effects/hooks-intro#rules-for-hooks
 // END
 
 // FILE: Hooks.kt
 
-import com.facebook.litho.Column
+import com.facebook.litho.layout.flexbox.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
@@ -87,6 +82,35 @@ class HookInForEachLoop {
 class HookInForEachLoopInRender : KComponent() {
   override fun ComponentScope.render(): Component {
     (1..3).forEach { useState {} }
+    return Column()
+  }
+}
+
+class HookInTryCatch {
+  @Hook
+  fun ComponentScope.useTryCatchState() {
+    try {
+      useState { 0 }
+    } catch (e: Exception) {
+      useState { 1 }
+    }
+  }
+}
+
+// A local function is a named function, so it is the container the rule looks at -- being lexically
+// inside render() does not lend it render()'s hook scope.
+class HookInLocalFunctionInRender : KComponent() {
+  override fun ComponentScope.render(): Component {
+    fun helper() = useState { 0 }
+    return Column()
+  }
+}
+
+class HookInAnonymousObjectInRender : KComponent() {
+  override fun ComponentScope.render(): Component {
+    val holder = object {
+      fun compute() = useState { 0 }
+    }
     return Column()
   }
 }

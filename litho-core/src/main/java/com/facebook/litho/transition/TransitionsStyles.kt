@@ -30,7 +30,7 @@ import com.facebook.litho.Transition.TransitionKeyType
 @DataClassGenerate
 data class TransitionKeyStyleItemValue(
     val transitionKey: String?,
-    val transitionKeyType: TransitionKeyType
+    val transitionKeyType: TransitionKeyType,
 )
 
 enum class TransitionKeyFields : StyleItemField {
@@ -42,10 +42,10 @@ enum class TransitionKeyFields : StyleItemField {
 internal data class TransitionKeyStyleItem(
     val context: ComponentContext,
     val transitionKey: String?,
-    val transitionKeyType: TransitionKeyType
+    val transitionKeyType: TransitionKeyType,
 ) : StyleItem<TransitionKeyStyleItemValue> {
   override fun applyCommonProps(context: ComponentContext, commonProps: CommonProps) {
-    commonProps.transitionKey(transitionKey, this.context.globalKey)
+    commonProps.transitionKey(transitionKey, this.context.nullableGlobalKey)
     commonProps.transitionKeyType(transitionKeyType)
   }
 
@@ -59,8 +59,9 @@ internal data class TransitionKeyStyleItem(
  * Setting this property will cause the Component to be represented as a View at mount time if it
  * wasn't going to already.
  */
-inline fun Style.transitionKey(
+@Deprecated(LEGACY_TRANSITION_DEPRECATION)
+fun Style.transitionKey(
     context: ComponentContext,
     transitionKey: String?,
-    transitionKeyType: TransitionKeyType = TransitionKeyType.LOCAL
+    transitionKeyType: TransitionKeyType = TransitionKeyType.LOCAL,
 ): Style = this + TransitionKeyStyleItem(context, transitionKey, transitionKeyType)

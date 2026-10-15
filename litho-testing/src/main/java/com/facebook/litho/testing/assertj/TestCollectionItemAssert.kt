@@ -22,7 +22,9 @@ import org.assertj.core.api.Assertions.assertThat
 
 class TestCollectionItemAssert(testCollectionItem: TestCollectionItem) :
     AbstractAssert<TestCollectionItemAssert, TestCollectionItem>(
-        testCollectionItem, TestCollectionItemAssert::class.java) {
+        testCollectionItem,
+        TestCollectionItemAssert::class.java,
+    ) {
 
   /** Assert the item is visible. */
   fun isVisible(): TestCollectionItemAssert {
@@ -40,7 +42,8 @@ class TestCollectionItemAssert(testCollectionItem: TestCollectionItem) :
   fun isFullyVisible(): TestCollectionItemAssert {
     assertThat(actual.isFullyVisible)
         .overridingErrorMessage(
-            "Expected item to be fully visible but is not.  The item ${if (actual.isVisible) "is" else "also is not "} partially visible")
+            "Expected item to be fully visible but is not.  The item ${if (actual.isVisible) "is" else "also is not "} partially visible",
+        )
         .isTrue
     return this
   }

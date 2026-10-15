@@ -28,5 +28,5 @@ enum class PrimitiveRecyclerBinderStrategy {
    * In this strategy, we are using the original RecyclerSpec Mount and Bind binders, and a separate
    * one for the item decoration
    */
-  DEFAULT
+  DEFAULT,
 }

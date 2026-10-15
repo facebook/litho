@@ -17,6 +17,7 @@
 package com.facebook.rendercore
 
 import androidx.annotation.IdRes
+import androidx.collection.ScatterSet
 
 /**
  * This wrapper allows to add binders to the original [renderUnit] without modifying it directly.
@@ -26,11 +27,9 @@ import androidx.annotation.IdRes
 // Don't add support for fixedMountBinders in WrapperRenderUnit unless you add support for them in
 // BindData handling logic.
 class WrapperRenderUnit<ContentType : Any>
-@JvmOverloads
-constructor(private val renderUnit: RenderUnit<ContentType>, idOverride: Long = renderUnit.id) :
-    RenderUnit<ContentType>(renderUnit.renderType) {
+constructor(private val renderUnit: RenderUnit<ContentType>) : RenderUnit<ContentType>() {
 
-  override val id: Long = idOverride
+  override val id: Long = renderUnit.id
 
   override val contentAllocator: ContentAllocator<ContentType> = renderUnit.contentAllocator
 
@@ -43,7 +42,8 @@ constructor(private val renderUnit: RenderUnit<ContentType>, idOverride: Long = 
   override fun addOptionalMountBinder(binder: DelegateBinder<*, in ContentType, *>) {
     if (renderUnit.containsOptionalMountBinder(binder)) {
       throw IllegalArgumentException(
-          "Binder ${binder.binder.description} already exists in the wrapped ${renderUnit.description}")
+          "Binder ${binder.binder.description} already exists in the wrapped ${renderUnit.description}",
+      )
     }
     super.addOptionalMountBinder(binder)
   }
@@ -51,19 +51,20 @@ constructor(private val renderUnit: RenderUnit<ContentType>, idOverride: Long = 
   override fun addAttachBinder(binder: DelegateBinder<*, in ContentType, *>) {
     if (renderUnit.containsAttachBinder(binder)) {
       throw IllegalArgumentException(
-          "Binder ${binder.binder.description} already exists in the wrapped ${renderUnit.description}")
+          "Binder ${binder.binder.description} already exists in the wrapped ${renderUnit.description}",
+      )
     }
     super.addAttachBinder(binder)
   }
 
-  override fun <T : BinderWithContext<*, *, *>?> findAttachBinderByKey(key: BinderKey): T? =
+  override fun <T : Binder<*, *, *>?> findAttachBinderByKey(key: BinderKey): T? =
       renderUnit.findAttachBinderByKey(key) ?: super.findAttachBinderByKey(key)
 
   override fun mountBinders(
       context: MountContext,
       content: ContentType,
       layoutData: Any?,
-      bindData: BindData
+      bindData: BindData,
   ) {
     renderUnit.mountBinders(context, content, layoutData, bindData)
     super.mountBinders(context, content, layoutData, bindData)
@@ -73,7 +74,7 @@ constructor(private val renderUnit: RenderUnit<ContentType>, idOverride: Long = 
       context: MountContext,
       content: ContentType,
       layoutData: Any?,
-      bindData: BindData
+      bindData: BindData,
   ) {
     super.unmountBinders(context, content, layoutData, bindData)
     renderUnit.unmountBinders(context, content, layoutData, bindData)
@@ -83,7 +84,7 @@ constructor(private val renderUnit: RenderUnit<ContentType>, idOverride: Long = 
       context: MountContext,
       content: ContentType,
       layoutData: Any?,
-      bindData: BindData
+      bindData: BindData,
   ) {
     renderUnit.attachBinders(context, content, layoutData, bindData)
     super.attachBinders(context, content, layoutData, bindData)
@@ -93,10 +94,21 @@ constructor(private val renderUnit: RenderUnit<ContentType>, idOverride: Long = 
       context: MountContext,
       content: ContentType,
       layoutData: Any?,
-      bindData: BindData
+      bindData: BindData,
   ) {
     super.detachBinders(context, content, layoutData, bindData)
     renderUnit.detachBinders(context, content, layoutData, bindData)
+  }
+
+  override fun rebindBinders(
+      context: MountContext,
+      binderIds: ScatterSet<BinderId>,
+      content: ContentType,
+      layoutData: Any?,
+      bindData: BindData,
+  ) {
+    renderUnit.rebindBinders(context, binderIds, content, layoutData, bindData)
+    super.rebindBinders(context, binderIds, content, layoutData, bindData)
   }
 
   override fun updateBinders(
@@ -107,7 +119,8 @@ constructor(private val renderUnit: RenderUnit<ContentType>, idOverride: Long = 
       newLayoutData: Any?,
       mountDelegate: MountDelegate?,
       bindData: BindData,
-      isAttached: Boolean
+      isAttached: Boolean,
+      extraBindersToUpdate: ScatterSet<BinderId>,
   ) {
     renderUnit.updateBinders(
         context,
@@ -118,6 +131,7 @@ constructor(private val renderUnit: RenderUnit<ContentType>, idOverride: Long = 
         mountDelegate,
         bindData,
         isAttached,
+        extraBindersToUpdate,
     )
     super.updateBinders(
         context,
@@ -128,6 +142,7 @@ constructor(private val renderUnit: RenderUnit<ContentType>, idOverride: Long = 
         mountDelegate,
         bindData,
         isAttached,
+        extraBindersToUpdate,
     )
   }
 }

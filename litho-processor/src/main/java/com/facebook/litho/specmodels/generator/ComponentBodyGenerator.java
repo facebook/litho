@@ -524,6 +524,10 @@ public class ComponentBodyGenerator {
       typeSpecDataHolder.addField(
           FieldSpec.builder(
                   ClassNames.EVENT_TRIGGER, getEventTriggerInstanceName(eventMethodModel.name))
+              .addAnnotation(
+                  AnnotationSpec.builder(SuppressWarnings.class)
+                      .addMember("value", "$S", "rawtypes")
+                      .build())
               .build());
     }
 
@@ -603,7 +607,6 @@ public class ComponentBodyGenerator {
             .addModifiers(Modifier.PUBLIC)
             .returns(TypeName.BOOLEAN)
             .addParameter(specModel.getComponentClass(), "other")
-            .addParameter(TypeName.BOOLEAN, "shouldCompareCommonProps")
             .beginControlFlow("if (this == other)")
             .addStatement("return true")
             .endControlFlow()
@@ -839,14 +842,13 @@ public class ComponentBodyGenerator {
             .addParameter(ClassName.OBJECT, "value")
             .addParameter(ClassName.OBJECT, "mountedContent");
 
-    final String sourceDelegateAccessor = SpecModelUtils.getSpecAccessor(specModel);
-
     methodBuilder.beginControlFlow("switch (dynamicPropIndex)");
 
     for (int index = 0, size = dynamicProps.size(); index < size; index++) {
       final PropModel prop = dynamicProps.get(index);
       final SpecMethodModel<BindDynamicValueMethod, Void> delegate =
           SpecModelUtils.getBindDelegateMethodForDynamicProp(specModel, prop);
+      final String sourceDelegateAccessor = SpecModelUtils.getSpecAccessor(specModel, delegate);
 
       methodBuilder.addCode("case $L:\n", index);
       methodBuilder.addStatement(
@@ -983,7 +985,7 @@ public class ComponentBodyGenerator {
       case Comparable.COMPONENT:
         codeBlock
             .beginControlFlow(
-                "if ($L != null ? !$T.isEquivalent($L, $L, shouldCompareCommonProps) : $L != null)",
+                "if ($L != null ? !$T.isEquivalent($L, $L) : $L != null)",
                 firstComparator,
                 ClassName.bestGuess("com.facebook.litho.ComponentUtils"),
                 firstComparator,
@@ -1013,6 +1015,17 @@ public class ComponentBodyGenerator {
                 firstComparator,
                 firstComparator,
                 secondComparator,
+                secondComparator)
+            .addStatement("return false")
+            .endControlFlow();
+        break;
+
+      case Comparable.CHARSEQUENCE:
+        codeBlock
+            .beginControlFlow(
+                "if (!$T.areObjectsEquivalent($L, $L))",
+                ClassName.bestGuess("com.facebook.rendercore.utils.EquivalenceUtils"),
+                firstComparator,
                 secondComparator)
             .addStatement("return false")
             .endControlFlow();
@@ -1078,6 +1091,8 @@ public class ComponentBodyGenerator {
     } else if (typeName instanceof ParameterizedTypeName
         && ((ParameterizedTypeName) typeName).rawType.equals(ClassNames.EVENT_HANDLER)) {
       return Comparable.EVENT_HANDLER_IN_PARAMETERIZED_TYPE;
+    } else if (typeName.equals(ClassName.get("java.lang", "CharSequence"))) {
+      return Comparable.CHARSEQUENCE;
     }
 
     return Comparable.OTHER;
@@ -1087,7 +1102,7 @@ public class ComponentBodyGenerator {
       String methodName,
       SpecModel specModel,
       MethodParamModel methodParamModel,
-      String contextParamName) {
+      @Nullable String contextParamName) {
     return getImplAccessor(methodName, specModel, methodParamModel, contextParamName, false);
   }
 
@@ -1095,7 +1110,7 @@ public class ComponentBodyGenerator {
       String methodName,
       SpecModel specModel,
       MethodParamModel methodParamModel,
-      String contextParamName,
+      @Nullable String contextParamName,
       boolean shallow) {
 
     return getImplAccessorFromContainer(
@@ -1106,7 +1121,7 @@ public class ComponentBodyGenerator {
       String methodName,
       SpecModel specModel,
       MethodParamModel methodParamModel,
-      String contextParamName,
+      @Nullable String contextParamName,
       @Nullable String cachedContainerVariableName) {
     return getImplAccessorFromContainer(
         methodName,
@@ -1202,7 +1217,7 @@ public class ComponentBodyGenerator {
       SpecModel specModel,
       DelegateMethodDescription methodDescription,
       MethodParamModel methodParamModel,
-      String contextParamName) {
+      @Nullable String contextParamName) {
     if (isOutputType(methodParamModel.getTypeName())) {
       if (methodDescription.optionalParameterTypes.contains(
               DelegateMethodDescription.OptionalParameterType.INTER_STAGE_OUTPUT)

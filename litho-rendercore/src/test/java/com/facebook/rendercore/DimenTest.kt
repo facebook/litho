@@ -19,7 +19,7 @@ package com.facebook.rendercore
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import java.lang.IllegalArgumentException
-import org.assertj.core.api.Java6Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExpectedException
@@ -241,7 +241,9 @@ class DimenTest {
       ResourceResolver(
           ApplicationProvider.getApplicationContext<Context>(),
           ResourceCache.getLatest(
-              ApplicationProvider.getApplicationContext<Context>().resources.configuration)) {
+              ApplicationProvider.getApplicationContext<Context>().resources.configuration,
+          ),
+      ) {
     override fun dipsToPixels(dips: Float): Int = FastMath.round(dips * density)
 
     override fun sipsToPixels(sips: Float): Int = FastMath.round(sips * scaledDensity)

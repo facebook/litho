@@ -63,10 +63,12 @@ class RenderInfoViewCreatorController(val componentViewType: Int) {
   private fun ensureCustomViewTypeValidity(renderInfo: RenderInfo) {
     if (customViewTypeEnabled && !renderInfo.hasCustomViewType()) {
       throw IllegalStateException(
-          "If you enable custom viewTypes, you must provide a customViewType in ViewRenderInfo.")
+          "If you enable custom viewTypes, you must provide a customViewType in ViewRenderInfo.",
+      )
     } else if (!customViewTypeEnabled && renderInfo.hasCustomViewType()) {
       throw IllegalStateException(
-          "You must enable custom viewTypes to provide customViewType in ViewRenderInfo.")
+          "You must enable custom viewTypes to provide customViewType in ViewRenderInfo.",
+      )
     } else if (customViewTypeEnabled && componentViewType == renderInfo.viewType) {
       throw IllegalStateException("CustomViewType cannot be the same as ComponentViewType.")
     }

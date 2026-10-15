@@ -16,8 +16,11 @@
 
 package com.facebook.litho
 
-import com.facebook.rendercore.Systracer
-import com.facebook.rendercore.Systracer.ArgsBuilder
+import com.meta.systrace.Systracer
+import com.meta.systrace.Systracer.ArgsBuilder
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 
 /**
  * This is intended as a hook into `android.os.Trace`, but allows you to provide your own
@@ -124,7 +127,9 @@ object ComponentsSystrace {
    * Starts the tracing section, executes the given [tracingBlock] and ends the tracing section.
    */
   @JvmStatic
+  @OptIn(ExperimentalContracts::class)
   inline fun <T> trace(name: String, tracingBlock: () -> T): T {
+    contract { callsInPlace(tracingBlock, InvocationKind.EXACTLY_ONCE) }
     return trace({ name }, tracingBlock)
   }
 
@@ -135,7 +140,9 @@ object ComponentsSystrace {
    * Starts the tracing section, executes the given [tracingBlock] and ends the tracing section.
    */
   @JvmStatic
+  @OptIn(ExperimentalContracts::class)
   inline fun <T> trace(name: () -> String, tracingBlock: () -> T): T {
+    contract { callsInPlace(tracingBlock, InvocationKind.EXACTLY_ONCE) }
     try {
       if (isTracing) beginSection(name())
       return tracingBlock()
@@ -147,4 +154,75 @@ object ComponentsSystrace {
   @JvmStatic
   val isTracing: Boolean
     @JvmStatic get() = systrace.isTracing()
+
+  /**
+   * A convenience Kotlin API for tracing a section with structured metadata arguments.
+   *
+   * The section name should follow the `<phase>:<componentName>` convention and remain simple for
+   * clean aggregation in Perfetto. Variable details (tree ID, sync/async, component ID, etc.)
+   * should be passed as arguments via the [TraceScope] in [argsProvider].
+   *
+   * When [isTracing] is false, none of the lambdas are evaluated except [tracingBlock] — zero
+   * overhead.
+   *
+   * Usage:
+   * ```
+   * ComponentsSystrace.traceWithArgs(
+   *     { "resolve:${component.simpleName}" },
+   *     { scope ->
+   *         scope.attribute("treeId", treeId)
+   *         scope.attribute("rootId", rootId)
+   *     },
+   * ) {
+   *     // actual work
+   * }
+   * ```
+   */
+  @JvmStatic
+  @OptIn(ExperimentalContracts::class)
+  inline fun <T> traceWithArgs(
+      nameProvider: () -> String,
+      argsProvider: (TraceScope) -> Unit,
+      tracingBlock: () -> T,
+  ): T {
+    contract { callsInPlace(tracingBlock, InvocationKind.EXACTLY_ONCE) }
+    if (!isTracing) return tracingBlock()
+    val argsBuilder = systrace.beginSectionWithArgs(nameProvider())
+    argsProvider(TraceScope(argsBuilder))
+    argsBuilder.flush()
+    return try {
+      tracingBlock()
+    } finally {
+      systrace.endSection()
+    }
+  }
+
+  /**
+   * Scope for adding structured metadata arguments to a systrace section.
+   *
+   * Wraps [ArgsBuilder] to provide a cleaner API for callers. Arguments appear as key-value
+   * metadata in the systrace section, keeping the section name clean for aggregation.
+   */
+  class TraceScope(private val argsBuilder: ArgsBuilder) {
+
+    fun attribute(key: String, value: Any): TraceScope {
+      argsBuilder.arg(key, value)
+      return this
+    }
+
+    fun attribute(key: String, value: Int): TraceScope {
+      argsBuilder.arg(key, value)
+      return this
+    }
+
+    fun attribute(key: String, value: Long): TraceScope {
+      argsBuilder.arg(key, value)
+      return this
+    }
+
+    fun attribute(key: String, value: Double): TraceScope {
+      argsBuilder.arg(key, value)
+      return this
+    }
+  }
 }

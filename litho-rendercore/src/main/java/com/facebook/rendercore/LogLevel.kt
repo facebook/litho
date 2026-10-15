@@ -18,8 +18,8 @@ package com.facebook.rendercore
 
 enum class LogLevel {
   VERBOSE,
-  DEBUG,
   WARNING,
+  DEBUG,
   ERROR,
-  FATAL
+  FATAL,
 }

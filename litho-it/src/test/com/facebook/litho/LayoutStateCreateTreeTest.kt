@@ -17,25 +17,36 @@
 package com.facebook.litho
 
 import android.animation.StateListAnimator
-import android.annotation.TargetApi
 import android.content.Context
 import android.graphics.Color
-import android.os.Build
 import android.util.SparseArray
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.annotations.ImportantForAccessibility
 import com.facebook.litho.drawable.ComparableColorDrawable
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.TestComponent
 import com.facebook.litho.testing.TestSizeDependentComponent
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec
 import com.facebook.litho.testing.testrunner.LithoTestRunner
+import com.facebook.litho.view.onClick
+import com.facebook.litho.view.onFocusedChanged
+import com.facebook.litho.view.onInterceptTouch
+import com.facebook.litho.view.onLongClick
+import com.facebook.litho.view.onTouch
 import com.facebook.litho.widget.SimpleMountSpecTester
+import com.facebook.rendercore.visibility.FocusedVisibleEvent
+import com.facebook.rendercore.visibility.FullImpressionVisibleEvent
+import com.facebook.rendercore.visibility.InvisibleEvent
+import com.facebook.rendercore.visibility.UnfocusedVisibleEvent
+import com.facebook.rendercore.visibility.VisibilityChangedEvent
+import com.facebook.rendercore.visibility.VisibleEvent
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaDirection
 import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaPositionType
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers
@@ -45,10 +56,11 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.robolectric.annotation.Config
 
 @RunWith(LithoTestRunner::class)
 class LayoutStateCreateTreeTest {
+
+  @Rule @JvmField val lithoViewRule = LithoTestRule()
 
   private lateinit var componentContext: ComponentContext
   private lateinit var resolveContext: ResolveContext
@@ -62,13 +74,13 @@ class LayoutStateCreateTreeTest {
   @Test
   fun simpleLayoutCreatesExpectedInternalNodeTree() {
     val component: Component =
-        object : InlineLayoutSpec(componentContext) {
+        object : InlineLayoutSpec(lithoViewRule.context) {
           override fun onCreateLayout(c: ComponentContext): Component =
-              Column.create(c)
-                  .child(Column.create(c).child(SimpleMountSpecTester.create(c)))
-                  .build()
+              Column.create(c).child(Column.create(c).child(SimpleMountSpecTester())).build()
         }
-    var node = Resolver.resolve(resolveContext, componentContext, component)
+    val testView = lithoViewRule.render { component }
+    var node = testView.currentRootNode?.node
+
     assertThat(node?.childCount).isEqualTo(1)
     assertThat(node?.headComponent).isEqualTo(component)
     assertThat(node?.tailComponent).isInstanceOf(Column::class.java)
@@ -98,23 +110,33 @@ class LayoutStateCreateTreeTest {
     val focusChangedHandler2: EventHandler<FocusChangedEvent> = mock()
     val focusChangedHandler3: EventHandler<FocusChangedEvent> = mock()
     val component: Component =
-        object : InlineLayoutSpec(componentContext) {
+        object : InlineLayoutSpec(lithoViewRule.context) {
           override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .child(
                       Column.create(c)
                           .child(
-                              SimpleMountSpecTester.create(c)
-                                  .clickHandler(clickHandler1)
-                                  .longClickHandler(longClickHandler1)
-                                  .touchHandler(touchHandler1)
-                                  .interceptTouchHandler(interceptTouchHandler1)
-                                  .focusChangeHandler(focusChangedHandler1))
+                              SimpleMountSpecTester(
+                                  style =
+                                      Style.onClick { clickHandler1.dispatchEvent(it) }
+                                          .onLongClick {
+                                            longClickHandler1.dispatchEvent(it) as Boolean
+                                          }
+                                          .onTouch { touchHandler1.dispatchEvent(it) as Boolean }
+                                          .onInterceptTouch {
+                                            interceptTouchHandler1.dispatchEvent(it) as Boolean
+                                          }
+                                          .onFocusedChanged {
+                                            focusChangedHandler1.dispatchEvent(it)
+                                          },
+                              ),
+                          )
                           .clickHandler(clickHandler2)
                           .longClickHandler(longClickHandler2)
                           .touchHandler(touchHandler2)
                           .interceptTouchHandler(interceptTouchHandler2)
-                          .focusChangeHandler(focusChangedHandler2))
+                          .focusChangeHandler(focusChangedHandler2),
+                  )
                   .clickHandler(clickHandler3)
                   .longClickHandler(longClickHandler3)
                   .touchHandler(touchHandler3)
@@ -122,7 +144,8 @@ class LayoutStateCreateTreeTest {
                   .focusChangeHandler(focusChangedHandler3)
                   .build()
         }
-    var node = Resolver.resolve(resolveContext, componentContext, component)
+    val testView = lithoViewRule.render { component }
+    var node = testView.currentRootNode?.node
     assertThat(node?.nodeInfo?.clickHandler).isEqualTo(clickHandler3)
     assertThat(node?.nodeInfo?.longClickHandler).isEqualTo(longClickHandler3)
     assertThat(node?.nodeInfo?.touchHandler).isEqualTo(touchHandler3)
@@ -135,11 +158,11 @@ class LayoutStateCreateTreeTest {
     assertThat(node?.nodeInfo?.interceptTouchHandler).isEqualTo(interceptTouchHandler2)
     assertThat(node?.nodeInfo?.focusChangeHandler).isEqualTo(focusChangedHandler2)
     node = node?.getChildAt(0)
-    assertThat(node?.nodeInfo?.clickHandler).isEqualTo(clickHandler1)
-    assertThat(node?.nodeInfo?.longClickHandler).isEqualTo(longClickHandler1)
-    assertThat(node?.nodeInfo?.touchHandler).isEqualTo(touchHandler1)
-    assertThat(node?.nodeInfo?.interceptTouchHandler).isEqualTo(interceptTouchHandler1)
-    assertThat(node?.nodeInfo?.focusChangeHandler).isEqualTo(focusChangedHandler1)
+    assertThat(node?.nodeInfo?.clickHandler).isInstanceOf(KEventHandler::class.java)
+    assertThat(node?.nodeInfo?.longClickHandler).isInstanceOf(KEventHandler::class.java)
+    assertThat(node?.nodeInfo?.touchHandler).isInstanceOf(KEventHandler::class.java)
+    assertThat(node?.nodeInfo?.interceptTouchHandler).isInstanceOf(KEventHandler::class.java)
+    assertThat(node?.nodeInfo?.focusChangeHandler).isInstanceOf(KEventHandler::class.java)
   }
 
   @Test
@@ -171,12 +194,14 @@ class LayoutStateCreateTreeTest {
                                   .longClickHandler(longClickHandler1)
                                   .touchHandler(touchHandler1)
                                   .interceptTouchHandler(interceptTouchHandler1)
-                                  .focusChangeHandler(focusChangedHandler1))
+                                  .focusChangeHandler(focusChangedHandler1),
+                          )
                           .clickHandler(clickHandler2)
                           .longClickHandler(longClickHandler2)
                           .touchHandler(touchHandler2)
                           .interceptTouchHandler(interceptTouchHandler2)
-                          .focusChangeHandler(focusChangedHandler2))
+                          .focusChangeHandler(focusChangedHandler2),
+                  )
                   .clickHandler(clickHandler3)
                   .longClickHandler(longClickHandler3)
                   .touchHandler(touchHandler3)
@@ -217,20 +242,27 @@ class LayoutStateCreateTreeTest {
     val focusChangedHandler1: EventHandler<FocusChangedEvent> = mock()
     val focusChangedHandler2: EventHandler<FocusChangedEvent> = mock()
     val component: Component =
-        object : InlineLayoutSpec(componentContext) {
+        object : InlineLayoutSpec(lithoViewRule.context) {
           override fun onCreateLayout(c: ComponentContext): Component {
             return Wrapper.create(c)
                 .delegate(
                     object : InlineLayoutSpec() {
-                      override fun onCreateLayout(c: ComponentContext): Component =
-                          SimpleMountSpecTester.create(c)
-                              .clickHandler(clickHandler1)
-                              .longClickHandler(longClickHandler1)
-                              .touchHandler(touchHandler1)
-                              .interceptTouchHandler(interceptTouchHandler1)
-                              .focusChangeHandler(focusChangedHandler1)
-                              .build()
-                    })
+                      override fun onCreateLayout(
+                          c: ComponentContext,
+                      ): Component = SimpleMountSpecTester(
+                          style =
+                              Style.onClick { clickHandler1.dispatchEvent(it) }
+                                  .onLongClick {
+                                    longClickHandler1.dispatchEvent(it) as Boolean
+                                  }
+                                  .onTouch { touchHandler1.dispatchEvent(it) as Boolean }
+                                  .onInterceptTouch {
+                                    interceptTouchHandler1.dispatchEvent(it) as Boolean
+                                  }
+                                  .onFocusedChanged { focusChangedHandler1.dispatchEvent(it) },
+                      )
+                    },
+                )
                 .clickHandler(clickHandler2)
                 .longClickHandler(longClickHandler2)
                 .touchHandler(touchHandler2)
@@ -239,7 +271,8 @@ class LayoutStateCreateTreeTest {
                 .build()
           }
         }
-    val node = Resolver.resolve(resolveContext, componentContext, component)
+    val testView = lithoViewRule.render { component }
+    val node = testView.currentRootNode?.node
     assertThat(node?.childCount).isEqualTo(0)
     assertThat(node?.tailComponent).isInstanceOf(SimpleMountSpecTester::class.java)
     assertThat(node?.nodeInfo?.clickHandler).isEqualTo(clickHandler2)
@@ -275,7 +308,8 @@ class LayoutStateCreateTreeTest {
                               .interceptTouchHandler(interceptTouchHandler1)
                               .focusChangeHandler(focusChangedHandler1)
                               .build()
-                    })
+                    },
+                )
                 .clickHandler(clickHandler2)
                 .longClickHandler(longClickHandler2)
                 .touchHandler(touchHandler2)
@@ -295,8 +329,6 @@ class LayoutStateCreateTreeTest {
   }
 
   @Test
-  @Config(sdk = [Build.VERSION_CODES.LOLLIPOP])
-  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   fun testAddingAllAttributes() {
     val background = ComparableColorDrawable.create(Color.RED)
     val foreground = ComparableColorDrawable.create(Color.BLACK)
@@ -399,9 +431,11 @@ class LayoutStateCreateTreeTest {
             .enabled(false)
             .keyboardNavigationCluster(false)
             .accessibilityHeading(false)
-            .visibleHeightRatio(55f)
-            .visibleWidthRatio(56f)
-            .visibleHandler(visibleHandler)
+            .visibleHandler(
+                /* visibleWidthRatio */ 56f, /* visibleHeightRatio */
+                55f,
+                visibleHandler,
+            )
             .focusedHandler(focusedHandler)
             .unfocusedHandler(unfocusedHandler)
             .fullImpressionHandler(fullImpressionHandler)
@@ -432,7 +466,8 @@ class LayoutStateCreateTreeTest {
             .build()
     val node = Resolver.resolve(resolveContext, componentContext, component)
     val output: LayoutProps = Mockito.spy(LayoutProps::class.java)
-    (component as SpecGeneratedComponent).commonProps?.copyLayoutProps(output)
+    val resourceResolver = componentContext.resourceResolver
+    (component as SpecGeneratedComponent).commonProps?.copyLayoutProps(output, resourceResolver)
     verify(output).layoutDirection(YogaDirection.INHERIT.toLayoutDirection())
     verify(output).alignSelf(YogaAlign.AUTO)
     verify(output).positionType(YogaPositionType.ABSOLUTE)
@@ -508,8 +543,12 @@ class LayoutStateCreateTreeTest {
       val nodeInfo = mock<NodeInfo>()
       whenever(node.mutableNodeInfo()).thenReturn(nodeInfo)
       whenever(
-              node.calculateLayout(
-                  anyOrNull(), ArgumentMatchers.anyInt(), ArgumentMatchers.anyInt()))
+          node.calculateLayout(
+              anyOrNull(),
+              ArgumentMatchers.anyInt(),
+              ArgumentMatchers.anyInt(),
+          ),
+      )
           .thenReturn(result)
       whenever(result.node).thenReturn(node)
       return node
@@ -519,17 +558,17 @@ class LayoutStateCreateTreeTest {
         resolveContext: ResolveContext,
         scopedComponentInfo: ScopedComponentInfo,
         parentWidthSpec: Int,
-        parentHeightSpec: Int
+        parentHeightSpec: Int,
     ): ComponentResolveResult {
       val lithoNode = resolve(resolveContext, scopedComponentInfo.context)
-      return ComponentResolveResult(lithoNode, null)
+      return ComponentResolveResult(lithoNode, commonProps)
     }
 
     class Builder(
         c: ComponentContext,
         defStyleAttr: Int,
         defStyleRes: Int,
-        private var _component: Component
+        private var _component: Component,
     ) : Component.Builder<Builder?>(c, defStyleAttr, defStyleRes, _component) {
       override fun setComponent(component: Component) {
         this._component = component

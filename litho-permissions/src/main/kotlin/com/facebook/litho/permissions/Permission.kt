@@ -41,13 +41,14 @@ import java.util.UUID
  * will be the [PermissionStatus] of the [permission] when the `render` function is called; this is
  * to ensure race conditions and tearing.
  *
- * Check [rules for hooks](https://fblitho.com/docs/mainconcepts/hooks-intro/#rules-for-hooks)
+ * Check
+ * [rules for hooks](https://fblitho.com/docs/state-and-side-effects/hooks-intro#rules-for-hooks)
  */
 @ExperimentalLithoApi
 @Hook
 fun ComponentScope.usePermission(
     permission: String,
-    onReceivePermissionResult: ((Boolean) -> Unit)? = null
+    onReceivePermissionResult: ((Boolean) -> Unit)? = null,
 ): PermissionState {
 
   val context = androidContext
@@ -55,19 +56,20 @@ fun ComponentScope.usePermission(
       useCached(context) {
         context.findComponentActivity()
             ?: throw IllegalStateException(
-                "Permissions should be called in the context of an Activity")
+                "Permissions should be called in the context of an Activity",
+            )
       }
 
   // region Update the permission status state change when the permission updates
   val manager =
-      useCached(permission) {
+      useCached(permission, activity) {
         PermissionStatusManager(
             permission,
             activity,
         )
       }
   val permissionStatus = useState { manager.status }
-  useEffect(manager) {
+  useEffect(manager, permissionStatus) {
     manager.onUpdate = { permissionStatus.update(it) }
     onCleanup { manager.onUpdate = null }
   }
@@ -96,20 +98,26 @@ fun ComponentScope.usePermission(
 
   // region Register with Activity Result Register to get Launcher to request permission
   val key = useCached { UUID.randomUUID().toString() }
-  useEffect(key, manager) {
+  useEffect(key, manager, activity) {
     manager.launcher =
         activity.activityResultRegistry.register(
-            key, ActivityResultContracts.RequestPermission()) { granted ->
-              manager.updatePermissionStatus()
-              onReceivePermissionResult?.invoke(granted)
-            }
-    onCleanup { manager.launcher = null }
+            key,
+            ActivityResultContracts.RequestPermission(),
+        ) { granted ->
+          manager.updatePermissionStatus()
+          onReceivePermissionResult?.invoke(granted)
+        }
+    onCleanup {
+      manager.launcher?.unregister()
+      manager.launcher = null
+    }
   }
   // endregion
 
   return LithoPermissionState(status = permissionStatus.value, manager = manager)
 }
 
+@OptIn(com.facebook.litho.annotations.ExperimentalLithoApi::class)
 internal fun Activity.getPermissionStatus(permission: String): PermissionStatus {
   val hasPermission = this.checkPermission(permission)
   return if (hasPermission) {
@@ -129,6 +137,7 @@ internal fun Activity.shouldShowRationale(permission: String): Boolean {
   return ActivityCompat.shouldShowRequestPermissionRationale(this, permission)
 }
 
+@OptIn(com.facebook.litho.annotations.ExperimentalLithoApi::class)
 internal class LithoPermissionState(
     override val status: PermissionStatus,
     private val manager: PermissionStatusManager,

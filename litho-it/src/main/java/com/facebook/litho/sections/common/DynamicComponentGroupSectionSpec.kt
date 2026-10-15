@@ -24,6 +24,7 @@ import com.facebook.litho.sections.annotations.GroupSectionSpec
 import com.facebook.litho.sections.annotations.OnCreateChildren
 
 /** Dynamic group section spec that accepts a component to populate as the child. */
+@Suppress("DeprecatedSectionSpecApiInKotlin")
 @GroupSectionSpec
 internal object DynamicComponentGroupSectionSpec {
   @JvmStatic
@@ -31,10 +32,9 @@ internal object DynamicComponentGroupSectionSpec {
   fun onCreateChildren(
       c: SectionContext,
       @Prop component: Component,
-      @Prop totalItems: Int
   ): Children {
     val builder = Children.create()
-    for (i in 0 until totalItems) {
+    for (i in 0 until 5) {
       builder.child(SingleComponentSection.create(c).component(component).key("key$i").build())
     }
     return builder.build()

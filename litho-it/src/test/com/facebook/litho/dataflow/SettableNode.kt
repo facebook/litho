@@ -19,12 +19,6 @@ package com.facebook.litho.dataflow
 /** Test node that allows setting of its next value. */
 class SettableNode : ValueNode(), NodeCanFinish {
 
-  private var value = 0f
-
-  override fun setValue(value: Float) {
-    this.value = value
-  }
-
   override fun calculateValue(frameTimeNanos: Long): Float = value
 
   override fun isFinished(): Boolean = false

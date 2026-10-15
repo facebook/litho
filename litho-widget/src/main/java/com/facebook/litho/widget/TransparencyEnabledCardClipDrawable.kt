@@ -154,7 +154,8 @@ class TransparencyEnabledCardClipDrawable : Drawable() {
           bounds.bottom.toFloat(),
           cornerRadius,
           cornerRadius,
-          backgroundPaint)
+          backgroundPaint,
+      )
     }
   }
 

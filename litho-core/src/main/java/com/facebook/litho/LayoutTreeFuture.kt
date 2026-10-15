@@ -19,14 +19,21 @@ package com.facebook.litho
 import android.content.Context
 import android.view.accessibility.AccessibilityManager
 import com.facebook.litho.AccessibilityUtils.isAccessibilityEnabled
-import com.facebook.litho.ComponentsSystrace.beginSectionWithArgs
-import com.facebook.litho.ComponentsSystrace.endSection
-import com.facebook.litho.Layout.measurePendingSubtrees
-import com.facebook.litho.Layout.measureTree
+import com.facebook.litho.ComponentsSystrace.traceWithArgs
+import com.facebook.litho.LayoutUtils.measurePendingSubtrees
+import com.facebook.litho.LayoutUtils.measureTree
+import com.facebook.litho.animation.ReflowGeneration
+import com.facebook.litho.animation.isReflowStateId
 import com.facebook.litho.debug.DebugOverlay
 import com.facebook.litho.debug.DebugOverlay.Companion.updateLayoutHistory
 import com.facebook.litho.debug.LithoDebugEvent
 import com.facebook.litho.debug.LithoDebugEventAttributes
+import com.facebook.litho.debug.LithoDebugEventAttributes.IsFirstLayout
+import com.facebook.litho.state.DirtyScopeIndex
+import com.facebook.litho.state.StateId
+import com.facebook.litho.state.getDirtyScopes
+import com.facebook.litho.state.hasDirtyScopes
+import com.facebook.litho.state.withScope
 import com.facebook.litho.stats.LithoStats
 import com.facebook.litho.transition.toMutableData
 import com.facebook.rendercore.LayoutCache
@@ -41,16 +48,19 @@ class LayoutTreeFuture(
     private val widthSpec: Int,
     private val heightSpec: Int,
     override val treeId: Int,
+    private val treeState: TreeState,
     private val version: Int,
-    @RenderSource private val source: Int
+    @RenderSource private val source: Int,
+    private val debugBreadcrumb: String? = null,
 ) : TreeFuture<LayoutState>(treeId, false) {
 
-  override fun getDescription(): String = "layout"
+  override fun getDescription(): String = DESCRIPTION
 
   override fun getVersion(): Int = version
 
   override fun calculate(): LayoutState {
     val sizeConstraints = SizeConstraints.fromMeasureSpecs(widthSpec, heightSpec)
+
     return DebugEventDispatcher.trace(
         type = LithoDebugEvent.ComponentTreeLayout,
         renderStateId = { treeId.toString() },
@@ -59,16 +69,54 @@ class LayoutTreeFuture(
           attrs[DebugEventAttribute.SizeConstraints] = sizeConstraints.toString()
           attrs[DebugEventAttribute.Version] = version
           attrs[DebugEventAttribute.Source] = LayoutState.layoutSourceToString(source)
-        }) {
-          layout(
-              resolveResult,
-              sizeConstraints,
-              version,
-              treeId,
-              currentLayoutState,
-              diffTreeRoot,
-              this)
-        }
+          if (debugBreadcrumb != null) {
+            attrs[LithoDebugEventAttributes.Breadcrumb] = debugBreadcrumb
+          }
+          // Enhanced phase logging attributes
+          attrs[LithoDebugEventAttributes.LayoutVersion] = version
+          attrs[LithoDebugEventAttributes.ResolveVersion] = resolveResult.version
+          attrs[IsFirstLayout] = currentLayoutState == null
+        },
+    ) { traceScope ->
+      val layoutState = layout(
+          resolveResult,
+          sizeConstraints,
+          version,
+          treeId,
+          treeState,
+          currentLayoutState,
+          diffTreeRoot,
+          this,
+      )
+
+      // Add post-layout attributes via TraceScope
+      addPostLayoutAttributes(traceScope, layoutState)
+
+      layoutState
+    }
+  }
+
+  private fun addPostLayoutAttributes(
+      traceScope: DebugEventDispatcher.TraceScope?,
+      layoutState: LayoutState,
+  ) {
+    if (traceScope == null) return
+
+    val currentState = currentLayoutState
+
+    // Reused: layout result is identical to previous
+    val reused =
+        currentState != null &&
+            currentState.root == layoutState.root &&
+            currentState.sizeConstraints == layoutState.sizeConstraints
+
+    // BoundsChanged: dimensions differ from previous layout
+    val boundsChanged =
+        currentState != null &&
+            (currentState.width != layoutState.width || currentState.height != layoutState.height)
+
+    traceScope.attribute(LithoDebugEventAttributes.Reused, reused)
+    traceScope.attribute(LithoDebugEventAttributes.BoundsChanged, boundsChanged)
   }
 
   override fun resumeCalculation(partialResult: LayoutState?): LayoutState {
@@ -85,56 +133,109 @@ class LayoutTreeFuture(
   }
 
   companion object {
+    /** The future's attribution, mirroring `ResolveTreeFuture.DESCRIPTION`. */
+    const val DESCRIPTION: String = "layout"
+
     /** Function to calculate a new layout. */
     fun layout(
         resolveResult: ResolveResult,
         sizeConstraints: SizeConstraints,
         version: Int,
         treeId: Int,
+        treeState: TreeState,
         currentLayoutState: LayoutState?,
         diffTreeRoot: DiffNode?,
-        future: TreeFuture<*>?
+        future: TreeFuture<*>?,
     ): LayoutState {
+      val c = resolveResult.context
+      val node = resolveResult.node
+
+      val scopesToUpdate =
+          DirtyScopeIndex.of(
+              if (c.isReadTrackingEnabled) {
+                val updatedStates = resolveResult.updatedStates
+                getDirtyScopes(updatedStates, currentLayoutState?.stateReads)
+              } else {
+                emptySet()
+              },
+          )
+      val willSkipLayout =
+          c.isReadTrackingEnabled &&
+              scopesToUpdate.isEmpty() &&
+              currentLayoutState != null &&
+              resolveResult.node == currentLayoutState.resolveResult.node &&
+              sizeConstraints == currentLayoutState.sizeConstraints
+
+      if (willSkipLayout) {
+        treeState.applyStateUpdatesEarly(
+            c,
+            currentLayoutState.rootComponent,
+            currentLayoutState.root,
+            true,
+        )
+        treeState.markAllStateInUse(isLayoutState = true)
+        return currentLayoutState.copyWith(resolveResult, treeState, version)
+      }
 
       LithoStats.incrementLayoutCount()
-      val isTracing = ComponentsSystrace.isTracing
-      val treeState = resolveResult.treeState
 
-      try {
-
-        if (isTracing) {
-          beginSectionWithArgs("layoutTree:" + resolveResult.component.simpleName)
-              .arg("treeId", treeId)
-              .arg("rootId", resolveResult.component.instanceId)
-              .arg("sizeConstraints", sizeConstraints.toString())
-              .flush()
-        }
-
-        treeState.registerLayoutState()
-
-        val node = resolveResult.node
+      traceWithArgs(
+          { "layoutTree:${resolveResult.component.simpleName}" },
+          { scope ->
+            scope.attribute("treeId", treeId)
+            scope.attribute("rootId", resolveResult.component.instanceId)
+            scope.attribute("sizeConstraints", sizeConstraints)
+          },
+      ) {
         val renderPhaseCache = resolveResult.consumeCache()
-        val c = resolveResult.context
         val layoutCache =
             if (currentLayoutState != null) {
               LayoutCache(currentLayoutState.layoutCacheData)
             } else {
               LayoutCache()
             }
-        val lsc =
-            LithoLayoutContext(
-                treeId,
-                MeasuredResultCache(renderPhaseCache),
-                c,
-                treeState,
-                version,
-                resolveResult.component.instanceId,
-                isAccessibilityEnabled(
-                    c.androidContext.getSystemService(Context.ACCESSIBILITY_SERVICE)
-                        as AccessibilityManager),
-                layoutCache,
-                diffTreeRoot,
-                future)
+        val lsc = LithoLayoutContext(
+            treeId,
+            MeasuredResultCache(renderPhaseCache),
+            c,
+            treeState,
+            version,
+            resolveResult.component.instanceId,
+            isAccessibilityEnabled(
+                c.androidContext.getSystemService(Context.ACCESSIBILITY_SERVICE)
+                    as AccessibilityManager,
+            ),
+            layoutCache,
+            diffTreeRoot,
+            future,
+            scopesToUpdate,
+        )
+
+        // An animation frame = nothing to re-measure (resolve reconciled to the same node under
+        // unchanged constraints) and every layout-affecting update is a reflow tick. Constraints
+        // must match too: a re-measure (rotation, IME, split screen) reuses the same ResolveResult,
+        // and riding the animation would skip the capture that corrects it. One AnimationController
+        // frame coalesces every value into one batch, so a reflow tick can arrive alongside an
+        // update that moves a natural size; a bind-only value (an alpha fade) has no layout reader
+        // and is ignored. Both main and background layouts read the published generation directly
+        // (live leaves, no rebuild).
+        if (c.isReadTrackingEnabled) {
+          val reflowView = c.lithoTree?.reflowProvider?.reflowView ?: ReflowGeneration.EMPTY
+          lsc.reflowReadView = reflowView
+          if (
+              !reflowView.isEmpty &&
+                  currentLayoutState != null &&
+                  resolveResult.node === currentLayoutState.resolveResult.node &&
+                  sizeConstraints == currentLayoutState.sizeConstraints &&
+                  !hasDirtyScopes(
+                      updatedStates = resolveResult.updatedStates,
+                      stateReads = currentLayoutState.stateReads,
+                      shouldSkip = StateId::isReflowStateId,
+                  )
+          ) {
+            lsc.reflowFrameUpdates = resolveResult.updatedStates
+          }
+        }
 
         val prevContext = c.calculationStateContext
         val stateProvider = c.stateProvider ?: error("State provider is null in layout")
@@ -142,40 +243,48 @@ class LayoutTreeFuture(
         try {
 
           c.setLithoLayoutContext(lsc)
-          stateProvider.enterScope(treeState)
-          val root = measureTree(lsc, c.androidContext, node, sizeConstraints)
+          stateProvider.withScope(treeState) {
+            val root = measureTree(lsc, c.androidContext, node, sizeConstraints)
 
-          val reductionState =
-              ReductionState(
-                  componentContext = c,
-                  sizeConstraints = sizeConstraints,
-                  currentLayoutState = currentLayoutState,
-                  rootLayoutResult = root,
-                  rootX = lsc.rootOffset.x,
-                  rootY = lsc.rootOffset.y,
-                  attachables = resolveResult.outputs?.let { ArrayList(it.attachables) },
-                  transitionData = resolveResult.outputs?.transitionData?.toMutableData(),
-              )
-          if (root != null) {
-            try {
-              measurePendingSubtrees(
-                  parentContext = c,
-                  lithoLayoutContext = lsc,
-                  reductionState = reductionState,
-                  result = root)
-            } catch (e: Exception) {
-              throw ComponentUtils.wrapWithMetadata(c, e)
+            val reductionState = ReductionState(
+                componentContext = c,
+                sizeConstraints = sizeConstraints,
+                currentLayoutState = currentLayoutState,
+                rootLayoutResult = root,
+                rootX = lsc.rootOffset.x,
+                rootY = lsc.rootOffset.y,
+                attachables = resolveResult.outputs?.let { ArrayList(it.attachables) },
+                transitionData = resolveResult.outputs?.transitionData?.toMutableData(),
+            )
+            if (root != null) {
+              try {
+                measurePendingSubtrees(
+                    parentContext = c,
+                    lithoLayoutContext = lsc,
+                    reductionState = reductionState,
+                    result = root,
+                )
+              } catch (e: Exception) {
+                throw ComponentUtils.wrapWithMetadata(c, e)
+              }
             }
+
+            val layoutState =
+                LithoReducer.reduce(
+                    lsc,
+                    resolveResult,
+                    version,
+                    treeId,
+                    treeState,
+                    layoutCache,
+                    reductionState,
+                )
+
+            root?.releaseLayoutPhaseData()
+
+            return layoutState
           }
-
-          val layoutState =
-              LithoReducer.reduce(lsc, resolveResult, version, treeId, layoutCache, reductionState)
-
-          root?.releaseLayoutPhaseData()
-
-          return layoutState
         } finally {
-          stateProvider.exitScope(treeState)
           c.calculationStateContext = prevContext
           lsc.release()
 
@@ -189,34 +298,7 @@ class LayoutTreeFuture(
             updateLayoutHistory(treeId)
           }
         }
-      } finally {
-        treeState.unregisterLayoutInitialState()
-        if (isTracing) {
-          endSection()
-        }
       }
-    }
-
-    fun layout(
-        resolveResult: ResolveResult,
-        widthSpec: Int,
-        heightSpec: Int,
-        version: Int,
-        treeId: Int,
-        currentLayoutState: LayoutState?,
-        diffTreeRoot: DiffNode?,
-        future: TreeFuture<*>?,
-        perfEvent: PerfEvent?
-    ): LayoutState {
-      return layout(
-          resolveResult = resolveResult,
-          sizeConstraints = SizeConstraints.fromMeasureSpecs(widthSpec, heightSpec),
-          version = version,
-          treeId = treeId,
-          currentLayoutState = currentLayoutState,
-          diffTreeRoot = diffTreeRoot,
-          future = future,
-      )
     }
   }
 }

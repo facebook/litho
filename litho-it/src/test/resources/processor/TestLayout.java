@@ -31,8 +31,10 @@ import com.facebook.litho.EventHandler;
 import com.facebook.litho.EventTrigger;
 import com.facebook.litho.EventTriggerTarget;
 import com.facebook.litho.EventTriggersContainer;
+import com.facebook.litho.GlobalKey;
 import com.facebook.litho.Handle;
 import com.facebook.litho.HasEventDispatcher;
+import com.facebook.litho.HookGlobalKey;
 import com.facebook.litho.Output;
 import com.facebook.litho.SpecGeneratedComponent;
 import com.facebook.litho.StateContainer;
@@ -67,7 +69,7 @@ import java.util.List;
  */
 @Generated
 public final class TestLayout<S extends View> extends SpecGeneratedComponent implements TestTag {
-  private TestLayoutRenderData mPreviousRenderData;
+  @Nullable private TestLayoutRenderData mPreviousRenderData;
 
   @Prop(resType = ResType.NONE, optional = false)
   @Comparable(type = 0)
@@ -444,7 +446,7 @@ public final class TestLayout<S extends View> extends SpecGeneratedComponent imp
       return;
     }
     StateContainer.StateUpdate _stateUpdate = new StateContainer.StateUpdate(0, someParam);
-    c.updateStateAsync(_stateUpdate, "updateState:TestLayout.updateCurrentState");
+    c.updateStateAsync(_stateUpdate, "updateState:TestLayout.updateCurrentState", TestLayout.class);
   }
 
   protected static void updateCurrentStateAsync(ComponentContext c, int someParam) {
@@ -453,7 +455,7 @@ public final class TestLayout<S extends View> extends SpecGeneratedComponent imp
       return;
     }
     StateContainer.StateUpdate _stateUpdate = new StateContainer.StateUpdate(0, someParam);
-    c.updateStateAsync(_stateUpdate, "updateState:TestLayout.updateCurrentState");
+    c.updateStateAsync(_stateUpdate, "updateState:TestLayout.updateCurrentState", TestLayout.class);
   }
 
   protected static void updateCurrentStateSync(ComponentContext c, int someParam) {
@@ -462,7 +464,7 @@ public final class TestLayout<S extends View> extends SpecGeneratedComponent imp
       return;
     }
     StateContainer.StateUpdate _stateUpdate = new StateContainer.StateUpdate(0, someParam);
-    c.updateStateSync(_stateUpdate, "updateState:TestLayout.updateCurrentState");
+    c.updateStateSync(_stateUpdate, "updateState:TestLayout.updateCurrentState", TestLayout.class);
   }
 
   protected static void lazyUpdateState1(ComponentContext c, final long lazyUpdateValue) {
@@ -472,7 +474,7 @@ public final class TestLayout<S extends View> extends SpecGeneratedComponent imp
     }
     StateContainer.StateUpdate _stateUpdate =
         new StateContainer.StateUpdate(-2147483648, lazyUpdateValue);
-    c.updateStateLazy(_stateUpdate);
+    c.updateStateLazy(_stateUpdate, TestLayout.class);
   }
 
   @Override
@@ -513,13 +515,14 @@ public final class TestLayout<S extends View> extends SpecGeneratedComponent imp
   }
 
   private int getCached(ComponentContext c) {
-    String globalKey = c.getGlobalKey();
+    GlobalKey globalKey = c.getGlobalKey();
     final CachedInputs inputs =
         new CachedInputs(globalKey, prop3, prop5, getStateContainerImpl(c).state1);
-    Integer cached = (Integer) c.getCachedValue(globalKey, 0, inputs);
+    HookGlobalKey cacheKey = HookGlobalKey.createForResolveScope(globalKey, 0);
+    Integer cached = (Integer) c.getCachedValue(cacheKey, inputs);
     if (cached == null) {
       cached = TestLayoutSpec.onCalculateCached(prop3, prop5, getStateContainerImpl(c).state1);
-      c.putCachedValue(globalKey, 0, inputs, cached);
+      c.putCachedValue(cacheKey, inputs, cached);
     }
     return cached;
   }
@@ -876,7 +879,7 @@ public final class TestLayout<S extends View> extends SpecGeneratedComponent imp
 
   @Generated
   private static class CachedInputs {
-    private final String globalKey;
+    private final GlobalKey globalKey;
 
     private final Object prop3;
 
@@ -884,7 +887,7 @@ public final class TestLayout<S extends View> extends SpecGeneratedComponent imp
 
     private final long state1;
 
-    CachedInputs(String globalKey, Object prop3, char prop5, long state1) {
+    CachedInputs(GlobalKey globalKey, Object prop3, char prop5, long state1) {
       this.globalKey = globalKey;
       this.prop3 = prop3;
       this.prop5 = prop5;

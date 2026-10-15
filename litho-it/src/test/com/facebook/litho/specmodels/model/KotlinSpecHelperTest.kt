@@ -67,24 +67,33 @@ class KotlinSpecHelperTest {
     whenever(specModel.specElementType).thenReturn(SpecElementType.JAVA_CLASS)
     val parameterizedTypeName =
         ParameterizedTypeName.get(
-            ClassName.get(List::class.java), WildcardTypeName.subtypeOf(Any::class.java))
+            ClassName.get(List::class.java),
+            WildcardTypeName.subtypeOf(Any::class.java),
+        )
 
     assertThat(
-            KotlinSpecHelper.maybeRemoveWildcardFromVarArgsIfKotlinSpec(
-                specModel, parameterizedTypeName))
+        KotlinSpecHelper.maybeRemoveWildcardFromVarArgsIfKotlinSpec(
+            specModel,
+            parameterizedTypeName,
+        ),
+    )
         .isSameAs(parameterizedTypeName)
   }
 
   @Test
   fun `maybeRemoveWildcardFromVarArgsIfKotlinSpec - does nothing for Kotlin non-parameterized type`() {
     assertThat(
-            KotlinSpecHelper.maybeRemoveWildcardFromVarArgsIfKotlinSpec(specModel, TypeName.DOUBLE))
+        KotlinSpecHelper.maybeRemoveWildcardFromVarArgsIfKotlinSpec(specModel, TypeName.DOUBLE),
+    )
         .isSameAs(TypeName.DOUBLE)
 
     val nonParameterizedType = ClassName.get(List::class.java)
     assertThat(
-            KotlinSpecHelper.maybeRemoveWildcardFromVarArgsIfKotlinSpec(
-                specModel, nonParameterizedType))
+        KotlinSpecHelper.maybeRemoveWildcardFromVarArgsIfKotlinSpec(
+            specModel,
+            nonParameterizedType,
+        ),
+    )
         .isSameAs(nonParameterizedType)
   }
 
@@ -92,11 +101,16 @@ class KotlinSpecHelperTest {
   fun `maybeRemoveWildcardFromVarArgsIfKotlinSpec - does nothing for Kotlin parameterized type with no wild cards`() {
     val parameterizedTypeName =
         ParameterizedTypeName.get(
-            ClassName.get(List::class.java), ClassName.get(String::class.java))
+            ClassName.get(List::class.java),
+            ClassName.get(String::class.java),
+        )
 
     assertThat(
-            KotlinSpecHelper.maybeRemoveWildcardFromVarArgsIfKotlinSpec(
-                specModel, parameterizedTypeName))
+        KotlinSpecHelper.maybeRemoveWildcardFromVarArgsIfKotlinSpec(
+            specModel,
+            parameterizedTypeName,
+        ),
+    )
         .isEqualTo(parameterizedTypeName)
   }
 
@@ -104,14 +118,22 @@ class KotlinSpecHelperTest {
   fun `maybeRemoveWildcardFromVarArgsIfKotlinSpec - cleans up wildcards for Kotlin parameterized type with one argument as wildcard`() {
     val parameterizedTypeName =
         ParameterizedTypeName.get(
-            ClassName.get(List::class.java), WildcardTypeName.subtypeOf(Any::class.java))
+            ClassName.get(List::class.java),
+            WildcardTypeName.subtypeOf(Any::class.java),
+        )
 
     assertThat(
-            KotlinSpecHelper.maybeRemoveWildcardFromVarArgsIfKotlinSpec(
-                specModel, parameterizedTypeName))
+        KotlinSpecHelper.maybeRemoveWildcardFromVarArgsIfKotlinSpec(
+            specModel,
+            parameterizedTypeName,
+        ),
+    )
         .isEqualTo(
             ParameterizedTypeName.get(
-                ClassName.get(List::class.java), ClassName.get(Any::class.java)))
+                ClassName.get(List::class.java),
+                ClassName.get(Any::class.java),
+            ),
+        )
   }
 
   @Test
@@ -120,11 +142,15 @@ class KotlinSpecHelperTest {
         ParameterizedTypeName.get(
             ClassName.get(List::class.java),
             WildcardTypeName.subtypeOf(Any::class.java),
-            TypeName.OBJECT)
+            TypeName.OBJECT,
+        )
 
     assertThat(
-            KotlinSpecHelper.maybeRemoveWildcardFromVarArgsIfKotlinSpec(
-                specModel, parameterizedTypeName))
+        KotlinSpecHelper.maybeRemoveWildcardFromVarArgsIfKotlinSpec(
+            specModel,
+            parameterizedTypeName,
+        ),
+    )
         .isSameAs(parameterizedTypeName)
   }
 
@@ -134,11 +160,15 @@ class KotlinSpecHelperTest {
         ParameterizedTypeName.get(
             ClassName.get(List::class.java),
             WildcardTypeName.subtypeOf(Any::class.java),
-            WildcardTypeName.subtypeOf(ClassName.get(Class::class.java)))
+            WildcardTypeName.subtypeOf(ClassName.get(Class::class.java)),
+        )
 
     assertThat(
-            KotlinSpecHelper.maybeRemoveWildcardFromVarArgsIfKotlinSpec(
-                specModel, parameterizedTypeName))
+        KotlinSpecHelper.maybeRemoveWildcardFromVarArgsIfKotlinSpec(
+            specModel,
+            parameterizedTypeName,
+        ),
+    )
         .isSameAs(parameterizedTypeName)
   }
 
@@ -148,11 +178,15 @@ class KotlinSpecHelperTest {
         ParameterizedTypeName.get(
             ClassName.get(List::class.java),
             TypeName.OBJECT,
-            WildcardTypeName.subtypeOf(Any::class.java))
+            WildcardTypeName.subtypeOf(Any::class.java),
+        )
 
     assertThat(
-            KotlinSpecHelper.maybeRemoveWildcardFromVarArgsIfKotlinSpec(
-                specModel, parameterizedTypeName))
+        KotlinSpecHelper.maybeRemoveWildcardFromVarArgsIfKotlinSpec(
+            specModel,
+            parameterizedTypeName,
+        ),
+    )
         .isSameAs(parameterizedTypeName)
   }
 
@@ -161,21 +195,32 @@ class KotlinSpecHelperTest {
     whenever(specModel.specElementType).thenReturn(SpecElementType.JAVA_CLASS)
     val parameterizedTypeName =
         ParameterizedTypeName.get(
-            ClassName.get(List::class.java), WildcardTypeName.subtypeOf(Any::class.java))
+            ClassName.get(List::class.java),
+            WildcardTypeName.subtypeOf(Any::class.java),
+        )
 
     assertThatThrownBy {
           KotlinSpecHelper.maybeRemoveWildcardFromContainerIfKotlinSpec(
-              specModel, parameterizedTypeName, 0 /* maxTypeArgumentsToCleanup */)
+              specModel,
+              parameterizedTypeName,
+              0, /* maxTypeArgumentsToCleanup */
+          )
         }
         .isInstanceOf(IllegalArgumentException::class.java)
     assertThatThrownBy {
           KotlinSpecHelper.maybeRemoveWildcardFromContainerIfKotlinSpec(
-              specModel, parameterizedTypeName, -1 /* maxTypeArgumentsToCleanup */)
+              specModel,
+              parameterizedTypeName,
+              -1, /* maxTypeArgumentsToCleanup */
+          )
         }
         .isInstanceOf(IllegalArgumentException::class.java)
     assertThatThrownBy {
           KotlinSpecHelper.maybeRemoveWildcardFromContainerIfKotlinSpec(
-              specModel, parameterizedTypeName, -500 /* maxTypeArgumentsToCleanup */)
+              specModel,
+              parameterizedTypeName,
+              -500, /* maxTypeArgumentsToCleanup */
+          )
         }
         .isInstanceOf(IllegalArgumentException::class.java)
   }
@@ -185,11 +230,17 @@ class KotlinSpecHelperTest {
     whenever(specModel.specElementType).thenReturn(SpecElementType.JAVA_CLASS)
     val parameterizedTypeName =
         ParameterizedTypeName.get(
-            ClassName.get(List::class.java), WildcardTypeName.subtypeOf(Any::class.java))
+            ClassName.get(List::class.java),
+            WildcardTypeName.subtypeOf(Any::class.java),
+        )
 
     assertThat(
-            KotlinSpecHelper.maybeRemoveWildcardFromContainerIfKotlinSpec(
-                specModel, parameterizedTypeName, 2 /* maxTypeArgumentsToCleanup */))
+        KotlinSpecHelper.maybeRemoveWildcardFromContainerIfKotlinSpec(
+            specModel,
+            parameterizedTypeName,
+            2, /* maxTypeArgumentsToCleanup */
+        ),
+    )
         .isSameAs(parameterizedTypeName)
   }
 
@@ -200,8 +251,12 @@ class KotlinSpecHelperTest {
 
     val nonParameterizedType = ClassName.get(List::class.java)
     assertThat(
-            KotlinSpecHelper.maybeRemoveWildcardFromContainerIfKotlinSpec(
-                specModel, nonParameterizedType, 2 /* maxTypeArgumentsToCleanup */))
+        KotlinSpecHelper.maybeRemoveWildcardFromContainerIfKotlinSpec(
+            specModel,
+            nonParameterizedType,
+            2, /* maxTypeArgumentsToCleanup */
+        ),
+    )
         .isSameAs(nonParameterizedType)
   }
 
@@ -209,11 +264,17 @@ class KotlinSpecHelperTest {
   fun `maybeRemoveWildcardFromContainerIfKotlinSpec - does nothing for Kotlin parameterized type with no wild cards`() {
     val parameterizedTypeName =
         ParameterizedTypeName.get(
-            ClassName.get(List::class.java), ClassName.get(String::class.java))
+            ClassName.get(List::class.java),
+            ClassName.get(String::class.java),
+        )
 
     assertThat(
-            KotlinSpecHelper.maybeRemoveWildcardFromContainerIfKotlinSpec(
-                specModel, parameterizedTypeName, 2 /* maxTypeArgumentsToCleanup */))
+        KotlinSpecHelper.maybeRemoveWildcardFromContainerIfKotlinSpec(
+            specModel,
+            parameterizedTypeName,
+            2, /* maxTypeArgumentsToCleanup */
+        ),
+    )
         .isEqualTo(parameterizedTypeName)
   }
 
@@ -223,28 +284,46 @@ class KotlinSpecHelperTest {
         ParameterizedTypeName.get(
             ClassName.get(List::class.java),
             WildcardTypeName.subtypeOf(Any::class.java),
-            WildcardTypeName.subtypeOf(TypeName.OBJECT))
+            WildcardTypeName.subtypeOf(TypeName.OBJECT),
+        )
 
     assertThat(
-            KotlinSpecHelper.maybeRemoveWildcardFromContainerIfKotlinSpec(
-                specModel, parameterizedTypeName, 2 /* maxTypeArgumentsToCleanup */))
+        KotlinSpecHelper.maybeRemoveWildcardFromContainerIfKotlinSpec(
+            specModel,
+            parameterizedTypeName,
+            2, /* maxTypeArgumentsToCleanup */
+        ),
+    )
         .isEqualTo(
             ParameterizedTypeName.get(
-                ClassName.get(List::class.java), ClassName.get(Any::class.java), TypeName.OBJECT))
+                ClassName.get(List::class.java),
+                ClassName.get(Any::class.java),
+                TypeName.OBJECT,
+            ),
+        )
   }
 
   @Test
   fun `maybeRemoveWildcardFromContainerIfKotlinSpec - cleans up wildcards for Kotlin parameterized type with number of type arguments less than to number to cleanup`() {
     val parameterizedTypeName =
         ParameterizedTypeName.get(
-            ClassName.get(List::class.java), WildcardTypeName.subtypeOf(Number::class.java))
+            ClassName.get(List::class.java),
+            WildcardTypeName.subtypeOf(Number::class.java),
+        )
 
     assertThat(
-            KotlinSpecHelper.maybeRemoveWildcardFromContainerIfKotlinSpec(
-                specModel, parameterizedTypeName, 2 /* maxTypeArgumentsToCleanup */))
+        KotlinSpecHelper.maybeRemoveWildcardFromContainerIfKotlinSpec(
+            specModel,
+            parameterizedTypeName,
+            2, /* maxTypeArgumentsToCleanup */
+        ),
+    )
         .isEqualTo(
             ParameterizedTypeName.get(
-                ClassName.get(List::class.java), ClassName.get(Number::class.java)))
+                ClassName.get(List::class.java),
+                ClassName.get(Number::class.java),
+            ),
+        )
   }
 
   @Test
@@ -255,11 +334,16 @@ class KotlinSpecHelperTest {
             WildcardTypeName.subtypeOf(Number::class.java),
             WildcardTypeName.subtypeOf(Number::class.java),
             WildcardTypeName.subtypeOf(Number::class.java),
-            WildcardTypeName.subtypeOf(Number::class.java))
+            WildcardTypeName.subtypeOf(Number::class.java),
+        )
 
     assertThat(
-            KotlinSpecHelper.maybeRemoveWildcardFromContainerIfKotlinSpec(
-                specModel, parameterizedTypeName, 3 /* maxTypeArgumentsToCleanup */))
+        KotlinSpecHelper.maybeRemoveWildcardFromContainerIfKotlinSpec(
+            specModel,
+            parameterizedTypeName,
+            3, /* maxTypeArgumentsToCleanup */
+        ),
+    )
         .isSameAs(parameterizedTypeName)
   }
 
@@ -270,11 +354,16 @@ class KotlinSpecHelperTest {
             ClassName.get(List::class.java),
             TypeName.OBJECT,
             TypeName.OBJECT,
-            WildcardTypeName.subtypeOf(Number::class.java))
+            WildcardTypeName.subtypeOf(Number::class.java),
+        )
 
     assertThat(
-            KotlinSpecHelper.maybeRemoveWildcardFromContainerIfKotlinSpec(
-                specModel, parameterizedTypeName, 2 /* maxTypeArgumentsToCleanup */))
+        KotlinSpecHelper.maybeRemoveWildcardFromContainerIfKotlinSpec(
+            specModel,
+            parameterizedTypeName,
+            2, /* maxTypeArgumentsToCleanup */
+        ),
+    )
         .isSameAs(parameterizedTypeName)
   }
 
@@ -282,14 +371,25 @@ class KotlinSpecHelperTest {
   fun `maybeRemoveWildcardFromContainerIfKotlinSpec - handles less type arguments without wildcards than max number to cleanup without issue`() {
     val parameterizedTypeName =
         ParameterizedTypeName.get(
-            ClassName.get(List::class.java), ClassName.get(Any::class.java), TypeName.OBJECT)
+            ClassName.get(List::class.java),
+            ClassName.get(Any::class.java),
+            TypeName.OBJECT,
+        )
 
     assertThat(
-            KotlinSpecHelper.maybeRemoveWildcardFromContainerIfKotlinSpec(
-                specModel, parameterizedTypeName, 50 /* maxTypeArgumentsToCleanup */))
+        KotlinSpecHelper.maybeRemoveWildcardFromContainerIfKotlinSpec(
+            specModel,
+            parameterizedTypeName,
+            50, /* maxTypeArgumentsToCleanup */
+        ),
+    )
         .isEqualTo(
             ParameterizedTypeName.get(
-                ClassName.get(List::class.java), ClassName.get(Any::class.java), TypeName.OBJECT))
+                ClassName.get(List::class.java),
+                ClassName.get(Any::class.java),
+                TypeName.OBJECT,
+            ),
+        )
   }
 
   @Test
@@ -298,14 +398,23 @@ class KotlinSpecHelperTest {
         ParameterizedTypeName.get(
             ClassName.get(List::class.java),
             WildcardTypeName.subtypeOf(Any::class.java),
-            TypeName.OBJECT)
+            TypeName.OBJECT,
+        )
 
     assertThat(
-            KotlinSpecHelper.maybeRemoveWildcardFromContainerIfKotlinSpec(
-                specModel, parameterizedTypeName, 15 /* maxTypeArgumentsToCleanup */))
+        KotlinSpecHelper.maybeRemoveWildcardFromContainerIfKotlinSpec(
+            specModel,
+            parameterizedTypeName,
+            15, /* maxTypeArgumentsToCleanup */
+        ),
+    )
         .isEqualTo(
             ParameterizedTypeName.get(
-                ClassName.get(List::class.java), ClassName.get(Any::class.java), TypeName.OBJECT))
+                ClassName.get(List::class.java),
+                ClassName.get(Any::class.java),
+                TypeName.OBJECT,
+            ),
+        )
   }
 
   @Test
@@ -313,11 +422,16 @@ class KotlinSpecHelperTest {
     whenever(specModel.specElementType).thenReturn(SpecElementType.JAVA_CLASS)
     val parameterizedTypeName =
         ParameterizedTypeName.get(
-            ClassName.get(List::class.java), WildcardTypeName.subtypeOf(Any::class.java))
+            ClassName.get(List::class.java),
+            WildcardTypeName.subtypeOf(Any::class.java),
+        )
 
     assertThat(
-            KotlinSpecHelper.maybeRemoveWildcardFromContainerIfKotlinSpec(
-                specModel, parameterizedTypeName))
+        KotlinSpecHelper.maybeRemoveWildcardFromContainerIfKotlinSpec(
+            specModel,
+            parameterizedTypeName,
+        ),
+    )
         .isSameAs(parameterizedTypeName)
   }
 
@@ -328,8 +442,11 @@ class KotlinSpecHelperTest {
 
     val nonParameterizedType = ClassName.get(List::class.java)
     assertThat(
-            KotlinSpecHelper.maybeRemoveWildcardFromContainerIfKotlinSpec(
-                specModel, nonParameterizedType))
+        KotlinSpecHelper.maybeRemoveWildcardFromContainerIfKotlinSpec(
+            specModel,
+            nonParameterizedType,
+        ),
+    )
         .isSameAs(nonParameterizedType)
   }
 
@@ -337,11 +454,16 @@ class KotlinSpecHelperTest {
   fun `maybeRemoveWildcardFromContainerIfKotlinSpec (no max) - does nothing for Kotlin parameterized type with no wild cards`() {
     val parameterizedTypeName =
         ParameterizedTypeName.get(
-            ClassName.get(List::class.java), ClassName.get(Number::class.java))
+            ClassName.get(List::class.java),
+            ClassName.get(Number::class.java),
+        )
 
     assertThat(
-            KotlinSpecHelper.maybeRemoveWildcardFromContainerIfKotlinSpec(
-                specModel, parameterizedTypeName))
+        KotlinSpecHelper.maybeRemoveWildcardFromContainerIfKotlinSpec(
+            specModel,
+            parameterizedTypeName,
+        ),
+    )
         .isEqualTo(parameterizedTypeName)
   }
 
@@ -351,14 +473,22 @@ class KotlinSpecHelperTest {
         ParameterizedTypeName.get(
             ClassName.get(List::class.java),
             WildcardTypeName.subtypeOf(Any::class.java),
-            WildcardTypeName.subtypeOf(TypeName.OBJECT))
+            WildcardTypeName.subtypeOf(TypeName.OBJECT),
+        )
 
     assertThat(
-            KotlinSpecHelper.maybeRemoveWildcardFromContainerIfKotlinSpec(
-                specModel, parameterizedTypeName))
+        KotlinSpecHelper.maybeRemoveWildcardFromContainerIfKotlinSpec(
+            specModel,
+            parameterizedTypeName,
+        ),
+    )
         .isEqualTo(
             ParameterizedTypeName.get(
-                ClassName.get(List::class.java), ClassName.get(Any::class.java), TypeName.OBJECT))
+                ClassName.get(List::class.java),
+                ClassName.get(Any::class.java),
+                TypeName.OBJECT,
+            ),
+        )
   }
 
   @Test
@@ -373,11 +503,15 @@ class KotlinSpecHelperTest {
             WildcardTypeName.subtypeOf(Any::class.java),
             WildcardTypeName.subtypeOf(TypeName.OBJECT),
             WildcardTypeName.subtypeOf(Any::class.java),
-            WildcardTypeName.subtypeOf(TypeName.OBJECT))
+            WildcardTypeName.subtypeOf(TypeName.OBJECT),
+        )
 
     assertThat(
-            KotlinSpecHelper.maybeRemoveWildcardFromContainerIfKotlinSpec(
-                specModel, parameterizedTypeName))
+        KotlinSpecHelper.maybeRemoveWildcardFromContainerIfKotlinSpec(
+            specModel,
+            parameterizedTypeName,
+        ),
+    )
         .isEqualTo(
             ParameterizedTypeName.get(
                 ClassName.get(List::class.java),
@@ -388,7 +522,9 @@ class KotlinSpecHelperTest {
                 ClassName.get(Any::class.java),
                 TypeName.OBJECT,
                 ClassName.get(Any::class.java),
-                TypeName.OBJECT))
+                TypeName.OBJECT,
+            ),
+        )
   }
 
   @Test
@@ -407,8 +543,8 @@ class KotlinSpecHelperTest {
   @Test
   fun `getBaseTypeIfWildcard - returns proper upperbound typename if lower bound`() {
     assertThat(
-            KotlinSpecHelper.getBaseTypeIfWildcard(
-                WildcardTypeName.supertypeOf(Number::class.java)))
+        KotlinSpecHelper.getBaseTypeIfWildcard(WildcardTypeName.supertypeOf(Number::class.java)),
+    )
         .isEqualTo(TypeName.OBJECT)
   }
 }

@@ -16,6 +16,8 @@
 
 package com.facebook.litho
 
+import androidx.collection.ScatterSet
+import com.facebook.litho.state.StateId
 import com.facebook.rendercore.LayoutResult
 import com.facebook.rendercore.primitives.Primitive
 import com.facebook.rendercore.visibility.VisibilityOutput
@@ -24,17 +26,19 @@ import com.facebook.rendercore.visibility.VisibilityOutput
  * A lightweight representation of a layout node, used to cache measurements between two Layout tree
  * calculations.
  */
-interface DiffNode : java.lang.Cloneable {
+interface DiffNode : Cloneable {
 
   val childCount: Int
 
   fun getChildAt(i: Int): DiffNode?
 
   val component: Component
-  val componentGlobalKey: String
+  val componentGlobalKey: GlobalKey
   val scopedComponentInfo: ScopedComponentInfo
   var layoutData: Any?
   var effects: List<Attachable>?
+  var stateReads: ScatterSet<StateId>?
+
   /**
    * The last value the measure function associated with this node [Component] returned for the
    * width. This is used together with [lastWidthSpec] to implement measure caching. Also sets the

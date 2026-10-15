@@ -39,7 +39,7 @@ object MeasureComparisonUtils {
       newWidthSpec: Int,
       newHeightSpec: Int,
       oldMeasuredWidth: Int,
-      oldMeasuredHeight: Int
+      oldMeasuredHeight: Int,
   ): Boolean {
     val widthIsCompatible = isMeasureSpecCompatible(oldWidthSpec, newWidthSpec, oldMeasuredWidth)
     val heightIsCompatible =
@@ -50,14 +50,14 @@ object MeasureComparisonUtils {
   private fun newSizeIsExactAndMatchesOldMeasuredSize(
       newSizeSpecMode: Int,
       newSizeSpecSize: Int,
-      oldMeasuredSize: Int
+      oldMeasuredSize: Int,
   ): Boolean = newSizeSpecMode == SizeSpec.EXACTLY && newSizeSpecSize == oldMeasuredSize
 
   private fun oldSizeIsUnspecifiedAndStillFits(
       oldSizeSpecMode: Int,
       newSizeSpecMode: Int,
       newSizeSpecSize: Int,
-      oldMeasuredSize: Int
+      oldMeasuredSize: Int,
   ): Boolean =
       newSizeSpecMode == SizeSpec.AT_MOST &&
           oldSizeSpecMode == SizeSpec.UNSPECIFIED &&
@@ -68,7 +68,7 @@ object MeasureComparisonUtils {
       newSizeSpecMode: Int,
       oldSizeSpecSize: Int,
       newSizeSpecSize: Int,
-      oldMeasuredSize: Int
+      oldMeasuredSize: Int,
   ): Boolean =
       oldSizeSpecMode == SizeSpec.AT_MOST &&
           newSizeSpecMode == SizeSpec.AT_MOST &&
@@ -92,6 +92,11 @@ object MeasureComparisonUtils {
         newSizeIsExactAndMatchesOldMeasuredSize(newSpecMode, newSpecSize, oldMeasuredSize) ||
         oldSizeIsUnspecifiedAndStillFits(oldSpecMode, newSpecMode, newSpecSize, oldMeasuredSize) ||
         newMeasureSizeIsStricterAndStillValid(
-            oldSpecMode, newSpecMode, oldSpecSize, newSpecSize, oldMeasuredSize)
+            oldSpecMode,
+            newSpecMode,
+            oldSpecSize,
+            newSpecSize,
+            oldMeasuredSize,
+        )
   }
 }

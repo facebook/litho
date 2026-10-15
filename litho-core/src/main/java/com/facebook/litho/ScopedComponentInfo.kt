@@ -26,7 +26,7 @@ import java.util.ArrayList
 class ScopedComponentInfo(
     val component: Component,
     val context: ComponentContext,
-    errorEventHandler: EventHandler<ErrorEvent>?
+    errorEventHandler: EventHandler<ErrorEvent>?,
 ) : Cloneable {
 
   var state: ComponentState<out StateContainer>? = null
@@ -62,9 +62,7 @@ class ScopedComponentInfo(
    * Holds a list of working range related data. [LayoutState] will use it to update
    * [LayoutState.mWorkingRangeContainer] when calculate method is finished.
    */
-  private val workingRangeRegistrations: MutableList<WorkingRangeContainer.Registration> by lazy {
-    ArrayList()
-  }
+  private var _workingRangeRegistrations: MutableList<WorkingRangeContainer.Registration>? = null
 
   /**
    * Returns the number of children of a given type @param[component] component has and then
@@ -98,14 +96,19 @@ class ScopedComponentInfo(
       name: String,
       workingRange: WorkingRange,
       component: Component,
-      globalKey: String
   ) {
-    workingRangeRegistrations.add(WorkingRangeContainer.Registration(name, workingRange, this))
+    val registrations =
+        _workingRangeRegistrations
+            ?: ArrayList<WorkingRangeContainer.Registration>().also {
+              _workingRangeRegistrations = it
+            }
+    registrations.add(WorkingRangeContainer.Registration(name, workingRange, this))
   }
 
   fun addWorkingRangeToNode(node: LithoNode) {
-    if (CollectionsUtils.isNotNullOrEmpty(workingRangeRegistrations)) {
-      node.addWorkingRanges(workingRangeRegistrations)
+    val registrations = _workingRangeRegistrations
+    if (registrations != null && registrations.isNotEmpty()) {
+      node.addWorkingRanges(registrations)
     }
   }
 

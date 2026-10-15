@@ -18,12 +18,12 @@ package com.facebook.litho.effects
 
 import android.util.SparseArray
 import android.view.View
-import com.facebook.litho.Column
 import com.facebook.litho.EmptyComponent
 import com.facebook.litho.LithoPrimitive
 import com.facebook.litho.PrimitiveComponent
 import com.facebook.litho.PrimitiveComponentScope
 import com.facebook.litho.Style
+import com.facebook.litho.layout.flexbox.Column
 import com.facebook.litho.onCleanup
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -82,7 +82,8 @@ private class TestPrimitive(
     return LithoPrimitive(
         layoutBehavior = TestLayoutBehavior(observer = observer, deps = deps(RenderScope.LAYOUT)),
         mountBehavior = TestMountBehavior(state.value),
-        style = Style.viewTags(tags).onClick { state.update { update(it) } })
+        style = Style.viewTags(tags).onClick { state.update { update(it) } },
+    )
   }
 }
 

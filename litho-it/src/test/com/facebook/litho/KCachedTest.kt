@@ -17,6 +17,8 @@
 package com.facebook.litho
 
 import com.facebook.litho.kotlin.widget.Text
+import com.facebook.litho.layout.flexbox.Column
+import com.facebook.litho.layout.flexbox.Row
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.onClick
@@ -61,7 +63,8 @@ class KCachedTest {
     lithoViewRule.render(lithoView = handle.lithoView) { EmptyComponent() }
     lithoViewRule.render(lithoView = handle.lithoView) { TestComponent() }
 
-    if (lithoViewRule.context.componentsConfig.useStateForCachedValues) {
+    val config = lithoViewRule.context.componentsConfig
+    if (config.useStateForCachedValues) {
       assertThat(initCounter.get()).isEqualTo(2)
     } else {
       assertThat(initCounter.get()).isEqualTo(1)
@@ -1006,7 +1009,7 @@ class KCachedTest {
   private class ComponentWithTwoCachedValuesWithSameInputs(
       val str: String,
       val repeatNum: Int,
-      val initCounter: AtomicInteger
+      val initCounter: AtomicInteger,
   ) : KComponent() {
     override fun ComponentScope.render(): Component? {
       val expensiveString1 =
@@ -1031,7 +1034,7 @@ class KCachedTest {
   private class PrimitiveLeaf1(
       val str: String,
       val repeatNum: Int,
-      val initCounter: AtomicInteger
+      val initCounter: AtomicInteger,
   ) : PrimitiveComponent() {
     override fun PrimitiveComponentScope.render(): LithoPrimitive {
       val expensiveString =
@@ -1046,7 +1049,7 @@ class KCachedTest {
   private class PrimitiveLeaf2(
       val str: String,
       val repeatNum: Int,
-      val initCounter: AtomicInteger
+      val initCounter: AtomicInteger,
   ) : PrimitiveComponent() {
     override fun PrimitiveComponentScope.render(): LithoPrimitive {
       val expensiveString =
@@ -1061,7 +1064,7 @@ class KCachedTest {
   private class PrimitiveComponentWithTwoCachedValuesWithSameInputs(
       val str: String,
       val repeatNum: Int,
-      val initCounter: AtomicInteger
+      val initCounter: AtomicInteger,
   ) : PrimitiveComponent() {
     override fun PrimitiveComponentScope.render(): LithoPrimitive {
       val expensiveString1 =
@@ -1077,7 +1080,9 @@ class KCachedTest {
           }
 
       return LithoPrimitive(
-          TestTextPrimitive(text = expensiveString1, tag = expensiveString2), null)
+          TestTextPrimitive(text = expensiveString1, tag = expensiveString2),
+          null,
+      )
     }
   }
 

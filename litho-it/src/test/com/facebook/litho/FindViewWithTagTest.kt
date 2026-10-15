@@ -19,6 +19,7 @@ package com.facebook.litho
 import android.view.View
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
+import com.facebook.litho.layout.flexbox.Column
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.viewTag
@@ -37,7 +38,7 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class FindViewWithTagTest {
 
-  @Rule @JvmField val mLithoTestRule = LithoTestRule()
+  @Rule @JvmField val lithoTestRule = LithoTestRule()
   @Rule @JvmField val expectedException = ExpectedException.none()
 
   @Test
@@ -45,15 +46,16 @@ class FindViewWithTagTest {
     class MyComponent(val viewRef: AtomicReference<View>) : KComponent() {
       override fun ComponentScope.render(): Component {
         return Column(
-            style = Style.wrapInView().onVisible { viewRef.set(findViewWithTag("Find Me!")) }) {
-              child(Column(style = Style.viewTag("not_this_one").width(100.dp).height(100.dp)))
-              child(Column(style = Style.viewTag("Find Me!").width(100.dp).height(100.dp)))
-            }
+            style = Style.wrapInView().onVisible { viewRef.set(findViewWithTag("Find Me!")) },
+        ) {
+          child(Column(style = Style.viewTag("not_this_one").width(100.dp).height(100.dp)))
+          child(Column(style = Style.viewTag("Find Me!").width(100.dp).height(100.dp)))
+        }
       }
     }
 
     val viewRef = AtomicReference<View>()
-    mLithoTestRule.render { MyComponent(viewRef = viewRef) }
+    lithoTestRule.render { MyComponent(viewRef = viewRef) }
 
     assertThat(viewRef.get()).isNotNull()
     assertThat(viewRef.get().tag).isEqualTo("Find Me!")
@@ -64,16 +66,16 @@ class FindViewWithTagTest {
     class MyComponent(val viewRef: AtomicReference<View>) : KComponent() {
       override fun ComponentScope.render(): Component {
         return Column(
-            style =
-                Style.wrapInView().onVisible { viewRef.set(findViewWithTag("I don't exist")) }) {
-              child(Column(style = Style.viewTag("not_this_one").width(100.dp).height(100.dp)))
-              child(Column(style = Style.viewTag("Find Me!").width(100.dp).height(100.dp)))
-            }
+            style = Style.wrapInView().onVisible { viewRef.set(findViewWithTag("I don't exist")) },
+        ) {
+          child(Column(style = Style.viewTag("not_this_one").width(100.dp).height(100.dp)))
+          child(Column(style = Style.viewTag("Find Me!").width(100.dp).height(100.dp)))
+        }
       }
     }
 
     val viewRef = AtomicReference<View>()
-    mLithoTestRule.render { MyComponent(viewRef = viewRef) }
+    lithoTestRule.render { MyComponent(viewRef = viewRef) }
 
     assertThat(viewRef.get()).isNull()
   }
@@ -86,15 +88,16 @@ class FindViewWithTagTest {
     class MyComponent(val viewRef: AtomicReference<View>) : KComponent() {
       override fun ComponentScope.render(): Component {
         return Column(
-            style = Style.wrapInView().onVisible { viewRef.set(findViewWithTag(handleTag2)) }) {
-              child(Column(style = Style.viewTag(handleTag1).width(100.dp).height(100.dp)))
-              child(Column(style = Style.viewTag(handleTag2).width(100.dp).height(100.dp)))
-            }
+            style = Style.wrapInView().onVisible { viewRef.set(findViewWithTag(handleTag2)) },
+        ) {
+          child(Column(style = Style.viewTag(handleTag1).width(100.dp).height(100.dp)))
+          child(Column(style = Style.viewTag(handleTag2).width(100.dp).height(100.dp)))
+        }
       }
     }
 
     val viewRef = AtomicReference<View>()
-    mLithoTestRule.render { MyComponent(viewRef = viewRef) }
+    lithoTestRule.render { MyComponent(viewRef = viewRef) }
 
     assertThat(viewRef.get()).isNotNull()
     assertThat(viewRef.get().tag).isEqualTo(handleTag2)
@@ -105,7 +108,7 @@ class FindViewWithTagTest {
     expectedException.expect(RuntimeException::class.java)
     expectedException.expectMessage("render")
 
-    ComponentContext(mLithoTestRule.context).findViewWithTag<View>("Some Tag")
+    ComponentContext(lithoTestRule.context).findViewWithTag<View>("Some Tag")
   }
 
   @Test
@@ -113,6 +116,6 @@ class FindViewWithTagTest {
     expectedException.expect(RuntimeException::class.java)
     expectedException.expectMessage("render")
 
-    ComponentScope(ComponentContext(mLithoTestRule.context)).findViewWithTag<View>("Some Tag")
+    ComponentScope(ComponentContext(lithoTestRule.context)).findViewWithTag<View>("Some Tag")
   }
 }

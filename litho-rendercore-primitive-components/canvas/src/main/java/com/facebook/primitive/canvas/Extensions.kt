@@ -22,7 +22,7 @@ import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.RectF
-import com.facebook.primitive.utils.types.Point
+import com.facebook.rendercore.geometry.Point
 
 /** Wrap the specified [block] in calls to [Canvas.saveLayer] and [Canvas.restoreToCount]. */
 @Suppress("DEPRECATION")
@@ -33,7 +33,7 @@ inline fun Canvas.withLayer(
     width: Float,
     height: Float,
     paint: Paint?,
-    block: Canvas.() -> Unit
+    block: Canvas.() -> Unit,
 ) {
   val checkpoint = saveLayer(x, y, x + width, y + height, paint, Canvas.ALL_SAVE_FLAG)
   try {
@@ -57,7 +57,7 @@ inline fun Canvas.withLayer(
  *    as a full circle, regardless of direction (clockwise or counter clockwise)
  */
 fun standardizeArc(startDegrees: Float, endDegrees: Float, clockwise: Boolean): Pair<Float, Float> {
-  var start = startDegrees
+  var start: Float
   var end = endDegrees
   var sweep = endDegrees - startDegrees
   if (sweep >= 360F || sweep <= -360F) {
@@ -92,7 +92,8 @@ fun Path.addArc(
   arcTo(
       RectF(center.x - radius, center.y - radius, center.x + radius, center.y + radius),
       start,
-      sweep)
+      sweep,
+  )
 }
 
 /**
@@ -105,7 +106,7 @@ fun Canvas.drawArc(
     startDegrees: Float,
     endDegrees: Float,
     clockwise: Boolean,
-    paint: Paint
+    paint: Paint,
 ) {
   val (start, sweep) = standardizeArc(startDegrees, endDegrees, clockwise)
   drawArc(
@@ -113,7 +114,8 @@ fun Canvas.drawArc(
       start,
       sweep,
       false,
-      paint)
+      paint,
+  )
 }
 
 /** Copies 9 values from the matrix into the array and returns the array. */

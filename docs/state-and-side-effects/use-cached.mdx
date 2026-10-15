@@ -1,0 +1,110 @@
+---
+id: use-cached
+title: Caching Expensive Calculations
+keywords:
+    - useCached
+    - companion object
+    - hoist
+    - compile-time constant
+    - cached value
+    - memoization
+    - dependencies
+    - expensive calculation
+    - performance optimization
+    - computed value
+api_category: hooks
+related_docs: [use-state, use-effect, use-ref]
+api_names: [useCached]
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import VersionedCodeBlock from '@theme/VersionedCodeBlock';
+
+:::info API Quick Reference
+**Signature:** `fun <T> ComponentScope.useCached(vararg deps: Any?, calculator: () -> T): T`
+
+| Dependency Pattern | When Value is Recalculated |
+|--------------------|----------------------------|
+| `useCached { ... }` | Only once on first render |
+| `useCached(dep1, dep2) { ... }` | When any dependency changes |
+
+**Import:**
+```kotlin
+import com.facebook.litho.useCached
+```
+:::
+
+`useCached` is a hook that, rather than have to repeatedly make an expensive calculation, enables a component to calculate and maintain a cached value. It is calculated when the component is first added to the ComponentTree, and only recalculated when any of the dependencies provided in the `useCached` declaration changes.
+
+To familiarize yourself with the concept and rules for hooks, see the [Introduction to Hooks](hooks-intro.mdx) page.
+
+## Example: Cached value with dependencies
+
+In the following code, `useCached` is used to create and maintain an expensive-to-calculate value, which can be used multiple times across renders without repeating the expensive calculation.
+
+Since the `useCached` declaration defines a dependency, the value will be calculated when the component is attached to the ComponentTree, and then recalculated every time the dependency changes.
+
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/documentation/UseCachedWithDependencyComponent.kt start=start_example end=end_example
+```
+
+## Example: Cached value without dependencies
+
+In the code below, since `useCached` does not declare a dependency, the value will be calculated only once when the component is attached to the ComponentTree but will not be recalculated when the state value changes. The initial value of the state will always be used.
+
+:::note
+It's a common mistake to use the state in `useCached` without defining it as a dependency then expect the cached value to be recalculated when the state is updated.
+:::
+
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/documentation/UseCachedWithoutDependencyComponent.kt start=start_example end=end_example
+```
+
+## Lifetime: don't cache heavy objects in a collection item
+
+:::caution
+A cached value can outlive the `ComponentTree` that created it. Do not use `useCached` to hold objects that are expensive to retain — inflated animation graphs, bitmaps, view hierarchies, or anything holding native memory — in a component that can appear in a collection item.
+:::
+
+Cached values live in the `TreeState` of the enclosing `ComponentTree` and have no pruning path. Unlike state, which is dropped once a component leaves the tree, cached values are copied forward verbatim into every subsequent state handler.
+
+Inside a collection this compounds: a row's `TreeState` is deliberately retained when the row leaves the prepared range so that state can be restored on scroll-back. A cached value therefore survives release of the row's `ComponentTree` and is only freed when the collection's data set is replaced — retention grows with the number of rows ever *scrolled past*, not the number of rows on screen. The same applies to a value cached by a throwaway component built only to measure, because measurement resolves against the enclosing `TreeState`.
+
+For expensive, reconstructible objects, either recompute per render, or hold the object in a bounded, evicting cache owned outside the tree and use `useCached` for a cheap key only.
+
+## When to use `useCached` vs `companion object`
+
+| Value depends on... | Use |
+|---|---|
+| props or state (>=1 dep) | `useCached(deps) { ... }` |
+| nothing - compile-time constants only (0 deps) | `private companion object { val X = ... }` |
+
+For values that depend on nothing - pure compile-time constants - prefer hoisting to a `private companion object`. It avoids the per-render dep-tracking overhead of `useCached` and makes the value a true singleton owned by the class.
+
+```kotlin
+// PREFERRED - compile-time constant, no deps
+class MyRow(val title: String) : KComponent() {
+  override fun ComponentScope.render(): Component {
+    return Row(style = Style.clip(SHAPE)) { child(Text(title)) }
+  }
+  private companion object {
+    private val SHAPE = Shape.RoundedRectangle(12.dp)
+  }
+}
+
+// AVOID - useCached with no deps for a compile-time constant
+class MyRow(val title: String) : KComponent() {
+  override fun ComponentScope.render(): Component {
+    val shape = useCached { Shape.RoundedRectangle(12.dp) }  // unnecessary dep tracking
+    return Row(style = Style.clip(shape)) { child(Text(title)) }
+  }
+}
+```
+
+Same applies to `Paint()`, `GradientDrawable()`, `Border()`, and any other compile-time-constant allocation. If a `dimenRes()` / `drawableRes()` value depends only on a literal R-id, treat the lookup as a compile-time constant and hoist it.
+
+## See Also
+
+- [Introduction to Hooks](hooks-intro.mdx) - Hook fundamentals and rules
+- [useState](use-state.mdx) - Persist values that trigger re-renders
+- [useEffect](use-effect.mdx) - Side effects and lifecycle
+- [useRef](use-ref.mdx) - Mutable references without re-renders

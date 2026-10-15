@@ -23,7 +23,7 @@ import com.facebook.rendercore.extensions.InformsMountCallback
 import com.facebook.rendercore.extensions.MountExtension
 import com.facebook.rendercore.extensions.RenderCoreExtension
 import com.facebook.rendercore.testing.TestRenderCoreExtension
-import org.assertj.core.api.Java6Assertions
+import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
@@ -42,19 +42,51 @@ class ExtensionStateTest {
     extensions.add(
         Pair(
             TestRenderCoreExtension(null, mountExtension1, null) as RenderCoreExtension<*, *>?,
-            null))
+            null,
+        ),
+    )
     extensions.add(
         Pair(
             TestRenderCoreExtension(null, mountExtension2, null) as RenderCoreExtension<*, *>?,
-            null))
+            null,
+        ),
+    )
     mountDelegate.registerExtensions(extensions)
     val extensionState1 = mountDelegate.extensionStates[0]
     val extensionState2 = mountDelegate.extensionStates[1]
     mountExtension1.acquireRef(extensionState1, 0, 0)
     mountExtension2.acquireRef(extensionState2, 0, 0)
-    Java6Assertions.assertThat(mountDelegate.getRefCount(0)).isEqualTo(2)
+    Assertions.assertThat(mountDelegate.getRefCount(0)).isEqualTo(2)
     mountExtension1.releaseAll(extensionState1)
-    Java6Assertions.assertThat(mountDelegate.getRefCount(0)).isEqualTo(1)
+    Assertions.assertThat(mountDelegate.getRefCount(0)).isEqualTo(1)
+  }
+
+  /**
+   * Regression test for T274149346. A reference acquired while reference counting is disabled (e.g.
+   * on an incremental-mount-disabled ComponentTree, where the IncrementalMountExtension is not
+   * registered) grows the extension's private ownership set. If the IncrementalMountExtension is
+   * later registered (e.g. a recycled LithoView rebound to an incremental-mount-enabled
+   * ComponentTree), reference counting becomes enabled and releasing that reference must not
+   * underflow the shared reference-count map.
+   */
+  @Test
+  fun testReleaseAll_afterReferenceCountingBecomesEnabled_doesNotUnderflow() {
+    val mountDelegateTarget = Mockito.mock(MountDelegateTarget::class.java)
+    val mountDelegate = MountDelegate(mountDelegateTarget, getInstance())
+
+    // A non-preventing extension (like TransitionsExtension) leaves reference counting disabled.
+    val nonPreventing = TestNonPreventingMountExtension()
+    val extensionState = mountDelegate.registerMountExtension(nonPreventing)
+
+    // Acquire a reference while reference counting is still disabled.
+    nonPreventing.acquireRef(extensionState, 0)
+
+    // An incremental-mount-like extension registers, enabling reference counting.
+    mountDelegate.registerMountExtension(TestMountExtension())
+
+    // Releasing the previously-acquired reference must not throw or underflow.
+    nonPreventing.releaseAll(extensionState)
+    Assertions.assertThat(mountDelegate.getRefCount(0)).isEqualTo(0)
   }
 
   private class TestMountExtension : MountExtension<Unit, Unit>(), InformsMountCallback {
@@ -66,6 +98,18 @@ class ExtensionStateTest {
 
     override fun canPreventMount(): Boolean {
       return true
+    }
+
+    fun releaseAll(state: ExtensionState<*>) {
+      state.releaseAllAcquiredReferences()
+    }
+  }
+
+  private class TestNonPreventingMountExtension : MountExtension<Unit, Unit>() {
+    override fun createState() = Unit
+
+    fun acquireRef(state: ExtensionState<*>, id: Int) {
+      state.acquireMountReference(id.toLong(), false)
     }
 
     fun releaseAll(state: ExtensionState<*>) {

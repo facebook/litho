@@ -61,6 +61,6 @@ interface SupportsPivotTransform {
    */
   fun setTransformPivot(
       @FloatRange(0.0, 100.0) pivotXPercent: Float,
-      @FloatRange(0.0, 100.0) pivotYPercent: Float
+      @FloatRange(0.0, 100.0) pivotYPercent: Float,
   )
 }

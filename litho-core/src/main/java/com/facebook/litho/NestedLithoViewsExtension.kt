@@ -35,7 +35,7 @@ class NestedLithoViewsExtension : MountExtension<Void?, Void?>(), OnItemCallback
       extensionState: ExtensionState<Void?>,
       renderUnit: RenderUnit<*>,
       content: Any,
-      layoutData: Any?
+      layoutData: Any?,
   ) {
     if (content is HasLithoViewChildren) {
       val baseMountingViews = ArrayList<BaseMountingView>()
@@ -50,14 +50,14 @@ class NestedLithoViewsExtension : MountExtension<Void?, Void?>(), OnItemCallback
   override fun beforeMountItem(
       extensionState: ExtensionState<Void?>,
       renderTreeNode: RenderTreeNode,
-      index: Int
+      index: Int,
   ): Unit = Unit
 
   override fun onMountItem(
       extensionState: ExtensionState<Void?>,
       renderUnit: RenderUnit<*>,
       content: Any,
-      layoutData: Any?
+      layoutData: Any?,
   ): Unit = Unit
 
   override fun shouldUpdateItem(
@@ -65,21 +65,21 @@ class NestedLithoViewsExtension : MountExtension<Void?, Void?>(), OnItemCallback
       previousRenderUnit: RenderUnit<*>,
       previousLayoutData: Any?,
       nextRenderUnit: RenderUnit<*>,
-      nextLayoutData: Any?
+      nextLayoutData: Any?,
   ): Boolean = false
 
   override fun onBindItem(
       extensionState: ExtensionState<Void?>,
       renderUnit: RenderUnit<*>,
       content: Any,
-      layoutData: Any?
+      layoutData: Any?,
   ): Unit = Unit
 
   override fun onUnbindItem(
       extensionState: ExtensionState<Void?>,
       renderUnit: RenderUnit<*>,
       content: Any,
-      layoutData: Any?
+      layoutData: Any?,
   ): Unit = Unit
 
   override fun onBoundsAppliedToItem(
@@ -87,6 +87,6 @@ class NestedLithoViewsExtension : MountExtension<Void?, Void?>(), OnItemCallback
       renderUnit: RenderUnit<*>,
       content: Any,
       layoutData: Any?,
-      changed: Boolean
+      changed: Boolean,
   ): Unit = Unit
 }

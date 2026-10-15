@@ -69,7 +69,7 @@ fun <T> ComponentScope.useProducer(
     vararg keys: Any?,
     producer: suspend StateProducerScope<T>.() -> Unit,
 ): T {
-  val state = useState { initialValue() }
+  val state = useStateWithDeps(*keys) { initialValue() }
   val producerScope = useCached { StateProducerScopeImpl(state) }
   useCoroutine(*keys) {
     producerScope.coroutineContext = coroutineContext

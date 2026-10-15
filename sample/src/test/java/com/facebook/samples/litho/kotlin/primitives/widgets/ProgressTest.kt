@@ -28,7 +28,6 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.ProgressPrimitiveComponent
 import com.facebook.litho.widget.ProgressView
 import com.facebook.rendercore.px
-import junit.framework.Assert.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
@@ -43,13 +42,12 @@ class ProgressTest {
 
   @Test
   fun `ProgressComponent should render`() {
-    val testLithoView =
-        lithoViewRule.render {
-          ProgressPrimitiveComponent(style = Style.width(100.px).height(100.px))
-        }
+    val testLithoView = lithoViewRule.render {
+      ProgressPrimitiveComponent(style = Style.width(100.px).height(100.px))
+    }
 
     // should find an Progress in the tree
-    assertNotNull(testLithoView.findComponent(ProgressPrimitiveComponent::class))
+    assertThat(testLithoView.findComponent(ProgressPrimitiveComponent::class)).isNotNull()
 
     // should mount an Progress
     assertThat(testLithoView.lithoView.mountItemCount).isEqualTo(1)
@@ -65,7 +63,6 @@ class ProgressTest {
     val component2 = ProgressPrimitiveComponent()
 
     assertThat(component).isEquivalentTo(component2)
-    assertThat(component).isEquivalentTo(component2, true)
   }
 
   @Test
@@ -84,10 +81,7 @@ class ProgressTest {
         ProgressPrimitiveComponent(indeterminateDrawable = colorDrawable, color = color)
 
     assertThat(firstProgressWithColorDrawable).isEquivalentTo(secondProgressWithColorDrawable)
-    assertThat(firstProgressWithColorDrawable).isEquivalentTo(secondProgressWithColorDrawable, true)
     assertThat(firstProgressWithColor).isEquivalentTo(secondProgressWithColor)
-    assertThat(firstProgressWithColor).isEquivalentTo(secondProgressWithColor, true)
     assertThat(firstProgressWithBothParams).isEquivalentTo(secondProgressWithBothParams)
-    assertThat(firstProgressWithBothParams).isEquivalentTo(secondProgressWithBothParams, true)
   }
 }

@@ -25,6 +25,8 @@ import android.widget.FrameLayout
 import android.widget.ScrollView
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.core.height
+import com.facebook.litho.core.width
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.common.DynamicComponentGroupSection
 import com.facebook.litho.sections.common.SingleComponentSection
@@ -48,17 +50,22 @@ import com.facebook.litho.widget.SimpleMountSpecTester
 import com.facebook.litho.widget.SimpleStateUpdateEmulator
 import com.facebook.litho.widget.SimpleStateUpdateEmulatorSpec
 import com.facebook.litho.widget.Text
+import com.facebook.rendercore.extensions.VisibilityChangeReason
+import com.facebook.rendercore.px
 import com.facebook.rendercore.utils.MeasureSpecUtils.exactly
+import com.facebook.rendercore.visibility.InvisibleEvent
+import com.facebook.rendercore.visibility.VisibleEvent
 import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaPositionType
+import kotlin.test.fail
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Java6Assertions.fail
 import org.junit.After
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.eq
@@ -69,8 +76,9 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.validateMockitoUsage
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.robolectric.Shadows
 import org.robolectric.annotation.LooperMode
+import org.robolectric.shadow.api.Shadow
+import org.robolectric.shadows.ShadowAccessibilityManager
 import org.robolectric.shadows.ShadowLooper
 
 @LooperMode(LooperMode.Mode.LEGACY)
@@ -82,17 +90,18 @@ class MountStateIncrementalMountTest {
 
   @JvmField
   @Rule
-  val lithoTestRule =
-      LithoTestRule(
-          ComponentsConfiguration.defaultInstance.copy(shouldAddHostViewForRootComponent = true))
+  val lithoTestRule = LithoTestRule(
+      ComponentsConfiguration.defaultInstance.copy(shouldAddHostViewForRootComponent = true),
+  )
 
   @Before
   fun setup() {
     context = lithoTestRule.context
     layoutThreadShadowLooper =
-        Shadows.shadowOf(
+        Shadow.extract(
             Whitebox.invokeMethod<Any>(ComponentTree::class.java, "getDefaultLayoutThreadLooper")
-                as Looper)
+                as Looper,
+        )
   }
 
   @After
@@ -141,12 +150,10 @@ class MountStateIncrementalMountTest {
 
     // Component2 marked with `excludeFromIncrementalMount`
     val tracker2 = LifecycleTracker()
-    val component2 =
-        MountSpecExcludeFromIncrementalMount.create(context)
-            .widthPx(100)
-            .heightPx(30)
-            .lifecycleTracker(tracker2)
-            .build()
+    val component2 = MountSpecExcludeFromIncrementalMount(
+        lifecycleTracker = tracker2,
+        style = Style.width(100.px).height(30.px),
+    )
 
     // Component3 without `excludeFromIncrementalMount`
     val tracker3 = LifecycleTracker()
@@ -164,11 +171,14 @@ class MountStateIncrementalMountTest {
             .delegate(
                 Column.create(context)
                     .child(
-                        Wrapper.create(context).delegate(component1).visibleHandler(eventHandler1))
+                        Wrapper.create(context).delegate(component1).visibleHandler(eventHandler1),
+                    )
                     .child(
-                        Wrapper.create(context).delegate(component2).visibleHandler(eventHandler2))
+                        Wrapper.create(context).delegate(component2).visibleHandler(eventHandler2),
+                    )
                     .child(component3)
-                    .build())
+                    .build(),
+            )
             .wrapInView()
             .build()
     val testLithoView =
@@ -199,7 +209,11 @@ class MountStateIncrementalMountTest {
 
     // move the view out of visible area and make sure the component that marked as excludeFromIM
     // will not get unmounted
-    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, -50, 100, -10), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(
+        Rect(0, -50, 100, -10),
+        true,
+        VisibilityChangeReason.UNKNOWN,
+    )
     assertThat(tracker1.isMounted)
         .describedAs("Invisible component WITHOUT excludeFromIM should get unmounted")
         .isFalse
@@ -212,7 +226,11 @@ class MountStateIncrementalMountTest {
     // verify that the visibility callback of the invisible component should not be called
     verify(eventHandler1, times(1)).call(anyOrNull<VisibleEvent>())
     verify(eventHandler2, times(0)).call(anyOrNull<VisibleEvent>())
-    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 15, 100, 45), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(
+        Rect(0, 15, 100, 45),
+        true,
+        VisibilityChangeReason.UNKNOWN,
+    )
     // verify that the visibility callback of the visible component should be called
     verify(eventHandler1, times(2)).call(anyOrNull<VisibleEvent>())
     verify(eventHandler2, times(1)).call(anyOrNull<VisibleEvent>())
@@ -222,12 +240,10 @@ class MountStateIncrementalMountTest {
   fun testExcludeFromIncrementalMount() {
     val child = TestViewComponent.create(context).widthPx(100).heightPx(100).build()
     val skipIMTracker = LifecycleTracker()
-    val excludeIMComponent =
-        MountSpecExcludeFromIncrementalMount.create(context)
-            .lifecycleTracker(skipIMTracker)
-            .widthPx(100)
-            .heightPx(100)
-            .build()
+    val excludeIMComponent = MountSpecExcludeFromIncrementalMount(
+        lifecycleTracker = skipIMTracker,
+        style = Style.width(100.px).height(100.px),
+    )
     val notSkipIMTracker = LifecycleTracker()
     val doesNotExcludeIMComponent =
         MountSpecLifecycleTester.create(context)
@@ -243,23 +259,27 @@ class MountStateIncrementalMountTest {
                 Column.create(context)
                     .child(child)
                     .child(doesNotExcludeIMComponent)
-                    .child(excludeIMComponent))
+                    .child(excludeIMComponent),
+            )
             .build()
     val testLithoView =
         lithoTestRule.render(widthSpec = exactly(100), heightSpec = exactly(500)) { root }
     testLithoView.lithoView.mountComponent(Rect(0, 400, 100, 500), false)
     assertThat(notSkipIMTracker.isMounted)
         .describedAs(
-            "Component without excludeFromIncrementalMount doesn't get mounted when out of visible rect")
+            "Component without excludeFromIncrementalMount doesn't get mounted when out of visible rect",
+        )
         .isFalse
     assertThat(skipIMTracker.isMounted)
         .describedAs(
-            "Component with excludeFromIncrementalMount do get mounted when out of visible rect")
+            "Component with excludeFromIncrementalMount do get mounted when out of visible rect",
+        )
         .isTrue
     testLithoView.lithoView.mountComponent(Rect(0, 0, 100, 300), false)
     assertThat(notSkipIMTracker.isMounted)
         .describedAs(
-            "Component without excludeFromIncrementalMount get mounted when in visible rect")
+            "Component without excludeFromIncrementalMount get mounted when in visible rect",
+        )
         .isTrue
     assertThat(skipIMTracker.isMounted)
         .describedAs("Component with excludeFromIncrementalMount get mounted when in visible rect")
@@ -267,16 +287,19 @@ class MountStateIncrementalMountTest {
     testLithoView.lithoView.mountComponent(Rect(0, 400, 50, 450), false)
     assertThat(notSkipIMTracker.isMounted)
         .describedAs(
-            "Component without excludeFromIncrementalMount get unmounted when out of visible rect")
+            "Component without excludeFromIncrementalMount get unmounted when out of visible rect",
+        )
         .isFalse
     assertThat(skipIMTracker.isMounted)
         .describedAs(
-            "Component with excludeFromIncrementalMount doesn't get unmounted when out of visible rect")
+            "Component with excludeFromIncrementalMount doesn't get unmounted when out of visible rect",
+        )
         .isTrue
     testLithoView.lithoView.mountComponent(Rect(0, 400, 50, 450), false)
     assertThat(skipIMTracker.isMounted)
         .describedAs(
-            "Component with excludeFromIncrementalMount doesn't get unmounted while doing IncrementalMount")
+            "Component with excludeFromIncrementalMount doesn't get unmounted while doing IncrementalMount",
+        )
         .isTrue
   }
 
@@ -536,7 +559,7 @@ class MountStateIncrementalMountTest {
             .wrapInView()
             .paddingPx(YogaEdge.ALL, 20)
             .child(Wrapper.create(context).delegate(child).widthPx(10).heightPx(10))
-            .child(SimpleMountSpecTester.create(context))
+            .child(SimpleMountSpecTester())
             .build()
     val lithoView =
         lithoTestRule
@@ -554,8 +577,12 @@ class MountStateIncrementalMountTest {
    * Verify that we can cope with a negative padding on a component that is wrapped in a view (since
    * the bounds of the component will be larger than the bounds of the view).
    */
+  @Ignore(
+      "Incremental mount never mounts the negatively-margined child: it reaches " +
+          "ON_BOUNDS_DEFINED and ON_ATTACHED but never ON_MOUNT. Unclear whether the product or " +
+          "the expectation is wrong; needs an owner for negative-margin incremental mount.",
+  )
   @Test
-  @Ignore("This has to be reviewed - we just ignored to unblock OSS release")
   fun testIncrementalMountVerticalDrawableStackNegativeMargin() {
     val parent = FrameLayout(context.androidContext)
     parent.measure(exactly(10), exactly(1_000))
@@ -580,7 +607,8 @@ class MountStateIncrementalMountTest {
                     .widthPx(10)
                     .heightPx(10)
                     .clickHandler(eventHandler)
-                    .marginDip(YogaEdge.TOP, -10f))
+                    .marginDip(YogaEdge.TOP, -10f),
+            )
             .build()
     val rootHost =
         Row.create(context)
@@ -590,8 +618,12 @@ class MountStateIncrementalMountTest {
     assertThat(lifecycleTracker1.steps).contains(LifecycleStep.ON_MOUNT)
   }
 
+  @Ignore(
+      "Incremental mount never mounts the negatively-margined child: it reaches " +
+          "ON_BOUNDS_DEFINED and ON_ATTACHED but never ON_MOUNT. Unclear whether the product or " +
+          "the expectation is wrong; needs an owner for negative-margin incremental mount.",
+  )
   @Test
-  @Ignore("This has to be reviewed - we just ignored to unblock OSS release")
   fun testIncrementalMountVerticalDrawableStackNegativeMargin_multipleUnmountedHosts() {
     val parent = FrameLayout(context.androidContext)
     parent.measure(exactly(10), exactly(1_000))
@@ -616,7 +648,8 @@ class MountStateIncrementalMountTest {
                     .widthPx(10)
                     .heightPx(10)
                     .clickHandler(eventHandler)
-                    .marginDip(YogaEdge.TOP, -10f))
+                    .marginDip(YogaEdge.TOP, -10f),
+            )
             .build()
     val rootHost =
         Row.create(context)
@@ -627,12 +660,15 @@ class MountStateIncrementalMountTest {
                         Wrapper.create(context)
                             .delegate(childHost1)
                             .clickHandler(eventHandler)
-                            .build())
+                            .build(),
+                    )
                     .child(
                         Wrapper.create(context)
                             .delegate(childHost1)
                             .clickHandler(eventHandler)
-                            .build()))
+                            .build(),
+                    ),
+            )
             .build()
     lithoView.componentTree?.root = rootHost
     assertThat(lifecycleTracker1.steps).contains(LifecycleStep.ON_MOUNT)
@@ -662,7 +698,8 @@ class MountStateIncrementalMountTest {
                     .delegate(child1)
                     .widthPx(10)
                     .heightPx(10)
-                    .clickHandler(eventHandler1))
+                    .clickHandler(eventHandler1),
+            )
             .build()
     val host1 =
         Row.create(context)
@@ -680,7 +717,8 @@ class MountStateIncrementalMountTest {
                     .widthPx(10)
                     .heightPx(10)
                     .clickHandler(eventHandler2)
-                    .marginDip(YogaEdge.TOP, -10f))
+                    .marginDip(YogaEdge.TOP, -10f),
+            )
             .build()
     val host2 =
         Row.create(context)
@@ -718,7 +756,8 @@ class MountStateIncrementalMountTest {
                     .positionPx(YogaEdge.TOP, 0)
                     .positionPx(YogaEdge.LEFT, 0)
                     .widthPx(10)
-                    .heightPx(10))
+                    .heightPx(10),
+            )
             .child(
                 Wrapper.create(context)
                     .delegate(child2)
@@ -726,8 +765,9 @@ class MountStateIncrementalMountTest {
                     .positionPx(YogaEdge.TOP, 5)
                     .positionPx(YogaEdge.LEFT, 5)
                     .widthPx(10)
-                    .heightPx(10))
-            .child(SimpleMountSpecTester.create(context))
+                    .heightPx(10),
+            )
+            .child(SimpleMountSpecTester())
             .build()
     val lithoView =
         lithoTestRule
@@ -762,9 +802,9 @@ class MountStateIncrementalMountTest {
         lithoTestRule
             .render(widthSpec = exactly(1_000), heightSpec = exactly(1_000)) { root }
             .lithoView
-    verify(childView1).notifyVisibleBoundsChanged()
-    verify(childView2).notifyVisibleBoundsChanged()
-    verify(childView3).notifyVisibleBoundsChanged()
+    verify(childView1).notifyVisibleBoundsChanged(any<VisibilityChangeReason>())
+    verify(childView2).notifyVisibleBoundsChanged(any<VisibilityChangeReason>())
+    verify(childView3).notifyVisibleBoundsChanged(any<VisibilityChangeReason>())
     reset(childView1)
     whenever(childView1.isIncrementalMountEnabled).thenReturn(true)
     reset(childView2)
@@ -772,9 +812,9 @@ class MountStateIncrementalMountTest {
     reset(childView3)
     whenever(childView3.isIncrementalMountEnabled).thenReturn(true)
     lithoView.mountComponent(Rect(15, 15, 40, 40), true)
-    verify(childView1, times(1)).notifyVisibleBoundsChanged()
-    verify(childView2, times(1)).notifyVisibleBoundsChanged()
-    verify(childView3, times(1)).notifyVisibleBoundsChanged()
+    verify(childView1, times(1)).notifyVisibleBoundsChanged(any<VisibilityChangeReason>())
+    verify(childView2, times(1)).notifyVisibleBoundsChanged(any<VisibilityChangeReason>())
+    verify(childView3, times(1)).notifyVisibleBoundsChanged(any<VisibilityChangeReason>())
   }
 
   @Test
@@ -809,7 +849,7 @@ class MountStateIncrementalMountTest {
           null
         }
         .`when`(childView1)
-        .notifyVisibleBoundsChanged(anyOrNull<Rect>(), eq(true))
+        .notifyVisibleBoundsChanged(anyOrNull<Rect>(), eq(true), any<VisibilityChangeReason>())
     doAnswer { invocation ->
           val rect = invocation.arguments[0] as Rect
           if (rect != Rect(0, 0, 40, 50)) {
@@ -818,7 +858,7 @@ class MountStateIncrementalMountTest {
           null
         }
         .`when`(childView2)
-        .notifyVisibleBoundsChanged(anyOrNull<Rect>(), eq(true))
+        .notifyVisibleBoundsChanged(anyOrNull<Rect>(), eq(true), any<VisibilityChangeReason>())
     doAnswer { invocation ->
           val rect = invocation.arguments[0] as Rect
           if (rect != Rect(0, 0, 20, 25)) {
@@ -827,10 +867,10 @@ class MountStateIncrementalMountTest {
           null
         }
         .`when`(childView3)
-        .notifyVisibleBoundsChanged(anyOrNull<Rect>(), eq(true))
-    verify(childView1).notifyVisibleBoundsChanged()
-    verify(childView2).notifyVisibleBoundsChanged()
-    verify(childView3).notifyVisibleBoundsChanged()
+        .notifyVisibleBoundsChanged(anyOrNull<Rect>(), eq(true), any<VisibilityChangeReason>())
+    verify(childView1).notifyVisibleBoundsChanged(any<VisibilityChangeReason>())
+    verify(childView2).notifyVisibleBoundsChanged(any<VisibilityChangeReason>())
+    verify(childView3).notifyVisibleBoundsChanged(any<VisibilityChangeReason>())
     reset(childView1)
     whenever(childView1.isIncrementalMountEnabled).thenReturn(true)
     reset(childView2)
@@ -838,9 +878,9 @@ class MountStateIncrementalMountTest {
     reset(childView3)
     whenever(childView3.isIncrementalMountEnabled).thenReturn(true)
     lithoView.mountComponent(Rect(0, 0, 100, 100), true)
-    verify(childView1, times(1)).notifyVisibleBoundsChanged()
-    verify(childView2, times(1)).notifyVisibleBoundsChanged()
-    verify(childView3, times(1)).notifyVisibleBoundsChanged()
+    verify(childView1, times(1)).notifyVisibleBoundsChanged(any<VisibilityChangeReason>())
+    verify(childView2, times(1)).notifyVisibleBoundsChanged(any<VisibilityChangeReason>())
+    verify(childView3, times(1)).notifyVisibleBoundsChanged(any<VisibilityChangeReason>())
   }
 
   /** Tests incremental mount behaviour of a vertical stack of components with a View mount type. */
@@ -965,24 +1005,24 @@ class MountStateIncrementalMountTest {
         lithoTestRule
             .render(widthSpec = exactly(1_000), heightSpec = exactly(1_000)) { root }
             .lithoView
-    verify(lithoView).notifyVisibleBoundsChanged()
+    verify(lithoView).notifyVisibleBoundsChanged(any<VisibilityChangeReason>())
     reset(lithoView)
 
     // Mount views with visible rect
     lithoViewParent.mountComponent(Rect(0, 0, 100, 1_000), true)
-    verify(lithoView, times(1)).notifyVisibleBoundsChanged()
+    verify(lithoView, times(1)).notifyVisibleBoundsChanged(any<VisibilityChangeReason>())
     reset(lithoView)
     whenever(lithoView.isIncrementalMountEnabled).thenReturn(true)
 
     // Unmount views with visible rect outside
     lithoViewParent.mountComponent(Rect(0, -10, 100, -5), true)
-    verify(lithoView, never()).notifyVisibleBoundsChanged()
+    verify(lithoView, never()).notifyVisibleBoundsChanged(any<VisibilityChangeReason>())
     reset(lithoView)
     whenever(lithoView.isIncrementalMountEnabled).thenReturn(true)
 
     // Mount again with visible rect
     lithoViewParent.mountComponent(Rect(0, 0, 100, 1_000), true)
-    verify(lithoView, times(1)).notifyVisibleBoundsChanged()
+    verify(lithoView, times(1)).notifyVisibleBoundsChanged(any<VisibilityChangeReason>())
   }
 
   @Test
@@ -996,12 +1036,14 @@ class MountStateIncrementalMountTest {
                 MountSpecLifecycleTester.create(lithoTestRule.context)
                     .intrinsicSize(Size(10, 10))
                     .lifecycleTracker(info_child1)
-                    .key("some_key"))
+                    .key("some_key"),
+            )
             .child(
                 MountSpecLifecycleTester.create(lithoTestRule.context)
                     .intrinsicSize(Size(10, 10))
                     .lifecycleTracker(info_child2)
-                    .key("other_key"))
+                    .key("other_key"),
+            )
             .child(SimpleStateUpdateEmulator.create(lithoTestRule.context).caller(stateUpdater))
             .build()
     val testLithoView = lithoTestRule.render(widthPx = exactly(10), heightPx = exactly(40)) { root }
@@ -1019,7 +1061,7 @@ class MountStateIncrementalMountTest {
     info_child1.reset()
     info_child2.reset()
     scrollView.scrollBy(0, 12)
-    testLithoView.lithoView.notifyVisibleBoundsChanged()
+    testLithoView.lithoView.notifyVisibleBoundsChanged(VisibilityChangeReason.UNKNOWN)
     assertThat(info_child1.steps).describedAs("Mounted.").contains(LifecycleStep.ON_UNMOUNT)
   }
 
@@ -1034,12 +1076,14 @@ class MountStateIncrementalMountTest {
                 MountSpecLifecycleTester.create(lithoTestRule.context)
                     .intrinsicSize(Size(10, 10))
                     .lifecycleTracker(info_child1)
-                    .key("some_key"))
+                    .key("some_key"),
+            )
             .child(
                 MountSpecLifecycleTester.create(lithoTestRule.context)
                     .intrinsicSize(Size(10, 10))
                     .lifecycleTracker(info_child2)
-                    .key("other_key"))
+                    .key("other_key"),
+            )
             .child(SimpleStateUpdateEmulator.create(lithoTestRule.context).caller(stateUpdater))
             .build()
     val testLithoView =
@@ -1071,14 +1115,16 @@ class MountStateIncrementalMountTest {
                     .visibleHandler(visibleEventHandler)
                     .invisibleHandler(invisibleEventHandler)
                     .widthPx(10)
-                    .heightPx(10))
+                    .heightPx(10),
+            )
             .child(
                 Wrapper.create(context)
                     .delegate(child2)
                     .visibleHandler(visibleEventHandler)
                     .invisibleHandler(invisibleEventHandler)
                     .widthPx(10)
-                    .heightPx(10))
+                    .heightPx(10),
+            )
             .build()
     val lithoView =
         lithoTestRule.render(widthPx = exactly(10), heightPx = exactly(20)) { root }.lithoView
@@ -1113,7 +1159,8 @@ class MountStateIncrementalMountTest {
                     .visibleHandler(visibleEventHandler1)
                     .invisibleHandler(invisibleEventHandler1)
                     .widthPx(10)
-                    .heightPx(10))
+                    .heightPx(10),
+            )
             .build()
     val lithoView =
         lithoTestRule.render(widthPx = exactly(10), heightPx = exactly(100)) { root }.lithoView
@@ -1130,14 +1177,16 @@ class MountStateIncrementalMountTest {
                     .visibleHandler(visibleEventHandler1)
                     .invisibleHandler(invisibleEventHandler1)
                     .widthPx(10)
-                    .heightPx(10))
+                    .heightPx(10),
+            )
             .child(
                 Wrapper.create(context)
                     .delegate(child2)
                     .visibleHandler(visibleEventHandler2)
                     .invisibleHandler(invisibleEventHandler2)
                     .widthPx(10)
-                    .heightPx(10))
+                    .heightPx(10),
+            )
             .build()
     lithoView.componentTree?.root = newRoot
     assertThat(child2.wasOnMountCalled()).isFalse
@@ -1145,6 +1194,70 @@ class MountStateIncrementalMountTest {
     lithoView.setVisibilityHint(true, true)
     assertThat(child2.wasOnMountCalled()).isTrue
     assertThat(child2.dispatchedEventHandlers).contains(visibleEventHandler2)
+  }
+
+  @Test
+  fun incrementalMount_rebindToNewTreeAfterVisibilityHintFalse_mountsWhenResetEnabled() {
+    val child = mountChildAfterRebindWithHintFalse(resetVisibilityHintOnTreeDetach = true)
+
+    assertThat(child.wasOnMountCalled())
+        .describedAs("Rebound content mounts once the stale visibility hint is cleared")
+        .isTrue
+  }
+
+  @Test
+  fun incrementalMount_rebindToNewTreeAfterVisibilityHintFalse_doesNotMountWhenResetDisabled() {
+    val child = mountChildAfterRebindWithHintFalse(resetVisibilityHintOnTreeDetach = false)
+
+    assertThat(child.wasOnMountCalled())
+        .describedAs("Stale visibility hint keeps blocking mount for the rebound content")
+        .isFalse
+  }
+
+  /**
+   * Mirrors how RecyclerBinder rebinds a scrapped item view: the host is hinted invisible while the
+   * view holds one tree, then the view is handed a different tree without ever being hinted visible
+   * again.
+   */
+  private fun mountChildAfterRebindWithHintFalse(
+      resetVisibilityHintOnTreeDetach: Boolean,
+  ): TestViewComponent {
+    val config =
+        ComponentsConfiguration.defaultInstance.copy(
+            resetVisibilityHintOnTreeDetach = resetVisibilityHintOnTreeDetach,
+        )
+    val testLithoView =
+        lithoTestRule
+            .createTestLithoView(widthSpec = exactly(10), heightSpec = exactly(100))
+            .attachToWindow()
+            .measure()
+    val lithoView = testLithoView.lithoView
+
+    val firstChild = TestViewComponent.create(context).build()
+    lithoView.componentTree = buildTree(config, firstChild)
+    lithoView.mountComponent(Rect(0, 0, 10, 100), true)
+    assertThat(firstChild.wasOnMountCalled()).isTrue
+
+    lithoView.setVisibilityHint(false, true)
+
+    val secondChild = TestViewComponent.create(context).build()
+    lithoView.componentTree = buildTree(config, secondChild)
+    lithoView.mountComponent(Rect(0, 0, 10, 100), true)
+
+    return secondChild
+  }
+
+  private fun buildTree(config: ComponentsConfiguration, child: Component): ComponentTree {
+    val root =
+        Column.create(context)
+            .child(Wrapper.create(context).delegate(child).widthPx(10).heightPx(10))
+            .build()
+    val holder =
+        ComponentTreeHolder.create(config)
+            .renderInfo(ComponentRenderInfo.create().component(root).build())
+            .build()
+    holder.computeLayoutSync(context, exactly(10), exactly(100), Size())
+    return checkNotNull(holder.componentTree)
   }
 
   @Test
@@ -1167,7 +1280,8 @@ class MountStateIncrementalMountTest {
     val binderConfig =
         RecyclerBinderConfiguration.create()
             .recyclerBinderConfig(
-                RecyclerBinderConfig.create().lithoViewFactory(lithoViewFactory).build())
+                RecyclerBinderConfig.create().lithoViewFactory(lithoViewFactory).build(),
+            )
             .build()
     val config =
         ListRecyclerConfiguration.create().recyclerBinderConfiguration(binderConfig).build()
@@ -1175,7 +1289,8 @@ class MountStateIncrementalMountTest {
         RecyclerCollectionComponent.create(context)
             .recyclerConfiguration(config)
             .section(
-                SingleComponentSection.create(SectionContext(context)).component(root1).build())
+                SingleComponentSection.create(SectionContext(context)).component(root1).build(),
+            )
             .build()
     val testLithoView = lithoTestRule.render(widthPx = exactly(10), heightPx = exactly(19)) { rcc }
     assertThat(lifecycleTracker1.steps).contains(LifecycleStep.ON_MOUNT)
@@ -1191,9 +1306,11 @@ class MountStateIncrementalMountTest {
                     .delegate(
                         MountSpecLifecycleTester.create(context)
                             .lifecycleTracker(lifecycleTracker1)
-                            .build())
+                            .build(),
+                    )
                     .widthPx(10)
-                    .heightPx(20))
+                    .heightPx(20),
+            )
             .child(Wrapper.create(context).delegate(child2).widthPx(10).heightPx(10))
             .child(Wrapper.create(context).delegate(child3).widthPx(10).heightPx(10))
             .build()
@@ -1204,11 +1321,12 @@ class MountStateIncrementalMountTest {
                 SingleComponentSection.create(SectionContext(context))
                     .component(root2)
                     .sticky(true)
-                    .build())
+                    .build(),
+            )
             .build()
     testLithoView.setRoot(rcc2)
     runToEndOfTasks()
-    testLithoView.lithoView.notifyVisibleBoundsChanged()
+    testLithoView.lithoView.notifyVisibleBoundsChanged(VisibilityChangeReason.UNKNOWN)
     assertThat(lifecycleTracker2.steps).contains(LifecycleStep.ON_UNMOUNT)
   }
 
@@ -1235,7 +1353,8 @@ class MountStateIncrementalMountTest {
     val binderConfig =
         RecyclerBinderConfiguration.create()
             .recyclerBinderConfig(
-                RecyclerBinderConfig.create().lithoViewFactory(lithoViewFactory).build())
+                RecyclerBinderConfig.create().lithoViewFactory(lithoViewFactory).build(),
+            )
             .build()
     val config =
         ListRecyclerConfiguration.create().recyclerBinderConfiguration(binderConfig).build()
@@ -1244,10 +1363,8 @@ class MountStateIncrementalMountTest {
         RecyclerCollectionComponent.create(context)
             .recyclerConfiguration(config)
             .section(
-                DynamicComponentGroupSection.create(sectionContext)
-                    .component(item)
-                    .totalItems(5)
-                    .build())
+                DynamicComponentGroupSection.create(sectionContext).component(item).build(),
+            )
             .build()
 
     // Set LithoView with height so that it can fully show exactly 3 items (3 children per item).
@@ -1330,10 +1447,14 @@ class MountStateIncrementalMountTest {
   private val lithoViewFactory: LithoViewFactory
     get() = LithoViewFactory { context -> LithoView(context) }
 
-  private class TestLithoView(context: Context?) : LithoView(context) {
+  private class TestLithoView(context: Context?) : LithoView(requireNotNull(context)) {
     private val previousIncrementalMountBounds = Rect()
 
-    override fun notifyVisibleBoundsChanged(visibleRect: Rect, processVisibilityOutputs: Boolean) {
+    override fun notifyVisibleBoundsChanged(
+        visibleRect: Rect,
+        processVisibilityOutputs: Boolean,
+        reason: VisibilityChangeReason,
+    ) {
       println("performIncMount on TestLithoView")
       previousIncrementalMountBounds.set(visibleRect)
     }
@@ -1356,10 +1477,11 @@ class MountStateIncrementalMountTest {
 
     private fun enableAccessibility() {
       AccessibilityUtils.invalidateCachedIsAccessibilityEnabled()
-      val manager =
-          Shadows.shadowOf(
+      val manager: ShadowAccessibilityManager =
+          Shadow.extract(
               ApplicationProvider.getApplicationContext<Context>()
-                  .getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager)
+                  .getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager,
+          )
       manager.setEnabled(true)
       manager.setTouchExplorationEnabled(true)
     }

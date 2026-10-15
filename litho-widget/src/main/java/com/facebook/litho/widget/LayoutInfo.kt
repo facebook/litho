@@ -63,7 +63,7 @@ interface LayoutInfo : ViewportInfo {
       firstMeasuredItemWidth: Int,
       firstMeasuredItemHeight: Int,
       recyclerMeasuredWidth: Int,
-      recyclerMeasuredHeight: Int
+      recyclerMeasuredHeight: Int,
   ): Int
 
   /**

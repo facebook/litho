@@ -36,14 +36,15 @@ class ChoreographerCompatTest {
     ShadowLooper.pauseMainLooper()
     val firstCallback = AtomicBoolean(false)
     val choreographerCompat = ChoreographerCompatImpl()
-    assertThat(choreographerCompat.isUsingChoreographer).isTrue
+    assertThat(choreographerCompat.isUsingChoreographer()).isTrue
     ChoreographerCompatImpl()
         .postFrameCallback(
             object : ChoreographerCompat.FrameCallback() {
               override fun doFrame(frameTimeNanos: Long) {
                 firstCallback.set(true)
               }
-            })
+            },
+        )
     assertThat(firstCallback.get()).isFalse
     ShadowLooper.runUiThreadTasks()
     assertThat(firstCallback.get()).isTrue
@@ -55,12 +56,12 @@ class ChoreographerCompatTest {
     val latch = CountDownLatch(1)
     val ref = AtomicReference<ChoreographerCompatImpl>()
     Thread {
-          ref.set(ChoreographerCompatImpl())
-          latch.countDown()
-        }
+      ref.set(ChoreographerCompatImpl())
+      latch.countDown()
+    }
         .start()
     assertThat(latch.await(5, TimeUnit.SECONDS)).isTrue
-    assertThat(ref.get().isUsingChoreographer).isFalse
+    assertThat(ref.get().isUsingChoreographer()).isFalse
     val firstCallback = AtomicBoolean(false)
     ref.get()
         .postFrameCallback(
@@ -68,12 +69,13 @@ class ChoreographerCompatTest {
               override fun doFrame(frameTimeNanos: Long) {
                 firstCallback.set(true)
               }
-            })
+            },
+        )
     assertThat(firstCallback.get()).isFalse
     ShadowLooper.runUiThreadTasks()
     assertThat(firstCallback.get()).isTrue
     ShadowLooper.pauseMainLooper()
-    assertThat(ref.get().isUsingChoreographer).isTrue
+    assertThat(ref.get().isUsingChoreographer()).isTrue
     val secondCallback = AtomicBoolean(false)
     ref.get()
         .postFrameCallback(
@@ -81,7 +83,8 @@ class ChoreographerCompatTest {
               override fun doFrame(frameTimeNanos: Long) {
                 secondCallback.set(true)
               }
-            })
+            },
+        )
     assertThat(secondCallback.get()).isFalse
     ShadowLooper.runUiThreadTasks()
     assertThat(secondCallback.get()).isTrue

@@ -1,0 +1,591 @@
+---
+id: view-styles
+title: Backgrounds, Clicks & View Behavior
+keywords:
+    - view styles
+    - litho styles
+    - view properties
+---
+
+View Styles are a subset of common props that modify how the underlying Android View behaves when a component is mounted. These styles encompass a wide range of View-level properties including:
+
+- **Visual appearance**: background, foreground, alpha, rotation, elevation, layer type
+- **Touch and interaction**: clickable, focusable, enabled, touch event handlers, touch expansion zones
+- **Clipping and drawing**: clip children, clip to outline, render effects
+- **State management**: selected state, duplicate parent state
+- **Accessibility and identification**: view ID, view tags, test keys, tooltip text, transition names
+- **Animation**: state list animator
+
+Setting any View Style property will cause the Component to be represented as a View at mount time if it wasn't going to already.
+
+View Styles are part of the `Style` API and can be chained together with other common props like layout properties (`margin`, `padding`) to create comprehensive styling configurations.
+
+## Background
+
+Sets a background on this component. You can set either a `Drawable` or a color as background. Use `backgroundColor` for a solid color tint; use `background` with a `Drawable` (e.g. an Android `GradientDrawable`) for gradient backgrounds, patterns, or any other drawable.
+
+### Using backgroundColor
+
+```kotlin
+import com.facebook.litho.view.backgroundColor
+import android.graphics.Color
+
+MyComponent(style = Style.backgroundColor(Color.RED))
+```
+
+### Using background with Drawable
+
+```kotlin
+import com.facebook.litho.view.background
+
+MyComponent(style = Style.background(drawable))
+```
+
+### Gradient background
+
+For a gradient background (e.g. linear or radial), pass an Android `GradientDrawable` to `background`:
+
+```kotlin
+import android.graphics.drawable.GradientDrawable
+import com.facebook.litho.view.background
+
+val gradient = GradientDrawable(
+    GradientDrawable.Orientation.TOP_BOTTOM,
+    intArrayOf(0xFF1877F2.toInt(), 0xFF42B72A.toInt()),
+)
+MyComponent(style = Style.background(gradient))
+```
+
+## Clickable
+
+Sets if the component should be clickable.
+
+
+```kotlin
+import com.facebook.litho.view.clickable
+
+MyComponent(style = Style.clickable(true))
+```
+
+## Clip Children
+
+Setting this to `false` allows child views of this view to draw outside its bounds, overriding the default behavior. It only applies to direct children.
+
+
+```kotlin
+import com.facebook.litho.view.clipChildren
+
+MyComponent(style = Style.clipChildren(false))  // Allow children to draw outside bounds
+```
+
+## Clip To Outline
+
+Sets whether the View's Outline should be used to clip the contents of the View.
+
+
+```kotlin
+import com.facebook.litho.view.clipToOutline
+
+MyComponent(style = Style.clipToOutline(true))
+```
+
+## Alpha
+
+Sets the transparency level of this component (0.0 = fully transparent, 1.0 = fully opaque).
+
+
+```kotlin
+import com.facebook.litho.view.alpha
+
+MyComponent(style = Style.alpha(0.5f))
+```
+
+## Elevation
+
+Sets the elevation of this component, which controls shadow rendering.
+
+
+```kotlin
+import com.facebook.litho.view.elevation
+import com.facebook.rendercore.dp
+
+MyComponent(style = Style.elevation(4.dp))
+```
+
+## Enabled
+
+Controls whether the component is enabled or disabled. When disabled (`false`), the component becomes non-interactive and won't respond to user interactions like clicks, touches, or other input events. Disabled components typically appear visually different (often grayed out) and child components inherit the disabled state.
+
+```kotlin
+import com.facebook.litho.view.enabled
+
+// Disable interaction
+MyComponent(style = Style.enabled(false))
+```
+
+```kotlin
+import com.facebook.litho.view.enabled
+
+// Enable conditionally based on state
+val isValid = useState { false }
+MyComponent(style = Style.enabled(isValid.value))
+```
+
+## Focusable
+
+Sets if the Component should be focusable.
+
+
+```kotlin
+import com.facebook.litho.view.focusable
+
+MyComponent(style = Style.focusable(true))
+```
+
+## Foreground
+
+Sets a foreground on this component. You can set either a `Drawable` or a color as foreground.
+
+### Using foreground with Drawable
+
+```kotlin
+import com.facebook.litho.view.foreground
+
+MyComponent(style = Style.foreground(drawable))
+```
+
+### Using foregroundColor
+
+```kotlin
+import com.facebook.litho.view.foregroundColor
+import android.graphics.Color
+
+MyComponent(style = Style.foregroundColor(Color.BLUE))
+```
+
+## Rotation
+
+Sets the degree that this component is rotated around the pivot point. Increasing the value results in clockwise rotation. By default, the pivot point is centered on the component.
+
+
+```kotlin
+import com.facebook.litho.view.rotation
+
+MyComponent(style = Style.rotation(45f))
+```
+
+## Rotation X
+
+Sets the degree that this component is rotated around the horizontal axis through the pivot point.
+
+
+```kotlin
+import com.facebook.litho.view.rotationX
+
+MyComponent(style = Style.rotationX(45f))
+```
+
+## Rotation Y
+
+Sets the degree that this component is rotated around the vertical axis through the pivot point.
+
+
+```kotlin
+import com.facebook.litho.view.rotationY
+
+MyComponent(style = Style.rotationY(45f))
+```
+
+## Scale
+
+Sets the scale (scaleX and scaleY) on this component. This is mostly relevant for animations and being able to animate size changes. Otherwise for non-animation usecases, you should use the standard layout properties to control the size of your component.
+
+
+```kotlin
+import com.facebook.litho.view.scale
+
+MyComponent(style = Style.scale(1.5f))
+```
+
+## Selected
+
+Changes the selection state of this Component.
+
+
+```kotlin
+import com.facebook.litho.view.selected
+
+MyComponent(style = Style.selected(true))
+```
+
+## Duplicate Children States
+
+Sets whether this ViewGroup's drawable states also include its children's drawable states. This is used, for example, to make a group appear to be focused when its child EditText or button is focused.
+
+
+```kotlin
+import com.facebook.litho.view.duplicateChildrenStates
+
+MyComponent(style = Style.duplicateChildrenStates(true))
+```
+
+## Duplicate Parent State
+
+Sets whether the View gets its drawable state (focused, pressed, etc.) from its direct parent rather than from itself.
+
+
+```kotlin
+import com.facebook.litho.view.duplicateParentState
+
+MyComponent(style = Style.duplicateParentState(true))
+```
+
+## onClick
+
+Sets a listener that will invoke the given lambda when this Component is clicked.
+
+
+```kotlin
+import com.facebook.litho.view.onClick
+
+MyComponent(
+    style = Style.onClick { event ->
+        // Handle click
+    }
+)
+```
+
+### Conditional onClick
+
+```kotlin
+import com.facebook.litho.view.onClick
+
+MyComponent(
+    style = Style.onClick(enabled = isClickEnabled) { event ->
+        // Handle click only if enabled
+    }
+)
+```
+
+## onLongClick
+
+Sets a listener that will invoke the given lambda when this Component is long clicked. Use this for **long-press** (also called *longpress*) gestures — e.g. opening a context menu after the user holds down on the component.
+
+The callback should return `true` if the event was handled and consumed, or `false` if it should continue propagating to parent components.
+
+```kotlin
+import com.facebook.litho.view.onLongClick
+
+MyComponent(
+    style = Style.onLongClick { event ->
+        // Handle long click (e.g., show context menu)
+        showContextMenu()
+        true  // Consume the event - don't propagate to parent
+    }
+)
+```
+
+## onTouch
+
+Sets a listener that will invoke the given lambda when this Component is touched.
+
+The callback should return `true` if the event was handled and consumed, or `false` to allow the event to continue being processed (e.g., by click handlers or parent components).
+
+```kotlin
+import com.facebook.litho.view.onTouch
+
+MyComponent(
+    style = Style.onTouch { event ->
+        // Handle touch event (e.g., custom gesture detection)
+        when (event.action) {
+            MotionEvent.ACTION_DOWN -> handleTouchDown(event)
+            MotionEvent.ACTION_MOVE -> handleTouchMove(event)
+            MotionEvent.ACTION_UP -> handleTouchUp(event)
+        }
+        false  // Allow other handlers (like onClick) to also process this event
+    }
+)
+```
+
+## onFocusedChanged
+
+Sets a listener that will invoke the given lambda when this Component's focus changes.
+
+
+```kotlin
+import com.facebook.litho.view.onFocusedChanged
+
+MyComponent(
+    style = Style.onFocusedChanged { event ->
+        // Handle focus change
+    }
+)
+```
+
+## onInterceptTouch
+
+Sets a listener that will intercept all touch screen motion events. This allows you to watch events as they are dispatched to your children, and take ownership of the current gesture at any point. Implementations should return true if they intercepted the event and wish to receive subsequent events, and false otherwise.
+
+
+```kotlin
+import com.facebook.litho.view.onInterceptTouch
+
+MyComponent(
+    style = Style.onInterceptTouch { event ->
+        // Decide whether to intercept
+        false
+    }
+)
+```
+
+## Test Key
+
+Sets testKey on this component for testing purposes.
+
+
+```kotlin
+import com.facebook.litho.view.testKey
+
+MyComponent(style = Style.testKey("my_component_test_key"))
+```
+
+## View ID
+
+Adds a View ID to this component.
+
+
+```kotlin
+import com.facebook.litho.view.viewId
+
+MyComponent(style = Style.viewId(R.id.my_view))
+```
+
+## View Tag
+
+Adds a View tag to this component.
+
+
+```kotlin
+import com.facebook.litho.view.viewTag
+
+MyComponent(style = Style.viewTag("my_tag"))
+```
+
+## View Tags
+
+Adds a set of View tags to this component. For each Int, Any pair in the given SparseArray, `View.setTag(Int, Any)` will be called.
+
+
+```kotlin
+import com.facebook.litho.view.viewTags
+import android.util.SparseArray
+
+val tags = SparseArray<Any>().apply {
+    put(R.id.tag_key_1, "value1")
+    put(R.id.tag_key_2, "value2")
+}
+MyComponent(style = Style.viewTags(tags))
+```
+
+## Transition Name
+
+Sets Activity transition name on this component for shared element transitions.
+
+
+```kotlin
+import com.facebook.litho.view.transitionName
+
+MyComponent(style = Style.transitionName("shared_element_transition"))
+```
+
+## Wrap In View
+
+Ensures this component is backed by an Android View when mounted.
+
+Normally, Litho avoids creating Views for performance reasons - components only mount Views when they render View content (via Primitives or MountSpecs) or use View-specific styles. Use `wrapInView` when you need to guarantee a View exists, such as when interfacing with Android APIs that require a View reference.
+
+**Note:** This is primarily used for advanced use cases. Most components don't need this style.
+
+
+```kotlin
+import com.facebook.litho.view.wrapInView
+
+MyComponent(style = Style.wrapInView())
+```
+
+## Outline Provider
+
+Sets a ViewOutlineProvider on this component. Prefer using the `clip` function which provides
+a cleaner API for both Shape-based clipping and raw ViewOutlineProvider usage.
+
+
+```kotlin
+import com.facebook.litho.view.clip
+import android.view.ViewOutlineProvider
+
+// Preferred: Shape-based API (handles both outlineProvider and clipToOutline)
+MyComponent(style = Style.clip(Shape.Circle))
+MyComponent(style = Style.clip(Shape.RoundedRectangle(12.dp)))
+// Per-corner radii; start/end follow the layout direction
+MyComponent(style = Style.clip(Shape.RoundedRectangle(topStart = 16.dp, topEnd = 16.dp)))
+
+// Alternative: Raw ViewOutlineProvider (requires separate clipToOutline call)
+MyComponent(style = Style.clip(ViewOutlineProvider.BOUNDS).clipToOutline(true))
+```
+
+**Note:** Before API 33, Android can only clip to a single-radius rounded rectangle. On those
+versions, per-corner radii clip exactly only when they are equal on all four corners or on the two
+corners of one side (for example, only the top corners); in the one-side case the elevation shadow
+is approximate. Other combinations use the smallest non-zero radius on all corners.
+
+## State List Animator
+
+Attaches the provided StateListAnimator to this Component.
+
+
+```kotlin
+import com.facebook.litho.view.stateListAnimator
+import android.animation.StateListAnimator
+
+val animator = StateListAnimator()
+MyComponent(style = Style.stateListAnimator(animator))
+```
+
+## Touch Expansion
+
+Expands the touch target area of this component beyond its visual bounds. This is useful for making small components (like icons or buttons) easier to tap while keeping their visual size small.
+
+The expansion is applied uniformly on all edges or can be customized per edge. This follows Material Design guidelines that recommend a minimum touch target of 48dp.
+
+```kotlin
+import com.facebook.litho.view.touchExpansion
+import com.facebook.rendercore.dp
+
+// Expand touch area by 8dp on all sides
+MyComponent(style = Style.touchExpansion(all = 8.dp))
+```
+
+### Per-edge touch expansion
+
+```kotlin
+import com.facebook.litho.view.touchExpansion
+import com.facebook.rendercore.dp
+
+// Custom expansion for each edge
+MyComponent(
+    style = Style.touchExpansion(
+        start = 8.dp,
+        top = 4.dp,
+        end = 8.dp,
+        bottom = 4.dp
+    )
+)
+```
+
+### Practical example
+
+```kotlin
+// Make a small icon easier to tap
+MyComponent(
+    style = Style
+        .width(24.dp)
+        .height(24.dp)
+        .touchExpansion(all = 12.dp)  // Total touch area: 48dp x 48dp
+        .onClick { handleIconClick() }
+)
+```
+
+## Shadow
+
+Style for attaching a standard Material Design shadow to a component. Larger elevation values result in larger shadows.
+
+
+```kotlin
+import com.facebook.litho.view.shadow
+import com.facebook.rendercore.dp
+
+MyComponent(style = Style.shadow(elevation = 8.dp))
+```
+
+### Shadow with custom colors
+
+```kotlin
+import com.facebook.litho.view.shadow
+import com.facebook.rendercore.dp
+import android.graphics.Color
+import android.view.ViewOutlineProvider
+
+MyComponent(
+    style = Style.shadow(
+        elevation = 8.dp,
+        outlineProvider = ViewOutlineProvider.BOUNDS,
+        ambientShadowColor = Color.BLACK,
+        spotShadowColor = Color.BLACK
+    )
+)
+```
+
+## Pivot Percent
+
+Sets the transform pivot of a View (used for scale and rotation transforms) to be centered at the given percentages of the View's width and height. The default pivot point is (50f, 50f).
+
+
+```kotlin
+import com.facebook.litho.view.pivotPercent
+
+MyComponent(style = Style.pivotPercent(pivotXPercent = 0f, pivotYPercent = 0f))
+```
+
+## Keyboard Navigation Cluster
+
+Sets if the Component should be a keyboard navigation cluster.
+
+
+```kotlin
+import com.facebook.litho.view.keyboardNavigationCluster
+
+MyComponent(style = Style.keyboardNavigationCluster(true))
+```
+
+## Tooltip Text
+
+Sets the tooltip text which will be displayed in a small popup next to the view.
+
+
+```kotlin
+import com.facebook.litho.view.tooltipText
+
+MyComponent(style = Style.tooltipText("This is a tooltip"))
+```
+
+## Layer Type
+
+Specifies the type of layer backing this view, which affects rendering performance and capabilities.
+
+- `LAYER_TYPE_NONE` (default) - No special layer, standard rendering
+- `LAYER_TYPE_SOFTWARE` - Forces software rendering, useful for compatibility or when hardware acceleration causes issues
+- `LAYER_TYPE_HARDWARE` - Hardware-accelerated rendering, better for complex animations or transparency effects but uses more memory
+
+**When to use:**
+- Use `LAYER_TYPE_HARDWARE` when animating alpha, rotation, or translation for smoother performance
+- Use `LAYER_TYPE_SOFTWARE` as a fallback if you encounter rendering issues with hardware acceleration
+- Default `LAYER_TYPE_NONE` is fine for most static content
+
+```kotlin
+import com.facebook.litho.view.layerType
+import com.facebook.litho.LayerType
+
+// Enable hardware layer for smooth animations
+MyComponent(style = Style.layerType(LayerType.LAYER_TYPE_HARDWARE))
+```
+
+## Blur
+
+Creates a Blur RenderEffect with the specified radius along the x and y axis and applies it to the component. This style is only supported on Android 12 and above. Usage of this Style on older Android versions will be ignored.
+
+
+```kotlin
+import com.facebook.litho.view.blur
+
+MyComponent(style = Style.blur(radiusX = 10f, radiusY = 10f))
+```

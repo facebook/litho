@@ -34,8 +34,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
-import org.robolectric.Shadows
 import org.robolectric.annotation.LooperMode
+import org.robolectric.shadow.api.Shadow
 import org.robolectric.shadows.ShadowLooper
 
 @LooperMode(LooperMode.Mode.LEGACY)
@@ -55,9 +55,10 @@ class LayoutStateFutureReleaseTest {
     widthSpec = makeSizeSpec(40, EXACTLY)
     heightSpec = makeSizeSpec(40, EXACTLY)
     layoutThreadShadowLooper =
-        Shadows.shadowOf(
+        Shadow.extract(
             Whitebox.invokeMethod<Any>(ComponentTree::class.java, "getDefaultLayoutThreadLooper")
-                as Looper)
+                as Looper,
+        )
   }
 
   private fun runToEndOfTasks() {
@@ -76,15 +77,15 @@ class LayoutStateFutureReleaseTest {
     val resolveContext = c.setRenderStateContextForTests()
     resolveContext.setLayoutStateFutureForTest(layoutStateFutureMock)
     val wait = CountDownLatch(1)
-    val child1 =
-        TestChildComponent(
-            wait,
-            null,
-            object : WaitActions {
-              override fun unblock(layoutStateFuture: TreeFuture<*>?) {
-                doReturn(true).`when`(layoutStateFutureMock).isReleased
-              }
-            })
+    val child1 = TestChildComponent(
+        wait,
+        null,
+        object : WaitActions {
+          override fun unblock(layoutStateFuture: TreeFuture<*>?) {
+            doReturn(true).`when`(layoutStateFutureMock).isReleased
+          }
+        },
+    )
     val child2 = TestChildComponent()
     val row = Row.create(context).child(child1).child(child2).build()
     val result = row.resolve(resolveContext, ScopedComponentInfo(row, c, null), 0, 0).lithoNode
@@ -100,15 +101,15 @@ class LayoutStateFutureReleaseTest {
     val resolveContext = c.setRenderStateContextForTests()
     resolveContext.setLayoutStateFutureForTest(layoutStateFutureMock)
     val wait = CountDownLatch(1)
-    val child1 =
-        TestChildComponent(
-            wait,
-            null,
-            object : WaitActions {
-              override fun unblock(layoutStateFuture: TreeFuture<*>?) {
-                doReturn(true).`when`(layoutStateFutureMock).isReleased
-              }
-            })
+    val child1 = TestChildComponent(
+        wait,
+        null,
+        object : WaitActions {
+          override fun unblock(layoutStateFuture: TreeFuture<*>?) {
+            doReturn(true).`when`(layoutStateFutureMock).isReleased
+          }
+        },
+    )
     val child2 = TestChildComponent()
     val column = Column.create(context).child(child1).child(child2).build()
     val result =
@@ -127,7 +128,7 @@ class LayoutStateFutureReleaseTest {
   constructor(
       private val wait: CountDownLatch? = null,
       private val unlockFinishedLayout: CountDownLatch? = null,
-      val waitActions: WaitActions? = null
+      val waitActions: WaitActions? = null,
   ) : SpecGeneratedComponent("TestChildComponent") {
     private val layoutStateFutureList: MutableList<TreeFuture<*>?>
     var hasRunLayout = false
@@ -136,7 +137,7 @@ class LayoutStateFutureReleaseTest {
         resolveContext: ResolveContext,
         c: ComponentContext,
         widthSpec: Int,
-        heightSpec: Int
+        heightSpec: Int,
     ): RenderResult<Component> {
       waitActions?.unblock(c.layoutStateFuture)
       if (wait != null) {

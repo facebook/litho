@@ -50,10 +50,12 @@ object ContextUtils {
   @JvmStatic
   fun getRootContext(context: Context): Context {
     var currentContext: Context = context
-    while (currentContext is ContextWrapper &&
-        currentContext !is Activity &&
-        currentContext !is Application &&
-        currentContext !is Service) {
+    while (
+        currentContext is ContextWrapper &&
+            currentContext !is Activity &&
+            currentContext !is Application &&
+            currentContext !is Service
+    ) {
       currentContext = currentContext.baseContext
     }
     return currentContext

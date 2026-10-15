@@ -34,13 +34,13 @@ class MountBehavior<ContentType : Any>(
     private val id: Long,
     private val description: (() -> String)?,
     private val contentAllocator: ContentAllocator<ContentType>,
-    private val mountConfigurationCall: MountConfigurationScope<ContentType>.() -> Unit
+    private val mountConfigurationCall: MountConfigurationScope<ContentType>.() -> Unit,
 ) {
 
   constructor(
       id: Long,
       contentAllocator: ContentAllocator<ContentType>,
-      mountConfigurationCall: MountConfigurationScope<ContentType>.() -> Unit
+      mountConfigurationCall: MountConfigurationScope<ContentType>.() -> Unit,
   ) : this(id, null, contentAllocator, mountConfigurationCall)
 
   internal val renderUnit: PrimitiveRenderUnit<ContentType>
@@ -52,9 +52,9 @@ class MountBehavior<ContentType : Any>(
     renderUnit =
         object :
             PrimitiveRenderUnit<ContentType>(
-                contentAllocator.renderType,
                 mountConfigurationScope.fixedBinders,
-                mountConfigurationScope.doesMountRenderTreeHosts) {
+                mountConfigurationScope.doesMountRenderTreeHosts,
+            ) {
           override val contentAllocator: ContentAllocator<ContentType>
             get() = this@MountBehavior.contentAllocator
 
@@ -70,16 +70,14 @@ class MountBehavior<ContentType : Any>(
 }
 
 abstract class PrimitiveRenderUnit<ContentType : Any>(
-    renderType: RenderType,
     fixedMountBinders: List<DelegateBinder<*, ContentType, in Any>>,
-    private val doesMountRenderTreeHosts: Boolean
+    private val doesMountRenderTreeHosts: Boolean,
 ) :
     RenderUnit<ContentType>(
-        renderType,
         fixedMountBinders,
         emptyList(), // optional binders
-        emptyList() // attach binders
-        ) {
+        emptyList(), // attach binders
+    ) {
 
   override fun doesMountRenderTreeHosts(): Boolean = doesMountRenderTreeHosts
 }

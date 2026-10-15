@@ -20,9 +20,12 @@ import android.content.Context
 import android.view.View
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.config.LithoDebugConfigurations
+import com.facebook.litho.core.height
+import com.facebook.litho.core.width
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.SimpleMountSpecTester
+import com.facebook.rendercore.px
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assume
 import org.junit.Before
@@ -36,7 +39,8 @@ class ComponentTreeDumpingHelperTest {
   fun skipIfRelease() {
     Assume.assumeTrue(
         "These tests cover debug functionality and can only be run for debug mode.",
-        LithoDebugConfigurations.isDebugModeEnabled)
+        LithoDebugConfigurations.isDebugModeEnabled,
+    )
   }
 
   @Test
@@ -44,18 +48,20 @@ class ComponentTreeDumpingHelperTest {
     val component: Component =
         object : InlineLayoutSpec() {
           override fun onCreateLayout(c: ComponentContext): Component? =
-              SimpleMountSpecTester.create(c).widthPx(100).heightPx(100).build()
+              SimpleMountSpecTester(style = Style.width(100.px).height(100.px))
         }
 
     val androidContext = ApplicationProvider.getApplicationContext<Context>()
     val baseContext = ComponentContext(androidContext)
-    val componentTree = ComponentTree.create(baseContext, component).build()
+    val componentTree =
+        ComponentTree.create(baseContext, component).enableChildClipping(true).build()
     val lithoView = LithoView(androidContext)
 
     lithoView.componentTree = componentTree
     lithoView.measure(
         View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
-        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED))
+        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+    )
     val string = ComponentTreeDumpingHelper.dumpContextTree(componentTree)
     assertThat(string)
         .containsPattern("InlineLayout\\{V}\n  SimpleMountSpecTester\\{V 100.0x100.0}")

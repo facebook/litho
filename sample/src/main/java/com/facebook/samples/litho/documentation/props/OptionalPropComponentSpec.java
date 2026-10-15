@@ -40,8 +40,7 @@ public class OptionalPropComponentSpec {
   }
 
   @OnCreateInitialState
-  static void onCreateInitialState(
-      ComponentContext c, @Prop(optional = true) @Nullable String location) {
+  static void onCreateInitialState(ComponentContext c) {
     // ...
   }
 }

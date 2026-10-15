@@ -41,7 +41,7 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class KTransitionTest {
 
-  @Rule @JvmField val mLithoTestRule = LithoTestRule()
+  @Rule @JvmField val lithoTestRule = LithoTestRule()
 
   @Before
   fun setup() {
@@ -55,7 +55,7 @@ class KTransitionTest {
 
   @Test
   fun useTransition_nullDependency_updatesTransitionOnce() {
-    val testLithoView = mLithoTestRule.createTestLithoView()
+    val testLithoView = lithoTestRule.createTestLithoView()
     var updateCounter = 0
 
     class TestComponent : KComponent() {
@@ -77,7 +77,7 @@ class KTransitionTest {
 
   @Test
   fun useTransition_fixedDependency_updatesTransitionOnce() {
-    val testLithoView = mLithoTestRule.createTestLithoView()
+    val testLithoView = lithoTestRule.createTestLithoView()
     var updateCounter = 0
 
     class TestComponent : KComponent() {
@@ -99,7 +99,7 @@ class KTransitionTest {
 
   @Test
   fun useTransition_dynamicDependency_updatesTransitionAlways() {
-    val testLithoView = mLithoTestRule.createTestLithoView()
+    val testLithoView = lithoTestRule.createTestLithoView()
     var updateCounter = 0
 
     class TestComponent : KComponent() {
@@ -121,7 +121,7 @@ class KTransitionTest {
 
   @Test
   fun useTransition_changingDependency_updatesTransitionOnChange() {
-    val testLithoView = mLithoTestRule.createTestLithoView()
+    val testLithoView = lithoTestRule.createTestLithoView()
     var updateCounter = 0
 
     class TestComponent(val dep: Int) : KComponent() {
@@ -143,7 +143,7 @@ class KTransitionTest {
 
   @Test
   fun useTransition_twoFixedDependencies_updatesTransitionOnce() {
-    val testLithoView = mLithoTestRule.createTestLithoView()
+    val testLithoView = lithoTestRule.createTestLithoView()
     var updateCounter = 0
 
     class TestComponent : KComponent() {
@@ -165,7 +165,7 @@ class KTransitionTest {
 
   @Test
   fun useTransition_anyChangingDependency_updatesTransitionOnChange() {
-    val testLithoView = mLithoTestRule.createTestLithoView()
+    val testLithoView = lithoTestRule.createTestLithoView()
     var updateCounter = 0
 
     class TestComponent(val dep: Int) : KComponent() {
@@ -187,7 +187,7 @@ class KTransitionTest {
 
   @Test
   fun useTransition_multipleChangingDependencies_updatesTransitionOnAnyChange() {
-    val testLithoView = mLithoTestRule.createTestLithoView()
+    val testLithoView = lithoTestRule.createTestLithoView()
     var updateCounter = 0
 
     class TestComponent(val dep1: Int, val dep2: String) : KComponent() {
@@ -214,7 +214,7 @@ class KTransitionTest {
 
   @Test
   fun useTransition_changingDependency_propagatesCorrectDiff() {
-    val testLithoView = mLithoTestRule.createTestLithoView()
+    val testLithoView = lithoTestRule.createTestLithoView()
     var outerDiff1: Diff<Int> by Delegates.notNull()
     var outerDiff2: Diff<String> by Delegates.notNull()
 
@@ -251,7 +251,7 @@ class KTransitionTest {
 
   @Test
   fun useTransition_alternateChangingDependency_propagatesCorrectDiff() {
-    val testLithoView = mLithoTestRule.createTestLithoView()
+    val testLithoView = lithoTestRule.createTestLithoView()
     var diff: Diff<Int> by Delegates.notNull()
 
     class TestComponent(private val dep: Int) : KComponent() {

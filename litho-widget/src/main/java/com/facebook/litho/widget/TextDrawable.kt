@@ -25,7 +25,6 @@ import android.graphics.Path
 import android.graphics.PixelFormat
 import android.graphics.Rect
 import android.graphics.Region
-import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Handler
@@ -41,16 +40,16 @@ import androidx.annotation.ColorInt
 import androidx.annotation.VisibleForTesting
 import androidx.core.graphics.withSave
 import com.facebook.fbui.textlayoutbuilder.util.LayoutMeasureUtil
-import com.facebook.litho.ComponentsSystrace.beginSection
-import com.facebook.litho.ComponentsSystrace.endSection
-import com.facebook.litho.ComponentsSystrace.isTracing
+import com.facebook.litho.ComponentsSystrace.trace
+import com.facebook.litho.LayoutTextContentItem
 import com.facebook.litho.TextContent
-import com.facebook.litho.TextContent.SpannableItem
 import com.facebook.litho.Touchable
 import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.rendercore.text.BidiIsolationMarkerSpan
 import com.facebook.rendercore.text.ClickableSpanListener
 import com.facebook.rendercore.text.LongClickableSpan
 import com.facebook.rendercore.text.TouchableSpanListener
+import kotlin.math.floor
 
 /**
  * A [Drawable] for mounting text content from a [com.facebook.litho.Component].
@@ -67,6 +66,21 @@ class TextDrawable : Drawable(), Touchable, TextContent, Drawable.Callback {
   private var clipToBounds = false
   private var shouldHandleTouch = false
   var text: CharSequence? = null
+    private set
+
+  /**
+   * The complete text the component was given, before any truncation. Differs from [text] only for
+   * a custom ellipsis, where [text] is the pre-truncated string actually drawn. Null until set by
+   * the full [mount] overload (other overloads leave it null and fall back to [text]).
+   */
+  var fullText: CharSequence? = null
+    private set
+
+  /**
+   * Whether the component pre-truncated the text for a custom ellipsis. A standard ellipsize leaves
+   * the full text in place and is detected from the layout's ellipsis metadata instead.
+   */
+  var isExplicitlyTruncated: Boolean = false
     private set
 
   private var colorStateList: ColorStateList? = null
@@ -94,6 +108,7 @@ class TextDrawable : Drawable(), Touchable, TextContent, Drawable.Callback {
   private var longClickActivated = false
   private var longClickHandler: Handler? = null
   private var longClickRunnable: LongClickRunnable? = null
+  private var longClickSpanAreaRegion: Region? = null
   private var spanListener: ClickableSpanListener? = null
   private var touchableSpanListener: TouchableSpanListener? = null
   private var contextLogTag: String? = null
@@ -139,29 +154,23 @@ class TextDrawable : Drawable(), Touchable, TextContent, Drawable.Callback {
    */
   private fun maybeDrawOutline(canvas: Canvas) {
     val layoutToUse = layout ?: return
-    val isTracing = isTracing
-    if (isTracing) {
-      beginSection("TextDrawable.maybeDrawOutline")
-    }
-    if (outlineWidth > 0f && outlineColor != 0) {
-      val p: Paint = layoutToUse.paint
-      val savedColor = p.color
-      val savedStyle = p.style
-      val savedStrokeWidth = p.strokeWidth
-      val savedJoin = p.strokeJoin
-      p.strokeJoin = Paint.Join.ROUND
-      p.color = outlineColor
-      p.style = Paint.Style.STROKE
-      p.strokeWidth = outlineWidth
-      layoutToUse.draw(canvas)
-      p.strokeWidth = savedStrokeWidth
-      p.style = savedStyle
-      p.color = savedColor
-      p.strokeJoin = savedJoin
-    }
-
-    if (isTracing) {
-      endSection()
+    trace({ "TextDrawable.maybeDrawOutline" }) {
+      if (outlineWidth > 0f && outlineColor != 0) {
+        val p: Paint = layoutToUse.paint
+        val savedColor = p.color
+        val savedStyle = p.style
+        val savedStrokeWidth = p.strokeWidth
+        val savedJoin = p.strokeJoin
+        p.strokeJoin = Paint.Join.ROUND
+        p.color = outlineColor
+        p.style = Paint.Style.STROKE
+        p.strokeWidth = outlineWidth
+        layoutToUse.draw(canvas)
+        p.strokeWidth = savedStrokeWidth
+        p.style = savedStyle
+        p.color = savedColor
+        p.strokeJoin = savedJoin
+      }
     }
   }
 
@@ -208,8 +217,10 @@ class TextDrawable : Drawable(), Touchable, TextContent, Drawable.Callback {
   }
 
   override fun onTouchEvent(event: MotionEvent, host: View): Boolean {
-    if ((shouldHandleTouchForClickableSpan(event) ||
-        shouldHandleTouchForLongClickableSpan(event)) && handleOnTouchForSpans(event, host)) {
+    if (
+        (shouldHandleTouchForClickableSpan(event) ||
+            shouldHandleTouchForLongClickableSpan(event)) && handleOnTouchForSpans(event, host)
+    ) {
       return true
     }
 
@@ -246,9 +257,11 @@ class TextDrawable : Drawable(), Touchable, TextContent, Drawable.Callback {
     if (action == MotionEvent.ACTION_UP) {
       clearSelection()
       val spanListenerToUse = spanListener
-      if (clickActivationAllowed &&
-          currentSpan != null &&
-          (spanListenerToUse == null || !spanListenerToUse.onClick(currentSpan, view))) {
+      if (
+          clickActivationAllowed &&
+              currentSpan != null &&
+              (spanListenerToUse == null || !spanListenerToUse.onClick(currentSpan, view))
+      ) {
         currentSpan.onClick(view)
       }
       currentlyTouchedSpan = null
@@ -283,6 +296,12 @@ class TextDrawable : Drawable(), Touchable, TextContent, Drawable.Callback {
       touchableSpanListenerToUse?.onTouch(null, event, view)
       return false
     }
+    val cachedLongClickableSpanForMove =
+        if (action == MotionEvent.ACTION_MOVE && longClickSpanAreaRegion != null) {
+          longClickRunnable?.longClickableSpan
+        } else {
+          null
+        }
 
     if (action == MotionEvent.ACTION_MOVE && !longClickActivated && longClickRunnable != null) {
       trackLongClickBoundaryOnMove(event)
@@ -298,6 +317,19 @@ class TextDrawable : Drawable(), Touchable, TextContent, Drawable.Callback {
       return false
     }
 
+    if (
+        ComponentsConfiguration.enableTextDrawableTouchAnrFix && action == MotionEvent.ACTION_MOVE
+    ) {
+      return false
+    }
+    if (cachedLongClickableSpanForMove != null) {
+      if (longClickRunnable?.longClickableSpan !== cachedLongClickableSpanForMove) {
+        clearSelection()
+        return false
+      }
+      touchableSpanListener?.onTouch(cachedLongClickableSpanForMove, event, view)
+      return true
+    }
     val x = event.x.toInt() - bounds.left
     val y = event.y.toInt() - bounds.top
 
@@ -316,8 +348,10 @@ class TextDrawable : Drawable(), Touchable, TextContent, Drawable.Callback {
     if (action == MotionEvent.ACTION_UP) {
       clearSelection()
       val spanListenerToUse = spanListener
-      if (clickActivationAllowed &&
-          (spanListenerToUse == null || !spanListenerToUse.onClick(clickedSpan, view))) {
+      if (
+          clickActivationAllowed &&
+              (spanListenerToUse == null || !spanListenerToUse.onClick(clickedSpan, view))
+      ) {
         clickedSpan.onClick(view)
       }
     } else if (action == MotionEvent.ACTION_DOWN) {
@@ -347,7 +381,7 @@ class TextDrawable : Drawable(), Touchable, TextContent, Drawable.Callback {
   private fun handleNoSpanOrOutOfBoundsCancelEvent(
       currentlyTouchedSpan: ClickableSpan?,
       event: MotionEvent,
-      view: View
+      view: View,
   ) {
     clearSelection()
     resetLongClick()
@@ -357,10 +391,19 @@ class TextDrawable : Drawable(), Touchable, TextContent, Drawable.Callback {
   private fun resetLongClick() {
     longClickRunnable?.let { runnable -> longClickHandler?.removeCallbacks(runnable) }
     longClickRunnable = null
+    longClickSpanAreaRegion = null
     longClickActivated = false
   }
 
   private fun registerForLongClick(longClickableSpan: LongClickableSpan, view: View) {
+    longClickSpanAreaRegion =
+        if (
+            !ComponentsConfiguration.enableTextDrawableTouchAnrFix && hasBidiIsolationMarker(text)
+        ) {
+          createLongClickSpanAreaRegion(longClickableSpan)
+        } else {
+          null
+        }
     val runnable = LongClickRunnable(longClickableSpan, view)
     longClickRunnable = runnable
     longClickHandler?.postDelayed(runnable, ViewConfiguration.getLongPressTimeout().toLong())
@@ -402,12 +445,74 @@ class TextDrawable : Drawable(), Touchable, TextContent, Drawable.Callback {
       return
     }
 
-    val clickableSpan =
-        getClickableSpanInCoords(event.x.toInt() - bounds.left, event.y.toInt() - bounds.top)
+    val spanAreaRegion = longClickSpanAreaRegion
+    if (spanAreaRegion != null) {
+      val x = event.x.toInt() - bounds.left
+      val y = event.y.toInt() - bounds.top
+      if (!spanAreaRegion.contains(x, y)) {
+        resetLongClick()
+      }
+      return
+    }
+
+    val clickableSpan = getClickableSpanInCoords(
+        event.x.toInt() - bounds.left,
+        event.y.toInt() - bounds.top,
+    )
     if (longClickRunnable?.longClickableSpan !== clickableSpan) {
-      // we are out of span area, reset longpress
       resetLongClick()
     }
+  }
+
+  private fun createLongClickSpanAreaRegion(longClickableSpan: LongClickableSpan): Region? {
+    val layoutToUse = layout ?: return null
+    val textToUse = text as? Spanned ?: return null
+    val spanStart = textToUse.getSpanStart(longClickableSpan)
+    val spanEnd = textToUse.getSpanEnd(longClickableSpan)
+    if (spanStart < 0 || spanEnd <= spanStart) {
+      return null
+    }
+
+    val clipBoundsRegion = Region()
+    val startLine = layoutToUse.getLineForOffset(spanStart)
+    val endLine = layoutToUse.getLineForOffset(spanEnd - 1)
+    for (line in startLine..endLine) {
+      clipBoundsRegion.op(getTextLineBounds(layoutToUse, line), Region.Op.UNION)
+    }
+
+    val spanAreaPath = Path()
+    layoutToUse.getSelectionPath(spanStart, spanEnd, spanAreaPath)
+    val spanAreaRegion = Region().apply { setPath(spanAreaPath, clipBoundsRegion) }
+    return if (spanAreaRegion.isEmpty) null else spanAreaRegion
+  }
+
+  private fun getTextLineBounds(layoutToUse: Layout, line: Int): Rect {
+    val left: Float
+    val right: Float
+    if (layoutToUse.alignment == Layout.Alignment.ALIGN_CENTER) {
+      left = layoutToUse.getLineLeft(line)
+      right = layoutToUse.getLineRight(line)
+    } else {
+      val direction = layoutToUse.getParagraphDirection(line)
+      val alignment = layoutToUse.getParagraphAlignment(line)
+      val rightAligned =
+          ((direction == Layout.DIR_RIGHT_TO_LEFT && alignment == Layout.Alignment.ALIGN_NORMAL) ||
+              (direction == Layout.DIR_LEFT_TO_RIGHT &&
+                  alignment == Layout.Alignment.ALIGN_OPPOSITE))
+      left =
+          if (rightAligned) layoutToUse.width - layoutToUse.getLineMax(line)
+          else layoutToUse.getParagraphLeft(line).toFloat()
+      right =
+          if (rightAligned) layoutToUse.getParagraphRight(line).toFloat()
+          else layoutToUse.getLineMax(line)
+    }
+
+    return Rect(
+        floor(left.toDouble()).toInt().coerceAtLeast(0),
+        layoutToUse.getLineTop(line),
+        (floor(right.toDouble()).toInt() + 1).coerceAtMost(layoutToUse.width),
+        layoutToUse.getLineBottom(line),
+    )
   }
 
   private fun shouldHandleTextOffsetOnTouch(event: MotionEvent): Boolean {
@@ -420,7 +525,7 @@ class TextDrawable : Drawable(), Touchable, TextContent, Drawable.Callback {
       text: CharSequence?,
       layout: Layout?,
       userColor: Int,
-      clickableSpans: Array<ClickableSpan>?
+      clickableSpans: Array<ClickableSpan>?,
   ) {
     mount(
         text,
@@ -441,7 +546,8 @@ class TextDrawable : Drawable(), Touchable, TextContent, Drawable.Callback {
         -1,
         -1,
         0f,
-        null)
+        null,
+    )
   }
 
   fun mount(text: CharSequence?, layout: Layout?, userColor: Int, highlightColor: Int) {
@@ -464,7 +570,8 @@ class TextDrawable : Drawable(), Touchable, TextContent, Drawable.Callback {
         -1,
         -1,
         0f,
-        null)
+        null,
+    )
   }
 
   fun mount(
@@ -474,7 +581,7 @@ class TextDrawable : Drawable(), Touchable, TextContent, Drawable.Callback {
       colorStateList: ColorStateList?,
       userColor: Int,
       highlightColor: Int,
-      clickableSpans: Array<ClickableSpan>?
+      clickableSpans: Array<ClickableSpan>?,
   ) {
     mount(
         text,
@@ -495,7 +602,8 @@ class TextDrawable : Drawable(), Touchable, TextContent, Drawable.Callback {
         -1,
         -1,
         0f,
-        null)
+        null,
+    )
   }
 
   fun mount(
@@ -517,13 +625,18 @@ class TextDrawable : Drawable(), Touchable, TextContent, Drawable.Callback {
       highlightStartOffset: Int,
       highlightEndOffset: Int,
       clickableSpanExpandedOffset: Float,
-      contextLogTag: String?
+      contextLogTag: String?,
+      fullText: CharSequence? = null,
+      isExplicitlyTruncated: Boolean = false,
   ) {
     this.layout = layout
+    longClickSpanAreaRegion = null
     this.layoutTranslationX = layoutTranslationX
     this.layoutTranslationY = layoutTranslationY
     this.clipToBounds = clipToBounds
     this.text = text
+    this.fullText = fullText
+    this.isExplicitlyTruncated = isExplicitlyTruncated
     this.clickableSpans = clickableSpans
     this.touchableSpanListener = touchableSpanListener
     if (longClickHandler == null && containsLongClickableSpan(clickableSpans)) {
@@ -584,7 +697,7 @@ class TextDrawable : Drawable(), Touchable, TextContent, Drawable.Callback {
   private fun highlightOffsetsValid(
       text: CharSequence?,
       highlightStart: Int,
-      highlightEnd: Int
+      highlightEnd: Int,
   ): Boolean {
     return text != null &&
         highlightStart >= 0 &&
@@ -593,10 +706,15 @@ class TextDrawable : Drawable(), Touchable, TextContent, Drawable.Callback {
   }
 
   fun unmount() {
+    if (hasBidiIsolationMarker(text)) {
+      resetLongClick()
+    }
     textContentItem = null
     layout = null
     layoutTranslationY = 0f
     text = null
+    fullText = null
+    isExplicitlyTruncated = false
     clickableSpans = null
     shouldHandleTouch = false
     highlightColor = 0
@@ -722,7 +840,7 @@ class TextDrawable : Drawable(), Touchable, TextContent, Drawable.Callback {
   private fun getClickableSpanInProximityToClick(
       x: Float,
       y: Float,
-      tapRadius: Float
+      tapRadius: Float,
   ): ClickableSpan? {
     val touchAreaRegion = Region()
     val clipBoundsRegion = Region()
@@ -741,8 +859,12 @@ class TextDrawable : Drawable(), Touchable, TextContent, Drawable.Callback {
     val clickableSpansToUse = clickableSpans
     if (clickableSpansToUse != null) {
       for (span in clickableSpansToUse) {
-        if (!isClickCloseToSpan(
-            span, text as Spanned?, layout, touchAreaRegion, clipBoundsRegion)) {
+        if (span is ExactBoundsClickableSpan) {
+          continue
+        }
+        if (
+            !isClickCloseToSpan(span, text as Spanned?, layout, touchAreaRegion, clipBoundsRegion)
+        ) {
           continue
         }
 
@@ -792,8 +914,10 @@ class TextDrawable : Drawable(), Touchable, TextContent, Drawable.Callback {
    * @param selectionEnd
    */
   private fun setSelection(selectionStart: Int, selectionEnd: Int) {
-    if (Color.alpha(highlightColor) == 0 ||
-        (this.selectionStart == selectionStart && this.selectionEnd == selectionEnd)) {
+    if (
+        Color.alpha(highlightColor) == 0 ||
+            (this.selectionStart == selectionStart && this.selectionEnd == selectionEnd)
+    ) {
       return
     }
 
@@ -819,7 +943,7 @@ class TextDrawable : Drawable(), Touchable, TextContent, Drawable.Callback {
       buffer: Spanned?,
       layout: Layout?,
       touchAreaRegion: Region,
-      clipBoundsRegion: Region
+      clipBoundsRegion: Region,
   ): Boolean {
     if (layout == null || buffer == null) {
       return false
@@ -829,7 +953,10 @@ class TextDrawable : Drawable(), Touchable, TextContent, Drawable.Callback {
     val clickableSpanAreaPath = Path()
 
     layout.getSelectionPath(
-        buffer.getSpanStart(span), buffer.getSpanEnd(span), clickableSpanAreaPath)
+        buffer.getSpanStart(span),
+        buffer.getSpanEnd(span),
+        clickableSpanAreaPath,
+    )
     clickableSpanAreaRegion.setPath(clickableSpanAreaPath, clipBoundsRegion)
 
     return clickableSpanAreaRegion.op(touchAreaRegion, Region.Op.INTERSECT)
@@ -870,113 +997,19 @@ class TextDrawable : Drawable(), Touchable, TextContent, Drawable.Callback {
   private val orCreateTextItem: TextContent.Item?
     get() {
       val layout = layout ?: return null
-
-      if (textContentItem == null) {
-        /* we get a reference to the values of these properties when we need it. this potentially avoids
-         * situations where the `mLayout` could be set to null after we got access to the `TextContent.Item` */
-        val text = requireNotNull(text)
-        val textSize = textSize
-        val typeface = layout.paint.typeface
-        val color = color
-        val fontLineHeight =
-            ((layout.paint.getFontMetricsInt(null) * layout.spacingMultiplier) + layout.spacingAdd)
-        val linesCount = layout.lineCount
-
-        textContentItem =
-            object : TextContent.Item {
-              override val text: CharSequence
-                get() = text
-
-              override val textSize: Float
-                get() = textSize
-
-              override val typeface: Typeface
-                get() = typeface
-
-              override val color: Int
-                get() = color
-
-              override val fontLineHeight: Float
-                get() = fontLineHeight
-
-              override val linesCount: Int
-                get() = linesCount
-
-              override val spannables: List<SpannableItem>
-                get() {
-                  val result: MutableList<SpannableItem> = ArrayList()
-                  if (text is Spanned) {
-                    val spanned = text
-                    val spans = spanned.getSpans(0, text.length, Any::class.java)
-                    for (span in spans) {
-                      val start = spanned.getSpanStart(span)
-                      val end = spanned.getSpanEnd(span)
-                      if (start != -1 && end != -1 && start != end) {
-                        result.add(
-                            object : SpannableItem {
-                              override val className: String
-                                get() = span.javaClass.name
-
-                              override val hash: String
-                                get() = Integer.toHexString(span.hashCode())
-
-                              override val text: String
-                                get() = text.subSequence(start, end).toString()
-
-                              override val bounds: Rect
-                                get() {
-                                  if (this@TextDrawable.layout == null) {
-                                    return Rect(0, 0, 0, 0)
-                                  }
-                                  try {
-                                    val startLine = layout.getLineForOffset(start)
-                                    val endLine = layout.getLineForOffset(end)
-
-                                    val startX = layout.getPrimaryHorizontal(start).toInt()
-                                    val startY = layout.getLineTop(startLine)
-
-                                    val endX: Int
-                                    val endY: Int
-                                    if (startLine == endLine) {
-                                      // Spannable fits into a single line, using regular bounds
-                                      endX = layout.getPrimaryHorizontal(end).toInt()
-                                      endY = layout.getLineBottom(endLine)
-                                    } else {
-                                      // Spannable does not fit into a single line and it may have a
-                                      // non-rectangular shape.
-                                      // Using bounds of the spannable object from the starting line
-                                      // to
-                                      // guarantee that all
-                                      // the coordinates within these bounds belong to the spannable
-                                      endX =
-                                          layout
-                                              .getPrimaryHorizontal(
-                                                  layout.getLineEnd(startLine) - 1)
-                                              .toInt()
-                                      endY = layout.getLineBottom(startLine)
-                                    }
-
-                                    val absoluteStartX = startX
-                                    val absoluteStartY = startY
-                                    val absoluteEndX = endX
-                                    val absoluteEndY = endY
-
-                                    return Rect(
-                                        absoluteStartX, absoluteStartY, absoluteEndX, absoluteEndY)
-                                  } catch (e: IndexOutOfBoundsException) {
-                                    return Rect(0, 0, 0, 0)
-                                  }
-                                }
-                            })
-                      }
-                    }
-                  }
-                  return result
-                }
-            }
+      val existing = textContentItem
+      if (existing != null) {
+        return existing
       }
-
-      return textContentItem
+      val text = requireNotNull(text)
+      return LayoutTextContentItem(
+          layout,
+          text,
+          fullText ?: text,
+          isExplicitlyTruncated,
+          isMounted = { this.layout === layout },
+      )
+          .also { textContentItem = it }
     }
 
   fun interface TextOffsetOnTouchListener {
@@ -985,7 +1018,7 @@ class TextDrawable : Drawable(), Touchable, TextContent, Drawable.Callback {
 
   private inner class LongClickRunnable(
       val longClickableSpan: LongClickableSpan,
-      private val longClickableSpanView: View
+      private val longClickableSpanView: View,
   ) : Runnable {
     override fun run() {
       val spanListenerToUse = spanListener
@@ -999,6 +1032,13 @@ class TextDrawable : Drawable(), Touchable, TextContent, Drawable.Callback {
   companion object {
     private fun isWithinBounds(bounds: Rect, event: MotionEvent): Boolean {
       return bounds.contains(event.x.toInt(), event.y.toInt())
+    }
+
+    private fun hasBidiIsolationMarker(text: CharSequence?): Boolean {
+      val spannedText = text as? Spanned ?: return false
+      return spannedText
+          .getSpans(0, spannedText.length, BidiIsolationMarkerSpan::class.java)
+          .isNotEmpty()
     }
 
     private fun containsLongClickableSpan(clickableSpans: Array<ClickableSpan>?): Boolean {

@@ -33,8 +33,8 @@ class RecyclerBinderOperationExecutor(
   constructor(recyclerBinder: RecyclerBinder) : this(recyclerBinder, false, null, null)
 
   override fun executeOperations(
-      context: ComponentContext,
-      operations: List<RecyclerBinderUpdateCallback.Operation>
+      c: ComponentContext,
+      operations: List<RecyclerBinderUpdateCallback.Operation>,
   ) {
 
     for (operation in operations) {
@@ -80,7 +80,7 @@ class RecyclerBinderOperationExecutor(
 
   private fun applyChangeSetSetSync(
       operation: RecyclerBinderUpdateCallback.Operation,
-      renderInfos: MutableList<RenderInfo>?
+      renderInfos: MutableList<RenderInfo>?,
   ) {
     when (operation.type) {
       RecyclerBinderUpdateCallback.Operation.INSERT ->
@@ -88,7 +88,9 @@ class RecyclerBinderOperationExecutor(
             recyclerBinder.insertRangeAt(operation.index, renderInfos)
           } else {
             recyclerBinder.insertItemAt(
-                operation.index, operation.componentContainers?.get(0)?.renderInfo)
+                operation.index,
+                operation.componentContainers?.get(0)?.renderInfo,
+            )
           }
       RecyclerBinderUpdateCallback.Operation.DELETE ->
           recyclerBinder.removeRangeAt(operation.index, operation.toIndex)
@@ -99,14 +101,16 @@ class RecyclerBinderOperationExecutor(
             recyclerBinder.updateRangeAt(operation.index, renderInfos)
           } else {
             recyclerBinder.updateItemAt(
-                operation.index, operation.componentContainers?.get(0)?.renderInfo)
+                operation.index,
+                operation.componentContainers?.get(0)?.renderInfo,
+            )
           }
     }
   }
 
   private fun applyChangeSetSetAsync(
       operation: RecyclerBinderUpdateCallback.Operation,
-      renderInfos: MutableList<RenderInfo>?
+      renderInfos: MutableList<RenderInfo>?,
   ) {
     when (operation.type) {
       RecyclerBinderUpdateCallback.Operation.INSERT ->
@@ -116,7 +120,8 @@ class RecyclerBinderOperationExecutor(
             recyclerBinder.insertItemAtAsync(
                 operation.index,
                 operation.componentContainers?.get(0)?.renderInfo
-                    ?: ComponentRenderInfo.createEmpty())
+                    ?: ComponentRenderInfo.createEmpty(),
+            )
           }
       RecyclerBinderUpdateCallback.Operation.DELETE ->
           recyclerBinder.removeRangeAtAsync(operation.index, operation.toIndex)
@@ -127,7 +132,9 @@ class RecyclerBinderOperationExecutor(
             recyclerBinder.updateRangeAtAsync(operation.index, renderInfos)
           } else {
             recyclerBinder.updateItemAtAsync(
-                operation.index, operation.componentContainers?.get(0)?.renderInfo)
+                operation.index,
+                operation.componentContainers?.get(0)?.renderInfo,
+            )
           }
     }
   }

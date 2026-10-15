@@ -32,7 +32,7 @@ internal object OnErrorPassUpParentTesterSpec {
   fun onCreateLayout(
       c: ComponentContext,
       @Prop info: List<String>,
-      @Prop child: Component
+      @Prop child: Component,
   ): Component = child
 
   @JvmStatic

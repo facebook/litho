@@ -20,10 +20,10 @@ import androidx.recyclerview.widget.RecyclerView.HORIZONTAL
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
-import com.facebook.litho.Row
 import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.core.padding
+import com.facebook.litho.layout.flexbox.Row
 import com.facebook.litho.view.backgroundColor
 import com.facebook.litho.widget.collection.CrossAxisWrapMode
 import com.facebook.litho.widget.collection.LazyList
@@ -35,7 +35,7 @@ import com.facebook.samples.litho.onboarding.model.User
 // start_example
 class UserFeedWithStoriesKComponent(
     private val posts: List<Post>,
-    private val usersWithStories: List<User>
+    private val usersWithStories: List<User>,
 ) : KComponent() {
   override fun ComponentScope.render(): Component {
     return LazyList {
@@ -45,9 +45,11 @@ class UserFeedWithStoriesKComponent(
               crossAxisWrapMode = CrossAxisWrapMode.MatchFirstChild,
               startPadding = 4.dp,
               topPadding = 4.dp,
-              style = Style.padding(vertical = 6.dp)) {
-                usersWithStories.forEach { user -> child(StoryKComponent(user = user)) }
-              })
+              style = Style.padding(vertical = 6.dp),
+          ) {
+            usersWithStories.forEach { user -> child(StoryKComponent(user = user)) }
+          },
+      )
 
       child(Row(style = Style.height(1.px).backgroundColor(0x22888888)))
 

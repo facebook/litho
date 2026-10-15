@@ -28,15 +28,15 @@ class EditorArray : EditorValue {
     this.value = listOf(*values)
   }
 
-  override fun equals(o: Any?): Boolean {
-    if (o === this) {
+  override fun equals(other: Any?): Boolean {
+    if (other === this) {
       return true
     }
-    if (o !is EditorArray) {
+    if (other !is EditorArray) {
       return false
     }
     val thisValue: Any = this.value
-    val otherValue: Any = o.value
+    val otherValue: Any = other.value
     return thisValue == otherValue
   }
 

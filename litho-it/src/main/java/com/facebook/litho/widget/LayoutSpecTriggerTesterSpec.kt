@@ -16,7 +16,7 @@
 
 package com.facebook.litho.widget
 
-import com.facebook.litho.Column
+import com.facebook.litho.Column as ColumnBuilder
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.LifecycleStep
@@ -35,7 +35,7 @@ internal object LayoutSpecTriggerTesterSpec {
   @JvmStatic
   @OnCreateLayout
   fun onCreateLayout(c: ComponentContext): Component =
-      Column.create(c).child(Text.create(c).text("hello")).build()
+      ColumnBuilder.create(c).child(Text.create(c).text("hello")).build()
 
   @JvmStatic
   @OnTrigger(TestTriggerEvent::class)
@@ -43,7 +43,7 @@ internal object LayoutSpecTriggerTesterSpec {
       c: ComponentContext,
       @Prop steps: MutableList<StepInfo>,
       @Prop triggerObjectRef: AtomicReference<Any?>,
-      @FromTrigger triggerObject: Any?
+      @FromTrigger triggerObject: Any?,
   ) {
     steps.add(StepInfo(LifecycleStep.ON_TRIGGER))
     triggerObjectRef.set(triggerObject)

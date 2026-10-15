@@ -22,6 +22,7 @@ import com.facebook.litho.testing.Whitebox
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.LayoutSpecLifecycleTester
 import com.facebook.litho.widget.MountSpecLifecycleTester
+import com.facebook.rendercore.extensions.VisibilityChangeReason
 import java.util.ArrayList
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
@@ -56,29 +57,36 @@ class LithoVisibilityEventsControllerTest {
             .heightPx(5)
             .lifecycleTracker(lifecycleTracker)
             .build()
-    lithoView = LithoView.create(c, Column.create(c).build(), lithoLifecycleProviderDelegate)
+    lithoView = LithoView.create(c, Column.create(c).build(), lithoLifecycleProviderDelegate, null)
   }
 
   @After
   fun resetViews() {
     steps.clear()
     lithoLifecycleProviderDelegate.moveToVisibilityState(
-        LithoVisibilityEventsController.LithoVisibilityState.DESTROYED)
+        LithoVisibilityEventsController.LithoVisibilityState.DESTROYED,
+    )
   }
 
   @Test
   fun lithoLifecycleProviderDelegateInvisibleToVisibleTest() {
     val testLithoView =
         lithoTestRule.render(lithoView = lithoView, widthPx = 10, heightPx = 5) { component }
-    testLithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 0, 10, 10), true)
+    testLithoView.lithoView.notifyVisibleBoundsChanged(
+        Rect(0, 0, 10, 10),
+        true,
+        VisibilityChangeReason.UNKNOWN,
+    )
     lithoLifecycleProviderDelegate.moveToVisibilityState(
-        LithoVisibilityEventsController.LithoVisibilityState.HINT_INVISIBLE)
+        LithoVisibilityEventsController.LithoVisibilityState.HINT_INVISIBLE,
+    )
     assertThat(LifecycleStep.getSteps(steps))
         .describedAs("Invisible event is expected to be dispatched")
         .contains(LifecycleStep.ON_EVENT_INVISIBLE)
     steps.clear()
     lithoLifecycleProviderDelegate.moveToVisibilityState(
-        LithoVisibilityEventsController.LithoVisibilityState.HINT_VISIBLE)
+        LithoVisibilityEventsController.LithoVisibilityState.HINT_VISIBLE,
+    )
     assertThat(LifecycleStep.getSteps(steps))
         .describedAs("Visible event is expected to be dispatched")
         .contains(LifecycleStep.ON_EVENT_VISIBLE)
@@ -92,13 +100,15 @@ class LithoVisibilityEventsControllerTest {
             .setRoot(component)
     testLithoView.measure().layout().setSizeSpecs(10, 10)
     lithoLifecycleProviderDelegate.moveToVisibilityState(
-        LithoVisibilityEventsController.LithoVisibilityState.HINT_INVISIBLE)
+        LithoVisibilityEventsController.LithoVisibilityState.HINT_INVISIBLE,
+    )
     assertThat(LifecycleStep.getSteps(steps))
         .describedAs("Invisible event is expected to be dispatched")
         .contains(LifecycleStep.ON_EVENT_INVISIBLE)
     steps.clear()
     lithoLifecycleProviderDelegate.moveToVisibilityState(
-        LithoVisibilityEventsController.LithoVisibilityState.HINT_INVISIBLE)
+        LithoVisibilityEventsController.LithoVisibilityState.HINT_INVISIBLE,
+    )
     assertThat(LifecycleStep.getSteps(steps))
         .describedAs("Invisible event is expected to be dispatched")
         .isEmpty()
@@ -112,13 +122,15 @@ class LithoVisibilityEventsControllerTest {
             .setRoot(component)
     testLithoView.measure().layout().setSizeSpecs(10, 10)
     lithoLifecycleProviderDelegate.moveToVisibilityState(
-        LithoVisibilityEventsController.LithoVisibilityState.HINT_VISIBLE)
+        LithoVisibilityEventsController.LithoVisibilityState.HINT_VISIBLE,
+    )
     assertThat(LifecycleStep.getSteps(steps))
         .describedAs("Visible event is expected to be dispatched")
         .contains(LifecycleStep.ON_EVENT_VISIBLE)
     steps.clear()
     lithoLifecycleProviderDelegate.moveToVisibilityState(
-        LithoVisibilityEventsController.LithoVisibilityState.HINT_VISIBLE)
+        LithoVisibilityEventsController.LithoVisibilityState.HINT_VISIBLE,
+    )
     assertThat(LifecycleStep.getSteps(steps))
         .describedAs("Visible event is expected to be dispatched")
         .isEmpty()
@@ -132,13 +144,15 @@ class LithoVisibilityEventsControllerTest {
             .setRoot(mountableComponent)
     testLithoView.measure().layout().setSizeSpecs(10, 10)
     lithoLifecycleProviderDelegate.moveToVisibilityState(
-        LithoVisibilityEventsController.LithoVisibilityState.HINT_VISIBLE)
+        LithoVisibilityEventsController.LithoVisibilityState.HINT_VISIBLE,
+    )
     assertThat(lifecycleTracker.steps)
         .describedAs("Visible event is expected to be dispatched")
         .contains(LifecycleStep.ON_MOUNT)
     lifecycleTracker.reset()
     lithoLifecycleProviderDelegate.moveToVisibilityState(
-        LithoVisibilityEventsController.LithoVisibilityState.DESTROYED)
+        LithoVisibilityEventsController.LithoVisibilityState.DESTROYED,
+    )
     assertThat(lifecycleTracker.steps)
         .describedAs("Visible event is expected to be dispatched")
         .contains(LifecycleStep.ON_UNMOUNT)
@@ -154,21 +168,28 @@ class LithoVisibilityEventsControllerTest {
             .setRoot(component)
     testLithoView.measure().layout().setSizeSpecs(10, 10)
     lithoLifecycleProviderDelegate.moveToVisibilityState(
-        LithoVisibilityEventsController.LithoVisibilityState.HINT_INVISIBLE)
+        LithoVisibilityEventsController.LithoVisibilityState.HINT_INVISIBLE,
+    )
     var hasVisibilityHint: Boolean =
         Whitebox.getInternalState<Boolean>(testLithoView.lithoView, "hasVisibilityHint")
     var pauseMountingWhileVisibilityHintFalse: Boolean =
         Whitebox.getInternalState<Boolean>(
-            testLithoView.lithoView, "pauseMountingWhileVisibilityHintFalse")
+            testLithoView.lithoView,
+            "pauseMountingWhileVisibilityHintFalse",
+        )
     assertThat(hasVisibilityHint).isTrue
     assertThat(pauseMountingWhileVisibilityHintFalse).isTrue
 
-    testLithoView.useComponentTree(ComponentTree.create(lithoTestRule.context).build())
+    testLithoView.useComponentTree(
+        ComponentTree.create(lithoTestRule.context).enableChildClipping(true).build(),
+    )
     hasVisibilityHint =
         Whitebox.getInternalState<Boolean>(testLithoView.lithoView, "hasVisibilityHint")
     pauseMountingWhileVisibilityHintFalse =
         Whitebox.getInternalState<Boolean>(
-            testLithoView.lithoView, "pauseMountingWhileVisibilityHintFalse")
+            testLithoView.lithoView,
+            "pauseMountingWhileVisibilityHintFalse",
+        )
     assertThat(hasVisibilityHint).isFalse
     assertThat(pauseMountingWhileVisibilityHintFalse).isFalse
   }

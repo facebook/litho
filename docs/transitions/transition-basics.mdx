@@ -1,0 +1,180 @@
+---
+id: transition-basics
+title: Animation Basics
+keywords:
+    - animations
+    - transitions
+    - bounds transitions
+    - useTransition
+    - transition key
+    - animated properties
+    - litho animations
+---
+
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+## Introduction
+
+Within Litho, UI updates are performed by changing state or props on the Component Tree, instead of mutating the views directly.
+The animation framework adds transitions to components that are triggered when regenerating a tree.
+
+:::note
+It's important to avoid accessing the underlying view to add animations as these values will probably not be preserved.
+:::
+
+Transitions can be used to animate view properties when they change between layouts, which is due to a state update or new props from the parent.
+When changes to a tree occur due to a new state, these changes happen immediately.
+
+The following code and animation show a simple Component that renders a yellow square then aligns it to either the right or left edge of the screen, based on the value of `toRight`:
+
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/documentation/SimpleAllLayoutTransitionComponent.kt start=layout_start end=layout_end
+```
+
+<video loop="true" autoplay="true" class="video" width="100%" height="200px">
+  <source type="video/webm" src={useBaseUrl("/videos/transitions/basics1.webm")}></source>
+  <p>Your browser does not support the video element.</p>
+</video>
+
+When the value of the state changes, the `ComponentTree` is re-rendered, which makes the square appear to 'jump' from its previous position to the new one.
+The following section shows how to replace this 'jump' with a transition animation.
+
+## Bounds transitions
+
+:::caution
+`Transition.allLayout()` may cause unexpected transitions because it adds transitions to ALL components present in the layout tree, which may include components higher than the target component in the hierarchy. Please use it carefully.
+:::
+
+To add bounds animations to all transitioning components between tree changes, use the following:
+
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/documentation/SimpleAllLayoutTransitionComponent.kt start=transition_start end=transition_end
+```
+
+[`Transition.allLayout()`](pathname:///javadoc/com/facebook/litho/Transition.html#allLayout--) creates a transition that automatically animates any changes to position, width, or height, as shown in the following animation.
+
+<video loop="true" autoplay="true" class="video" width="100%" height="200px">
+  <source type="video/webm" src={useBaseUrl("/videos/transitions/basics2.webm")}></source>
+  <p>Your browser does not support the video element.</p>
+</video>
+
+This method only works when changing the bounds of a component.  It does not work with:
+
+* **Other properties**, including scale, alpha, and rotation.
+* **Components** being added or removed.
+
+## Transitions
+
+For greater control over the transitions, use the following APIs:
+
+* **`useTransition`** - a hook that is used to define the transition animations. It accepts a [Transition](pathname:///javadoc/com/facebook/litho/Transition.html) as its parameter.
+* **`Transition`** - a description of the Component/Property (mandatory) and how (optional) to animate it. Instead of using a Constructor to create `Transition` instances, use one of the provided `Builder`s.
+* **`transitionKey`** - an identifier normally assigned to a `Component` that is to be animated. The key is then used when defining `Transition`. Assign a transition key using `Style.transitionKey(context, "key_name")`.
+* **`AnimatedProperties`** - used to target the property of a `Component` that should be animated when its value changes.
+
+The following sample shows the APIs in use:
+
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/documentation/AlphaTransitionComponent.kt start=component_start end=component_end
+```
+
+The above code features the following:
+
+* `transitionKey`- assigned to the component using the `Style.transitionKey(context, "key")` method.
+* `Transition` - created using [`Transition.create()`](pathname:///javadoc/com/facebook/litho/Transition.html#create-java.lang.String-) that takes a `transitionKey` and specifies the property of the component using the [`.animate()`](pathname:///javadoc/com/facebook/litho/Transition.TransitionUnitsBuilder.html#animate-com.facebook.litho.animation.AnimatedProperty-) method, which takes [`AnimatedProperties`](pathname:///javadoc/com/facebook/litho/animation/AnimatedProperties.html). Both of these methods take a [variable number of arguments](pathname:///javadoc/com/facebook/litho/Transition.html#create-java.lang.String...-), which means multiple `Transition`s may be expressed as follows:
+
+```kotlin
+import com.facebook.litho.Transition
+import com.facebook.litho.animation.AnimatedProperties
+import com.facebook.litho.transition.useTransition
+
+private const val SQUARE_KEY: String = "square"
+private const val OVAL_KEY: String = "oval"
+private const val ANOTHER_SHAPE: String = "another_shape"
+
+// Animate multiple components with the same properties
+useTransition(
+    Transition.create(SQUARE_KEY, OVAL_KEY, ANOTHER_SHAPE)
+        .animate(AnimatedProperties.X, AnimatedProperties.Y))
+
+```
+
+The following animation shows the `AlphaTransitionComponent` in action.
+
+<video loop="true" autoplay="true" class="video" width="100%" height="200px">
+  <source type="video/webm" src={useBaseUrl("/videos/transitions/basics3.webm")}></source>
+  <p>Your browser does not support the video element.</p>
+</video>
+
+The transitions animations API supports three [types of transitions](transition-types.mdx): **Change**, **Appear** and **Disappear**, which work differently depending on how the tree changes between states. The example in this page uses a Change transition.
+
+## Transition Key
+
+Assigns a unique identifier to a component that can be used to define animations. The transition key is used with the `useTransition` hook and `Transition` API to specify which components should be animated and how.
+
+Setting a transition key will cause the Component to be represented as a View at mount time if it wasn't going to already.
+
+### Basic usage
+
+```kotlin
+import com.facebook.litho.Style
+import com.facebook.litho.transition.transitionKey
+
+val style = Style.transitionKey(context, "my_component_key")
+```
+
+### Transition key with animation
+
+```kotlin
+import com.facebook.litho.Column
+import com.facebook.litho.KComponent
+import com.facebook.litho.Style
+import com.facebook.litho.Transition
+import com.facebook.litho.animation.AnimatedProperties
+import com.facebook.litho.core.height
+import com.facebook.litho.core.width
+import com.facebook.litho.transition.transitionKey
+import com.facebook.litho.transition.useTransition
+import com.facebook.litho.widget.SolidColor
+import com.facebook.rendercore.dp
+
+class AnimatedBoxComponent : KComponent() {
+  override fun ComponentScope.render(): Component {
+    val isExpanded = useState { false }
+
+    // Define the transition for the component with key "box_key"
+    useTransition(
+        Transition.create("box_key")
+            .animate(AnimatedProperties.WIDTH)
+            .animate(AnimatedProperties.HEIGHT)
+    )
+
+    return Column(
+        style = Style.onClick { isExpanded.update(!isExpanded.value) }
+    ) {
+      child(
+          SolidColor(
+              color = Color.BLUE,
+              style = Style
+                  .transitionKey(context, "box_key")  // Assign the key here
+                  .width(if (isExpanded.value) 200.dp else 100.dp)
+                  .height(if (isExpanded.value) 200.dp else 100.dp)
+          )
+      )
+    }
+  }
+}
+```
+
+### Animating multiple properties
+
+```kotlin
+import com.facebook.litho.Transition
+import com.facebook.litho.animation.AnimatedProperties
+import com.facebook.litho.transition.useTransition
+
+// Animate width, height, and alpha together
+useTransition(
+    Transition.create("element_key")
+        .animate(AnimatedProperties.WIDTH)
+        .animate(AnimatedProperties.HEIGHT)
+        .animate(AnimatedProperties.ALPHA)
+)
+```

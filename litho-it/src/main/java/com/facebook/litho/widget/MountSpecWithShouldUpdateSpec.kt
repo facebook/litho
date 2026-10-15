@@ -23,18 +23,21 @@ import com.facebook.litho.ComponentLayout
 import com.facebook.litho.Diff
 import com.facebook.litho.LifecycleStep
 import com.facebook.litho.Size
+import com.facebook.litho.annotations.ExcuseMySpec
 import com.facebook.litho.annotations.MountSpec
 import com.facebook.litho.annotations.OnCreateMountContent
 import com.facebook.litho.annotations.OnMeasure
 import com.facebook.litho.annotations.OnMount
 import com.facebook.litho.annotations.OnUnmount
 import com.facebook.litho.annotations.Prop
+import com.facebook.litho.annotations.Reason
 import com.facebook.litho.annotations.ShouldUpdate
 
 /**
  * A MountSpec that lets us test the function of ShouldUpdate/pure-render by supplying an object
  * who's identity determines the result of @ShouldUpdate.
  */
+@ExcuseMySpec(reason = Reason.LEGACY)
 @MountSpec(isPureRender = true)
 object MountSpecWithShouldUpdateSpec {
 
@@ -53,7 +56,7 @@ object MountSpecWithShouldUpdateSpec {
       widthSpec: Int,
       heightSpec: Int,
       size: Size,
-      @Prop operationsOutput: MutableList<LifecycleStep>
+      @Prop operationsOutput: MutableList<LifecycleStep>,
   ) {
     size.height = 100
     size.width = 100
@@ -66,7 +69,6 @@ object MountSpecWithShouldUpdateSpec {
       c: ComponentContext,
       v: View,
       @Prop operationsOutput: MutableList<LifecycleStep>,
-      @Prop objectForShouldUpdate: Any?
   ) {
     operationsOutput.add(LifecycleStep.ON_MOUNT)
   }
@@ -77,7 +79,6 @@ object MountSpecWithShouldUpdateSpec {
       c: ComponentContext,
       v: View,
       @Prop operationsOutput: MutableList<LifecycleStep>,
-      @Prop objectForShouldUpdate: Any?
   ) {
     operationsOutput.add(LifecycleStep.ON_UNMOUNT)
   }

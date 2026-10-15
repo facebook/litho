@@ -16,7 +16,6 @@
 
 package com.facebook.samples.litho.documentation.flexbox
 
-import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
@@ -26,6 +25,7 @@ import com.facebook.litho.core.margin
 import com.facebook.litho.core.padding
 import com.facebook.litho.flexbox.flex
 import com.facebook.litho.kotlin.widget.Text
+import com.facebook.litho.layout.flexbox.Column
 import com.facebook.rendercore.dp
 import com.facebook.rendercore.sp
 
@@ -38,18 +38,22 @@ class TextInColumnWithExactHeight : KComponent() {
           Text(
               style =
                   Style.flex(
-                      shrink =
-                          0f), // Even with flexShrink zero, text will be cut as there is not enough
+                      shrink = 0f,
+                  ), // Even with flexShrink zero, text will be cut as there is not enough
               // space
               text = "This is a really long text.",
               textSize = 20.sp,
-              maxLines = 1))
+              maxLines = 1,
+          ),
+      )
       child(
           Text(
               style = Style.margin(start = 8.dp),
               text = "Another long text",
               textSize = 20.sp,
-              maxLines = 1))
+              maxLines = 1,
+          ),
+      )
     }
   }
   // end_example

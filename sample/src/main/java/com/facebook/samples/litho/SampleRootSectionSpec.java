@@ -20,33 +20,32 @@ import android.graphics.Color;
 import android.text.Layout;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Column;
+import com.facebook.litho.StyleCompat;
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.Param;
-import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.sections.Children;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.annotations.GroupSectionSpec;
 import com.facebook.litho.sections.annotations.OnCreateChildren;
 import com.facebook.litho.sections.common.DataDiffSection;
 import com.facebook.litho.sections.common.RenderEvent;
-import com.facebook.litho.widget.Card;
 import com.facebook.litho.widget.ComponentRenderInfo;
+import com.facebook.litho.widget.PrimitiveCard;
 import com.facebook.litho.widget.RenderInfo;
 import com.facebook.litho.widget.Text;
 import com.facebook.litho.widget.TouchableFeedback;
 import com.facebook.yoga.YogaEdge;
-import java.util.List;
 
 @GroupSectionSpec
 class SampleRootSectionSpec {
 
   @OnCreateChildren
-  static Children onCreateChildren(SectionContext c, @Prop List<Demos.DemoList> dataModels) {
+  static Children onCreateChildren(SectionContext c) {
     return Children.create()
         .child(
             DataDiffSection.<Demos.DemoList>create(c)
-                .data(dataModels)
+                .data(Demos.Demos)
                 .renderEventHandler(SampleRootSection.onRender(c)))
         .build();
   }
@@ -58,8 +57,7 @@ class SampleRootSectionSpec {
         .component(
             Column.create(c)
                 .child(
-                    Card.create(c)
-                        .content(
+                    new PrimitiveCard.Builder(
                             new TouchableFeedback(
                                 Text.create(c)
                                     .text(model.getName())
@@ -70,8 +68,12 @@ class SampleRootSectionSpec {
                                     .build(),
                                 Color.WHITE,
                                 Color.LTGRAY))
-                        .marginDip(YogaEdge.HORIZONTAL, 16)
-                        .marginDip(YogaEdge.TOP, 16)))
+                        .cardBackgroundColor(Color.WHITE)
+                        .style(
+                            StyleCompat.marginDip(YogaEdge.HORIZONTAL, 16f)
+                                .marginDip(YogaEdge.TOP, 16f)
+                                .build())
+                        .build()))
         .build();
   }
 

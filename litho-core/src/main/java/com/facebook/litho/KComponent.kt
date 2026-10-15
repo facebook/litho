@@ -19,7 +19,7 @@ package com.facebook.litho
 import android.content.Context
 import com.facebook.litho.Resolver.resolveDeferred
 import com.facebook.litho.debug.LithoDebugEvent.ComponentRendered
-import com.facebook.litho.debug.LithoDebugEventAttributes.Component
+import com.facebook.litho.debug.LithoDebugEventAttributes
 import com.facebook.rendercore.debug.DebugEventAttribute.Name
 import com.facebook.rendercore.debug.DebugEventDispatcher.trace
 import com.facebook.rendercore.utils.hasEquivalentFields
@@ -40,27 +40,30 @@ abstract class KComponent : Component() {
       resolveContext: ResolveContext,
       scopedComponentInfo: ScopedComponentInfo,
       parentWidthSpec: Int,
-      parentHeightSpec: Int
+      parentHeightSpec: Int,
   ): ComponentResolveResult {
 
     val c: ComponentContext = scopedComponentInfo.context
-    val renderResult: RenderResult<Component?> =
-        trace(
-            type = ComponentRendered,
-            renderStateId = { resolveContext.treeId.toString() },
-            attributesAccumulator = { accumulator ->
-              accumulator[Component] = simpleName
-              accumulator[Name] = fullyQualifiedName
-            },
-        ) {
-          ComponentsSystrace.trace("render:$simpleName") {
-            scopedComponentInfo.runInRecorderScope(resolveContext) {
-              val scope = ComponentScope(c)
-              val result = scope.withResolveContext(resolveContext) { render() }
-              RenderResult(result, scope.transitionData, scope.useEffectEntries)
-            }
+    val renderResult: RenderResult<Component?> = trace(
+        type = ComponentRendered,
+        renderStateId = { resolveContext.treeId.toString() },
+        attributesAccumulator = { accumulator ->
+          accumulator[Name] = fullyQualifiedName
+          accumulator[LithoDebugEventAttributes.ResolveVersion] = resolveContext.layoutVersion
+          val parentName = Component.parentNameFromKey(c.nullableGlobalKey)
+          if (parentName != null) {
+            accumulator["parentComponentName"] = parentName
           }
+        },
+    ) {
+      ComponentsSystrace.trace({ "render:$simpleName" }) {
+        scopedComponentInfo.runInRecorderScope(resolveContext) {
+          val scope = ComponentScope(c)
+          val result = scope.withResolveContext(resolveContext) { render() }
+          RenderResult(result, scope.transitionData, scope.useEffectEntries)
         }
+      }
+    }
 
     val root = renderResult.value
     val node: LithoNode? =
@@ -85,7 +88,7 @@ abstract class KComponent : Component() {
   override fun resolveDeferred(
       calculationContext: CalculationContext,
       componentContext: ComponentContext,
-      parentContext: ComponentContext
+      parentContext: ComponentContext,
   ): ComponentResolveResult {
     return this.resolveDeferred(calculationContext, componentContext, parentContext, null)
   }
@@ -114,7 +117,7 @@ abstract class KComponent : Component() {
   }
 
   // All other Component lifecycle methods are made final and no-op here as they shouldn't be
-  // overriden.
+  // overridden.
 
   final override fun isEquivalentTo(other: Component?): Boolean = super.isEquivalentTo(other)
 
@@ -135,7 +138,7 @@ abstract class KComponent : Component() {
       previous: Component,
       prevStateContainer: StateContainer?,
       next: Component,
-      nextStateContainer: StateContainer?
+      nextStateContainer: StateContainer?,
   ): Boolean = super.shouldUpdate(previous, prevStateContainer, next, nextStateContainer)
 }
 
@@ -159,14 +162,16 @@ inline fun key(key: String, crossinline componentLambda: () -> Component): Compo
  * handle(Handle()) { Text(...) }
  * ```
  */
-inline fun handle(handle: Handle, crossinline componentLambda: () -> Component): Component {
+inline fun handle(handle: Handle?, crossinline componentLambda: () -> Component): Component {
   val component = componentLambda()
-  setHandleForComponentInternal(component, handle)
+  if (handle != null) {
+    setHandleForComponentInternal(component, handle)
+  }
   return component
 }
 
 /**
- * This is extracted out since we don't want to expose Component.setKey in the public API and will
+ * This is extracted out since we don't want to expose Component.key in the public API and will
  * hopefully change this implementation in the future.
  */
 @PublishedApi

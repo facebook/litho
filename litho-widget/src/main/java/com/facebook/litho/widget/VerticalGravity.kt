@@ -23,5 +23,5 @@ package com.facebook.litho.widget
 enum class VerticalGravity {
   TOP,
   CENTER,
-  BOTTOM
+  BOTTOM,
 }

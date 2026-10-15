@@ -16,6 +16,9 @@
 
 package com.facebook.litho.debug
 
+import android.os.Build
+import android.util.Log
+import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.debug.LithoDebugEvent.NoRenderStateId
 import com.facebook.rendercore.LogLevel
 import com.facebook.rendercore.RenderState
@@ -29,6 +32,22 @@ import com.facebook.rendercore.debug.DebugEventDispatcher.dispatch
  */
 object DebugInfoReporter {
 
+  /** Detects if running in a test environment (Robolectric/JUnit) vs actual debug build */
+  @JvmStatic
+  fun isTestEnvironment(): Boolean {
+    // Check for Robolectric
+    if (Build.FINGERPRINT == "robolectric") {
+      return true
+    }
+    // Check for JUnit
+    try {
+      Class.forName("org.junit.runner.JUnitCore")
+      return true
+    } catch (e: ClassNotFoundException) {
+      return false
+    }
+  }
+
   /**
    * @param [category] the debug event category. It is saved as the 'name' attribute in QPL
    * @param [level] the log level; default is [LogLevel.DEBUG]
@@ -41,17 +60,113 @@ object DebugInfoReporter {
       renderStateId: Int = RenderState.NO_ID,
       write: MutableMap<String, Any?>.() -> Unit,
   ) {
-    dispatch(
-        LithoDebugEvent.DebugInfo,
-        if (renderStateId == RenderState.NO_ID) {
-          NoRenderStateId
+    when (level) {
+      LogLevel.VERBOSE,
+      LogLevel.WARNING -> {
+        val attributes = mutableMapOf<String, Any?>()
+        attributes.write()
+        Log.w("LithoWarning:", "$category\n$attributes")
+      }
+      LogLevel.DEBUG -> {
+        dispatch(
+            LithoDebugEvent.DebugInfo,
+            if (renderStateId == RenderState.NO_ID) {
+              NoRenderStateId
+            } else {
+              { renderStateId.toString() }
+            },
+            level,
+        ) { attribute ->
+          attribute.write()
+          attribute[Name] = category
+        }
+      }
+      LogLevel.ERROR -> {
+        if (LithoDebugConfigurations.isDebugModeEnabled && !isTestEnvironment()) {
+          val attributes = mutableMapOf<String, Any?>()
+          attributes.write()
+          throw RuntimeException("LithoError:$category\n$attributes")
         } else {
-          { renderStateId.toString() }
-        },
-        level,
-    ) { attribute ->
-      attribute.write()
-      attribute[Name] = category
+          dispatch(
+              LithoDebugEvent.DebugInfo,
+              if (renderStateId == RenderState.NO_ID) {
+                NoRenderStateId
+              } else {
+                { renderStateId.toString() }
+              },
+              level,
+          ) { attribute ->
+            attribute.write()
+            attribute[Name] = category
+          }
+        }
+      }
+      LogLevel.FATAL -> {
+        val attributes = mutableMapOf<String, Any?>()
+        attributes.write()
+        throw RuntimeException("LithoError:$category\n$attributes")
+      }
+    }
+  }
+
+  /**
+   * @param [category] the debug event category. It is saved as the 'name' attribute in QPL
+   * @param [level] the log level; default is [LogLevel.DEBUG]
+   */
+  @JvmStatic
+  @JvmOverloads
+  inline fun report(
+      category: () -> String,
+      level: LogLevel = LogLevel.DEBUG,
+      renderStateId: Int = RenderState.NO_ID,
+      write: MutableMap<String, Any?>.() -> Unit,
+  ) {
+    when (level) {
+      LogLevel.VERBOSE,
+      LogLevel.WARNING -> {
+        val attributes = mutableMapOf<String, Any?>()
+        attributes.write()
+        Log.w("LithoWarning:", "${category.invoke()}\n$attributes")
+      }
+      LogLevel.DEBUG -> {
+        dispatch(
+            LithoDebugEvent.DebugInfo,
+            if (renderStateId == RenderState.NO_ID) {
+              NoRenderStateId
+            } else {
+              { renderStateId.toString() }
+            },
+            level,
+        ) { attribute ->
+          attribute.write()
+          attribute[Name] = category()
+        }
+      }
+      LogLevel.ERROR -> {
+        if (LithoDebugConfigurations.isDebugModeEnabled && !isTestEnvironment()) {
+          val attributes = mutableMapOf<String, Any?>()
+          attributes.write()
+          throw RuntimeException("LithoError:${category.invoke()}\n$attributes")
+        } else {
+          dispatch(
+              LithoDebugEvent.DebugInfo,
+              if (renderStateId == RenderState.NO_ID) {
+                NoRenderStateId
+              } else {
+                { renderStateId.toString() }
+              },
+              level,
+          ) { attribute ->
+            attribute.write()
+            attribute[Name] = category()
+          }
+        }
+      }
+      LogLevel.FATAL -> {
+        val attributes = mutableMapOf<String, Any?>()
+        attributes.write()
+        throw RuntimeException("LithoError:${category.invoke()}\n$attributes")
+      }
     }
   }
 }

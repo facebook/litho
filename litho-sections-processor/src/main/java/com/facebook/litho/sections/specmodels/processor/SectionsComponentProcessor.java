@@ -22,10 +22,7 @@ import com.facebook.litho.specmodels.processor.AbstractComponentsProcessor;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import javax.annotation.processing.SupportedSourceVersion;
-import javax.lang.model.SourceVersion;
 
-@SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class SectionsComponentProcessor extends AbstractComponentsProcessor {
 
   public SectionsComponentProcessor() {

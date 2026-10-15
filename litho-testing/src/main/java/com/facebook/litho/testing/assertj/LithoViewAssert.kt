@@ -60,7 +60,8 @@ class LithoViewAssert internal constructor(actual: LithoView) :
             actual,
             count,
             if (testItems.isEmpty()) "couldn't find it"
-            else String.format(Locale.ROOT, "saw it %d times instead", testItems.size))
+            else String.format(Locale.ROOT, "saw it %d times instead", testItems.size),
+        )
         .isNotNull()
     return this
   }
@@ -73,7 +74,8 @@ class LithoViewAssert internal constructor(actual: LithoView) :
             "Expected not to find test key <%s> in LithoView <%s>, but it was present at bounds %s.",
             testKey,
             actual,
-            bounds)
+            bounds,
+        )
         .isNull()
     return this
   }
@@ -95,6 +97,12 @@ class LithoViewAssert internal constructor(actual: LithoView) :
   /** Assert that any view in the given Component has the provided content description. */
   fun hasContentDescription(@StringRes resourceId: Int): LithoViewAssert {
     assertThatViewTree().hasContentDescription(resourceId)
+    return this
+  }
+
+  /** Assert that any view in the given Component has the provided accessibility role. */
+  fun hasAccessibilityRole(accessibilityRole: String): LithoViewAssert {
+    assertThatViewTree().hasAccessibilityRole(accessibilityRole)
     return this
   }
 
@@ -160,7 +168,7 @@ class LithoViewAssert internal constructor(actual: LithoView) :
    * that may be appended with other text in a span.
    */
   fun hasVisibleTextContaining(text: String): LithoViewAssert {
-    val regexPattern = String.format(".*%s.*", text)
+    val regexPattern = ".*$text.*"
     return hasVisibleTextMatching(regexPattern)
   }
 
@@ -172,7 +180,7 @@ class LithoViewAssert internal constructor(actual: LithoView) :
 
   /** Inverse of [.hasVisibleTextContaining]. */
   fun doesNotHaveVisibleTextContaining(text: String): LithoViewAssert {
-    val regexPattern = String.format(".*%s.*", text)
+    val regexPattern = ".*$text.*"
     return doesNotHaveVisibleTextMatching(regexPattern)
   }
 
@@ -180,7 +188,10 @@ class LithoViewAssert internal constructor(actual: LithoView) :
   fun hasMeasuredWidthOf(width: Int): LithoViewAssert {
     assertThat(actual.measuredWidth)
         .overridingErrorMessage(
-            "Expected LithoView to have a width of %d, but was %d.", width, actual.measuredWidth)
+            "Expected LithoView to have a width of %d, but was %d.",
+            width,
+            actual.measuredWidth,
+        )
         .isEqualTo(width)
     return this
   }
@@ -189,7 +200,10 @@ class LithoViewAssert internal constructor(actual: LithoView) :
   fun hasMeasuredHeightOf(height: Int): LithoViewAssert {
     assertThat(actual.measuredHeight)
         .overridingErrorMessage(
-            "Expected LithoView to have a height of %d, but was %d.", height, actual.measuredHeight)
+            "Expected LithoView to have a height of %d, but was %d.",
+            height,
+            actual.measuredHeight,
+        )
         .isEqualTo(height)
     return this
   }
@@ -218,7 +232,8 @@ class LithoViewAssert internal constructor(actual: LithoView) :
           .assertThat(foundDirectComponent)
           .overridingErrorMessage(
               "Expected to have direct component of type %s in LithoView, but did not find one",
-              *clazzes)
+              *clazzes,
+          )
           .isNotNull()
     }
     softAssertions.assertAll()
@@ -238,7 +253,8 @@ class LithoViewAssert internal constructor(actual: LithoView) :
           .assertThat(foundDirectComponent)
           .overridingErrorMessage(
               "Expected to not have direct component of type %s in LithoView, but did not find one",
-              clazz)
+              clazz,
+          )
           .isNull()
     }
     softAssertions.assertAll()
@@ -288,7 +304,8 @@ class LithoViewAssert internal constructor(actual: LithoView) :
           .assertThat(componentList)
           .overridingErrorMessage(
               "Expected to have component of type %s in LithoView, but did not find one",
-              componentClass)
+              componentClass,
+          )
           .haveAtLeastOne(ComponentConditions.typeIs(componentClass))
     }
     softAssertions.assertAll()
@@ -329,7 +346,8 @@ class LithoViewAssert internal constructor(actual: LithoView) :
   fun willRenderContent(): LithoViewAssert {
     assertThat(actual.mountItemCount > 0 || actual.childCount > 0)
         .overridingErrorMessage(
-            "Expected content to be visible, but current LithoView childCount = 0 and we did not mount any content")
+            "Expected content to be visible, but current LithoView childCount = 0 and we did not mount any content",
+        )
     return this
   }
 
@@ -343,7 +361,8 @@ class LithoViewAssert internal constructor(actual: LithoView) :
             "Expected no content in the current LithoView, but found child count = %d and mounted item count = %d with LithoView hierarchy:\n %s",
             actual.childCount,
             actual.mountItemCount,
-            actual.toString())
+            actual.toString(),
+        )
         .isTrue()
     return this
   }
@@ -379,7 +398,10 @@ class LithoViewAssert internal constructor(actual: LithoView) :
     }
     assertThat(conditionMet)
         .overridingErrorMessage(
-            "Expected LithoView <%s> to satisfy condition <%s>", actual, condition)
+            "Expected LithoView <%s> to satisfy condition <%s>",
+            actual,
+            condition,
+        )
         .isTrue()
     return this
   }
@@ -393,18 +415,20 @@ class LithoViewAssert internal constructor(actual: LithoView) :
     val conditionMet = iterateOverAllChildren(listOf(inspectableComponent!!), condition)
     assertThat(conditionMet)
         .overridingErrorMessage(
-            "Expected LithoView <%s> to satisfy condition <%s>", actual, condition)
+            "Expected LithoView <%s> to satisfy condition <%s>",
+            actual,
+            condition,
+        )
         .isTrue()
     return this
   }
 
   private fun iterateOverAllChildren(
       inspectableComponents: List<InspectableComponent>,
-      condition: Condition<InspectableComponent>
-  ): Boolean =
-      inspectableComponents.any { component: InspectableComponent ->
-        condition.matches(component) || iterateOverAllChildren(component.childComponents, condition)
-      }
+      condition: Condition<InspectableComponent>,
+  ): Boolean = inspectableComponents.any { component: InspectableComponent ->
+    condition.matches(component) || iterateOverAllChildren(component.childComponents, condition)
+  }
 
   /**
    * Asserts that the LithoView contains a Component with given props at any level of the hierarchy.
@@ -415,7 +439,7 @@ class LithoViewAssert internal constructor(actual: LithoView) :
    */
   fun <T1, T2> hasAnyMatchingComponent(
       kClass: KClass<out Component>,
-      vararg propsValuePairs: Pair<KProperty1<T2, T1>, T1>
+      vararg propsValuePairs: Pair<KProperty1<T2, T1>, T1>,
   ): LithoViewAssert {
     val componentsList: List<Component> = findAllComponentsInLithoView(actual, kClass)
     val hasMatchingProps = hasMatchingProps(componentsList, propsValuePairs)
@@ -424,7 +448,8 @@ class LithoViewAssert internal constructor(actual: LithoView) :
             "\nExpected LithoView : \n <%s> \n to contains component with given props, but the components that were found of given class: \n <%s> \ndid not satisfy all those props: \n %s ",
             actual,
             kClass.toString(),
-            getPropsFormattedString(propsValuePairs))
+            getPropsFormattedString(propsValuePairs),
+        )
         .isTrue()
     return this
   }
@@ -438,7 +463,7 @@ class LithoViewAssert internal constructor(actual: LithoView) :
    */
   fun <T1, T2> doesNotHaveMatchingComponent(
       kClass: KClass<out Component>,
-      vararg propsValuePairs: Pair<KProperty1<T2, T1>, T1>
+      vararg propsValuePairs: Pair<KProperty1<T2, T1>, T1>,
   ): LithoViewAssert {
     val componentsList: List<Component> = findAllComponentsInLithoView(actual, kClass)
     val hasMatchingProps = hasMatchingProps(componentsList, propsValuePairs)
@@ -447,7 +472,8 @@ class LithoViewAssert internal constructor(actual: LithoView) :
             "\nExpected LithoView : \n <%s> \n to not contain component with given props, but the components that were found of given class: \n <%s> \ndid satisfy all those props: \n %s ",
             actual,
             kClass.toString(),
-            getPropsFormattedString(propsValuePairs))
+            getPropsFormattedString(propsValuePairs),
+        )
         .isFalse()
     return this
   }
@@ -460,7 +486,7 @@ class LithoViewAssert internal constructor(actual: LithoView) :
    */
   fun <T1, T2> hasDirectMatchingComponent(
       kClass: KClass<out Component>,
-      vararg propsValuePairs: Pair<KProperty1<T2, T1>, T1>
+      vararg propsValuePairs: Pair<KProperty1<T2, T1>, T1>,
   ): LithoViewAssert {
     val componentsList: List<Component> = findAllDirectComponentsInLithoView(actual, kClass)
     val hasMatchingProps = hasMatchingProps(componentsList, propsValuePairs)
@@ -468,18 +494,18 @@ class LithoViewAssert internal constructor(actual: LithoView) :
         .overridingErrorMessage(
             "\nExpected LithoView : \n <%s> \n to contains direct component with props that matches given matcher, but the direct components that were found of given class: \n <%s>  did not satisfy all those props",
             actual,
-            kClass.toString())
+            kClass.toString(),
+        )
         .isTrue()
     return this
   }
 
   private fun <T1, T2> hasMatchingProps(
       componentsList: List<Component>,
-      propsValuePairs: Array<out Pair<KProperty1<T2, T1>, T1>>
-  ): Boolean =
-      componentsList.any { component: Component ->
-        comparedPropsAreEqual(component, propsValuePairs)
-      }
+      propsValuePairs: Array<out Pair<KProperty1<T2, T1>, T1>>,
+  ): Boolean = componentsList.any { component: Component ->
+    comparedPropsAreEqual(component, propsValuePairs)
+  }
 
   /**
    * Asserts that the LithoView contains a Component with props that matches given matcher at any
@@ -490,7 +516,7 @@ class LithoViewAssert internal constructor(actual: LithoView) :
    */
   fun <T2, T1> hasAnyMatchingComponentWithMatcher(
       kClass: KClass<out Component>,
-      vararg propsMatcherPairs: Pair<KProperty1<T2, T1>, Matcher<T1>>
+      vararg propsMatcherPairs: Pair<KProperty1<T2, T1>, Matcher<T1>>,
   ): LithoViewAssert {
     val componentsList: List<Component> = findAllComponentsInLithoView(actual, kClass)
     val isMatching = hasMatchingPropsWithMatcher(componentsList, propsMatcherPairs)
@@ -499,7 +525,8 @@ class LithoViewAssert internal constructor(actual: LithoView) :
             "\nExpected LithoView : \n <%s> \n to contains component with props that matches given matcher, but the components that were found of given class: \n <%s> \ndid not satisfy those matchers: \n %s ",
             actual,
             kClass.toString(),
-            getPropsMatcherFormattedString(propsMatcherPairs))
+            getPropsMatcherFormattedString(propsMatcherPairs),
+        )
         .isTrue()
     return this
   }
@@ -513,7 +540,7 @@ class LithoViewAssert internal constructor(actual: LithoView) :
    */
   fun <T2, T1> hasDirectMatchingComponentWithMatcher(
       kClass: KClass<out Component>,
-      vararg propsMatcherPairs: Pair<KProperty1<T2, T1>, Matcher<T1>>
+      vararg propsMatcherPairs: Pair<KProperty1<T2, T1>, Matcher<T1>>,
   ): LithoViewAssert {
     val componentsList: List<Component> = findAllDirectComponentsInLithoView(actual, kClass)
     val isMatching = hasMatchingPropsWithMatcher(componentsList, propsMatcherPairs)
@@ -522,7 +549,8 @@ class LithoViewAssert internal constructor(actual: LithoView) :
             "\nExpected LithoView : \n <%s> \n to contains a direct component with props that matches given matcher, but the direct components that were found of given class: \n <%s> \ndid not satisfy those matchers: \n %s ",
             actual,
             kClass.toString(),
-            getPropsMatcherFormattedString(propsMatcherPairs))
+            getPropsMatcherFormattedString(propsMatcherPairs),
+        )
         .isTrue()
     return this
   }
@@ -532,14 +560,13 @@ class LithoViewAssert internal constructor(actual: LithoView) :
    */
   private fun <T2, T1> hasMatchingPropsWithMatcher(
       componentsList: List<Component>,
-      propsMatcherPairs: Array<out Pair<KProperty1<T2, T1>, Matcher<T1>>>
-  ): Boolean =
-      componentsList.any { component: Component ->
-        comparedPropsMatch(component, propsMatcherPairs)
-      }
+      propsMatcherPairs: Array<out Pair<KProperty1<T2, T1>, Matcher<T1>>>,
+  ): Boolean = componentsList.any { component: Component ->
+    comparedPropsMatch(component, propsMatcherPairs)
+  }
 
   private fun <T2, T1> getPropsFormattedString(
-      propsValuePairs: Array<out Pair<KProperty1<T2, T1>, T1>>
+      propsValuePairs: Array<out Pair<KProperty1<T2, T1>, T1>>,
   ): String {
     val sb = StringBuilder()
     for ((first, second) in propsValuePairs) {
@@ -549,7 +576,7 @@ class LithoViewAssert internal constructor(actual: LithoView) :
   }
 
   private fun <T2, T1> getPropsMatcherFormattedString(
-      propsMatcherPairs: Array<out Pair<KProperty1<T2, T1>, Matcher<T1>>>
+      propsMatcherPairs: Array<out Pair<KProperty1<T2, T1>, Matcher<T1>>>,
   ): String {
     val sb = StringBuilder()
     for ((first, second) in propsMatcherPairs) {
@@ -565,20 +592,21 @@ class LithoViewAssert internal constructor(actual: LithoView) :
     sb.append("\n")
   }
 
+  @Suppress("UNCHECKED_CAST") // Safe: T2 is the component type from the caller's context
   private fun <T2, T1> comparedPropsMatch(
       component: Component,
-      propsMatcherPairs: Array<out Pair<KProperty1<T2, T1>, Matcher<T1>>>
+      propsMatcherPairs: Array<out Pair<KProperty1<T2, T1>, Matcher<T1>>>,
   ): Boolean {
     return propsMatcherPairs.none { (first, second) -> !second.matches(first.get(component as T2)) }
   }
 
+  @Suppress("UNCHECKED_CAST") // Safe: T2 is the component type from the caller's context
   private fun <T2, T1> comparedPropsAreEqual(
       component: Component,
-      propsValuePairs: Array<out Pair<KProperty1<T2, T1>, T1>>
-  ): Boolean =
-      propsValuePairs.all { (first, second): Pair<KProperty1<T2, T1>, T1> ->
-        first.get(component as T2) == second
-      }
+      propsValuePairs: Array<out Pair<KProperty1<T2, T1>, T1>>,
+  ): Boolean = propsValuePairs.all { (first, second): Pair<KProperty1<T2, T1>, T1> ->
+    first.get(component as T2) == second
+  }
 
   class OccurrenceCount internal constructor(val times: Int, val shortName: String) {
     override fun toString(): String = shortName
@@ -592,7 +620,7 @@ class LithoViewAssert internal constructor(actual: LithoView) :
     @JvmStatic fun once(): OccurrenceCount = OccurrenceCount(1, "once")
 
     private fun getJavaClasses(
-        vararg kClazzes: KClass<out Component>
+        vararg kClazzes: KClass<out Component>,
     ): Array<Class<out Component>> = kClazzes.map { kClass -> kClass.java }.toTypedArray()
   }
 }

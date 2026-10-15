@@ -75,7 +75,6 @@ public class LithoRecyclerViewDescriptor extends NodeDescriptor<LithoRecyclerVie
 
   @Override
   public int getChildCount(LithoRecyclerView node) throws Exception {
-    // TODO T39526148 this might not always be true when using the RecyclerBinder manually.
     return 1;
   }
 
@@ -89,7 +88,6 @@ public class LithoRecyclerViewDescriptor extends NodeDescriptor<LithoRecyclerVie
   @Override
   // NULLSAFE_FIXME[Inconsistent Subclass Return Annotation]
   public Object getChildAt(LithoRecyclerView node, int index) throws Exception {
-    // TODO T39526148 account for the case above
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
     int count = Preconditions.checkNotNull(descriptor).getChildCount(node);
 

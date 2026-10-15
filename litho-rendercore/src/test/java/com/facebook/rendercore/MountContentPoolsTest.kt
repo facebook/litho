@@ -23,12 +23,13 @@ import android.view.View
 import androidx.lifecycle.LifecycleService
 import com.facebook.rendercore.MountContentPools.acquireMountContent
 import com.facebook.rendercore.MountContentPools.clear
+import com.facebook.rendercore.MountContentPools.getContentPoolItemCount
 import com.facebook.rendercore.MountContentPools.onContextDestroyed
 import com.facebook.rendercore.MountContentPools.prefillMountContentPool
 import com.facebook.rendercore.MountContentPools.recycle
 import com.facebook.rendercore.MountContentPools.setMountContentPoolFactory
 import java.lang.Thread
-import org.assertj.core.api.Java6Assertions
+import org.assertj.core.api.Assertions
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -72,14 +73,14 @@ class MountContentPoolsTest {
     val prefillCount = 4
     val testRenderUnit = TestRenderUnit(id = 0, customPoolSize = prefillCount)
     prefillMountContentPool(context, prefillCount, testRenderUnit)
-    Java6Assertions.assertThat(testRenderUnit.createdCount).isEqualTo(prefillCount)
+    Assertions.assertThat(testRenderUnit.createdCount).isEqualTo(prefillCount)
     val testRenderUnitToAcquire = TestRenderUnit(0, customPoolSize = prefillCount)
     for (i in 0 until prefillCount) {
       acquireMountContent(context, testRenderUnitToAcquire)
     }
-    Java6Assertions.assertThat(testRenderUnitToAcquire.createdCount).isEqualTo(0)
+    Assertions.assertThat(testRenderUnitToAcquire.createdCount).isEqualTo(0)
     acquireMountContent(context, testRenderUnitToAcquire)
-    Java6Assertions.assertThat(testRenderUnitToAcquire.createdCount).isEqualTo(1)
+    Assertions.assertThat(testRenderUnitToAcquire.createdCount).isEqualTo(1)
   }
 
   @Test
@@ -90,12 +91,12 @@ class MountContentPoolsTest {
 
     // Assert prefill works
     prefillMountContentPool(context, prefillCount, testRenderUnit)
-    Java6Assertions.assertThat(testRenderUnit.createdCount).isEqualTo(2)
+    Assertions.assertThat(testRenderUnit.createdCount).isEqualTo(2)
 
     // Assert acquiring works by fetching from pool
     val mountContentList =
         (0 until prefillCount).map { acquireMountContent(context, testRenderUnit) }
-    Java6Assertions.assertThat(testRenderUnit.createdCount).isEqualTo(prefillCount)
+    Assertions.assertThat(testRenderUnit.createdCount).isEqualTo(prefillCount)
 
     // Attempt to release into the pool (should not work)
     for (i in 0 until prefillCount) {
@@ -107,7 +108,7 @@ class MountContentPoolsTest {
       acquireMountContent(context, testRenderUnit.contentAllocator)
     }
     // The number of creation should double because we had to create content again
-    Java6Assertions.assertThat(testRenderUnit.createdCount).isEqualTo(prefillCount * 2)
+    Assertions.assertThat(testRenderUnit.createdCount).isEqualTo(prefillCount * 2)
   }
 
   @Test
@@ -117,13 +118,13 @@ class MountContentPoolsTest {
     val testRenderUnit = TestRenderUnit(0, customPoolSize)
     prefillMountContentPool(context, prefillCount, testRenderUnit)
     // the prefill count overrides the default pool size of the render unit
-    Java6Assertions.assertThat(testRenderUnit.createdCount).isEqualTo(prefillCount)
+    Assertions.assertThat(testRenderUnit.createdCount).isEqualTo(prefillCount)
     val testRenderUnitToAcquire = TestRenderUnit(0, 2)
     for (i in 0 until prefillCount) {
       acquireMountContent(context, testRenderUnitToAcquire)
     }
     // expect no new render units to be created as the pool has been prefilled
-    Java6Assertions.assertThat(testRenderUnitToAcquire.createdCount).isEqualTo(0)
+    Assertions.assertThat(testRenderUnitToAcquire.createdCount).isEqualTo(0)
   }
 
   @Test
@@ -134,14 +135,14 @@ class MountContentPoolsTest {
     val content2 = acquireMountContent(activity, testRenderUnit)
 
     // Assert pooling was working before
-    Java6Assertions.assertThat(content1).isSameAs(content2)
+    Assertions.assertThat(content1).isSameAs(content2)
     recycle(activity, testRenderUnit, content2)
 
     // Now destroy the activity and assert pooling no longer works. Next acquire should produce
     // difference content.
     onContextDestroyed(activity)
     val content3 = acquireMountContent(activity, testRenderUnit)
-    Java6Assertions.assertThat(content3).isNotSameAs(content1)
+    Assertions.assertThat(content3).isNotSameAs(content1)
   }
 
   @Test
@@ -157,7 +158,7 @@ class MountContentPoolsTest {
     val content2 = acquireMountContent(context, testRenderUnit)
 
     // Ensure different context is unaffected by destroying activity context.
-    Java6Assertions.assertThat(content1).isSameAs(content2)
+    Assertions.assertThat(content1).isSameAs(content2)
   }
 
   @Test
@@ -169,7 +170,7 @@ class MountContentPoolsTest {
     val content2 = acquireMountContent(service, testRenderUnit)
 
     // Ensure that the content is reused
-    Java6Assertions.assertThat(content1).isSameAs(content2)
+    Assertions.assertThat(content1).isSameAs(content2)
 
     // Recycle the content
     recycle(service, testRenderUnit, content2)
@@ -179,7 +180,7 @@ class MountContentPoolsTest {
 
     val content3 = acquireMountContent(service, testRenderUnit)
     // Ensure that the content acquired after destroying the service is different
-    Java6Assertions.assertThat(content3).isNotSameAs(content2)
+    Assertions.assertThat(content3).isNotSameAs(content2)
   }
 
   @Test
@@ -196,7 +197,7 @@ class MountContentPoolsTest {
     val content2 = acquireMountContent(service, testRenderUnit)
 
     // Ensure that the content is reused
-    Java6Assertions.assertThat(content1).isSameAs(content2)
+    Assertions.assertThat(content1).isSameAs(content2)
 
     // Recycle the content
     recycle(service, testRenderUnit, content2)
@@ -206,7 +207,7 @@ class MountContentPoolsTest {
 
     val content3 = acquireMountContent(service, testRenderUnit)
     // Ensure that the content acquired after destroying the service is different
-    Java6Assertions.assertThat(content3).isNotSameAs(content2)
+    Assertions.assertThat(content3).isNotSameAs(content2)
   }
 
   @Test
@@ -218,9 +219,9 @@ class MountContentPoolsTest {
     val secondContent = acquireMountContent(context, testRenderUnitToAcquire)
 
     // both of them should be created and they shouldn't be the same instance
-    Java6Assertions.assertThat(testRenderUnitToAcquire.createdCount).isEqualTo(2)
-    Java6Assertions.assertThat(firstContent).isNotNull
-    Java6Assertions.assertThat(secondContent).isNotSameAs(firstContent)
+    Assertions.assertThat(testRenderUnitToAcquire.createdCount).isEqualTo(2)
+    Assertions.assertThat(firstContent).isNotNull
+    Assertions.assertThat(secondContent).isNotSameAs(firstContent)
 
     // Recycle the second content instance
     recycle(context, testRenderUnitToAcquire, secondContent)
@@ -229,7 +230,7 @@ class MountContentPoolsTest {
     val thirdContent = acquireMountContent(context, testRenderUnitToAcquire)
 
     // it should be the same instance that was just released
-    Java6Assertions.assertThat(thirdContent).isSameAs(secondContent)
+    Assertions.assertThat(thirdContent).isSameAs(secondContent)
   }
 
   @Test
@@ -241,9 +242,9 @@ class MountContentPoolsTest {
     val secondContent = acquireMountContent(context, testRenderUnitToAcquire)
 
     // both of them should be created and they shouldn't be the same instance
-    Java6Assertions.assertThat(testRenderUnitToAcquire.createdCount).isEqualTo(2)
-    Java6Assertions.assertThat(firstContent).isNotNull
-    Java6Assertions.assertThat(secondContent).isNotSameAs(firstContent)
+    Assertions.assertThat(testRenderUnitToAcquire.createdCount).isEqualTo(2)
+    Assertions.assertThat(firstContent).isNotNull
+    Assertions.assertThat(secondContent).isNotSameAs(firstContent)
 
     // Recycle the second content instance
     recycle(context, testRenderUnitToAcquire, secondContent)
@@ -252,7 +253,7 @@ class MountContentPoolsTest {
     val thirdContent = acquireMountContent(context, testRenderUnitToAcquire)
 
     // it should not be the same as just released instance because pool size is 0
-    Java6Assertions.assertThat(thirdContent).isNotSameAs(secondContent)
+    Assertions.assertThat(thirdContent).isNotSameAs(secondContent)
   }
 
   @Test
@@ -265,9 +266,9 @@ class MountContentPoolsTest {
     val secondContent = acquireMountContent(context, testRenderUnitToAcquire)
 
     // both of them should be created and they shouldn't be the same instance
-    Java6Assertions.assertThat(testRenderUnitToAcquire.createdCount).isEqualTo(2)
-    Java6Assertions.assertThat(firstContent).isNotNull
-    Java6Assertions.assertThat(secondContent).isNotSameAs(firstContent)
+    Assertions.assertThat(testRenderUnitToAcquire.createdCount).isEqualTo(2)
+    Assertions.assertThat(firstContent).isNotNull
+    Assertions.assertThat(secondContent).isNotSameAs(firstContent)
 
     // Recycle the second content instance
     recycle(context, testRenderUnitToAcquire, secondContent)
@@ -276,7 +277,7 @@ class MountContentPoolsTest {
     val thirdContent = acquireMountContent(context, testRenderUnitToAcquire)
 
     // it should not be the same as just released instance because pool size is 0
-    Java6Assertions.assertThat(thirdContent).isNotSameAs(secondContent)
+    Assertions.assertThat(thirdContent).isNotSameAs(secondContent)
   }
 
   @Test
@@ -289,9 +290,9 @@ class MountContentPoolsTest {
     val secondContent = acquireMountContent(context, testRenderUnitToAcquire)
 
     // both of them should be created and they shouldn't be the same instance
-    Java6Assertions.assertThat(testRenderUnitToAcquire.createdCount).isEqualTo(2)
-    Java6Assertions.assertThat(firstContent).isNotNull
-    Java6Assertions.assertThat(secondContent).isNotSameAs(firstContent)
+    Assertions.assertThat(testRenderUnitToAcquire.createdCount).isEqualTo(2)
+    Assertions.assertThat(firstContent).isNotNull
+    Assertions.assertThat(secondContent).isNotSameAs(firstContent)
 
     // Recycle the second content instance
     recycle(context, testRenderUnitToAcquire, secondContent)
@@ -300,7 +301,7 @@ class MountContentPoolsTest {
     val thirdContent = acquireMountContent(context, testRenderUnitToAcquire)
 
     // it should not be the same as just released instance because pool size is 0
-    Java6Assertions.assertThat(thirdContent).isNotSameAs(secondContent)
+    Assertions.assertThat(thirdContent).isNotSameAs(secondContent)
   }
 
   @Test
@@ -309,14 +310,14 @@ class MountContentPoolsTest {
     val prefillCount = 4
     val testRenderUnit = TestRenderUnit(id = 0, customPoolSize = prefillCount)
     prefillMountContentPool(context, prefillCount, testRenderUnit, poolScope)
-    Java6Assertions.assertThat(testRenderUnit.createdCount).isEqualTo(prefillCount)
+    Assertions.assertThat(testRenderUnit.createdCount).isEqualTo(prefillCount)
     val testRenderUnitToAcquire = TestRenderUnit(0, customPoolSize = prefillCount)
     for (i in 0 until prefillCount) {
       acquireMountContent(context, testRenderUnitToAcquire, poolScope)
     }
-    Java6Assertions.assertThat(testRenderUnitToAcquire.createdCount).isEqualTo(0)
+    Assertions.assertThat(testRenderUnitToAcquire.createdCount).isEqualTo(0)
     acquireMountContent(context, testRenderUnitToAcquire)
-    Java6Assertions.assertThat(testRenderUnitToAcquire.createdCount).isEqualTo(1)
+    Assertions.assertThat(testRenderUnitToAcquire.createdCount).isEqualTo(1)
   }
 
   @Test
@@ -327,13 +328,13 @@ class MountContentPoolsTest {
     val testRenderUnit = TestRenderUnit(0, customPoolSize)
     prefillMountContentPool(context, prefillCount, testRenderUnit, poolScope)
     // the prefill count overrides the default pool size of the render unit
-    Java6Assertions.assertThat(testRenderUnit.createdCount).isEqualTo(prefillCount)
+    Assertions.assertThat(testRenderUnit.createdCount).isEqualTo(prefillCount)
     val testRenderUnitToAcquire = TestRenderUnit(0, 2)
     for (i in 0 until prefillCount) {
       acquireMountContent(context, testRenderUnitToAcquire, poolScope)
     }
     // expect no new render units to be created as the pool has been prefilled
-    Java6Assertions.assertThat(testRenderUnitToAcquire.createdCount).isEqualTo(0)
+    Assertions.assertThat(testRenderUnitToAcquire.createdCount).isEqualTo(0)
   }
 
   @Test
@@ -345,14 +346,14 @@ class MountContentPoolsTest {
     val content2 = acquireMountContent(activity, testRenderUnit, poolScope)
 
     // Assert pooling was working before
-    Java6Assertions.assertThat(content1).isSameAs(content2)
+    Assertions.assertThat(content1).isSameAs(content2)
     recycle(activity, testRenderUnit, content2, poolScope)
 
     // Now destroy the activity and assert pooling no longer works. Next acquire should produce
     // difference content.
     onContextDestroyed(activity)
     val content3 = acquireMountContent(activity, testRenderUnit, poolScope)
-    Java6Assertions.assertThat(content3).isNotSameAs(content1)
+    Assertions.assertThat(content3).isNotSameAs(content1)
   }
 
   @Test
@@ -364,13 +365,13 @@ class MountContentPoolsTest {
     val content2 = acquireMountContent(activity, testRenderUnit, poolScope)
 
     // Assert pooling was working before
-    Java6Assertions.assertThat(content1).isSameAs(content2)
+    Assertions.assertThat(content1).isSameAs(content2)
     recycle(activity, testRenderUnit, content2, poolScope)
 
     // Now release custom pool scope. Next acquire should produce difference content.
     poolScope.releaseScope()
     val content3 = acquireMountContent(activity, testRenderUnit, poolScope)
-    Java6Assertions.assertThat(content3).isNotSameAs(content1)
+    Assertions.assertThat(content3).isNotSameAs(content1)
   }
 
   @Test
@@ -382,14 +383,14 @@ class MountContentPoolsTest {
     val content2 = acquireMountContent(activity, testRenderUnit, servicePoolScope)
 
     // Assert pooling was working before
-    Java6Assertions.assertThat(content1).isSameAs(content2)
+    Assertions.assertThat(content1).isSameAs(content2)
     recycle(activity, testRenderUnit, content2, servicePoolScope)
 
     // Now release custom pool scope by destroying the Service. Next acquire should produce
     // difference content.
     serviceController.destroy()
     val content3 = acquireMountContent(activity, testRenderUnit, servicePoolScope)
-    Java6Assertions.assertThat(content3).isNotSameAs(content1)
+    Assertions.assertThat(content3).isNotSameAs(content1)
   }
 
   @Test
@@ -402,7 +403,7 @@ class MountContentPoolsTest {
     val content2 = acquireMountContent(activity, testRenderUnit, poolScope)
 
     // Ensure that the content is reused
-    Java6Assertions.assertThat(content1).isSameAs(content2)
+    Assertions.assertThat(content1).isSameAs(content2)
 
     // Recycle the content
     recycle(activity, testRenderUnit, content2, poolScope)
@@ -413,7 +414,7 @@ class MountContentPoolsTest {
 
     val content3 = acquireMountContent(activity, testRenderUnit, poolScope)
     // Ensure that the content acquired after destroying the activity is different
-    Java6Assertions.assertThat(content3).isNotSameAs(content2)
+    Assertions.assertThat(content3).isNotSameAs(content2)
   }
 
   @Test
@@ -434,11 +435,11 @@ class MountContentPoolsTest {
         acquireMountContent(context, testRenderUnitToAcquire, secondPoolScope)
 
     // all of them should be created and they shouldn't be the same instance
-    Java6Assertions.assertThat(testRenderUnitToAcquire.createdCount).isEqualTo(4)
-    Java6Assertions.assertThat(firstContentFirstScope).isNotNull
-    Java6Assertions.assertThat(secondContentFirstScope).isNotSameAs(firstContentFirstScope)
-    Java6Assertions.assertThat(firstContentSecondScope).isNotNull
-    Java6Assertions.assertThat(secondContentSecondScope).isNotSameAs(firstContentSecondScope)
+    Assertions.assertThat(testRenderUnitToAcquire.createdCount).isEqualTo(4)
+    Assertions.assertThat(firstContentFirstScope).isNotNull
+    Assertions.assertThat(secondContentFirstScope).isNotSameAs(firstContentFirstScope)
+    Assertions.assertThat(firstContentSecondScope).isNotNull
+    Assertions.assertThat(secondContentSecondScope).isNotSameAs(firstContentSecondScope)
 
     // Recycle the second content instances
     recycle(context, testRenderUnitToAcquire, secondContentFirstScope, firstPoolScope)
@@ -451,8 +452,8 @@ class MountContentPoolsTest {
         acquireMountContent(context, testRenderUnitToAcquire, secondPoolScope)
 
     // they should be the same instances that were just released
-    Java6Assertions.assertThat(thirdContentFirstScope).isSameAs(secondContentFirstScope)
-    Java6Assertions.assertThat(thirdContentSecondScope).isSameAs(secondContentSecondScope)
+    Assertions.assertThat(thirdContentFirstScope).isSameAs(secondContentFirstScope)
+    Assertions.assertThat(thirdContentSecondScope).isSameAs(secondContentSecondScope)
   }
 
   @Test
@@ -465,9 +466,9 @@ class MountContentPoolsTest {
     val secondContent = acquireMountContent(context, testRenderUnitToAcquire, poolScope)
 
     // both of them should be created and they shouldn't be the same instance
-    Java6Assertions.assertThat(testRenderUnitToAcquire.createdCount).isEqualTo(2)
-    Java6Assertions.assertThat(firstContent).isNotNull
-    Java6Assertions.assertThat(secondContent).isNotSameAs(firstContent)
+    Assertions.assertThat(testRenderUnitToAcquire.createdCount).isEqualTo(2)
+    Assertions.assertThat(firstContent).isNotNull
+    Assertions.assertThat(secondContent).isNotSameAs(firstContent)
 
     // Recycle the second content instance
     recycle(context, testRenderUnitToAcquire, secondContent, poolScope)
@@ -476,7 +477,7 @@ class MountContentPoolsTest {
     val thirdContent = acquireMountContent(context, testRenderUnitToAcquire, poolScope)
 
     // it should not be the same as just released instance because pool size is 0
-    Java6Assertions.assertThat(thirdContent).isNotSameAs(secondContent)
+    Assertions.assertThat(thirdContent).isNotSameAs(secondContent)
   }
 
   @Test
@@ -490,7 +491,7 @@ class MountContentPoolsTest {
     onContextDestroyed(activity)
 
     // Assert that content discarded was called once
-    Java6Assertions.assertThat(testRenderUnit.contentDiscardedCount).isEqualTo(1)
+    Assertions.assertThat(testRenderUnit.contentDiscardedCount).isEqualTo(1)
   }
 
   @Test
@@ -505,7 +506,7 @@ class MountContentPoolsTest {
     poolScope.releaseScope()
 
     // Assert that content discarded was called once
-    Java6Assertions.assertThat(testRenderUnit.contentDiscardedCount).isEqualTo(1)
+    Assertions.assertThat(testRenderUnit.contentDiscardedCount).isEqualTo(1)
   }
 
   @Test
@@ -520,7 +521,7 @@ class MountContentPoolsTest {
     serviceController.destroy()
 
     // Assert that content discarded was called once
-    Java6Assertions.assertThat(testRenderUnit.contentDiscardedCount).isEqualTo(1)
+    Assertions.assertThat(testRenderUnit.contentDiscardedCount).isEqualTo(1)
   }
 
   @Test
@@ -539,8 +540,8 @@ class MountContentPoolsTest {
     clear()
 
     // Assert that content discarded was called once for both units
-    Java6Assertions.assertThat(unscopedTestRenderUnit.contentDiscardedCount).isEqualTo(1)
-    Java6Assertions.assertThat(scopedTestRenderUnit.contentDiscardedCount).isEqualTo(1)
+    Assertions.assertThat(unscopedTestRenderUnit.contentDiscardedCount).isEqualTo(1)
+    Assertions.assertThat(scopedTestRenderUnit.contentDiscardedCount).isEqualTo(1)
   }
 
   @Test
@@ -553,15 +554,15 @@ class MountContentPoolsTest {
 
     recycle(activity, testRenderUnit, firstContent)
     // Pool size is 2 so first release shouldn't trigger content discarded listener
-    Java6Assertions.assertThat(testRenderUnit.contentDiscardedCount).isEqualTo(0)
+    Assertions.assertThat(testRenderUnit.contentDiscardedCount).isEqualTo(0)
 
     recycle(activity, testRenderUnit, secondContent)
     // Pool size is 2 so second release shouldn't trigger content discarded listener
-    Java6Assertions.assertThat(testRenderUnit.contentDiscardedCount).isEqualTo(0)
+    Assertions.assertThat(testRenderUnit.contentDiscardedCount).isEqualTo(0)
 
     recycle(activity, testRenderUnit, thirdContent)
     // Pool size is 2 so third release should trigger content discarded listener
-    Java6Assertions.assertThat(testRenderUnit.contentDiscardedCount).isEqualTo(1)
+    Assertions.assertThat(testRenderUnit.contentDiscardedCount).isEqualTo(1)
   }
 
   @Test
@@ -575,22 +576,50 @@ class MountContentPoolsTest {
 
     recycle(activity, testRenderUnit, firstContent, poolScope)
     // Pool size is 2 so first release shouldn't trigger content discarded listener
-    Java6Assertions.assertThat(testRenderUnit.contentDiscardedCount).isEqualTo(0)
+    Assertions.assertThat(testRenderUnit.contentDiscardedCount).isEqualTo(0)
 
     recycle(activity, testRenderUnit, secondContent, poolScope)
     // Pool size is 2 so second release shouldn't trigger content discarded listener
-    Java6Assertions.assertThat(testRenderUnit.contentDiscardedCount).isEqualTo(0)
+    Assertions.assertThat(testRenderUnit.contentDiscardedCount).isEqualTo(0)
 
     recycle(activity, testRenderUnit, thirdContent, poolScope)
     // Pool size is 2 so third release should trigger content discarded listener
-    Java6Assertions.assertThat(testRenderUnit.contentDiscardedCount).isEqualTo(1)
+    Assertions.assertThat(testRenderUnit.contentDiscardedCount).isEqualTo(1)
+  }
+
+  @Test
+  fun testPoolReturnsCorrectPooledItemsCount() {
+
+    val testRenderUnit = TestRenderUnit(0)
+
+    // Pool is initially empty
+    Assertions.assertThat(getContentPoolItemCount(activity, testRenderUnit)).isZero
+
+    val content1 = acquireMountContent(activity, testRenderUnit)
+    val content2 = acquireMountContent(activity, testRenderUnit)
+
+    // After acquiring the pool is empty
+    Assertions.assertThat(getContentPoolItemCount(activity, testRenderUnit)).isZero
+
+    recycle(activity, testRenderUnit, content1)
+
+    // After recycling first item, the pool contains 1 item
+    Assertions.assertThat(getContentPoolItemCount(activity, testRenderUnit)).isEqualTo(1)
+
+    recycle(activity, testRenderUnit, content2)
+    // After recycling second item, the pool contains 2 items
+    Assertions.assertThat(getContentPoolItemCount(activity, testRenderUnit)).isEqualTo(2)
+
+    clear()
+    // After clear the pool is empty
+    Assertions.assertThat(getContentPoolItemCount(activity, testRenderUnit)).isZero
   }
 
   class TestRenderUnit(
       override val id: Long,
       private val customPoolSize: Int = ContentAllocator.DEFAULT_MAX_PREALLOCATION,
       private val policy: PoolingPolicy = PoolingPolicy.Default,
-  ) : RenderUnit<View>(RenderType.VIEW), ContentAllocator<View> {
+  ) : RenderUnit<View>(), ContentAllocator<View> {
 
     var createdCount: Int = 0
       private set
@@ -605,6 +634,8 @@ class MountContentPoolsTest {
 
     override val contentAllocator: ContentAllocator<View>
       get() = this
+
+    override val renderType: RenderType = RenderType.VIEW
 
     override val poolingPolicy: PoolingPolicy
       get() = policy

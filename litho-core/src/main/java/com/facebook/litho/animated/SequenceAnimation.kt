@@ -39,7 +39,8 @@ class SequenceAnimation(private val animators: Array<out AnimatedAnimation>) : A
               }
               animatorFinished(cancelled)
             }
-          })
+          },
+      )
     }
   }
 

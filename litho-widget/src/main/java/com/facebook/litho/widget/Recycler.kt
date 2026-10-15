@@ -61,8 +61,8 @@ constructor(
     private val topPadding: Int = 0,
     private val rightPadding: Int = 0,
     private val bottomPadding: Int = 0,
-    @ColorInt private val refreshProgressBarBackgroundColor: Int? = null,
-    @ColorInt private val refreshProgressBarColor: Int = Color.BLACK,
+    @param:ColorInt private val refreshProgressBarBackgroundColor: Int? = null,
+    @param:ColorInt private val refreshProgressBarColor: Int = Color.BLACK,
     private val isClipChildrenEnabled: Boolean = true,
     private val isNestedScrollingEnabled: Boolean = true,
     private val scrollBarStyle: Int = View.SCROLLBARS_INSIDE_OVERLAY,
@@ -75,7 +75,7 @@ constructor(
     private val isBottomFadingEnabled: Boolean = true,
     private val fadingEdgeLength: Int = 0,
     private val edgeFactory: RecyclerView.EdgeEffectFactory? = null,
-    @IdRes private val recyclerViewId: Int = View.NO_ID,
+    @param:IdRes private val recyclerViewId: Int = View.NO_ID,
     private val overScrollMode: Int = View.OVER_SCROLL_ALWAYS,
     private val contentDescription: CharSequence? = null,
     private val itemAnimator: RecyclerView.ItemAnimator? = NoUpdateItemAnimator(),
@@ -91,7 +91,8 @@ constructor(
     private val paddingAdditionDisabled: Boolean = false,
     private val onBeforeLayoutListener: OnBeforeLayoutListener? = null,
     private val onAfterLayoutListener: OnAfterLayoutListener? = null,
-    private val style: Style? = null
+    private val removeAccessibilityListRole: Boolean = false,
+    private val style: Style = Style,
 ) : PrimitiveComponent() {
 
   override fun PrimitiveComponentScope.render(): LithoPrimitive {
@@ -105,8 +106,10 @@ constructor(
     }
 
     val mountBehavior =
-        when (binderStrategy
-            ?: context.lithoConfiguration.componentsConfig.primitiveRecyclerBinderStrategy) {
+        when (
+            binderStrategy
+                ?: context.lithoConfiguration.componentsConfig.primitiveRecyclerBinderStrategy
+        ) {
           PrimitiveRecyclerBinderStrategy.SPLIT_BINDERS ->
               SplitBindersMountBehavior(
                   measureVersion,
@@ -136,11 +139,13 @@ constructor(
                 startPadding = leftPadding,
                 endPadding = rightPadding,
                 topPadding = topPadding,
-                bottomPadding = bottomPadding) {
-                  measureVersion.update { v -> v + 1 }
-                },
+                bottomPadding = bottomPadding,
+            ) {
+              measureVersion.update { v -> v + 1 }
+            },
         mountBehavior = mountBehavior,
-        style = style)
+        style = style,
+    )
   }
 
   private fun PrimitiveComponentScope.DefaultMountBehavior(
@@ -150,7 +155,7 @@ constructor(
       recyclerEventsController: RecyclerEventsController?,
       onBeforeLayoutListener: OnBeforeLayoutListener?,
       onAfterLayoutListener: OnAfterLayoutListener?,
-      measureChild: View.() -> Unit
+      measureChild: View.() -> Unit,
   ): MountBehavior<SectionsRecyclerView> =
       MountBehavior(ViewAllocator { context -> createSectionsRecyclerView(context) }) {
         doesMountRenderTreeHosts = true
@@ -196,48 +201,60 @@ constructor(
               fadingEdgeLength,
               refreshProgressBarBackgroundColor,
               refreshProgressBarColor,
-              itemAnimator?.javaClass) { sectionsRecyclerView ->
-                val recyclerView = sectionsRecyclerView.requireLithoRecyclerView()
+              itemAnimator?.javaClass,
+              removeAccessibilityListRole,
+          ) { sectionsRecyclerView ->
+            val recyclerView = sectionsRecyclerView.requireLithoRecyclerView()
 
-                bindLegacyMountBinder(
-                    sectionsRecyclerView = sectionsRecyclerView,
-                    contentDescription = contentDescription,
-                    hasFixedSize = hasFixedSize,
-                    isClipToPaddingEnabled = isClipToPaddingEnabled,
-                    paddingAdditionDisabled = paddingAdditionDisabled,
-                    leftPadding = leftPadding,
-                    topPadding = topPadding,
-                    rightPadding = rightPadding,
-                    bottomPadding = bottomPadding,
-                    isClipChildrenEnabled = isClipChildrenEnabled,
-                    isNestedScrollingEnabled = isNestedScrollingEnabled,
-                    scrollBarStyle = scrollBarStyle,
-                    isHorizontalFadingEdgeEnabled = isHorizontalFadingEdgeEnabled,
-                    isVerticalFadingEdgeEnabled = isVerticalFadingEdgeEnabled,
-                    isLeftFadingEnabled = isLeftFadingEnabled,
-                    isRightFadingEnabled = isRightFadingEnabled,
-                    isTopFadingEnabled = isTopFadingEnabled,
-                    isBottomFadingEnabled = isBottomFadingEnabled,
-                    fadingEdgeLength = fadingEdgeLength,
-                    recyclerViewId = recyclerViewId,
-                    overScrollMode = overScrollMode,
-                    edgeFactory = edgeFactory,
-                    refreshProgressBarBackgroundColor = refreshProgressBarBackgroundColor,
-                    refreshProgressBarColor = refreshProgressBarColor,
-                    itemAnimator = itemAnimator)
+            bindLegacyMountBinder(
+                sectionsRecyclerView = sectionsRecyclerView,
+                contentDescription = contentDescription,
+                hasFixedSize = hasFixedSize,
+                isClipToPaddingEnabled = isClipToPaddingEnabled,
+                paddingAdditionDisabled = paddingAdditionDisabled,
+                leftPadding = leftPadding,
+                topPadding = topPadding,
+                rightPadding = rightPadding,
+                bottomPadding = bottomPadding,
+                isClipChildrenEnabled = isClipChildrenEnabled,
+                isNestedScrollingEnabled = isNestedScrollingEnabled,
+                scrollBarStyle = scrollBarStyle,
+                isHorizontalFadingEdgeEnabled = isHorizontalFadingEdgeEnabled,
+                isVerticalFadingEdgeEnabled = isVerticalFadingEdgeEnabled,
+                isLeftFadingEnabled = isLeftFadingEnabled,
+                isRightFadingEnabled = isRightFadingEnabled,
+                isTopFadingEnabled = isTopFadingEnabled,
+                isBottomFadingEnabled = isBottomFadingEnabled,
+                fadingEdgeLength = fadingEdgeLength,
+                recyclerViewId = recyclerViewId,
+                overScrollMode = overScrollMode,
+                edgeFactory = edgeFactory,
+                refreshProgressBarBackgroundColor = refreshProgressBarBackgroundColor,
+                refreshProgressBarColor = refreshProgressBarColor,
+                itemAnimator = itemAnimator,
+                removeAccessibilityListRole = removeAccessibilityListRole,
+            )
 
-                binder.mount(recyclerView)
+            binder.mount(recyclerView)
 
-                onUnbind {
-                  unbindLegacyMountBinder(
-                      sectionsRecyclerView = sectionsRecyclerView,
-                      refreshProgressBarBackgroundColor = refreshProgressBarBackgroundColor,
-                      edgeFactory = edgeFactory,
-                      snapHelper = snapHelper)
+            onUnbind {
+              unbindLegacyMountBinder(
+                  sectionsRecyclerView = sectionsRecyclerView,
+                  refreshProgressBarBackgroundColor = refreshProgressBarBackgroundColor,
+                  edgeFactory = edgeFactory,
+                  snapHelper = snapHelper,
+              )
 
-                  binder.unmount(recyclerView)
-                }
-              }
+              binder.unmount(recyclerView)
+            }
+          }
+        }
+
+        // Unmount only: the mount binder above also unbinds on new props or a new measure.
+        withDescription("bring-to-front-reset") {
+          bind(Unit) { sectionsRecyclerView ->
+            onUnbind { sectionsRecyclerView.skipsRedundantBringToFront = false }
+          }
         }
 
         withDescription("recycler-before-layout") {
@@ -267,14 +284,16 @@ constructor(
                 touchInterceptor = touchInterceptor,
                 onItemTouchListener = onItemTouchListener,
                 snapHelper = snapHelper,
-                recyclerEventsController = recyclerEventsController)
+                recyclerEventsController = recyclerEventsController,
+            )
 
             onUnbind {
               unbindLegacyAttachBinder(
                   sectionsRecyclerView = sectionsRecyclerView,
                   recyclerEventsController = recyclerEventsController,
                   onScrollListeners = onScrollListeners,
-                  onItemTouchListener = onItemTouchListener)
+                  onItemTouchListener = onItemTouchListener,
+              )
             }
           }
         }
@@ -297,7 +316,7 @@ constructor(
       recyclerEventsController: RecyclerEventsController?,
       onBeforeLayoutListener: OnBeforeLayoutListener?,
       onAfterLayoutListener: OnAfterLayoutListener?,
-      measureChild: View.() -> Unit
+      measureChild: View.() -> Unit,
   ): MountBehavior<SectionsRecyclerView> =
       MountBehavior(ViewAllocator { context -> createSectionsRecyclerView(context) }) {
         doesMountRenderTreeHosts = true
@@ -341,42 +360,54 @@ constructor(
               fadingEdgeLength,
               refreshProgressBarBackgroundColor,
               refreshProgressBarColor,
-              itemAnimator?.javaClass) { sectionsRecyclerView ->
-                bindLegacyMountBinder(
-                    sectionsRecyclerView = sectionsRecyclerView,
-                    contentDescription = contentDescription,
-                    hasFixedSize = hasFixedSize,
-                    isClipToPaddingEnabled = isClipToPaddingEnabled,
-                    paddingAdditionDisabled = paddingAdditionDisabled,
-                    leftPadding = leftPadding,
-                    topPadding = topPadding,
-                    rightPadding = rightPadding,
-                    bottomPadding = bottomPadding,
-                    isClipChildrenEnabled = isClipChildrenEnabled,
-                    isNestedScrollingEnabled = isNestedScrollingEnabled,
-                    scrollBarStyle = scrollBarStyle,
-                    isHorizontalFadingEdgeEnabled = isHorizontalFadingEdgeEnabled,
-                    isVerticalFadingEdgeEnabled = isVerticalFadingEdgeEnabled,
-                    isLeftFadingEnabled = isLeftFadingEnabled,
-                    isRightFadingEnabled = isRightFadingEnabled,
-                    isTopFadingEnabled = isTopFadingEnabled,
-                    isBottomFadingEnabled = isBottomFadingEnabled,
-                    fadingEdgeLength = fadingEdgeLength,
-                    recyclerViewId = recyclerViewId,
-                    overScrollMode = overScrollMode,
-                    edgeFactory = edgeFactory,
-                    refreshProgressBarBackgroundColor = refreshProgressBarBackgroundColor,
-                    refreshProgressBarColor = refreshProgressBarColor,
-                    itemAnimator = itemAnimator)
+              itemAnimator?.javaClass,
+              removeAccessibilityListRole,
+          ) { sectionsRecyclerView ->
+            bindLegacyMountBinder(
+                sectionsRecyclerView = sectionsRecyclerView,
+                contentDescription = contentDescription,
+                hasFixedSize = hasFixedSize,
+                isClipToPaddingEnabled = isClipToPaddingEnabled,
+                paddingAdditionDisabled = paddingAdditionDisabled,
+                leftPadding = leftPadding,
+                topPadding = topPadding,
+                rightPadding = rightPadding,
+                bottomPadding = bottomPadding,
+                isClipChildrenEnabled = isClipChildrenEnabled,
+                isNestedScrollingEnabled = isNestedScrollingEnabled,
+                scrollBarStyle = scrollBarStyle,
+                isHorizontalFadingEdgeEnabled = isHorizontalFadingEdgeEnabled,
+                isVerticalFadingEdgeEnabled = isVerticalFadingEdgeEnabled,
+                isLeftFadingEnabled = isLeftFadingEnabled,
+                isRightFadingEnabled = isRightFadingEnabled,
+                isTopFadingEnabled = isTopFadingEnabled,
+                isBottomFadingEnabled = isBottomFadingEnabled,
+                fadingEdgeLength = fadingEdgeLength,
+                recyclerViewId = recyclerViewId,
+                overScrollMode = overScrollMode,
+                edgeFactory = edgeFactory,
+                refreshProgressBarBackgroundColor = refreshProgressBarBackgroundColor,
+                refreshProgressBarColor = refreshProgressBarColor,
+                itemAnimator = itemAnimator,
+                removeAccessibilityListRole = removeAccessibilityListRole,
+            )
 
-                onUnbind {
-                  unbindLegacyMountBinder(
-                      sectionsRecyclerView = sectionsRecyclerView,
-                      refreshProgressBarBackgroundColor = refreshProgressBarBackgroundColor,
-                      edgeFactory = edgeFactory,
-                      snapHelper = snapHelper)
-                }
-              }
+            onUnbind {
+              unbindLegacyMountBinder(
+                  sectionsRecyclerView = sectionsRecyclerView,
+                  refreshProgressBarBackgroundColor = refreshProgressBarBackgroundColor,
+                  edgeFactory = edgeFactory,
+                  snapHelper = snapHelper,
+              )
+            }
+          }
+        }
+
+        // Unmount only: the mount binder above also unbinds on new props or a new measure.
+        withDescription("bring-to-front-reset") {
+          bind(Unit) { sectionsRecyclerView ->
+            onUnbind { sectionsRecyclerView.skipsRedundantBringToFront = false }
+          }
         }
 
         withDescription("recycler-before-layout") {
@@ -414,14 +445,16 @@ constructor(
                 touchInterceptor = touchInterceptor,
                 onItemTouchListener = onItemTouchListener,
                 snapHelper = snapHelper,
-                recyclerEventsController = recyclerEventsController)
+                recyclerEventsController = recyclerEventsController,
+            )
 
             onUnbind {
               unbindLegacyAttachBinder(
                   sectionsRecyclerView = sectionsRecyclerView,
                   recyclerEventsController = recyclerEventsController,
                   onScrollListeners = onScrollListeners,
-                  onItemTouchListener = onItemTouchListener)
+                  onItemTouchListener = onItemTouchListener,
+              )
             }
           }
         }
@@ -448,7 +481,8 @@ constructor(
 fun SectionsRecyclerView.requireLithoRecyclerView(): LithoRecyclerView =
     recyclerView as? LithoRecyclerView
         ?: throw java.lang.IllegalStateException(
-            "RecyclerView not found, it should not be removed from SwipeRefreshLayout")
+            "RecyclerView not found, it should not be removed from SwipeRefreshLayout",
+        )
 
 private class RecyclerLayoutBehavior(
     private val binder: Binder<RecyclerView>,
@@ -456,7 +490,7 @@ private class RecyclerLayoutBehavior(
     private val endPadding: Int,
     private val topPadding: Int,
     private val bottomPadding: Int,
-    private val onRemeasure: () -> Unit
+    private val onRemeasure: () -> Unit,
 ) : LayoutBehavior {
   override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
     val size = Size()
@@ -467,9 +501,12 @@ private class RecyclerLayoutBehavior(
         maybeGetSpecWithPadding(sizeConstraints.toHeightSpec(), topPadding + bottomPadding),
         if (binder.isCrossAxisWrapContent || binder.isMainAxisWrapContent)
             eventHandler { onRemeasure() }
-        else null)
+        else null,
+    )
     return PrimitiveLayoutResult(
-        max(sizeConstraints.minWidth, size.width), max(sizeConstraints.minHeight, size.height))
+        max(sizeConstraints.minWidth, size.width + startPadding + endPadding),
+        max(sizeConstraints.minHeight, size.height + topPadding + bottomPadding),
+    )
   }
 }
 
@@ -502,7 +539,8 @@ fun ResourcesScope.bindLegacyMountBinder(
     edgeFactory: RecyclerView.EdgeEffectFactory?,
     @ColorInt refreshProgressBarBackgroundColor: Int?,
     @ColorInt refreshProgressBarColor: Int,
-    itemAnimator: ItemAnimator?
+    itemAnimator: ItemAnimator?,
+    removeAccessibilityListRole: Boolean = false,
 ): LithoRecyclerView {
   val recyclerView = sectionsRecyclerView.requireLithoRecyclerView()
 
@@ -512,7 +550,12 @@ fun ResourcesScope.bindLegacyMountBinder(
   sectionsRecyclerView.clipToPadding = isClipToPaddingEnabled
   if (!paddingAdditionDisabled) {
     ViewCompat.setPaddingRelative(
-        recyclerView, leftPadding, topPadding, rightPadding, bottomPadding)
+        recyclerView,
+        leftPadding,
+        topPadding,
+        rightPadding,
+        bottomPadding,
+    )
   }
   recyclerView.clipChildren = isClipChildrenEnabled
   sectionsRecyclerView.clipChildren = isClipChildrenEnabled
@@ -538,6 +581,12 @@ fun ResourcesScope.bindLegacyMountBinder(
 
   sectionsRecyclerView.setItemAnimator(itemAnimator)
 
+  // Remove the accessibility list role to prevent TalkBack from announcing
+  // the entire RecyclerView as a list when it should only expose actual lists.
+  if (removeAccessibilityListRole) {
+    ViewCompat.setImportantForAccessibility(recyclerView, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO)
+  }
+
   return recyclerView
 }
 
@@ -550,7 +599,7 @@ fun unbindLegacyMountBinder(
     sectionsRecyclerView: SectionsRecyclerView,
     @ColorInt refreshProgressBarBackgroundColor: Int?,
     edgeFactory: RecyclerView.EdgeEffectFactory?,
-    snapHelper: SnapHelper?
+    snapHelper: SnapHelper?,
 ) {
   val recyclerView = sectionsRecyclerView.requireLithoRecyclerView()
 
@@ -558,7 +607,8 @@ fun unbindLegacyMountBinder(
 
   if (refreshProgressBarBackgroundColor != null) {
     sectionsRecyclerView.setProgressBackgroundColorSchemeColor(
-        Recycler.DEFAULT_REFRESH_SPINNER_BACKGROUND_COLOR)
+        Recycler.DEFAULT_REFRESH_SPINNER_BACKGROUND_COLOR,
+    )
   }
 
   if (edgeFactory != null) {
@@ -584,7 +634,7 @@ fun bindLegacyAttachBinder(
     touchInterceptor: TouchInterceptor?,
     onItemTouchListener: RecyclerView.OnItemTouchListener?,
     snapHelper: SnapHelper?,
-    recyclerEventsController: RecyclerEventsController?
+    recyclerEventsController: RecyclerEventsController?,
 ): LithoRecyclerView {
   val recyclerView = sectionsRecyclerView.requireLithoRecyclerView()
 
@@ -645,6 +695,7 @@ fun unbindLegacyAttachBinder(
     onItemTouchListener: RecyclerView.OnItemTouchListener?,
 ) {
   val recyclerView = sectionsRecyclerView.requireLithoRecyclerView()
+  sectionsRecyclerView.stickyHeaderTopOffset = 0
 
   sectionsRecyclerView.setSectionsRecyclerViewLogger(null)
 

@@ -18,19 +18,14 @@ package com.facebook.litho.widget
 
 import android.graphics.Rect
 import com.facebook.litho.BoundaryWorkingRange
-import com.facebook.litho.Column
+import com.facebook.litho.Column as ColumnBuilder
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
-import com.facebook.litho.FocusedVisibleEvent
-import com.facebook.litho.FullImpressionVisibleEvent
-import com.facebook.litho.InvisibleEvent
 import com.facebook.litho.LifecycleStep
 import com.facebook.litho.Output
 import com.facebook.litho.StateValue
 import com.facebook.litho.TestTriggerEvent
 import com.facebook.litho.Transition
-import com.facebook.litho.VisibilityChangedEvent
-import com.facebook.litho.VisibleEvent
 import com.facebook.litho.annotations.CachedValue
 import com.facebook.litho.annotations.ExcuseMySpec
 import com.facebook.litho.annotations.FromTrigger
@@ -55,6 +50,11 @@ import com.facebook.litho.annotations.Prop
 import com.facebook.litho.annotations.Reason
 import com.facebook.litho.annotations.State
 import com.facebook.litho.widget.events.EventWithoutAnnotation
+import com.facebook.rendercore.visibility.FocusedVisibleEvent
+import com.facebook.rendercore.visibility.FullImpressionVisibleEvent
+import com.facebook.rendercore.visibility.InvisibleEvent
+import com.facebook.rendercore.visibility.VisibilityChangedEvent
+import com.facebook.rendercore.visibility.VisibleEvent
 
 /**
  * LayoutSpec that implements lifecycle methods and crashes from the one provided as crashFromStep
@@ -69,7 +69,7 @@ object TestCrashFromEachLayoutLifecycleMethodSpec {
   fun onCreateInitialState(
       c: ComponentContext,
       state: StateValue<String>,
-      @Prop crashFromStep: LifecycleStep
+      @Prop crashFromStep: LifecycleStep,
   ) {
     state.set("hello world")
     if (crashFromStep == LifecycleStep.ON_CREATE_INITIAL_STATE) {
@@ -102,21 +102,23 @@ object TestCrashFromEachLayoutLifecycleMethodSpec {
       @Prop crashFromStep: LifecycleStep,
       @Prop(optional = true) caller: Caller?,
       @State state: String,
-      @CachedValue expensiveValue: Int
+      @CachedValue expensiveValue: Int,
   ): Component {
     checkNotNull(state) { "OnCreateLayout called without initialised state." }
     caller?.set(c, crashFromStep)
     if (crashFromStep == LifecycleStep.ON_CREATE_LAYOUT) {
       throw RuntimeException("onCreateLayout crash")
     }
-    return Column.create(c)
+    return ColumnBuilder.create(c)
         .visibleHandler(TestCrashFromEachLayoutLifecycleMethod.onVisible(c))
         .invisibleHandler(TestCrashFromEachLayoutLifecycleMethod.onInvisible(c))
         .focusedHandler(TestCrashFromEachLayoutLifecycleMethod.onFocusedEventVisible(c))
         .fullImpressionHandler(
-            TestCrashFromEachLayoutLifecycleMethod.onFullImpressionVisibleEvent(c))
+            TestCrashFromEachLayoutLifecycleMethod.onFullImpressionVisibleEvent(c),
+        )
         .visibilityChangedHandler(
-            TestCrashFromEachLayoutLifecycleMethod.onVisibilityChangedEvent(c))
+            TestCrashFromEachLayoutLifecycleMethod.onVisibilityChangedEvent(c),
+        )
         .build()
   }
 
@@ -240,7 +242,7 @@ object TestCrashFromEachLayoutLifecycleMethodSpec {
   fun triggerTestEvent(
       c: ComponentContext,
       @Prop crashFromStep: LifecycleStep,
-      @FromTrigger triggerObject: Any?
+      @FromTrigger triggerObject: Any?,
   ) {
     if (crashFromStep == LifecycleStep.ON_TRIGGER) {
       throw RuntimeException("onTrigger crash")
@@ -262,7 +264,9 @@ object TestCrashFromEachLayoutLifecycleMethodSpec {
 
     fun updateStateWithTransition() {
       TestCrashFromEachLayoutLifecycleMethod.updateStateWithTransitionWithTransition(
-          c, crashFromStep)
+          c,
+          crashFromStep,
+      )
     }
   }
 }

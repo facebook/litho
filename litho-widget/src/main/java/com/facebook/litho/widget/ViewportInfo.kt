@@ -47,7 +47,7 @@ interface ViewportInfo {
         lastVisibleIndex: Int,
         firstFullyVisibleIndex: Int,
         lastFullyVisibleIndex: Int,
-        @State state: Int
+        @State state: Int,
     )
   }
 

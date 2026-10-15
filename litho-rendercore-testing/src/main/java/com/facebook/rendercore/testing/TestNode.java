@@ -16,6 +16,7 @@
 
 package com.facebook.rendercore.testing;
 
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.LayoutContext;
 import com.facebook.rendercore.LayoutResult;
@@ -33,11 +34,10 @@ public class TestNode implements Node {
   private int mY;
   private int mWidth = 100;
   private int mHeight = 100;
-  // NULLSAFE_FIXME[Field Not Initialized]
-  private Object mLayoutData;
+  @Nullable private Object mLayoutData;
   // NULLSAFE_FIXME[Field Not Initialized]
   private RenderUnit mRenderUnit;
-  private long mId = sIdGenerator.getAndIncrement();
+  private final long mId = sIdGenerator.getAndIncrement();
 
   public TestNode() {
     super();
@@ -81,7 +81,7 @@ public class TestNode implements Node {
     mChildren.add(node);
   }
 
-  public void setLayoutData(Object layoutData) {
+  public void setLayoutData(@Nullable Object layoutData) {
     mLayoutData = layoutData;
   }
 

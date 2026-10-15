@@ -20,7 +20,7 @@ import com.facebook.litho.choreographercompat.ChoreographerCompat
 import com.facebook.litho.choreographercompat.ChoreographerCompat.FrameCallback
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import java.util.ArrayList
-import org.junit.Assert.fail
+import kotlin.test.fail
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -83,7 +83,8 @@ class MockTimingSourceTest {
                   override fun doFrame(frameTimeNanos: Long) {
                     fail("Nested FrameCallback should not be called in the same step")
                   }
-                })
+                },
+            )
           }
         }
     timingSource.postFrameCallback(callback)

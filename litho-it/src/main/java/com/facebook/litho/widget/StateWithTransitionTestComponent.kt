@@ -49,7 +49,8 @@ class StateWithTransitionTestComponent(
                   .animate(AnimatedProperties.X),
               Transition.create(BLUE_TRANSITION_KEY)
                   .animator(Transition.timing(144))
-                  .animate(AnimatedProperties.X))
+                  .animate(AnimatedProperties.X),
+          )
         }
       }
       onCleanup { stateCaller.setStateUpdateListener(null) }

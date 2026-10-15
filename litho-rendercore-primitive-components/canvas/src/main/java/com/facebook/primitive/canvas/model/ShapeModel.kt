@@ -22,8 +22,8 @@ import android.graphics.Paint
 import android.graphics.RectF
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.primitive.canvas.drawArc
-import com.facebook.primitive.utils.types.Point
-import com.facebook.primitive.utils.types.Size
+import com.facebook.rendercore.geometry.Point
+import com.facebook.rendercore.geometry.Size
 
 sealed interface CanvasShape
 
@@ -58,14 +58,15 @@ data class CanvasShapeLine(private val startPoint: Point, private val endPoint: 
 data class CanvasShapeRect(
     private val topLeft: Point,
     private val size: Size,
-    private val cornerRadius: Float
+    private val cornerRadius: Float,
 ) : CanvasShapeModel {
   override fun draw(canvas: Canvas, paint: Paint) {
     canvas.drawRoundRect(
         RectF(topLeft.x, topLeft.y, topLeft.x + size.width, topLeft.y + size.height),
         cornerRadius,
         cornerRadius,
-        paint)
+        paint,
+    )
   }
 }
 
@@ -119,6 +120,8 @@ data class CanvasShapeEllipse(private val topLeft: Point, private val size: Size
     CanvasShapeModel {
   override fun draw(canvas: Canvas, paint: Paint) {
     canvas.drawOval(
-        RectF(topLeft.x, topLeft.y, topLeft.x + size.width, topLeft.y + size.height), paint)
+        RectF(topLeft.x, topLeft.y, topLeft.x + size.width, topLeft.y + size.height),
+        paint,
+    )
   }
 }

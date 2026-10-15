@@ -21,6 +21,7 @@ import android.graphics.drawable.Drawable;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.ContentAllocator;
 import com.facebook.rendercore.PoolingPolicy;
+import com.facebook.rendercore.RenderType;
 import com.facebook.rendercore.RenderUnit;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
@@ -31,7 +32,7 @@ public class DrawableWrapperUnit extends RenderUnit<Drawable>
   private final long id;
 
   public DrawableWrapperUnit(final Drawable drawable, final long id) {
-    super(RenderType.DRAWABLE);
+    super();
     this.drawable = drawable;
     this.id = id;
   }
@@ -44,6 +45,11 @@ public class DrawableWrapperUnit extends RenderUnit<Drawable>
   @Override
   public Class<?> getPoolKey() {
     return drawable.getClass();
+  }
+
+  @Override
+  public RenderType getRenderType() {
+    return RenderType.DRAWABLE;
   }
 
   @Override

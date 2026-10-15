@@ -48,6 +48,6 @@ fun interface LayoutResultVisitor<State> {
       x: Int,
       y: Int,
       position: Int,
-      state: State?
+      state: State?,
   )
 }

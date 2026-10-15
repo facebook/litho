@@ -22,6 +22,7 @@ import com.facebook.litho.config.TempComponentsConfigurations
 import com.facebook.litho.testing.helper.ComponentTestHelper
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec
 import com.facebook.litho.testing.testrunner.LithoTestRunner
+import com.facebook.litho.view.tooltipText
 import com.facebook.litho.widget.SimpleMountSpecTester
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
@@ -59,12 +60,14 @@ class MountStateViewTooltipTextTest {
                       .child(
                           Column.create(c)
                               .tooltipText(tooltipText1)
-                              .child(SimpleMountSpecTester.create(c))
-                              .child(SimpleMountSpecTester.create(c)))
-                      .child(SimpleMountSpecTester.create(c))
-                      .child(SimpleMountSpecTester.create(c).tooltipText(tooltipText2))
+                              .child(SimpleMountSpecTester())
+                              .child(SimpleMountSpecTester()),
+                      )
+                      .child(SimpleMountSpecTester())
+                      .child(SimpleMountSpecTester(style = Style.tooltipText(tooltipText2)))
                       .build()
-            })
+            },
+        )
     val innerHost1 = lithoView.getChildAt(0)
     val innerHost2 = lithoView.getChildAt(1)
     assertThat(innerHost1.tooltipText).isEqualTo(tooltipText1)
@@ -81,10 +84,11 @@ class MountStateViewTooltipTextTest {
               override fun onCreateLayout(c: ComponentContext): Component =
                   Column.create(c)
                       .tooltipText(tooltipText)
-                      .child(SimpleMountSpecTester.create(c))
-                      .child(SimpleMountSpecTester.create(c))
+                      .child(SimpleMountSpecTester())
+                      .child(SimpleMountSpecTester())
                       .build()
-            })
+            },
+        )
     val innerHost = lithoView.getChildAt(0)
     assertThat(innerHost.tooltipText).isEqualTo(tooltipText)
   }

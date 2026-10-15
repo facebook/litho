@@ -41,21 +41,55 @@ class Primitive(val layoutBehavior: LayoutBehavior, private val mountBehavior: M
   val renderUnit: PrimitiveRenderUnit<*>
     get() = mountBehavior.renderUnit
 
+  @Deprecated("Deprecated in Node interface")
   override fun calculateLayout(
       context: LayoutContext<Any?>,
       widthSpec: Int,
-      heightSpec: Int
+      heightSpec: Int,
   ): LayoutResult {
-    val layoutScope =
-        LayoutScope(
-            context,
-            context.consumePreviousLayoutDataForCurrentNode(),
-            context.consumeExtraContextForCurrentNode(),
-        )
+    val layoutScope = LayoutScope(
+        context,
+        context.consumePreviousLayoutDataForCurrentNode(),
+        context.consumeExtraContextForCurrentNode(),
+    )
     return with(layoutBehavior) {
       layoutScope
           .layout(SizeConstraints.fromMeasureSpecs(widthSpec, heightSpec))
           .toNodeLayoutResult(renderUnit)
     }
+  }
+
+  /**
+   * Returns this Primitive's minimum intrinsic width by dispatching to
+   * [LayoutBehavior.minIntrinsicWidth]. As with [calculateLayout], previous layout data and extra
+   * context must be set on [context] immediately before the call; both are consumed while building
+   * the [LayoutScope].
+   */
+  fun calculateMinIntrinsicWidth(
+      context: LayoutContext<Any?>,
+      sizeConstraints: SizeConstraints,
+  ): Int {
+    val layoutScope = LayoutScope(
+        context,
+        context.consumePreviousLayoutDataForCurrentNode(),
+        context.consumeExtraContextForCurrentNode(),
+    )
+    return with(layoutBehavior) { layoutScope.minIntrinsicWidth(sizeConstraints) }
+  }
+
+  /**
+   * Returns this Primitive's minimum intrinsic height by dispatching to
+   * [LayoutBehavior.minIntrinsicHeight]. See [calculateMinIntrinsicWidth].
+   */
+  fun calculateMinIntrinsicHeight(
+      context: LayoutContext<Any?>,
+      sizeConstraints: SizeConstraints,
+  ): Int {
+    val layoutScope = LayoutScope(
+        context,
+        context.consumePreviousLayoutDataForCurrentNode(),
+        context.consumeExtraContextForCurrentNode(),
+    )
+    return with(layoutBehavior) { layoutScope.minIntrinsicHeight(sizeConstraints) }
   }
 }

@@ -16,9 +16,9 @@
 
 package com.facebook.litho
 
+import com.facebook.litho.kotlin.widget.HorizontalScroll
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
-import com.facebook.litho.widget.HorizontalScroll
 import com.facebook.litho.widget.MountSpecLifecycleTester
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
@@ -33,20 +33,19 @@ class AttachDetachTest {
   fun horizontalScroll_releaseTree_childComponentShouldCallOnDetached() {
     val c = lithoTestRule.context
     val lifecycleTracker = LifecycleTracker()
-    val testLithoView =
-        lithoTestRule.render {
-          HorizontalScroll.create(c)
-              .contentProps(
-                  MountSpecLifecycleTester.create(c)
-                      .intrinsicSize(Size(800, 600))
-                      .lifecycleTracker(lifecycleTracker)
-                      .build())
-              .build()
-        }
+    val testLithoView = lithoTestRule.render {
+      HorizontalScroll {
+        MountSpecLifecycleTester.create(c)
+            .intrinsicSize(Size(800, 600))
+            .lifecycleTracker(lifecycleTracker)
+            .build()
+      }
+    }
     testLithoView.release()
     assertThat(lifecycleTracker.steps)
         .describedAs(
-            "Child component should call @OnDetached when parent HorizontalScroll is detached")
+            "Child component should call @OnDetached when parent HorizontalScroll is detached",
+        )
         .contains(LifecycleStep.ON_DETACHED)
   }
 }

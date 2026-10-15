@@ -36,7 +36,17 @@ internal constructor(
     get() = layoutContext.androidContext
 
   override val resourceResolver: ResourceResolver
-    get() =
-        ResourceResolver(
-            androidContext, ResourceCache.getLatest(androidContext.resources.configuration))
+    get() = ResourceResolver(
+        androidContext,
+        ResourceCache.getLatest(androidContext.resources.configuration),
+    )
+
+  /**
+   * Whether the current measurement is a min-content query from the flex layout algorithm. When
+   * true, the algorithm has passed 0 on the main axis constraint (maxWidth=0 for row, maxHeight=0
+   * for column). Components should return their intrinsic minimum size rather than filling the
+   * constraint.
+   */
+  val isMinContentMeasure: Boolean
+    get() = layoutContext.isMinContentMeasure
 }

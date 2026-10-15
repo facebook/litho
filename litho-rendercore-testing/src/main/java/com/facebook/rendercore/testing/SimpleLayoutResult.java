@@ -54,7 +54,7 @@ public class SimpleLayoutResult implements LayoutResult {
   private final int paddingBottom;
   private final int paddingLeft;
   private final List<LayoutResult> mChildren;
-  private final Object mLayoutData;
+  @Nullable private final Object mLayoutData;
 
   public SimpleLayoutResult(
       int x,
@@ -78,17 +78,20 @@ public class SimpleLayoutResult implements LayoutResult {
     this.paddingLeft = paddingLeft;
     mChildren = children;
     mRenderUnit = renderUnit;
-    // NULLSAFE_FIXME[Field Not Nullable]
     mLayoutData = layoutData;
   }
 
   public SimpleLayoutResult(
-      @Nullable RenderUnit<?> renderUnit, Object layoutData, int x, int y, int width, int height) {
+      @Nullable RenderUnit<?> renderUnit,
+      @Nullable Object layoutData,
+      int x,
+      int y,
+      int width,
+      int height) {
     this(x, y, width, height, 0, 0, 0, 0, new ArrayList<LayoutResult>(), renderUnit, layoutData);
   }
 
   public SimpleLayoutResult(RenderUnit<?> renderUnit, int x, int y, int width, int height) {
-    // NULLSAFE_FIXME[Parameter Not Nullable]
     this(renderUnit, null, x, y, width, height);
   }
 
@@ -115,12 +118,20 @@ public class SimpleLayoutResult implements LayoutResult {
 
   @Override
   public int getXForChildAtIndex(int index) {
-    return ((SimpleLayoutResult) mChildren.get(index)).mX;
+    LayoutResult child = mChildren.get(index);
+    if (child instanceof SimpleLayoutResult) {
+      return ((SimpleLayoutResult) child).mX;
+    }
+    return 0;
   }
 
   @Override
   public int getYForChildAtIndex(int index) {
-    return ((SimpleLayoutResult) mChildren.get(index)).mY;
+    LayoutResult child = mChildren.get(index);
+    if (child instanceof SimpleLayoutResult) {
+      return ((SimpleLayoutResult) child).mY;
+    }
+    return 0;
   }
 
   @Override
@@ -172,7 +183,7 @@ public class SimpleLayoutResult implements LayoutResult {
     private int paddingBottom;
     private int paddingLeft;
 
-    private List<LayoutResult> children = new ArrayList<>();
+    private final List<LayoutResult> children = new ArrayList<>();
 
     private @Nullable RenderUnit<?> renderUnit;
     private @Nullable Object layoutData;

@@ -17,4 +17,5 @@
 
 <resources>
   <item type="id" name="recycler_view_container_id"/>
+  <item type="id" name="sticky_header_id"/>
 </resources>

@@ -16,22 +16,18 @@
 
 package com.facebook.litho.components
 
-import com.facebook.litho.Column
 import com.facebook.litho.Component
-import com.facebook.litho.ComponentContext
-import com.facebook.litho.annotations.LayoutSpec
-import com.facebook.litho.annotations.OnCreateLayout
-import com.facebook.litho.annotations.Prop
+import com.facebook.litho.ComponentScope
+import com.facebook.litho.GlobalKey
+import com.facebook.litho.KComponent
+import com.facebook.litho.layout.flexbox.Column
 
-@LayoutSpec
-object StateReadingTestLayoutSpec {
-  @OnCreateLayout
-  fun createLayout(
-      c: ComponentContext,
-      @Prop readState: Boolean,
-      @Prop getState: (String) -> Int
-  ): Component {
-    if (readState) getState(c.globalKey)
-    return Column.create(c).build()
+class StateReadingTestLayoutComponent(
+    private val readState: Boolean,
+    private val getState: (GlobalKey) -> Int,
+) : KComponent() {
+  override fun ComponentScope.render(): Component? {
+    if (readState) getState(context.globalKey)
+    return Column()
   }
 }

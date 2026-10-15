@@ -17,14 +17,21 @@
 package com.facebook.litho.state
 
 import androidx.annotation.MainThread
+import androidx.collection.LongSet
+import androidx.collection.MutableLongObjectMap
 import androidx.collection.MutableLongSet
 import androidx.collection.MutableScatterSet
 import androidx.collection.ScatterSet
+import androidx.collection.emptyLongSet
+import androidx.collection.emptyScatterSet
+import androidx.collection.mutableLongObjectMapOf
 import androidx.collection.mutableLongSetOf
 import androidx.collection.mutableScatterMapOf
 import androidx.collection.mutableScatterSetOf
 import com.facebook.rendercore.BinderId
 import com.facebook.rendercore.BinderObserver
+import com.facebook.rendercore.BooleanFunc
+import com.facebook.rendercore.DepChange
 
 /**
  * A [BinderObserver] responsible for tracking and recording state reads in binders.
@@ -38,29 +45,88 @@ import com.facebook.rendercore.BinderObserver
  * @param config Supplies the read tracking status and current treeId to the observer.
  */
 @MainThread
-internal class UiStateReadRecords(private val config: Config) : BinderObserver() {
+class UiStateReadRecords(
+    private val config: Config,
+    private val binderEventListener: BinderEventListener? = null,
+) : BinderObserver() {
 
+  /**
+   * Optional listener for binder lifecycle events. Allows external systems (e.g., observability) to
+   * observe shouldUpdate results and bind durations without subclassing UiStateReadRecords.
+   */
+  interface BinderEventListener {
+    /** Called after shouldUpdate completes with the result. */
+    fun onShouldUpdate(binderId: BinderId, result: Boolean)
+
+    /** Called after onBind completes with the elapsed duration. */
+    fun onBindComplete(binderId: BinderId, durationNs: Long)
+
+    /**
+     * Called when a binder is rebound because its deps changed. Empty means the deps compared equal
+     * and something else caused the rebind.
+     */
+    fun onDepsChanged(binderId: BinderId, changes: List<DepChange>): Unit = Unit
+
+    /**
+     * Called instead of [onDepsChanged] when the binder declares deps but they were not diffed, so
+     * a `null` change list means "nobody looked" rather than "no dep model".
+     */
+    fun onDepsNotCollected(binderId: BinderId): Unit = Unit
+
+    /** Called when a binder is rebound because a state value it read was updated. */
+    fun onStateReadRebind(binderId: BinderId): Unit = Unit
+  }
+
+  // Forward maps: StateId -> readers (optimized for getBindersToRebind / getContentIdsToInvalidate)
   private val onBindRecords = mutableScatterMapOf<StateId, MutableScatterSet<BinderId>>()
   private val onDrawRecords = mutableScatterMapOf<StateId, MutableLongSet>()
 
+  // Inverse maps: reader -> StateIds (optimized for onUnbind / removeDrawScope).
+  // Values are the ScatterSet returned by StateReadRecorder.record(), stored directly without copy.
+  private val binderToStates = mutableScatterMapOf<BinderId, ScatterSet<StateId>>()
+  private val drawHostToStates: MutableLongObjectMap<ScatterSet<StateId>> = mutableLongObjectMapOf()
+
+  override fun shouldUpdate(binderId: BinderId, func: BooleanFunc): Boolean {
+    val result = func.invoke()
+    binderEventListener?.onShouldUpdate(binderId, result)
+    return result
+  }
+
+  override fun onDepsChanged(binderId: BinderId, changes: List<DepChange>) {
+    binderEventListener?.onDepsChanged(binderId, changes)
+  }
+
+  override fun onDepsNotCollected(binderId: BinderId) {
+    binderEventListener?.onDepsNotCollected(binderId)
+  }
+
+  override fun onStateReadRebind(binderId: BinderId) {
+    binderEventListener?.onStateReadRebind(binderId)
+  }
+
   override fun onBind(binderId: BinderId, func: () -> Unit) {
-    if (!config.isReadTrackingEnabled) return func()
+    if (!config.isReadTrackingEnabled) {
+      if (binderEventListener != null) {
+        val start = System.nanoTime()
+        func()
+        binderEventListener.onBindComplete(binderId, System.nanoTime() - start)
+      } else {
+        func()
+      }
+      return
+    }
 
     val treeId = config.currentTreeId()
-    val reads =
-        StateReadRecorder.record(
-            treeId,
-            debugInfo = {
-              put("phase", "bind")
-              put("reader.binder", binderId)
-              put("reader.owner", binderId.renderUnitDebugDescription?.invoke())
-            },
-            func)
-    synchronized(this) {
+    val start = if (binderEventListener != null) System.nanoTime() else 0L
+    val reads = StateReadRecorder.record(treeId, binderId.binderDebugDescription, scope = func)
+    if (binderEventListener != null) {
+      binderEventListener.onBindComplete(binderId, System.nanoTime() - start)
+    }
+    if (reads.isNotEmpty()) {
       reads.forEach { stateId ->
-        val binderIds = onBindRecords.getOrPut(stateId) { mutableScatterSetOf() }
-        binderIds.add(binderId)
+        onBindRecords.getOrPut(stateId) { mutableScatterSetOf() }.add(binderId)
       }
+      binderToStates[binderId] = reads
     }
   }
 
@@ -68,62 +134,64 @@ internal class UiStateReadRecords(private val config: Config) : BinderObserver()
     func()
     if (!config.isReadTrackingEnabled) return
 
-    synchronized(this) {
-      val stateIdsToRemove = mutableSetOf<StateId>()
-      onBindRecords.forEach { stateId, binderIds ->
-        val removed = binderIds.remove(binderId)
-        if (removed && binderIds.isEmpty()) stateIdsToRemove.add(stateId)
-      }
-      stateIdsToRemove.forEach { onBindRecords.remove(it) }
+    val states = binderToStates.remove(binderId) ?: return
+    states.forEach { stateId ->
+      val binders = onBindRecords[stateId] ?: return@forEach
+      binders.remove(binderId)
+      if (binders.isEmpty()) onBindRecords.remove(stateId)
     }
   }
 
-  fun recordOnDraw(hostId: Long, description: (() -> String?)?, func: () -> Unit) {
+  fun recordOnDraw(hostId: Long, description: String?, func: () -> Unit) {
     if (!config.isReadTrackingEnabled) return func()
 
     val treeId = config.currentTreeId()
-    val reads =
-        StateReadRecorder.record(
-            treeId,
-            debugInfo = {
-              put("phase", "draw")
-              put("reader.host", hostId)
-              put("reader.owner", description?.invoke())
-            },
-            func)
-    reads.forEach { stateId ->
-      val hostIds = onDrawRecords.getOrPut(stateId) { mutableLongSetOf() }
-      hostIds.add(hostId)
+    val reads = StateReadRecorder.record(treeId, description, scope = func)
+
+    if (reads.isNotEmpty()) {
+      reads.forEach { stateId ->
+        onDrawRecords.getOrPut(stateId) { mutableLongSetOf() }.add(hostId)
+      }
+      drawHostToStates[hostId] = reads
     }
   }
 
   fun removeDrawScope(hostId: Long) {
     if (!config.isReadTrackingEnabled) return
 
-    synchronized(this) {
-      val stateIdsToRemove = mutableSetOf<StateId>()
-      onDrawRecords.forEach { stateId, hostIds ->
-        val removed = hostIds.remove(hostId)
-        if (removed && hostIds.isEmpty()) stateIdsToRemove.add(stateId)
-      }
-      stateIdsToRemove.forEach { onDrawRecords.remove(it) }
+    val states = drawHostToStates.remove(hostId) ?: return
+    states.forEach { stateId ->
+      val hosts = onDrawRecords[stateId] ?: return@forEach
+      hosts.remove(hostId)
+      if (hosts.isEmpty()) onDrawRecords.remove(stateId)
     }
   }
 
-  fun hasBindersForState(dirtyStates: Set<StateId>): Boolean {
-    return synchronized(this) {
-      dirtyStates.any { stateId -> onBindRecords[stateId]?.isNotEmpty() == true }
+  fun getBindersToRebind(dirtyStates: Set<StateId>): ScatterSet<BinderId> {
+    if (dirtyStates.isEmpty()) {
+      return emptyScatterSet()
     }
+    var expectedBinderCount = 0
+    dirtyStates.forEach { stateId -> expectedBinderCount += onBindRecords[stateId]?.size ?: 0 }
+    if (expectedBinderCount == 0) {
+      return emptyScatterSet()
+    }
+    val result = MutableScatterSet<BinderId>(expectedBinderCount)
+    dirtyStates.forEach { stateId -> onBindRecords[stateId]?.let { result.addAll(it) } }
+    return result
   }
 
-  fun takeBinderSnapshotForState(dirtyStates: Set<StateId>): ScatterSet<BinderId> {
-    val result = mutableScatterSetOf<BinderId>()
-    synchronized(this) {
-      dirtyStates.forEach { stateId ->
-        val binderIds = onBindRecords[stateId]
-        if (binderIds != null) result.addAll(binderIds)
-      }
+  fun getContentIdsToInvalidate(dirtyStates: Set<StateId>): LongSet {
+    if (dirtyStates.isEmpty()) {
+      return emptyLongSet()
     }
+    var expectedHostCount = 0
+    dirtyStates.forEach { stateId -> expectedHostCount += onDrawRecords[stateId]?.size ?: 0 }
+    if (expectedHostCount == 0) {
+      return emptyLongSet()
+    }
+    val result = MutableLongSet(expectedHostCount)
+    dirtyStates.forEach { stateId -> onDrawRecords[stateId]?.let { result.addAll(it) } }
     return result
   }
 

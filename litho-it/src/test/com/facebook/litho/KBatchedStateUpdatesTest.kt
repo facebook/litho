@@ -20,6 +20,7 @@ import android.widget.TextView
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.kotlin.widget.Text
+import com.facebook.litho.layout.flexbox.Row
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.assertj.LithoAssertions
@@ -72,9 +73,10 @@ class KBatchedStateUpdatesTest {
                     executeAndRunPendingBgTasks { counter.update { it + 1 } }
                     executeAndRunPendingBgTasks { counter.update { it + 1 } }
                   }
-                }) {
-              child(Text(text = "Counter: ${counter.value}"))
-            }
+                },
+        ) {
+          child(Text(text = "Counter: ${counter.value}"))
+        }
       }
     }
 
@@ -128,9 +130,10 @@ class KBatchedStateUpdatesTest {
                     executeAndRunPendingBgTasks { counter.update { it + 1 } }
                     executeAndRunPendingBgTasks { counter.update { it + 1 } }
                   }
-                }) {
-              child(Text(text = "Counter: ${counter.value}"))
-            }
+                },
+        ) {
+          child(Text(text = "Counter: ${counter.value}"))
+        }
       }
     }
 
@@ -177,9 +180,10 @@ class KBatchedStateUpdatesTest {
                     /* this sync should consume all pending batched updates when batching is enabled */
                     executeAndRunPendingBgTasks { counter.updateSync { it + 1 } }
                   }
-                }) {
-              child(Text(text = "Counter: ${counter.value}"))
-            }
+                },
+        ) {
+          child(Text(text = "Counter: ${counter.value}"))
+        }
       }
     }
 
@@ -217,7 +221,8 @@ class KBatchedStateUpdatesTest {
                     executeAndRunPendingBgTasks { counter.update { it + 1 } }
                     executeAndRunPendingBgTasks { counter.update { it + 1 } }
                   }
-                })
+                },
+        )
       }
     }
 
@@ -272,7 +277,8 @@ class KBatchedStateUpdatesTest {
                     executeAndRunPendingBgTasks { counter.update { it + 1 } }
                     executeAndRunPendingBgTasks { counter.update { it + 1 } }
                   }
-                })
+                },
+        )
       }
     }
 
@@ -320,7 +326,8 @@ class KBatchedStateUpdatesTest {
                     /* this sync should consume all pending batched updates when batching is enabled */
                     executeAndRunPendingBgTasks { counter.updateSync { it + 1 } }
                   }
-                })
+                },
+        )
       }
     }
 
@@ -352,7 +359,7 @@ class KBatchedStateUpdatesTest {
 @Suppress("TestFunctionName")
 internal fun PrimitiveComponentScope.TestTextPrimitive(
     text: String,
-    tag: String? = null
+    tag: String? = null,
 ): Primitive {
   return Primitive(
       layoutBehavior = FixedSizeLayoutBehavior(100.px, 100.px),
@@ -361,5 +368,6 @@ internal fun PrimitiveComponentScope.TestTextPrimitive(
             text.bindTo(TextView::setText, "")
             tag.bindTo(TextView::setTag)
             tag.bindTo(TextView::setContentDescription)
-          })
+          },
+  )
 }

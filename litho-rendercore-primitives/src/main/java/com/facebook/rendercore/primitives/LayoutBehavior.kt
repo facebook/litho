@@ -18,9 +18,9 @@ package com.facebook.rendercore.primitives
 
 import com.facebook.rendercore.Dimen
 import com.facebook.rendercore.Equivalence
+import com.facebook.rendercore.IntSize
 import com.facebook.rendercore.LayoutResult
 import com.facebook.rendercore.RenderUnit
-import com.facebook.rendercore.Size
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.px
 import com.facebook.rendercore.utils.exact
@@ -38,6 +38,34 @@ import com.facebook.rendercore.utils.withEqualDimensions
 fun interface LayoutBehavior : Equivalence<LayoutBehavior> {
   fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult
 
+  /**
+   * Whether this Primitive contributes a real minimum intrinsic size. Default `false` → contributes
+   * `0` and is not measured for it. Set `true` to opt in; the per-axis [minIntrinsicWidth] /
+   * [minIntrinsicHeight] then supply the value (their defaults derive it from [layout]).
+   */
+  val hasIntrinsicSize: Boolean
+    get() = false
+
+  /**
+   * The minimum width in px this Primitive needs to render its content, measured with the width
+   * bounded to 0 and the height unbounded — e.g. text's longest-word width. Called only when
+   * [hasIntrinsicSize] is true. The default derives it from [layout] at the given [sizeConstraints]
+   * (correct for any measurer that respects the width bound); override to provide a cheaper
+   * computation, or when the measurer ignores the constraint. Must be cheap and side-effect-free.
+   */
+  fun LayoutScope.minIntrinsicWidth(sizeConstraints: SizeConstraints): Int =
+      layout(sizeConstraints).width
+
+  /**
+   * The minimum height in px this Primitive needs to render its content, measured with the height
+   * bounded to 0 and the width unbounded — e.g. text's single-line height. Called only when
+   * [hasIntrinsicSize] is true. The default derives it from [layout] at the given [sizeConstraints]
+   * (correct for any measurer that respects the height bound); override to provide a cheaper
+   * computation, or when the measurer ignores the constraint. Must be cheap and side-effect-free.
+   */
+  fun LayoutScope.minIntrinsicHeight(sizeConstraints: SizeConstraints): Int =
+      layout(sizeConstraints).height
+
   // By default, LayoutBehavior have field-wise equivalence, like Components
   override fun isEquivalentTo(other: LayoutBehavior): Boolean = hasEquivalentFields(this, other)
 }
@@ -52,10 +80,11 @@ fun interface LayoutBehavior : Equivalence<LayoutBehavior> {
  */
 object ExactSizeConstraintsLayoutBehavior : LayoutBehavior {
   override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
-    val exactSize = Size.exact(sizeConstraints)
-    if (exactSize == Size.Invalid) {
+    val exactSize = IntSize.exact(sizeConstraints)
+    if (exactSize == IntSize.Invalid) {
       throw IllegalArgumentException(
-          "Expected exact SizeConstraints where minWidth==maxWidth and minHeight==maxHeight but got $sizeConstraints.")
+          "Expected exact SizeConstraints where minWidth==maxWidth and minHeight==maxHeight but got $sizeConstraints.",
+      )
     }
     return PrimitiveLayoutResult(size = exactSize)
   }
@@ -79,7 +108,9 @@ class FillLayoutBehavior(
 
   override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
     return PrimitiveLayoutResult(
-        size = Size.fillSpace(sizeConstraints, defaultWidth.toPixels(), defaultHeight.toPixels()))
+        size =
+            IntSize.fillSpace(sizeConstraints, defaultWidth.toPixels(), defaultHeight.toPixels()),
+    )
   }
 }
 
@@ -118,17 +149,19 @@ class AspectRatioLayoutBehavior(
   constructor(
       aspectRatio: Float,
       intrinsicWidth: Int,
-      intrinsicHeight: Int
+      intrinsicHeight: Int,
   ) : this(aspectRatio, intrinsicWidth.px, intrinsicHeight.px)
 
   override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
     return PrimitiveLayoutResult(
         size =
-            Size.withAspectRatio(
+            IntSize.withAspectRatio(
                 sizeConstraints,
                 aspectRatio,
                 intrinsicWidth.toPixels(),
-                intrinsicHeight.toPixels()))
+                intrinsicHeight.toPixels(),
+            ),
+    )
   }
 }
 
@@ -139,7 +172,7 @@ class AspectRatioLayoutBehavior(
  */
 object EqualDimensionsLayoutBehavior : LayoutBehavior {
   override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
-    return PrimitiveLayoutResult(size = Size.withEqualDimensions(sizeConstraints))
+    return PrimitiveLayoutResult(size = IntSize.withEqualDimensions(sizeConstraints))
   }
 }
 
@@ -154,14 +187,21 @@ class PrimitiveLayoutResult(
 ) {
 
   constructor(
-      size: Size,
+      size: IntSize,
       paddingTop: Int = 0,
       paddingRight: Int = 0,
       paddingBottom: Int = 0,
       paddingLeft: Int = 0,
-      layoutData: Any? = null
+      layoutData: Any? = null,
   ) : this(
-      size.width, size.height, paddingTop, paddingRight, paddingBottom, paddingLeft, layoutData)
+      size.width,
+      size.height,
+      paddingTop,
+      paddingRight,
+      paddingBottom,
+      paddingLeft,
+      layoutData,
+  )
 
   init {
     if (width < 0) {

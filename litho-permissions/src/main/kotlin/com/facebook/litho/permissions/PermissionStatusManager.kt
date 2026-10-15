@@ -30,9 +30,11 @@ import androidx.activity.result.ActivityResultLauncher
 internal class PermissionStatusManager(
     val permission: String,
     private val activity: ComponentActivity,
+    @OptIn(com.facebook.litho.annotations.ExperimentalLithoApi::class)
     internal var onUpdate: ((PermissionStatus) -> Unit)? = null,
 ) {
 
+  @OptIn(com.facebook.litho.annotations.ExperimentalLithoApi::class)
   var status: PermissionStatus = activity.getPermissionStatus(permission)
     get() = activity.getPermissionStatus(permission)
     private set(value) {
@@ -43,6 +45,7 @@ internal class PermissionStatusManager(
       }
     }
 
+  @OptIn(com.facebook.litho.annotations.ExperimentalLithoApi::class)
   fun requestPermission() {
     if (!status.isGranted) {
       launcher?.launch(permission) ?: error("Launcher has not been initialized")
@@ -51,6 +54,7 @@ internal class PermissionStatusManager(
 
   internal var launcher: ActivityResultLauncher<String>? = null
 
+  @OptIn(com.facebook.litho.annotations.ExperimentalLithoApi::class)
   internal fun updatePermissionStatus() {
     status = activity.getPermissionStatus(permission)
   }

@@ -41,6 +41,7 @@ class SimpleNestedTreeComponent(private val contentComponent: Component) : Primi
     val componentTree = useState {
       ComponentTree.create(ComponentContext.makeCopyForNestedTree(context))
           .incrementalMount(false)
+          .enableChildClipping(true)
           .build()
     }
     return LithoPrimitive(
@@ -54,29 +55,37 @@ class SimpleNestedTreeComponent(private val contentComponent: Component) : Primi
                   frameLayout.addView(
                       LithoView(context),
                       FrameLayout.LayoutParams.MATCH_PARENT,
-                      FrameLayout.LayoutParams.MATCH_PARENT)
+                      FrameLayout.LayoutParams.MATCH_PARENT,
+                  )
                   frameLayout
-                }) {
-                  bind(componentTree.value) { content ->
-                    val lithoView = content.getChildAt(0) as LithoView
-                    lithoView.componentTree = componentTree.value
-                    onUnbind { lithoView.componentTree = null }
-                  }
                 },
-        style = null)
+            ) {
+              bind(componentTree.value) { content ->
+                val lithoView = content.getChildAt(0) as LithoView
+                lithoView.componentTree = componentTree.value
+                onUnbind { lithoView.componentTree = null }
+              }
+            },
+        style = null,
+    )
   }
 }
 
 private class SimpleNestedTreeLayoutBehavior(
     private val contentComponent: Component,
-    private val componentTree: ComponentTree
+    private val componentTree: ComponentTree,
 ) : LayoutBehavior {
   override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
     val size = Size()
     componentTree.setRootAndSizeSpecSync(
-        contentComponent, sizeConstraints.toWidthSpec(), sizeConstraints.toHeightSpec(), size)
+        contentComponent,
+        sizeConstraints.toWidthSpec(),
+        sizeConstraints.toHeightSpec(),
+        size,
+    )
     return PrimitiveLayoutResult(
         width = max(sizeConstraints.minWidth, size.width),
-        height = max(sizeConstraints.minHeight, size.height))
+        height = max(sizeConstraints.minHeight, size.height),
+    )
   }
 }

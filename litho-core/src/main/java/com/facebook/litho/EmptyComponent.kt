@@ -25,7 +25,7 @@ class EmptyComponent : Component() {
       resolveContext: ResolveContext,
       scopedComponentInfo: ScopedComponentInfo,
       parentWidthSpec: Int,
-      parentHeightSpec: Int
+      parentHeightSpec: Int,
   ): ComponentResolveResult {
     return ComponentResolveResult(NullNode(), null)
   }
@@ -33,7 +33,7 @@ class EmptyComponent : Component() {
   override fun resolveDeferred(
       calculationContext: CalculationContext,
       componentContext: ComponentContext,
-      parentContext: ComponentContext
+      parentContext: ComponentContext,
   ): ComponentResolveResult {
     return this.resolveDeferred(calculationContext, componentContext, parentContext, null)
   }

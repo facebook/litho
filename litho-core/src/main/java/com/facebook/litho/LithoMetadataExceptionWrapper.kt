@@ -36,7 +36,7 @@ class LithoMetadataExceptionWrapper(
 
   constructor(
       componentTree: ComponentTree?,
-      cause: Throwable
+      cause: Throwable,
   ) : this(
       null,
       componentTree?.root?.simpleName,

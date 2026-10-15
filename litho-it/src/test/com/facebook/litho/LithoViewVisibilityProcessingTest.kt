@@ -21,9 +21,11 @@ import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.kotlin.widget.Text
+import com.facebook.litho.layout.flexbox.Row
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.visibility.onVisible
+import com.facebook.rendercore.extensions.VisibilityChangeReason
 import com.facebook.rendercore.px
 import java.util.concurrent.atomic.AtomicInteger
 import org.assertj.core.api.Assertions.assertThat
@@ -36,7 +38,7 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class LithoViewVisibilityProcessingTest {
 
-  @get:Rule val mLithoTestRule = LithoTestRule()
+  @get:Rule val lithoTestRule = LithoTestRule()
 
   @Before
   fun setup() {
@@ -57,8 +59,8 @@ class LithoViewVisibilityProcessingTest {
     val secondComponent = MyTestComponent(secondComponentOnVisibleCounter)
 
     /* We start out by rendering two different components in two different litho views */
-    val firstLithoView = mLithoTestRule.render { firstComponent }.lithoView
-    val secondLithoView = mLithoTestRule.render { secondComponent }.lithoView
+    val firstLithoView = lithoTestRule.render { firstComponent }.lithoView
+    val secondLithoView = lithoTestRule.render { secondComponent }.lithoView
 
     /* we verify that both components on visible callback was triggered */
     assertThat(firstComponentOnVisibleCounter.get()).isEqualTo(1)
@@ -69,7 +71,11 @@ class LithoViewVisibilityProcessingTest {
 
     /* immediately after, we "fake" translate down the component out of the viewport, so that it is not visible; calling translate
      * is not possible in this test because it requires a wrapping view of the LithoView */
-    firstLithoView.notifyVisibleBoundsChanged(Rect(0, 200, 200, 600), true)
+    firstLithoView.notifyVisibleBoundsChanged(
+        Rect(0, 200, 200, 600),
+        true,
+        VisibilityChangeReason.UNKNOWN,
+    )
 
     /* during the translation, the used rect should be the visible rect (and not the last stored one in the visibility extensions),
     and therefore no extra visible callback should be called. */
@@ -88,7 +94,9 @@ class LithoViewVisibilityProcessingTest {
                 style =
                     Style.height(200.px).width(200.px).onVisible {
                       atomicCounter.incrementAndGet()
-                    }))
+                    },
+            ),
+        )
       }
     }
   }

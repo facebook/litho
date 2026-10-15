@@ -16,6 +16,7 @@
 
 package com.facebook.litho
 
+import android.content.Context
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
 import com.facebook.litho.config.ComponentsConfiguration
@@ -25,4 +26,14 @@ data class LithoConfiguration(
     @JvmField val componentsConfig: ComponentsConfiguration,
     @JvmField val areTransitionsEnabled: Boolean,
     @JvmField val renderUnitIdGenerator: RenderUnitIdGenerator?,
+)
+
+fun LithoConfiguration(
+    context: Context,
+    componentsConfig: ComponentsConfiguration = ComponentsConfiguration.defaultInstance,
+    renderUnitIdGenerator: RenderUnitIdGenerator? = null,
+): LithoConfiguration = LithoConfiguration(
+    componentsConfig = componentsConfig,
+    areTransitionsEnabled = AnimationsDebug.areTransitionsEnabled(context),
+    renderUnitIdGenerator = renderUnitIdGenerator,
 )

@@ -19,16 +19,20 @@ package com.facebook.litho
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.LithoTree.Companion.create
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.SimpleMountSpecTester
 import com.facebook.litho.widget.Text
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(LithoTestRunner::class)
 class ComponentShallowCopyTest {
+
+  @Rule @JvmField val lithoViewRule = LithoTestRule()
 
   private lateinit var context: ComponentContext
 
@@ -39,11 +43,12 @@ class ComponentShallowCopyTest {
 
   @Test
   fun testShallowCopyCachedLayoutSameLayoutState() {
-    context = context.makeNewCopy()
+    val componentTree = ComponentTree.create(context).enableChildClipping(true).build()
+    context = fromComponentTree(componentTree)
     val c = ComponentContext(context)
     val resolveContext = c.setRenderStateContextForTests()
     val resultCache = resolveContext.cache
-    val component = SimpleMountSpecTester.create(context).build()
+    val component = SimpleMountSpecTester()
     component.measure(c, 100, 100, Size())
     assertThat(resultCache.getCachedResult(component)).isNotNull
     val copyComponent = component.makeShallowCopy()
@@ -54,7 +59,7 @@ class ComponentShallowCopyTest {
 
   @Test
   fun testShallowCopyCachedLayoutOtherLayoutStateCacheLayoutState() {
-    val componentTree = ComponentTree.create(context).build()
+    val componentTree = ComponentTree.create(context).enableChildClipping(true).build()
     context = fromComponentTree(componentTree)
 
     val c1 = fromComponentTree(componentTree)
@@ -64,7 +69,7 @@ class ComponentShallowCopyTest {
     val rsc2 = c2.setRenderStateContextForTests()
     val resultCache1 = rsc1.cache
     val resultCache2 = rsc2.cache
-    val component = SimpleMountSpecTester.create(context).build()
+    val component = SimpleMountSpecTester()
     component.measure(c1, 100, 100, Size())
     assertThat(resultCache1.getCachedResult(component)).isNotNull
     val copyComponent = component.makeShallowCopy()
@@ -88,9 +93,10 @@ class ComponentShallowCopyTest {
         c.treePropContainer,
         componentTree.lithoConfiguration,
         create(componentTree, componentTree),
-        c.mGlobalKey,
+        c.nullableGlobalKey,
         c.lithoVisibilityEventsController,
         null,
-        c.parentTreePropContainer)
+        c.parentTreePropContainer,
+    )
   }
 }

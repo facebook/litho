@@ -20,7 +20,6 @@ import android.os.Looper
 import android.os.Process
 import androidx.annotation.IntDef
 import androidx.annotation.VisibleForTesting
-import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.debug.DebugInfoReporter
 
@@ -33,6 +32,28 @@ object ThreadUtils {
   @MainThreadOverride private var mainThreadOverride = OVERRIDE_DISABLED
   // Defaults to -1 for cases where the Android SDK is stubbed out. E.g when running unit tests.
   private val mainThreadId = runCatching { Looper.getMainLooper().thread.id }.getOrDefault(-1)
+
+  /**
+   * False only when the Android SDK is stubbed out and [mainThreadId] could not be resolved, which
+   * makes [isMainThread] permanently false. On a real device or emulator the main Looper exists and
+   * [isMainThread] is accurate.
+   */
+  private val hasRealMainLooper: Boolean
+    get() = mainThreadId != -1L
+
+  /**
+   * Instrumentation test bodies run on the runner's own thread and drive Litho APIs directly from
+   * it. Android names that thread `Instr: <runner class>` (ActivityThread.InstrumentationThread),
+   * which is the only signal available to tell the test apart from the app.
+   *
+   * Note the breadth: this exempts everything reached synchronously from the runner thread, product
+   * code included, so an on-device test that drives a main-thread-confined API directly still
+   * cannot surface a violation in it. Work the app does on its own threads, layout threads among
+   * them, is unaffected. The match is on thread name, so any other thread carrying this prefix is
+   * exempt too.
+   */
+  private val isInstrumentationThread: Boolean
+    get() = Thread.currentThread().name.startsWith(INSTRUMENTATION_THREAD_PREFIX)
 
   @JvmStatic
   @VisibleForTesting
@@ -57,13 +78,22 @@ object ThreadUtils {
   val isDefaultLayoutThread: Boolean
     get() = Thread.currentThread().name == ComponentTree.DEFAULT_LAYOUT_THREAD_NAME
 
+  /**
+   * The test bypass used to cover the whole of an end-to-end run, which hid main-thread violations
+   * that crash in production, such as reading a [Ref] value during background layout. It is now
+   * scoped to the two callers that cannot satisfy the assertion: runs with no real main Looper (see
+   * [hasRealMainLooper]), and instrumentation test bodies, which drive Litho from the runner's own
+   * thread (see [isInstrumentationThread]).
+   *
+   * Everything else, jest-e2e included, is held to the production contract.
+   */
   @JvmStatic
   fun assertMainThread() {
-    if (ComponentsConfiguration.isEndToEndTestRun) {
+    if (!hasRealMainLooper || isInstrumentationThread) {
       return
     }
     check(isMainThread) {
-      ("This must run on the main thread; but is running on ${Thread.currentThread().name}")
+      "This must run on the main thread; but is running on ${Thread.currentThread().name}"
     }
   }
 
@@ -131,4 +161,7 @@ object ThreadUtils {
   @IntDef(OVERRIDE_DISABLED, OVERRIDE_MAIN_THREAD_FALSE, OVERRIDE_MAIN_THREAD_TRUE)
   @Retention(AnnotationRetention.SOURCE)
   annotation class MainThreadOverride
+
+  /** Set by `ActivityThread.InstrumentationThread`; see [isInstrumentationThread]. */
+  private const val INSTRUMENTATION_THREAD_PREFIX = "Instr: "
 }

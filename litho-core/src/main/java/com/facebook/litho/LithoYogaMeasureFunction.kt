@@ -30,7 +30,7 @@ class LithoYogaMeasureFunction : YogaMeasureFunction {
       width: Float,
       widthMode: YogaMeasureMode,
       height: Float,
-      heightMode: YogaMeasureMode
+      heightMode: YogaMeasureMode,
   ): Long {
     val context: LayoutContext<LithoLayoutContext> =
         LithoYogaLayoutFunction.getLayoutContextFromYogaNode(cssNode)

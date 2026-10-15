@@ -26,4 +26,8 @@ object VisibilityExtensionConfigs {
   const val DEBUG_TAG: String = "VisibilityExtension"
   /** Set this to true to enable debug logs for the visibility extension. */
   @JvmField var isDebugLoggingEnabled: Boolean = false
+
+  @JvmField var isOptimizedVisibilityOutputProcessingEnabled: Boolean = false
+
+  @JvmField var isCachedParentVisibleRectEnabled: Boolean = false
 }

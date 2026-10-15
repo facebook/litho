@@ -23,7 +23,7 @@ import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.kotlinStyle
 
-class Button(private val text: String, private val style: Style? = null) : KComponent() {
+class Button(private val text: String, private val style: Style = Style) : KComponent() {
   override fun ComponentScope.render(): Component {
     return Text.create(context, android.R.attr.buttonStyle, 0)
         .text(text)

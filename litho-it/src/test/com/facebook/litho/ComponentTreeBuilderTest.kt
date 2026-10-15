@@ -46,29 +46,31 @@ class ComponentTreeBuilderTest {
     context =
         ComponentContext(
             androidContext,
-            ComponentContextUtils.buildDefaultLithoConfiguration(
+            LithoConfiguration(
                 context = androidContext,
-                componentsConfig = ComponentsConfiguration.defaultInstance.copy(logTag = LOG_TAG)),
-            null)
+                componentsConfig = ComponentsConfiguration.defaultInstance.copy(logTag = LOG_TAG),
+            ),
+            null,
+        )
 
     root = TestLayoutComponent.create(context).build()
-    componentTreeBuilder = ComponentTree.create(context, root)
+    componentTreeBuilder = ComponentTree.create(context, root).enableChildClipping(true)
   }
 
   @Test
   fun testDefaultCreation() {
     val componentTree = componentTreeBuilder.build()
-    assertSameAsInternalState(componentTree, root, "mRoot")
+    assertSameAsInternalState(componentTree, root, "_root")
     assertDefaults(componentTree)
   }
 
   @Test
   fun testCreationWithInputs() {
     val componentTree = componentTreeBuilder.layoutThreadLooper(looper).build()
-    assertSameAsInternalState(componentTree, root, "mRoot")
+    assertSameAsInternalState(componentTree, root, "_root")
     assertThat(componentTree.isIncrementalMountEnabled).isTrue
     assertThat(context.logTag).isEqualTo(LOG_TAG)
-    val handler = Whitebox.getInternalState<Handler>(componentTree, "mLayoutThreadHandler")
+    val handler = Whitebox.getInternalState<Handler>(componentTree, "layoutThreadHandler")
     assertThat(looper).isSameAs(handler.looper)
   }
 
@@ -79,7 +81,7 @@ class ComponentTreeBuilderTest {
     private fun assertSameAsInternalState(
         componentTree: ComponentTree,
         obj: Any?,
-        internalName: String
+        internalName: String,
     ) {
       assertThat(obj).isSameAs(Whitebox.getInternalState(componentTree, internalName))
     }
@@ -88,7 +90,7 @@ class ComponentTreeBuilderTest {
     private fun assertEqualToInternalState(
         componentTree: ComponentTree,
         obj: Any,
-        internalName: String
+        internalName: String,
     ) {
       assertThat(Whitebox.getInternalState(componentTree, internalName) as Any).isEqualTo(obj)
     }

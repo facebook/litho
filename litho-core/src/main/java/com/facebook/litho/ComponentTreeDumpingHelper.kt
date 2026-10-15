@@ -55,10 +55,11 @@ object ComponentTreeDumpingHelper {
     }
     if (layout != null) {
       sb.append(" ")
-      sb.append(layout.layoutHeight)
-      sb.append("x")
       sb.append(layout.layoutWidth)
+      sb.append("x")
+      sb.append(layout.layoutHeight)
     }
+    appendPaintedSize(sb, debugComponent)
     sb.append('}')
     for (child in debugComponent.childComponents) {
       sb.append("\n")
@@ -67,5 +68,22 @@ object ComponentTreeDumpingHelper {
       }
       logComponent(child, depth + 1, sb)
     }
+  }
+
+  /**
+   * Appends the size the drawable actually painted, when it differs from the layout box. A scale
+   * type such as CENTER_INSIDE leaves an under-sized drawable painting smaller than the box it was
+   * measured into, which the layout size above does not show.
+   */
+  private fun appendPaintedSize(sb: StringBuilder, debugComponent: DebugComponent) {
+    val drawable = debugComponent.mountedDrawable as? MatrixDrawable<*> ?: return
+    val visualBounds = drawable.getVisualBounds()
+    if (visualBounds == drawable.bounds) {
+      return
+    }
+    sb.append(" painted=")
+    sb.append(visualBounds.width())
+    sb.append("x")
+    sb.append(visualBounds.height())
   }
 }

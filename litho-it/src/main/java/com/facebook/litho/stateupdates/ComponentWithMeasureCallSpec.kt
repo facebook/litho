@@ -33,14 +33,15 @@ object ComponentWithMeasureCallSpec {
       @Prop component: Component,
       @Prop shouldCacheResult: Boolean,
       @Prop(optional = true) widthSpec: Int,
-      @Prop(optional = true) heightSpec: Int
+      @Prop(optional = true) heightSpec: Int,
   ): Component {
     component.measure(
         c,
         if (widthSpec != 0) widthSpec else SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
         if (heightSpec != 0) heightSpec else SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
         Size(),
-        shouldCacheResult)
+        shouldCacheResult,
+    )
     return component
   }
 }

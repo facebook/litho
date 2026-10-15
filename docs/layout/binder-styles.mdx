@@ -1,0 +1,448 @@
+---
+id: binder-styles
+title: Mount/Unmount Lifecycle Hooks
+keywords:
+    - binder styles
+    - onBind
+    - onBindView
+    - onBindHostView
+    - lifecycle
+    - mount
+    - unmount
+---
+
+Binder Styles provide low-level mount/unmount callbacks that allow you to execute custom code when a component is mounted to the screen or unmounted from the screen.
+
+Binder Styles encompass:
+
+- **onBind**: Adds mount callbacks for any component content (View or Drawable)
+- **onBindView**: Adds mount callbacks specifically for Views, wrapping content in a View if necessary
+- **onBindHostView**: Adds mount callbacks for HostViews, forcing content to be wrapped in a HostView
+- **viewBinder**: Applies a reusable `RenderUnit.Binder` to a View
+
+These styles work with dependencies to determine when callbacks should be re-invoked, providing fine-grained control over component lifecycle.
+
+## Understanding Binders
+
+A binder consists of two parts:
+
+1. **Bind Function (`BindFunc`)**: Called when the component is mounted. Receives a `BindScope` and the content (View or Drawable).
+2. **Unbind Function (`UnbindFunc`)**: Called when the component is unmounted or dependencies change. Must undo any mutations made in the bind function.
+
+**Key Characteristics:**
+- Callbacks are guaranteed to be called on the main thread
+- Dependencies control when binders are re-invoked
+- If dependencies haven't changed, callbacks are not re-invoked
+- If dependencies change, unbind is called followed by bind
+- Use `Unit` as dependency to invoke callbacks only once
+
+## onBind
+
+Adds mount callbacks for any component content, whether it's a View or Drawable.
+
+```kotlin
+import com.facebook.litho.binders.onBind
+
+// Basic usage with dependencies
+val dependency1 = "string" // prop
+val dependency2 = useState { false } // state
+
+MyComponent(
+    style = Style.onBind(dependency1, dependency2.value) { content ->
+      // Called when component is mounted
+      // Perform setup or mutations on content
+
+      onUnbind {
+        // Called when component is unmounted or dependencies change
+        // Undo any mutations made in bind
+      }
+    }
+)
+
+// Invoke only once (use Unit as dependency)
+MyComponent(
+    style = Style.onBind(Unit) { content ->
+      // Called only once when first mounted
+      onUnbind {
+        // Called only when unmounted
+      }
+    }
+)
+```
+
+### Example: Detecting Text Ellipsis
+
+When working with text components, you may need to detect if text has been truncated with an ellipsis due to space constraints. This example shows using `onBind` to check the text layout and update state accordingly.
+
+```kotlin
+import com.facebook.litho.binders.onBindWithDescription
+import com.facebook.litho.widget.TextDrawable
+
+val isEllipsized = useState { false }
+val label = "Long text that might be truncated"
+
+// Use onBind to detect when text is ellipsized
+MyComponent(
+    style = Style.onBindWithDescription(
+      { "bind ellipsis detector" },
+      label  // Dependency: re-run when label changes
+    ) { content ->
+      (content as? TextDrawable)?.layout?.let { textLayout ->
+        if (textLayout.getEllipsisCount(0) > 0) {
+          isEllipsized.update(true)
+        }
+      }
+      onUnbind {}
+    }
+)
+```
+
+## onBindView
+
+Adds mount callbacks specifically for Views. If the component doesn't render a View, this style will wrap the content in a View.
+
+**Use this when:**
+- You need to perform View-specific operations
+- You need to set view properties on Row/Column components
+- You want to ensure the content is always a View
+
+```kotlin
+import android.view.View
+import com.facebook.litho.binders.onBindView
+
+val dependency = useState { false }
+MyComponent(
+    style = Style.onBindView(dependency.value) { view ->
+      // Called when component is mounted
+      // view is guaranteed to be a View
+      view.setOnLongClickListener {
+        // Handle long click
+        true
+      }
+
+      onUnbind {
+        view.setOnLongClickListener(null)
+      }
+    }
+)
+```
+
+### Example: Streaming Text Animation
+
+For streaming text scenarios where text appears gradually (like a typing effect or AI-generated responses), you can use `onBind` to animate the text rendering word by word.
+
+```kotlin
+import android.os.Handler
+import android.os.Looper
+import com.facebook.litho.binders.onBind
+import com.facebook.rendercore.text.RCTextView
+
+val text = "This is a streaming text example"
+val currentWordIndex = useState { 0 }
+val shouldStreamText = useState { true }
+val handler = useRef { Handler(Looper.getMainLooper()) }
+val hasPendingWord = useRef { false }
+val streamingDelayMs = 100L
+
+// Use onBind to animate text streaming word by word
+MyComponent(
+    style = Style.onBind(Any()) { view ->
+      if (shouldStreamText.value && currentWordIndex.value < text.length) {
+        if (!hasPendingWord.value) {
+          hasPendingWord.value = true
+
+          // Find next word boundary
+          var nextIndex = currentWordIndex.value + 1
+          while (nextIndex < text.length && !text[nextIndex].isWhitespace()) {
+            nextIndex++
+          }
+
+          // Post a runnable to show the next word after a delay
+          handler.value.postDelayed(
+            {
+              hasPendingWord.value = false
+              currentWordIndex.updateSync(nextIndex)
+              (view as? RCTextView)?.requestLayout()
+            },
+            streamingDelayMs
+          )
+        }
+
+        // Request layout for the streaming animation
+        (view as? RCTextView)?.requestLayout()
+      }
+      onUnbind {}
+    }
+)
+```
+
+## onBindHostView
+
+Adds mount callbacks for HostViews, forcing the content to be wrapped in a HostView even if it already renders a View.
+
+**Use this when:**
+- You need access to the HostView wrapper
+- You want to force wrapping in a HostView
+- You need the `ComponentContext` from the binder scope
+
+```kotlin
+import android.view.View
+import com.facebook.litho.binders.onBindHostView
+
+val dependency = useState { false }
+MyComponent(
+    style = Style.onBindHostView(dependency.value) { view ->
+      // Called when HostView is mounted
+      // view is the HostView wrapper
+
+      // Access the scoped ComponentContext if needed
+      // The model in BindScope is a ModelWithContext type
+
+      onUnbind {
+        // Clean up
+      }
+    }
+)
+```
+
+## onBindWithDescription
+
+All `onBind` variants have a `*WithDescription` counterpart that takes a description function for debugging purposes.
+
+```kotlin
+import com.facebook.litho.binders.onBindWithDescription
+
+val dependency1 = "string" // prop
+val dependency2 = useState { false } // state
+
+val style = Style.onBindWithDescription(
+  { "Description for debugging" },
+  dependency1,
+  dependency2.value
+) { content ->
+  // Bind logic
+  onUnbind {
+    // Unbind logic
+  }
+}
+```
+
+**When to use:**
+- Use `onBindWithDescription` for better debugging and logging
+- The description appears in debugging tools and stack traces
+- Helps identify which binder is executing in complex components
+
+## Dependencies and Re-binding
+
+The `deps` parameter controls when the binder should be re-invoked:
+
+```kotlin
+import com.facebook.litho.binders.onBind
+
+// Re-run when userId changes
+MyComponent(
+    style = Style.onBind(userId) { content ->
+      // Setup based on userId
+      onUnbind {
+        // Cleanup
+      }
+    }
+)
+
+// Re-run when multiple dependencies change
+MyComponent(
+    style = Style.onBind(userId, userName, userAge) { content ->
+      // Setup based on multiple values
+      onUnbind {
+        // Cleanup
+      }
+    }
+)
+
+// Run only once (use Unit)
+MyComponent(
+    style = Style.onBind(Unit) { content ->
+      // One-time setup
+      onUnbind {
+        // One-time cleanup
+      }
+    }
+)
+
+// Run every mount (use Any())
+MyComponent(
+    style = Style.onBind(Any()) { content ->
+      // Runs every time component is mounted
+      onUnbind {
+        // Runs every time component is unmounted
+      }
+    }
+)
+```
+
+**Dependency Comparison:**
+- Dependencies are compared using `equals()`
+- If old deps equal new deps, binder is not re-invoked
+- If deps differ, unbind is called with old deps, then bind with new deps
+- Use immutable objects as dependencies for predictable behavior
+
+## viewBinder
+
+Applies a reusable `RenderUnit.Binder` to a View. This is useful for creating reusable binder logic that can be shared across components.
+
+```kotlin
+import com.facebook.litho.binders.viewBinder
+import com.facebook.rendercore.RenderUnit
+
+// Define a reusable binder
+class MyViewBinder : RenderUnit.Binder<MyModel, View, MyBindData> {
+  override fun shouldUpdate(
+    currentModel: MyModel,
+    newModel: MyModel,
+    currentLayoutData: Any?,
+    nextLayoutData: Any?
+  ): Boolean {
+    return currentModel != newModel
+  }
+
+  override fun bind(
+    context: Context,
+    content: View,
+    model: MyModel,
+    layoutData: Any?
+  ): MyBindData {
+    // Bind model to view
+    content.setBackgroundColor(model.color)
+    return MyBindData()
+  }
+
+  override fun unbind(
+    context: Context,
+    content: View,
+    model: MyModel,
+    layoutData: Any?,
+    bindData: MyBindData
+  ) {
+    // Unbind model from view
+    content.setBackgroundColor(Color.TRANSPARENT)
+  }
+}
+
+// Use the binder
+val model = MyModel(color = Color.BLUE)
+MyComponent(style = Style.viewBinder(MyViewBinder(), model))
+```
+
+## Common Use Cases
+
+### Integrating Third-Party Libraries
+
+```kotlin
+import com.facebook.litho.binders.onBindView
+
+MyComponent(
+    style = Style.onBindView(analyticsId) { view ->
+      // Register view with analytics library
+      AnalyticsLibrary.trackView(view, analyticsId)
+
+      onUnbind {
+        AnalyticsLibrary.untrackView(view)
+      }
+    }
+)
+```
+
+### Custom View Properties
+
+```kotlin
+import com.facebook.litho.binders.onBindView
+
+MyComponent(
+    style = Style.onBindView(isEnabled) { view ->
+      view.isEnabled = isEnabled
+      view.alpha = if (isEnabled) 1f else 0.5f
+
+      onUnbind {
+        view.isEnabled = true
+        view.alpha = 1f
+      }
+    }
+)
+```
+
+### Accessibility Announcements
+
+```kotlin
+import com.facebook.litho.binders.onBindView
+
+MyComponent(
+    style = Style.onBindView(message) { view ->
+      view.announceForAccessibility(message)
+      onUnbind {}
+    }
+)
+```
+
+### View Measurements
+
+```kotlin
+import com.facebook.litho.binders.onBindView
+
+val viewHeight = useRef { 0 }
+
+MyComponent(
+    style = Style.onBindView(Unit) { view ->
+      view.post {
+        viewHeight.value = view.height
+        // Use the measured height
+      }
+      onUnbind {}
+    }
+)
+```
+
+## Best Practices
+
+1. **Always provide unbind logic**: Every mutation in bind must be undone in unbind
+2. **Use appropriate dependencies**: Choose deps that accurately represent when re-binding is needed
+3. **Avoid heavy operations**: Binders run on the main thread, keep them lightweight
+4. **Use `Unit` for one-time setup**: If logic should run only once, use `Unit` as dependency
+5. **Use `Any()` sparingly**: Using `Any()` causes re-binding on every mount, which can be expensive
+6. **Prefer specific bind variants**: Use `onBindView` when you need a View, `onBind` when content type doesn't matter
+7. **Add descriptions for debugging**: Use `*WithDescription` variants for better debugging experience
+8. **Don't capture mutable state**: Dependencies should be immutable or stable references
+
+## Performance Considerations
+
+Binders execute on the main thread during mount/unmount, so:
+
+- **Keep bind/unbind fast**: Avoid expensive computations or I/O operations
+- **Minimize allocations**: Reuse objects when possible
+- **Use dependencies wisely**: Unnecessary re-binding can hurt performance
+- **Batch operations**: If multiple binders affect the same view, consider combining them
+
+## Comparison with Other Lifecycle APIs
+
+| API | Use Case | Thread | Frequency |
+|-----|----------|--------|-----------|
+| `onBind` | Low-level mount callbacks | Main thread | On mount/unmount or when deps change |
+| `useEffect` | Side effects with cleanup | Main thread | On render when deps change |
+| `useState` | Component state | Main thread | On state updates |
+| Event handlers (`onClick`, etc.) | User interactions | Main thread | On user action |
+
+**When to use binders:**
+- Direct view manipulation needed
+- Integration with non-Litho libraries
+- Access to actual mounted View/Drawable
+- Creating higher-order style functions
+
+**When to use other APIs:**
+- `useEffect` for side effects that don't require view access
+- `useState` for component state management
+- Event handlers for user interactions
+
+## See also
+
+- **[Common Props](../props/common-props.mdx)** - Learn about the broader Style API and how to combine styles.
+- **[View Styles](view-styles.mdx)** - Learn about static view styling properties.
+- **[Use Effect](../state-and-side-effects/use-effect.mdx)** - Learn about side effects and lifecycle management with useEffect.

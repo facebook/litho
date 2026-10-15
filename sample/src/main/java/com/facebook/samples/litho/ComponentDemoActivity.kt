@@ -17,12 +17,13 @@
 package com.facebook.samples.litho
 
 import android.os.Bundle
-import com.facebook.litho.AOSPLithoVisibilityEventsController
-import com.facebook.litho.LithoView
+import com.facebook.litho.ComponentContext
+import com.facebook.litho.surface.getLithoView
+import com.facebook.litho.surface.setLithoContent
 import com.facebook.samples.litho.Demos.SingleDemo
 import java.lang.RuntimeException
 
-class ComponentDemoActivity : NavigatableDemoActivity() {
+open class ComponentDemoActivity : NavigatableDemoActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     val model = dataModel
@@ -30,15 +31,7 @@ class ComponentDemoActivity : NavigatableDemoActivity() {
       throw RuntimeException("Invalid model: $model")
     }
 
-    val componentCreator = model.componentCreator
-    if (componentCreator != null) {
-      val lithoView = LithoView(this)
-      lithoView.setComponent(componentCreator.create(lithoView.componentContext))
-      setContentView(lithoView)
-    } else {
-      val lithoView =
-          LithoView.create(this, model.component, AOSPLithoVisibilityEventsController(this))
-      setContentView(lithoView)
-    }
+    setLithoContent { model.componentCreator?.create(ComponentContext(this)) ?: model.component!! }
+    setContentView(getLithoView())
   }
 }

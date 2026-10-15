@@ -65,7 +65,8 @@ class ViewCompatComponentTest {
         }
     val lithoView =
         ComponentTestHelper.mountComponent(
-            ViewCompatComponent.get(textViewCreator, "TextView").create(context).viewBinder(binder))
+            ViewCompatComponent.get(textViewCreator, "TextView").create(context).viewBinder(binder),
+        )
     assertThat(lithoView.mountItemCount).isEqualTo(1)
     val view = lithoView.getMountItemAt(0).content as TextView
     assertThat(view.text).isEqualTo("Hello World!")
@@ -89,7 +90,8 @@ class ViewCompatComponentTest {
         }
     val lithoView =
         ComponentTestHelper.mountComponent(
-            ViewCompatComponent.get(textViewCreator, "TextView").create(context).viewBinder(binder))
+            ViewCompatComponent.get(textViewCreator, "TextView").create(context).viewBinder(binder),
+        )
     assertThat(lithoView.mountItemCount).isEqualTo(1)
     val view = lithoView.getMountItemAt(0).content as TextView
     assertThat(view.text).isEqualTo("Hello World!")
@@ -115,7 +117,8 @@ class ViewCompatComponentTest {
         }
     val lithoView =
         ComponentTestHelper.mountComponent(
-            ViewCompatComponent.get(textViewCreator, "TextView").create(context).viewBinder(binder))
+            ViewCompatComponent.get(textViewCreator, "TextView").create(context).viewBinder(binder),
+        )
     ComponentTestHelper.unbindComponent(lithoView)
     assertThat(lithoView.mountItemCount).isEqualTo(1)
     val view = lithoView.getMountItemAt(0).content as TextView

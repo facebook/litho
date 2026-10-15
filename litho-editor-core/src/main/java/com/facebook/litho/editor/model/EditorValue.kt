@@ -157,7 +157,8 @@ abstract class EditorValue {
           override fun isBool(bool: EditorBool): Boolean {
             return visitor.isBool(path.toTypedArray(), bool)
           }
-        })
+        },
+    )
   }
 
   /** Traverses the tree enriching an initial value */
@@ -199,7 +200,8 @@ abstract class EditorValue {
             ref.set(aggregator.addBool(ref.get(), bool))
             return false
           }
-        })
+        },
+    )
 
     return ref.get()
   }

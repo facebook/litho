@@ -41,7 +41,8 @@ class Border private constructor() : Equivalence<Border> {
   @Retention(AnnotationRetention.SOURCE)
   @IntDef(
       flag = true,
-      value = [Corner.TOP_LEFT, Corner.TOP_RIGHT, Corner.BOTTOM_RIGHT, Corner.BOTTOM_LEFT])
+      value = [Corner.TOP_LEFT, Corner.TOP_RIGHT, Corner.BOTTOM_RIGHT, Corner.BOTTOM_LEFT],
+  )
   annotation class Corner {
     companion object {
       const val TOP_LEFT: Int = 0
@@ -227,7 +228,7 @@ class Border private constructor() : Equivalence<Border> {
     fun radiusAttr(
         @Corner corner: Int,
         @AttrRes attrId: Int,
-        @DimenRes defaultResId: Int
+        @DimenRes defaultResId: Int,
     ): Builder {
       val resolver = checkNotBuilt()
       return radiusPx(corner, resolver.resolveDimenSizeAttr(attrId, defaultResId))
@@ -305,7 +306,7 @@ class Border private constructor() : Equivalence<Border> {
         shape: Path?,
         advance: Float,
         phase: Float,
-        style: PathDashPathEffect.Style?
+        style: PathDashPathEffect.Style?,
     ): Builder {
       checkNotBuilt()
       checkEffectCount()

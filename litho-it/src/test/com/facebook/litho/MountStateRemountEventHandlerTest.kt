@@ -58,11 +58,13 @@ class MountStateRemountEventHandlerTest {
               override fun onCreateLayout(c: ComponentContext): Component =
                   Column.create(c)
                       .longClickHandler(
-                          EventHandlerTestHelper.create(c, 1) as? EventHandler<LongClickEvent>)
-                      .child(SimpleMountSpecTester.create(c))
-                      .child(SimpleMountSpecTester.create(c))
+                          EventHandlerTestHelper.create(c, 1) as? EventHandler<LongClickEvent>,
+                      )
+                      .child(SimpleMountSpecTester())
+                      .child(SimpleMountSpecTester())
                       .build()
-            })
+            },
+        )
     assertThat(lithoView.childCount).isEqualTo(1)
     val longClickListener = ViewAttributes.getComponentLongClickListener(lithoView.getChildAt(0))
     assertThat(longClickListener).isNotNull
@@ -71,14 +73,15 @@ class MountStateRemountEventHandlerTest {
           override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .longClickHandler(
-                      EventHandlerTestHelper.create(c, 1) as? EventHandler<LongClickEvent>)
-                  .child(SimpleMountSpecTester.create(c))
-                  .child(SimpleMountSpecTester.create(c))
+                      EventHandlerTestHelper.create(c, 1) as? EventHandler<LongClickEvent>,
+                  )
+                  .child(SimpleMountSpecTester())
+                  .child(SimpleMountSpecTester())
                   .build()
         }
     assertThat(
-            longClickListener ===
-                ViewAttributes.getComponentLongClickListener(lithoView.getChildAt(0)))
+        longClickListener === ViewAttributes.getComponentLongClickListener(lithoView.getChildAt(0)),
+    )
         .isTrue
   }
 
@@ -94,11 +97,13 @@ class MountStateRemountEventHandlerTest {
               override fun onCreateLayout(c: ComponentContext): Component =
                   Column.create(c)
                       .focusChangeHandler(
-                          EventHandlerTestHelper.create(c, 1) as? EventHandler<FocusChangedEvent>)
-                      .child(SimpleMountSpecTester.create(c))
-                      .child(SimpleMountSpecTester.create(c))
+                          EventHandlerTestHelper.create(c, 1) as? EventHandler<FocusChangedEvent>,
+                      )
+                      .child(SimpleMountSpecTester())
+                      .child(SimpleMountSpecTester())
                       .build()
-            })
+            },
+        )
     assertThat(lithoView.childCount).isEqualTo(1)
     val focusChangeListener =
         ViewAttributes.getComponentFocusChangeListener(lithoView.getChildAt(0))
@@ -108,14 +113,16 @@ class MountStateRemountEventHandlerTest {
           override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .focusChangeHandler(
-                      EventHandlerTestHelper.create(c, 1) as? EventHandler<FocusChangedEvent>)
-                  .child(SimpleMountSpecTester.create(c))
-                  .child(SimpleMountSpecTester.create(c))
+                      EventHandlerTestHelper.create(c, 1) as? EventHandler<FocusChangedEvent>,
+                  )
+                  .child(SimpleMountSpecTester())
+                  .child(SimpleMountSpecTester())
                   .build()
         }
     assertThat(
-            focusChangeListener ===
-                ViewAttributes.getComponentFocusChangeListener(lithoView.getChildAt(0)))
+        focusChangeListener ===
+            ViewAttributes.getComponentFocusChangeListener(lithoView.getChildAt(0)),
+    )
         .isTrue
   }
 
@@ -131,11 +138,13 @@ class MountStateRemountEventHandlerTest {
               override fun onCreateLayout(c: ComponentContext): Component =
                   Column.create(c)
                       .touchHandler(
-                          EventHandlerTestHelper.create(c, 1) as? EventHandler<TouchEvent>)
-                      .child(SimpleMountSpecTester.create(c))
-                      .child(SimpleMountSpecTester.create(c))
+                          EventHandlerTestHelper.create(c, 1) as? EventHandler<TouchEvent>,
+                      )
+                      .child(SimpleMountSpecTester())
+                      .child(SimpleMountSpecTester())
                       .build()
-            })
+            },
+        )
     assertThat(lithoView.childCount).isEqualTo(1)
     val touchListener = ViewAttributes.getComponentTouchListener(lithoView.getChildAt(0))
     assertThat(touchListener).isNotNull
@@ -144,8 +153,8 @@ class MountStateRemountEventHandlerTest {
           override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .touchHandler(EventHandlerTestHelper.create(c, 2) as? EventHandler<TouchEvent>)
-                  .child(SimpleMountSpecTester.create(c))
-                  .child(SimpleMountSpecTester.create(c))
+                  .child(SimpleMountSpecTester())
+                  .child(SimpleMountSpecTester())
                   .build()
         }
     assertThat(ViewAttributes.getComponentTouchListener(lithoView.getChildAt(0)))
@@ -164,19 +173,18 @@ class MountStateRemountEventHandlerTest {
               override fun onCreateLayout(c: ComponentContext): Component =
                   Column.create(c)
                       .clickHandler(
-                          EventHandlerTestHelper.create(c, 1) as? EventHandler<ClickEvent>)
-                      .child(SimpleMountSpecTester.create(c))
-                      .child(SimpleMountSpecTester.create(c))
+                          EventHandlerTestHelper.create(c, 1) as? EventHandler<ClickEvent>,
+                      )
+                      .child(SimpleMountSpecTester())
+                      .child(SimpleMountSpecTester())
                       .build()
-            })
+            },
+        )
     assertThat(lithoView.getChildAt(0).isClickable).isTrue
     lithoView.componentTree?.root =
         object : InlineLayoutSpec(COMPONENT_IDENTITY) {
           override fun onCreateLayout(c: ComponentContext): Component =
-              Column.create(c)
-                  .child(SimpleMountSpecTester.create(c))
-                  .child(SimpleMountSpecTester.create(c))
-                  .build()
+              Column.create(c).child(SimpleMountSpecTester()).child(SimpleMountSpecTester()).build()
         }
     assertThat(lithoView.isClickable).isFalse
   }
@@ -193,20 +201,19 @@ class MountStateRemountEventHandlerTest {
               override fun onCreateLayout(c: ComponentContext): Component =
                   Column.create(c)
                       .longClickHandler(
-                          EventHandlerTestHelper.create(c, 1) as? EventHandler<LongClickEvent>)
-                      .child(SimpleMountSpecTester.create(c))
-                      .child(SimpleMountSpecTester.create(c))
+                          EventHandlerTestHelper.create(c, 1) as? EventHandler<LongClickEvent>,
+                      )
+                      .child(SimpleMountSpecTester())
+                      .child(SimpleMountSpecTester())
                       .build()
-            })
+            },
+        )
     assertThat(lithoView.childCount).isEqualTo(1)
     assertThat(ViewAttributes.getComponentLongClickListener(lithoView.getChildAt(0))).isNotNull
     lithoView.componentTree?.root =
         object : InlineLayoutSpec(COMPONENT_IDENTITY) {
           override fun onCreateLayout(c: ComponentContext): Component =
-              Column.create(c)
-                  .child(SimpleMountSpecTester.create(c))
-                  .child(SimpleMountSpecTester.create(c))
-                  .build()
+              Column.create(c).child(SimpleMountSpecTester()).child(SimpleMountSpecTester()).build()
         }
     assertThat(lithoView.childCount).isEqualTo(0)
     val listener = ViewAttributes.getComponentLongClickListener(lithoView)
@@ -225,20 +232,19 @@ class MountStateRemountEventHandlerTest {
               override fun onCreateLayout(c: ComponentContext): Component =
                   Column.create(c)
                       .focusChangeHandler(
-                          EventHandlerTestHelper.create(c, 1) as? EventHandler<FocusChangedEvent>)
-                      .child(SimpleMountSpecTester.create(c))
-                      .child(SimpleMountSpecTester.create(c))
+                          EventHandlerTestHelper.create(c, 1) as? EventHandler<FocusChangedEvent>,
+                      )
+                      .child(SimpleMountSpecTester())
+                      .child(SimpleMountSpecTester())
                       .build()
-            })
+            },
+        )
     assertThat(lithoView.childCount).isEqualTo(1)
     assertThat(ViewAttributes.getComponentFocusChangeListener(lithoView.getChildAt(0))).isNotNull
     lithoView.componentTree?.root =
         object : InlineLayoutSpec(COMPONENT_IDENTITY) {
           override fun onCreateLayout(c: ComponentContext): Component =
-              Column.create(c)
-                  .child(SimpleMountSpecTester.create(c))
-                  .child(SimpleMountSpecTester.create(c))
-                  .build()
+              Column.create(c).child(SimpleMountSpecTester()).child(SimpleMountSpecTester()).build()
         }
     assertThat(lithoView.childCount).isEqualTo(0)
     val listener = ViewAttributes.getComponentFocusChangeListener(lithoView)
@@ -257,18 +263,17 @@ class MountStateRemountEventHandlerTest {
               override fun onCreateLayout(c: ComponentContext): Component =
                   Column.create(c)
                       .touchHandler(
-                          EventHandlerTestHelper.create(c, 1) as? EventHandler<TouchEvent>)
-                      .child(SimpleMountSpecTester.create(c))
-                      .child(SimpleMountSpecTester.create(c))
+                          EventHandlerTestHelper.create(c, 1) as? EventHandler<TouchEvent>,
+                      )
+                      .child(SimpleMountSpecTester())
+                      .child(SimpleMountSpecTester())
                       .build()
-            })
+            },
+        )
     lithoView.componentTree?.root =
         object : InlineLayoutSpec(COMPONENT_IDENTITY) {
           override fun onCreateLayout(c: ComponentContext): Component =
-              Column.create(c)
-                  .child(SimpleMountSpecTester.create(c))
-                  .child(SimpleMountSpecTester.create(c))
-                  .build()
+              Column.create(c).child(SimpleMountSpecTester()).child(SimpleMountSpecTester()).build()
         }
     assertThat(lithoView.childCount).isEqualTo(0)
     val listener = ViewAttributes.getComponentTouchListener(lithoView)
@@ -286,10 +291,11 @@ class MountStateRemountEventHandlerTest {
             object : InlineLayoutSpec(COMPONENT_IDENTITY) {
               override fun onCreateLayout(c: ComponentContext): Component =
                   Column.create(c)
-                      .child(SimpleMountSpecTester.create(c))
-                      .child(SimpleMountSpecTester.create(c))
+                      .child(SimpleMountSpecTester())
+                      .child(SimpleMountSpecTester())
                       .build()
-            })
+            },
+        )
     assertThat(lithoView.childCount).isEqualTo(0)
     assertThat(lithoView.isClickable).isFalse
     lithoView.componentTree?.root =
@@ -297,8 +303,8 @@ class MountStateRemountEventHandlerTest {
           override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .clickHandler(EventHandlerTestHelper.create(c, 1) as? EventHandler<ClickEvent>)
-                  .child(SimpleMountSpecTester.create(c))
-                  .child(SimpleMountSpecTester.create(c))
+                  .child(SimpleMountSpecTester())
+                  .child(SimpleMountSpecTester())
                   .build()
         }
     assertThat(lithoView.childCount).isEqualTo(1)
@@ -316,10 +322,11 @@ class MountStateRemountEventHandlerTest {
             object : InlineLayoutSpec(COMPONENT_IDENTITY) {
               override fun onCreateLayout(c: ComponentContext): Component =
                   Column.create(c)
-                      .child(SimpleMountSpecTester.create(c))
-                      .child(SimpleMountSpecTester.create(c))
+                      .child(SimpleMountSpecTester())
+                      .child(SimpleMountSpecTester())
                       .build()
-            })
+            },
+        )
     assertThat(lithoView.childCount).isEqualTo(0)
     assertThat(ViewAttributes.getComponentLongClickListener(lithoView)).isNull()
     lithoView.componentTree?.root =
@@ -327,9 +334,10 @@ class MountStateRemountEventHandlerTest {
           override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .longClickHandler(
-                      EventHandlerTestHelper.create(c, 1) as? EventHandler<LongClickEvent>)
-                  .child(SimpleMountSpecTester.create(c))
-                  .child(SimpleMountSpecTester.create(c))
+                      EventHandlerTestHelper.create(c, 1) as? EventHandler<LongClickEvent>,
+                  )
+                  .child(SimpleMountSpecTester())
+                  .child(SimpleMountSpecTester())
                   .build()
         }
     assertThat(lithoView.childCount).isEqualTo(1)
@@ -349,10 +357,11 @@ class MountStateRemountEventHandlerTest {
             object : InlineLayoutSpec(COMPONENT_IDENTITY) {
               override fun onCreateLayout(c: ComponentContext): Component =
                   Column.create(c)
-                      .child(SimpleMountSpecTester.create(c))
-                      .child(SimpleMountSpecTester.create(c))
+                      .child(SimpleMountSpecTester())
+                      .child(SimpleMountSpecTester())
                       .build()
-            })
+            },
+        )
     assertThat(lithoView.childCount).isEqualTo(0)
     assertThat(ViewAttributes.getComponentFocusChangeListener(lithoView)).isNull()
     lithoView.componentTree?.root =
@@ -360,9 +369,10 @@ class MountStateRemountEventHandlerTest {
           override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .focusChangeHandler(
-                      EventHandlerTestHelper.create(c, 1) as? EventHandler<FocusChangedEvent>)
-                  .child(SimpleMountSpecTester.create(c))
-                  .child(SimpleMountSpecTester.create(c))
+                      EventHandlerTestHelper.create(c, 1) as? EventHandler<FocusChangedEvent>,
+                  )
+                  .child(SimpleMountSpecTester())
+                  .child(SimpleMountSpecTester())
                   .build()
         }
     assertThat(lithoView.childCount).isEqualTo(1)
@@ -382,10 +392,11 @@ class MountStateRemountEventHandlerTest {
             object : InlineLayoutSpec(COMPONENT_IDENTITY) {
               override fun onCreateLayout(c: ComponentContext): Component =
                   Column.create(c)
-                      .child(SimpleMountSpecTester.create(c))
-                      .child(SimpleMountSpecTester.create(c))
+                      .child(SimpleMountSpecTester())
+                      .child(SimpleMountSpecTester())
                       .build()
-            })
+            },
+        )
     assertThat(lithoView.childCount).isEqualTo(0)
     assertThat(ViewAttributes.getComponentTouchListener(lithoView)).isNull()
     lithoView.componentTree?.root =
@@ -393,8 +404,8 @@ class MountStateRemountEventHandlerTest {
           override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
                   .touchHandler(EventHandlerTestHelper.create(c, 1) as? EventHandler<TouchEvent>)
-                  .child(SimpleMountSpecTester.create(c))
-                  .child(SimpleMountSpecTester.create(c))
+                  .child(SimpleMountSpecTester())
+                  .child(SimpleMountSpecTester())
                   .build()
         }
     assertThat(lithoView.childCount).isEqualTo(1)

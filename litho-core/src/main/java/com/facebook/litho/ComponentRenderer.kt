@@ -18,8 +18,8 @@
 
 package com.facebook.litho
 
+import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.state.StateReadRecorder
-import com.facebook.litho.state.UiStateReadRecords
 
 /**
  * Wrapper around the Component-specific render implementation.
@@ -34,19 +34,14 @@ import com.facebook.litho.state.UiStateReadRecords
  */
 internal inline fun <T> ScopedComponentInfo.runInRecorderScope(
     resolveContext: ResolveContext,
-    crossinline render: () -> RenderResult<T>
+    crossinline render: () -> RenderResult<T>,
 ): RenderResult<T> {
   return if (context.isReadTrackingEnabled) {
     var result: RenderResult<T>? = null
     val stateReads =
-        StateReadRecorder.record(
-            resolveContext.treeId,
-            debugInfo = {
-              put("phase", "resolve")
-              put("reader.owner", component.simpleName)
-            }) {
-              result = render()
-            }
+        StateReadRecorder.record(resolveContext.treeId, attribution("resolve", component)) {
+          result = render()
+        }
     context.scopedComponentInfo.stateReads = stateReads
     checkNotNull(result)
   } else {
@@ -54,13 +49,25 @@ internal inline fun <T> ScopedComponentInfo.runInRecorderScope(
   }
 }
 
-internal val ComponentContext.isReadTrackingEnabled: Boolean
-  // Workaround for package-private calls directly in an inline function that seem
-  // to generate bytecode that's incompatible with Java call-sites
-  get() = lithoTree?.isReadTrackingEnabled == true
+/**
+ * Calls [SpecGeneratedComponent.render] inside [ScopedComponentInfo.runInRecorderScope].
+ *
+ * [runInRecorderScope] is a Kotlin `inline` function, so calls from Kotlin elide the lambda.
+ * [SpecGeneratedComponent.resolve] is Java, where the lambda is *not* inlined and allocates an
+ * anonymous class on every call. This extension exists so the call site stays in Kotlin and the
+ * `inline` works as expected.
+ */
+internal fun SpecGeneratedComponent.renderWithRecorder(
+    resolveContext: ResolveContext,
+    scopedComponentInfo: ScopedComponentInfo,
+    widthSpec: Int,
+    heightSpec: Int,
+): RenderResult<Component?> {
+  val context = scopedComponentInfo.context
+  return scopedComponentInfo.runInRecorderScope(resolveContext) {
+    render(resolveContext, context, widthSpec, heightSpec)
+  }
+}
 
-internal val ComponentContext.uiStateReadRecords: UiStateReadRecords
-  get() =
-      checkNotNull(lithoTree?.uiStateReadRecordsProvider?.getUiStateReadRecords()) {
-        "Could not retrieve the UI state read records. This is likely because the LithoTree is not initialized."
-      }
+internal fun attribution(phase: String, component: Component): String? =
+    if (LithoDebugConfigurations.isDebugModeEnabled) "$phase:${component.simpleName}" else phase

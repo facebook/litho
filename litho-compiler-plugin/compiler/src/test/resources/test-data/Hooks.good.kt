@@ -1,5 +1,8 @@
 // @nolint
 // PROCESSOR: SimpleClassDumpProcessor
+// class OuterConditionalComponent
+//   val condition: Boolean
+//   fun render(): Component
 // class HookInRender
 //   val a: String
 //   val b: Int
@@ -16,7 +19,7 @@
 
 // FILE: HookInRender.kt
 
-import com.facebook.litho.Column
+import com.facebook.litho.layout.flexbox.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
@@ -48,7 +51,7 @@ class NonLitho {
 
 // FILE: HookInNestedComponent.kt
 
-import com.facebook.litho.Column
+import com.facebook.litho.layout.flexbox.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
@@ -72,3 +75,54 @@ import com.facebook.litho.annotations.Hook
 fun bar() {
   @Hook fun ComponentScope.useZero(): Int = useCached { 0 }
 }
+
+// FILE: HookInNestedComponentInsideConditional.kt
+
+import com.facebook.litho.layout.flexbox.Column
+import com.facebook.litho.Component
+import com.facebook.litho.ComponentScope
+import com.facebook.litho.KComponent
+import com.facebook.litho.useState
+
+class OuterConditionalComponent(private val condition: Boolean) : KComponent() {
+  override fun ComponentScope.render(): Component {
+    if (condition) {
+      val child = object : KComponent() {
+        override fun ComponentScope.render(): Component {
+          val state = useState { false }
+          return Column()
+        }
+      }
+    }
+    return Column()
+  }
+}
+
+// FILE: HookInPrimitiveRender.kt
+
+import com.facebook.litho.PrimitiveComponentScope
+import com.facebook.litho.useState
+
+// Covers the PrimitiveComponentScope receiver branch of isRenderMethod. A real PrimitiveComponent
+// would have to supply mount and layout behaviours, which this rule does not look at.
+fun PrimitiveComponentScope.render(): Int {
+  useState { 0 }
+  return 0
+}
+
+// FILE: HookInDeferredLambda.kt
+
+import com.facebook.litho.ComponentScope
+import com.facebook.litho.animated.useBinding
+import com.facebook.litho.annotations.Hook
+import com.facebook.litho.useCached
+
+// Deliberately not reported: the rule looks through lambdas to the enclosing named function, and
+// cannot tell a lambda that runs during render from one that does not. Hooks in a deferred lambda
+// are the separate KComponentHookInDeferredLambda androidlint rule.
+@Hook
+fun ComponentScope.useDeferred(): Boolean =
+    useCached(1) {
+      useBinding { true }
+      false
+    }

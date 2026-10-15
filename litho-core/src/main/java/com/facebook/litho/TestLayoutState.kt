@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
+@file:Suppress("DEPRECATION") // special-cases the legacy Spec-generated Column / Row classes
+
 package com.facebook.litho
 
-import com.facebook.litho.ComponentsSystrace.isTracing
+import com.facebook.litho.ComponentsSystrace.trace
 import com.facebook.litho.layout.LayoutDirection
+import com.facebook.litho.layout.flexbox.FlexboxContainerComponent
 import com.facebook.rendercore.LayoutCache
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaFlexDirection
@@ -41,7 +44,7 @@ object TestLayoutState {
       context: ComponentContext,
       component: Component,
       widthSpec: Int,
-      heightSpec: Int
+      heightSpec: Int,
   ): LithoNode? {
     val c =
         Resolver.createScopedContext(
@@ -49,28 +52,30 @@ object TestLayoutState {
             context,
             component,
             ComponentKeyUtils.generateGlobalKey(context, context.componentScope, component),
-            null)
+        )
     val root = createImmediateLayout(resolveContext, c, widthSpec, heightSpec, component)
     c.clearCalculationStateContext()
     if (root == null || resolveContext.isResolveInterrupted) {
       return root
     }
-    val lsc =
-        LithoLayoutContext(
-            resolveContext.treeId,
-            resolveContext.cache,
-            c,
-            resolveContext.treeState,
-            resolveContext.layoutVersion,
-            resolveContext.rootComponentId,
-            resolveContext.isAccessibilityEnabled,
-            LayoutCache(),
-            null,
-            null)
+    val lsc = LithoLayoutContext(
+        resolveContext.treeId,
+        resolveContext.cache,
+        c,
+        resolveContext.treeState,
+        resolveContext.layoutVersion,
+        resolveContext.rootComponentId,
+        resolveContext.isAccessibilityEnabled,
+        LayoutCache(),
+        null,
+        null,
+    )
     c.setLithoLayoutContext(lsc)
     root.applyParentDependentCommonProps(
-        resolveContext, LayoutDirection.fromContext(c.androidContext))
-    Layout.measureTree(lsc, c.androidContext, root, widthSpec, heightSpec)
+        resolveContext,
+        LayoutDirection.fromContext(c.androidContext),
+    )
+    LayoutUtils.measureTree(lsc, c.androidContext, root, widthSpec, heightSpec)
     c.clearCalculationStateContext()
     return root
   }
@@ -81,7 +86,7 @@ object TestLayoutState {
       c: ComponentContext,
       widthSpec: Int,
       heightSpec: Int,
-      component: Component
+      component: Component,
   ): LithoNode? {
     // this can be false for a mocked component
     if (component.mountType.toString() == null) {
@@ -94,10 +99,31 @@ object TestLayoutState {
         create(resolveContext, c, widthSpec, heightSpec, component)
       }
     }
+    // After useKFlexboxContainerComponent default flipped to true (D106294343), KColumn/KRow
+    // replace the legacy SpecGen Column/Row at every DSL call site. Walk their children the same
+    // way the Spec branch above does so `ComponentTestHelper.getSubComponents` can find deeper
+    // sub-components for tests that pre-date the flip.
+    if (component is FlexboxContainerComponent) {
+      return create(resolveContext, c, widthSpec, heightSpec, component)
+    }
+    // A Mockito deep-stub / smart-null test double has a null getKey(), which would NPE in
+    // generateGlobalKey below (a real component reaching this leaf branch always has a non-null
+    // key).
+    // This surfaced once the legacy Row/Column build() return type widened to Component: a mocked
+    // `provider.foo(): Row.Builder?.build()` now yields a bare mock Component (this leaf branch)
+    // instead of a mock Row (the tolerant SpecGeneratedComponent branch above). Skip it, matching
+    // the
+    // pre-migration tolerance of the mock Row.
+    if (component.getKey() == null) {
+      return null
+    }
     val node = createInternalNode()
     val scopedContext =
         ComponentContext.withComponentScope(
-            c, component, ComponentKeyUtils.generateGlobalKey(c, c.componentScope, component))
+            c,
+            component,
+            ComponentKeyUtils.generateGlobalKey(c, c.componentScope, component),
+        )
     val testComponent = TestComponent(component)
     val scopedComponentInfo = ScopedComponentInfo(testComponent, scopedContext, null)
     scopedComponentInfo.commonProps = testComponent.commonProps
@@ -107,27 +133,34 @@ object TestLayoutState {
 
   /**
    * Mimics implementation of Column.resolve or Row.resolve but uses a test InternalNode for shallow
-   * child resolution.
+   * child resolution. Also handles the Kotlin replacements [FlexboxContainerComponent] (KColumn /
+   * KRow), which carry a precomputed `flexDirection` instead of a `reverse` flag.
    */
   private fun resolve(
       resolveContext: ResolveContext,
       c: ComponentContext,
       widthSpec: Int,
       heightSpec: Int,
-      component: Component
+      component: Component,
   ): LithoNode? {
     // this can be false for a mocked component
     if (component.mountType.toString() == null) {
       return null
     }
-    val reverse = getInternalState<Boolean>(component, "reverse")
+    val flexDirection: YogaFlexDirection =
+        if (component is FlexboxContainerComponent) {
+          getInternalState<YogaFlexDirection>(component, "flexDirection")
+        } else {
+          val reverse = getInternalState<Boolean>(component, "reverse")
+          if (reverse) YogaFlexDirection.COLUMN_REVERSE else YogaFlexDirection.COLUMN
+        }
     val alignItems = getInternalState<YogaAlign?>(component, "alignItems")
     val alignContent = getInternalState<YogaAlign?>(component, "alignContent")
     val justifyContent = getInternalState<YogaJustify?>(component, "justifyContent")
     val wrap = getInternalState<YogaWrap?>(component, "wrap")
     val children = getInternalState<List<Component>?>(component, "children")
     val node = createInternalNode()
-    node.flexDirection(if (reverse) YogaFlexDirection.COLUMN_REVERSE else YogaFlexDirection.COLUMN)
+    node.flexDirection(flexDirection)
     if (alignItems != null) {
       node.alignItems(alignItems)
     }
@@ -161,7 +194,7 @@ object TestLayoutState {
       resolveContext: ResolveContext,
       c: ComponentContext,
       widthSpec: Int,
-      heightSpec: Int
+      heightSpec: Int,
   ): RenderResult<Component?> {
     return when (this) {
       is KComponent -> {
@@ -179,7 +212,7 @@ object TestLayoutState {
       c: ComponentContext,
       widthSpec: Int,
       heightSpec: Int,
-      component: Component
+      component: Component,
   ): LithoNode? {
     // this can be false for a mocked component
     if (component.mountType.toString() == null) {
@@ -214,6 +247,9 @@ object TestLayoutState {
                   .lithoNode
             }
       }
+      component is FlexboxContainerComponent -> {
+        node = resolve(resolveContext, c, widthSpec, heightSpec, component)
+      }
       Component.isMountSpec(component) -> node = createInternalNode()
       else -> {
         val renderResult = component.render(resolveContext, c, widthSpec, heightSpec)
@@ -237,6 +273,7 @@ object TestLayoutState {
       val isMountSpecWithMeasure = component.canMeasure() && Component.isMountSpec(component)
       if (isMountSpecWithMeasure) {
         node.setMeasureFunction(Component.sMeasureFunction)
+        node.setMinContentMeasureFunction(Component.sMinContentMeasureFunction)
       }
     }
     val scopedComponentInfo = c.scopedComponentInfo
@@ -254,7 +291,7 @@ object TestLayoutState {
       c: ComponentContext,
       widthSpec: Int,
       heightSpec: Int,
-      component: Component
+      component: Component,
   ): LithoNode? {
 
     // this can be false for a mocked component
@@ -271,13 +308,20 @@ object TestLayoutState {
           }
           component is SpecGeneratedComponent && canResolve(component) ->
               create(resolveContext, c, widthSpec, heightSpec, component)
+          component is FlexboxContainerComponent ->
+              create(resolveContext, c, widthSpec, heightSpec, component)
           else -> createInternalNode()
         }
     if (node != null) {
+      val scopedContext =
+          ComponentContext.withComponentScope(
+              c,
+              component,
+              ComponentKeyUtils.generateGlobalKey(c, c.componentScope, component),
+          )
       val testComponent = TestComponent(component)
-      val scopedComponentInfo = ScopedComponentInfo(testComponent, c, null)
-      val commonProps = testComponent.commonProps
-      scopedComponentInfo.commonProps = commonProps
+      val scopedComponentInfo = ScopedComponentInfo(testComponent, scopedContext, null)
+      scopedComponentInfo.commonProps = testComponent.commonProps
       node.appendComponent(scopedComponentInfo)
     }
     return node
@@ -295,142 +339,145 @@ object TestLayoutState {
       parent: ComponentContext,
       widthSpec: Int,
       heightSpec: Int,
-      component: Component
-  ): LithoNode? {
-    val isTracing = isTracing
-    if (isTracing) {
-      ComponentsSystrace.beginSection("createLayout:${component.simpleName}")
-    }
-    val node: LithoNode?
-    val c: ComponentContext
-    val globalKey: String
-    val scopedComponentInfo: ScopedComponentInfo
-    try {
-
-      // 1. Consume the layout created in `willrender`.
-      val cached = component.consumeLayoutCreatedInWillRender(resolveContext, parent)
-
-      // 2. Return immediately if cached layout is available.
-      if (cached != null) {
-        return cached
-      }
-
-      // 4. Update the component.
-      // 5. Get the scoped context of the updated component.
-      c = Resolver.createScopedContext(resolveContext, parent, component, null, null)
-      globalKey = c.globalKey
-      scopedComponentInfo = c.scopedComponentInfo
-      // 6. Resolve the component into an InternalNode tree.
-      val shouldDeferNestedTreeResolution = Component.willDeferResolution(component)
-
-      // If nested tree resolution is deferred, then create an nested tree holder.
-      when {
-        shouldDeferNestedTreeResolution -> node = createNestedTreeHolder(c.treePropContainer)
-        component is SpecGeneratedComponent && canResolve(component) -> {
-
-          // Resolve the component into an InternalNode.
-          node =
-              if (component is Column || component is Row) {
-                resolve(resolveContext, c, widthSpec, heightSpec, component)
-              } else {
-                component
-                    .resolve(resolveContext, ScopedComponentInfo(component, c, null), 0, 0)
-                    .lithoNode
-              }
-        }
-        Component.isMountSpec(component) -> {
-
-          // Create a blank InternalNode for MountSpecs and set the default flex direction.
-          node = createInternalNode()
-          node.flexDirection(YogaFlexDirection.COLUMN)
-        }
-        Component.isLayoutSpec(component) -> {
-          val renderResult = component.render(resolveContext, c, widthSpec, heightSpec)
-          val root = renderResult.value
-          node =
-              if (root != null) {
-                create(resolveContext, c, widthSpec, heightSpec, root)
-              } else {
-                null
-              }
-          if (node != null) {
-            Resolver.applyTransitionsAndUseEffectEntriesToNode(
-                renderResult.transitionData, renderResult.useEffectEntries, node)
-          }
-        }
-        else -> throw IllegalArgumentException("component:${component.simpleName}")
-      }
-    } catch (e: Exception) {
-      ComponentUtils.handleWithHierarchy(parent, component, e)
-      return null
-    } finally {
-      if (isTracing) {
-        ComponentsSystrace.endSection()
-      }
-    }
-    // 7. If the layout is null then return immediately.
-    if (node == null) {
-      return null
-    }
-    if (isTracing) {
-      ComponentsSystrace.beginSection("afterCreateLayout:${component.simpleName}")
-    }
-
-    // 8. Set the measure function
-    // Set measure func on the root node of the generated tree so that the mount calls use
-    // those (see Controller.mountNodeTree()). Handle the case where the component simply
-    // delegates its layout creation to another component, i.e. the root node belongs to
-    // another component.
-    if (node.childCount == 0) {
-      val isMountSpecWithMeasure = component.canMeasure() && Component.isMountSpec(component)
-      if (isMountSpecWithMeasure || Component.willDeferResolution(component)) {
-        node.setMeasureFunction(Component.sMeasureFunction)
-      }
-    }
-
-    // 10. Add the component to the InternalNode.
-    node.appendComponent(scopedComponentInfo)
-
-    // 11. Create and add transition to this component's InternalNode.
-    if (c.areTransitionsEnabled()) {
-      if (component is SpecGeneratedComponent && component.needsPreviousRenderData()) {
-        node.addComponentNeedingPreviousRenderData(scopedComponentInfo)
-      } else {
+      component: Component,
+  ): LithoNode? =
+      trace({ "createLayout:${component.simpleName}" }) {
+        val node: LithoNode?
+        val c: ComponentContext
+        val globalKey: GlobalKey
+        val scopedComponentInfo: ScopedComponentInfo
         try {
-          // Calls onCreateTransition on the Spec.
-          val transition =
-              if (component is SpecGeneratedComponent) component.createTransition(c) else null
-          if (transition != null) {
-            node.addTransition(transition)
+
+          // 1. Consume the layout created in `willrender`.
+          val cached = component.consumeLayoutCreatedInWillRender(resolveContext, parent)
+
+          // 2. Return immediately if cached layout is available.
+          if (cached != null) {
+            return cached
           }
+
+          // 4. Update the component.
+          // 5. Get the scoped context of the updated component.
+          c =
+              Resolver.createScopedContext(
+                  resolveContext,
+                  parent,
+                  component,
+                  null as GlobalKey?,
+              )
+          globalKey = c.globalKey
+          scopedComponentInfo = c.scopedComponentInfo
+          // 6. Resolve the component into an InternalNode tree.
+          val shouldDeferNestedTreeResolution = Component.willDeferResolution(component)
+
+          // If nested tree resolution is deferred, then create an nested tree holder.
+          node =
+              when {
+                shouldDeferNestedTreeResolution -> createNestedTreeHolder(c.treePropContainer)
+                component is SpecGeneratedComponent && canResolve(component) -> {
+
+                  // Resolve the component into an InternalNode.
+                  if (component is Column || component is Row) {
+                    resolve(resolveContext, c, widthSpec, heightSpec, component)
+                  } else {
+                    component
+                        .resolve(resolveContext, ScopedComponentInfo(component, c, null), 0, 0)
+                        .lithoNode
+                  }
+                }
+                component is FlexboxContainerComponent -> {
+                  resolve(resolveContext, c, widthSpec, heightSpec, component)
+                }
+                Component.isMountSpec(component) -> {
+
+                  // Create a blank InternalNode for MountSpecs and set the default flex direction.
+                  createInternalNode().also { it.flexDirection(YogaFlexDirection.COLUMN) }
+                }
+                Component.isLayoutSpec(component) -> {
+                  val renderResult = component.render(resolveContext, c, widthSpec, heightSpec)
+                  val root = renderResult.value
+                  val n =
+                      if (root != null) {
+                        create(resolveContext, c, widthSpec, heightSpec, root)
+                      } else {
+                        null
+                      }
+                  if (n != null) {
+                    Resolver.applyTransitionsAndUseEffectEntriesToNode(
+                        renderResult.transitionData,
+                        renderResult.useEffectEntries,
+                        n,
+                    )
+                  }
+                  n
+                }
+                else -> throw IllegalArgumentException("component:${component.simpleName}")
+              }
         } catch (e: Exception) {
           ComponentUtils.handleWithHierarchy(parent, component, e)
+          return null
         }
+        // 7. If the layout is null then return immediately.
+        if (node == null) {
+          return null
+        }
+        trace({ "afterCreateLayout:${component.simpleName}" }) {
+
+          // 8. Set the measure function
+          // Set measure func on the root node of the generated tree so that the mount calls use
+          // those (see Controller.mountNodeTree()). Handle the case where the component simply
+          // delegates its layout creation to another component, i.e. the root node belongs to
+          // another component.
+          if (node.childCount == 0) {
+            val isMountSpecWithMeasure = component.canMeasure() && Component.isMountSpec(component)
+            if (isMountSpecWithMeasure || Component.willDeferResolution(component)) {
+              node.setMeasureFunction(Component.sMeasureFunction)
+              node.setMinContentMeasureFunction(Component.sMinContentMeasureFunction)
+            }
+          }
+
+          // 10. Add the component to the InternalNode.
+          node.appendComponent(scopedComponentInfo)
+
+          // 11. Create and add transition to this component's InternalNode.
+          if (c.areTransitionsEnabled()) {
+            if (component is SpecGeneratedComponent && component.needsPreviousRenderData()) {
+              node.addComponentNeedingPreviousRenderData(scopedComponentInfo)
+            } else {
+              try {
+                // Calls onCreateTransition on the Spec.
+                val transition =
+                    if (component is SpecGeneratedComponent) component.createTransition(c) else null
+                if (transition != null) {
+                  node.addTransition(transition)
+                }
+              } catch (e: Exception) {
+                ComponentUtils.handleWithHierarchy(parent, component, e)
+              }
+            }
+          }
+
+          // 12. Add attachable components
+          if (
+              component is SpecGeneratedComponent && component.hasAttachDetachCallback()
+          ) { // needs ComponentUtils.getGlobalKey?
+            node.addAttachable(LayoutSpecAttachable(globalKey, component, scopedComponentInfo))
+          }
+
+          // 13. Call onPrepare for MountSpecs.
+          if (Component.isMountSpec(component)) {
+            try {
+              (component as SpecGeneratedComponent).onPrepare(c)
+            } catch (e: Exception) {
+              ComponentUtils.handleWithHierarchy(parent, component, e)
+            }
+          }
+
+          // 14. Add working ranges to the InternalNode.
+          scopedComponentInfo.addWorkingRangeToNode(node)
+        }
+        node
       }
-    }
-
-    // 12. Add attachable components
-    if (component is SpecGeneratedComponent &&
-        component.hasAttachDetachCallback()) { // needs ComponentUtils.getGlobalKey?
-      node.addAttachable(LayoutSpecAttachable(globalKey, component, scopedComponentInfo))
-    }
-
-    // 13. Call onPrepare for MountSpecs.
-    if (Component.isMountSpec(component)) {
-      try {
-        (component as SpecGeneratedComponent).onPrepare(c)
-      } catch (e: Exception) {
-        ComponentUtils.handleWithHierarchy(parent, component, e)
-      }
-    }
-
-    // 14. Add working ranges to the InternalNode.
-    scopedComponentInfo.addWorkingRangeToNode(node)
-    if (isTracing) {
-      ComponentsSystrace.endSection()
-    }
-    return node
-  }
 
   private fun <T> getInternalState(obj: Any, fieldName: String): T {
     val foundField = findFieldInHierarchy(getType(obj), fieldName)

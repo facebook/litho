@@ -16,14 +16,14 @@
 
 package com.facebook.litho.widget
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Rect
 import android.view.View
+import androidx.core.view.isGone
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.facebook.litho.BaseMountingView
-import com.facebook.litho.ComponentContext
-import com.facebook.litho.ComponentTree
 import com.facebook.litho.HasLithoViewChildren
 import com.facebook.litho.LithoView
 import com.facebook.litho.config.ComponentsConfiguration
@@ -38,15 +38,50 @@ import com.facebook.rendercore.debug.DebugEventDispatcher.generateTraceIdentifie
  * Wrapper that encapsulates all the features [Recycler] provides such as sticky header and
  * pull-to-refresh
  */
+@SuppressLint("ViewConstructor")
 open class SectionsRecyclerView(context: Context, recyclerView: RecyclerView) :
     SwipeRefreshLayout(context), HasLithoViewChildren {
 
-  val stickyHeader: LithoView
   val recyclerView: RecyclerView
+  var stickyHeaderView: View? = null
+    set(value) {
+      field?.let { oldView ->
+        if (value != null) {
+          throw IllegalStateException("The sticky header view is already initialized.")
+        }
+        removeView(oldView)
+      } ?: value?.let { addView(it) }
+      field = value
+    }
 
   val defaultEdgeEffectFactory: RecyclerView.EdgeEffectFactory
+  // TODO: Calling layoutStickyHeader() here may cause a double layout pass per frame
+  //  since StickyHeaderControllerImpl::onScroll also triggers layout. Investigate applying the
+  //  offset without an extra layout pass (e.g., via translationY), but note that
+  //  StickyHeaderControllerImpl continuously overwrites translationY.
+  var stickyHeaderTopOffset: Int = 0
+    set(value) {
+      if (field != value) {
+        field = value
+        layoutStickyHeader()
+      }
+    }
+
+  val isStickyHeaderHidden: Boolean
+    get() = stickyHeaderView?.isGone == true
+
+  /**
+   * Makes [bringChildToFront] skip a child that is already last. `SwipeRefreshLayout` brings its
+   * spinner to the front on each touch down at the top of a pull-to-refresh list, and each of those
+   * no-op reorders lays out every ancestor again. Off by default. Litho turns it off when it
+   * unmounts the list, so a pooled view comes back with it off; new props or a new measure keep it.
+   */
+  var skipsRedundantBringToFront: Boolean = false
+
   private var sectionsRecyclerViewLogger: SectionsRecyclerViewLogger? = null
   private var isFirstLayout = true
+  private val traceAttributes: MutableMap<String, Any> = LinkedHashMap()
+  private val bounds: Rect = Rect()
 
   /**
    * Indicates whether [RecyclerView] has been detached. In such case we need to make sure to
@@ -78,63 +113,12 @@ open class SectionsRecyclerView(context: Context, recyclerView: RecyclerView) :
     // to screen and it is not rebound therefore we will see 0 height LithoView which actually
     // happened in multiple product surfaces. Disabling it fixes the issue.
     recyclerView.setItemViewCacheSize(0)
-
     addView(this.recyclerView)
-    stickyHeader = LithoView(ComponentContext(getContext()), null)
-    stickyHeader.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
-
-    addView(stickyHeader)
   }
 
   fun setSectionsRecyclerViewLogger(lithoViewLogger: SectionsRecyclerViewLogger?) {
     sectionsRecyclerViewLogger = lithoViewLogger
   }
-
-  fun setStickyComponent(componentTree: ComponentTree) {
-    val existingLithoView = componentTree.lithoView
-    stickyHeader.componentTree = componentTree
-
-    // Set this after because setComponentTree clears temporary detached component tree
-    if (existingLithoView != null && stickyHeader !== existingLithoView) {
-      existingLithoView.setTemporaryDetachedComponentTree(componentTree)
-    }
-    measureStickyHeader(width)
-  }
-
-  fun setStickyHeaderVerticalOffset(verticalOffset: Int) {
-    stickyHeader.translationY = verticalOffset.toFloat()
-  }
-
-  fun showStickyHeader() {
-    stickyHeader.visibility = View.VISIBLE
-
-    layoutStickyHeader()
-  }
-
-  fun hideStickyHeader() {
-    stickyHeader.unmountAllItems()
-    stickyHeader.visibility = View.GONE
-  }
-
-  fun maybeRestoreDetachedComponentTree(stickyHeaderPosition: Int) {
-    if (stickyHeaderPosition <= -1 ||
-        !ComponentsConfiguration.initStickyHeaderInLayoutWhenComponentTreeIsNull ||
-        stickyHeader.componentTree == null) {
-      return
-    }
-
-    val viewHolder = recyclerView.findViewHolderForAdapterPosition(stickyHeaderPosition)
-    val recyclerBinderViewHolder = if (viewHolder is RecyclerBinderViewHolder) viewHolder else null
-    val lithoView = recyclerBinderViewHolder?.lithoView
-    if (lithoView != null &&
-        lithoView.componentTree == null &&
-        lithoView.hasTemporaryDetachedComponentTree()) {
-      lithoView.requestLayout()
-    }
-  }
-
-  val isStickyHeaderHidden: Boolean
-    get() = stickyHeader.visibility == View.GONE
 
   fun setItemAnimator(itemAnimator: RecyclerView.ItemAnimator?) {
     detachedItemAnimator = recyclerView.itemAnimator
@@ -151,13 +135,6 @@ open class SectionsRecyclerView(context: Context, recyclerView: RecyclerView) :
     measureStickyHeader(MeasureSpec.getSize(widthMeasureSpec))
   }
 
-  private fun measureStickyHeader(parentWidth: Int) {
-    measureChild(
-        stickyHeader,
-        MeasureSpec.makeMeasureSpec(parentWidth, MeasureSpec.EXACTLY),
-        MeasureSpec.UNSPECIFIED)
-  }
-
   override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
     dispatch(
         type = DebugEvent.ViewOnLayout + ":start",
@@ -165,15 +142,17 @@ open class SectionsRecyclerView(context: Context, recyclerView: RecyclerView) :
         attributesAccumulator = { attrs ->
           attrs[DebugEventAttribute.Id] = hashCode()
           attrs[DebugEventAttribute.Name] = "SectionsRecyclerView"
-        })
+        },
+    )
 
     val traceId = generateTraceIdentifier(DebugEvent.ViewOnLayout)
     if (traceId != null) {
-      val attributes: MutableMap<String, Any> = LinkedHashMap()
-      attributes[DebugEventAttribute.Id] = hashCode()
-      attributes[DebugEventAttribute.Name] = "SectionsRecyclerView"
-      attributes[DebugEventAttribute.Bounds] = Rect(left, top, right, bottom)
-      beginTrace(traceId, DebugEvent.ViewOnLayout, "-1", attributes)
+      bounds.set(left, top, right, bottom)
+      traceAttributes.clear()
+      traceAttributes[DebugEventAttribute.Id] = hashCode()
+      traceAttributes[DebugEventAttribute.Name] = "SectionsRecyclerView"
+      traceAttributes[DebugEventAttribute.Bounds] = bounds
+      beginTrace(traceId, DebugEvent.ViewOnLayout, "-1", traceAttributes)
     }
 
     try {
@@ -189,18 +168,29 @@ open class SectionsRecyclerView(context: Context, recyclerView: RecyclerView) :
     }
   }
 
-  private fun layoutStickyHeader() {
-    if (stickyHeader.visibility == View.GONE) {
+  fun measureStickyHeader(parentWidth: Int) {
+    val view = stickyHeaderView ?: return
+    measureChild(
+        view,
+        MeasureSpec.makeMeasureSpec(parentWidth, MeasureSpec.EXACTLY),
+        MeasureSpec.UNSPECIFIED,
+    )
+  }
+
+  fun layoutStickyHeader() {
+    val view = stickyHeaderView ?: return
+    if (isStickyHeaderHidden) {
       return
     }
 
     val stickyHeaderLeft = paddingLeft
-    val stickyHeaderTop = paddingTop
-    stickyHeader.layout(
+    val stickyHeaderTop = paddingTop + stickyHeaderTopOffset
+    view.layout(
         stickyHeaderLeft,
         stickyHeaderTop,
-        stickyHeaderLeft + stickyHeader.measuredWidth,
-        stickyHeaderTop + stickyHeader.measuredHeight)
+        stickyHeaderLeft + view.measuredWidth,
+        stickyHeaderTop + view.measuredHeight,
+    )
   }
 
   override fun onDetachedFromWindow() {
@@ -228,13 +218,23 @@ open class SectionsRecyclerView(context: Context, recyclerView: RecyclerView) :
     }
   }
 
-  override fun setOnTouchListener(listener: OnTouchListener) {
+  override fun bringChildToFront(child: View) {
+    // ViewGroup requests a layout even when the child is already last and nothing moves.
+    if (skipsRedundantBringToFront && getChildAt(childCount - 1) === child) {
+      return
+    }
+    super.bringChildToFront(child)
+  }
+
+  @SuppressLint("ClickableViewAccessibility")
+  override fun setOnTouchListener(listener: OnTouchListener?) {
     // When setting touch handler for RecyclerSpec we want RecyclerView to handle it.
     recyclerView.setOnTouchListener(listener)
   }
 
   override fun obtainLithoViewChildren(lithoViews: MutableList<BaseMountingView>) {
-    lithoViews.add(stickyHeader)
+    val view = stickyHeaderView as? LithoView ?: return
+    lithoViews.add(view)
     val size = recyclerView.childCount
     for (i in 0 until size) {
       val child = recyclerView.getChildAt(i)

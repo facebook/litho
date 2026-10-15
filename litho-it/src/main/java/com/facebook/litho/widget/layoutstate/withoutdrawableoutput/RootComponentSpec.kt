@@ -17,10 +17,10 @@
 package com.facebook.litho.widget.layoutstate.withoutdrawableoutput
 
 import android.graphics.Color
-import com.facebook.litho.Column
+import com.facebook.litho.Column as ColumnBuilder
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
-import com.facebook.litho.Row
+import com.facebook.litho.Row as RowBuilder
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateLayout
 import com.facebook.litho.annotations.Prop
@@ -31,16 +31,20 @@ internal object RootComponentSpec {
   @JvmStatic
   @OnCreateLayout
   fun onCreateLayout(c: ComponentContext, @Prop shouldWrapInView: Boolean): Component =
-      Row.create(c)
+      RowBuilder.create(c)
           .child(
-              (if (shouldWrapInView) Column.create(c).wrapInView() else Column.create(c))
+              (if (shouldWrapInView) ColumnBuilder.create(c).wrapInView()
+                  else ColumnBuilder.create(c))
                   .backgroundColor(Color.RED)
                   .foregroundColor(Color.GREEN)
-                  .child(Text.create(c).text("Hello")))
+                  .child(Text.create(c).text("Hello")),
+          )
           .child(
-              (if (shouldWrapInView) Column.create(c).wrapInView() else Column.create(c))
+              (if (shouldWrapInView) ColumnBuilder.create(c).wrapInView()
+                  else ColumnBuilder.create(c))
                   .backgroundColor(Color.RED)
                   .foregroundColor(Color.GREEN)
-                  .child(Text.create(c).text("world")))
+                  .child(Text.create(c).text("world")),
+          )
           .build()
 }

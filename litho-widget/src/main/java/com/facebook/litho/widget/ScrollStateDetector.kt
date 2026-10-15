@@ -55,16 +55,20 @@ internal class ScrollStateDetector(private val hostView: View) {
 
   @UiThread
   fun onTouchEvent(motionEvent: MotionEvent) {
-    if (motionEvent.action == MotionEvent.ACTION_DOWN ||
-        motionEvent.action == MotionEvent.ACTION_MOVE) {
+    if (
+        motionEvent.action == MotionEvent.ACTION_DOWN ||
+            motionEvent.action == MotionEvent.ACTION_MOVE
+    ) {
       if (scrollStopped) {
         reset()
       } else {
         flingStarted = false
         hasScrolledBetweenDraw = true
       }
-    } else if (motionEvent.action == MotionEvent.ACTION_UP ||
-        motionEvent.action == MotionEvent.ACTION_CANCEL) {
+    } else if (
+        motionEvent.action == MotionEvent.ACTION_UP ||
+            motionEvent.action == MotionEvent.ACTION_CANCEL
+    ) {
       // if the touch events hasn't triggered fling, the up event leads to scroll_stop.
       if (!flingStarted && scrollStarted && !scrollStopped) {
         scrollStopped = true

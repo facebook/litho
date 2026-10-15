@@ -17,7 +17,7 @@
 package com.facebook.litho.stateupdates
 
 import android.graphics.Rect
-import com.facebook.litho.Column
+import com.facebook.litho.Column as ColumnBuilder
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.LifecycleStep
@@ -46,7 +46,7 @@ object ComponentWithSizeAndMeasureCallAndStateSpec {
   fun onCreateInitialState(
       c: ComponentContext,
       count: StateValue<Int?>,
-      @Prop steps: MutableList<StepInfo?>
+      @Prop steps: MutableList<StepInfo?>,
   ) {
     steps.add(StepInfo(LifecycleStep.ON_CREATE_INITIAL_STATE))
     count.set(0)
@@ -64,7 +64,7 @@ object ComponentWithSizeAndMeasureCallAndStateSpec {
       @Prop(optional = true) mountSpec: Component?,
       @Prop(optional = true) prefix: String?,
       @CachedValue expensiveValue: Int,
-      @State count: Int
+      @State count: Int,
   ): Component {
     steps.add(StepInfo(LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC))
     component?.measure(
@@ -72,9 +72,10 @@ object ComponentWithSizeAndMeasureCallAndStateSpec {
         if (widthSpec != 0) widthSpec else SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
         if (heightSpec != 0) heightSpec else SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
         Size(),
-        shouldCacheResult)
+        shouldCacheResult,
+    )
     val textPrefix = prefix ?: "Count:"
-    return Column.create(c)
+    return ColumnBuilder.create(c)
         .child(Text.create(c).text("$textPrefix $count"))
         .child(component ?: mountSpec)
         .build()

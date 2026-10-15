@@ -21,8 +21,8 @@ import android.graphics.Rect
 import android.view.View
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
-import com.facebook.litho.kotlin.widget.SolidColor
 import com.facebook.litho.kotlin.widget.TextInput
+import com.facebook.litho.layout.flexbox.Column
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.onClick
@@ -32,6 +32,7 @@ import com.facebook.litho.visibility.Visibility.Companion.Invisible
 import com.facebook.litho.visibility.Visibility.Companion.Visible
 import com.facebook.litho.visibility.visibility
 import com.facebook.litho.widget.MountSpecLifecycleTester
+import com.facebook.litho.widget.SolidColor
 import com.facebook.rendercore.px
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
@@ -83,7 +84,8 @@ class ViewAttributeExtensionTest {
             .child(
                 MountSpecLifecycleTester.create(c)
                     .intrinsicSize(Size(100, 100))
-                    .lifecycleTracker(LifecycleTracker()))
+                    .lifecycleTracker(LifecycleTracker()),
+            )
             .build()
 
     val testLithoView = lithoTestRule.render { root }

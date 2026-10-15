@@ -19,6 +19,8 @@ package com.facebook.litho
 import com.facebook.litho.LifecycleStep.StepInfo
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.config.PreAllocationHandler
+import com.facebook.litho.core.height
+import com.facebook.litho.layout.flexbox.Column
 import com.facebook.litho.testing.LithoStatsRule
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.LithoTestRuleResizeMode
@@ -27,7 +29,6 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.testing.unspecified
 import com.facebook.litho.widget.MountSpecLifecycleTester
 import com.facebook.litho.widget.MountSpecWithMountUnmountAssertion
-import com.facebook.litho.widget.MountSpecWithMountUnmountAssertionSpec
 import com.facebook.litho.widget.PreallocatedMountSpecLifecycleTester
 import com.facebook.litho.widget.RecordsShouldUpdate
 import com.facebook.litho.widget.SimpleStateUpdateEmulator
@@ -35,6 +36,8 @@ import com.facebook.litho.widget.SimpleStateUpdateEmulatorSpec
 import com.facebook.litho.widget.Text
 import com.facebook.rendercore.MountContentPools
 import com.facebook.rendercore.RunnableHandler
+import com.facebook.rendercore.extensions.VisibilityChangeReason
+import com.facebook.rendercore.px
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
@@ -72,7 +75,8 @@ class MountSpecLifecycleTest {
             LifecycleStep.ON_CREATE_INITIAL_STATE,
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
-            LifecycleStep.ON_PREPARE)
+            LifecycleStep.ON_PREPARE,
+        )
   }
 
   @Test
@@ -96,7 +100,8 @@ class MountSpecLifecycleTest {
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_CREATE_MOUNT_CONTENT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
   }
 
   @Test
@@ -119,7 +124,8 @@ class MountSpecLifecycleTest {
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_CREATE_MOUNT_CONTENT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
   }
 
   @Test
@@ -162,12 +168,14 @@ class MountSpecLifecycleTest {
                         .intrinsicSize(Size(800, 600))
                         // exclude this component from incremental mount
                         .shouldExcludeFromIncrementalMount(true)
-                        .build())
+                        .build(),
+                )
                 child(
                     MountSpecLifecycleTester.create(lithoViewRule.context)
                         .lifecycleTracker(lifecycleTracker2)
                         .intrinsicSize(Size(800, 600))
-                        .build())
+                        .build(),
+                )
               }
             }
             .detachFromWindow()
@@ -209,7 +217,7 @@ class MountSpecLifecycleTest {
     }
 
     if (config != null && config.enableFixForIM) {
-      testLithoView.lithoView.notifyVisibleBoundsChanged()
+      testLithoView.lithoView.notifyVisibleBoundsChanged(VisibilityChangeReason.UNKNOWN)
       assertThat(lifecycleTracker2.steps)
           .describedAs("Should be mounted as we notify visible bounds changed")
           .containsExactly(LifecycleStep.ON_MOUNT, LifecycleStep.ON_BIND)
@@ -219,13 +227,12 @@ class MountSpecLifecycleTest {
   @Test
   fun lifecycle_onRemeasureWithSameSpecs_shouldNotCallLifecycleMethods() {
     val lifecycleTracker = LifecycleTracker()
-    val testLithoView =
-        lithoViewRule.render {
-          MountSpecLifecycleTester.create(lithoViewRule.context)
-              .intrinsicSize(Size(800, 600))
-              .lifecycleTracker(lifecycleTracker)
-              .build()
-        }
+    val testLithoView = lithoViewRule.render {
+      MountSpecLifecycleTester.create(lithoViewRule.context)
+          .intrinsicSize(Size(800, 600))
+          .lifecycleTracker(lifecycleTracker)
+          .build()
+    }
     lifecycleTracker.reset()
     testLithoView.measure()
     assertThat(lifecycleTracker.steps)
@@ -236,13 +243,12 @@ class MountSpecLifecycleTest {
   @Test
   fun lifecycle_onRemeasureWithDifferentSpecs_shouldCallLifecycleMethods() {
     val lifecycleTracker = LifecycleTracker()
-    val testLithoView =
-        lithoViewRule.render {
-          MountSpecLifecycleTester.create(lithoViewRule.context)
-              .intrinsicSize(Size(800, 600))
-              .lifecycleTracker(lifecycleTracker)
-              .build()
-        }
+    val testLithoView = lithoViewRule.render {
+      MountSpecLifecycleTester.create(lithoViewRule.context)
+          .intrinsicSize(Size(800, 600))
+          .lifecycleTracker(lifecycleTracker)
+          .build()
+    }
     lifecycleTracker.reset()
     testLithoView.setSizeSpecs(exactly(800), unspecified()).measure()
     assertThat(lifecycleTracker.steps)
@@ -253,31 +259,30 @@ class MountSpecLifecycleTest {
   @Test
   fun lifecycle_onRemeasureWithExactSize_shouldNotCallLifecycleMethods() {
     val lifecycleTracker = LifecycleTracker()
-    val testLithoView =
-        lithoViewRule.render {
-          MountSpecLifecycleTester.create(lithoViewRule.context)
-              .lifecycleTracker(lifecycleTracker)
-              .intrinsicSize(Size(800, 600))
-              .build()
-        }
+    val testLithoView = lithoViewRule.render {
+      MountSpecLifecycleTester.create(lithoViewRule.context)
+          .lifecycleTracker(lifecycleTracker)
+          .intrinsicSize(Size(800, 600))
+          .build()
+    }
     lifecycleTracker.reset()
     testLithoView.setSizePx(800, 600).measure()
     assertThat(lifecycleTracker.steps)
         .describedAs(
-            "No lifecycle methods should be called because EXACT measures should skip layout calculation.")
+            "No lifecycle methods should be called because EXACT measures should skip layout calculation.",
+        )
         .isEmpty()
   }
 
   @Test
   fun lifecycle_onReLayoutAfterMeasureWithExactSize_shouldCallLifecycleMethods() {
     val lifecycleTracker = LifecycleTracker()
-    val testLithoView =
-        lithoViewRule.render {
-          MountSpecLifecycleTester.create(lithoViewRule.context)
-              .lifecycleTracker(lifecycleTracker)
-              .intrinsicSize(Size(800, 600))
-              .build()
-        }
+    val testLithoView = lithoViewRule.render {
+      MountSpecLifecycleTester.create(lithoViewRule.context)
+          .lifecycleTracker(lifecycleTracker)
+          .intrinsicSize(Size(800, 600))
+          .build()
+    }
     lifecycleTracker.reset()
     testLithoView.setSizePx(800, 600).measure().layout()
 
@@ -288,22 +293,23 @@ class MountSpecLifecycleTest {
             LifecycleStep.ON_UNBIND,
             LifecycleStep.ON_UNMOUNT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
   }
 
   @Test
   fun lifecycle_onReLayoutAfterMeasureWithExactSizeAsNonRoot_shouldCallLifecycleMethods() {
     val lifecycleTracker = LifecycleTracker()
-    val testLithoView =
-        lithoViewRule.render {
-          Column.create(lithoViewRule.context)
-              .child(
-                  MountSpecLifecycleTester.create(lithoViewRule.context)
-                      .intrinsicSize(Size(800, 600))
-                      .lifecycleTracker(lifecycleTracker)
-                      .build())
-              .build()
-        }
+    val testLithoView = lithoViewRule.render {
+      Column.create(lithoViewRule.context)
+          .child(
+              MountSpecLifecycleTester.create(lithoViewRule.context)
+                  .intrinsicSize(Size(800, 600))
+                  .lifecycleTracker(lifecycleTracker)
+                  .build(),
+          )
+          .build()
+    }
     lifecycleTracker.reset()
     testLithoView.setSizePx(800, 600).measure().layout()
     assertThat(lifecycleTracker.steps)
@@ -314,7 +320,8 @@ class MountSpecLifecycleTest {
             LifecycleStep.ON_UNBIND,
             LifecycleStep.ON_UNMOUNT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
   }
 
   @Test
@@ -336,13 +343,12 @@ class MountSpecLifecycleTest {
   @Test
   fun lifecycle_onRemeasureWithCompatibleSpecs_shouldNotRemount() {
     val lifecycleTracker = LifecycleTracker()
-    val testLithoView =
-        lithoViewRule.render {
-          MountSpecLifecycleTester.create(lithoViewRule.context)
-              .intrinsicSize(Size(800, 600))
-              .lifecycleTracker(lifecycleTracker)
-              .build()
-        }
+    val testLithoView = lithoViewRule.render {
+      MountSpecLifecycleTester.create(lithoViewRule.context)
+          .intrinsicSize(Size(800, 600))
+          .lifecycleTracker(lifecycleTracker)
+          .build()
+    }
     lifecycleTracker.reset()
 
     // Force measure call to propagate to ComponentTree
@@ -355,13 +361,12 @@ class MountSpecLifecycleTest {
   @Test
   fun lifecycle_onSetSemanticallySimilarComponent_shouldCallLifecycleMethods() {
     val lifecycleTracker = LifecycleTracker()
-    val testLithoView =
-        lithoViewRule.render {
-          MountSpecLifecycleTester.create(lithoViewRule.context)
-              .intrinsicSize(Size(800, 600))
-              .lifecycleTracker(lifecycleTracker)
-              .build()
-        }
+    val testLithoView = lithoViewRule.render {
+      MountSpecLifecycleTester.create(lithoViewRule.context)
+          .intrinsicSize(Size(800, 600))
+          .lifecycleTracker(lifecycleTracker)
+          .build()
+    }
 
     lifecycleTracker.reset()
     val newLifecycleTracker = LifecycleTracker()
@@ -369,7 +374,8 @@ class MountSpecLifecycleTest {
         MountSpecLifecycleTester.create(lithoViewRule.context)
             .intrinsicSize(Size(800, 600))
             .lifecycleTracker(newLifecycleTracker)
-            .build())
+            .build(),
+    )
     assertThat(lifecycleTracker.steps)
         .describedAs("Should call the lifecycle methods on old instance in expected order")
         .containsExactly(LifecycleStep.ON_UNBIND, LifecycleStep.ON_UNMOUNT)
@@ -382,7 +388,8 @@ class MountSpecLifecycleTest {
             LifecycleStep.ON_MEASURE,
             LifecycleStep.ON_BOUNDS_DEFINED,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
   }
 
   @Test
@@ -395,10 +402,13 @@ class MountSpecLifecycleTest {
                 .componentsConfiguration(
                     ComponentsConfiguration.defaultInstance.copy(
                         preAllocationHandler =
-                            PreAllocationHandler.Custom(RunnableHandler.DefaultHandler(looper))))
-                .build()) {
-          PreallocatedMountSpecLifecycleTester.create(lithoViewRule.context).steps(info).build()
-        }
+                            PreAllocationHandler.Custom(RunnableHandler.DefaultHandler(looper)),
+                    ),
+                )
+                .build(),
+    ) {
+      PreallocatedMountSpecLifecycleTester.create(lithoViewRule.context).steps(info).build()
+    }
 
     ShadowLooper.runUiThreadTasks()
     assertThat(LifecycleStep.getSteps(info))
@@ -410,7 +420,8 @@ class MountSpecLifecycleTest {
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_CREATE_MOUNT_CONTENT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
   }
 
   @Test
@@ -423,10 +434,13 @@ class MountSpecLifecycleTest {
                 .componentsConfiguration(
                     ComponentsConfiguration.defaultInstance.copy(
                         preAllocationHandler =
-                            PreAllocationHandler.Custom(RunnableHandler.DefaultHandler(looper))))
-                .build()) {
-          PreallocatedMountSpecLifecycleTester.create(lithoViewRule.context).steps(info).build()
-        }
+                            PreAllocationHandler.Custom(RunnableHandler.DefaultHandler(looper)),
+                    ),
+                )
+                .build(),
+    ) {
+      PreallocatedMountSpecLifecycleTester.create(lithoViewRule.context).steps(info).build()
+    }
 
     ShadowLooper.runUiThreadTasks()
     assertThat(LifecycleStep.getSteps(info))
@@ -438,7 +452,8 @@ class MountSpecLifecycleTest {
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_CREATE_MOUNT_CONTENT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
     assertThat(MountContentPools.mountContentPools.size)
         .describedAs("Should contain only 1 content pool")
         .isEqualTo(1)
@@ -447,20 +462,20 @@ class MountSpecLifecycleTest {
   @Test
   fun shouldUpdate_shouldUpdateIsCalled_prevAndNextAreInRightOrder() {
     val firstObject = Any()
-    val shouldUpdateCalls: List<Diff<Any>> = ArrayList()
-    val testLithoView =
-        lithoViewRule.render {
-          RecordsShouldUpdate.create(lithoViewRule.context)
-              .shouldUpdateCalls(shouldUpdateCalls)
-              .testProp(firstObject)
-              .build()
-        }
+    val shouldUpdateCalls: MutableList<Diff<Any>> = ArrayList()
+    val testLithoView = lithoViewRule.render {
+      RecordsShouldUpdate(
+          shouldUpdateCalls = shouldUpdateCalls,
+          testProp = firstObject,
+      )
+    }
     val secondObject = Any()
     testLithoView.setRoot(
-        RecordsShouldUpdate.create(lithoViewRule.context)
-            .shouldUpdateCalls(shouldUpdateCalls)
-            .testProp(secondObject)
-            .build())
+        RecordsShouldUpdate(
+            shouldUpdateCalls = shouldUpdateCalls,
+            testProp = secondObject,
+        ),
+    )
     assertThat(shouldUpdateCalls).hasSize(1)
     assertThat(shouldUpdateCalls[0].previous).isEqualTo(firstObject)
     assertThat(shouldUpdateCalls[0].next).isEqualTo(secondObject)
@@ -478,18 +493,23 @@ class MountSpecLifecycleTest {
     val stateUpdater = SimpleStateUpdateEmulatorSpec.Caller()
 
     val testLithoView =
-        lithoViewRule.render(componentTree = ComponentTree.create(lithoViewRule.context).build()) {
+        lithoViewRule.render(
+            componentTree =
+                ComponentTree.create(lithoViewRule.context).enableChildClipping(true).build(),
+        ) {
           Column.create(lithoViewRule.context)
               .child(
                   MountSpecLifecycleTester.create(lithoViewRule.context)
                       .intrinsicSize(Size(800, 600))
                       .lifecycleTracker(info_child1)
-                      .key("some_key"))
+                      .key("some_key"),
+              )
               .child(
                   MountSpecLifecycleTester.create(lithoViewRule.context)
                       .intrinsicSize(Size(800, 600))
                       .lifecycleTracker(info_child2)
-                      .key("other_key"))
+                      .key("other_key"),
+              )
               .child(SimpleStateUpdateEmulator.create(lithoViewRule.context).caller(stateUpdater))
               .build()
         }
@@ -520,11 +540,14 @@ class MountSpecLifecycleTest {
             .heightPx(200)
             .child(Text.create(c).text("1").heightPx(100))
             .child(
-                MountSpecWithMountUnmountAssertion.create(c)
-                    .container(MountSpecWithMountUnmountAssertionSpec.Container())
-                    .heightPx(100))
+                MountSpecWithMountUnmountAssertion(
+                    container = MountSpecWithMountUnmountAssertion.Container(),
+                    style = Style.height(100.px),
+                ),
+            )
             .build()
-    val initialComponentTree = ComponentTree.create(c, initialComponent).build()
+    val initialComponentTree =
+        ComponentTree.create(c, initialComponent).enableChildClipping(true).build()
     val lithoView = LithoView(c.androidContext)
 
     // Mount a layout with the component.
@@ -539,10 +562,11 @@ class MountSpecLifecycleTest {
             .heightPx(200)
             .child(Text.create(c).text("1").heightPx(100))
             .child(
-                MountSpecWithMountUnmountAssertion.create(c)
-                    .container(MountSpecWithMountUnmountAssertionSpec.Container())
-                    .heightPx(100)
-                    .build())
+                MountSpecWithMountUnmountAssertion(
+                    container = MountSpecWithMountUnmountAssertion.Container(),
+                    style = Style.height(100.px),
+                ),
+            )
             .build()
 
     // Create a new component tree so that state is recreated
@@ -552,7 +576,9 @@ class MountSpecLifecycleTest {
         ComponentTree.create(c, newComponent)
             .overrideRenderUnitIdMap(
                 initialComponentTree.lithoConfiguration.renderUnitIdGenerator,
-                initialComponentTree.mId)
+                initialComponentTree.id,
+            )
+            .enableChildClipping(true)
             .build()
     lithoView.componentTree = newComponentTree
 

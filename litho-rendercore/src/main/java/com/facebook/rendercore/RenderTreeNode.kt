@@ -29,11 +29,18 @@ class RenderTreeNode(
     val resolvedPadding: Rect?,
     val positionInParent: Int,
     val poolScope: PoolScope = PoolScope.None,
+    /**
+     * When true, [MountState] may skip the full update path for this node if its payload is
+     * identity-stable. Set unconditionally in [LithoReducer.spliceOneOutput] — only nodes produced
+     * by the subtree-cache splice path carry this flag, so the fast path is implicitly gated on
+     * subtree caching being enabled.
+     */
+    val isFastPathEligible: Boolean = false,
 ) {
   val absoluteX: Int = (parent?.absoluteX ?: 0) + bounds.left
   val absoluteY: Int = (parent?.absoluteY ?: 0) + bounds.top
   private val children: MutableList<RenderTreeNode> by
-      lazy(LazyThreadSafetyMode.NONE) { ArrayList(DEFAULT_SIZE) }
+      lazy(LazyThreadSafetyMode.PUBLICATION) { ArrayList(DEFAULT_SIZE) }
 
   fun child(renderTreeNode: RenderTreeNode) {
     children.add(renderTreeNode)
@@ -78,7 +85,8 @@ class RenderTreeNode(
         absoluteX,
         absoluteY,
         childCount,
-        parentId)
+        parentId,
+    )
   }
 
   fun getHierarchyDepth(): Int {

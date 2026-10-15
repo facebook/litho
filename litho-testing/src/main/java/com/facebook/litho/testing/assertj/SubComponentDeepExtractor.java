@@ -83,14 +83,14 @@ public final class SubComponentDeepExtractor
    * <h2>Example Use</h2>
    *
    * Suppose you have a <code>MyWrapperComponentSpec</code> that creates a {@link
-   * com.facebook.litho.widget.Card} which contains a {@link com.facebook.litho.widget.Text} for a
-   * <code>text</code> prop that your component accepts.
+   * com.facebook.litho.widget.PrimitiveCard} which contains a {@link
+   * com.facebook.litho.widget.Text} for a <code>text</code> prop that your component accepts.
    *
    * <p>You want to ensure that the text truncation logic correctly applies to the text that sits
    * inside the card. Using {@link SubComponentExtractor#subComponentWith(ComponentContext,
    * Condition)} won't work here as it will only be able to make assertions on the {@link
-   * com.facebook.litho.widget.Card} but not the {@link com.facebook.litho.widget.Text} sitting
-   * inside.
+   * com.facebook.litho.widget.PrimitiveCard} but not the {@link com.facebook.litho.widget.Text}
+   * sitting inside.
    *
    * <p>
    *

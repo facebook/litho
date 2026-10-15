@@ -28,13 +28,9 @@ import com.facebook.litho.annotations.Prop;
 public class ComponentContainerSpec {
 
   @OnCreateLayout
-  static Component onCreateLayout(
-      ComponentContext c, @Prop Handle componentWithTriggerHandle, @Prop String uniqueString) {
+  static Component onCreateLayout(ComponentContext c, @Prop Handle componentWithTriggerHandle) {
     return Column.create(c)
-        .child(
-            ComponentWithTrigger.create(c)
-                .handle(componentWithTriggerHandle)
-                .uniqueString(uniqueString))
+        .child(ComponentWithTrigger.create(c).handle(componentWithTriggerHandle))
         .build();
   }
 }

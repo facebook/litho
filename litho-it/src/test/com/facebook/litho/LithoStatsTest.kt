@@ -41,7 +41,7 @@ class LithoStatsTest {
   private lateinit var testComponent: StateUpdateTestComponent
   private lateinit var componentTree: ComponentTree
   private lateinit var lithoView: LithoView
-  private lateinit var testComponentKey: String
+  private lateinit var testComponentKey: GlobalKey
 
   @JvmField @Rule val lithoTestRule = LithoTestRule()
 
@@ -50,12 +50,12 @@ class LithoStatsTest {
     context = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
     layoutThreadShadowLooper = ComponentTestHelper.getDefaultLayoutThreadShadowLooper()
     testComponent = StateUpdateTestComponent()
-    testComponentKey = testComponent.key
-    componentTree = ComponentTree.create(context, testComponent).build()
+    componentTree = ComponentTree.create(context, testComponent).enableChildClipping(true).build()
     lithoView = LithoView(context)
     lithoView.componentTree = componentTree
     lithoView.onAttachedToWindow()
     ComponentTestHelper.measureAndLayout(lithoView)
+    testComponentKey = componentTree.committedTreeState!!.resolveState.state!!.keys.single()
   }
 
   private fun runToEndOfTasks() {
@@ -72,7 +72,11 @@ class LithoStatsTest {
     val beforeAsync = LithoStats.componentTriggeredAsyncStateUpdateCount
     val beforeTotal = LithoStats.componentAppliedStateUpdateCount
     componentTree.updateStateAsync(
-        testComponentKey, StateUpdateTestComponent.createIncrementStateUpdate(), "test", false)
+        testComponentKey,
+        StateUpdateTestComponent.createIncrementStateUpdate(),
+        "test",
+        false,
+    )
     runToEndOfTasks()
     val afterSync = LithoStats.componentTriggeredSyncStateUpdateCount
     val afterAsync = LithoStats.componentTriggeredAsyncStateUpdateCount
@@ -88,7 +92,11 @@ class LithoStatsTest {
     val beforeAsync = LithoStats.componentTriggeredAsyncStateUpdateCount
     val beforeTotal = LithoStats.componentAppliedStateUpdateCount
     componentTree.updateStateSync(
-        testComponentKey, StateUpdateTestComponent.createIncrementStateUpdate(), "test", false)
+        testComponentKey,
+        StateUpdateTestComponent.createIncrementStateUpdate(),
+        "test",
+        false,
+    )
     runToEndOfTasks()
     val afterSync = LithoStats.componentTriggeredSyncStateUpdateCount
     val afterAsync = LithoStats.componentTriggeredAsyncStateUpdateCount
@@ -116,12 +124,12 @@ class LithoStatsTest {
     componentTree.setRootAsync(StateUpdateTestComponent())
     val latch = CountDownLatch(1)
     Thread {
-          // We have to do this inside another thread otherwise the execution of
-          // mChangeSetThreadShadowLooper will happen on Main Thread
-          runOneTask()
-          runOneTask()
-          latch.countDown()
-        }
+      // We have to do this inside another thread otherwise the execution of
+      // mChangeSetThreadShadowLooper will happen on Main Thread
+      runOneTask()
+      runOneTask()
+      latch.countDown()
+    }
         .start()
     latch.await()
     val afterLayoutCalculationCount = LithoStats.componentCalculateLayoutCount

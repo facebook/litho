@@ -72,7 +72,7 @@ public final class SpecModelImpl implements SpecModel {
   private final ImmutableList<FieldModel> mFields;
   private final ImmutableList<SpecMethodModel<BindDynamicValueMethod, Void>>
       mBindDynamicValueMethods;
-  private final String mClassJavadoc;
+  @Nullable private final String mClassJavadoc;
   private final ImmutableList<PropJavadocModel> mPropJavadocs;
   private final boolean mIsPublic;
   private final Object mRepresentedObject;
@@ -99,7 +99,7 @@ public final class SpecModelImpl implements SpecModel {
       ImmutableList<TagModel> tags,
       ImmutableList<FieldModel> fields,
       ImmutableList<SpecMethodModel<BindDynamicValueMethod, Void>> bindDynamicValueMethods,
-      String classJavadoc,
+      @Nullable String classJavadoc,
       ImmutableList<PropJavadocModel> propJavadocs,
       boolean isPublic,
       SpecElementType specElementType,
@@ -321,6 +321,7 @@ public final class SpecModelImpl implements SpecModel {
   }
 
   @Override
+  @Nullable
   public String getClassJavadoc() {
     return mClassJavadoc;
   }
@@ -1066,7 +1067,7 @@ public final class SpecModelImpl implements SpecModel {
     @Nullable private ImmutableList<TagModel> mTags;
     private ImmutableList<FieldModel> mFields;
     private ImmutableList<SpecMethodModel<BindDynamicValueMethod, Void>> mBindDynamicValueMethods;
-    private String mClassJavadoc;
+    @Nullable private String mClassJavadoc;
     private ImmutableList<PropJavadocModel> mPropJavadocs;
     private boolean mIsPublic;
     private Object mRepresentedObject;
@@ -1188,7 +1189,7 @@ public final class SpecModelImpl implements SpecModel {
       return this;
     }
 
-    public Builder classJavadoc(String classJavadoc) {
+    public Builder classJavadoc(@Nullable String classJavadoc) {
       mClassJavadoc = classJavadoc;
       return this;
     }

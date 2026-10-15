@@ -33,7 +33,7 @@ object Easing {
   fun bezier(x1: Float, y1: Float, x2: Float, y2: Float) =
       PathInterpolatorCompat.create(x1, y1, x2, y2)
 
-  fun linear() = LinearInterpolator()
+  fun linear(): LinearInterpolator = LinearInterpolator()
 
   fun accelerate(factor: Float = 1.0f) = AccelerateInterpolator(factor)
 

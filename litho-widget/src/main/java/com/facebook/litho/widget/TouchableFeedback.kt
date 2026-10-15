@@ -36,8 +36,8 @@ import com.facebook.litho.useCached
  */
 class TouchableFeedback(
     private val content: Component,
-    @ColorInt private val color: Int = Color.WHITE,
-    @ColorInt private val highlightColor: Int = Color.LTGRAY,
+    @param:ColorInt private val color: Int = Color.WHITE,
+    @param:ColorInt private val highlightColor: Int = Color.LTGRAY,
 ) : KComponent() {
   override fun ComponentScope.render(): Component {
     val drawable = useCached(color, highlightColor) { getRippleDrawable(color, highlightColor) }
@@ -48,7 +48,8 @@ class TouchableFeedback(
     return RippleDrawable(
         ColorStateList.valueOf(pressedColor),
         ColorDrawable(normalColor),
-        getRippleMask(pressedColor))
+        getRippleMask(pressedColor),
+    )
   }
 
   private fun getRippleMask(color: Int): Drawable {

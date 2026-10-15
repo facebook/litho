@@ -17,6 +17,7 @@
 package com.facebook.rendercore
 
 import androidx.annotation.Px
+import com.facebook.rendercore.geometry.Position
 
 /**
  * Represents the result of a Layout pass. A LayoutResult has a reference to its originating Node
@@ -56,4 +57,64 @@ interface LayoutResult {
   @get:Px val paddingBottom: Int
 
   @get:Px val paddingLeft: Int
+}
+
+fun LayoutResult.getRelativePositionOf(target: LayoutResult): Position {
+  val calculator = LayoutResultPositionCalculator()
+  calculator.calculate(root = this, target = target)
+
+  return Position(calculator.x.toFloat(), calculator.y.toFloat())
+}
+
+internal class LayoutResultPositionCalculator constructor() {
+
+  companion object {
+    const val TARGET_NOT_FOUND_MESSAGE = "Target not found"
+  }
+
+  var x = 0
+  var y = 0
+
+  fun calculate(root: LayoutResult, target: LayoutResult) {
+    val found = traverse(current = root, target = target)
+    if (!found) {
+      error(TARGET_NOT_FOUND_MESSAGE)
+    }
+  }
+
+  fun traverse(current: LayoutResult, target: LayoutResult): Boolean {
+    if (current == target) {
+      return true
+    }
+
+    for (i in 0 until current.childrenCount) {
+      val child = current.getChildAt(i)
+      val index = current.getIndexOfChild(child)
+      val xForChild = current.getXForChildAtIndex(index)
+      val yForChild = current.getYForChildAtIndex(index)
+
+      x = x + xForChild
+      y = y + yForChild
+
+      val found = traverse(current = child, target = target)
+      if (found) {
+        return true
+      }
+
+      x = x - xForChild
+      y = y - yForChild
+    }
+
+    return false
+  }
+}
+
+fun LayoutResult.getIndexOfChild(child: LayoutResult): Int {
+  for (i in 0 until childrenCount) {
+    if (getChildAt(i) === child) {
+      return i
+    }
+  }
+
+  error("Child not found")
 }

@@ -24,6 +24,8 @@ import com.facebook.litho.core.height
 import com.facebook.litho.core.margin
 import com.facebook.litho.core.width
 import com.facebook.litho.kotlin.widget.Image
+import com.facebook.litho.layout.RenderWithConstraints
+import com.facebook.litho.layout.flexbox.Row
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.Text
@@ -37,7 +39,7 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class LithoTooltipControllerTest {
 
-  @Rule @JvmField val mLithoTestRule = LithoTestRule()
+  @Rule @JvmField val lithoTestRule = LithoTestRule()
 
   @Test
   fun `shows tooltip on Text Spec`() {
@@ -47,7 +49,8 @@ class LithoTooltipControllerTest {
           child(
               handle(tooltipHandle) {
                 Text.create(context).text("I'm an anchor!").kotlinStyle(Style.margin(10.px)).build()
-              })
+              },
+          )
         }
       }
     }
@@ -55,9 +58,9 @@ class LithoTooltipControllerTest {
     val handle = Handle()
     val tooltip = RecordingLithoTooltip()
 
-    mLithoTestRule.render { ComponentWithTooltip(tooltipHandle = handle) }
+    lithoTestRule.render { ComponentWithTooltip(tooltipHandle = handle) }
 
-    LithoTooltipController.showTooltipOnHandle(mLithoTestRule.context, tooltip, handle)
+    LithoTooltipController.showTooltipOnHandle(lithoTestRule.context, tooltip, handle)
 
     assertThat(tooltip.calls).hasSize(1)
     val call = tooltip.calls[0]
@@ -76,7 +79,8 @@ class LithoTooltipControllerTest {
                 Row(style = Style.margin(10.px)) {
                   Image(style = Style.margin(100.px), drawable = ColorDrawable(Color.BLUE))
                 }
-              })
+              },
+          )
         }
       }
     }
@@ -84,9 +88,9 @@ class LithoTooltipControllerTest {
     val handle = Handle()
     val tooltip = RecordingLithoTooltip()
 
-    mLithoTestRule.render { ComponentWithTooltip(tooltipHandle = handle) }
+    lithoTestRule.render { ComponentWithTooltip(tooltipHandle = handle) }
 
-    LithoTooltipController.showTooltipOnHandle(mLithoTestRule.context, tooltip, handle)
+    LithoTooltipController.showTooltipOnHandle(lithoTestRule.context, tooltip, handle)
 
     assertThat(tooltip.calls).hasSize(1)
     val call = tooltip.calls[0]
@@ -100,7 +104,9 @@ class LithoTooltipControllerTest {
     class KComponentWithDrawable() : KComponent() {
       override fun ComponentScope.render(): Component? {
         return Image(
-            style = Style.width(100.px).height(100.px), drawable = ColorDrawable(Color.BLUE))
+            style = Style.width(100.px).height(100.px),
+            drawable = ColorDrawable(Color.BLUE),
+        )
       }
     }
 
@@ -113,9 +119,9 @@ class LithoTooltipControllerTest {
     val handle = Handle()
     val tooltip = RecordingLithoTooltip()
 
-    mLithoTestRule.render { ComponentWithTooltip(tooltipHandle = handle) }
+    lithoTestRule.render { ComponentWithTooltip(tooltipHandle = handle) }
 
-    LithoTooltipController.showTooltipOnHandle(mLithoTestRule.context, tooltip, handle)
+    LithoTooltipController.showTooltipOnHandle(lithoTestRule.context, tooltip, handle)
 
     assertThat(tooltip.calls).hasSize(1)
     val call = tooltip.calls[0]
@@ -126,11 +132,109 @@ class LithoTooltipControllerTest {
     assertThat(call.anchorBounds.bottom).isEqualTo(100)
   }
 
+  @Test
+  fun `does not show tooltip for unregistered handle`() {
+    class SimpleComponent : KComponent() {
+      override fun ComponentScope.render(): Component? {
+        return Row {
+          child(
+              Text.create(context).text("No handle here").build(),
+          )
+        }
+      }
+    }
+
+    val unknownHandle = Handle()
+    val tooltip = RecordingLithoTooltip()
+
+    lithoTestRule.render { SimpleComponent() }
+
+    LithoTooltipController.showTooltipOnHandle(lithoTestRule.context, tooltip, unknownHandle)
+
+    assertThat(tooltip.calls).isEmpty()
+  }
+
+  @Test
+  fun `shows tooltip with accumulated offsets for deeply nested component`() {
+    class ComponentWithTooltip(val tooltipHandle: Handle) : KComponent() {
+      override fun ComponentScope.render(): Component? {
+        return Row {
+          child(
+              Row(style = Style.margin(left = 5.px, top = 5.px)) {
+                child(
+                    handle(tooltipHandle) {
+                      Text.create(context)
+                          .text("Nested anchor")
+                          .kotlinStyle(Style.margin(left = 10.px, top = 10.px))
+                          .build()
+                    },
+                )
+              },
+          )
+        }
+      }
+    }
+
+    val handle = Handle()
+    val tooltip = RecordingLithoTooltip()
+
+    lithoTestRule.render { ComponentWithTooltip(tooltipHandle = handle) }
+
+    LithoTooltipController.showTooltipOnHandle(lithoTestRule.context, tooltip, handle)
+
+    assertThat(tooltip.calls).hasSize(1)
+    val call = tooltip.calls[0]
+    assertThat(call.container).isNotNull()
+    assertThat(call.anchorBounds.left).isEqualTo(15)
+    assertThat(call.anchorBounds.top).isEqualTo(15)
+  }
+
+  @Test
+  fun `shows tooltip on component inside deferred layout`() {
+    class DeferredComponentWithTooltip(val tooltipHandle: Handle) : KComponent() {
+      override fun ComponentScope.render(): Component? {
+        return Row {
+          child(
+              Row(style = Style.margin(left = 5.px, top = 5.px)) {
+                child(
+                    RenderWithConstraints { _ ->
+                      Row {
+                        child(
+                            handle(tooltipHandle) {
+                              Text.create(context)
+                                  .text("Inside deferred")
+                                  .kotlinStyle(Style.margin(left = 10.px, top = 10.px))
+                                  .build()
+                            },
+                        )
+                      }
+                    },
+                )
+              },
+          )
+        }
+      }
+    }
+
+    val handle = Handle()
+    val tooltip = RecordingLithoTooltip()
+
+    lithoTestRule.render { DeferredComponentWithTooltip(tooltipHandle = handle) }
+
+    LithoTooltipController.showTooltipOnHandle(lithoTestRule.context, tooltip, handle)
+
+    assertThat(tooltip.calls).hasSize(1)
+    val call = tooltip.calls[0]
+    assertThat(call.container).isNotNull()
+    assertThat(call.anchorBounds.left).isEqualTo(15) // 5 (outer Row margin) + 10 (Text margin)
+    assertThat(call.anchorBounds.top).isEqualTo(15) // 5 (outer Row margin) + 10 (Text margin)
+  }
+
   data class ShowTooltipCall(
       val container: View?,
       val anchorBounds: Rect,
       val xOffset: Int = 0,
-      val yOffset: Int = 0
+      val yOffset: Int = 0,
   )
 
   class RecordingLithoTooltip : LithoTooltip {
@@ -142,7 +246,7 @@ class LithoTooltipControllerTest {
         container: View?,
         anchorBounds: Rect,
         xOffset: Int,
-        yOffset: Int
+        yOffset: Int,
     ) {
       _calls.add(ShowTooltipCall(container, anchorBounds, xOffset, yOffset))
     }

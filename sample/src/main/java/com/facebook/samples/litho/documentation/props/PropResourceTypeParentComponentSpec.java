@@ -16,8 +16,6 @@
 
 package com.facebook.samples.litho.documentation.props;
 
-import android.content.res.Resources;
-import androidx.core.content.ContextCompat;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.annotations.LayoutSpec;
@@ -32,12 +30,10 @@ public class PropResourceTypeParentComponentSpec {
   static Component onCreateLayout(ComponentContext c, @Prop boolean useResourceType) {
     if (!useResourceType) {
       // start_prop_without_resource_type_usage
-      final Resources res = c.getResources();
-
       return PropWithoutResourceTypeComponent.create(c)
-          .name(res.getString(R.string.name_string))
-          .size(res.getDimensionPixelSize(R.dimen.primary_text_size))
-          .color(ContextCompat.getColor(c.getAndroidContext(), R.color.primaryColor))
+          .name(c.getString(R.string.name_string))
+          .size(c.getResourceResolver().resolveDimenSizeRes(R.dimen.primary_text_size))
+          .color(c.getColor(R.color.primaryColor))
           .build();
       // end_prop_without_resource_type_usage
     } else {

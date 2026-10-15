@@ -49,14 +49,16 @@ class NoOpEventHandlerTest {
     val componentContext = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
     val component: Component? = null
     assertThat(
-            Component.newEventHandler<Any>(
-                    component!!.javaClass,
-                    "Component",
-                    componentContext,
-                    1,
-                    arrayOfNulls(1),
-                    EventHandlerRebindMode.NONE)
-                .isEquivalentTo(getNoOpEventHandler<Any>()))
+        Component.newEventHandler<Any>(
+                component!!.javaClass,
+                "Component",
+                componentContext,
+                1,
+                arrayOfNulls(1),
+                EventHandlerRebindMode.NONE,
+            )
+            .isEquivalentTo(getNoOpEventHandler<Any>()),
+    )
         .isTrue
   }
 }

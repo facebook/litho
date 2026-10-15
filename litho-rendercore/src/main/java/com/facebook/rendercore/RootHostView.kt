@@ -19,6 +19,7 @@ package com.facebook.rendercore
 import android.content.Context
 import android.util.AttributeSet
 import androidx.annotation.VisibleForTesting
+import com.facebook.rendercore.extensions.VisibilityChangeReason
 
 open class RootHostView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) :
     HostView(context, attrs), RootHost {
@@ -29,8 +30,8 @@ open class RootHostView @JvmOverloads constructor(context: Context, attrs: Attri
     rootHostDelegate.setRenderState(renderState)
   }
 
-  override fun notifyVisibleBoundsChanged() {
-    rootHostDelegate.notifyVisibleBoundsChanged()
+  override fun notifyVisibleBoundsChanged(reason: VisibilityChangeReason) {
+    rootHostDelegate.notifyVisibleBoundsChanged(reason)
   }
 
   override fun onRegisterForPremount(frameTimeMs: Long?) {
@@ -46,8 +47,12 @@ open class RootHostView @JvmOverloads constructor(context: Context, attrs: Attri
   }
 
   override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-    if (rootHostDelegate.onMeasure(
-        SizeConstraints.fromMeasureSpecs(widthMeasureSpec, heightMeasureSpec), MEASURE_OUTPUTS)) {
+    if (
+        rootHostDelegate.onMeasure(
+            SizeConstraints.fromMeasureSpecs(widthMeasureSpec, heightMeasureSpec),
+            MEASURE_OUTPUTS,
+        )
+    ) {
       setMeasuredDimension(MEASURE_OUTPUTS[0], MEASURE_OUTPUTS[1])
     } else {
       super.onMeasure(widthMeasureSpec, heightMeasureSpec)
@@ -73,22 +78,22 @@ open class RootHostView @JvmOverloads constructor(context: Context, attrs: Attri
 
   override fun offsetTopAndBottom(offset: Int) {
     super.offsetTopAndBottom(offset)
-    notifyVisibleBoundsChanged()
+    notifyVisibleBoundsChanged(VisibilityChangeReason.SCROLL)
   }
 
   override fun offsetLeftAndRight(offset: Int) {
     super.offsetLeftAndRight(offset)
-    notifyVisibleBoundsChanged()
+    notifyVisibleBoundsChanged(VisibilityChangeReason.SCROLL)
   }
 
   override fun setTranslationX(translationX: Float) {
     super.setTranslationX(translationX)
-    notifyVisibleBoundsChanged()
+    notifyVisibleBoundsChanged(VisibilityChangeReason.SCROLL)
   }
 
   override fun setTranslationY(translationY: Float) {
     super.setTranslationY(translationY)
-    notifyVisibleBoundsChanged()
+    notifyVisibleBoundsChanged(VisibilityChangeReason.SCROLL)
   }
 
   fun findMountContentById(id: Long): Any? {

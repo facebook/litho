@@ -42,7 +42,7 @@ class RequiredPropsTest {
     try {
       Text.create(context).build()
     } catch (e: IllegalStateException) {
-      error = e.message ?: ""
+      error = e.message.orEmpty()
     }
     assertTrue("Error message did not mention the missing required prop", error.contains("text"))
   }

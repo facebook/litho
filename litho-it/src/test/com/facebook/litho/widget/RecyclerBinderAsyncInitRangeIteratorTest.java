@@ -42,7 +42,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import javax.annotation.Nullable;
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

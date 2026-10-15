@@ -150,4 +150,7 @@ public interface ClassNames {
 
   ClassName Unit = ClassName.bestGuess("kotlin.Unit");
   ClassName Function1 = ClassName.bestGuess("kotlin.jvm.functions.Function1");
+
+  ClassName EQUIVALENT_EVENT_LAMBDA =
+      ClassName.bestGuess("com.facebook.litho.EquivalentEventLambda");
 }

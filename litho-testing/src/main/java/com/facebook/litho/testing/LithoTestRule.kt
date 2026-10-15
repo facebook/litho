@@ -19,6 +19,7 @@ package com.facebook.litho.testing
 import android.app.Activity
 import android.content.Context
 import android.os.Looper
+import androidx.lifecycle.LifecycleOwner
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
@@ -27,6 +28,7 @@ import com.facebook.litho.ComponentTree
 import com.facebook.litho.ErrorEventHandler
 import com.facebook.litho.LithoView
 import com.facebook.litho.LithoVisibilityEventsController
+import com.facebook.litho.TestComponentScope
 import com.facebook.litho.TreePropContainer
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.config.LithoDebugConfigurations
@@ -65,37 +67,68 @@ constructor(
     val componentsConfiguration: ComponentsConfiguration? = null,
     val themeResId: Int? = null,
     private val lithoVisibilityEventsController: (() -> LithoVisibilityEventsController)? = null,
+    private val lifecycleOwner: (() -> LifecycleOwner)? = null,
     private val resizeMode: LithoTestRuleResizeMode = LithoTestRuleResizeMode.AUTO,
+    val androidContext: Context? = null,
+    /**
+     * Renders into a real Activity window instead of the synthetic one, so that framework behavior
+     * only reachable from a real window is exercised. See [TestLithoView.attachToWindow].
+     *
+     * Opt-in rather than the default because a real window also changes measure/layout timing,
+     * focus and touch mode, and when `ViewTreeObserver` callbacks fire, and `LithoTestRule` has
+     * well over a thousand callers.
+     */
+    val attachToRealWindow: Boolean = false,
 ) : TestRule {
   lateinit var context: ComponentContext
-  private var threadLooperController: BaseThreadLooperController = ThreadLooperController()
+  private val threadLooperController: BaseThreadLooperController = ThreadLooperController()
 
   init {
     LithoDebugConfigurations.isDebugModeEnabled = true
+    // A given androidContext is used as-is, so the rule cannot supply the Activity the real window
+    // needs. Rejecting it here rather than at attach time keeps the failure next to the mistake.
+    require(!attachToRealWindow || androidContext == null || androidContext is Activity) {
+      "attachToRealWindow needs an Activity, but was given a ${androidContext?.javaClass?.name} as " +
+          "androidContext. Pass an Activity, or drop androidContext and let the rule create one."
+    }
   }
 
   override fun apply(base: Statement, description: Description): Statement {
     return object : Statement() {
       override fun evaluate() {
-
         try {
-          if (themeResId != null) {
-            val activity = Robolectric.buildActivity(Activity::class.java).create().get()
-            activity.setTheme(themeResId)
-            context = ComponentContext(activity)
-          } else {
-            context = ComponentContext(getApplicationContext<Context>())
-          }
-
+          initializeContext()
           threadLooperController.init()
           base.evaluate()
         } finally {
           threadLooperController.clean()
+          // A Factory installed by the test outlives clear(), which only empties the pool maps.
+          MountContentPools.setMountContentPoolFactory(null)
           MountContentPools.clear()
           context.clearCalculationStateContext()
         }
       }
     }
+  }
+
+  private fun initializeContext(): ComponentContext {
+    if (androidContext != null) {
+      context = ComponentContext(androidContext)
+    } else if (attachToRealWindow) {
+      // setup() drives the Activity through to resumed, which create() alone does not do and a live
+      // window requires.
+      val newActivity = Robolectric.buildActivity(Activity::class.java).setup().get()
+      themeResId?.let { newActivity.setTheme(it) }
+      context = ComponentContext(newActivity)
+    } else if (themeResId != null) {
+      val newActivity = Robolectric.buildActivity(Activity::class.java).create().get()
+      newActivity.setTheme(themeResId)
+      context = ComponentContext(newActivity)
+    } else {
+      context = ComponentContext(getApplicationContext<Context>())
+    }
+
+    return context
   }
 
   fun useContext(c: ComponentContext): LithoTestRule {
@@ -124,15 +157,17 @@ constructor(
       heightPx: Int? = null,
       widthSpec: Int = DEFAULT_WIDTH_SPEC,
       heightSpec: Int = DEFAULT_HEIGHT_SPEC,
-      componentFunction: (ComponentScope.() -> Component?)? = null
+      componentFunction: (ComponentScope.() -> Component?)? = null,
   ): TestLithoView {
-    val testLithoView =
-        TestLithoView(
-            context = context,
-            componentsConfiguration = componentsConfiguration,
-            lithoVisibilityEventsController = lithoVisibilityEventsController?.invoke(),
-            resizeMode = resizeMode,
-            idleTask = { idle() })
+    val testLithoView = TestLithoView(
+        context = context,
+        componentsConfiguration = componentsConfiguration,
+        lithoVisibilityEventsController = lithoVisibilityEventsController?.invoke(),
+        lifecycleOwner = lifecycleOwner?.invoke(),
+        resizeMode = resizeMode,
+        idleTask = { idle() },
+        attachToRealWindow = attachToRealWindow,
+    )
     componentTree?.let { testLithoView.useComponentTree(componentTree) }
     lithoView?.let { testLithoView.useLithoView(lithoView) }
 
@@ -141,7 +176,7 @@ constructor(
     testLithoView.setSizeSpecs(resolvedWidthSpec, resolvedHeightSpec)
 
     componentFunction?.let {
-      with(ComponentScope(context)) { componentFunction() }
+      with(TestComponentScope(context)) { componentFunction() }
           ?.let { component -> testLithoView.setRoot(component) }
     }
     return testLithoView
@@ -156,17 +191,17 @@ constructor(
       heightPx: Int? = null,
       widthSpec: Int = DEFAULT_WIDTH_SPEC,
       heightSpec: Int = DEFAULT_HEIGHT_SPEC,
-      componentFunction: ComponentScope.() -> Component?
+      componentFunction: ComponentScope.() -> Component?,
   ): TestLithoView {
-    val testLithoView =
-        createTestLithoView(
-            lithoView = lithoView,
-            componentTree = componentTree,
-            widthPx = widthPx,
-            heightPx = heightPx,
-            widthSpec = widthSpec,
-            heightSpec = heightSpec,
-            componentFunction = componentFunction)
+    val testLithoView = createTestLithoView(
+        lithoView = lithoView,
+        componentTree = componentTree,
+        widthPx = widthPx,
+        heightPx = heightPx,
+        widthSpec = widthSpec,
+        heightSpec = heightSpec,
+        componentFunction = componentFunction,
+    )
     return testLithoView.attachToWindow().measure().layout()
   }
 
@@ -181,7 +216,7 @@ constructor(
    */
   fun act(
       testLithoView: TestLithoView,
-      action: TestLithoView.InteractionsScope.() -> Unit
+      action: TestLithoView.InteractionsScope.() -> Unit,
   ): LithoTestRule {
     testLithoView.InteractionsScope().action()
     idle()
@@ -189,17 +224,47 @@ constructor(
   }
 
   /**
-   * Runs through all tasks on the background thread and main lopper, blocking until it completes.
-   * Use if there are any async events triggered by layout ( ie visibility events) to manually drain
-   * the queue
+   * Drains all pending work on both the Litho layout thread and the main looper, repeating until
+   * both are simultaneously idle (quiescence).
+   *
+   * A single drain pass is not sufficient because work ping-pongs between threads: layout completes
+   * on the background thread and posts a result to the main thread, which in turn schedules a
+   * follow-up layout (e.g. HScroll resolving its height after the initial pass). Each call to
+   * [idle] processes one full round-trip, so the loop continues until neither looper has pending
+   * work.
+   *
+   * Throws [IllegalStateException] if quiescence is not reached within [MAX_IDLE_PASSES] passes,
+   * which indicates a component is continuously enqueuing layout work (an application bug).
+   *
+   * Use this after any action that triggers async layout or visibility events.
    */
   fun idle() {
-    threadLooperController.runToEndOfTasksSync()
-    shadowOf(Looper.getMainLooper()).idle()
+    var passes = 0
+    while (!threadLooperController.isIdle() || !shadowOf(Looper.getMainLooper()).isIdle) {
+      check(++passes <= MAX_IDLE_PASSES) {
+        "idle() did not reach quiescence after $MAX_IDLE_PASSES passes — possible infinite layout loop"
+      }
+      threadLooperController.runToEndOfTasksSync()
+      shadowOf(Looper.getMainLooper()).idle()
+    }
   }
 
   fun finishAsyncUpdates() {
     threadLooperController.runToEndOfTasksSync()
+  }
+
+  /**
+   * Creates a [LithoView] configured for screenshot capture.
+   *
+   * The [LithoView] is created without triggering a measure/layout pass so that the screenshot test
+   * rule can control when measurement happens. Callers are responsible for any desired component
+   * wrapping (e.g. a [com.facebook.litho.Column] to prevent components from stretching to
+   * full-screen width or to ensure correct RTL behaviour).
+   */
+  fun createLithoViewForScreenshot(component: Component): LithoView {
+    val lithoView = LithoView(context.androidContext)
+    lithoView.componentTree = ComponentTree.create(context, component).build()
+    return lithoView
   }
 
   /**
@@ -213,13 +278,20 @@ constructor(
   fun withThrowOnErrorHandler(): ComponentTree {
     return ComponentTree.create(context)
         .componentsConfiguration(
-            context.lithoConfiguration.componentsConfig.copy(
-                errorEventHandler =
+            ComponentsConfiguration.create(context.lithoConfiguration.componentsConfig)
+                .errorEventHandler(
                     object : ErrorEventHandler() {
                       override fun onError(cc: ComponentContext, e: Exception): Component? {
                         throw e
                       }
-                    }))
+                    },
+                )
+                .build(),
+        )
         .build()
+  }
+
+  companion object {
+    private const val MAX_IDLE_PASSES = 10
   }
 }

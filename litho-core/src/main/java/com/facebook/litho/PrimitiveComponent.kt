@@ -19,7 +19,7 @@ package com.facebook.litho
 import android.content.Context
 import com.facebook.litho.Resolver.resolveDeferred
 import com.facebook.litho.debug.LithoDebugEvent.ComponentRendered
-import com.facebook.litho.debug.LithoDebugEventAttributes.Component
+import com.facebook.litho.debug.LithoDebugEventAttributes
 import com.facebook.rendercore.RenderUnit
 import com.facebook.rendercore.debug.DebugEventAttribute.Name
 import com.facebook.rendercore.debug.DebugEventDispatcher.trace
@@ -39,37 +39,42 @@ abstract class PrimitiveComponent : Component() {
       resolveContext: ResolveContext,
       scopedComponentInfo: ScopedComponentInfo,
       parentWidthSpec: Int,
-      parentHeightSpec: Int
+      parentHeightSpec: Int,
   ): ComponentResolveResult {
 
     val node = LithoNode()
     var commonProps: CommonProps? = null
 
     val c = scopedComponentInfo.context
-    val renderResult: RenderResult<LithoPrimitive> =
-        trace(
-            type = ComponentRendered,
-            renderStateId = { resolveContext.treeId.toString() },
-            attributesAccumulator = { accumulator ->
-              accumulator[Component] = simpleName
-              accumulator[Name] = fullyQualifiedName
-            },
-        ) {
-          ComponentsSystrace.trace("render:$simpleName") {
-            scopedComponentInfo.runInRecorderScope(resolveContext) {
-              val scope = PrimitiveComponentScope(c)
-              val result = scope.withResolveContext(resolveContext) { scope.render() }
-              if (scope.shouldExcludeFromIncrementalMount) {
-                result.primitive.renderUnit.addAttachBinder(
-                    RenderUnit.DelegateBinder.createDelegateBinder(
-                        result.primitive.renderUnit,
-                        ExcludeFromIncrementalMountBinder.INSTANCE,
-                    ))
-              }
-              RenderResult(result, scope.transitionData, scope.useEffectEntries)
-            }
+    val renderResult: RenderResult<LithoPrimitive> = trace(
+        type = ComponentRendered,
+        renderStateId = { resolveContext.treeId.toString() },
+        attributesAccumulator = { accumulator ->
+          accumulator[Name] = fullyQualifiedName
+          accumulator[LithoDebugEventAttributes.ResolveVersion] = resolveContext.layoutVersion
+          val parentName = Component.parentNameFromKey(c.nullableGlobalKey)
+          if (parentName != null) {
+            accumulator["parentComponentName"] = parentName
           }
+        },
+    ) {
+      ComponentsSystrace.trace({ "render:$simpleName" }) {
+        scopedComponentInfo.runInRecorderScope(resolveContext) {
+          val scope = PrimitiveComponentScope(c)
+          val result = scope.withResolveContext(resolveContext) { scope.render() }
+          if (scope.shouldExcludeFromIncrementalMount) {
+            node.primitiveExcludesFromIncrementalMount = true
+            result.primitive.renderUnit.addAttachBinder(
+                RenderUnit.DelegateBinder.createDelegateBinder(
+                    result.primitive.renderUnit,
+                    ExcludeFromIncrementalMountBinder.INSTANCE,
+                ),
+            )
+          }
+          RenderResult(result, scope.transitionData, scope.useEffectEntries)
         }
+      }
+    }
     val lithoPrimitive = renderResult.value
     node.primitive = lithoPrimitive.primitive
     if (lithoPrimitive.style != null) {
@@ -89,7 +94,7 @@ abstract class PrimitiveComponent : Component() {
   override fun resolveDeferred(
       calculationContext: CalculationContext,
       componentContext: ComponentContext,
-      parentContext: ComponentContext
+      parentContext: ComponentContext,
   ): ComponentResolveResult {
     return this.resolveDeferred(calculationContext, componentContext, parentContext, null)
   }
@@ -141,12 +146,12 @@ abstract class PrimitiveComponent : Component() {
       previous: Component,
       prevStateContainer: StateContainer?,
       next: Component,
-      nextStateContainer: StateContainer?
+      nextStateContainer: StateContainer?,
   ): Boolean = super.shouldUpdate(previous, prevStateContainer, next, nextStateContainer)
 
   final override fun isEqualivalentTreePropContainer(
       current: ComponentContext,
-      next: ComponentContext
+      next: ComponentContext,
   ): Boolean {
     return super.isEqualivalentTreePropContainer(current, next)
   }
@@ -160,6 +165,6 @@ class LithoPrimitive(val primitive: Primitive, val style: Style?) {
   constructor(
       layoutBehavior: LayoutBehavior,
       mountBehavior: MountBehavior<*>,
-      style: Style?
+      style: Style?,
   ) : this(Primitive(layoutBehavior, mountBehavior), style)
 }

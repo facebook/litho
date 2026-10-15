@@ -23,7 +23,7 @@ import com.facebook.litho.Transition.RootBoundsTransition
 import com.facebook.litho.TransitionId
 import com.facebook.rendercore.MountDelegateInput
 import com.facebook.rendercore.RenderTreeNode
-import com.facebook.rendercore.Systracer
+import com.meta.systrace.Systracer
 
 /**
  * Delegate Input needs to implement this interface to provide access to specific transitions
@@ -45,14 +45,14 @@ interface TransitionsExtensionInput : MountDelegateInput {
   // TODO: remove dependency to MountDelegateInput
   override fun getMountableOutputCount(): Int
 
-  override fun getMountableOutputAt(index: Int): RenderTreeNode?
+  override fun getMountableOutputAt(position: Int): RenderTreeNode?
 
   fun needsToRerunTransitions(): Boolean
 
   fun setNeedsToRerunTransitions(needsToRerunTransitions: Boolean)
 
   fun getAnimatableItemForTransitionId(
-      transitionId: TransitionId
+      transitionId: TransitionId,
   ): OutputUnitsAffinityGroup<AnimatableItem>?
 
   fun getAnimatableItem(id: Long): AnimatableItem?
@@ -61,6 +61,6 @@ interface TransitionsExtensionInput : MountDelegateInput {
 
   fun setInitialRootBoundsForAnimation(
       rootWidth: RootBoundsTransition?,
-      rootHeight: RootBoundsTransition?
+      rootHeight: RootBoundsTransition?,
   )
 }

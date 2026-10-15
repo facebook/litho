@@ -23,6 +23,6 @@ import com.facebook.litho.kotlinStyle
 // start_kwrapper
 inline fun ResourcesScope.CircularImage(
     url: String,
-    style: Style? = null,
+    style: Style = Style,
 ) = CircularImage.create(context).url(url).kotlinStyle(style).build()
 // end_kwrapper

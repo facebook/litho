@@ -25,6 +25,8 @@ import com.facebook.litho.ComponentResolveResult
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.ComponentsSystrace
 import com.facebook.litho.DeferredLithoNode
+import com.facebook.litho.Handle
+import com.facebook.litho.LithoLayoutResult
 import com.facebook.litho.LithoNode
 import com.facebook.litho.NullNode
 import com.facebook.litho.RenderResult
@@ -33,9 +35,11 @@ import com.facebook.litho.Resolver
 import com.facebook.litho.ScopedComponentInfo
 import com.facebook.litho.StateContainer
 import com.facebook.litho.Style
+import com.facebook.litho.calculate
 import com.facebook.litho.debug.LithoDebugEvent
 import com.facebook.litho.debug.LithoDebugEventAttributes
 import com.facebook.litho.runInRecorderScope
+import com.facebook.rendercore.LayoutResult
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.debug.DebugEventAttribute
 import com.facebook.rendercore.debug.DebugEventDispatcher
@@ -44,27 +48,51 @@ import com.facebook.rendercore.utils.hasEquivalentFields
 class RenderWithConstraintsScope
 internal constructor(
     context: ComponentContext,
-) : ComponentScope(context)
+) : ComponentScope(context) {
+  fun Component.measure(sizeConstraints: SizeConstraints): LayoutResult? {
+    val component = this
+    return with(this@RenderWithConstraintsScope) {
+      calculate(component = component, sizeConstraints = sizeConstraints)
+    }
+  }
+
+  fun LayoutResult.find(handle: Handle): LayoutResult? {
+    val result = this as LithoLayoutResult
+    val queue = ArrayDeque<LithoLayoutResult>()
+    queue.add(result)
+
+    while (queue.isNotEmpty()) {
+      val current = queue.removeFirst()
+      if (current.node.scopedComponentInfos.any { it.component.handle == handle }) {
+        return current
+      }
+      for (i in 0 until current.childCount) {
+        queue.add(current.getChildAt(i))
+      }
+    }
+
+    return null
+  }
+}
 
 class RenderWithConstraints(
-    private val style: Style? = null,
-    private val render: RenderWithConstraintsScope.(SizeConstraints) -> Component?
+    private val style: Style = Style,
+    private val render: RenderWithConstraintsScope.(SizeConstraints) -> Component?,
 ) : Component() {
 
   override fun resolveDeferred(
       calculationContext: CalculationContext,
       componentContext: ComponentContext,
-      parentContext: ComponentContext
+      parentContext: ComponentContext,
   ): ComponentResolveResult {
-    val node =
-        DeferredLithoNode(
-            componentContext.treePropContainer,
-            calculationContext.cache.getCachedNode(this),
-            parentContext,
-        )
+    val node = DeferredLithoNode(
+        componentContext.treePropContainer,
+        calculationContext.cache.getCachedNode(this),
+        parentContext,
+    )
 
     val commonProps =
-        if (style != null) {
+        if (style !== Style) {
           CommonProps().apply { style.applyCommonProps(componentContext, this) }
         } else {
           null
@@ -86,18 +114,25 @@ class RenderWithConstraints(
             type = LithoDebugEvent.ComponentRendered,
             renderStateId = { calculationContext.treeId.toString() },
             attributesAccumulator = { accumulator ->
-              accumulator[LithoDebugEventAttributes.Component] = simpleName
               accumulator[DebugEventAttribute.Name] = fullyQualifiedName
+              accumulator[LithoDebugEventAttributes.ResolveVersion] =
+                  calculationContext.layoutVersion
+              val parentName = Component.parentNameFromKey(c.nullableGlobalKey)
+              if (parentName != null) {
+                accumulator["parentComponentName"] = parentName
+              }
             },
         ) {
-          ComponentsSystrace.trace("render:$simpleName") {
+          ComponentsSystrace.trace({ "render:$simpleName" }) {
             componentScope.runInRecorderScope(calculationContext) {
               val scope = RenderWithConstraintsScope(componentScope.context)
               val result =
                   scope.withResolveContext(calculationContext) {
                     scope.render(
                         SizeConstraints.Companion.fromMeasureSpecs(
-                            parentWidthSpec, parentHeightSpec),
+                            parentWidthSpec,
+                            parentHeightSpec,
+                        ),
                     )
                   }
               RenderResult(result, scope.transitionData, scope.useEffectEntries)
@@ -122,8 +157,8 @@ class RenderWithConstraints(
     }
 
     val commonProps =
-        if (node != null && node !is NullNode) {
-          CommonProps().apply { style?.applyCommonProps(c, this) }
+        if (node != null && node !is NullNode && style !== Style) {
+          CommonProps().apply { style.applyCommonProps(c, this) }
         } else {
           null
         }
@@ -172,6 +207,6 @@ class RenderWithConstraints(
       previous: Component,
       prevStateContainer: StateContainer?,
       next: Component,
-      nextStateContainer: StateContainer?
+      nextStateContainer: StateContainer?,
   ): Boolean = super.shouldUpdate(previous, prevStateContainer, next, nextStateContainer)
 }

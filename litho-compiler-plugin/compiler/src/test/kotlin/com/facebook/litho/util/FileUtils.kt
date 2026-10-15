@@ -76,7 +76,8 @@ private fun processFile(lines: Sequence<String>): TestData {
       processor = processor,
       processorExpectedOutput = processorOutput.joinToString("\n"),
       compilerExpectedOutput = compilerOutput.joinToString("\n"),
-      sourceFiles = sourceFiles)
+      sourceFiles = sourceFiles,
+  )
 }
 
 private fun MutableList<String>.toSourceFile(fileName: String): SourceFile {

@@ -19,6 +19,7 @@ package com.facebook.litho
 import android.content.Context
 import android.util.AttributeSet
 import androidx.annotation.UiThread
+import androidx.core.view.ViewCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
@@ -52,10 +53,11 @@ class LithoRenderTreeView @JvmOverloads constructor(context: Context, attrs: Att
     }
 
   var onClean: (() -> Unit)? = null
+  var onMeasured: ((widthMeasureSpec: Int, heightMeasureSpec: Int) -> Unit)? = null
 
   override fun onLifecycleOwnerChanged(
       previousLifecycleOwner: LifecycleOwner?,
-      currentLifecycleOwner: LifecycleOwner?
+      currentLifecycleOwner: LifecycleOwner?,
   ) {
     previousLifecycleOwner?.lifecycle?.removeObserver(this)
     currentLifecycleOwner?.lifecycle?.addObserver(this)
@@ -63,7 +65,7 @@ class LithoRenderTreeView @JvmOverloads constructor(context: Context, attrs: Att
 
   override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
     if (event == Lifecycle.Event.ON_DESTROY) {
-      cleanup()
+      clean()
     }
   }
 
@@ -92,6 +94,9 @@ class LithoRenderTreeView @JvmOverloads constructor(context: Context, attrs: Att
     get() = layoutState != null
 
   override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+
+    onMeasured?.invoke(widthMeasureSpec, heightMeasureSpec)
+
     // mAnimatedWidth/mAnimatedHeight >= 0 if something is driving a width/height animation.
     val isAnimating = animatedWidth != -1 || animatedHeight != -1
     // up to date view sizes, taking into account running animations
@@ -116,7 +121,8 @@ class LithoRenderTreeView @JvmOverloads constructor(context: Context, attrs: Att
           else 0,
           if (MeasureSpec.getMode(heightMeasureSpec) == MeasureSpec.EXACTLY)
               MeasureSpec.getSize(heightMeasureSpec)
-          else 0)
+          else 0,
+      )
       return
     }
     val hasMounted = requireTreeState.mountInfo.hasMounted
@@ -170,15 +176,21 @@ class LithoRenderTreeView @JvmOverloads constructor(context: Context, attrs: Att
     requestLayout()
   }
 
-  override fun cleanup() {
+  fun clean() {
     unmountAllItems()
     onClean?.invoke()
     onClean = null
     currentLifecycleOwner?.lifecycle?.removeObserver(this)
     currentLifecycleOwner = null
+    // resetVisibilityHint() reads its config through layoutState.
+    resetVisibilityHint()
     layoutState = null
     _treeState = null
     hasNewTree = true
+    // Clear the accessibility delegate to prevent memory leaks when the view is pooled.
+    // The delegate holds NodeInfo which references ComponentContext and event handlers,
+    // which can retain references to fragments/activities after they are destroyed.
+    ViewCompat.setAccessibilityDelegate(this, null)
     super.cleanup()
     requestLayout()
   }

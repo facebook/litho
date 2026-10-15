@@ -16,8 +16,11 @@
 
 package com.facebook.litho.testing
 
+import android.annotation.SuppressLint
 import android.os.Looper
+import android.os.SystemClock
 import com.facebook.litho.ComponentTree
+import java.time.Duration
 import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.BlockingQueue
 import org.robolectric.Shadows
@@ -32,7 +35,8 @@ class ThreadLooperController(
     val layoutLooper: ShadowLooper =
         Shadows.shadowOf(
             Whitebox.invokeMethod<Any>(ComponentTree::class.java, "getDefaultLayoutThreadLooper")
-                as Looper)
+                as Looper,
+        ),
 ) : BaseThreadLooperController {
   private lateinit var messageQueue: BlockingQueue<Message>
   private var isInitialized = false
@@ -83,6 +87,21 @@ class ThreadLooperController(
     semaphore.acquire()
   }
 
+  override fun isIdle(): Boolean = layoutLooper.isIdle && !hasTaskDueByMainClock()
+
+  // In LEGACY mode a task posted from the main thread is scheduled at the main looper's time, which
+  // can be ahead of this looper's own clock, and isIdle() doesn't count it until this clock catches
+  // up. Treat it as pending, or idle() can return with a state update still queued.
+  @SuppressLint("NewApi") // Only runs under Robolectric on the JVM, where java.time is available.
+  private fun hasTaskDueByMainClock(): Boolean {
+    if (ShadowLooper.looperMode() != LooperMode.Mode.LEGACY) {
+      return false
+    }
+    // Duration.ZERO means nothing is scheduled.
+    val nextTaskTime = layoutLooper.nextScheduledTaskTime
+    return nextTaskTime != Duration.ZERO && nextTaskTime.toMillis() <= SystemClock.uptimeMillis()
+  }
+
   override fun runToEndOfTasksAsync(): TimeOutSemaphore? {
     val semaphore = TimeOutSemaphore(0)
     messageQueue.add(Message(MessageType.DRAIN_ALL, semaphore))
@@ -93,7 +112,7 @@ class ThreadLooperController(
 enum class MessageType {
   DRAIN_ONE,
   DRAIN_ALL,
-  QUIT
+  QUIT,
 }
 
 class Message constructor(val messageType: MessageType, val semaphore: TimeOutSemaphore)
@@ -130,4 +149,5 @@ private class LayoutLooperThread(layoutLooper: ShadowLooper, messages: BlockingQ
               message.semaphore.release()
             }
           }
-        })
+        },
+    )

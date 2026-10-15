@@ -107,7 +107,8 @@ class DebugEventsTest {
           renderStateId = {
             createdDebugEvent = true
             TestRenderStateId
-          })
+          },
+      )
     }
 
     dispatchDebugEvent()
@@ -129,9 +130,10 @@ class DebugEventsTest {
           renderStateId = {
             createdDebugEvent = true
             TestRenderStateId
-          }) {
-            traceBlockRan = true
-          }
+          },
+      ) {
+        traceBlockRan = true
+      }
     }
 
     runTrace()
@@ -266,9 +268,10 @@ class DebugEventsTest {
         type = TestEvent,
         renderStateId = { TestRenderStateId },
         timestamp = System.currentTimeMillis(),
-        logLevel = LogLevel.VERBOSE) {
-          mapOf<String, Any?>(TestAttr to TestAttrValue)
-        }
+        logLevel = LogLevel.VERBOSE,
+    ) {
+      mapOf<String, Any?>(TestAttr to TestAttrValue)
+    }
 
     assertThat(event).isNotNull
     event = null
@@ -278,9 +281,10 @@ class DebugEventsTest {
         type = TestEvent,
         renderStateId = { TestRenderStateId },
         timestamp = System.currentTimeMillis(),
-        logLevel = LogLevel.DEBUG) {
-          mapOf<String, Any?>(TestAttr to TestAttrValue)
-        }
+        logLevel = LogLevel.DEBUG,
+    ) {
+      mapOf<String, Any?>(TestAttr to TestAttrValue)
+    }
 
     assertThat(event).isNotNull
     event = null
@@ -290,21 +294,71 @@ class DebugEventsTest {
         type = TestEvent,
         renderStateId = { TestRenderStateId },
         timestamp = System.currentTimeMillis(),
-        logLevel = LogLevel.DEBUG) {
-          mapOf<String, Any?>(TestAttr to TestAttrValue)
-        }
+        logLevel = LogLevel.VERBOSE,
+    ) {
+      mapOf<String, Any?>(TestAttr to TestAttrValue)
+    }
 
     assertThat(event).isNull()
     event = null
 
-    DebugEventDispatcher.minLogLevel = LogLevel.WARNING
     DebugEventDispatcher.dispatch(
         type = TestEvent,
         renderStateId = { TestRenderStateId },
         timestamp = System.currentTimeMillis(),
-        logLevel = LogLevel.ERROR) {
-          mapOf<String, Any?>(TestAttr to TestAttrValue)
-        }
+        logLevel = LogLevel.WARNING,
+    ) {
+      mapOf<String, Any?>(TestAttr to TestAttrValue)
+    }
+
+    assertThat(event).isNotNull
+    event = null
+
+    DebugEventDispatcher.dispatch(
+        type = TestEvent,
+        renderStateId = { TestRenderStateId },
+        timestamp = System.currentTimeMillis(),
+        logLevel = LogLevel.DEBUG,
+    ) {
+      mapOf<String, Any?>(TestAttr to TestAttrValue)
+    }
+
+    assertThat(event).isNotNull
+    event = null
+
+    DebugEventDispatcher.minLogLevel = LogLevel.DEBUG
+    DebugEventDispatcher.dispatch(
+        type = TestEvent,
+        renderStateId = { TestRenderStateId },
+        timestamp = System.currentTimeMillis(),
+        logLevel = LogLevel.WARNING,
+    ) {
+      mapOf<String, Any?>(TestAttr to TestAttrValue)
+    }
+
+    assertThat(event).isNull()
+    event = null
+
+    DebugEventDispatcher.dispatch(
+        type = TestEvent,
+        renderStateId = { TestRenderStateId },
+        timestamp = System.currentTimeMillis(),
+        logLevel = LogLevel.DEBUG,
+    ) {
+      mapOf<String, Any?>(TestAttr to TestAttrValue)
+    }
+
+    assertThat(event).isNotNull
+    event = null
+
+    DebugEventDispatcher.dispatch(
+        type = TestEvent,
+        renderStateId = { TestRenderStateId },
+        timestamp = System.currentTimeMillis(),
+        logLevel = LogLevel.ERROR,
+    ) {
+      mapOf<String, Any?>(TestAttr to TestAttrValue)
+    }
 
     assertThat(event).isNotNull
     event = null
@@ -314,9 +368,34 @@ class DebugEventsTest {
         type = TestEvent,
         renderStateId = { TestRenderStateId },
         timestamp = System.currentTimeMillis(),
-        logLevel = LogLevel.ERROR) {
-          mapOf<String, Any?>(TestAttr to TestAttrValue)
-        }
+        logLevel = LogLevel.DEBUG,
+    ) {
+      mapOf<String, Any?>(TestAttr to TestAttrValue)
+    }
+
+    assertThat(event).isNull()
+    event = null
+
+    DebugEventDispatcher.dispatch(
+        type = TestEvent,
+        renderStateId = { TestRenderStateId },
+        timestamp = System.currentTimeMillis(),
+        logLevel = LogLevel.ERROR,
+    ) {
+      mapOf<String, Any?>(TestAttr to TestAttrValue)
+    }
+
+    assertThat(event).isNotNull
+    event = null
+
+    DebugEventDispatcher.dispatch(
+        type = TestEvent,
+        renderStateId = { TestRenderStateId },
+        timestamp = System.currentTimeMillis(),
+        logLevel = LogLevel.FATAL,
+    ) {
+      mapOf<String, Any?>(TestAttr to TestAttrValue)
+    }
 
     assertThat(event).isNotNull
     event = null
@@ -326,11 +405,24 @@ class DebugEventsTest {
         type = TestEvent,
         renderStateId = { TestRenderStateId },
         timestamp = System.currentTimeMillis(),
-        logLevel = LogLevel.ERROR) {
-          mapOf<String, Any?>(TestAttr to TestAttrValue)
-        }
+        logLevel = LogLevel.ERROR,
+    ) {
+      mapOf<String, Any?>(TestAttr to TestAttrValue)
+    }
 
     assertThat(event).isNull()
+    event = null
+
+    DebugEventDispatcher.dispatch(
+        type = TestEvent,
+        renderStateId = { TestRenderStateId },
+        timestamp = System.currentTimeMillis(),
+        logLevel = LogLevel.FATAL,
+    ) {
+      mapOf<String, Any?>(TestAttr to TestAttrValue)
+    }
+
+    assertThat(event).isNotNull
     event = null
   }
 
@@ -352,8 +444,13 @@ class DebugEventsTest {
   fun `generateTraceIdentifier should generate different ids for each invocation as long as there are valid subscribers`() {
     assertThat(DebugEventDispatcher.generateTraceIdentifier(TestEvent)).isNull()
     DebugEventDispatcher.subscribe(TestEventsSubscriber(TestEvent, listener = { /* nothing */ }))
-    assertThat(DebugEventDispatcher.generateTraceIdentifier(TestEvent)).isEqualTo(1)
-    assertThat(DebugEventDispatcher.generateTraceIdentifier(TestEvent)).isEqualTo(2)
+
+    // Relative, not absolute: the counter is process-wide, so other tests in this JVM shift it.
+    val first = DebugEventDispatcher.generateTraceIdentifier(TestEvent)
+    val second = DebugEventDispatcher.generateTraceIdentifier(TestEvent)
+
+    assertThat(first).isNotNull()
+    assertThat(second).isEqualTo(checkNotNull(first) + 1)
   }
 
   @Test
@@ -422,9 +519,11 @@ class DebugEventsTest {
     assertThat(events).hasSize(0)
 
     DebugEventDispatcher.dispatch(
-        type = DebugEvent.ViewOnLayout + ":start", renderStateId = { "-1" }) {
-          it[DebugEventAttribute.Name] = "ViewGroup"
-        }
+        type = DebugEvent.ViewOnLayout + ":start",
+        renderStateId = { "-1" },
+    ) {
+      it[DebugEventAttribute.Name] = "ViewGroup"
+    }
 
     assertThat(events).hasSize(1)
   }
@@ -491,7 +590,12 @@ class DebugEventsTest {
 
     override fun onEvent(event: DebugEvent): Unit = Unit
 
-    override fun onTraceStart(type: String): Int {
+    override fun onTraceStart(
+        type: String,
+        timestamp: Long,
+        renderStateId: String,
+        attributes: Map<String, Any?>,
+    ): Int {
       records.add(type)
       val token = counter
       counter++

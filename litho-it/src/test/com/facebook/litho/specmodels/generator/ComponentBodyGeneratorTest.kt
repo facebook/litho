@@ -18,7 +18,7 @@
 
 package com.facebook.litho.specmodels.generator
 
-import com.facebook.litho.Column
+import com.facebook.litho.Column as ColumnBuilder
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.annotations.ExcuseMySpec
@@ -29,6 +29,11 @@ import com.facebook.litho.annotations.OnCreateMountContent
 import com.facebook.litho.annotations.OnMount
 import com.facebook.litho.annotations.Prop
 import com.facebook.litho.annotations.Reason
+import com.facebook.litho.sections.Children
+import com.facebook.litho.sections.SectionContext
+import com.facebook.litho.sections.annotations.GroupSectionSpec
+import com.facebook.litho.sections.annotations.OnCreateChildren
+import com.facebook.litho.sections.specmodels.processor.GroupSectionSpecModelFactory
 import com.facebook.litho.specmodels.internal.RunMode
 import com.facebook.litho.specmodels.processor.LayoutSpecModelFactory
 import com.facebook.litho.specmodels.processor.MountSpecModelFactory
@@ -45,6 +50,7 @@ class ComponentBodyGeneratorTest {
 
   @Rule @JvmField val compilationRule = CompilationRule()
 
+  private val groupSectionSpecModelFactory = GroupSectionSpecModelFactory()
   private val layoutSpecModelFactory = LayoutSpecModelFactory()
   private val mountSpecModelFactory = MountSpecModelFactory()
   private val elements
@@ -87,9 +93,10 @@ class ComponentBodyGeneratorTest {
             protected final java.lang.Object[] getProps() {
               return new java.lang.Object[] {age, id, name};
             }
-            
+
             """
-                .trimIndent())
+                .trimIndent(),
+        )
   }
 
   @Test
@@ -106,9 +113,50 @@ class ComponentBodyGeneratorTest {
             protected final java.lang.Object[] getProps() {
               return com.facebook.litho.Component.EMPTY_ARRAY;
             }
-            
+
             """
-                .trimIndent())
+                .trimIndent(),
+        )
+  }
+
+  @Test
+  fun `component model generates one-argument equivalence with unconditional component recursion`() {
+    val typeElement = elements.getTypeElement(EquivalenceTestLayoutSpec::class.java.canonicalName)
+    val specModel =
+        layoutSpecModelFactory.create(elements, types, typeElement, mock(), RunMode.normal(), null)
+
+    val method = ComponentBodyGenerator.generateIsEquivalentPropsMethod(specModel, RunMode.normal())
+
+    Assertions.assertThat(method.parameters).hasSize(1)
+    Assertions.assertThat(method.toString())
+        .contains(
+            "com.facebook.litho.ComponentUtils.isEquivalent(child, equivalenceTestLayoutRef.child)",
+        )
+        .doesNotContain("shouldCompareCommonProps")
+  }
+
+  @Test
+  fun `section model generates one-argument equivalence with unconditional component recursion`() {
+    val typeElement =
+        elements.getTypeElement(EquivalenceTestGroupSectionSpec::class.java.canonicalName)
+    val specModel =
+        groupSectionSpecModelFactory.create(
+            elements,
+            types,
+            typeElement,
+            mock(),
+            RunMode.normal(),
+            null,
+        )
+
+    val method = ComponentBodyGenerator.generateIsEquivalentPropsMethod(specModel, RunMode.normal())
+
+    Assertions.assertThat(method.parameters).hasSize(1)
+    Assertions.assertThat(method.toString())
+        .contains(
+            "com.facebook.litho.ComponentUtils.isEquivalent(child, equivalenceTestGroupSectionRef.child)",
+        )
+        .doesNotContain("shouldCompareCommonProps")
   }
 }
 
@@ -120,9 +168,27 @@ private object TestLayoutSpec {
       c: ComponentContext,
       @Prop name: String,
       @Prop age: Int,
-      @Prop id: Long
+      @Prop id: Long,
   ): Component {
-    return Column.create(c).build()
+    return ColumnBuilder.create(c).build()
+  }
+}
+
+@ExcuseMySpec(reason = Reason.LEGACY)
+@LayoutSpec
+private object EquivalenceTestLayoutSpec {
+  @OnCreateLayout
+  fun onCreateLayout(c: ComponentContext, @Prop child: Component): Component {
+    return ColumnBuilder.create(c).child(child).build()
+  }
+}
+
+@Suppress("DeprecatedSectionSpecApiInKotlin")
+@GroupSectionSpec
+private object EquivalenceTestGroupSectionSpec {
+  @OnCreateChildren
+  fun onCreateChildren(c: SectionContext, @Prop child: Component): Children {
+    return Children.create().build()
   }
 }
 
@@ -131,7 +197,7 @@ private object TestLayoutSpec {
 private object EmptyTestLayoutSpec {
   @OnCreateLayout
   fun onCreateLayout(c: ComponentContext): Component {
-    return Column.create(c).build()
+    return ColumnBuilder.create(c).build()
   }
 }
 

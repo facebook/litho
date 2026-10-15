@@ -17,26 +17,20 @@
 package com.facebook.litho.annotations
 
 /**
- * Marker annotation for methods that should be called unconditionally.
+ * Marker for methods whose identity is their call order, so callers must not vary that order.
  *
- * This annotation can be applied directly on methods. It can also serve as a meta annotation for
- * other annotations to indicate that they should be treated as unconditional.
+ * Two rules, both enforced by `KComponentUnconditionalMisuseDetector`:
+ * - They must be called unconditionally: not inside `if`, `when`, `for`, `while` or `forEach`.
+ * - They may only be called from another `@Unconditional` method, which is what keeps the first
+ *   rule from being escaped one frame up.
  *
- * Unconditional methods follow 2 clear rules:
- * - They must be called unconditionally. i.e it is not permitted to call them inside if, when, for
- *   or forEach expressions
- * - They may only be called within other Unconditional annotated methods.
+ * `ComponentScope.diffOf` is the case this exists for. It appends to a per-render list and reads
+ * the previous render's value back by that position, so a call that runs on some renders and not
+ * others silently pairs a value with the wrong predecessor.
  *
- * The reason for these rules is to preserve the identity of such methods and as such, ensure
- * correctness and consistency across multiple invocations.
- *
- * The motivation here is very similar to that of [Hook]s. In fact, hooks are a kind of
- * Unconditional, though the vice versa is not necessarily true.
- *
- * **Note**: At the moment, it is not possible to call Unconditional methods directly from a
- * render(), hence, they can **only** be called from other unconditional methods (including Hooks,
- * even though hooks don't actually have such restriction). This restriction may be lifted in the
- * future.
+ * Hooks used to work this way and no longer do: the compiler plugin gives each hook call site a
+ * structural identity, so [Hook] does not carry this annotation and hooks may be called
+ * conditionally. Do not reach for `@Unconditional` on anything hook-shaped.
  */
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.FUNCTION, AnnotationTarget.ANNOTATION_CLASS)

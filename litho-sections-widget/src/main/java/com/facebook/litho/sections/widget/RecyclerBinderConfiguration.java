@@ -28,7 +28,6 @@ import com.facebook.rendercore.RunnableHandler;
 /** Configuration setting for {@link RecyclerBinder}. */
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class RecyclerBinderConfiguration {
-  // TODO T34627443 make all fields final after removing setters
   private boolean mUseBackgroundChangeSets = SectionsConfiguration.useBackgroundChangeSets;
   @Nullable private RunnableHandler mChangeSetThreadHandler;
   private final boolean mPostToFrontOfQueueForFirstChangeset;

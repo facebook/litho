@@ -44,8 +44,8 @@ public final class SectionLifecycleTestUtil {
     lifecycle.createInitialState(c);
   }
 
+  @Nullable
   public static StateContainer getStateContainer(Section section) {
-    // NULLSAFE_FIXME[Return Not Nullable]
     return section.getStateContainer();
   }
 

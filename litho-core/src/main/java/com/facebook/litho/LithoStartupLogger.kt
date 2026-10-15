@@ -93,8 +93,9 @@ abstract class LithoStartupLogger {
   fun markPoint(eventName: String, stage: String, dataAttribution: String = latestDataAttribution) {
     if (stage == START) {
       startedEvents.add(getFullMarkerName(eventName, dataAttribution, ""))
-    } else if (stage == END &&
-        !startedEvents.remove(getFullMarkerName(eventName, dataAttribution, ""))) {
+    } else if (
+        stage == END && !startedEvents.remove(getFullMarkerName(eventName, dataAttribution, ""))
+    ) {
       // no matching start point, skip (can happen for changeset end)
       return
     }

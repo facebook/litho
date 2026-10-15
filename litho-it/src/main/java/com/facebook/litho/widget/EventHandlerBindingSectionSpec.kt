@@ -79,14 +79,17 @@ object EventHandlerBindingSectionSpec {
     return Children.create()
         .child(
             SingleComponentSection.create(c)
-                .component(Text.create(c).text("Counter: $counter").build()))
+                .component(Text.create(c).text("Counter: $counter").build()),
+        )
         .child(
             SingleComponentSection.create(c)
                 .component(
                     Wrapper.create(c)
                         .delegate(buttonCreator.createButton(c))
                         .clickHandler(EventHandlerBindingSection.onRowClick(c))
-                        .build()))
+                        .build(),
+                ),
+        )
         .build()
   }
 
@@ -94,7 +97,7 @@ object EventHandlerBindingSectionSpec {
   fun onRowClick(
       c: SectionContext,
       @Prop onButtonClickListener: OnButtonClickListener,
-      @State counter: Int
+      @State counter: Int,
   ) {
     onButtonClickListener.onClick(counter)
   }

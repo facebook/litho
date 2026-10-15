@@ -26,8 +26,8 @@ import com.facebook.rendercore.TestBinderWithBindData.TestBinderWithBindData2
 import com.facebook.rendercore.TestBinderWithBindData.TestBinderWithBindData3
 import com.facebook.rendercore.TestBinderWithBindData.TestBinderWithBindData4
 import java.util.Arrays
-import org.assertj.core.api.Java6Assertions.assertThat
-import org.assertj.core.api.Java6Assertions.assertThatThrownBy
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -58,7 +58,8 @@ class WrapperRenderUnitTest {
     val wrapperMountBinder = TestBinder2(bindOrder, unbindOrder)
     val wrapperRenderUnit = WrapperRenderUnit(originalRenderUnit)
     wrapperRenderUnit.addOptionalMountBinder(
-        createDelegateBinder(TestRenderUnit(), wrapperMountBinder))
+        createDelegateBinder(TestRenderUnit(), wrapperMountBinder),
+    )
     wrapperRenderUnit.mountBinders(context, content, null, bindData)
     assertThat(bindOrder).containsExactly(originalMountBinder, wrapperMountBinder)
     wrapperRenderUnit.unmountBinders(context, content, null, bindData)
@@ -68,11 +69,11 @@ class WrapperRenderUnitTest {
   @Test
   fun attachDetachBinders_originalBindersAttachFirstAndDetachLast() {
     val originalAttachBinder = TestBinder1(bindOrder, unbindOrder)
-    val originalRenderUnit =
-        TestRenderUnit(
-            emptyList(),
-            emptyList(),
-            listOf(createDelegateBinder(TestRenderUnit(), originalAttachBinder)))
+    val originalRenderUnit = TestRenderUnit(
+        emptyList(),
+        emptyList(),
+        listOf(createDelegateBinder(TestRenderUnit(), originalAttachBinder)),
+    )
     val wrapperAttachBinder = TestBinder2(bindOrder, unbindOrder)
     val wrapperRenderUnit = WrapperRenderUnit(originalRenderUnit)
     wrapperRenderUnit.addAttachBinder(createDelegateBinder(TestRenderUnit(), wrapperAttachBinder))
@@ -90,7 +91,8 @@ class WrapperRenderUnitTest {
     val wrapperRenderUnit = WrapperRenderUnit(originalRenderUnit)
     assertThatThrownBy {
           wrapperRenderUnit.addOptionalMountBinder(
-              createDelegateBinder(TestRenderUnit(), mountBinder))
+              createDelegateBinder(TestRenderUnit(), mountBinder),
+          )
         }
         .isInstanceOf(IllegalArgumentException::class.java)
         .hasMessage("Binder TestBinder1 already exists in the wrapped TestRenderUnit")
@@ -115,20 +117,23 @@ class WrapperRenderUnitTest {
     val originalFixedBinder2 = TestBinderWithBindData2(2)
     val originalMountBinder1 = TestBinderWithBindData1(3)
     val originalMountBinder2 = TestBinderWithBindData2(4)
-    val originalRenderUnit =
-        TestRenderUnit(
-            listOf(
-                createDelegateBinder(TestRenderUnit(), originalFixedBinder1),
-                createDelegateBinder(TestRenderUnit(), originalFixedBinder2)))
+    val originalRenderUnit = TestRenderUnit(
+        listOf(
+            createDelegateBinder(TestRenderUnit(), originalFixedBinder1),
+            createDelegateBinder(TestRenderUnit(), originalFixedBinder2),
+        ),
+    )
     originalRenderUnit.addOptionalMountBinders(
         createDelegateBinder(TestRenderUnit(), originalMountBinder1),
-        createDelegateBinder(TestRenderUnit(), originalMountBinder2))
+        createDelegateBinder(TestRenderUnit(), originalMountBinder2),
+    )
     val wrapperMountBinder1 = TestBinderWithBindData3(5)
     val wrapperMountBinder2 = TestBinderWithBindData4(6)
     val wrapperRenderUnit = WrapperRenderUnit(originalRenderUnit)
     wrapperRenderUnit.addOptionalMountBinders(
         createDelegateBinder(TestRenderUnit(), wrapperMountBinder1),
-        createDelegateBinder(TestRenderUnit(), wrapperMountBinder2))
+        createDelegateBinder(TestRenderUnit(), wrapperMountBinder2),
+    )
     val wrapperBindData = BindData()
     wrapperRenderUnit.mountBinders(context, content, null, wrapperBindData)
 
@@ -137,14 +142,14 @@ class WrapperRenderUnitTest {
     assertThat(wrapperBindData.fixedBindersBindData).containsExactly(1, 2)
 
     // assert optional mount binders bind data is correct
-    assertThat(wrapperBindData.optionalMountBindersBindData).hasSize(4)
-    assertThat(wrapperBindData.optionalMountBindersBindData?.get(originalMountBinder1.key))
+    assertThat(wrapperBindData.optionalMountBindersBindDataSize()).isEqualTo(4)
+    assertThat(wrapperBindData.getOptionalMountBindersBindData(originalMountBinder1.key))
         .isEqualTo(3)
-    assertThat(wrapperBindData.optionalMountBindersBindData?.get(originalMountBinder2.key))
+    assertThat(wrapperBindData.getOptionalMountBindersBindData(originalMountBinder2.key))
         .isEqualTo(4)
-    assertThat(wrapperBindData.optionalMountBindersBindData?.get(wrapperMountBinder1.key))
+    assertThat(wrapperBindData.getOptionalMountBindersBindData(wrapperMountBinder1.key))
         .isEqualTo(5)
-    assertThat(wrapperBindData.optionalMountBindersBindData?.get(wrapperMountBinder2.key))
+    assertThat(wrapperBindData.getOptionalMountBindersBindData(wrapperMountBinder2.key))
         .isEqualTo(6)
   }
 
@@ -155,13 +160,15 @@ class WrapperRenderUnitTest {
     val originalRenderUnit = TestRenderUnit()
     originalRenderUnit.addAttachBinders(
         createDelegateBinder(TestRenderUnit(), originalAttachBinder1),
-        createDelegateBinder(TestRenderUnit(), originalAttachBinder2))
+        createDelegateBinder(TestRenderUnit(), originalAttachBinder2),
+    )
     val wrapperAttachBinder1 = TestBinderWithBindData3(3)
     val wrapperAttachBinder2 = TestBinderWithBindData4(4)
     val wrapperRenderUnit = WrapperRenderUnit(originalRenderUnit)
     wrapperRenderUnit.addAttachBinders(
         createDelegateBinder(TestRenderUnit(), wrapperAttachBinder1),
-        createDelegateBinder(TestRenderUnit(), wrapperAttachBinder2))
+        createDelegateBinder(TestRenderUnit(), wrapperAttachBinder2),
+    )
     val wrapperBindData = BindData()
     wrapperRenderUnit.attachBinders(context, content, null, wrapperBindData)
 
@@ -169,14 +176,14 @@ class WrapperRenderUnitTest {
     assertThat(wrapperBindData.fixedBindersBindData).isNull()
 
     // assert no optional mount binders bind data is present when calling attachBinders
-    assertThat(wrapperBindData.optionalMountBindersBindData).isNull()
+    assertThat(wrapperBindData.optionalMountBindersBindDataSize()).isZero()
 
     // assert attach binders bind data is correct
-    assertThat(wrapperBindData.attachBindersBindData).hasSize(4)
-    assertThat(wrapperBindData.attachBindersBindData?.get(originalAttachBinder1.key)).isEqualTo(1)
-    assertThat(wrapperBindData.attachBindersBindData?.get(originalAttachBinder2.key)).isEqualTo(2)
-    assertThat(wrapperBindData.attachBindersBindData?.get(wrapperAttachBinder1.key)).isEqualTo(3)
-    assertThat(wrapperBindData.attachBindersBindData?.get(wrapperAttachBinder2.key)).isEqualTo(4)
+    assertThat(wrapperBindData.attachBindersBindDataSize()).isEqualTo(4)
+    assertThat(wrapperBindData.getAttachBindersBindData(originalAttachBinder1.key)).isEqualTo(1)
+    assertThat(wrapperBindData.getAttachBindersBindData(originalAttachBinder2.key)).isEqualTo(2)
+    assertThat(wrapperBindData.getAttachBindersBindData(wrapperAttachBinder1.key)).isEqualTo(3)
+    assertThat(wrapperBindData.getAttachBindersBindData(wrapperAttachBinder2.key)).isEqualTo(4)
   }
 
   @Test
@@ -186,21 +193,24 @@ class WrapperRenderUnitTest {
     val originalFixedBinder2 = TestBinderWithBindData2(bindOrder, originalUnbindOrder)
     val originalMountBinder1 = TestBinderWithBindData1(bindOrder, originalUnbindOrder)
     val originalMountBinder2 = TestBinderWithBindData2(bindOrder, originalUnbindOrder)
-    val originalRenderUnit =
-        TestRenderUnit(
-            listOf(
-                createDelegateBinder(TestRenderUnit(), originalFixedBinder1),
-                createDelegateBinder(TestRenderUnit(), originalFixedBinder2)))
+    val originalRenderUnit = TestRenderUnit(
+        listOf(
+            createDelegateBinder(TestRenderUnit(), originalFixedBinder1),
+            createDelegateBinder(TestRenderUnit(), originalFixedBinder2),
+        ),
+    )
     originalRenderUnit.addOptionalMountBinders(
         createDelegateBinder(TestRenderUnit(), originalMountBinder1),
-        createDelegateBinder(TestRenderUnit(), originalMountBinder2))
+        createDelegateBinder(TestRenderUnit(), originalMountBinder2),
+    )
     val wrapperUnbindOrder = mutableListOf<Any?>()
     val wrapperMountBinder1 = TestBinderWithBindData3(bindOrder, wrapperUnbindOrder)
     val wrapperMountBinder2 = TestBinderWithBindData4(bindOrder, wrapperUnbindOrder)
     val wrapperRenderUnit = WrapperRenderUnit(originalRenderUnit)
     wrapperRenderUnit.addOptionalMountBinders(
         createDelegateBinder(TestRenderUnit(), wrapperMountBinder1),
-        createDelegateBinder(TestRenderUnit(), wrapperMountBinder2))
+        createDelegateBinder(TestRenderUnit(), wrapperMountBinder2),
+    )
 
     // Create BindData that will be passed to updateBinders
     val bindData =
@@ -210,8 +220,10 @@ class WrapperRenderUnitTest {
                 Pair(originalMountBinder1.key, 3),
                 Pair(originalMountBinder2.key, 4),
                 Pair(wrapperMountBinder1.key, 7),
-                Pair(wrapperMountBinder2.key, 8)),
-            null)
+                Pair(wrapperMountBinder2.key, 8),
+            ),
+            null,
+        )
     wrapperRenderUnit.unmountBinders(context, content, null, bindData)
 
     // assert that unbind was called on original RU in correct order and with correct bind data
@@ -236,14 +248,16 @@ class WrapperRenderUnitTest {
     val originalRenderUnit = TestRenderUnit()
     originalRenderUnit.addAttachBinders(
         createDelegateBinder(TestRenderUnit(), originalAttachBinder1),
-        createDelegateBinder(TestRenderUnit(), originalAttachBinder2))
+        createDelegateBinder(TestRenderUnit(), originalAttachBinder2),
+    )
     val wrapperUnbindOrder = mutableListOf<Any?>()
     val wrapperAttachBinder1 = TestBinderWithBindData3(bindOrder, wrapperUnbindOrder)
     val wrapperAttachBinder2 = TestBinderWithBindData4(bindOrder, wrapperUnbindOrder)
     val wrapperRenderUnit = WrapperRenderUnit(originalRenderUnit)
     wrapperRenderUnit.addAttachBinders(
         createDelegateBinder(TestRenderUnit(), wrapperAttachBinder1),
-        createDelegateBinder(TestRenderUnit(), wrapperAttachBinder2))
+        createDelegateBinder(TestRenderUnit(), wrapperAttachBinder2),
+    )
 
     // Create BindData that will be passed to updateBinders
     val bindData =
@@ -254,7 +268,9 @@ class WrapperRenderUnitTest {
                 Pair(originalAttachBinder1.key, 1),
                 Pair(originalAttachBinder2.key, 2),
                 Pair(wrapperAttachBinder1.key, 3),
-                Pair(wrapperAttachBinder2.key, 4)))
+                Pair(wrapperAttachBinder2.key, 4),
+            ),
+        )
     wrapperRenderUnit.detachBinders(context, content, null, bindData)
 
     // assert that unbind was called on original RU in correct order and with correct bind data
@@ -277,19 +293,24 @@ class WrapperRenderUnitTest {
     val originalMountBinder2 = TestBinderWithBindData3(bindOrder, originalUnbindOrder, 400)
     val originalFixedMountBinder1 = TestBinderWithBindData3(bindOrder, originalUnbindOrder, 500)
     val originalFixedMountBinder2 = TestBinderWithBindData3(bindOrder, originalUnbindOrder, 600)
-    val currentOriginalRU =
-        TestRenderUnit(
-            Arrays.asList(
-                createDelegateBinder(TestRenderUnit(), originalFixedMountBinder1),
-                createDelegateBinder(TestRenderUnit(), originalFixedMountBinder2)))
+    val currentOriginalRU = TestRenderUnit(
+        Arrays.asList(
+            createDelegateBinder(TestRenderUnit(), originalFixedMountBinder1),
+            createDelegateBinder(TestRenderUnit(), originalFixedMountBinder2),
+        ),
+    )
     currentOriginalRU.addOptionalMountBinder(
-        createDelegateBinder(currentOriginalRU, originalMountBinder1))
+        createDelegateBinder(currentOriginalRU, originalMountBinder1),
+    )
     currentOriginalRU.addOptionalMountBinder(
-        createDelegateBinder(currentOriginalRU, originalMountBinder2))
+        createDelegateBinder(currentOriginalRU, originalMountBinder2),
+    )
     currentOriginalRU.addAttachBinder(
-        createDelegateBinder(currentOriginalRU, originalAttachBinder1))
+        createDelegateBinder(currentOriginalRU, originalAttachBinder1),
+    )
     currentOriginalRU.addAttachBinder(
-        createDelegateBinder(currentOriginalRU, originalAttachBinder2))
+        createDelegateBinder(currentOriginalRU, originalAttachBinder2),
+    )
     val wrapperUnbindOrder = mutableListOf<Any?>()
     val wrapperAttachBinder1 = TestBinderWithBindData3(bindOrder, wrapperUnbindOrder, 700)
     val wrapperAttachBinder2 = TestBinderWithBindData4(bindOrder, wrapperUnbindOrder, 800)
@@ -298,15 +319,18 @@ class WrapperRenderUnitTest {
     val currentWrapperRU = WrapperRenderUnit(currentOriginalRU)
     currentWrapperRU.addOptionalMountBinders(
         createDelegateBinder(TestRenderUnit(), wrapperMountBinder1),
-        createDelegateBinder(TestRenderUnit(), wrapperMountBinder2))
+        createDelegateBinder(TestRenderUnit(), wrapperMountBinder2),
+    )
     currentWrapperRU.addAttachBinders(
         createDelegateBinder(TestRenderUnit(), wrapperAttachBinder1),
-        createDelegateBinder(TestRenderUnit(), wrapperAttachBinder2))
-    val nextRU =
-        TestRenderUnit(
-            listOf(
-                createDelegateBinder(TestRenderUnit(), originalFixedMountBinder1),
-                createDelegateBinder(TestRenderUnit(), originalFixedMountBinder2)))
+        createDelegateBinder(TestRenderUnit(), wrapperAttachBinder2),
+    )
+    val nextRU = TestRenderUnit(
+        listOf(
+            createDelegateBinder(TestRenderUnit(), originalFixedMountBinder1),
+            createDelegateBinder(TestRenderUnit(), originalFixedMountBinder2),
+        ),
+    )
     nextRU.addOptionalMountBinders(createDelegateBinder(nextRU, originalMountBinder1))
     nextRU.addOptionalMountBinders(createDelegateBinder(nextRU, originalMountBinder2))
     nextRU.addAttachBinder(createDelegateBinder(nextRU, originalAttachBinder1))
@@ -314,10 +338,12 @@ class WrapperRenderUnitTest {
     val nextWrapperRU = WrapperRenderUnit(nextRU)
     nextWrapperRU.addOptionalMountBinders(
         createDelegateBinder(TestRenderUnit(), wrapperMountBinder1),
-        createDelegateBinder(TestRenderUnit(), wrapperMountBinder2))
+        createDelegateBinder(TestRenderUnit(), wrapperMountBinder2),
+    )
     nextWrapperRU.addAttachBinders(
         createDelegateBinder(TestRenderUnit(), wrapperAttachBinder1),
-        createDelegateBinder(TestRenderUnit(), wrapperAttachBinder2))
+        createDelegateBinder(TestRenderUnit(), wrapperAttachBinder2),
+    )
 
     // Create BindData that will be passed to updateBinders
     val bindData =
@@ -327,14 +353,25 @@ class WrapperRenderUnitTest {
                 Pair(originalMountBinder1.key, 5),
                 Pair(originalMountBinder2.key, 6),
                 Pair(wrapperMountBinder1.key, 7),
-                Pair(wrapperMountBinder2.key, 8)),
+                Pair(wrapperMountBinder2.key, 8),
+            ),
             Arrays.asList(
                 Pair(originalAttachBinder1.key, 9),
                 Pair(originalAttachBinder2.key, 10),
                 Pair(wrapperAttachBinder1.key, 11),
-                Pair(wrapperAttachBinder2.key, 12)))
+                Pair(wrapperAttachBinder2.key, 12),
+            ),
+        )
     nextWrapperRU.updateBinders(
-        context, content, currentWrapperRU, null, Any(), null, bindData, true)
+        context,
+        content,
+        currentWrapperRU,
+        null,
+        Any(),
+        null,
+        bindData,
+        true,
+    )
 
     // assert that unbind was called on original RU in correct order and with correct bind data
     assertThat(originalUnbindOrder).hasSize(6)
@@ -356,17 +393,17 @@ class WrapperRenderUnitTest {
     assertThat(bindData.fixedBindersBindData).containsExactly(500, 600)
 
     // assert optional mount binders bind data is correct
-    assertThat(bindData.optionalMountBindersBindData).hasSize(4)
-    assertThat(bindData.optionalMountBindersBindData?.get(originalMountBinder1.key)).isEqualTo(300)
-    assertThat(bindData.optionalMountBindersBindData?.get(originalMountBinder2.key)).isEqualTo(400)
-    assertThat(bindData.optionalMountBindersBindData?.get(wrapperMountBinder1.key)).isEqualTo(900)
-    assertThat(bindData.optionalMountBindersBindData?.get(wrapperMountBinder2.key)).isEqualTo(1000)
+    assertThat(bindData.optionalMountBindersBindDataSize()).isEqualTo(4)
+    assertThat(bindData.getOptionalMountBindersBindData(originalMountBinder1.key)).isEqualTo(300)
+    assertThat(bindData.getOptionalMountBindersBindData(originalMountBinder2.key)).isEqualTo(400)
+    assertThat(bindData.getOptionalMountBindersBindData(wrapperMountBinder1.key)).isEqualTo(900)
+    assertThat(bindData.getOptionalMountBindersBindData(wrapperMountBinder2.key)).isEqualTo(1000)
 
     // assert attach binders bind data is correct
-    assertThat(bindData.attachBindersBindData).hasSize(4)
-    assertThat(bindData.attachBindersBindData?.get(originalAttachBinder1.key)).isEqualTo(100)
-    assertThat(bindData.attachBindersBindData?.get(originalAttachBinder2.key)).isEqualTo(200)
-    assertThat(bindData.attachBindersBindData?.get(wrapperAttachBinder1.key)).isEqualTo(700)
-    assertThat(bindData.attachBindersBindData?.get(wrapperAttachBinder2.key)).isEqualTo(800)
+    assertThat(bindData.attachBindersBindDataSize()).isEqualTo(4)
+    assertThat(bindData.getAttachBindersBindData(originalAttachBinder1.key)).isEqualTo(100)
+    assertThat(bindData.getAttachBindersBindData(originalAttachBinder2.key)).isEqualTo(200)
+    assertThat(bindData.getAttachBindersBindData(wrapperAttachBinder1.key)).isEqualTo(700)
+    assertThat(bindData.getAttachBindersBindData(wrapperAttachBinder2.key)).isEqualTo(800)
   }
 }

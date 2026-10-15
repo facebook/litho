@@ -41,7 +41,8 @@ class BaseMatcherTest {
         .thenReturn(
             Row.create(ComponentContext(ApplicationProvider.getApplicationContext<Context>()))
                 .wrapInView()
-                .build())
+                .build(),
+        )
   }
 
   @Test

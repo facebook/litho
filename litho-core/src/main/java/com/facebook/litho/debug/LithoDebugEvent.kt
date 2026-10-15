@@ -17,13 +17,14 @@
 package com.facebook.litho.debug
 
 import android.os.Process
+import com.facebook.rendercore.MountStats
 import com.facebook.rendercore.debug.DebugEvent
 import com.facebook.rendercore.debug.DebugEventAttribute
 import com.facebook.rendercore.debug.DebugEventDispatcher
 
 object LithoDebugEvent {
 
-  val NoRenderStateId = { "-1" }
+  val NoRenderStateId: () -> String = { "-1" }
 
   @JvmField var enableStackTraces: Boolean = true
 
@@ -62,7 +63,23 @@ object LithoDebugEvent {
   const val TreeFutureInterrupt = "Litho.TreeFuture.Interrupt"
   const val TreeFutureResume = "Litho.TreeFuture.Resume"
   const val ComponentTreeMountContentPreallocated = "Litho.ComponentTree.MountContent.Preallocated"
+  const val TouchEvent = "Litho.Touch"
   const val DebugInfo = "Litho.DebugInfo" // used to report debug events upstream
+  const val AsyncLayoutDropped = "Litho.AsyncLayout.Dropped"
+  const val CollectionChangesetApplied = "Litho.Collection.ChangesetApplied"
+  const val CollectionRangeComputed = "Litho.Collection.RangeComputed"
+  const val RootCloned = "Litho.ComponentTree.RootCloned"
+  const val MountEnd = "Litho.MountEnd"
+}
+
+/** Trigger that caused a [LithoDebugEvent.CollectionRangeComputed] event. */
+enum class CollectionRangeTrigger {
+  /** Initial range computation during first measure. */
+  INITIAL,
+  /** Range recomputation triggered by scrolling. */
+  SCROLL,
+  /** Range recomputation triggered by data changes (changeset applied). */
+  DATA_CHANGE,
 }
 
 object LithoDebugEventAttributes {
@@ -80,10 +97,76 @@ object LithoDebugEventAttributes {
   const val Breadcrumb = "breadcrumb"
   const val RenderExecutionMode = "execution-mode"
   const val Forced = "forced"
-  const val Component = "component"
+
   const val Stack = "stack"
   const val Cause = "cause"
   const val WaitingOn = "waiting-on"
+
+  /**
+   * Monotonically increasing version identifying a specific resolve pass within a component tree.
+   * Incremented by [ComponentTree] on each `setRoot` or state update that triggers a resolve.
+   * Present on resolve-phase events ([LithoDebugEvent.ComponentTreeResolve],
+   * [LithoDebugEvent.ComponentRendered]) and also on layout-phase events to enable cross-phase
+   * correlation.
+   */
+  const val ResolveVersion = "resolve_version"
+
+  /**
+   * Monotonically increasing version identifying a specific layout pass within a component tree.
+   * Incremented by [ComponentTree] each time a layout is computed from a resolve result. Present on
+   * layout-phase events ([LithoDebugEvent.ComponentTreeLayout],
+   * [LithoDebugEvent.AsyncLayoutDropped]) and mount events.
+   */
+  /**
+   * @deprecated Use [ResolveVersion] or [LayoutVersion] instead. This key was emitted with mixed
+   *   semantics — resolve-phase events used the resolve counter while layout-phase events used the
+   *   layout counter, making cross-phase correlation unreliable.
+   */
+  @Deprecated("Use ResolveVersion or LayoutVersion instead", level = DeprecationLevel.WARNING)
+  const val LayoutVersion = "layout_version"
+  const val Reason = "reason"
+  const val InitialResolve = "initial_resolve"
+  const val IsFirstLayout = "is_first_layout"
+  const val MountedCount = "mounted_count"
+  const val UnmountedCount = "unmounted_count"
+  const val UpdatedCount = "updated_count"
+  const val ReusedCount = "reused_count"
+  const val RemountedCount = "remounted_count"
+
+  // Resolve phase attributes
+  const val GlobalKeysChanged = "global_keys_changed"
+  const val ComponentCount = "component_count"
+  const val Components = "components"
+
+  // Layout phase attributes
+  const val Reused = "reused"
+  const val BoundsChanged = "bounds_changed"
+  const val CommittedVersion = "committed_version"
+
+  // Mount phase attributes
+  const val SummaryByComponent = "summary_by_component"
+
+  // Collection attributes
+  const val ChangeType = "change_type"
+  const val ChangeCount = "change_count"
+  const val TotalItemCount = "total_item_count"
+  const val IsSync = "is_sync"
+  const val IsAsyncInsertMode = "is_async_insert_mode"
+  const val HasPreparationWarming = "has_preparation_warming"
+  const val Orientation = "orientation"
+  const val IsLegacyInfra = "is_legacy_infra"
+  const val ChangesetDurationNs = "changeset_duration_ns"
+  const val Trigger = "trigger"
+  const val FirstVisiblePosition = "first_visible_position"
+  const val LastVisiblePosition = "last_visible_position"
+  const val VisibleCount = "visible_count"
+  const val RangeStart = "range_start"
+  const val RangeEnd = "range_end"
+  const val PreparedCount = "prepared_count"
+  const val RangeRatio = "range_ratio"
+  const val ItemViewCacheSize = "item_view_cache_size"
+  const val RecyclerViewItemPrefetch = "recycler_view_item_prefetch"
+  const val RecyclingStrategy = "recycling_strategy"
 }
 
 object LithoDebugEvents {
@@ -98,12 +181,35 @@ object LithoDebugEvents {
       }
     }
 
+    /**
+     * Begins a TreeFutureWait trace. Returns a trace identifier that must be passed to [endWait]
+     * after the blocking `.get()` completes. The resulting event will carry
+     * [DebugEventAttribute.Duration] measuring the actual wait time.
+     *
+     * Returns `null` if no subscribers are listening (no trace overhead).
+     */
     @JvmStatic
-    fun wait(treeId: Int, name: String, waitingOn: Int) {
-      dispatch(type = LithoDebugEvent.TreeFutureWait, treeId = treeId) { attrs ->
+    fun beginWait(treeId: Int, name: String, waitingOn: Int): Int? {
+      val traceId =
+          DebugEventDispatcher.generateTraceIdentifier(LithoDebugEvent.TreeFutureWait)
+              ?: return null
+      DebugEventDispatcher.beginTrace(
+          traceIdentifier = traceId,
+          type = LithoDebugEvent.TreeFutureWait,
+          renderStateId = treeId.toString(),
+      ) { attrs ->
         attrs[DebugEventAttribute.Name] = name
         attrs[DebugEventAttribute.ThreadPriority] = Process.getThreadPriority(Process.myTid())
         attrs[LithoDebugEventAttributes.WaitingOn] = waitingOn
+      }
+      return traceId
+    }
+
+    /** Ends a TreeFutureWait trace started by [beginWait]. */
+    @JvmStatic
+    fun endWait(traceIdentifier: Int?) {
+      if (traceIdentifier != null) {
+        DebugEventDispatcher.endTrace(traceIdentifier)
       }
     }
 
@@ -153,5 +259,16 @@ object LithoDebugEvents {
     ) { attrs ->
       putAttrs(attrs)
     }
+  }
+}
+
+/**
+ * Formats the per-component mount stats into a string for debug logging. Format:
+ * {ComponentName:m=X/u=Y/r=Z/re=W,...}
+ */
+fun formatMountSummaryByComponent(summary: Map<String, MountStats.ComponentMountStats>): String {
+  if (summary.isEmpty()) return "{}"
+  return summary.entries.joinToString(",", "{", "}") { (name, stats) ->
+    "$name:m=${stats.mounted}/u=${stats.updated}/r=${stats.reused}/re=${stats.remounted}"
   }
 }

@@ -16,12 +16,11 @@
 
 package com.facebook.litho
 
-import android.util.Pair
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
 import com.facebook.litho.Resolver.Outputs
+import com.facebook.litho.state.StateId
 import java.util.concurrent.atomic.AtomicReference
-import kotlin.jvm.JvmField
 
 @DataClassGenerate(toString = Mode.OMIT, equalsHashCode = Mode.KEEP)
 data class ResolveResult(
@@ -32,9 +31,10 @@ data class ResolveResult(
     @JvmField val treeState: TreeState,
     override val isPartialResult: Boolean,
     @JvmField val version: Int,
-    @JvmField val eventHandlers: List<Pair<String, EventHandler<*>>>?,
     @JvmField val outputs: Outputs?,
-    @JvmField val contextForResuming: ResolveContext?
+    @JvmField val contextForResuming: ResolveContext?,
+    @JvmField val updatedStates: Set<StateId>,
+    @JvmField val isAccessibilityEnabled: Boolean = false,
 ) : PotentiallyPartialResult {
 
   private val cacheRef: AtomicReference<MeasuredResultCache> = AtomicReference(cache)

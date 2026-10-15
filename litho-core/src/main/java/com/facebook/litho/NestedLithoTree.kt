@@ -20,6 +20,7 @@ import android.view.View
 import androidx.annotation.UiThread
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.state.StateId
 import com.facebook.litho.state.TreeStateProvider
 import com.facebook.rendercore.SizeConstraints
@@ -42,21 +43,48 @@ object NestedLithoTree {
       treeProps: TreePropContainer?,
       state: TreeState,
       current: ResolveResult?,
+      version: Int,
   ): ResolveResult {
-    return if (current == null ||
-        !ComponentUtils.isEquivalent(root, current.component, true) ||
-        state.keysForPendingStateUpdates.isNotEmpty() ||
-        treeProps != current.context.treePropContainer) {
-      ResolveTreeFuture.resolve(
-          context,
-          root,
-          state,
-          -1,
-          id,
-          current?.node,
-          "nested-resolve",
-          null, // tree future is null; effectively cannot be cancelled
-      )
+    return if (
+        current == null ||
+            !ComponentUtils.isEquivalent(root, current.component) ||
+            state.keysForPendingStateUpdates.isNotEmpty() ||
+            treeProps != current.context.treePropContainer
+    ) {
+      // Register here; unregister happens later in NestedLithoTreeState.commitAndRunEffects()
+      // after the result has been committed. Unlike ComponentTree (which commits inside the same
+      // scope), NestedLithoTree's commit is deferred until after layout and mount.
+      //
+      // The register/unregister is needed to clear the InitialState cache between resolve cycles.
+      // Without clearing, a removed-then-recreated component can inherit stale initial state:
+      //
+      //   1. Resolve: component P created → InitialState caches valueA for keyP
+      //   2. Commit: treeState updated with valueA
+      //   3. Resolve: component P removed (conditional render changed)
+      //   4. Commit: StateHandler cleans up keyP from neededState
+      //   5. Resolve: new component at position P created
+      //      → StateHandler: no value (cleaned in step 4)
+      //      → InitialState cache: still has valueA (never cleared!)
+      //      → Returns stale valueA instead of running the new initializer
+      //
+      // With register/unregister spanning resolve → commit, the cache is cleared after step 2
+      // and step 4, so step 5 correctly runs the initializer.
+      val resolveScope = InitialStateScope.forResolve(state)
+      try {
+        ResolveTreeFuture.resolve(
+            context,
+            root,
+            state,
+            version,
+            id,
+            current,
+            "nested-resolve",
+            null, // tree future is null; effectively cannot be cancelled
+        )
+      } catch (e: Throwable) {
+        resolveScope.close()
+        throw e
+      }
     } else {
       current
     }
@@ -66,18 +94,28 @@ object NestedLithoTree {
       result: ResolveResult,
       sizeConstraints: SizeConstraints,
       current: LayoutState?,
+      version: Int,
   ): LayoutState {
     val layoutState =
         if (result != current?.resolveResult || sizeConstraints != current.sizeConstraints) {
-          LayoutTreeFuture.layout(
-              result,
-              sizeConstraints,
-              -1,
-              checkNotNull(result.context.lithoTree).id,
-              current,
-              current?.diffTree,
-              null, // tree future is null; task cannot be cancelled
-          )
+          val treeState = TreeState(result.treeState)
+          // Register here; unregister happens in NestedLithoTreeState.commitAndRunEffects().
+          val layoutScope = InitialStateScope.forLayout(treeState)
+          try {
+            LayoutTreeFuture.layout(
+                result,
+                sizeConstraints,
+                version,
+                checkNotNull(result.context.lithoTree).id,
+                treeState,
+                current,
+                current?.diffTree,
+                null, // tree future is null; task cannot be cancelled
+            )
+          } catch (e: Throwable) {
+            layoutScope.close()
+            throw e
+          }
         } else {
           current
         }
@@ -89,57 +127,87 @@ object NestedLithoTree {
 
   fun LayoutState.commit() {
     val components = consumeComponentScopes()
-    val eventHandlers = consumeCreatedEventHandlers()
     val stateUpdater = checkNotNull(componentContext.stateUpdater)
     val mountedView = checkNotNull(componentContext.lithoTree).rootHost
 
+    if (components != null) {
+      treeState.updateEventDispatchers(components)
+    }
     // clear state updates
     treeState.commit()
-    val useStateForEventDispatchInfo =
-        componentContext.lithoConfiguration.componentsConfig.useStateForEventDispatchInfo
-    if (useStateForEventDispatchInfo) {
-      if (components != null) {
-        treeState.updateEventDispatchers(components)
-      }
-    } else {
-      // bind event handlers
-      treeState.bindEventAndTriggerHandlers(eventHandlers, components)
-    }
 
     // bind handles
-    for (handle in componentHandles) {
+    componentHandles?.forEach { handle ->
       handle.setStateUpdaterAndRootViewReference(stateUpdater, mountedView)
     }
   }
 
-  fun LayoutState.runEffects() {
-    treeState.effectsHandler.onAttached(treeId, attachables)
-  }
-
   fun LayoutState.cleanup() {
-    treeState.effectsHandler.onDetached(treeId)
+    treeState.effectsHandler.onCleanup()
     treeState.clearEventHandlersAndTriggers()
   }
 
-  fun TreeState.enqueue(updates: List<PendingStateUpdate<*>>): TreeState {
+  fun TreeState.enqueue(updates: List<PendingStateUpdate>): TreeState {
     for (update in updates) {
       this.enqueue(update)
     }
     return this
   }
 
-  fun TreeState.enqueue(update: PendingStateUpdate<*>): TreeState {
+  fun createLithoTree(
+      id: Int,
+      stateUpdater: NestedStateUpdater,
+      mountedViewReference: NestedMountedViewReference,
+      errorComponentReceiver: ErrorComponentReceiver,
+      treeLifecycleProvider: NestedLithoTreeLifecycleProvider,
+      isReadTrackingEnabled: Boolean =
+          ComponentsConfiguration.defaultInstance.enableStateReadTracking,
+  ): LithoTree = LithoTree(
+      id = id,
+      stateProvider = stateUpdater,
+      stateUpdater = stateUpdater,
+      rootHost = mountedViewReference,
+      errorComponentReceiver = errorComponentReceiver,
+      treeLifecycle = treeLifecycleProvider,
+      uiStateReadRecordsProvider = {
+        val host = mountedViewReference.mountedView
+        check(host is BaseMountingView) {
+          "Trying to get UI state read records without a set host"
+        }
+        host.uiStateReadRecords
+      },
+      isReadTrackingEnabled = isReadTrackingEnabled,
+  )
+
+  fun createComponentContext(
+      androidContext: android.content.Context,
+      treePropContainer: TreePropContainer?,
+      lithoConfiguration: LithoConfiguration,
+      lithoTree: LithoTree,
+      lithoVisibilityEventsController: LithoVisibilityEventsController? = null,
+  ): ComponentContext = ComponentContext(
+      androidContext,
+      treePropContainer,
+      lithoConfiguration,
+      lithoTree,
+      StringGlobalKey("nested-tree-root"),
+      lithoVisibilityEventsController,
+      null,
+      null,
+  )
+
+  fun TreeState.enqueue(update: PendingStateUpdate): TreeState {
     when (update.updater) {
       is HookUpdater -> {
         queueHookStateUpdate(
-            stateId = update.stateId as StateId,
+            stateId = update.stateId,
             updater = update.updater,
             isLayoutState = update.isLayoutState,
         )
       }
       is StateContainer.StateUpdate -> {
         queueStateUpdate(
-            key = update.stateId as String,
+            key = update.stateId,
             stateUpdate = update.updater,
             update.isLazy,
             isLayoutState = update.isLayoutState,
@@ -152,10 +220,17 @@ object NestedLithoTree {
 
 // region NestedStateUpdater
 class NestedStateUpdater
-internal constructor(
+constructor(
+    private val treeId: Int,
     private val getState: () -> TreeState?,
     private val updater: StateUpdateRequester,
 ) : StateUpdater, TreeStateProvider {
+
+  private val treeState: TreeState?
+    get() = getState()
+
+  override val uiTreeState: TreeState?
+    @Synchronized get() = treeState
 
   override var isFirstMount: Boolean
     get() = treeState?.mountInfo?.isFirstMount ?: false
@@ -163,14 +238,11 @@ internal constructor(
       treeState?.mountInfo?.isFirstMount = value
     }
 
-  override val treeState: TreeState?
-    get() = getState()
-
   override fun updateHookStateAsync(
       stateId: StateId,
       updateBlock: HookUpdater,
       attribution: String?,
-      isLayoutState: Boolean
+      isLayoutState: Boolean,
   ) {
     updater.request(
         PendingStateUpdate(
@@ -179,14 +251,15 @@ internal constructor(
             isLayoutState = isLayoutState,
             isAsync = true,
             attribution = attribution,
-        ))
+        ),
+    )
   }
 
   override fun updateHookStateSync(
       stateId: StateId,
       updateBlock: HookUpdater,
       attribution: String?,
-      isLayoutState: Boolean
+      isLayoutState: Boolean,
   ) {
     updater.request(
         PendingStateUpdate(
@@ -195,69 +268,77 @@ internal constructor(
             isLayoutState = isLayoutState,
             isAsync = false,
             attribution = attribution,
-        ))
+        ),
+    )
   }
 
   override fun updateStateAsync(
-      globalKey: String,
+      globalKey: GlobalKey,
       stateUpdate: StateContainer.StateUpdate,
       attribution: String?,
-      isLayoutState: Boolean
+      isLayoutState: Boolean,
   ) {
     updater.request(
         PendingStateUpdate(
-            stateId = globalKey,
+            stateId = StateId.forSpec(treeId, globalKey),
             updater = stateUpdate,
             isLayoutState = isLayoutState,
             isAsync = true,
             attribution = attribution,
-        ))
+        ),
+    )
   }
 
   override fun updateStateSync(
-      globalKey: String,
+      globalKey: GlobalKey,
       stateUpdate: StateContainer.StateUpdate,
       attribution: String?,
-      isLayoutState: Boolean
+      isLayoutState: Boolean,
   ) {
     updater.request(
         PendingStateUpdate(
-            stateId = globalKey,
+            stateId = StateId.forSpec(treeId, globalKey),
             updater = stateUpdate,
             isLayoutState = isLayoutState,
             isAsync = false,
             attribution = attribution,
-        ))
+        ),
+    )
   }
 
   override fun updateStateLazy(
-      globalKey: String,
+      globalKey: GlobalKey,
       stateUpdate: StateContainer.StateUpdate,
-      isLayoutState: Boolean
+      isLayoutState: Boolean,
   ) {
     updater.request(
         PendingStateUpdate(
-            stateId = globalKey,
+            stateId = StateId.forSpec(treeId, globalKey),
             updater = stateUpdate,
             isLayoutState = isLayoutState,
             isAsync = false,
             isLazy = true,
-        ))
+        ),
+    )
   }
 
+  @Synchronized
   override fun applyLazyStateUpdatesForContainer(
-      globalKey: String,
+      globalKey: GlobalKey,
       container: StateContainer,
-      isLayoutState: Boolean
+      isLayoutState: Boolean,
   ): StateContainer {
-    return treeState?.applyLazyStateUpdatesForContainer(globalKey, container, isLayoutState)
-        ?: container
+    return treeState?.applyLazyStateUpdatesForContainer(
+        StateId.forSpec(treeId, globalKey),
+        container,
+        isLayoutState,
+    ) ?: container
   }
 
   override fun <T> canSkipStateUpdate(
       stateId: StateId,
       newValue: T?,
-      isLayoutState: Boolean
+      isLayoutState: Boolean,
   ): Boolean {
     return treeState?.canSkipStateUpdate(stateId, newValue, isLayoutState) ?: false
   }
@@ -265,7 +346,7 @@ internal constructor(
   override fun <T> canSkipStateUpdate(
       newValueFunction: (T) -> T,
       stateId: StateId,
-      isLayoutState: Boolean
+      isLayoutState: Boolean,
   ): Boolean {
     return treeState?.canSkipStateUpdate(
         newValueFunction,
@@ -274,33 +355,36 @@ internal constructor(
     ) ?: false
   }
 
-  override fun removePendingStateUpdate(key: String, isLayoutState: Boolean) {
+  override fun removePendingStateUpdate(key: GlobalKey, isLayoutState: Boolean) {
     throw UnsupportedOperationException(
-        """This API should not be invoked. Nested Litho Tree updates will
-          |be cleared when nested layout state is committed."""
-            .trimMargin())
+        """
+        |This API should not be invoked. Nested Litho Tree updates will
+        |be cleared when nested layout state is committed.
+        """
+            .trimMargin(),
+    )
   }
 
+  @Synchronized
   override fun getCachedValue(
-      globalKey: String,
-      index: Int,
+      cacheKey: HookGlobalKey,
       cachedValueInputs: Any,
-      isLayoutState: Boolean
+      isLayoutState: Boolean,
   ): Any? {
-    return treeState?.getCachedValue(globalKey, index, cachedValueInputs, isLayoutState)
+    return treeState?.getCachedValue(cacheKey, cachedValueInputs, isLayoutState)
   }
 
+  @Synchronized
   override fun putCachedValue(
-      globalKey: String,
-      index: Int,
+      cacheKey: HookGlobalKey,
       cachedValueInputs: Any,
       cachedValue: Any?,
-      isLayoutState: Boolean
+      isLayoutState: Boolean,
   ) {
-    treeState?.putCachedValue(globalKey, index, cachedValueInputs, cachedValue, isLayoutState)
+    treeState?.putCachedValue(cacheKey, cachedValueInputs, cachedValue, isLayoutState)
   }
 
-  override fun getEventTrigger(key: String): EventTrigger<*>? {
+  override fun getEventTrigger(key: Any): EventTrigger<*>? {
     return treeState?.getEventTrigger(triggerKey = key)
   }
 
@@ -344,6 +428,10 @@ class NestedLithoTreeLifecycleProvider : LithoTreeLifecycleProvider {
     }
   }
 
+  override fun removeOnReleaseListener(listener: LithoTreeLifecycleProvider.OnReleaseListener) {
+    synchronized(this) { listeners.remove(listener) }
+  }
+
   @UiThread
   fun release() {
     assertMainThread()
@@ -356,12 +444,12 @@ class NestedLithoTreeLifecycleProvider : LithoTreeLifecycleProvider {
 // endregion
 
 fun interface StateUpdateRequester {
-  fun request(update: PendingStateUpdate<*>)
+  fun request(update: PendingStateUpdate)
 }
 
 @DataClassGenerate(toString = Mode.OMIT, equalsHashCode = Mode.KEEP)
-data class PendingStateUpdate<T>(
-    val stateId: T,
+data class PendingStateUpdate(
+    val stateId: StateId,
     val updater: StateUpdateApplier,
     val isLayoutState: Boolean, // state created during the layout phase
     val isAsync: Boolean,

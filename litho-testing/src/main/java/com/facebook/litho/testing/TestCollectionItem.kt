@@ -19,11 +19,13 @@ package com.facebook.litho.testing
 import com.facebook.litho.Component
 import com.facebook.litho.widget.ComponentTreeHolder
 import com.facebook.litho.widget.RecyclerBinder
+import com.facebook.litho.widget.collection.CollectionItem
 
 /**
  * A wrapper class that exposes methods specific to testing collection children.
  *
- * @property componentTreeHolder The [ComponentTreeHolder] that holds information about the child.
+ * @property componentTreeHolder The [ComponentTreeHolder] that holds information about the child
+ *   (legacy approach). Null for new collection infrastructure.
  * @property index The item's index in the collection.
  * @property component The [Component] contained in this child.
  * @property id The id of the child in the collection.
@@ -33,24 +35,25 @@ import com.facebook.litho.widget.RecyclerBinder
  */
 data class TestCollectionItem(
     private val testCollection: TestCollection,
-    private val componentTreeHolder: ComponentTreeHolder,
+    private val componentTreeHolder: ComponentTreeHolder?,
     val index: Int,
+    private val collectionItem: CollectionItem<*>? = null,
 ) {
 
   internal val recyclerView
     get() = testCollection.recyclerView
 
   internal val renderInfo
-    get() = componentTreeHolder.renderInfo
+    get() = componentTreeHolder?.renderInfo ?: collectionItem?.renderInfo
 
   internal val componentTree
-    get() = componentTreeHolder.componentTree
+    get() = componentTreeHolder?.componentTree
 
   val id
-    get() = renderInfo.getCustomAttribute(RecyclerBinder.ID_CUSTOM_ATTR_KEY)
+    get() = renderInfo?.getCustomAttribute(RecyclerBinder.ID_CUSTOM_ATTR_KEY)
 
-  val component
-    get() = renderInfo.component
+  val component: Component?
+    get() = renderInfo?.component
 
   val isVisible
     get() = index in with(testCollection) { firstVisibleIndex..lastVisibleIndex }
@@ -58,12 +61,12 @@ data class TestCollectionItem(
   val isFullyVisible
     get() = index in with(testCollection) { firstFullyVisibleIndex..lastFullyVisibleIndex }
 
-  val isSticky
-    get() = renderInfo.isSticky
+  val isSticky: Boolean
+    get() = renderInfo?.isSticky ?: false
 
   val isFullSpan: Boolean
-    get() = renderInfo.isFullSpan
+    get() = renderInfo?.isFullSpan ?: false
 
   val spanSize: Int
-    get() = renderInfo.spanSize
+    get() = renderInfo?.spanSize ?: 1
 }

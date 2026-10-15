@@ -17,15 +17,18 @@
 package com.facebook.litho.widget
 
 import com.facebook.litho.ClickEvent
-import com.facebook.litho.Column
+import com.facebook.litho.Column as ColumnBuilder
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.LongClickEvent
+import com.facebook.litho.Style
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateLayout
 import com.facebook.litho.annotations.OnEvent
 import com.facebook.litho.annotations.Prop
 import com.facebook.litho.annotations.PropDefault
+import com.facebook.litho.view.onClick
+import com.facebook.litho.view.onLongClick
 
 @LayoutSpec
 object LayoutWithInnerClickableChildTesterSpec {
@@ -39,16 +42,26 @@ object LayoutWithInnerClickableChildTesterSpec {
   fun onCreateLayout(
       c: ComponentContext,
       @Prop(optional = true) shouldSetClickHandler: Boolean,
-      @Prop(optional = true) shouldSetLongClickHandler: Boolean
+      @Prop(optional = true) shouldSetLongClickHandler: Boolean,
   ): Component {
-    val mountSpecBuilder = SimpleMountSpecTester.create(c)
+    var style = Style(null, null)
     if (shouldSetClickHandler) {
-      mountSpecBuilder.clickHandler(LayoutWithInnerClickableChildTester.onClickEvent(c))
+      style =
+          style.plus(
+              Style.onClick {
+                LayoutWithInnerClickableChildTester.onClickEvent(c).dispatchEvent(it)
+              },
+          )
     }
     if (shouldSetLongClickHandler) {
-      mountSpecBuilder.longClickHandler(LayoutWithInnerClickableChildTester.onLongClickEvent(c))
+      style =
+          style.plus(
+              Style.onLongClick {
+                LayoutWithInnerClickableChildTester.onLongClickEvent(c).dispatchEvent(it) as Boolean
+              },
+          )
     }
-    return Column.create(c).child(mountSpecBuilder.build()).build()
+    return ColumnBuilder.create(c).child(SimpleMountSpecTester(style = style)).build()
   }
 
   @JvmStatic @OnEvent(ClickEvent::class) fun onClickEvent(c: ComponentContext) = Unit

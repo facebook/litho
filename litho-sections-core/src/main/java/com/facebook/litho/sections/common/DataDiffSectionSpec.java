@@ -146,7 +146,7 @@ public class DataDiffSectionSpec<T> {
       detectDuplicates(nextData, callback, changeSet.getSectionName());
     }
     if (isTracing) {
-      ComponentsSystrace.beginSection("DiffUtil.calculateDiff");
+      ComponentsSystrace.beginSection("sections.calculateDiff");
     }
     final DiffUtil.DiffResult result =
         DiffUtil.calculateDiff(callback, isDetectMovesEnabled(detectMoves));

@@ -52,7 +52,7 @@ object WildcardOutPropTestSpec {
   @OnCreateLayout
   fun onCreateLayout(
       c: ComponentContext,
-      @Prop numWildCard: List<out @JvmWildcard Number>
+      @Prop numWildCard: List<out @JvmWildcard Number>,
   ): Component? {
     return Column.create(c).build()
   }
@@ -74,7 +74,7 @@ class BuilderGeneratorKtTest {
 
   @Before
   fun setup() {
-    MockitoAnnotations.initMocks(this)
+    MockitoAnnotations.openMocks(this).close()
   }
 
   @Test
@@ -83,64 +83,71 @@ class BuilderGeneratorKtTest {
 
     val specModel =
         layoutSpecModelFactory.create(
-            elements, types, typeElement, messager, RunMode.normal(), null)
+            elements,
+            types,
+            typeElement,
+            messager,
+            RunMode.normal(),
+            null,
+        )
     val dataHolder = BuilderGenerator.generate(specModel)
     assertThat(dataHolder.typeSpecs.size).isEqualTo(1)
     assertThat(dataHolder.typeSpecs.get(0).toString())
         .isEqualTo(
             """
-                    @com.facebook.litho.annotations.Generated
-                    public static final class Builder extends com.facebook.litho.Component.Builder<Builder> {
-                      WildcardOutPropTest mWildcardOutPropTest;
+            @com.facebook.litho.annotations.Generated
+            public static final class Builder extends com.facebook.litho.Component.Builder<Builder> {
+              WildcardOutPropTest mWildcardOutPropTest;
 
-                      com.facebook.litho.ComponentContext mContext;
+              com.facebook.litho.ComponentContext mContext;
 
-                      private final java.lang.String[] REQUIRED_PROPS_NAMES = new String[] {"numWildCard"};
+              private final java.lang.String[] REQUIRED_PROPS_NAMES = new String[] {"numWildCard"};
 
-                      private final int REQUIRED_PROPS_COUNT = 1;
+              private final int REQUIRED_PROPS_COUNT = 1;
 
-                      private final java.util.BitSet mRequired = new java.util.BitSet(REQUIRED_PROPS_COUNT);
+              private final java.util.BitSet mRequired = new java.util.BitSet(REQUIRED_PROPS_COUNT);
 
-                      private Builder(com.facebook.litho.ComponentContext context, int defStyleAttr, int defStyleRes,
-                          WildcardOutPropTest wildcardOutPropTestRef) {
-                        super(context, defStyleAttr, defStyleRes, wildcardOutPropTestRef);
-                        mWildcardOutPropTest = wildcardOutPropTestRef;
-                        mContext = context;
-                        mRequired.clear();
-                      }
+              private Builder(com.facebook.litho.ComponentContext context, int defStyleAttr, int defStyleRes,
+                  WildcardOutPropTest wildcardOutPropTestRef) {
+                super(context, defStyleAttr, defStyleRes, wildcardOutPropTestRef);
+                mWildcardOutPropTest = wildcardOutPropTestRef;
+                mContext = context;
+                mRequired.clear();
+              }
 
-                      @java.lang.Override
-                      protected void setComponent(com.facebook.litho.Component component) {
-                        mWildcardOutPropTest = (com.facebook.litho.specmodels.generator.WildcardOutPropTest) component;
-                      }
+              @java.lang.Override
+              protected void setComponent(com.facebook.litho.Component component) {
+                mWildcardOutPropTest = (com.facebook.litho.specmodels.generator.WildcardOutPropTest) component;
+              }
 
-                      @com.facebook.litho.annotations.PropSetter(
-                          value = "numWildCard",
-                          required = true
-                      )
-                      @com.facebook.litho.annotations.RequiredProp("numWildCard")
-                      public Builder numWildCard(
-                          @org.jetbrains.annotations.NotNull java.util.List<? extends java.lang.Number> numWildCard) {
-                        this.mWildcardOutPropTest.numWildCard = numWildCard;
-                        mRequired.set(0);
-                        return this;
-                      }
+              @com.facebook.litho.annotations.PropSetter(
+                  value = "numWildCard",
+                  required = true
+              )
+              @com.facebook.litho.annotations.RequiredProp("numWildCard")
+              public Builder numWildCard(
+                  @org.jetbrains.annotations.NotNull java.util.List<? extends java.lang.Number> numWildCard) {
+                this.mWildcardOutPropTest.numWildCard = numWildCard;
+                mRequired.set(0);
+                return this;
+              }
 
-                      @java.lang.Override
-                      public Builder getThis() {
-                        return this;
-                      }
+              @java.lang.Override
+              public Builder getThis() {
+                return this;
+              }
 
-                      @java.lang.Override
-                      public com.facebook.litho.specmodels.generator.WildcardOutPropTest build() {
-                        checkArgs(REQUIRED_PROPS_COUNT, mRequired, REQUIRED_PROPS_NAMES);
-                        validate();
-                        return mWildcardOutPropTest;
-                      }
-                    }
-                    
-                    """
-                .trimIndent())
+              @java.lang.Override
+              public com.facebook.litho.specmodels.generator.WildcardOutPropTest build() {
+                checkArgs(REQUIRED_PROPS_COUNT, mRequired, REQUIRED_PROPS_NAMES);
+                validate();
+                return mWildcardOutPropTest;
+              }
+            }
+
+            """
+                .trimIndent(),
+        )
   }
 
   @Test
@@ -150,75 +157,82 @@ class BuilderGeneratorKtTest {
 
     val specModel =
         layoutSpecModelFactory.create(
-            elements, types, typeElement, messager, RunMode.normal(), null)
+            elements,
+            types,
+            typeElement,
+            messager,
+            RunMode.normal(),
+            null,
+        )
     val dataHolder = BuilderGenerator.generate(specModel)
     assertThat(dataHolder.typeSpecs.size).isEqualTo(1)
     assertThat(dataHolder.typeSpecs.get(0).toString())
         .isEqualTo(
             """
-                    @com.facebook.litho.annotations.Generated
-                    public static final class Builder extends com.facebook.litho.Component.Builder<Builder> {
-                      VarArgsWildcardPropTest mVarArgsWildcardPropTest;
+            @com.facebook.litho.annotations.Generated
+            public static final class Builder extends com.facebook.litho.Component.Builder<Builder> {
+              VarArgsWildcardPropTest mVarArgsWildcardPropTest;
 
-                      com.facebook.litho.ComponentContext mContext;
+              com.facebook.litho.ComponentContext mContext;
 
-                      private Builder(com.facebook.litho.ComponentContext context, int defStyleAttr, int defStyleRes,
-                          VarArgsWildcardPropTest varArgsWildcardPropTestRef) {
-                        super(context, defStyleAttr, defStyleRes, varArgsWildcardPropTestRef);
-                        mVarArgsWildcardPropTest = varArgsWildcardPropTestRef;
-                        mContext = context;
-                      }
+              private Builder(com.facebook.litho.ComponentContext context, int defStyleAttr, int defStyleRes,
+                  VarArgsWildcardPropTest varArgsWildcardPropTestRef) {
+                super(context, defStyleAttr, defStyleRes, varArgsWildcardPropTestRef);
+                mVarArgsWildcardPropTest = varArgsWildcardPropTestRef;
+                mContext = context;
+              }
 
-                      @java.lang.Override
-                      protected void setComponent(com.facebook.litho.Component component) {
-                        mVarArgsWildcardPropTest = (com.facebook.litho.specmodels.generator.VarArgsWildcardPropTest) component;
-                      }
+              @java.lang.Override
+              protected void setComponent(com.facebook.litho.Component component) {
+                mVarArgsWildcardPropTest = (com.facebook.litho.specmodels.generator.VarArgsWildcardPropTest) component;
+              }
 
-                      @com.facebook.litho.annotations.PropSetter(
-                          value = "colors",
-                          required = false
-                      )
-                      public Builder color(@org.jetbrains.annotations.NotNull android.graphics.Color color) {
-                        if (color == null) {
-                          return this;
-                        }
-                        if (this.mVarArgsWildcardPropTest.colors == java.util.Collections.EMPTY_LIST) {
-                          this.mVarArgsWildcardPropTest.colors = new java.util.ArrayList<android.graphics.Color>();
-                        }
-                        this.mVarArgsWildcardPropTest.colors.add(color);
-                        return this;
-                      }
+              @com.facebook.litho.annotations.PropSetter(
+                  value = "colors",
+                  required = false
+              )
+              public Builder color(@org.jetbrains.annotations.NotNull android.graphics.Color color) {
+                if (color == null) {
+                  return this;
+                }
+                if (this.mVarArgsWildcardPropTest.colors == java.util.Collections.EMPTY_LIST) {
+                  this.mVarArgsWildcardPropTest.colors = new java.util.ArrayList<android.graphics.Color>();
+                }
+                this.mVarArgsWildcardPropTest.colors.add(color);
+                return this;
+              }
 
-                      @com.facebook.litho.annotations.PropSetter(
-                          value = "colors",
-                          required = false
-                      )
-                      public Builder colors(
-                          @org.jetbrains.annotations.NotNull java.util.List<android.graphics.Color> colors) {
-                        if (colors == null) {
-                          return this;
-                        }
-                        if (this.mVarArgsWildcardPropTest.colors.isEmpty()) {
-                          this.mVarArgsWildcardPropTest.colors = colors;
-                        } else {
-                          this.mVarArgsWildcardPropTest.colors.addAll(colors);
-                        }
-                        return this;
-                      }
+              @com.facebook.litho.annotations.PropSetter(
+                  value = "colors",
+                  required = false
+              )
+              public Builder colors(
+                  @org.jetbrains.annotations.NotNull java.util.List<android.graphics.Color> colors) {
+                if (colors == null) {
+                  return this;
+                }
+                if (this.mVarArgsWildcardPropTest.colors.isEmpty()) {
+                  this.mVarArgsWildcardPropTest.colors = colors;
+                } else {
+                  this.mVarArgsWildcardPropTest.colors.addAll(colors);
+                }
+                return this;
+              }
 
-                      @java.lang.Override
-                      public Builder getThis() {
-                        return this;
-                      }
+              @java.lang.Override
+              public Builder getThis() {
+                return this;
+              }
 
-                      @java.lang.Override
-                      public com.facebook.litho.specmodels.generator.VarArgsWildcardPropTest build() {
-                        validate();
-                        return mVarArgsWildcardPropTest;
-                      }
-                    }
-                    
-                """
-                .trimIndent())
+              @java.lang.Override
+              public com.facebook.litho.specmodels.generator.VarArgsWildcardPropTest build() {
+                validate();
+                return mVarArgsWildcardPropTest;
+              }
+            }
+
+            """
+                .trimIndent(),
+        )
   }
 }

@@ -35,6 +35,7 @@ import static com.facebook.rendercore.utils.CommonUtils.getSectionNameForTracing
 
 import android.animation.AnimatorInflater;
 import android.animation.StateListAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -48,13 +49,11 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.DimenRes;
 import androidx.annotation.Dimension;
 import androidx.annotation.DrawableRes;
-import androidx.annotation.GuardedBy;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
-import androidx.core.content.ContextCompat;
 import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.ReturnsOwnership;
@@ -65,13 +64,22 @@ import com.facebook.litho.config.ComponentEqualityMode;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.LithoDebugConfigurations;
 import com.facebook.litho.debug.DebugInfoReporter;
+import com.facebook.litho.debug.LithoDebugEventAttributes;
+import com.facebook.litho.debug.VisibilityCallbackCommonPropsTracker;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.rendercore.Equivalence;
 import com.facebook.rendercore.LayoutCache;
+import com.facebook.rendercore.LayoutResult;
 import com.facebook.rendercore.LogLevel;
 import com.facebook.rendercore.ResourceResolver;
 import com.facebook.rendercore.debug.DebugEventAttribute;
+import com.facebook.rendercore.visibility.FocusedVisibleEvent;
+import com.facebook.rendercore.visibility.FullImpressionVisibleEvent;
+import com.facebook.rendercore.visibility.InvisibleEvent;
+import com.facebook.rendercore.visibility.UnfocusedVisibleEvent;
+import com.facebook.rendercore.visibility.VisibilityChangedEvent;
+import com.facebook.rendercore.visibility.VisibleEvent;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
@@ -83,10 +91,10 @@ import com.facebook.yoga.YogaWrap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
@@ -105,9 +113,18 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
   // integration tests.
   static final int ERROR_EVENT_HANDLER_ID = "__internalOnErrorHandler".hashCode();
   static final YogaMeasureFunction sMeasureFunction = new LithoYogaMeasureFunction();
+  static final YogaMeasureFunction sMinContentMeasureFunction =
+      new LithoYogaMinContentMeasureFunction();
 
-  @GuardedBy("sTypeIdByComponentType")
-  private static final Map<Object, Integer> sTypeIdByComponentType = new HashMap<>();
+  /** Maps each component type (usually a {@link Class}) to its stable integer ID. Hot path. */
+  private static final ConcurrentHashMap<Object, Integer> sTypeToId = new ConcurrentHashMap<>();
+
+  /**
+   * Reverse of {@link #sTypeToId}. Used only for debug/tracing to resolve an integer ID back to a
+   * human-readable type name. Populated inside {@link #getOrCreateId} together with {@link
+   * #sTypeToId}.
+   */
+  private static final ConcurrentHashMap<Integer, Object> sIdToType = new ConcurrentHashMap<>();
 
   private static final AtomicInteger sComponentTypeId = new AtomicInteger();
   private static final String MISMATCHING_BASE_CONTEXT = "Component:MismatchingBaseContext";
@@ -121,15 +138,45 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
    *     Allocated IDs map 1-to-1 with objects passed to this method.
    */
   static int getOrCreateId(Object type) {
-    synchronized (sTypeIdByComponentType) {
-      final Integer typeId = sTypeIdByComponentType.get(type);
-      if (typeId != null) {
-        return typeId;
-      }
-      final int nextTypeId = sComponentTypeId.incrementAndGet();
-      sTypeIdByComponentType.put(type, nextTypeId);
-      return nextTypeId;
+    Integer existing = sTypeToId.get(type);
+    if (existing != null) {
+      return existing;
     }
+    // Use putIfAbsent instead of computeIfAbsent to avoid generating a synthetic lambda class
+    // that requires desugaring on API < 24. The desugared class
+    // (Component$$ExternalSyntheticLambda0) was being stripped, causing NoClassDefFoundError
+    // on Android 5.x/6.x devices.
+    final int nextTypeId = sComponentTypeId.incrementAndGet();
+    Integer prev = sTypeToId.putIfAbsent(type, nextTypeId);
+    if (prev != null) {
+      return prev;
+    }
+    sIdToType.put(nextTypeId, type);
+    return nextTypeId;
+  }
+
+  /**
+   * Returns the stable class name represented by {@code typeId}, or {@code null} when the id was
+   * allocated for a non-class identity.
+   *
+   * <p>Component type ids are allocated from a process-local counter and must not be persisted
+   * directly. Callers that need an identity across process recreation can use the class name.
+   */
+  static @Nullable String typeNameForId(int typeId) {
+    Object type = sIdToType.get(typeId);
+    if (type == null) {
+      // A concurrent getOrCreateId caller can observe the forward entry before the winner has
+      // populated the reverse map. Repair that rare race here instead of adding work to the
+      // component-construction hot path.
+      for (Map.Entry<Object, Integer> entry : sTypeToId.entrySet()) {
+        if (entry.getValue() == typeId) {
+          type = entry.getKey();
+          sIdToType.putIfAbsent(typeId, type);
+          break;
+        }
+      }
+    }
+    return type instanceof Class<?> ? ((Class<?>) type).getName() : null;
   }
 
   private final int mTypeId;
@@ -163,11 +210,21 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     mTypeId = getOrCreateId(identityHashCode);
   }
 
+  /**
+   * Adopt the type identity (and therefore the auto-generated global key) of another Component
+   * class. Used e.g. by the KComponent flexbox Column/Row to share identity with the classic
+   * Spec-generated Column/Row, so migrating between them does not change global keys (visibility
+   * ids, {@code @State}, transitions). A manual key set at the callsite still takes precedence.
+   */
+  protected Component(Class<? extends Component> typeIdClass) {
+    mTypeId = getOrCreateId(typeIdClass);
+  }
+
   @ThreadSafe(enableChecks = false)
   public final Object createMountContent(Context c) {
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
-      ComponentsSystrace.beginSection("createMountContent:" + ((Component) this).getSimpleName());
+      ComponentsSystrace.beginSection("mount.createContent:" + ((Component) this).getSimpleName());
     }
     try {
       return onCreateMountContent(c);
@@ -209,6 +266,16 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
   }
 
   protected boolean isPureRender() {
+    return false;
+  }
+
+  /**
+   * @return whether this component contributes a real min-content size to CSS Flexbox §4.5
+   *     automatic minimum sizing. Default false means it contributes 0 (the auto-min probe is
+   *     short-circuited for this node). MountSpecs opt in via {@code @MountSpec(hasIntrinsicSize =
+   *     true)}.
+   */
+  protected boolean hasIntrinsicSize() {
     return false;
   }
 
@@ -301,7 +368,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       return true;
     }
 
-    return !ComponentUtils.isEquivalent(previous, next, false)
+    return !ComponentUtils.isEquivalent(previous, next)
         || !ComponentUtils.hasEquivalentState(prevStateContainer, nextStateContainer);
   }
 
@@ -316,7 +383,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       return null;
     }
 
-    return c.getStateUpdater().getEventTrigger(c.getGlobalKey() + id + key);
+    return c.getStateUpdater().getEventTrigger(new EventTriggerKey(c.getGlobalKey(), id, key));
   }
 
   @Nullable
@@ -441,30 +508,79 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
   }
 
   /**
-   * Measure a component with the given {@link SizeSpec} constrain.
+   * Measure a component with the given {@link SizeSpec} constraint.
+   *
+   * <p><b>Delicate API:</b> This API is delicate as it can lead to undefined behaviors when called
+   * during resolve. The method should be used strictly during **layout**, otherwise, an
+   * IllegalStateException will be thrown when {@link
+   * ComponentsConfiguration#measureInResolvePolicy} is set to {@link
+   * ComponentsConfiguration.LogicViolationPolicy#CRASH}
+   *
+   * <p>To avoid this issue, use the {@code RenderWithConstraints} API for Kotlin Components, which
+   * defers component creation until layout phase. As such, it provides {@code SizeConstraints} that
+   * can be used directly, and if needed, a safe API to measure child components. For {@code
+   * LayoutSpec} components that need to measure their children, the
+   * {@code @OnCreateLayoutWithSizeSpec} annotation should be used instead.
    *
    * @param c {@link ComponentContext}.
-   * @param widthSpec Width {@link SizeSpec} constrain.
-   * @param heightSpec Height {@link SizeSpec} constrain.
+   * @param widthSpec Width {@link SizeSpec} constraint.
+   * @param heightSpec Height {@link SizeSpec} constraint.
    * @param outputSize Size object that will be set with the measured dimensions.
+   * @throws IllegalStateException if called during the resolve phase and measureInResolvePolicy is
+   *     set to CRASH.
    */
   public final void measure(ComponentContext c, int widthSpec, int heightSpec, Size outputSize) {
     measure(c, widthSpec, heightSpec, outputSize, true);
   }
 
+  /**
+   * Measure a component with the given {@link SizeSpec} constraint.
+   *
+   * <p><b>Delicate API:</b> This API is delicate as it can lead to undefined behaviors when called
+   * during resolve. The method should be used strictly during **layout**, otherwise, an
+   * IllegalStateException will be thrown when {@link
+   * ComponentsConfiguration#measureInResolvePolicy} is set to {@link
+   * ComponentsConfiguration.LogicViolationPolicy#CRASH}
+   *
+   * <p>To avoid this issue, use the {@code RenderWithConstraints} API for Kotlin Components, which
+   * defers component creation until layout phase. As such, it provides {@code SizeConstraints} that
+   * can be used directly, and if needed, a safe API to measure child components. For {@code
+   * LayoutSpec} components that need to measure their children, the
+   * {@code @OnCreateLayoutWithSizeSpec} annotation should be used instead.
+   *
+   * @param c {@link ComponentContext}.
+   * @param widthSpec Width {@link SizeSpec} constraint.
+   * @param heightSpec Height {@link SizeSpec} constraint.
+   * @param outputSize Size object that will be set with the measured dimensions.
+   * @param shouldCacheResult Whether the measurement result should be cached for future use.
+   * @throws IllegalStateException if called during the resolve phase and measureInResolvePolicy is
+   *     set to CRASH.
+   */
   public final void measure(
       final ComponentContext c,
       final int widthSpec,
       final int heightSpec,
       final Size outputSize,
       final boolean shouldCacheResult) {
+    final @Nullable LayoutResult result = measure(c, widthSpec, heightSpec, shouldCacheResult);
+    outputSize.width = result == null ? 0 : result.getWidth();
+    outputSize.height = result == null ? 0 : result.getHeight();
+  }
+
+  final @Nullable LayoutResult measure(
+      final ComponentContext c,
+      final int widthSpec,
+      final int heightSpec,
+      final boolean shouldCacheResult) {
 
     final CalculationContext calculationContext = c.getCalculationStateContext();
     final ComponentsConfiguration.LogicViolationPolicy violationPolicy =
-        ComponentsConfiguration.defaultInstance.stateReadViolationPolicy;
+        ComponentsConfiguration.defaultInstance.measureInResolvePolicy;
     if (calculationContext instanceof ResolveContext
-        && !((ResolveContext) calculationContext).isInLayout()) {
-      if (violationPolicy == ComponentsConfiguration.LogicViolationPolicy.CRASH) {
+        && !((ResolveContext) calculationContext).isInLayout()
+        && violationPolicy != ComponentsConfiguration.LogicViolationPolicy.NONE) {
+      if (violationPolicy == ComponentsConfiguration.LogicViolationPolicy.CRASH
+          && !c.isIgnoreMeasureInResolve()) {
         throw new IllegalStateException(
             getSimpleName()
                 + ": Measuring a component during resolve is forbidden as "
@@ -477,16 +593,14 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
             attr -> {
               Component scope = c.getComponentScope();
               if (scope != null) {
-                attr.put(DebugEventAttribute.Key, c.getGlobalKey());
-                attr.put(DebugEventAttribute.Source, scope);
+                attr.put(DebugEventAttribute.Source, scope.getFullyQualifiedName());
               }
-              attr.put("measured.component", toString());
-              attr.put("measured.key", getKey());
+              attr.put("measured.component", getFullyQualifiedName());
 
               StringBuilder sb = new StringBuilder();
               StackTraceElement[] traces = Thread.currentThread().getStackTrace();
               for (int i = 5; i < 15; i++) sb.append(traces[i]).append("\n");
-              attr.put("stacktrace", sb.toString());
+              attr.put(LithoDebugEventAttributes.Stack, sb.toString());
 
               return Unit.INSTANCE;
             });
@@ -502,8 +616,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       } else {
         // Not caching, so redirect to measureMightNotCacheInternalNode that will setup a temp
         // state-context and call this method again.
-        measureMightNotCacheInternalNode(c, widthSpec, heightSpec, outputSize);
-        return;
+        return measureMightNotCacheInternalNode(c, widthSpec, heightSpec);
       }
     }
 
@@ -514,8 +627,11 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     final TreeState treeState = calculationContext.getTreeState();
     final ResolveContext mainRsc =
         calculationContext instanceof ResolveContext ? (ResolveContext) calculationContext : null;
+    final @Nullable LithoLayoutContext enclosingLsc =
+        LayoutUtils.getEnclosingLayoutContext(calculationContext);
 
-    LithoLayoutResult lastMeasuredLayout = resultCache.getCachedResult(this);
+    final @Nullable LithoLayoutResult lastMeasuredLayout = resultCache.getCachedResult(this);
+    final @Nullable LithoLayoutResult resultToReturn;
 
     if (lastMeasuredLayout == null
         || !MeasureComparisonUtils.isMeasureSpecCompatible(
@@ -544,16 +660,16 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
                   calculationContext.isAccessibilityEnabled(),
                   null,
                   null,
-                  true);
+                  true,
+                  calculationContext.getScopesToUpdate(),
+                  enclosingLsc);
           c.setRenderStateContext(nestedRsc);
 
           node = Resolver.resolveTree(nestedRsc, c, this);
         }
 
         if (mainRsc != null && mainRsc.isResolveInterrupted() && node != null) {
-          outputSize.width = 0;
-          outputSize.height = 0;
-          return;
+          return null;
         }
 
         final LithoLayoutContext nestedLsc =
@@ -567,33 +683,39 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
                 calculationContext.isAccessibilityEnabled(),
                 new LayoutCache(),
                 null,
-                null);
+                null,
+                calculationContext.getScopesToUpdate());
 
-        lastMeasuredLayout =
-            Layout.measureTree(nestedLsc, c.getAndroidContext(), node, widthSpec, heightSpec);
+        LayoutUtils.inheritReflowInputs(nestedLsc, enclosingLsc);
 
-        if (lastMeasuredLayout == null) {
-          outputSize.width = 0;
-          outputSize.height = 0;
-          return;
+        LithoLayoutResult result =
+            LayoutUtils.measureTree(nestedLsc, c.getAndroidContext(), node, widthSpec, heightSpec);
+
+        if (result == null) {
+          return null;
         }
 
         CalculationContext.recordEventHandlers(nestedRsc, prevContext);
         CalculationContext.recordEventHandlers(nestedLsc, prevContext);
+        LayoutUtils.mergeReflowTargetSizes(enclosingLsc, nestedLsc);
+
+        resultToReturn = result;
 
       } finally {
         c.setCalculationStateContext(prevContext);
       }
 
       // Add the cached result.
-      resultCache.addCachedResult(this, lastMeasuredLayout.getNode(), lastMeasuredLayout);
+      resultCache.addCachedResult(this, resultToReturn.getNode(), resultToReturn);
+    } else {
+      resultToReturn = lastMeasuredLayout;
     }
-    outputSize.width = lastMeasuredLayout.getWidth();
-    outputSize.height = lastMeasuredLayout.getHeight();
 
     if (!shouldCacheResult) {
       resultCache.clearCache(this);
     }
+
+    return resultToReturn;
   }
 
   /**
@@ -616,11 +738,19 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
   @Deprecated
   public final void measureMightNotCacheInternalNode(
       ComponentContext c, int widthSpec, int heightSpec, Size outputSize) {
+    final @Nullable LayoutResult result =
+        measureMightNotCacheInternalNode(c, widthSpec, heightSpec);
+    outputSize.width = result == null ? 0 : result.getWidth();
+    outputSize.height = result == null ? 0 : result.getHeight();
+  }
+
+  @Deprecated
+  final @Nullable LayoutResult measureMightNotCacheInternalNode(
+      ComponentContext c, int widthSpec, int heightSpec) {
     final CalculationContext prevContext = c.getCalculationStateContext();
 
     if (prevContext != null && !prevContext.isFutureReleased()) {
-      measure(c, widthSpec, heightSpec, outputSize);
-      return;
+      return measure(c, widthSpec, heightSpec, true);
     }
 
     try {
@@ -630,8 +760,8 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       if (lithoTree == null) {
         // This is a temporary tree that will be only used as a way of measuring a component.
         // we could be using a treeless context here as well. Might be worth revisiting later.
-        ComponentTree ct = ComponentTree.create(c).build();
-        componentTreeId = ct.mId;
+        ComponentTree ct = ComponentTree.create(c).enableChildClipping(true).build();
+        componentTreeId = ct.getId();
 
         c =
             new ComponentContext(
@@ -639,7 +769,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
                 c.getTreePropContainer(),
                 ct.getLithoConfiguration(),
                 LithoTree.Companion.create(ct, ct),
-                c.mGlobalKey,
+                c.getNullableGlobalKey(),
                 c.getLithoVisibilityEventsController(),
                 null,
                 c.getParentTreePropContainer());
@@ -668,7 +798,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       // At this point we're trying to measure the Component outside of a layout calculation.
       // The state values are irrelevant in this scenario - outside of a layout calculation they
       // should bethe default/initial values.
-      measure(c, widthSpec, heightSpec, outputSize, false);
+      return measure(c, widthSpec, heightSpec, false);
     } finally {
       c.setCalculationStateContext(prevContext);
     }
@@ -677,7 +807,6 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
   @Nullable
   final LithoNode consumeLayoutCreatedInWillRender(
       final @Nullable ResolveContext resolveContext, @Nullable ComponentContext context) {
-    LithoNode layout;
 
     if (context == null || resolveContext == null) {
       return null;
@@ -876,16 +1005,14 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     return component != null && component.isPureRender();
   }
 
+  static boolean hasIntrinsicSize(@Nullable Component component) {
+    return component != null && component.hasIntrinsicSize();
+  }
+
   /** Store a working range information into a list for later use by {@link LayoutState}. */
   protected static void registerWorkingRange(
-      ComponentContext scopedContext,
-      String name,
-      WorkingRange workingRange,
-      Component component,
-      String globalKey) {
-    scopedContext
-        .getScopedComponentInfo()
-        .registerWorkingRange(name, workingRange, component, globalKey);
+      ComponentContext scopedContext, String name, WorkingRange workingRange, Component component) {
+    scopedContext.getScopedComponentInfo().registerWorkingRange(name, workingRange, component);
   }
 
   protected static @Nullable <T> T retrieveValue(@Nullable DynamicValue<T> dynamicValue) {
@@ -921,8 +1048,8 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
   }
 
   @Override
-  public final boolean equals(@Nullable Object obj) {
-    return super.equals(obj);
+  public final boolean equals(@Nullable Object other) {
+    return super.equals(other);
   }
 
   @Override
@@ -959,6 +1086,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     protected final ResourceResolver mResourceResolver;
     private final ComponentContext mContext;
     private SpecGeneratedComponent mComponent;
+    private @Nullable VisibilityCallbackCommonPropsTracker mVisibilityCallbackTracker;
 
     protected Builder(
         ComponentContext c,
@@ -980,7 +1108,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
 
       final Component owner = getOwner();
       if (owner != null) {
-        mComponent.setOwnerGlobalKey(mContext.getGlobalKey());
+        mComponent.setOwnerGlobalKey(mContext.getNullableGlobalKey());
       }
 
       if (defStyleAttr != 0 || defStyleRes != 0) {
@@ -1017,7 +1145,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
           if (hasZeroAlpha && isInteractable) {
             DebugInfoReporter.report(
                 "ZeroAlphaComponent",
-                LogLevel.WARNING,
+                LogLevel.DEBUG,
                 (Map<String, Object> attrs) -> {
                   attrs.put("isSpec", true);
                   attrs.put("component", mComponent.getSimpleName());
@@ -1104,7 +1232,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
      *
      * @param value controller for the alpha value
      */
-    public T alpha(DynamicValue<Float> value) {
+    public T alpha(@Nullable DynamicValue<Float> value) {
       mComponent.getOrCreateCommonDynamicProps().put(KEY_ALPHA, value);
       return getThis();
     }
@@ -1157,7 +1285,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
      *
      * @param value controller for the background drawable
      */
-    public T backgroundDynamicDrawable(DynamicValue<? extends Drawable> value) {
+    public T backgroundDynamicDrawable(@Nullable DynamicValue<? extends Drawable> value) {
       mComponent.getOrCreateCommonDynamicProps().put(KEY_BACKGROUND_DRAWABLE, value);
       return getThis();
     }
@@ -1167,7 +1295,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
         return background(null);
       }
 
-      return background(ContextCompat.getDrawable(mContext.getAndroidContext(), resId));
+      return background(mResourceResolver.resolveDrawableRes(resId));
     }
 
     public T border(@Nullable Border border) {
@@ -1196,6 +1324,22 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
      */
     public T clipChildren(boolean clipChildren) {
       mComponent.getOrCreateCommonProps().clipChildren(clipChildren);
+      return getThis();
+    }
+
+    /**
+     * Ports {@link android.view.View#setDefaultFocusHighlightEnabled(boolean)} into components
+     * world. Only effective on API 26+ (Android O); a no-op on older API levels. Setting this
+     * property will cause the Component to be represented as a View at mount time if it wasn't
+     * going to already.
+     *
+     * @param defaultFocusHighlightEnabled false to suppress the platform default focus highlight on
+     *     the mounted View.
+     */
+    public T defaultFocusHighlightEnabled(boolean defaultFocusHighlightEnabled) {
+      mComponent
+          .getOrCreateCommonProps()
+          .defaultFocusHighlightEnabled(defaultFocusHighlightEnabled);
       return getThis();
     }
 
@@ -1379,7 +1523,21 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     }
 
     public T focusedHandler(@Nullable EventHandler<FocusedVisibleEvent> focusedHandler) {
+      return focusedHandler(0, 0, focusedHandler);
+    }
+
+    public T focusedHandler(
+        float visibleWidthRatio,
+        float visibleHeightRatio,
+        @Nullable EventHandler<FocusedVisibleEvent> focusedHandler) {
       mComponent.getOrCreateCommonProps().focusedHandler(focusedHandler);
+      getOrCreateVisibilityCallbackTracker().incrementOnFocusedCount();
+      if (visibleWidthRatio != 0) {
+        mComponent.getOrCreateCommonProps().visibleWidthRatio(visibleWidthRatio);
+      }
+      if (visibleHeightRatio != 0) {
+        mComponent.getOrCreateCommonProps().visibleHeightRatio(visibleHeightRatio);
+      }
       return getThis();
     }
 
@@ -1409,7 +1567,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       return foreground(ComparableColorDrawable.create(foregroundColor));
     }
 
-    public T foregroundColor(DynamicValue<Integer> value) {
+    public T foregroundColor(@Nullable DynamicValue<Integer> value) {
       mComponent.getOrCreateCommonDynamicProps().put(KEY_FOREGROUND_COLOR, value);
       return getThis();
     }
@@ -1419,12 +1577,26 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
         return foreground(null);
       }
 
-      return foreground(ContextCompat.getDrawable(mContext.getAndroidContext(), resId));
+      return foreground(mResourceResolver.resolveDrawableRes(resId));
     }
 
     public T fullImpressionHandler(
         @Nullable EventHandler<FullImpressionVisibleEvent> fullImpressionHandler) {
+      return fullImpressionHandler(0, 0, fullImpressionHandler);
+    }
+
+    public T fullImpressionHandler(
+        float visibleWidthRatio,
+        float visibleHeightRatio,
+        @Nullable EventHandler<FullImpressionVisibleEvent> fullImpressionHandler) {
       mComponent.getOrCreateCommonProps().fullImpressionHandler(fullImpressionHandler);
+      getOrCreateVisibilityCallbackTracker().incrementOnFullImpressionCount();
+      if (visibleWidthRatio != 0) {
+        mComponent.getOrCreateCommonProps().visibleWidthRatio(visibleWidthRatio);
+      }
+      if (visibleHeightRatio != 0) {
+        mComponent.getOrCreateCommonProps().visibleHeightRatio(visibleHeightRatio);
+      }
       return getThis();
     }
 
@@ -1515,7 +1687,21 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     }
 
     public T invisibleHandler(@Nullable EventHandler<InvisibleEvent> invisibleHandler) {
+      return invisibleHandler(0, 0, invisibleHandler);
+    }
+
+    public T invisibleHandler(
+        float visibleWidthRatio,
+        float visibleHeightRatio,
+        @Nullable EventHandler<InvisibleEvent> invisibleHandler) {
       mComponent.getOrCreateCommonProps().invisibleHandler(invisibleHandler);
+      getOrCreateVisibilityCallbackTracker().incrementOnInvisibleCount();
+      if (visibleWidthRatio != 0) {
+        mComponent.getOrCreateCommonProps().visibleWidthRatio(visibleWidthRatio);
+      }
+      if (visibleHeightRatio != 0) {
+        mComponent.getOrCreateCommonProps().visibleHeightRatio(visibleHeightRatio);
+      }
       return getThis();
     }
 
@@ -2030,7 +2216,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
      *
      * @param value controller for the scaleX value
      */
-    public T scaleX(DynamicValue<Float> value) {
+    public T scaleX(@Nullable DynamicValue<Float> value) {
       mComponent.getOrCreateCommonDynamicProps().put(KEY_SCALE_X, value);
       return getThis();
     }
@@ -2040,7 +2226,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
      *
      * @param value controller for the scaleY value
      */
-    public T scaleY(DynamicValue<Float> value) {
+    public T scaleY(@Nullable DynamicValue<Float> value) {
       mComponent.getOrCreateCommonDynamicProps().put(KEY_SCALE_Y, value);
       return getThis();
     }
@@ -2113,7 +2299,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
      *
      * @param value controller for the elevation value
      */
-    public T shadowElevation(DynamicValue<Float> value) {
+    public T shadowElevation(@Nullable DynamicValue<Float> value) {
       mComponent.getOrCreateCommonDynamicProps().put(KEY_ELEVATION, value);
       return getThis();
     }
@@ -2212,7 +2398,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
      *
      * @param value controller for the translationY value
      */
-    public T translationX(DynamicValue<Float> value) {
+    public T translationX(@Nullable DynamicValue<Float> value) {
       mComponent.getOrCreateCommonDynamicProps().put(KEY_TRANSLATION_X, value);
       return getThis();
     }
@@ -2222,7 +2408,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
      *
      * @param value controller for the translationY value
      */
-    public T translationY(DynamicValue<Float> value) {
+    public T translationY(@Nullable DynamicValue<Float> value) {
       mComponent.getOrCreateCommonDynamicProps().put(KEY_TRANSLATION_Y, value);
       return getThis();
     }
@@ -2232,13 +2418,27 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
      *
      * @param value controller for the translationZ value
      */
-    public T translationZ(DynamicValue<Float> value) {
+    public T translationZ(@Nullable DynamicValue<Float> value) {
       mComponent.getOrCreateCommonDynamicProps().put(KEY_TRANSLATION_Z, value);
       return getThis();
     }
 
     public T unfocusedHandler(@Nullable EventHandler<UnfocusedVisibleEvent> unfocusedHandler) {
+      return unfocusedHandler(0, 0, unfocusedHandler);
+    }
+
+    public T unfocusedHandler(
+        float visibleWidthRatio,
+        float visibleHeightRatio,
+        @Nullable EventHandler<UnfocusedVisibleEvent> unfocusedHandler) {
       mComponent.getOrCreateCommonProps().unfocusedHandler(unfocusedHandler);
+      getOrCreateVisibilityCallbackTracker().incrementOnUnfocusedCount();
+      if (visibleWidthRatio != 0) {
+        mComponent.getOrCreateCommonProps().visibleWidthRatio(visibleWidthRatio);
+      }
+      if (visibleHeightRatio != 0) {
+        mComponent.getOrCreateCommonProps().visibleHeightRatio(visibleHeightRatio);
+      }
       return getThis();
     }
 
@@ -2270,22 +2470,40 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
 
     public T visibilityChangedHandler(
         @Nullable EventHandler<VisibilityChangedEvent> visibilityChangedHandler) {
+      return visibilityChangedHandler(0, 0, visibilityChangedHandler);
+    }
+
+    public T visibilityChangedHandler(
+        float visibleWidthRatio,
+        float visibleHeightRatio,
+        @Nullable EventHandler<VisibilityChangedEvent> visibilityChangedHandler) {
       mComponent.getOrCreateCommonProps().visibilityChangedHandler(visibilityChangedHandler);
+      getOrCreateVisibilityCallbackTracker().incrementOnVisibilityChangedCount();
+      if (visibleWidthRatio != 0) {
+        mComponent.getOrCreateCommonProps().visibleWidthRatio(visibleWidthRatio);
+      }
+      if (visibleHeightRatio != 0) {
+        mComponent.getOrCreateCommonProps().visibleHeightRatio(visibleHeightRatio);
+      }
       return getThis();
     }
 
     public T visibleHandler(@Nullable EventHandler<VisibleEvent> visibleHandler) {
+      return visibleHandler(0, 0, visibleHandler);
+    }
+
+    public T visibleHandler(
+        float visibleWidthRatio,
+        float visibleHeightRatio,
+        @Nullable EventHandler<VisibleEvent> visibleHandler) {
       mComponent.getOrCreateCommonProps().visibleHandler(visibleHandler);
-      return getThis();
-    }
-
-    public T visibleHeightRatio(float visibleHeightRatio) {
-      mComponent.getOrCreateCommonProps().visibleHeightRatio(visibleHeightRatio);
-      return getThis();
-    }
-
-    public T visibleWidthRatio(float visibleWidthRatio) {
-      mComponent.getOrCreateCommonProps().visibleWidthRatio(visibleWidthRatio);
+      getOrCreateVisibilityCallbackTracker().incrementOnVisibleCount();
+      if (visibleWidthRatio != 0) {
+        mComponent.getOrCreateCommonProps().visibleWidthRatio(visibleWidthRatio);
+      }
+      if (visibleHeightRatio != 0) {
+        mComponent.getOrCreateCommonProps().visibleHeightRatio(visibleHeightRatio);
+      }
       return getThis();
     }
 
@@ -2374,6 +2592,14 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       return mContext.getComponentScope();
     }
 
+    private VisibilityCallbackCommonPropsTracker getOrCreateVisibilityCallbackTracker() {
+      if (mVisibilityCallbackTracker == null) {
+        mVisibilityCallbackTracker =
+            new VisibilityCallbackCommonPropsTracker(mComponent, getOwner());
+      }
+      return mVisibilityCallbackTracker;
+    }
+
     /**
      * Note: This is exposed for backwards compatibility with the Kotlin API to allow applying
      * common props via Style without moving Style into Java. Use with caution since at this point
@@ -2439,6 +2665,8 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
 
     public abstract T child(@Nullable Component.Builder<?> child);
 
+    public abstract T children(List<Component> children);
+
     /**
      * The JustifyContent property describes how to align children within the main axis of a
      * container. For example, you can use this property to center a child horizontally within a
@@ -2484,18 +2712,70 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     return parentTreePropContainer == null ? null : parentTreePropContainer.get(key);
   }
 
-  static LinkedList<String> generateHierarchy(String globalKey) {
+  public static LinkedList<String> generateHierarchy(String globalKey) {
     LinkedList<String> list = new LinkedList<>();
     String[] keys = globalKey.split(",");
 
-    synchronized (sTypeIdByComponentType) {
-      for (String key : keys) {
-        String name = ComponentKeyUtils.mapToSimpleName(key, sTypeIdByComponentType);
-        list.add(name);
+    for (String key : keys) {
+      String name = ComponentKeyUtils.formatKeySegment(key, sIdToType);
+      list.add(name);
+    }
+
+    return list;
+  }
+
+  /**
+   * Extracts the parent component's simple name directly from the GlobalKey structure.
+   *
+   * @see ComponentKeyUtils#parentNameFromKey
+   */
+  @Nullable
+  public static String parentNameFromKey(@Nullable GlobalKey globalKey) {
+    return ComponentKeyUtils.parentNameFromKey(globalKey, sIdToType);
+  }
+
+  public static LinkedList<String> generateHierarchy(GlobalKey globalKey) {
+    if (globalKey instanceof StringGlobalKey) {
+      return generateHierarchy(globalKey.toString());
+    }
+
+    // Structural keys: walk parent chain and resolve each segment directly
+    LinkedList<String> list = new LinkedList<>();
+    GlobalKey current = globalKey;
+    while (current != null) {
+      if (current instanceof DefaultGlobalKey) {
+        int typeId = (int) current.getKey();
+        String name = resolveTypeId(typeId);
+        list.addFirst(name);
+        current = current.getParent();
+      } else if (current instanceof ManualGlobalKey) {
+        // Manual key: use the key string directly (cannot be resolved to a component name)
+        list.addFirst((String) current.getKey());
+        current = current.getParent();
+      } else {
+        // StringGlobalKey ancestor: parse its string and prepend
+        LinkedList<String> parentHierarchy = generateHierarchy(current.toString());
+        for (int i = parentHierarchy.size() - 1; i >= 0; i--) {
+          String name = parentHierarchy.get(i);
+          list.addFirst(name != null ? name : "null");
+        }
+        break;
       }
     }
 
     return list;
+  }
+
+  @SuppressLint("ReflectionMethodUse") // mirrors existing mapToSimpleName logic
+  private static String resolveTypeId(int typeId) {
+    Object type = sIdToType.get(typeId);
+    if (type == null) {
+      return "id(" + typeId + ")";
+    }
+    if (type instanceof Class<?>) {
+      return "<cls>" + ((Class<?>) type).getName() + "</cls>";
+    }
+    return type.toString();
   }
 
   /**
@@ -2515,7 +2795,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     }
   }
 
-  public <T> T getDebugAttribute(AttributeKey<T> attributeKey) {
+  public <T> @Nullable T getDebugAttribute(AttributeKey<T> attributeKey) {
     if (mDebugAttributesHolder == null) {
       throw new RuntimeException("This shouldn't get accessed when not initialized");
     }

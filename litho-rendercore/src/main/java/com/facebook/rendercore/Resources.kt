@@ -27,6 +27,12 @@ import androidx.annotation.IntegerRes
 import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
 
+/** Return a text (styled CharSequence) for a resource ID. */
+fun BaseResourcesScope.textRes(@StringRes id: Int): CharSequence =
+    requireNotNull(resourceResolver.resolveText(id)) {
+      "Text resource not found for ID #0x${Integer.toHexString(id)}"
+    }
+
 /** Return a string for a resource ID. */
 fun BaseResourcesScope.stringRes(@StringRes id: Int): String =
     requireNotNull(resourceResolver.resolveStringRes(id)) {
@@ -34,13 +40,13 @@ fun BaseResourcesScope.stringRes(@StringRes id: Int): String =
     }
 
 /** Return a string for a resource ID, substituting the format arguments with [arg]. */
-fun BaseResourcesScope.stringRes(@StringRes id: Int, arg: Any): String =
+fun BaseResourcesScope.stringRes(@StringRes id: Int, arg: Any?): String =
     requireNotNull(resourceResolver.resolveStringRes(id, arg)) {
       "String resource not found for ID #0x${Integer.toHexString(id)}"
     }
 
 /** Return a string for a resource ID, substituting the format arguments with [formatArgs]. */
-fun BaseResourcesScope.stringRes(@StringRes id: Int, vararg formatArgs: Any): String =
+fun BaseResourcesScope.stringRes(@StringRes id: Int, vararg formatArgs: Any?): String =
     requireNotNull(resourceResolver.resolveStringRes(id, *formatArgs)) {
       "String resource not found for ID #0x${Integer.toHexString(id)}"
     }
@@ -76,9 +82,9 @@ fun BaseResourcesScope.quantityStringRes(@PluralsRes id: Int, quantity: Int): St
 fun BaseResourcesScope.quantityStringRes(
     @PluralsRes id: Int,
     quantity: Int,
-    vararg formatArgs: Any
+    vararg formatArgs: Any?,
 ): String =
-    requireNotNull(resourceResolver.resolveQuantityStringRes(id, quantity, formatArgs)) {
+    requireNotNull(resourceResolver.resolveQuantityStringRes(id, quantity, *formatArgs)) {
       "String resource not found for ID #0x${Integer.toHexString(id)}"
     }
 
@@ -87,6 +93,14 @@ fun BaseResourcesScope.drawableRes(@DrawableRes id: Int): Drawable =
     requireNotNull(resourceResolver.resolveDrawableRes(id)) {
       "Drawable resource not found for ID #0x${Integer.toHexString(id)}"
     }
+
+/**
+ * Retrieve a [android.graphics.drawable.Drawable] for a resource ID as a [Drawable] instance, or
+ * null if the resource ID is zero or null.
+ */
+fun BaseResourcesScope.nullableDrawableRes(@DrawableRes id: Int?): Drawable? = id?.let { resId ->
+  resourceResolver.resolveDrawableRes(resId)
+}
 
 /**
  * Retrieve a [android.graphics.drawable.Drawable], corresponding to an attribute resource ID, as a
@@ -121,6 +135,22 @@ fun BaseResourcesScope.floatAttr(@AttrRes id: Int, @DimenRes defResId: Int = 0):
 /** Resolve a dimen resource ID as a [Dimen] value. */
 fun BaseResourcesScope.dimenRes(@DimenRes id: Int): Dimen =
     resourceResolver.resolveDimenSizeRes(id).px
+
+/**
+ * Return the dimension value for [id] in pixels as an Int. Use this when the caller needs raw pixel
+ * values (e.g., for View APIs that accept Int). Use [dimenRes] instead when the result will be
+ * passed to Style APIs that accept [Dimen].
+ */
+fun BaseResourcesScope.dimenPixelRes(@DimenRes id: Int): Int =
+    resourceResolver.resolveDimenSizeRes(id)
+
+/**
+ * Return the dimension value for [id] in pixels as an Int, using offset (truncation/floor)
+ * rounding. Use this for `getDimensionPixelOffset` replacements where truncation semantics must be
+ * preserved. Use [dimenPixelRes] for `getDimensionPixelSize` replacements (standard rounding).
+ */
+fun BaseResourcesScope.dimenPixelOffsetRes(@DimenRes id: Int): Int =
+    resourceResolver.resolveDimenOffsetRes(id)
 
 /** Return a dimen for an attribute resource ID. */
 fun BaseResourcesScope.dimenAttr(@AttrRes id: Int, @DimenRes defResId: Int = 0): Dimen =

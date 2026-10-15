@@ -16,6 +16,7 @@
 
 package com.facebook.litho
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.ContextWrapper
 import android.graphics.Rect
@@ -25,6 +26,11 @@ import android.util.Log
 import android.view.View
 import androidx.annotation.UiThread
 import androidx.annotation.VisibleForTesting
+import androidx.collection.LongObjectMap
+import androidx.collection.MutableScatterSet
+import androidx.collection.ScatterSet
+import androidx.collection.mutableLongObjectMapOf
+import androidx.collection.mutableScatterSetOf
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.findViewTreeLifecycleOwner
@@ -43,15 +49,32 @@ import com.facebook.litho.animation.AnimatedProperty
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.debug.DebugOverlay
 import com.facebook.litho.debug.DebugOverlay.Companion.getDebugOverlay
+import com.facebook.litho.debug.LithoDebugEvent
+import com.facebook.litho.debug.LithoDebugEventAttributes
+import com.facebook.litho.debug.formatMountSummaryByComponent
+import com.facebook.litho.state.BinderUpdateTracer
+import com.facebook.litho.state.StateId
 import com.facebook.litho.state.UiStateReadRecords
 import com.facebook.litho.stats.LithoStats.incrementComponentMountCount
+import com.facebook.litho.utils.IncrementalMountUtils
+import com.facebook.rendercore.BinderId
+import com.facebook.rendercore.LogLevel
 import com.facebook.rendercore.MountDelegateTarget
 import com.facebook.rendercore.MountState
 import com.facebook.rendercore.RenderCoreExtensionHost
 import com.facebook.rendercore.RenderTreeUpdateListener
+import com.facebook.rendercore.debug.DebugEventDispatcher
 import com.facebook.rendercore.extensions.RenderCoreExtension.Companion.onRegisterForPremount
 import com.facebook.rendercore.extensions.RenderCoreExtension.Companion.onUnregisterForPremount
+import com.facebook.rendercore.incrementalmount.GapWorkerMode
 import com.facebook.rendercore.transitions.AnimatedRootHost
+import com.facebook.rendercore.visibility.CachedVisibleRectProvider
+import com.facebook.rendercore.visibility.FocusedVisibleEvent
+import com.facebook.rendercore.visibility.FullImpressionVisibleEvent
+import com.facebook.rendercore.visibility.InvisibleEvent
+import com.facebook.rendercore.visibility.UnfocusedVisibleEvent
+import com.facebook.rendercore.visibility.VisibilityChangeReason
+import com.facebook.rendercore.visibility.VisibilityExtensionConfigs
 import com.facebook.rendercore.visibility.VisibilityMountExtension.VisibilityMountExtensionState
 import com.facebook.rendercore.visibility.VisibilityOutput
 import com.facebook.rendercore.visibility.VisibilityUtils.dispatchOnFocused
@@ -59,6 +82,7 @@ import com.facebook.rendercore.visibility.VisibilityUtils.dispatchOnFullImpressi
 import com.facebook.rendercore.visibility.VisibilityUtils.dispatchOnInvisible
 import com.facebook.rendercore.visibility.VisibilityUtils.dispatchOnUnfocused
 import com.facebook.rendercore.visibility.VisibilityUtils.dispatchOnVisible
+import com.facebook.rendercore.visibility.VisibleEvent
 import java.util.ArrayDeque
 import java.util.Deque
 
@@ -136,7 +160,11 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
 
   private var onDirtyMountListener: OnDirtyMountListener? = null
 
-  @get:JvmName("getUiStateReadRecords") internal val uiStateReadRecords = UiStateReadRecords(this)
+  private var onPassUnderTransientStateListener: OnPassUnderTransientStateListener? = null
+
+  @get:JvmName("getUiStateReadRecords")
+  internal val uiStateReadRecords: UiStateReadRecords =
+      UiStateReadRecords(this, BinderUpdateTracer())
 
   private val mountState = MountState(this, systrace, uiStateReadRecords)
 
@@ -154,16 +182,21 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
 
   private var skipMountingIfNotVisible = false
 
+  /**
+   * Tracks the most recent non-UNKNOWN visibility change reason. Used to propagate the correct
+   * reason when the view is detached (e.g., RecyclerView recycling a child after scroll).
+   */
+  private var lastVisibilityReason: VisibilityChangeReason = VisibilityChangeReason.UNKNOWN
+
   private val rect = Rect()
 
   @JvmOverloads
   constructor(
       context: Context,
-      attrs: AttributeSet? = null
+      attrs: AttributeSet? = null,
   ) : this(ComponentContext(context), attrs)
 
   init {
-    mountState.setEnsureParentMounted(true)
     viewAttributeFlags = getViewAttributeFlags(this)
   }
 
@@ -180,7 +213,11 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
   }
 
   override fun performLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
-    trace("BaseMountingView.performLayout") {
+    trace(
+        {
+          "BaseMountingView.performLayout[${currentLayoutState?.rootComponent?.simpleName ?: "Unknown"}]"
+        },
+    ) {
       if (hasTree) {
         onBeforeLayout(l, t, r, b)
 
@@ -188,8 +225,8 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
 
         // If this happens the LithoView might have moved on Screen without a scroll event
         // triggering incremental mount. We trigger one here to be sure all the content is visible.
-        if (!wasMountTriggered) {
-          notifyVisibleBoundsChanged()
+        if (!wasMountTriggered && !IncrementalMountUtils.skipMountOnLayoutDuringScroll) {
+          notifyVisibleBoundsChanged(VisibilityChangeReason.MOUNT)
         }
 
         if (!wasMountTriggered || shouldAlwaysLayoutChildren()) {
@@ -218,13 +255,14 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
     return false
   }
 
-  protected open fun onBeforeLayout(left: Int, top: Int, right: Int, bottom: Int) {}
+  protected open fun onBeforeLayout(left: Int, top: Int, right: Int, bottom: Int) = Unit
 
   protected abstract fun onLifecycleOwnerChanged(
       previousLifecycleOwner: LifecycleOwner?,
-      currentLifecycleOwner: LifecycleOwner?
+      currentLifecycleOwner: LifecycleOwner?,
   )
 
+  @SuppressLint("LambdaEquality")
   private fun attachLifecycleOwner() {
     val lifecycleOwner = getDefaultLifecycleOwner(this)
     if (lifecycleOwner != null && this.lifecycleOwner != lifecycleOwner) {
@@ -246,7 +284,7 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
    * Invoke this before the result of currentLayoutState is about to change to a new non-null tree.
    */
   fun onBeforeSettingNewTree() {
-    clearVisibilityItems()
+    clearVisibilityItems(VisibilityChangeReason.MOUNT)
     clearLastMountedTree()
   }
 
@@ -311,12 +349,14 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
 
   private fun maybeUnmountComponents() {
     val config = configuration
-    if (config != null &&
-        config.enableFixForIM &&
-        !isTemporaryDetached &&
-        !hasTransientState() &&
-        isIncrementalMountEnabled) {
-      notifyVisibleBoundsChanged(EMPTY_RECT)
+    if (
+        config != null &&
+            config.enableFixForIM &&
+            !isTemporaryDetached &&
+            !hasTransientState() &&
+            isIncrementalMountEnabled
+    ) {
+      notifyVisibleBoundsChanged(EMPTY_RECT, true, lastVisibilityReason)
     }
   }
 
@@ -343,7 +383,7 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
 
     if (hasTransientState) {
       if (transientStateCount == 0 && hasTree) {
-        notifyVisibleBoundsChanged(Rect(0, 0, width, height), false)
+        notifyVisibleBoundsChanged(Rect(0, 0, width, height), false, VisibilityChangeReason.UNKNOWN)
       }
       if (transientStateCount == 0) {
         this.hasTransientState = true
@@ -358,7 +398,7 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
         // We mounted everything when the transient state was set on this view. We need to do this
         // partly to unmount content that is not visible but mostly to get the correct visibility
         // events to be fired.
-        notifyVisibleBoundsChanged()
+        notifyVisibleBoundsChanged(VisibilityChangeReason.ANIMATION)
       }
       if (transientStateCount < 0) {
         transientStateCount = 0
@@ -366,30 +406,51 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
     }
   }
 
-  override fun notifyVisibleBoundsChanged(visibleRect: Rect, processVisibilityOutputs: Boolean) {
+  override fun notifyVisibleBoundsChanged(
+      visibleRect: Rect,
+      processVisibilityOutputs: Boolean,
+      reason: VisibilityChangeReason,
+  ) {
     if (currentLayoutState == null) {
       return
     }
 
-    trace("BaseMountingView.notifyVisibleBoundsChangedWithRect") {
+    if (reason != VisibilityChangeReason.UNKNOWN) {
+      lastVisibilityReason = reason
+    }
+
+    trace(
+        {
+          "mount.notifyVisibleBoundsChangedWithRect[${currentLayoutState?.rootComponent?.simpleName ?: "Unknown"}]"
+        },
+    ) {
       if (isIncrementalMountEnabled) {
-        mountComponent(visibleRect, processVisibilityOutputs)
+        mountComponent(visibleRect, processVisibilityOutputs, reason)
       } else if (processVisibilityOutputs) {
-        processVisibilityOutputs(visibleRect)
+        processVisibilityOutputs(visibleRect, reason)
       }
     }
   }
 
   @UiThread
   fun mountComponent(currentVisibleArea: Rect?, processVisibilityOutputs: Boolean) {
+    mountComponent(currentVisibleArea, processVisibilityOutputs, VisibilityChangeReason.MOUNT)
+  }
+
+  @UiThread
+  internal fun mountComponent(
+      currentVisibleArea: Rect?,
+      processVisibilityOutputs: Boolean,
+      reason: VisibilityChangeReason,
+  ) {
     assertMainThread()
 
     if (isMounting) {
-      collectReentrantMount(ReentrantMount(currentVisibleArea, processVisibilityOutputs))
+      collectReentrantMount(ReentrantMount(currentVisibleArea, processVisibilityOutputs, reason))
       return
     }
 
-    maybeMountOrNotifyVisibleBoundsChange(currentVisibleArea, processVisibilityOutputs)
+    maybeMountOrNotifyVisibleBoundsChange(currentVisibleArea, processVisibilityOutputs, reason)
 
     consumeReentrantMounts()
   }
@@ -431,14 +492,15 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
       while (!requests.isEmpty()) {
         val request = requireNotNull(requests.pollFirst())
         setMountStateDirty()
-        mount(request.currentVisibleArea, request.processVisibilityOutputs)
+        mount(request.currentVisibleArea, request.processVisibilityOutputs, request.reason)
       }
     }
   }
 
   private fun maybeMountOrNotifyVisibleBoundsChange(
       actualVisibleRect: Rect?,
-      requestVisibilityEvents: Boolean
+      requestVisibilityEvents: Boolean,
+      reason: VisibilityChangeReason,
   ) {
     val layoutState = currentLayoutState ?: return
 
@@ -448,11 +510,13 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
 
     val visibleRectToUse: Rect?
     val processVisibilityOutputs: Boolean
-    if (transientStateCount > 0 && hasTree && isIncrementalMountEnabled) {
+    val isUnderTransientState = transientStateCount > 0 && hasTree && isIncrementalMountEnabled
+    if (isUnderTransientState) {
       // If transient state is set but the MountState is dirty we want to re-mount everything.
       // Otherwise, we don't need to do anything as the entire BaseMountingView was mounted when
       // the transient state was set.
       if (!isMountStateDirty) {
+        onPassUnderTransientStateListener?.onPassUnderTransientState(this)
         return
       } else {
         visibleRectToUse = Rect(0, 0, width, height)
@@ -474,16 +538,25 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
       try {
         isMounting = true
         layoutState.setShouldProcessVisibilityOutputs(processVisibilityOutputs)
-        requireNotNull(mountState.getMountDelegate()).notifyVisibleBoundsChanged(visibleRectToUse)
+        requireNotNull(mountState.getMountDelegate())
+            .notifyVisibleBoundsChanged(visibleRectToUse, reason)
       } finally {
         isMounting = false
       }
     } else {
-      mount(visibleRectToUse, processVisibilityOutputs)
+      mount(visibleRectToUse, processVisibilityOutputs, reason)
+    }
+    if (isUnderTransientState) {
+      onPassUnderTransientStateListener?.onPassUnderTransientState(this)
     }
   }
 
-  private fun mount(visibleRect: Rect?, shouldProcessVisibilityEvents: Boolean) {
+  private fun mount(
+      visibleRect: Rect?,
+      shouldProcessVisibilityEvents: Boolean,
+      reason: VisibilityChangeReason,
+      isProbe: Boolean = false,
+  ) {
     val layoutState = currentLayoutState ?: return
     if (shouldPauseMountingWithVisibilityHintFalse()) {
       return
@@ -493,38 +566,66 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
     try {
       // If this is the first mount, we need to set the hasMounted flag on the TreeState.
 
+      // A probe mounts content the user cannot see, so it must not consume the first mount: that
+      // would suppress the root appear transition the real first mount is supposed to run.
       val mountInfo = mountInfo
-      if (mountInfo != null && !mountInfo.hasMounted) {
+      if (mountInfo != null && !mountInfo.hasMounted && !isProbe) {
         mountInfo.isFirstMount = true
         mountInfo.hasMounted = true
       }
 
       isMounting = true
 
+      val updatedStates = treeState?.consumeMountUpdates() ?: emptySet()
       val renderTree = layoutState.toRenderTree()
+      val dirtyBinders = uiStateReadRecords.getBindersToRebind(updatedStates)
       setupMountExtensions()
       val coordinator = requireNotNull(lithoHostListenerCoordinator)
 
-      val willRemount = mountState.willRemountWith(renderTree)
-      if (!willRemount) {
-        return
+      val treeChanged = mountState.willRemountWith(renderTree)
+      if (treeChanged) {
+        val onBeforeMountResult = onBeforeMount()
+
+        layoutState.setShouldProcessVisibilityOutputs(shouldProcessVisibilityEvents)
+
+        coordinator.beforeMount(layoutState, visibleRect)
+
+        mountState.mount(renderTree, dirtyBinders, reason)
+        incrementComponentMountCount()
+        drawDebugOverlay(this, layoutState.componentTreeId)
+
+        onAfterMount(onBeforeMountResult)
+
+        // Dispatch post-mount attributes for phase logging correlation
+        DebugEventDispatcher.dispatch(
+            type = LithoDebugEvent.MountEnd,
+            renderStateId = { layoutState.componentTreeId.toString() },
+        ) { attrs ->
+          attrs[LithoDebugEventAttributes.LayoutVersion] = layoutState.version
+          mountState.mountStats?.let { stats ->
+            attrs[LithoDebugEventAttributes.SummaryByComponent] =
+                formatMountSummaryByComponent(stats.summaryByComponent)
+          }
+        }
+
+        val treeState = this.treeState
+        if (isMountStateDirty && treeState != null) {
+          layoutState.recordRenderData()
+          treeState.recordRenderData(layoutState)
+        }
+      } else if (dirtyBinders.isNotEmpty()) {
+        // Fast path: tree is unchanged, only specific binders need rebinding.
+        // Use targeted O(K) rebindBinders instead of O(N) mount traversal.
+        val groupedBinders = mutableLongObjectMapOf<MutableScatterSet<BinderId>>()
+        dirtyBinders.forEach { binderId ->
+          groupedBinders.getOrPut(binderId.renderUnitId) { mutableScatterSetOf() }.add(binderId)
+        }
+        @Suppress("UNCHECKED_CAST")
+        mountState.rebindBinders(groupedBinders as LongObjectMap<ScatterSet<BinderId>>)
       }
-      val onBeforeMountResult = onBeforeMount()
-
-      layoutState.setShouldProcessVisibilityOutputs(shouldProcessVisibilityEvents)
-
-      coordinator.beforeMount(layoutState, visibleRect)
-
-      mountState.mount(renderTree)
-      incrementComponentMountCount()
-      drawDebugOverlay(this, layoutState.componentTreeId)
-
-      onAfterMount(onBeforeMountResult)
-
-      val treeState = this.treeState
-      if (isMountStateDirty && treeState != null) {
-        layoutState.recordRenderData()
-        treeState.recordRenderData(layoutState)
+      val dirtyHosts = uiStateReadRecords.getContentIdsToInvalidate(updatedStates)
+      if (dirtyHosts.isNotEmpty()) {
+        mountState.invalidateHosts(dirtyHosts)
       }
     } catch (e: Exception) {
       throw wrapWithMetadata(this, e)
@@ -536,6 +637,30 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
         onDirtyMountComplete()
       }
     }
+  }
+
+  /**
+   * Rebinds binders and invalidates hosts that read [dirtyStates]; returns true if anything was
+   * applied.
+   */
+  fun applyChanges(dirtyStates: Set<StateId>): Boolean {
+    val binders = uiStateReadRecords.getBindersToRebind(dirtyStates)
+    val dirtyHosts = uiStateReadRecords.getContentIdsToInvalidate(dirtyStates)
+    if (binders.isEmpty() && dirtyHosts.isEmpty()) {
+      return false
+    }
+
+    if (binders.isNotEmpty()) {
+      val dirtyBinders = mutableLongObjectMapOf<MutableScatterSet<BinderId>>()
+      binders.forEach { binderId ->
+        dirtyBinders.getOrPut(binderId.renderUnitId) { mutableScatterSetOf() }.add(binderId)
+      }
+      mountState.rebindBinders(dirtyBinders as LongObjectMap<ScatterSet<BinderId>>)
+    }
+    if (dirtyHosts.isNotEmpty()) {
+      mountState.invalidateHosts(dirtyHosts)
+    }
+    return true
   }
 
   /**
@@ -554,7 +679,7 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
    * @param fromOnBeforeMount this is whatever was returned by the onBeforMount call. The default is
    *   null.
    */
-  open fun onAfterMount(fromOnBeforeMount: Any?) {}
+  open fun onAfterMount(fromOnBeforeMount: Any?) = Unit
 
   // We pause mounting while the visibility hint is set to false, because the visible rect of
   // the BaseMountingView is not consistent with what's currently on screen.
@@ -598,7 +723,7 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
 
   private fun dispatchVisibilityEvent(
       visibilityOutput: VisibilityOutput,
-      visibilityEventType: Class<*>
+      visibilityEventType: Class<*>,
   ) {
     val content =
         if (visibilityOutput.hasMountableContent)
@@ -606,23 +731,40 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
         else null
     if (visibilityEventType == VisibleEvent::class.java) {
       if (visibilityOutput.onVisible != null) {
-        dispatchOnVisible(requireNotNull(visibilityOutput.onVisible).callback, content)
+        dispatchOnVisible(
+            requireNotNull(visibilityOutput.onVisible).callback,
+            content,
+            VisibilityChangeReason.UNKNOWN,
+        )
       }
     } else if (visibilityEventType == InvisibleEvent::class.java) {
       if (visibilityOutput.onInvisible != null) {
-        dispatchOnInvisible(requireNotNull(visibilityOutput.onInvisible).callback)
+        dispatchOnInvisible(
+            requireNotNull(visibilityOutput.onInvisible).callback,
+            VisibilityChangeReason.UNKNOWN,
+        )
       }
     } else if (visibilityEventType == FocusedVisibleEvent::class.java) {
       if (visibilityOutput.onFocusedVisible != null) {
-        dispatchOnFocused(requireNotNull(visibilityOutput.onFocusedVisible).callback)
+        dispatchOnFocused(
+            requireNotNull(visibilityOutput.onFocusedVisible).callback,
+            VisibilityChangeReason.UNKNOWN,
+        )
       }
     } else if (visibilityEventType == UnfocusedVisibleEvent::class.java) {
       if (visibilityOutput.onUnfocusedVisible != null) {
-        dispatchOnUnfocused(requireNotNull(visibilityOutput.onUnfocusedVisible).callback)
+        dispatchOnUnfocused(
+            requireNotNull(visibilityOutput.onUnfocusedVisible).callback,
+            VisibilityChangeReason.UNKNOWN,
+        )
       }
     } else if (visibilityEventType == FullImpressionVisibleEvent::class.java) {
       if (visibilityOutput.onFullImpression != null) {
-        dispatchOnFullImpression(requireNotNull(visibilityOutput.onFullImpression).callback)
+        dispatchOnFullImpression(
+            requireNotNull(visibilityOutput.onFullImpression).callback,
+            content,
+            VisibilityChangeReason.UNKNOWN,
+        )
       }
     }
   }
@@ -630,6 +772,11 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
   @Synchronized
   fun setOnDirtyMountListener(onDirtyMountListener: OnDirtyMountListener?) {
     this.onDirtyMountListener = onDirtyMountListener
+  }
+
+  @UiThread
+  fun setOnPassUnderTransientStateListener(listener: OnPassUnderTransientStateListener?) {
+    onPassUnderTransientStateListener = listener
   }
 
   @Synchronized
@@ -650,22 +797,27 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
             toDebugString(this) +
             ", component=" +
             (if (hasTree) treeName else null))
-    emitMessage(ComponentsReporter.LogLevel.FATAL, REENTRANT_MOUNTS_EXCEED_MAX_ATTEMPTS, message)
+    // Changed from FATAL to ERROR to prevent crashes during DebugInfoReporter migration
+    emitMessage(ComponentsReporter.LogLevel.ERROR, REENTRANT_MOUNTS_EXCEED_MAX_ATTEMPTS, message)
   }
 
-  override fun notifyVisibleBoundsChanged() {
+  override fun notifyVisibleBoundsChanged(reason: VisibilityChangeReason) {
     if (currentLayoutState == null) {
       return
     }
 
-    trace("BaseMountingView.notifyVisibleBoundsChanged") { notifyVisibleBoundsChanged(null) }
+    trace("mount.notifyVisibleBoundsChanged") { notifyVisibleBoundsChanged(null, reason) }
   }
 
   override fun onRegisterForPremount(frameTimeMs: Long?) {
     val config = configuration
-    if (config != null && config.useIncrementalMountGapWorker) {
-      trace("BaseMountingView::onRegisterForPremount") {
-        mount(Rect(), false)
+    if (config != null && config.gapWorkerMode != GapWorkerMode.OFF) {
+      trace(
+          {
+            "mount.onRegisterForPremount[${currentLayoutState?.rootComponent?.simpleName ?: "Unknown"}]"
+          },
+      ) {
+        mount(Rect(), false, VisibilityChangeReason.MOUNT)
         onRegisterForPremount(mountState, frameTimeMs)
       }
     }
@@ -673,8 +825,14 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
 
   override fun onUnregisterForPremount() {
     val config = configuration
-    if (config != null && config.useIncrementalMountGapWorker) {
-      trace("BaseMountingView::onUnregisterForPremount") { onUnregisterForPremount(mountState) }
+    if (config != null && config.gapWorkerMode != GapWorkerMode.OFF) {
+      trace(
+          {
+            "mount.onUnregisterForPremount[${currentLayoutState?.rootComponent?.simpleName ?: "Unknown"}]"
+          },
+      ) {
+        onUnregisterForPremount(mountState)
+      }
     }
   }
 
@@ -693,7 +851,10 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
   }
 
   @UiThread
-  fun notifyVisibleBoundsChanged(rect: Rect?) {
+  fun notifyVisibleBoundsChanged(
+      rect: Rect?,
+      reason: VisibilityChangeReason,
+  ) {
     assertMainThread()
 
     val config = configuration
@@ -721,16 +882,18 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
       visibleRectToUse = Rect(rect)
     }
 
-    if (areBoundsVisible ||
-        (mountWhenAttachAndDetach && (rect != null && rect.isEmpty)) ||
-        hasComponentsExcludedFromIncrementalMount(
-            currentLayoutState) // It might not be yet visible but animating from 0
-        // height/width in
-        // which case we still
-        // need to mount them to trigger animation.
-        ||
-        animatingRootBoundsFromZero(visibleRectToUse)) {
-      mountComponent(visibleRectToUse, true)
+    if (
+        areBoundsVisible ||
+            (mountWhenAttachAndDetach && (rect != null && rect.isEmpty)) ||
+            hasComponentsExcludedFromIncrementalMount(
+                currentLayoutState,
+            ) // It might not be yet visible but animating from 0
+            // height/width in
+            // which case we still
+            // need to mount them to trigger animation.
+            || animatingRootBoundsFromZero(visibleRectToUse)
+    ) {
+      mountComponent(visibleRectToUse, true, reason)
     }
   }
 
@@ -754,8 +917,9 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
       return false
     }
 
-    if ((rect.left >= width && rect.right > width) ||
-        (rect.top >= height && rect.bottom > height)) {
+    if (
+        (rect.left >= width && rect.right > width) || (rect.top >= height && rect.bottom > height)
+    ) {
       // It means the view is outside of right or bottom of the screen.
       return false
     }
@@ -773,12 +937,19 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
   }
 
   @VisibleForTesting
-  fun processVisibilityOutputs(currentVisibleArea: Rect?) {
+  fun processVisibilityOutputs(
+      currentVisibleArea: Rect?,
+      reason: VisibilityChangeReason,
+  ) {
     if (currentLayoutState == null || !isVisibilityProcessingEnabled) {
       return
     }
 
-    trace("BaseMountingView.processVisibilityOutputs") {
+    trace(
+        {
+          "BaseMountingView.processVisibilityOutputs[${currentLayoutState?.rootComponent?.simpleName ?: "Unknown"}]"
+        },
+    ) {
       val layoutState = currentLayoutState
 
       if (layoutState == null) {
@@ -789,17 +960,49 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
       layoutState.setShouldProcessVisibilityOutputs(true)
 
       lithoHostListenerCoordinator?.processVisibilityOutputs(
-          requireNotNull(currentVisibleArea), isMountStateDirty)
+          requireNotNull(currentVisibleArea),
+          isMountStateDirty,
+          reason,
+      )
 
       previousMountBounds.set(requireNotNull(currentVisibleArea))
     }
   }
 
+  /**
+   * Runs the visibility pass of a mount whose mount state was dirty, against what shows now, so the
+   * items the last mount removed log as gone. A mount under transient state processes no
+   * visibility, so the owner of that state calls this once it ends. Does nothing while mounting is
+   * paused; the visibility extension also skips a host that still has transient state.
+   */
+  @UiThread
+  fun processVisibilityOutputsForDirtyMount() {
+    assertMainThread()
+    val layoutState = currentLayoutState ?: return
+    if (!isVisibilityProcessingEnabled || shouldPauseMountingWithVisibilityHintFalse()) {
+      return
+    }
+    val visibleRect = Rect()
+    if (!getLocalVisibleRect(visibleRect)) {
+      return
+    }
+    layoutState.setShouldProcessVisibilityOutputs(true)
+    lithoHostListenerCoordinator?.processVisibilityOutputs(
+        visibleRect,
+        true,
+        VisibilityChangeReason.MOUNT,
+    )
+  }
+
   fun mountComponentIfNeeded(): Boolean {
     if (isMountStateDirty || mountStateNeedsRemount()) {
-      trace("BaseMountingView::mountComponentIfNeeded") {
+      trace(
+          {
+            "mount.mountComponentIfNeeded[${currentLayoutState?.rootComponent?.simpleName ?: "Unknown"}]"
+          },
+      ) {
         if (isIncrementalMountEnabled) {
-          notifyVisibleBoundsChanged(null)
+          notifyVisibleBoundsChanged(null, VisibilityChangeReason.MOUNT)
         } else {
           val visibleRect = Rect()
           getLocalVisibleRect(visibleRect)
@@ -819,6 +1022,7 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
 
       coordinator.enableNestedLithoViewsExtension()
       coordinator.enableTransitions()
+      coordinator.enableStyleTransitions()
 
       if (ComponentsConfiguration.isEndToEndTestRun) {
         coordinator.enableEndToEndTestProcessing()
@@ -832,9 +1036,7 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
 
     if (hasTree) {
       if (isIncrementalMountEnabled) {
-        val config = configuration
-        val useGapWorker = config != null && config.useIncrementalMountGapWorker
-        coordinator.enableIncrementalMount(useGapWorker)
+        coordinator.enableIncrementalMount(configuration?.gapWorkerMode ?: GapWorkerMode.OFF)
       } else {
         coordinator.disableIncrementalMount()
       }
@@ -872,9 +1074,15 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
   open protected fun resetVisibilityHint() {
     hasVisibilityHint = false
     pauseMountingWhileVisibilityHintFalse = false
+    if (configuration?.resetVisibilityHintOnTreeDetach == true) {
+      visibilityHintIsVisible = false
+    }
   }
 
-  open protected fun setVisibilityHintNonRecursive(isVisible: Boolean) {
+  open protected fun setVisibilityHintNonRecursive(
+      isVisible: Boolean,
+      reason: VisibilityChangeReason,
+  ) {
     assertMainThread()
 
     if (!hasTree) {
@@ -898,14 +1106,14 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
     if (isVisible) {
       if (shouldDispatchVisibilityEvent()) {
         if (forceMount) {
-          notifyVisibleBoundsChanged()
+          notifyVisibleBoundsChanged(reason)
         } else if (getLocalVisibleRect(rect)) {
-          processVisibilityOutputs(rect)
+          processVisibilityOutputs(rect, reason)
         }
       }
     } else {
       // if false: no-op, doesn't have visible area, is not ready or not attached
-      clearVisibilityItems()
+      clearVisibilityItems(reason)
     }
   }
 
@@ -926,7 +1134,7 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
    */
   @Deprecated("")
   open fun setVisibilityHint(isVisible: Boolean) {
-    setVisibilityHintInternal(isVisible, true)
+    setVisibilityHintInternal(isVisible, true, VisibilityChangeReason.VISIBILITY_HINT)
   }
 
   /**
@@ -943,10 +1151,18 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
       return
     }
 
-    setVisibilityHintInternal(isVisible, skipMountingIfNotVisible)
+    setVisibilityHintInternal(
+        isVisible,
+        skipMountingIfNotVisible,
+        VisibilityChangeReason.VISIBILITY_HINT,
+    )
   }
 
-  private fun setVisibilityHintInternal(isVisible: Boolean, skipMountingIfNotVisible: Boolean) {
+  internal fun setVisibilityHintInternal(
+      isVisible: Boolean,
+      skipMountingIfNotVisible: Boolean,
+      reason: VisibilityChangeReason,
+  ) {
     assertMainThread()
     if (!hasTree) {
       return
@@ -965,21 +1181,21 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
     if (isVisible) {
       if (shouldDispatchVisibilityEvent()) {
         if (forceMount) {
-          notifyVisibleBoundsChanged()
+          notifyVisibleBoundsChanged(reason)
         } else if (getLocalVisibleRect(rect)) {
-          processVisibilityOutputs(rect)
+          processVisibilityOutputs(rect, reason)
         }
         recursivelySetVisibleHint(true, skipMountingIfNotVisible)
       }
     } else {
       // if false: no-op, doesn't have visible area, is not ready or not attached
       recursivelySetVisibleHint(false, skipMountingIfNotVisible)
-      clearVisibilityItems()
+      clearVisibilityItems(reason)
     }
   }
 
-  private fun clearVisibilityItems() {
-    lithoHostListenerCoordinator?.clearVisibilityItems()
+  private fun clearVisibilityItems(reason: VisibilityChangeReason) {
+    lithoHostListenerCoordinator?.clearVisibilityItems(reason)
   }
 
   /** This should be called when setting a null component tree to the litho view. */
@@ -1007,11 +1223,15 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
   @ThreadConfined(ThreadConfined.UI)
   fun getInitialAnimatedMountingViewWidth(
       currentAnimatedWidth: Int,
-      hasNewComponentTree: Boolean
+      hasNewComponentTree: Boolean,
   ): Int {
     val transition = currentLayoutState?.rootWidthAnimation
     return getInitialAnimatedMountingViewDimension(
-        currentAnimatedWidth, hasNewComponentTree, transition, AnimatedProperties.WIDTH)
+        currentAnimatedWidth,
+        hasNewComponentTree,
+        transition,
+        AnimatedProperties.WIDTH,
+    )
   }
 
   /**
@@ -1022,26 +1242,34 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
   @ThreadConfined(ThreadConfined.UI)
   fun getInitialAnimatedMountingViewHeight(
       currentAnimatedHeight: Int,
-      hasNewComponentTree: Boolean
+      hasNewComponentTree: Boolean,
   ): Int {
     val transition = currentLayoutState?.rootHeightAnimation
     return getInitialAnimatedMountingViewDimension(
-        currentAnimatedHeight, hasNewComponentTree, transition, AnimatedProperties.HEIGHT)
+        currentAnimatedHeight,
+        hasNewComponentTree,
+        transition,
+        AnimatedProperties.HEIGHT,
+    )
   }
 
   private fun getInitialAnimatedMountingViewDimension(
       currentAnimatedDimension: Int,
       hasNewComponentTree: Boolean,
       rootBoundsTransition: RootBoundsTransition?,
-      property: AnimatedProperty
+      property: AnimatedProperty,
   ): Int {
     if (rootBoundsTransition == null) {
       return SIZE_UNSET
     }
     val hasMounted = hasMountedAtLeastOnce()
-    if (!hasMounted && rootBoundsTransition.appearTransition != null) {
+    val appearTransition = rootBoundsTransition.appearTransition
+    if (!hasMounted && appearTransition != null) {
       return Transition.getRootAppearFromValue(
-              rootBoundsTransition.appearTransition, requireNotNull(currentLayoutState), property)
+              appearTransition,
+              requireNotNull(currentLayoutState),
+              property,
+          )
           .toInt()
     }
 
@@ -1058,6 +1286,44 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
       val mountingView = childMountingViews[i]
       mountingView.setVisibilityHint(isVisible, skipMountingIfNotVisible)
     }
+  }
+
+  override fun addFocusables(views: ArrayList<View>, direction: Int, focusableMode: Int) {
+    mountForFocusSearchIfNeeded()
+    super.addFocusables(views, direction, focusableMode)
+  }
+
+  /**
+   * A parent may lay this view out beyond its own bounds and then ask what focusables it holds --
+   * RecyclerView does exactly that to answer a focus search that runs off the edge of a list.
+   * Incremental mount keys off [getLocalVisibleRect], so in that state nothing is mounted and we
+   * would answer "none", dropping the content out of the focus order entirely. Mount for the query
+   * instead. Visibility events are deliberately not processed: the content is laid out, not seen.
+   *
+   * This is a probe, not a display, so it goes to [mount] rather than [mountComponent]: it must
+   * record nothing about having been seen. In particular [previousMountBounds] has to keep reading
+   * empty. Both [onOffsetOrTranslationChange] and `IncrementalMountUtils` treat bounds that match
+   * the view's full size as "fully visible and already completely mounted" and would then skip the
+   * pass that dispatches the visible event, losing the impression for a card the user does go on to
+   * see.
+   */
+  private fun mountForFocusSearchIfNeeded() {
+    // Whether content is mounted is asked of the mount state rather than of previousMountBounds,
+    // which a probe leaves empty. Only the root host survives an incremental unmount, so anything
+    // above it means the focus search already has real content to walk.
+    if (!hasTree || width <= 0 || height <= 0 || mountState.getMountItemCount() > 1) {
+      return
+    }
+    // mountComponent's guards are skipped along with its bookkeeping, so re-check the two that
+    // matter: a reentrant mount would be dropped rather than queued, and under transient state the
+    // whole view is mounted already.
+    if (isMounting || (transientStateCount > 0 && isIncrementalMountEnabled)) {
+      return
+    }
+    mount(Rect(0, 0, width, height), false, VisibilityChangeReason.MOUNT, isProbe = true)
+    // Draining is mountComponent's job, and nothing else on this path does it: a mount collected
+    // while the probe held isMounting would otherwise sit queued until the next mountComponent.
+    consumeReentrantMounts()
   }
 
   override fun offsetTopAndBottom(offset: Int) {
@@ -1091,7 +1357,7 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
   }
 
   private fun onOffsetOrTranslationChange() {
-    if (!hasTree || parent !is View) {
+    if (!hasTree || parent !is View || IncrementalMountUtils.skipMountOnLayoutDuringScroll) {
       return
     }
 
@@ -1112,28 +1378,41 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
     val configuration = configuration
     val hasVisibilityBoundsTransformer = configuration?.visibilityBoundsTransformer != null
 
-    if (left >= 0 &&
-        top >= 0 &&
-        right <= parentWidth &&
-        bottom <= parentHeight &&
-        previousRect.left >= 0 &&
-        previousRect.top >= 0 &&
-        previousRect.right <= parentWidth &&
-        previousRect.bottom <= parentHeight &&
-        previousRect.width() == width &&
-        previousRect.height() == height &&
-        !hasVisibilityBoundsTransformer) {
+    if (
+        left >= 0 &&
+            top >= 0 &&
+            right <= parentWidth &&
+            bottom <= parentHeight &&
+            previousRect.left >= 0 &&
+            previousRect.top >= 0 &&
+            previousRect.right <= parentWidth &&
+            previousRect.bottom <= parentHeight &&
+            previousRect.width() == width &&
+            previousRect.height() == height &&
+            !hasVisibilityBoundsTransformer
+    ) {
       // View is fully visible, and has already been completely mounted.
       return
     }
 
     val rect = Rect()
-    if (!getLocalVisibleRect(rect)) {
-      // View is not visible at all, nothing to do.
+    val parentCachedRect =
+        if (VisibilityExtensionConfigs.isCachedParentVisibleRectEnabled) {
+          (parent as? CachedVisibleRectProvider)?.cachedLocalVisibleRect
+        } else {
+          null
+        }
+    if (parentCachedRect != null) {
+      rect.set(parentCachedRect)
+      if (!rect.intersect(left, top, right, bottom)) {
+        return
+      }
+      rect.offset(-left, -top)
+    } else if (!getLocalVisibleRect(rect)) {
       return
     }
 
-    notifyVisibleBoundsChanged(rect, true)
+    notifyVisibleBoundsChanged(rect, true, VisibilityChangeReason.SCROLL)
   }
 
   val visibilityExtensionState: VisibilityMountExtensionState?
@@ -1162,9 +1441,17 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
     super.onVisibilityAggregated(isVisible)
     if (ComponentsConfiguration.defaultInstance.enableCheckVisibilityAggregated) {
       if (isVisible) {
-        setVisibilityHintInternal(isVisible = true, skipMountingIfNotVisible = true)
+        setVisibilityHintInternal(
+            isVisible = true,
+            skipMountingIfNotVisible = true,
+            reason = VisibilityChangeReason.VISIBILITY_HINT,
+        )
       } else {
-        setVisibilityHintInternal(isVisible = false, skipMountingIfNotVisible = true)
+        setVisibilityHintInternal(
+            isVisible = false,
+            skipMountingIfNotVisible = true,
+            reason = VisibilityChangeReason.VISIBILITY_HINT,
+        )
       }
     }
   }
@@ -1174,7 +1461,8 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
    */
   private class ReentrantMount(
       val currentVisibleArea: Rect?,
-      val processVisibilityOutputs: Boolean
+      val processVisibilityOutputs: Boolean,
+      val reason: VisibilityChangeReason,
   )
 
   fun interface OnDirtyMountListener {
@@ -1183,6 +1471,14 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
      * new props/state in the tree, or the BaseMountingView was mounting a new ComponentTree
      */
     fun onDirtyMount(view: BaseMountingView)
+  }
+
+  fun interface OnPassUnderTransientStateListener {
+    /**
+     * Called on the main thread after a mount or visible-bounds pass on [view] skipped visibility
+     * because [view] has transient state. Its owner can run the pass itself.
+     */
+    fun onPassUnderTransientState(view: BaseMountingView)
   }
 
   companion object {
@@ -1218,7 +1514,8 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
           // this would conflict with the component's own layout calculations.
           child.measure(
               MeasureSpec.makeMeasureSpec(child.width, MeasureSpec.EXACTLY),
-              MeasureSpec.makeMeasureSpec(child.height, MeasureSpec.EXACTLY))
+              MeasureSpec.makeMeasureSpec(child.height, MeasureSpec.EXACTLY),
+          )
           child.layout(child.left, child.top, child.right, child.bottom)
         }
 
@@ -1229,8 +1526,9 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
     }
 
     private fun getDefaultLifecycleOwner(view: View): LifecycleOwner? {
-      return if (ComponentsConfiguration.defaultInstance
-          .enableDefaultLifecycleOwnerAsFragmentOrActivity) {
+      return if (
+          ComponentsConfiguration.defaultInstance.enableDefaultLifecycleOwnerAsFragmentOrActivity
+      ) {
         try {
           FragmentManager.findFragment(view)
         } catch (e: IllegalStateException) {
@@ -1252,7 +1550,7 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
     }
 
     private fun getChildMountingViewsFromCurrentlyMountedItems(
-        mountDelegateTarget: MountDelegateTarget
+        mountDelegateTarget: MountDelegateTarget,
     ): List<BaseMountingView> {
       val childMountingViews = ArrayList<BaseMountingView>()
 

@@ -28,8 +28,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.Shadows
 import org.robolectric.annotation.LooperMode
+import org.robolectric.shadow.api.Shadow
 import org.robolectric.shadows.ShadowLooper
 
 @LooperMode(LooperMode.Mode.LEGACY)
@@ -48,12 +48,13 @@ class ComponentTreeHasCompatibleLayoutTest {
   @Before
   fun setup() {
     context = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    component = SimpleMountSpecTester.create(context).build()
-    componentTree = ComponentTree.create(context, component).build()
+    component = SimpleMountSpecTester()
+    componentTree = ComponentTree.create(context, component).enableChildClipping(true).build()
     layoutThreadShadowLooper =
-        Shadows.shadowOf(
+        Shadow.extract(
             Whitebox.invokeMethod<Any>(ComponentTree::class.java, "getDefaultLayoutThreadLooper")
-                as Looper)
+                as Looper,
+        )
     widthSpec = makeSizeSpec(39, EXACTLY)
     widthSpec2 = makeSizeSpec(40, EXACTLY)
     heightSpec = makeSizeSpec(41, EXACTLY)

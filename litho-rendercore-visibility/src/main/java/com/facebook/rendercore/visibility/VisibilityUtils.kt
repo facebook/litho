@@ -17,12 +17,6 @@
 package com.facebook.rendercore.visibility
 
 import android.util.Log
-import com.facebook.litho.FocusedVisibleEvent
-import com.facebook.litho.FullImpressionVisibleEvent
-import com.facebook.litho.InvisibleEvent
-import com.facebook.litho.UnfocusedVisibleEvent
-import com.facebook.litho.VisibilityChangedEvent
-import com.facebook.litho.VisibleEvent
 import com.facebook.rendercore.Function
 import com.facebook.rendercore.RenderCoreSystrace
 
@@ -35,57 +29,86 @@ object VisibilityUtils {
   private val visibilityChangedEvent: VisibilityChangedEvent = VisibilityChangedEvent()
 
   @JvmStatic
-  fun dispatchOnVisible(visibleHandler: Function<Void?>, content: Any?) {
+  fun dispatchOnVisible(
+      visibleHandler: Function<Void?>,
+      content: Any?,
+      reason: VisibilityChangeReason,
+  ) {
     RenderCoreSystrace.beginSection("VisibilityUtils.dispatchOnVisible")
 
     visibleEvent.content = content
+    visibleEvent.reason = reason
     if (VisibilityExtensionConfigs.isDebugLoggingEnabled) {
       Log.d(VisibilityExtensionConfigs.DEBUG_TAG, "Dispatch:VisibleEvent to: $visibleHandler")
     }
     visibleHandler.call(visibleEvent)
     visibleEvent.content = null
+    visibleEvent.reason = VisibilityChangeReason.UNKNOWN
     RenderCoreSystrace.endSection()
   }
 
   @JvmStatic
-  fun dispatchOnFocused(focusedHandler: Function<Void?>) {
-
+  fun dispatchOnFocused(
+      focusedHandler: Function<Void?>,
+      reason: VisibilityChangeReason,
+  ) {
+    focusedVisibleEvent.reason = reason
     if (VisibilityExtensionConfigs.isDebugLoggingEnabled) {
       Log.d(
-          VisibilityExtensionConfigs.DEBUG_TAG, "Dispatch:FocusedVisibleEvent to: $focusedHandler")
+          VisibilityExtensionConfigs.DEBUG_TAG,
+          "Dispatch:FocusedVisibleEvent to: $focusedHandler",
+      )
     }
     focusedHandler.call(focusedVisibleEvent)
+    focusedVisibleEvent.reason = VisibilityChangeReason.UNKNOWN
   }
 
   @JvmStatic
-  fun dispatchOnUnfocused(unfocusedHandler: Function<Void?>) {
-
+  fun dispatchOnUnfocused(
+      unfocusedHandler: Function<Void?>,
+      reason: VisibilityChangeReason,
+  ) {
+    unfocusedVisibleEvent.reason = reason
     if (VisibilityExtensionConfigs.isDebugLoggingEnabled) {
       Log.d(
           VisibilityExtensionConfigs.DEBUG_TAG,
-          "Dispatch:UnfocusedVisibleEvent to: $unfocusedHandler")
+          "Dispatch:UnfocusedVisibleEvent to: $unfocusedHandler",
+      )
     }
     unfocusedHandler.call(unfocusedVisibleEvent)
+    unfocusedVisibleEvent.reason = VisibilityChangeReason.UNKNOWN
   }
 
   @JvmStatic
-  fun dispatchOnFullImpression(fullImpressionHandler: Function<Void?>) {
-
+  fun dispatchOnFullImpression(
+      fullImpressionHandler: Function<Void?>,
+      content: Any?,
+      reason: VisibilityChangeReason,
+  ) {
+    fullImpressionVisibleEvent.content = content
+    fullImpressionVisibleEvent.reason = reason
     if (VisibilityExtensionConfigs.isDebugLoggingEnabled) {
       Log.d(
           VisibilityExtensionConfigs.DEBUG_TAG,
-          "Dispatch:FullImpressionVisibleEvent to: $fullImpressionHandler")
+          "Dispatch:FullImpressionVisibleEvent to: $fullImpressionHandler",
+      )
     }
     fullImpressionHandler.call(fullImpressionVisibleEvent)
+    fullImpressionVisibleEvent.content = null
+    fullImpressionVisibleEvent.reason = VisibilityChangeReason.UNKNOWN
   }
 
   @JvmStatic
-  fun dispatchOnInvisible(invisibleHandler: Function<Void?>) {
-
+  fun dispatchOnInvisible(
+      invisibleHandler: Function<Void?>,
+      reason: VisibilityChangeReason,
+  ) {
+    invisibleEvent.reason = reason
     if (VisibilityExtensionConfigs.isDebugLoggingEnabled) {
       Log.d(VisibilityExtensionConfigs.DEBUG_TAG, "Dispatch:InvisibleEvent to: $invisibleHandler")
     }
     invisibleHandler.call(invisibleEvent)
+    invisibleEvent.reason = VisibilityChangeReason.UNKNOWN
   }
 
   @JvmStatic
@@ -98,11 +121,13 @@ object VisibilityUtils {
       rootHostViewWidth: Int,
       rootHostViewHeight: Int,
       percentVisibleWidth: Float,
-      percentVisibleHeight: Float
+      percentVisibleHeight: Float,
+      reason: VisibilityChangeReason,
   ) {
     if (visibilityChangedHandler == null) {
       return
     }
+    visibilityChangedEvent.reason = reason
     visibilityChangedEvent.visibleTop = visibleTop
     visibilityChangedEvent.visibleLeft = visibleLeft
     visibilityChangedEvent.visibleHeight = visibleHeight
@@ -114,8 +139,10 @@ object VisibilityUtils {
     if (VisibilityExtensionConfigs.isDebugLoggingEnabled) {
       Log.d(
           VisibilityExtensionConfigs.DEBUG_TAG,
-          "Dispatch:VisibilityChangedEvent to: $visibilityChangedHandler")
+          "Dispatch:VisibilityChangedEvent to: $visibilityChangedHandler",
+      )
     }
     visibilityChangedHandler.call(visibilityChangedEvent)
+    visibilityChangedEvent.reason = VisibilityChangeReason.UNKNOWN
   }
 }

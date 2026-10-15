@@ -20,8 +20,20 @@ package com.facebook.litho
  * EXPERIMENTAL - fun interface for a block of code that will update state created with useState.
  * See KState.kt for more details.
  */
-interface HookUpdater : StateUpdateApplier {
+fun interface HookUpdater : StateUpdateApplier {
 
   /** Get a [KStateContainer] instance with updates applied. */
   fun getUpdatedStateContainer(currentState: KStateContainer): KStateContainer
+
+  companion object {
+    /**
+     * A [HookUpdater] that does not modify the state container. Triggers a re-render pass without
+     * changing any stored state values.
+     *
+     * Used by [AnimationController][animation.AnimationController] to signal that animated values
+     * have changed and components reading them should re-render. The actual values live in
+     * [AnimatedValue][animation.AnimatedValue] instances, not in [KStateContainer].
+     */
+    val NoOp: HookUpdater = HookUpdater { it }
+  }
 }

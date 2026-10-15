@@ -17,6 +17,7 @@
 package com.facebook.rendercore
 
 import android.content.Context
+import com.meta.systrace.Systracer
 
 /**
  * A MountContext is a context object that is passed to the [RenderUnit] when interacting with
@@ -24,47 +25,30 @@ import android.content.Context
  * mount/unmount/attach/detach/update operation as required.
  *
  * @param androidContext The Android [Context].
- * @param tracer The [Systracer] that may be used to trace execution of code blocks.
+ * @param tracer The [com.meta.systrace.Systracer] that may be used to trace code execution.
  * @param binderObserver The [BinderObserver] that can observe the bind and unbind operations of a
  *   binder.
  * @see RenderUnit
  */
 class MountContext
 internal constructor(
-    override val androidContext: Context,
+    val androidContext: Context,
     val tracer: Systracer,
-    val binderObserver: BinderObserver? = null
-) : BinderScope {
-
-  private var _binderId: BinderId? = null
-  private var _model: Any? = null
-
-  internal inline fun <T> withBinder(
-      binderId: BinderId,
-      model: Any?,
-      func: BinderScope.() -> T
-  ): T {
-    try {
-      _binderId = binderId
-      _model = model
-      return func()
-    } finally {
-      _binderId = null
-      _model = null
-    }
-  }
-
-  /**
-   * Returns the [BinderId] of the binder currently associated with the [BinderScope]. This is only
-   * valid when called within the scope of [withBinder] and will throw an exception otherwise.
-   */
-  override val binderId: BinderId
-    get() = requireNotNull(_binderId)
-
-  /**
-   * Returns the model of the binder currently associated with the [BinderScope]. This is only valid
-   * when called within the scope of [withBinder] and will throw an exception otherwise.
-   */
-  override val binderModel: Any?
-    get() = _model
+    val binderObserver: BinderObserver? = null,
+    reader: ContinuationValueReader = ContinuationValueReader { null },
+) {
+  internal val continuationContext: MountContinuationContext = MountContinuationContext(reader)
 }
+
+/**
+ * Reads continuation values produced by the layout phase. A [MountState] installs a reader at
+ * construction time; the reader is consulted by [useContinuation] every time a continuation runs.
+ * Integrations supply their own reader. The default reader returns `null` for every key.
+ */
+fun interface ContinuationValueReader {
+  fun readValue(key: Any): Any?
+
+  fun readVersion(key: Any): Long = UNKNOWN_CONTINUATION_VALUE_VERSION
+}
+
+const val UNKNOWN_CONTINUATION_VALUE_VERSION: Long = -1L

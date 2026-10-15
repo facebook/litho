@@ -17,7 +17,10 @@
 package com.facebook.litho
 
 import android.graphics.drawable.Drawable
+import android.util.SparseArray
 import com.facebook.litho.YogaLayoutOutput.Companion.getYogaNode
+import com.facebook.litho.layout.IntEdges
+import com.facebook.litho.layout.LayoutDirection
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaDirection
 import com.facebook.yoga.YogaEdge
@@ -25,6 +28,7 @@ import com.facebook.yoga.YogaFlexDirection
 import com.facebook.yoga.YogaJustify
 import com.facebook.yoga.YogaPositionType
 import com.facebook.yoga.YogaValue
+import com.facebook.yoga.YogaWrap
 
 /**
  * A DebugLayoutNode is a wrapper around InternalNode which allows debug tools to inspect and mutate
@@ -88,6 +92,9 @@ class DebugLayoutNode internal constructor(private val result: LithoLayoutResult
   val positionType: YogaPositionType
     get() = result.getYogaNode().positionType
 
+  val wrap: YogaWrap
+    get() = result.getYogaNode().wrap
+
   val flexGrow: Float
     get() = result.getYogaNode().flexGrow
 
@@ -124,20 +131,51 @@ class DebugLayoutNode internal constructor(private val result: LithoLayoutResult
 
   fun getPosition(edge: YogaEdge): YogaValue = result.getYogaNode().getPosition(edge)
 
-  fun getBorderWidth(edge: YogaEdge): Float = result.getYogaNode().getBorder(edge)
+  /** A leaf its `Layout` laid out directly has no Yoga layout, so its edges are read there. */
+  fun getBorderWidth(edge: YogaEdge): Float =
+      result.layoutOutput.boxGeometry?.let { it.border.at(edge, it.direction) }
+          ?: result.getYogaNode().getBorder(edge)
+
+  val commonDynamicProps: SparseArray<DynamicValue<*>>?
+    get() = LithoNodeUtils.mergeCommonDynamicProps(node.scopedComponentInfos)
 
   val clickHandler: EventHandler<ClickEvent>?
     get() = node.nodeInfo?.clickHandler
 
+  val touchHandler: EventHandler<TouchEvent>?
+    get() = node.nodeInfo?.touchHandler
+
+  // The laid-out geometry is read from the result, which knows a `Layout` child's: a leaf laid out
+  // directly has no Yoga layout, and a child's margins are applied by its container.
+
   val layoutWidth: Float
-    get() = result.getYogaNode().layoutWidth
+    get() = result.width.toFloat()
 
   val layoutHeight: Float
-    get() = result.getYogaNode().layoutHeight
+    get() = result.height.toFloat()
 
-  fun getLayoutMargin(edge: YogaEdge): Float = result.getYogaNode().getLayoutMargin(edge)
+  fun getLayoutMargin(edge: YogaEdge): Float =
+      result.layoutOutput.resolvedMargins?.at(edge, result.layoutOutput.layoutDirection)
+          ?: result.getYogaNode().getLayoutMargin(edge)
 
-  fun getLayoutPadding(edge: YogaEdge): Float = result.getYogaNode().getLayoutPadding(edge)
+  fun getLayoutPadding(edge: YogaEdge): Float =
+      result.layoutOutput.boxGeometry?.let { it.padding.at(edge, it.direction) }
+          ?: result.getYogaNode().getLayoutPadding(edge)
 
-  fun getLayoutBorderWidth(edge: YogaEdge): Float = result.getYogaNode().getLayoutBorder(edge)
+  fun getLayoutBorderWidth(edge: YogaEdge): Float =
+      result.layoutOutput.boxGeometry?.let { it.border.at(edge, it.direction) }
+          ?: result.getYogaNode().getLayoutBorder(edge)
+
+  private fun IntEdges.at(edge: YogaEdge, direction: LayoutDirection): Float? {
+    val isRtl = direction.isRTL
+    return when (edge) {
+      YogaEdge.LEFT -> left
+      YogaEdge.TOP -> top
+      YogaEdge.RIGHT -> right
+      YogaEdge.BOTTOM -> bottom
+      YogaEdge.START -> if (isRtl) right else left
+      YogaEdge.END -> if (isRtl) left else right
+      else -> null
+    }?.toFloat()
+  }
 }

@@ -17,6 +17,7 @@
 package com.facebook.litho
 
 import com.facebook.litho.kotlin.widget.Text
+import com.facebook.litho.layout.flexbox.Column
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.assertj.LithoViewAssert.Companion.assertThat
@@ -50,8 +51,9 @@ class NestedComponentStateUpdatesWithReconciliationTest {
   @Test
   fun `when component C is updated sync, A, B, and D should not re-render`() {
     val renderCounts = RenderCounts()
-    val testLithoView =
-        lithoViewRule.render { RootComponent(renderCounts = renderCounts, asyncUpdates = false) }
+    val testLithoView = lithoViewRule.render {
+      RootComponent(renderCounts = renderCounts, asyncUpdates = false)
+    }
 
     testLithoView.findViewWithTag("C").performClick()
 
@@ -78,8 +80,9 @@ class NestedComponentStateUpdatesWithReconciliationTest {
   @Test
   fun `when component C is updated async, A, B, and D should not re-render`() {
     val renderCounts = RenderCounts()
-    val testLithoView =
-        lithoViewRule.render { RootComponent(renderCounts = renderCounts, asyncUpdates = true) }
+    val testLithoView = lithoViewRule.render {
+      RootComponent(renderCounts = renderCounts, asyncUpdates = true)
+    }
 
     testLithoView.findViewWithTag("C").performClick()
 
@@ -109,8 +112,9 @@ class NestedComponentStateUpdatesWithReconciliationTest {
   @Test
   fun `when component D is updated sync, A, B, and C should not re-render`() {
     val renderCounts = RenderCounts()
-    val testLithoView =
-        lithoViewRule.render { RootComponent(renderCounts = renderCounts, asyncUpdates = false) }
+    val testLithoView = lithoViewRule.render {
+      RootComponent(renderCounts = renderCounts, asyncUpdates = false)
+    }
 
     testLithoView.findViewWithTag("D").performClick()
 
@@ -137,8 +141,9 @@ class NestedComponentStateUpdatesWithReconciliationTest {
   @Test
   fun `when component D is updated async, A, B, and C should not re-render`() {
     val renderCounts = RenderCounts()
-    val testLithoView =
-        lithoViewRule.render { RootComponent(renderCounts = renderCounts, asyncUpdates = true) }
+    val testLithoView = lithoViewRule.render {
+      RootComponent(renderCounts = renderCounts, asyncUpdates = true)
+    }
 
     testLithoView.findViewWithTag("D").performClick()
 
@@ -168,8 +173,9 @@ class NestedComponentStateUpdatesWithReconciliationTest {
   @Test
   fun `when components C and D are updated async in the same frame, A and B should not re-render`() {
     val renderCounts = RenderCounts()
-    val testLithoView =
-        lithoViewRule.render { RootComponent(renderCounts = renderCounts, asyncUpdates = true) }
+    val testLithoView = lithoViewRule.render {
+      RootComponent(renderCounts = renderCounts, asyncUpdates = true)
+    }
 
     testLithoView.findViewWithTag("C").performClick()
     testLithoView.findViewWithTag("D").performClick()
@@ -198,7 +204,7 @@ class NestedComponentStateUpdatesWithReconciliationTest {
   private class StateUpdatingLeafComponent(
       val viewTag: String,
       val renderCount: AtomicInteger,
-      val asyncUpdates: Boolean
+      val asyncUpdates: Boolean,
   ) : KComponent() {
     override fun ComponentScope.render(): Component {
       val clickCount = useState { 0 }
@@ -214,7 +220,8 @@ class NestedComponentStateUpdatesWithReconciliationTest {
                   clickCount.updateSync { value -> value + 1 }
                 }
               },
-          text = "Count[$viewTag]: ${clickCount.value}")
+          text = "Count[$viewTag]: ${clickCount.value}",
+      )
     }
   }
 
@@ -228,10 +235,18 @@ class NestedComponentStateUpdatesWithReconciliationTest {
       return Column {
         child(
             StateUpdatingLeafComponent(
-                viewTag = "C", renderCount = renderCounts.C, asyncUpdates = asyncUpdates))
+                viewTag = "C",
+                renderCount = renderCounts.C,
+                asyncUpdates = asyncUpdates,
+            ),
+        )
         child(
             StateUpdatingLeafComponent(
-                viewTag = "D", renderCount = renderCounts.D, asyncUpdates = asyncUpdates))
+                viewTag = "D",
+                renderCount = renderCounts.D,
+                asyncUpdates = asyncUpdates,
+            ),
+        )
         child(
             Text(
                 style =
@@ -242,7 +257,9 @@ class NestedComponentStateUpdatesWithReconciliationTest {
                         clickCount.updateSync { value -> value + 1 }
                       }
                     },
-                text = "Count[B]: ${clickCount.value}"))
+                text = "Count[B]: ${clickCount.value}",
+            ),
+        )
       }
     }
   }
@@ -264,7 +281,11 @@ class NestedComponentStateUpdatesWithReconciliationTest {
       return Column {
         child(
             StateUpdatingLeafComponent(
-                viewTag = "A", renderCount = renderCounts.A, asyncUpdates = asyncUpdates))
+                viewTag = "A",
+                renderCount = renderCounts.A,
+                asyncUpdates = asyncUpdates,
+            ),
+        )
         child(BComponent(renderCounts = renderCounts, asyncUpdates = asyncUpdates))
       }
     }

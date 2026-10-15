@@ -48,7 +48,7 @@ internal object MountSpecWorkingRangeTesterSpec {
       layout: ComponentLayout,
       widthSpec: Int,
       heightSpec: Int,
-      size: Size
+      size: Size,
   ) {
     size.width = 600
     size.height = 800

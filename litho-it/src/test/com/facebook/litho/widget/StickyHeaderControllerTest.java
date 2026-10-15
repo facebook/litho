@@ -16,17 +16,21 @@
 
 package com.facebook.litho.widget;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.LithoView;
+import com.facebook.litho.testing.LithoTestRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import org.junit.Before;
 import org.junit.Rule;
@@ -38,20 +42,26 @@ import org.junit.runner.RunWith;
 @RunWith(LithoTestRunner.class)
 public class StickyHeaderControllerTest {
 
+  @Rule public final LithoTestRule lithoTestRule = new LithoTestRule();
   private HasStickyHeader mHasStickyHeader;
-  private StickyHeaderController mStickyHeaderController;
+  private RecyclerView recyclerView;
+  private StickyHeaderControllerImpl mStickyHeaderController;
 
   @Rule public ExpectedException thrown = ExpectedException.none();
 
   @Before
   public void setup() {
     mHasStickyHeader = mock(HasStickyHeader.class);
-    mStickyHeaderController = new StickyHeaderControllerImpl(mHasStickyHeader);
+    recyclerView = new RecyclerView(lithoTestRule.context.getAndroidContext());
+    recyclerView.setLayoutManager(
+        new LinearLayoutManager(lithoTestRule.context.getAndroidContext()));
+    mStickyHeaderController = spy(new StickyHeaderControllerImpl(mHasStickyHeader));
   }
 
   @Test
   public void testInitNoLayoutManager() {
     SectionsRecyclerView recycler = mock(SectionsRecyclerView.class);
+    when(recycler.getContext()).thenReturn(lithoTestRule.getContext().getAndroidContext());
     RecyclerView recyclerView = mock(RecyclerView.class);
     when(recycler.getRecyclerView()).thenReturn(recyclerView);
 
@@ -63,12 +73,14 @@ public class StickyHeaderControllerTest {
   @Test
   public void testInitTwiceWithoutReset() {
     SectionsRecyclerView recycler1 = mock(SectionsRecyclerView.class);
+    when(recycler1.getContext()).thenReturn(lithoTestRule.getContext().getAndroidContext());
     RecyclerView recyclerView1 = mock(RecyclerView.class);
     when(recycler1.getRecyclerView()).thenReturn(recyclerView1);
     when(recyclerView1.getLayoutManager()).thenReturn(mock(RecyclerView.LayoutManager.class));
     mStickyHeaderController.init(recycler1);
 
     SectionsRecyclerView recycler2 = mock(SectionsRecyclerView.class);
+    when(recycler2.getContext()).thenReturn(lithoTestRule.getContext().getAndroidContext());
     RecyclerView recyclerView2 = mock(RecyclerView.class);
     when(recyclerView2.getLayoutManager()).thenReturn(mock(RecyclerView.LayoutManager.class));
     when(recycler2.getRecyclerView()).thenReturn(recyclerView2);
@@ -88,10 +100,8 @@ public class StickyHeaderControllerTest {
 
   @Test
   public void testTranslateRecyclerViewChild() {
-    SectionsRecyclerView recycler = mock(SectionsRecyclerView.class);
-    RecyclerView recyclerView = mock(RecyclerView.class);
-    when(recycler.getRecyclerView()).thenReturn(recyclerView);
-    when(recyclerView.getLayoutManager()).thenReturn(mock(RecyclerView.LayoutManager.class));
+    SectionsRecyclerView recycler =
+        new SectionsRecyclerView(lithoTestRule.context.getAndroidContext(), recyclerView);
     mStickyHeaderController.init(recycler);
 
     when(mHasStickyHeader.findFirstVisibleItemPosition()).thenReturn(2);
@@ -105,15 +115,13 @@ public class StickyHeaderControllerTest {
     mStickyHeaderController.onScrolled(recyclerView, 0, 0);
 
     verify(lithoView).setTranslationY(anyFloat());
-    verify(recycler, times(2)).hideStickyHeader();
+    verify(mStickyHeaderController, times(2)).hideStickyHeader();
   }
 
   @Test
-  public void testTranslaterecyclerChild() {
-    SectionsRecyclerView recycler = mock(SectionsRecyclerView.class);
-    RecyclerView recyclerView = mock(RecyclerView.class);
-    when(recycler.getRecyclerView()).thenReturn(recyclerView);
-    when(recyclerView.getLayoutManager()).thenReturn(mock(RecyclerView.LayoutManager.class));
+  public void testTranslateRecyclerChild() {
+    SectionsRecyclerView recycler =
+        new SectionsRecyclerView(lithoTestRule.context.getAndroidContext(), recyclerView);
     mStickyHeaderController.init(recycler);
 
     when(mHasStickyHeader.findFirstVisibleItemPosition()).thenReturn(6);
@@ -124,15 +132,14 @@ public class StickyHeaderControllerTest {
 
     mStickyHeaderController.onScrolled(recyclerView, 0, 0);
 
-    verify(recycler).setStickyHeaderVerticalOffset(nullable(Integer.class));
+    verify(mStickyHeaderController)
+        .setStickyHeaderVerticalOffset(any(LithoView.class), nullable(Integer.class));
   }
 
   @Test
   public void testTranslateStackedStickyHeaders() {
-    SectionsRecyclerView recycler = mock(SectionsRecyclerView.class);
-    RecyclerView recyclerView = mock(RecyclerView.class);
-    when(recycler.getRecyclerView()).thenReturn(recyclerView);
-    when(recyclerView.getLayoutManager()).thenReturn(mock(RecyclerView.LayoutManager.class));
+    SectionsRecyclerView recycler =
+        new SectionsRecyclerView(lithoTestRule.context.getAndroidContext(), recyclerView);
     mStickyHeaderController.init(recycler);
 
     when(mHasStickyHeader.findFirstVisibleItemPosition()).thenReturn(2);
@@ -148,6 +155,6 @@ public class StickyHeaderControllerTest {
     mStickyHeaderController.onScrolled(recyclerView, 0, 0);
 
     verify(lithoView, never()).setTranslationY(nullable(Integer.class));
-    verify(recycler, times(2)).hideStickyHeader();
+    verify(mStickyHeaderController, times(2)).hideStickyHeader();
   }
 }

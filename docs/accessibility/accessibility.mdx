@@ -1,6 +1,13 @@
 ---
 id: accessibility
-title: Accessibility
+title: Accessibility Styles
+keywords:
+    - accessibility
+    - a11y
+    - talkback
+    - screen reader
+    - accessibility role
+    - content description
 ---
 
 ## Why Accessibility is important
@@ -19,44 +26,342 @@ Accessibility properties and events for components can be implemented by adding 
 
 Following is an example of how to combine a `Style`, that was passed to a Primitive Component, with a newly created `Style` object that implements accessibility properties and events and will be returned on the `LithoPrimitive` object from the `render()` method:
 
-```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/primitives/SimpleImageViewWithAccessibilityPrimitiveComponent.kt start=start_simple_primitive_component_with_a11y_example end=end_simple_primitive_component_with_a11y_example
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/primitives/SimpleImageViewWithAccessibilityPrimitiveComponent.kt start=start_simple_primitive_component_with_a11y_example end=end_simple_primitive_component_with_a11y_example
 ```
 
-## Supported Accessibility properties and events
+## Accessibility Properties
 
-The following list provides the supported properties of the `Style` object:
+### Accessibility Heading
 
-* `Style.accessibilityHeading`
-* `Style.accessibilityRole`
-* `Style.accessibilityRoleDescription`
-* `Style.contentDescription`
-* `Style.importantForAccessibility`
-* `Style.screenReaderFocusable`
-* `Style.requestInitialAccessibilityFocus`
-* `Style.stateDescription`
-* `Style.minDurationBetweenContentChangesMillis`
-* `Style.labeledBy`
-* `Style.paneTitle`
-* `Style.liveRegion`
-* `Style.containerTitle`
+Whether the view is a heading for a section of content for accessibility purposes.
 
-The following table provides the supported events of the `Style` object:
+```kotlin
+import com.facebook.litho.accessibility.accessibilityHeading
 
-| Event | AccessibilityDelegate method |
-| ----- | ---------------------------- |
-| `Style.onInitializeAccessibilityEvent`    | <a href="https://developer.android.com/reference/kotlin/androidx/core/view/AccessibilityDelegateCompat#onInitializeAccessibilityEvent(android.view.View,android.view.accessibility.AccessibilityEvent)">onInitializeAccessibilityEvent</a> |
-| `Style.onInitializeAccessibilityNodeInfo` | <a href="https://developer.android.com/reference/kotlin/androidx/core/view/AccessibilityDelegateCompat#onInitializeAccessibilityNodeInfo(android.view.View,androidx.core.view.accessibility.AccessibilityNodeInfoCompat)">onInitializeAccessibilityNodeInfo</a> |
-| `Style.onPopulateAccessibilityNode`       | <a href="https://fburl.com/onpopulateaccessibilitynode">Populate an accessibility node with information about the component</a> |
-| `Style.onPopulateAccessibilityEvent`      | <a href="https://developer.android.com/reference/kotlin/androidx/core/view/AccessibilityDelegateCompat#onPopulateAccessibilityEvent(android.view.View,android.view.accessibility.AccessibilityEvent)">onPopulateAccessibilityEvent</a> |
-| `Style.onRequestSendAccessibilityEvent`   | <a href="https://developer.android.com/reference/kotlin/androidx/core/view/AccessibilityDelegateCompat#onRequestSendAccessibilityEvent(android.view.ViewGroup,android.view.View,android.view.accessibility.AccessibilityEvent)">onRequestSendAccessibilityEvent</a> |
-| `Style.performAccessibilityAction`        | <a href="https://developer.android.com/reference/kotlin/androidx/core/view/AccessibilityDelegateCompat#performAccessibilityAction(android.view.View,int,android.os.Bundle)">performAccessibilityAction</a> |
-| `Style.sendAccessibilityEvent`            | <a href="https://developer.android.com/reference/kotlin/androidx/core/view/AccessibilityDelegateCompat#sendAccessibilityEvent(android.view.View,int)">sendAccessibilityEvent</a> |
-| `Style.sendAccessibilityEventUnchecked`   | <a href="https://developer.android.com/reference/kotlin/androidx/core/view/AccessibilityDelegateCompat#sendAccessibilityEventUnchecked(android.view.View,android.view.accessibility.AccessibilityEvent)">sendAccessibilityEventUnchecked</a> |
+MyComponent(style = Style.accessibilityHeading(true))
+```
+
+### Accessibility Role
+
+The Android Talkback "role" this component has. This will be read out when the view is visited in Talkback mode.
+
+```kotlin
+import com.facebook.litho.accessibility.accessibilityRole
+import com.facebook.litho.AccessibilityRole
+
+MyComponent(style = Style.accessibilityRole(AccessibilityRole.BUTTON))
+```
+
+### Accessibility Role Description
+
+The description for this Component's accessibility role. This will be read out when the view is visited in Talkback mode.
+
+```kotlin
+import com.facebook.litho.accessibility.accessibilityRoleDescription
+
+MyComponent(style = Style.accessibilityRoleDescription("Custom action button"))
+```
+
+### Content Description
+
+A description of the contents of this Component for accessibility.
+
+```kotlin
+import com.facebook.litho.accessibility.contentDescription
+
+MyComponent(style = Style.contentDescription("Profile picture"))
+```
+
+### State Description
+
+Sets the state description of the component.
+
+```kotlin
+import com.facebook.litho.accessibility.stateDescription
+
+MyComponent(style = Style.stateDescription("Selected"))
+```
+
+### Important For Accessibility
+
+Sets whether this Component is "important for accessibility". If it is, it fires accessibility events and is reported to accessibility services that query the screen.
+
+```kotlin
+import com.facebook.litho.accessibility.importantForAccessibility
+import com.facebook.litho.accessibility.ImportantForAccessibility
+
+MyComponent(style = Style.importantForAccessibility(ImportantForAccessibility.YES))
+```
+
+#### ImportantForAccessibility values
+
+```kotlin
+import com.facebook.litho.accessibility.ImportantForAccessibility
+
+// Automatically determine whether a view is important for accessibility
+ImportantForAccessibility.AUTO
+
+// The view is important for accessibility
+ImportantForAccessibility.YES
+
+// The view is not important for accessibility
+ImportantForAccessibility.NO
+
+// The view is not important for accessibility, nor are any of its descendant views
+ImportantForAccessibility.NO_HIDE_DESCENDANTS
+```
+
+### Screen Reader Focusable
+
+Sets whether this View should be a focusable element for screen readers.
+
+```kotlin
+import com.facebook.litho.accessibility.screenReaderFocusable
+
+MyComponent(style = Style.screenReaderFocusable(true))
+```
+
+### Request Initial Accessibility Focus
+
+Sets whether the node has requested initial accessibility focus.
+
+```kotlin
+import com.facebook.litho.accessibility.requestInitialAccessibilityFocus
+
+MyComponent(style = Style.requestInitialAccessibilityFocus(true))
+```
+
+### Min Duration Between Content Changes
+
+Sets the minimum time duration between two content change events, which is used in throttling content change events in accessibility services.
+
+```kotlin
+import com.facebook.litho.accessibility.minDurationBetweenContentChangesMillis
+
+MyComponent(style = Style.minDurationBetweenContentChangesMillis(1000L))
+```
+
+### Labeled By
+
+Sets the view which serves as the label of the view represented by this info for accessibility purposes.
+
+```kotlin
+import com.facebook.litho.accessibility.labeledBy
+
+MyComponent(style = Style.labeledBy("label_view_tag"))
+```
+
+### Pane Title
+
+Visually distinct portion of a window with window-like semantics are considered panes for accessibility purposes. Panes should have descriptive titles.
+
+```kotlin
+import com.facebook.litho.accessibility.paneTitle
+
+MyComponent(style = Style.paneTitle("Settings Panel"))
+```
+
+### Live Region
+
+Sets the live region mode for this view. This indicates to accessibility services whether they should automatically notify the user about changes to the view's content description or text.
+
+```kotlin
+import com.facebook.litho.accessibility.liveRegion
+import android.view.View
+
+MyComponent(style = Style.liveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE))
+```
+
+#### Live Region modes
+
+```kotlin
+import android.view.View
+
+// No live region notification
+View.ACCESSIBILITY_LIVE_REGION_NONE
+
+// Polite interruption (wait for a pause)
+View.ACCESSIBILITY_LIVE_REGION_POLITE
+
+// Assertive interruption (interrupt immediately)
+View.ACCESSIBILITY_LIVE_REGION_ASSERTIVE
+```
+
+### Container Title
+
+Sets the container title for app-developer-defined container which can be any type of ViewGroup or layout. Container title will be used to group together related controls.
+
+```kotlin
+import com.facebook.litho.accessibility.containerTitle
+
+MyComponent(style = Style.containerTitle("Form Section"))
+```
+
+## Accessibility Events
+
+### onInitializeAccessibilityEvent
+
+Initializes an AccessibilityEvent with information about the the host View which dispatched the event.
+
+```kotlin
+import com.facebook.litho.accessibility.onInitializeAccessibilityEvent
+
+MyComponent(
+    style = Style.onInitializeAccessibilityEvent { event ->
+        // Initialize accessibility event
+    }
+)
+```
+
+### onInitializeAccessibilityNodeInfo
+
+Initializes an AccessibilityNodeInfoCompat with information about the host view.
+
+```kotlin
+import com.facebook.litho.accessibility.onInitializeAccessibilityNodeInfo
+
+MyComponent(
+    style = Style.onInitializeAccessibilityNodeInfo { event ->
+        // Initialize accessibility node info
+    }
+)
+```
+
+### onPopulateAccessibilityNode
+
+Gives a chance to the component to implement its own accessibility support.
+
+```kotlin
+import com.facebook.litho.accessibility.onPopulateAccessibilityNode
+
+MyComponent(
+    style = Style.onPopulateAccessibilityNode { event ->
+        // Populate accessibility node
+    }
+)
+```
+
+### onPopulateAccessibilityEvent
+
+Gives a chance to the host View to populate the accessibility event with its text content.
+
+```kotlin
+import com.facebook.litho.accessibility.onPopulateAccessibilityEvent
+
+MyComponent(
+    style = Style.onPopulateAccessibilityEvent { event ->
+        // Populate accessibility event
+    }
+)
+```
+
+### onRequestSendAccessibilityEventWithResult
+
+Called when a child of the host View requests sending an AccessibilityEvent. Return `true` to allow the event to propagate, or `false` to block it. Delegate to `superDelegate` to preserve the View's default behavior.
+
+```kotlin
+import com.facebook.litho.accessibility.onRequestSendAccessibilityEventWithResult
+
+MyComponent(
+    style = Style.onRequestSendAccessibilityEventWithResult { event ->
+        event.superDelegate.onRequestSendAccessibilityEvent(
+            event.host,
+            event.child,
+            event.event,
+        )
+    }
+)
+```
+
+### onPerformAccessibilityActionWithResult
+
+Called when performing the specified accessibility action on the view. Return `true` when the action was handled. Return `false`, or delegate to `superDelegate`, when it was not.
+
+```kotlin
+import android.view.accessibility.AccessibilityNodeInfo
+import com.facebook.litho.accessibility.onPerformAccessibilityActionWithResult
+
+MyComponent(
+    style = Style.onPerformAccessibilityActionWithResult { event ->
+        if (event.action == AccessibilityNodeInfo.ACTION_CLICK) {
+            activate()
+            true
+        } else {
+            event.superDelegate.performAccessibilityAction(
+                event.host,
+                event.action,
+                event.args,
+            )
+        }
+    }
+)
+```
+
+### onSendAccessibilityEvent
+
+Called when Sends an accessibility event of the given type. If accessibility is not enabled this method has no effect.
+
+```kotlin
+import com.facebook.litho.accessibility.onSendAccessibilityEvent
+
+MyComponent(
+    style = Style.onSendAccessibilityEvent { event ->
+        // Send accessibility event
+    }
+)
+```
+
+### onSendAccessibilityEventUnchecked
+
+Sends an accessibility event. This method behaves exactly as sendAccessibilityEvent() but takes as an argument an empty AccessibilityEvent and does not perform a check whether accessibility is enabled.
+
+```kotlin
+import com.facebook.litho.accessibility.onSendAccessibilityEventUnchecked
+
+MyComponent(
+    style = Style.onSendAccessibilityEventUnchecked { event ->
+        // Send accessibility event unchecked
+    }
+)
+```
+
+### onVirtualViewKeyboardFocusChanged
+
+Called when a virtual view child of the host View has changed keyboard focus and gives an opportunity to the parent (the host) to react (changing visual display, etc.)
+
+```kotlin
+import com.facebook.litho.accessibility.onVirtualViewKeyboardFocusChanged
+
+MyComponent(
+    style = Style.onVirtualViewKeyboardFocusChanged { event ->
+        // Handle virtual view keyboard focus change
+    }
+)
+```
+
+### onPerformActionForVirtualViewWithResult
+
+Performs the specified accessibility action on a virtual view child of the host View. Return `true` when the action was handled, or `false` otherwise.
+
+:::caution
+Litho does not currently dispatch this handler. Virtual views come only from Spec components that declare extra accessibility nodes, and Litho calls their `@OnPerformActionForVirtualView` method instead.
+:::
+
+```kotlin
+import com.facebook.litho.accessibility.onPerformActionForVirtualViewWithResult
+
+MyComponent(
+    style = Style.onPerformActionForVirtualViewWithResult { event ->
+        // Perform the action, then return whether it was handled
+        true
+    }
+)
+```
 
 
 ## Focus Order
 
 You can customize the default focus order behavior by creating focus order properties using `useFocusOrder()` hook and adding them to the `Style` object. This allows you to tailor the focus order to your specific needs, ensuring that interactive elements are navigable in a logical and predictable manner.
 
-```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/accessibility/FocusOrderComponent.kt start=start_focusorder_a11y_example end=end_focusorder_a11y_example
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/accessibility/FocusOrderComponent.kt start=start_focusorder_a11y_example end=end_focusorder_a11y_example
 ```

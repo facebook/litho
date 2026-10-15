@@ -42,7 +42,7 @@ internal constructor(
      * custom view you can define a specific extraction that verifies if a listener was properly
      * cleaned up for example
      */
-    extraFields: List<FieldExtractionDefinition> = emptyList()
+    extraFields: List<FieldExtractionDefinition> = emptyList(),
 ) {
 
   private val pooledViewsToInitialState = WeakHashMap<View, Set<FieldState>>()
@@ -97,7 +97,8 @@ internal constructor(
                 } else {
                   null
                 }
-              }) + extraFields)
+              },
+          ) + extraFields)
           .associateBy { it.id }
 
   fun registerAcquiredViewState(view: View) {
@@ -124,9 +125,11 @@ internal constructor(
 
     val currentHierarchyIdentifier = currentHierarchy.joinToString("->")
 
-    if (excludedPatterns.any {
-      it.containsMatchIn(currentHierarchyIdentifier) || it.matches(currentHierarchyIdentifier)
-    }) {
+    if (
+        excludedPatterns.any {
+          it.containsMatchIn(currentHierarchyIdentifier) || it.matches(currentHierarchyIdentifier)
+        }
+    ) {
       return
     }
 

@@ -17,16 +17,23 @@
 package com.facebook.litho
 
 import android.graphics.Rect
-import android.util.Pair
 import androidx.annotation.VisibleForTesting
-import androidx.collection.LongSparseArray
+import androidx.collection.LongObjectMap
+import androidx.collection.LongSet
+import androidx.collection.MutableIntList
+import androidx.collection.MutableLongObjectMap
+import androidx.collection.MutableScatterMap
+import androidx.collection.ScatterMap
 import androidx.collection.ScatterSet
 import com.facebook.litho.EndToEndTestingExtension.EndToEndTestingExtensionInput
 import com.facebook.litho.Transition.RootBoundsTransition
+import com.facebook.litho.animation.StyleTransitionTarget
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.state.StateId
 import com.facebook.litho.transition.TransitionData
+import com.facebook.rendercore.IntSize
+import com.facebook.rendercore.LayoutCacheData
 import com.facebook.rendercore.LayoutResult
 import com.facebook.rendercore.MountState
 import com.facebook.rendercore.RenderTree
@@ -34,15 +41,14 @@ import com.facebook.rendercore.RenderTreeNode
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.SizeConstraints.Helper.getHeightSpec
 import com.facebook.rendercore.SizeConstraints.Helper.getWidthSpec
-import com.facebook.rendercore.Systracer
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtensionInput
 import com.facebook.rendercore.incrementalmount.IncrementalMountOutput
 import com.facebook.rendercore.transitions.TransitionsExtensionInput
 import com.facebook.rendercore.visibility.VisibilityBoundsTransformer
 import com.facebook.rendercore.visibility.VisibilityExtensionInput
 import com.facebook.rendercore.visibility.VisibilityOutput
+import com.meta.systrace.Systracer
 import java.util.concurrent.atomic.AtomicInteger
-import javax.annotation.CheckReturnValue
 
 /**
  * The main role of [LayoutState] is to hold the output of layout calculation. This includes
@@ -59,13 +65,17 @@ class LayoutState
 internal constructor(
     val resolveResult: ResolveResult,
     val version: Int,
-    val sizeConstraints: SizeConstraints,
+    val treeState: TreeState,
     val componentTreeId: Int,
     val isAccessibilityEnabled: Boolean,
-    val layoutCacheData: Map<Any, Any?>?,
-    // needed to be var as it's being reset via consumeCreatedEventHandlers
-    private var createdEventHandlers: List<Pair<String, EventHandler<*>>>?,
-    reductionState: ReductionState
+    val layoutCacheData: LayoutCacheData?,
+    private val reductionState: ReductionStateLite,
+    /**
+     * Natural sizes for every collected reflow node this commit (changed and unchanged), keyed by
+     * [LithoNode.transitionGlobalKey]; [StyleTransitionsExtension] reconciles each against the live
+     * store target at mount. Null on every layout with no collected reflow node.
+     */
+    internal val reflowTargetSizes: ScatterMap<GlobalKey, IntSize>? = null,
 ) :
     IncrementalMountExtensionInput,
     VisibilityExtensionInput,
@@ -74,57 +84,91 @@ internal constructor(
     PotentiallyPartialResult,
     DynamicPropsExtensionInput {
 
-  private val animatableItems: LongSparseArray<AnimatableItem> = reductionState.animatableItems
-  private val outputsIdToPositionMap: LongSparseArray<Int> = reductionState.outputsIdToPositionMap
-  private val incrementalMountOutputs: Map<Long, IncrementalMountOutput> =
-      reductionState.incrementalMountOutputs
-  private val mountableOutputTops: ArrayList<IncrementalMountOutput> =
-      reductionState.mountableOutputTops
-  private val mountableOutputBottoms: ArrayList<IncrementalMountOutput> =
-      reductionState.mountableOutputBottoms
+  internal val transitionData: TransitionData?
+    get() = reductionState.transitionData
 
-  private val testOutputs: List<TestOutput>? = reductionState.testOutputs
-  private val workingRangeContainer: WorkingRangeContainer? = reductionState.workingRangeContainer
+  @get:JvmName("getStateReads")
+  internal val stateReads: Map<StateId, ScatterSet<GlobalKey>>?
+    get() = reductionState.stateReads
 
-  internal val transitionData: TransitionData? = reductionState.transitionData
-  internal val stateReads: Map<StateId, ScatterSet<String>> = reductionState.stateReads
+  val sizeConstraints: SizeConstraints
+    get() = reductionState.sizeConstraints
 
-  val root: LithoNode? = reductionState.rootNode
-  val diffTree: DiffNode? = reductionState.diffTreeRoot
-  val mountableOutputs: List<RenderTreeNode> = reductionState.mountableOutputs
+  val root: LithoNode?
+    get() = reductionState.rootNode
 
-  val componentKeyToBounds: Map<String, Rect> = reductionState.componentKeyToBounds
-  val componentHandleToBounds: Map<Handle, Rect> = reductionState.componentHandleToBounds
+  val diffTree: DiffNode?
+    get() = reductionState.diffTreeRoot
 
-  val width: Int = reductionState.width
-  val height: Int = reductionState.height
+  val mountableOutputs: List<RenderTreeNode>
+    get() = reductionState.mountableOutputs
+
+  val width: Int
+    get() = reductionState.width
+
+  val height: Int
+    get() = reductionState.height
+
   /** Id of this [LayoutState]. */
-  val id: Int = reductionState.id
+  val id: Int
+    get() = reductionState.id
+
   /** Id of the [LayoutState] that was compared to when calculating this [LayoutState]. */
-  val previousLayoutStateId: Int = reductionState.previousLayoutStateId
-  val currentTransitionId: TransitionId? = reductionState.currentTransitionId
-  val attachables: List<Attachable>? = reductionState.attachables
+  val previousLayoutStateId: Int
+    get() = reductionState.previousLayoutStateId
+
+  val currentTransitionId: TransitionId?
+    get() = reductionState.currentTransitionId
+
+  val attachables: List<Attachable>?
+    get() = reductionState.attachables
+
+  internal val subtreeSnapshots: MutableScatterMap<LithoNode, SubtreeSnapshot>?
+    get() = reductionState.subtreeSnapshots
+
+  internal val outputParentIndices: MutableIntList?
+    get() = reductionState.outputParentIndices
+
+  internal val testOutputs: List<TestOutput>?
+    get() = reductionState.testOutputs
+
+  // Distinct from the private `componentScopes` var below, which gets nulled by
+  // [consumeComponentScopes]. Splice path needs always-available access to prev pass's scopes.
+  internal val componentScopesInternal: List<ScopedComponentInfo>
+    get() = reductionState.componentScopes
+
+  internal val animatableItems: MutableLongObjectMap<AnimatableItem>
+    get() = reductionState.animatableItems
+
+  internal val styleTransitionTargets: List<StyleTransitionTarget>
+    get() = reductionState.styleTransitionTargets ?: emptyList()
+
   /** Whether or not there are components marked as 'ExcludeFromIncrementalMount'. */
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  val hasComponentsExcludedFromIncrementalMount: Boolean =
-      reductionState.hasComponentsExcludedFromIncrementalMount
-  val currentLayoutOutputAffinityGroup: OutputUnitsAffinityGroup<AnimatableItem>? =
-      reductionState.currentLayoutOutputAffinityGroup
+  val hasComponentsExcludedFromIncrementalMount: Boolean
+    get() = reductionState.hasComponentsExcludedFromIncrementalMount
+
+  val currentLayoutOutputAffinityGroup: OutputUnitsAffinityGroup<AnimatableItem>?
+    get() = reductionState.currentLayoutOutputAffinityGroup
 
   override val tracer: Systracer = ComponentsSystrace.systrace
   override val rootTransitionId: TransitionId? =
       LithoNodeUtils.createTransitionId(resolveResult.node)
   /** Gets a mapping from transition ids to a group of LayoutOutput. */
-  override val transitionIdMapping: Map<TransitionId, OutputUnitsAffinityGroup<AnimatableItem>> =
-      reductionState.transitionIdMapping
-  override val visibilityOutputs: List<VisibilityOutput> = reductionState.visibilityOutputs
-  override val renderUnitIdsWhichHostRenderTrees: Set<Long> =
-      reductionState.renderUnitIdsWhichHostRenderTrees
+  override val transitionIdMapping: Map<TransitionId, OutputUnitsAffinityGroup<AnimatableItem>>?
+    get() = reductionState.transitionIdMapping
+
+  override val visibilityOutputs: List<VisibilityOutput>
+    get() = reductionState.visibilityOutputs
+
+  override val renderUnitIdsWhichHostRenderTrees: LongSet?
+    get() = reductionState.renderUnitIdsWhichHostRenderTrees
+
   val rootComponent: Component
     get() = resolveResult.component
 
-  val componentHandles: Set<Handle>
-    get() = componentHandleToBounds.keys
+  val componentHandles: ScatterSet<Handle>?
+    get() = reductionState.componentHandles
 
   val isEmpty: Boolean
     get() = resolveResult.component is EmptyComponent
@@ -138,24 +182,16 @@ internal constructor(
   val componentContext: ComponentContext
     get() = resolveResult.context
 
-  /**
-   * Returns the state handler instance currently held by LayoutState.
-   *
-   * @return the state handler
-   */
-  @get:CheckReturnValue
-  val treeState: TreeState
-    get() = resolveResult.treeState
-
   override val testOutputCount: Int
-    get() = testOutputs?.size ?: 0
+    get() = reductionState.testOutputs?.size ?: 0
 
-  override val dynamicValueOutputs: Map<Long, DynamicValueOutput> =
-      reductionState.dynamicValueOutputs
+  override val dynamicValueOutputs: LongObjectMap<DynamicValueOutput>?
+    get() = reductionState.dynamicValueOutputs
+
   override val isPartialResult: Boolean = false
 
   override val animatableRootItem: AnimatableItem?
-    get() = animatableItems[MountState.ROOT_HOST_ID]
+    get() = reductionState.animatableItems[MountState.ROOT_HOST_ID]
 
   override val treeId: Int
     get() = componentTreeId
@@ -174,6 +210,9 @@ internal constructor(
 
   override val isProcessingVisibilityOutputsEnabled: Boolean
     get() = shouldProcessVisibilityOutputs
+
+  override val useEmptyVisibleRectOnDetach: Boolean
+    get() = componentContext.lithoConfiguration.componentsConfig.useEmptyVisibleRectOnDetach
 
   private var cachedRenderTree: RenderTree? = null // memoized RenderTree
   // TODO(t66287929): Remove isCommitted from LayoutState by matching RenderState logic around
@@ -202,12 +241,6 @@ internal constructor(
     return scopedSpecComponentInfos
   }
 
-  fun consumeCreatedEventHandlers(): List<Pair<String, EventHandler<*>>>? {
-    val createdEventHandlers = createdEventHandlers
-    this.createdEventHandlers = null
-    return createdEventHandlers
-  }
-
   fun toRenderTree(): RenderTree {
     cachedRenderTree?.let {
       return it
@@ -221,12 +254,13 @@ internal constructor(
         RenderTree.create(
             root,
             flatList,
-            outputsIdToPositionMap,
+            reductionState.outputsIdToPositionMap,
             sizeConstraints.encodedValue,
             componentTreeId,
             null,
             null,
-            null)
+            null,
+        )
     cachedRenderTree = renderTree
     return renderTree
   }
@@ -234,10 +268,16 @@ internal constructor(
   fun isCompatibleSpec(widthSpec: Int, heightSpec: Int): Boolean {
     val widthIsCompatible =
         MeasureComparisonUtils.isMeasureSpecCompatible(
-            getWidthSpec(sizeConstraints), widthSpec, width)
+            getWidthSpec(sizeConstraints),
+            widthSpec,
+            width,
+        )
     val heightIsCompatible =
         MeasureComparisonUtils.isMeasureSpecCompatible(
-            getHeightSpec(sizeConstraints), heightSpec, height)
+            getHeightSpec(sizeConstraints),
+            heightSpec,
+            height,
+        )
     return widthIsCompatible && heightIsCompatible
   }
 
@@ -252,26 +292,29 @@ internal constructor(
 
   override fun getMountableOutputCount(): Int = mountableOutputs.size
 
-  override fun getIncrementalMountOutputCount(): Int = incrementalMountOutputs.size
+  override fun getIncrementalMountOutputCount(): Int =
+      reductionState.incrementalMountOutputs?.size ?: 0
 
   override fun getMountableOutputAt(position: Int): RenderTreeNode = mountableOutputs[position]
 
   override fun getIncrementalMountOutputForId(id: Long): IncrementalMountOutput? =
-      incrementalMountOutputs[id]
+      reductionState.incrementalMountOutputs?.get(id)
 
-  override fun getIncrementalMountOutputs(): Collection<IncrementalMountOutput> =
-      incrementalMountOutputs.values
+  override fun getIncrementalMountOutputs(): Collection<IncrementalMountOutput>? =
+      reductionState.incrementalMountOutputsList
 
-  override fun getAnimatableItem(id: Long): AnimatableItem? = animatableItems[id]
+  override fun getAnimatableItem(id: Long): AnimatableItem? = reductionState.animatableItems[id]
 
-  override fun getOutputsOrderedByTopBounds(): List<IncrementalMountOutput> = mountableOutputTops
+  override fun getOutputsOrderedByTopBounds(): List<IncrementalMountOutput> =
+      reductionState.mountableOutputTops
 
   override fun getOutputsOrderedByBottomBounds(): List<IncrementalMountOutput> =
-      mountableOutputBottoms
+      reductionState.mountableOutputBottoms
 
   fun getVisibilityOutputAt(index: Int): VisibilityOutput = visibilityOutputs[index]
 
-  override fun getTestOutputAt(position: Int): TestOutput? = testOutputs?.get(position)
+  override fun getTestOutputAt(position: Int): TestOutput? =
+      reductionState.testOutputs?.get(position)
 
   fun getWidthSpec(): Int = getWidthSpec(sizeConstraints)
 
@@ -281,27 +324,30 @@ internal constructor(
    * @return the position of the [LithoRenderUnit] with id layoutOutputId in the [LayoutState] list
    *   of outputs or -1 if no [LithoRenderUnit] with that id exists in the [LayoutState]
    */
-  override fun getPositionForId(id: Long): Int = checkNotNull(outputsIdToPositionMap.get(id, -1))
+  override fun getPositionForId(id: Long): Int =
+      reductionState.outputsIdToPositionMap.getOrDefault(id, -1)
 
   override fun renderUnitWithIdHostsRenderTrees(id: Long): Boolean =
-      renderUnitIdsWhichHostRenderTrees.contains(id)
+      reductionState.renderUnitIdsWhichHostRenderTrees?.contains(id) == true
 
   /** Gets a group of LayoutOutput given transition key */
   override fun getAnimatableItemForTransitionId(
-      transitionId: TransitionId
-  ): OutputUnitsAffinityGroup<AnimatableItem>? = transitionIdMapping[transitionId]
+      transitionId: TransitionId,
+  ): OutputUnitsAffinityGroup<AnimatableItem>? =
+      reductionState.transitionIdMapping?.get(transitionId)
 
   override fun setInitialRootBoundsForAnimation(
       rootWidth: RootBoundsTransition?,
-      rootHeight: RootBoundsTransition?
+      rootHeight: RootBoundsTransition?,
   ) {
     rootWidthAnimation = rootWidth
     rootHeightAnimation = rootHeight
   }
 
   override fun getMountTimeTransitions(
-      previousInput: TransitionsExtensionInput?
+      previousInput: TransitionsExtensionInput?,
   ): List<Transition>? {
+    val transitionData = transitionData
     previousInput as LayoutState?
     var mountTimeTransitions: MutableList<Transition>? = null
     val mountedLayoutStateId = previousInput?.id ?: NO_PREVIOUS_LAYOUT_STATE_ID
@@ -341,10 +387,12 @@ internal constructor(
 
   /** Debug-only: return a string representation of this LayoutState and its LayoutOutputs. */
   fun dumpAsString(): String {
-    if (!LithoDebugConfigurations.isDebugModeEnabled &&
-        !ComponentsConfiguration.isEndToEndTestRun) {
+    if (
+        !LithoDebugConfigurations.isDebugModeEnabled && !ComponentsConfiguration.isEndToEndTestRun
+    ) {
       throw RuntimeException(
-          "LayoutState#dumpAsString() should only be called in debug mode or from e2e tests!")
+          "LayoutState#dumpAsString() should only be called in debug mode or from e2e tests!",
+      )
     }
     var res =
         """LayoutState w/ ${getMountableOutputCount()} mountable outputs, root: ${resolveResult.component}
@@ -365,25 +413,21 @@ internal constructor(
       lastVisibleIndex: Int,
       firstFullyVisibleIndex: Int,
       lastFullyVisibleIndex: Int,
-      stateHandler: WorkingRangeStatusHandler
+      stateHandler: WorkingRangeStatusHandler,
   ) {
-    if (workingRangeContainer == null) {
-      return
-    }
+    val workingRangeContainer = reductionState.workingRangeContainer ?: return
     workingRangeContainer.checkWorkingRangeAndDispatch(
         position,
         firstVisibleIndex,
         lastVisibleIndex,
         firstFullyVisibleIndex,
         lastFullyVisibleIndex,
-        stateHandler)
+        stateHandler,
+    )
   }
 
   fun dispatchOnExitRangeIfNeeded(stateHandler: WorkingRangeStatusHandler) {
-    if (workingRangeContainer == null) {
-      return
-    }
-    workingRangeContainer.dispatchOnExitedRangeIfNeeded(stateHandler)
+    reductionState.workingRangeContainer?.dispatchOnExitedRangeIfNeeded(stateHandler)
   }
 
   override fun needsToRerunTransitions(): Boolean {
@@ -410,6 +454,76 @@ internal constructor(
 
   fun getRenderTreeNode(output: IncrementalMountOutput): RenderTreeNode =
       getMountableOutputAt(output.index)
+
+  fun copyWith(
+      updatedResolveResult: ResolveResult,
+      treeState: TreeState,
+      newVersion: Int,
+  ): LayoutState {
+    return LayoutState(
+        updatedResolveResult,
+        newVersion,
+        treeState,
+        componentTreeId,
+        isAccessibilityEnabled,
+        layoutCacheData,
+        reductionState,
+    )
+        .also {
+          // Reuse the cached RenderTree since all inputs to toRenderTree() are identical
+          // (shared reductionState, same componentTreeId). This enables MountState to detect
+          // the tree is unchanged via reference equality, skipping the full O(N) mount traversal.
+          it.cachedRenderTree = cachedRenderTree
+        }
+  }
+
+  fun findBoundsForHandle(handle: Handle): Rect? {
+    val root = rootLayoutResult as? LithoLayoutResult ?: return null
+    return findBoundsInTree(root, handle, 0, 0)
+  }
+
+  private fun findBoundsInTree(root: LithoLayoutResult, handle: Handle, x: Int, y: Int): Rect? {
+    val node = root.node
+
+    for (i in 0 until node.componentCount) {
+      val component = node.getComponentAt(i)
+      if (component.hasHandle() && component.handle === handle) {
+        return if (root.contentRenderUnit != null) {
+          Rect(
+              x + root.adjustedLeft(),
+              y + root.adjustedTop(),
+              x + root.width + root.adjustedRight(),
+              y + root.height + root.adjustedBottom(),
+          )
+        } else { // Default bounds
+          Rect(x, y, x + root.width, y + root.height)
+        }
+      }
+    }
+
+    if (root.isDeferredLayoutResult) {
+      val actualRoot = (root as DeferredLithoLayoutResult).result ?: return null
+      return findBoundsInTree(
+          actualRoot,
+          handle,
+          x + root.getXForChildAtIndex(0),
+          y + root.getYForChildAtIndex(0),
+      )
+    }
+
+    for (i in 0 until root.childCount) {
+      val child = root.getChildAt(i)
+      val found = findBoundsInTree(
+          child,
+          handle,
+          x + root.getXForChildAtIndex(i),
+          y + root.getYForChildAtIndex(i),
+      )
+      if (found != null) return found
+    }
+
+    return null
+  }
 
   companion object {
     @JvmStatic
@@ -441,14 +555,6 @@ internal constructor(
           RenderSource.NONE -> "none"
           else -> throw RuntimeException("Unknown calculate layout source: $source")
         }
-
-    @JvmStatic
-    @VisibleForTesting
-    @OutputUnitType
-    fun getTypeFromId(id: Long): Int {
-      val masked = id and -0x100000000L
-      return (masked shr 32).toInt()
-    }
 
     @JvmStatic
     fun isNullOrEmpty(layoutState: LayoutState?): Boolean =

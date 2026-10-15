@@ -16,8 +16,8 @@
 
 package com.facebook.litho.intellij.completion;
 
-import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.assertj.core.api.Java6Assertions.atIndex;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.atIndex;
 
 import com.facebook.litho.intellij.LithoPluginIntellijTest;
 import com.intellij.psi.PsiFile;

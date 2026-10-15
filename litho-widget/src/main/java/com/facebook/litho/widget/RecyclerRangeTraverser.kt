@@ -34,7 +34,7 @@ interface RecyclerRangeTraverser {
       rangeEnd: Int,
       firstVisible: Int,
       lastVisible: Int,
-      processor: Processor
+      processor: Processor,
   )
 
   fun interface Processor {
@@ -52,7 +52,7 @@ interface RecyclerRangeTraverser {
               rangeEnd: Int,
               firstVisible: Int,
               lastVisible: Int,
-              processor: Processor
+              processor: Processor,
           ) {
             for (i in rangeStart until rangeEnd) {
               if (!processor.process(i)) {
@@ -70,7 +70,7 @@ interface RecyclerRangeTraverser {
               rangeEnd: Int,
               firstVisible: Int,
               lastVisible: Int,
-              processor: Processor
+              processor: Processor,
           ) {
             for (i in rangeEnd - 1 downTo rangeStart) {
               if (!processor.process(i)) {
@@ -92,7 +92,7 @@ interface RecyclerRangeTraverser {
               rangeEnd: Int,
               firstVisible: Int,
               lastVisible: Int,
-              processor: Processor
+              processor: Processor,
           ) {
             if (rangeEnd <= rangeStart) {
               return

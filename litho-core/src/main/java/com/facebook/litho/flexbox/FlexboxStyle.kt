@@ -16,6 +16,9 @@
 
 package com.facebook.litho.flexbox
 
+import android.graphics.Path
+import android.graphics.PathDashPathEffect
+import androidx.annotation.ColorInt
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.litho.Border
 import com.facebook.litho.CommonProps
@@ -25,6 +28,7 @@ import com.facebook.litho.StyleItem
 import com.facebook.litho.StyleItemField
 import com.facebook.litho.toLayoutDirection
 import com.facebook.rendercore.Dimen
+import com.facebook.rendercore.ResourceResolver
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaDirection
 import com.facebook.yoga.YogaEdge
@@ -73,6 +77,7 @@ internal enum class FlexboxFloatField : StyleItemField {
 internal enum class FlexboxObjectField : StyleItemField {
   ALIGN_SELF,
   BORDER,
+  BORDERv2,
   LAYOUT_DIRECTION,
   MARGIN_AUTO,
   POSITION_TYPE,
@@ -85,7 +90,7 @@ internal enum class FlexboxObjectField : StyleItemField {
 @DataClassGenerate
 internal data class FlexboxDimenStyleItem(
     override val field: FlexboxDimenField,
-    override val value: Dimen
+    override val value: Dimen,
 ) : StyleItem<Dimen> {
   override fun applyCommonProps(context: ComponentContext, commonProps: CommonProps) {
     val pixelValue = value.toPixels(context.resourceResolver)
@@ -110,8 +115,11 @@ internal data class FlexboxDimenStyleItem(
 
 /** Common style item for all float styles. See note on [FlexboxFloatField] about this pattern. */
 @PublishedApi
-internal class FloatStyleItem(override val field: FlexboxFloatField, override val value: Float) :
-    StyleItem<Float> {
+@DataClassGenerate
+internal data class FloatStyleItem(
+    override val field: FlexboxFloatField,
+    override val value: Float,
+) : StyleItem<Float> {
   override fun applyCommonProps(context: ComponentContext, commonProps: CommonProps) {
     when (field) {
       FlexboxFloatField.FLEX -> commonProps.flex(value)
@@ -137,14 +145,19 @@ internal class FloatStyleItem(override val field: FlexboxFloatField, override va
 
 /** Common style item for all object styles. See note on [FlexboxObjectField] about this pattern. */
 @PublishedApi
-internal class FlexboxObjectStyleItem(
+@DataClassGenerate
+internal data class FlexboxObjectStyleItem(
     override val field: FlexboxObjectField,
-    override val value: Any?
+    override val value: Any?,
 ) : StyleItem<Any?> {
   override fun applyCommonProps(context: ComponentContext, commonProps: CommonProps) {
     when (field) {
       FlexboxObjectField.ALIGN_SELF -> value?.let { commonProps.alignSelf(it as YogaAlign) }
       FlexboxObjectField.BORDER -> commonProps.border(value as Border?)
+      FlexboxObjectField.BORDERv2 -> {
+        val config = value as BorderConfiguration
+        commonProps.border(config.toBorder(context))
+      }
       FlexboxObjectField.LAYOUT_DIRECTION ->
           commonProps.layoutDirection((value as YogaDirection).toLayoutDirection())
       FlexboxObjectField.POSITION_TYPE ->
@@ -182,11 +195,11 @@ internal class FlexboxObjectStyleItem(
  *
  * Defaults: flex-grow = 0, flex-shrink = 1, flex-basis = null, flex-basis-percent = null
  */
-inline fun Style.flex(
+fun Style.flex(
     grow: Float? = null,
     shrink: Float? = null,
     basis: Dimen? = null,
-    basisPercent: Float? = null
+    basisPercent: Float? = null,
 ): Style =
     this +
         grow?.let { FloatStyleItem(FlexboxFloatField.FLEX_GROW, it) } +
@@ -201,7 +214,7 @@ inline fun Style.flex(
  *   properties.
  * - See https://yogalayout.dev/ for a web-based playground for trying out flexbox layouts.
  */
-inline fun Style.alignSelf(align: YogaAlign): Style =
+fun Style.alignSelf(align: YogaAlign): Style =
     this + FlexboxObjectStyleItem(FlexboxObjectField.ALIGN_SELF, align)
 
 /**
@@ -210,7 +223,7 @@ inline fun Style.alignSelf(align: YogaAlign): Style =
  *
  * Note: This property is not part of the flexbox standard.
  */
-inline fun Style.aspectRatio(aspectRatio: Float): Style =
+fun Style.aspectRatio(aspectRatio: Float): Style =
     this + FloatStyleItem(FlexboxFloatField.ASPECT_RATIO, aspectRatio)
 
 /**
@@ -227,7 +240,7 @@ inline fun Style.aspectRatio(aspectRatio: Float): Style =
  *
  * See https://yogalayout.dev/ for a web-based playground for trying out flexbox layouts.
  */
-inline fun Style.position(
+fun Style.position(
     all: Dimen? = null,
     horizontal: Dimen? = null,
     vertical: Dimen? = null,
@@ -253,7 +266,7 @@ inline fun Style.position(
  * Used in conjunction with [positionType] to define how a component should be positioned in its
  * parent, with a float value between 0 and 100.
  */
-inline fun Style.positionPercent(
+fun Style.positionPercent(
     all: Float? = null,
     horizontal: Float? = null,
     vertical: Float? = null,
@@ -276,15 +289,79 @@ inline fun Style.positionPercent(
         right?.let { FloatStyleItem(FlexboxFloatField.POSITION_RIGHT_PERCENT, it) }
 
 /** See docs in [position]. */
-inline fun Style.positionType(positionType: YogaPositionType): Style =
+fun Style.positionType(positionType: YogaPositionType): Style =
     this + FlexboxObjectStyleItem(FlexboxObjectField.POSITION_TYPE, positionType)
 
 /**
  * Describes how a [Border] should be drawn around this component. Setting this property will cause
  * the Component to be represented as a View at mount time if it wasn't going to already.
  */
-inline fun Style.border(border: Border): Style =
+fun Style.border(border: Border?): Style =
     this + FlexboxObjectStyleItem(FlexboxObjectField.BORDER, border)
+
+/**
+ * Applies a uniform border with the same width and color on all edges. This is a simplified API for
+ * the most common border use case.
+ *
+ * Example:
+ * ```
+ * Style.border(width = 2.dp, color = Color.Blue)
+ * Style.border(width = 4.dp, color = Color.Red, radius = 8.dp)
+ * Style.border(
+ *   width = 4.dp,
+ *   color = Color.Red,
+ *   effect = BorderEffect.dashed(floatArrayOf(10f, 5f), phase = 0f)
+ * )
+ * ```
+ *
+ * @param width the width to apply to all edges
+ * @param color the color to apply to all edges
+ * @param radius optional corner radius to apply to all corners
+ * @param effect optional border effect to apply to the entire border
+ */
+fun Style.border(
+    width: Dimen,
+    @ColorInt color: Int,
+    radius: Dimen? = null,
+    effect: BorderEffect? = null,
+): Style =
+    this +
+        FlexboxObjectStyleItem(
+            FlexboxObjectField.BORDERv2,
+            BorderConfiguration(
+                allWidth = width,
+                allColor = color,
+                allRadius = radius,
+                effect = effect,
+            ),
+        )
+
+/**
+ * Applies a border using a DSL-style builder for complex configurations.
+ *
+ * This API provides a declarative way to configure borders with different properties per edge,
+ * custom corner radii, and effects.
+ *
+ * Example:
+ * ```
+ * Style.border {
+ *   all(width = 5.dp, color = Color.Blue, effect = BorderEffect.dashed(floatArrayOf(10f, 5f)))
+ *   cornerRadius(all = 10.dp)
+ *
+ *   top(color = Color.Red)
+ *   bottom(color = Color.Green)
+ *
+ *   cornerRadius(topLeft = 15.dp, topRight = 15.dp)
+ * }
+ * ```
+ *
+ * @param block the configuration block
+ */
+fun Style.border(block: BorderConfigScope.() -> Unit): Style {
+  val scope = BorderConfigScope()
+  scope.block()
+  return this + FlexboxObjectStyleItem(FlexboxObjectField.BORDERv2, scope.build())
+}
 
 /**
  * Describes the RTL/LTR direction of component. Determines whether {@link YogaEdge#START} and
@@ -294,34 +371,295 @@ inline fun Style.border(border: Border): Style =
  *
  * <p>Default: {@link YogaDirection#INHERIT}
  */
-inline fun Style.layoutDirection(layoutDirection: YogaDirection): Style =
+fun Style.layoutDirection(layoutDirection: YogaDirection): Style =
     this + FlexboxObjectStyleItem(FlexboxObjectField.LAYOUT_DIRECTION, layoutDirection)
 
 /**
  * Sets margin value for specified edge to auto. The item will extend the margin for this edge to
  * occupy the extra space in the parent, depending on the direction (Row or Column).
  */
-inline fun Style.marginAuto(edge: YogaEdge): Style =
+fun Style.marginAuto(edge: YogaEdge): Style =
     this + FlexboxObjectStyleItem(FlexboxObjectField.MARGIN_AUTO, edge)
 
-inline fun Style.isReferenceBaseline(isReferenceBaseline: Boolean): Style =
+fun Style.isReferenceBaseline(isReferenceBaseline: Boolean): Style =
     this + FlexboxObjectStyleItem(FlexboxObjectField.IS_REFERENCE_BASELINE, isReferenceBaseline)
 
-inline fun Style.useHeightAsBaseline(useHeightAsBaseline: Boolean): Style =
+fun Style.useHeightAsBaseline(useHeightAsBaseline: Boolean): Style =
     this + FlexboxObjectStyleItem(FlexboxObjectField.USE_HEIGHT_AS_BASELINE, useHeightAsBaseline)
 
 /**
- * Gap will add spacing between the rows and columns of a flex container. You can specify if you
- * want the gaps to be between only the rows, only the columns, or both.
+ * Stores properties that are used to customise an effect that is applied to the border.
  *
- * See https://yogalayout.dev/ for a web-based playground for trying out flexbox layouts.
+ * @see BorderEffect.path
+ * @see BorderEffect.dashed
+ * @see BorderEffect.discrete
  */
-inline fun Style.gap(
-    column: Dimen? = null,
-    row: Dimen? = null,
-    all: Dimen? = null,
-): Style =
-    this +
-        column?.let { FlexboxDimenStyleItem(FlexboxDimenField.GAP_COLUMN, it) } +
-        row?.let { FlexboxDimenStyleItem(FlexboxDimenField.GAP_ROW, it) } +
-        all?.let { FlexboxDimenStyleItem(FlexboxDimenField.GAP_ALL, it) }
+class BorderEffect {
+
+  // shared properties
+  var phase: Float? = null
+
+  // dash properties
+  var intervals: FloatArray? = null
+
+  // path properties
+  var pathShape: Path? = null
+  var pathAdvance: Float? = null
+  var pathStyle: PathDashPathEffect.Style? = null
+
+  // discrete effect properties
+  var segmentLength: Float? = null
+  var deviation: Float? = null
+
+  private constructor(intervals: FloatArray, phase: Float) {
+    this.intervals = intervals
+    this.phase = phase
+  }
+
+  private constructor(
+      pathShape: Path,
+      pathAdvance: Float,
+      pathPhase: Float,
+      pathStyle: PathDashPathEffect.Style,
+  ) {
+    this.pathShape = pathShape
+    this.pathAdvance = pathAdvance
+    this.phase = pathPhase
+    this.pathStyle = pathStyle
+  }
+
+  private constructor(segmentLength: Float, deviation: Float) {
+    this.segmentLength = segmentLength
+    this.deviation = deviation
+  }
+
+  fun apply(builder: Border.Builder) {
+    // apply dashed border effect.
+    intervals?.let { builder.dashEffect(it, phase ?: 0f) }
+
+    // apply path border effect.
+    if (this.pathShape != null) {
+      builder.pathDashEffect(pathShape, pathAdvance ?: 0f, phase ?: 0f, pathStyle)
+    }
+
+    // apply discrete path border effect.
+    if (this.segmentLength != null) {
+      builder.discreteEffect(segmentLength ?: 0f, deviation ?: 0f)
+    }
+  }
+
+  companion object {
+
+    /**
+     * Applies a path dash effect to the border
+     *
+     * @see Border.Builder.pathDashEffect
+     */
+    fun path(
+        shape: Path,
+        advance: Float,
+        phase: Float,
+        style: PathDashPathEffect.Style,
+    ): BorderEffect {
+      return BorderEffect(shape, advance, phase, style)
+    }
+
+    /**
+     * Applies a dash effect to the border.
+     *
+     * @see Border.Builder.dashEffect
+     */
+    fun dashed(intervals: FloatArray, phase: Float): BorderEffect {
+      return BorderEffect(intervals, phase)
+    }
+
+    /**
+     * Applies a discrete effect to the border.
+     *
+     * @see Border.Builder.discreteEffect
+     */
+    fun discrete(segmentLength: Float, deviation: Float): BorderEffect {
+      return BorderEffect(segmentLength, deviation)
+    }
+  }
+}
+
+/**
+ * Configuration for a border with unresolved Dimen values. This will be resolved to pixels in
+ * applyCommonProps.
+ */
+@PublishedApi
+@DataClassGenerate
+internal data class BorderConfiguration(
+    // Edge properties
+    val allWidth: Dimen? = null,
+    val allColor: Int? = null,
+    val startEdge: BorderEdgeConfig? = null,
+    val endEdge: BorderEdgeConfig? = null,
+    val topEdge: BorderEdgeConfig? = null,
+    val bottomEdge: BorderEdgeConfig? = null,
+    val leftEdge: BorderEdgeConfig? = null,
+    val rightEdge: BorderEdgeConfig? = null,
+
+    // Radius properties
+    val allRadius: Dimen? = null,
+    val topLeftRadius: Dimen? = null,
+    val topRightRadius: Dimen? = null,
+    val bottomLeftRadius: Dimen? = null,
+    val bottomRightRadius: Dimen? = null,
+
+    // Effect
+    val effect: BorderEffect? = null,
+) {
+  fun toBorder(context: ComponentContext): Border {
+    val resolver = context.resourceResolver
+    val border = Border.create(context)
+
+    // Apply all edge properties
+    allWidth?.let { border.widthPx(YogaEdge.ALL, it.toPixels(resolver)) }
+    allColor?.let { border.color(YogaEdge.ALL, it) }
+
+    // Apply group edges
+    startEdge?.applyEdge(YogaEdge.START, border, resolver)
+    endEdge?.applyEdge(YogaEdge.END, border, resolver)
+
+    // Apply individual edges
+    topEdge?.applyEdge(YogaEdge.TOP, border, resolver)
+    bottomEdge?.applyEdge(YogaEdge.BOTTOM, border, resolver)
+    leftEdge?.applyEdge(YogaEdge.LEFT, border, resolver)
+    rightEdge?.applyEdge(YogaEdge.RIGHT, border, resolver)
+
+    // Apply radius
+    allRadius?.let { border.radiusPx(it.toPixels(resolver)) }
+    topLeftRadius?.let { border.radiusPx(Border.Corner.TOP_LEFT, it.toPixels(resolver)) }
+    topRightRadius?.let { border.radiusPx(Border.Corner.TOP_RIGHT, it.toPixels(resolver)) }
+    bottomLeftRadius?.let { border.radiusPx(Border.Corner.BOTTOM_LEFT, it.toPixels(resolver)) }
+    bottomRightRadius?.let { border.radiusPx(Border.Corner.BOTTOM_RIGHT, it.toPixels(resolver)) }
+
+    // Apply effect
+    effect?.apply(border)
+
+    return border.build()
+  }
+}
+
+/** Edge configuration with unresolved Dimen */
+@PublishedApi
+@DataClassGenerate
+internal data class BorderEdgeConfig(
+    @ColorInt val color: Int? = null,
+    val width: Dimen? = null,
+) {
+  fun applyEdge(edge: YogaEdge, builder: Border.Builder, resolver: ResourceResolver) {
+    color?.let { builder.color(edge, it) }
+    width?.let { builder.widthPx(edge, it.toPixels(resolver)) }
+  }
+}
+
+/** DSL scope for building border configurations. */
+class BorderConfigScope {
+  private var allWidth: Dimen? = null
+  private var allColor: Int? = null
+  private var allRadius: Dimen? = null
+
+  private var startEdge: BorderEdgeConfig? = null
+  private var endEdge: BorderEdgeConfig? = null
+  private var topEdge: BorderEdgeConfig? = null
+  private var bottomEdge: BorderEdgeConfig? = null
+  private var leftEdge: BorderEdgeConfig? = null
+  private var rightEdge: BorderEdgeConfig? = null
+
+  private var topLeftRadius: Dimen? = null
+  private var topRightRadius: Dimen? = null
+  private var bottomLeftRadius: Dimen? = null
+  private var bottomRightRadius: Dimen? = null
+
+  private var borderEffect: BorderEffect? = null
+
+  /** Configures all edges with the same properties. */
+  fun all(@ColorInt color: Int? = null, width: Dimen? = null, effect: BorderEffect? = null) {
+    if (color != null) allColor = color
+    if (width != null) allWidth = width
+    if (effect != null) borderEffect = effect
+  }
+
+  /**
+   * Configures corner radii. Use `all` to set all corners, or individual parameters to customize
+   * specific corners.
+   */
+  fun cornerRadius(
+      all: Dimen? = null,
+      topLeft: Dimen? = null,
+      topRight: Dimen? = null,
+      bottomLeft: Dimen? = null,
+      bottomRight: Dimen? = null,
+  ) {
+    if (all != null) allRadius = all
+    if (topLeft != null) this.topLeftRadius = topLeft
+    if (topRight != null) this.topRightRadius = topRight
+    if (bottomLeft != null) this.bottomLeftRadius = bottomLeft
+    if (bottomRight != null) this.bottomRightRadius = bottomRight
+  }
+
+  /** Configures the top edge. */
+  fun top(@ColorInt color: Int? = null, width: Dimen? = null) {
+    if (color != null || width != null) {
+      topEdge = BorderEdgeConfig(color = color, width = width)
+    }
+  }
+
+  /** Configures the bottom edge. */
+  fun bottom(@ColorInt color: Int? = null, width: Dimen? = null) {
+    if (color != null || width != null) {
+      bottomEdge = BorderEdgeConfig(color = color, width = width)
+    }
+  }
+
+  /** Configures the left edge. */
+  fun left(@ColorInt color: Int? = null, width: Dimen? = null) {
+    if (color != null || width != null) {
+      leftEdge = BorderEdgeConfig(color = color, width = width)
+    }
+  }
+
+  /** Configures the right edge. */
+  fun right(@ColorInt color: Int? = null, width: Dimen? = null) {
+    if (color != null || width != null) {
+      rightEdge = BorderEdgeConfig(color = color, width = width)
+    }
+  }
+
+  /** Configures the start edge (LTR: left, RTL: right). */
+  fun start(@ColorInt color: Int? = null, width: Dimen? = null) {
+    if (color != null || width != null) {
+      startEdge = BorderEdgeConfig(color = color, width = width)
+    }
+  }
+
+  /** Configures the end edge (LTR: right, RTL: left). */
+  fun end(@ColorInt color: Int? = null, width: Dimen? = null) {
+    if (color != null || width != null) {
+      endEdge = BorderEdgeConfig(color = color, width = width)
+    }
+  }
+
+  @PublishedApi
+  internal fun build(): BorderConfiguration {
+    return BorderConfiguration(
+        allWidth = allWidth,
+        allColor = allColor,
+        startEdge = startEdge,
+        endEdge = endEdge,
+        topEdge = topEdge,
+        bottomEdge = bottomEdge,
+        leftEdge = leftEdge,
+        rightEdge = rightEdge,
+        allRadius = allRadius,
+        topLeftRadius = topLeftRadius,
+        topRightRadius = topRightRadius,
+        bottomLeftRadius = bottomLeftRadius,
+        bottomRightRadius = bottomRightRadius,
+        effect = borderEffect,
+    )
+  }
+}

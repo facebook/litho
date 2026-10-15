@@ -28,9 +28,9 @@ object MountHelper {
   fun requestMount(
       componentTree: ComponentTree,
       visibleRect: Rect?,
-      processVisibilityOutputs: Boolean
+      processVisibilityOutputs: Boolean,
   ) {
-    val lithoView = componentTree.lithoView
+    val lithoView = componentTree.getLithoView()
     lithoView?.mountComponent(visibleRect, processVisibilityOutputs)
   }
 

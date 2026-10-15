@@ -145,6 +145,13 @@ data class RecyclerBinderConfig(
     @JvmField
     @RecyclerBinder.RecyclingStrategy
     val recyclingStrategy: Int = RecyclerBinder.RecyclingStrategy.DEFAULT,
+    /**
+     * Temporary rollout flag for [RecyclerBinder.PaginationStrategy.SCROLL_TO_INSERT_POSITION].
+     * When true, the scroll target is resolved when the change set is committed rather than when
+     * the item is inserted, so removals later in the same change set cannot leave it at a stale
+     * index.
+     */
+    @JvmField val resolvePaginationTargetOnCommit: Boolean = false,
 ) {
 
   init {
@@ -203,6 +210,7 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
   private var crossAxisWrapMode = configuration.crossAxisWrapMode
   private var paginationStrategy = configuration.paginationStrategy
   private var recyclingStrategy = configuration.recyclingStrategy
+  private var resolvePaginationTargetOnCommit = configuration.resolvePaginationTargetOnCommit
 
   fun isCircular(isCircular: Boolean): RecyclerBinderConfigBuilder = also {
     this.isCircular = isCircular
@@ -217,7 +225,7 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
   }
 
   fun requestMountForPrefetchedItems(
-      requestMountForPrefetchedItems: Boolean
+      requestMountForPrefetchedItems: Boolean,
   ): RecyclerBinderConfigBuilder = also {
     this.requestMountForPrefetchedItems = requestMountForPrefetchedItems
   }
@@ -241,7 +249,7 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
   }
 
   fun componentsConfiguration(
-      componentsConfiguration: ComponentsConfiguration?
+      componentsConfiguration: ComponentsConfiguration?,
   ): RecyclerBinderConfigBuilder = also { this.componentsConfiguration = componentsConfiguration }
 
   fun rangeRatio(rangeRatio: Float): RecyclerBinderConfigBuilder = also {
@@ -249,7 +257,7 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
   }
 
   fun layoutHandlerFactory(
-      layoutHandlerFactory: LayoutHandlerFactory?
+      layoutHandlerFactory: LayoutHandlerFactory?,
   ): RecyclerBinderConfigBuilder = also { this.layoutHandlerFactory = layoutHandlerFactory }
 
   fun enableStableIds(enabled: Boolean): RecyclerBinderConfigBuilder = also {
@@ -265,8 +273,12 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
   }
 
   fun recyclingStrategy(
-      @RecyclerBinder.RecyclingStrategy strategy: Int
+      @RecyclerBinder.RecyclingStrategy strategy: Int,
   ): RecyclerBinderConfigBuilder = also { this.recyclingStrategy = strategy }
+
+  fun resolvePaginationTargetOnCommit(enabled: Boolean): RecyclerBinderConfigBuilder = also {
+    this.resolvePaginationTargetOnCommit = enabled
+  }
 
   fun build(): RecyclerBinderConfig {
     return RecyclerBinderConfig(
@@ -286,6 +298,7 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
         crossAxisWrapMode = crossAxisWrapMode,
         paginationStrategy = paginationStrategy,
         recyclingStrategy = recyclingStrategy,
+        resolvePaginationTargetOnCommit = resolvePaginationTargetOnCommit,
     )
   }
 }

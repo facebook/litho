@@ -30,7 +30,7 @@ import com.facebook.rendercore.testing.TestRenderCoreExtension
 import com.facebook.rendercore.testing.ViewAssertions
 import com.facebook.rendercore.testing.ViewWrapperUnit
 import com.facebook.rendercore.testing.match.ViewMatchNode
-import org.assertj.core.api.Java6Assertions
+import org.assertj.core.api.Assertions
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -52,19 +52,22 @@ class MountDelegateTest {
                 SimpleLayoutResult.create()
                     .renderUnit(ViewWrapperUnit(TextView(c), 2))
                     .width(100)
-                    .height(100))
+                    .height(100),
+            )
             .child(
                 SimpleLayoutResult.create()
                     .renderUnit(ViewWrapperUnit(TextView(c), 3))
                     .y(100)
                     .width(100)
-                    .height(100))
+                    .height(100),
+            )
             .child(
                 SimpleLayoutResult.create()
                     .renderUnit(ViewWrapperUnit(TextView(c), 4))
                     .y(200)
                     .width(100)
-                    .height(100))
+                    .height(100),
+            )
             .build()
     val mountExtension = UnitIdBasedMountExtension(2, 3)
     val extension: RenderCoreExtension<*, *> = TestRenderCoreExtension(mountExtension)
@@ -78,24 +81,27 @@ class MountDelegateTest {
                 .child(
                     ViewMatchNode.forType(TextView::class.java)
                         .bounds(0, 0, 100, 100)
-                        .absoluteBoundsForRootType(0, 0, 100, 100, RootHost::class.java))
+                        .absoluteBoundsForRootType(0, 0, 100, 100, RootHost::class.java),
+                )
                 .child(
                     ViewMatchNode.forType(TextView::class.java)
                         .bounds(0, 100, 100, 100)
-                        .absoluteBoundsForRootType(0, 100, 100, 100, RootHost::class.java)))
-    Java6Assertions.assertThat(mountExtension.beforeMountItem).isEqualTo(3)
-    Java6Assertions.assertThat(mountExtension.onMountItem).isEqualTo(2 + 1 /* for the root*/)
-    Java6Assertions.assertThat(mountExtension.onBindItem).isEqualTo(2 + 1 /* for the root*/)
+                        .absoluteBoundsForRootType(0, 100, 100, 100, RootHost::class.java),
+                ),
+        )
+    Assertions.assertThat(mountExtension.beforeMountItem).isEqualTo(3)
+    Assertions.assertThat(mountExtension.onMountItem).isEqualTo(2 + 1 /* for the root*/)
+    Assertions.assertThat(mountExtension.onBindItem).isEqualTo(2 + 1 /* for the root*/)
     renderCoreTestRule
         .useRootNode(LayoutResultWrappingNode(SimpleLayoutResult.create().build()))
         .render()
 
     // No new calls to the 'before' APIs
-    Java6Assertions.assertThat(mountExtension.beforeMountItem).isEqualTo(3)
-    Java6Assertions.assertThat(mountExtension.onMountItem).isEqualTo(2 + 1 /* for the root*/)
-    Java6Assertions.assertThat(mountExtension.onBindItem).isEqualTo(2 + 1 /* for the root*/)
-    Java6Assertions.assertThat(mountExtension.onUnmountItem).isEqualTo(2)
-    Java6Assertions.assertThat(mountExtension.onUnbindItem).isEqualTo(2)
+    Assertions.assertThat(mountExtension.beforeMountItem).isEqualTo(3)
+    Assertions.assertThat(mountExtension.onMountItem).isEqualTo(2 + 1 /* for the root*/)
+    Assertions.assertThat(mountExtension.onBindItem).isEqualTo(2 + 1 /* for the root*/)
+    Assertions.assertThat(mountExtension.onUnmountItem).isEqualTo(2)
+    Assertions.assertThat(mountExtension.onUnbindItem).isEqualTo(2)
   }
 
   internal class UnitIdBasedMountExtension(vararg ids: Long) :
@@ -127,7 +133,7 @@ class MountDelegateTest {
     override fun beforeMountItem(
         extensionState: ExtensionState<Map<Long?, Boolean?>?>,
         renderTreeNode: RenderTreeNode,
-        index: Int
+        index: Int,
     ) {
       beforeMountItem++
       val id = renderTreeNode.renderUnit.id
@@ -140,7 +146,7 @@ class MountDelegateTest {
         extensionState: ExtensionState<Map<Long?, Boolean?>?>,
         renderUnit: RenderUnit<*>,
         content: Any,
-        layoutData: Any?
+        layoutData: Any?,
     ) {
       onMountItem++
     }
@@ -149,7 +155,7 @@ class MountDelegateTest {
         extensionState: ExtensionState<Map<Long?, Boolean?>?>,
         renderUnit: RenderUnit<*>,
         content: Any,
-        layoutData: Any?
+        layoutData: Any?,
     ) {
       onUnmountItem++
     }
@@ -158,7 +164,7 @@ class MountDelegateTest {
         extensionState: ExtensionState<Map<Long?, Boolean?>?>,
         renderUnit: RenderUnit<*>,
         content: Any,
-        layoutData: Any?
+        layoutData: Any?,
     ) {
       onBindItem++
     }
@@ -167,7 +173,7 @@ class MountDelegateTest {
         extensionState: ExtensionState<Map<Long?, Boolean?>?>,
         renderUnit: RenderUnit<*>,
         content: Any,
-        layoutData: Any?
+        layoutData: Any?,
     ) {
       onUnbindItem++
     }
@@ -177,7 +183,7 @@ class MountDelegateTest {
         previousRenderUnit: RenderUnit<*>,
         previousLayoutData: Any?,
         nextRenderUnit: RenderUnit<*>,
-        nextLayoutData: Any?
+        nextLayoutData: Any?,
     ): Boolean {
       return false
     }
@@ -187,7 +193,7 @@ class MountDelegateTest {
         renderUnit: RenderUnit<*>,
         content: Any,
         layoutData: Any?,
-        changed: Boolean
+        changed: Boolean,
     ) = Unit
   }
 }

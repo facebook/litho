@@ -19,7 +19,6 @@ package com.facebook.litho.specmodels.generator;
 import com.facebook.litho.annotations.FromBoundsDefined;
 import com.facebook.litho.annotations.FromMeasure;
 import com.facebook.litho.annotations.OnMount;
-import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DelegateMethod;
 import com.facebook.litho.specmodels.model.InterStageInputParamModel;
@@ -29,8 +28,6 @@ import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.SpecModelUtils;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
-import java.lang.annotation.Annotation;
-import javax.annotation.Nullable;
 import javax.lang.model.element.Modifier;
 
 /** Class that generates methods for Mount Specs. */
@@ -117,19 +114,5 @@ public class MountSpecGenerator {
     }
 
     return dataHolder.build();
-  }
-
-  @Nullable
-  private static ShouldUpdate getShouldUpdateAnnotation(MountSpecModel specModel) {
-    for (SpecMethodModel<DelegateMethod, Void> delegateMethodModel :
-        specModel.getDelegateMethods()) {
-      for (Annotation annotation : delegateMethodModel.annotations) {
-        if (annotation.annotationType().equals(ShouldUpdate.class)) {
-          return (ShouldUpdate) annotation;
-        }
-      }
-    }
-
-    return null;
   }
 }

@@ -17,7 +17,8 @@
 package com.facebook.samples.litho.onboarding
 
 import android.os.Bundle
-import com.facebook.litho.LithoView
+import com.facebook.litho.surface.getLithoView
+import com.facebook.litho.surface.setLithoContent
 import com.facebook.samples.litho.NavigatableDemoActivity
 import com.facebook.samples.litho.kotlin.documentation.HelloComponent
 
@@ -26,7 +27,8 @@ class FirstComponentActivity : NavigatableDemoActivity() {
     super.onCreate(savedInstanceState)
 
     // start_example
-    setContentView(LithoView.create(this, HelloComponent(name = "Linda")))
+    setLithoContent { HelloComponent(name = "Linda") }
+    setContentView(getLithoView())
     // end_example
   }
 }

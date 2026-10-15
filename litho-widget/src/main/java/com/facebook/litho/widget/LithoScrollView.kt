@@ -37,17 +37,16 @@ import com.facebook.litho.TreeState
 import com.facebook.rendercore.ErrorReporter
 import com.facebook.rendercore.LogLevel
 import com.facebook.rendercore.utils.CommonUtils
+import com.facebook.rendercore.visibility.VisibilityChangeReason
 
-/**
- * Extension of [NestedScrollView] that allows to add more features needed for [VerticalScrollSpec].
- */
+/** Extension of [NestedScrollView] that allows to add more features needed for [VerticalScroll]. */
 class LithoScrollView
 @JvmOverloads
 constructor(
     context: Context,
     val renderTreeView: BaseMountingView = LithoView(context),
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
+    defStyleAttr: Int = 0,
 ) :
     NestedScrollView(ContextThemeWrapper(context, R.style.LithoScrollView), attrs, defStyleAttr),
     HasLithoViewChildren {
@@ -69,7 +68,7 @@ constructor(
   constructor(
       context: Context,
       attrs: AttributeSet?,
-      defStyleAttr: Int = 0
+      defStyleAttr: Int = 0,
   ) : this(context, LithoView(context), attrs, defStyleAttr)
 
   override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
@@ -92,8 +91,7 @@ constructor(
           "LITHO:NPE:LITHO_SCROLL_VIEW_DRAW",
           "Root component: $currentRootComponent",
           t,
-          0,
-          null)
+      )
       throw LithoMetadataExceptionWrapper(null, currentRootComponent, currentLogTag, t)
     }
   }
@@ -101,7 +99,7 @@ constructor(
   override fun onScrollChanged(l: Int, t: Int, oldl: Int, oldt: Int) {
     super.onScrollChanged(l, t, oldl, oldt)
 
-    renderTreeView.notifyVisibleBoundsChanged()
+    renderTreeView.notifyVisibleBoundsChanged(VisibilityChangeReason.SCROLL)
 
     scrollPosition?.y = scrollY
     scrollStateDetector?.onScrollChanged()
@@ -143,6 +141,10 @@ constructor(
   }
 
   fun setScrollPosition(scrollPosition: ScrollPosition?) {
+    // Store the reference so onScrollChanged() can persist scroll Y via scrollPosition.y = scrollY.
+    // Without this, the Primitive path (which calls setScrollPosition directly instead of mount())
+    // would leave the field null and scroll position changes would never be tracked.
+    this.scrollPosition = scrollPosition
     if (scrollPosition != null) {
       onPreDrawListener = OneShotPreDrawListener.add(this) { scrollY = scrollPosition.y }
     } else {
@@ -163,7 +165,7 @@ constructor(
   fun mount(
       contentComponentTree: ComponentTree?,
       scrollPosition: ScrollPosition,
-      scrollStateListener: ScrollStateListener?
+      scrollStateListener: ScrollStateListener?,
   ) {
     if (renderTreeView !is LithoView) {
       throw UnsupportedOperationException("API can only be invoked from Vertical Scroll Spec")
@@ -200,10 +202,11 @@ constructor(
 
   fun release() {
     if (renderTreeView is LithoRenderTreeView) {
-      renderTreeView.cleanup()
+      renderTreeView.clean()
     } else {
       throw UnsupportedOperationException(
-          "This operation is only support for LithoRenderTreeView but it was : ${CommonUtils.getSectionNameForTracing(renderTreeView.javaClass)}")
+          "This operation is only support for LithoRenderTreeView but it was : ${CommonUtils.getSectionNameForTracing(renderTreeView.javaClass)}",
+      )
     }
   }
 

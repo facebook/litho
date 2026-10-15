@@ -23,6 +23,7 @@ import static org.mockito.Mockito.mock;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
+import android.text.Selection;
 import android.text.method.ArrowKeyMovementMethod;
 import android.text.method.LinkMovementMethod;
 import android.view.inputmethod.EditorInfo;
@@ -35,6 +36,7 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.Handle;
 import com.facebook.litho.LithoView;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.it.R;
 import com.facebook.litho.testing.LithoTestRule;
 import com.facebook.litho.testing.TestLithoView;
@@ -72,6 +74,44 @@ public class TextInputSpecTest {
     assertThat(editText.getTextSize()).isEqualTo(textSize);
     assertThat(editText.getSelectionStart()).isEqualTo(textSize);
     assertThat(editText.getSelectionEnd()).isEqualTo(textSize);
+  }
+
+  // ArrowKeyMovementMethod passes -1 when Shift is pressed between touch down and up
+  // (T291343055).
+  @Test
+  public void testSetSelectionWithNegativeOffsetIsClamped() {
+    assertSelectionClamped(false, "hello world", -1, 0);
+  }
+
+  @Test
+  public void testSetSelectionWithNegativeOffsetIsClampedForPrimitive() {
+    assertSelectionClamped(true, "hello world", -1, 0);
+  }
+
+  @Test
+  public void testSetSelectionPastEndIsClamped() {
+    assertSelectionClamped(false, "abc", 11, 3);
+  }
+
+  @Test
+  public void testSetSelectionPastEndIsClampedForPrimitive() {
+    assertSelectionClamped(true, "abc", 11, 3);
+  }
+
+  private void assertSelectionClamped(
+      boolean usePrimitiveTextInput, String text, int requestedOffset, int expectedOffset) {
+    final boolean originalUsePrimitiveTextInput = ComponentsConfiguration.usePrimitiveTextInput;
+    ComponentsConfiguration.usePrimitiveTextInput = usePrimitiveTextInput;
+    try {
+      final EditText editText = getEditText(TextInput.create(mContext).initialText(text));
+
+      Selection.setSelection(editText.getText(), requestedOffset);
+
+      assertThat(editText.getSelectionStart()).isEqualTo(expectedOffset);
+      assertThat(editText.getSelectionEnd()).isEqualTo(expectedOffset);
+    } finally {
+      ComponentsConfiguration.usePrimitiveTextInput = originalUsePrimitiveTextInput;
+    }
   }
 
   @Test

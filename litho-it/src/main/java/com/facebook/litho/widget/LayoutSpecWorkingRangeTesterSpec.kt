@@ -17,7 +17,7 @@
 package com.facebook.litho.widget
 
 import com.facebook.litho.BoundaryWorkingRange
-import com.facebook.litho.Column
+import com.facebook.litho.Column as ColumnBuilder
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.LifecycleStep
@@ -37,7 +37,7 @@ internal object LayoutSpecWorkingRangeTesterSpec {
   @JvmStatic
   @OnCreateLayout
   fun onCreateLayout(c: ComponentContext): Component =
-      Column.create(c).child(Text.create(c).text("hello")).build()
+      ColumnBuilder.create(c).child(Text.create(c).text("hello")).build()
 
   @JvmStatic
   @OnRegisterRanges

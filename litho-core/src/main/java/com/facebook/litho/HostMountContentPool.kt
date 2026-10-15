@@ -18,6 +18,7 @@ package com.facebook.litho
 
 import android.content.Context
 import com.facebook.rendercore.ContentAllocator
+import com.facebook.rendercore.MountContentPools
 import com.facebook.rendercore.MountContentPools.ContentPool
 import com.facebook.rendercore.MountContentPools.DefaultContentPool
 
@@ -34,22 +35,29 @@ class HostMountContentPool(maxSize: Int, isEnabled: Boolean) : ContentPool {
         null
       }
 
+  override val pooledItemsCount: Int
+    get() = pool?.pooledItemsCount ?: 0
+
   override fun acquire(contentAllocator: ContentAllocator<*>): Any? =
       pool?.acquire(contentAllocator)
 
   override fun release(item: Any): Boolean {
-    if (pool == null) {
-      return false
-    }
+    return ComponentsSystrace.trace("MountContentPools:releaseToPool ComponentHost") {
+      if (pool == null) {
+        return@trace false
+      }
 
-    // See ComponentHost#hadChildWithDuplicateParentState() for reason for this check
-    if ((item as ComponentHost).hadChildWithDuplicateParentState()) {
-      return false
-    }
+      // See ComponentHost#hadChildWithDuplicateParentState() for reason for this check
+      if ((item as ComponentHost).hadChildWithDuplicateParentState()) {
+        return@trace false
+      }
 
-    return pool.release(item)
+      pool.release(item)
+    }
   }
 
   override fun maybePreallocateContent(c: Context, contentAllocator: ContentAllocator<*>): Boolean =
       pool?.maybePreallocateContent(c, contentAllocator) ?: false
+
+  override fun getPoolStats(): MountContentPools.PoolStats? = pool?.getPoolStats()
 }

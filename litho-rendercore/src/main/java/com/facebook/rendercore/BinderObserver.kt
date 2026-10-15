@@ -86,4 +86,65 @@ abstract class BinderObserver {
    * @param func logic that executes the [RenderUnit.Binder.unbind] of the associated binder
    */
   protected abstract fun onUnbind(binderId: BinderId, func: () -> Unit)
+
+  /**
+   * This function ensures that implementations of [shouldUpdate] actually execute [func] and that
+   * it is executed exactly once.
+   *
+   * @throws [IllegalStateException] if [func] is not executed exactly once
+   */
+  internal inline fun observeShouldUpdate(
+      binderId: BinderId,
+      crossinline func: () -> Boolean,
+  ): Boolean {
+    if (BuildConfig.DEBUG) {
+      var executionCount = 0
+      val shouldUpdate = shouldUpdate(
+          binderId,
+          BooleanFunc {
+            executionCount++
+            func()
+          },
+      )
+      check(executionCount == 1) {
+        "BinderObserver: shouldUpdate func must be executed exactly once"
+      }
+      return shouldUpdate
+    } else {
+      return shouldUpdate(binderId, BooleanFunc { func() })
+    }
+  }
+
+  /**
+   * Called when a binder needs to check if it should update.
+   *
+   * Uses [BooleanFunc] instead of `() -> Boolean` to avoid primitive boxing: this method is `open`
+   * (virtual dispatch), so the lambda cannot be inlined, and `Function0<Boolean>` would box the
+   * return value on every call. [BooleanFunc] compiles to `boolean invoke()` in bytecode.
+   *
+   * @param binderId the identifier of the binder that's being disposed
+   * @param func logic that executes the [RenderUnit.Binder.shouldUpdate] of the associated binder
+   */
+  protected open fun shouldUpdate(binderId: BinderId, func: BooleanFunc): Boolean {
+    return func.invoke()
+  }
+
+  /**
+   * Called after [shouldUpdate] returns `true` for a binder that declares its model as
+   * dependencies. An empty [changes] list means the deps compared equal, so something else, usually
+   * layout data, caused the rebind. Binders without [DepsModel] never reach here at all.
+   */
+  open fun onDepsChanged(binderId: BinderId, changes: List<DepChange>): Unit = Unit
+
+  /**
+   * Called instead of [onDepsChanged] when the binder does declare its model as dependencies but
+   * `collectBindReasons` is off, so nothing diffed them.
+   *
+   * Without this an observer cannot tell "this binder has no dep model" from "nobody looked", and
+   * every dep-based binder reads as a hand-written `shouldUpdate`.
+   */
+  open fun onDepsNotCollected(binderId: BinderId): Unit = Unit
+
+  /** Called when a binder is rebound because a state value it read was updated. */
+  open fun onStateReadRebind(binderId: BinderId): Unit = Unit
 }

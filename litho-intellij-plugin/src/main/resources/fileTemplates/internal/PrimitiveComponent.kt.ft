@@ -14,7 +14,7 @@ class ${NAME}(val style: Style? = null) : PrimitiveComponent() {
   override fun PrimitiveComponentScope.render(): LithoPrimitive {
     return LithoPrimitive(
         layoutBehavior = ${NAME}LayoutBehavior(),
-        /* doc: https://fburl.com/primitivecontentcreation */
+        /* doc: https://fblitho.com/docs/primitives/primitive/#content-creation */
         mountBehavior = MountBehavior(ViewAllocator {
           TODO("Not yet implemented")
         }) {},
@@ -24,7 +24,7 @@ class ${NAME}(val style: Style? = null) : PrimitiveComponent() {
 
 internal class ${NAME}LayoutBehavior : LayoutBehavior {
   override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
-    /* doc: https://fburl.com/primitivemeasurement */
+    /* doc: https://fblitho.com/docs/primitives/primitive/#content-size-measurement */
     TODO("Not yet implemented")
   }
 }

@@ -22,11 +22,11 @@ object EventHandlerTestUtil {
 
   @JvmStatic
   fun <E> create(id: Int, hasEventDispatcher: HasEventDispatcher?): EventHandler<E> {
-    return EventHandler(
-        id,
-        EventHandlerRebindMode.REBIND,
-        EventDispatchInfo(hasEventDispatcher, null),
-        null,
-    )
+    return create(id, EventDispatchInfo(hasEventDispatcher, null))
+  }
+
+  @JvmStatic
+  fun <E> create(id: Int, dispatchInfo: EventDispatchInfo): EventHandler<E> {
+    return EventHandler(id, EventHandlerRebindMode.REBIND, dispatchInfo, null)
   }
 }

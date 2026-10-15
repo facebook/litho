@@ -16,7 +16,7 @@
 
 package com.facebook.litho
 
-import java.lang.IllegalArgumentException
+import com.facebook.litho.OutputUnitsAffinityGroup.Companion.ERROR_HOST_UNIT_VALIDATION
 import java.lang.IndexOutOfBoundsException
 import java.lang.RuntimeException
 import org.assertj.core.api.Assertions.assertThat
@@ -88,18 +88,9 @@ class OutputUnitsAffinityGroupTest {
   }
 
   @Test
-  fun testAddingNull() {
-    expectedException.expect(IllegalArgumentException::class.java)
-    expectedException.expectMessage("value should not be null")
-    val group = OutputUnitsAffinityGroup<Any?>()
-    group.add(OutputUnitType.FOREGROUND, null)
-  }
-
-  @Test
   fun testAddingHostToNotEmptyGroup() {
     expectedException.expect(RuntimeException::class.java)
-    expectedException.expectMessage(
-        "OutputUnitType.HOST unit should be the only member of an OutputUnitsAffinityGroup")
+    expectedException.expectMessage(ERROR_HOST_UNIT_VALIDATION)
     val group = OutputUnitsAffinityGroup<Any>()
     group.add(OutputUnitType.CONTENT, Any())
     group.add(OutputUnitType.HOST, Any())
@@ -108,8 +99,7 @@ class OutputUnitsAffinityGroupTest {
   @Test
   fun testAddingToGroupThatContainsHost() {
     expectedException.expect(RuntimeException::class.java)
-    expectedException.expectMessage(
-        "OutputUnitType.HOST unit should be the only member of an OutputUnitsAffinityGroup")
+    expectedException.expectMessage(ERROR_HOST_UNIT_VALIDATION)
     val group = OutputUnitsAffinityGroup<Any>()
     group.add(OutputUnitType.HOST, Any())
     group.add(OutputUnitType.BACKGROUND, Any())

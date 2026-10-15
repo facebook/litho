@@ -17,7 +17,6 @@
 package com.facebook.samples.litho.onboarding
 
 import android.widget.Toast
-import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
@@ -27,6 +26,7 @@ import com.facebook.litho.core.padding
 import com.facebook.litho.core.width
 import com.facebook.litho.kotlin.widget.Image
 import com.facebook.litho.kotlin.widget.Text
+import com.facebook.litho.layout.flexbox.Column
 import com.facebook.litho.view.onClick
 import com.facebook.rendercore.dp
 import com.facebook.rendercore.drawableRes
@@ -43,12 +43,11 @@ class StoryKComponent(private val user: User) : KComponent() {
             Style.padding(all = 4.dp).onClick {
               Toast.makeText(androidContext, "Open ${user.username} Story", Toast.LENGTH_SHORT)
                   .show()
-            }) {
-          child(
-              Image(
-                  drawable = drawableRes(user.avatarRes), style = Style.width(72.dp).height(72.dp)))
-          child(Text(text = user.username, textSize = 10.sp))
-        }
+            },
+    ) {
+      child(Image(drawable = drawableRes(user.avatarRes), style = Style.width(72.dp).height(72.dp)))
+      child(Text(text = user.username, textSize = 10.sp))
+    }
   }
 }
 // end_example

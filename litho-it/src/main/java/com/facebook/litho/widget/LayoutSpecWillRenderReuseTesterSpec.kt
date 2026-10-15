@@ -16,11 +16,11 @@
 
 package com.facebook.litho.widget
 
-import com.facebook.litho.Column
+import com.facebook.litho.Column as ColumnBuilder
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.LifecycleStep.StepInfo
-import com.facebook.litho.Row
+import com.facebook.litho.Row as RowBuilder
 import com.facebook.litho.Wrapper
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateLayout
@@ -33,12 +33,14 @@ object LayoutSpecWillRenderReuseTesterSpec {
   @OnCreateLayout
   fun onCreateLayout(c: ComponentContext, @Prop steps: List<StepInfo>): Component? {
     val component =
-        Row.create(c)
+        RowBuilder.create(c)
             .child(
-                Column.create(c)
+                ColumnBuilder.create(c)
                     .child(
                         Wrapper.create(c)
-                            .delegate(LayoutSpecLifecycleTester.create(c).steps(steps).build())))
+                            .delegate(LayoutSpecLifecycleTester.create(c).steps(steps).build()),
+                    ),
+            )
             .build()
     return if (Component.willRender(c, component)) component else null
   }

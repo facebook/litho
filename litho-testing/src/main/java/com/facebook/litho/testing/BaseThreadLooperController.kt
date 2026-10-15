@@ -26,4 +26,6 @@ interface BaseThreadLooperController {
   fun runToEndOfTasksSync()
 
   fun runToEndOfTasksAsync(): TimeOutSemaphore?
+
+  fun isIdle(): Boolean
 }

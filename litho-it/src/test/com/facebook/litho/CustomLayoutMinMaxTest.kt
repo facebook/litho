@@ -1,0 +1,329 @@
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@file:OptIn(ExperimentalLithoApi::class)
+
+package com.facebook.litho
+
+import com.facebook.litho.annotations.ExperimentalLithoApi
+import com.facebook.litho.core.height
+import com.facebook.litho.core.margin
+import com.facebook.litho.core.marginPercent
+import com.facebook.litho.core.maxHeight
+import com.facebook.litho.core.maxWidth
+import com.facebook.litho.core.maxWidthPercent
+import com.facebook.litho.core.minWidth
+import com.facebook.litho.core.minWidthPercent
+import com.facebook.litho.core.width
+import com.facebook.litho.layout.LayoutFunctionN
+import com.facebook.litho.layout.flexbox.Column
+import com.facebook.litho.testing.LithoTestRule
+import com.facebook.litho.testing.TestLithoView
+import com.facebook.litho.testing.testrunner.LithoTestRunner
+import com.facebook.litho.widget.SimpleMountSpecTester
+import com.facebook.rendercore.SizeConstraints
+import com.facebook.rendercore.px
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
+
+private const val VIEWPORT = 1000
+private const val CHILD = 100
+private const val M = 7
+
+/** Measures the only child under [constraints] and places it at the origin. */
+private fun measuringUnder(constraints: (SizeConstraints) -> SizeConstraints): LayoutFunctionN =
+    LayoutFunctionN { ms, c ->
+      val p = ms[0].measure(constraints(c))
+      layout(c.maxWidth, p.height) { p.place(0, 0) }
+    }
+
+private val bounded = measuringUnder { c -> SizeConstraints(0, c.maxWidth, 0, c.maxHeight) }
+
+private fun LithoTestRule.renderAndFindContainer(component: Component): LithoLayoutResult =
+    findIn(render(widthPx = VIEWPORT, heightPx = VIEWPORT) { Column { child(component) } })
+
+private fun findIn(testView: TestLithoView): LithoLayoutResult {
+  val root = checkNotNull(testView.componentTree.mainThreadLayoutState?.rootLayoutResult)
+  return checkNotNull(findContainer(root as LithoLayoutResult)) { "container not found in tree" }
+}
+
+private fun findContainer(result: LithoLayoutResult): LithoLayoutResult? {
+  if (result.node.tailComponent is Layout) return result
+  for (i in 0 until result.childCount) {
+    findContainer(result.getChildAt(i))?.let {
+      return it
+    }
+  }
+  return null
+}
+
+/**
+ * A child's declared min and max replace the bound of the constraints a custom layout measures it
+ * under on their side, as Compose's `requiredWidthIn` does, rather than being overwritten by them.
+ * Both win even over an exact constraint, and between the two the max wins.
+ */
+@RunWith(LithoTestRunner::class)
+class CustomLayoutMinMaxTest {
+
+  @JvmField @Rule val lithoTestRule = LithoTestRule()
+
+  @Test
+  fun `a declared maxWidth holds under a looser bound`() {
+    val capped =
+        SimpleMountSpecTester(style = Style.width(CHILD.px).maxWidth(50.px).height(CHILD.px))
+
+    val result = lithoTestRule.renderAndFindContainer(Layout(listOf(capped), layout = bounded))
+
+    assertThat(result.getChildAt(0).width)
+        .describedAs("100 means the bound replaced the declared max")
+        .isEqualTo(50)
+  }
+
+  @Test
+  fun `a declared maxHeight holds under a looser bound`() {
+    val capped =
+        SimpleMountSpecTester(style = Style.width(CHILD.px).height(CHILD.px).maxHeight(50.px))
+
+    // An explicit height bound on every run. Under `bounded`, the intrinsic run's height is
+    // unbounded, so today's code writes the declared max itself and the test would pass unfixed.
+    val result =
+        lithoTestRule.renderAndFindContainer(
+            Layout(
+                listOf(capped),
+                layout = measuringUnder { c -> SizeConstraints(0, c.maxWidth, 0, 300) },
+            ),
+        )
+
+    assertThat(result.getChildAt(0).height)
+        .describedAs("100 means the 300 bound replaced the declared max")
+        .isEqualTo(50)
+  }
+
+  @Test
+  fun `a percent maxWidth resolves against the bound`() {
+    val fill = SimpleMountSpecTester(style = Style.maxWidthPercent(50f).height(CHILD.px))
+
+    val result =
+        lithoTestRule.renderAndFindContainer(
+            Layout(
+                listOf(fill),
+                layout = measuringUnder { c -> SizeConstraints(0, 300, 0, c.maxHeight) },
+            ),
+        )
+
+    assertThat(result.getChildAt(0).width).isEqualTo(150)
+  }
+
+  @Test
+  fun `a declared maxWidth wins over an exact constraint`() {
+    // No own width, so the exact width is what the own max has to narrow.
+    val capped = SimpleMountSpecTester(style = Style.maxWidth(50.px).height(CHILD.px))
+
+    val result =
+        lithoTestRule.renderAndFindContainer(
+            Layout(listOf(capped), layout = measuringUnder { SizeConstraints.exact(300, CHILD) }),
+        )
+
+    assertThat(result.getChildAt(0).width)
+        .describedAs("the own max wins over the exact 300, as in a Column that stretches it")
+        .isEqualTo(50)
+  }
+
+  @Test
+  fun `a declared maxWidth is the box, with margins outside it`() {
+    val fill =
+        SimpleMountSpecTester(style = Style.maxWidth(150.px).height(CHILD.px).margin(all = M.px))
+
+    val result =
+        lithoTestRule.renderAndFindContainer(
+            Layout(
+                listOf(fill),
+                layout = measuringUnder { c -> SizeConstraints(0, 300, 0, c.maxHeight) },
+            ),
+        )
+
+    assertThat(result.getChildAt(0).width)
+        .describedAs("150 - 2M means the max went in without the margins Yoga takes out of it")
+        .isEqualTo(150)
+  }
+
+  /**
+   * The same with a percentage margin. A percentage is never kept between measurements, since it
+   * resolves against the space offered, so the layout that corrects the declared max for the
+   * margins used to run without them and changed nothing.
+   */
+  @Test
+  fun `a declared maxWidth is the box with a percentage margin outside it`() {
+    val fill = SimpleMountSpecTester(
+        style = Style.maxWidth(150.px).height(CHILD.px).marginPercent(horizontal = 5f),
+    )
+
+    val result =
+        lithoTestRule.renderAndFindContainer(
+            Layout(
+                listOf(fill),
+                layout = measuringUnder { c -> SizeConstraints(0, 300, 0, c.maxHeight) },
+            ),
+        )
+
+    assertThat(result.getChildAt(0).width)
+        .describedAs("short by its margins means the max went in without them")
+        .isEqualTo(150)
+  }
+
+  /**
+   * A declared max that comes to a fraction of a pixel is rounded, as Yoga rounds it for the same
+   * child in a Column, not truncated a pixel short.
+   */
+  @Test
+  fun `a fractional declared max rounds as it does in a Column`() {
+    val bound = 301
+    fun fill() = SimpleMountSpecTester(style = Style.maxWidthPercent(50f).height(CHILD.px))
+
+    val inColumn =
+        lithoTestRule.render(widthPx = VIEWPORT, heightPx = VIEWPORT) {
+          Column { child(Column(style = Style.width(bound.px)) { child(fill()) }) }
+        }
+    val columnWidth =
+        checkNotNull(inColumn.componentTree.mainThreadLayoutState?.rootLayoutResult)
+            .let { it as LithoLayoutResult }
+            .getChildAt(0)
+            .getChildAt(0)
+            .width
+
+    val result =
+        lithoTestRule.renderAndFindContainer(
+            Layout(
+                listOf(fill()),
+                layout = measuringUnder { c -> SizeConstraints(0, bound, 0, c.maxHeight) },
+            ),
+        )
+
+    assertThat(result.getChildAt(0).width)
+        .describedAs("50%% of %s, as a Column sizes it", bound)
+        .isEqualTo(columnWidth)
+  }
+
+  @Test
+  fun `a declared minWidth holds under a looser constraint minimum`() {
+    val floored = SimpleMountSpecTester(style = Style.width(20.px).minWidth(80.px).height(CHILD.px))
+
+    val result =
+        lithoTestRule.renderAndFindContainer(
+            Layout(
+                listOf(floored),
+                layout = measuringUnder { c -> SizeConstraints(10, c.maxWidth, 0, c.maxHeight) },
+            ),
+        )
+
+    assertThat(result.getChildAt(0).width)
+        .describedAs("20 means the constraint's minimum of 10 replaced the declared 80")
+        .isEqualTo(80)
+  }
+
+  @Test
+  fun `a percent minWidth resolves against the bound`() {
+    val floored =
+        SimpleMountSpecTester(style = Style.width(20.px).minWidthPercent(50f).height(CHILD.px))
+
+    val result =
+        lithoTestRule.renderAndFindContainer(
+            Layout(
+                listOf(floored),
+                layout = measuringUnder { c -> SizeConstraints(0, 300, 0, c.maxHeight) },
+            ),
+        )
+
+    assertThat(result.getChildAt(0).width).isEqualTo(150)
+  }
+
+  @Test
+  fun `a declared minWidth beats an exact constraint`() {
+    val floored =
+        SimpleMountSpecTester(style = Style.width(20.px).minWidth(400.px).height(CHILD.px))
+
+    val result =
+        lithoTestRule.renderAndFindContainer(
+            Layout(listOf(floored), layout = measuringUnder { SizeConstraints.exact(300, CHILD) }),
+        )
+
+    assertThat(result.getChildAt(0).width)
+        .describedAs("the own min wins over the exact 300, as in Yoga and CSS")
+        .isEqualTo(400)
+  }
+
+  /**
+   * A declared min larger than the bound wins over it, as in Yoga and CSS, so the child's answer
+   * can be wider than the constraints it was asked under. Here the child also declares a width,
+   * which the min then raises.
+   */
+  @Test
+  fun `a declared minWidth above the bound wins over it`() {
+    val floored =
+        SimpleMountSpecTester(style = Style.width(20.px).minWidth(400.px).height(CHILD.px))
+
+    val result =
+        lithoTestRule.renderAndFindContainer(
+            Layout(
+                listOf(floored),
+                layout = measuringUnder { c -> SizeConstraints(0, 300, 0, c.maxHeight) },
+            ),
+        )
+
+    assertThat(result.getChildAt(0).width)
+        .describedAs("the own min wins over the 300 bound, as in Yoga and CSS")
+        .isEqualTo(400)
+  }
+
+  /** The same for a child with no width of its own, whose room the min raises past the bound. */
+  @Test
+  fun `a declared minWidth above the bound wins over it without a declared width`() {
+    val floored = SimpleMountSpecTester(style = Style.minWidth(400.px).height(CHILD.px))
+
+    val result =
+        lithoTestRule.renderAndFindContainer(
+            Layout(
+                listOf(floored),
+                layout = measuringUnder { c -> SizeConstraints(0, 300, 0, c.maxHeight) },
+            ),
+        )
+
+    assertThat(result.getChildAt(0).width)
+        .describedAs("the own min raises the room past the 300 bound")
+        .isEqualTo(400)
+  }
+
+  @Test
+  fun `a declared maxWidth beats a declared minWidth, as in Compose`() {
+    val capped = SimpleMountSpecTester(
+        style = Style.width(20.px).minWidth(80.px).maxWidth(50.px).height(CHILD.px),
+    )
+
+    val result =
+        lithoTestRule.renderAndFindContainer(
+            Layout(
+                listOf(capped),
+                layout = measuringUnder { c -> SizeConstraints(0, 300, 0, c.maxHeight) },
+            ),
+        )
+
+    assertThat(result.getChildAt(0).width)
+        .describedAs("80 would mean the declared min beat the declared max")
+        .isEqualTo(50)
+  }
+}

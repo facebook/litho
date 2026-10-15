@@ -13,16 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.facebook.litho.animation
 
 import android.graphics.drawable.Drawable
 import android.view.View
 import com.facebook.litho.AnimatableItem
 import com.facebook.rendercore.Host
+import com.facebook.rendercore.MountItem
+import com.facebook.rendercore.MountItemVisitor
 import com.facebook.rendercore.transitions.AnimatedRootHost
 import com.facebook.rendercore.transitions.TransitionRenderUnit
 import com.facebook.rendercore.transitions.TransitionUtils
 import com.facebook.rendercore.utils.BoundsUtils
+import kotlin.Array
+import kotlin.math.roundToInt
 
 /** A convenience class for common View properties applicable to all subclasses of View. */
 object AnimatedProperties {
@@ -38,6 +43,21 @@ object AnimatedProperties {
    * component tree.
    */
   @JvmField val Y: AnimatedProperty = YAnimatedProperty()
+
+  /**
+   * The X-position of a mount content relative to its parent. Use instead of [X] when a child's
+   * absolute position is unchanged between renders (e.g., pinned to a screen edge) but its position
+   * within the parent changes because the parent resized. [X] would skip the animation (same
+   * absolute position), while [RELATIVE_X] detects the change and fires it.
+   */
+  @JvmField val RELATIVE_X: AnimatedProperty = RelativeXAnimatedProperty()
+
+  /**
+   * The Y-position of a mount content relative to its parent. Use instead of [Y] when a child's
+   * absolute position is unchanged between renders but its position within the parent changes
+   * because the parent resized.
+   */
+  @JvmField val RELATIVE_Y: AnimatedProperty = RelativeYAnimatedProperty()
 
   /** The width of a mount content. */
   @JvmField val WIDTH: AnimatedProperty = WidthAnimatedProperty()
@@ -79,17 +99,24 @@ object AnimatedProperties {
   @JvmField val ROTATION: AnimatedProperty = RotationAnimatedProperty()
 
   /**
+   * The rotated degree around the X-axis of a mount content. Increasing the value results in
+   * clockwise rotation.
+   */
+  @JvmField val ROTATION_X: AnimatedProperty = RotationXAnimatedProperty()
+
+  /**
    * The rotated degree around the Y-axis of a mount content. Increasing the value results in
    * clockwise rotation.
    */
   @JvmField val ROTATION_Y: AnimatedProperty = RotationYAnimatedProperty()
 
-  @JvmField val AUTO_LAYOUT_PROPERTIES = arrayOf(X, Y, WIDTH, HEIGHT)
+  @JvmField val AUTO_LAYOUT_PROPERTIES: Array<AnimatedProperty> = arrayOf(X, Y, WIDTH, HEIGHT)
 
   private fun assertIsView(mountContent: Any, property: AnimatedProperty): View {
     if (mountContent !is View) {
       throw RuntimeException(
-          "Animating '${property.getName()}' is only supported on Views (got ${mountContent})")
+          "Animating '${property.getName()}' is only supported on Views (got ${mountContent})",
+      )
     }
     return mountContent
   }
@@ -129,22 +156,29 @@ object AnimatedProperties {
   }
 
   private fun getLinkedDrawables(host: Host): List<Drawable>? {
+    val collector = LinkedDrawablesCollector()
+    host.visitMountItems(collector)
+    return collector.drawables
+  }
+
+  /**
+   * Instantiated per call rather than pooled on this `object`: a shared accumulator would have to
+   * be drained on every exit path, including a throwing visit, and would be reachable from every
+   * animating host in the process at once.
+   */
+  private class LinkedDrawablesCollector : MountItemVisitor {
     var drawables: MutableList<Drawable>? = null
-    var i = 0
-    val size = host.mountItemCount
-    while (i < size) {
-      val mountItem = host.getMountItemAt(i)
-      if (mountItem.content is Drawable &&
-          mountItem.renderTreeNode.renderUnit is TransitionRenderUnit &&
-          (mountItem.renderTreeNode.renderUnit as TransitionRenderUnit).matchHostBounds) {
-        if (drawables == null) {
-          drawables = ArrayList()
-        }
-        drawables.add(mountItem.content as Drawable)
+      private set
+
+    override fun visit(mountItem: MountItem): Boolean {
+      val content = mountItem.content
+      val renderUnit = mountItem.renderTreeNode.renderUnit
+      if (content is Drawable && renderUnit is TransitionRenderUnit && renderUnit.matchHostBounds) {
+        val collected = drawables ?: ArrayList<Drawable>().also { drawables = it }
+        collected.add(content)
       }
-      i++
+      return true
     }
-    return drawables
   }
 
   private class XAnimatedProperty : AnimatedProperty {
@@ -161,7 +195,8 @@ object AnimatedProperties {
           }
           else -> {
             throw UnsupportedOperationException(
-                "Getting X from unsupported mount content: $mountContent")
+                "Getting X from unsupported mount content: $mountContent",
+            )
           }
         }
 
@@ -180,11 +215,15 @@ object AnimatedProperties {
           val drawable = mountContent
           val parentX = getPositionRelativeToRootHost(getHostView(drawable), true)
           TransitionUtils.applyXYToDrawableForAnimation(
-              drawable, (value - parentX).toInt(), drawable.bounds.top)
+              drawable,
+              (value - parentX).toInt(),
+              drawable.bounds.top,
+          )
         }
         else -> {
           throw UnsupportedOperationException(
-              "Setting X on unsupported mount content: $mountContent")
+              "Setting X on unsupported mount content: $mountContent",
+          )
         }
       }
     }
@@ -212,7 +251,8 @@ object AnimatedProperties {
           }
           else -> {
             throw UnsupportedOperationException(
-                "Getting Y from unsupported mount content: $mountContent")
+                "Getting Y from unsupported mount content: $mountContent",
+            )
           }
         }
 
@@ -231,11 +271,15 @@ object AnimatedProperties {
           val drawable = mountContent
           val parentY = getPositionRelativeToRootHost(getHostView(drawable), false)
           TransitionUtils.applyXYToDrawableForAnimation(
-              drawable, drawable.bounds.left, (value - parentY).toInt())
+              drawable,
+              drawable.bounds.left,
+              (value - parentY).toInt(),
+          )
         }
         else -> {
           throw UnsupportedOperationException(
-              "Setting Y on unsupported mount content: $mountContent")
+              "Setting Y on unsupported mount content: $mountContent",
+          )
         }
       }
     }
@@ -245,6 +289,70 @@ object AnimatedProperties {
         mountContent.translationY = 0f
       } else if (mountContent is Drawable) {
         // No-op: x/y are always properly set for Drawables
+      }
+    }
+  }
+
+  private class RelativeXAnimatedProperty : AnimatedProperty {
+    override fun getName(): String = "relative_x"
+
+    override fun get(mountContent: Any): Float {
+      if (mountContent is View) {
+        return mountContent.x
+      }
+      throw UnsupportedOperationException(
+          "Getting relative X from unsupported mount content: $mountContent",
+      )
+    }
+
+    override fun get(animatableItem: AnimatableItem): Float =
+        animatableItem.getBounds().left.toFloat()
+
+    override fun set(mountContent: Any, value: Float) {
+      if (mountContent is View) {
+        mountContent.x = value
+        return
+      }
+      throw UnsupportedOperationException(
+          "Setting relative X on unsupported mount content: $mountContent",
+      )
+    }
+
+    override fun reset(mountContent: Any) {
+      if (mountContent is View) {
+        mountContent.translationX = 0f
+      }
+    }
+  }
+
+  private class RelativeYAnimatedProperty : AnimatedProperty {
+    override fun getName(): String = "relative_y"
+
+    override fun get(mountContent: Any): Float {
+      if (mountContent is View) {
+        return mountContent.y
+      }
+      throw UnsupportedOperationException(
+          "Getting relative Y from unsupported mount content: $mountContent",
+      )
+    }
+
+    override fun get(animatableItem: AnimatableItem): Float =
+        animatableItem.getBounds().top.toFloat()
+
+    override fun set(mountContent: Any, value: Float) {
+      if (mountContent is View) {
+        mountContent.y = value
+        return
+      }
+      throw UnsupportedOperationException(
+          "Setting relative Y on unsupported mount content: $mountContent",
+      )
+    }
+
+    override fun reset(mountContent: Any) {
+      if (mountContent is View) {
+        mountContent.translationY = 0f
       }
     }
   }
@@ -259,7 +367,8 @@ object AnimatedProperties {
           mountContent.bounds.width().toFloat()
         } else {
           throw UnsupportedOperationException(
-              "Getting width from unsupported mount content: $mountContent")
+              "Getting width from unsupported mount content: $mountContent",
+          )
         }
 
     override fun get(animatableItem: AnimatableItem): Float =
@@ -274,7 +383,14 @@ object AnimatedProperties {
           } else {
             val left = view.left
             BoundsUtils.applyBoundsToMountContent(
-                left, view.top, (left + value).toInt(), view.bottom, null, view, false)
+                left,
+                view.top,
+                (left + value).toInt(),
+                view.bottom,
+                null,
+                view,
+                false,
+            )
           }
           val animatingDrawables = getLinkedDrawables(view)
           if (animatingDrawables != null) {
@@ -282,7 +398,10 @@ object AnimatedProperties {
             val height = view.height
             for (index in animatingDrawables.indices) {
               TransitionUtils.applySizeToDrawableForAnimation(
-                  animatingDrawables[index], width, height)
+                  animatingDrawables[index],
+                  width,
+                  height,
+              )
             }
           }
         }
@@ -291,7 +410,14 @@ object AnimatedProperties {
           val left = view.left
           val right = (left + value).toInt()
           BoundsUtils.applyBoundsToMountContent(
-              left, view.top, right, view.bottom, null, view, false)
+              left,
+              view.top,
+              right,
+              view.bottom,
+              null,
+              view,
+              false,
+          )
         }
         mountContent is Drawable -> {
           val drawable = mountContent
@@ -301,7 +427,8 @@ object AnimatedProperties {
         }
         else -> {
           throw UnsupportedOperationException(
-              "Setting width on unsupported mount content: $mountContent")
+              "Setting width on unsupported mount content: $mountContent",
+          )
         }
       }
     }
@@ -321,7 +448,8 @@ object AnimatedProperties {
           mountContent.bounds.height().toFloat()
         } else {
           throw UnsupportedOperationException(
-              "Getting height from unsupported mount content: $mountContent")
+              "Getting height from unsupported mount content: $mountContent",
+          )
         }
 
     override fun get(animatableItem: AnimatableItem): Float =
@@ -336,7 +464,14 @@ object AnimatedProperties {
           } else {
             val top = view.top
             BoundsUtils.applyBoundsToMountContent(
-                view.left, top, view.right, (top + value).toInt(), null, view, false)
+                view.left,
+                top,
+                view.right,
+                (top + value).toInt(),
+                null,
+                view,
+                false,
+            )
           }
           val animatingDrawables = getLinkedDrawables(view)
           if (animatingDrawables != null) {
@@ -344,7 +479,10 @@ object AnimatedProperties {
             val height = value.toInt()
             for (index in animatingDrawables.indices) {
               TransitionUtils.applySizeToDrawableForAnimation(
-                  animatingDrawables[index], width, height)
+                  animatingDrawables[index],
+                  width,
+                  height,
+              )
             }
           }
         }
@@ -353,7 +491,14 @@ object AnimatedProperties {
           val top = view.top
           val bottom = (top + value).toInt()
           BoundsUtils.applyBoundsToMountContent(
-              view.left, top, view.right, bottom, null, view, false)
+              view.left,
+              top,
+              view.right,
+              bottom,
+              null,
+              view,
+              false,
+          )
         }
         mountContent is Drawable -> {
           val drawable = mountContent
@@ -363,7 +508,8 @@ object AnimatedProperties {
         }
         else -> {
           throw UnsupportedOperationException(
-              "Setting height on unsupported mount content: $mountContent")
+              "Setting height on unsupported mount content: $mountContent",
+          )
         }
       }
     }
@@ -377,27 +523,34 @@ object AnimatedProperties {
     override fun getName(): String = "alpha"
 
     override fun get(mountContent: Any): Float =
-        if (mountContent is View) {
-          mountContent.alpha
-        } else {
-          throw UnsupportedOperationException(
-              "Tried to get alpha of unsupported mount content: $mountContent")
+        when (mountContent) {
+          is View -> mountContent.alpha
+          is Drawable -> mountContent.alpha / 255f
+          else ->
+              throw UnsupportedOperationException(
+                  "Tried to get alpha of unsupported mount content: $mountContent",
+              )
         }
 
     override fun get(animatableItem: AnimatableItem): Float =
         if (animatableItem.isAlphaSet()) animatableItem.getAlpha() else 1f
 
     override fun set(mountContent: Any, value: Float) {
-      if (mountContent is View) {
-        mountContent.alpha = value
-      } else {
-        throw UnsupportedOperationException(
-            "Setting alpha on unsupported mount content: $mountContent")
+      when (mountContent) {
+        is View -> mountContent.alpha = value
+        is Drawable -> mountContent.alpha = (value.coerceIn(0f, 1f) * 255).roundToInt()
+        else ->
+            throw UnsupportedOperationException(
+                "Setting alpha on unsupported mount content: $mountContent",
+            )
       }
     }
 
     override fun reset(mountContent: Any) {
-      set(mountContent, 1f)
+      when (mountContent) {
+        is Drawable -> mountContent.alpha = 255
+        else -> set(mountContent, 1f)
+      }
     }
   }
 
@@ -475,6 +628,23 @@ object AnimatedProperties {
 
     override fun reset(mountContent: Any) {
       assertIsView(mountContent, this).rotation = 0f
+    }
+  }
+
+  private class RotationXAnimatedProperty : AnimatedProperty {
+    override fun getName(): String = "rotationX"
+
+    override fun get(mountContent: Any): Float = assertIsView(mountContent, this).rotationX
+
+    override fun get(animatableItem: AnimatableItem): Float =
+        if (animatableItem.isRotationXSet()) animatableItem.getRotationX() else 0f
+
+    override fun set(mountContent: Any, value: Float) {
+      assertIsView(mountContent, this).rotationX = value
+    }
+
+    override fun reset(mountContent: Any) {
+      assertIsView(mountContent, this).rotationX = 0f
     }
   }
 

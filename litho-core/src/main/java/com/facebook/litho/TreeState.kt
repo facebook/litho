@@ -16,26 +16,41 @@
 
 package com.facebook.litho
 
-import android.util.Pair
+import androidx.annotation.UiThread
 import androidx.annotation.VisibleForTesting
+import com.facebook.infer.annotation.ThreadConfined
 import com.facebook.litho.Component.RenderData
-import com.facebook.litho.internal.HookKey
+import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.effects.EffectHandler
+import com.facebook.litho.internal.HookKey as RenderDataHookKey
 import com.facebook.litho.state.ComponentState
 import com.facebook.litho.state.StateId
 import com.facebook.rendercore.annotations.UIState
 
-class TreeState {
-  val resolveState: StateHandler
-  val layoutState: StateHandler
-  val effectsHandler: AttachDetachHandler
+class TreeState
+private constructor(
+    val resolveState: StateHandler,
+    val layoutState: StateHandler,
+    @UIState val mountInfo: TreeMountInfo,
+    @UIState private val renderState: RenderState,
+    val effectsHandler: EffectHandler,
+    private val eventTriggersContainer: EventTriggersContainer,
+    @get:VisibleForTesting val eventHandlersController: EventHandlersController,
+) {
 
-  private val eventTriggersContainer: EventTriggersContainer
+  /**
+   * The active [InitialStateScope] for this TreeState, if any. Set by
+   * [InitialStateScope.forResolve]/[InitialStateScope.forLayout].
+   */
+  @JvmField internal var scope: InitialStateScope? = null
 
-  @UIState private val renderState: RenderState
+  init {
+    if (resolveState.initialState === layoutState.initialState) {
+      error("The same InitialState cannot be used for both resolve and layout states")
+    }
+  }
 
-  @UIState val mountInfo: TreeMountInfo
-
-  @get:VisibleForTesting val eventHandlersController: EventHandlersController
+  @ThreadConfined(ThreadConfined.UI) private var _unconsumedMountUpdates: Set<StateId> = emptySet()
 
   /**
    * This class represents whether this Litho tree has been mounted before. The usage is a bit
@@ -47,38 +62,16 @@ class TreeState {
     @JvmField @Volatile var isFirstMount: Boolean = false
   }
 
-  private constructor(
-      resolveState: StateHandler,
-      layoutState: StateHandler,
-      mountInfo: TreeMountInfo,
-      renderState: RenderState,
-      effectsHandler: AttachDetachHandler,
-      eventTriggersContainer: EventTriggersContainer,
-      eventHandlersController: EventHandlersController,
-  ) {
-
-    if (resolveState.initialState === layoutState.initialState) {
-      throw IllegalArgumentException(
-          "The same InitialState cannot be used for both resolve and layout states")
-    }
-
-    this.resolveState = resolveState
-    this.layoutState = layoutState
-    this.mountInfo = mountInfo
-    this.renderState = renderState
-    this.effectsHandler = effectsHandler
-    this.eventTriggersContainer = eventTriggersContainer
-    this.eventHandlersController = eventHandlersController
-  }
-
+  @JvmOverloads
   constructor(
-      fromState: TreeState?
+      fromState: TreeState? = null,
+      effectsHandler: EffectHandler? = null,
   ) : this(
       resolveState = StateHandler(fromState?.resolveState),
       layoutState = StateHandler(fromState?.layoutState),
       mountInfo = fromState?.mountInfo ?: TreeMountInfo(),
       renderState = RenderState(fromState?.renderState),
-      effectsHandler = fromState?.effectsHandler ?: AttachDetachHandler(),
+      effectsHandler = effectsHandler ?: fromState?.effectsHandler ?: EffectHandler(),
       eventTriggersContainer = fromState?.eventTriggersContainer ?: EventTriggersContainer(),
       eventHandlersController = fromState?.eventHandlersController ?: EventHandlersController(),
   )
@@ -91,12 +84,10 @@ class TreeState {
       layoutState = StateHandler(initialLayoutState),
       mountInfo = TreeMountInfo(),
       renderState = RenderState(),
-      effectsHandler = AttachDetachHandler(),
+      effectsHandler = EffectHandler(),
       eventTriggersContainer = EventTriggersContainer(),
       eventHandlersController = EventHandlersController(),
   )
-
-  constructor() : this(fromState = null)
 
   private fun getStateHandler(isLayoutState: Boolean): StateHandler {
     return if (isLayoutState) {
@@ -106,28 +97,42 @@ class TreeState {
     }
   }
 
-  fun registerResolveState() {
+  internal fun registerResolveState() {
     resolveState.initialState.registerStateHandler(resolveState)
   }
 
-  fun registerLayoutState() {
+  internal fun registerLayoutState() {
     layoutState.initialState.registerStateHandler(layoutState)
   }
 
-  fun unregisterResolveInitialState() {
+  internal fun unregisterResolveInitialState() {
     resolveState.initialState.unregisterStateHandler(resolveState)
   }
 
-  fun unregisterLayoutInitialState() {
+  internal fun unregisterLayoutInitialState() {
     layoutState.initialState.unregisterStateHandler(layoutState)
   }
 
-  fun commitResolveState(localTreeState: TreeState) {
+  fun commitResolveState(localTreeState: TreeState, trackForPromotion: Boolean = false) {
     resolveState.commit(localTreeState.resolveState)
+    if (trackForPromotion) {
+      val updated = localTreeState.resolveState.getStateIdsForPendingUpdates()
+      if (updated.isNotEmpty()) {
+        resolveState.addToStateIdsToPromote(updated)
+      }
+    }
+    localTreeState.scope?.close()
   }
 
-  fun commitLayoutState(localTreeState: TreeState) {
+  fun commitLayoutState(localTreeState: TreeState, trackForPromotion: Boolean = false) {
     layoutState.commit(localTreeState.layoutState)
+    if (trackForPromotion) {
+      val updated = localTreeState.layoutState.getStateIdsForPendingUpdates()
+      if (updated.isNotEmpty()) {
+        layoutState.addToStateIdsToPromote(updated)
+      }
+    }
+    localTreeState.scope?.close()
   }
 
   fun commit() {
@@ -136,10 +141,10 @@ class TreeState {
   }
 
   fun queueStateUpdate(
-      key: String,
+      key: StateId,
       stateUpdate: StateContainer.StateUpdate,
       isLazyStateUpdate: Boolean,
-      isLayoutState: Boolean
+      isLayoutState: Boolean,
   ) {
     val stateHandler = getStateHandler(isLayoutState)
     stateHandler.queueStateUpdate(key, stateUpdate, isLazyStateUpdate)
@@ -150,9 +155,9 @@ class TreeState {
   }
 
   fun applyLazyStateUpdatesForContainer(
-      key: String,
+      key: StateId,
       container: StateContainer,
-      isNestedTree: Boolean
+      isNestedTree: Boolean,
   ): StateContainer {
     return getStateHandler(isNestedTree).applyLazyStateUpdatesForContainer(key, container)
   }
@@ -168,58 +173,62 @@ class TreeState {
       context: ComponentContext,
       component: Component?,
       prevTreeRootNode: LithoNode?,
-      isLayoutState: Boolean
+      isLayoutState: Boolean,
   ) {
     getStateHandler(isLayoutState).applyStateUpdatesEarly(context, component, prevTreeRootNode)
   }
 
-  val keysForPendingStateUpdates: Set<String>
+  val keysForPendingStateUpdates: Set<GlobalKey>
     get() {
-      return HashSet<String>().apply {
+      return HashSet<GlobalKey>().apply {
         addAll(getKeysForPendingStateUpdates(resolveState))
         addAll(getKeysForPendingStateUpdates(layoutState))
       }
     }
 
-  val keysForAppliedStateUpdates: Set<String>
+  val keysForAppliedStateUpdates: Set<GlobalKey>
     get() {
-      return HashSet<String>().apply {
+      return HashSet<GlobalKey>().apply {
         addAll(resolveState.keysForAppliedUpdates)
         addAll(layoutState.keysForAppliedUpdates)
       }
     }
 
-  fun getStateIdsForPendingStateUpdates(treeIdForSpec: Int): Set<StateId> {
+  fun getStateIdsForPendingStateUpdates(): Set<StateId> {
     return buildSet {
-      addAll(resolveState.getStateIdsForPendingUpdates(treeIdForSpec))
-      addAll(layoutState.getStateIdsForPendingUpdates(treeIdForSpec))
+      addAll(resolveState.getStateIdsForPendingUpdates())
+      addAll(layoutState.getStateIdsForPendingUpdates())
     }
   }
 
-  fun getStateIdsForPendingResolveStateUpdates(treeIdForSpec: Int): Set<StateId> {
-    return resolveState.getStateIdsForPendingUpdates(treeIdForSpec)
+  fun getStateIdsForPendingResolveStateUpdates(): Set<StateId> {
+    return resolveState.getStateIdsForPendingUpdates()
   }
 
-  fun getStateIdsForPendingLayoutStateUpdates(treeIdForSpec: Int): Set<StateId> {
-    return layoutState.getStateIdsForPendingUpdates(treeIdForSpec)
+  fun getStateIdsForPendingLayoutStateUpdates(): Set<StateId> {
+    return layoutState.getStateIdsForPendingUpdates()
   }
 
-  fun addState(key: String, state: ComponentState<*>, isLayoutState: Boolean) {
+  fun addState(key: GlobalKey, state: ComponentState<*>, isLayoutState: Boolean) {
     getStateHandler(isLayoutState).addState(key, state)
   }
 
-  fun markStateInUse(key: String, isLayoutState: Boolean) {
+  fun markStateInUse(key: GlobalKey, isLayoutState: Boolean) {
     getStateHandler(isLayoutState).markStateInUse(key)
   }
 
-  fun getState(key: String, isLayoutState: Boolean): ComponentState<out StateContainer>? {
+  fun markAllStateInUse(isLayoutState: Boolean) {
+    getStateHandler(isLayoutState).markAllStateInUse()
+  }
+
+  fun getState(key: GlobalKey, isLayoutState: Boolean): ComponentState<out StateContainer>? {
     return getStateHandler(isLayoutState).getState(key)
   }
 
   fun createOrGetState(
       scopedContext: ComponentContext,
       component: Component,
-      key: String
+      key: GlobalKey,
   ): ComponentState<out StateContainer> {
     return getStateHandler(scopedContext.isContextForLayout)
         .createOrGetState(scopedContext, component, key)
@@ -228,15 +237,16 @@ class TreeState {
   fun createOrGetEventDispatchInfoForComponent(
       scopedContext: ComponentContext,
       component: Component,
-      key: String,
+      key: GlobalKey,
   ): EventDispatchInfo {
     return checkNotNull(
         getStateHandler(scopedContext.isContextForLayout)
             .createOrGetState(scopedContext, component, key)
-            .eventDispatchInfo)
+            .eventDispatchInfo,
+    )
   }
 
-  fun removePendingStateUpdate(key: String, isLayoutState: Boolean) {
+  fun removePendingStateUpdate(key: StateId, isLayoutState: Boolean) {
     getStateHandler(isLayoutState).removePendingStateUpdate(key)
   }
 
@@ -254,8 +264,11 @@ class TreeState {
     if (committedState != null) {
       val committedStateWithUpdatesApplied = stateHandler.getKStateWithUpdates(stateId.globalKey)
       if (committedStateWithUpdatesApplied != null) {
+        val hookKey = stateId.hookGlobalKey.hookKey as HookKey
         val committedUpdatedCachedValue =
-            committedStateWithUpdatesApplied.states.getOrNull(stateId.index)
+            committedStateWithUpdatesApplied.getByHookKey(hookKey)
+                // A hook pruned after this State was captured can no longer be updated.
+                ?: return true
         val committedUpdatedValue: T = committedUpdatedCachedValue?.value as T
         val newValueAfterUpdate = updater.invoke(committedUpdatedValue)
         return if (committedUpdatedValue == null && newValueAfterUpdate == null) {
@@ -272,49 +285,69 @@ class TreeState {
     get() {
       val updateStateTransitions: MutableList<Transition> = ArrayList()
 
-      for (pendingTransitions in resolveState.pendingStateUpdateTransitions.values) {
-        updateStateTransitions.addAll(pendingTransitions)
+      resolveState.pendingStateUpdateTransitions?.values?.let { transitions ->
+        for (pendingTransitions in transitions) {
+          updateStateTransitions.addAll(pendingTransitions)
+        }
       }
 
-      for (pendingTransitions in layoutState.pendingStateUpdateTransitions.values) {
-        updateStateTransitions.addAll(pendingTransitions)
+      layoutState.pendingStateUpdateTransitions?.values?.let { transitions ->
+        for (pendingTransitions in transitions) {
+          updateStateTransitions.addAll(pendingTransitions)
+        }
       }
       return updateStateTransitions
     }
 
   fun putCachedValue(
-      globalKey: String,
-      index: Int,
+      cacheKey: HookGlobalKey,
       cachedValueInputs: Any,
       cachedValue: Any?,
-      isLayoutState: Boolean
+      isLayoutState: Boolean,
   ) {
-    getStateHandler(isLayoutState).putCachedValue(globalKey, index, cachedValueInputs, cachedValue)
+    getStateHandler(isLayoutState).putCachedValue(cacheKey, cachedValueInputs, cachedValue)
   }
 
   fun getCachedValue(
-      globalKey: String,
-      index: Int,
+      cacheKey: HookGlobalKey,
       cachedValueInputs: Any,
-      isLayoutState: Boolean
+      isLayoutState: Boolean,
   ): Any? {
-    return getStateHandler(isLayoutState).getCachedValue(globalKey, index, cachedValueInputs)
+    return getStateHandler(isLayoutState).getCachedValue(cacheKey, cachedValueInputs)
   }
 
-  fun <T> createOrGetInitialHookState(
-      key: String,
-      kStateIndex: Int,
+  fun <T> createOrGetInitialHookStateByHookKey(
+      key: GlobalKey,
+      hookKey: HookKey,
       deps: Array<*>,
       initializer: HookInitializer<T>,
       isLayoutState: Boolean,
-      componentName: String
+      componentName: String,
   ): ComponentState<KStateContainer> {
-
     return getStateHandler(isLayoutState)
         .initialState
-        .getOrCreateInitialKState(
+        .getOrCreateInitialKStateByHookKey(
             key,
-            kStateIndex,
+            hookKey,
+            deps,
+            initializer,
+            componentName,
+        )
+  }
+
+  fun <T> peekOrSeedInitialHookStateByHookKey(
+      key: GlobalKey,
+      hookKey: HookKey,
+      deps: Array<*>,
+      initializer: HookInitializer<T>,
+      isLayoutState: Boolean,
+      componentName: String,
+  ): CachedValue {
+    return getStateHandler(isLayoutState)
+        .initialState
+        .peekOrSeedInitialKStateByHookKey(
+            key,
+            hookKey,
             deps,
             initializer,
             componentName,
@@ -323,7 +356,7 @@ class TreeState {
 
   internal fun getPreviousLayoutStateId(): Int = renderState.getPreviousLayoutStateId()
 
-  internal fun getPreviousRenderData(hookKey: HookKey): RenderData? {
+  internal fun getPreviousRenderData(hookKey: RenderDataHookKey): RenderData? {
     return renderState.getPreviousRenderData(hookKey)
   }
 
@@ -331,7 +364,7 @@ class TreeState {
     renderState.recordRenderData(layoutState)
   }
 
-  fun getEventTrigger(triggerKey: String): EventTrigger<*>? {
+  fun getEventTrigger(triggerKey: Any): EventTrigger<*>? {
     synchronized(eventTriggersContainer) {
       return eventTriggersContainer.getEventTrigger(triggerKey)
     }
@@ -352,44 +385,20 @@ class TreeState {
     synchronized(eventTriggersContainer) { eventTriggersContainer.clear() }
   }
 
-  fun bindEventAndTriggerHandlers(
-      createdEventHandlers: List<Pair<String, EventHandler<*>>>?,
-      componentScopes: List<ScopedComponentInfo>?
-  ) {
-    synchronized(eventTriggersContainer) {
-      clearUnusedTriggerHandlers()
-      if (createdEventHandlers != null) {
-        eventHandlersController.canonicalizeEventDispatchInfos(createdEventHandlers)
-      }
-      if (componentScopes != null) {
-        for (componentScope in componentScopes) {
-          val component = componentScope.component as SpecGeneratedComponent
-          val context = componentScope.context
-          eventHandlersController.updateEventDispatchInfoForGlobalKey(
-              context,
-              component,
-              context.globalKey,
-          )
-          component.recordEventTrigger(context, eventTriggersContainer)
-        }
-      }
-    }
-    eventHandlersController.clearUnusedEventDispatchInfos()
-  }
-
   fun updateEventDispatchers(toUpdate: List<ScopedComponentInfo>) {
     toUpdate.forEach { scope ->
       val context = scope.context
-      val key = context.globalKey
+      val key = context.nullableGlobalKey
       val component = context.componentScope
 
       if (component is SpecGeneratedComponent) {
         component.recordEventTrigger(context, eventTriggersContainer)
       }
 
+      val nonNullKey = requireNotNull(key)
       val info =
-          resolveState.getState(key)?.eventDispatchInfo
-              ?: layoutState.getState(key)?.eventDispatchInfo
+          resolveState.getState(nonNullKey)?.eventDispatchInfo
+              ?: layoutState.getState(nonNullKey)?.eventDispatchInfo
               ?: return@forEach
 
       info.componentContext = context
@@ -397,9 +406,140 @@ class TreeState {
     }
   }
 
+  /** Computes the effective updates for promotion by combining both resolve and layout handlers. */
+  fun getUpdatesForPromotion(localTreeState: TreeState): Map<StateId, Int> {
+    val resolveEffective = computeEffectiveForHandler(localTreeState.resolveState, resolveState)
+    val layoutEffective = computeEffectiveForHandler(localTreeState.layoutState, layoutState)
+
+    if (resolveEffective.isEmpty()) return layoutEffective
+    if (layoutEffective.isEmpty()) return resolveEffective
+
+    // Union (merge counts defensively)
+    return buildMap {
+      putAll(resolveEffective)
+      for ((id, count) in layoutEffective) {
+        put(id, (get(id) ?: 0) + count)
+      }
+    }
+  }
+
+  private fun computeEffectiveForHandler(
+      localHandler: StateHandler,
+      committedHandler: StateHandler,
+  ): Map<StateId, Int> {
+    val toPromote = localHandler.getStateIdsToPromoteUnsafe()
+    val pending = localHandler.getStateIdsForPendingUpdates()
+    if (toPromote == null && pending.isEmpty()) return emptyMap()
+
+    val snapshot = buildMap {
+      toPromote?.let { putAll(it) }
+      for (id in pending) {
+        put(id, (get(id) ?: 0) + 1)
+      }
+    }
+    return committedHandler.computeEffective(snapshot)
+  }
+
+  /** Subtracts promoted counts from both resolve and layout handlers. */
+  fun subtractPromotedUpdates(promoted: Map<StateId, Int>) {
+    if (promoted.isNotEmpty()) {
+      resolveState.subtractPromotedUpdates(promoted)
+      layoutState.subtractPromotedUpdates(promoted)
+    }
+  }
+
+  @UiThread
+  fun addMountUpdates(updates: Set<StateId>) {
+    _unconsumedMountUpdates =
+        when {
+          _unconsumedMountUpdates.isEmpty() -> updates
+          updates.isEmpty() -> _unconsumedMountUpdates
+          else -> _unconsumedMountUpdates + updates
+        }
+  }
+
+  @UiThread
+  fun consumeMountUpdates(): Set<StateId> {
+    val updates = _unconsumedMountUpdates
+    _unconsumedMountUpdates = emptySet()
+    return updates
+  }
+
   companion object {
-    private fun getKeysForPendingStateUpdates(stateHandler: StateHandler): Set<String> {
+    private fun getKeysForPendingStateUpdates(stateHandler: StateHandler): Set<GlobalKey> {
       return stateHandler.keysForPendingUpdates
+    }
+
+    /**
+     * Creates the [TreeState] for a layout-only pass (same resolve, new size specs), continuing
+     * from [previousLayout] so layout-scoped state created since [resolveSnapshot] carries over.
+     *
+     * The [RenderState] comes from [resolveSnapshot]: the previous layout's render data is written
+     * on the main thread at mount, while the resolve snapshot's is never written after it is
+     * published, so only the latter is safe to copy off the main thread.
+     */
+    internal fun forLayoutOnlyPass(
+        previousLayout: TreeState,
+        resolveSnapshot: TreeState?,
+    ): TreeState {
+      if (!ComponentsConfiguration.layoutOnlyPassUsesResolveRenderState) {
+        return TreeState(previousLayout)
+      }
+      return TreeState(
+          resolveState = StateHandler(previousLayout.resolveState),
+          layoutState = StateHandler(previousLayout.layoutState),
+          mountInfo = previousLayout.mountInfo,
+          renderState = RenderState(resolveSnapshot?.renderState),
+          effectsHandler = previousLayout.effectsHandler,
+          eventTriggersContainer = previousLayout.eventTriggersContainer,
+          eventHandlersController = previousLayout.eventHandlersController,
+      )
+    }
+  }
+}
+
+/**
+ * An [AutoCloseable] scope that pairs [TreeState] register/unregister lifecycle into a single
+ * object. Creating a scope registers the [TreeState]'s [InitialState] handler; closing it
+ * unregisters. Close is idempotent—safe to call multiple times.
+ *
+ * Use the factory methods [forResolve] and [forLayout] to create instances. The scope is typically
+ * managed by [TreeFuture.trackRunAndCommit] for [ComponentTree] and [LithoRenderer] call sites, or
+ * explicitly via try/finally for [NestedLithoTree].
+ */
+class InitialStateScope
+private constructor(
+    private val treeState: TreeState,
+    private val phase: Phase,
+) : AutoCloseable {
+  enum class Phase {
+    RESOLVE,
+    LAYOUT,
+  }
+
+  @Volatile private var closed = false
+
+  /** Unregisters the [InitialState] handler. Idempotent: subsequent calls are no-ops. */
+  override fun close() {
+    if (closed) return
+    closed = true
+    when (phase) {
+      Phase.RESOLVE -> treeState.unregisterResolveInitialState()
+      Phase.LAYOUT -> treeState.unregisterLayoutInitialState()
+    }
+  }
+
+  companion object {
+    /** Registers the resolve-phase [InitialState] handler and returns a scope to unregister it. */
+    fun forResolve(treeState: TreeState): InitialStateScope {
+      treeState.registerResolveState()
+      return InitialStateScope(treeState, Phase.RESOLVE).also { treeState.scope = it }
+    }
+
+    /** Registers the layout-phase [InitialState] handler and returns a scope to unregister it. */
+    fun forLayout(treeState: TreeState): InitialStateScope {
+      treeState.registerLayoutState()
+      return InitialStateScope(treeState, Phase.LAYOUT).also { treeState.scope = it }
     }
   }
 }

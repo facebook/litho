@@ -23,16 +23,15 @@ import android.content.Intent
 import android.graphics.Color
 import android.view.View
 import android.view.animation.AccelerateInterpolator
+import android.view.animation.Interpolator
 import android.widget.FrameLayout
 import androidx.test.core.app.ApplicationProvider
-import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentHost
 import com.facebook.litho.ComponentTree
 import com.facebook.litho.DynamicValue
 import com.facebook.litho.LithoView
-import com.facebook.litho.Row
 import com.facebook.litho.StateCaller
 import com.facebook.litho.Style
 import com.facebook.litho.Transition
@@ -47,6 +46,8 @@ import com.facebook.litho.core.widthPercent
 import com.facebook.litho.flexbox.flex
 import com.facebook.litho.flexbox.position
 import com.facebook.litho.kotlin.widget.Text
+import com.facebook.litho.layout.flexbox.Column
+import com.facebook.litho.layout.flexbox.Row
 import com.facebook.litho.testing.DEFAULT_HEIGHT_SPEC
 import com.facebook.litho.testing.DEFAULT_WIDTH_SPEC
 import com.facebook.litho.testing.LithoTestRule
@@ -148,26 +149,29 @@ class AnimationTest {
 
   @Test
   fun animationProperties_animatingPropertyY_elementShouldAnimateInTheYAxis() {
-    val component =
-        TestAnimationsComponent(
-            stateCaller,
-            Transition.create(TRANSITION_KEY)
-                .animator(Transition.timing(144))
-                .animate(AnimatedProperties.Y)) { state ->
-              Row(
-                  justifyContent = if (state) YogaJustify.FLEX_START else YogaJustify.FLEX_END,
-                  alignItems = if (state) YogaAlign.FLEX_START else YogaAlign.FLEX_END,
-                  style = Style.height(200.dp).width(200.dp)) {
-                    child(
-                        Row(
-                            style =
-                                Style.height(40.dp)
-                                    .width(40.dp)
-                                    .backgroundColor(Color.parseColor("#ee1111"))
-                                    .transitionKey(context, TRANSITION_KEY)
-                                    .viewTag(TRANSITION_KEY)))
-                  }
-            }
+    val component = TestAnimationsComponent(
+        stateCaller,
+        Transition.create(TRANSITION_KEY)
+            .animator(Transition.timing(144))
+            .animate(AnimatedProperties.Y),
+    ) { state ->
+      Row(
+          justifyContent = if (state) YogaJustify.FLEX_START else YogaJustify.FLEX_END,
+          alignItems = if (state) YogaAlign.FLEX_START else YogaAlign.FLEX_END,
+          style = Style.height(200.dp).width(200.dp),
+      ) {
+        child(
+            Row(
+                style =
+                    Style.height(40.dp)
+                        .width(40.dp)
+                        .backgroundColor(Color.parseColor("#ee1111"))
+                        .transitionKey(context, TRANSITION_KEY)
+                        .viewTag(TRANSITION_KEY),
+            ),
+        )
+      }
+    }
 
     val testLithoView = mLithoTestRule.render { component }
     activityController.get().setContentView(testLithoView.lithoView)
@@ -198,24 +202,26 @@ class AnimationTest {
 
   @Test
   fun animationProperties_animatingPropertyScale_elementShouldAnimateXandYScale() {
-    val component =
-        TestAnimationsComponent(
-            stateCaller,
-            Transition.create(TRANSITION_KEY)
-                .animator(Transition.timing(144))
-                .animate(AnimatedProperties.SCALE)) { state ->
-              Row {
-                child(
-                    Row(
-                        style =
-                            Style.height(40.dp)
-                                .width(40.dp)
-                                .scale(if (state) 1f else 2f)
-                                .backgroundColor(Color.parseColor("#ee1111"))
-                                .transitionKey(context, TRANSITION_KEY)
-                                .viewTag(TRANSITION_KEY)))
-              }
-            }
+    val component = TestAnimationsComponent(
+        stateCaller,
+        Transition.create(TRANSITION_KEY)
+            .animator(Transition.timing(144))
+            .animate(AnimatedProperties.SCALE),
+    ) { state ->
+      Row {
+        child(
+            Row(
+                style =
+                    Style.height(40.dp)
+                        .width(40.dp)
+                        .scale(if (state) 1f else 2f)
+                        .backgroundColor(Color.parseColor("#ee1111"))
+                        .transitionKey(context, TRANSITION_KEY)
+                        .viewTag(TRANSITION_KEY),
+            ),
+        )
+      }
+    }
 
     val testLithoView = mLithoTestRule.render { component }
     activityController.get().setContentView(testLithoView.lithoView)
@@ -243,24 +249,26 @@ class AnimationTest {
 
   @Test
   fun animationProperties_animatingPropertyAlpha_elementShouldAnimateAlpha() {
-    val component =
-        TestAnimationsComponent(
-            stateCaller,
-            Transition.create(TRANSITION_KEY)
-                .animator(Transition.timing(144))
-                .animate(AnimatedProperties.ALPHA)) { state ->
-              Row {
-                child(
-                    Row(
-                        style =
-                            Style.height(40.dp)
-                                .width(40.dp)
-                                .alpha(if (state) 1f else 0.5f)
-                                .backgroundColor(Color.parseColor("#ee1111"))
-                                .transitionKey(context, TRANSITION_KEY)
-                                .viewTag(TRANSITION_KEY)))
-              }
-            }
+    val component = TestAnimationsComponent(
+        stateCaller,
+        Transition.create(TRANSITION_KEY)
+            .animator(Transition.timing(144))
+            .animate(AnimatedProperties.ALPHA),
+    ) { state ->
+      Row {
+        child(
+            Row(
+                style =
+                    Style.height(40.dp)
+                        .width(40.dp)
+                        .alpha(if (state) 1f else 0.5f)
+                        .backgroundColor(Color.parseColor("#ee1111"))
+                        .transitionKey(context, TRANSITION_KEY)
+                        .viewTag(TRANSITION_KEY),
+            ),
+        )
+      }
+    }
     val testLithoView = mLithoTestRule.render { component }
     activityController.get().setContentView(testLithoView.lithoView)
     activityController.resume().visible()
@@ -279,24 +287,26 @@ class AnimationTest {
 
   @Test
   fun animationProperties_animatingPropertyRotation_elementShouldAnimateRotation() {
-    val component =
-        TestAnimationsComponent(
-            stateCaller,
-            Transition.create(TRANSITION_KEY)
-                .animator(Transition.timing(144))
-                .animate(AnimatedProperties.ROTATION)) { state ->
-              Row {
-                child(
-                    Row(
-                        style =
-                            Style.height(40.dp)
-                                .width(40.dp)
-                                .rotation(if (state) 45f else 0f)
-                                .backgroundColor(Color.parseColor("#ee1111"))
-                                .transitionKey(context, TRANSITION_KEY)
-                                .viewTag(TRANSITION_KEY)))
-              }
-            }
+    val component = TestAnimationsComponent(
+        stateCaller,
+        Transition.create(TRANSITION_KEY)
+            .animator(Transition.timing(144))
+            .animate(AnimatedProperties.ROTATION),
+    ) { state ->
+      Row {
+        child(
+            Row(
+                style =
+                    Style.height(40.dp)
+                        .width(40.dp)
+                        .rotation(if (state) 45f else 0f)
+                        .backgroundColor(Color.parseColor("#ee1111"))
+                        .transitionKey(context, TRANSITION_KEY)
+                        .viewTag(TRANSITION_KEY),
+            ),
+        )
+      }
+    }
     val testLithoView = mLithoTestRule.render { component }
     activityController.get().setContentView(testLithoView.lithoView)
     activityController.resume().visible()
@@ -317,24 +327,26 @@ class AnimationTest {
 
   @Test
   fun animationProperties_animatingPropertyRotationY_elementShouldAnimateRotationY() {
-    val component =
-        TestAnimationsComponent(
-            stateCaller,
-            Transition.create(TRANSITION_KEY)
-                .animator(Transition.timing(144))
-                .animate(AnimatedProperties.ROTATION_Y)) { state ->
-              Row {
-                child(
-                    Row(
-                        style =
-                            Style.height(40.dp)
-                                .width(40.dp)
-                                .rotationY(if (state) 180f else 0f)
-                                .backgroundColor(Color.parseColor("#ee1111"))
-                                .transitionKey(context, TRANSITION_KEY)
-                                .viewTag(TRANSITION_KEY)))
-              }
-            }
+    val component = TestAnimationsComponent(
+        stateCaller,
+        Transition.create(TRANSITION_KEY)
+            .animator(Transition.timing(144))
+            .animate(AnimatedProperties.ROTATION_Y),
+    ) { state ->
+      Row {
+        child(
+            Row(
+                style =
+                    Style.height(40.dp)
+                        .width(40.dp)
+                        .rotationY(if (state) 180f else 0f)
+                        .backgroundColor(Color.parseColor("#ee1111"))
+                        .transitionKey(context, TRANSITION_KEY)
+                        .viewTag(TRANSITION_KEY),
+            ),
+        )
+      }
+    }
     val testLithoView = mLithoTestRule.render { component }
     activityController.get().setContentView(testLithoView.lithoView)
     activityController.resume().visible()
@@ -357,23 +369,25 @@ class AnimationTest {
 
   @Test
   fun animationProperties_animatingPropertyHeight_elementShouldAnimateHeight() {
-    val component =
-        TestAnimationsComponent(
-            stateCaller,
-            Transition.create(TRANSITION_KEY)
-                .animator(Transition.timing(144))
-                .animate(AnimatedProperties.HEIGHT)) { state ->
-              Row(style = Style.height(200.dp).width(200.dp)) {
-                child(
-                    Row(
-                        style =
-                            Style.height(if (state) 80.dp else 40.dp)
-                                .width(if (state) 80.dp else 40.dp)
-                                .backgroundColor(Color.parseColor("#ee1111"))
-                                .transitionKey(context, TRANSITION_KEY)
-                                .viewTag(TRANSITION_KEY)))
-              }
-            }
+    val component = TestAnimationsComponent(
+        stateCaller,
+        Transition.create(TRANSITION_KEY)
+            .animator(Transition.timing(144))
+            .animate(AnimatedProperties.HEIGHT),
+    ) { state ->
+      Row(style = Style.height(200.dp).width(200.dp)) {
+        child(
+            Row(
+                style =
+                    Style.height(if (state) 80.dp else 40.dp)
+                        .width(if (state) 80.dp else 40.dp)
+                        .backgroundColor(Color.parseColor("#ee1111"))
+                        .transitionKey(context, TRANSITION_KEY)
+                        .viewTag(TRANSITION_KEY),
+            ),
+        )
+      }
+    }
     val testLithoView = mLithoTestRule.render { component }
     activityController.get().setContentView(testLithoView.lithoView)
     activityController.resume().visible()
@@ -395,23 +409,25 @@ class AnimationTest {
 
   @Test
   fun animationProperties_animatingPropertyWidth_elementShouldAnimateWidth() {
-    val component =
-        TestAnimationsComponent(
-            stateCaller,
-            Transition.create(TRANSITION_KEY)
-                .animator(Transition.timing(144))
-                .animate(AnimatedProperties.WIDTH)) { state ->
-              Row(style = Style.height(200.dp).width(200.dp)) {
-                child(
-                    Row(
-                        style =
-                            Style.height(if (state) 80.dp else 40.dp)
-                                .width(if (state) 80.dp else 40.dp)
-                                .backgroundColor(Color.parseColor("#ee1111"))
-                                .transitionKey(context, TRANSITION_KEY)
-                                .viewTag(TRANSITION_KEY)))
-              }
-            }
+    val component = TestAnimationsComponent(
+        stateCaller,
+        Transition.create(TRANSITION_KEY)
+            .animator(Transition.timing(144))
+            .animate(AnimatedProperties.WIDTH),
+    ) { state ->
+      Row(style = Style.height(200.dp).width(200.dp)) {
+        child(
+            Row(
+                style =
+                    Style.height(if (state) 80.dp else 40.dp)
+                        .width(if (state) 80.dp else 40.dp)
+                        .backgroundColor(Color.parseColor("#ee1111"))
+                        .transitionKey(context, TRANSITION_KEY)
+                        .viewTag(TRANSITION_KEY),
+            ),
+        )
+      }
+    }
     val testLithoView = mLithoTestRule.render { component }
     activityController.get().setContentView(testLithoView.lithoView)
     activityController.resume().visible()
@@ -433,28 +449,30 @@ class AnimationTest {
 
   @Test
   fun animation_appearAnimation_elementShouldAppearAnimatingAlpha() {
-    val component =
-        TestAnimationsComponent(
-            stateCaller,
-            Transition.create(TRANSITION_KEY)
-                .animator(Transition.timing(144))
-                .animate(AnimatedProperties.ALPHA)
-                .appearFrom(0f)
-                .disappearTo(0f)) { state ->
-              Column {
-                child(Row(style = Style.height(50.dp).width(50.dp).backgroundColor(Color.YELLOW)))
-                child(
-                    if (state)
-                        Row(
-                            style =
-                                Style.height(50.dp)
-                                    .width(50.dp)
-                                    .backgroundColor(Color.RED)
-                                    .viewTag(TRANSITION_KEY)
-                                    .transitionKey(context, TRANSITION_KEY))
-                    else null)
-              }
-            }
+    val component = TestAnimationsComponent(
+        stateCaller,
+        Transition.create(TRANSITION_KEY)
+            .animator(Transition.timing(144))
+            .animate(AnimatedProperties.ALPHA)
+            .appearFrom(0f)
+            .disappearTo(0f),
+    ) { state ->
+      Column {
+        child(Row(style = Style.height(50.dp).width(50.dp).backgroundColor(Color.YELLOW)))
+        child(
+            if (state)
+                Row(
+                    style =
+                        Style.height(50.dp)
+                            .width(50.dp)
+                            .backgroundColor(Color.RED)
+                            .viewTag(TRANSITION_KEY)
+                            .transitionKey(context, TRANSITION_KEY),
+                )
+            else null,
+        )
+      }
+    }
     val testLithoView = mLithoTestRule.render { component }
     activityController.get().setContentView(testLithoView.lithoView)
     activityController.resume().visible()
@@ -479,28 +497,30 @@ class AnimationTest {
 
   @Test
   fun animation_disappearAnimation_elementShouldDisappearAnimatingAlpha() {
-    val component =
-        TestAnimationsComponent(
-            stateCaller,
-            Transition.create(TRANSITION_KEY)
-                .animator(Transition.timing(144))
-                .animate(AnimatedProperties.ALPHA)
-                .appearFrom(0f)
-                .disappearTo(0f)) { state ->
-              Column {
-                child(Row(style = Style.height(50.dp).width(50.dp).backgroundColor(Color.YELLOW)))
-                child(
-                    if (!state)
-                        Row(
-                            style =
-                                Style.height(50.dp)
-                                    .width(50.dp)
-                                    .backgroundColor(Color.RED)
-                                    .viewTag(TRANSITION_KEY)
-                                    .transitionKey(context, TRANSITION_KEY))
-                    else null)
-              }
-            }
+    val component = TestAnimationsComponent(
+        stateCaller,
+        Transition.create(TRANSITION_KEY)
+            .animator(Transition.timing(144))
+            .animate(AnimatedProperties.ALPHA)
+            .appearFrom(0f)
+            .disappearTo(0f),
+    ) { state ->
+      Column {
+        child(Row(style = Style.height(50.dp).width(50.dp).backgroundColor(Color.YELLOW)))
+        child(
+            if (!state)
+                Row(
+                    style =
+                        Style.height(50.dp)
+                            .width(50.dp)
+                            .backgroundColor(Color.RED)
+                            .viewTag(TRANSITION_KEY)
+                            .transitionKey(context, TRANSITION_KEY),
+                )
+            else null,
+        )
+      }
+    }
     val testLithoView = mLithoTestRule.render { component }
     activityController.get().setContentView(testLithoView.lithoView)
     activityController.resume().visible()
@@ -537,132 +557,143 @@ class AnimationTest {
 
   @Test
   fun animation_disappearAnimationWithRemountToRoot_elementShouldDisappearWithoutCrashing() {
-    val component =
-        TestAnimationsComponent(
-            stateCaller,
-            Transition.parallel(
-                Transition.create("comment_editText")
-                    .animate(AnimatedProperties.ALPHA)
-                    .appearFrom(0f)
-                    .disappearTo(0f)
-                    .animate(AnimatedProperties.X)
-                    .appearFrom(DimensionValue.widthPercentageOffset(-50f))
-                    .disappearTo(DimensionValue.widthPercentageOffset(-50f)),
-                Transition.create("cont_comment")
-                    .animate(AnimatedProperties.ALPHA)
-                    .appearFrom(0f)
-                    .disappearTo(0f),
-                Transition.create("icon_like", "icon_share").animate(AnimatedProperties.X),
-                Transition.create("text_like", "text_share")
-                    .animate(AnimatedProperties.ALPHA)
-                    .appearFrom(0f)
-                    .disappearTo(0f)
-                    .animate(AnimatedProperties.X)
-                    .appearFrom(DimensionValue.widthPercentageOffset(50f))
-                    .disappearTo(DimensionValue.widthPercentageOffset(50f)))) { state ->
-              if (!state)
-                  Row(style = Style.backgroundColor(Color.WHITE).height(56.dp)) {
-                    child(
-                        Row(
-                            alignItems = YogaAlign.CENTER,
-                            justifyContent = YogaJustify.CENTER,
-                            style = Style.widthPercent(33.3f).wrapInView().testKey("like_button")) {
-                              child(
-                                  Column(
-                                      style =
-                                          Style.height(24.dp)
-                                              .width(24.dp)
-                                              .backgroundColor(Color.RED)
-                                              .transitionKey(context, "icon_like")))
-                              child(
-                                  Text(
-                                      textSize = 16.sp,
-                                      text = "Like",
-                                      style =
-                                          Style.transitionKey(context, "text_like")
-                                              .margin(left = 8.dp)))
-                            })
-                    child(
-                        Row(
-                            alignItems = YogaAlign.CENTER,
-                            justifyContent = YogaJustify.CENTER,
-                            style =
-                                Style.transitionKey(context, "cont_comment").widthPercent(33.3f)) {
-                              child(
-                                  Column(
-                                      style =
-                                          Style.height(24.dp)
-                                              .width(24.dp)
-                                              .backgroundColor(Color.RED)))
-                              child(
-                                  Text(
-                                      textSize = 16.sp,
-                                      text = "Comment",
-                                      style = Style.margin(left = 8.dp)))
-                            })
-                    child(
-                        Row(
-                            alignItems = YogaAlign.CENTER,
-                            justifyContent = YogaJustify.CENTER,
-                            style = Style.widthPercent(33.3f)) {
-                              child(
-                                  Column(
-                                      style =
-                                          Style.transitionKey(context, "icon_share")
-                                              .height(24.dp)
-                                              .width(24.dp)
-                                              .backgroundColor(Color.RED)))
-                              child(
-                                  Text(
-                                      textSize = 16.sp,
-                                      text = "Share",
-                                      style =
-                                          Style.transitionKey(context, "text_share")
-                                              .margin(left = 8.dp)))
-                            })
-                  }
-              else
-                  Row(style = Style.backgroundColor(Color.WHITE).height(56.dp)) {
-                    child(
-                        Row(
-                            alignItems = YogaAlign.CENTER,
-                            justifyContent = YogaJustify.CENTER,
-                            style =
-                                Style.wrapInView()
-                                    .padding(horizontal = 16.dp)
-                                    .testKey("like_button")) {
-                              child(
-                                  Column(
-                                      style =
-                                          Style.transitionKey(context, "icon_like")
-                                              .height(24.dp)
-                                              .width(24.dp)
-                                              .backgroundColor(Color.RED)))
-                            })
-                    child(
-                        Column(
-                            style =
-                                Style.flex(grow = 1f).transitionKey(context, "comment_editText")) {
-                              child(Text(text = "Input here", textSize = 16.sp))
-                            })
-                    child(
-                        Row(
-                            style =
-                                Style.transitionKey(context, "cont_share")
-                                    .wrapInView()
-                                    .padding(all = 16.dp)
-                                    .backgroundColor(-0xffff01),
-                            alignItems = YogaAlign.CENTER) {
-                              child(
-                                  Column(
-                                      style =
-                                          Style.transitionKey(context, "icon_share")
-                                              .height(24.dp)
-                                              .width(24.dp)
-                                              .backgroundColor(Color.RED)))
-                            })
-                  }
-            }
+    val component = TestAnimationsComponent(
+        stateCaller,
+        Transition.parallel(
+            Transition.create("comment_editText")
+                .animate(AnimatedProperties.ALPHA)
+                .appearFrom(0f)
+                .disappearTo(0f)
+                .animate(AnimatedProperties.X)
+                .appearFrom(DimensionValue.widthPercentageOffset(-50f))
+                .disappearTo(DimensionValue.widthPercentageOffset(-50f)),
+            Transition.create("cont_comment")
+                .animate(AnimatedProperties.ALPHA)
+                .appearFrom(0f)
+                .disappearTo(0f),
+            Transition.create("icon_like", "icon_share").animate(AnimatedProperties.X),
+            Transition.create("text_like", "text_share")
+                .animate(AnimatedProperties.ALPHA)
+                .appearFrom(0f)
+                .disappearTo(0f)
+                .animate(AnimatedProperties.X)
+                .appearFrom(DimensionValue.widthPercentageOffset(50f))
+                .disappearTo(DimensionValue.widthPercentageOffset(50f)),
+        ),
+    ) { state ->
+      if (!state)
+          Row(style = Style.backgroundColor(Color.WHITE).height(56.dp)) {
+            child(
+                Row(
+                    alignItems = YogaAlign.CENTER,
+                    justifyContent = YogaJustify.CENTER,
+                    style = Style.widthPercent(33.3f).wrapInView().testKey("like_button"),
+                ) {
+                  child(
+                      Column(
+                          style =
+                              Style.height(24.dp)
+                                  .width(24.dp)
+                                  .backgroundColor(Color.RED)
+                                  .transitionKey(context, "icon_like"),
+                      ),
+                  )
+                  child(
+                      Text(
+                          textSize = 16.sp,
+                          text = "Like",
+                          style = Style.transitionKey(context, "text_like").margin(left = 8.dp),
+                      ),
+                  )
+                },
+            )
+            child(
+                Row(
+                    alignItems = YogaAlign.CENTER,
+                    justifyContent = YogaJustify.CENTER,
+                    style = Style.transitionKey(context, "cont_comment").widthPercent(33.3f),
+                ) {
+                  child(Column(style = Style.height(24.dp).width(24.dp).backgroundColor(Color.RED)))
+                  child(
+                      Text(
+                          textSize = 16.sp,
+                          text = "Comment",
+                          style = Style.margin(left = 8.dp),
+                      ),
+                  )
+                },
+            )
+            child(
+                Row(
+                    alignItems = YogaAlign.CENTER,
+                    justifyContent = YogaJustify.CENTER,
+                    style = Style.widthPercent(33.3f),
+                ) {
+                  child(
+                      Column(
+                          style =
+                              Style.transitionKey(context, "icon_share")
+                                  .height(24.dp)
+                                  .width(24.dp)
+                                  .backgroundColor(Color.RED),
+                      ),
+                  )
+                  child(
+                      Text(
+                          textSize = 16.sp,
+                          text = "Share",
+                          style = Style.transitionKey(context, "text_share").margin(left = 8.dp),
+                      ),
+                  )
+                },
+            )
+          }
+      else
+          Row(style = Style.backgroundColor(Color.WHITE).height(56.dp)) {
+            child(
+                Row(
+                    alignItems = YogaAlign.CENTER,
+                    justifyContent = YogaJustify.CENTER,
+                    style = Style.wrapInView().padding(horizontal = 16.dp).testKey("like_button"),
+                ) {
+                  child(
+                      Column(
+                          style =
+                              Style.transitionKey(context, "icon_like")
+                                  .height(24.dp)
+                                  .width(24.dp)
+                                  .backgroundColor(Color.RED),
+                      ),
+                  )
+                },
+            )
+            child(
+                Column(style = Style.flex(grow = 1f).transitionKey(context, "comment_editText")) {
+                  child(Text(text = "Input here", textSize = 16.sp))
+                },
+            )
+            child(
+                Row(
+                    style =
+                        Style.transitionKey(context, "cont_share")
+                            .wrapInView()
+                            .padding(all = 16.dp)
+                            .backgroundColor(-0xffff01),
+                    alignItems = YogaAlign.CENTER,
+                ) {
+                  child(
+                      Column(
+                          style =
+                              Style.transitionKey(context, "icon_share")
+                                  .height(24.dp)
+                                  .width(24.dp)
+                                  .backgroundColor(Color.RED),
+                      ),
+                  )
+                },
+            )
+          }
+    }
     val testLithoView = mLithoTestRule.render { component }
     activityController.get().setContentView(testLithoView.lithoView)
     activityController.resume().visible()
@@ -680,26 +711,29 @@ class AnimationTest {
 
   @Test
   fun animationProperties_differentInterpolator_elementShouldAnimateInTheXAxis() {
-    val component =
-        TestAnimationsComponent(
-            stateCaller,
-            Transition.create(TRANSITION_KEY)
-                .animator(Transition.timing(144, AccelerateInterpolator()))
-                .animate(AnimatedProperties.X)) { state ->
-              Row(
-                  style = Style.height(200.dp).width(200.dp),
-                  justifyContent = if (state) YogaJustify.FLEX_START else YogaJustify.FLEX_END,
-                  alignItems = if (state) YogaAlign.FLEX_START else YogaAlign.FLEX_END) {
-                    child(
-                        Row(
-                            style =
-                                Style.height(40.dp)
-                                    .width(40.dp)
-                                    .backgroundColor(Color.parseColor("#ee1111"))
-                                    .transitionKey(context, TRANSITION_KEY)
-                                    .viewTag(TRANSITION_KEY)))
-                  }
-            }
+    val component = TestAnimationsComponent(
+        stateCaller,
+        Transition.create(TRANSITION_KEY)
+            .animator(Transition.timing(144, AccelerateInterpolator()))
+            .animate(AnimatedProperties.X),
+    ) { state ->
+      Row(
+          style = Style.height(200.dp).width(200.dp),
+          justifyContent = if (state) YogaJustify.FLEX_START else YogaJustify.FLEX_END,
+          alignItems = if (state) YogaAlign.FLEX_START else YogaAlign.FLEX_END,
+      ) {
+        child(
+            Row(
+                style =
+                    Style.height(40.dp)
+                        .width(40.dp)
+                        .backgroundColor(Color.parseColor("#ee1111"))
+                        .transitionKey(context, TRANSITION_KEY)
+                        .viewTag(TRANSITION_KEY),
+            ),
+        )
+      }
+    }
 
     val testLithoView = mLithoTestRule.render { component }
     activityController.get().setContentView(testLithoView.lithoView)
@@ -733,26 +767,29 @@ class AnimationTest {
 
   @Test
   fun animationProperties_nullInterpolator_elementShouldAnimateInTheXAxis() {
-    val component =
-        TestAnimationsComponent(
-            stateCaller,
-            Transition.create(TRANSITION_KEY)
-                .animator(Transition.timing(144, null))
-                .animate(AnimatedProperties.X)) { state ->
-              Row(
-                  style = Style.height(200.dp).width(200.dp),
-                  justifyContent = if (state) YogaJustify.FLEX_START else YogaJustify.FLEX_END,
-                  alignItems = if (state) YogaAlign.FLEX_START else YogaAlign.FLEX_END) {
-                    child(
-                        Row(
-                            style =
-                                Style.height(40.dp)
-                                    .width(40.dp)
-                                    .backgroundColor(Color.parseColor("#ee1111"))
-                                    .transitionKey(context, TRANSITION_KEY)
-                                    .viewTag(TRANSITION_KEY)))
-                  }
-            }
+    val component = TestAnimationsComponent(
+        stateCaller,
+        Transition.create(TRANSITION_KEY)
+            .animator(Transition.timing(144, Interpolator { x -> x }))
+            .animate(AnimatedProperties.X),
+    ) { state ->
+      Row(
+          style = Style.height(200.dp).width(200.dp),
+          justifyContent = if (state) YogaJustify.FLEX_START else YogaJustify.FLEX_END,
+          alignItems = if (state) YogaAlign.FLEX_START else YogaAlign.FLEX_END,
+      ) {
+        child(
+            Row(
+                style =
+                    Style.height(40.dp)
+                        .width(40.dp)
+                        .backgroundColor(Color.parseColor("#ee1111"))
+                        .transitionKey(context, TRANSITION_KEY)
+                        .viewTag(TRANSITION_KEY),
+            ),
+        )
+      }
+    }
     val testLithoView = mLithoTestRule.render { component }
     activityController.get().setContentView(testLithoView.lithoView)
     activityController.resume().visible()
@@ -827,7 +864,8 @@ class AnimationTest {
     // We need an other litho view where we are going to measure and layout an other similar tree
     // (the real difference here is that the root components are not animating)
     val lithoView = LithoView(componentContext)
-    val nonAnimatingComponentTree = ComponentTree.create(componentContext).build()
+    val nonAnimatingComponentTree =
+        ComponentTree.create(componentContext).enableChildClipping(true).build()
     nonAnimatingComponentTree.root = nonAnimatingComponent
     lithoView.componentTree = nonAnimatingComponentTree
     lithoView.measure(DEFAULT_WIDTH_SPEC, DEFAULT_HEIGHT_SPEC)
@@ -835,7 +873,8 @@ class AnimationTest {
 
     // Now we need a new component tree that will hold a component tree that holds an animating root
     // component.
-    val animatingComponentTree = ComponentTree.create(componentContext).build()
+    val animatingComponentTree =
+        ComponentTree.create(componentContext).enableChildClipping(true).build()
     animatingComponentTree.root = animatingXPropertyComponent
     testLithoView.useComponentTree(animatingComponentTree)
     // We measure this component tree so we initialize the mRootTransition in the extension, but we
@@ -853,43 +892,48 @@ class AnimationTest {
   fun animation_unmountParentBeforeChildDisappearAnimation_shouldNotCrash() {
     // Disabling drawable outputs to ensure a nest heirachy rather than a list of drawables.
     TempComponentsConfigurations.setShouldAddHostViewForRootComponent(true)
-    val component =
-        TestAnimationsComponent(
-            stateCaller,
-            Transition.create(TRANSITION_KEY)
-                .animator(Transition.timing(144))
-                .animate(AnimatedProperties.ALPHA)
-                .disappearTo(0f)) { state ->
-              Column {
-                child(
-                    Row(
-                        style =
-                            Style.height(50.dp)
-                                .width(50.dp)
-                                .backgroundColor(Color.YELLOW)
-                                .viewTag("parent_of_parent")) {
-                          child(
-                              Row(
-                                  style =
-                                      Style.height(25.dp)
-                                          .width(25.dp)
-                                          .backgroundColor(Color.RED)
-                                          .viewTag(
-                                              "parent")) { // This is the parent that will unmount
-                                    child(
-                                        if (!state) // Disappearing child
-                                            Row(
-                                                style =
-                                                    Style.height(10.dp)
-                                                        .width(10.dp)
-                                                        .backgroundColor(Color.BLUE)
-                                                        .transitionKey(context, TRANSITION_KEY)
-                                                        .viewTag(TRANSITION_KEY))
-                                        else null)
-                                  })
-                        })
-              }
-            }
+    val component = TestAnimationsComponent(
+        stateCaller,
+        Transition.create(TRANSITION_KEY)
+            .animator(Transition.timing(144))
+            .animate(AnimatedProperties.ALPHA)
+            .disappearTo(0f),
+    ) { state ->
+      Column {
+        child(
+            Row(
+                style =
+                    Style.height(50.dp)
+                        .width(50.dp)
+                        .backgroundColor(Color.YELLOW)
+                        .viewTag("parent_of_parent"),
+            ) {
+              child(
+                  Row(
+                      style =
+                          Style.height(25.dp)
+                              .width(25.dp)
+                              .backgroundColor(Color.RED)
+                              .viewTag("parent"),
+                  ) { // This is the parent that will unmount
+                    child(
+                        if (!state) // Disappearing child
+                            Row(
+                                style =
+                                    Style.height(10.dp)
+                                        .width(10.dp)
+                                        .backgroundColor(Color.BLUE)
+                                        .transitionKey(context, TRANSITION_KEY)
+                                        .viewTag(TRANSITION_KEY),
+                            )
+                        else null,
+                    )
+                  },
+              )
+            },
+        )
+      }
+    }
     val testLithoView = mLithoTestRule.render { component }
     activityController.get().setContentView(testLithoView.lithoView)
     activityController.resume().visible()
@@ -915,36 +959,39 @@ class AnimationTest {
 
   @Test
   fun animation_unmountElementMidAppearAnimation_elementShouldBeUnmounted() {
-    val component =
-        TestAnimationsComponent(
-            stateCaller,
-            Transition.stagger(
-                144,
-                Transition.create(TRANSITION_KEY + 0)
-                    .animator(Transition.timing(144))
-                    .animate(AnimatedProperties.ALPHA)
-                    .appearFrom(0f),
-                Transition.create(TRANSITION_KEY + 1)
-                    .animator(Transition.timing(144))
-                    .animate(AnimatedProperties.ALPHA)
-                    .appearFrom(0f))) { state ->
-              Column {
-                child(Row(style = Style.height(50.dp).width(50.dp).backgroundColor(Color.YELLOW)))
+    val component = TestAnimationsComponent(
+        stateCaller,
+        Transition.stagger(
+            144,
+            Transition.create(TRANSITION_KEY + 0)
+                .animator(Transition.timing(144))
+                .animate(AnimatedProperties.ALPHA)
+                .appearFrom(0f),
+            Transition.create(TRANSITION_KEY + 1)
+                .animator(Transition.timing(144))
+                .animate(AnimatedProperties.ALPHA)
+                .appearFrom(0f),
+        ),
+    ) { state ->
+      Column {
+        child(Row(style = Style.height(50.dp).width(50.dp).backgroundColor(Color.YELLOW)))
 
-                if (state) {
-                  for (i in 0..1) {
-                    child(
-                        Row(
-                            style =
-                                Style.height(50.dp)
-                                    .width(50.dp)
-                                    .backgroundColor(Color.RED)
-                                    .viewTag(TRANSITION_KEY + i)
-                                    .transitionKey(context, TRANSITION_KEY + i)))
-                  }
-                }
-              }
-            }
+        if (state) {
+          for (i in 0..1) {
+            child(
+                Row(
+                    style =
+                        Style.height(50.dp)
+                            .width(50.dp)
+                            .backgroundColor(Color.RED)
+                            .viewTag(TRANSITION_KEY + i)
+                            .transitionKey(context, TRANSITION_KEY + i),
+                ),
+            )
+          }
+        }
+      }
+    }
     val testLithoView = mLithoTestRule.render { component }
     activityController.get().setContentView(testLithoView.lithoView)
     activityController.resume().visible()
@@ -983,77 +1030,86 @@ class AnimationTest {
 
   @Test
   fun animation_disappearAnimationMovingAnItemToTheSameIndex_elementShouldDisappearWithoutCrashing() {
-    val component =
-        TestAnimationsComponent(
-            stateCaller,
-            Transition.create("text_like")
-                .animate(AnimatedProperties.ALPHA)
-                .appearFrom(0f)
-                .disappearTo(0f)
-                .animate(AnimatedProperties.X)
-                .appearFrom(DimensionValue.widthPercentageOffset(50f))
-                .disappearTo(DimensionValue.widthPercentageOffset(50f))) { state ->
-              if (!state)
-                  Row(style = Style.backgroundColor(Color.WHITE).height(56.dp)) {
-                    child(
-                        Row(
-                            style = Style.widthPercent(33.3f),
-                            alignItems = YogaAlign.CENTER,
-                            justifyContent = YogaJustify.CENTER) {
-                              child(
-                                  Text(
-                                      textSize = 16.sp,
-                                      text = "Comment",
-                                      style = Style.margin(left = 8.dp)))
-                            })
-                    child(
-                        Row(
-                            style = Style.widthPercent(33.3f),
-                            alignItems = YogaAlign.CENTER,
-                            justifyContent = YogaJustify.CENTER) {
-                              child(
-                                  Column(
-                                      style =
-                                          Style.height(24.dp)
-                                              .width(24.dp)
-                                              .backgroundColor(Color.RED)))
-                              child(
-                                  Text(
-                                      textSize = 16.sp,
-                                      text = "Like",
-                                      style =
-                                          Style.transitionKey(context, "text_like")
-                                              .margin(left = 8.dp)))
-                            })
-                  }
-              else
-                  Row(style = Style.backgroundColor(Color.WHITE).height(56.dp)) {
-                    child(
-                        Row(
-                            alignItems = YogaAlign.CENTER,
-                            justifyContent = YogaJustify.CENTER,
-                            style = Style.padding(horizontal = 16.dp)) {
-                              child(
-                                  Column(
-                                      style =
-                                          Style.transitionKey(context, "icon_like")
-                                              .height(24.dp)
-                                              .width(24.dp)
-                                              .backgroundColor(Color.RED)))
-                            })
-                    child(
-                        Row(
-                            style = Style.widthPercent(33.3f),
-                            alignItems = YogaAlign.CENTER,
-                            justifyContent = YogaJustify.CENTER) {
-                              child(
-                                  Text(
-                                      textSize = 16.sp,
-                                      text = "Comment",
-                                      style = Style.margin(left = 8.dp)))
-                            })
-                  }
-            }
+    val component = TestAnimationsComponent(
+        stateCaller,
+        Transition.create("text_like")
+            .animate(AnimatedProperties.ALPHA)
+            .appearFrom(0f)
+            .disappearTo(0f)
+            .animate(AnimatedProperties.X)
+            .appearFrom(DimensionValue.widthPercentageOffset(50f))
+            .disappearTo(DimensionValue.widthPercentageOffset(50f)),
+    ) { state ->
+      if (!state)
+          Row(style = Style.backgroundColor(Color.WHITE).height(56.dp)) {
+            child(
+                Row(
+                    style = Style.widthPercent(33.3f),
+                    alignItems = YogaAlign.CENTER,
+                    justifyContent = YogaJustify.CENTER,
+                ) {
+                  child(
+                      Text(
+                          textSize = 16.sp,
+                          text = "Comment",
+                          style = Style.margin(left = 8.dp),
+                      ),
+                  )
+                },
+            )
+            child(
+                Row(
+                    style = Style.widthPercent(33.3f),
+                    alignItems = YogaAlign.CENTER,
+                    justifyContent = YogaJustify.CENTER,
+                ) {
+                  child(Column(style = Style.height(24.dp).width(24.dp).backgroundColor(Color.RED)))
+                  child(
+                      Text(
+                          textSize = 16.sp,
+                          text = "Like",
+                          style = Style.transitionKey(context, "text_like").margin(left = 8.dp),
+                      ),
+                  )
+                },
+            )
+          }
+      else
+          Row(style = Style.backgroundColor(Color.WHITE).height(56.dp)) {
+            child(
+                Row(
+                    alignItems = YogaAlign.CENTER,
+                    justifyContent = YogaJustify.CENTER,
+                    style = Style.padding(horizontal = 16.dp),
+                ) {
+                  child(
+                      Column(
+                          style =
+                              Style.transitionKey(context, "icon_like")
+                                  .height(24.dp)
+                                  .width(24.dp)
+                                  .backgroundColor(Color.RED),
+                      ),
+                  )
+                },
+            )
+            child(
+                Row(
+                    style = Style.widthPercent(33.3f),
+                    alignItems = YogaAlign.CENTER,
+                    justifyContent = YogaJustify.CENTER,
+                ) {
+                  child(
+                      Text(
+                          textSize = 16.sp,
+                          text = "Comment",
+                          style = Style.margin(left = 8.dp),
+                      ),
+                  )
+                },
+            )
+          }
+    }
     val testLithoView = mLithoTestRule.render { component }
     activityController.get().setContentView(testLithoView.lithoView)
     activityController.resume().visible()
@@ -1073,7 +1129,8 @@ class AnimationTest {
   fun animationTransitionsExtension_reUsingLithoViewWithSameComponentTrees_shouldNotCrash() {
     val componentContext = mLithoTestRule.context
     val testLithoView = mLithoTestRule.createTestLithoView()
-    val animatingComponentTree = ComponentTree.create(componentContext).build()
+    val animatingComponentTree =
+        ComponentTree.create(componentContext).enableChildClipping(true).build()
     animatingComponentTree.root = animatingXPropertyComponent
     testLithoView.useComponentTree(animatingComponentTree)
     activityController.get().setContentView(testLithoView.lithoView)
@@ -1098,24 +1155,25 @@ class AnimationTest {
 
   @Test
   fun animationProperties_animatingPropertyOnRootComponent_elementShouldAnimateInTheXAxis() {
-    val component =
-        TestAnimationsComponent(
-            stateCaller,
-            Transition.create(TRANSITION_KEY)
-                .animator(Transition.timing(144))
-                .animate(AnimatedProperties.X)
-                .animate(AnimatedProperties.Y)
-                .animate(AnimatedProperties.WIDTH)
-                .animate(AnimatedProperties.HEIGHT)) { state ->
-              Row(
-                  style =
-                      Style.height(if (state) 200.dp else 100.dp)
-                          .width(if (state) 200.dp else 100.dp)
-                          .backgroundColor(Color.RED)
-                          .position(left = if (!state) 0.px else 100.px)
-                          .position(top = if (!state) 0.px else 100.px)
-                          .transitionKey(context, TRANSITION_KEY))
-            }
+    val component = TestAnimationsComponent(
+        stateCaller,
+        Transition.create(TRANSITION_KEY)
+            .animator(Transition.timing(144))
+            .animate(AnimatedProperties.X)
+            .animate(AnimatedProperties.Y)
+            .animate(AnimatedProperties.WIDTH)
+            .animate(AnimatedProperties.HEIGHT),
+    ) { state ->
+      Row(
+          style =
+              Style.height(if (state) 200.dp else 100.dp)
+                  .width(if (state) 200.dp else 100.dp)
+                  .backgroundColor(Color.RED)
+                  .position(left = if (!state) 0.px else 100.px)
+                  .position(top = if (!state) 0.px else 100.px)
+                  .transitionKey(context, TRANSITION_KEY),
+      )
+    }
     val testLithoView = mLithoTestRule.render { component }
     activityController.get().setContentView(testLithoView.lithoView)
     activityController.resume().visible()
@@ -1178,26 +1236,29 @@ class AnimationTest {
   }
 
   private val animatingXPropertyComponent: TestAnimationsComponent
-    get() =
-        TestAnimationsComponent(
-            stateCaller,
-            Transition.create(TRANSITION_KEY)
-                .animator(Transition.timing(144))
-                .animate(AnimatedProperties.X)) { state ->
-              Row(
-                  justifyContent = if (state) YogaJustify.FLEX_START else YogaJustify.FLEX_END,
-                  alignItems = if (state) YogaAlign.FLEX_START else YogaAlign.FLEX_END,
-                  style = Style.height(200.dp).width(200.dp)) {
-                    child(
-                        Row(
-                            style =
-                                Style.height(40.dp)
-                                    .width(40.dp)
-                                    .backgroundColor(Color.parseColor("#ee1111"))
-                                    .transitionKey(context, TRANSITION_KEY)
-                                    .viewTag(TRANSITION_KEY)))
-                  }
-            }
+    get() = TestAnimationsComponent(
+        stateCaller,
+        Transition.create(TRANSITION_KEY)
+            .animator(Transition.timing(144))
+            .animate(AnimatedProperties.X),
+    ) { state ->
+      Row(
+          justifyContent = if (state) YogaJustify.FLEX_START else YogaJustify.FLEX_END,
+          alignItems = if (state) YogaAlign.FLEX_START else YogaAlign.FLEX_END,
+          style = Style.height(200.dp).width(200.dp),
+      ) {
+        child(
+            Row(
+                style =
+                    Style.height(40.dp)
+                        .width(40.dp)
+                        .backgroundColor(Color.parseColor("#ee1111"))
+                        .transitionKey(context, TRANSITION_KEY)
+                        .viewTag(TRANSITION_KEY),
+            ),
+        )
+      }
+    }
 
   private val nonAnimatingComponent: Component
     get() =
@@ -1205,36 +1266,42 @@ class AnimationTest {
           Row(
               style = Style.height(200.dp).width(200.dp),
               justifyContent = if (state) YogaJustify.FLEX_START else YogaJustify.FLEX_END,
-              alignItems = if (state) YogaAlign.FLEX_START else YogaAlign.FLEX_END) {
-                child(
-                    Row(
-                        style =
-                            Style.height(40.dp)
-                                .width(40.dp)
-                                .backgroundColor(Color.parseColor("#ee1111"))))
-              }
+              alignItems = if (state) YogaAlign.FLEX_START else YogaAlign.FLEX_END,
+          ) {
+            child(
+                Row(
+                    style =
+                        Style.height(40.dp)
+                            .width(40.dp)
+                            .backgroundColor(Color.parseColor("#ee1111")),
+                ),
+            )
+          }
         }
 
   @Test
   fun transitionAnimation_interruption_overridesCurrentTransition() {
-    val component =
-        TestAnimationsComponent(
-            stateCaller,
-            Transition.create(TRANSITION_KEY)
-                .animator(Transition.timing(160, null))
-                .animate(AnimatedProperties.X)) { state ->
-              Row(
-                  style = Style.width(200.dp),
-                  justifyContent = if (state) YogaJustify.FLEX_START else YogaJustify.FLEX_END) {
-                    child(
-                        Row(
-                            style =
-                                Style.height(40.dp)
-                                    .width(40.dp)
-                                    .transitionKey(context, TRANSITION_KEY)
-                                    .viewTag(TRANSITION_KEY)))
-                  }
-            }
+    val component = TestAnimationsComponent(
+        stateCaller,
+        Transition.create(TRANSITION_KEY)
+            .animator(Transition.timing(160, Interpolator { x -> x }))
+            .animate(AnimatedProperties.X),
+    ) { state ->
+      Row(
+          style = Style.width(200.dp),
+          justifyContent = if (state) YogaJustify.FLEX_START else YogaJustify.FLEX_END,
+      ) {
+        child(
+            Row(
+                style =
+                    Style.height(40.dp)
+                        .width(40.dp)
+                        .transitionKey(context, TRANSITION_KEY)
+                        .viewTag(TRANSITION_KEY),
+            ),
+        )
+      }
+    }
     val testLithoView = mLithoTestRule.render { component }
     activityController.get().setContentView(testLithoView.lithoView)
     activityController.resume().visible()
@@ -1266,29 +1333,31 @@ class AnimationTest {
   @Test
   fun animation_disappearAnimationOnNestedLithoViews_elementShouldDisappearAnimatingAlpha() {
     val innerStateCaller = StateCaller()
-    val component =
-        TestAnimationsComponent(
-            stateCaller,
-            Transition.create(TRANSITION_KEY)
-                .animator(Transition.timing(144))
-                .animate(AnimatedProperties.ALPHA)
-                .appearFrom(0f)
-                .disappearTo(0f)) { state ->
-              Column {
-                child(Row(style = Style.height(50.dp).width(50.dp).backgroundColor(Color.YELLOW)))
-                child(TestAnimationMount(innerStateCaller))
-                child(
-                    if (!state)
-                        Row(
-                            style =
-                                Style.height(50.dp)
-                                    .width(50.dp)
-                                    .backgroundColor(Color.RED)
-                                    .viewTag(TRANSITION_KEY)
-                                    .transitionKey(context, TRANSITION_KEY))
-                    else null)
-              }
-            }
+    val component = TestAnimationsComponent(
+        stateCaller,
+        Transition.create(TRANSITION_KEY)
+            .animator(Transition.timing(144))
+            .animate(AnimatedProperties.ALPHA)
+            .appearFrom(0f)
+            .disappearTo(0f),
+    ) { state ->
+      Column {
+        child(Row(style = Style.height(50.dp).width(50.dp).backgroundColor(Color.YELLOW)))
+        child(TestAnimationMount(innerStateCaller))
+        child(
+            if (!state)
+                Row(
+                    style =
+                        Style.height(50.dp)
+                            .width(50.dp)
+                            .backgroundColor(Color.RED)
+                            .viewTag(TRANSITION_KEY)
+                            .transitionKey(context, TRANSITION_KEY),
+                )
+            else null,
+        )
+      }
+    }
 
     val testLithoView = mLithoTestRule.render { component }
     activityController.get().setContentView(testLithoView.lithoView)
@@ -1356,31 +1425,34 @@ class AnimationTest {
   @Test
   fun animation_disappearAnimationWhichRemountsToRoot_shouldPreserveInitialXandY() {
     val innerStateCaller = StateCaller()
-    val component =
-        TestAnimationsComponent(
-            stateCaller,
-            Transition.create(TRANSITION_KEY)
-                .animator(Transition.timing(144))
-                .animate(AnimatedProperties.ALPHA)
-                .disappearTo(0f)) { state ->
-              Column(style = Style.wrapInView()) {
-                child(Row(style = Style.height(50.dp).width(50.dp).backgroundColor(Color.YELLOW)))
-                child(TestAnimationMount(innerStateCaller))
-                child(
-                    Row(style = Style.wrapInView()) {
-                      child(
-                          if (!state)
-                              Row(
-                                  style =
-                                      Style.height(50.dp)
-                                          .width(50.dp)
-                                          .backgroundColor(Color.RED)
-                                          .viewTag(TRANSITION_KEY)
-                                          .transitionKey(context, TRANSITION_KEY))
-                          else null)
-                    })
-              }
-            }
+    val component = TestAnimationsComponent(
+        stateCaller,
+        Transition.create(TRANSITION_KEY)
+            .animator(Transition.timing(144))
+            .animate(AnimatedProperties.ALPHA)
+            .disappearTo(0f),
+    ) { state ->
+      Column(style = Style.wrapInView()) {
+        child(Row(style = Style.height(50.dp).width(50.dp).backgroundColor(Color.YELLOW)))
+        child(TestAnimationMount(innerStateCaller))
+        child(
+            Row(style = Style.wrapInView()) {
+              child(
+                  if (!state)
+                      Row(
+                          style =
+                              Style.height(50.dp)
+                                  .width(50.dp)
+                                  .backgroundColor(Color.RED)
+                                  .viewTag(TRANSITION_KEY)
+                                  .transitionKey(context, TRANSITION_KEY),
+                      )
+                  else null,
+              )
+            },
+        )
+      }
+    }
     val testLithoView = mLithoTestRule.render { component }
     activityController.get().setContentView(testLithoView.lithoView)
     activityController.resume().visible()
@@ -1426,37 +1498,34 @@ class AnimationTest {
   fun animation_disappearAnimationWhichRemountsToRoot_shouldPreserveInitialXandYWithParentTranslation() {
     val translation = DynamicValue(10f)
     val innerStateCaller = StateCaller()
-    val component =
-        TestAnimationsComponent(
-            stateCaller,
-            Transition.create(TRANSITION_KEY)
-                .animator(Transition.timing(144))
-                .animate(AnimatedProperties.ALPHA)
-                .disappearTo(0f)) { state ->
-              Column(
-                  style = Style.translationX(translation).translationY(translation).wrapInView()) {
-                    child(
-                        Row(style = Style.height(50.dp).width(50.dp).backgroundColor(Color.YELLOW)))
-                    child(TestAnimationMount(innerStateCaller))
-                    child(
-                        Row(
-                            style =
-                                Style.translationX(translation)
-                                    .translationY(translation)
-                                    .wrapInView()) {
-                              child(
-                                  if (!state)
-                                      Row(
-                                          style =
-                                              Style.height(50.dp)
-                                                  .width(50.dp)
-                                                  .backgroundColor(Color.RED)
-                                                  .viewTag(TRANSITION_KEY)
-                                                  .transitionKey(context, TRANSITION_KEY))
-                                  else null)
-                            })
-                  }
-            }
+    val component = TestAnimationsComponent(
+        stateCaller,
+        Transition.create(TRANSITION_KEY)
+            .animator(Transition.timing(144))
+            .animate(AnimatedProperties.ALPHA)
+            .disappearTo(0f),
+    ) { state ->
+      Column(style = Style.translationX(translation).translationY(translation).wrapInView()) {
+        child(Row(style = Style.height(50.dp).width(50.dp).backgroundColor(Color.YELLOW)))
+        child(TestAnimationMount(innerStateCaller))
+        child(
+            Row(style = Style.translationX(translation).translationY(translation).wrapInView()) {
+              child(
+                  if (!state)
+                      Row(
+                          style =
+                              Style.height(50.dp)
+                                  .width(50.dp)
+                                  .backgroundColor(Color.RED)
+                                  .viewTag(TRANSITION_KEY)
+                                  .transitionKey(context, TRANSITION_KEY),
+                      )
+                  else null,
+              )
+            },
+        )
+      }
+    }
     val testLithoView = mLithoTestRule.render { component }
     activityController.get().setContentView(testLithoView.lithoView)
     activityController.resume().visible()
@@ -1496,31 +1565,34 @@ class AnimationTest {
 
   @Test
   fun animation_disappearAnimationNewComponentTree_disappearingElementsContentsRemoved() {
-    val component =
-        TestAnimationsComponent(
-            stateCaller,
-            Transition.create(TRANSITION_KEY)
-                .animator(Transition.timing(144))
-                .animate(AnimatedProperties.ALPHA)
-                .appearFrom(0f)
-                .disappearTo(0f)) { state ->
-              Column {
-                child(Row(style = Style.height(50.dp).width(50.dp).backgroundColor(Color.YELLOW)))
-                child(
-                    if (!state)
-                        Row(
-                            style =
-                                Style.height(50.dp)
-                                    .width(50.dp)
-                                    .backgroundColor(Color.RED)
-                                    .viewTag(TRANSITION_KEY)
-                                    .transitionKey(context, TRANSITION_KEY))
-                    else null)
-              }
-            }
+    val component = TestAnimationsComponent(
+        stateCaller,
+        Transition.create(TRANSITION_KEY)
+            .animator(Transition.timing(144))
+            .animate(AnimatedProperties.ALPHA)
+            .appearFrom(0f)
+            .disappearTo(0f),
+    ) { state ->
+      Column {
+        child(Row(style = Style.height(50.dp).width(50.dp).backgroundColor(Color.YELLOW)))
+        child(
+            if (!state)
+                Row(
+                    style =
+                        Style.height(50.dp)
+                            .width(50.dp)
+                            .backgroundColor(Color.RED)
+                            .viewTag(TRANSITION_KEY)
+                            .transitionKey(context, TRANSITION_KEY),
+                )
+            else null,
+        )
+      }
+    }
 
     val nonAnimatingComponent = nonAnimatingComponent
-    val newComponentTree = ComponentTree.create(mLithoTestRule.context).build()
+    val newComponentTree =
+        ComponentTree.create(mLithoTestRule.context).enableChildClipping(true).build()
     newComponentTree.root = nonAnimatingComponent
     val testLithoView = mLithoTestRule.render { component }
     activityController.get().setContentView(testLithoView.lithoView)
@@ -1544,39 +1616,42 @@ class AnimationTest {
     // Check kdoc for how we calculate this value.
     Assertions.assertThat(view.alpha).describedAs("view after 5 frames").isEqualTo(0.5868241f)
     Assertions.assertThat(
-            Whitebox.invokeMethod<Any>(testLithoView.lithoView, "hasDisappearingItems") as Boolean)
+            Whitebox.invokeMethod<Any>(testLithoView.lithoView, "hasDisappearingItems") as Boolean,
+        )
         .describedAs("root host has disappearing items before updating the tree")
         .isTrue
 
     // Change component tree mid animation.
     testLithoView.useComponentTree(newComponentTree)
     Assertions.assertThat(
-            Whitebox.invokeMethod<Any>(testLithoView.lithoView, "hasDisappearingItems") as Boolean)
+            Whitebox.invokeMethod<Any>(testLithoView.lithoView, "hasDisappearingItems") as Boolean,
+        )
         .describedAs("root host does not have disappearing items after setting tree")
         .isFalse
     val nullableView = testLithoView.findViewWithTagOrNull(TRANSITION_KEY)
     Assertions.assertThat(nullableView).describedAs("view after setting new tree").isNull()
   }
 
+  /** Hosts do not clip, so an animation no longer has to unset and restore clipping. */
   @Test
-  fun animation_clipChildren_shouldBeFalseDuringAnimation() {
+  fun animation_clipChildren_isNotOverriddenByAnimation() {
     val component = animatingXPropertyComponent
     val testLithoView = mLithoTestRule.render { component }
     activityController.get().setContentView(testLithoView.lithoView)
     activityController.resume().visible()
-    Assertions.assertThat(testLithoView.lithoView.clipChildren)
-        .describedAs("before animation, clip children is set to true")
-        .isTrue
+    // Whether the host clips is the tree's business, not the animation's, so this pins only that
+    // the value survives a transition.
+    val clipsChildren = testLithoView.lithoView.clipChildren
     stateCaller.update()
     mLithoTestRule.idle()
     transitionTestRule.step(5)
     Assertions.assertThat(testLithoView.lithoView.clipChildren)
-        .describedAs("during animation, clip children is set to false")
-        .isFalse
+        .describedAs("during animation, clipping is unchanged")
+        .isEqualTo(clipsChildren)
     transitionTestRule.step(5)
     Assertions.assertThat(testLithoView.lithoView.clipChildren)
-        .describedAs("after animation, clip children is set to true")
-        .isTrue
+        .describedAs("after animation, clipping is unchanged")
+        .isEqualTo(clipsChildren)
   }
 
   companion object {

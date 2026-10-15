@@ -25,13 +25,17 @@ import com.facebook.litho.annotations.EventHandlerRebindMode
  */
 abstract class ErrorEventHandler :
     EventHandler<ErrorEvent>(
-        Component.ERROR_EVENT_HANDLER_ID, EventHandlerRebindMode.NONE, EventDispatchInfo(), null),
+        Component.ERROR_EVENT_HANDLER_ID,
+        EventHandlerRebindMode.NONE,
+        EventDispatchInfo(),
+        null,
+    ),
     HasEventDispatcher,
     EventDispatcher {
 
   init {
     // sets up HasEventDispatcher immediately after constructing EventHandler
-    dispatchInfo?.hasEventDispatcher = this
+    dispatchInfo.hasEventDispatcher = this
   }
 
   override fun dispatchOnEvent(eventHandler: EventHandler<*>, eventState: Any): Any? {

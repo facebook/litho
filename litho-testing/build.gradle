@@ -42,11 +42,14 @@ android {
     }
 }
 
+addKotlinFriend(project, ':litho-core')
+
 dependencies {
     compileOnly project(':litho-sections-annotations')
     implementation project(':litho-core')
     implementation project(':litho-widget')
     implementation project(':litho-widget-kotlin')
+    implementation deps.supportSwipeRefresh
     implementation project(':litho-sections-core')
     implementation project(':litho-processor')
     implementation project(':litho-rendercore-text')

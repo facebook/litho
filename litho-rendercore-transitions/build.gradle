@@ -24,9 +24,6 @@ android {
     compileSdkVersion rootProject.compileSdkVersion
     buildToolsVersion rootProject.buildToolsVersion
 
-    kotlinOptions {
-        freeCompilerArgs = ['-Xjvm-default=all']
-    }
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion

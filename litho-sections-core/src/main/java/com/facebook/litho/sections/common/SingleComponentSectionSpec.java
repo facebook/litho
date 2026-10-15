@@ -24,10 +24,8 @@ import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentUtils;
-import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.Diff;
 import com.facebook.litho.annotations.Prop;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.LithoDebugConfigurations;
 import com.facebook.litho.sections.ChangeSet;
 import com.facebook.litho.sections.SectionContext;
@@ -68,9 +66,7 @@ public class SingleComponentSectionSpec {
       @Prop(optional = true) Diff<Boolean> isFullSpan,
       @Prop(optional = true) Diff<Map<String, Object>> customAttributes,
       @Prop(optional = true) Diff<Object> data,
-      @Prop(optional = true) Diff<ComponentsLogger> componentsLogger,
-      @Prop(optional = true) Diff<String> logTag,
-      @Prop(optional = true) Diff<Boolean> shouldCompareComponentCommonProps) {
+      @Prop(optional = true) Diff<String> logTag) {
     final Object prevData = data.getPrevious();
     final Object nextData = data.getNext();
     final Component prevComponent = component.getPrevious();
@@ -104,11 +100,7 @@ public class SingleComponentSectionSpec {
       changeSet.insert(
           0,
           addCustomAttributes(
-                  ComponentRenderInfo.create(),
-                  customAttributes.getNext(),
-                  context,
-                  component,
-                  componentsLogger)
+                  ComponentRenderInfo.create(), customAttributes.getNext(), context, component)
               .component(nextComponent)
               .isSticky(isNextSticky)
               .spanSize(nextSpanSize)
@@ -138,27 +130,17 @@ public class SingleComponentSectionSpec {
     final boolean customAttributesEqual =
         MapDiffUtils.areMapsEqual(customAttributes.getPrevious(), customAttributes.getNext());
 
-    boolean shouldCompareComponentCommonPropsValue = false;
-    if (shouldCompareComponentCommonProps != null
-        && shouldCompareComponentCommonProps.getNext() != null) {
-      shouldCompareComponentCommonPropsValue = shouldCompareComponentCommonProps.getNext();
-    }
-
     if (isPrevSticky != isNextSticky
         || prevSpanSize != nextSpanSize
         || isPrevFullSpan != isNextFullSpan
         || !customAttributesEqual
         || !isComponentEquivalent(
             // NULLSAFE_FIXME[Parameter Not Nullable]
-            prevComponent, nextComponent, shouldCompareComponentCommonPropsValue)) {
+            prevComponent, nextComponent)) {
       changeSet.update(
           0,
           addCustomAttributes(
-                  ComponentRenderInfo.create(),
-                  customAttributes.getNext(),
-                  context,
-                  component,
-                  componentsLogger)
+                  ComponentRenderInfo.create(), customAttributes.getNext(), context, component)
               .component(nextComponent)
               .isSticky(isNextSticky)
               .spanSize(nextSpanSize)
@@ -170,21 +152,15 @@ public class SingleComponentSectionSpec {
     }
   }
 
-  private static boolean isComponentEquivalent(
-      Component prevComponent, Component nextComponent, boolean shouldCompareCommonProps) {
-    return ComponentUtils.isEquivalent(
-        prevComponent,
-        nextComponent,
-        ComponentsConfiguration.shouldCompareRootCommonPropsInSingleComponentSection
-            || shouldCompareCommonProps);
+  private static boolean isComponentEquivalent(Component prevComponent, Component nextComponent) {
+    return ComponentUtils.isEquivalent(prevComponent, nextComponent);
   }
 
   private static ComponentRenderInfo.Builder addCustomAttributes(
       ComponentRenderInfo.Builder builder,
       @Nullable Map<String, Object> attributes,
       SectionContext c,
-      Diff<Component> component,
-      @Nullable Diff<ComponentsLogger> componentsLogger) {
+      Diff<Component> component) {
     if (LithoDebugConfigurations.isRenderInfoDebuggingEnabled) {
       builder.debugInfo(SONAR_SECTIONS_DEBUG_INFO_TAG, c.getSectionScope());
       builder.debugInfo(SONAR_SINGLE_COMPONENT_SECTION_DATA_PREV, component.getPrevious());
@@ -196,8 +172,6 @@ public class SingleComponentSectionSpec {
         builder.customAttribute(entry.getKey(), entry.getValue());
       }
     }
-
-    builder.componentsLogger(componentsLogger != null ? componentsLogger.getNext() : null);
 
     return builder;
   }

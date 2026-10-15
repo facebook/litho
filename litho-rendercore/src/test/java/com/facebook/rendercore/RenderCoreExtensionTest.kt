@@ -25,6 +25,7 @@ import com.facebook.rendercore.extensions.LayoutResultVisitor
 import com.facebook.rendercore.extensions.MountExtension
 import com.facebook.rendercore.extensions.OnItemCallbacks
 import com.facebook.rendercore.extensions.RenderCoreExtension
+import com.facebook.rendercore.extensions.VisibilityChangeReason
 import com.facebook.rendercore.extensions.VisibleBoundsCallbacks
 import com.facebook.rendercore.testing.LayoutResultWrappingNode
 import com.facebook.rendercore.testing.RenderCoreTestRule
@@ -33,7 +34,7 @@ import com.facebook.rendercore.testing.TestRenderCoreExtension
 import com.facebook.rendercore.testing.ViewAssertions
 import com.facebook.rendercore.testing.ViewWrapperUnit
 import com.facebook.rendercore.testing.match.ViewMatchNode
-import org.assertj.core.api.Java6Assertions
+import org.assertj.core.api.Assertions
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -66,15 +67,16 @@ class RenderCoreExtensionTest {
     ViewAssertions.assertThat(rootView)
         .matches(
             ViewMatchNode.forType(Host::class.java)
-                .child(ViewMatchNode.forType(TextView::class.java).bounds(0, 0, 100, 100)))
-    Java6Assertions.assertThat(visitor.count).isEqualTo(2)
-    Java6Assertions.assertThat(extension.beforeMount).isEqualTo(1)
-    Java6Assertions.assertThat(extension.afterMount).isEqualTo(1)
-    Java6Assertions.assertThat(extension.onVisibleBoundsChanged).isEqualTo(0)
+                .child(ViewMatchNode.forType(TextView::class.java).bounds(0, 0, 100, 100)),
+        )
+    Assertions.assertThat(visitor.count).isEqualTo(2)
+    Assertions.assertThat(extension.beforeMount).isEqualTo(1)
+    Assertions.assertThat(extension.afterMount).isEqualTo(1)
+    Assertions.assertThat(extension.onVisibleBoundsChanged).isEqualTo(0)
     rootView.offsetLeftAndRight(100)
-    Java6Assertions.assertThat(extension.onVisibleBoundsChanged).isEqualTo(1)
+    Assertions.assertThat(extension.onVisibleBoundsChanged).isEqualTo(1)
     rootView.offsetTopAndBottom(100)
-    Java6Assertions.assertThat(extension.onVisibleBoundsChanged).isEqualTo(2)
+    Assertions.assertThat(extension.onVisibleBoundsChanged).isEqualTo(2)
   }
 
   @Test
@@ -96,11 +98,12 @@ class RenderCoreExtensionTest {
     ViewAssertions.assertThat(renderCoreTestRule.rootHost as View)
         .matches(
             ViewMatchNode.forType(Host::class.java)
-                .child(ViewMatchNode.forType(TextView::class.java).bounds(0, 0, 100, 100)))
-    Java6Assertions.assertThat(v1.count).isEqualTo(2)
-    Java6Assertions.assertThat(me1.beforeMount).isEqualTo(1)
-    Java6Assertions.assertThat(me1.afterMount).isEqualTo(1)
-    Java6Assertions.assertThat(me1.onVisibleBoundsChanged).isEqualTo(0)
+                .child(ViewMatchNode.forType(TextView::class.java).bounds(0, 0, 100, 100)),
+        )
+    Assertions.assertThat(v1.count).isEqualTo(2)
+    Assertions.assertThat(me1.beforeMount).isEqualTo(1)
+    Assertions.assertThat(me1.afterMount).isEqualTo(1)
+    Assertions.assertThat(me1.onVisibleBoundsChanged).isEqualTo(0)
 
     // New Extensions
     val v2 = TrackingLayoutResultVisitor()
@@ -116,19 +119,20 @@ class RenderCoreExtensionTest {
     ViewAssertions.assertThat(renderCoreTestRule.rootHost as View)
         .matches(
             ViewMatchNode.forType(Host::class.java)
-                .child(ViewMatchNode.forType(TextView::class.java).bounds(0, 0, 100, 100)))
+                .child(ViewMatchNode.forType(TextView::class.java).bounds(0, 0, 100, 100)),
+        )
 
     // No interactions with the previous extensions.
-    Java6Assertions.assertThat(v1.count).isEqualTo(2)
-    Java6Assertions.assertThat(me1.beforeMount).isEqualTo(1)
-    Java6Assertions.assertThat(me1.afterMount).isEqualTo(1)
-    Java6Assertions.assertThat(me1.onVisibleBoundsChanged).isEqualTo(0)
+    Assertions.assertThat(v1.count).isEqualTo(2)
+    Assertions.assertThat(me1.beforeMount).isEqualTo(1)
+    Assertions.assertThat(me1.afterMount).isEqualTo(1)
+    Assertions.assertThat(me1.onVisibleBoundsChanged).isEqualTo(0)
 
     // Only interactions with the new extensions.
-    Java6Assertions.assertThat(v2.count).isEqualTo(2)
-    Java6Assertions.assertThat(me2.beforeMount).isEqualTo(1)
-    Java6Assertions.assertThat(me2.afterMount).isEqualTo(1)
-    Java6Assertions.assertThat(me2.onVisibleBoundsChanged).isEqualTo(0)
+    Assertions.assertThat(v2.count).isEqualTo(2)
+    Assertions.assertThat(me2.beforeMount).isEqualTo(1)
+    Assertions.assertThat(me2.afterMount).isEqualTo(1)
+    Assertions.assertThat(me2.onVisibleBoundsChanged).isEqualTo(0)
   }
 
   @Test
@@ -146,24 +150,24 @@ class RenderCoreExtensionTest {
         .render()
 
     // should call
-    Java6Assertions.assertThat(extension.beforeMount).isEqualTo(1)
-    Java6Assertions.assertThat(extension.afterMount).isEqualTo(1)
-    Java6Assertions.assertThat(extension.mountItem).isEqualTo(2)
-    Java6Assertions.assertThat(extension.bindItem).isEqualTo(2)
+    Assertions.assertThat(extension.beforeMount).isEqualTo(1)
+    Assertions.assertThat(extension.afterMount).isEqualTo(1)
+    Assertions.assertThat(extension.mountItem).isEqualTo(2)
+    Assertions.assertThat(extension.bindItem).isEqualTo(2)
 
     // should not call
-    Java6Assertions.assertThat(extension.unmountItem).isEqualTo(0)
-    Java6Assertions.assertThat(extension.unbindItem).isEqualTo(0)
-    Java6Assertions.assertThat(extension.unmount).isEqualTo(0)
-    Java6Assertions.assertThat(extension.unbind).isEqualTo(0)
-    Java6Assertions.assertThat(extension.onVisibleBoundsChanged).isEqualTo(0)
+    Assertions.assertThat(extension.unmountItem).isEqualTo(0)
+    Assertions.assertThat(extension.unbindItem).isEqualTo(0)
+    Assertions.assertThat(extension.unmount).isEqualTo(0)
+    Assertions.assertThat(extension.unbind).isEqualTo(0)
+    Assertions.assertThat(extension.onVisibleBoundsChanged).isEqualTo(0)
     renderCoreTestRule.rootHost.setRenderState(null)
 
     // should call
-    Java6Assertions.assertThat(extension.unmountItem).isEqualTo(2)
-    Java6Assertions.assertThat(extension.unbindItem).isEqualTo(2)
-    Java6Assertions.assertThat(extension.unmount).isEqualTo(1)
-    Java6Assertions.assertThat(extension.unbind).isEqualTo(1)
+    Assertions.assertThat(extension.unmountItem).isEqualTo(2)
+    Assertions.assertThat(extension.unbindItem).isEqualTo(2)
+    Assertions.assertThat(extension.unmount).isEqualTo(1)
+    Assertions.assertThat(extension.unbind).isEqualTo(1)
   }
 
   @Test
@@ -182,9 +186,9 @@ class RenderCoreExtensionTest {
     val rootView = renderCoreTestRule.rootHost as RootHostView
     extension.idsMarkedForRelease = longArrayOf(Reducer.ROOT_HOST_RENDER_UNIT.id)
     rootView.offsetTopAndBottom(100)
-    Java6Assertions.assertThat(extension.onVisibleBoundsChanged).isEqualTo(1)
-    Java6Assertions.assertThat(extension.unmountItem).isEqualTo(2)
-    Java6Assertions.assertThat(extension.unbindItem).isEqualTo(2)
+    Assertions.assertThat(extension.onVisibleBoundsChanged).isEqualTo(1)
+    Assertions.assertThat(extension.unmountItem).isEqualTo(2)
+    Assertions.assertThat(extension.unbindItem).isEqualTo(2)
   }
 
   class TrackingLayoutResultVisitor : LayoutResultVisitor<Any?> {
@@ -197,7 +201,7 @@ class RenderCoreExtensionTest {
         x: Int,
         y: Int,
         position: Int,
-        state: Any?
+        state: Any?,
     ) {
       count++
     }
@@ -231,7 +235,7 @@ class RenderCoreExtensionTest {
     override fun beforeMount(
         extensionState: ExtensionState<Any?>,
         input: Any?,
-        localVisibleRect: Rect?
+        localVisibleRect: Rect?,
     ) {
       beforeMount++
     }
@@ -242,7 +246,8 @@ class RenderCoreExtensionTest {
 
     override fun onVisibleBoundsChanged(
         extensionState: ExtensionState<Any?>,
-        localVisibleRect: Rect?
+        localVisibleRect: Rect?,
+        reason: VisibilityChangeReason,
     ) {
       onVisibleBoundsChanged++
       val idsMarkedForRelease = this.idsMarkedForRelease ?: return
@@ -259,7 +264,7 @@ class RenderCoreExtensionTest {
     override fun beforeMountItem(
         extensionState: ExtensionState<Any?>,
         renderTreeNode: RenderTreeNode,
-        index: Int
+        index: Int,
     ) {
       // mount all
       if (!extensionState.ownsReference(renderTreeNode.renderUnit.id)) {
@@ -279,7 +284,7 @@ class RenderCoreExtensionTest {
         extensionState: ExtensionState<Any?>,
         renderUnit: RenderUnit<*>,
         content: Any,
-        layoutData: Any?
+        layoutData: Any?,
     ) {
       bindItem++
     }
@@ -288,7 +293,7 @@ class RenderCoreExtensionTest {
         extensionState: ExtensionState<Any?>,
         renderUnit: RenderUnit<*>,
         content: Any,
-        layoutData: Any?
+        layoutData: Any?,
     ) {
       unbindItem++
     }
@@ -297,7 +302,7 @@ class RenderCoreExtensionTest {
         extensionState: ExtensionState<Any?>,
         renderUnit: RenderUnit<*>,
         content: Any,
-        layoutData: Any?
+        layoutData: Any?,
     ) {
       unmountItem++
     }
@@ -306,7 +311,7 @@ class RenderCoreExtensionTest {
         extensionState: ExtensionState<Any?>,
         renderUnit: RenderUnit<*>,
         content: Any,
-        layoutData: Any?
+        layoutData: Any?,
     ) {
       mountItem++
     }
@@ -316,7 +321,7 @@ class RenderCoreExtensionTest {
         previousRenderUnit: RenderUnit<*>,
         previousLayoutData: Any?,
         nextRenderUnit: RenderUnit<*>,
-        nextLayoutData: Any?
+        nextLayoutData: Any?,
     ): Boolean {
       return false
     }
@@ -326,7 +331,7 @@ class RenderCoreExtensionTest {
         renderUnit: RenderUnit<*>,
         content: Any,
         layoutData: Any?,
-        changed: Boolean
+        changed: Boolean,
     ) = Unit
   }
 }

@@ -16,6 +16,8 @@
 
 package com.facebook.rendercore
 
+import androidx.collection.MutableScatterMap
+
 /**
  * A class storing data that was created in [RenderUnit.Binder.bind] and will be passed to
  * [RenderUnit.Binder.unbind].
@@ -24,10 +26,10 @@ class BindData {
   var fixedBindersBindData: Array<Any?>? = null
     private set
 
-  var optionalMountBindersBindData: MutableMap<BinderKey, Any?>? = null
+  var optionalMountBindersBindData: MutableScatterMap<BinderKey, Any?>? = null
     private set
 
-  var attachBindersBindData: MutableMap<BinderKey, Any?>? = null
+  var attachBindersBindData: MutableScatterMap<BinderKey, Any?>? = null
     private set
 
   /**
@@ -51,28 +53,28 @@ class BindData {
    * wasn't present or [fixedBindersBindData] array was `null`.
    */
   fun removeFixedBinderBindData(index: Int): Any? {
-    return fixedBindersBindData?.let {
-      val bindData = it[index]
-      it[index] = null
+    return fixedBindersBindData?.let { array ->
+      val bindData = array[index]
+      array[index] = null
       bindData
     }
   }
 
   /**
-   * Sets the bindData at specified [index] to the provided value. If [optionalMountBindersBindData]
-   * doesn't exist, it creates it and then sets the bindData value.
+   * Sets the bindData at specified [index] to the provided value. If the appropriate optional mount
+   * binders bind data map doesn't exist, it creates it and then sets the bindData value.
    */
   fun setOptionalMountBindersBindData(
       bindData: Any?,
       key: BinderKey,
-      optionalMountBindersSize: Int
+      optionalMountBindersSize: Int,
   ) {
     if (bindData == null) {
       return
     }
 
-    val bindersBindData: MutableMap<BinderKey, Any?> =
-        optionalMountBindersBindData ?: LinkedHashMap(optionalMountBindersSize)
+    val bindersBindData: MutableScatterMap<BinderKey, Any?> =
+        optionalMountBindersBindData ?: MutableScatterMap(optionalMountBindersSize)
     bindersBindData[key] = bindData
     if (optionalMountBindersBindData == null) {
       optionalMountBindersBindData = bindersBindData
@@ -81,23 +83,23 @@ class BindData {
 
   /**
    * Removes the bindData for specified [key] and returns it if it was present or `null` if it
-   * wasn't present or [optionalMountBindersBindData] map was `null`.
+   * wasn't present or the appropriate optional mount binders bind data map was `null`.
    */
   fun removeOptionalMountBindersBindData(key: BinderKey): Any? {
     return optionalMountBindersBindData?.remove(key)
   }
 
   /**
-   * Sets the bindData at specified [index] to the provided value. If [attachBindersBindData]
-   * doesn't exist, it creates it and then sets the bindData value.
+   * Sets the bindData at specified [index] to the provided value. If the appropriate attach binders
+   * bind data map doesn't exist, it creates it and then sets the bindData value.
    */
   fun setAttachBindersBindData(bindData: Any?, key: BinderKey, attachBindersSize: Int) {
     if (bindData == null) {
       return
     }
 
-    val bindersBindData: MutableMap<BinderKey, Any?> =
-        attachBindersBindData ?: LinkedHashMap(attachBindersSize)
+    val bindersBindData: MutableScatterMap<BinderKey, Any?> =
+        attachBindersBindData ?: MutableScatterMap(attachBindersSize)
     bindersBindData[key] = bindData
     if (attachBindersBindData == null) {
       attachBindersBindData = bindersBindData
@@ -106,7 +108,7 @@ class BindData {
 
   /**
    * Removes the bindData for specified [key] and returns it if it was present or `null` if it
-   * wasn't present or [attachBindersBindData] map was `null`.
+   * wasn't present or the appropriate attach binders bind data map was `null`.
    */
   fun removeAttachBindersBindData(key: BinderKey): Any? {
     return attachBindersBindData?.remove(key)

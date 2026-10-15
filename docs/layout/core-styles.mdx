@@ -1,0 +1,574 @@
+---
+id: core-styles
+title: Size, Margin, Padding & Border
+keywords:
+    - core styles
+    - layout styles
+    - sizing
+    - margin
+    - padding
+    - border
+---
+
+Layout Styles expose the basic layout properties that control the sizing, spacing, and positioning of components as Litho `Style` APIs. Use the following APIs to specify the size, and spacing of components.
+
+## Width
+
+Sets a specific preferred width for this component when its parent lays it out.
+
+```kotlin
+import com.facebook.litho.Style
+import com.facebook.litho.core.width
+import com.facebook.rendercore.dp
+
+MyComponent(style = Style.width(200.dp))
+```
+
+### Width Percent
+
+Sets a specific preferred percent width for this component when its parent lays it out. The percentage is a value from **0 to 100** (e.g., `50f` = 50% of parent width).
+
+```kotlin
+import com.facebook.litho.Style
+import com.facebook.litho.core.widthPercent
+
+MyComponent(style = Style.widthPercent(50f))  // 50% of parent width
+```
+
+### Width Auto
+
+Sets width to auto, allowing the component to size itself based on its content. This is useful when you want to reset an explicit width to content-based sizing.
+
+```kotlin
+import com.facebook.litho.Style
+import com.facebook.litho.core.widthAuto
+
+MyComponent(style = Style.widthAuto())
+```
+
+## Height
+
+Sets a specific preferred height for this component when its parent lays it out.
+
+```kotlin
+import com.facebook.litho.Style
+import com.facebook.litho.core.height
+import com.facebook.rendercore.dp
+
+MyComponent(style = Style.height(100.dp))
+```
+
+### Height Percent
+
+Sets a specific preferred percent height for this component when its parent lays it out. The percentage is a value from **0 to 100** (e.g., `25f` = 25% of parent height).
+
+```kotlin
+import com.facebook.litho.Style
+import com.facebook.litho.core.heightPercent
+
+MyComponent(style = Style.heightPercent(25f))  // 25% of parent height
+```
+
+### Height Auto
+
+Sets height to auto, allowing the component to size itself based on its content. This is useful when you want to reset an explicit height to content-based sizing.
+
+```kotlin
+import com.facebook.litho.Style
+import com.facebook.litho.core.heightAuto
+
+MyComponent(style = Style.heightAuto())
+```
+
+## Size
+
+Sets both width and height to the same value, useful for creating square components.
+
+```kotlin
+import com.facebook.litho.Style
+import com.facebook.litho.core.size
+import com.facebook.rendercore.dp
+
+MyComponent(style = Style.size(50.dp))  // Creates a 50dp x 50dp component
+```
+
+## Min Width
+
+Sets a preferred minimum width for this component when its parent lays it out.
+
+```kotlin
+import com.facebook.litho.Style
+import com.facebook.litho.core.minWidth
+import com.facebook.rendercore.dp
+
+MyComponent(style = Style.minWidth(100.dp))
+```
+
+### Min Width Percent
+
+Sets a specific minimum percent width for this component when its parent lays it out.
+
+```kotlin
+import com.facebook.litho.Style
+import com.facebook.litho.core.minWidthPercent
+
+MyComponent(style = Style.minWidthPercent(20f))  // At least 20% of parent width
+```
+
+## Max Width
+
+Sets a preferred maximum width for this component when its parent lays it out.
+
+```kotlin
+import com.facebook.litho.Style
+import com.facebook.litho.core.maxWidth
+import com.facebook.rendercore.dp
+
+MyComponent(style = Style.maxWidth(400.dp))
+```
+
+### Max Width Percent
+
+Sets a specific maximum percent width for this component when its parent lays it out.
+
+```kotlin
+import com.facebook.litho.Style
+import com.facebook.litho.core.maxWidthPercent
+
+MyComponent(style = Style.maxWidthPercent(80f))  // At most 80% of parent width
+```
+
+### Width In
+
+Convenience function that sets both minimum and maximum width constraints in a single call.
+
+```kotlin
+import com.facebook.litho.Style
+import com.facebook.litho.core.widthIn
+import com.facebook.rendercore.dp
+
+MyComponent(style = Style.widthIn(min = 100.dp, max = 400.dp))
+```
+
+## Min Height
+
+Sets a preferred minimum height for this component when its parent lays it out.
+
+```kotlin
+import com.facebook.litho.Style
+import com.facebook.litho.core.minHeight
+import com.facebook.rendercore.dp
+
+MyComponent(style = Style.minHeight(50.dp))
+```
+
+### Min Height Percent
+
+Sets a specific minimum percent height for this component when its parent lays it out.
+
+```kotlin
+import com.facebook.litho.Style
+import com.facebook.litho.core.minHeightPercent
+
+MyComponent(style = Style.minHeightPercent(10f))  // At least 10% of parent height
+```
+
+## Max Height
+
+Sets a preferred maximum height for this component when its parent lays it out.
+
+```kotlin
+import com.facebook.litho.Style
+import com.facebook.litho.core.maxHeight
+import com.facebook.rendercore.dp
+
+MyComponent(style = Style.maxHeight(300.dp))
+```
+
+### Max Height Percent
+
+Sets a specific maximum percent height for this component when its parent lays it out.
+
+```kotlin
+import com.facebook.litho.Style
+import com.facebook.litho.core.maxHeightPercent
+
+MyComponent(style = Style.maxHeightPercent(90f))  // At most 90% of parent height
+```
+
+### Height In
+
+Convenience function that sets both minimum and maximum height constraints in a single call.
+
+```kotlin
+import com.facebook.litho.Style
+import com.facebook.litho.core.heightIn
+import com.facebook.rendercore.dp
+
+MyComponent(style = Style.heightIn(min = 50.dp, max = 300.dp))
+```
+
+## Padding
+
+Defines padding on the component on a per-edge basis. Padding is the internal spacing between a component's content and its borders.
+
+### All edges
+
+```kotlin
+import com.facebook.litho.Style
+import com.facebook.litho.core.padding
+import com.facebook.rendercore.dp
+
+MyComponent(style = Style.padding(all = 16.dp))
+```
+
+### Horizontal and vertical
+
+```kotlin
+import com.facebook.litho.Style
+import com.facebook.litho.core.padding
+import com.facebook.rendercore.dp
+
+MyComponent(style = Style.padding(horizontal = 16.dp, vertical = 8.dp))
+```
+
+:::info start/end vs left/right
+- **Prefer `start`/`end`**: These automatically adapt to RTL (right-to-left) languages, making your UI internationalization-friendly.
+- **Use `left`/`right` only when**: You need absolute positioning regardless of text direction (rare cases).
+
+For most apps supporting international users, always use `start`/`end`.
+:::
+
+### Individual edges
+
+```kotlin
+import com.facebook.litho.Style
+import com.facebook.litho.core.padding
+import com.facebook.rendercore.dp
+
+MyComponent(
+    style = Style.padding(
+        start = 16.dp,
+        top = 8.dp,
+        end = 16.dp,
+        bottom = 8.dp
+    )
+)
+```
+
+### Using left/right instead of start/end
+
+```kotlin
+import com.facebook.litho.Style
+import com.facebook.litho.core.padding
+import com.facebook.rendercore.dp
+
+MyComponent(
+    style = Style.padding(
+        left = 16.dp,
+        top = 8.dp,
+        right = 16.dp,
+        bottom = 8.dp
+    )
+)
+```
+
+## Padding Percent
+
+Defines padding on the component on a per-edge basis, with a percent value of container's size.
+
+### All edges
+
+```kotlin
+import com.facebook.litho.Style
+import com.facebook.litho.core.paddingPercent
+
+MyComponent(style = Style.paddingPercent(all = 5f))  // 5% padding on all sides
+```
+
+### Per-edge percent padding
+
+```kotlin
+import com.facebook.litho.Style
+import com.facebook.litho.core.paddingPercent
+
+MyComponent(
+    style = Style.paddingPercent(
+        horizontal = 5f,
+        vertical = 2f
+    )
+)
+```
+
+## Margin
+
+Defines margin around the component on a per-edge basis. Margin is the external spacing around a component, separating it from other components.
+
+### All edges
+
+```kotlin
+import com.facebook.litho.Style
+import com.facebook.litho.core.margin
+import com.facebook.rendercore.dp
+
+MyComponent(style = Style.margin(all = 16.dp))
+```
+
+### Horizontal and vertical
+
+```kotlin
+import com.facebook.litho.Style
+import com.facebook.litho.core.margin
+import com.facebook.rendercore.dp
+
+MyComponent(style = Style.margin(horizontal = 16.dp, vertical = 8.dp))
+```
+
+### Individual edges
+
+```kotlin
+import com.facebook.litho.Style
+import com.facebook.litho.core.margin
+import com.facebook.rendercore.dp
+
+MyComponent(
+    style = Style.margin(
+        start = 16.dp,
+        top = 8.dp,
+        end = 16.dp,
+        bottom = 8.dp
+    )
+)
+```
+
+### Using left/right instead of start/end
+
+```kotlin
+import com.facebook.litho.Style
+import com.facebook.litho.core.margin
+import com.facebook.rendercore.dp
+
+MyComponent(
+    style = Style.margin(
+        left = 16.dp,
+        top = 8.dp,
+        right = 16.dp,
+        bottom = 8.dp
+    )
+)
+```
+
+## Margin Percent
+
+Defines margin around the component on a per-edge basis, with a percent value of container's size.
+
+### All edges
+
+```kotlin
+import com.facebook.litho.Style
+import com.facebook.litho.core.marginPercent
+
+MyComponent(style = Style.marginPercent(all = 5f))  // 5% margin on all sides
+```
+
+### Per-edge percent margin
+
+```kotlin
+import com.facebook.litho.Style
+import com.facebook.litho.core.marginPercent
+
+MyComponent(
+    style = Style.marginPercent(
+        horizontal = 5f,
+        vertical = 2f
+    )
+)
+```
+
+## Border
+
+The Border API provides a modern, Kotlin-idiomatic way to add borders to your components. It offers two variants: a simple parameter-based API for uniform borders and a DSL-style builder for complex multi-edge configurations.
+
+### Simple Uniform Border
+
+For components that need the same border on all sides, use the simple parameter-based API:
+
+```kotlin
+import com.facebook.litho.Style
+import com.facebook.litho.flexbox.border
+import com.facebook.rendercore.dp
+
+MyComponent(
+    style = Style.border(
+        width = 2.dp,
+        color = Color.BLUE,
+        radius = 8.dp
+    )
+)
+```
+
+### Complex Multi-Edge Border with DSL
+
+For more complex borders with different properties on each edge, use the DSL-style builder:
+
+```kotlin
+import com.facebook.litho.Style
+import com.facebook.litho.flexbox.border
+import com.facebook.rendercore.dp
+
+MyComponent(
+    style = Style.border {
+        // Set base properties for all edges
+        all(width = 3.dp)
+
+        // Override specific edges with different colors
+        top(color = Color.RED)
+        bottom(color = Color.BLUE)
+        left(color = Color.BLACK)
+        right(color = Color.GREEN)
+
+        // Configure corner radius
+        cornerRadius(
+            topLeft = 10.dp,
+            bottomRight = 20.dp
+        )
+    }
+)
+```
+
+### Border with Effects
+
+Apply visual effects to borders such as dashed, discrete, or path effects.
+
+:::caution
+Borders with **different widths per side** do not support path effects (dashed, discrete, etc.). Combining per-side widths with a `BorderEffect` throws `IllegalArgumentException` at runtime. Use **uniform width** (via `all(width = ...)` or a single `width` parameter) when using effects.
+:::
+
+
+#### Dashed Border
+
+```kotlin
+import com.facebook.litho.Style
+import com.facebook.litho.flexbox.BorderEffect
+import com.facebook.litho.flexbox.border
+import com.facebook.rendercore.dp
+
+MyComponent(
+    style = Style.border(
+        width = 4.dp,
+        color = Color.RED,
+        effect = BorderEffect.dashed(
+            intervals = floatArrayOf(10f, 5f),
+            phase = 0f
+        )
+    )
+)
+```
+
+#### Discrete Border Effect
+
+```kotlin
+import com.facebook.litho.Style
+import com.facebook.litho.flexbox.BorderEffect
+import com.facebook.litho.flexbox.border
+import com.facebook.rendercore.dp
+
+MyComponent(
+    style = Style.border {
+        all(
+            width = 5.dp,
+            effect = BorderEffect.discrete(
+                segmentLength = 5f,
+                deviation = 10f
+            )
+        )
+
+        left(color = Color.RED)
+        top(color = Color.ORANGE)
+        right(color = Color.GREEN)
+        bottom(color = Color.BLUE)
+    }
+)
+```
+
+#### Path Border Effect
+
+```kotlin
+import android.graphics.Path
+import android.graphics.PathDashPathEffect
+import com.facebook.litho.Style
+import com.facebook.litho.flexbox.BorderEffect
+import com.facebook.litho.flexbox.border
+import com.facebook.rendercore.dp
+
+val customPath = Path().apply {
+    // Define your custom path shape
+    addCircle(0f, 0f, 5f, Path.Direction.CW)
+}
+
+MyComponent(
+    style = Style.border(
+        width = 3.dp,
+        color = Color.MAGENTA,
+        effect = BorderEffect.path(
+            shape = customPath,
+            advance = 15f,
+            phase = 0f,
+            style = PathDashPathEffect.Style.ROTATE
+        )
+    )
+)
+```
+
+### Border DSL API Reference
+
+When using the DSL-style builder, you have access to these functions:
+
+- **`all(...)`** - Set properties for all edges at once (width, color, effect)
+- **`top(...)`** - Configure the top edge (width, color, effect)
+- **`bottom(...)`** - Configure the bottom edge (width, color, effect)
+- **`left(...)`** - Configure the left edge (width, color, effect)
+- **`right(...)`** - Configure the right edge (width, color, effect)
+- **`start(...)`** - Configure the start edge (width, color, effect) - respects RTL
+- **`end(...)`** - Configure the end edge (width, color, effect) - respects RTL
+- **`horizontal(...)`** - Configure left and right edges (width, color, effect)
+- **`vertical(...)`** - Configure top and bottom edges (width, color, effect)
+- **`cornerRadius(...)`** - Set corner radii (topLeft, topRight, bottomLeft, bottomRight, all)
+
+:::info start/end vs left/right
+- **Prefer `start`/`end`**: These automatically adapt to RTL (right-to-left) languages, making your UI internationalization-friendly.
+- **Use `left`/`right` only when**: You need absolute positioning regardless of text direction (rare cases).
+
+For most apps supporting international users, always use `start`/`end`.
+:::
+
+## Combining Core Styles
+
+Core Styles can be easily combined to create complex layouts:
+
+```kotlin
+import com.facebook.litho.Style
+import com.facebook.litho.core.height
+import com.facebook.litho.core.margin
+import com.facebook.litho.core.maxHeight
+import com.facebook.litho.core.minHeight
+import com.facebook.litho.core.padding
+import com.facebook.litho.core.width
+import com.facebook.litho.flexbox.border
+import com.facebook.rendercore.dp
+
+MyComponent(
+    style = Style
+        .width(200.dp)
+        .minHeight(100.dp)
+        .maxHeight(300.dp)
+        .padding(all = 16.dp)
+        .margin(horizontal = 8.dp, vertical = 4.dp)
+        .border(width = 1.dp, color = Color.GRAY, radius = 4.dp)
+)
+```
+
+## See also
+
+- **[Common Props](../props/common-props.mdx)** - Learn about the broader Style API and how to combine styles.
+- **[Flexbox Yoga](flexbox-yoga.mdx)** - Learn about the layout system that works with these core styles.

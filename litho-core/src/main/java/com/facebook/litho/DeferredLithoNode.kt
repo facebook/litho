@@ -39,7 +39,7 @@ constructor(
      * to be able to access this cache, this node is used.
      */
     val cachedNode: LithoNode? = null,
-    @JvmField var parentContext: ComponentContext? = null
+    @JvmField var parentContext: ComponentContext? = null,
 ) : LithoNode() {
 
   val pendingTreePropContainer: TreePropContainer? = TreePropContainer.copy(propContainer)
@@ -57,9 +57,13 @@ constructor(
     this.deferredBorders = deferredBorders
   }
 
-  override fun createLayoutResult(layoutOutput: YogaLayoutOutput): DeferredLithoLayoutResult =
-      DeferredLithoLayoutResult(
-          c = tailComponentContext, deferredNode = this, layoutOutput = layoutOutput)
+  override fun createLayoutResult(
+      layoutOutput: YogaLayoutOutput,
+  ): DeferredLithoLayoutResult = DeferredLithoLayoutResult(
+      c = tailComponentContext,
+      deferredNode = this,
+      layoutOutput = layoutOutput,
+  )
 
   fun copyInto(target: LithoNode) {
     // Defer copying, and set this DeferredNode on the target. The props will be

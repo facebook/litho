@@ -24,5 +24,5 @@ class RecyclerViewLayoutManagerOverrideParams(
     height: Int,
     override val widthMeasureSpec: Int,
     override val heightMeasureSpec: Int,
-    val isFullSpan: Boolean
+    val isFullSpan: Boolean,
 ) : RecyclerView.LayoutParams(width, height), LayoutManagerOverrideParams

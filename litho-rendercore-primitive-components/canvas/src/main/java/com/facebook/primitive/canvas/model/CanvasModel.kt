@@ -31,9 +31,9 @@ import com.facebook.primitive.utils.types.BlendingMode
 import com.facebook.primitive.utils.types.DEFAULT_BLENDING_MODE
 import com.facebook.primitive.utils.types.LineCap
 import com.facebook.primitive.utils.types.LineJoin
-import com.facebook.primitive.utils.types.Size
 import com.facebook.rendercore.ErrorReporter
 import com.facebook.rendercore.LogLevel
+import com.facebook.rendercore.geometry.Size
 
 sealed interface CanvasNodeModel {
   fun draw(canvas: Canvas, state: CanvasState)
@@ -52,7 +52,7 @@ sealed interface CanvasNodeModel {
 @DataClassGenerate
 data class CanvasModel(
     private val canvasState: CanvasState,
-    private val children: List<CanvasNodeModel>
+    private val children: List<CanvasNodeModel>,
 ) {
 
   /**
@@ -103,7 +103,7 @@ data class CanvasGroup(
     private val size: Size,
     private val clip: CanvasPathModel?,
     private val clipToBounds: Boolean,
-    private val children: List<CanvasNodeModel>
+    private val children: List<CanvasNodeModel>,
 ) : CanvasNodeModel {
   override fun draw(canvas: Canvas, state: CanvasState) {
     state.getMatrix(transform) { matrix ->
@@ -159,9 +159,9 @@ data class CanvasLayer(
     val transform: CanvasTransformModel,
     val size: Size,
     val clip: CanvasPathModel?,
-    @FloatRange(from = 0.0, to = 1.0) val alpha: Float,
+    @param:FloatRange(from = 0.0, to = 1.0) val alpha: Float,
     val blendingMode: BlendingMode,
-    val children: List<CanvasNodeModel>
+    val children: List<CanvasNodeModel>,
 ) : CanvasNodeModel {
   override fun draw(canvas: Canvas, state: CanvasState) {
     state.getMatrix(transform) { matrix ->
@@ -218,7 +218,7 @@ data class CanvasFill(
     val shape: CanvasShape,
     val shading: CanvasShadingModel,
     val blendingMode: BlendingMode,
-    val shadow: CanvasShadowModel?
+    val shadow: CanvasShadowModel?,
 ) : CanvasNodeModel {
   override fun draw(canvas: Canvas, state: CanvasState) {
     val fillPaint = state.configureFillPaint(this)
@@ -238,7 +238,10 @@ data class CanvasFill(
           //
           // A CanvasFill with a CanvasLineShape should behave similarly.
           ErrorReporter.report(
-              LogLevel.ERROR, "CanvasFill", "A Line shape cannot be 'filled'. Ignoring.")
+              LogLevel.ERROR,
+              "CanvasFill",
+              "A Line shape cannot be 'filled'. Ignoring.",
+          )
         } else {
           shape.draw(canvas, fillPaint)
         }
@@ -294,7 +297,7 @@ data class CanvasStroke(
     val lineJoin: LineJoin,
     val miterLimit: Float,
     val dashLengths: FloatArray?,
-    val dashPhase: Float
+    val dashPhase: Float,
 ) : CanvasNodeModel {
   override fun draw(canvas: Canvas, state: CanvasState) {
     val strokePaint = state.configureStrokePaint(this)
@@ -418,7 +421,7 @@ data class CanvasDrawIntoCanvas(private val block: (Canvas) -> Unit) : CanvasNod
 private inline fun checkIfSoftwareLayerNeeded(
     shadow: CanvasShadowModel? = null,
     blendingMode: BlendingMode? = null,
-    children: List<CanvasNodeModel> = listOf()
+    children: List<CanvasNodeModel> = listOf(),
 ): Boolean {
   return (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) &&
       (blendingMode == BlendingMode.Darken ||

@@ -31,6 +31,7 @@ android {
 }
 
 dependencies {
+  implementation deps.supportCollection
     // Project dependencies
     api project(':litho-rendercore')
     api project(':litho-rendercore-extensions')

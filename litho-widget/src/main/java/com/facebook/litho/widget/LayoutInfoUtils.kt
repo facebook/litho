@@ -43,7 +43,7 @@ object LayoutInfoUtils {
   fun computeLinearLayoutWrappedHeight(
       linearLayoutManager: LinearLayoutManager,
       maxHeight: Int,
-      componentTreeHolders: List<ComponentTreeHolder>
+      componentTreeHolders: List<ComponentTreeHolder>,
   ): Int {
     val itemCount = componentTreeHolders.size
     var measuredHeight = 0
@@ -68,10 +68,12 @@ object LayoutInfoUtils {
       }
       LinearLayoutManager.HORIZONTAL ->
           throw IllegalStateException(
-              "This method should only be called when orientation is vertical")
+              "This method should only be called when orientation is vertical",
+          )
       else ->
           throw IllegalStateException(
-              "This method should only be called when orientation is vertical")
+              "This method should only be called when orientation is vertical",
+          )
     }
   }
 
@@ -83,7 +85,7 @@ object LayoutInfoUtils {
   fun getMaxHeightInRow(
       start: Int,
       end: Int,
-      componentTreeHolders: List<ComponentTreeHolder>
+      componentTreeHolders: List<ComponentTreeHolder>,
   ): Int {
     val itemCount = componentTreeHolders.size
 

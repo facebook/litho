@@ -30,12 +30,12 @@ object StaggeredGridLayoutHelper {
 
   @JvmStatic
   fun findFirstFullyVisibleItemPosition(
-      staggeredGridLayoutManager: StaggeredGridLayoutManager
+      staggeredGridLayoutManager: StaggeredGridLayoutManager,
   ): Int = min(staggeredGridLayoutManager.findFirstCompletelyVisibleItemPositions(null))
 
   @JvmStatic
   fun findLastFullyVisibleItemPosition(
-      staggeredGridLayoutManager: StaggeredGridLayoutManager
+      staggeredGridLayoutManager: StaggeredGridLayoutManager,
   ): Int = max(staggeredGridLayoutManager.findLastCompletelyVisibleItemPositions(null))
 
   private fun min(a: IntArray): Int = if (a.isEmpty()) Int.MAX_VALUE else a.min()

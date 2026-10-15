@@ -22,7 +22,7 @@ import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.declarations.IrFile
 import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
-import org.jetbrains.kotlin.ir.visitors.IrElementVisitorVoid
+import org.jetbrains.kotlin.ir.visitors.IrVisitorVoid
 import org.jetbrains.kotlin.ir.visitors.acceptChildrenVoid
 import org.jetbrains.kotlin.ir.visitors.acceptVoid
 
@@ -35,8 +35,9 @@ class TestIrExtension(private val processor: AbstractTestProcessor) : IrGenerati
 
 private class TestIrVisitor(
     private val processor: AbstractTestProcessor,
-    private val context: IrPluginContext
-) : IrElementVisitorVoid {
+    private val context: IrPluginContext,
+) : IrVisitorVoid() {
+
   override fun visitFile(declaration: IrFile) {
     super.visitFile(declaration)
     processor.analyse(AbstractTestProcessor.AnalysisData(declaration, context))

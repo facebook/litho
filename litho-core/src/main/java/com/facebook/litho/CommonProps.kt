@@ -29,18 +29,26 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.IdRes
 import androidx.annotation.Px
 import androidx.annotation.StyleRes
-import androidx.core.util.Preconditions
 import com.facebook.infer.annotation.ThreadConfined
 import com.facebook.litho.AccessibilityRole.AccessibilityRoleType
 import com.facebook.litho.Transition.TransitionKeyType
+import com.facebook.litho.animation.StyleTransitionData
 import com.facebook.litho.drawable.DrawableUtils
 import com.facebook.litho.layout.LayoutDirection
 import com.facebook.litho.visibility.Visibility
 import com.facebook.rendercore.BinderKey
+import com.facebook.rendercore.Dimen
 import com.facebook.rendercore.Equivalence
 import com.facebook.rendercore.RenderUnit.DelegateBinder
+import com.facebook.rendercore.ResourceResolver
 import com.facebook.rendercore.utils.equals
 import com.facebook.rendercore.utils.isEquivalentTo
+import com.facebook.rendercore.visibility.FocusedVisibleEvent
+import com.facebook.rendercore.visibility.FullImpressionVisibleEvent
+import com.facebook.rendercore.visibility.InvisibleEvent
+import com.facebook.rendercore.visibility.UnfocusedVisibleEvent
+import com.facebook.rendercore.visibility.VisibilityChangedEvent
+import com.facebook.rendercore.visibility.VisibleEvent
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaConstants
 import com.facebook.yoga.YogaEdge
@@ -81,6 +89,12 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
       return _layoutProps ?: DefaultLayoutProps().also { _layoutProps = it }
     }
 
+  private var _layoutValues: LayoutValues? = null
+
+  internal fun getOrCreateLayoutValues(): LayoutValues {
+    return _layoutValues ?: LayoutValues().also { _layoutValues = it }
+  }
+
   private var _commonDynamicProps: SparseArray<DynamicValue<*>>? = null
   val commonDynamicProps: SparseArray<DynamicValue<*>>?
     get() {
@@ -97,11 +111,18 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
 
   private var wrapInView: Boolean = false
 
-  var background: Drawable? = null
-    private set
+  private var _binderMigratedCommonProps: BinderMigratedCommonProps? = null
 
-  var paddingFromBackground: Rect? = null
-    private set
+  private fun getOrCreateBinderMigratedCommonProps(): BinderMigratedCommonProps {
+    return _binderMigratedCommonProps
+        ?: BinderMigratedCommonProps().also { _binderMigratedCommonProps = it }
+  }
+
+  val background: Drawable?
+    get() = _binderMigratedCommonProps?.background
+
+  val paddingFromBackground: Rect?
+    get() = _binderMigratedCommonProps?.paddingFromBackground
 
   private var _testKey: String? = null
 
@@ -130,15 +151,11 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
   }
 
   fun background(background: Drawable?) {
-    privateFlags = (privateFlags or PFLAG_BACKGROUND_IS_SET)
-    this.background = background
-    if (background != null) {
-      val outRect = Rect()
-      background.getPadding(outRect)
-      if (outRect.bottom != 0 || outRect.top != 0 || outRect.left != 0 || outRect.right != 0) {
-        paddingFromBackground = outRect
-      }
-    }
+    getOrCreateBinderMigratedCommonProps().background(background)
+  }
+
+  internal fun background(background: Drawable?, paddingFromBackground: Rect?) {
+    getOrCreateBinderMigratedCommonProps().background(background, paddingFromBackground)
   }
 
   fun testKey(testKey: String?) {
@@ -158,9 +175,7 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
   }
 
   private fun shouldWrapInView(): Boolean {
-    return (wrapInView ||
-        (privateFlags and
-            (PFLAG_SCALE_KEY_IS_SET or PFLAG_ALPHA_KEY_IS_SET or PFLAG_ROTATION_KEY_IS_SET)) != 0)
+    return wrapInView || (_binderMigratedCommonProps?.shouldWrapInView() == true)
   }
 
   override fun layoutDirection(direction: LayoutDirection) {
@@ -233,6 +248,10 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
 
   fun stateListAnimatorRes(@DrawableRes resId: Int) {
     otherProps.stateListAnimatorRes(resId)
+  }
+
+  fun zIndex(order: Int) {
+    otherProps.zIndex(order)
   }
 
   override fun positionPercent(edge: YogaEdge, percent: Float) {
@@ -314,6 +333,16 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
 
   val clickHandler: EventHandler<ClickEvent>?
     get() = _nodeInfo?.clickHandler
+
+  /**
+   * Registers an extra click listener alongside the primary [clickHandler]. The "primary clears
+   * extras" rule is enforced on the [NodeInfo] setter, so any later call to [clickHandler] from the
+   * same Style chain will wipe extras added before it — this is by-design and matches the "last
+   * `onClick` wins" semantics.
+   */
+  internal fun addClickListener(holder: com.facebook.litho.view.ClickListenerHolder) {
+    getOrCreateNodeInfo().addExtraClickListener(holder)
+  }
 
   fun longClickHandler(longClickHandler: EventHandler<LongClickEvent>?) {
     getOrCreateNodeInfo().longClickHandler = longClickHandler
@@ -424,6 +453,31 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
     otherProps.visibilityChangedHandler(visibilityChangedHandler)
   }
 
+  internal fun isVisibilityHandlerSet(field: Int): Boolean {
+    val op = _otherProps ?: return false
+    return when (field) {
+      VISIBILITY_HANDLER_VISIBLE -> op.isVisibleHandlerSet()
+      VISIBILITY_HANDLER_FOCUSED -> op.isFocusedHandlerSet()
+      VISIBILITY_HANDLER_UNFOCUSED -> op.isUnfocusedHandlerSet()
+      VISIBILITY_HANDLER_FULL_IMPRESSION -> op.isFullImpressionHandlerSet()
+      VISIBILITY_HANDLER_INVISIBLE -> op.isInvisibleHandlerSet()
+      VISIBILITY_HANDLER_VISIBILITY_CHANGED -> op.isVisibilityChangedHandlerSet()
+      else -> false
+    }
+  }
+
+  companion object {
+    // Flags used to indicate that a certain attribute was explicitly set on the node.
+    private const val PFLAG_TEST_KEY_IS_SET = (1 shl 0)
+
+    internal const val VISIBILITY_HANDLER_VISIBLE = 0
+    internal const val VISIBILITY_HANDLER_FOCUSED = 1
+    internal const val VISIBILITY_HANDLER_UNFOCUSED = 2
+    internal const val VISIBILITY_HANDLER_FULL_IMPRESSION = 3
+    internal const val VISIBILITY_HANDLER_INVISIBLE = 4
+    internal const val VISIBILITY_HANDLER_VISIBILITY_CHANGED = 5
+  }
+
   fun setVisibility(visibility: Visibility) {
     getOrCreateNodeInfo().visibility = visibility
     wrapInView()
@@ -500,6 +554,10 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
     getOrCreateNodeInfo().clipChildren = clipChildren
   }
 
+  fun defaultFocusHighlightEnabled(defaultFocusHighlightEnabled: Boolean) {
+    getOrCreateNodeInfo().defaultFocusHighlightEnabled = defaultFocusHighlightEnabled
+  }
+
   fun accessibilityRole(@AccessibilityRoleType role: String?) {
     getOrCreateNodeInfo().accessibilityRole = role
   }
@@ -510,7 +568,7 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
 
   fun dispatchPopulateAccessibilityEventHandler(
       dispatchPopulateAccessibilityEventHandler:
-          EventHandler<DispatchPopulateAccessibilityEventEvent>?
+          EventHandler<DispatchPopulateAccessibilityEventEvent>?,
   ) {
     getOrCreateNodeInfo().dispatchPopulateAccessibilityEventHandler =
         dispatchPopulateAccessibilityEventHandler
@@ -522,7 +580,7 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
   }
 
   fun onInitializeAccessibilityEventHandler(
-      onInitializeAccessibilityEventHandler: EventHandler<OnInitializeAccessibilityEventEvent>?
+      onInitializeAccessibilityEventHandler: EventHandler<OnInitializeAccessibilityEventEvent>?,
   ) {
     getOrCreateNodeInfo().onInitializeAccessibilityEventHandler =
         onInitializeAccessibilityEventHandler
@@ -530,59 +588,59 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
 
   fun onInitializeAccessibilityNodeInfoHandler(
       onInitializeAccessibilityNodeInfoHandler:
-          EventHandler<OnInitializeAccessibilityNodeInfoEvent>?
+          EventHandler<OnInitializeAccessibilityNodeInfoEvent>?,
   ) {
     getOrCreateNodeInfo().onInitializeAccessibilityNodeInfoHandler =
         onInitializeAccessibilityNodeInfoHandler
   }
 
   fun onPopulateAccessibilityEventHandler(
-      onPopulateAccessibilityEventHandler: EventHandler<OnPopulateAccessibilityEventEvent>?
+      onPopulateAccessibilityEventHandler: EventHandler<OnPopulateAccessibilityEventEvent>?,
   ) {
     getOrCreateNodeInfo().onPopulateAccessibilityEventHandler = onPopulateAccessibilityEventHandler
   }
 
   fun onPopulateAccessibilityNodeHandler(
-      onPopulateAccessibilityNodeHandler: EventHandler<OnPopulateAccessibilityNodeEvent>?
+      onPopulateAccessibilityNodeHandler: EventHandler<OnPopulateAccessibilityNodeEvent>?,
   ) {
     getOrCreateNodeInfo().onPopulateAccessibilityNodeHandler = onPopulateAccessibilityNodeHandler
   }
 
   fun onRequestSendAccessibilityEventHandler(
-      onRequestSendAccessibilityEventHandler: EventHandler<OnRequestSendAccessibilityEventEvent>?
+      onRequestSendAccessibilityEventHandler: EventHandler<OnRequestSendAccessibilityEventEvent>?,
   ) {
     getOrCreateNodeInfo().onRequestSendAccessibilityEventHandler =
         onRequestSendAccessibilityEventHandler
   }
 
   fun performAccessibilityActionHandler(
-      performAccessibilityActionHandler: EventHandler<PerformAccessibilityActionEvent>?
+      performAccessibilityActionHandler: EventHandler<PerformAccessibilityActionEvent>?,
   ) {
     getOrCreateNodeInfo().performAccessibilityActionHandler = performAccessibilityActionHandler
   }
 
   fun sendAccessibilityEventHandler(
-      sendAccessibilityEventHandler: EventHandler<SendAccessibilityEventEvent>?
+      sendAccessibilityEventHandler: EventHandler<SendAccessibilityEventEvent>?,
   ) {
     getOrCreateNodeInfo().sendAccessibilityEventHandler = sendAccessibilityEventHandler
   }
 
   fun sendAccessibilityEventUncheckedHandler(
-      sendAccessibilityEventUncheckedHandler: EventHandler<SendAccessibilityEventUncheckedEvent>?
+      sendAccessibilityEventUncheckedHandler: EventHandler<SendAccessibilityEventUncheckedEvent>?,
   ) {
     getOrCreateNodeInfo().sendAccessibilityEventUncheckedHandler =
         sendAccessibilityEventUncheckedHandler
   }
 
   fun onVirtualViewKeyboardFocusChangedHandler(
-      onVirtualViewKeyboardFocusChangedHandler: EventHandler<VirtualViewKeyboardFocusChangedEvent>?
+      onVirtualViewKeyboardFocusChangedHandler: EventHandler<VirtualViewKeyboardFocusChangedEvent>?,
   ) {
     getOrCreateNodeInfo().onVirtualViewKeyboardFocusChangedHandler =
         onVirtualViewKeyboardFocusChangedHandler
   }
 
   fun onPerformActionForVirtualViewHandler(
-      onPerformActionForVirtualViewHandler: EventHandler<PerformActionForVirtualViewEvent>?
+      onPerformActionForVirtualViewHandler: EventHandler<PerformActionForVirtualViewEvent>?,
   ) {
     getOrCreateNodeInfo().onPerformActionForVirtualViewHandler =
         onPerformActionForVirtualViewHandler
@@ -610,22 +668,12 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
 
   fun scale(scale: Float) {
     getOrCreateNodeInfo().scale = scale
-    privateFlags =
-        if (scale == 1f) {
-          (privateFlags and PFLAG_SCALE_KEY_IS_SET.inv())
-        } else {
-          (privateFlags or PFLAG_SCALE_KEY_IS_SET)
-        }
+    getOrCreateBinderMigratedCommonProps().onScaleSet(scale)
   }
 
   fun alpha(alpha: Float) {
     getOrCreateNodeInfo().alpha = alpha
-    privateFlags =
-        if (alpha == 1f) {
-          (privateFlags and PFLAG_ALPHA_KEY_IS_SET.inv())
-        } else {
-          (privateFlags or PFLAG_ALPHA_KEY_IS_SET)
-        }
+    getOrCreateBinderMigratedCommonProps().onAlphaSet(alpha)
   }
 
   val alpha: Float?
@@ -633,12 +681,7 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
 
   fun rotation(rotation: Float) {
     getOrCreateNodeInfo().rotation = rotation
-    privateFlags =
-        if (rotation == 0f) {
-          (privateFlags and PFLAG_ROTATION_KEY_IS_SET.inv())
-        } else {
-          (privateFlags or PFLAG_ROTATION_KEY_IS_SET)
-        }
+    getOrCreateBinderMigratedCommonProps().onRotationSet(rotation)
   }
 
   fun rotationX(rotationX: Float) {
@@ -651,8 +694,13 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
     getOrCreateNodeInfo().rotationY = rotationY
   }
 
-  fun transitionKey(key: String?, ownerKey: String?) {
+  fun transitionKey(key: String?, ownerKey: Any?) {
     otherProps.transitionKey(key, ownerKey)
+  }
+
+  internal fun styleTransition(styleTransitionData: StyleTransitionData) {
+    wrapInView()
+    otherProps.styleTransition(styleTransitionData)
   }
 
   fun getTransitionKey(): String? {
@@ -697,8 +745,9 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
     otherProps.visibilityOutputTag(visibilityOutputTag)
   }
 
-  fun copyLayoutProps(layoutProps: LayoutProps) {
+  fun copyLayoutProps(layoutProps: LayoutProps, resolver: ResourceResolver) {
     _layoutProps?.copyInto(layoutProps)
+    _layoutValues?.copyInto(layoutProps, resolver)
   }
 
   fun addSystemGestureExclusionZone(exclusion: (Rect) -> Rect) {
@@ -710,10 +759,7 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
     if (_nodeInfo != null) {
       node.applyNodeInfo(_nodeInfo)
     }
-    if ((privateFlags and PFLAG_BACKGROUND_IS_SET) != 0) {
-      node.background(background)
-      node.paddingFromBackground = paddingFromBackground
-    }
+    _binderMigratedCommonProps?.copyInto(node)
 
     _layoutProps?.layoutDirection?.let { node.layoutDirection(it) }
 
@@ -737,13 +783,22 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
             wrapInView == other.wrapInView &&
             defStyleAttr == other.defStyleAttr &&
             defStyleRes == other.defStyleRes &&
-            DrawableUtils.isEquivalentTo(background, other.background) &&
+            isEquivalentTo(_binderMigratedCommonProps, other._binderMigratedCommonProps) &&
             isEquivalentTo(_otherProps, other._otherProps) &&
             isEquivalentTo(_nodeInfo, other._nodeInfo) &&
             isEquivalentTo(_layoutProps, other._layoutProps) &&
+            equals(_layoutValues, other._layoutValues) &&
             equals(_testKey, other._testKey) &&
             equals(componentTag, other.componentTag) &&
             equals(_commonDynamicProps, other._commonDynamicProps))
+  }
+
+  override fun heightAuto() {
+    layoutProps.heightAuto()
+  }
+
+  override fun widthAuto() {
+    layoutProps.widthAuto()
   }
 
   private class OtherProps : Equivalence<OtherProps?> {
@@ -763,12 +818,22 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
     private var duplicateParentState: Boolean = false
     private var duplicateChildrenStates: Boolean = false
     private var touchExpansions: Edges? = null
+    // ---- Binder-migrated properties ----
+    // These properties have been migrated to the onBindViewWithDescription binder pattern.
+    // When useViewStyleBinders is fully rolled out, these can be removed.
     private var foreground: Drawable? = null
-    private var transitionOwnerKey: String? = null
+    // ---- End binder-migrated properties ----
+    private var transitionOwnerKey: Any? = null
     private var transitionKey: String? = null
     private var transitionKeyType: TransitionKeyType? = null
+    private var styleTransitionData: StyleTransitionData? = null
     private var border: Border? = null
+    // ---- Binder-migrated property ----
+    // This property has been migrated to the onBindViewWithDescription binder pattern.
+    // When useViewStyleBinders is fully rolled out, this can be removed.
     private var stateListAnimator: StateListAnimator? = null
+    // ---- End binder-migrated property ----
+    private var zIndex: Int = 0
 
     @DrawableRes private var stateListAnimatorRes: Int = 0
     private var layerType = LayerType.LAYER_TYPE_NOT_SET
@@ -864,7 +929,21 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
       this.visibilityChangedHandler = visibilityChangedHandler
     }
 
-    fun transitionKey(key: String?, ownerKey: String?) {
+    fun isVisibleHandlerSet(): Boolean = (privateFlags and PFLAG_VISIBLE_HANDLER_IS_SET) != 0
+
+    fun isFocusedHandlerSet(): Boolean = (privateFlags and PFLAG_FOCUSED_HANDLER_IS_SET) != 0
+
+    fun isUnfocusedHandlerSet(): Boolean = (privateFlags and PFLAG_UNFOCUSED_HANDLER_IS_SET) != 0
+
+    fun isFullImpressionHandlerSet(): Boolean =
+        (privateFlags and PFLAG_FULL_IMPRESSION_HANDLER_IS_SET) != 0
+
+    fun isInvisibleHandlerSet(): Boolean = (privateFlags and PFLAG_INVISIBLE_HANDLER_IS_SET) != 0
+
+    fun isVisibilityChangedHandlerSet(): Boolean =
+        (privateFlags and PFLAG_VISIBILITY_CHANGED_HANDLER_IS_SET) != 0
+
+    fun transitionKey(key: String?, ownerKey: Any?) {
       privateFlags = privateFlags or PFLAG_TRANSITION_KEY_IS_SET
       transitionKey = key
       transitionOwnerKey = ownerKey
@@ -872,6 +951,12 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
 
     fun getTransitionKey(): String? {
       return transitionKey
+    }
+
+    fun styleTransition(styleTransitionData: StyleTransitionData) {
+      privateFlags = privateFlags or PFLAG_STYLE_TRANSITION_IS_SET
+      this.styleTransitionData =
+          this.styleTransitionData?.plus(styleTransitionData) ?: styleTransitionData
     }
 
     fun transitionKeyType(type: TransitionKeyType?) {
@@ -891,6 +976,11 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
     fun stateListAnimatorRes(@DrawableRes resId: Int) {
       privateFlags = privateFlags or PFLAG_STATE_LIST_ANIMATOR_RES_IS_SET
       stateListAnimatorRes = resId
+    }
+
+    fun zIndex(order: Int) {
+      privateFlags = privateFlags or PFLAG_Z_INDEX_IS_SET
+      zIndex = order
     }
 
     fun layerType(@LayerType type: Int, paint: Paint?) {
@@ -948,6 +1038,17 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
       if ((privateFlags and PFLAG_TRANSITION_KEY_TYPE_IS_SET).toLong() != 0L) {
         node.transitionKeyType(transitionKeyType)
       }
+      if ((privateFlags and PFLAG_STYLE_TRANSITION_IS_SET).toLong() != 0L) {
+        val styleTransitionData = checkNotNull(styleTransitionData)
+        val hasExplicitTransitionKey =
+            (privateFlags and PFLAG_TRANSITION_KEY_IS_SET).toLong() != 0L &&
+                !transitionKey.isNullOrEmpty()
+        check(!hasExplicitTransitionKey) {
+          "Style.transition cannot be combined with Style.transitionKey on the same component. " +
+              "Keep legacy transitionKey/useTransition separate from Style.transition."
+        }
+        node.styleTransition(styleTransitionData)
+      }
       if ((privateFlags and PFLAG_VISIBLE_HEIGHT_RATIO_IS_SET).toLong() != 0L) {
         node.visibleHeightRatio(visibleHeightRatio)
       }
@@ -965,13 +1066,16 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
         }
       }
       if ((privateFlags and PFLAG_BORDER_IS_SET).toLong() != 0L) {
-        node.border(Preconditions.checkNotNull(border))
+        node.border(checkNotNull(border))
       }
       if ((privateFlags and PFLAG_STATE_LIST_ANIMATOR_IS_SET).toLong() != 0L) {
         node.stateListAnimator(stateListAnimator)
       }
       if ((privateFlags and PFLAG_STATE_LIST_ANIMATOR_RES_IS_SET).toLong() != 0L) {
         node.stateListAnimatorRes(stateListAnimatorRes)
+      }
+      if ((privateFlags and PFLAG_Z_INDEX_IS_SET).toLong() != 0L) {
+        node.zIndex(zIndex)
       }
       node.layerType(layerType, layerPaint)
       node.visibilityOutputTag(visibilityOutputTag)
@@ -1007,6 +1111,7 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
               isEquivalentTo(border, other.border) &&
               equals(transitionOwnerKey, other.transitionOwnerKey) &&
               equals(transitionKey, other.transitionKey) &&
+              equals(styleTransitionData, other.styleTransitionData) &&
               equals(systemGestureExclusionZones, other.systemGestureExclusionZones) &&
               DrawableUtils.isEquivalentTo(foreground, other.foreground))
     }
@@ -1032,6 +1137,8 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
       private const val PFLAG_VISIBILITY_CHANGED_HANDLER_IS_SET = 1 shl 16
       private const val PFLAG_TRANSITION_KEY_TYPE_IS_SET = 1 shl 17
       private const val PFLAG_DUPLICATE_CHILDREN_STATES_IS_SET = 1 shl 18
+      private const val PFLAG_Z_INDEX_IS_SET = 1 shl 19
+      private const val PFLAG_STYLE_TRANSITION_IS_SET = 1 shl 20
     }
   }
 
@@ -1079,8 +1186,9 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
 
     /** Used by [DebugLayoutNodeEditor] */
     private var borderEdges: Edges? = null
-    private var gapGutter: YogaGutter? = null
-    private var gapLength: Int = 0
+    private var columnGap: Int = UNSET_GAP
+    private var rowGap: Int = UNSET_GAP
+    private var allGap: Int = UNSET_GAP
 
     override fun widthPx(@Px width: Int) {
       privateFlags = privateFlags or PFLAG_WIDTH_IS_SET
@@ -1237,8 +1345,24 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
     }
 
     override fun gap(gutter: YogaGutter, length: Int) {
-      gapGutter = gutter
-      gapLength = length
+      when (gutter) {
+        YogaGutter.COLUMN -> columnGap = length
+        YogaGutter.ROW -> rowGap = length
+        YogaGutter.ALL -> allGap = length
+        else -> {}
+      }
+    }
+
+    var heightAuto: Boolean? = null
+
+    override fun heightAuto() {
+      heightAuto = true
+    }
+
+    var widthAuto: Boolean? = null
+
+    override fun widthAuto() {
+      widthAuto = true
     }
 
     fun copyInto(target: LayoutProps) {
@@ -1279,10 +1403,10 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
         target.maxHeightPercent(maxHeightPercent)
       }
       if ((privateFlags and PFLAG_LAYOUT_DIRECTION_IS_SET).toLong() != 0L) {
-        target.layoutDirection(Preconditions.checkNotNull(layoutDirection))
+        target.layoutDirection(checkNotNull(layoutDirection))
       }
       if ((privateFlags and PFLAG_ALIGN_SELF_IS_SET).toLong() != 0L) {
-        target.alignSelf(Preconditions.checkNotNull(alignSelf))
+        target.alignSelf(checkNotNull(alignSelf))
       }
       if ((privateFlags and PFLAG_FLEX_IS_SET).toLong() != 0L) {
         target.flex(flex)
@@ -1303,7 +1427,7 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
         target.aspectRatio(aspectRatio)
       }
       if ((privateFlags and PFLAG_POSITION_TYPE_IS_SET).toLong() != 0L) {
-        target.positionType(Preconditions.checkNotNull(positionType))
+        target.positionType(checkNotNull(positionType))
       }
       if ((privateFlags and PFLAG_POSITION_IS_SET).toLong() != 0L) {
         positions?.let {
@@ -1382,7 +1506,11 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
           }
         }
       }
-      gapGutter?.let { target.gap(it, gapLength) }
+      columnGap.ifSet { target.gap(YogaGutter.COLUMN, it) }
+      rowGap.ifSet { target.gap(YogaGutter.ROW, it) }
+      allGap.ifSet { target.gap(YogaGutter.ALL, it) }
+      widthAuto?.let { target.widthAuto() }
+      heightAuto?.let { target.heightAuto() }
     }
 
     override fun isEquivalentTo(other: DefaultLayoutProps?): Boolean {
@@ -1424,11 +1552,18 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
               isEquivalentTo(positionPercents, other.positionPercents) &&
               isEquivalentTo(borderEdges, other.borderEdges) &&
               equals(marginAutos, other.marginAutos) &&
-              equals(gapGutter, other.gapGutter) &&
-              equals(gapLength, other.gapLength))
+              columnGap == other.columnGap &&
+              rowGap == other.rowGap &&
+              allGap == other.allGap)
     }
 
     companion object {
+      private const val UNSET_GAP = -1
+
+      private inline fun Int.ifSet(block: (Int) -> Unit) {
+        if (this != UNSET_GAP) block(this)
+      }
+
       private const val PFLAG_WIDTH_IS_SET = 1 shl 0
       private const val PFLAG_WIDTH_PERCENT_IS_SET = 1 shl 1
       private const val PFLAG_MIN_WIDTH_IS_SET = 1 shl 2
@@ -1461,12 +1596,32 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
     }
   }
 
-  companion object {
-    // Flags used to indicate that a certain attribute was explicitly set on the node.
-    private const val PFLAG_BACKGROUND_IS_SET = (1 shl 0)
-    private const val PFLAG_TEST_KEY_IS_SET = (1 shl 1)
-    private const val PFLAG_SCALE_KEY_IS_SET = (1 shl 2)
-    private const val PFLAG_ALPHA_KEY_IS_SET = (1 shl 3)
-    private const val PFLAG_ROTATION_KEY_IS_SET = (1 shl 4)
+  // TODO: Implement equals for values
+  internal class LayoutValues(
+      @JvmField var height: Value<Dimen>? = null,
+      @JvmField var width: Value<Dimen>? = null,
+  ) {
+    fun copyInto(layoutProps: LayoutProps, resolver: ResourceResolver) {
+      height?.run { layoutProps.heightPx(value.toPixels(resolver)) }
+      width?.run { layoutProps.widthPx(value.toPixels(resolver)) }
+    }
+
+    override fun equals(other: Any?): Boolean {
+      if (this === other) return true
+      if (javaClass != other?.javaClass) return false
+
+      other as LayoutValues
+
+      if (height != other.height) return false
+      if (width != other.width) return false
+
+      return true
+    }
+
+    override fun hashCode(): Int {
+      var result = height?.hashCode() ?: 0
+      result = 31 * result + (width?.hashCode() ?: 0)
+      return result
+    }
   }
 }

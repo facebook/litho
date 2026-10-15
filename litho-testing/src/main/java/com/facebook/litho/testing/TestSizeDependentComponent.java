@@ -40,11 +40,11 @@ public class TestSizeDependentComponent extends SpecGeneratedComponent {
   protected Component onCreateLayoutWithSizeSpec(
       ComponentContext c, int widthSpec, int heightSpec) {
 
-    final Component.Builder builder1 =
+    final Component.Builder<?> builder1 =
         TestDrawableComponent.create(c, true, true, false)
             .flexShrink(0)
             .backgroundColor(0xFFFF0000);
-    final Component.Builder builder2 =
+    final Component.Builder<?> builder2 =
         TestViewComponent.create(c, true, true, false).flexShrink(0).marginPx(YogaEdge.ALL, 3);
 
     if (hasFixedSizes) {
@@ -60,7 +60,7 @@ public class TestSizeDependentComponent extends SpecGeneratedComponent {
   }
 
   @Override
-  public boolean isEquivalentProps(@Nullable Component other, boolean shouldCompareCommonProps) {
+  public boolean isEquivalentProps(@Nullable Component other) {
     return this == other;
   }
 

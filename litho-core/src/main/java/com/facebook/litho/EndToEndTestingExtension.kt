@@ -53,7 +53,7 @@ class EndToEndTestingExtension(private val mountDelegateTarget: MountDelegateTar
   override fun beforeMount(
       extensionState: ExtensionState<Void?>,
       input: EndToEndTestingExtensionInput?,
-      localVisibleRect: Rect?
+      localVisibleRect: Rect?,
   ) {
     this.input = input
   }
@@ -102,7 +102,8 @@ class EndToEndTestingExtension(private val mountDelegateTarget: MountDelegateTar
     if (testItemMap == null) {
       throw UnsupportedOperationException(
           "Trying to access TestItems while " +
-              "ComponentsConfiguration.isEndToEndTestRun is false.")
+              "ComponentsConfiguration.isEndToEndTestRun is false.",
+      )
     }
     val items = testItemMap[testKey]
     return items ?: LinkedList()

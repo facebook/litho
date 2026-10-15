@@ -16,51 +16,43 @@
 
 package com.facebook.litho.widget
 
-import android.content.Context
 import android.view.View
-import com.facebook.litho.ComponentContext
-import com.facebook.litho.ComponentLayout
 import com.facebook.litho.Diff
-import com.facebook.litho.Size
-import com.facebook.litho.annotations.MountSpec
-import com.facebook.litho.annotations.OnCreateMountContent
-import com.facebook.litho.annotations.OnMeasure
-import com.facebook.litho.annotations.OnMount
-import com.facebook.litho.annotations.Prop
-import com.facebook.litho.annotations.ShouldUpdate
+import com.facebook.litho.LithoPrimitive
+import com.facebook.litho.PrimitiveComponent
+import com.facebook.litho.PrimitiveComponentScope
+import com.facebook.litho.Style
+import com.facebook.rendercore.primitives.FixedSizeLayoutBehavior
+import com.facebook.rendercore.primitives.ViewAllocator
+import com.facebook.rendercore.px
 
-/**
- * A MountSpec that lets us test the function of ShouldUpdate/pure-render by supplying an object
- * who's identity determines the result of @ShouldUpdate.
- */
-@MountSpec(isPureRender = true)
-object RecordsShouldUpdateSpec {
+class RecordsShouldUpdate(
+    private val testProp: Any,
+    private val shouldUpdateCalls: MutableList<Diff<Any>>,
+    private val style: Style = Style,
+) : PrimitiveComponent() {
 
-  @JvmStatic
-  @OnMeasure
-  fun onMeasure(c: ComponentContext, layout: ComponentLayout, w: Int, h: Int, size: Size) {
-    size.width = 100
-    size.height = 100
+  override fun PrimitiveComponentScope.render(): LithoPrimitive {
+    return LithoPrimitive(
+        layoutBehavior = FixedSizeLayoutBehavior(width = 100.px, height = 100.px),
+        mountBehavior =
+            MountBehavior(ViewAllocator { c -> View(c) }) {
+              bind(TestPropWrapper(testProp)) { onUnbind {} }
+            },
+        style = style,
+    )
   }
 
-  @JvmStatic @OnCreateMountContent fun onCreateMountContent(c: Context): View = View(c)
+  private inner class TestPropWrapper(private val testProp: Any) {
+    override fun equals(other: Any?): Boolean {
+      other as TestPropWrapper
 
-  @JvmStatic
-  @ShouldUpdate(onMount = true)
-  fun shouldUpdate(
-      @Prop testProp: Diff<Any?>,
-      @Prop shouldUpdateCalls: Diff<MutableList<Diff<Any?>>>
-  ): Boolean {
-    shouldUpdateCalls.next!!.add(testProp)
-    return true
+      shouldUpdateCalls.add(Diff(testProp, other.testProp))
+      return true
+    }
+
+    override fun hashCode(): Int {
+      return testProp.hashCode()
+    }
   }
-
-  @JvmStatic
-  @OnMount
-  fun onMount(
-      c: ComponentContext,
-      v: View,
-      @Prop testProp: Any?,
-      @Prop shouldUpdateCalls: List<Diff<Any?>>
-  ) = Unit
 }

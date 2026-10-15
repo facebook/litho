@@ -25,7 +25,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.assertj.core.api.Java6Assertions;
+import org.assertj.core.api.Assertions;
 
 /**
  * Base class for matching against a generic Object. When {@link #assertMatches(Object,
@@ -101,8 +101,7 @@ public class MatchNode {
   public final void assertMatches(Object o, DebugTraceContext debugContext) {
     debugContext.mNodes.add(this);
 
-    // NULLSAFE_FIXME[Not Vetted Third-Party]
-    Java6Assertions.assertThat(o)
+    Assertions.assertThat(o)
         .describedAs(getDescription("Expecting type " + mType))
         .isInstanceOf(mType);
 
@@ -113,14 +112,11 @@ public class MatchNode {
         ((MatchNode) expected).assertMatches(actual, debugContext);
       } else if (expected instanceof MatchNodeList) {
         final MatchNodeList expectedList = (MatchNodeList) expected;
-        // NULLSAFE_FIXME[Not Vetted Third-Party]
-        Java6Assertions.assertThat(actual)
+        Assertions.assertThat(actual)
             .describedAs(getDescription("Field " + prop.getKey() + " is not a List."))
             .isInstanceOf(List.class);
         final List actualList = (List) actual;
-        // NULLSAFE_FIXME[Not Vetted Third-Party]
-        Java6Assertions.assertThat(actualList)
-            // NULLSAFE_FIXME[Not Vetted Third-Party]
+        Assertions.assertThat(actualList)
             .describedAs("Size of list on field " + prop.getKey())
             .hasSize(expectedList.getList().size());
 
@@ -130,8 +126,7 @@ public class MatchNode {
       } else if (expected instanceof PropAssertion) {
         ((PropAssertion) expected).doAssert(actual);
       } else {
-        // NULLSAFE_FIXME[Not Vetted Third-Party]
-        Java6Assertions.assertThat(actual)
+        Assertions.assertThat(actual)
             .describedAs(getDescription("Comparing field '" + prop.getKey() + "' on " + o))
             .isEqualTo(expected);
       }

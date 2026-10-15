@@ -50,8 +50,7 @@ import java.util.List;
 public final class ChangeSet {
 
   private final List<Change> mChanges;
-  // NULLSAFE_FIXME[Field Not Initialized]
-  private Section mSection;
+  @Nullable private Section mSection;
 
   @Nullable private ChangeSetStats mChangeSetStats;
   private int mFinalCount;
@@ -262,7 +261,6 @@ public final class ChangeSet {
       int startCount, @Nullable Section section, boolean enableStats) {
     final ChangeSet changeSet = new ChangeSet();
     changeSet.mFinalCount = startCount;
-    // NULLSAFE_FIXME[Field Not Nullable]
     changeSet.mSection = section;
     changeSet.mChangeSetStats = enableStats ? new ChangeSetStats() : null;
 
@@ -494,11 +492,11 @@ public final class ChangeSet {
     }
 
     @Override
-    public boolean equals(@Nullable Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(@Nullable Object other) {
+      if (this == other) return true;
+      if (other == null || getClass() != other.getClass()) return false;
 
-      ChangeSetStats that = (ChangeSetStats) o;
+      ChangeSetStats that = (ChangeSetStats) other;
 
       if (mEffectiveChangesCount != that.mEffectiveChangesCount) return false;
       if (mInsertSingleCount != that.mInsertSingleCount) return false;

@@ -24,9 +24,9 @@ import java.lang.Exception
  * the given Component when the Attachable is attached/detached.
  */
 internal class LayoutSpecAttachable(
-    override val uniqueId: String,
+    override val uniqueId: Any,
     private val component: SpecGeneratedComponent,
-    private val scopedComponentInfo: ScopedComponentInfo
+    private val scopedComponentInfo: ScopedComponentInfo,
 ) : Attachable {
 
   override fun attach() {

@@ -25,7 +25,6 @@ import androidx.core.text.TextDirectionHeuristicCompat
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.DynamicValue
-import com.facebook.litho.EmptyComponent
 import com.facebook.litho.EventHandler
 import com.facebook.litho.Output
 import com.facebook.litho.annotations.ExcuseMySpec
@@ -37,6 +36,7 @@ import com.facebook.litho.annotations.PropDefault
 import com.facebook.litho.annotations.Reason
 import com.facebook.litho.annotations.ResType
 import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.rendercore.RenderCoreConfig
 import com.facebook.rendercore.text.ClickableSpanListener
 import com.facebook.rendercore.text.TextStyle
 import com.facebook.rendercore.text.TouchableSpanListener
@@ -60,10 +60,10 @@ object TextSpec {
 
   @JvmField
   @PropDefault
-  val textColorStateList: ColorStateList =
-      ColorStateList(
-          TextComponentSpec.DEFAULT_TEXT_COLOR_STATE_LIST_STATES,
-          TextComponentSpec.DEFAULT_TEXT_COLOR_STATE_LIST_COLORS)
+  val textColorStateList: ColorStateList = ColorStateList(
+      TextComponentSpec.DEFAULT_TEXT_COLOR_STATE_LIST_STATES,
+      TextComponentSpec.DEFAULT_TEXT_COLOR_STATE_LIST_COLORS,
+  )
 
   @JvmField @PropDefault val textSize: Int = TextComponentSpec.UNSET
   @JvmField @PropDefault val textStyle: Int = TextComponentSpec.DEFAULT_TYPEFACE.style
@@ -136,9 +136,6 @@ object TextSpec {
       @Prop(optional = true, resType = ResType.DIMEN_TEXT) lineHeight: Float,
   ): Component {
     if (ComponentsConfiguration.usePrimitiveText) {
-      if (text == null) {
-        return EmptyComponent()
-      }
       val richTextStyle = TextStyle()
       richTextStyle.breakStrategy = TextStylesHelper.DEFAULT_BREAK_STRATEGY
       ellipsize?.let { richTextStyle.ellipsize = it }
@@ -217,9 +214,9 @@ object TextSpec {
       }
       customEllipsisText?.let { richTextStyle.customEllipsisText = it }
       richTextStyle.clickableSpanExpandedOffset = clickableSpanExpandedOffset
-      if (!clipToBounds) {
-        richTextStyle.clipToBounds = clipToBounds
-      }
+      richTextStyle.clipToBounds = clipToBounds
+      richTextStyle.textBelongsToHost = true
+      richTextStyle.exposeClickableSpansToAccessibility = accessibleClickableSpans
       if (highlightStartOffset != -1) {
         richTextStyle.highlightStartOffset = highlightStartOffset
       }
@@ -251,10 +248,26 @@ object TextSpec {
         richTextStyle.lineHeight = lineHeight
       }
       return RichText(
-          text = text,
+          // Null text still mounts an empty text view, like legacy: the caller's style, size
+          // rounding and content binders then behave the same as for any other Text.
+          text = text ?: "",
           textStyle = richTextStyle,
           touchableSpanListener = touchableSpanListener,
-          clickableSpanListener = spanListener)
+          clickableSpanListener = spanListener,
+          clickableSpanAccessibilityProvider = AccessibleClickableSpanNodes,
+          dynamicTextColor = dynamicTextColor,
+          // With its custom-ellipsis offset fix, legacy Text cuts at Paint.getOffsetForAdvance's
+          // offset. Without it, keep RichText's default truncation, so turning the fix off is a
+          // full rollback.
+          usePerformantTruncation =
+              ComponentsConfiguration.enableFixForTextEllipsisOffset ||
+                  RenderCoreConfig.usePerformantTruncation,
+          useLegacyTextCustomEllipsisOffsetFix =
+              ComponentsConfiguration.enableFixForTextEllipsisOffset,
+          // Like legacy, resolve direction from the component's Yoga direction rather than the
+          // locale, so subtrees that override layoutDirection behave the same.
+          useResolvedLayoutDirection = true,
+      )
     } else {
       return TextComponent.create(c)
           .text(text)
@@ -337,7 +350,7 @@ object TextSpec {
       shadowDy: Output<Float>?,
       shadowColor: Output<Int>?,
       verticalGravity: Output<VerticalGravity>?,
-      typeface: Output<Typeface>?
+      typeface: Output<Typeface>?,
   ) {
     TextStylesHelper.onLoadStyle(
         c,
@@ -367,11 +380,12 @@ object TextSpec {
         shadowDy,
         shadowColor,
         verticalGravity,
-        typeface)
+        typeface,
+    )
   }
 
   private fun getRCVerticalGravity(
-      verticalGravity: VerticalGravity
+      verticalGravity: VerticalGravity,
   ): com.facebook.rendercore.text.VerticalGravity {
     return when (verticalGravity) {
       VerticalGravity.TOP -> com.facebook.rendercore.text.VerticalGravity.TOP

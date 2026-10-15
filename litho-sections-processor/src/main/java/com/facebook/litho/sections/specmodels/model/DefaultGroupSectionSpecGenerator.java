@@ -77,7 +77,7 @@ public class DefaultGroupSectionSpecGenerator implements SpecGenerator<GroupSect
             ComponentBodyGenerator.generate(specModel, specModel.getServiceParam(), runMode))
         .addTypeSpecDataHolder(BuilderGenerator.generate(specModel))
         .addTypeSpecDataHolder(StateGenerator.generate(specModel))
-        .addTypeSpecDataHolder(EventGenerator.generate(specModel))
+        .addTypeSpecDataHolder(EventGenerator.generate(specModel, runMode))
         .addTypeSpecDataHolder(
             DelegateMethodGenerator.generateDelegates(
                 specModel,

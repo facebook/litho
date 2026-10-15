@@ -98,8 +98,7 @@ public class TreePropTest {
   @Test
   public void testTreePropChangeShouldUpdateMountSpec() {
     SimpleTreeProp treeProp = new SimpleTreeProp("sampleTreeProp");
-    final Component component =
-        ComponentWithTreePropParent.create(mTestRule.getContext()).propA(treeProp).build();
+    final Component component = new ComponentWithTreePropParent(treeProp);
 
     TestLithoView testLithoView = mTestRule.render(componentScope -> component);
 
@@ -110,8 +109,7 @@ public class TreePropTest {
     assertThat(((TextView) view).getText()).isEqualTo("sampleTreeProp");
 
     SimpleTreeProp treePropChanged = new SimpleTreeProp("sampleTreeProp_changed");
-    final Component updatedComponent =
-        ComponentWithTreePropParent.create(mTestRule.getContext()).propA(treePropChanged).build();
+    final Component updatedComponent = new ComponentWithTreePropParent(treePropChanged);
     testLithoView.setRoot(updatedComponent);
 
     view = testLithoView.getLithoView().getChildAt(0);

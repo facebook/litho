@@ -22,8 +22,7 @@ class StateUpdateTestComponent : SpecGeneratedComponent("StateUpdateTest") {
 
   private val createInitialStateCount = AtomicInteger(0)
 
-  override fun isEquivalentProps(other: Component?, shouldCompareCommonProps: Boolean): Boolean =
-      this === other
+  override fun isEquivalentProps(other: Component?): Boolean = this === other
 
   override fun hasState(): Boolean = true
 
@@ -46,7 +45,7 @@ class StateUpdateTestComponent : SpecGeneratedComponent("StateUpdateTest") {
 
   class TestStateContainer : StateContainer() {
     @JvmField var count = 0
-    @JvmField var dummy = Any()
+    @JvmField var dummy: Any = Any()
 
     override fun applyStateUpdate(stateUpdate: StateUpdate) {
       when (stateUpdate.type) {

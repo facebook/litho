@@ -1,0 +1,63 @@
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.facebook.litho.animation
+
+import android.view.Choreographer
+
+/**
+ * Lightweight alias used by [AnimationFrameDriver] and [AnimationController] for frame callbacks.
+ *
+ * Using a typealias keeps the Android-specific type from being overly loud in the animation
+ * controller code while avoiding adapter bookkeeping in the production driver.
+ */
+internal typealias AnimationFrameCallback = Choreographer.FrameCallback
+
+/**
+ * Schedules and cancels frame callbacks for [AnimationController].
+ *
+ * Production uses Android's [Choreographer], while tests can install a deterministic driver that
+ * advances time explicitly.
+ */
+internal interface AnimationFrameDriver {
+
+  /** Schedules [callback] for the next frame. Re-posting the same callback is allowed. */
+  fun postFrameCallback(callback: AnimationFrameCallback)
+
+  /** Cancels a previously scheduled [callback]. No-op if it is not scheduled. */
+  fun removeFrameCallback(callback: AnimationFrameCallback)
+}
+
+internal fun interface FrameDrivenAnimation {
+  /** Ticks this animation and returns true if it should stay registered for the next frame. */
+  fun onFrame(frameTimeNanos: Long): Boolean
+}
+
+/**
+ * Default [AnimationFrameDriver] backed by Android's [Choreographer].
+ *
+ * The callback type is a typealias to [Choreographer.FrameCallback], so this driver can delegate
+ * directly without maintaining adapter state.
+ */
+internal object ChoreographerAnimationFrameDriver : AnimationFrameDriver {
+  override fun postFrameCallback(callback: AnimationFrameCallback) {
+    Choreographer.getInstance().postFrameCallback(callback)
+  }
+
+  override fun removeFrameCallback(callback: AnimationFrameCallback) {
+    Choreographer.getInstance().removeFrameCallback(callback)
+  }
+}

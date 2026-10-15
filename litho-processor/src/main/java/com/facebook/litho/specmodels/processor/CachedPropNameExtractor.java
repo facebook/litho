@@ -37,7 +37,6 @@ final class CachedPropNameExtractor {
       InterStageStore interStageStore, Name qualifiedName) {
     final Optional<ImmutableList<String>> strings =
         interStageStore.getPropNameInterStageStore().loadNames(qualifiedName);
-    // TODO(T23487428): Use the processing env Messager to report this.
     return strings.orElseGet(ImmutableList::of);
   }
 }

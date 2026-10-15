@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+<!--
   ~ Copyright (c) Meta Platforms, Inc. and affiliates.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -43,6 +44,11 @@
             android:name=".ComponentDemoActivity"
             android:exported="true" />
         <activity
+            android:name=".FullScreenComponentDemoActivity"
+            android:theme="@style/FullScreenTheme"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:exported="true" />
+        <activity
             android:name=".java.lithography.LithographyActivity"
             android:exported="true" />
         <activity
@@ -65,6 +71,9 @@
             android:exported="true" />
         <activity
             android:name=".playground.XMLPlaygroundActivity"
+            android:exported="true" />
+        <activity
+            android:name=".playground.ViewModelPlaygroundActivity"
             android:exported="true" />
         <activity
             android:name=".java.animations.animationcallbacks.AnimationCallbacksActivity"
@@ -152,9 +161,6 @@
             android:name=".kotlin.animations.animatedcounter.AnimatedCounterActivity"
             android:exported="true" />
         <activity
-            android:name=".kotlin.logging.LoggingActivity"
-            android:exported="true" />
-        <activity
             android:name=".kotlin.visibility.SetVisibilityActivity"
             android:exported="true" />
         <activity
@@ -166,6 +172,21 @@
         <activity
             android:name=".kotlin.visibility.VisibilityBoundsTransformerActivity"
             android:exported="true" />
+        <activity
+            android:name=".kotlin.collection.RangeManagerActivity"
+            android:exported="true" />
+        <activity
+            android:name=".kotlin.collection.RangeManagerFeedActivity"
+            android:exported="true" />
+        <activity
+            android:name=".kotlin.mountandvisibility.ViewPagerIncrementalMountActivity"
+            android:exported="true" />
+        <activity
+            android:name=".kotlin.mountandvisibility.ViewPager2IncrementalMountActivity"
+            android:exported="true" />
+        <activity
+            android:name=".kotlin.mountandvisibility.IncrementalMountManualTriggerActivity"
+            android:exported="true" />
 
     </application>
     <uses-permission android:name="android.permission.INTERNET" />
@@ -174,7 +195,7 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <uses-sdk
-        android:minSdkVersion="24"
+        android:minSdkVersion="21"
         android:targetSdkVersion="33" />
 
 

@@ -41,7 +41,7 @@ internal object EventDispatcherUtils {
   fun dispatchOnFocusChanged(
       focusChangeHandler: EventHandler<FocusChangedEvent>,
       view: View,
-      hasFocus: Boolean
+      hasFocus: Boolean,
   ) {
     ThreadUtils.assertMainThread()
     val focusChangedEvent = FocusChangedEvent()
@@ -63,7 +63,7 @@ internal object EventDispatcherUtils {
   fun dispatchOnTouch(
       touchHandler: EventHandler<TouchEvent>,
       view: View,
-      event: MotionEvent
+      event: MotionEvent,
   ): Boolean {
     ThreadUtils.assertMainThread()
     val touchEvent = TouchEvent()
@@ -77,7 +77,7 @@ internal object EventDispatcherUtils {
   fun dispatchOnInterceptTouch(
       interceptTouchHandler: EventHandler<InterceptTouchEvent>,
       view: View,
-      event: MotionEvent
+      event: MotionEvent,
   ): Boolean {
     ThreadUtils.assertMainThread()
     val interceptTouchEvent = InterceptTouchEvent()
@@ -92,7 +92,7 @@ internal object EventDispatcherUtils {
       eventHandler: EventHandler<DispatchPopulateAccessibilityEventEvent>,
       host: View,
       event: AccessibilityEvent,
-      superDelegate: AccessibilityDelegateCompat?
+      superDelegate: AccessibilityDelegateCompat,
   ): Boolean {
     ThreadUtils.assertMainThread()
     val dispatchPopulateAccessibilityEventEvent = DispatchPopulateAccessibilityEventEvent()
@@ -108,7 +108,7 @@ internal object EventDispatcherUtils {
       eventHandler: EventHandler<OnInitializeAccessibilityEventEvent>,
       host: View,
       event: AccessibilityEvent,
-      superDelegate: AccessibilityDelegateCompat?
+      superDelegate: AccessibilityDelegateCompat,
   ) {
     ThreadUtils.assertMainThread()
     val onInitializeAccessibilityEventEvent = OnInitializeAccessibilityEventEvent()
@@ -123,7 +123,7 @@ internal object EventDispatcherUtils {
       eventHandler: EventHandler<OnInitializeAccessibilityNodeInfoEvent>,
       host: View,
       info: AccessibilityNodeInfoCompat,
-      superDelegate: AccessibilityDelegateCompat?
+      superDelegate: AccessibilityDelegateCompat,
   ) {
     ThreadUtils.assertMainThread()
     val onInitializeAccessibilityNodeInfoEvent = OnInitializeAccessibilityNodeInfoEvent()
@@ -138,7 +138,7 @@ internal object EventDispatcherUtils {
       eventHandler: EventHandler<OnPopulateAccessibilityEventEvent>,
       host: View,
       event: AccessibilityEvent,
-      superDelegate: AccessibilityDelegateCompat?
+      superDelegate: AccessibilityDelegateCompat,
   ) {
     ThreadUtils.assertMainThread()
     val onPopulateAccessibilityEventEvent = OnPopulateAccessibilityEventEvent()
@@ -152,7 +152,7 @@ internal object EventDispatcherUtils {
   fun dispatchOnPopulateAccessibilityNode(
       eventHandler: EventHandler<OnPopulateAccessibilityNodeEvent>,
       host: View,
-      info: AccessibilityNodeInfoCompat
+      info: AccessibilityNodeInfoCompat,
   ) {
     ThreadUtils.assertMainThread()
     val onPopulateAccessibilityNodeEvent = OnPopulateAccessibilityNodeEvent()
@@ -167,7 +167,7 @@ internal object EventDispatcherUtils {
       host: ViewGroup,
       child: View,
       event: AccessibilityEvent,
-      superDelegate: AccessibilityDelegateCompat?
+      superDelegate: AccessibilityDelegateCompat,
   ): Boolean {
     ThreadUtils.assertMainThread()
     val onRequestSendAccessibilityEventEvent = OnRequestSendAccessibilityEventEvent()
@@ -185,7 +185,7 @@ internal object EventDispatcherUtils {
       host: View,
       action: Int,
       args: Bundle?,
-      superDelegate: AccessibilityDelegateCompat?
+      superDelegate: AccessibilityDelegateCompat,
   ): Boolean {
     ThreadUtils.assertMainThread()
     val performAccessibilityActionEvent = PerformAccessibilityActionEvent()
@@ -202,7 +202,7 @@ internal object EventDispatcherUtils {
       eventHandler: EventHandler<SendAccessibilityEventEvent>,
       host: View,
       eventType: Int,
-      superDelegate: AccessibilityDelegateCompat?
+      superDelegate: AccessibilityDelegateCompat,
   ) {
     ThreadUtils.assertMainThread()
     val sendAccessibilityEventEvent = SendAccessibilityEventEvent()
@@ -217,7 +217,7 @@ internal object EventDispatcherUtils {
       eventHandler: EventHandler<SendAccessibilityEventUncheckedEvent>,
       host: View,
       event: AccessibilityEvent,
-      superDelegate: AccessibilityDelegateCompat?
+      superDelegate: AccessibilityDelegateCompat,
   ) {
     ThreadUtils.assertMainThread()
     val sendAccessibilityEventUncheckedEvent = SendAccessibilityEventUncheckedEvent()
@@ -234,7 +234,7 @@ internal object EventDispatcherUtils {
       nodeInfo: AccessibilityNodeInfoCompat?,
       virtualViewId: Int,
       hasFocus: Boolean,
-      superDelegate: AccessibilityDelegateCompat
+      superDelegate: AccessibilityDelegateCompat,
   ) {
     ThreadUtils.assertMainThread()
     val event =
@@ -249,7 +249,7 @@ internal object EventDispatcherUtils {
       nodeInfo: AccessibilityNodeInfoCompat,
       virtualViewId: Int,
       action: Int,
-      arguments: Bundle?
+      arguments: Bundle?,
   ): Boolean {
     ThreadUtils.assertMainThread()
     val event = PerformActionForVirtualViewEvent(host, nodeInfo, virtualViewId, action, arguments)

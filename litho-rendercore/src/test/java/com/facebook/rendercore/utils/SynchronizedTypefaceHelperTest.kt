@@ -19,7 +19,6 @@ package com.facebook.rendercore.utils
 import android.graphics.Typeface
 import android.util.SparseArray
 import com.facebook.rendercore.utils.SynchronizedTypefaceHelper.SynchronizedLongSparseArray
-import com.facebook.rendercore.utils.SynchronizedTypefaceHelper.SynchronizedSparseArray
 import com.facebook.rendercore.utils.SynchronizedTypefaceHelper.SynchronizedTypefaceSparseArray
 import org.assertj.core.api.Assertions
 import org.junit.Test
@@ -46,17 +45,6 @@ class SynchronizedTypefaceHelperTest {
     sparseArray.put(1, Typeface.DEFAULT)
     synchronizedLongSparseArray.put(2, sparseArray)
     val gotSparseArray = synchronizedLongSparseArray[2]
-    Assertions.assertThat(gotSparseArray).isInstanceOf(SynchronizedTypefaceSparseArray::class.java)
-    Assertions.assertThat(gotSparseArray!![1]).isSameAs(Typeface.DEFAULT)
-  }
-
-  @Test
-  fun testSynchronizedSparseArray() {
-    val synchronizedSparseArray = SynchronizedSparseArray(Any(), 2)
-    val sparseArray = SparseArray<Typeface?>()
-    sparseArray.put(1, Typeface.DEFAULT)
-    synchronizedSparseArray.put(2, sparseArray)
-    val gotSparseArray = synchronizedSparseArray[2]
     Assertions.assertThat(gotSparseArray).isInstanceOf(SynchronizedTypefaceSparseArray::class.java)
     Assertions.assertThat(gotSparseArray!![1]).isSameAs(Typeface.DEFAULT)
   }

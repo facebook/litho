@@ -55,26 +55,26 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
   private final ComponentContext mComponentContext;
 
   public static ComponentAssert assertThat(ComponentContext componentContext, Component component) {
-    componentContext.mLithoConfiguration =
+    componentContext.setLithoConfiguration(
         new LithoConfiguration(
-            componentContext.mLithoConfiguration.componentsConfig,
-            componentContext.mLithoConfiguration.areTransitionsEnabled,
-            componentContext.mLithoConfiguration.renderUnitIdGenerator != null
-                ? componentContext.mLithoConfiguration.renderUnitIdGenerator
-                : new RenderUnitIdGenerator(0));
+            componentContext.getLithoConfiguration().componentsConfig,
+            componentContext.getLithoConfiguration().areTransitionsEnabled,
+            componentContext.getLithoConfiguration().renderUnitIdGenerator != null
+                ? componentContext.getLithoConfiguration().renderUnitIdGenerator
+                : new RenderUnitIdGenerator(0)));
     return new ComponentAssert(componentContext, component);
   }
 
   public static ComponentAssert assertThat(Component.Builder<?> builder) {
     // mContext is freed up during build() so we need to get a reference to it before.
     final ComponentContext context = Whitebox.getInternalState(builder, "mContext");
-    context.mLithoConfiguration =
+    context.setLithoConfiguration(
         new LithoConfiguration(
-            context.mLithoConfiguration.componentsConfig,
-            context.mLithoConfiguration.areTransitionsEnabled,
-            context.mLithoConfiguration.renderUnitIdGenerator != null
-                ? context.mLithoConfiguration.renderUnitIdGenerator
-                : new RenderUnitIdGenerator(0));
+            context.getLithoConfiguration().componentsConfig,
+            context.getLithoConfiguration().areTransitionsEnabled,
+            context.getLithoConfiguration().renderUnitIdGenerator != null
+                ? context.getLithoConfiguration().renderUnitIdGenerator
+                : new RenderUnitIdGenerator(0)));
     return new ComponentAssert(context, builder.build());
   }
 
@@ -459,6 +459,7 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
   }
 
   /** Assert that a given {@link Component} has a property matching the provided matcher. */
+  @SuppressWarnings("unchecked") // Safe: T2 is the component type from the caller's context
   public <T1, T2> ComponentAssert hasPropsMatching(
       KProperty1<T2, T1> property, Matcher<T1> matcher) {
     MatcherAssert.assertThat(property.get((T2) actual), matcher);

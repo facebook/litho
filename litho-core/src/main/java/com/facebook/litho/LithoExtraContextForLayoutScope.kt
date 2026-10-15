@@ -17,15 +17,22 @@
 package com.facebook.litho
 
 import com.facebook.litho.layout.LayoutDirection
+import com.facebook.rendercore.primitives.ResolvedLayoutDirectionProvider
 
 class LithoExtraContextForLayoutScope
 internal constructor(
     val componentContext: ComponentContext,
     val layoutDirection: LayoutDirection,
-) {
+    val layoutVersion: Int,
+) : ResolvedLayoutDirectionProvider {
 
-  val globalKey: String
-    get() = componentContext.globalKey
+  override val isResolvedLayoutDirectionRtl: Boolean?
+    get() =
+        when {
+          layoutDirection.isRTL -> true
+          layoutDirection.isLTR -> false
+          else -> null
+        }
 
   internal var effects: MutableList<Attachable>? = null
     private set
@@ -34,8 +41,17 @@ internal constructor(
     (effects ?: mutableListOf<Attachable>().apply { effects = this }).add(entry)
   }
 
-  internal fun generateEffectId(): String {
+  internal fun generateEffectId(): Any {
     val index = effects?.size ?: 0
-    return "$globalKey:$index:layout"
+    return HookGlobalKey(componentContext.globalKey, index, RenderScope.Layout)
   }
 }
+
+/**
+ * Extension property to get the layout version from [LayoutScope].
+ *
+ * This version is inherited from the parent tree's layout pass and should be used when performing
+ * nested tree layouts to ensure version consistency across the tree hierarchy.
+ */
+val com.facebook.rendercore.primitives.LayoutScope.layoutVersion: Int
+  get() = (extraContext as LithoExtraContextForLayoutScope).layoutVersion

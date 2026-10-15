@@ -36,7 +36,7 @@ public class PureRenderValidationTest {
   interface PureRenderSpecModel extends SpecModel, HasPureRender {}
 
   private final Object mDelegateMethodRepresentedObject1 = new Object();
-  private PureRenderSpecModel mSpecModel = mock(PureRenderSpecModel.class);
+  private final PureRenderSpecModel mSpecModel = mock(PureRenderSpecModel.class);
 
   @Before
   public void setup() {

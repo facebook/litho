@@ -22,11 +22,14 @@ import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import com.facebook.litho.LithoKeyTestingUtil.getScopedComponentInfos
 import com.facebook.litho.annotations.OnCreateLayout
 import com.facebook.litho.config.TempComponentsConfigurations
+import com.facebook.litho.core.height
+import com.facebook.litho.core.width
 import com.facebook.litho.testing.TestViewComponent
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.CardClip
 import com.facebook.litho.widget.Text
+import com.facebook.rendercore.dp
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
@@ -35,12 +38,12 @@ import org.junit.runner.RunWith
 
 @RunWith(LithoTestRunner::class)
 class GlobalKeyWithoutRootHostTest {
-  private var mContext: ComponentContext? = null
+  private var context: ComponentContext? = null
 
   @Before
   fun setup() {
     TempComponentsConfigurations.setShouldAddHostViewForRootComponent(false)
-    mContext = ComponentContext(getApplicationContext<Context>())
+    context = ComponentContext(getApplicationContext<Context>())
   }
 
   @Test
@@ -48,7 +51,7 @@ class GlobalKeyWithoutRootHostTest {
     val component = multipleChildrenComponent
     val layoutSpecId = component.typeId
     val nestedLayoutSpecId = layoutSpecId - 1
-    val column: Component = Column.create(mContext).build()
+    val column: Component = Column.create(context).build()
     val columnSpecId = column.typeId
     val lithoView = getLithoView(component)
     val globalKeysInfo = getScopedComponentInfos(lithoView)
@@ -57,13 +60,19 @@ class GlobalKeyWithoutRootHostTest {
     val expectedGlobalKeyText =
         ComponentKeyUtils.getKeyWithSeparatorForTest(layoutSpecId, columnSpecId, "$[Text2]")
     val scopedComponentInfoText = globalKeysInfo["Text"]!![0]
-    assertThat(scopedComponentInfoText.context.globalKey).isEqualTo(expectedGlobalKeyText)
+    assertThat(scopedComponentInfoText.context.globalKey.toString())
+        .isEqualTo(expectedGlobalKeyText)
     // TestViewComponent in child layout
     val expectedGlobalKeyTestViewComponent =
         ComponentKeyUtils.getKeyWithSeparatorForTest(
-            layoutSpecId, columnSpecId, nestedLayoutSpecId, columnSpecId, "$[TestViewComponent1]")
+            layoutSpecId,
+            columnSpecId,
+            nestedLayoutSpecId,
+            columnSpecId,
+            "$[TestViewComponent1]",
+        )
     val scopedComponentInfoTestViewComponent = globalKeysInfo["TestViewComponent"]!![0]
-    assertThat(scopedComponentInfoTestViewComponent.context.globalKey)
+    assertThat(scopedComponentInfoTestViewComponent.context.globalKey.toString())
         .isEqualTo(expectedGlobalKeyTestViewComponent)
     // CardClip in child
     val expectedGlobalKeyCardClip =
@@ -73,39 +82,56 @@ class GlobalKeyWithoutRootHostTest {
             nestedLayoutSpecId,
             columnSpecId,
             columnSpecId,
-            "$[CardClip1]")
+            "$[CardClip1]",
+        )
     val scopedComponentInfoCardClip = globalKeysInfo["CardClip"]!![0]
-    assertThat(scopedComponentInfoCardClip.context.globalKey).isEqualTo(expectedGlobalKeyCardClip)
+    assertThat(scopedComponentInfoCardClip.context.globalKey.toString())
+        .isEqualTo(expectedGlobalKeyCardClip)
 
     // Text in child
     val expectedGlobalKeyTextChild =
         ComponentKeyUtils.getKeyWithSeparatorForTest(
-            layoutSpecId, columnSpecId, nestedLayoutSpecId, columnSpecId, "$[Text1]")
+            layoutSpecId,
+            columnSpecId,
+            nestedLayoutSpecId,
+            columnSpecId,
+            "$[Text1]",
+        )
     val scopedComponentInfoTextChild = globalKeysInfo["Text"]!![1]
-    assertThat(scopedComponentInfoTextChild.context.globalKey).isEqualTo(expectedGlobalKeyTextChild)
+    assertThat(scopedComponentInfoTextChild.context.globalKey.toString())
+        .isEqualTo(expectedGlobalKeyTextChild)
 
     // CardClip
     val expectedGlobalKeyCardClip2 =
         ComponentKeyUtils.getKeyWithSeparatorForTest(
-            layoutSpecId, columnSpecId, columnSpecId, "$[CardClip2]")
+            layoutSpecId,
+            columnSpecId,
+            columnSpecId,
+            "$[CardClip2]",
+        )
     val scopedComponentInfoCardClip2 = globalKeysInfo["CardClip"]!![1]
-    assertThat(scopedComponentInfoCardClip2.context.globalKey).isEqualTo(expectedGlobalKeyCardClip2)
+    assertThat(scopedComponentInfoCardClip2.context.globalKey.toString())
+        .isEqualTo(expectedGlobalKeyCardClip2)
 
     // TestViewComponent
     val expectedGlobalKeyTestViewComponent2 =
         ComponentKeyUtils.getKeyWithSeparatorForTest(
-            layoutSpecId, columnSpecId, "$[TestViewComponent2]")
+            layoutSpecId,
+            columnSpecId,
+            "$[TestViewComponent2]",
+        )
     val scopedComponentInfoTestViewComponent2 = globalKeysInfo["TestViewComponent"]!![1]
-    assertThat(scopedComponentInfoTestViewComponent2.context.globalKey)
+    assertThat(scopedComponentInfoTestViewComponent2.context.globalKey.toString())
         .isEqualTo(expectedGlobalKeyTestViewComponent2)
   }
 
   private fun getLithoView(component: Component): LithoView {
-    val lithoView = LithoView(mContext)
+    val lithoView = LithoView(requireNotNull(context))
     lithoView.setComponent(component)
     lithoView.measure(
         View.MeasureSpec.makeMeasureSpec(640, View.MeasureSpec.UNSPECIFIED),
-        View.MeasureSpec.makeMeasureSpec(480, View.MeasureSpec.UNSPECIFIED))
+        View.MeasureSpec.makeMeasureSpec(480, View.MeasureSpec.UNSPECIFIED),
+    )
     lithoView.layout(0, 0, lithoView.measuredWidth, lithoView.measuredHeight)
     return lithoView
   }
@@ -117,7 +143,7 @@ class GlobalKeyWithoutRootHostTest {
 
   companion object {
     private val multipleChildrenComponent: Component
-      private get() {
+      get() {
         val color = -0x10000
         val testGlobalKeyChildComponent: Component =
             object : InlineLayoutSpec() {
@@ -128,12 +154,17 @@ class GlobalKeyWithoutRootHostTest {
                         TestViewComponent.create(c)
                             .widthDip(10f)
                             .heightDip(10f)
-                            .key("[TestViewComponent1]"))
+                            .key("[TestViewComponent1]"),
+                    )
                     .child(
                         Column.create(c)
                             .backgroundColor(color)
                             .child(
-                                CardClip.create(c).widthDip(10f).heightDip(10f).key("[CardClip1]")))
+                                key("[CardClip1]") {
+                                  CardClip(style = Style.width(10.dp).height(10.dp))
+                                },
+                            ),
+                    )
                     .child(Text.create(c).text("Test").widthDip(10f).heightDip(10f).key("[Text1]"))
                     .build()
               }
@@ -149,12 +180,17 @@ class GlobalKeyWithoutRootHostTest {
                         Column.create(c)
                             .backgroundColor(color)
                             .child(
-                                CardClip.create(c).widthDip(10f).heightDip(10f).key("[CardClip2]")))
+                                key("[CardClip2]") {
+                                  CardClip(style = Style.width(10.dp).height(10.dp))
+                                },
+                            ),
+                    )
                     .child(
                         TestViewComponent.create(c)
                             .widthDip(10f)
                             .heightDip(10f)
-                            .key("[TestViewComponent2]"))
+                            .key("[TestViewComponent2]"),
+                    )
                     .build()
               }
             }

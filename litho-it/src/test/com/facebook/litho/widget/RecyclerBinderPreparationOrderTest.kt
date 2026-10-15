@@ -20,6 +20,7 @@ import android.view.View
 import com.facebook.litho.LithoPrimitive
 import com.facebook.litho.PrimitiveComponent
 import com.facebook.litho.PrimitiveComponentScope
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.LithoTestRuleResizeMode
 import com.facebook.litho.widget.collection.LazyList
@@ -29,6 +30,7 @@ import com.facebook.rendercore.px
 import com.facebook.rendercore.utils.MeasureSpecUtils.atMost
 import com.facebook.rendercore.utils.MeasureSpecUtils.exactly
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Assume.assumeFalse
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -40,29 +42,33 @@ import org.robolectric.annotation.LooperMode
 @RunWith(RobolectricTestRunner::class)
 class RecyclerBinderPreparationOrderTest {
 
-  @JvmField @Rule val mLithoTestRule = LithoTestRule(resizeMode = LithoTestRuleResizeMode.MANUAL)
+  @JvmField @Rule val lithoTestRule = LithoTestRule(resizeMode = LithoTestRuleResizeMode.MANUAL)
 
   @Test
   fun `default traversal order should match RecyclerView layout order for primitive`() {
+    // This test is specific to RecyclerBinder behavior, skip when new collection is enabled
+    assumeFalse(ComponentsConfiguration.defaultInstance.enableNewCollection)
+
     val prepareTracking = mutableListOf<Int>()
     val mountTracking = mutableListOf<Int>()
 
-    val lithoView =
-        mLithoTestRule.createTestLithoView {
-          LazyList {
-            (1..10).forEach { tag ->
-              child(
-                  id = tag,
-                  component =
-                      PrepareTrackingPrimitiveComponent(
-                          prepareTracking = prepareTracking,
-                          mountTracking = mountTracking,
-                          tag = tag))
-            }
-          }
+    val lithoView = lithoTestRule.createTestLithoView {
+      LazyList {
+        (1..10).forEach { tag ->
+          child(
+              id = tag,
+              component =
+                  PrepareTrackingPrimitiveComponent(
+                      prepareTracking = prepareTracking,
+                      mountTracking = mountTracking,
+                      tag = tag,
+                  ),
+          )
         }
+      }
+    }
 
-    mLithoTestRule.act(lithoView) {
+    lithoTestRule.act(lithoView) {
       lithoView.setSizeSpecs(exactly(1000), atMost(400))
       lithoView.measure()
     }
@@ -78,25 +84,29 @@ class RecyclerBinderPreparationOrderTest {
 
   @Test
   fun `reverseLayout traversal order should match RecyclerView layout order for primitive`() {
+    // This test is specific to RecyclerBinder behavior, skip when new collection is enabled
+    assumeFalse(ComponentsConfiguration.defaultInstance.enableNewCollection)
+
     val prepareTracking = mutableListOf<Int>()
     val mountTracking = mutableListOf<Int>()
 
-    val lithoView =
-        mLithoTestRule.createTestLithoView {
-          LazyList(reverse = true) {
-            (1..10).forEach { tag ->
-              child(
-                  id = tag,
-                  component =
-                      PrepareTrackingPrimitiveComponent(
-                          prepareTracking = prepareTracking,
-                          mountTracking = mountTracking,
-                          tag = tag))
-            }
-          }
+    val lithoView = lithoTestRule.createTestLithoView {
+      LazyList(reverse = true) {
+        (1..10).forEach { tag ->
+          child(
+              id = tag,
+              component =
+                  PrepareTrackingPrimitiveComponent(
+                      prepareTracking = prepareTracking,
+                      mountTracking = mountTracking,
+                      tag = tag,
+                  ),
+          )
         }
+      }
+    }
 
-    mLithoTestRule.act(lithoView) {
+    lithoTestRule.act(lithoView) {
       lithoView.setSizeSpecs(exactly(1000), atMost(400))
       lithoView.measure()
     }
@@ -114,7 +124,7 @@ class RecyclerBinderPreparationOrderTest {
 private class PrepareTrackingPrimitiveComponent(
     val prepareTracking: MutableList<Int>,
     val mountTracking: MutableList<Int>,
-    val tag: Int
+    val tag: Int,
 ) : PrimitiveComponent() {
   override fun PrimitiveComponentScope.render(): LithoPrimitive {
     prepareTracking.add(tag)
@@ -127,6 +137,7 @@ private class PrepareTrackingPrimitiveComponent(
                 onUnbind {}
               }
             },
-        style = null)
+        style = null,
+    )
   }
 }

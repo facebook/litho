@@ -41,7 +41,7 @@ import org.robolectric.annotation.LooperMode
 @RunWith(LithoTestRunner::class)
 class PostRecyclingStateUpdaterTest {
 
-  @Rule @JvmField val mLithoTestRule = LithoTestRule()
+  @Rule @JvmField val lithoTestRule = LithoTestRule()
   lateinit var stateRef: AtomicReference<Int>
 
   @Test
@@ -49,7 +49,7 @@ class PostRecyclingStateUpdaterTest {
     val lazyCollectionController = LazyCollectionController()
 
     val testLithoView =
-        mLithoTestRule.render(widthPx = 100, heightPx = 100) {
+        lithoTestRule.render(widthPx = 100, heightPx = 100) {
           getTestComponent(lazyCollectionController)
         }
 
@@ -62,7 +62,7 @@ class PostRecyclingStateUpdaterTest {
         .doesNotHaveVisibleText("100")
         .describedAs("ListItem with index 1 is visible, ListItem with index 100 is not visible")
 
-    mLithoTestRule.act(testLithoView) { clickOnTag("test_view_1") }
+    lithoTestRule.act(testLithoView) { clickOnTag("test_view_1") }
     assertThat(stateRef.get()).describedAs("ListItem state is updated when clicked").isEqualTo(2)
 
     lazyCollectionController.scrollBy(0, 20000) // scroll to the end of the list
@@ -71,7 +71,8 @@ class PostRecyclingStateUpdaterTest {
         .hasVisibleText("100")
         .doesNotHaveVisibleText("1")
         .describedAs(
-            "After scrolling to the end of the list ListItem with index 100 is visible and ListItem with index 1 is not visible")
+            "After scrolling to the end of the list ListItem with index 100 is visible and ListItem with index 1 is not visible",
+        )
 
     lazyCollectionController.scrollBy(0, -20000) // scroll to the top of the list
 
@@ -79,9 +80,10 @@ class PostRecyclingStateUpdaterTest {
         .hasVisibleText("1")
         .doesNotHaveVisibleText("100")
         .describedAs(
-            "After scrolling to the top of the list ListItem with index 1 is visible and ListItem with index 100 is not visible")
+            "After scrolling to the top of the list ListItem with index 1 is visible and ListItem with index 100 is not visible",
+        )
 
-    mLithoTestRule.act(testLithoView) { clickOnTag("test_view_1") }
+    lithoTestRule.act(testLithoView) { clickOnTag("test_view_1") }
 
     assertThat(stateRef.get())
         .describedAs("ListItem state is updated when clicked after the view was recycled")
@@ -120,9 +122,11 @@ class PostRecyclingStateUpdaterTest {
           list.add(i)
         }
         return LazyList(
-            lazyCollectionController = controller, style = Style.viewTag("collection_tag")) {
-              children(list, id = { it }) { ListItem(it) }
-            }
+            lazyCollectionController = controller,
+            style = Style.viewTag("collection_tag"),
+        ) {
+          children(list, id = { it }) { ListItem(it) }
+        }
       }
     }
     return TestComponent()

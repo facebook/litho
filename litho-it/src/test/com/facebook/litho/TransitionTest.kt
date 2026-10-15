@@ -51,12 +51,20 @@ class TransitionTest {
     val rootTransitionId = TransitionId(TransitionId.Type.GLOBAL, "rootKey", null)
     val rootWidthTransition = RootBoundsTransition()
     TransitionUtils.collectRootBoundsTransitions(
-        rootTransitionId, transition, AnimatedProperties.WIDTH, rootWidthTransition)
+        rootTransitionId,
+        transition,
+        AnimatedProperties.WIDTH,
+        rootWidthTransition,
+    )
     assertThat(rootWidthTransition.hasTransition).isTrue
     assertThat(rootWidthTransition.appearTransition).isNull()
     val rootHeightTransition = RootBoundsTransition()
     TransitionUtils.collectRootBoundsTransitions(
-        rootTransitionId, transition, AnimatedProperties.HEIGHT, rootHeightTransition)
+        rootTransitionId,
+        transition,
+        AnimatedProperties.HEIGHT,
+        rootHeightTransition,
+    )
     assertThat(rootHeightTransition.hasTransition).isFalse
   }
 
@@ -69,11 +77,16 @@ class TransitionTest {
                 .animate(AnimatedProperties.HEIGHT)
                 .appearFrom(10f),
             Transition.create(Transition.TransitionKeyType.GLOBAL, "otherkey")
-                .animate(AnimatedProperties.ALPHA))
+                .animate(AnimatedProperties.ALPHA),
+        )
     val rootTransitionId = TransitionId(TransitionId.Type.GLOBAL, "rootKey", null)
     val rootHeightTransition = RootBoundsTransition()
     TransitionUtils.collectRootBoundsTransitions(
-        rootTransitionId, transition, AnimatedProperties.HEIGHT, rootHeightTransition)
+        rootTransitionId,
+        transition,
+        AnimatedProperties.HEIGHT,
+        rootHeightTransition,
+    )
     assertThat(rootHeightTransition.hasTransition).isTrue
     assertThat(rootHeightTransition.appearTransition).isNotNull
   }
@@ -87,11 +100,16 @@ class TransitionTest {
                 .appearFrom(10f),
             Transition.allLayout(),
             Transition.create(Transition.TransitionKeyType.GLOBAL, "otherkey")
-                .animate(AnimatedProperties.ALPHA))
+                .animate(AnimatedProperties.ALPHA),
+        )
     val rootTransitionId = TransitionId(TransitionId.Type.GLOBAL, "rootKey", null)
     val rootHeightTransition = RootBoundsTransition()
     TransitionUtils.collectRootBoundsTransitions(
-        rootTransitionId, transition, AnimatedProperties.HEIGHT, rootHeightTransition)
+        rootTransitionId,
+        transition,
+        AnimatedProperties.HEIGHT,
+        rootHeightTransition,
+    )
     assertThat(rootHeightTransition.hasTransition).isTrue
     assertThat(rootHeightTransition.appearTransition).isNotNull
   }
@@ -105,14 +123,17 @@ class TransitionTest {
     val rootTransitionId = TransitionId(TransitionId.Type.GLOBAL, "rootKey", null)
     val rootHeightTransition = RootBoundsTransition()
     TransitionUtils.collectRootBoundsTransitions(
-        rootTransitionId, transition, AnimatedProperties.HEIGHT, rootHeightTransition)
+        rootTransitionId,
+        transition,
+        AnimatedProperties.HEIGHT,
+        rootHeightTransition,
+    )
     assertThat(rootHeightTransition.hasTransition).isTrue
     assertThat(rootHeightTransition.appearTransition).isNotNull
     val layoutState = mock<LayoutState>()
     val component: Component =
         object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component =
-              SimpleMountSpecTester.create(c).build()
+          override fun onCreateLayout(c: ComponentContext): Component = SimpleMountSpecTester()
         }
     val rootUnit: LithoRenderUnit =
         MountSpecLithoRenderUnit.create(
@@ -124,12 +145,19 @@ class TransitionTest {
             0,
             0,
             MountSpecLithoRenderUnit.STATE_UNKNOWN,
-            null)
+            null,
+        )
     whenever(layoutState.getMountableOutputAt(0))
         .thenReturn(create(rootUnit, Rect(0, 0, 300, 100), null, null))
+    whenever(layoutState.rootTransitionId).thenReturn(rootTransitionId)
+    val appearTransition = rootHeightTransition.appearTransition
+    assertThat(appearTransition).isNotNull
     val animateFrom =
         Transition.getRootAppearFromValue(
-                rootHeightTransition.appearTransition, layoutState, AnimatedProperties.HEIGHT)
+                requireNotNull(appearTransition),
+                layoutState,
+                AnimatedProperties.HEIGHT,
+            )
             .toInt()
     assertThat(animateFrom).isEqualTo(10)
   }
@@ -143,18 +171,79 @@ class TransitionTest {
     val rootTransitionId = TransitionId(TransitionId.Type.GLOBAL, "rootKey", null)
     val rootHeightTransition = RootBoundsTransition()
     TransitionUtils.collectRootBoundsTransitions(
-        rootTransitionId, transition, AnimatedProperties.HEIGHT, rootHeightTransition)
+        rootTransitionId,
+        transition,
+        AnimatedProperties.HEIGHT,
+        rootHeightTransition,
+    )
     assertThat(rootHeightTransition.hasTransition).isTrue
     assertThat(rootHeightTransition.appearTransition).isNotNull
     val layoutState = mock<LayoutState>()
     val bounds = Rect(0, 0, 300, 100)
     whenever(layoutState.animatableRootItem)
         .thenReturn(LithoAnimtableItem(0, Rect(0, 0, 300, 100), OutputUnitType.CONTENT, null, null))
+    whenever(layoutState.rootTransitionId).thenReturn(rootTransitionId)
+    val appearTransition = rootHeightTransition.appearTransition
+    assertThat(appearTransition).isNotNull
     val animateFrom =
         Transition.getRootAppearFromValue(
-                rootHeightTransition.appearTransition, layoutState, AnimatedProperties.HEIGHT)
+                requireNotNull(appearTransition),
+                layoutState,
+                AnimatedProperties.HEIGHT,
+            )
             .toInt()
     val expectedAppearFrom = bounds.height() * 1.5f
     assertThat(animateFrom).isEqualTo(expectedAppearFrom.toInt())
+  }
+
+  @Test
+  fun testCollectRootBoundsTransitionsAutogeneratedRootDoesNotMatchKeyedTarget() {
+    var keyToStringCount = 0
+    // Structural global key with a counting toString().
+    val structuralKey =
+        object {
+          override fun toString(): String {
+            keyToStringCount++
+            return "expensive-structural-key"
+          }
+        }
+    val transition =
+        Transition.create(Transition.TransitionKeyType.GLOBAL, "rootKey")
+            .animate(AnimatedProperties.WIDTH)
+    val rootTransitionId = TransitionId.autogenerated(structuralKey)
+    val rootWidthTransition = RootBoundsTransition()
+    TransitionUtils.collectRootBoundsTransitions(
+        rootTransitionId,
+        transition,
+        AnimatedProperties.WIDTH,
+        rootWidthTransition,
+    )
+    // Keyless root: no keyed match, and the key is never stringified.
+    assertThat(rootWidthTransition.hasTransition).isFalse
+    assertThat(keyToStringCount).isEqualTo(0)
+  }
+
+  @Test
+  fun testCollectRootBoundsTransitionsAutogeneratedRootMatchesAllLayoutWithoutStringifyingKey() {
+    var keyToStringCount = 0
+    val structuralKey =
+        object {
+          override fun toString(): String {
+            keyToStringCount++
+            return "expensive-structural-key"
+          }
+        }
+    val transition = Transition.allLayout()
+    val rootTransitionId = TransitionId.autogenerated(structuralKey)
+    val rootWidthTransition = RootBoundsTransition()
+    TransitionUtils.collectRootBoundsTransitions(
+        rootTransitionId,
+        transition,
+        AnimatedProperties.WIDTH,
+        rootWidthTransition,
+    )
+    // ALL/AUTO_LAYOUT matches a keyless root without reading (stringifying) the key.
+    assertThat(rootWidthTransition.hasTransition).isTrue
+    assertThat(keyToStringCount).isEqualTo(0)
   }
 }

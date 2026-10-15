@@ -24,7 +24,8 @@ import com.facebook.rendercore.ContentAllocator.Companion.DEFAULT_MAX_PREALLOCAT
 import com.facebook.rendercore.MountContentPools
 import com.facebook.rendercore.PoolScope
 import com.facebook.rendercore.PoolingPolicy
-import com.facebook.rendercore.RenderUnit
+import com.facebook.rendercore.RenderCoreSystrace
+import com.facebook.rendercore.RenderType
 
 /**
  * A [ContentAllocator] that allocates an instance of a [View].
@@ -49,11 +50,23 @@ class ViewAllocator<Content : View>(
     override val poolingPolicy: PoolingPolicy = PoolingPolicy.Default,
     internal val useCustomPoolScope: Boolean = false,
     private val onDiscarded: ((Content) -> Unit)? = null,
-    private val allocator: Allocator<Content>
+    private val allocator: Allocator<Content>,
 ) : ContentAllocator<Content> {
-  override fun createContent(context: Context): Content = allocator.allocate(context)
+  override fun createContent(context: Context): Content {
+    val isTracing = RenderCoreSystrace.isTracing()
+    if (isTracing) {
+      RenderCoreSystrace.beginSection("mount.createContent:View")
+    }
+    try {
+      return allocator.allocate(context)
+    } finally {
+      if (isTracing) {
+        RenderCoreSystrace.endSection()
+      }
+    }
+  }
 
-  override val renderType: RenderUnit.RenderType = RenderUnit.RenderType.VIEW
+  override val renderType: RenderType = RenderType.VIEW
 
   override fun poolSize(): Int = poolSize
 
@@ -89,11 +102,23 @@ class DrawableAllocator<Content : Drawable>(
     override val poolingPolicy: PoolingPolicy = PoolingPolicy.Default,
     internal val useCustomPoolScope: Boolean = false,
     private val onDiscarded: ((Content) -> Unit)? = null,
-    private val allocator: Allocator<Content>
+    private val allocator: Allocator<Content>,
 ) : ContentAllocator<Content> {
-  override fun createContent(context: Context): Content = allocator.allocate(context)
+  override fun createContent(context: Context): Content {
+    val isTracing = RenderCoreSystrace.isTracing()
+    if (isTracing) {
+      RenderCoreSystrace.beginSection("mount.createContent:Drawable")
+    }
+    try {
+      return allocator.allocate(context)
+    } finally {
+      if (isTracing) {
+        RenderCoreSystrace.endSection()
+      }
+    }
+  }
 
-  override val renderType: RenderUnit.RenderType = RenderUnit.RenderType.DRAWABLE
+  override val renderType: RenderType = RenderType.DRAWABLE
 
   override fun poolSize(): Int = poolSize
 
@@ -118,7 +143,7 @@ fun interface Allocator<ContentType> {
  * Returns a new [ContentAllocator] that uses the the provided [contentType] as PoolableContentType.
  */
 fun <Content : Any> ContentAllocator<Content>.withContentType(
-    contentType: Any
+    contentType: Any,
 ): ContentAllocator<Content> {
   require(this is ViewAllocator<*> || this is DrawableAllocator<*>) {
     "withContentType() can only be used with ViewAllocator or DrawableAllocator"
@@ -138,12 +163,19 @@ fun <Content : Any> ContentAllocator<Content>.withContentType(
 
     override fun acquireContent(context: Context, poolScope: PoolScope): Any {
       return MountContentPools.acquireMountContent(
-          context, this, if (useCustomPoolScope) poolScope else PoolScope.None)
+          context,
+          this,
+          if (useCustomPoolScope) poolScope else PoolScope.None,
+      )
     }
 
     override fun recycleContent(context: Context, content: Any, poolScope: PoolScope) {
       MountContentPools.recycle(
-          context, this, content, if (useCustomPoolScope) poolScope else PoolScope.None)
+          context,
+          this,
+          content,
+          if (useCustomPoolScope) poolScope else PoolScope.None,
+      )
     }
   }
 }

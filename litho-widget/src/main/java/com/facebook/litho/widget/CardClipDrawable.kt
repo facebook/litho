@@ -106,7 +106,7 @@ class CardClipDrawable : Drawable() {
   }
 
   fun setCornerRadius(radius: Float) {
-    var newRadius = (radius + .5f).toInt().toFloat()
+    val newRadius = (radius + .5f).toInt().toFloat()
     if (cornerRadius == newRadius) {
       return
     }

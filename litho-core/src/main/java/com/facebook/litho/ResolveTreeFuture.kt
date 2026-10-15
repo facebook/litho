@@ -18,82 +18,57 @@ package com.facebook.litho
 
 import android.content.Context
 import android.view.accessibility.AccessibilityManager
+import com.facebook.litho.ComponentsSystrace.trace
+import com.facebook.litho.ComponentsSystrace.traceWithArgs
 import com.facebook.litho.debug.DebugOverlay
 import com.facebook.litho.debug.LithoDebugEvent
+import com.facebook.litho.debug.LithoDebugEventAttributes
 import com.facebook.litho.debug.LithoDebugEventAttributes.Attribution
+import com.facebook.litho.debug.LithoDebugEventAttributes.InitialResolve
+import com.facebook.litho.debug.LithoDebugEventAttributes.Reason
 import com.facebook.litho.debug.LithoDebugEventAttributes.Root
+import com.facebook.litho.state.DirtyScopeIndex
+import com.facebook.litho.state.getDirtyScopes
+import com.facebook.litho.state.withScope
 import com.facebook.litho.stats.LithoStats
 import com.facebook.rendercore.debug.DebugEventAttribute.Source
 import com.facebook.rendercore.debug.DebugEventAttribute.Version
 import com.facebook.rendercore.debug.DebugEventDispatcher
 
-class ResolveTreeFuture
-/** TODO(T137275959) */
-@Deprecated("Refactor sync render logic to remove sizes from resolved tree future")
-constructor(
+class ResolveTreeFuture(
     private val componentContext: ComponentContext,
     private val component: Component,
     private val treeState: TreeState,
-    private val currentRootNode: LithoNode?,
+    private val currentResolveResult: ResolveResult?,
     private val resolveVersion: Int,
     useCancellableFutures: Boolean,
-    private val syncWidthSpec: Int,
-    private val syncHeightSpec: Int,
     private val componentTreeId: Int,
     private val extraAttribution: String?,
-    private val source: Int
+    private val source: Int,
+    private val debugBreadcrumb: String? = null,
 ) : TreeFuture<ResolveResult>(componentTreeId, useCancellableFutures) {
 
-  private val enableResolveWithoutSizeSpec =
-      componentContext.lithoConfiguration.componentsConfig.enableResolveWithoutSizeSpec
-
-  constructor(
-      c: ComponentContext,
-      component: Component,
-      treeState: TreeState,
-      currentRootNode: LithoNode?,
-      resolveVersion: Int,
-      useCancellableFutures: Boolean,
-      componentTreeId: Int,
-      extraAttribution: String?,
-      source: Int
-  ) : this(
-      c,
-      component,
-      treeState,
-      currentRootNode,
-      resolveVersion,
-      useCancellableFutures,
-      ComponentTree.SIZE_UNINITIALIZED,
-      ComponentTree.SIZE_UNINITIALIZED,
-      componentTreeId,
-      extraAttribution,
-      source)
-
   override fun calculate(): ResolveResult {
-    val resolveTraceIdentifier =
-        DebugEventDispatcher.generateTraceIdentifier(LithoDebugEvent.ComponentTreeResolve)
-    if (resolveTraceIdentifier != null) {
-      DebugEventDispatcher.beginTrace(
-          resolveTraceIdentifier,
-          LithoDebugEvent.ComponentTreeResolve,
-          componentTreeId.toString(),
-          createDebugAttributes())
-    }
-    return try {
-      resolve(
+    return DebugEventDispatcher.trace(
+        LithoDebugEvent.ComponentTreeResolve,
+        { componentTreeId.toString() },
+        { attributes -> attributes.createDebugAttributes() },
+    ) { traceScope ->
+      val resolveResult = resolve(
           componentContext,
           component,
           treeState,
           resolveVersion,
           componentTreeId,
-          currentRootNode,
+          currentResolveResult,
           extraAttribution,
-          this)
-    } finally {
-      if (resolveTraceIdentifier != null) {
-        DebugEventDispatcher.endTrace(resolveTraceIdentifier)
-      }
+          this,
+      )
+
+      // Add post-resolve attributes to the trace via TraceScope
+      addPostResolveAttributes(traceScope, resolveResult)
+
+      resolveResult
     }
   }
 
@@ -102,31 +77,67 @@ constructor(
   override fun getDescription(): String = DESCRIPTION
 
   override fun resumeCalculation(partialResult: ResolveResult?): ResolveResult {
-    val resolveTraceIdentifier =
-        DebugEventDispatcher.generateTraceIdentifier(LithoDebugEvent.ComponentTreeResume)
-    if (resolveTraceIdentifier != null) {
-      DebugEventDispatcher.beginTrace(
-          resolveTraceIdentifier,
-          LithoDebugEvent.ComponentTreeResume,
-          componentTreeId.toString(),
-          createDebugAttributes())
-    }
-    return try {
-      resume(checkNotNull(partialResult), extraAttribution)
-    } finally {
-      if (resolveTraceIdentifier != null) {
-        DebugEventDispatcher.endTrace(resolveTraceIdentifier)
-      }
+    return DebugEventDispatcher.trace(
+        LithoDebugEvent.ComponentTreeResume,
+        { componentTreeId.toString() },
+        { attributes -> attributes.createDebugAttributes() },
+    ) {
+      resume(checkNotNull(partialResult), componentTreeId, extraAttribution)
     }
   }
 
-  private fun createDebugAttributes(): HashMap<String, Any?> {
-    val attributes = HashMap<String, Any?>()
+  private fun MutableMap<String, Any?>.createDebugAttributes() {
+    val attributes = this
     attributes[Root] = component.fullyQualifiedName
     attributes[Version] = resolveVersion
     attributes[Source] = LayoutState.layoutSourceToString(source)
     attributes[Attribution] = extraAttribution
-    return attributes
+    if (debugBreadcrumb != null) {
+      attributes[LithoDebugEventAttributes.Breadcrumb] = debugBreadcrumb
+    }
+    // Enhanced phase logging attributes
+    attributes[LithoDebugEventAttributes.ResolveVersion] = resolveVersion
+    attributes[InitialResolve] = currentResolveResult == null
+    attributes[Reason] =
+        when (source) {
+          RenderSource.SET_ROOT_SYNC,
+          RenderSource.SET_ROOT_ASYNC -> "SET_ROOT"
+          RenderSource.UPDATE_STATE_SYNC,
+          RenderSource.UPDATE_STATE_ASYNC -> "STATE"
+          RenderSource.SET_SIZE_SPEC_SYNC,
+          RenderSource.SET_SIZE_SPEC_ASYNC -> "SET_SIZE_SPEC"
+          RenderSource.MEASURE_SET_SIZE_SPEC,
+          RenderSource.MEASURE_SET_SIZE_SPEC_ASYNC -> "MEASURE"
+          else -> "UNKNOWN"
+        }
+  }
+
+  private fun addPostResolveAttributes(
+      traceScope: DebugEventDispatcher.TraceScope?,
+      resolveResult: ResolveResult,
+  ) {
+    if (traceScope == null) return
+
+    // Collect component names for logging (top 5)
+    val componentNames = mutableListOf<String>()
+    componentNames.add(component.simpleName ?: "Unknown")
+    resolveResult.node?.scopedComponentInfos?.take(4)?.forEach { info ->
+      info.component.simpleName.let { name -> componentNames.add(name) }
+    }
+
+    // globalKeysChanged: true if state update caused key changes
+    val globalKeysChanged =
+        when (source) {
+          RenderSource.UPDATE_STATE_SYNC,
+          RenderSource.UPDATE_STATE_ASYNC -> resolveResult.updatedStates.isNotEmpty()
+          else -> false
+        }
+
+    val componentCount = resolveResult.node?.scopedComponentInfos?.size ?: 0
+
+    traceScope.attribute(LithoDebugEventAttributes.GlobalKeysChanged, globalKeysChanged)
+    traceScope.attribute(LithoDebugEventAttributes.ComponentCount, componentCount)
+    traceScope.attribute(LithoDebugEventAttributes.Components, componentNames.joinToString(","))
   }
 
   override fun isEquivalentTo(that: TreeFuture<*>?): Boolean {
@@ -138,16 +149,6 @@ constructor(
     }
     if (componentContext.treePropContainer !== that.componentContext.treePropContainer) {
       return false
-    }
-
-    if (!enableResolveWithoutSizeSpec) {
-      if (syncWidthSpec != that.syncWidthSpec) {
-        return false
-      }
-
-      if (syncHeightSpec != that.syncHeightSpec) {
-        return false
-      }
     }
 
     return true
@@ -172,45 +173,84 @@ constructor(
         state: TreeState,
         version: Int,
         componentTreeId: Int,
-        currentRootNode: LithoNode?,
+        currentResolveResult: ResolveResult?,
         extraAttribution: String?,
-        future: TreeFuture<*>?
+        future: TreeFuture<*>?,
     ): ResolveResult {
-      LithoStats.incrementResolveCount()
-      val isTracing = ComponentsSystrace.isTracing
-      return try {
-        if (isTracing) {
-          if (extraAttribution != null) {
-            ComponentsSystrace.beginSection("extra:$extraAttribution")
+      val updatedStates =
+          when (context.isReadTrackingEnabled) {
+            true -> state.getStateIdsForPendingStateUpdates()
+            else -> emptySet()
           }
-          ComponentsSystrace.beginSectionWithArgs("resolveTree:${component.simpleName}")
-              .arg("treeId", componentTreeId)
-              .arg("rootId", component.instanceId)
-              .flush()
-        }
-        state.registerResolveState()
-        val rsc =
-            ResolveContext(
-                componentTreeId,
-                MeasuredResultCache(),
-                state,
-                version,
-                component.instanceId,
-                AccessibilityUtils.isAccessibilityEnabled(
-                    context.androidContext.getSystemService(Context.ACCESSIBILITY_SERVICE)
-                        as AccessibilityManager),
-                future,
-                currentRootNode,
-                false)
+      val scopesToUpdate =
+          DirtyScopeIndex.of(
+              if (context.isReadTrackingEnabled) {
+                getDirtyScopes(updatedStates, currentResolveResult?.outputs?.stateReads)
+              } else {
+                state.keysForPendingStateUpdates
+              },
+          )
+      val currentAccessibilityEnabled =
+          AccessibilityUtils.isAccessibilityEnabled(
+              context.androidContext.getSystemService(Context.ACCESSIBILITY_SERVICE)
+                  as AccessibilityManager,
+          )
+      val willSkipResolve =
+          context.isReadTrackingEnabled &&
+              scopesToUpdate.isEmpty() &&
+              currentResolveResult != null &&
+              Resolver.isReconcilable(
+                  context,
+                  component,
+                  state,
+                  currentResolveResult.node,
+                  currentAccessibilityEnabled = currentAccessibilityEnabled,
+                  previousAccessibilityEnabled = currentResolveResult.isAccessibilityEnabled,
+              ) &&
+              context.treePropContainer == currentResolveResult.context.treePropContainer
+
+      if (willSkipResolve) {
+        state.applyStateUpdatesEarly(context, component, currentResolveResult.node, false)
+        state.markAllStateInUse(isLayoutState = false)
+        return currentResolveResult.copy(
+            treeState = state,
+            component = component,
+            updatedStates = updatedStates,
+            version = version,
+        )
+      }
+
+      LithoStats.incrementResolveCount()
+
+      return traceWithArgs(
+          { "resolveTree:${component.simpleName}" },
+          { scope ->
+            scope.attribute("treeId", componentTreeId)
+            scope.attribute("rootId", component.instanceId)
+            if (extraAttribution != null) {
+              scope.attribute("extraAttribution", extraAttribution)
+            }
+          },
+      ) {
+        val rsc = ResolveContext(
+            componentTreeId,
+            MeasuredResultCache(),
+            state,
+            version,
+            component.instanceId,
+            currentAccessibilityEnabled,
+            future,
+            currentResolveResult,
+            false,
+            scopesToUpdate,
+        )
         val previousStateContext = context.calculationStateContext
         val stateProvider = context.stateProvider ?: error("State provider is null in resolve")
         val node: LithoNode?
         try {
           context.renderStateContext = rsc
-          stateProvider.enterScope(state)
-          node = Resolver.resolveTree(rsc, context, component)
+          stateProvider.withScope(state) { node = Resolver.resolveTree(rsc, context, component) }
         } finally {
-          stateProvider.exitScope(state)
           context.calculationStateContext = previousStateContext
         }
         val outputs: Resolver.Outputs?
@@ -224,29 +264,27 @@ constructor(
           DebugOverlay.updateResolveHistory(componentTreeId)
         }
         ResolveResult(
-            node,
-            context,
-            component,
-            rsc.cache,
-            state,
-            rsc.isResolveInterrupted,
-            version,
-            rsc.eventHandlers,
-            outputs,
-            if (rsc.isResolveInterrupted) rsc else null)
-      } finally {
-        state.unregisterResolveInitialState()
-        if (isTracing) {
-          ComponentsSystrace.endSection()
-          if (extraAttribution != null) {
-            ComponentsSystrace.endSection()
-          }
-        }
+            node = node,
+            context = context,
+            component = component,
+            cache = rsc.cache,
+            treeState = state,
+            isPartialResult = rsc.isResolveInterrupted,
+            version = version,
+            outputs = outputs,
+            contextForResuming = if (rsc.isResolveInterrupted) rsc else null,
+            updatedStates = updatedStates,
+            isAccessibilityEnabled = rsc.isAccessibilityEnabled,
+        )
       }
     }
 
     @JvmStatic
-    fun resume(partialResult: ResolveResult, extraAttribution: String?): ResolveResult {
+    fun resume(
+        partialResult: ResolveResult,
+        componentTreeId: Int,
+        extraAttribution: String?,
+    ): ResolveResult {
       LithoStats.incrementResumeCount()
       val context = partialResult.context
       val component = partialResult.component
@@ -256,48 +294,47 @@ constructor(
       checkNotNull(partialResult.contextForResuming) {
         "RenderStateContext cannot be null during resume"
       }
-      val isTracing = ComponentsSystrace.isTracing
-      return try {
-        if (isTracing) {
-          if (extraAttribution != null) {
-            ComponentsSystrace.beginSection("extra:$extraAttribution")
-          }
-          ComponentsSystrace.beginSection("resume:${component.simpleName}")
-        }
-        partialResult.treeState.registerResolveState()
+
+      return traceWithArgs(
+          { "resumeResolveTree:${component.simpleName}" },
+          { scope ->
+            scope.attribute("treeId", componentTreeId)
+            scope.attribute("rootId", component.instanceId)
+            if (extraAttribution != null) {
+              scope.attribute("extraAttribution", extraAttribution)
+            }
+          },
+      ) {
         val previousStateContext = context.calculationStateContext
         val stateProvider = context.stateProvider ?: error("State provider is null in resolve")
         val node: LithoNode
         try {
           context.renderStateContext = partialResult.contextForResuming
-          stateProvider.enterScope(partialResult.treeState)
-          node = Resolver.resumeResolvingTree(partialResult.contextForResuming, partialResult.node)
+          stateProvider.withScope(partialResult.treeState) {
+            node =
+                Resolver.resumeResolvingTree(
+                    partialResult.contextForResuming,
+                    partialResult.node,
+                )
+          }
         } finally {
-          stateProvider.exitScope(partialResult.treeState)
           context.calculationStateContext = previousStateContext
         }
         val outputs = Resolver.collectOutputs(node)
         partialResult.contextForResuming.cache.freezeCache()
-        val createdEventHandlers = partialResult.contextForResuming.eventHandlers
-        partialResult.treeState.unregisterResolveInitialState()
         ResolveResult(
-            node,
-            context,
-            partialResult.component,
-            partialResult.consumeCache(),
-            partialResult.treeState,
-            false,
-            resolveVersion,
-            createdEventHandlers,
-            outputs,
-            null)
-      } finally {
-        if (isTracing) {
-          ComponentsSystrace.endSection()
-          if (extraAttribution != null) {
-            ComponentsSystrace.endSection()
-          }
-        }
+            node = node,
+            context = context,
+            component = partialResult.component,
+            cache = partialResult.consumeCache(),
+            treeState = partialResult.treeState,
+            isPartialResult = false,
+            version = resolveVersion,
+            outputs = outputs,
+            contextForResuming = null,
+            updatedStates = partialResult.updatedStates,
+            isAccessibilityEnabled = partialResult.isAccessibilityEnabled,
+        )
       }
     }
   }

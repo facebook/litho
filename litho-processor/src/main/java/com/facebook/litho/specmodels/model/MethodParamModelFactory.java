@@ -26,6 +26,7 @@ import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.squareup.javapoet.AnnotationSpec;
 import java.lang.annotation.Annotation;
 import java.util.List;
+import javax.annotation.Nullable;
 
 /** Factory for creating {@link MethodParamModel}s. */
 public final class MethodParamModelFactory {
@@ -113,7 +114,7 @@ public final class MethodParamModelFactory {
   }
 
   public static SimpleMethodParamModel createSimpleMethodParamModel(
-      TypeSpec typeSpec, String name, Object representedObject) {
+      TypeSpec typeSpec, String name, @Nullable Object representedObject) {
     return new SimpleMethodParamModel(
         typeSpec,
         name,

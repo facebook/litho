@@ -26,14 +26,30 @@ import com.facebook.litho.findComponentActivity
 import com.facebook.rendercore.zoomable.ZoomableViewBaseController
 
 class LithoZoomableController(
-    context: Context,
-    backgroundDrawable: Drawable = ColorDrawable(BLACK_TRANSPARENT_80)
+    private val controllerContext: Context,
+    backgroundDrawable: Drawable = ColorDrawable(BLACK_TRANSPARENT_80),
 ) :
     ZoomableViewBaseController<LithoZoomableView>(
-        context = context, backgroundDrawable = backgroundDrawable, isRemoteZoomEnabled = true) {
+        context = controllerContext,
+        backgroundDrawable = backgroundDrawable,
+        isRemoteZoomEnabled = true,
+    ) {
 
-  override val decorView: ViewGroup =
-      checkNotNull(context.findComponentActivity()).window.decorView as ViewGroup
+  // Computed property: resolves from Context each time, avoiding a strong reference
+  // to the Activity's decorView that would prevent GC if the controller outlives the Activity.
+  // Only accessed during startRemoteZoom/teardownRemoteZoom (at most twice per gesture).
+  override val decorView: ViewGroup
+    get() {
+      val activity =
+          checkNotNull(controllerContext.findComponentActivity()) {
+            "LithoZoomableController requires an Activity-backed Context, " +
+                "but findComponentActivity() returned null for ${controllerContext.javaClass.name}"
+          }
+      return checkNotNull(activity.window) {
+            "LithoZoomableController: Activity ${activity.javaClass.name} has a null window"
+          }
+          .decorView as ViewGroup
+    }
 
   override fun getRenderTreeView(): LithoRenderTreeView = requireRootView().renderTreeView
 

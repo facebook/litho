@@ -21,9 +21,12 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.view.View
+import android.view.accessibility.AccessibilityManager
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.TextView
+import androidx.core.view.ViewCompat
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.litho.accessibility.ImportantForAccessibility
 import com.facebook.litho.accessibility.accessibilityRole
@@ -32,6 +35,7 @@ import com.facebook.litho.accessibility.contentDescription
 import com.facebook.litho.accessibility.importantForAccessibility
 import com.facebook.litho.accessibility.onInitializeAccessibilityNodeInfo
 import com.facebook.litho.accessibility.onPopulateAccessibilityNode
+import com.facebook.litho.accessibility.stateDescription
 import com.facebook.litho.animated.alpha
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.core.height
@@ -44,6 +48,8 @@ import com.facebook.litho.flexbox.border
 import com.facebook.litho.flexbox.flex
 import com.facebook.litho.kotlin.widget.Border
 import com.facebook.litho.kotlin.widget.BorderEdge
+import com.facebook.litho.layout.flexbox.Column
+import com.facebook.litho.layout.flexbox.Row
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -55,9 +61,9 @@ import com.facebook.litho.visibility.onInvisible
 import com.facebook.litho.visibility.onVisible
 import com.facebook.litho.widget.LithoScrollView
 import com.facebook.litho.widget.collection.LazyList
+import com.facebook.rendercore.IntSize
 import com.facebook.rendercore.MeasureResult
 import com.facebook.rendercore.PoolScope
-import com.facebook.rendercore.Size
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.dp
 import com.facebook.rendercore.primitives.DrawableAllocator
@@ -78,6 +84,7 @@ import org.junit.Test
 import org.junit.rules.ExpectedException
 import org.junit.runner.RunWith
 import org.mockito.kotlin.mock
+import org.robolectric.Shadows
 import org.robolectric.annotation.LooperMode
 
 @LooperMode(LooperMode.Mode.LEGACY)
@@ -92,22 +99,22 @@ class PrimitiveComponentsTest {
     val c = mLithoTestRule.context
     val steps = mutableListOf<LifecycleStep.StepInfo>()
 
-    val testView =
-        mLithoTestRule.render {
-          Column {
-            child(
-                TestViewPrimitiveComponent(
-                    TextView(c.androidContext),
-                    steps,
-                    style =
-                        Style.width(100.px)
-                            .height(100.px)
-                            .padding(all = 20.px)
-                            .backgroundColor(Color.LTGRAY)
-                            .border(
-                                Border(edgeAll = BorderEdge(width = 5f.dp, color = Color.BLACK)))))
-          }
-        }
+    val testView = mLithoTestRule.render {
+      Column {
+        child(
+            TestViewPrimitiveComponent(
+                TextView(c.androidContext),
+                steps,
+                style =
+                    Style.width(100.px)
+                        .height(100.px)
+                        .padding(all = 20.px)
+                        .backgroundColor(Color.LTGRAY)
+                        .border(Border(edgeAll = BorderEdge(width = 5f.dp, color = Color.BLACK))),
+            ),
+        )
+      }
+    }
     testView.lithoView.unmountAllItems()
 
     assertThat(LifecycleStep.getSteps(steps))
@@ -116,15 +123,16 @@ class PrimitiveComponentsTest {
             LifecycleStep.ON_MEASURE,
             LifecycleStep.ON_CREATE_MOUNT_CONTENT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_UNMOUNT)
+            LifecycleStep.ON_UNMOUNT,
+        )
   }
 
   @Test
   fun `width, height, focusable, viewTag styles respected when set`() {
-    val testComponent =
-        TestViewPrimitiveComponent(
-            view = TextView(mLithoTestRule.context.androidContext),
-            style = Style.width(667.px).height(668.px).focusable(true).viewTag("test_view_tag"))
+    val testComponent = TestViewPrimitiveComponent(
+        view = TextView(mLithoTestRule.context.androidContext),
+        style = Style.width(667.px).height(668.px).focusable(true).viewTag("test_view_tag"),
+    )
 
     val testView = mLithoTestRule.render { testComponent }
 
@@ -141,13 +149,12 @@ class PrimitiveComponentsTest {
   @Test
   fun `width, height, focusable, viewTag styles respected when updated`() {
 
-    val testView =
-        mLithoTestRule.render {
-          TestViewPrimitiveComponent(
-              view = TextView(mLithoTestRule.context.androidContext),
-              style = Style.width(667.px).height(668.px).focusable(true).viewTag("test_view_tag"),
-          )
-        }
+    val testView = mLithoTestRule.render {
+      TestViewPrimitiveComponent(
+          view = TextView(mLithoTestRule.context.androidContext),
+          style = Style.width(667.px).height(668.px).focusable(true).viewTag("test_view_tag"),
+      )
+    }
 
     assertThat(testView.lithoView.childCount).isEqualTo(1)
     val realTestView = testView.lithoView.getChildAt(0)
@@ -177,13 +184,13 @@ class PrimitiveComponentsTest {
   fun `onClick event is dispatched when set`() {
     val wasClicked = AtomicBoolean(false)
 
-    val testComponent =
-        TestViewPrimitiveComponent(
-            view = TextView(mLithoTestRule.context.androidContext),
-            style =
-                Style.width(667.px).height(668.px).focusable(true).viewTag("click_me").onClick {
-                  wasClicked.set(true)
-                })
+    val testComponent = TestViewPrimitiveComponent(
+        view = TextView(mLithoTestRule.context.androidContext),
+        style =
+            Style.width(667.px).height(668.px).focusable(true).viewTag("click_me").onClick {
+              wasClicked.set(true)
+            },
+    )
 
     val testView = mLithoTestRule.render { testComponent }
 
@@ -196,13 +203,13 @@ class PrimitiveComponentsTest {
   fun `onVisible event is fired when set`() {
     val eventFired = AtomicBoolean(false)
 
-    val testComponent =
-        TestViewPrimitiveComponent(
-            view = TextView(mLithoTestRule.context.androidContext),
-            style =
-                Style.width(667.px).height(668.px).focusable(true).viewTag("click_me").onVisible {
-                  eventFired.set(true)
-                })
+    val testComponent = TestViewPrimitiveComponent(
+        view = TextView(mLithoTestRule.context.androidContext),
+        style =
+            Style.width(667.px).height(668.px).focusable(true).viewTag("click_me").onVisible {
+              eventFired.set(true)
+            },
+    )
 
     mLithoTestRule.render { testComponent }
 
@@ -211,15 +218,14 @@ class PrimitiveComponentsTest {
 
   @Test
   fun `widthPercent and heightPercent is respected when set`() {
-    val testComponent =
-        TestViewPrimitiveComponent(
-            view = TextView(mLithoTestRule.context.androidContext),
-            style = Style.heightPercent(50f).widthPercent(50f))
+    val testComponent = TestViewPrimitiveComponent(
+        view = TextView(mLithoTestRule.context.androidContext),
+        style = Style.heightPercent(50f).widthPercent(50f),
+    )
 
-    val testView =
-        mLithoTestRule.render {
-          Row(style = Style.width(100.px).height(100.px)) { child(testComponent) }
-        }
+    val testView = mLithoTestRule.render {
+      Row(style = Style.width(100.px).height(100.px)) { child(testComponent) }
+    }
 
     assertThat(testView.lithoView.childCount).isEqualTo(1)
     val realTestView = testView.lithoView.getChildAt(0)
@@ -232,10 +238,10 @@ class PrimitiveComponentsTest {
     val alpha = 0.5f
     val alphaDV: DynamicValue<Float> = DynamicValue<Float>(alpha)
 
-    val testComponent =
-        TestViewPrimitiveComponent(
-            view = TextView(mLithoTestRule.context.androidContext),
-            style = Style.width(100.px).height(100.px).alpha(alphaDV))
+    val testComponent = TestViewPrimitiveComponent(
+        view = TextView(mLithoTestRule.context.androidContext),
+        style = Style.width(100.px).height(100.px).alpha(alphaDV),
+    )
 
     val testView = mLithoTestRule.render { testComponent }
 
@@ -258,7 +264,8 @@ class PrimitiveComponentsTest {
         stateRef = AtomicReference(testState.value)
         return LithoPrimitive(
             ViewPrimitive(view = view, updateState = { testState.update { s -> s + "_" + it } }),
-            style = null)
+            style = null,
+        )
       }
     }
 
@@ -266,9 +273,7 @@ class PrimitiveComponentsTest {
 
     mLithoTestRule.idle()
 
-    assertThat(stateRef.get())
-        .describedAs("String state is updated")
-        .isEqualTo("initial_createContent_mount")
+    assertThat(stateRef.get()).describedAs("String state is updated").isEqualTo("initial_mount")
   }
 
   @Test
@@ -276,12 +281,11 @@ class PrimitiveComponentsTest {
     val c = mLithoTestRule.context
     val steps = mutableListOf<LifecycleStep.StepInfo>()
     val view = TextView(c.androidContext)
-    val component =
-        TestViewPrimitiveComponent(
-            view = view,
-            steps = steps,
-            style = Style.width(100.px).height(100.px),
-        )
+    val component = TestViewPrimitiveComponent(
+        view = view,
+        steps = steps,
+        style = Style.width(100.px).height(100.px),
+    )
 
     val testView = mLithoTestRule.render { Column { child(component) } }
 
@@ -290,7 +294,8 @@ class PrimitiveComponentsTest {
             LifecycleStep.RENDER,
             LifecycleStep.ON_MEASURE,
             LifecycleStep.ON_CREATE_MOUNT_CONTENT,
-            LifecycleStep.ON_MOUNT)
+            LifecycleStep.ON_MOUNT,
+        )
 
     steps.clear()
 
@@ -304,12 +309,11 @@ class PrimitiveComponentsTest {
     val c = mLithoTestRule.context
     val steps = mutableListOf<LifecycleStep.StepInfo>()
     val view = TextView(c.androidContext)
-    val component =
-        TestViewPrimitiveComponent(
-            view = view,
-            steps = steps,
-            style = Style.width(100.px).flex(grow = 1f),
-        )
+    val component = TestViewPrimitiveComponent(
+        view = view,
+        steps = steps,
+        style = Style.width(100.px).flex(grow = 1f),
+    )
 
     val testView = mLithoTestRule.render { Column { child(component) } }
 
@@ -318,7 +322,8 @@ class PrimitiveComponentsTest {
             LifecycleStep.RENDER,
             LifecycleStep.ON_MEASURE,
             LifecycleStep.ON_CREATE_MOUNT_CONTENT,
-            LifecycleStep.ON_MOUNT)
+            LifecycleStep.ON_MOUNT,
+        )
 
     steps.clear()
 
@@ -338,7 +343,8 @@ class PrimitiveComponentsTest {
         val testState: State<String> = useState { "initial" }
         return LithoPrimitive(
             ViewPrimitive(view = view, steps = steps, str = testState.value),
-            style = Style.viewTag("click_me").onClick { testState.update("updated") })
+            style = Style.viewTag("click_me").onClick { testState.update("updated") },
+        )
       }
     }
 
@@ -346,7 +352,10 @@ class PrimitiveComponentsTest {
 
     assertThat(LifecycleStep.getSteps(steps))
         .containsExactly(
-            LifecycleStep.ON_MEASURE, LifecycleStep.ON_CREATE_MOUNT_CONTENT, LifecycleStep.ON_MOUNT)
+            LifecycleStep.ON_MEASURE,
+            LifecycleStep.ON_CREATE_MOUNT_CONTENT,
+            LifecycleStep.ON_MOUNT,
+        )
 
     steps.clear()
     testView.findViewWithTag("click_me").performClick()
@@ -362,25 +371,26 @@ class PrimitiveComponentsTest {
     val steps = mutableListOf<LifecycleStep.StepInfo>()
     val view = TextView(c.androidContext)
 
-    val testView =
-        mLithoTestRule.render {
-          Column {
-            child(
-                TestViewPrimitiveComponent(
-                    identity = 0,
-                    view = view,
-                    steps = steps,
-                    style = Style.width(100.px).flex(grow = 1f),
-                ))
-          }
-        }
+    val testView = mLithoTestRule.render {
+      Column {
+        child(
+            TestViewPrimitiveComponent(
+                identity = 0,
+                view = view,
+                steps = steps,
+                style = Style.width(100.px).flex(grow = 1f),
+            ),
+        )
+      }
+    }
 
     assertThat(LifecycleStep.getSteps(steps))
         .containsExactly(
             LifecycleStep.RENDER,
             LifecycleStep.ON_MEASURE,
             LifecycleStep.ON_CREATE_MOUNT_CONTENT,
-            LifecycleStep.ON_MOUNT)
+            LifecycleStep.ON_MOUNT,
+        )
 
     steps.clear()
 
@@ -392,7 +402,8 @@ class PrimitiveComponentsTest {
                 view = view,
                 steps = steps,
                 style = Style.width(100.px).flex(grow = 1f),
-            ))
+            ),
+        )
       }
     }
 
@@ -401,7 +412,8 @@ class PrimitiveComponentsTest {
             LifecycleStep.RENDER,
             LifecycleStep.ON_MEASURE,
             LifecycleStep.ON_UNMOUNT,
-            LifecycleStep.ON_MOUNT)
+            LifecycleStep.ON_MOUNT,
+        )
   }
 
   @Test
@@ -418,7 +430,8 @@ class PrimitiveComponentsTest {
             LifecycleStep.RENDER,
             LifecycleStep.ON_MEASURE,
             LifecycleStep.ON_CREATE_MOUNT_CONTENT,
-            LifecycleStep.ON_MOUNT)
+            LifecycleStep.ON_MOUNT,
+        )
 
     steps.clear()
 
@@ -466,72 +479,210 @@ class PrimitiveComponentsTest {
     val c = mLithoTestRule.context
     val steps = mutableListOf<LifecycleStep.StepInfo>()
     val view = TextView(c.androidContext)
-    val a =
-        TestViewPrimitiveComponent(
-            identity = 0,
-            view = view,
-            steps = steps,
-            style = Style.width(100.px).height(100.px), /* 100 here */
-        )
+    val a = TestViewPrimitiveComponent(
+        identity = 0,
+        view = view,
+        steps = steps,
+        style = Style.width(100.px).height(100.px), /* 100 here */
+    )
 
-    val b =
-        TestViewPrimitiveComponent(
-            identity = 0,
-            view = view,
-            steps = steps,
-            style = Style.width(200.px).height(200.px), /* 200 here */
-        )
+    val b = TestViewPrimitiveComponent(
+        identity = 0,
+        view = view,
+        steps = steps,
+        style = Style.width(200.px).height(200.px), /* 200 here */
+    )
 
     assertThat(a.isEquivalentTo(b)).isFalse
   }
 
   @Test
-  fun `when a11y props are set on style it should set them on the rendered content`() {
-    val eventHandler: EventHandler<OnInitializeAccessibilityNodeInfoEvent> = mock()
-    val onPopulateAccessibilityNodeHandler: EventHandler<OnPopulateAccessibilityNodeEvent> = mock()
+  fun `when a11y props are set on style it should set them on the rendered content`() =
+      withAccessibilityEnabled {
+        val eventHandler: EventHandler<OnInitializeAccessibilityNodeInfoEvent> = mock()
+        val onPopulateAccessibilityNodeHandler: EventHandler<OnPopulateAccessibilityNodeEvent> =
+            mock()
+        val accessibilityDescription =
+            mLithoTestRule.context.androidContext.getString(android.R.string.ok)
 
-    val component =
-        TestViewPrimitiveComponent(
+        val component = TestViewPrimitiveComponent(
             view = EditText(mLithoTestRule.context.androidContext),
             style =
                 Style.accessibilityRole(AccessibilityRole.EDIT_TEXT)
-                    .accessibilityRoleDescription("Accessibility Test")
-                    .contentDescription("Accessibility Test")
+                    .accessibilityRoleDescription(accessibilityDescription)
+                    .contentDescription(accessibilityDescription)
                     .importantForAccessibility(ImportantForAccessibility.YES)
                     .onInitializeAccessibilityNodeInfo { eventHandler }
-                    .onPopulateAccessibilityNode { onPopulateAccessibilityNodeHandler })
+                    .onPopulateAccessibilityNode { onPopulateAccessibilityNodeHandler },
+        )
 
-    // verify that info is set on the LithoView where possible, otherwise on LithoNode
-    val testView = mLithoTestRule.render { component }
-    val node = testView.currentRootNode?.node
-    val nodeInfo = node?.nodeInfo
-    assertThat(nodeInfo?.accessibilityRole).isEqualTo(AccessibilityRole.EDIT_TEXT)
-    assertThat(nodeInfo?.accessibilityRoleDescription).isEqualTo("Accessibility Test")
-    assertThat(testView.lithoView.getChildAt(0).contentDescription).isEqualTo("Accessibility Test")
-    assertThat(testView.lithoView.getChildAt(0).importantForAccessibility)
-        .isEqualTo(View.IMPORTANT_FOR_ACCESSIBILITY_YES)
-    assertThat(nodeInfo?.onInitializeAccessibilityNodeInfoHandler).isNotNull
-    assertThat(nodeInfo?.onPopulateAccessibilityNodeHandler).isNotNull
+        val testView = mLithoTestRule.render { component }
+        val nodeInfo = testView.currentRootNode?.node?.nodeInfo
+        val renderedContent = testView.lithoView.getChildAt(0)
+        assertThat(nodeInfo?.accessibilityRole).isEqualTo(AccessibilityRole.EDIT_TEXT)
+        assertThat(nodeInfo?.accessibilityRoleDescription).isEqualTo(accessibilityDescription)
+        assertThat(renderedContent.contentDescription).isEqualTo(accessibilityDescription)
+        assertThat(renderedContent.importantForAccessibility)
+            .isEqualTo(View.IMPORTANT_FOR_ACCESSIBILITY_YES)
+        assertThat(nodeInfo?.onInitializeAccessibilityNodeInfoHandler).isNotNull
+        assertThat(nodeInfo?.onPopulateAccessibilityNodeHandler).isNotNull
+        assertThat(renderedContent.getTag(ComponentHost.COMPONENT_NODE_INFO_ID)).isSameAs(nodeInfo)
+        assertThat(ViewCompat.getAccessibilityDelegate(renderedContent)).isNotNull
+      }
+
+  @Test
+  fun `when a11y handler style changes it should update the mounted content`() =
+      withAccessibilityEnabled {
+        val view = EditText(mLithoTestRule.context.androidContext)
+        val handledBy = AtomicReference<String?>()
+        val testView = mLithoTestRule.render {
+          TestViewPrimitiveComponent(
+              view = view,
+              style = Style.onInitializeAccessibilityNodeInfo { handledBy.set("first") },
+          )
+        }
+
+        val firstNodeInfo = view.getTag(ComponentHost.COMPONENT_NODE_INFO_ID) as NodeInfo
+        checkNotNull(ViewCompat.getAccessibilityDelegate(view))
+            .onInitializeAccessibilityNodeInfo(view, AccessibilityNodeInfoCompat.obtain())
+        assertThat(handledBy.get()).isEqualTo("first")
+
+        handledBy.set(null)
+        mLithoTestRule.render(lithoView = testView.lithoView) {
+          TestViewPrimitiveComponent(
+              view = view,
+              style = Style.onInitializeAccessibilityNodeInfo { handledBy.set("second") },
+          )
+        }
+
+        val secondNodeInfo = view.getTag(ComponentHost.COMPONENT_NODE_INFO_ID) as NodeInfo
+        assertThat(secondNodeInfo).isNotSameAs(firstNodeInfo)
+        checkNotNull(ViewCompat.getAccessibilityDelegate(view))
+            .onInitializeAccessibilityNodeInfo(view, AccessibilityNodeInfoCompat.obtain())
+        assertThat(handledBy.get()).isEqualTo("second")
+      }
+
+  @Test
+  fun `when a11y handler style is removed it should clear the mounted content`() =
+      withAccessibilityEnabled {
+        val view = EditText(mLithoTestRule.context.androidContext)
+        val wasHandled = AtomicBoolean(false)
+        val testView = mLithoTestRule.render {
+          TestViewPrimitiveComponent(
+              view = view,
+              style = Style.onInitializeAccessibilityNodeInfo { wasHandled.set(true) },
+          )
+        }
+
+        assertThat(view.getTag(ComponentHost.COMPONENT_NODE_INFO_ID)).isNotNull
+        val installedDelegate = checkNotNull(ViewCompat.getAccessibilityDelegate(view))
+        assertThat(installedDelegate).isInstanceOf(ComponentAccessibilityDelegate::class.java)
+        installedDelegate.onInitializeAccessibilityNodeInfo(
+            view,
+            AccessibilityNodeInfoCompat.obtain(),
+        )
+        assertThat(wasHandled.get()).isTrue
+        wasHandled.set(false)
+
+        mLithoTestRule.render(lithoView = testView.lithoView) {
+          TestViewPrimitiveComponent(view = view)
+        }
+
+        assertThat(view.getTag(ComponentHost.COMPONENT_NODE_INFO_ID)).isNull()
+        val remainingDelegate = ViewCompat.getAccessibilityDelegate(view)
+        assertThat(remainingDelegate).isNotInstanceOf(ComponentAccessibilityDelegate::class.java)
+        remainingDelegate?.onInitializeAccessibilityNodeInfo(
+            view,
+            AccessibilityNodeInfoCompat.obtain(),
+        )
+        assertThat(wasHandled.get()).isFalse
+      }
+
+  @Test
+  fun `primitive preserves its view accessibility delegate through mount and reuse`() =
+      withAccessibilityEnabled {
+        fun nodeInfoFor(view: View): AccessibilityNodeInfoCompat =
+            AccessibilityNodeInfoCompat.obtain().also { info ->
+              checkNotNull(ViewCompat.getAccessibilityDelegate(view))
+                  .onInitializeAccessibilityNodeInfo(view, info)
+            }
+
+        val stateDescription = mLithoTestRule.context.androidContext.getString(android.R.string.ok)
+        val child: ComponentScope.() -> Component = {
+          Column(style = Style.width(100.px).height(300.px)) {}
+        }
+        val testView = mLithoTestRule.render {
+          TestVerticalScrollPrimitiveComponent(
+              child = child,
+              style = Style.stateDescription(stateDescription),
+          )
+        }
+        val scrollView = testView.lithoView.getChildAt(0) as LithoScrollView
+        val delegateRegistration =
+            scrollView.getTag(ComponentHost.COMPONENT_ACCESSIBILITY_DELEGATE_ID)
+
+        val mountedInfo = nodeInfoFor(scrollView)
+        assertThat(mountedInfo.stateDescription).isEqualTo(stateDescription)
+        assertThat(mountedInfo.actionList.map { it.id })
+            .contains(AccessibilityNodeInfoCompat.ACTION_SCROLL_FORWARD)
+
+        testView.lithoView.unmountAllItems()
+
+        assertThat(scrollView.getTag(ComponentHost.COMPONENT_ACCESSIBILITY_DELEGATE_ID))
+            .isSameAs(delegateRegistration)
+        assertThat(ViewCompat.getAccessibilityDelegate(scrollView))
+            .isNotInstanceOf(ComponentAccessibilityDelegate::class.java)
+        assertThat(nodeInfoFor(scrollView).actionList.map { it.id })
+            .contains(AccessibilityNodeInfoCompat.ACTION_SCROLL_FORWARD)
+
+        mLithoTestRule.render(lithoView = testView.lithoView) {
+          TestVerticalScrollPrimitiveComponent(child = child)
+        }
+        val reusedScrollView = testView.lithoView.getChildAt(0) as LithoScrollView
+        assertThat(reusedScrollView).isSameAs(scrollView)
+        assertThat(reusedScrollView.getTag(ComponentHost.COMPONENT_ACCESSIBILITY_DELEGATE_ID))
+            .isSameAs(delegateRegistration)
+        val reusedInfo = nodeInfoFor(reusedScrollView)
+        assertThat(reusedInfo.stateDescription).isNotEqualTo(stateDescription)
+        assertThat(reusedInfo.actionList.map { it.id })
+            .contains(AccessibilityNodeInfoCompat.ACTION_SCROLL_FORWARD)
+      }
+
+  private inline fun withAccessibilityEnabled(block: () -> Unit) {
+    val accessibilityManager =
+        mLithoTestRule.context.androidContext.getSystemService(Context.ACCESSIBILITY_SERVICE)
+            as AccessibilityManager
+    val shadowAccessibilityManager = Shadows.shadowOf(accessibilityManager)
+    shadowAccessibilityManager.setEnabled(true)
+    shadowAccessibilityManager.setTouchExplorationEnabled(true)
+    AccessibilityUtils.invalidateCachedIsAccessibilityEnabled()
+
+    try {
+      block()
+    } finally {
+      shadowAccessibilityManager.setEnabled(false)
+      shadowAccessibilityManager.setTouchExplorationEnabled(false)
+      AccessibilityUtils.invalidateCachedIsAccessibilityEnabled()
+    }
   }
 
   @Test
   fun `TestDrawablePrimitiveComponent has IMAGE accessibility role by default but overriding it works`() {
-    val component1 =
-        TestDrawablePrimitiveComponent(
-            drawable = ColorDrawable(Color.RED), style = Style.width(100.px).height(100.px))
+    val component1 = TestDrawablePrimitiveComponent(
+        drawable = ColorDrawable(Color.RED),
+        style = Style.width(100.px).height(100.px),
+    )
 
     val testView1 = mLithoTestRule.render { component1 }
     val node1 = testView1.currentRootNode?.node
     val nodeInfo1 = node1?.nodeInfo
     assertThat(nodeInfo1?.accessibilityRole).isEqualTo(AccessibilityRole.IMAGE)
 
-    val component2 =
-        TestDrawablePrimitiveComponent(
-            drawable = ColorDrawable(Color.RED),
-            style =
-                Style.width(100.px)
-                    .height(100.px)
-                    .accessibilityRole(AccessibilityRole.IMAGE_BUTTON))
+    val component2 = TestDrawablePrimitiveComponent(
+        drawable = ColorDrawable(Color.RED),
+        style =
+            Style.width(100.px).height(100.px).accessibilityRole(AccessibilityRole.IMAGE_BUTTON),
+    )
 
     val testView2 = mLithoTestRule.render { component2 }
     val node2 = testView2.currentRootNode?.node
@@ -542,11 +693,11 @@ class PrimitiveComponentsTest {
   @Test
   fun `when dynamic value is set it should update the content`() {
     val tag = DynamicValue<Any?>("0")
-    val root =
-        TestViewPrimitiveComponent(
-            view = EditText(mLithoTestRule.context.androidContext),
-            dynamicTag = tag,
-            style = Style.width(100.px).height(100.px))
+    val root = TestViewPrimitiveComponent(
+        view = EditText(mLithoTestRule.context.androidContext),
+        dynamicTag = tag,
+        style = Style.width(100.px).height(100.px),
+    )
 
     val test = mLithoTestRule.render { root }
 
@@ -560,11 +711,11 @@ class PrimitiveComponentsTest {
   @Test
   fun `when component with dynamic value is unmounted it should unbind the dynamic value`() {
     val tag = DynamicValue<Any?>("0")
-    val root =
-        TestViewPrimitiveComponent(
-            view = EditText(mLithoTestRule.context.androidContext),
-            dynamicTag = tag,
-            style = Style.width(100.px).height(100.px))
+    val root = TestViewPrimitiveComponent(
+        view = EditText(mLithoTestRule.context.androidContext),
+        dynamicTag = tag,
+        style = Style.width(100.px).height(100.px),
+    )
 
     val test = mLithoTestRule.render { root }
 
@@ -583,11 +734,11 @@ class PrimitiveComponentsTest {
   @Test
   fun `when new dynamic value is set it should unbind the old dynamic value`() {
     val tag1 = DynamicValue<Any?>("0")
-    val root1 =
-        TestViewPrimitiveComponent(
-            view = EditText(mLithoTestRule.context.androidContext),
-            dynamicTag = tag1,
-            style = Style.width(100.px).height(100.px))
+    val root1 = TestViewPrimitiveComponent(
+        view = EditText(mLithoTestRule.context.androidContext),
+        dynamicTag = tag1,
+        style = Style.width(100.px).height(100.px),
+    )
 
     val test = mLithoTestRule.render { root1 }
 
@@ -600,11 +751,11 @@ class PrimitiveComponentsTest {
     assertThat(tag1.numberOfListeners).isEqualTo(1)
 
     val tag2 = DynamicValue<Any?>("2")
-    val root2 =
-        TestViewPrimitiveComponent(
-            view = EditText(mLithoTestRule.context.androidContext),
-            dynamicTag = tag2,
-            style = Style.width(100.px).height(100.px))
+    val root2 = TestViewPrimitiveComponent(
+        view = EditText(mLithoTestRule.context.androidContext),
+        dynamicTag = tag2,
+        style = Style.width(100.px).height(100.px),
+    )
 
     test.setRoot(root2)
 
@@ -631,11 +782,11 @@ class PrimitiveComponentsTest {
   @Test
   fun `when new dynamic value is null it should unbind the old dynamic value`() {
     val tag1 = DynamicValue<Any?>("0")
-    val root1 =
-        TestViewPrimitiveComponent(
-            view = EditText(mLithoTestRule.context.androidContext),
-            dynamicTag = tag1,
-            style = Style.width(100.px).height(100.px))
+    val root1 = TestViewPrimitiveComponent(
+        view = EditText(mLithoTestRule.context.androidContext),
+        dynamicTag = tag1,
+        style = Style.width(100.px).height(100.px),
+    )
 
     val test = mLithoTestRule.render { root1 }
 
@@ -645,11 +796,11 @@ class PrimitiveComponentsTest {
 
     test.findViewWithTag("1")
 
-    val root2 =
-        TestViewPrimitiveComponent(
-            view = EditText(mLithoTestRule.context.androidContext),
-            dynamicTag = null,
-            style = Style.width(100.px).height(100.px))
+    val root2 = TestViewPrimitiveComponent(
+        view = EditText(mLithoTestRule.context.androidContext),
+        dynamicTag = null,
+        style = Style.width(100.px).height(100.px),
+    )
 
     test.setRoot(root2)
 
@@ -658,20 +809,20 @@ class PrimitiveComponentsTest {
 
   @Test
   fun `when new dynamic value is set and the old one was null it should bind the new dynamic value`() {
-    val root1 =
-        TestViewPrimitiveComponent(
-            view = EditText(mLithoTestRule.context.androidContext),
-            dynamicTag = null,
-            style = Style.width(100.px).height(100.px))
+    val root1 = TestViewPrimitiveComponent(
+        view = EditText(mLithoTestRule.context.androidContext),
+        dynamicTag = null,
+        style = Style.width(100.px).height(100.px),
+    )
 
     val test = mLithoTestRule.render { root1 }
 
     val tag = DynamicValue<Any?>("1")
-    val root2 =
-        TestViewPrimitiveComponent(
-            view = EditText(mLithoTestRule.context.androidContext),
-            dynamicTag = tag,
-            style = Style.width(100.px).height(100.px))
+    val root2 = TestViewPrimitiveComponent(
+        view = EditText(mLithoTestRule.context.androidContext),
+        dynamicTag = tag,
+        style = Style.width(100.px).height(100.px),
+    )
 
     test.setRoot(root2)
 
@@ -694,21 +845,24 @@ class PrimitiveComponentsTest {
     val c = mLithoTestRule.context
     val tag = DynamicValue<Any?>("0")
 
-    val test =
-        mLithoTestRule.render {
-          Column {
-            child(
-                TestViewPrimitiveComponent(
-                    view = EditText(mLithoTestRule.context.androidContext),
-                    dynamicTag = tag,
-                    style = Style.width(100.px).height(100.px)))
-            child(
-                TestViewPrimitiveComponent(
-                    view = EditText(mLithoTestRule.context.androidContext),
-                    dynamicTag = tag,
-                    style = Style.width(100.px).height(100.px)))
-          }
-        }
+    val test = mLithoTestRule.render {
+      Column {
+        child(
+            TestViewPrimitiveComponent(
+                view = EditText(mLithoTestRule.context.androidContext),
+                dynamicTag = tag,
+                style = Style.width(100.px).height(100.px),
+            ),
+        )
+        child(
+            TestViewPrimitiveComponent(
+                view = EditText(mLithoTestRule.context.androidContext),
+                dynamicTag = tag,
+                style = Style.width(100.px).height(100.px),
+            ),
+        )
+      }
+    }
 
     val lithoView = test.lithoView
     val child0 = lithoView.getChildAt(0)
@@ -727,19 +881,18 @@ class PrimitiveComponentsTest {
   fun `when same component with dynamic value is used multiple times it should update the content for all instances`() {
     val c = mLithoTestRule.context
     val tag = DynamicValue<Any?>("0")
-    val component =
-        TestViewPrimitiveComponent(
-            view = EditText(mLithoTestRule.context.androidContext),
-            dynamicTag = tag,
-            style = Style.width(100.px).height(100.px))
+    val component = TestViewPrimitiveComponent(
+        view = EditText(mLithoTestRule.context.androidContext),
+        dynamicTag = tag,
+        style = Style.width(100.px).height(100.px),
+    )
 
-    val test =
-        mLithoTestRule.render {
-          Column {
-            child(component)
-            child(component)
-          }
-        }
+    val test = mLithoTestRule.render {
+      Column {
+        child(component)
+        child(component)
+      }
+    }
 
     val lithoView = test.lithoView
     val child0 = lithoView.getChildAt(0)
@@ -758,24 +911,23 @@ class PrimitiveComponentsTest {
   fun `Primitive that renders tree host notifies them about visibility bounds changes`() {
     val steps = mutableListOf<LifecycleStep.StepInfo>()
 
-    val component =
-        TestVerticalScrollPrimitiveComponent(
-            child = {
-              Column {
-                child(
-                    TestViewPrimitiveComponent(
-                        view = TextView(mLithoTestRule.context.androidContext),
-                        steps = steps,
-                        style =
-                            Style.width(100.px).height(100.px).margin(top = 50.px).onVisible {
-                              steps.add(LifecycleStep.StepInfo(LifecycleStep.ON_EVENT_VISIBLE))
-                            },
-                    ),
-                )
-              }
-            },
-            style = Style.width(100.px).height(100.px),
-        )
+    val component = TestVerticalScrollPrimitiveComponent(
+        child = {
+          Column {
+            child(
+                TestViewPrimitiveComponent(
+                    view = TextView(mLithoTestRule.context.androidContext),
+                    steps = steps,
+                    style =
+                        Style.width(100.px).height(100.px).margin(top = 50.px).onVisible {
+                          steps.add(LifecycleStep.StepInfo(LifecycleStep.ON_EVENT_VISIBLE))
+                        },
+                ),
+            )
+          }
+        },
+        style = Style.width(100.px).height(100.px),
+    )
 
     // Create a FrameLayout 100x100
     val parent = FrameLayout(mLithoTestRule.context.androidContext)
@@ -823,19 +975,19 @@ class PrimitiveComponentsTest {
   fun `Primitive that is excluded from incremental mount is setting this value properly`() {
     val steps = mutableListOf<LifecycleStep.StepInfo>()
 
-    val component =
-        TestViewPrimitiveComponent(
-            view = TextView(mLithoTestRule.context.androidContext),
-            shouldExcludeFromIncrementalMount = true,
-            steps = steps,
-            style =
-                Style.width(100.px)
-                    .height(100.px)
-                    .margin(top = 50.px)
-                    .onVisible { steps.add(LifecycleStep.StepInfo(LifecycleStep.ON_EVENT_VISIBLE)) }
-                    .onInvisible {
-                      steps.add(LifecycleStep.StepInfo(LifecycleStep.ON_EVENT_INVISIBLE))
-                    })
+    val component = TestViewPrimitiveComponent(
+        view = TextView(mLithoTestRule.context.androidContext),
+        shouldExcludeFromIncrementalMount = true,
+        steps = steps,
+        style =
+            Style.width(100.px)
+                .height(100.px)
+                .margin(top = 50.px)
+                .onVisible { steps.add(LifecycleStep.StepInfo(LifecycleStep.ON_EVENT_VISIBLE)) }
+                .onInvisible {
+                  steps.add(LifecycleStep.StepInfo(LifecycleStep.ON_EVENT_INVISIBLE))
+                },
+    )
 
     // Create a FrameLayout 100x100
     val parent = FrameLayout(mLithoTestRule.context.androidContext)
@@ -879,18 +1031,18 @@ class PrimitiveComponentsTest {
   fun `Primitive that is not excluded from incremental mount by default is setting this value properly`() {
     val steps = mutableListOf<LifecycleStep.StepInfo>()
 
-    val component =
-        TestViewPrimitiveComponent(
-            view = TextView(mLithoTestRule.context.androidContext),
-            steps = steps,
-            style =
-                Style.width(100.px)
-                    .height(100.px)
-                    .margin(top = 50.px)
-                    .onVisible { steps.add(LifecycleStep.StepInfo(LifecycleStep.ON_EVENT_VISIBLE)) }
-                    .onInvisible {
-                      steps.add(LifecycleStep.StepInfo(LifecycleStep.ON_EVENT_INVISIBLE))
-                    })
+    val component = TestViewPrimitiveComponent(
+        view = TextView(mLithoTestRule.context.androidContext),
+        steps = steps,
+        style =
+            Style.width(100.px)
+                .height(100.px)
+                .margin(top = 50.px)
+                .onVisible { steps.add(LifecycleStep.StepInfo(LifecycleStep.ON_EVENT_VISIBLE)) }
+                .onInvisible {
+                  steps.add(LifecycleStep.StepInfo(LifecycleStep.ON_EVENT_INVISIBLE))
+                },
+    )
 
     // Create a FrameLayout 100x100
     val parent = FrameLayout(mLithoTestRule.context.androidContext)
@@ -936,19 +1088,19 @@ class PrimitiveComponentsTest {
   fun `Primitive that sets that it's not excluded from incremental mount is setting this value properly`() {
     val steps = mutableListOf<LifecycleStep.StepInfo>()
 
-    val component =
-        TestViewPrimitiveComponent(
-            view = TextView(mLithoTestRule.context.androidContext),
-            shouldExcludeFromIncrementalMount = false,
-            steps = steps,
-            style =
-                Style.width(100.px)
-                    .height(100.px)
-                    .margin(top = 50.px)
-                    .onVisible { steps.add(LifecycleStep.StepInfo(LifecycleStep.ON_EVENT_VISIBLE)) }
-                    .onInvisible {
-                      steps.add(LifecycleStep.StepInfo(LifecycleStep.ON_EVENT_INVISIBLE))
-                    })
+    val component = TestViewPrimitiveComponent(
+        view = TextView(mLithoTestRule.context.androidContext),
+        shouldExcludeFromIncrementalMount = false,
+        steps = steps,
+        style =
+            Style.width(100.px)
+                .height(100.px)
+                .margin(top = 50.px)
+                .onVisible { steps.add(LifecycleStep.StepInfo(LifecycleStep.ON_EVENT_VISIBLE)) }
+                .onInvisible {
+                  steps.add(LifecycleStep.StepInfo(LifecycleStep.ON_EVENT_INVISIBLE))
+                },
+    )
 
     // Create a FrameLayout 100x100
     val parent = FrameLayout(mLithoTestRule.context.androidContext)
@@ -996,10 +1148,10 @@ class PrimitiveComponentsTest {
     val componentNoDescription =
         object : PrimitiveComponent() {
           override fun PrimitiveComponentScope.render(): LithoPrimitive {
-            val primitive =
-                Primitive(
-                    layoutBehavior = FixedSizeLayoutBehavior(100.px, 100.px),
-                    MountBehavior(ViewAllocator { context -> TextView(context) }) {})
+            val primitive = Primitive(
+                layoutBehavior = FixedSizeLayoutBehavior(100.px, 100.px),
+                MountBehavior(ViewAllocator { context -> TextView(context) }) {},
+            )
 
             defaultRenderUnitDescription = primitive.renderUnit.description
 
@@ -1017,11 +1169,13 @@ class PrimitiveComponentsTest {
     val componentWithDescription =
         object : PrimitiveComponent() {
           override fun PrimitiveComponentScope.render(): LithoPrimitive {
-            val primitive =
-                Primitive(
-                    layoutBehavior = FixedSizeLayoutBehavior(100.px, 100.px),
-                    MountBehavior(
-                        { customDescription }, ViewAllocator { context -> TextView(context) }) {})
+            val primitive = Primitive(
+                layoutBehavior = FixedSizeLayoutBehavior(100.px, 100.px),
+                MountBehavior(
+                    { customDescription },
+                    ViewAllocator { context -> TextView(context) },
+                ) {},
+            )
 
             customRenderUnitDescription = primitive.renderUnit.description
 
@@ -1054,7 +1208,11 @@ class PrimitiveComponentsTest {
     testView.lithoView.unmountAllItems()
     assertThat(bindInfo)
         .containsExactly(
-            "BIND:text", "BIND:contentDescription", "UNBIND:contentDescription", "UNBIND:text")
+            "BIND:text",
+            "BIND:contentDescription",
+            "UNBIND:contentDescription",
+            "UNBIND:text",
+        )
   }
 
   @Test
@@ -1101,17 +1259,17 @@ class PrimitiveComponentsTest {
             layoutBehavior =
                 object : LayoutBehavior {
                   override fun LayoutScope.layout(
-                      sizeConstraints: SizeConstraints
+                      sizeConstraints: SizeConstraints,
                   ): PrimitiveLayoutResult {
-                    val layoutData =
-                        TestPrimitiveLayoutData(
-                            width = sizeConstraints.maxWidth,
-                            height = sizeConstraints.maxHeight,
-                        )
+                    val layoutData = TestPrimitiveLayoutData(
+                        width = sizeConstraints.maxWidth,
+                        height = sizeConstraints.maxHeight,
+                    )
                     return PrimitiveLayoutResult(
                         width = layoutData.width,
                         height = layoutData.height,
-                        layoutData = layoutData)
+                        layoutData = layoutData,
+                    )
                   }
                 },
             mountBehavior =
@@ -1126,13 +1284,15 @@ class PrimitiveComponentsTest {
                     onUnbind {}
                   }
                 },
-            style = style)
+            style = style,
+        )
       }
     }
 
     // initial render
-    val testView =
-        mLithoTestRule.render { TestComponent(style = Style.width(100.px).height(100.px)) }
+    val testView = mLithoTestRule.render {
+      TestComponent(style = Style.width(100.px).height(100.px))
+    }
 
     assertThat(unitDepLayoutData).containsExactly(TestPrimitiveLayoutData(100, 100))
     assertThat(noDepLayoutData).isEqualTo(unitDepLayoutData)
@@ -1168,13 +1328,16 @@ class PrimitiveComponentsTest {
             ViewPrimitive(
                 view = view,
                 onBind = { context -> onBindAndroidContext = context },
-                onUnbind = { context -> onUnbindAndroidContext = context }),
-            style = null)
+                onUnbind = { context -> onUnbindAndroidContext = context },
+            ),
+            style = null,
+        )
       }
     }
 
-    val testView =
-        mLithoTestRule.render { TestComponent(TextView(mLithoTestRule.context.androidContext)) }
+    val testView = mLithoTestRule.render {
+      TestComponent(TextView(mLithoTestRule.context.androidContext))
+    }
 
     mLithoTestRule.idle()
 
@@ -1193,18 +1356,22 @@ class PrimitiveComponentsTest {
       ComponentsConfiguration.customPoolScopesEnabled = true
       val poolScope = PoolScope.ManuallyManaged()
       val componentTreeWithPoolScope =
-          ComponentTree.create(mLithoTestRule.context).poolScope(poolScope).build()
-      val componentTreeWithoutPoolScope = ComponentTree.create(mLithoTestRule.context).build()
+          ComponentTree.create(mLithoTestRule.context)
+              .poolScope(poolScope)
+              .enableChildClipping(true)
+              .build()
+      val componentTreeWithoutPoolScope =
+          ComponentTree.create(mLithoTestRule.context).enableChildClipping(true).build()
 
       var resolvedPoolScope: PoolScope? = null
       val component =
           object : PrimitiveComponent() {
             override fun PrimitiveComponentScope.render(): LithoPrimitive {
               resolvedPoolScope = PoolScopeTreeProp.value
-              val primitive =
-                  Primitive(
-                      layoutBehavior = FixedSizeLayoutBehavior(100.px, 100.px),
-                      MountBehavior(ViewAllocator { context -> TextView(context) }) {})
+              val primitive = Primitive(
+                  layoutBehavior = FixedSizeLayoutBehavior(100.px, 100.px),
+                  MountBehavior(ViewAllocator { context -> TextView(context) }) {},
+              )
               return LithoPrimitive(primitive, null)
             }
           }
@@ -1233,17 +1400,18 @@ class PrimitiveComponentsTest {
   fun `should see custom pool scope in render only if the component is inside of a lazy list`() {
     try {
       ComponentsConfiguration.customPoolScopesEnabled = true
-      val componentTreeWithoutPoolScope = ComponentTree.create(mLithoTestRule.context).build()
+      val componentTreeWithoutPoolScope =
+          ComponentTree.create(mLithoTestRule.context).enableChildClipping(true).build()
 
       var firstResolvedPoolScope: PoolScope? = null
       val firstComponent =
           object : PrimitiveComponent() {
             override fun PrimitiveComponentScope.render(): LithoPrimitive {
               firstResolvedPoolScope = PoolScopeTreeProp.value
-              val primitive =
-                  Primitive(
-                      layoutBehavior = FixedSizeLayoutBehavior(100.px, 100.px),
-                      MountBehavior(ViewAllocator { context -> TextView(context) }) {})
+              val primitive = Primitive(
+                  layoutBehavior = FixedSizeLayoutBehavior(100.px, 100.px),
+                  MountBehavior(ViewAllocator { context -> TextView(context) }) {},
+              )
               return LithoPrimitive(primitive, null)
             }
           }
@@ -1253,10 +1421,10 @@ class PrimitiveComponentsTest {
           object : PrimitiveComponent() {
             override fun PrimitiveComponentScope.render(): LithoPrimitive {
               secondResolvedPoolScope = PoolScopeTreeProp.value
-              val primitive =
-                  Primitive(
-                      layoutBehavior = FixedSizeLayoutBehavior(100.px, 100.px),
-                      MountBehavior(ViewAllocator { context -> TextView(context) }) {})
+              val primitive = Primitive(
+                  layoutBehavior = FixedSizeLayoutBehavior(100.px, 100.px),
+                  MountBehavior(ViewAllocator { context -> TextView(context) }) {},
+              )
               return LithoPrimitive(primitive, null)
             }
           }
@@ -1269,7 +1437,8 @@ class PrimitiveComponentsTest {
                   LazyList(style = Style.height(100.dp)) {
                     // first component is inside of a lazy list
                     child(firstComponent)
-                  })
+                  },
+              )
               // second component is outside of the lazy collection
               child(secondComponent)
             }
@@ -1296,7 +1465,7 @@ class TestViewPrimitiveComponent(
     val identity: Int = 0,
     val dynamicTag: DynamicValue<Any?>? = null,
     val shouldExcludeFromIncrementalMount: Boolean? = null,
-    val style: Style? = null
+    val style: Style? = null,
 ) : PrimitiveComponent() {
 
   override fun PrimitiveComponentScope.render(): LithoPrimitive {
@@ -1310,8 +1479,10 @@ class TestViewPrimitiveComponent(
             steps = steps,
             dynamicTag = dynamicTag,
             excludeFromIncrementalMount =
-                this@TestViewPrimitiveComponent.shouldExcludeFromIncrementalMount),
-        style)
+                this@TestViewPrimitiveComponent.shouldExcludeFromIncrementalMount,
+        ),
+        style,
+    )
   }
 }
 
@@ -1331,9 +1502,11 @@ private fun PrimitiveComponentScope.ViewPrimitive(
   class ViewPrimitiveLayoutBehavior(private val id: Int = 0) : LayoutBehavior {
     override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
       steps?.add(LifecycleStep.StepInfo(LifecycleStep.ON_MEASURE))
-      val size = Size.fillSpace(sizeConstraints, 100, 100)
+      val size = IntSize.fillSpace(sizeConstraints, 100, 100)
       return PrimitiveLayoutResult(
-          size = size, layoutData = TestPrimitiveLayoutData(size.width, size.height))
+          size = size,
+          layoutData = TestPrimitiveLayoutData(size.width, size.height),
+      )
     }
   }
 
@@ -1342,26 +1515,27 @@ private fun PrimitiveComponentScope.ViewPrimitive(
       mountBehavior =
           MountBehavior(
               ViewAllocator {
-                updateState?.invoke("createContent")
                 steps?.add(LifecycleStep.StepInfo(LifecycleStep.ON_CREATE_MOUNT_CONTENT))
                 view
-              }) {
-                shouldExcludeFromIncrementalMount = excludeFromIncrementalMount == true
+              },
+          ) {
+            shouldExcludeFromIncrementalMount = excludeFromIncrementalMount == true
 
-                // using tag for convenience of tests
-                bindDynamic(dynamicTag, View::setTag, "default_value")
+            // using tag for convenience of tests
+            bindDynamic(dynamicTag, View::setTag, "default_value")
 
-                bindWithLayoutData<TestPrimitiveLayoutData>(id, steps, updateState, str) { _, _ ->
-                  onBind?.invoke(androidContext)
-                  updateState?.invoke("mount")
-                  steps?.add(LifecycleStep.StepInfo(LifecycleStep.ON_MOUNT))
+            bindWithLayoutData<TestPrimitiveLayoutData>(id, steps, str) { _, _ ->
+              onBind?.invoke(androidContext)
+              updateState?.invoke("mount")
+              steps?.add(LifecycleStep.StepInfo(LifecycleStep.ON_MOUNT))
 
-                  onUnbind {
-                    onUnbind?.invoke(androidContext)
-                    steps?.add(LifecycleStep.StepInfo(LifecycleStep.ON_UNMOUNT))
-                  }
-                }
-              })
+              onUnbind {
+                onUnbind?.invoke(androidContext)
+                steps?.add(LifecycleStep.StepInfo(LifecycleStep.ON_UNMOUNT))
+              }
+            }
+          },
+  )
 }
 
 class TestDrawablePrimitiveComponent(val drawable: Drawable, val style: Style? = null) :
@@ -1372,7 +1546,7 @@ class TestDrawablePrimitiveComponent(val drawable: Drawable, val style: Style? =
         layoutBehavior =
             object : LayoutBehavior {
               override fun LayoutScope.layout(
-                  sizeConstraints: SizeConstraints
+                  sizeConstraints: SizeConstraints,
               ): PrimitiveLayoutResult {
                 val width =
                     if (sizeConstraints.hasExactWidth) {
@@ -1390,7 +1564,10 @@ class TestDrawablePrimitiveComponent(val drawable: Drawable, val style: Style? =
 
                 val result = MeasureResult(width, height, TestPrimitiveLayoutData(width, height))
                 return PrimitiveLayoutResult(
-                    result.width, result.height, layoutData = result.layoutData)
+                    result.width,
+                    result.height,
+                    layoutData = result.layoutData,
+                )
               }
             },
         mountBehavior =
@@ -1400,7 +1577,8 @@ class TestDrawablePrimitiveComponent(val drawable: Drawable, val style: Style? =
                 onUnbind {}
               }
             },
-        Style.accessibilityRole(AccessibilityRole.IMAGE) + style)
+        Style.accessibilityRole(AccessibilityRole.IMAGE) + style,
+    )
   }
 }
 
@@ -1412,7 +1590,9 @@ class TestVerticalScrollPrimitiveComponent(
   override fun PrimitiveComponentScope.render(): LithoPrimitive {
 
     val componentTree = useState {
-      ComponentTree.createNestedComponentTree(context, this@render.child()).build()
+      ComponentTree.createNestedComponentTree(context, this@render.child())
+          .enableChildClipping(true)
+          .build()
     }
 
     return LithoPrimitive(
@@ -1431,14 +1611,15 @@ class TestVerticalScrollPrimitiveComponent(
                 onUnbind {}
               }
             },
-        style)
+        style,
+    )
   }
 }
 
 class TestPrimitiveWithTwoBindersComponent(
     private val text: String,
     private val contentDescription: String,
-    private val bindInfo: MutableList<String>
+    private val bindInfo: MutableList<String>,
 ) : PrimitiveComponent() {
   override fun PrimitiveComponentScope.render(): LithoPrimitive {
     return LithoPrimitive(
@@ -1462,7 +1643,8 @@ class TestPrimitiveWithTwoBindersComponent(
                 }
               }
             },
-        style = null)
+        style = null,
+    )
   }
 }
 

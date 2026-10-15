@@ -53,11 +53,25 @@ abstract class MountExtension<Input, State> {
   open fun beforeMount(
       extensionState: ExtensionState<State>,
       input: Input?,
-      localVisibleRect: Rect?
+      localVisibleRect: Rect?,
   ) = Unit
 
   /** Called immediately after mounting. */
   open fun afterMount(extensionState: ExtensionState<State>) = Unit
+
+  /** Called immediately after mounting with the reason that triggered the mount. */
+  open fun afterMount(extensionState: ExtensionState<State>, reason: VisibilityChangeReason) {
+    afterMount(extensionState)
+  }
+
+  /**
+   * Called once, before the whole tree is torn down and before any child is unmounted. Not called
+   * when individual items unmount.
+   *
+   * It also runs when there is no current render tree so extensions can release state before they
+   * are unregistered.
+   */
+  open fun onBeforeUnmount(extensionState: ExtensionState<State>) = Unit
 
   /** Called after all the Host's children have been unmounted. */
   open fun onUnmount(extensionState: ExtensionState<State>) = Unit
@@ -92,7 +106,7 @@ abstract class MountExtension<Input, State> {
     @JvmStatic
     protected fun isLockedForMount(
         extensionState: ExtensionState<*>,
-        renderTreeNode: RenderTreeNode
+        renderTreeNode: RenderTreeNode,
     ): Boolean = isLockedForMount(extensionState, renderTreeNode.renderUnit.id)
 
     @JvmStatic

@@ -51,7 +51,9 @@ class MountStateRemountInPlaceTest {
     val firstComponent = TestDrawableComponent.create(context).color(Color.RED).build()
     val lithoView =
         ComponentTestHelper.mountComponent(
-            context, Column.create(context).child(firstComponent).build())
+            context,
+            Column.create(context).child(firstComponent).build(),
+        )
     assertThat(firstComponent.wasOnMountCalled()).isTrue
     assertThat(firstComponent.wasOnBindCalled()).isTrue
     assertThat(firstComponent.wasOnUnmountCalled()).isFalse
@@ -67,7 +69,9 @@ class MountStateRemountInPlaceTest {
     val firstComponent = TestDrawableComponent.create(context).build()
     val lithoView =
         ComponentTestHelper.mountComponent(
-            context, Column.create(context).child(firstComponent).build())
+            context,
+            Column.create(context).child(firstComponent).build(),
+        )
     assertThat(firstComponent.wasOnMountCalled()).isTrue
     assertThat(firstComponent.wasOnBindCalled()).isTrue
     assertThat(firstComponent.wasOnUnmountCalled()).isFalse
@@ -95,7 +99,8 @@ class MountStateRemountInPlaceTest {
             LifecycleStep.ON_UNBIND,
             LifecycleStep.ON_UNMOUNT,
             LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            LifecycleStep.ON_BIND,
+        )
   }
 
   @Test
@@ -104,7 +109,9 @@ class MountStateRemountInPlaceTest {
     val firstComponent = TestDrawableComponent.create(context).build()
     val lithoView =
         ComponentTestHelper.mountComponent(
-            context, Column.create(context).child(firstComponent).build())
+            context,
+            Column.create(context).child(firstComponent).build(),
+        )
     assertThat(firstComponent.wasOnMountCalled()).isTrue
     assertThat(firstComponent.wasOnBindCalled()).isTrue
     assertThat(firstComponent.wasOnUnmountCalled()).isFalse
@@ -122,19 +129,35 @@ class MountStateRemountInPlaceTest {
     context.resources.configuration.orientation = Configuration.ORIENTATION_PORTRAIT
     val firstComponent =
         TestDrawableComponent.create(
-                context, 0, 0, true, true, false, true /*isMountSizeDependent*/)
+                context,
+                0,
+                0,
+                true,
+                true,
+                false,
+                true, /*isMountSizeDependent*/
+            )
             .measuredHeight(10)
             .build()
     val lithoView =
         ComponentTestHelper.mountComponent(
-            context, Column.create(context).child(firstComponent).build())
+            context,
+            Column.create(context).child(firstComponent).build(),
+        )
     assertThat(firstComponent.wasOnMountCalled()).isTrue
     assertThat(firstComponent.wasOnBindCalled()).isTrue
     assertThat(firstComponent.wasOnUnmountCalled()).isFalse
     context.resources.configuration.orientation = Configuration.ORIENTATION_LANDSCAPE
     val secondComponent =
         TestDrawableComponent.create(
-                context, 0, 0, true, true, false, true /*isMountSizeDependent*/)
+                context,
+                0,
+                0,
+                true,
+                true,
+                false,
+                true, /*isMountSizeDependent*/
+            )
             .measuredHeight(10)
             .build()
     lithoView.componentTree?.root = Column.create(context).child(secondComponent).build()
@@ -148,18 +171,34 @@ class MountStateRemountInPlaceTest {
   fun testMountUnmountWithNoShouldUpdateAndDifferentSize() {
     val firstComponent =
         TestDrawableComponent.create(
-                context, 0, 0, true, true, false, true /*isMountSizeDependent*/)
+                context,
+                0,
+                0,
+                true,
+                true,
+                false,
+                true, /*isMountSizeDependent*/
+            )
             .measuredHeight(10)
             .build()
     val lithoView =
         ComponentTestHelper.mountComponent(
-            context, Column.create(context).child(firstComponent).build())
+            context,
+            Column.create(context).child(firstComponent).build(),
+        )
     assertThat(firstComponent.wasOnMountCalled()).isTrue
     assertThat(firstComponent.wasOnBindCalled()).isTrue
     assertThat(firstComponent.wasOnUnmountCalled()).isFalse
     val secondComponent =
         TestDrawableComponent.create(
-                context, 0, 0, true, true, false, true /*isMountSizeDependent*/)
+                context,
+                0,
+                0,
+                true,
+                true,
+                false,
+                true, /*isMountSizeDependent*/
+            )
             .measuredHeight(11)
             .build()
     lithoView.componentTree?.root = Column.create(context).child(secondComponent).build()
@@ -172,18 +211,34 @@ class MountStateRemountInPlaceTest {
   fun testMountUnmountWithNoShouldUpdateAndSameSize() {
     val firstComponent =
         TestDrawableComponent.create(
-                context, 0, 0, true, true, false, true /*isMountSizeDependent*/)
+                context,
+                0,
+                0,
+                true,
+                true,
+                false,
+                true, /*isMountSizeDependent*/
+            )
             .measuredHeight(10)
             .build()
     val lithoView =
         ComponentTestHelper.mountComponent(
-            context, Column.create(context).child(firstComponent).build())
+            context,
+            Column.create(context).child(firstComponent).build(),
+        )
     assertThat(firstComponent.wasOnMountCalled()).isTrue
     assertThat(firstComponent.wasOnBindCalled()).isTrue
     assertThat(firstComponent.wasOnUnmountCalled()).isFalse
     val secondComponent =
         TestDrawableComponent.create(
-                context, 0, 0, true, true, false, true /*isMountSizeDependent*/)
+                context,
+                0,
+                0,
+                true,
+                true,
+                false,
+                true, /*isMountSizeDependent*/
+            )
             .measuredHeight(10)
             .build()
     lithoView.componentTree?.root = Column.create(context).child(secondComponent).build()
@@ -198,10 +253,15 @@ class MountStateRemountInPlaceTest {
     val lithoView =
         ComponentTestHelper.mountComponent(
             LithoView(context),
-            ComponentTree.create(context, Column.create(context).child(firstComponent).build())
+            ComponentTree.create(
+                    context,
+                    Column.create(context).child(firstComponent).build(),
+                )
+                .enableChildClipping(true)
                 .build(),
             atMost(100),
-            atMost(100))
+            atMost(100),
+        )
     assertThat(firstComponent.wasOnMountCalled()).isTrue
     assertThat(firstComponent.wasOnBindCalled()).isTrue
     assertThat(firstComponent.wasOnUnmountCalled()).isFalse
@@ -223,10 +283,15 @@ class MountStateRemountInPlaceTest {
     val lithoView =
         ComponentTestHelper.mountComponent(
             LithoView(context),
-            ComponentTree.create(context, Column.create(context).child(firstComponent).build())
+            ComponentTree.create(
+                    context,
+                    Column.create(context).child(firstComponent).build(),
+                )
+                .enableChildClipping(true)
                 .build(),
             exactly(100),
-            exactly(100))
+            exactly(100),
+        )
     assertThat(firstComponent.wasOnMountCalled()).isTrue
     assertThat(firstComponent.wasOnBindCalled()).isTrue
     assertThat(firstComponent.wasOnUnmountCalled()).isFalse
@@ -245,10 +310,15 @@ class MountStateRemountInPlaceTest {
     val lithoView =
         ComponentTestHelper.mountComponent(
             LithoView(context),
-            ComponentTree.create(context, Column.create(context).child(firstComponent).build())
+            ComponentTree.create(
+                    context,
+                    Column.create(context).child(firstComponent).build(),
+                )
+                .enableChildClipping(true)
                 .build(),
             exactly(100),
-            exactly(100))
+            exactly(100),
+        )
     assertThat(firstComponent.wasOnMountCalled()).isTrue
     assertThat(firstComponent.wasOnBindCalled()).isTrue
     assertThat(firstComponent.wasOnUnmountCalled()).isFalse
@@ -266,7 +336,9 @@ class MountStateRemountInPlaceTest {
     val firstComponent = TestDrawableComponent.create(context).color(Color.BLACK).build()
     val lithoView =
         ComponentTestHelper.mountComponent(
-            context, Column.create(context).child(firstComponent).build())
+            context,
+            Column.create(context).child(firstComponent).build(),
+        )
     assertThat(firstComponent.wasOnMountCalled()).isTrue
     assertThat(firstComponent.wasOnBindCalled()).isTrue
     assertThat(firstComponent.wasOnUnmountCalled()).isFalse
@@ -282,7 +354,9 @@ class MountStateRemountInPlaceTest {
     val firstComponent = TestDrawableComponent.create(context).color(Color.BLACK).build()
     val lithoView =
         ComponentTestHelper.mountComponent(
-            context, Column.create(context).child(firstComponent).build())
+            context,
+            Column.create(context).child(firstComponent).build(),
+        )
     assertThat(firstComponent.wasOnMountCalled()).isTrue
     assertThat(firstComponent.wasOnBindCalled()).isTrue
     assertThat(firstComponent.wasOnUnmountCalled()).isFalse
@@ -298,13 +372,20 @@ class MountStateRemountInPlaceTest {
     val firstComponent = TestDrawableComponent.create(context).color(Color.RED).build()
     val firstLithoView =
         ComponentTestHelper.mountComponent(
-            context, Column.create(context).child(firstComponent).build())
+            context,
+            Column.create(context).child(firstComponent).build(),
+        )
     assertThat(firstComponent.wasOnMountCalled()).isTrue
     assertThat(firstComponent.wasOnBindCalled()).isTrue
     assertThat(firstComponent.wasOnUnmountCalled()).isFalse
     val secondComponent = TestDrawableComponent.create(context).color(Color.BLUE).build()
     val secondTree =
-        ComponentTree.create(context, Column.create(context).child(secondComponent).build()).build()
+        ComponentTree.create(
+                context,
+                Column.create(context).child(secondComponent).build(),
+            )
+            .enableChildClipping(true)
+            .build()
     secondTree.setSizeSpec(100, 100)
     val thirdComponent = spy(TestDrawableComponent.create(context).build())
     doReturn(thirdComponent).`when`(thirdComponent).makeShallowCopy()

@@ -26,6 +26,11 @@ import static com.facebook.litho.sections.widget.RecyclerCollectionComponentSpec
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assume.assumeThat;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.times;
 
 import android.text.TextUtils;
 import android.view.View;
@@ -50,16 +55,22 @@ import com.facebook.litho.testing.state.StateUpdatesTestHelper;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.testing.viewtree.ViewTree;
 import com.facebook.litho.testing.viewtree.ViewTreeAssert;
+import com.facebook.litho.widget.LayoutSpecDelegatingToSizeSpecWorkingRangeTester;
+import com.facebook.litho.widget.LayoutSpecMeasuringWorkingRangeTester;
+import com.facebook.litho.widget.LayoutSpecWithSizeSpecMeasuringWorkingRangeTester;
+import com.facebook.litho.widget.LayoutSpecWithSizeSpecWorkingRangeTester;
 import com.facebook.litho.widget.LayoutSpecWorkingRangeTester;
 import com.facebook.litho.widget.MountSpecWorkingRangeTester;
 import com.facebook.litho.widget.SnapUtil;
 import com.facebook.litho.widget.Text;
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.MockedStatic;
 import org.robolectric.annotation.LooperMode;
 
 /** Tests {@link RecyclerCollectionComponentSpec} */
@@ -78,6 +89,19 @@ public class RecyclerCollectionComponentSpecTest {
   private Component mErrorComponent;
   private Component mRecyclerCollectionComponent;
   private Component mContentComponent;
+  private boolean mPrevEnableWorkingRangeOnDeferredNode;
+
+  @Before
+  public void saveConfig() {
+    mPrevEnableWorkingRangeOnDeferredNode =
+        ComponentsConfiguration.enableWorkingRangeOnDeferredNode;
+  }
+
+  @After
+  public void restoreConfig() {
+    ComponentsConfiguration.enableWorkingRangeOnDeferredNode =
+        mPrevEnableWorkingRangeOnDeferredNode;
+  }
 
   @Before
   public void assumeDebug() {
@@ -268,6 +292,7 @@ public class RecyclerCollectionComponentSpecTest {
             ComponentTree.create(mComponentContext)
                 .incrementalMount(false)
                 .componentsConfiguration(config)
+                .enableChildClipping(true)
                 .build(),
             null,
             null,
@@ -352,6 +377,185 @@ public class RecyclerCollectionComponentSpecTest {
   }
 
   @Test
+  public void
+      rcc_insertLayoutSpecWithSizeSpecWorkingRangeTester_workingRangeIsRegisteredAndEntered() {
+    final ComponentContext componentContext = lithoTestRule.getContext();
+    final List<LifecycleStep.StepInfo> info = new ArrayList<>();
+    final Component component =
+        LayoutSpecWithSizeSpecWorkingRangeTester.create(componentContext)
+            .steps(info)
+            .heightPx(100)
+            .build();
+    final RecyclerCollectionComponent rcc =
+        RecyclerCollectionComponent.create(componentContext)
+            .recyclerConfiguration(
+                ListRecyclerConfiguration.create()
+                    .orientation(LinearLayoutManager.VERTICAL)
+                    .build())
+            .section(
+                SingleComponentSection.create(new SectionContext(componentContext))
+                    .component(component)
+                    .build())
+            .build();
+    lithoTestRule.render(
+        null,
+        null,
+        null,
+        null,
+        makeSizeSpec(100, SizeSpec.EXACTLY),
+        makeSizeSpec(100, SizeSpec.EXACTLY),
+        componentScope -> rcc);
+
+    assertThat(getSteps(info))
+        .describedAs("Should register and enter working range in expected order")
+        .containsExactly(LifecycleStep.ON_REGISTER_RANGES, LifecycleStep.ON_ENTERED_RANGE);
+  }
+
+  @Test
+  public void
+      rcc_insertLayoutSpecDelegatingToSizeSpecWorkingRangeTester_workingRangeIsRegisteredAndEntered() {
+    ComponentsConfiguration.enableWorkingRangeOnDeferredNode = true;
+    final ComponentContext componentContext = lithoTestRule.getContext();
+    final List<LifecycleStep.StepInfo> info = new ArrayList<>();
+    final Component component =
+        LayoutSpecDelegatingToSizeSpecWorkingRangeTester.create(componentContext)
+            .steps(info)
+            .childSteps(new ArrayList<>())
+            .heightPx(100)
+            .build();
+    final RecyclerCollectionComponent rcc =
+        RecyclerCollectionComponent.create(componentContext)
+            .recyclerConfiguration(
+                ListRecyclerConfiguration.create()
+                    .orientation(LinearLayoutManager.VERTICAL)
+                    .build())
+            .section(
+                SingleComponentSection.create(new SectionContext(componentContext))
+                    .component(component)
+                    .build())
+            .build();
+    lithoTestRule.render(
+        null,
+        null,
+        null,
+        null,
+        makeSizeSpec(100, SizeSpec.EXACTLY),
+        makeSizeSpec(100, SizeSpec.EXACTLY),
+        componentScope -> rcc);
+
+    assertThat(getSteps(info))
+        .describedAs("Should register and enter working range in expected order")
+        .containsExactly(LifecycleStep.ON_REGISTER_RANGES, LifecycleStep.ON_ENTERED_RANGE);
+  }
+
+  @Test
+  public void
+      rcc_insertLayoutSpecWithSizeSpecMeasuringWorkingRangeTester_workingRangeIsRegisteredAndEntered() {
+    ComponentsConfiguration.enableWorkingRangeOnDeferredNode = true;
+    final ComponentContext componentContext = lithoTestRule.getContext();
+    final List<LifecycleStep.StepInfo> info = new ArrayList<>();
+    final Component component =
+        LayoutSpecWithSizeSpecMeasuringWorkingRangeTester.create(componentContext)
+            .steps(info)
+            .heightPx(100)
+            .build();
+    final RecyclerCollectionComponent rcc =
+        RecyclerCollectionComponent.create(componentContext)
+            .recyclerConfiguration(
+                ListRecyclerConfiguration.create()
+                    .orientation(LinearLayoutManager.VERTICAL)
+                    .build())
+            .section(
+                SingleComponentSection.create(new SectionContext(componentContext))
+                    .component(component)
+                    .build())
+            .build();
+    lithoTestRule.render(
+        null,
+        null,
+        null,
+        null,
+        makeSizeSpec(100, SizeSpec.EXACTLY),
+        makeSizeSpec(100, SizeSpec.EXACTLY),
+        componentScope -> rcc);
+
+    assertThat(getSteps(info))
+        .describedAs("Should register and enter working range in expected order")
+        .containsExactly(LifecycleStep.ON_REGISTER_RANGES, LifecycleStep.ON_ENTERED_RANGE);
+  }
+
+  @Test
+  public void rcc_insertLayoutSpecMeasuringWorkingRangeTester_workingRangeIsRegisteredAndEntered() {
+    ComponentsConfiguration.enableWorkingRangeOnDeferredNode = true;
+    final ComponentContext componentContext = lithoTestRule.getContext();
+    final List<LifecycleStep.StepInfo> info = new ArrayList<>();
+    final Component component =
+        LayoutSpecMeasuringWorkingRangeTester.create(componentContext)
+            .steps(info)
+            .heightPx(100)
+            .build();
+    final RecyclerCollectionComponent rcc =
+        RecyclerCollectionComponent.create(componentContext)
+            .recyclerConfiguration(
+                ListRecyclerConfiguration.create()
+                    .orientation(LinearLayoutManager.VERTICAL)
+                    .build())
+            .section(
+                SingleComponentSection.create(new SectionContext(componentContext))
+                    .component(component)
+                    .build())
+            .build();
+    lithoTestRule.render(
+        null,
+        null,
+        null,
+        null,
+        makeSizeSpec(100, SizeSpec.EXACTLY),
+        makeSizeSpec(100, SizeSpec.EXACTLY),
+        componentScope -> rcc);
+
+    assertThat(getSteps(info))
+        .describedAs("Should register and enter working range in expected order")
+        .containsExactly(LifecycleStep.ON_REGISTER_RANGES, LifecycleStep.ON_ENTERED_RANGE);
+  }
+
+  @Test
+  public void
+      rcc_insertLayoutSpecWithSizeSpecMeasuringWorkingRangeTester_gateOff_workingRangeIsNotEntered() {
+    ComponentsConfiguration.enableWorkingRangeOnDeferredNode = false;
+    final ComponentContext componentContext = lithoTestRule.getContext();
+    final List<LifecycleStep.StepInfo> info = new ArrayList<>();
+    final Component component =
+        LayoutSpecWithSizeSpecMeasuringWorkingRangeTester.create(componentContext)
+            .steps(info)
+            .heightPx(100)
+            .build();
+    final RecyclerCollectionComponent rcc =
+        RecyclerCollectionComponent.create(componentContext)
+            .recyclerConfiguration(
+                ListRecyclerConfiguration.create()
+                    .orientation(LinearLayoutManager.VERTICAL)
+                    .build())
+            .section(
+                SingleComponentSection.create(new SectionContext(componentContext))
+                    .component(component)
+                    .build())
+            .build();
+    lithoTestRule.render(
+        null,
+        null,
+        null,
+        null,
+        makeSizeSpec(100, SizeSpec.EXACTLY),
+        makeSizeSpec(100, SizeSpec.EXACTLY),
+        componentScope -> rcc);
+
+    assertThat(getSteps(info))
+        .describedAs("Should register but not enter the working range while gated off")
+        .containsExactly(LifecycleStep.ON_REGISTER_RANGES);
+  }
+
+  @Test
   public void rcc_insertMountSpecWorkingRangeTester_workingRangeIsRegisteredAndEntered() {
     final ComponentContext componentContext = lithoTestRule.getContext();
     final List<LifecycleStep.StepInfo> info = new ArrayList<>();
@@ -401,5 +605,60 @@ public class RecyclerCollectionComponentSpecTest {
     }
 
     return null;
+  }
+
+  @SuppressWarnings("deprecation")
+  @Test
+  public void testLazyUpdateOnlyCalledOnFirstRender() {
+    // lazyUpdateHasSetSectionTreeRoot should only be called when hasSetSectionTreeRoot is false
+    // (the first render). Previously it was called on every render when setRootAsync=false,
+    // causing an infinite component resolve loop.
+    try (MockedStatic<RecyclerCollectionComponent> mocked =
+        mockStatic(RecyclerCollectionComponent.class, CALLS_REAL_METHODS)) {
+
+      final Component rcc =
+          RecyclerCollectionComponent.create(mComponentContext)
+              .section(
+                  SingleComponentSection.create(new SectionContext(mComponentContext))
+                      .component(Text.create(mComponentContext).text("content").build())
+                      .build())
+              .setRootAsync(false)
+              .build();
+
+      TestLithoView testLithoView =
+          lithoTestRule.render(
+              null,
+              null,
+              null,
+              null,
+              makeSizeSpec(100, SizeSpec.EXACTLY),
+              makeSizeSpec(100, SizeSpec.EXACTLY),
+              componentScope -> rcc);
+
+      // First render should call lazyUpdate once
+      mocked.verify(
+          () ->
+              RecyclerCollectionComponent.lazyUpdateHasSetSectionTreeRoot(
+                  any(ComponentContext.class), eq(true)),
+          times(1));
+
+      // Re-render with same component
+      final Component rcc2 =
+          RecyclerCollectionComponent.create(mComponentContext)
+              .section(
+                  SingleComponentSection.create(new SectionContext(mComponentContext))
+                      .component(Text.create(mComponentContext).text("content").build())
+                      .build())
+              .setRootAsync(false)
+              .build();
+      testLithoView.setRoot(rcc2);
+
+      // Should still be only 1 call - second render should NOT call lazyUpdate
+      mocked.verify(
+          () ->
+              RecyclerCollectionComponent.lazyUpdateHasSetSectionTreeRoot(
+                  any(ComponentContext.class), eq(true)),
+          times(1));
+    }
   }
 }

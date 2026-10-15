@@ -37,8 +37,9 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.mock
-import org.robolectric.Shadows
 import org.robolectric.annotation.LooperMode
+import org.robolectric.shadow.api.Shadow
+import org.robolectric.shadows.ShadowLooper
 
 @RunWith(LithoTestRunner::class)
 @LooperMode(LooperMode.Mode.LEGACY)
@@ -75,7 +76,7 @@ class LithoRecyclerBinderLifecycleProviderTest {
     recyclerBinder.notifyChangeSetComplete(true, null)
     recyclerBinder.measure(Size(), exactly(10), exactly(100), mock())
     backgroundLayoutLooperRule.runToEndOfTasksSync()
-    Shadows.shadowOf(Looper.getMainLooper()).idle()
+    (Shadow.extract(Looper.getMainLooper()) as ShadowLooper).idle()
   }
 
   // All nested Lithoviews are not yet created, so there are not lifecycleproviders are created
@@ -93,7 +94,8 @@ class LithoRecyclerBinderLifecycleProviderTest {
   @Test
   fun lithoLifecycleProviderDelegateRecyclerBinderInvisibleTest() {
     lithoVisibilityEventsControllerDelegate.moveToVisibilityState(
-        LithoVisibilityState.HINT_INVISIBLE)
+        LithoVisibilityState.HINT_INVISIBLE,
+    )
     for (j in 0..19) {
       assertThat(recyclerBinder.getComponentAt(j)?.lithoVisibilityEventsController?.visibilityState)
           .describedAs("Invisible event is expected to be dispatched")

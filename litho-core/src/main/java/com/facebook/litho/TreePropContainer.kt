@@ -40,10 +40,20 @@ class TreePropContainer {
     map[treeProp] = value
   }
 
+  /**
+   * The entries, read under this container's own monitor.
+   *
+   * Anything spanning two containers has to go through this rather than holding one monitor while
+   * reaching for the other: `equals` on a pair is reachable from both the main thread and a resolve
+   * thread with the operands the other way round, and `Collections.synchronizedMap` takes the
+   * receiver's monitor before it touches the argument, so operand order is lock order.
+   */
+  private fun snapshot(): Map<TreeProp<*>, Any?> = synchronized(map) { HashMap(map) }
+
   @JvmName("putAll")
   internal fun putAll(treeProps: TreePropContainer?) {
     if (treeProps != null) {
-      synchronized(treeProps.map) { map.putAll(treeProps.map) }
+      map.putAll(treeProps.snapshot())
     }
   }
 
@@ -65,17 +75,20 @@ class TreePropContainer {
     map.clear()
   }
 
-  override fun equals(o: Any?): Boolean {
-    if (this === o) {
+  override fun equals(other: Any?): Boolean {
+    if (this === other) {
       return true
     }
 
-    if (o !is TreePropContainer) return false
+    if (other !is TreePropContainer) return false
 
-    return map == o.map
+    // Only one side needs copying: comparing a private copy against the other's live map takes
+    // that map's monitor per lookup and releases it, never while holding ours. Snapshotting both
+    // would allocate twice on a path that is sampled during scroll.
+    return snapshot() == other.map
   }
 
-  override fun hashCode(): Int = Objects.hash(map)
+  override fun hashCode(): Int = Objects.hash(snapshot())
 
   companion object {
     /** @return a copy of the provided TreeProps instance; returns null if source is null */
@@ -99,6 +112,8 @@ class TreePropContainer {
     fun acquire(source: TreePropContainer?): TreePropContainer {
       val newProps = TreePropContainer()
       if (source != null) {
+        // Unlike putAll, the destination here cannot have escaped yet, so nothing can be holding
+        // its monitor and taking both in one go is safe — and saves a copy on a resolve-hot path.
         synchronized(source.map) { newProps.map.putAll(source.map) }
       }
       return newProps

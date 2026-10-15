@@ -16,8 +16,9 @@
 
 package com.facebook.litho.stateupdates
 
+import android.annotation.SuppressLint
 import android.graphics.Rect
-import com.facebook.litho.Column
+import com.facebook.litho.Column as ColumnBuilder
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.LifecycleStep
@@ -26,6 +27,7 @@ import com.facebook.litho.Size
 import com.facebook.litho.SizeSpec
 import com.facebook.litho.StateValue
 import com.facebook.litho.annotations.CachedValue
+import com.facebook.litho.annotations.ExcuseMySpec
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnAttached
 import com.facebook.litho.annotations.OnCalculateCachedValue
@@ -35,9 +37,12 @@ import com.facebook.litho.annotations.OnCreateTreeProp
 import com.facebook.litho.annotations.OnDetached
 import com.facebook.litho.annotations.OnUpdateState
 import com.facebook.litho.annotations.Prop
+import com.facebook.litho.annotations.Reason
 import com.facebook.litho.annotations.State
 import com.facebook.litho.widget.Text
 
+@ExcuseMySpec(reason = Reason.LEGACY)
+@SuppressLint("DeprecatedLayoutSpecApiInKotlin")
 @LayoutSpec
 object ComponentWithMeasureCallAndStateSpec {
 
@@ -46,7 +51,7 @@ object ComponentWithMeasureCallAndStateSpec {
   fun onCreateInitialState(
       c: ComponentContext,
       count: StateValue<Int?>,
-      @Prop steps: MutableList<StepInfo?>
+      @Prop steps: MutableList<StepInfo?>,
   ) {
     steps.add(StepInfo(LifecycleStep.ON_CREATE_INITIAL_STATE))
     count.set(0)
@@ -56,7 +61,6 @@ object ComponentWithMeasureCallAndStateSpec {
   @OnCreateLayout
   fun onCreateLayout(
       c: ComponentContext,
-      @Prop shouldCacheResult: Boolean,
       @Prop steps: MutableList<StepInfo?>,
       @Prop(optional = true) component: Component?,
       @Prop(optional = true) mountSpec: Component?,
@@ -64,7 +68,7 @@ object ComponentWithMeasureCallAndStateSpec {
       @Prop(optional = true) heightSpec: Int,
       @Prop(optional = true) prefix: String?,
       @CachedValue expensiveValue: Int,
-      @State count: Int
+      @State count: Int,
   ): Component {
     steps.add(StepInfo(LifecycleStep.ON_CREATE_LAYOUT))
     component?.measure(
@@ -72,9 +76,10 @@ object ComponentWithMeasureCallAndStateSpec {
         if (widthSpec != 0) widthSpec else SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
         if (heightSpec != 0) heightSpec else SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
         Size(),
-        shouldCacheResult)
+        true,
+    )
     val textPrefix = prefix ?: "Count:"
-    return Column.create(c)
+    return ColumnBuilder.create(c)
         .child(Text.create(c).text("$textPrefix $count"))
         .child(component ?: mountSpec)
         .build()

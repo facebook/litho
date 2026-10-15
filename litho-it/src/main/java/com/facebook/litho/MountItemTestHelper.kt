@@ -17,6 +17,7 @@
 package com.facebook.litho
 
 import android.graphics.Rect
+import com.facebook.litho.LithoLayoutData.Companion.NO_Z_INDEX
 import com.facebook.litho.MountSpecLithoRenderUnit.Companion.STATE_UNKNOWN
 import com.facebook.rendercore.MountItem
 
@@ -29,7 +30,7 @@ object MountItemTestHelper {
       info: NodeInfo?,
       bounds: Rect?,
       flags: Int,
-      importantForAccessibility: Int
+      importantForAccessibility: Int,
   ): MountItem {
     val unit: LithoRenderUnit =
         MountSpecLithoRenderUnit.create(
@@ -41,30 +42,29 @@ object MountItemTestHelper {
             flags,
             importantForAccessibility,
             STATE_UNKNOWN,
-            null)
-    val width = bounds?.width() ?: 0
-    val height = bounds?.height() ?: 0
-    val node =
-        create(
-            unit,
-            bounds ?: Rect(),
-            null,
-            LithoLayoutData(
-                width,
-                height,
-                0,
-                0,
-                null,
-                null,
-                if (component is SpecGeneratedComponent) {
-                  component.isMountSizeDependent
-                } else {
-                  false
-                },
-                null,
-            ),
             null,
         )
-    return MountItem(node, content).apply { mountData = LithoMountData(content) }
+    val width = bounds?.width() ?: 0
+    val height = bounds?.height() ?: 0
+    val node = create(
+        unit,
+        bounds ?: Rect(),
+        null,
+        LithoLayoutData(
+            width,
+            height,
+            null,
+            NO_Z_INDEX,
+            null,
+            if (component is SpecGeneratedComponent) {
+              component.isMountSizeDependent
+            } else {
+              false
+            },
+            null,
+        ),
+        null,
+    )
+    return MountItem(node, content)
   }
 }

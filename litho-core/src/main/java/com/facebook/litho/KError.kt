@@ -33,6 +33,9 @@ import java.lang.Exception
  */
 @Hook
 fun ComponentScope.useErrorBoundary(onError: (exception: Exception) -> Unit) {
-  val errorEventHandler = eventHandler<ErrorEvent> { onError(it.exception) }
+  val errorEventHandler =
+      eventHandler<ErrorEvent> {
+        onError(requireNotNull(it.exception) { "ErrorEvent must have an exception" })
+      }
   context.scopedComponentInfo.setErrorEventHandlerDuringRender(errorEventHandler)
 }

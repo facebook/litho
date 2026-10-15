@@ -17,7 +17,6 @@
 package com.facebook.rendercore.utils
 
 import android.annotation.SuppressLint
-import android.annotation.TargetApi
 import android.graphics.Typeface
 import android.os.Build
 import android.util.LongSparseArray
@@ -36,10 +35,6 @@ object SynchronizedTypefaceHelper {
   @SuppressLint("PrivateApi")
   @JvmStatic
   fun setupSynchronizedTypeface() {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-      // sTypefaceCache was introduced in API level 16.
-      return
-    }
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
       // sTypefaceCache was removed and Typeface is thread-safe since Android 9.
       return
@@ -54,20 +49,12 @@ object SynchronizedTypefaceHelper {
       // This is nasty, but otherwise we have another race condition between
       // typefaceCacheField.set and newCache.append if Typeface.create(...) is called elsewhere.
       synchronized(lock) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-          val oldCache = typefaceCacheField[null] as LongSparseArray<SparseArray<Typeface?>>
-          val newCache = SynchronizedLongSparseArray(lock, oldCache.size())
-          typefaceCacheField[null] = newCache
-          oldCache.forEach { key, value ->
-            newCache.append(key, SynchronizedTypefaceSparseArray(value))
-          }
-        } else {
-          val oldCache = typefaceCacheField[null] as SparseArray<SparseArray<Typeface?>>
-          val newCache = SynchronizedSparseArray(lock, oldCache.size())
-          typefaceCacheField[null] = newCache
-          oldCache.forEach { key, value ->
-            newCache.append(key, SynchronizedTypefaceSparseArray(value))
-          }
+        @Suppress("UNCHECKED_CAST")
+        val oldCache = typefaceCacheField[null] as LongSparseArray<SparseArray<Typeface?>>
+        val newCache = SynchronizedLongSparseArray(lock, oldCache.size())
+        typefaceCacheField[null] = newCache
+        oldCache.forEach { key, value ->
+          newCache.append(key, SynchronizedTypefaceSparseArray(value))
         }
       }
     } catch (e: Exception) {
@@ -76,7 +63,6 @@ object SynchronizedTypefaceHelper {
     }
   }
 
-  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   internal class SynchronizedLongSparseArray(private val lock: Any, initialCapacity: Int) :
       LongSparseArray<SparseArray<Typeface?>?>(initialCapacity) {
 
@@ -93,27 +79,6 @@ object SynchronizedTypefaceHelper {
     }
 
     override fun put(key: Long, value: SparseArray<Typeface?>?) {
-      synchronized(lock) { super.put(key, value) }
-    }
-  }
-
-  @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-  internal class SynchronizedSparseArray(private val lock: Any, initialCapacity: Int) :
-      SparseArray<SparseArray<Typeface?>?>(initialCapacity) {
-
-    override fun get(key: Int): SparseArray<Typeface?>? {
-      synchronized(lock) {
-        val sparseArray = super.get(key)
-        if (sparseArray == null || sparseArray is SynchronizedTypefaceSparseArray) {
-          return sparseArray
-        }
-        val synchronizedSparseArray = SynchronizedTypefaceSparseArray(sparseArray)
-        put(key, synchronizedSparseArray)
-        return synchronizedSparseArray
-      }
-    }
-
-    override fun put(key: Int, value: SparseArray<Typeface?>?) {
       synchronized(lock) { super.put(key, value) }
     }
   }

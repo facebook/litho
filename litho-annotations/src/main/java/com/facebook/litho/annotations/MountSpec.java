@@ -66,8 +66,7 @@ import java.lang.annotation.RetentionPolicy;
  *     of {@code MountSpec}s. Specs should only be used in Java.
  *     <p>
  *     <p>For detailed information read <a
- *     href="https://fblitho.com/docs/mainconcepts/primitivecomponents/overview/">PrimitiveComponents
- *     docs</a>.
+ *     href="https://fblitho.com/docs/primitivecomponents/overview/">PrimitiveComponents docs</a>.
  *     <p>For migration guide from MountSpecs to PrimitiveComponents read this: <a
  *     href="https://fblitho.com/docs/kotlin/migrating-from-mountspecs-to-primitives/">Migrating
  *     MountSpecs doc</a>.
@@ -97,6 +96,13 @@ public @interface MountSpec {
    *     LayoutOutputs will be reused instead of being calculated again.
    */
   boolean isPureRender() default false;
+
+  /**
+   * @return Boolean indicating whether the component contributes a real min-content size to CSS
+   *     Flexbox §4.5 automatic minimum sizing. When false (the default) the component contributes 0
+   *     and Yoga short-circuits the auto-min probe for this node.
+   */
+  boolean hasIntrinsicSize() default false;
 
   /**
    * @return boolean indicating whether this mount spec has child LithoViews. If this is true then

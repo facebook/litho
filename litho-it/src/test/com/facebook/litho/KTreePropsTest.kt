@@ -19,6 +19,7 @@ package com.facebook.litho
 import android.content.Context
 import android.graphics.Rect
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
+import com.facebook.litho.layout.flexbox.Row
 import com.facebook.litho.testing.helper.ComponentTestHelper
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.collection.LazyList
