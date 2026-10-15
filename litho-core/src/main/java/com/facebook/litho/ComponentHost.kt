@@ -780,13 +780,11 @@ open class ComponentHost(
         implementsVirtualViews &&
         hasOnlyOneAccessibleItem &&
         // `implementsVirtualViews` is a property of the component *type*, so a host whose content
-        // currently exposes no virtual views still reaches here. Delegating in that state is what
-        // makes ENTER and DPAD_CENTER dead on Litho buttons: ExploreByTouchHelper claims both
+        // currently exposes no virtual views still reaches here. Delegating in that state would
+        // make ENTER and DPAD_CENTER dead on Litho buttons: ExploreByTouchHelper claims both
         // unconditionally, and with nothing to move between it swallows them instead of letting
-        // View.onKeyUp turn them into a click. SPACE is absent from that switch, which is why it
-        // is the one confirm key that works today.
-        (!ComponentsConfiguration.enableAccessibilityConfirmKeyDispatchFix ||
-            componentAccessibilityDelegate?.hasExtraAccessibilityNodes() == true) &&
+        // View.onKeyUp turn them into a click.
+        componentAccessibilityDelegate?.hasExtraAccessibilityNodes() == true &&
         componentAccessibilityDelegate?.dispatchKeyEvent(event) == true) ||
         super.dispatchKeyEvent(event))
   }

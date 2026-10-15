@@ -328,14 +328,6 @@ internal constructor(
     @JvmField var enableComponentHostViewMoveInvalidation: Boolean = false
 
     /**
-     * Stops [ComponentHost] handing key events to its accessibility delegate when the host exposes
-     * no virtual views. `ExploreByTouchHelper` claims ENTER and DPAD_CENTER unconditionally, so in
-     * that state it swallows them instead of letting `View.onKeyUp` turn them into a click, leaving
-     * SPACE as the only confirm key that activates a Litho button.
-     */
-    @JvmField var enableAccessibilityConfirmKeyDispatchFix: Boolean = false
-
-    /**
      * This flag enables the use of the main thread priority when raising the priority of a blocking
      * thread on main
      */
