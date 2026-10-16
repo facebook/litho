@@ -90,6 +90,15 @@ import kotlin.concurrent.withLock
  *   generic so this base library stays free of app-layer lifecycle/visibility dependencies.
  * @param keepTreeWhileShown whether a bound item's tree survives [unprepare] until [unbind] (see
  *   "Release while shown"). Off by default, so each consumer turns it on behind its own config.
+ * @param keepStateAfterRelease whether [unprepare] saves the tree's [TreeState] for the next tree
+ *   built for this row to restore. A consumer that gives each tree something it releases with the
+ *   tree turns this off: component state can capture it (a nested collection's binder captures its
+ *   visibility events controller), so a restored state would point at something already released.
+ *   Off, the item saves and restores none, clears any an earlier item saved for the row, and every
+ *   piece of the row's component state resets when the row comes back. Don't turn it off while the
+ *   trees share a visibility events controller that outlives them: each new tree then builds a new
+ *   nested collection on that controller, and every earlier one keeps its item trees until the
+ *   controller is destroyed.
  * @param sizeConstraintsProvider Optional current constraints for a data snapshot. Setting it opts
  *   the item into re-laying out a kept tree when constraints change, and into leaving a shown
  *   tree's size to its LithoView; without it, the item keeps its fixed-constraint behavior. Invoked
@@ -112,6 +121,7 @@ class LithoCollectionItem<T>(
      */
     val traceTag: String,
     private val keepTreeWhileShown: Boolean = false,
+    private val keepStateAfterRelease: Boolean = true,
     private val sizeConstraintsProvider: ((T) -> SizeConstraints)? = null,
 ) : BindableCollectionItem {
 
@@ -156,7 +166,7 @@ class LithoCollectionItem<T>(
       ComponentsSystrace.trace(tracePrepare) {
         isReleasedByOwner = false
         // Restore TreeState from PrepareScope if available (key context is set by infrastructure)
-        val restoredState = getSavedState() as? TreeState
+        val restoredState = if (keepStateAfterRelease) getSavedState() as? TreeState else null
         if (restoredState != null) {
           cachedTreeState = restoredState
         }
@@ -177,10 +187,15 @@ class LithoCollectionItem<T>(
         val tree = componentTree
         var isKeptForView = false
         if (tree != null) {
-          // Cache TreeState for later restoration (both locally and in PrepareScope)
-          val treeState = tree.acquireTreeState()
-          cachedTreeState = treeState
-          saveState(treeState)
+          if (keepStateAfterRelease) {
+            // Cache TreeState for later restoration (both locally and in PrepareScope)
+            val treeState = tree.acquireTreeState()
+            cachedTreeState = treeState
+            saveState(treeState)
+          } else {
+            // An earlier item for this row may have saved state; the next one must not restore it.
+            saveState(null)
+          }
           isKeptForView = isReleasedByOwner && lithoView != null
           if (isKeptForView) {
             // Rechecked on the main thread, where unbind clears lithoView, so a release racing
