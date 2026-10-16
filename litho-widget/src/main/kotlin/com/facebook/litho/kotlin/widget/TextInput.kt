@@ -46,8 +46,8 @@ import com.facebook.rendercore.Dimen
 import com.facebook.rendercore.sp
 
 /** Builder function for creating [TextInputSpec] components. */
-@Suppress("NOTHING_TO_INLINE", "FunctionName")
-inline fun ResourcesScope.TextInput(
+@Suppress("FunctionName")
+fun ResourcesScope.TextInput(
     initialText: CharSequence,
     style: Style = Style,
     hint: CharSequence = "",
@@ -68,22 +68,22 @@ inline fun ResourcesScope.TextInput(
     inputFilters: List<InputFilter>? = null,
     ellipsize: TruncateAt? = null,
     /** Called when the text entered by the user changes. */
-    noinline onTextChanged: ((TextChangedEvent) -> Unit)? = null,
+    onTextChanged: ((TextChangedEvent) -> Unit)? = null,
     /** Called when the selection (particular case: cursor position) gets changed by user. */
-    noinline onSelectionChanged: ((SelectionChangedEvent) -> Unit)? = null,
+    onSelectionChanged: ((SelectionChangedEvent) -> Unit)? = null,
     /** Called when the input focus changed by user. */
-    noinline onInputFocusChanged: ((InputFocusChangedEvent) -> Unit)? = null,
+    onInputFocusChanged: ((InputFocusChangedEvent) -> Unit)? = null,
     /** Called when underlying [android.widget.EditText#onKeyUp()] happens. */
-    noinline onKeyUp: ((KeyUpEvent) -> Boolean)? = null,
+    onKeyUp: ((KeyUpEvent) -> Boolean)? = null,
     /** Called when underlying [android.widget.EditText#onKeyPreIme()] happens. */
-    noinline onKeyPreIme: ((KeyPreImeEvent) -> Boolean)? = null,
+    onKeyPreIme: ((KeyPreImeEvent) -> Boolean)? = null,
     /** Called when the return key is pressed or the IME signals an 'action'. */
-    noinline onEditorAction: ((EditorActionEvent) -> Boolean)? = null,
+    onEditorAction: ((EditorActionEvent) -> Boolean)? = null,
     /**
      * Called when underlying
      * [android.widget.EditText#onCreateInputConnection(EditorInfo editorInfo)] happens.
      */
-    noinline onInputConnection: ((InputConnectionEvent) -> InputConnection)? = null,
+    onInputConnection: ((InputConnectionEvent) -> InputConnection)? = null,
     handle: Handle? = null,
     inputBackground: Drawable? = null,
     textWatcher: TextWatcher? = null,

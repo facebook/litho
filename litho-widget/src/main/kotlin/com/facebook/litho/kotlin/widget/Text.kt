@@ -44,8 +44,8 @@ import com.facebook.rendercore.text.TouchableSpanListener
  * Temporary builder function for creating [TextSpec] components. In the future it will either be
  * auto-generated or modified to have the final set of parameters.
  */
-@Suppress("NOTHING_TO_INLINE", "FunctionName")
-inline fun ResourcesScope.Text(
+@Suppress("FunctionName")
+fun ResourcesScope.Text(
     text: CharSequence?,
     style: Style = Style,
     @ColorInt textColor: Int = Color.BLACK,

@@ -28,20 +28,20 @@ import com.facebook.rendercore.dp
 
 /** Builder function for creating [HorizontalScrollPrimitive] components. */
 @Suppress("FunctionName")
-inline fun ResourcesScope.HorizontalScroll(
+fun ResourcesScope.HorizontalScroll(
     initialScrollPosition: Dimen = HorizontalScrollPrimitive.LAST_SCROLL_POSITION_UNSET.dp,
     scrollbarEnabled: Boolean = true,
     wrapContent: Boolean = false,
     fillViewport: Boolean = false,
     eventsController: HorizontalScrollEventsController? = null,
-    noinline onScrollChange: ((View, scrollX: Int, oldScrollX: Int) -> Unit)? = null,
+    onScrollChange: ((View, scrollX: Int, oldScrollX: Int) -> Unit)? = null,
     horizontalFadingEdgeEnabled: Boolean = false,
     incrementalMountEnabled: Boolean = false,
     overScrollMode: Int = View.OVER_SCROLL_IF_CONTENT_SCROLLS,
     scrollStateListener: ScrollStateListener? = null,
     fadingEdgeLength: Int = 0,
     style: Style = Style,
-    crossinline child: ResourcesScope.() -> Component,
+    child: ResourcesScope.() -> Component,
 ): Component {
   return HorizontalScrollPrimitive(
       wrapContent = wrapContent,

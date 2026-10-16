@@ -24,8 +24,8 @@ import com.facebook.litho.Style
 import com.facebook.litho.widget.PrimitiveImage
 
 /** Builder function for creating Image components. */
-@Suppress("NOTHING_TO_INLINE", "FunctionName")
-inline fun ResourcesScope.Image(
+@Suppress("FunctionName")
+fun ResourcesScope.Image(
     drawable: Drawable,
     style: Style = Style,
     scaleType: ScaleType = ScaleType.FIT_CENTER,

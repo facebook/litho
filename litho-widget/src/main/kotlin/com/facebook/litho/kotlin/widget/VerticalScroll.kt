@@ -30,7 +30,7 @@ import com.facebook.rendercore.dp
 
 /** Builder function for creating Vertical Scroll Primitive. */
 @Suppress("FunctionName")
-inline fun ResourcesScope.VerticalScroll(
+fun ResourcesScope.VerticalScroll(
     initialScrollPosition: Dimen = 0.dp,
     scrollbarEnabled: Boolean = false,
     scrollbarFadingEnabled: Boolean = true,
@@ -42,11 +42,11 @@ inline fun ResourcesScope.VerticalScroll(
     overScrollMode: Int = View.OVER_SCROLL_IF_CONTENT_SCROLLS,
     eventsController: VerticalScrollEventsController? = null,
     incrementalMountEnabled: Boolean = true,
-    noinline onScrollChange: ((NestedScrollView, scrollY: Int, oldScrollY: Int) -> Unit)? = null,
-    noinline onScrollStateChange: ((View, Int) -> Unit)? = null,
-    noinline onInterceptTouch: ((NestedScrollView, event: MotionEvent) -> Boolean)? = null,
+    onScrollChange: ((NestedScrollView, scrollY: Int, oldScrollY: Int) -> Unit)? = null,
+    onScrollStateChange: ((View, Int) -> Unit)? = null,
+    onInterceptTouch: ((NestedScrollView, event: MotionEvent) -> Boolean)? = null,
     style: Style = Style,
-    crossinline child: ResourcesScope.() -> Component,
+    child: ResourcesScope.() -> Component,
 ): Component {
   return VerticalScroll(
       child = child(),

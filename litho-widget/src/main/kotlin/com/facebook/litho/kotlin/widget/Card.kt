@@ -27,7 +27,7 @@ import com.facebook.rendercore.dp
 
 /** Builder function for creating Card components. */
 @Suppress("FunctionName")
-inline fun ResourcesScope.Card(
+fun ResourcesScope.Card(
     style: Style = Style,
     @ColorInt cardBackgroundColor: Int = Color.WHITE,
     cornerRadius: Dimen = 2.dp,
@@ -41,7 +41,7 @@ inline fun ResourcesScope.Card(
     disableClipBottomLeft: Boolean = false,
     disableClipBottomRight: Boolean = false,
     transparencyEnabled: Boolean = false,
-    crossinline child: ResourcesScope.() -> Component,
+    child: ResourcesScope.() -> Component,
 ): Component = PrimitiveCard(
     content = child(),
     cardBackgroundColor = cardBackgroundColor,

@@ -24,8 +24,8 @@ import com.facebook.litho.Style
 import com.facebook.litho.widget.ProgressPrimitiveComponent
 
 /** Builder function for creating [ProgressPrimitiveComponent] components. */
-@Suppress("NOTHING_TO_INLINE", "FunctionName")
-inline fun ResourcesScope.Progress(
+@Suppress("FunctionName")
+fun ResourcesScope.Progress(
     @ColorInt color: Int? = null,
     style: Style = Style,
     indeterminateDrawable: Drawable? = null,
