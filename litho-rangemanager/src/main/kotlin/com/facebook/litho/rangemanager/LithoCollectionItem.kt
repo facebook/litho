@@ -26,6 +26,7 @@ import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentTree
 import com.facebook.litho.ComponentsSystrace
 import com.facebook.litho.LithoView
+import com.facebook.litho.LithoVisibilityEventsController
 import com.facebook.litho.TreeState
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.thread.utils.ThreadUtils
@@ -90,14 +91,21 @@ import kotlin.concurrent.withLock
  *   generic so this base library stays free of app-layer lifecycle/visibility dependencies.
  * @param keepTreeWhileShown whether a bound item's tree survives [unprepare] until [unbind] (see
  *   "Release while shown"). Off by default, so each consumer turns it on behind its own config.
+ * @param visibilityEventsController a parent for the visibility events controllers of this item's
+ *   trees. Each tree the item builds gets its own child controller, which forwards the parent's
+ *   events and is destroyed when the item releases the tree. That releases what the tree's nested
+ *   collections hold, since they only let go of their item trees when their controller is
+ *   destroyed. Requires `keepStateAfterRelease = false`, and takes precedence over a controller
+ *   [treeConfigurator] sets.
  * @param keepStateAfterRelease whether [unprepare] saves the tree's [TreeState] for the next tree
- *   built for this row to restore. A consumer that gives each tree something it releases with the
- *   tree turns this off: component state can capture it (a nested collection's binder captures its
- *   visibility events controller), so a restored state would point at something already released.
- *   Off, the item saves and restores none, clears any an earlier item saved for the row, and every
- *   piece of the row's component state resets when the row comes back. Don't turn it off while the
- *   trees share a visibility events controller that outlives them: each new tree then builds a new
- *   nested collection on that controller, and every earlier one keeps its item trees until the
+ *   built for this row to restore. Off is required with a [visibilityEventsController], and suits
+ *   any consumer that gives each tree something it releases with the tree: component state can
+ *   capture it (a nested collection's binder captures the controller), so a restored state would
+ *   point at something already released. Off, the item saves and restores none, clears any an
+ *   earlier item saved for the row, and every piece of the row's component state resets when the
+ *   row comes back. Don't turn it off while the trees share a visibility events controller that
+ *   outlives them, unless you also pass it as [visibilityEventsController]: each new tree would
+ *   build a new nested collection on it, and every earlier one keeps its item trees until that
  *   controller is destroyed.
  * @param sizeConstraintsProvider Optional current constraints for a data snapshot. Setting it opts
  *   the item into re-laying out a kept tree when constraints change, and into leaving a shown
@@ -121,9 +129,17 @@ class LithoCollectionItem<T>(
      */
     val traceTag: String,
     private val keepTreeWhileShown: Boolean = false,
+    private val visibilityEventsController: LithoVisibilityEventsController? = null,
     private val keepStateAfterRelease: Boolean = true,
     private val sizeConstraintsProvider: ((T) -> SizeConstraints)? = null,
 ) : BindableCollectionItem {
+
+  init {
+    require(visibilityEventsController == null || !keepStateAfterRelease) {
+      "visibilityEventsController needs keepStateAfterRelease = false: a restored state would " +
+          "bring back nested collections bound to a destroyed controller"
+    }
+  }
 
   private val tracePrepare = "litho:row:prepare:$traceTag"
   private val traceBind = "litho:row:bind:$traceTag"
@@ -138,6 +154,9 @@ class LithoCollectionItem<T>(
   @Volatile private var componentTree: ComponentTree? = null
   @Volatile private var lithoView: LithoView? = null
   private var cachedTreeState: TreeState? = null
+
+  /** The controller this item gave [componentTree], if any. Set and cleared with it. */
+  @Volatile private var treeVisibilityEventsController: TreeVisibilityEventsController? = null
 
   /**
    * Guards the item's state. [prepare] holds it on its thread while it builds the component, and
@@ -185,6 +204,7 @@ class LithoCollectionItem<T>(
       ComponentsSystrace.trace(traceUnprepare) {
         isReleasedByOwner = keepTreeWhileShown
         val tree = componentTree
+        val controller = treeVisibilityEventsController
         var isKeptForView = false
         if (tree != null) {
           if (keepStateAfterRelease) {
@@ -202,11 +222,12 @@ class LithoCollectionItem<T>(
             // unbind still releases the tree.
             onMainThread { checkRelease() }
           } else {
-            onMainThread { tree.release() }
+            onMainThread { release(tree, controller) }
           }
         }
         if (!isKeptForView) {
           componentTree = null
+          treeVisibilityEventsController = null
           preparedContent = null
         }
       }
@@ -277,7 +298,7 @@ class LithoCollectionItem<T>(
     if (!lock.tryLock()) {
       return
     }
-    val releasedTree =
+    val toRelease =
         try {
           val tree = componentTree
           val isShown = tree != null && lithoView?.componentTree === tree
@@ -286,13 +307,32 @@ class LithoCollectionItem<T>(
         } finally {
           lock.unlock()
         }
-    releasedTree?.release()
+    toRelease?.let { (tree, controller) -> release(tree, controller) }
   }
 
-  /** Clears the prepared tree and returns it, for the caller to release. Holds [lock]. */
-  private fun takeTree(): ComponentTree? = componentTree.also {
+  /** Releases [tree], then destroys [controller], the one this item gave it. Main thread only. */
+  @UiThread
+  private fun release(tree: ComponentTree, controller: TreeVisibilityEventsController?) {
+    try {
+      tree.release()
+    } finally {
+      // A release that threw never unsubscribed the tree, which must not be released again.
+      controller?.removeListener(tree)
+      controller?.destroy()
+    }
+  }
+
+  /**
+   * Clears the prepared tree and returns it with its controller, for the caller to release. Holds
+   * [lock].
+   */
+  private fun takeTree(): Pair<ComponentTree, TreeVisibilityEventsController?>? {
+    val tree = componentTree ?: return null
+    val controller = treeVisibilityEventsController
     componentTree = null
+    treeVisibilityEventsController = null
     preparedContent = null
+    return tree to controller
   }
 
   /** [ComponentTree.release] must run on the main thread. */
@@ -384,14 +424,26 @@ class LithoCollectionItem<T>(
           ComponentTree.create(ComponentContext(context))
               .treeState(cachedTreeState)
               .enableChildClipping(true)
-      // Sole configuration hook: callers set componentsConfiguration / visibility controller /
-      // lifecycle-owner tree prop here. Null (default) leaves the ComponentContext's default
-      // config.
-      treeConfigurator?.invoke(builder)
-      componentTree =
-          ComponentsSystrace.trace("LithoCollectionItem.buildComponentTree") {
-            builder.build().also { it.setDebugLogsBreadcrumb(debugBreadcrumb) }
-          }
+      val childController = visibilityEventsController?.let(TreeVisibilityEventsController::childOf)
+      var tree: ComponentTree? = null
+      try {
+        // Callers set componentsConfiguration / lifecycle-owner tree prop here. Null (default)
+        // leaves the ComponentContext's default config.
+        treeConfigurator?.invoke(builder)
+        // After the configurator, so the item's own controller wins over one it sets.
+        childController?.let(builder::withLithoVisibilityEventsController)
+        tree =
+            ComponentsSystrace.trace("LithoCollectionItem.buildComponentTree") {
+              builder.build().also { it.setDebugLogsBreadcrumb(debugBreadcrumb) }
+            }
+      } finally {
+        // A tree that was never built would never release its controller.
+        if (tree == null) {
+          childController?.unsubscribe()
+        }
+      }
+      componentTree = tree
+      treeVisibilityEventsController = childController
       // Clear cached state after use to avoid stale references
       cachedTreeState = null
     }
