@@ -136,6 +136,25 @@ class LayoutTreeFuture(
     /** The future's attribution, mirroring `ResolveTreeFuture.DESCRIPTION`. */
     const val DESCRIPTION: String = "layout"
 
+    /**
+     * [updatedStates] plus the states a committed resolve newer than [currentLayoutState]'s
+     * updated. A resolve whose layout was dropped leaves its updates out of every later resolve's
+     * [ResolveResult.updatedStates].
+     */
+    private fun withUpdatesNotLaidOut(
+        updatedStates: Set<StateId>,
+        treeState: TreeState,
+        currentLayoutState: LayoutState?,
+    ): Set<StateId> {
+      if (currentLayoutState == null) return updatedStates
+      val notLaidOut = treeState.statesUpdatedAfter(currentLayoutState.resolveResult.version)
+      return when {
+        notLaidOut.isEmpty() -> updatedStates
+        updatedStates.isEmpty() -> notLaidOut
+        else -> updatedStates + notLaidOut
+      }
+    }
+
     /** Function to calculate a new layout. */
     fun layout(
         resolveResult: ResolveResult,
@@ -150,15 +169,14 @@ class LayoutTreeFuture(
       val c = resolveResult.context
       val node = resolveResult.node
 
+      val dirtyStates =
+          if (c.isReadTrackingEnabled) {
+            withUpdatesNotLaidOut(resolveResult.updatedStates, treeState, currentLayoutState)
+          } else {
+            emptySet()
+          }
       val scopesToUpdate =
-          DirtyScopeIndex.of(
-              if (c.isReadTrackingEnabled) {
-                val updatedStates = resolveResult.updatedStates
-                getDirtyScopes(updatedStates, currentLayoutState?.stateReads)
-              } else {
-                emptySet()
-              },
-          )
+          DirtyScopeIndex.of(getDirtyScopes(dirtyStates, currentLayoutState?.stateReads))
       val willSkipLayout =
           c.isReadTrackingEnabled &&
               scopesToUpdate.isEmpty() &&
@@ -228,7 +246,7 @@ class LayoutTreeFuture(
                   resolveResult.node === currentLayoutState.resolveResult.node &&
                   sizeConstraints == currentLayoutState.sizeConstraints &&
                   !hasDirtyScopes(
-                      updatedStates = resolveResult.updatedStates,
+                      updatedStates = dirtyStates,
                       stateReads = currentLayoutState.stateReads,
                       shouldSkip = StateId::isReflowStateId,
                   )

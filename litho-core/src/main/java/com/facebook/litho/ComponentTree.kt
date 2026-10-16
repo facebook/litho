@@ -288,6 +288,7 @@ open class ComponentTree protected constructor(builder: Builder) :
         renderUnitIdGenerator,
     )
 
+    builder.treeState?.clearResolveUpdates()
     committedTreeState = builder.treeState ?: TreeState()
     uiTreeState =
         TreeState(
@@ -2158,6 +2159,7 @@ open class ComponentTree protected constructor(builder: Builder) :
           ?.commitResolveState(
               resolveResult.treeState,
               trackForPromotion = context.isReadTrackingEnabled,
+              resolveVersion = resolveResult.version,
           )
     }
   }
@@ -2349,7 +2351,11 @@ open class ComponentTree protected constructor(builder: Builder) :
       val stateToCommit = layoutState.treeState
       if (committedNewLayout) {
         getCommittedTreeStateSync()
-            ?.commitLayoutState(stateToCommit, trackForPromotion = context.isReadTrackingEnabled)
+            ?.commitLayoutState(
+                stateToCommit,
+                trackForPromotion = context.isReadTrackingEnabled,
+                resolveVersion = layoutState.resolveResult.version,
+            )
 
         if (this.measureListeners != null) {
           rootWidth = layoutState.width

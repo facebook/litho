@@ -16,14 +16,17 @@
 
 package com.facebook.litho.animation
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Looper.getMainLooper
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
+import com.facebook.litho.LayoutTreeFuture
 import com.facebook.litho.LifecycleStep.StepInfo
 import com.facebook.litho.State
 import com.facebook.litho.Style
+import com.facebook.litho.TreeFuture
 import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.core.height
@@ -34,6 +37,8 @@ import com.facebook.litho.layout.flexbox.Column
 import com.facebook.litho.layout.flexbox.Row
 import com.facebook.litho.testing.LithoAnimationTestRule
 import com.facebook.litho.testing.LithoTestRule
+import com.facebook.litho.testing.ThreadTestingUtils
+import com.facebook.litho.testing.TimeOutSemaphore
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.useState
 import com.facebook.litho.view.backgroundColor
@@ -44,6 +49,7 @@ import com.facebook.rendercore.ms
 import com.facebook.rendercore.px
 import com.facebook.rendercore.utils.MeasureSpecUtils.exactly
 import com.facebook.rendercore.utils.MeasureSpecUtils.unspecified
+import java.util.concurrent.atomic.AtomicBoolean
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
@@ -75,6 +81,7 @@ class StyleReflowInterruptionTest {
   private var layoutHeight: Animatable<Dimen>? = null
   private var secondExpanded: State<Boolean>? = null
   private var deferredRenderCount: Int = 0
+  private var declaredHeight: State<Dimen>? = null
 
   @Test
   fun unrelatedCommitMidAnimation_holdsInterpolatedSize_noFlash() {
@@ -268,6 +275,91 @@ class StyleReflowInterruptionTest {
   }
 
   /**
+   * The dropped-layout counterpart of the test above. Rn is the n-th resolve and Ln the layout of
+   * Rn's result; `h` is the node's declared height, a state read only while laying out.
+   * 1. A width reflow is in flight.
+   * 2. R2 applies `h = 250px` and commits on the layout thread. L2 is held.
+   * 3. The next frame's tick commits R3, whose only update is the reflow value, and L3 lays out on
+   *    the main thread while L2 is held.
+   * 4. L2 is released and dropped, since R3 is now the committed resolve.
+   *
+   * L3 must not count as an animation frame for the node: `h` moved its natural size, and L3 is the
+   * only pass that sees it before the width settles. Counting it skips the capture, so the height
+   * stays put until the reflow ends.
+   */
+  @Test
+  fun droppedLayoutHeightChangeDuringWidthReflow_stillCapturesNaturalSize() {
+    val testView = lithoTestRule.render { DroppedLayoutHeightComponent() }
+    shadowOf(getMainLooper()).idle()
+    testView.measure().layout()
+    val grow = { checkNotNull(testView.findViewWithTagOrNull(GROW_TAG)) }
+    assertThat(grow().width).isEqualTo(100)
+    assertThat(grow().height).isEqualTo(100)
+
+    // Step 1. Sync, so that the reflow is in flight before R2 is requested.
+    @SuppressLint("KComponentSyncUpdateDetector") checkNotNull(expanded).updateSync { true }
+    shadowOf(getMainLooper()).idle()
+    testView.measure().layout()
+    animationRule.advanceBy(72.ms)
+    testView.measure().layout()
+    assertThat(grow().width).isGreaterThan(100).isLessThan(250)
+
+    val componentTree = testView.componentTree
+    val layout2Held = TimeOutSemaphore(0)
+    val releaseLayout2 = TimeOutSemaphore(0)
+    val holdLayout2 = AtomicBoolean(true)
+    componentTree.setFutureExecutionListener(
+        object : TreeFuture.FutureExecutionListener {
+          override fun onPreExecution(
+              version: Int,
+              futureExecutionType: TreeFuture.FutureExecutionType,
+              attribution: String,
+          ) {
+            if (
+                attribution == LayoutTreeFuture.DESCRIPTION &&
+                    holdLayout2.compareAndSet(true, false)
+            ) {
+              layout2Held.release()
+              releaseLayout2.acquire()
+            }
+          }
+
+          override fun onPostExecution(version: Int, released: Boolean, attribution: String) = Unit
+        },
+    )
+
+    // Step 2. `update` batches through the main thread, so R2 is requested on the layout thread
+    // directly.
+    checkNotNull(declaredHeight).update(250.px)
+    componentTree.updateStateInternal(true, "R2")
+    val bgLatch = ThreadTestingUtils.runOnBackgroundThread { lithoTestRule.finishAsyncUpdates() }
+    layout2Held.acquire()
+
+    // Step 3.
+    animationRule.advanceBy(24.ms)
+    testView.measure().layout()
+
+    // Step 4.
+    releaseLayout2.release()
+    bgLatch.acquire()
+    componentTree.setFutureExecutionListener(null)
+
+    repeat(6) {
+      animationRule.advanceBy(24.ms)
+      testView.measure().layout()
+    }
+    assertThat(grow().width).isLessThan(250)
+    assertThat(grow().height)
+        .describedAs("L3 captured the moved natural height, so the height retargets mid-reflow")
+        .isGreaterThan(100)
+
+    animationRule.advanceBy(400.ms)
+    testView.measure().layout()
+    assertThat(grow().width).isEqualTo(250)
+    assertThat(grow().height).isEqualTo(250)
+  }
+
+  /**
    * Two reflow nodes ticking on the same frame both ride it, so the frame stays one layout pass.
    *
    * Known limitation: if the two are layout-coupled, each animates toward a destination captured
@@ -355,6 +447,28 @@ class StyleReflowInterruptionTest {
             Row(
                 style =
                     Style.width(200.px).height(20.px).viewTag("unrelated-${unrelatedState.value}"),
+            ),
+        )
+      }
+    }
+  }
+
+  private inner class DroppedLayoutHeightComponent : KComponent() {
+    override fun ComponentScope.render(): Component {
+      val expandedState = useState { false }.also { expanded = it }
+      val height = useState { 100.px }
+      declaredHeight = height
+      return Column(style = Style.width(300.px)) {
+        child(
+            Row(
+                style =
+                    Style.width(if (expandedState.value) 250.px else 100.px)
+                        // Not read here: `Style.height(Value)` reads the state while laying out.
+                        .height(height)
+                        .transition {
+                          bounds(tween(duration = 400.ms, easing = Easing.Linear), reflow = true)
+                        }
+                        .viewTag(GROW_TAG),
             ),
         )
       }

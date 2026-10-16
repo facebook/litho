@@ -16,8 +16,12 @@
 
 package com.facebook.litho
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Looper
 import androidx.test.core.app.ApplicationProvider
+import com.facebook.litho.animation.height
+import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
@@ -25,10 +29,17 @@ import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.layout.flexbox.Column
 import com.facebook.litho.layout.flexbox.Row
 import com.facebook.litho.testing.LithoTestRule
+import com.facebook.litho.testing.ThreadTestingUtils
+import com.facebook.litho.testing.TimeOutSemaphore
 import com.facebook.litho.testing.Whitebox
 import com.facebook.litho.testing.testrunner.LithoTestRunner
+import com.facebook.litho.widget.RenderAndLayoutCountingTester
+import com.facebook.rendercore.Dimen
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.dp
+import com.facebook.rendercore.px
+import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicReference
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
@@ -353,7 +364,104 @@ class LithoRendererTest {
     assertThat(Whitebox.getInternalState<Boolean>(view, "visibilityHintIsVisible")).isFalse
   }
 
+  /**
+   * `LithoRenderer`'s path through the dropped-layout schedule in `SplitFuturesTest`. Rn is the
+   * n-th resolve and Ln the layout of Rn's result; `s` is the reader's height, read only while
+   * laying out.
+   * 1. R1 and L1 commit: the reader is 100px tall.
+   * 2. R2 applies `s = 200px` and commits on the layout thread. L2 is held while it measures the
+   *    reader's child.
+   * 3. On the main thread, R3 applies an update to a state nothing reads, and commits, and L3 lays
+   *    out against L1.
+   * 4. L2 is released and dropped, since R3 is now the committed resolve.
+   *
+   * L3 has to lay the reader out again, or it is served from L1 and stays 100px tall.
+   */
+  @OptIn(ExperimentalLithoApi::class)
+  @Test
+  fun `a layout lays out again what a resolve whose layout was dropped updated`() {
+    val heightState = AtomicReference<State<Dimen>?>()
+    val unreadState = AtomicReference<State<Int>?>()
+    val layout2Held = TimeOutSemaphore(0)
+    val releaseLayout2 = TimeOutSemaphore(0)
+    val holdLayout2 = AtomicBoolean(false)
+    val holdOnLayoutThread =
+        object : RenderAndLayoutCountingTester.Listener {
+          override fun onPrepare() = Unit
+
+          override fun onMeasure() {
+            if (
+                Looper.myLooper() != Looper.getMainLooper() &&
+                    holdLayout2.compareAndSet(true, false)
+            ) {
+              layout2Held.release()
+              releaseLayout2.acquire()
+            }
+          }
+        }
+    val constraints =
+        SizeConstraints(minWidth = 100, maxWidth = 100, minHeight = 0, maxHeight = 500)
+    renderer.bindTo(LithoRenderTreeView(context))
+
+    // Step 1.
+    renderer.renderSync(
+        RendererHeightReader(heightState, unreadState, holdOnLayoutThread),
+        constraints,
+    )
+    assertThat(renderer.currentLayoutState?.height).isEqualTo(100)
+
+    // Step 2.
+    holdLayout2.set(true)
+    checkNotNull(heightState.get()).update(200.px)
+    val bgLatch = ThreadTestingUtils.runOnBackgroundThread { lithoTestRule.finishAsyncUpdates() }
+    layout2Held.acquire()
+
+    // Step 3. Sync, so that R3 resolves on this thread while L2 is held.
+    @SuppressLint("KComponentSyncUpdateDetector")
+    checkNotNull(unreadState.get()).updateSync { it + 1 }
+
+    // Step 4.
+    releaseLayout2.release()
+    bgLatch.acquire()
+    lithoTestRule.idle()
+
+    assertThat(renderer.currentLayoutState?.height)
+        .describedAs("L3 lays out again the component that read `s` while laying out")
+        .isEqualTo(200)
+    assertThat(checkNotNull(renderer.treeState).statesUpdatedAfter(TreeState.UNSET_VERSION))
+        .describedAs("L3's commit drops every update its resolve version covers")
+        .isEmpty()
+  }
+
   // ========== Test Components ==========
+
+  private class RendererHeightReader(
+      private val heightState: AtomicReference<State<Dimen>?>,
+      private val unreadState: AtomicReference<State<Int>?>,
+      private val listener: RenderAndLayoutCountingTester.Listener,
+  ) : KComponent() {
+    @OptIn(ExperimentalLithoApi::class)
+    override fun ComponentScope.render(): Component {
+      // Not read here: `Style.height(Value)` reads the state while laying out.
+      val height = useState { 100.px }
+      heightState.set(height)
+      unreadState.set(useState { 0 })
+      return Column {
+        child(
+            Row(style = Style.width(100.px).height(height)) {
+              // Stretched to the row's height, so it is measured again whenever that changes.
+              child(
+                  RenderAndLayoutCountingTester(
+                      renderAndMeasureCounter = RenderAndMeasureCounter(),
+                      listener = listener,
+                      style = Style.width(100.px),
+                  ),
+              )
+            },
+        )
+      }
+    }
+  }
 
   /** Test component for rendering tests */
   private class TestComponent : KComponent() {

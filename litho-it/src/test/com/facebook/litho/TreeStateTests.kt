@@ -227,6 +227,61 @@ class TreeStateTests {
     treeState.assertThatTestStateContainerHasValue(5)
   }
 
+  @Test
+  fun `a tree seeded with a TreeState forgets the resolve versions the previous tree recorded`() {
+    val forComponentTree = treeStateWithUpdateRecordedAtResolveVersion(57)
+    val forRenderer = treeStateWithUpdateRecordedAtResolveVersion(57)
+    assertThat(forComponentTree.statesUpdatedAfter(0)).isNotEmpty
+    assertThat(forRenderer.statesUpdatedAfter(0)).isNotEmpty
+
+    // Both trees number their resolves from 0, so a kept 57 would dirty its readers until then.
+    ComponentTree.create(context, EmptyComponent()).treeState(forComponentTree).build()
+    LithoRenderer(context = context.androidContext, treeState = forRenderer)
+
+    assertThat(forComponentTree.statesUpdatedAfter(TreeState.UNSET_VERSION)).isEmpty()
+    assertThat(forRenderer.statesUpdatedAfter(TreeState.UNSET_VERSION)).isEmpty()
+  }
+
+  @Test
+  fun `the states updated after a version are those of every newer committed resolve`() {
+    val committed = TreeState()
+    val ids = (1..3).map { StateId.forSpec(it, testComponentKey) }
+    ids.forEachIndexed { i, id -> committed.commitResolveUpdating(id, resolveVersion = i + 1) }
+
+    assertThat(committed.statesUpdatedAfter(0)).containsExactlyInAnyOrderElementsOf(ids)
+    assertThat(committed.statesUpdatedAfter(1)).containsExactlyInAnyOrder(ids[1], ids[2])
+    assertThat(committed.statesUpdatedAfter(2)).containsExactly(ids[2])
+    assertThat(committed.statesUpdatedAfter(3)).isEmpty()
+  }
+
+  private fun TreeState.commitResolveUpdating(id: StateId, resolveVersion: Int) {
+    val local = TreeState(this)
+    local.queueStateUpdate(
+        key = id,
+        stateUpdate = StateUpdateTestComponent.createIncrementStateUpdate(),
+        isLazyStateUpdate = false,
+        isLayoutState = false,
+    )
+    commitResolveState(local, trackForPromotion = true, resolveVersion = resolveVersion)
+  }
+
+  private fun treeStateWithUpdateRecordedAtResolveVersion(resolveVersion: Int): TreeState {
+    val committed = TreeState()
+    committed.createOrGetState(context, testComponent, testComponentKey)
+    committed.queueStateUpdate(
+        key = makeStateId(testComponentKey),
+        stateUpdate = StateUpdateTestComponent.createIncrementStateUpdate(),
+        isLazyStateUpdate = false,
+        isLayoutState = false,
+    )
+    committed.commitResolveState(
+        TreeState(committed),
+        trackForPromotion = true,
+        resolveVersion = resolveVersion,
+    )
+    return committed
+  }
+
   private fun TreeState.assertThatTestStateContainerHasValue(value: Int) {
     assertThat(
         (getState(testComponentKey, false)?.value as StateUpdateTestComponent.TestStateContainer)

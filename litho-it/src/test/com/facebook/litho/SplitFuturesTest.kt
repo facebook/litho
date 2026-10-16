@@ -16,9 +16,15 @@
 
 package com.facebook.litho
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import com.facebook.litho.TreeFuture.FutureExecutionListener
 import com.facebook.litho.TreeFuture.FutureExecutionType
+import com.facebook.litho.animation.height
+import com.facebook.litho.annotations.ExperimentalLithoApi
+import com.facebook.litho.core.width
+import com.facebook.litho.layout.flexbox.Column as FlexColumn
+import com.facebook.litho.layout.flexbox.Row
 import com.facebook.litho.testing.LithoStatsRule
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.ThreadTestingUtils
@@ -26,9 +32,15 @@ import com.facebook.litho.testing.TimeOutSemaphore
 import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.testing.unspecified
+import com.facebook.litho.view.viewTag
 import com.facebook.litho.widget.MountSpecPureRenderLifecycleTester
 import com.facebook.litho.widget.RenderAndLayoutCountingTester
 import com.facebook.litho.widget.Text
+import com.facebook.rendercore.Dimen
+import com.facebook.rendercore.px
+import java.util.Collections
+import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicReference
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
@@ -952,5 +964,266 @@ class SplitFuturesTest {
     assertThat(lithoStatsRule.layoutCount).isEqualTo(2)
     assertThat(output.width).isEqualTo(150)
     assertThat(output.height).isEqualTo(150)
+  }
+
+  /**
+   * A resolve that commits but whose layout is dropped still has to reach the next layout.
+   *
+   * Each render is a resolve pass followed by a layout pass: Rn is the n-th resolve and Ln the
+   * layout of Rn's result. `s` is the reader's height, a state read only while laying out.
+   * 1. R1 and L1 commit: the reader is 100px tall, and L1 records that it read `s`.
+   * 2. R2 applies `s = 200px` and commits. Committing clears `s` from the pending updates and
+   *    records R2's version against `s`. L2 is held before it runs.
+   * 3. R3 applies an update to a state nothing reads, and commits. L3 lays out against L1, the last
+   *    committed layout, while L2 is still held.
+   * 4. L2 is released and finishes, but R2 is no longer the committed resolve, so L2 is dropped.
+   *
+   * R3's own updates don't include `s`, so L3 has to take it from the states a committed resolve
+   * newer than L1 updated (`TreeState.statesUpdatedAfter`). Otherwise the reader is served from L1
+   * and stays 100px tall.
+   */
+  @OptIn(ExperimentalLithoApi::class)
+  @Test
+  fun supersededLayout_componentThatReadUpdatedStateWhileLayingOut_isLaidOutAgain() {
+    val heightState = AtomicReference<State<Dimen>?>()
+    val unreadState = AtomicReference<State<Int>?>()
+    val testLithoView =
+        lithoTestRule.render(widthPx = 100, heightPx = 500) {
+          LayoutPhaseHeightReader(heightState, unreadState)
+        }
+    val componentTree = testLithoView.componentTree
+    val readerHeight = { checkNotNull(testLithoView.findViewWithTagOrNull(READER_TAG)).height }
+    // Step 1: R1 and L1 committed in render().
+    assertThat(readerHeight()).isEqualTo(100)
+
+    val layout2Held = TimeOutSemaphore(0)
+    val releaseLayout2 = TimeOutSemaphore(0)
+    val holdLayout2 = AtomicBoolean(true)
+    componentTree.setFutureExecutionListener(
+        object : FutureExecutionListener {
+          override fun onPreExecution(
+              version: Int,
+              futureExecutionType: FutureExecutionType,
+              attribution: String,
+          ) {
+            if (
+                attribution == LayoutTreeFuture.DESCRIPTION &&
+                    holdLayout2.compareAndSet(true, false)
+            ) {
+              layout2Held.release()
+              releaseLayout2.acquire()
+            }
+          }
+
+          override fun onPostExecution(version: Int, released: Boolean, attribution: String) = Unit
+        },
+    )
+
+    // Step 2: R2 resolves and commits on the layout thread, then L2 is held before it runs.
+    checkNotNull(heightState.get()).update(200.px)
+    val bgLatch = ThreadTestingUtils.runOnBackgroundThread { lithoTestRule.finishAsyncUpdates() }
+    layout2Held.acquire()
+
+    // Step 3: R3 and L3 commit on this thread while L2 is held. The update is sync so that R3
+    // resolves here: an async one would queue behind L2 on the layout thread.
+    @SuppressLint("KComponentSyncUpdateDetector")
+    checkNotNull(unreadState.get()).updateSync { it + 1 }
+
+    // Step 4: L2 finishes against R2, which is no longer the committed resolve, and is dropped.
+    releaseLayout2.release()
+    bgLatch.acquire()
+    componentTree.setFutureExecutionListener(null)
+
+    lithoTestRule.idle()
+    testLithoView.measure().layout()
+    assertThat(readerHeight())
+        .describedAs("L3 lays out again the component that read `s` while laying out")
+        .isEqualTo(200)
+    assertThat(componentTree.acquireTreeState().statesUpdatedAfter(TreeState.UNSET_VERSION))
+        .describedAs("L3's commit drops every update its resolve version covers")
+        .isEmpty()
+  }
+
+  /**
+   * An update recorded when a resolve copies its [TreeState] is not laid out again if the layout
+   * that resolve diffs against already laid it out.
+   *
+   * Same naming as above:
+   * 1. R1 and L1 commit.
+   * 2. R2 applies `s = 200px` and commits on the layout thread. L2 is held before it runs.
+   * 3. R3 starts on another thread for an update to a state nothing reads. It has copied the
+   *    [TreeState], with `s` still recorded at R2's version, when it releases L2 and waits for it.
+   * 4. L2 commits, then R3 and L3 commit. L3 lays out against L2, which already laid out `s`.
+   *
+   * Only R2's version, not newer than L2's resolve, keeps `s` out of L3's dirty states.
+   */
+  @Test
+  fun resolveCopiedBeforeLayoutCommits_updateThatLayoutLaidOut_isNotLaidOutAgain() {
+    val heightState = AtomicReference<State<Dimen>?>()
+    val unreadState = AtomicReference<State<Int>?>()
+    val testLithoView =
+        lithoTestRule.render(widthPx = 100, heightPx = 500) {
+          LayoutPhaseHeightReader(heightState, unreadState)
+        }
+    val componentTree = testLithoView.componentTree
+    val readerHeight = { checkNotNull(testLithoView.findViewWithTagOrNull(READER_TAG)).height }
+    // Step 1: R1 and L1 committed in render().
+    assertThat(readerHeight()).isEqualTo(100)
+
+    val layout2Held = TimeOutSemaphore(0)
+    val releaseLayout2 = TimeOutSemaphore(0)
+    val holdLayout2 = AtomicBoolean(true)
+    val resolve3Version = AtomicReference<Int?>()
+    val bgLatch = AtomicReference<TimeOutSemaphore>()
+    componentTree.setFutureExecutionListener(
+        object : FutureExecutionListener {
+          override fun onPreExecution(
+              version: Int,
+              futureExecutionType: FutureExecutionType,
+              attribution: String,
+          ) {
+            if (
+                attribution == LayoutTreeFuture.DESCRIPTION &&
+                    holdLayout2.compareAndSet(true, false)
+            ) {
+              layout2Held.release()
+              releaseLayout2.acquire()
+            } else if (
+                attribution == ResolveTreeFuture.DESCRIPTION &&
+                    !holdLayout2.get() &&
+                    resolve3Version.compareAndSet(null, version)
+            ) {
+              // R3 has copied the TreeState: let L2 run and commit before R3 resolves.
+              releaseLayout2.release()
+              bgLatch.get().acquire()
+            }
+          }
+
+          override fun onPostExecution(version: Int, released: Boolean, attribution: String) = Unit
+        },
+    )
+    lithoStatsRule.resetAllCounters()
+
+    // Step 2: R2 resolves and commits on the layout thread, then L2 is held before it runs.
+    checkNotNull(heightState.get()).update(200.px)
+    bgLatch.set(ThreadTestingUtils.runOnBackgroundThread { lithoTestRule.finishAsyncUpdates() })
+    layout2Held.acquire()
+
+    // Steps 3 and 4. R3 is requested sync on a third thread: an async request would queue behind L2
+    // on the layout thread, and one run by the main looper would block L2 posting to it.
+    ThreadTestingUtils.runOnBackgroundThread {
+          checkNotNull(unreadState.get()).update { it + 1 }
+          componentTree.updateStateInternal(false, "R3")
+        }
+        .acquire()
+    componentTree.setFutureExecutionListener(null)
+
+    assertThat(componentTree.getCommittedLayoutState()?.resolveResult?.version)
+        .describedAs("L3 committed")
+        .isEqualTo(checkNotNull(resolve3Version.get()))
+    assertThat(lithoStatsRule.layoutCount)
+        .describedAs("only L2 lays out; L3 is served from L2, which already laid out `s`")
+        .isEqualTo(1)
+
+    lithoTestRule.idle()
+    testLithoView.measure().layout()
+    assertThat(readerHeight()).isEqualTo(200)
+  }
+
+  /**
+   * An update the last committed layout already laid out is not laid out again, even before the
+   * main thread has processed that layout.
+   *
+   * Same naming as above:
+   * 1. R1 and L1 commit.
+   * 2. R2 applies `s = 200px` and commits on the layout thread. As L2 starts, it queues an async
+   *    update to a state nothing reads.
+   * 3. L2 commits on the layout thread. R3 and L3 run straight after it, on the same thread, before
+   *    the main thread can process L2, so `s` is still in the promotion set.
+   * 4. L3 lays out against L2, which already laid out `s`, so it has nothing to lay out.
+   */
+  @Test
+  fun committedLayout_updateItAlreadyLaidOut_isNotLaidOutAgain() {
+    val heightState = AtomicReference<State<Dimen>?>()
+    val unreadState = AtomicReference<State<Int>?>()
+    val testLithoView =
+        lithoTestRule.render(widthPx = 100, heightPx = 500) {
+          LayoutPhaseHeightReader(heightState, unreadState)
+        }
+    val componentTree = testLithoView.componentTree
+    val readerHeight = { checkNotNull(testLithoView.findViewWithTagOrNull(READER_TAG)).height }
+    // Step 1: R1 and L1 committed in render().
+    assertThat(readerHeight()).isEqualTo(100)
+
+    val queueUpdateInLayout2 = AtomicBoolean(true)
+    val executed = Collections.synchronizedList(mutableListOf<Pair<String, Int>>())
+    componentTree.setFutureExecutionListener(
+        object : FutureExecutionListener {
+          override fun onPreExecution(
+              version: Int,
+              futureExecutionType: FutureExecutionType,
+              attribution: String,
+          ) {
+            executed.add(attribution to version)
+            if (
+                attribution == LayoutTreeFuture.DESCRIPTION &&
+                    queueUpdateInLayout2.compareAndSet(true, false)
+            ) {
+              // `update` batches through the main thread; request R3 on the layout thread directly
+              // so it can run before the main thread processes L2.
+              checkNotNull(unreadState.get()).update { it + 1 }
+              componentTree.updateStateInternal(true, "R3")
+            }
+          }
+
+          override fun onPostExecution(version: Int, released: Boolean, attribution: String) = Unit
+        },
+    )
+    lithoStatsRule.resetAllCounters()
+
+    // Step 2 and L2 run on the layout thread. The main thread, which would process L2, doesn't run
+    // until idle() below.
+    checkNotNull(heightState.get()).update(200.px)
+    lithoTestRule.finishAsyncUpdates()
+    // R3 and L3, queued during L2, run on the layout thread too.
+    lithoTestRule.finishAsyncUpdates()
+    componentTree.setFutureExecutionListener(null)
+    // R3 and L3 really ran before the main thread could process L2, and L3 is what committed.
+    assertThat(executed.map { it.first })
+        .containsExactly(
+            ResolveTreeFuture.DESCRIPTION,
+            LayoutTreeFuture.DESCRIPTION,
+            ResolveTreeFuture.DESCRIPTION,
+            LayoutTreeFuture.DESCRIPTION,
+        )
+    assertThat(componentTree.getCommittedLayoutState()?.resolveResult?.version)
+        .isEqualTo(executed[2].second)
+    assertThat(lithoStatsRule.resolveCount + lithoStatsRule.layoutCount)
+        .describedAs("R2, R3 and L3 skip; only L2 lays out, since L2 already laid out `s` for L3")
+        .isEqualTo(1)
+
+    lithoTestRule.idle()
+    testLithoView.measure().layout()
+    assertThat(readerHeight()).isEqualTo(200)
+  }
+
+  private class LayoutPhaseHeightReader(
+      private val heightState: AtomicReference<State<Dimen>?>,
+      private val unreadState: AtomicReference<State<Int>?>,
+  ) : KComponent() {
+    @OptIn(ExperimentalLithoApi::class)
+    override fun ComponentScope.render(): Component {
+      // Not read here: `Style.height(Value)` reads the state while laying out.
+      val height = useState { 100.px }
+      heightState.set(height)
+      unreadState.set(useState { 0 })
+      return FlexColumn {
+        child(Row(style = Style.width(100.px).height(height).viewTag(READER_TAG)))
+      }
+    }
+  }
+
+  companion object {
+    private const val READER_TAG = "layout_phase_height_reader"
   }
 }

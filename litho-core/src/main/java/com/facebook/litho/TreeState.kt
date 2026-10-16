@@ -53,6 +53,14 @@ private constructor(
   @ThreadConfined(ThreadConfined.UI) private var _unconsumedMountUpdates: Set<StateId> = emptySet()
 
   /**
+   * The states each committed resolve updated, oldest first, until a layout of that resolve or a
+   * newer one commits. Replaced, not mutated, so a copied [TreeState] shares it.
+   */
+  @Volatile private var resolveUpdates: List<ResolveUpdates> = emptyList()
+
+  private class ResolveUpdates(val resolveVersion: Int, val states: Set<StateId>)
+
+  /**
    * This class represents whether this Litho tree has been mounted before. The usage is a bit
    * convoluted and will need to be cleaned out properly in the future.
    */
@@ -74,7 +82,9 @@ private constructor(
       effectsHandler = effectsHandler ?: fromState?.effectsHandler ?: EffectHandler(),
       eventTriggersContainer = fromState?.eventTriggersContainer ?: EventTriggersContainer(),
       eventHandlersController = fromState?.eventHandlersController ?: EventHandlersController(),
-  )
+  ) {
+    fromState?.let { resolveUpdates = it.resolveUpdates }
+  }
 
   constructor(
       initialResolveState: InitialState,
@@ -113,19 +123,41 @@ private constructor(
     layoutState.initialState.unregisterStateHandler(layoutState)
   }
 
-  fun commitResolveState(localTreeState: TreeState, trackForPromotion: Boolean = false) {
+  /**
+   * @param resolveVersion the committed resolve's version. When tracking, it is recorded with the
+   *   states the resolve updated, for [statesUpdatedAfter].
+   */
+  fun commitResolveState(
+      localTreeState: TreeState,
+      trackForPromotion: Boolean = false,
+      resolveVersion: Int = UNSET_VERSION,
+  ) {
     resolveState.commit(localTreeState.resolveState)
     if (trackForPromotion) {
       val updated = localTreeState.resolveState.getStateIdsForPendingUpdates()
       if (updated.isNotEmpty()) {
         resolveState.addToStateIdsToPromote(updated)
+        if (resolveVersion != UNSET_VERSION) {
+          recordResolveUpdates(updated, resolveVersion)
+        }
       }
     }
     localTreeState.scope?.close()
   }
 
-  fun commitLayoutState(localTreeState: TreeState, trackForPromotion: Boolean = false) {
+  /**
+   * @param resolveVersion the version of the resolve the committed layout came from. Every update
+   *   recorded at or below it is laid out, so it is dropped from [statesUpdatedAfter].
+   */
+  fun commitLayoutState(
+      localTreeState: TreeState,
+      trackForPromotion: Boolean = false,
+      resolveVersion: Int = UNSET_VERSION,
+  ) {
     layoutState.commit(localTreeState.layoutState)
+    if (resolveVersion != UNSET_VERSION) {
+      dropResolveUpdatesUpTo(resolveVersion)
+    }
     if (trackForPromotion) {
       val updated = localTreeState.layoutState.getStateIdsForPendingUpdates()
       if (updated.isNotEmpty()) {
@@ -133,6 +165,43 @@ private constructor(
       }
     }
     localTreeState.scope?.close()
+  }
+
+  /** The states a committed resolve newer than [resolveVersion] updated. */
+  internal fun statesUpdatedAfter(resolveVersion: Int): Set<StateId> {
+    var single: Set<StateId>? = null
+    var union: HashSet<StateId>? = null
+    for (updates in resolveUpdates) {
+      if (updates.resolveVersion > resolveVersion) {
+        when {
+          union != null -> union.addAll(updates.states)
+          single == null -> single = updates.states
+          else -> union = HashSet(single).apply { addAll(updates.states) }
+        }
+      }
+    }
+    return union ?: single ?: emptySet()
+  }
+
+  @Synchronized
+  private fun recordResolveUpdates(updated: Set<StateId>, resolveVersion: Int) {
+    resolveUpdates = resolveUpdates + ResolveUpdates(resolveVersion, updated)
+  }
+
+  /**
+   * Forgets every recorded version. A tree seeded with this [TreeState] numbers its resolves from
+   * zero again, so versions recorded by the previous tree mean nothing to it.
+   */
+  @Synchronized
+  internal fun clearResolveUpdates() {
+    resolveUpdates = emptyList()
+  }
+
+  @Synchronized
+  private fun dropResolveUpdatesUpTo(resolveVersion: Int) {
+    val updates = resolveUpdates
+    if (updates.none { it.resolveVersion <= resolveVersion }) return
+    resolveUpdates = updates.filter { it.resolveVersion > resolveVersion }
   }
 
   fun commit() {
@@ -466,6 +535,9 @@ private constructor(
   }
 
   companion object {
+    /** No resolve version: the commit records nothing for [statesUpdatedAfter]. */
+    internal const val UNSET_VERSION: Int = Int.MIN_VALUE
+
     private fun getKeysForPendingStateUpdates(stateHandler: StateHandler): Set<GlobalKey> {
       return stateHandler.keysForPendingUpdates
     }

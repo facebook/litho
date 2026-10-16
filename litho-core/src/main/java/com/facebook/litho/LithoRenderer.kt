@@ -78,6 +78,10 @@ class LithoRenderer(
   private val errorComponentRef = AtomicReference<Component?>(null)
   private val renderHandler = runnableHandlerProvider.getRunnableHandler()
 
+  init {
+    treeState?.clearResolveUpdates()
+  }
+
   /** The root component that this renderer is responsible for rendering. */
   @GuardedBy("this") @Volatile private var root: Component = EmptyComponent()
   /** The size constraints used for layout calculations. */
@@ -643,6 +647,7 @@ class LithoRenderer(
       treeState?.commitResolveState(
           resolveResult.treeState,
           trackForPromotion = componentsConfig.enableStateReadTracking,
+          resolveVersion = resolveResult.version,
       )
     }
   }
@@ -706,6 +711,7 @@ class LithoRenderer(
       treeState?.commitLayoutState(
           layoutState.treeState,
           trackForPromotion = componentsConfig.enableStateReadTracking,
+          resolveVersion = layoutState.resolveResult.version,
       )
       return true
     }
