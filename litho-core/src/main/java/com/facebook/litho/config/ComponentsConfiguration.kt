@@ -459,6 +459,14 @@ internal constructor(
      */
     @JvmField var enableWorkingRangeOnDeferredNode: Boolean = false
 
+    /**
+     * Marks a deferred node (`RenderWithConstraints`, a `Component.measure` holder) dirty when the
+     * layout cache copies its subtree whole, so Yoga measures it under the constraints of this
+     * pass. Without it, Yoga can reuse a size the node measured in the last pass under other
+     * constraints, and its content is laid out only at that size.
+     */
+    @JvmField var remeasureDeferredNodesInCachedSubtree: Boolean = false
+
     /** Enables a default visibility events controller in LithoView to handle visibility events */
     @JvmField var enableDefaultVisibilityEventsController: Boolean = false
 

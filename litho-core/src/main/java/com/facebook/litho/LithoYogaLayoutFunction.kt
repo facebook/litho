@@ -30,6 +30,7 @@ import com.facebook.litho.YogaLayoutOutput.Companion.getYogaNode
 import com.facebook.litho.YogaLayoutOutput.Companion.layoutDirection
 import com.facebook.litho.animation.ReflowReadView
 import com.facebook.litho.animation.reflowStateId
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.debug.DebugInfoReporter
 import com.facebook.litho.drawable.BorderColorDrawable
@@ -369,11 +370,20 @@ internal object LithoYogaLayoutFunction {
     val node: LithoNode = cachedResult.node
     val result: LithoLayoutResult = copyLayoutResult(cachedResult, node, clonedYogaNode)
     clonedYogaNode.data = Pair<Any, Any>(context, result)
+    // The copy drops the resolved content, but Yoga would reuse its cached measurement under a
+    // stricter AT_MOST the old size fits, or under a size that rounds to the old one, so the
+    // content would be laid out only at that old size. Dirtying makes Yoga measure it under this
+    // pass's constraints.
+    if (
+        ComponentsConfiguration.remeasureDeferredNodesInCachedSubtree && node is DeferredLithoNode
+    ) {
+      clonedYogaNode.dirty()
+    }
 
     // Set the DiffNode on the cloned result so the measure cache in measureLithoNode can use
     // its cached specs/sizes when Yoga re-measures with changed constraints. Unlike applyDiffNode
-    // (used in the non-cached path), this only sets the _diffNode reference — it does not call
-    // shouldComponentUpdate or dirty the yoga node, which would cause unnecessary re-measurement.
+    // (used in the non-cached path), this does not run shouldComponentUpdate; only a deferred node
+    // may be dirtied, above.
     //
     // Type validation and isReleased checks are handled by findDiffNode, which resolved
     // currentDiffNode before this function was called. If the type didn't match or the context
