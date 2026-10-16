@@ -46,6 +46,12 @@ open class ResourceResolver(private val androidContext: Context, val resourceCac
     return round(sips * scale)
   }
 
+  /** Converts [dips] to pixels without rounding to a whole pixel, unlike [dipsToPixels]. */
+  open fun dipsToUnroundedPixels(dips: Float): Float = dips * resources.displayMetrics.density
+
+  /** Converts [sips] to pixels without rounding to a whole pixel, unlike [sipsToPixels]. */
+  open fun sipsToUnroundedPixels(sips: Float): Float = sips * resources.displayMetrics.scaledDensity
+
   fun pixelsToDips(pixels: Int): Float {
     val scale = resources.displayMetrics.density
     return pixels / scale

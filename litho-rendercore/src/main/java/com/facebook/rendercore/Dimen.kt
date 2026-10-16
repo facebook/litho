@@ -37,9 +37,30 @@ value class Dimen @PublishedApi internal constructor(val encodedValue: Long) {
   fun toPixels(resourceResolver: ResourceResolver): Int =
       convertEncodedValueToPixels(resourceResolver, encodedValue)
 
-  /** Converts the given Dimen to pixels as a Float. */
+  /**
+   * Converts the given Dimen to pixels as a Float, rounded to a whole pixel like [toPixels]. For
+   * the exact value of a dp or sp Dimen, e.g. for drawing geometry, use [toUnroundedPixels]. Px
+   * values, including those from [dimenRes] and [dimenAttr], are already whole pixels when created,
+   * so [toUnroundedPixels] returns them unchanged.
+   */
   fun toFloatPixels(resourceResolver: ResourceResolver): Float =
       convertEncodedValueToPixels(resourceResolver, encodedValue).toFloat()
+
+  /** Converts the given Dimen to pixels without rounding to a whole pixel. */
+  fun toUnroundedPixels(resourceResolver: ResourceResolver): Float =
+      when {
+        // DP case
+        encodedValue and NAN_MASK != NAN_MASK ->
+            resourceResolver.dipsToUnroundedPixels(longBitsToDouble(encodedValue).toFloat())
+        // PX case
+        encodedValue and PX_FLAG == PX_FLAG -> (encodedValue and PAYLOAD_MASK).toInt().toFloat()
+        // SP case
+        encodedValue and SP_FLAG == SP_FLAG ->
+            resourceResolver.sipsToUnroundedPixels(
+                intBitsToFloat((encodedValue and PAYLOAD_MASK).toInt()),
+            )
+        else -> throw IllegalArgumentException("Got unexpected NaN: ${toHexString(encodedValue)}")
+      }
 
   override fun toString(): String {
     return when {

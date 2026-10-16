@@ -20,11 +20,13 @@ import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import java.lang.IllegalArgumentException
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.within
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExpectedException
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
 const val DENSITY = 2f
 const val SCALED_DENSITY = 10f
@@ -237,6 +239,30 @@ class DimenTest {
     assertThat(-(10.px)).isEqualTo((-10).px)
   }
 
+  @Test
+  fun `unrounded pixels keep the fraction that toPixels and toFloatPixels round away`() {
+    assertThat(10.2f.dp.toUnroundedPixels(resourceResolver)).isEqualTo(20.4f)
+    assertThat(10.2f.dp.toFloatPixels(resourceResolver)).isEqualTo(20f)
+    assertThat((-10.2f).dp.toUnroundedPixels(resourceResolver)).isEqualTo(-20.4f)
+    assertThat(1.24f.sp.toUnroundedPixels(resourceResolver)).isCloseTo(12.4f, within(1e-4f))
+    assertThat(1.24f.sp.toFloatPixels(resourceResolver)).isEqualTo(12f)
+    assertThat(7.px.toUnroundedPixels(resourceResolver)).isEqualTo(7f)
+    assertThat((-7).px.toUnroundedPixels(resourceResolver)).isEqualTo(-7f)
+  }
+
+  @Test
+  @Config(qualifiers = "hdpi", fontScale = 1.3f)
+  fun `unrounded pixels use the display density for dp and the scaled density for sp`() {
+    val context = ApplicationProvider.getApplicationContext<Context>()
+    val resolver =
+        ResourceResolver(context, ResourceCache.getLatest(context.resources.configuration))
+
+    // density 1.5, scaledDensity 1.95
+    assertThat(1.5f.dp.toUnroundedPixels(resolver)).isEqualTo(2.25f)
+    assertThat(1.5f.dp.toPixels(resolver)).isEqualTo(2)
+    assertThat(1.5f.sp.toUnroundedPixels(resolver)).isCloseTo(2.925f, within(1e-4f))
+  }
+
   private class MockResourceResolver(val density: Float, val scaledDensity: Float) :
       ResourceResolver(
           ApplicationProvider.getApplicationContext<Context>(),
@@ -247,5 +273,9 @@ class DimenTest {
     override fun dipsToPixels(dips: Float): Int = FastMath.round(dips * density)
 
     override fun sipsToPixels(sips: Float): Int = FastMath.round(sips * scaledDensity)
+
+    override fun dipsToUnroundedPixels(dips: Float): Float = dips * density
+
+    override fun sipsToUnroundedPixels(sips: Float): Float = sips * scaledDensity
   }
 }
