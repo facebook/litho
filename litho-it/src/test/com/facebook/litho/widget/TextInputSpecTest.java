@@ -23,6 +23,7 @@ import static org.mockito.Mockito.mock;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
+import android.text.Layout;
 import android.text.Selection;
 import android.text.method.ArrowKeyMovementMethod;
 import android.text.method.LinkMovementMethod;
@@ -30,6 +31,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.widget.EditText;
 import android.widget.TextView;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -54,6 +56,12 @@ import org.robolectric.annotation.LooperMode;
 @LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(LithoTestRunner.class)
 public class TextInputSpecTest {
+  // Robolectric's legacy text layout breaks lines only at line breaks, so the uncut hint measures
+  // two lines through the one past the cut.
+  private static final String LONG_HINT =
+      "Reply to Puaonaonamakamaeokalanikea about the view of the canyon\nand the river";
+  private static final int NARROW_WIDTH_PX = 60;
+
   private ComponentContext mContext;
 
   public @Rule LithoTestRule lithoTestRule = new LithoTestRule();
@@ -125,6 +133,56 @@ public class TextInputSpecTest {
     component = TextInput.create(mContext).initialText(multiline).multiline(true);
     editText = getEditText(component);
     assertThat(editText.getLineCount()).isEqualTo(3);
+  }
+
+  @Test
+  public void testLongHintFitsOneLineOnEmptyExpandedInputAndIsReadWhole() {
+    assertLongHintFitsOneLineAndIsReadWhole(false);
+  }
+
+  @Test
+  public void testLongHintFitsOneLineOnEmptyExpandedInputAndIsReadWholeForPrimitive() {
+    assertLongHintFitsOneLineAndIsReadWhole(true);
+  }
+
+  @Test
+  public void testHintStaysAsGivenWithoutHintOnOneLine() {
+    final EditText field = getEditText(render(multilineInput().hint(LONG_HINT)));
+
+    assertThat(field.getHint().toString()).isEqualTo(LONG_HINT);
+  }
+
+  private void assertLongHintFitsOneLineAndIsReadWhole(boolean usePrimitiveTextInput) {
+    final boolean originalUsePrimitiveTextInput = ComponentsConfiguration.usePrimitiveTextInput;
+    ComponentsConfiguration.usePrimitiveTextInput = usePrimitiveTextInput;
+    try {
+      final EditText field =
+          getEditText(render(multilineInput().hint(LONG_HINT).isHintOnOneLine(true)));
+      final EditText oneLine = getEditText(render(multilineInput().initialText("x")));
+      final int textWidth =
+          field.getWidth() - field.getCompoundPaddingLeft() - field.getCompoundPaddingRight();
+
+      assertThat(Math.ceil(Layout.getDesiredWidth(field.getHint(), field.getPaint())))
+          .isLessThanOrEqualTo(textWidth);
+      assertThat(field.getHeight()).isEqualTo(oneLine.getHeight());
+      assertThat(
+              AccessibilityNodeInfoCompat.wrap(field.createAccessibilityNodeInfo())
+                  .getHintText()
+                  .toString())
+          .isEqualTo(LONG_HINT);
+    } finally {
+      ComponentsConfiguration.usePrimitiveTextInput = originalUsePrimitiveTextInput;
+    }
+  }
+
+  private TextInput.Builder multilineInput() {
+    return TextInput.create(lithoTestRule.context).multiline(true).maxLines(5);
+  }
+
+  private LithoView render(TextInput.Builder input) {
+    return lithoTestRule
+        .render(null, null, NARROW_WIDTH_PX, componentScope -> input.build())
+        .getLithoView();
   }
 
   @Test

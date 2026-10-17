@@ -145,6 +145,8 @@ import com.facebook.litho.config.ComponentsConfiguration
  *   remeasures it when the line count changes, so that layout changes nothing. Replacing the text
  *   with `setText` without changing the line count does not remeasure the input, so the input keeps
  *   its size until the line count changes.
+ * @prop isHintOnOneLine If set, a single-paragraph hint is laid out as one line, ellipsized at the
+ *   input's width, whatever [maxLines] allows. Accessibility still reads the whole hint.
  */
 @ExcuseMySpec(reason = Reason.J2K_CONVERSION)
 @LayoutSpec(
@@ -242,6 +244,7 @@ internal object TextInputSpec {
       @Prop(optional = true) transformationMethod: TransformationMethod?,
       @Prop(optional = true) useTransformationMethod: Boolean,
       @Prop(optional = true) shouldUseMatchParentLayoutParams: Boolean,
+      @Prop(optional = true) isHintOnOneLine: Boolean,
       @Prop(optional = true) externalTextInputController: TextInputController?,
       @State textInputHandle: Handle,
       @CachedValue textInputController: TextInputController?,
@@ -290,6 +293,7 @@ internal object TextInputSpec {
           transformationMethod = transformationMethod,
           useTransformationMethod = useTransformationMethod,
           shouldUseMatchParentLayoutParams = shouldUseMatchParentLayoutParams,
+          isHintOnOneLine = isHintOnOneLine,
           onTextChanged =
               TextInput.getTextChangedEventHandler(c)?.let { handler ->
                 { editText, text ->
@@ -405,6 +409,7 @@ internal object TextInputSpec {
           .insertionActionModeCallback(insertionActionModeCallback)
           .shouldExcludeFromIncrementalMount(shouldExcludeFromIncrementalMount)
           .shouldUseMatchParentLayoutParams(shouldUseMatchParentLayoutParams)
+          .isHintOnOneLine(isHintOnOneLine)
           .handle(textInputHandle)
           .selectionChangedEventHandler(TextInput.getSelectionChangedEventHandler(c))
           .inputFocusChangedEventHandler(TextInput.getInputFocusChangedEventHandler(c))

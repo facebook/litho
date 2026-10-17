@@ -351,6 +351,7 @@ internal object MaterialTextInputSpec {
             keyListener,
             shouldExcludeFromIncrementalMount,
             shouldUseMatchParentLayoutParams = Diff(false, false),
+            isHintOnOneLine = Diff(false, false),
             measureSeqNumber,
             mountedEditTextRef,
             savedText,

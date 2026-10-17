@@ -178,6 +178,7 @@ import kotlin.math.min
  *   https://developer.android.com/reference/android/widget/TextView.html#setError for more details.
  * @prop errorDrawable Will show along with the error message when a message is set.
  * @prop shouldUseMatchParentLayoutParams See [TextInputSpec].
+ * @prop isHintOnOneLine See [TextInputSpec].
  */
 @ExcuseMySpec(reason = Reason.J2K_CONVERSION)
 @MountSpec(
@@ -304,6 +305,7 @@ internal object TextInputComponentSpec {
       @Prop(optional = true) importantForAutofill: Int,
       @Prop(optional = true) autofillHints: Array<String?>?,
       @Prop(optional = true) disableAutofill: Boolean,
+      @Prop(optional = true) isHintOnOneLine: Boolean,
       @State savedText: AtomicReference<CharSequence?>,
   ) {
     val forMeasure = createAndMeasureEditText(
@@ -348,6 +350,7 @@ internal object TextInputComponentSpec {
         // 1. After initState before onMount: savedText = initText.
         // 2. After onMount before onUnmount: savedText preserved from underlying editText.
         savedText.get(),
+        isHintOnOneLine = isHintOnOneLine,
     )
 
     setSizeForView(size, widthSpec, heightSpec, forMeasure)
@@ -405,6 +408,7 @@ internal object TextInputComponentSpec {
       autofillHints: Array<String?>?,
       disableAutofill: Boolean,
       text: CharSequence?,
+      isHintOnOneLine: Boolean = false,
   ): EditText {
     // The height should be the measured height of EditText with relevant params
     var textToMeasure = text
@@ -460,6 +464,9 @@ internal object TextInputComponentSpec {
         inputConnectionEventHandler = null, // Not needed for measurement
     )
     forMeasure.setDisableAutofill(disableAutofill)
+    if (isHintOnOneLine && hint != null && getMode(widthSpec) != SizeSpec.UNSPECIFIED) {
+      forMeasure.hint = cutToOneLine(hint, forMeasure, getSize(widthSpec))
+    }
     forMeasure.measure(getViewMeasureSpec(widthSpec), getViewMeasureSpec(heightSpec))
     return forMeasure
   }
@@ -698,6 +705,7 @@ internal object TextInputComponentSpec {
       @Prop(optional = true) keyListener: Diff<KeyListener?>,
       @Prop(optional = true) shouldExcludeFromIncrementalMount: Diff<Boolean>,
       @Prop(optional = true) shouldUseMatchParentLayoutParams: Diff<Boolean>,
+      @Prop(optional = true) isHintOnOneLine: Diff<Boolean>,
       @State measureSeqNumber: Diff<Int?>,
       @State mountedView: Diff<AtomicReference<EditTextWithEventHandlers?>>,
       @State savedText: Diff<AtomicReference<CharSequence?>>,
@@ -776,6 +784,9 @@ internal object TextInputComponentSpec {
             shouldUseMatchParentLayoutParams.next,
         )
     ) {
+      return true
+    }
+    if (isHintOnOneLine.previous != isHintOnOneLine.next) {
       return true
     }
     if (!ObjectsCompat.equals(imeOptions.previous, imeOptions.next)) {
@@ -930,6 +941,7 @@ internal object TextInputComponentSpec {
       @Prop(optional = true) autofillHints: Array<String?>?,
       @Prop(optional = true) disableAutofill: Boolean,
       @Prop(optional = true) shouldUseMatchParentLayoutParams: Boolean,
+      @Prop(optional = true) isHintOnOneLine: Boolean,
       @State savedText: AtomicReference<CharSequence?>,
       @State mountedView: AtomicReference<EditTextWithEventHandlers?>,
   ) {
@@ -987,6 +999,7 @@ internal object TextInputComponentSpec {
     )
     editText.setDisableAutofill(disableAutofill)
     editText.setTextState(savedText)
+    editText.setHintOnOneLine(hint.takeIf { isHintOnOneLine })
   }
 
   @OnBind
@@ -1361,6 +1374,9 @@ internal object TextInputComponentSpec {
     private var textLineCount = UNMEASURED_LINE_COUNT
     private var textWatcher: TextWatcher? = null
     private var isSoftInputRequested = false
+    /** The whole hint while it's laid out on one line; null otherwise. */
+    private var fullHint: CharSequence? = null
+    private var oneLineHint: OneLineHint? = null
 
     private var disableAutofill = false
     private var isTextPasted = false
@@ -1419,9 +1435,15 @@ internal object TextInputComponentSpec {
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+      fullHint?.let { oneLineHint?.applyTo(this, it, View.MeasureSpec.getSize(widthMeasureSpec)) }
       super.onMeasure(widthMeasureSpec, heightMeasureSpec)
       // Line count of the current text.
       textLineCount = lineCount
+    }
+
+    override fun onInitializeAccessibilityNodeInfo(info: AccessibilityNodeInfo) {
+      super.onInitializeAccessibilityNodeInfo(info)
+      fullHint?.let { describeWholeHint(info, it, isShowingHint = text.isEmpty()) }
     }
 
     override fun onSelectionChanged(selStart: Int, selEnd: Int) {
@@ -1538,6 +1560,20 @@ internal object TextInputComponentSpec {
     /** Sets reference to keep current text up to date. */
     fun setTextState(savedText: AtomicReference<CharSequence?>?) {
       textState = savedText
+    }
+
+    /**
+     * Lays [hint] out on one ellipsized line at this input's width. Call it after `setParams`,
+     * which sets the full hint; null keeps that hint.
+     */
+    fun setHintOnOneLine(hint: CharSequence?) {
+      fullHint = hint
+      if (hint != null) {
+        val oneLineHint = oneLineHint ?: OneLineHint().also { oneLineHint = it }
+        if (width > 0) {
+          oneLineHint.applyTo(this, hint, width)
+        }
+      }
     }
 
     fun attachWatchers(textWatchers: List<TextWatcher?>?) {

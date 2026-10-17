@@ -129,5 +129,6 @@ class TextInputLayoutBehaviorTest {
       savedTextWithoutSpans = savedTextWithoutSpans,
       savedTextWithSpans = savedTextWithSpans,
       useTextWithSpansForMeasure = false,
+      isHintOnOneLine = false,
   )
 }

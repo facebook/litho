@@ -194,6 +194,8 @@ import kotlin.math.min
  *   exactly and remeasures it when the line count changes, so that layout changes nothing.
  *   Replacing the text with `setText` without changing the line count does not remeasure the input,
  *   so the input keeps its size until the line count changes.
+ * @property isHintOnOneLine If set, a single-paragraph hint is laid out as one line, ellipsized at
+ *   the input's width. Accessibility still reads the whole hint.
  * @property onTextChanged A callback that will be called when the text gets changed.
  * @property onTextPasted A callback that will be called when the text gets pasted.
  * @property onSelectionChanged A callback that will be called when the text selection changes.
@@ -249,6 +251,7 @@ class ExperimentalTextInput(
     private val transformationMethod: TransformationMethod? = null,
     private val useTransformationMethod: Boolean = false,
     private val shouldUseMatchParentLayoutParams: Boolean = false,
+    private val isHintOnOneLine: Boolean = false,
     private val onTextChanged: ((EditText, String) -> Unit)? = null,
     private val onTextPasted: ((EditText, String) -> Unit)? = null,
     private val onSelectionChanged: ((Int, Int) -> Unit)? = null,
@@ -341,6 +344,7 @@ class ExperimentalTextInput(
                 savedTextWithSpans = savedTextWithSpans.value,
                 measureSeqNumber = measureSeqNumber.value,
                 useTextWithSpansForMeasure = useTextWithSpansForMeasure,
+                isHintOnOneLine = isHintOnOneLine,
             ),
         mountBehavior =
             MountBehavior(
@@ -419,6 +423,7 @@ class ExperimentalTextInput(
                     excludeFromIncrementalMount,
                     transformationMethod,
                     useTransformationMethod,
+                    isHintOnOneLine,
                 ) { editText ->
                   mountedView.value.set(editText)
 
@@ -469,6 +474,7 @@ class ExperimentalTextInput(
                   editText.setTextState(savedText.value)
                   editText.setTextWithoutSpansState(savedTextWithoutSpans.value)
                   editText.setTextWithSpansState(savedTextWithSpans.value)
+                  editText.setHintOnOneLine(hint.takeIf { isHintOnOneLine })
 
                   onUnbind {
                     if (keyListener != null) {
@@ -602,6 +608,7 @@ internal class TextInputLayoutBehavior(
     private val savedTextWithoutSpans: AtomicReference<CharSequence?>?,
     private val savedTextWithSpans: AtomicReference<Spanned?>?,
     private val useTextWithSpansForMeasure: Boolean,
+    private val isHintOnOneLine: Boolean,
 ) : LayoutBehavior {
   /**
    * Whether the previous measurement can be reused. Written out, rather than Litho's default
@@ -655,7 +662,8 @@ internal class TextInputLayoutBehavior(
         savedText === other.savedText &&
         savedTextWithoutSpans === other.savedTextWithoutSpans &&
         savedTextWithSpans === other.savedTextWithSpans &&
-        useTextWithSpansForMeasure == other.useTextWithSpansForMeasure
+        useTextWithSpansForMeasure == other.useTextWithSpansForMeasure &&
+        isHintOnOneLine == other.isHintOnOneLine
   }
 
   override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
@@ -706,6 +714,7 @@ internal class TextInputLayoutBehavior(
         savedTextWithoutSpans?.get(),
         savedTextWithSpans?.get(),
         useTextWithSpansForMeasure,
+        isHintOnOneLine = isHintOnOneLine,
     )
 
     return PrimitiveLayoutResult(
@@ -779,6 +788,7 @@ internal fun createAndMeasureEditText(
     textWithoutSpans: CharSequence?,
     textWithSpans: Spanned?,
     useTextWithSpansForMeasure: Boolean,
+    isHintOnOneLine: Boolean = false,
 ): EditText {
   val textToMeasure =
       if (useTextWithSpansForMeasure) {
@@ -836,6 +846,9 @@ internal fun createAndMeasureEditText(
         null,
         transformationMethod = null, // Not needed for measurement
     )
+    if (isHintOnOneLine && hint != null && sizeConstraints.hasBoundedWidth) {
+      forMeasure.hint = cutToOneLine(hint, forMeasure, sizeConstraints.maxWidth)
+    }
   }
   forMeasure.setDisableAutofill(disableAutofill)
   forMeasure.measure(sizeConstraints.toWidthSpec(), sizeConstraints.toHeightSpec())
@@ -1061,6 +1074,10 @@ internal class EditTextWithEventHandlers(context: Context?) :
   private var textWithSpansState: AtomicReference<Spanned?>? = null
   private var textLineCount = UNMEASURED_LINE_COUNT
   private var textWatcher: TextWatcher? = null
+  /** The whole hint while it's laid out on one line; null otherwise. */
+  private var fullHint: CharSequence? = null
+  private var oneLineHint: OneLineHint? = null
+
   private var isSoftInputRequested = false
 
   private var disableAutofill = false
@@ -1118,9 +1135,15 @@ internal class EditTextWithEventHandlers(context: Context?) :
   }
 
   override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+    fullHint?.let { oneLineHint?.applyTo(this, it, View.MeasureSpec.getSize(widthMeasureSpec)) }
     super.onMeasure(widthMeasureSpec, heightMeasureSpec)
     // Line count of the current text.
     textLineCount = lineCount
+  }
+
+  override fun onInitializeAccessibilityNodeInfo(info: AccessibilityNodeInfo) {
+    super.onInitializeAccessibilityNodeInfo(info)
+    fullHint?.let { describeWholeHint(info, it, isShowingHint = text.isEmpty()) }
   }
 
   override fun onSelectionChanged(selStart: Int, selEnd: Int) {
@@ -1169,6 +1192,20 @@ internal class EditTextWithEventHandlers(context: Context?) :
   /** Sets reference to keep current text up to date. */
   fun setTextState(savedText: AtomicReference<CharSequence?>?) {
     textState = savedText
+  }
+
+  /**
+   * Lays [hint] out on one ellipsized line at this input's width. Call it after `setParams`, which
+   * sets the full hint; null keeps that hint.
+   */
+  fun setHintOnOneLine(hint: CharSequence?) {
+    fullHint = hint
+    if (hint != null) {
+      val oneLineHint = oneLineHint ?: OneLineHint().also { oneLineHint = it }
+      if (width > 0) {
+        oneLineHint.applyTo(this, hint, width)
+      }
+    }
   }
 
   /** Sets reference to keep current text without spans up to date. */
