@@ -27,7 +27,7 @@ import com.facebook.rendercore.geometry.Point
 /** Wrap the specified [block] in calls to [Canvas.saveLayer] and [Canvas.restoreToCount]. */
 @Suppress("DEPRECATION")
 @SuppressLint("DeprecatedMethod")
-inline fun Canvas.withLayer(
+fun Canvas.withLayer(
     x: Float,
     y: Float,
     width: Float,
@@ -119,7 +119,7 @@ fun Canvas.drawArc(
 }
 
 /** Copies 9 values from the matrix into the array and returns the array. */
-inline var Matrix.values: FloatArray
+var Matrix.values: FloatArray
   get() {
     val values = FloatArray(9)
     getValues(values)
