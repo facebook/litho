@@ -50,11 +50,11 @@ class CanvasScope {
 
   /** The size of the current drawing scope (group, layer or whole canvas) */
   val size: Size
-    inline get() = drawParams.size
+    get() = drawParams.size
 
   /** The center of the current bounds of the drawing scope (group, layer or whole canvas) */
   val center: Point
-    inline get() = drawParams.size.center
+    get() = drawParams.size.center
 
   /**
    * Fills the given Shape.
@@ -151,7 +151,7 @@ class CanvasScope {
    * @param block The lambda callback to issue drawing commands
    */
   @SuppressLint("KotlinScopeFunctionsMisuse")
-  inline fun group(
+  fun group(
       transform: Transform = Transform.IDENTITY,
       size: Size? = null,
       clip: Path? = null,
@@ -199,7 +199,7 @@ class CanvasScope {
    * @param block The lambda callback to issue drawing commands
    */
   @SuppressLint("KotlinScopeFunctionsMisuse")
-  inline fun layer(
+  fun layer(
       transform: Transform = Transform.IDENTITY,
       size: Size? = null,
       clip: Path? = null,
@@ -241,7 +241,7 @@ class CanvasScope {
    *   href="https://developer.android.com/topic/performance/hardware-accel#drawing-support">Drawing
    *   Support</a>
    */
-  inline fun drawIntoCanvas(noinline block: (Canvas) -> Unit) {
+  fun drawIntoCanvas(block: (Canvas) -> Unit) {
     drawParams.children.add(CanvasDrawIntoCanvas(block))
   }
 
@@ -256,7 +256,7 @@ class CanvasScope {
    *   to instantiate it properly.
    * @param block The lambda that is called to issue drawing commands on this [CanvasScope]
    */
-  inline fun draw(
+  fun draw(
       canvas: Canvas,
       size: Size,
       canvasState: CanvasState,
@@ -267,7 +267,7 @@ class CanvasScope {
     canvasRootModel.draw(canvas)
   }
 
-  inline fun createModel(
+  fun createModel(
       size: Size,
       canvasState: CanvasState,
       block: CanvasScope.() -> Unit,

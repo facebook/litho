@@ -171,7 +171,7 @@ class PathScope {
    * @param block The lambda callback to issue path commands
    * @return The PathModel object created from the operations invoked in this scope.
    */
-  inline fun createModel(fillRule: FillRule, block: PathScope.() -> Unit): CanvasPathModel {
+  fun createModel(fillRule: FillRule, block: PathScope.() -> Unit): CanvasPathModel {
     block()
     return CanvasPath(fillRule, children)
   }
