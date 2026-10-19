@@ -1090,7 +1090,6 @@ class VisibilityEventsIncrementalMountDisabledTest {
                     )
                     .build(),
             )
-            .enableChildClipping(true)
             .build()
     ComponentTestHelper.measureAndLayout(lithoView)
     assertThat(component1.dispatchedEventHandlers).contains(invisibleEventHandler1)
@@ -1465,7 +1464,6 @@ class VisibilityEventsIncrementalMountDisabledTest {
             .componentsConfiguration(
                 ComponentsConfiguration.defaultInstance.copy(visibilityProcessingEnabled = true),
             )
-            .enableChildClipping(true)
             .build()
     lithoView.componentTree = componentTree
     parent.addView(

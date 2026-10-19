@@ -5955,10 +5955,7 @@ class RecyclerBinderTest {
   @Test
   fun testTurnOnStableId() {
     val parentContext = ComponentContext(componentContext.androidContext)
-    val parent =
-        ComponentTree.create(componentContext, SimpleMountSpecTester())
-            .enableChildClipping(true)
-            .build()
+    val parent = ComponentTree.create(componentContext, SimpleMountSpecTester()).build()
 
     val recyclerBinder =
         RecyclerBinder.Builder()
@@ -5979,10 +5976,7 @@ class RecyclerBinderTest {
   @Test
   fun testTurnOnStableIdAndCircular() {
     val parentContext = ComponentContext(componentContext.androidContext)
-    val parent =
-        ComponentTree.create(componentContext, SimpleMountSpecTester())
-            .enableChildClipping(true)
-            .build()
+    val parent = ComponentTree.create(componentContext, SimpleMountSpecTester()).build()
 
     val recyclerBinder =
         RecyclerBinder.Builder()
@@ -6004,10 +5998,7 @@ class RecyclerBinderTest {
   @Test
   fun testParentWidthHeightPercent() {
     val parentContext = ComponentContext(componentContext.androidContext)
-    val parent =
-        ComponentTree.create(componentContext, SimpleMountSpecTester())
-            .enableChildClipping(true)
-            .build()
+    val parent = ComponentTree.create(componentContext, SimpleMountSpecTester()).build()
 
     val recyclerBinder =
         RecyclerBinder.Builder()

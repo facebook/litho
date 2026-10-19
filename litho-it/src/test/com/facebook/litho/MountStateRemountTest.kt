@@ -159,9 +159,7 @@ class MountStateRemountTest {
             .build()
     val lithoView = LithoView(context)
     val componentTree =
-        ComponentTree.create(context, Column.create(context).child(component1).build())
-            .enableChildClipping(true)
-            .build()
+        ComponentTree.create(context, Column.create(context).child(component1).build()).build()
     ComponentTestHelper.mountComponent(lithoView, componentTree, exactly(100), exactly(100))
     assertThat(component1.isMounted).isTrue
     componentTree.setRootAndSizeSpecSync(
@@ -217,7 +215,6 @@ class MountStateRemountTest {
         ComponentTree.create(context, oldComponent)
             .componentsConfiguration(config)
             .incrementalMount(false)
-            .enableChildClipping(true)
             .build()
     ComponentTestHelper.mountComponent(lithoView, componentTree, exactly(400), exactly(400))
     val oldHost = lithoView.getChildAt(0) as ViewGroup
@@ -271,7 +268,6 @@ class MountStateRemountTest {
         ComponentTree.create(context, oldComponent)
             .componentsConfiguration(config)
             .incrementalMount(false)
-            .enableChildClipping(true)
             .build()
     ComponentTestHelper.mountComponent(lithoView, componentTree, exactly(400), exactly(400))
     val oldHost = lithoView.getChildAt(0) as ViewGroup
@@ -319,7 +315,6 @@ class MountStateRemountTest {
         ComponentTree.create(context, oldComponent)
             .componentsConfiguration(config)
             .incrementalMount(false)
-            .enableChildClipping(true)
             .build()
     ComponentTestHelper.mountComponent(lithoView, componentTree, exactly(400), exactly(400))
     val oldHost = lithoView.getChildAt(0) as ViewGroup

@@ -462,7 +462,6 @@ class NestedLithoTreeParityTest {
                     },
             ),
         )
-        .enableChildClipping(true)
         .build()
   }
 

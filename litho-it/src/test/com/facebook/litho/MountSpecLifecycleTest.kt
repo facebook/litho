@@ -494,8 +494,7 @@ class MountSpecLifecycleTest {
 
     val testLithoView =
         lithoViewRule.render(
-            componentTree =
-                ComponentTree.create(lithoViewRule.context).enableChildClipping(true).build(),
+            componentTree = ComponentTree.create(lithoViewRule.context).build(),
         ) {
           Column.create(lithoViewRule.context)
               .child(
@@ -546,8 +545,7 @@ class MountSpecLifecycleTest {
                 ),
             )
             .build()
-    val initialComponentTree =
-        ComponentTree.create(c, initialComponent).enableChildClipping(true).build()
+    val initialComponentTree = ComponentTree.create(c, initialComponent).build()
     val lithoView = LithoView(c.androidContext)
 
     // Mount a layout with the component.
@@ -578,7 +576,6 @@ class MountSpecLifecycleTest {
                 initialComponentTree.lithoConfiguration.renderUnitIdGenerator,
                 initialComponentTree.id,
             )
-            .enableChildClipping(true)
             .build()
     lithoView.componentTree = newComponentTree
 

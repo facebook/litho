@@ -40,7 +40,7 @@ class LayoutStateCalculationWithoutDrawableOutputsTest {
   fun before() {
     context = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
     lithoView = LithoView(context)
-    componentTree = ComponentTree.create(context).enableChildClipping(true).build()
+    componentTree = ComponentTree.create(context).build()
     lithoView.componentTree = componentTree
   }
 

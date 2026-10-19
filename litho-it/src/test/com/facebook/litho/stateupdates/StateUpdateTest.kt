@@ -436,11 +436,7 @@ class StateUpdateTest {
     val component: Component =
         create(context).child(ComponentWithCounterStateNestedParent.create(context)).build()
     val looper = looper
-    var componentTree =
-        ComponentTree.create(context, component)
-            .layoutThreadLooper(looper)
-            .enableChildClipping(true)
-            .build()
+    var componentTree = ComponentTree.create(context, component).layoutThreadLooper(looper).build()
     val testLithoView =
         lithoTestRule
             .createTestLithoView(null, componentTree)
@@ -461,11 +457,7 @@ class StateUpdateTest {
     // correctly when we acquire state handler and again process the pending state update.
     looper.quit()
     val treeState = componentTree.acquireTreeState()
-    componentTree =
-        ComponentTree.create(context, component)
-            .treeState(treeState)
-            .enableChildClipping(true)
-            .build()
+    componentTree = ComponentTree.create(context, component).treeState(treeState).build()
     lithoTestRule
         .createTestLithoView(null, componentTree)
         .setSizeSpecs(widthSpec, heightSpec)

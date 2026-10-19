@@ -78,7 +78,6 @@ private fun getComponentTree(): ComponentTree {
           ComponentContext(ApplicationProvider.getApplicationContext<Context>()),
           SimpleText(),
       )
-      .enableChildClipping(true)
       .build()
       .also(ComponentTree::layout)
 }

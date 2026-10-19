@@ -127,7 +127,6 @@ class HostRecyclingTest {
                             else PoolingPolicy.Disabled,
                     ),
                 )
-                .enableChildClipping(true)
                 .build(),
     ) {
       EmptyComponent()

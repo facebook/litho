@@ -257,7 +257,6 @@ class MountStateRemountInPlaceTest {
                     context,
                     Column.create(context).child(firstComponent).build(),
                 )
-                .enableChildClipping(true)
                 .build(),
             atMost(100),
             atMost(100),
@@ -287,7 +286,6 @@ class MountStateRemountInPlaceTest {
                     context,
                     Column.create(context).child(firstComponent).build(),
                 )
-                .enableChildClipping(true)
                 .build(),
             exactly(100),
             exactly(100),
@@ -314,7 +312,6 @@ class MountStateRemountInPlaceTest {
                     context,
                     Column.create(context).child(firstComponent).build(),
                 )
-                .enableChildClipping(true)
                 .build(),
             exactly(100),
             exactly(100),
@@ -384,7 +381,6 @@ class MountStateRemountInPlaceTest {
                 context,
                 Column.create(context).child(secondComponent).build(),
             )
-            .enableChildClipping(true)
             .build()
     secondTree.setSizeSpec(100, 100)
     val thirdComponent = spy(TestDrawableComponent.create(context).build())

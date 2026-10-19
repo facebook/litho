@@ -1748,7 +1748,7 @@ class VisibilityEventsTest {
             )
             .build()
     testLithoView
-        .useComponentTree(ComponentTree.create(context).enableChildClipping(true).build())
+        .useComponentTree(ComponentTree.create(context).build())
         .setRoot(newRoot)
         .attachToWindow()
         .setSizeSpecs(exactly(100), exactly(100))
@@ -1850,7 +1850,7 @@ class VisibilityEventsTest {
     val testLithoView =
         lithoTestRule
             .createTestLithoView()
-            .useComponentTree(ComponentTree.create(context).enableChildClipping(true).build())
+            .useComponentTree(ComponentTree.create(context).build())
             .setRoot(root)
             .attachToWindow()
             .setSizeSpecs(exactly(100), exactly(100))
@@ -1900,7 +1900,7 @@ class VisibilityEventsTest {
     val testLithoView =
         lithoTestRule
             .createTestLithoView()
-            .useComponentTree(ComponentTree.create(context).enableChildClipping(true).build())
+            .useComponentTree(ComponentTree.create(context).build())
             .setRoot(root)
             .attachToWindow()
             .setSizeSpecs(exactly(10), exactly(10))
@@ -2062,7 +2062,7 @@ class VisibilityEventsTest {
     val testLithoView =
         lithoTestRule
             .createTestLithoView()
-            .useComponentTree(ComponentTree.create(context).enableChildClipping(true).build())
+            .useComponentTree(ComponentTree.create(context).build())
             .setRoot(mountedTestComponentInner)
             .attachToWindow()
             .setSizeSpecs(exactly(100), exactly(100))
@@ -2134,10 +2134,7 @@ class VisibilityEventsTest {
         lithoTestRule
             .createTestLithoView()
             .useComponentTree(
-                ComponentTree.create(context)
-                    .incrementalMount(false)
-                    .enableChildClipping(true)
-                    .build(),
+                ComponentTree.create(context).incrementalMount(false).build(),
             )
             .setRoot(root)
             .attachToWindow()
@@ -2211,11 +2208,7 @@ class VisibilityEventsTest {
             .build()
     val testLithoView =
         lithoTestRule.createTestLithoView(
-            componentTree =
-                ComponentTree.create(context)
-                    .incrementalMount(false)
-                    .enableChildClipping(true)
-                    .build(),
+            componentTree = ComponentTree.create(context).incrementalMount(false).build(),
             widthPx = 100,
             heightPx = 100,
         ) {
@@ -2263,10 +2256,7 @@ class VisibilityEventsTest {
         lithoTestRule
             .createTestLithoView()
             .useComponentTree(
-                ComponentTree.create(context)
-                    .incrementalMount(false)
-                    .enableChildClipping(true)
-                    .build(),
+                ComponentTree.create(context).incrementalMount(false).build(),
             )
             .setRoot(root)
             .attachToWindow()
@@ -2297,12 +2287,12 @@ class VisibilityEventsTest {
                     .marginPx(YogaEdge.TOP, 5),
             )
             .build()
-    val componentTree = ComponentTree.create(context, root).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(context, root).build()
     val testLithoView = lithoTestRule.createTestLithoView()
     testLithoView.lithoView.componentTree = componentTree
     assertThat(content.dispatchedEventHandlers).doesNotContain(visibleEventHandler)
     content.dispatchedEventHandlers.clear()
-    val newComponentTree = ComponentTree.create(context, root).enableChildClipping(true).build()
+    val newComponentTree = ComponentTree.create(context, root).build()
     testLithoView.lithoView.componentTree = newComponentTree
     assertThat(content.dispatchedEventHandlers).doesNotContain(invisibleEventHandler)
     assertThat(content.dispatchedEventHandlers).doesNotContain(visibleEventHandler)

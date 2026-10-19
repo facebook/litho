@@ -42,7 +42,7 @@ class TreePropsTest {
 
   @Test
   fun `when ComponentTree is created with TreeProps then component should receive tree props`() {
-    val tree = ComponentTree.create(parentContext).enableChildClipping(true).build()
+    val tree = ComponentTree.create(parentContext).build()
     val assertion = AtomicReference<ComponentScope.() -> Unit>()
     val component = TestComponent { assertion.get().invoke(this) }
 
@@ -65,7 +65,7 @@ class TreePropsTest {
     parentTreeProps.put(TestAnyTreeProp, "not-string")
     val parentContext = ComponentContext(lithoTestRule.context, parentTreeProps)
 
-    val tree = ComponentTree.create(parentContext).enableChildClipping(true).build()
+    val tree = ComponentTree.create(parentContext).build()
     val assertion = AtomicReference<ComponentScope.() -> Unit>()
     val component = TestComponent { assertion.get().invoke(this) }
 
@@ -100,7 +100,7 @@ class TreePropsTest {
 
   @Test
   fun `when TreeProps do not change then component should not resolve again`() {
-    val tree = ComponentTree.create(parentContext).enableChildClipping(true).build()
+    val tree = ComponentTree.create(parentContext).build()
     val assertion = AtomicReference<ComponentScope.() -> Unit>()
     val component = TestComponent { assertion.get().invoke(this) }
 

@@ -82,7 +82,7 @@ class UnregisterLocalTreeStateInResolveTest {
     val context = getApplicationContext<Context>()
     val componentContext = ComponentContext(context)
 
-    val componentTree = ComponentTree.create(componentContext).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(componentContext).build()
 
     val lithoView =
         lithoTestRule.createTestLithoView(

@@ -52,7 +52,6 @@ class ComponentsConfigurationTest {
     val componentTree =
         ComponentTree.create(componentContext)
             .componentsConfiguration(ComponentsConfiguration.defaultInstance)
-            .enableChildClipping(true)
             .build()
     val componentsConfiguration = componentTree.context.lithoConfiguration.componentsConfig
 

@@ -48,8 +48,7 @@ class DynamicPropsOnForcedRemountTest {
     lithoView.detachFromWindow()
 
     val componentContext = ComponentContext(getApplicationContext() as Context)
-    val componentTree =
-        ComponentTree.create(componentContext, component).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(componentContext, component).build()
 
     lithoView.setComponentTree(componentTree)
     lithoView.attachToWindow().measure().layout()

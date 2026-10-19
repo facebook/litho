@@ -265,8 +265,7 @@ class LithoViewTest {
     assertThat(lithoView.rootComponent).isEqualTo(initialComponent)
     val c = lithoView.componentContext
     val newRootComponent: Component = SimpleMountSpecTester(style = Style.height(12345.px))
-    lithoView.componentTree =
-        ComponentTree.create(c, newRootComponent).enableChildClipping(true).build()
+    lithoView.componentTree = ComponentTree.create(c, newRootComponent).build()
     assertThat(lithoView.rootComponent).isEqualTo(newRootComponent)
   }
 

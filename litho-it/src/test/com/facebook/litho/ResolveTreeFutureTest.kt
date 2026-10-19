@@ -44,7 +44,7 @@ class ResolveTreeFutureTest {
   @Before
   fun setup() {
     val baseContext = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    val componentTree = ComponentTree.create(baseContext).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(baseContext).build()
     componentContext = componentTree.context
     accessibilityManager =
         ApplicationProvider.getApplicationContext<Context>()

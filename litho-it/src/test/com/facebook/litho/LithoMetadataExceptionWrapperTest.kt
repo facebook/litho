@@ -160,7 +160,7 @@ class LithoMetadataExceptionWrapperTest {
     expectedException.expectMessage("log_tag: myLogTag")
     val c = getComponentContextForTest()
     lithoTestRule.render(
-        componentTree = ComponentTree.create(c).enableChildClipping(true).build(),
+        componentTree = ComponentTree.create(c).build(),
     ) {
       TestCrasherOnCreateLayout()
     }
@@ -172,7 +172,7 @@ class LithoMetadataExceptionWrapperTest {
     expectedException.expectMessage("log_tag: myLogTag")
     val c = getComponentContextForTest()
     lithoTestRule.render(
-        componentTree = ComponentTree.create(c).enableChildClipping(true).build(),
+        componentTree = ComponentTree.create(c).build(),
         widthPx = 100,
         heightPx = 100,
     ) {
@@ -198,7 +198,7 @@ class LithoMetadataExceptionWrapperTest {
             .build()
     val testLithoView =
         lithoTestRule.render(
-            componentTree = ComponentTree.create(c).enableChildClipping(true).build(),
+            componentTree = ComponentTree.create(c).build(),
         ) {
           component
         }
@@ -227,7 +227,7 @@ class LithoMetadataExceptionWrapperTest {
 
     val testLithoView =
         lithoTestRule.render(
-            componentTree = ComponentTree.create(c).enableChildClipping(true).build(),
+            componentTree = ComponentTree.create(c).build(),
         ) {
           component
         }
@@ -252,7 +252,7 @@ class LithoMetadataExceptionWrapperTest {
             )
             .build()
     lithoTestRule.render(
-        componentTree = ComponentTree.create(c).enableChildClipping(true).build(),
+        componentTree = ComponentTree.create(c).build(),
     ) {
       component
     }

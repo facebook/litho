@@ -965,7 +965,7 @@ class LayoutStateCalculateTest {
   @Test
   fun testNoMeasureOnNestedComponentWithSameSpecs() {
     val baseContext = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    val componentTree = ComponentTree.create(baseContext).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(baseContext).build()
     val componentContext = componentTree.context
     val resolveContext = componentContext.setRenderStateContextForTests()
     val size = Size()
@@ -1004,7 +1004,7 @@ class LayoutStateCalculateTest {
   @Test
   fun testNoMeasureOnNestedComponentWithNewMeasureSpecExact() {
     val baseContext = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    val componentTree = ComponentTree.create(baseContext).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(baseContext).build()
     val componentContext = componentTree.context
 
     val resolveContext = componentContext.setRenderStateContextForTests()
@@ -1044,7 +1044,7 @@ class LayoutStateCalculateTest {
   @Test
   fun testNoMeasureOnNestedComponentWithNewMeasureSpecOldUnspecified() {
     val baseContext = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    val componentTree = ComponentTree.create(baseContext).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(baseContext).build()
     val componentContext = componentTree.context
     val resolveContext = componentContext.setRenderStateContextForTests()
     val size = Size()
@@ -1081,7 +1081,7 @@ class LayoutStateCalculateTest {
   @Test
   fun testNoMeasureOnNestedComponentWithOldAndNewAtMost() {
     val baseContext = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    val componentTree = ComponentTree.create(baseContext).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(baseContext).build()
     val treeContext = componentTree.context
     val resolveContext = treeContext.setRenderStateContextForTests()
     val size = Size()

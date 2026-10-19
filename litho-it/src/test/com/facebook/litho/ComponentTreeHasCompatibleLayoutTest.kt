@@ -49,7 +49,7 @@ class ComponentTreeHasCompatibleLayoutTest {
   fun setup() {
     context = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
     component = SimpleMountSpecTester()
-    componentTree = ComponentTree.create(context, component).enableChildClipping(true).build()
+    componentTree = ComponentTree.create(context, component).build()
     layoutThreadShadowLooper =
         Shadow.extract(
             Whitebox.invokeMethod<Any>(ComponentTree::class.java, "getDefaultLayoutThreadLooper")

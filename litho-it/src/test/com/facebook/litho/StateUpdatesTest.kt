@@ -342,7 +342,7 @@ open class StateUpdatesTest {
 
   @Test
   fun testStateContainerDrained() {
-    val componentTree = ComponentTree.create(context).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(context).build()
     val check = CountDownLatch(2)
     val waitForFirstLayoutToStart = CountDownLatch(1)
     val waitForFirstThreadToStart = CountDownLatch(1)

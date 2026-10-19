@@ -54,7 +54,6 @@ class MountStateViewClickTest {
                     visibilityProcessingEnabled = false,
                 ),
             )
-            .enableChildClipping(true)
             .build()
   }
 

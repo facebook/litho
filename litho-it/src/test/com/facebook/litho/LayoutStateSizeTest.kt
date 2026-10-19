@@ -77,7 +77,7 @@ class LayoutStateSizeTest {
 
     fun newComponentTreeContext(): ComponentContext {
       val baseContext = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-      return ComponentTree.create(baseContext).enableChildClipping(true).build().context
+      return ComponentTree.create(baseContext).build().context
     }
   }
 }

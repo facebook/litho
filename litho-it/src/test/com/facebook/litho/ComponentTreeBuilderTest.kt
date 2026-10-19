@@ -54,7 +54,7 @@ class ComponentTreeBuilderTest {
         )
 
     root = TestLayoutComponent.create(context).build()
-    componentTreeBuilder = ComponentTree.create(context, root).enableChildClipping(true)
+    componentTreeBuilder = ComponentTree.create(context, root)
   }
 
   @Test

@@ -864,8 +864,7 @@ class AnimationTest {
     // We need an other litho view where we are going to measure and layout an other similar tree
     // (the real difference here is that the root components are not animating)
     val lithoView = LithoView(componentContext)
-    val nonAnimatingComponentTree =
-        ComponentTree.create(componentContext).enableChildClipping(true).build()
+    val nonAnimatingComponentTree = ComponentTree.create(componentContext).build()
     nonAnimatingComponentTree.root = nonAnimatingComponent
     lithoView.componentTree = nonAnimatingComponentTree
     lithoView.measure(DEFAULT_WIDTH_SPEC, DEFAULT_HEIGHT_SPEC)
@@ -873,8 +872,7 @@ class AnimationTest {
 
     // Now we need a new component tree that will hold a component tree that holds an animating root
     // component.
-    val animatingComponentTree =
-        ComponentTree.create(componentContext).enableChildClipping(true).build()
+    val animatingComponentTree = ComponentTree.create(componentContext).build()
     animatingComponentTree.root = animatingXPropertyComponent
     testLithoView.useComponentTree(animatingComponentTree)
     // We measure this component tree so we initialize the mRootTransition in the extension, but we
@@ -1129,8 +1127,7 @@ class AnimationTest {
   fun animationTransitionsExtension_reUsingLithoViewWithSameComponentTrees_shouldNotCrash() {
     val componentContext = mLithoTestRule.context
     val testLithoView = mLithoTestRule.createTestLithoView()
-    val animatingComponentTree =
-        ComponentTree.create(componentContext).enableChildClipping(true).build()
+    val animatingComponentTree = ComponentTree.create(componentContext).build()
     animatingComponentTree.root = animatingXPropertyComponent
     testLithoView.useComponentTree(animatingComponentTree)
     activityController.get().setContentView(testLithoView.lithoView)
@@ -1591,8 +1588,7 @@ class AnimationTest {
     }
 
     val nonAnimatingComponent = nonAnimatingComponent
-    val newComponentTree =
-        ComponentTree.create(mLithoTestRule.context).enableChildClipping(true).build()
+    val newComponentTree = ComponentTree.create(mLithoTestRule.context).build()
     newComponentTree.root = nonAnimatingComponent
     val testLithoView = mLithoTestRule.render { component }
     activityController.get().setContentView(testLithoView.lithoView)

@@ -1356,12 +1356,8 @@ class PrimitiveComponentsTest {
       ComponentsConfiguration.customPoolScopesEnabled = true
       val poolScope = PoolScope.ManuallyManaged()
       val componentTreeWithPoolScope =
-          ComponentTree.create(mLithoTestRule.context)
-              .poolScope(poolScope)
-              .enableChildClipping(true)
-              .build()
-      val componentTreeWithoutPoolScope =
-          ComponentTree.create(mLithoTestRule.context).enableChildClipping(true).build()
+          ComponentTree.create(mLithoTestRule.context).poolScope(poolScope).build()
+      val componentTreeWithoutPoolScope = ComponentTree.create(mLithoTestRule.context).build()
 
       var resolvedPoolScope: PoolScope? = null
       val component =
@@ -1400,8 +1396,7 @@ class PrimitiveComponentsTest {
   fun `should see custom pool scope in render only if the component is inside of a lazy list`() {
     try {
       ComponentsConfiguration.customPoolScopesEnabled = true
-      val componentTreeWithoutPoolScope =
-          ComponentTree.create(mLithoTestRule.context).enableChildClipping(true).build()
+      val componentTreeWithoutPoolScope = ComponentTree.create(mLithoTestRule.context).build()
 
       var firstResolvedPoolScope: PoolScope? = null
       val firstComponent =
@@ -1590,9 +1585,7 @@ class TestVerticalScrollPrimitiveComponent(
   override fun PrimitiveComponentScope.render(): LithoPrimitive {
 
     val componentTree = useState {
-      ComponentTree.createNestedComponentTree(context, this@render.child())
-          .enableChildClipping(true)
-          .build()
+      ComponentTree.createNestedComponentTree(context, this@render.child()).build()
     }
 
     return LithoPrimitive(

@@ -50,7 +50,7 @@ class LithoStatsTest {
     context = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
     layoutThreadShadowLooper = ComponentTestHelper.getDefaultLayoutThreadShadowLooper()
     testComponent = StateUpdateTestComponent()
-    componentTree = ComponentTree.create(context, testComponent).enableChildClipping(true).build()
+    componentTree = ComponentTree.create(context, testComponent).build()
     lithoView = LithoView(context)
     lithoView.componentTree = componentTree
     lithoView.onAttachedToWindow()

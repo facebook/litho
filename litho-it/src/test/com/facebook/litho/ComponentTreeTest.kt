@@ -181,7 +181,7 @@ class ComponentTreeTest {
 
   @Test
   fun testCreate() {
-    val componentTree = ComponentTree.create(context, component).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(context, component).build()
     creationCommonChecks(componentTree)
 
     // Both the main thread and the background layout state shouldn't be calculated yet.
@@ -194,22 +194,21 @@ class ComponentTreeTest {
   fun testCreate_ContextIsNotScoped() {
     val scopedContext =
         ComponentContext.withComponentScope(context, Row.create(context).build(), "global_key")
-    val componentTree =
-        ComponentTree.create(scopedContext, component).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(scopedContext, component).build()
     val c = componentTree.context
     assertNull(c.componentScope)
   }
 
   @Test
   fun testSetSizeSpec() {
-    val componentTree = ComponentTree.create(context, component).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(context, component).build()
     componentTree.setSizeSpec(widthSpec, heightSpec)
     postSizeSpecChecks(componentTree)
   }
 
   @Test
   fun testSetSizeSpecAsync() {
-    val componentTree = ComponentTree.create(context, component).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(context, component).build()
     componentTree.setSizeSpecAsync(widthSpec, heightSpec)
 
     // Only fields changed but no layout is done yet.
@@ -228,7 +227,7 @@ class ComponentTreeTest {
     val scopedContext =
         ComponentContext.withComponentScope(context, Row.create(context).build(), "global_key")
     val root = Column.create(scopedContext).key("key").build()
-    val componentTree = ComponentTree.create(scopedContext, root).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(scopedContext, root).build()
     componentTree.setSizeSpecAsync(widthSpec, heightSpec)
     runOneTask()
     runOneTask()
@@ -266,8 +265,8 @@ class ComponentTreeTest {
     val heightSpec = makeSizeSpec(100, EXACTLY)
     val asyncWidthSpec = makeSizeSpec(200, EXACTLY)
     val asyncHeightSpec = makeSizeSpec(200, EXACTLY)
-    val componentTree = ComponentTree.create(context).enableChildClipping(true).build()
-    val innerComponentTree = ComponentTree.create(context).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(context).build()
+    val innerComponentTree = ComponentTree.create(context).build()
     val measureListener = MeasureListener()
     innerComponentTree.addMeasureListener(measureListener)
     val component: Component =
@@ -324,7 +323,7 @@ class ComponentTreeTest {
 
   @Test
   fun testSetSizeSpecAsyncThenSyncBeforeRunningTask() {
-    val componentTree = ComponentTree.create(context, component).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(context, component).build()
     componentTree.setSizeSpecAsync(widthSpec, heightSpec)
     componentTree.setSizeSpec(widthSpec2, heightSpec2)
     runToEndOfTasks()
@@ -333,7 +332,7 @@ class ComponentTreeTest {
 
   @Test
   fun testSetRootSynchThenAsyncThenSync() {
-    val componentTree = ComponentTree.create(context).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(context).build()
     componentTree.setRootAndSizeSpecSync(
         SimpleMountSpecTester(style = Style.width(200.px).height(200.px)),
         makeSizeSpec(0, UNSPECIFIED),
@@ -358,7 +357,7 @@ class ComponentTreeTest {
 
   @Test
   fun testSetSizeSpecAsyncThenSyncAfterRunningTask() {
-    val componentTree = ComponentTree.create(context, component).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(context, component).build()
     componentTree.setSizeSpecAsync(widthSpec, heightSpec)
     runToEndOfTasks()
     componentTree.setSizeSpec(widthSpec2, heightSpec2)
@@ -367,7 +366,7 @@ class ComponentTreeTest {
 
   @Test
   fun testSetSizeSpecWithOutput() {
-    val componentTree = ComponentTree.create(context, component).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(context, component).build()
     val size = Size()
     componentTree.setSizeSpec(widthSpec, heightSpec, size)
     junit.framework.Assert.assertEquals(getSize(widthSpec).toDouble(), size.width.toDouble(), 0.0)
@@ -377,7 +376,7 @@ class ComponentTreeTest {
 
   @Test
   fun testSetSizeSpecWithOutputWhenAttachedToViewWithSameSpec() {
-    val componentTree = ComponentTree.create(context, component).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(context, component).build()
     componentTree.setLithoView(LithoView(context))
     val size = Size()
     componentTree.measure(widthSpec, heightSpec, IntArray(2), false)
@@ -391,7 +390,7 @@ class ComponentTreeTest {
 
   @Test
   fun testSetSizeSpecWithOutputWhenAttachedToViewWithNewSpec() {
-    val componentTree = ComponentTree.create(context, component).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(context, component).build()
     componentTree.setLithoView(LithoView(context))
     val size = Size()
     componentTree.measure(widthSpec2, heightSpec2, IntArray(2), false)
@@ -405,7 +404,7 @@ class ComponentTreeTest {
 
   @Test
   fun testSetCompatibleSizeSpec() {
-    val componentTree = ComponentTree.create(context, component).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(context, component).build()
     val size = Size()
     componentTree.setSizeSpec(makeSizeSpec(100, AT_MOST), makeSizeSpec(100, AT_MOST), size)
     junit.framework.Assert.assertEquals(100.0, size.width.toDouble(), 0.0)
@@ -420,7 +419,7 @@ class ComponentTreeTest {
 
   @Test
   fun testSetCompatibleSizeSpecWithDifferentRoot() {
-    val componentTree = ComponentTree.create(context, component).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(context, component).build()
     val size = Size()
     componentTree.setSizeSpec(makeSizeSpec(100, AT_MOST), makeSizeSpec(100, AT_MOST), size)
     junit.framework.Assert.assertEquals(100.0, size.width.toDouble(), 0.0)
@@ -438,7 +437,7 @@ class ComponentTreeTest {
 
   @Test
   fun testSetRootAndSizeSpecWithTreeProps() {
-    val componentTree = ComponentTree.create(context, component).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(context, component).build()
     val size = Size()
     val treePropContainer = TreePropContainer()
     treePropContainer.put(Any::class.java, "hello world")
@@ -455,7 +454,7 @@ class ComponentTreeTest {
 
   @Test
   fun testDefaultInitialisationAndSetRoot() {
-    val componentTree = ComponentTree.create(context).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(context).build()
     componentTree.setLithoView(LithoView(context))
     componentTree.attach()
     assertThat(componentTree.root).isNotNull
@@ -465,7 +464,7 @@ class ComponentTreeTest {
 
   @Test
   fun testSetRootWithTreePropsThenMeasure() {
-    val componentTree = ComponentTree.create(context, component).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(context, component).build()
     componentTree.setLithoView(LithoView(context))
     componentTree.attach()
     val treePropContainer = TreePropContainer()
@@ -492,7 +491,7 @@ class ComponentTreeTest {
 
   @Test
   fun testSetRootWithTreePropsThenSetSizeSpec() {
-    val componentTree = ComponentTree.create(context, component).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(context, component).build()
     componentTree.setLithoView(LithoView(context))
     componentTree.attach()
     val treePropContainer = TreePropContainer()
@@ -513,7 +512,7 @@ class ComponentTreeTest {
 
   @Test
   fun testSetRootWithTreePropsThenSetNewRoot() {
-    val componentTree = ComponentTree.create(context, component).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(context, component).build()
     componentTree.setLithoView(LithoView(context))
     componentTree.attach()
     val treePropContainer = TreePropContainer()
@@ -544,7 +543,6 @@ class ComponentTreeTest {
                 context,
                 SimpleStateUpdateEmulator.create(context).caller(caller).build(),
             )
-            .enableChildClipping(true)
             .build()
     componentTree.setLithoView(LithoView(context))
     componentTree.attach()
@@ -573,7 +571,7 @@ class ComponentTreeTest {
   @Test
   fun testSetInput() {
     val component = TestLayoutComponent.create(context).build()
-    val componentTree = ComponentTree.create(context, component).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(context, component).build()
     componentTree.root = this.component
     creationCommonChecks(componentTree)
     assertNull(componentTree.mainThreadLayoutState)
@@ -585,9 +583,9 @@ class ComponentTreeTest {
   @Test
   fun testSetComponentFromView() {
     val component1 = SimpleMountSpecTester()
-    val componentTree1 = ComponentTree.create(context, component1).enableChildClipping(true).build()
+    val componentTree1 = ComponentTree.create(context, component1).build()
     val component2 = SimpleMountSpecTester()
-    val componentTree2 = ComponentTree.create(context, component2).enableChildClipping(true).build()
+    val componentTree2 = ComponentTree.create(context, component2).build()
     assertNull(componentTree1.lithoView)
     assertNull(componentTree2.lithoView)
     val lithoView = LithoView(context)
@@ -602,7 +600,7 @@ class ComponentTreeTest {
   @Test
   fun testComponentTreeReleaseClearsView() {
     val component = SimpleMountSpecTester()
-    val componentTree = ComponentTree.create(context, component).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(context, component).build()
     val lithoView = LithoView(context)
     lithoView.componentTree = componentTree
     assertThat(componentTree).isEqualTo(lithoView.componentTree)
@@ -613,7 +611,7 @@ class ComponentTreeTest {
   @Test
   fun testSetTreeToTwoViewsBothAttached() {
     val component = SimpleMountSpecTester()
-    val componentTree = ComponentTree.create(context, component).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(context, component).build()
 
     // Attach first view.
     val lithoView1 = LithoView(context)
@@ -632,7 +630,7 @@ class ComponentTreeTest {
   @Test
   fun testSettingNewViewToTree() {
     val component = SimpleMountSpecTester()
-    val componentTree = ComponentTree.create(context, component).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(context, component).build()
 
     // Attach first view.
     val lithoView1 = LithoView(context)
@@ -651,7 +649,7 @@ class ComponentTreeTest {
 
   @Test
   fun testSetRootAsyncFollowedByMeasureDoesntComputeSyncLayout() {
-    val componentTree = ComponentTree.create(context, component).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(context, component).build()
     componentTree.setLithoView(LithoView(context))
     componentTree.measure(widthSpec, heightSpec, IntArray(2), false)
     componentTree.attach()
@@ -734,7 +732,7 @@ class ComponentTreeTest {
 
   @Test
   fun testSetRootAsyncFollowedByNonCompatibleMeasureComputesSyncLayout() {
-    val componentTree = ComponentTree.create(context, component).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(context, component).build()
     componentTree.setLithoView(LithoView(context))
     componentTree.measure(widthSpec, heightSpec, IntArray(2), false)
     componentTree.attach()
@@ -771,9 +769,7 @@ class ComponentTreeTest {
       return
     }
     val componentTree =
-        ComponentTree.create(context, Row.create(context).minWidthPx(100).minHeightPx(100))
-            .enableChildClipping(true)
-            .build()
+        ComponentTree.create(context, Row.create(context).minWidthPx(100).minHeightPx(100)).build()
     val lithoView = LithoView(context)
     lithoView.componentTree = componentTree
     val parent = DoubleMeasureViewGroup(context.androidContext)
@@ -844,7 +840,6 @@ class ComponentTreeTest {
             .componentsConfiguration(
                 ComponentsConfiguration.defaultInstance.copy(performExactSameSpecsCheck = false),
             )
-            .enableChildClipping(true)
             .build()
 
     val testLithoView =
@@ -940,7 +935,7 @@ class ComponentTreeTest {
    */
   @Test
   fun testSetRootAsyncWithIncompatibleMeasureBeforeStart() {
-    val componentTree = ComponentTree.create(context, component).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(context, component).build()
     componentTree.setLithoView(LithoView(context))
     val widthSpec1 = makeSizeSpec(1_000, EXACTLY)
     val heightSpec1 = makeSizeSpec(1_000, EXACTLY)
@@ -991,8 +986,7 @@ class ComponentTreeTest {
   fun testSetRootAsyncWithCompatibleMeasureBeforeStart() {
     val oldComponent =
         SimpleMountSpecTester(style = Style.width(100.px).height(100.px), color = 1_234)
-    val componentTree =
-        ComponentTree.create(context, oldComponent).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(context, oldComponent).build()
     componentTree.setLithoView(LithoView(context))
     val widthSpec1 = makeSizeSpec(1_000, EXACTLY)
     val heightSpec1 = makeSizeSpec(1_000, AT_MOST)
@@ -1034,8 +1028,7 @@ class ComponentTreeTest {
   fun testSetRootAsyncWithIncompatibleMeasureButCompatibleMeasureForExistingLayoutBeforeStart() {
     val oldComponent =
         SimpleMountSpecTester(style = Style.width(100.px).height(100.px), color = 1_234)
-    val componentTree =
-        ComponentTree.create(context, oldComponent).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(context, oldComponent).build()
     componentTree.setLithoView(LithoView(context))
     val widthSpec1 = makeSizeSpec(1_000, EXACTLY)
     val heightSpec1 = makeSizeSpec(1_000, AT_MOST)
@@ -1080,7 +1073,7 @@ class ComponentTreeTest {
    */
   @Test
   fun testSetRootAsyncWithIncompatibleMeasureAfterFinish() {
-    val componentTree = ComponentTree.create(context, component).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(context, component).build()
     componentTree.setLithoView(LithoView(context))
     val widthSpec1 = makeSizeSpec(1_000, EXACTLY)
     val heightSpec1 = makeSizeSpec(1_000, EXACTLY)
@@ -1123,8 +1116,7 @@ class ComponentTreeTest {
   fun testSetRootAsyncWithCompatibleMeasureAfterFinish() {
     val oldComponent =
         SimpleMountSpecTester(style = Style.width(100.px).height(100.px), color = 1_234)
-    val componentTree =
-        ComponentTree.create(context, oldComponent).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(context, oldComponent).build()
     componentTree.setLithoView(LithoView(context))
     val widthSpec1 = makeSizeSpec(1_000, EXACTLY)
     val heightSpec1 = makeSizeSpec(1_000, AT_MOST)
@@ -1166,8 +1158,7 @@ class ComponentTreeTest {
   fun testSetRootAsyncWithIncompatibleMeasureButCompatibleMeasureForExistingLayoutAfterFinish() {
     val oldComponent =
         SimpleMountSpecTester(style = Style.width(100.px).height(100.px), color = 1_234)
-    val componentTree =
-        ComponentTree.create(context, oldComponent).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(context, oldComponent).build()
     componentTree.setLithoView(LithoView(context))
     val widthSpec1 = makeSizeSpec(1_000, EXACTLY)
     val heightSpec1 = makeSizeSpec(1_000, AT_MOST)
@@ -1213,7 +1204,7 @@ class ComponentTreeTest {
     if (true) {
       return
     }
-    val componentTree = ComponentTree.create(context, component).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(context, component).build()
     componentTree.setLithoView(LithoView(context))
     val widthSpec1 = makeSizeSpec(1_000, EXACTLY)
     val heightSpec1 = makeSizeSpec(1_000, EXACTLY)
@@ -1286,8 +1277,7 @@ class ComponentTreeTest {
     }
     val oldComponent =
         SimpleMountSpecTester(style = Style.width(100.px).height(100.px), color = 1_234)
-    val componentTree =
-        ComponentTree.create(context, oldComponent).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(context, oldComponent).build()
     componentTree.setLithoView(LithoView(context))
     val widthSpec1 = makeSizeSpec(1_000, EXACTLY)
     val heightSpec1 = makeSizeSpec(1_000, AT_MOST)
@@ -1372,8 +1362,7 @@ class ComponentTreeTest {
     }
     val oldComponent =
         SimpleMountSpecTester(style = Style.width(100.px).height(100.px), color = 1_234)
-    val componentTree =
-        ComponentTree.create(context, oldComponent).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(context, oldComponent).build()
     componentTree.setLithoView(LithoView(context))
     val widthSpec1 = makeSizeSpec(1_000, EXACTLY)
     val heightSpec1 = makeSizeSpec(1_000, AT_MOST)
@@ -1448,8 +1437,7 @@ class ComponentTreeTest {
     }
     val oldComponent =
         SimpleMountSpecTester(style = Style.width(100.px).height(100.px), color = 1_234)
-    val componentTree =
-        ComponentTree.create(context, oldComponent).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(context, oldComponent).build()
     componentTree.setLithoView(LithoView(context))
     val widthSpec1 = makeSizeSpec(1_000, EXACTLY)
     val heightSpec1 = makeSizeSpec(1_000, AT_MOST)
@@ -1496,8 +1484,7 @@ class ComponentTreeTest {
     val blockingComponent = TestDrawableComponent.create(context).flexGrow(1f).color(1_234).build()
     blockingComponent.setTestComponentListener(blockInPrepare)
     val lithoView = LithoView(context)
-    val componentTree =
-        ComponentTree.create(context, blockingComponent).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(context, blockingComponent).build()
     lithoView.componentTree = componentTree
     val widthSpec = makeSizeSpec(1_000, AT_MOST)
     val heightSpec = makeSizeSpec(500, EXACTLY)
@@ -1529,7 +1516,7 @@ class ComponentTreeTest {
   @Test
   fun testSetSizeSpecAsyncFollowedBySetSizeSpecSyncBeforeStartReturnsCorrectSize() {
     val component = SimpleMountSpecTester(style = Style.flex(grow = 1f), color = 1_234)
-    val componentTree = ComponentTree.create(context, component).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(context, component).build()
     componentTree.setLithoView(LithoView(context))
     val widthSpec1 = makeSizeSpec(1_000, EXACTLY)
     val heightSpec1 = makeSizeSpec(1_000, AT_MOST)
@@ -1554,7 +1541,7 @@ class ComponentTreeTest {
 
   @Test
   fun testSetRootAfterRelease() {
-    val componentTree = ComponentTree.create(context, component).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(context, component).build()
     componentTree.release()
 
     // Verify we don't crash
@@ -1563,7 +1550,7 @@ class ComponentTreeTest {
 
   @Test
   fun testCachedValues() {
-    val componentTree = ComponentTree.create(context, component).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(context, component).build()
     val cacheKey = HookGlobalKey(StringGlobalKey("globalKey"), 0, RenderScope.Resolve)
     assertThat(componentTree.getCachedValue(cacheKey, "key1", false)).isNull()
     componentTree.putCachedValue(cacheKey, "key1", "value1", false)
@@ -1574,7 +1561,7 @@ class ComponentTreeTest {
   @Test
   fun testVersioningCalculate() {
     val root1: Component = ComponentTreeTester()
-    val componentTree = ComponentTree.create(context).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(context).build()
     componentTree.setVersionedRootAndSizeSpec(root1, widthSpec, heightSpec, Size(), null, 0)
     var layoutState = componentTree.mainThreadLayoutState
     junit.framework.Assert.assertEquals(root1.instanceId, layoutState?.rootComponent?.instanceId)
@@ -1592,7 +1579,7 @@ class ComponentTreeTest {
   fun testAttachFromListenerDoesntCrash() {
     val component = TestLayoutComponent.create(context).build()
     val lithoView = LithoView(context)
-    val componentTree = ComponentTree.create(context, component).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(context, component).build()
     lithoView.componentTree = componentTree
     componentTree.newLayoutStateReadyListener = ComponentTree.NewLayoutStateReadyListener {
       lithoView.onAttachedToWindow()
@@ -1604,7 +1591,7 @@ class ComponentTreeTest {
   fun testDetachFromListenerDoesntCrash() {
     val component = TestLayoutComponent.create(context).build()
     val lithoView = LithoView(context)
-    val componentTree = ComponentTree.create(context, component).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(context, component).build()
     lithoView.componentTree = componentTree
     lithoView.onAttachedToWindow()
     componentTree.newLayoutStateReadyListener =
@@ -1630,14 +1617,8 @@ class ComponentTreeTest {
     }
 
     val lithoView = LithoView(context)
-    val componentTree1 =
-        ComponentTree.create(context, TestComponent(text = "First text"))
-            .enableChildClipping(true)
-            .build()
-    val componentTree2 =
-        ComponentTree.create(context, TestComponent(text = "Second text"))
-            .enableChildClipping(true)
-            .build()
+    val componentTree1 = ComponentTree.create(context, TestComponent(text = "First text")).build()
+    val componentTree2 = ComponentTree.create(context, TestComponent(text = "Second text")).build()
     lithoView.componentTree = componentTree1
     measureLayoutLithoView(lithoView)
 

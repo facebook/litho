@@ -292,7 +292,6 @@ public class RecyclerCollectionComponentSpecTest {
             ComponentTree.create(mComponentContext)
                 .incrementalMount(false)
                 .componentsConfiguration(config)
-                .enableChildClipping(true)
                 .build(),
             null,
             null,

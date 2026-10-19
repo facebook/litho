@@ -83,7 +83,6 @@ class NestedPreallocationTest {
                         if (preallocationEnabled) PreAllocationHandler.LayoutThread else null,
                 ),
             )
-            .enableChildClipping(true)
             .build()
 
     return lithoRule.render(heightPx = 2040, componentTree = componentTree) { TestComponent() }

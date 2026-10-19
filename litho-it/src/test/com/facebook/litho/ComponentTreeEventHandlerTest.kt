@@ -38,7 +38,6 @@ class ComponentTreeEventHandlerTest {
   fun setup() {
     componentTree =
         ComponentTree.create(ComponentContext(ApplicationProvider.getApplicationContext<Context>()))
-            .enableChildClipping(true)
             .build()
     context = componentTree.context
   }

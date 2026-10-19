@@ -180,7 +180,6 @@ class ComponentErrorBoundaryTest {
                     errorEventHandler = errorEventHandler,
                 ),
             )
-            .enableChildClipping(true)
             .build()
     componentTree.root = component
     lithoTestRule.render(componentTree = componentTree) { component }

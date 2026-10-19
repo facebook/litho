@@ -56,8 +56,7 @@ public class ComponentHostMatchersTest {
         new ComponentContext(InstrumentationRegistry.getTargetContext());
     final Component mTextComponent =
         MyComponent.create(mComponentContext).text("foobar").customViewTag("zoidberg").build();
-    final ComponentTree tree =
-        ComponentTree.create(mComponentContext, mTextComponent).enableChildClipping(true).build();
+    final ComponentTree tree = ComponentTree.create(mComponentContext, mTextComponent).build();
     mView = new LithoView(mComponentContext);
     mView.setComponentTree(tree);
     ViewHelpers.setupView(mView).setExactWidthPx(200).setExactHeightPx(100).layout();

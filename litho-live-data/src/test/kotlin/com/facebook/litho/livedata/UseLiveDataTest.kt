@@ -184,7 +184,6 @@ class UseLiveDataTest {
                 AOSPLithoVisibilityEventsController(fakeLifecycleOwner),
             )
             .withLifecycleOwnerTreeProp(fakeLifecycleOwner)
-            .enableChildClipping(true)
             .build()
 
     val lithoView = rule.render(componentTree = componentTree) { component }

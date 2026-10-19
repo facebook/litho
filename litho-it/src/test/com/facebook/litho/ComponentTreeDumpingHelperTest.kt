@@ -53,8 +53,7 @@ class ComponentTreeDumpingHelperTest {
 
     val androidContext = ApplicationProvider.getApplicationContext<Context>()
     val baseContext = ComponentContext(androidContext)
-    val componentTree =
-        ComponentTree.create(baseContext, component).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(baseContext, component).build()
     val lithoView = LithoView(androidContext)
 
     lithoView.componentTree = componentTree

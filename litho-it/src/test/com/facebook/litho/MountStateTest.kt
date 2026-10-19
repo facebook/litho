@@ -238,8 +238,7 @@ class MountStateTest {
                     .child(TextInput.create(c).key("#6").initialText("6").heightPx(100)),
             )
             .build()
-    val initialComponentTree =
-        ComponentTree.create(c, initialComponent).enableChildClipping(true).build()
+    val initialComponentTree = ComponentTree.create(c, initialComponent).build()
     val lithoView = LithoView(c.androidContext)
 
     // Mount a layout with the component.

@@ -181,7 +181,7 @@ class LithoVisibilityEventsControllerTest {
     assertThat(pauseMountingWhileVisibilityHintFalse).isTrue
 
     testLithoView.useComponentTree(
-        ComponentTree.create(lithoTestRule.context).enableChildClipping(true).build(),
+        ComponentTree.create(lithoTestRule.context).build(),
     )
     hasVisibilityHint =
         Whitebox.getInternalState<Boolean>(testLithoView.lithoView, "hasVisibilityHint")

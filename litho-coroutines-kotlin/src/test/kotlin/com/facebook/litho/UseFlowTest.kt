@@ -220,8 +220,7 @@ class UseFlowTest {
       }
     }
 
-    val componentTree =
-        ComponentTree.create(lithoViewRule.context).enableChildClipping(true).build()
+    val componentTree = ComponentTree.create(lithoViewRule.context).build()
 
     val lithoView =
         lithoViewRule
@@ -327,11 +326,7 @@ class UseFlowTest {
     }
 
     val config = ComponentsConfiguration.defaultInstance.copy(enableStateReadTracking = true)
-    val tree =
-        ComponentTree.create(lithoViewRule.context)
-            .componentsConfiguration(config)
-            .enableChildClipping(true)
-            .build()
+    val tree = ComponentTree.create(lithoViewRule.context).componentsConfiguration(config).build()
 
     val lithoView = lithoViewRule.render(componentTree = tree) { TestComponent() }
     lithoViewRule.act(lithoView) { testDispatcher.scheduler.runCurrent() }
