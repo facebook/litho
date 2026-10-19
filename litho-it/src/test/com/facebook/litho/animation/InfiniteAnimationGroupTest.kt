@@ -17,6 +17,7 @@
 package com.facebook.litho.animation
 
 import android.os.Looper.getMainLooper
+import android.view.View
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
@@ -30,6 +31,8 @@ import com.facebook.litho.layout.flexbox.Row
 import com.facebook.litho.testing.LithoAnimationTestRule
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
+import com.facebook.litho.widget.ComponentRenderInfo
+import com.facebook.litho.widget.ComponentTreeHolder
 import com.facebook.rendercore.ms
 import com.facebook.rendercore.px
 import org.assertj.core.api.Assertions.assertThat
@@ -45,7 +48,7 @@ import org.robolectric.annotation.LooperMode
 @OptIn(ExperimentalLithoApi::class)
 @LooperMode(LooperMode.Mode.PAUSED)
 @RunWith(LithoTestRunner::class)
-class UseInfiniteAnimationTest {
+class InfiniteAnimationGroupTest {
 
   @Rule
   @JvmField
@@ -84,8 +87,60 @@ class UseInfiniteAnimationTest {
               initialStartOffset = initialStartOffset,
           )
       captured = listOf(v)
-      return Row(style = Style.width((10 + renderVersion).px).height(10.px))
+      return Row(style = Style.width((10 + renderVersion).px).height(10.px).alpha(v))
     }
+  }
+
+  @Test
+  fun restoredTree_holderRebuild_restartsAnUnchangedLoop() {
+    val component = LoopComponent()
+    val holder =
+        ComponentTreeHolder.create(checkNotNull(lithoTestRule.componentsConfiguration))
+            .renderInfo(
+                ComponentRenderInfo.create()
+                    .component(component)
+                    .customAttribute(ComponentTreeHolder.ACQUIRE_STATE_HANDLER_ON_RELEASE, true)
+                    .build(),
+            )
+            .build()
+    val sizeSpec = View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY)
+    holder.computeLayoutSync(lithoTestRule.context, sizeSpec, sizeSpec, null)
+    val originalTree = checkNotNull(holder.componentTree)
+    val original = lithoTestRule.render(componentTree = originalTree) { component }
+    idle()
+    animationRule.advanceBy(250.ms)
+    assertThat(original.lithoView.alpha).isCloseTo(0.25f, tolerance)
+    val retainedValue = captured.single()
+
+    holder.acquireStateAndReleaseTree()
+    original.release()
+    idle()
+    assertThat(originalTree.isReleased).isTrue()
+    assertThat(holder.componentTree).isNull()
+    assertThat(animationRule.hasScheduledFrames()).isFalse()
+
+    captured = emptyList()
+    val restoredComponent = LoopComponent(renderVersion = 1)
+    holder.renderInfo =
+        ComponentRenderInfo.create()
+            .component(restoredComponent)
+            .customAttribute(ComponentTreeHolder.ACQUIRE_STATE_HANDLER_ON_RELEASE, true)
+            .build()
+    holder.computeLayoutSync(lithoTestRule.context, sizeSpec, sizeSpec, null)
+    val restored =
+        lithoTestRule.render(componentTree = checkNotNull(holder.componentTree)) {
+          restoredComponent
+        }
+    idle()
+    assertThat(captured.single()).isEqualTo(retainedValue)
+    animationRule.advanceBy(500.ms)
+    assertThat(restored.lithoView.alpha).isCloseTo(0.5f, tolerance)
+    animationRule.advanceBy(750.ms)
+    assertThat(restored.lithoView.alpha).isCloseTo(0.25f, tolerance)
+    assertThat(animationRule.hasScheduledFrames()).isTrue()
+    restored.release()
+    idle()
+    assertThat(animationRule.hasScheduledFrames()).isFalse()
   }
 
   @Test

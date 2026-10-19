@@ -264,6 +264,7 @@ internal class InfiniteAnimationGroupState(
   @MainThread
   internal fun dispose() {
     for (slot in animatedValues.indices) stopSlot(slot)
+    wasRunning = false
   }
 
   private fun validateSlotCount(newRecord: InfiniteAnimationRecord) {
