@@ -309,7 +309,7 @@ constructor(
    * - ItemDecorations: This will bind/unbind the [itemDecorations]
    * - Binder<RecyclerView>: This will bind/unbind the [binder].
    */
-  fun PrimitiveComponentScope.SplitBindersMountBehavior(
+  private fun PrimitiveComponentScope.SplitBindersMountBehavior(
       measureVersion: State<Int>,
       onRefresh: (() -> Unit)?,
       onScrollListeners: List<RecyclerView.OnScrollListener>?,
