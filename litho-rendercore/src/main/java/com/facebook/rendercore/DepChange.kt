@@ -17,6 +17,7 @@
 package com.facebook.rendercore
 
 import com.facebook.rendercore.utils.areObjectsEquivalent
+import kotlin.jvm.internal.FunctionBase
 
 /** Marks a [RenderUnit.Binder] whose model is a positional array of dependencies. */
 interface DepsModel
@@ -269,8 +270,13 @@ private fun renderValue(value: Any?): String {
   if (value == null) {
     return "null"
   }
+  // A Kotlin function's `toString` asks kotlin-reflect to render its signature. Where that library
+  // is present, its first use loads hundreds of classes on the calling (main) thread, stalling the
+  // mount that triggered this report for close to a second. The arity is enough here: functions
+  // are flagged by identity and the type name already identifies the lambda. Reading it stays
+  // inside the guard: a reflective function object can throw from `arity`.
   return try {
-    value.toString()
+    if (value is FunctionBase<*>) "Function${value.arity}" else value.toString()
   } catch (e: Throwable) {
     "<${typeNameOf(value.javaClass)}: toString threw ${typeNameOf(e.javaClass)}>"
   }

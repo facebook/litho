@@ -16,6 +16,8 @@
 
 package com.facebook.rendercore
 
+import kotlin.jvm.internal.FunctionBase
+import kotlin.jvm.internal.Lambda
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -79,6 +81,69 @@ class DepChangeTest {
     assertThat(changes[0].describe())
         .doesNotContain("→")
         .contains("compares by identity, rebinds every update")
+  }
+
+  @Test
+  fun `does not call toString on a Kotlin lambda`() {
+    class CountingLambda : Lambda<Unit>(0), () -> Unit {
+      var toStringCalls = 0
+
+      override fun invoke() = Unit
+
+      override fun toString(): String {
+        toStringCalls++
+        return "rendered"
+      }
+    }
+    val before = CountingLambda()
+    val after = CountingLambda()
+
+    val changes = describeDepChanges(arrayOf<Any?>(before), arrayOf<Any?>(after))
+
+    assertThat(changes).hasSize(1)
+    assertThat(changes[0].comparesByIdentity).isTrue()
+    assertThat(before.toStringCalls).isEqualTo(0)
+    assertThat(after.toStringCalls).isEqualTo(0)
+    assertThat(changes[0].before).isEqualTo("Function0")
+    assertThat(changes[0].after).isEqualTo("Function0")
+  }
+
+  @Test
+  fun `renders a lambda by its arity so differently shaped lambdas still differ`() {
+    val before: () -> Unit = {}
+    val after: (Int) -> Unit = {}
+
+    val changes = describeDepChanges(arrayOf<Any?>(before), arrayOf<Any?>(after))
+
+    assertThat(changes).hasSize(1)
+    assertThat(changes[0].before).isEqualTo("Function0")
+    assertThat(changes[0].after).isEqualTo("Function1")
+  }
+
+  @Test
+  fun `renders a function reference by its arity`() {
+    val before: (Int, Int) -> Unit = ::twoArguments
+    val after: (Int, Int) -> Unit = ::twoArguments
+
+    val changes = describeDepChanges(arrayOf<Any?>(before), arrayOf<Any?>(after))
+
+    assertThat(changes).hasSize(1)
+    assertThat(changes[0].before).isEqualTo("Function2")
+    assertThat(changes[0].after).isEqualTo("Function2")
+  }
+
+  @Test
+  fun `does not throw when a function dependency cannot report its arity`() {
+    class ThrowingArity : FunctionBase<Unit> {
+      override val arity: Int
+        get() = throw IllegalStateException("arity unavailable")
+    }
+
+    val changes = describeDepChanges(arrayOf<Any?>(ThrowingArity()), arrayOf<Any?>(ThrowingArity()))
+
+    assertThat(changes).hasSize(1)
+    assertThat(changes[0].before).contains("ThrowingArity").contains("threw IllegalStateException")
+    assertThat(changes[0].comparesByIdentity).isTrue()
   }
 
   @Test
@@ -359,3 +424,5 @@ class DepChangeTest {
     override fun toString(): String = throw IllegalStateException("nope")
   }
 }
+
+private fun twoArguments(a: Int, b: Int) = Unit
