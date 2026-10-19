@@ -18,6 +18,12 @@ package com.facebook.litho
 
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
+import com.facebook.litho.core.widthPercent
+import com.facebook.litho.flexbox.alignSelf
+import com.facebook.litho.flexbox.flex
+import com.facebook.litho.visibility.onVisible
+import com.facebook.rendercore.visibility.VisibleEvent
+import com.facebook.yoga.YogaAlign
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -84,6 +90,25 @@ class StyleTest {
         .isNotEqualTo(Style.testStyleItem("B").testStyleItem("1"))
     assertThat(Style.testStyleItem("A").testStyleItem("1"))
         .isNotEqualTo(Style.testStyleItem("A").testStyleItem("2"))
+  }
+
+  @Test
+  fun style_equals_floatAndObjectItemsCompareByValue() {
+    val callback: (VisibleEvent) -> Unit = {}
+    val style = {
+      Style.flex(grow = 1f)
+          .alignSelf(YogaAlign.CENTER)
+          .widthPercent(50f)
+          .onVisible(visibleWidthRatio = 0.5f, callback = callback)
+    }
+
+    assertThat(style()).isEqualTo(style())
+    assertThat(style().hashCode()).isEqualTo(style().hashCode())
+    assertThat(Style.flex(grow = 1f)).isNotEqualTo(Style.flex(grow = 2f))
+    assertThat(Style.alignSelf(YogaAlign.CENTER)).isNotEqualTo(Style.alignSelf(YogaAlign.END))
+    assertThat(Style.widthPercent(50f)).isNotEqualTo(Style.widthPercent(60f))
+    assertThat(Style.onVisible(visibleWidthRatio = 0.5f, callback = callback))
+        .isNotEqualTo(Style.onVisible(visibleWidthRatio = 0.6f, callback = callback))
   }
 
   @Test
