@@ -70,25 +70,25 @@ android {
         targetCompatibility rootProject.targetCompatibilityVersion
     }
 
-    // Tests live directly under src/test, next to the resources directory.
-    sourceSets.test.java.srcDir 'src/test'
+    // Tests live under src/test/com. src/test itself can't be a source root: src/test/resources
+    // holds Java files that the processor tests read as data.
+    sourceSets.test.java.srcDir 'src/test/com'
     namespace 'com.facebook.litho.it'
     lint {
         abortOnError false
     }
 }
 
-// resources/ holds Java sources that the processor tests read as data. The spec-model tests use
-// javax.lang.model, which Android unit-test compilation doesn't provide; they still run with Buck.
-def excludedTestSources = ['resources/**', 'com/facebook/litho/specmodels/**']
+// The spec-model tests use javax.lang.model, which Android unit-test compilation doesn't provide.
+// They still run with Buck.
 tasks.withType(JavaCompile).configureEach {
     if (name.contains('UnitTest')) {
-        exclude excludedTestSources
+        exclude 'facebook/litho/specmodels/**'
     }
 }
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
     if (name.contains('UnitTest')) {
-        exclude excludedTestSources
+        exclude 'facebook/litho/specmodels/**'
     }
 }
 
