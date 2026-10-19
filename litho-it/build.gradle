@@ -36,7 +36,9 @@ android {
             forkEvery = 1
             maxParallelForks = 4
 
-            jvmArgs '-Dcom.facebook.litho.is_oss=true', '-Dlitho.animation.disabled=true'
+            // Same default looper mode as the Buck target's vm_args.
+            jvmArgs '-Dcom.facebook.litho.is_oss=true', '-Dlitho.animation.disabled=true',
+                    '-Drobolectric.looperMode=LEGACY'
             testLogging {
                 events 'skipped', 'failed', 'standardOut', 'standardError'
                 exceptionFormat = 'full'
@@ -62,6 +64,9 @@ android {
               android plugin's UnitTest options doesn't allow excluding specific tests.
             */
             exclude 'com/facebook/litho/sections/specmodels/generator/GroupSectionSpecGeneratorTest.class'
+
+            // Its methods have no @Test annotations, so JUnit rejects the class.
+            exclude 'com/facebook/litho/KStateStateReadUpdateTest.class'
         }
     }
 
