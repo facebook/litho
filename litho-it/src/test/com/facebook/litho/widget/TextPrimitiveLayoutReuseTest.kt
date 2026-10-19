@@ -20,7 +20,7 @@ import android.graphics.Color
 import android.text.Layout
 import android.view.View
 import android.view.ViewGroup
-import com.facebook.litho.Column
+import com.facebook.litho.Column as ColumnBuilder
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.LithoView
@@ -188,7 +188,7 @@ class TextPrimitiveLayoutReuseTest {
     if (fixedHeight) {
       text.heightPx(60)
     }
-    return Column.create(c).layoutDirection(direction).child(text).build()
+    return ColumnBuilder.create(c).layoutDirection(direction).child(text).build()
   }
 
   /** The mounted text layout, for primitive (RCTextView) and legacy (TextDrawable) Text alike. */
