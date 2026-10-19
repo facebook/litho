@@ -654,7 +654,7 @@ class RenderStateTest {
     renderState.setTree { resolveContext, committedTree, committedState, stateUpdatesToApply ->
       resolveCount.incrementAndGet()
       appliedStateUpdates.set(stateUpdatesToApply)
-      ResolveResult(TestNode(), Any())
+      ResolveResult(TestNode(), Any(), stateUpdatesToApply)
     }
 
     Shadows.shadowOf(Looper.getMainLooper()).idle()
@@ -668,7 +668,7 @@ class RenderStateTest {
     renderState.setTree { resolveContext, committedTree, committedState, stateUpdatesToApply ->
       resolveCount.incrementAndGet()
       appliedStateUpdates.set(stateUpdatesToApply)
-      ResolveResult(TestNode(), Any())
+      ResolveResult(TestNode(), Any(), stateUpdatesToApply)
     }
 
     // Release the Looper to update the RenderState.

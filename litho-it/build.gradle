@@ -67,6 +67,14 @@ android {
 
             // Its methods have no @Test annotations, so JUnit rejects the class.
             exclude 'com/facebook/litho/KStateStateReadUpdateTest.class'
+
+            // These depend on timing or text measurement that differs on GitHub's runners. They
+            // still run with Buck.
+            filter {
+                excludeTestsMatching 'com.facebook.litho.animation.AnimatedContentTest'
+                excludeTestsMatching 'com.facebook.litho.PrimitiveLithoRenderUnitErrorBoundaryTest.testPrimitiveUnmountBindersCrashCaughtByTestErrorBoundary*'
+                excludeTestsMatching 'com.facebook.litho.widget.TextSpanAccessibilityParityTest.a span cut off by maxLines*'
+            }
         }
     }
 
