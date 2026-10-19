@@ -25,6 +25,7 @@ import org.assertj.core.api.Assertions
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
+import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.shadows.ShadowLooper
 
@@ -44,6 +45,7 @@ class KStateStateReadUpdateTest {
     ComponentsConfiguration.defaultInstance = defaultConfig
   }
 
+  @Test
   fun `skip subsequent resolve if updated state not read in resolve`() {
     ShadowLooper.pauseMainLooper()
 
@@ -55,6 +57,7 @@ class KStateStateReadUpdateTest {
     Assertions.assertThat(renderCount.get()).isEqualTo(1)
   }
 
+  @Test
   fun `do not skip subsequent resolve if updated state read in resolve`() {
     ShadowLooper.pauseMainLooper()
 
@@ -63,7 +66,7 @@ class KStateStateReadUpdateTest {
     lithoTestRule.render { MyStateReadUpdateComponent(renderCount, readInResolve = true) }
     repeat(10) { ShadowLooper.runMainLooperOneTask() }
 
-    Assertions.assertThat(renderCount.get()).isEqualTo(10)
+    Assertions.assertThat(renderCount.get()).isEqualTo(11)
   }
 }
 
