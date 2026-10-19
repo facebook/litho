@@ -13,7 +13,7 @@ runs:
           21
           17
     - name: Set up Android SDK
-      uses: android-actions/setup-android@v3
+      uses: android-actions/setup-android@v4
     - name: Install NDK and CMake
       shell: bash
       run: sdkmanager "ndk;27.1.12297006" "cmake;3.22.1"
