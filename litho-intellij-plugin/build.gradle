@@ -33,6 +33,10 @@ java.sourceCompatibility = rootProject.sourceCompatibilityVersion
 sourceSets {
     test.java.srcDirs += project(':litho-processor').file("src/test/java")
     test.java.srcDirs += project(':litho-sections-processor').file("src/test/java")
+    // Same tests as the Buck target. These use test fixtures that no longer exist (T58412963).
+    test.java.exclude 'com/facebook/litho/intellij/completion/ParamCompletionContributorTest.java'
+    test.java.exclude 'com/facebook/litho/intellij/completion/ReplacingConsumerTest.java'
+    test.java.exclude 'com/facebook/litho/intellij/completion/RequiredPropMethodContributorTest.java'
 }
 
 dependencies {
