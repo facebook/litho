@@ -1127,7 +1127,8 @@ internal object LithoYogaLayoutFunction {
           if (
               (layoutResult.lastMeasuredSize != Long.MIN_VALUE) &&
                   !layoutResult.wasMeasured &&
-                  layoutResult.isCachedLayout
+                  layoutResult.isCachedLayout &&
+                  yogaOutput._boundsDefined
           ) {
             // Two scenarios would skip measurement and fall into this case:
             // 1. A cached result from Yoga (which may also contain a fixed size).
@@ -1182,6 +1183,7 @@ internal object LithoYogaLayoutFunction {
           }
         }
       }
+      yogaOutput._boundsDefined = true
       if (!layoutResult.wasMeasured) {
         yogaOutput.setSizeSpec(
             MeasureSpecUtils.exactly(newContentWidth),
@@ -1885,6 +1887,11 @@ data class YogaLayoutOutput(
     internal var _wasMeasured: Boolean = false,
     internal var _cachedMeasuresValid: Boolean = false,
     internal var _measureHadExceptions: Boolean = false,
+    /**
+     * Whether a MountSpec's `@OnBoundsDefined` outputs are in [_layoutData]. A cached copy of a
+     * result its pass measured but left out of its tree, which a `Layout` can do, has none.
+     */
+    internal var _boundsDefined: Boolean = false,
     internal var _contentRenderUnit: LithoRenderUnit? = null,
     internal var _hostRenderUnit: LithoRenderUnit? = null,
     internal var _backgroundRenderUnit: LithoRenderUnit? = null,

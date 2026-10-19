@@ -29,6 +29,8 @@ import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.TestLithoView
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.SimpleMountSpecTester
+import com.facebook.litho.widget.Text
+import com.facebook.litho.widget.TextDrawable
 import com.facebook.rendercore.LayoutCache
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.px
@@ -52,6 +54,29 @@ class CustomLayoutReuseTest {
     view.setSizePx(400, VIEWPORT).measure().layout()
 
     assertThat(childRoot(view).isCachedLayout).describedAs("re-layout").isTrue()
+  }
+
+  /**
+   * A child the function measured but did not place gets its bounds defined when a later pass
+   * places its copy: the `Text` in it mounts. The child is a `Row`, so the `Text` is laid out by
+   * Yoga, not measured directly as a leaf would be.
+   */
+  @Test
+  fun `a Text under a child left out of one pass mounts when a later pass places it`() {
+    val textInRow = Row {
+      child(
+          Text.create(lithoTestRule.context)
+              .text("a")
+              .textSizePx(14)
+              .kotlinStyle(Style.width(200.px))
+              .build(),
+      )
+    }
+    val view = render(width = 100) { Layout(listOf(textInRow), layout = PLACES_IF_IT_FITS) }
+
+    view.setSizePx(300, VIEWPORT).measure().layout()
+
+    assertThat(view.lithoView.drawables.filterIsInstance<TextDrawable>()).hasSize(1)
   }
 
   @Test
@@ -194,6 +219,16 @@ class CustomLayoutReuseTest {
     const val VIEWPORT = 500
 
     /** Measures its child at most 100 wide, whatever its own width, and places it at the origin. */
+    /** Measures its child unbounded, and places it only if it fits. */
+    val PLACES_IF_IT_FITS = LayoutFunctionN { ms, c ->
+      val p = ms[0].measure(SizeConstraints(maxWidth = SizeConstraints.Infinity))
+      layout(c.maxWidth, p.height) {
+        if (p.width <= c.maxWidth) {
+          p.place(0, 0)
+        }
+      }
+    }
+
     val AT_MOST_100 = LayoutFunctionN { ms, c ->
       val p = ms[0].measure(SizeConstraints(maxWidth = 100, maxHeight = 100))
       layout(c.maxWidth, p.height) { p.place(0, 0) }
