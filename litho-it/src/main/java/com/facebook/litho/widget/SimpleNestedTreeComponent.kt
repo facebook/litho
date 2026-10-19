@@ -41,7 +41,6 @@ class SimpleNestedTreeComponent(private val contentComponent: Component) : Primi
     val componentTree = useState {
       ComponentTree.create(ComponentContext.makeCopyForNestedTree(context))
           .incrementalMount(false)
-          .enableChildClipping(true)
           .build()
     }
     return LithoPrimitive(

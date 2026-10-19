@@ -80,9 +80,7 @@ class TestAnimationMount(
             MountBehavior(ViewAllocator { context -> LithoView(context) }) {
               bind(component) { content ->
                 content.componentTree =
-                    ComponentTree.create(ComponentContext(androidContext), component)
-                        .enableChildClipping(true)
-                        .build()
+                    ComponentTree.create(ComponentContext(androidContext), component).build()
                 onUnbind { content.componentTree = null }
               }
             },
