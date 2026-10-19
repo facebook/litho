@@ -65,6 +65,14 @@ intellij {
     plugins = ['java', 'org.jetbrains.kotlin',]
 }
 
+// The IntelliJ plugin points the test JVM at its JetBrains Runtime, which Gradle rejects because it
+// differs from the toolchain's launcher. These tests don't need the IDE runtime.
+tasks.named('test') {
+    doFirst {
+        executable = javaLauncher.get().executablePath.asFile.absolutePath
+    }
+}
+
 task merge {
     doLast {
         def output = new File(project.buildDir, "patchedPluginXmlFiles/plugin.xml")
