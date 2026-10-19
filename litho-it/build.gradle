@@ -131,6 +131,8 @@ dependencies {
     testImplementation deps.assertjCore
     testImplementation deps.compileTesting
     testImplementation deps.junit
+    testImplementation deps.kotlinTest
+    testImplementation deps.lifecycleTesting
     testImplementation deps.mockitoCore
     testImplementation deps.mockitokotlin
     testImplementation deps.javapoet

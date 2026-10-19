@@ -217,6 +217,7 @@ ext.deps = [
         viewModel      : 'androidx.lifecycle:lifecycle-viewmodel:2.9.4',
         liveData           : 'androidx.lifecycle:lifecycle-livedata:2.9.4',
         lifecycleService   : 'androidx.lifecycle:lifecycle-service:2.9.4',
+        lifecycleTesting   : 'androidx.lifecycle:lifecycle-runtime-testing:2.9.4',
         // First-party
         fresco             : 'com.facebook.fresco:fresco:3.9.0',
         frescoVito         : 'com.facebook.fresco:vito:3.9.0',
@@ -239,10 +240,10 @@ ext.deps = [
         robolectric        : 'org.robolectric:robolectric:4.16.1',
         junit              : 'junit:junit:4.13.2',
         hamcrestLibrary    : 'org.hamcrest:hamcrest-library:1.3',
-        mockitoCore        : 'org.mockito:mockito-core:4.11.0',
+        mockitoCore        : 'org.mockito:mockito-core:5.24.0',
         assertjCore        : 'org.assertj:assertj-core:3.27.7',
         compileTesting     : 'com.google.testing.compile:compile-testing:0.14',
-        mockitokotlin      : 'org.mockito.kotlin:mockito-kotlin:4.1.0',
+        mockitokotlin      : 'org.mockito.kotlin:mockito-kotlin:6.4.0',
         // Proguard annotations (published through Yoga)
         proguardAnnotations: 'com.facebook.yoga:proguard-annotations:1.14.1',
         // Processor
@@ -253,5 +254,6 @@ ext.deps = [
         kotlinStandardLib  : "org.jetbrains.kotlin:kotlin-stdlib:${KOTLIN_VERSION}",
         kotlinCoroutines   : "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4",
         kotlinCoroutinesTest  : "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4",
+        kotlinTest         : "org.jetbrains.kotlin:kotlin-test:${KOTLIN_VERSION}",
         kotlinReflect      : "org.jetbrains.kotlin:kotlin-reflect:${KOTLIN_VERSION}"
 ]
