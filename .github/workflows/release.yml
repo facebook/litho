@@ -64,21 +64,14 @@ jobs:
       uses: actions/checkout@v4
     - name: Set up build
       uses: ./.github/actions/setup-build
+    - name: Build Yoga for the host
+      uses: ./.github/actions/build-yoga-host
     - name: Run tests
       uses: nick-invision/retry@v1
       with:
         timeout_minutes: 60
         max_attempts: 2
-        command: >-
-          ./gradlew test --stacktrace
-          -x :litho-core:test
-          -x :litho-coroutines-kotlin:test
-          -x :litho-it:test
-          -x :litho-it-spec:test
-          -x :litho-live-data:test
-          -x :litho-surface:test
-          -x :litho-testing:test
-          -x :sample:test
+        command: ./gradlew test --stacktrace
   sample-app-job:
     name: Assemble Sample App
     needs: [start-release-job]

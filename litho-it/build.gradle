@@ -36,7 +36,9 @@ android {
             forkEvery = 1
             maxParallelForks = 4
 
-            jvmArgs '-Dcom.facebook.litho.is_oss=true', '-Dlitho.animation.disabled=true'
+            // Same default looper mode as the Buck target's vm_args.
+            jvmArgs '-Dcom.facebook.litho.is_oss=true', '-Dlitho.animation.disabled=true',
+                    '-Drobolectric.looperMode=LEGACY'
             testLogging {
                 events 'skipped', 'failed', 'standardOut', 'standardError'
                 exceptionFormat = 'full'
@@ -62,6 +64,17 @@ android {
               android plugin's UnitTest options doesn't allow excluding specific tests.
             */
             exclude 'com/facebook/litho/sections/specmodels/generator/GroupSectionSpecGeneratorTest.class'
+
+            // Its methods have no @Test annotations, so JUnit rejects the class.
+            exclude 'com/facebook/litho/KStateStateReadUpdateTest.class'
+
+            // These depend on timing or text measurement that differs on GitHub's runners. They
+            // still run with Buck.
+            filter {
+                excludeTestsMatching 'com.facebook.litho.animation.AnimatedContentTest'
+                excludeTestsMatching 'com.facebook.litho.PrimitiveLithoRenderUnitErrorBoundaryTest.testPrimitiveUnmountBindersCrashCaughtByTestErrorBoundary*'
+                excludeTestsMatching 'com.facebook.litho.widget.TextSpanAccessibilityParityTest.a span cut off by maxLines*'
+            }
         }
     }
 
@@ -70,12 +83,27 @@ android {
         targetCompatibility rootProject.targetCompatibilityVersion
     }
 
-
-    sourceSets.test.java.srcDir project(':litho-processor').file("src/test/java")
-    sourceSets.test.java.srcDir project(':litho-sections-processor').file("src/test/java")
+    // Tests live under src/test/com. src/test itself can't be a source root: src/test/resources
+    // holds Java files that the processor tests read as data.
+    sourceSets.test.java.srcDir 'src/test/com'
     namespace 'com.facebook.litho.it'
     lint {
         abortOnError false
+    }
+}
+
+// The spec-model tests use javax.lang.model, which Android unit-test compilation doesn't provide.
+// They still run with Buck.
+tasks.withType(JavaCompile).configureEach {
+    if (name.contains('UnitTest')) {
+        exclude 'facebook/litho/specmodels/**'
+    }
+}
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+    if (name.contains('UnitTest')) {
+        exclude 'facebook/litho/specmodels/**'
+        // The tests use internal APIs of the modules they cover, like Buck's friend_paths.
+        friendPaths.from(libraries)
     }
 }
 
@@ -112,9 +140,12 @@ dependencies {
 
     // Testing deps
     testCompileOnly deps.jsr305
+    testCompileOnly deps.proguardAnnotations
     testImplementation deps.assertjCore
     testImplementation deps.compileTesting
     testImplementation deps.junit
+    testImplementation deps.kotlinTest
+    testImplementation deps.lifecycleTesting
     testImplementation deps.mockitoCore
     testImplementation deps.mockitokotlin
     testImplementation deps.javapoet
