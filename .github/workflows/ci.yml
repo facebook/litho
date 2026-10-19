@@ -16,6 +16,14 @@ jobs:
         uses: ./.github/actions/setup-build
       - name: Build everything
         run: ./gradlew assemble --stacktrace
+      - name: "[temp check] buildPlugin.sh"
+        run: litho-intellij-plugin/buildPlugin.sh
+      - name: "[temp check] testPlugin.sh"
+        if: success() || failure()
+        run: litho-intellij-plugin/testPlugin.sh
+      - name: "[temp check] plugin tasks with output"
+        if: failure()
+        run: ./gradlew -PwithIntellijPlugin :litho-intellij-plugin:buildPlugin :litho-intellij-plugin:test --continue --stacktrace
   tests:
     runs-on: ubuntu-latest
     steps:

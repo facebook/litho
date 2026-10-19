@@ -20,8 +20,8 @@ set -o pipefail
 DIR=$(dirname "$0")
 cd "$DIR"
 rm -rf build
-echo "./gradlew :litho-intellij-plugin:buildPlugin"
-../gradlew :litho-intellij-plugin:buildPlugin &> /dev/null
+echo "./gradlew -PwithIntellijPlugin :litho-intellij-plugin:buildPlugin"
+../gradlew -PwithIntellijPlugin :litho-intellij-plugin:buildPlugin &> /dev/null
 
 cd build/distributions
 mkdir tmp
