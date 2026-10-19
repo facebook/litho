@@ -62,7 +62,10 @@
   <div class="breadcrumbs"><a href="../../index.html">litho-annotations</a><span class="delimiter">/</span><a href="../index.html">com.facebook.litho.annotations</a><span class="delimiter">/</span><span class="current">OnCreateLayoutWithSizeSpec</span></div>
   <div class="cover ">
     <h1 class="cover"><span>On</span><wbr><span>Create</span><wbr><span>Layout</span><wbr><span>With</span><wbr><span>Size</span><wbr><span><span>Spec</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-annotations:dokkaHtmlPartial/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/Retention.html"><span class="token annotation builtin">Retention</span></a><span class="token punctuation">(</span><span>value<span class="token operator"> = </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/RetentionPolicy.html">RetentionPolicy.CLASS</a></span><wbr><span class="token punctuation">)</span></div></div><span class="token keyword">annotation class </span><a href="index.html">OnCreateLayoutWithSizeSpec</a></div><p class="paragraph"><code class="lang-kotlin">OnCreateLayoutWithSizeSpec</code> is the same as <a href="../-on-create-layout/index.html">OnCreateLayout</a> but the layout can be resolved with a specified width and height. Use this instead of <code class="lang-kotlin">OnCreateLayout</code> if the <a href="../-layout-spec/index.html">LayoutSpec</a> returns a layout tree that depends on its own and/or its children's size. </p><p class="paragraph">For example, a spec might use Component <code class="lang-kotlin">A</code> if that fits within the specified width or use Component <code class="lang-kotlin">B</code> instead. </p><p class="paragraph">The annotated method must return a Component and can receive the following arguments. </p><p class="paragraph">Required:</p><ol><li>ComponentContext </li><li>int (width spec) </li><li>int (height spec) </li></ol><p class="paragraph">Optional and annotated arguments:</p><ul><li><a href="../-prop/index.html">Prop</a></li><li><a href="../-tree-prop/index.html">TreeProp</a></li><li>InjectProp</li><li><a href="../-state/index.html">State</a></li><li><code class="lang-kotlin">Output</code></li></ul><p class="paragraph">The annotation processor will validate this and other invariants in the API at build time. The optional and annotated arguments are inputs which should be used to create the layout of the spec. </p><p class="paragraph">For example: </p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">@LayoutSpec
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-annotations:dokkaHtmlPartial/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/Retention.html"><span class="token annotation builtin">Retention</span></a><span class="token punctuation">(</span><span>value<span class="token operator"> = </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/RetentionPolicy.html">RetentionPolicy.CLASS</a></span><wbr><span class="token punctuation">)</span></div></div><span class="token keyword">annotation class </span><a href="index.html">OnCreateLayoutWithSizeSpec</a></div><p class="paragraph"><code class="lang-kotlin">OnCreateLayoutWithSizeSpec</code> is the same as <a href="../-on-create-layout/index.html">OnCreateLayout</a> but the layout can be resolved with a specified width and height. Use this instead of <code class="lang-kotlin">OnCreateLayout</code> if the <a href="../-layout-spec/index.html">LayoutSpec</a> returns a layout tree that depends on its own and/or its children's size. </p><p class="paragraph">For example, a spec might use Component <code class="lang-kotlin">A</code> if that fits within the specified width or use Component <code class="lang-kotlin">B</code> instead. </p><p class="paragraph">The annotated method must return a Component and can receive the following arguments. </p><p class="paragraph">Required:</p><ol><li>ComponentContext </li><li>int (width spec) </li><li>int (height spec) </li></ol><p class="paragraph">Optional and annotated arguments:</p><ul><li><a href="../-prop/index.html">Prop</a></li><li><a href="../-tree-prop/index.html">TreeProp</a></li><li><a href="../-state/index.html">State</a></li><li><code class="lang-kotlin">Output</code></li></ul><p class="paragraph">The annotation processor will validate this and other invariants in the API at build time. The optional and annotated arguments are inputs which should be used to create the layout of the spec. </p><p class="paragraph">For example: </p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">import android.widget.ImageView.ScaleType;
+import com.facebook.litho.widget.PrimitiveImage;
+
+@LayoutSpec
 class MyComponentSpec {
 
  @OnCreateLayoutWithSizeSpec
@@ -84,7 +87,14 @@ class MyComponentSpec {
         textOutputSize);
 
     // Small component to use in case textComponent does not fit within the current layout.
-    final Component imageComponent = Image.create(c).drawableRes(R.drawable.ic_launcher).build();
+    final Component imageComponent =
+        PrimitiveImage.create(
+            c.getResourceResolver().resolveDrawableRes(R.drawable.ic_launcher),
+            ScaleType.FIT_CENTER,
+            true,
+            null,
+            null,
+            null);
 
     // Assuming SizeSpec.getMode(widthSpec) == EXACTLY or AT_MOST.
     final int layoutWidth = SizeSpec.getSize(widthSpec);
@@ -103,13 +113,13 @@ class MyComponentSpec {
           <div class="table-row" data-filterable-current=":litho-annotations:dokkaHtmlPartial/main" data-filterable-set=":litho-annotations:dokkaHtmlPartial/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-on-create-initial-state/index.html#-2087345088%2FFunctions%2F-246487483"><span>annotation</span><wbr><span><span>Type</span></span></a></div>
+                  <div><a href="../-on-virtual-view-keyboard-focus-changed/index.html#-2087345088%2FFunctions%2F-246487483"><span>annotation</span><wbr><span><span>Type</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2087345088%2FFunctions%2F-246487483"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-annotations:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="../-on-create-initial-state/index.html#-2087345088%2FFunctions%2F-246487483"><span class="token function">annotationType</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/Annotation.html">Annotation</a><span class="token operator">&gt;</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-annotations:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="../-on-virtual-view-keyboard-focus-changed/index.html#-2087345088%2FFunctions%2F-246487483"><span class="token function">annotationType</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/Annotation.html">Annotation</a><span class="token operator">&gt;</span></div></div></div>
                 </div>
               </div>
             </div>
@@ -118,13 +128,13 @@ class MyComponentSpec {
           <div class="table-row" data-filterable-current=":litho-annotations:dokkaHtmlPartial/main" data-filterable-set=":litho-annotations:dokkaHtmlPartial/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-on-create-initial-state/index.html#-1297283241%2FFunctions%2F-246487483"><span><span>equals</span></span></a></div>
+                  <div><a href="../-on-virtual-view-keyboard-focus-changed/index.html#-1297283241%2FFunctions%2F-246487483"><span><span>equals</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1297283241%2FFunctions%2F-246487483"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-annotations:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="../-on-create-initial-state/index.html#-1297283241%2FFunctions%2F-246487483"><span class="token function">equals</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-any/index.html">Any</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-annotations:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="../-on-virtual-view-keyboard-focus-changed/index.html#-1297283241%2FFunctions%2F-246487483"><span class="token function">equals</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-any/index.html">Any</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
                 </div>
               </div>
             </div>
@@ -133,13 +143,13 @@ class MyComponentSpec {
           <div class="table-row" data-filterable-current=":litho-annotations:dokkaHtmlPartial/main" data-filterable-set=":litho-annotations:dokkaHtmlPartial/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-on-create-initial-state/index.html#-867487634%2FFunctions%2F-246487483"><span>hash</span><wbr><span><span>Code</span></span></a></div>
+                  <div><a href="../-on-virtual-view-keyboard-focus-changed/index.html#-867487634%2FFunctions%2F-246487483"><span>hash</span><wbr><span><span>Code</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-867487634%2FFunctions%2F-246487483"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-annotations:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="../-on-create-initial-state/index.html#-867487634%2FFunctions%2F-246487483"><span class="token function">hashCode</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-annotations:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="../-on-virtual-view-keyboard-focus-changed/index.html#-867487634%2FFunctions%2F-246487483"><span class="token function">hashCode</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a></div></div></div>
                 </div>
               </div>
             </div>
@@ -148,13 +158,13 @@ class MyComponentSpec {
           <div class="table-row" data-filterable-current=":litho-annotations:dokkaHtmlPartial/main" data-filterable-set=":litho-annotations:dokkaHtmlPartial/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-on-create-initial-state/index.html#-1045653699%2FFunctions%2F-246487483"><span>to</span><wbr><span><span>String</span></span></a></div>
+                  <div><a href="../-on-virtual-view-keyboard-focus-changed/index.html#-1045653699%2FFunctions%2F-246487483"><span>to</span><wbr><span><span>String</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1045653699%2FFunctions%2F-246487483"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-annotations:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="../-on-create-initial-state/index.html#-1045653699%2FFunctions%2F-246487483"><span class="token function">toString</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-annotations:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="../-on-virtual-view-keyboard-focus-changed/index.html#-1045653699%2FFunctions%2F-246487483"><span class="token function">toString</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a></div></div></div>
                 </div>
               </div>
             </div>
@@ -165,7 +175,7 @@ class MyComponentSpec {
   </div>
 </div>
       <div class="footer">
-        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2025 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2026 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
       </div>
             </div>
         </div>

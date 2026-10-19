@@ -1,13 +1,26 @@
 ---
 id: builtin-widgets
 title: Built-in widgets
+keywords:
+    - text
+    - textinput
+    - image
+    - card
+    - solidcolor
+    - horizontaldivider
+    - verticaldivider
+    - progress
+    - spinner
+    - verticalscroll
+    - horizontalscroll
+    - recycler
 ---
 
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
+import {FbInternalOnly, OssOnly} from 'docusaurus-plugin-internaldocs-fb/internal';
+
 import VersionedCodeBlock from '@theme/VersionedCodeBlock';
 
-This page covers the basic built-in widgets. For the full list of components and APIs, see the [com.facebook.litho.widget](pathname:///javadoc/index.html?com/facebook/litho/widget/package-summary.html) package in javadocs.
+This page covers the basic built-in widgets. For the full list of components and APIs, see the Widget Example list [here](../../sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/widgets/WidgetsExamplesComponent.kt).
 
 ## Text
 
@@ -21,36 +34,29 @@ Shows simple text (the equivalent of an Android `TextView` within Litho).
 
 `Text` has numerous optional props that can be used style text, just as with `TextView` since both use `android.text.Layout` under the hood.
 
-A full list of the optional props is available in the [javadocs](pathname:///javadoc/com/facebook/litho/widget/Text.html).
-
-<Tabs
-  groupId="widget"
-  defaultValue="kcomponent_widget"
-  values={[
-    {label: 'KComponent', value: 'kcomponent_widget'},
-    {label: 'Spec API', value: 'specapi_widget'},
-  ]}>
-  <TabItem value="kcomponent_widget">
-
-```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/widgets/WidgetsExamplesComponent.kt start=start_text_widget_example end=end_text_widget_example
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/widgets/WidgetsExamplesComponent.kt start=start_text_widget_example end=end_text_widget_example
 ```
 
-  </TabItem>
-  <TabItem value="specapi_widget">
+#### Text alignment
 
-```java
-final Component component =
-    Text.create(c)
-        .text("This is my example text")
-        .textSizeRes(R.dimen.my_text_size)
-        .textColorRes(R.color.my_text_color)
-        .textAlignment(Layout.Alignment.ALIGN_CENTER)
-        .build();
- ```
+Use the `alignment` prop with a `TextAlignment` value to control horizontal alignment within the `Text` component's bounds. `TextAlignment` is RTL-aware: prefer `TEXT_START` / `TEXT_END` (which flip based on layout direction) over `LEFT` / `RIGHT` (which are absolute) for *left-align* / *right-align*. Use `CENTER` for centered text.
 
-  </TabItem>
+```kotlin
+import com.facebook.litho.kotlin.widget.Text
+import com.facebook.litho.widget.TextAlignment
 
-</Tabs>
+Text(text = "Centered", alignment = TextAlignment.CENTER)
+Text(text = "Left-aligned (RTL-aware)", alignment = TextAlignment.TEXT_START)
+Text(text = "Right-aligned (RTL-aware)", alignment = TextAlignment.TEXT_END)
+```
+
+#### Emoji
+
+Emoji characters are just Unicode codepoints — render them with the `Text` component like any other string. No special widget is needed; `textColor` and other text props apply normally.
+
+```kotlin
+Text(text = "Hello 👋")  // "Hello 👋"
+```
 
 ## TextInput
 
@@ -68,37 +74,8 @@ As this component is backed by Android's `EditText`, many native capabilities ar
 * Change the input representation by passing an `android.text.InputType` constant.
 * For performance reasons, avoid recreating the Component with different props to change its configuration. Instead, use Event triggers `OnTrigger` to update text, request view focus or set selection. For example, `TextInput.setText(c, "myTextInputKey", "myText")`.
 
-<Tabs
-  groupId="widget"
-  defaultValue="kcomponent_widget"
-  values={[
-    {label: 'KComponent', value: 'kcomponent_widget'},
-    {label: 'Spec API', value: 'specapi_widget'},
-  ]}>
-  <TabItem value="kcomponent_widget">
-
-```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/widgets/WidgetsExamplesComponent.kt start=start_textinput_widget_example end=end_textinput_widget_example
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/widgets/WidgetsExamplesComponent.kt start=start_textinput_widget_example end=end_textinput_widget_example
 ```
-
-  </TabItem>
-  <TabItem value="specapi_widget">
-
-```java
-private static final InputFilter lenFilter = new InputFilter.LengthFilter(maxLength);
-Component component =
-    TextInput.create(c)
-        .initialText(text)
-        .textColorStateList(ColorStateList.valueOf(color))
-        .multiline(true)
-        .inputFilter(lenFilter)
-        .backgroundColor(Color.TRANSPARENT)
-        .inputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES)
-        .build();
- ```
-
-  </TabItem>
-
-</Tabs>
 
 ## Image
 
@@ -110,32 +87,8 @@ Displays a drawable.
 
 ### Usage
 
-<Tabs
-  groupId="widget"
-  defaultValue="kcomponent_widget"
-  values={[
-    {label: 'KComponent', value: 'kcomponent_widget'},
-    {label: 'Spec API', value: 'specapi_widget'},
-  ]}>
-  <TabItem value="kcomponent_widget">
-
-```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/widgets/WidgetsExamplesComponent.kt start=start_image_example end=end_image_example
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/widgets/WidgetsExamplesComponent.kt start=start_image_example end=end_image_example
 ```
-
-  </TabItem>
-  <TabItem value="specapi_widget">
-
-```java
-Component component =
-    Image.create(c)
-        .drawableRes(R.drawable.my_drawable)
-        .scaleType(ImageView.ScaleType.CENTER_CROP)
-        .build();
-```
-
-  </TabItem>
-
-</Tabs>
 
 ## Card
 
@@ -148,37 +101,12 @@ If your card is rendered on top of a dynamically coloured background that cannot
 
 ### Usage
 
-<Tabs
-  groupId="widget"
-  defaultValue="kcomponent_widget"
-  values={[
-    {label: 'KComponent', value: 'kcomponent_widget'},
-    {label: 'Spec API', value: 'specapi_widget'},
-  ]}>
-  <TabItem value="kcomponent_widget">
-
-```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/widgets/WidgetsExamplesComponent.kt start=start_card_example end=end_card_example
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/widgets/WidgetsExamplesComponent.kt start=start_card_example end=end_card_example
 ```
-
-  </TabItem>
-  <TabItem value="specapi_widget">
-
-```java
-Component component =
-	Card.create(c)
-        .content(myContentComponent)
-        .clippingColorRes(R.color.my_clipping_color)
-        .cornerRadiusDip(8)
-        .build();
-```
-
-  </TabItem>
-
-</Tabs>
 
 ## SolidColor
 
-Renders solid color.
+Renders a solid colored rectangle. Use `SolidColor` for colored placeholder rectangles and skeleton loaders. For dividers, separator lines, hairlines, and threading indicators, use `HorizontalDivider` or `VerticalDivider`; they preserve thickness while stretching on the correct axis.
 
 ### Required Prop
 
@@ -186,32 +114,38 @@ Renders solid color.
 
 ### Usage
 
-<Tabs
-  groupId="widget"
-  defaultValue="kcomponent_widget"
-  values={[
-    {label: 'KComponent', value: 'kcomponent_widget'},
-    {label: 'Spec API', value: 'specapi_widget'},
-  ]}>
-  <TabItem value="kcomponent_widget">
+Basic colored rectangle:
 
-```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/widgets/WidgetsExamplesComponent.kt start=start_solidcolor_example end=end_solidcolor_example
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/widgets/WidgetsExamplesComponent.kt start=start_solidcolor_example end=end_solidcolor_example
 ```
 
-  </TabItem>
-  <TabItem value="specapi_widget">
+Skeleton loader placeholder (multiple SolidColor rectangles stacked vertically):
 
-```java
-Component component =
-    SolidColor.create(c)
-        .color(Color.RED)
-        .alpha(0.5)
-        .build();
+```kotlin
+import com.facebook.litho.widget.SolidColor
+
+Column(style = Style.padding(all = 16.dp).gap(column = 12.dp)) {
+  child(SolidColor(color = Color.LTGRAY, style = Style.width(200.dp).height(50.dp)))
+  child(SolidColor(color = Color.LTGRAY, style = Style.width(280.dp).height(50.dp)))
+  child(SolidColor(color = Color.LTGRAY, style = Style.width(160.dp).height(50.dp)))
+}
 ```
 
-  </TabItem>
+### Import
 
-</Tabs>
+```kotlin
+import com.facebook.litho.widget.SolidColor
+```
+
+<FbInternalOnly>
+
+<h3>BUCK Target</h3>
+
+```
+//fbandroid/libraries/components/litho-widget/src/main/java/com/facebook/litho/widget:widget
+```
+
+</FbInternalOnly>
 
 ## Progress
 
@@ -223,31 +157,8 @@ None.
 
 ### Usage
 
-<Tabs
-  groupId="widget"
-  defaultValue="kcomponent_widget"
-  values={[
-    {label: 'KComponent', value: 'kcomponent_widget'},
-    {label: 'Spec API', value: 'specapi_widget'},
-  ]}>
-  <TabItem value="kcomponent_widget">
-
-```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/widgets/WidgetsExamplesComponent.kt start=start_progress_example end=end_progress_example
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/widgets/WidgetsExamplesComponent.kt start=start_progress_example end=end_progress_example
 ```
-
-  </TabItem>
-  <TabItem value="specapi_widget">
-
-```java
-Component component =
-	  Progress.create(c)
-        .indeterminateDrawableRes(R.drawable.my_loading_spinner)
-        .build();
-```
-
-  </TabItem>
-
-</Tabs>
 
 ## Spinner
 
@@ -260,34 +171,66 @@ A simple spinner (dropdown) component. Derived from the standard Android `Spinne
 
 ### Usage
 
-<Tabs
-  groupId="widget"
-  defaultValue="kcomponent_widget"
-  values={[
-    {label: 'KComponent', value: 'kcomponent_widget'},
-    {label: 'Spec API', value: 'specapi_widget'},
-  ]}>
-  <TabItem value="kcomponent_widget">
-
-```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/widgets/WidgetsExamplesComponent.kt start=start_spinner_example end=end_spinner_example
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/widgets/WidgetsExamplesComponent.kt start=start_spinner_example end=end_spinner_example
 ```
 
-  </TabItem>
-  <TabItem value="specapi_widget">
+## HorizontalDivider
+
+A horizontal divider that fills its available width while preserving its requested thickness.
+
+### Required Prop
+
+None.
+
+### Usage
+
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/widgets/WidgetsExamplesComponent.kt start=start_divider_example end=end_divider_example
+```
+
+### Import
 
 ```kotlin
-val myOptions: List<String> = ...
-Component component =
-	  Spinner(
-        options = myOptions,
-        selectedOption = myOptions.get(0),
-        onItemSelected = { newSelection -> ...}
-    )
+import com.facebook.litho.kotlin.widget.HorizontalDivider
 ```
 
-  </TabItem>
+<FbInternalOnly>
 
-</Tabs>
+<h3>BUCK Target</h3>
+
+```
+//fbandroid/libraries/components/litho-widget/src/main/kotlin/com/facebook/litho/kotlin/widget:widget
+```
+
+</FbInternalOnly>
+
+## VerticalDivider
+
+A vertical divider that fills its available height while preserving its requested thickness. Prefer it over adding `flex(grow = 1f)` to a `SolidColor`, which can grow the line's width in a row.
+
+### Required Prop
+
+None.
+
+### Usage
+
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/widgets/WidgetsExamplesComponent.kt start=start_vertical_divider_example end=end_vertical_divider_example
+```
+
+### Import
+
+```kotlin
+import com.facebook.litho.kotlin.widget.VerticalDivider
+```
+
+<FbInternalOnly>
+
+<h3>BUCK Target</h3>
+
+```
+//fbandroid/libraries/components/litho-widget/src/main/kotlin/com/facebook/litho/kotlin/widget:widget
+```
+
+</FbInternalOnly>
 
 ## VerticalScroll
 
@@ -299,33 +242,8 @@ Wraps another component, allowing it to be vertically scrollable. It's analogous
 
 ### Usage
 
-<Tabs
-  groupId="widget"
-  defaultValue="kcomponent_widget"
-  values={[
-    {label: 'KComponent', value: 'kcomponent_widget'},
-    {label: 'Spec API', value: 'specapi_widget'},
-  ]}>
-  <TabItem value="kcomponent_widget">
-
-```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/widgets/WidgetsExamplesComponent.kt start=start_verticalscroll_example end=end_verticalscroll_example
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/widgets/WidgetsExamplesComponent.kt start=start_verticalscroll_example end=end_verticalscroll_example
 ```
-
-  </TabItem>
-  <TabItem value="specapi_widget">
-
-```java
-Component component =
-	  VerticalScroll.create(c)
-        .childComponent(myComponentToScroll)
-        .verticalFadingEdgeEnabled(true)
-        .fadingEdgeLengthDip(FADING_EDGE_LENGTH_DP)
-        .build();
-```
-
-  </TabItem>
-
-</Tabs>
 
 ## HorizontalScroll
 
@@ -337,34 +255,11 @@ Wraps another component, allowing it to be horizontally scrollable. It's analogo
 
 ### Usage
 
-<Tabs
-  groupId="widget"
-  defaultValue="kcomponent_widget"
-  values={[
-    {label: 'KComponent', value: 'kcomponent_widget'},
-    {label: 'Spec API', value: 'specapi_widget'},
-  ]}>
-  <TabItem value="kcomponent_widget">
-
-```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/widgets/WidgetsExamplesComponent.kt start=start_horizontalscroll_example end=end_horizontalscroll_example
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/widgets/WidgetsExamplesComponent.kt start=start_horizontalscroll_example end=end_horizontalscroll_example
 ```
-
-  </TabItem>
-  <TabItem value="specapi_widget">
-
-```java
-Component component =
-	  HorizontalScroll.create(c)
-        .contentProps(myComponentToScroll)
-        .build();
-```
-
-  </TabItem>
-
-</Tabs>
 
 ## Recycler
 
-`Recycler` is the equivalent of Android's `RecyclerView`. It's recommended to use [Sections](../sections/start.mdx) for efficient list rendering, which uses `Recycler` under the hood.
+`Recycler` is the equivalent of Android's `RecyclerView`. It's recommended to use [LazyList and LazyGrid](../lazycollections/lazycollections.mdx) for efficient list rendering, which use `Recycler` under the hood.
 
-To use the `Recycler` directly, see the [RecyclerCollectionComponent](../sections/recycler-collection-component.md) page.
+For legacy Sections-based lists, see [RecyclerCollectionComponent](../legacy-spec-api/sections/recycler-collection-component.md) in the Legacy Spec API section.

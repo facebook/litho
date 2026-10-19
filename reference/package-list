@@ -7,6 +7,7 @@ module:litho-core
 com.facebook.litho
 com.facebook.litho.accessibility
 com.facebook.litho.animated
+com.facebook.litho.animation
 com.facebook.litho.annotations
 com.facebook.litho.binders
 com.facebook.litho.config
@@ -18,9 +19,8 @@ com.facebook.litho.flexbox
 com.facebook.litho.graphics.drawscope
 com.facebook.litho.host
 com.facebook.litho.layout
-com.facebook.litho.layout.flexlayout
+com.facebook.litho.layout.flexbox
 com.facebook.litho.lifecycle
-com.facebook.litho.perfboost
 com.facebook.litho.state
 com.facebook.litho.stats
 com.facebook.litho.tools.firstdraw
@@ -32,16 +32,13 @@ com.facebook.litho.visibility
 com.facebook.litho.yoga
 module:litho-coroutines-kotlin
 com.facebook.litho
-module:litho-flexlayout
-com.facebook.flexlayout
-com.facebook.flexlayout.layoutoutput
-com.facebook.flexlayout.styles
+module:litho-permissions
+com.facebook.litho.permissions
 module:litho-testing
 com.facebook.litho
 com.facebook.litho.componentsfinder
 com.facebook.litho.config
 com.facebook.litho.testing
-com.facebook.litho.testing.api
 com.facebook.litho.testing.assertj
 com.facebook.litho.testing.eventhandler
 com.facebook.litho.testing.helper
@@ -62,6 +59,5 @@ com.facebook.litho.widget.collection
 com.facebook.widget.accessibility.delegates
 module:litho-widget-kotlin
 com.facebook.litho.kotlin.widget
-com.facebook.litho.sections.widget
 com.facebook.litho.widget.canvas
 com.facebook.litho.widget.collection

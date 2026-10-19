@@ -1,0 +1,76 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>compatSpring</title>
+<link href="../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../styles/style.css" rel="Stylesheet">
+<link href="../../styles/main.css" rel="Stylesheet">
+<link href="../../styles/prism.css" rel="Stylesheet">
+<link href="../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<script type="text/javascript" src="../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+<a class="library-name--link" href="../../index.html">
+                            Litho
+                    </a>            </div>
+            <div class="library-version">
+            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":litho-core:dokkaHtmlPartial/release">androidJvm</button>
+        </div>
+    </div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
+    </div>
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="member" id="content" pageids="litho-core::com.facebook.litho.animation//compatSpring/#/PointingToDeclaration//947585829">
+  <div class="breadcrumbs"><a href="../index.html">litho-core</a><span class="delimiter">/</span><a href="index.html">com.facebook.litho.animation</a><span class="delimiter">/</span><span class="current">compatSpring</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>compat</span><wbr><span><span>Spring</span></span></h1>
+  </div>
+  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="compat-spring.html">T</a><span class="token operator">&gt; </span><a href="compat-spring.html"><span class="token function">compatSpring</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-finite-animation-spec/index.html">FiniteAnimationSpec</a><span class="token operator">&lt;</span><a href="compat-spring.html">T</a><span class="token operator">&gt;</span></div><p class="paragraph">Equivalent of <code class="lang-kotlin">Transition.SPRING_WITH_OVERSHOOT</code>, the default <code class="lang-kotlin">Transition</code> animator. Keeps the existing motion of code moving off <code class="lang-kotlin">Transition</code>; prefer <a href="spring.html">spring</a> for new code.</p><h4 class="">See also</h4><div class="table"><div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="compat-spring.html"><span>compat</span><wbr><span><span>Spring</span></span></a></div></span></div><div></div></div></div></div><hr><div class="symbol monospace"><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="compat-spring.html">T</a><span class="token operator">&gt; </span><a href="compat-spring.html"><span class="token function">compatSpring</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">tension<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-double/index.html">Double</a><span class="token punctuation">, </span></span><span class="parameter ">friction<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-double/index.html">Double</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-finite-animation-spec/index.html">FiniteAnimationSpec</a><span class="token operator">&lt;</span><a href="compat-spring.html">T</a><span class="token operator">&gt;</span></div><p class="paragraph">Equivalent of <code class="lang-kotlin">Transition.springWithConfig(tension, friction)</code>. Keeps the existing motion of code moving off <code class="lang-kotlin">Transition</code>; prefer <a href="spring.html">spring</a> for new code.</p><p class="paragraph">Both engines solve the same unit-mass oscillator, <code class="lang-kotlin">x'' = -tension * x - friction * x'</code>, so the mapping to stiffness and damping ratio is exact. The motion is equivalent within tolerance rather than bit-identical: this runs the closed-form solver instead of the fixed-step integrator behind <code class="lang-kotlin">Transition</code>, and settles on slightly different thresholds.</p><p class="paragraph">Under a dropped frame the two differ. <code class="lang-kotlin">Transition</code> advances its spring by at most 64ms per frame, so after a long frame it falls behind real time; this spec evaluates the full elapsed time. A stateless spec cannot reproduce that cap, since it depends on how frames were spaced.</p><p class="paragraph"><a href="compat-spring.html">friction</a> must be positive: with no damping the spring never settles, which a finite spec cannot express.</p></div></div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2026 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

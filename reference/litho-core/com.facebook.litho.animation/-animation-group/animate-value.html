@@ -1,0 +1,76 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>animateValue</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+<a class="library-name--link" href="../../../index.html">
+                            Litho
+                    </a>            </div>
+            <div class="library-version">
+            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":litho-core:dokkaHtmlPartial/release">androidJvm</button>
+        </div>
+    </div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
+    </div>
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="member" id="content" pageids="litho-core::com.facebook.litho.animation/AnimationGroup/animateValue/#com.facebook.litho.animation.TypeConverter[TypeParam(bounds=[kotlin.Any?])]#kotlin.Function1[com.facebook.litho.animation.Segment[TypeParam(bounds=[kotlin.Any?])],com.facebook.litho.animation.FiniteAnimationSpec[TypeParam(bounds=[kotlin.Any?])]]#kotlin.String#kotlin.Function1[TypeParam(bounds=[kotlin.Any?]),TypeParam(bounds=[kotlin.Any?])]/PointingToDeclaration//947585829">
+  <div class="breadcrumbs"><a href="../../index.html">litho-core</a><span class="delimiter">/</span><a href="../index.html">com.facebook.litho.animation</a><span class="delimiter">/</span><a href="index.html">AnimationGroup</a><span class="delimiter">/</span><span class="current">animateValue</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>animate</span><wbr><span><span>Value</span></span></h1>
+  </div>
+  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="animate-value.html">T</a><span class="token operator">&gt; </span><a href="animate-value.html"><span class="token function">animateValue</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">typeConverter<span class="token operator">: </span><a href="../-type-converter/index.html">TypeConverter</a><span class="token operator">&lt;</span><a href="animate-value.html">T</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">transitionSpec<span class="token operator">: </span><a href="../-segment/index.html">Segment</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span><span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="../-finite-animation-spec/index.html">FiniteAnimationSpec</a><span class="token operator">&lt;</span><a href="animate-value.html">T</a><span class="token operator">&gt;</span><span class="token operator"> = </span>{ spring() }<span class="token punctuation">, </span></span><span class="parameter ">label<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator"> = </span><span class="token string">""</span><span class="token punctuation">, </span></span><span class="parameter ">targetValueByState<span class="token operator">: </span><span class="token punctuation">(</span><a href="index.html">S</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="animate-value.html">T</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../com.facebook.litho/-value/index.html">Value</a><span class="token operator">&lt;</span><a href="animate-value.html">T</a><span class="token operator">&gt;</span></div><p class="paragraph">Animates a value of type <a href="animate-value.html">T</a> as part of this transition using a custom <a href="../-type-converter/index.html">TypeConverter</a>.</p><p class="paragraph">This is the generic form used by <a href="animate-float.html">animateFloat</a>, <a href="animate-int.html">animateInt</a>, <a href="animate-color.html">animateColor</a>, and <a href="animate-dimen.html">animateDimen</a>. Use it directly when animating a custom type with your own <a href="../-type-converter/index.html">TypeConverter</a>.</p><p class="paragraph">The returned <a href="../../com.facebook.litho/-value/index.html">Value</a> is a stable slot handle: the underlying long-lived <a href="../-animated-value/index.html">AnimatedValue</a> is created during commit, not here, so this call performs no shared-state mutation and is safe under concurrent resolves.</p><span class="kdoc-tag"><h4 class="">Return</h4><p class="paragraph">A <a href="../../com.facebook.litho/-value/index.html">Value</a> containing the current animated value.</p></span><h4 class="">Parameters</h4><div class="table"><div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span>type</span><wbr><span><span>Converter</span></span></u></div></span></div><div><div class="title"><p class="paragraph">Converts between <a href="animate-value.html">T</a> and <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html">Float</a> for animation computation.</p></div></div></div></div><div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span>transition</span><wbr><span><span>Spec</span></span></u></div></span></div><div><div class="title"><p class="paragraph">Provides the animation spec. Defaults to <a href="../spring.html">spring</a>.</p></div></div></div></div><div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span><span>label</span></span></u></div></span></div><div><div class="title"><p class="paragraph">Optional label for this animation, used for tracing attribution.</p></div></div></div></div><div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span>target</span><wbr><span>Value</span><wbr><span>By</span><wbr><span><span>State</span></span></u></div></span></div><div><div class="title"><p class="paragraph">Maps the target state to the target value.</p></div></div></div></div></div></div></div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2026 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

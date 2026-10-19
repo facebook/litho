@@ -62,7 +62,7 @@
   <div class="breadcrumbs"><a href="../../index.html">litho-core</a><span class="delimiter">/</span><a href="../index.html">com.facebook.litho</a><span class="delimiter">/</span><span class="current">KStateContainer</span></div>
   <div class="cover ">
     <h1 class="cover"><span>KState</span><wbr><span><span>Container</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">KStateContainer</a> : <a href="../-state-container/index.html">StateContainer</a></div><p class="paragraph">The StateContainer implementation for Kotlin components. It tracks all the state defined by useState calls for the same component. See KState for how this is being used. This is a purely immutable class and it exposes utilities to create a new instance with either a new piece of state or by changing the value at a given index</p></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">KStateContainer</a> : <a href="../-state-container/index.html">StateContainer</a></div><p class="paragraph">The StateContainer implementation for Kotlin components. Tracks all state defined by useState calls for the same component (see KState for usage). Immutable by default: every copy-on-write mutation returns a new instance with the prior entries copied and one entry added or replaced. The one exception is the transient render-owned fork (<a href="mutable-fork-with.html">mutableForkWith</a> / <a href="mutate-in-place.html">mutateInPlace</a>): a render forks a single mutable copy of its component's container and then mutates that copy in place for the rest of the pass, tracked by <span data-unresolved-link="com.facebook.litho/ComponentScope/ownedStateContainer/#/PointingToDeclaration/">ComponentScope.ownedStateContainer</span>. Committed/shared containers are never mutated in place - a subsequent render forks them.</p><p class="paragraph">Each entry carries its <a href="../-hook-key/index.html">HookKey</a>; lookup is an O(N) linear scan over the list using <a href="../-hook-key/index.html">HookKey</a> equality via <a href="get-by-hook-key.html">getByHookKey</a>/<a href="has-hook-key.html">hasHookKey</a>/<a href="copy-and-mutate-by-hook-key.html">copyAndMutateByHookKey</a>. Interning lets equality short-circuit on reference identity, so the scan is essentially a pointer compare.</p></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button><button class="section-tab" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION,EXTENSION_PROPERTY,EXTENSION_FUNCTION">Members &amp; Extensions</button></div>
@@ -152,17 +152,107 @@
               </div>
             </div>
           </div>
-<a data-name="1019264459%2FFunctions%2F947585829" anchor-label="copyAndMutate" id="1019264459%2FFunctions%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
+<a data-name="1180869945%2FFunctions%2F947585829" anchor-label="copyAndMutateByHookKey" id="1180869945%2FFunctions%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
           <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="copy-and-mutate.html"><span>copy</span><wbr><span>And</span><wbr><span><span>Mutate</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1019264459%2FFunctions%2F947585829"></span>
+                  <div><a href="copy-and-mutate-by-hook-key.html"><span>copy</span><wbr><span>And</span><wbr><span>Mutate</span><wbr><span>By</span><wbr><span>Hook</span><wbr><span><span>Key</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1180869945%2FFunctions%2F947585829"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="copy-and-mutate.html"><span class="token function">copyAndMutate</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">index<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">newValue<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">KStateContainer</a></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="copy-and-mutate.html"><span class="token function">copyAndMutate</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">index<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">newValue<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">deps<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-array/index.html">Array</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">KStateContainer</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="copy-and-mutate-by-hook-key.html"><span class="token function">copyAndMutateByHookKey</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">hookKey<span class="token operator">: </span><a href="../-hook-key/index.html">HookKey</a><span class="token punctuation">, </span></span><span class="parameter ">newValue<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">KStateContainer</a></div><div class="brief "><p class="paragraph">Add or replace the entry for <a href="copy-and-mutate-by-hook-key.html">hookKey</a>, preserving its existing <a href="../-cached-value/deps.html">CachedValue.deps</a> when one is already present (and using NoDeps otherwise).</p></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="copy-and-mutate-by-hook-key.html"><span class="token function">copyAndMutateByHookKey</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">hookKey<span class="token operator">: </span><a href="../-hook-key/index.html">HookKey</a><span class="token punctuation">, </span></span><span class="parameter ">newValue<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">deps<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-array/index.html">Array</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">KStateContainer</a></div><div class="brief "><p class="paragraph">Add or replace the entry for <a href="copy-and-mutate-by-hook-key.html">hookKey</a>; <a href="copy-and-mutate-by-hook-key.html">deps</a> overwrites any previously stored deps.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-399699235%2FFunctions%2F947585829" anchor-label="getByHookKey" id="-399699235%2FFunctions%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-by-hook-key.html"><span>get</span><wbr><span>By</span><wbr><span>Hook</span><wbr><span><span>Key</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-399699235%2FFunctions%2F947585829"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="get-by-hook-key.html"><span class="token function">getByHookKey</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">hookKey<span class="token operator">: </span><a href="../-hook-key/index.html">HookKey</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-cached-value/index.html">CachedValue</a><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="936726762%2FFunctions%2F947585829" anchor-label="hasHookKey" id="936726762%2FFunctions%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="has-hook-key.html"><span>has</span><wbr><span>Hook</span><wbr><span><span>Key</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="936726762%2FFunctions%2F947585829"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="has-hook-key.html"><span class="token function">hasHookKey</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">hookKey<span class="token operator">: </span><a href="../-hook-key/index.html">HookKey</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="103464097%2FFunctions%2F947585829" anchor-label="mutableForkWith" id="103464097%2FFunctions%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="mutable-fork-with.html"><span>mutable</span><wbr><span>Fork</span><wbr><span><span>With</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="103464097%2FFunctions%2F947585829"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="mutable-fork-with.html"><span class="token function">mutableForkWith</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">hookKey<span class="token operator">: </span><a href="../-hook-key/index.html">HookKey</a><span class="token punctuation">, </span></span><span class="parameter ">newValue<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">deps<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-array/index.html">Array</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">KStateContainer</a></div><div class="brief "><p class="paragraph">Fork a single mutable copy of this container with <a href="mutable-fork-with.html">hookKey</a> added or replaced. The returned container's backing is a live <a href="https://docs.oracle.com/javase/8/docs/api/java/util/ArrayList.html">ArrayList</a> (not wrapped), so the owning render can keep mutating it in place via <a href="mutate-in-place.html">mutateInPlace</a> for the rest of the pass. The caller (KState) records the result as <span data-unresolved-link="com.facebook.litho/ComponentScope/ownedStateContainer/#/PointingToDeclaration/">ComponentScope.ownedStateContainer</span> so subsequent mutations this pass route to <a href="mutate-in-place.html">mutateInPlace</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1160387729%2FFunctions%2F947585829" anchor-label="mutateInPlace" id="-1160387729%2FFunctions%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="mutate-in-place.html"><span>mutate</span><wbr><span>In</span><wbr><span><span>Place</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1160387729%2FFunctions%2F947585829"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="mutate-in-place.html"><span class="token function">mutateInPlace</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">hookKey<span class="token operator">: </span><a href="../-hook-key/index.html">HookKey</a><span class="token punctuation">, </span></span><span class="parameter ">newValue<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">deps<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-array/index.html">Array</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">KStateContainer</a></div><div class="brief "><p class="paragraph">Mutate this container in place. MUST ONLY be done by a scope that owns this container for its current render pass (tracked by <span data-unresolved-link="com.facebook.litho/ComponentScope/ownedStateContainer/#/PointingToDeclaration/">ComponentScope.ownedStateContainer</span>); the caller guarantees that with an identity check.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1486494717%2FFunctions%2F947585829" anchor-label="retainByHookKeys" id="-1486494717%2FFunctions%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="retain-by-hook-keys.html"><span>retain</span><wbr><span>By</span><wbr><span>Hook</span><wbr><span><span>Keys</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1486494717%2FFunctions%2F947585829"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="retain-by-hook-keys.html"><span class="token function">retainByHookKeys</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">live<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../-hook-key/index.html">HookKey</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">KStateContainer</a></div><div class="brief "><p class="paragraph">Return a container with only the entries whose <a href="../-cached-value/hook-key.html">CachedValue.hookKey</a> is in <a href="retain-by-hook-keys.html">live</a> (null-hookKey index entries are always kept). Returns <code class="lang-kotlin">this</code> when nothing is dropped.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="703443857%2FFunctions%2F947585829" anchor-label="toString" id="703443857%2FFunctions%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="to-string.html"><span>to</span><wbr><span><span>String</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="703443857%2FFunctions%2F947585829"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="to-string.html"><span class="token function">toString</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a></div></div></div>
                 </div>
               </div>
             </div>
@@ -173,7 +263,7 @@
   </div>
 </div>
       <div class="footer">
-        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2025 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2026 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
       </div>
             </div>
         </div>

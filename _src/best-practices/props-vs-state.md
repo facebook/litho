@@ -1,11 +1,34 @@
 ---
 id: props-vs-state
 title: Props vs. State
+keywords:
+    - props vs state
+    - when to use props
+    - when to use state
+    - state management
+    - data flow
+    - top-down data
+    - hoisting state
+api_category: best-practices
+related_docs: [immutability, use-state, hoisting-state]
+api_names: [useState, State]
 ---
 
-Litho components have two types of data model: [Props](../codegen/passing-data-to-components/props.md) and [State](../mainconcepts/coordinate-state-actions/hoisting-state.md).
+Litho components have two types of data model: [Props](../components-basics.mdx#props) and [State](../best-practices/hoisting-state.md).
 
 This page helps explains the difference between props and state, to assist in the decision of when to use them.
+
+## Decision Guide
+
+| Scenario | Use Props | Use State |
+|----------|-----------|-----------|
+| Data passed from parent | ✅ | ❌ |
+| Data from API call/network | ❌ | ✅ |
+| User input (text, clicks, toggles) | ❌ | ✅ |
+| Configuration/settings | ✅ | ❌ |
+| Derived/computed value | ✅ (compute inline) | ❌ |
+| Shared between siblings | ❌ (hoist to parent) | ✅ (in parent) |
+| Animation state | ❌ | ✅ |
 
 ## Props
 
@@ -35,3 +58,10 @@ Try to keep the use of state for components to a minimum, and data flow top-down
 ### Example Scenario
 
 Consider the scenario of a list of radio buttons where only one can be selected at a time.  In such a scenario, a state would be used for specifying which item is selected in the parent and information would be propagated top-down to the children through props.
+
+## See Also
+
+- [useState](../state-and-side-effects/use-state.mdx) - State management hook
+- [Immutability](immutability.md) - Keeping props and state immutable
+- [Hoisting State](../best-practices/hoisting-state.md) - When to lift state to parent components
+- [Communicating Between Components](../best-practices/communicating-between-components.md) - Patterns for component communication

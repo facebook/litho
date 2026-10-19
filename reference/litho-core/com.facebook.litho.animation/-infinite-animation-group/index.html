@@ -1,0 +1,160 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>InfiniteAnimationGroup</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+<a class="library-name--link" href="../../../index.html">
+                            Litho
+                    </a>            </div>
+            <div class="library-version">
+            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":litho-core:dokkaHtmlPartial/release">androidJvm</button>
+        </div>
+    </div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
+    </div>
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="litho-core::com.facebook.litho.animation/InfiniteAnimationGroup///PointingToDeclaration//947585829">
+  <div class="breadcrumbs"><a href="../../index.html">litho-core</a><span class="delimiter">/</span><a href="../index.html">com.facebook.litho.animation</a><span class="delimiter">/</span><span class="current">InfiniteAnimationGroup</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Infinite</span><wbr><span>Animation</span><wbr><span><span>Group</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="../../com.facebook.litho.annotations/-experimental-litho-api/index.html"><span class="token annotation builtin">ExperimentalLithoApi</span></a></div></div><span class="token keyword">class </span><a href="index.html">InfiniteAnimationGroup</a></div><p class="paragraph">The per-render handle returned by <a href="../use-infinite-animation-group.html">useInfiniteAnimationGroup</a> and the public surface for declaring a container's loops (<a href="animate-float.html">animateFloat</a>, <a href="animate-dimen.html">animateDimen</a>, …).</p><p class="paragraph">Each call to <a href="../use-infinite-animation-group.html">useInfiniteAnimationGroup</a> creates a fresh <code class="lang-kotlin">InfiniteAnimation</code>, isolating per-render bookkeeping (the slot counter, pending descriptors) from the shared <a href="../../../litho-core/com.facebook.litho.animation/-infinite-animation-group-state/index.html">InfiniteAnimationGroupState</a>. Declaring a loop allocates no <a href="../-animated-value/index.html">AnimatedValue</a> and mutates nothing: it records an <a href="../../../litho-core/com.facebook.litho.animation/-infinite-slot-descriptor/index.html">InfiniteSlotDescriptor</a> and returns a stable <a href="../../com.facebook.litho/-value/index.html">Value</a> handle.</p></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="1652838940%2FFunctions%2F947585829" anchor-label="animateColor" id="1652838940%2FFunctions%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="animate-color.html"><span>animate</span><wbr><span><span>Color</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1652838940%2FFunctions%2F947585829"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="animate-color.html"><span class="token function">animateColor</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">from<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore.graphics/Color///PointingToDeclaration/">Color</span><span class="token punctuation">, </span></span><span class="parameter ">to<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore.graphics/Color///PointingToDeclaration/">Color</span><span class="token punctuation">, </span></span><span class="parameter ">animation<span class="token operator">: </span><a href="../-duration-based-animation-spec/index.html">DurationBasedAnimationSpec</a><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.rendercore.graphics/Color///PointingToDeclaration/">Color</span><span class="token operator">&gt;</span><span class="token operator"> = </span>tween()<span class="token punctuation">, </span></span><span class="parameter ">repeatMode<span class="token operator">: </span><a href="../-repeat-mode/index.html">RepeatMode</a><span class="token operator"> = </span>RepeatMode.Reverse<span class="token punctuation">, </span></span><span class="parameter ">initialStartOffset<span class="token operator">: </span><a href="../-start-offset/index.html">StartOffset</a><span class="token operator"> = </span>StartOffset(0)<span class="token punctuation">, </span></span><span class="parameter ">label<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator"> = </span><span class="token string">"color"</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../com.facebook.litho/-value/index.html">Value</a><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.rendercore.graphics/Color///PointingToDeclaration/">Color</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Loops a <span data-unresolved-link="com.facebook.rendercore.graphics/Color///PointingToDeclaration/">Color</span> (per-channel) between <a href="animate-color.html">from</a> and <a href="animate-color.html">to</a>. See <a href="animate-float.html">animateFloat</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="781935265%2FFunctions%2F947585829" anchor-label="animateDimen" id="781935265%2FFunctions%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="animate-dimen.html"><span>animate</span><wbr><span><span>Dimen</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="781935265%2FFunctions%2F947585829"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="animate-dimen.html"><span class="token function">animateDimen</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">from<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token punctuation">, </span></span><span class="parameter ">to<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token punctuation">, </span></span><span class="parameter ">animation<span class="token operator">: </span><a href="../-duration-based-animation-spec/index.html">DurationBasedAnimationSpec</a><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">&gt;</span><span class="token operator"> = </span>tween()<span class="token punctuation">, </span></span><span class="parameter ">repeatMode<span class="token operator">: </span><a href="../-repeat-mode/index.html">RepeatMode</a><span class="token operator"> = </span>RepeatMode.Reverse<span class="token punctuation">, </span></span><span class="parameter ">initialStartOffset<span class="token operator">: </span><a href="../-start-offset/index.html">StartOffset</a><span class="token operator"> = </span>StartOffset(0)<span class="token punctuation">, </span></span><span class="parameter ">label<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator"> = </span><span class="token string">"dimen"</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../com.facebook.litho/-value/index.html">Value</a><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Loops a <span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span> between <a href="animate-dimen.html">from</a> and <a href="animate-dimen.html">to</a>. See <a href="animate-float.html">animateFloat</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1790624110%2FFunctions%2F947585829" anchor-label="animateFloat" id="-1790624110%2FFunctions%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="animate-float.html"><span>animate</span><wbr><span><span>Float</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1790624110%2FFunctions%2F947585829"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="animate-float.html"><span class="token function">animateFloat</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">from<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">to<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">animation<span class="token operator">: </span><a href="../-duration-based-animation-spec/index.html">DurationBasedAnimationSpec</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token operator">&gt;</span><span class="token operator"> = </span>tween()<span class="token punctuation">, </span></span><span class="parameter ">repeatMode<span class="token operator">: </span><a href="../-repeat-mode/index.html">RepeatMode</a><span class="token operator"> = </span>RepeatMode.Reverse<span class="token punctuation">, </span></span><span class="parameter ">initialStartOffset<span class="token operator">: </span><a href="../-start-offset/index.html">StartOffset</a><span class="token operator"> = </span>StartOffset(0)<span class="token punctuation">, </span></span><span class="parameter ">label<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator"> = </span><span class="token string">"float"</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../com.facebook.litho/-value/index.html">Value</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Loops a <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html">Float</a> between <a href="animate-float.html">from</a> and <a href="animate-float.html">to</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="776549964%2FFunctions%2F947585829" anchor-label="animateInt" id="776549964%2FFunctions%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="animate-int.html"><span>animate</span><wbr><span><span>Int</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="776549964%2FFunctions%2F947585829"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="animate-int.html"><span class="token function">animateInt</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">from<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">to<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">animation<span class="token operator">: </span><a href="../-duration-based-animation-spec/index.html">DurationBasedAnimationSpec</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator">&gt;</span><span class="token operator"> = </span>tween()<span class="token punctuation">, </span></span><span class="parameter ">repeatMode<span class="token operator">: </span><a href="../-repeat-mode/index.html">RepeatMode</a><span class="token operator"> = </span>RepeatMode.Reverse<span class="token punctuation">, </span></span><span class="parameter ">initialStartOffset<span class="token operator">: </span><a href="../-start-offset/index.html">StartOffset</a><span class="token operator"> = </span>StartOffset(0)<span class="token punctuation">, </span></span><span class="parameter ">label<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator"> = </span><span class="token string">"int"</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../com.facebook.litho/-value/index.html">Value</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Loops an <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a> between <a href="animate-int.html">from</a> and <a href="animate-int.html">to</a>. See <a href="animate-float.html">animateFloat</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="717122990%2FFunctions%2F947585829" anchor-label="animateValue" id="717122990%2FFunctions%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="animate-value.html"><span>animate</span><wbr><span><span>Value</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="717122990%2FFunctions%2F947585829"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="animate-value.html">T</a><span class="token operator">&gt; </span><a href="animate-value.html"><span class="token function">animateValue</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">from<span class="token operator">: </span><a href="animate-value.html">T</a><span class="token punctuation">, </span></span><span class="parameter ">to<span class="token operator">: </span><a href="animate-value.html">T</a><span class="token punctuation">, </span></span><span class="parameter ">typeConverter<span class="token operator">: </span><a href="../-type-converter/index.html">TypeConverter</a><span class="token operator">&lt;</span><a href="animate-value.html">T</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">animation<span class="token operator">: </span><a href="../-duration-based-animation-spec/index.html">DurationBasedAnimationSpec</a><span class="token operator">&lt;</span><a href="animate-value.html">T</a><span class="token operator">&gt;</span><span class="token operator"> = </span>tween()<span class="token punctuation">, </span></span><span class="parameter ">repeatMode<span class="token operator">: </span><a href="../-repeat-mode/index.html">RepeatMode</a><span class="token operator"> = </span>RepeatMode.Reverse<span class="token punctuation">, </span></span><span class="parameter ">initialStartOffset<span class="token operator">: </span><a href="../-start-offset/index.html">StartOffset</a><span class="token operator"> = </span>StartOffset(0)<span class="token punctuation">, </span></span><span class="parameter ">label<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator"> = </span><span class="token string">""</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../com.facebook.litho/-value/index.html">Value</a><span class="token operator">&lt;</span><a href="animate-value.html">T</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Loops a value of type <a href="animate-value.html">T</a> between <a href="animate-value.html">from</a> and <a href="animate-value.html">to</a> using a custom <a href="../-type-converter/index.html">TypeConverter</a>. The generic form behind <a href="animate-float.html">animateFloat</a> / <a href="animate-int.html">animateInt</a> / <a href="animate-color.html">animateColor</a> / <a href="animate-dimen.html">animateDimen</a>. Allocates no <a href="../-animated-value/index.html">AnimatedValue</a> — it records a descriptor and returns a stable slot handle.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2026 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

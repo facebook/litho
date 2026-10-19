@@ -1,0 +1,83 @@
+---
+id: use-callback
+title: Stable Callbacks with Latest State
+keywords:
+    - useCallback
+    - stable callback
+    - callback memoization
+    - lambda equality
+    - referential equality
+    - performance
+    - child re-render
+api_category: hooks
+related_docs: [use-state, use-effect, use-ref]
+api_names: [useCallback]
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import VersionedCodeBlock from '@theme/VersionedCodeBlock';
+
+:::info API Quick Reference
+**Signature:** `fun <T> ComponentScope.useCallback(callback: T): T`
+
+| Feature | Description |
+|---------|-------------|
+| **Referential Equality** | Returns the same function instance across renders |
+| **Latest State** | Callback always captures latest props/state when invoked |
+| **Main Thread Only** | Only use with main thread events (e.g., onClick) |
+
+**Use Case:** Give capturing UI-thread callbacks stable identity when attaching them to a `Style` or
+passing them to children, while ensuring the callback uses the latest props and state.
+
+**Import:**
+```kotlin
+import com.facebook.litho.useCallback
+```
+:::
+
+`useCallback` is a hook that allows a parent to pass a child component a callback which:
+- maintains referential equality across multiple layout passes
+- is updated to have the latest parent props and state, even if the child doesn't re-render.
+
+## Match the Consumer Signature
+
+Declare the callback with the exact signature its consumer expects and pass it by name:
+
+```kotlin
+val onClick = useCallback<ClickEvent, Unit> { count.update { it + 1 } }
+Text(text = "Count: ${count.value}", style = Style.onClick(action = onClick))
+```
+
+Do not re-wrap it as `Style.onClick { onClick(it) }`; that creates a new lambda each render and
+discards the stable identity. If a callback prop already has the consumer's signature, pass that prop
+directly. A captureless lambda is already a stable Kotlin singleton and does not need `useCallback`.
+
+## Example
+
+In the following code, we have a parent component which renders a list of children via a Collection.
+Let's say we also want this parent to implement multi-select behavior, meaning on click, a row can be marked as selected/de-selected.
+We will store the state of which components are currently selected in the parent, and the parent will pass a lambda to the child to allow that state to be updated when a row is clicked.
+
+When the first row is clicked, it will update the state in the parent via an onClick lambda. At this point, we ideally want to re-render only that row since that's the only row whose UI will be updated, i.e. to a selected state.
+However, that means the rest of the children will still have that original onClick lambda set on them: if that lambda captured props/state, then invoking it will operate on stale props/state! In this case, that means selecting a second row will de-select the first one which is incorrect.
+
+An alternative is to always re-render all children whenever the list of selected items changes.
+This is effective in that it will make sure all children have a lambda capturing the latest props/state, however it's inefficient since it re-renders all children even though their UI doesn't appear different.
+
+`useCallback` tries to give the best of both worlds: it doesn't cause children to re-render, and
+also gives a mechanism for them to invoke a lambda that has captured the latest props and state
+
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/collection/SelectionCollectionKComponent.kt start=start_example end=end_example
+```
+
+:::note
+The callback that will be invoked by the function returned by `useCallback` is updated when a new layout has been committed **on the main thread**. This means that `useCallback` should only be used with events that will also be invoked from the main thread, e.g. onClick.
+:::
+
+## See Also
+
+- [Introduction to Hooks](hooks-intro.mdx) - Hook fundamentals and rules
+- [useState](use-state.mdx) - State management basics
+- [useRef](use-ref.mdx) - Mutable references without re-renders
+- [useEffect](use-effect.mdx) - Side effects and lifecycle

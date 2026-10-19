@@ -1,0 +1,80 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>Hook</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+<a class="library-name--link" href="../../../index.html">
+                            Litho
+                    </a>            </div>
+            <div class="library-version">
+            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":litho-annotations:dokkaHtmlPartial/main">jvm</button>
+        </div>
+    </div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
+    </div>
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="litho-annotations::com.facebook.litho.annotations/Hook///PointingToDeclaration//-246487483">
+  <div class="breadcrumbs"><a href="../../index.html">litho-annotations</a><span class="delimiter">/</span><a href="../index.html">com.facebook.litho.annotations</a><span class="delimiter">/</span><span class="current">Hook</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span><span>Hook</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-annotations:dokkaHtmlPartial/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.annotation/-target/index.html"><span class="token annotation builtin">Target</span></a><span class="token punctuation">(</span><span>allowedTargets<span class="token operator"> = </span><span class="token punctuation">[</span><span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.annotation/-annotation-target/-f-u-n-c-t-i-o-n/index.html">AnnotationTarget.FUNCTION</a></span><wbr><span class="token punctuation">]</span></span><wbr><span class="token punctuation">)</span></div></div><span class="token keyword">annotation class </span><a href="index.html">Hook</a></div><p class="paragraph">Marker for the Litho hooks.</p><p class="paragraph">Carrying this annotation is what makes a function a hook, and it drives both hook rules: <code class="lang-kotlin">KComponentHookCallsite</code> requires the call to come from <code class="lang-kotlin">render()</code> or another <code class="lang-kotlin">@Hook</code> function, and <code class="lang-kotlin">KComponentHookInDeferredLambda</code> requires it to run synchronously during render. Neither rule restricts control flow — the compiler plugin gives each call site a structural identity, so hooks may be called in conditions, loops, and after early returns. Two consequences are worth knowing: a hook's state lives exactly as long as the hook keeps being called, so a hook that stops running loses its state and starts from its initial value when it runs again; and repeated invocations of one call site are positional unless wrapped in <code class="lang-kotlin">withNewScope</code> with a stable product key. See the Hooks Overview doc.</p><p class="paragraph">Calling a hook requires opting in, and the only supported way to do that is the <code class="lang-kotlin">-opt-in</code> argument that <code class="lang-kotlin">litho_hook_identity_decorator</code> emits alongside the Litho compiler plugin. A module that calls a hook from an un-annotated function without the plugin therefore fails to compile instead of throwing on its first render — a compiler plugin cannot detect its own absence, so the always-present annotation has to carry the requirement.</p><p class="paragraph">Never hand-write the opt-in. <code class="lang-kotlin">@OptIn(Hook::class)</code> or a manual <code class="lang-kotlin">-opt-in</code> argument silences the requirement without adding the plugin, which is precisely the state this marker exists to prevent. Both are what kotlinc suggests when the requirement fires, which is why message spells out the real fix — the diagnostic is the only place the reader is looking.</p></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"></div>
+    <div class="tabs-section-body"></div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2026 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

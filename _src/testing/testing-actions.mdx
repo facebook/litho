@@ -1,0 +1,107 @@
+---
+id: testing-actions
+title: Interactions
+keywords:
+    - test interactions
+    - click test
+    - state update test
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import VersionedCodeBlock from '@theme/VersionedCodeBlock';
+
+An `Interaction` is defined as any type of action that a user can perform on `Components`. A good example is touching or clicking a `Button`.
+
+## `act{InteractionsScope.() -> Unit}`
+
+In `Litho`, the state of the `Components` is updated asynchronously, off the Main Thread. Once the background operations are finished, they are posted to the Main Thread to update the `Component`.
+
+During tests, it's important to ensure that everything is in sync in the Main Thread and the Background Thread, as in a real-life use case. This is the role of the `act{}` function, which removes the responsibility to use the Loopers and manage the thread synchronisation, as shown in the following snippet:
+
+```kotlin file=litho-it/src/test/com/facebook/litho/examples/LithoTestRuleExampleTest.kt start=act_example_start end=act_example_end
+```
+
+:::note
+Only one of the defined interactions from `InteractionsScope` needs to be called, Litho takes care of the rest.
+:::
+
+The following interactions are exposed via `act()`:
+
+* `clickOnText`
+* `clickOnTag`
+* `clickOnContentDescription`
+* `clickOnRootView`
+
+Interactions can be chained to invoke multiples in a given order:
+
+```kotlin
+import com.facebook.litho.testing.testrunner.LithoTestRunner
+
+ lithoViewRule
+        .act { clickOnText("Menu") }
+        .act { clickOnText("File") }
+        .act { clickOnText("New") }
+        .act { clickOnText("New Project...") }
+```
+
+## `idle()`
+
+Use `act()` for events that trigger async updates (such as `clicks`). Otherwise, there are sometimes async events triggered by layout (for example visibility events, or when the state is immediately updated in a render call) that can be manually waited for to finish by calling: `idle()`.
+
+For example, it may be needed if a component defines a visibility event that triggers an async state update. In such a case, `idle()` should be called after layout to make sure the update is reflected in the UI before making test assertions:
+
+```kotlin file=litho-it/src/test/com/facebook/litho/examples/LithoTestRuleExampleTest.kt start=idle_component_start end=idle_component_end
+```
+
+## Interactions with LithoTestRule
+
+### How to test a click action
+
+Four types of 'click' are supported:
+
+* `clickOnText`
+* `clickOnTag`
+* `clickOnContentDescription`
+* `clickOnRootView`
+
+#### The TestComponent
+
+To illustrate how to test a click action, the following `TestComponent` shows/hides the Text after the click action is performed on a `Row`:
+
+```kotlin file=litho-it/src/test/com/facebook/litho/examples/LithoTestRuleExampleTest.kt start=component_for_action_start end=component_for_action_end
+```
+
+#### Testing the TestComponent for a click action
+
+The test case performs three steps:
+
+1. Confirm that the `Component` is not being rendered if there is no click on the `Row`.
+   * In order to do this, find the `Component` based on the Text or its Class by using either: `findViewWithTextOrNull(String)` or `findComponent(Class<out Component?>)` and assert that it's null.
+2. Perform an action on the `LithoView` with the help of `LithoTestRule.act{}`.
+   * Clicking on the content description of the row triggers the state update.
+3. Confirm that the `Component` is being rendered and is not null.
+   * Any of the available methods can be used to find the `Component`.
+
+This test case is satisfied with the assertions shown in the following snippet:
+
+```kotlin file=litho-it/src/test/com/facebook/litho/examples/LithoTestRuleExampleTest.kt start=test_interaction_start end=test_interaction_end
+```
+
+### How to test `VisiblityEvent`
+
+In order to test `VisiblityEvent` instead of using `LithoTestRule.render(Component)`, separate the methods that are being called under the render call.
+
+This enables the state of the component to be checked before and after the visibility event is triggered:
+
+```kotlin file=litho-it/src/test/com/facebook/litho/examples/LithoTestRuleExampleTest.kt start=visibility_test_start end=visibility_test_end
+```
+
+:::note
+If there is any background work happening in an `onVisible` call, remember to call `idle()` after `layout()`.
+:::
+
+### How to test State Update
+
+If a state update needs to be tested, the best thing to do is to trigger the event that causes the state update, as the state of the `Component` is not being exposed.
+Have another look at the [TestComponent](#the-testcomponent) snippet, in the `clicking` section, where the State Update is triggered by the `Click Action`.

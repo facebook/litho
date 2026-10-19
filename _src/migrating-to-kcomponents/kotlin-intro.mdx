@@ -1,0 +1,63 @@
+---
+id: kotlin-intro
+title: Introduction and Setup
+keywords:
+    - litho
+    - litho kotlin
+    - kotlin litho
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import VersionedCodeBlock from '@theme/VersionedCodeBlock';
+import {FbInternalOnly, OssOnly} from 'docusaurus-plugin-internaldocs-fb/internal';
+
+## Introduction
+
+The 'Migrating to the Kotlin API' section of Litho docs is aimed at developers already familiar with the old Spec API and Litho concepts. Within its pages comparisons are made between the use of the Spec API and the Kotlin API.
+
+Before continuing, consider the following options:
+
+* If you aren't familiar with Litho, start with the [Tutorial](../tutorial/overview.md) pages then return here later.
+* If you're new to the Litho Kotlin API, start with [KComponent and Props](kotlin-api-basics.mdx).
+* If you just want a reference comparing features in the Spec API to their equivalents in the Kotlin API, then you'll find the [Cheatsheet](kotlin-api-cheatsheet.mdx) useful.
+
+## Setup - Adding Dependencies
+
+<OssOnly>
+
+Litho is published to Maven Central. Add the dependencies to your module's `build.gradle`:
+
+<VersionedCodeBlock language="groovy" code={`
+dependencies {
+  implementation 'com.facebook.litho:litho-core:{{site.lithoVersion}}'
+  implementation 'com.facebook.litho:litho-widget-kotlin:{{site.lithoVersion}}'
+}
+`} />
+
+From Litho 0.51.0, Kotlin code that calls Litho hooks also has to be built with the Litho Gradle plugin. Apply it with the same version as the Litho dependencies, and add `mavenCentral()` to `pluginManagement.repositories` in `settings.gradle`:
+
+```groovy
+plugins {
+  id 'com.facebook.litho' version '<Litho version>'
+}
+```
+
+</OssOnly>
+
+<FbInternalOnly>
+
+To use the Litho Kotlin API, you'll need to add the following dependencies into your BUCK file:
+
+```python title="BUCK"
+deps = [
+    "//fbandroid/libraries/components/litho-core/src/main/java/com/facebook/litho:litho",
+    "//fbandroid/libraries/components/litho-widget/src/main/kotlin/com/facebook/litho/kotlin/widget:widget", # for widgets
+],
+```
+
+:::note
+If you're getting an "unresolved supertypes: com.facebook.litho.KComponent" or "incompatible types: com.facebook.&lt;Your new KComponent&gt; cannot be converted to com.facebook.litho.Component" error, be sure to also add the `litho_core` dependency in the BUCK file for the module that is using the Kotlin component.
+:::
+
+</FbInternalOnly>

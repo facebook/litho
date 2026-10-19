@@ -1,0 +1,31 @@
+---
+id: event-handling
+title: Event Handling
+---
+
+import VersionedCodeBlock from '@theme/VersionedCodeBlock';
+
+The Kotlin API provides a streamlined approach to event handling using lambdas:
+
+1. [Event handlers in common props](#event-handlers-in-common-props) - event handlers are configured via `Style` using lambdas.
+2. [Accepting custom event handlers](#accepting-custom-event-handlers) - custom events use lambdas passed as props.
+
+Each of these scenarios is detailed in the following sections.
+
+## Supplying event handlers
+
+### Event handlers in common props
+
+Event handlers for common interactions (such as clicks) are provided via `Style`.
+
+`Style` properties accept [lambdas](https://kotlinlang.org/docs/lambdas.html) to handle user interactions.
+
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/documentation/EventComponent.kt start=start_example end=end_example
+```
+
+## Accepting custom event handlers
+
+In the Kotlin API, custom event handlers are implemented by accepting a lambda as a prop. The lambda is invoked when the event occurs:
+
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/documentation/ClickEventComponent.kt start=start_example end=end_example
+```
