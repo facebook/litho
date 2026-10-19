@@ -333,11 +333,7 @@ object Resolver {
     }
 
     if (LithoDebugConfigurations.isDebugModeEnabled) {
-      DebugComponent.applyOverrides(
-          c,
-          component,
-          c.globalKey.toString(),
-      )
+      DebugComponent.applyOverrides(c, component, c.globalKey)
     }
     return c
   }

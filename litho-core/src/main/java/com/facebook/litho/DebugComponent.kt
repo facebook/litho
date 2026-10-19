@@ -484,8 +484,11 @@ private constructor(
         "${treeId?: "notree"}:${globalKey}"
 
     @JvmStatic
-    fun applyOverrides(context: ComponentContext, component: Component, componentKey: String) {
-      val key = generateGlobalKey(context, componentKey)
+    fun applyOverrides(context: ComponentContext, component: Component, componentKey: GlobalKey) {
+      if (overriders.isEmpty()) {
+        return
+      }
+      val key = generateGlobalKey(context, componentKey.toString())
       val overrider = overriders[key]
       if (overrider != null) {
         overrider.applyComponentOverrides(key, component)
@@ -498,7 +501,7 @@ private constructor(
 
     @JvmStatic
     fun applyOverrides(context: ComponentContext, node: LithoNode) {
-      if (node.componentCount == 0) {
+      if (overriders.isEmpty() || node.componentCount == 0) {
         return
       }
       val componentKey = node.getGlobalKeyAt(0).toString()
