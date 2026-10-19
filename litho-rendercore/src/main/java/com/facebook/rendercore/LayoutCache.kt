@@ -45,7 +45,14 @@ class LayoutCache(@JvmField val readCache: LayoutCacheData? = null) {
   operator fun <T> get(uniqueId: Any): T? = readCache?.get(uniqueId)
 
   fun writeContinuationValue(key: Any, value: Any?) {
-    val cache = continuationCache ?: mutableScatterMapOf()
+    // Sized as the last pass's, which a pass over the same tree usually matches, so it rarely
+    // grows.
+    val cache =
+        continuationCache
+            ?: run {
+              val lastSize = readCache?.continuationValues?.size ?: 0
+              if (lastSize > 0) MutableScatterMap(lastSize) else mutableScatterMapOf()
+            }
     continuationCache = cache
     cache.put(key, value)
   }
