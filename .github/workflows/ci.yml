@@ -15,7 +15,7 @@ jobs:
       - name: Set up build
         uses: ./.github/actions/setup-build
       - name: Build everything
-        run: ./gradlew assemble --stacktrace
+        run: ./gradlew assemble --continue --stacktrace
   tests:
     runs-on: ubuntu-latest
     steps:
@@ -25,7 +25,7 @@ jobs:
         uses: ./.github/actions/setup-build
       # litho-core and litho-it tests load Yoga's JNI library, which is only built for Android ABIs.
       - name: Run tests
-        run: ./gradlew test -x :litho-intellij-plugin:test -x :litho-core:test -x :litho-it:test --stacktrace
+        run: ./gradlew test -x :litho-core:test -x :litho-it:test --continue --stacktrace
   deploy-check:
     name: Skip deploy if PR or Fork or not a SNAPSHOT version
     needs: [build, tests]
