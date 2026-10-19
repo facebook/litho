@@ -70,12 +70,22 @@ android {
         targetCompatibility rootProject.targetCompatibilityVersion
     }
 
-
-    sourceSets.test.java.srcDir project(':litho-processor').file("src/test/java")
-    sourceSets.test.java.srcDir project(':litho-sections-processor').file("src/test/java")
     namespace 'com.facebook.litho.it'
     lint {
         abortOnError false
+    }
+}
+
+// The spec-model tests use javax.lang.model, which Android unit-test compilation doesn't provide.
+// They still run with Buck.
+tasks.withType(JavaCompile).configureEach {
+    if (name.contains('UnitTest')) {
+        exclude 'com/facebook/litho/specmodels/**'
+    }
+}
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+    if (name.contains('UnitTest')) {
+        exclude 'com/facebook/litho/specmodels/**'
     }
 }
 
