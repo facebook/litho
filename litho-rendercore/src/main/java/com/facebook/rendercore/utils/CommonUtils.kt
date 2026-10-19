@@ -20,17 +20,15 @@ val NoDeps = emptyArray<Any?>()
 
 object CommonUtils {
 
+  private val sectionNames = SectionNameCache(Class<*>::getSimpleName)
+
   /**
    * This API is used for tracing, and the section names have a char limit of 127. If the class name
    * exceeds that it will be replace by the simple name. In a release build the class name will be
-   * minified, so it is unlikely to hit the limit.
+   * minified, so it is unlikely to hit the limit. Computed once per class and held in a bounded
+   * cache.
    */
-  @JvmStatic
-  fun getSectionNameForTracing(kclass: Class<*>): String {
-    val name = kclass.name
-    val simpleName = kclass.simpleName
-    return if (simpleName.length < 5) "<cls>$name</cls>" else kclass.simpleName
-  }
+  @JvmStatic fun getSectionNameForTracing(kclass: Class<*>): String = sectionNames[kclass]
 
   /**
    * This API is used for tracing. It's the same as getSectionNameForTracing(Class), but it uses
@@ -50,4 +48,31 @@ object CommonUtils {
       throw RuntimeException(e)
     }
   }
+}
+
+/**
+ * Section names by class, each computed once from [simpleNameOf]: `Class.getSimpleName` walks the
+ * class's annotations and allocates on Android on every call.
+ *
+ * Only the [maxSize] most recently named classes are kept, so a long tail of one-off classes
+ * (anonymous classes, lambdas) cannot grow the cache without bound.
+ */
+internal class SectionNameCache(
+    private val simpleNameOf: (Class<*>) -> String,
+    private val maxSize: Int = 512,
+) {
+
+  private val names =
+      object : LinkedHashMap<Class<*>, String>(16, 0.75f, true) {
+        override fun removeEldestEntry(eldest: Map.Entry<Class<*>, String>): Boolean =
+            size > maxSize
+      }
+
+  operator fun get(kclass: Class<*>): String =
+      synchronized(names) {
+        names.getOrPut(kclass) {
+          val simpleName = simpleNameOf(kclass)
+          if (simpleName.length < 5) "<cls>${kclass.name}</cls>" else simpleName
+        }
+      }
 }
