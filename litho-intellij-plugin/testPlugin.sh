@@ -16,5 +16,5 @@
 # litho-intellij-plugin
 DIR=$(dirname "$0")
 cd "$DIR" || exit 1
-echo "./gradlew :litho-intellij-plugin:test"
-../gradlew :litho-intellij-plugin:test &> /dev/null
+echo "./gradlew -PwithIntellijPlugin :litho-intellij-plugin:test"
+../gradlew -PwithIntellijPlugin :litho-intellij-plugin:test &> /dev/null

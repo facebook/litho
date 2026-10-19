@@ -33,6 +33,10 @@ java.sourceCompatibility = rootProject.sourceCompatibilityVersion
 sourceSets {
     test.java.srcDirs += project(':litho-processor').file("src/test/java")
     test.java.srcDirs += project(':litho-sections-processor').file("src/test/java")
+    // Same tests as the Buck target. These use test fixtures that no longer exist (T58412963).
+    test.java.exclude 'com/facebook/litho/intellij/completion/ParamCompletionContributorTest.java'
+    test.java.exclude 'com/facebook/litho/intellij/completion/ReplacingConsumerTest.java'
+    test.java.exclude 'com/facebook/litho/intellij/completion/RequiredPropMethodContributorTest.java'
 }
 
 dependencies {
@@ -51,6 +55,7 @@ dependencies {
     // Testing
     testImplementation deps.junit
     testImplementation deps.mockitoCore
+    testImplementation deps.mockitokotlin
     testImplementation deps.assertjCore
 }
 
@@ -58,6 +63,14 @@ intellij {
     version = '2024.1'
     updateSinceUntilBuild = false
     plugins = ['java', 'org.jetbrains.kotlin',]
+}
+
+// The IntelliJ plugin points the test JVM at its JetBrains Runtime, which Gradle rejects because it
+// differs from the toolchain's launcher. These tests don't need the IDE runtime.
+tasks.named('test') {
+    doFirst {
+        executable = javaLauncher.get().executablePath.asFile.absolutePath
+    }
 }
 
 task merge {

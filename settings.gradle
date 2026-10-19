@@ -25,7 +25,6 @@ include ':litho-fresco'
 include ':litho-fresco-kotlin'
 include ':litho-gradle-plugin'
 include ':litho-instrumentation-tests'
-include ':litho-intellij-plugin'
 include ':litho-it'
 include ':litho-it-spec'
 include ':litho-live-data'
@@ -65,6 +64,12 @@ include ':systrace'
 include ':test-processor'
 include ':test-specs'
 include ':yoga'
+
+// The IntelliJ plugin isn't part of the regular build. Its buildPlugin.sh and testPlugin.sh pass
+// -PwithIntellijPlugin to include it.
+if (providers.gradleProperty('withIntellijPlugin').isPresent()) {
+    include ':litho-intellij-plugin'
+}
 
 project(':litho-compiler-plugin').projectDir = file('litho-compiler-plugin/compiler')
 project(':litho-gradle-plugin').projectDir = file('litho-compiler-plugin/gradle-plugin')

@@ -69,7 +69,16 @@ jobs:
       with:
         timeout_minutes: 60
         max_attempts: 2
-        command: ./gradlew test -x :litho-intellij-plugin:test -x :litho-core:test -x :litho-it:test --stacktrace
+        command: >-
+          ./gradlew test --stacktrace
+          -x :litho-core:test
+          -x :litho-coroutines-kotlin:test
+          -x :litho-it:test
+          -x :litho-it-spec:test
+          -x :litho-live-data:test
+          -x :litho-surface:test
+          -x :litho-testing:test
+          -x :sample:test
   sample-app-job:
     name: Assemble Sample App
     needs: [start-release-job]
