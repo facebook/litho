@@ -24,6 +24,10 @@ object RenderCoreThreadUtilsConfig {
    * <pre>IS_TESTING</pre>
    *
    * system property at startup but can be overridden at runtime.
+   *
+   * [ThreadUtils.assertMainThread] no longer reads this flag: an end-to-end or instrumentation run
+   * enforces main-thread assertions like production. Tests that drive main-thread-confined code
+   * must run it on the UI thread, for example with `@UiThreadTest`.
    */
   @JvmField var isEndToEndTestRun: Boolean = System.getProperty("IS_TESTING") != null
 }

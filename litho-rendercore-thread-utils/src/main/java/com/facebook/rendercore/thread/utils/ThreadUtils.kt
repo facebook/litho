@@ -45,9 +45,6 @@ object ThreadUtils {
   @JvmStatic
   @JvmOverloads
   fun assertMainThread(message: String? = null) {
-    if (RenderCoreThreadUtilsConfig.isEndToEndTestRun) {
-      return
-    }
     if (!isMainThread) {
       throw IllegalStateException(
           message
