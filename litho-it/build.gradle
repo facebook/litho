@@ -89,6 +89,8 @@ tasks.withType(JavaCompile).configureEach {
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
     if (name.contains('UnitTest')) {
         exclude 'facebook/litho/specmodels/**'
+        // The tests use internal APIs of the modules they cover, like Buck's friend_paths.
+        friendPaths.from(libraries)
     }
 }
 
