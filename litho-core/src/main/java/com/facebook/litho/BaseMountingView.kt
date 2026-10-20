@@ -160,8 +160,6 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
 
   private var onDirtyMountListener: OnDirtyMountListener? = null
 
-  private var onPassUnderTransientStateListener: OnPassUnderTransientStateListener? = null
-
   @get:JvmName("getUiStateReadRecords")
   internal val uiStateReadRecords: UiStateReadRecords =
       UiStateReadRecords(this, BinderUpdateTracer())
@@ -510,13 +508,11 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
 
     val visibleRectToUse: Rect?
     val processVisibilityOutputs: Boolean
-    val isUnderTransientState = transientStateCount > 0 && hasTree && isIncrementalMountEnabled
-    if (isUnderTransientState) {
+    if (transientStateCount > 0 && hasTree && isIncrementalMountEnabled) {
       // If transient state is set but the MountState is dirty we want to re-mount everything.
       // Otherwise, we don't need to do anything as the entire BaseMountingView was mounted when
       // the transient state was set.
       if (!isMountStateDirty) {
-        onPassUnderTransientStateListener?.onPassUnderTransientState(this)
         return
       } else {
         visibleRectToUse = Rect(0, 0, width, height)
@@ -545,9 +541,6 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
       }
     } else {
       mount(visibleRectToUse, processVisibilityOutputs, reason)
-    }
-    if (isUnderTransientState) {
-      onPassUnderTransientStateListener?.onPassUnderTransientState(this)
     }
   }
 
@@ -774,11 +767,6 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
     this.onDirtyMountListener = onDirtyMountListener
   }
 
-  @UiThread
-  fun setOnPassUnderTransientStateListener(listener: OnPassUnderTransientStateListener?) {
-    onPassUnderTransientStateListener = listener
-  }
-
   @Synchronized
   protected fun onDirtyMountComplete() {
     onDirtyMountListener?.onDirtyMount(this)
@@ -967,31 +955,6 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
 
       previousMountBounds.set(requireNotNull(currentVisibleArea))
     }
-  }
-
-  /**
-   * Runs the visibility pass of a mount whose mount state was dirty, against what shows now, so the
-   * items the last mount removed log as gone. A mount under transient state processes no
-   * visibility, so the owner of that state calls this once it ends. Does nothing while mounting is
-   * paused; the visibility extension also skips a host that still has transient state.
-   */
-  @UiThread
-  fun processVisibilityOutputsForDirtyMount() {
-    assertMainThread()
-    val layoutState = currentLayoutState ?: return
-    if (!isVisibilityProcessingEnabled || shouldPauseMountingWithVisibilityHintFalse()) {
-      return
-    }
-    val visibleRect = Rect()
-    if (!getLocalVisibleRect(visibleRect)) {
-      return
-    }
-    layoutState.setShouldProcessVisibilityOutputs(true)
-    lithoHostListenerCoordinator?.processVisibilityOutputs(
-        visibleRect,
-        true,
-        VisibilityChangeReason.MOUNT,
-    )
   }
 
   fun mountComponentIfNeeded(): Boolean {
@@ -1471,14 +1434,6 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
      * new props/state in the tree, or the BaseMountingView was mounting a new ComponentTree
      */
     fun onDirtyMount(view: BaseMountingView)
-  }
-
-  fun interface OnPassUnderTransientStateListener {
-    /**
-     * Called on the main thread after a mount or visible-bounds pass on [view] skipped visibility
-     * because [view] has transient state. Its owner can run the pass itself.
-     */
-    fun onPassUnderTransientState(view: BaseMountingView)
   }
 
   companion object {
