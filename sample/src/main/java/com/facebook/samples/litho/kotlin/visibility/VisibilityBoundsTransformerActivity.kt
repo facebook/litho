@@ -123,7 +123,7 @@ class VisibilityBoundsTransformerActivity : NavigatableDemoActivity() {
     val lithoView =
         LithoView.create(
             ComponentContext(this),
-            ComponentTree.create(ComponentContext(this), ParentComponent())
+            ComponentTree.create(this, ParentComponent())
                 .componentsConfiguration(
                     ComponentsConfiguration.defaultInstance.copy(
                         visibilityBoundsTransformer = visibilityBoundsTransformer,
