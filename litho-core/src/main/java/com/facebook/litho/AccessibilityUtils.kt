@@ -23,6 +23,7 @@ import android.view.accessibility.AccessibilityManager
 import androidx.core.accessibilityservice.AccessibilityServiceInfoCompat
 import com.facebook.litho.config.LithoDebugConfigurations
 
+@Suppress("KotlinSplitStaticMonitor")
 object AccessibilityUtils {
 
   @Volatile private var isCachedIsAccessibilityEnabledSet = false
