@@ -16,9 +16,16 @@
 
 package com.facebook.litho.layout
 
+import com.facebook.litho.CustomLayoutResult
+import com.facebook.litho.LithoLayoutContext
 import com.facebook.litho.LithoLayoutResult
+import com.facebook.litho.LithoNode
 import com.facebook.litho.annotations.ExperimentalLithoApi
+import com.facebook.litho.measureChild
+import com.facebook.rendercore.Dimen
 import com.facebook.rendercore.IntSize
+import com.facebook.rendercore.LayoutContext
+import com.facebook.rendercore.ResourceResolver
 import com.facebook.rendercore.SizeConstraints
 
 /**
@@ -39,7 +46,8 @@ import com.facebook.rendercore.SizeConstraints
  *
  * The intrinsic-size questions all have answers here, each of which runs the layout function and
  * reads the size back. Override one when the container knows its answer more cheaply — a pager is
- * one page wide however many pages it holds — which needs an object rather than a lambda.
+ * one page wide however many pages it holds — which needs an object rather than a lambda. An
+ * override receives the real children, and an [IntrinsicMeasureScope], which cannot measure them.
  */
 @ExperimentalLithoApi
 sealed interface LayoutFunction {
@@ -49,14 +57,21 @@ sealed interface LayoutFunction {
    *
    * @param measurables the children, to measure and then place
    * @param constraints what the parent will allow this container to occupy
-   * @throws IllegalStateException if it returns without calling [LayoutScope.layout], since the
+   * @throws IllegalStateException if it returns without calling [MeasureScope.layout], since the
    *   container would then have no size and its children nowhere to go
    */
-  fun LayoutScope.measure(measurables: List<Measurable>, constraints: SizeConstraints)
+  fun MeasureScope.measure(measurables: List<Measurable>, constraints: SizeConstraints)
 
   /** The widest this container would like to be at [height], ignoring any upper bound. */
-  fun IntrinsicLayoutScope.maxIntrinsicWidth(measurables: List<Measurable>, height: Int): Int =
-      measureForIntrinsic(measurables, atMostConstraints(SizeConstraints.Infinity, height)).width
+  fun IntrinsicMeasureScope.maxIntrinsicWidth(
+      measurables: List<Measurable>,
+      height: Int,
+  ): Int = measureForIntrinsic(
+      this@LayoutFunction,
+      measurables,
+      atMostConstraints(SizeConstraints.Infinity, height),
+  )
+      .width
 
   /**
    * The narrowest this container can be at [height] without its content breaking out of it.
@@ -65,16 +80,23 @@ sealed interface LayoutFunction {
    * squeezes it cannot take it below this. Nothing here reaches it: Litho asks that question
    * through a second measure function, which the diffs above register.
    */
-  fun IntrinsicLayoutScope.minIntrinsicWidth(measurables: List<Measurable>, height: Int): Int =
-      measureForIntrinsic(measurables, atMostConstraints(0, height)).width
+  fun IntrinsicMeasureScope.minIntrinsicWidth(measurables: List<Measurable>, height: Int): Int =
+      measureForIntrinsic(this@LayoutFunction, measurables, atMostConstraints(0, height)).width
 
   /** The tallest this container would like to be at [width], ignoring any upper bound. */
-  fun IntrinsicLayoutScope.maxIntrinsicHeight(measurables: List<Measurable>, width: Int): Int =
-      measureForIntrinsic(measurables, atMostConstraints(width, SizeConstraints.Infinity)).height
+  fun IntrinsicMeasureScope.maxIntrinsicHeight(
+      measurables: List<Measurable>,
+      width: Int,
+  ): Int = measureForIntrinsic(
+      this@LayoutFunction,
+      measurables,
+      atMostConstraints(width, SizeConstraints.Infinity),
+  )
+      .height
 
   /** The shortest this container can be at [width]. The other axis of [minIntrinsicWidth]. */
-  fun IntrinsicLayoutScope.minIntrinsicHeight(measurables: List<Measurable>, width: Int): Int =
-      measureForIntrinsic(measurables, atMostConstraints(width, 0)).height
+  fun IntrinsicMeasureScope.minIntrinsicHeight(measurables: List<Measurable>, width: Int): Int =
+      measureForIntrinsic(this@LayoutFunction, measurables, atMostConstraints(width, 0)).height
 }
 
 /**
@@ -86,7 +108,7 @@ sealed interface LayoutFunction {
  */
 @ExperimentalLithoApi
 fun interface LayoutFunctionN : LayoutFunction {
-  override fun LayoutScope.measure(measurables: List<Measurable>, constraints: SizeConstraints)
+  override fun MeasureScope.measure(measurables: List<Measurable>, constraints: SizeConstraints)
 }
 
 /**
@@ -107,11 +129,11 @@ fun interface LayoutFunctionN : LayoutFunction {
 @ExperimentalLithoApi
 fun interface LayoutFunction1 : LayoutFunction {
 
-  fun LayoutScope.measureChildren(child: Measurable, constraints: SizeConstraints)
+  fun MeasureScope.measure(child: Measurable, constraints: SizeConstraints)
 
-  override fun LayoutScope.measure(measurables: List<Measurable>, constraints: SizeConstraints) {
+  override fun MeasureScope.measure(measurables: List<Measurable>, constraints: SizeConstraints) {
     measurables.requireArity(1)
-    measureChildren(measurables[0], constraints)
+    measure(measurables[0], constraints)
   }
 }
 
@@ -119,15 +141,15 @@ fun interface LayoutFunction1 : LayoutFunction {
 @ExperimentalLithoApi
 fun interface LayoutFunction2 : LayoutFunction {
 
-  fun LayoutScope.measureChildren(
+  fun MeasureScope.measure(
       child1: Measurable,
       child2: Measurable,
       constraints: SizeConstraints,
   )
 
-  override fun LayoutScope.measure(measurables: List<Measurable>, constraints: SizeConstraints) {
+  override fun MeasureScope.measure(measurables: List<Measurable>, constraints: SizeConstraints) {
     measurables.requireArity(2)
-    measureChildren(measurables[0], measurables[1], constraints)
+    measure(measurables[0], measurables[1], constraints)
   }
 }
 
@@ -135,16 +157,16 @@ fun interface LayoutFunction2 : LayoutFunction {
 @ExperimentalLithoApi
 fun interface LayoutFunction3 : LayoutFunction {
 
-  fun LayoutScope.measureChildren(
+  fun MeasureScope.measure(
       child1: Measurable,
       child2: Measurable,
       child3: Measurable,
       constraints: SizeConstraints,
   )
 
-  override fun LayoutScope.measure(measurables: List<Measurable>, constraints: SizeConstraints) {
+  override fun MeasureScope.measure(measurables: List<Measurable>, constraints: SizeConstraints) {
     measurables.requireArity(3)
-    measureChildren(measurables[0], measurables[1], measurables[2], constraints)
+    measure(measurables[0], measurables[1], measurables[2], constraints)
   }
 }
 
@@ -163,44 +185,34 @@ private fun List<Measurable>.requireArity(expected: Int) {
   }
 }
 
-/** The answer either maximum gives when the container did not supply a cheaper one. */
-internal fun IntrinsicLayoutScope.measuredIntrinsicSize(
-    measurables: List<Measurable>,
-    maxWidth: Int,
-    maxHeight: Int,
-): IntSize = measureForIntrinsic(measurables, atMostConstraints(maxWidth, maxHeight))
-
 /**
  * A child that has been resolved but not yet laid out.
  *
  * Created by the framework during layout, where the context needed to lay a child out exists. An
- * instance is only meaningful inside the [LayoutFunction.measure] call that received it.
+ * instance is only meaningful inside the [LayoutFunction] call that received it. It has no public
+ * members: the scope that call runs in measures it ([MeasureScope]).
+ *
+ * Final, and only Litho creates one: its constructor is internal, so a member added later is not a
+ * breaking change. A layout function is tested by rendering a tree that holds its container.
  */
 @ExperimentalLithoApi
-interface Measurable {
-
-  /**
-   * Lay this child out under [constraints] and report the size it took.
-   *
-   * **May be called more than once per pass.** CSS Flexbox §9.7 resolves flexible lengths by
-   * measuring a child at its flex basis, distributing free space, and measuring again at the
-   * resolved size, so a flexbox written on this API necessarily measures twice.
-   *
-   * Each call lays the child out under its constraints, and the [Placeable] it returns carries that
-   * layout: whichever placeable the container places is what mounts, so measuring a child once to
-   * probe it and again to place it costs the probe and nothing more.
-   *
-   * The child's own size props — width, min and max, aspect ratio, margins, padding and border —
-   * apply within [constraints], and the placeable reports the size it took, kept within them.
-   */
-  fun measure(constraints: SizeConstraints): Placeable
-}
+class Measurable
+internal constructor(
+    /** The child's declaration index in its container. */
+    internal val index: Int,
+    /** The child's node. */
+    internal val node: LithoNode,
+    /** The layout context the child is measured in. */
+    internal val context: LayoutContext<LithoLayoutContext>,
+    /** The container whose layout function was handed this child. */
+    internal val owner: CustomLayoutResult,
+)
 
 /**
  * A child that has been laid out and knows its size, but not yet where it sits.
  *
  * Only the framework can make one — the constructor is internal — which is what lets
- * [PlaceableScope.place] trust [childIndex]. `place` is an extension on this type rather than a
+ * [PlacementScope.place] trust [childIndex]. `place` is an extension on this type rather than a
  * function taking an index, so the index travels with the placeable and cannot be fabricated to
  * place a child at the wrong slot.
  */
@@ -263,21 +275,91 @@ internal constructor(
 }
 
 /**
- * What a layout function can reach whether it is measuring or answering an intrinsic question.
- *
- * [LayoutScope] adds the verb that places children; [IntrinsicLayoutScope] adds the one that asks
- * what a container would do without placing anything.
+ * Marks the scopes a layout function runs in: inside a placement block only [PlacementScope]'s
+ * members resolve implicitly, so measuring a child or declaring a size there does not compile.
  */
-@ExperimentalLithoApi sealed class MeasuringScope constructor()
+@ExperimentalLithoApi @DslMarker annotation class LayoutScopeMarker
 
 /**
- * Receiver for [LayoutFunction.measure], and where a pass leaves what it works out.
+ * What a layout function can do whether it is answering an intrinsic question or measuring: read
+ * its environment. Receiver for a [LayoutFunction]'s intrinsic overrides, which answer a number:
+ * they may not measure, declare a size or place. [MeasureScope] adds measuring and declaring.
+ *
+ * Nothing in Litho asks a layout function's intrinsic overrides yet: Yoga measures a `Layout` by
+ * running [LayoutFunction.measure].
+ *
+ * Sealed: only Litho provides one.
+ */
+@ExperimentalLithoApi
+@LayoutScopeMarker
+sealed class IntrinsicMeasureScope(
+    /** The container's resource resolver, which [toPixels] converts through. */
+    internal val resourceResolver: ResourceResolver,
+    /** The direction the container is laid out in. */
+    val layoutDirection: LayoutDirection,
+) {
+
+  /** This dimension in pixels, as the container's resources resolve it: `16.dp.toPixels()`. */
+  fun Dimen.toPixels(): Int = toPixels(resourceResolver)
+
+  /**
+   * Runs [function] under [constraints] and reports the size it asked for: the default answer to
+   * each of its intrinsic questions.
+   *
+   * Only the size is read; the placements are discarded unevaluated. The children it measures are
+   * laid out as in any other run, so an honest answer costs a measure pass, which is what an
+   * override exists to avoid.
+   *
+   * @throws IllegalStateException if the layout function returns without calling
+   *   [MeasureScope.layout], since there is then no size to report
+   */
+  internal fun measureForIntrinsic(
+      function: LayoutFunction,
+      measurables: List<Measurable>,
+      constraints: SizeConstraints,
+  ): IntSize {
+    val scope = MeasureScope(resourceResolver, layoutDirection)
+    with(function) { scope.measure(measurables, constraints) }
+    // Without this the omission is answered rather than reported: the scope still holds its
+    // initial 0x0, and an intrinsic of zero is a size Yoga will act on.
+    checkNotNull(scope.placement) { NO_SIZE_DECLARED }
+    return IntSize(scope.width, scope.height)
+  }
+}
+
+/**
+ * Receiver for [LayoutFunction.measure], and where a pass leaves what it works out: it asks its
+ * children as [IntrinsicMeasureScope] does, measures them, and declares.
  *
  * A layout function reports through the scope rather than by returning a value, so everything a
  * pass produces arrives by one route and a later addition needs no new return type.
  */
 @ExperimentalLithoApi
-class LayoutScope internal constructor() : MeasuringScope() {
+@LayoutScopeMarker
+class MeasureScope
+internal constructor(
+    resourceResolver: ResourceResolver,
+    layoutDirection: LayoutDirection,
+) : IntrinsicMeasureScope(resourceResolver, layoutDirection) {
+
+  /**
+   * Lay this child out under [constraints] and report the size it took.
+   *
+   * **May be called more than once per pass.** CSS Flexbox §9.7 resolves flexible lengths by
+   * measuring a child at its flex basis, distributing free space, and measuring again at the
+   * resolved size, so a flexbox written on this API necessarily measures twice.
+   *
+   * Each call lays the child out under its constraints, and the [Placeable] it returns carries that
+   * layout: whichever placeable the container places is what mounts, so measuring a child once to
+   * probe it and again to place it costs the probe and nothing more.
+   *
+   * The child's own size props — width, min and max, aspect ratio, margins, padding and border —
+   * apply within [constraints], and the placeable reports the size it took, kept within them.
+   *
+   * Not from the placement block: placing only chooses among the measurements already made. Not
+   * from an intrinsic override either, which answers a number.
+   */
+  fun Measurable.measure(constraints: SizeConstraints): Placeable = measureChild(constraints)
 
   internal var width: Int = 0
     private set
@@ -293,13 +375,13 @@ class LayoutScope internal constructor() : MeasuringScope() {
    * computed during measurement would be wrong in exactly that case. The framework runs the block
    * once the size is final.
    */
-  internal var placement: (PlaceableScope.() -> Unit)? = null
+  internal var placement: (PlacementScope.() -> Unit)? = null
     private set
 
   /**
    * Declare this container's size and how its children are positioned.
    *
-   * Positioning happens inside the block and nowhere else: `place` exists only on [PlaceableScope],
+   * Positioning happens inside the block and nowhere else: `place` exists only on [PlacementScope],
    * so placing a child while still measuring is a compile error rather than a child placed against
    * a size that has not settled.
    *
@@ -307,11 +389,11 @@ class LayoutScope internal constructor() : MeasuringScope() {
    * @param height the height this container asks for; the parent may override it
    * @param placement runs later, once the final size is known, which may differ from [width] by
    *   [height]. Capture whatever it needs — [Placeable]s, sizes, anything computed while measuring
-   *   — and it will see those values.
+   *   — and it will see those values. It only places: measuring a child there does not compile.
    * @throws IllegalStateException if called twice, since one of the two sizes would be discarded
    * @throws IllegalArgumentException if [width] or [height] is negative
    */
-  fun layout(width: Int, height: Int, placement: PlaceableScope.() -> Unit) {
+  fun layout(width: Int, height: Int, placement: PlacementScope.() -> Unit) {
     check(this.placement == null) {
       "layout() has already been called on this container. Calling it twice means one of the two " +
           "sizes, and one of the two placement blocks, is silently discarded."
@@ -326,41 +408,6 @@ class LayoutScope internal constructor() : MeasuringScope() {
 }
 
 /**
- * Receiver for a [LayoutFunction]'s intrinsic-size questions.
- *
- * Separate from [LayoutScope] so an intrinsic query cannot place anything: it asks what a container
- * *would* do. A [LayoutScope] holds its placement block unevaluated and only the framework runs it,
- * so asking for an intrinsic size cannot place a child or fire a side effect the block holds.
- */
-@ExperimentalLithoApi
-class IntrinsicLayoutScope
-internal constructor(
-    private val layoutFunction: LayoutFunction,
-) : MeasuringScope() {
-
-  /**
-   * Runs the layout function under [constraints] and reports the size it asked for.
-   *
-   * Only the size is read; the placements are discarded unevaluated. An honest answer costs a
-   * measure pass, which is what an override exists to avoid.
-   *
-   * @throws IllegalStateException if the layout function returns without calling
-   *   [LayoutScope.layout], since there is then no size to report
-   */
-  fun measureForIntrinsic(
-      measurables: List<Measurable>,
-      constraints: SizeConstraints,
-  ): IntSize {
-    val scope = LayoutScope()
-    with(layoutFunction) { scope.measure(measurables, constraints) }
-    // Without this the omission is answered rather than reported: the scope still holds its
-    // initial 0x0, and an intrinsic of zero is a size Yoga will act on.
-    checkNotNull(scope.placement) { NO_SIZE_DECLARED }
-    return IntSize(scope.width, scope.height)
-  }
-}
-
-/**
  * Receiver for the placement pass.
  *
  * A child that is never placed occupies no space and will not be mounted. Declining to place is
@@ -368,8 +415,11 @@ internal constructor(
  * out costs its subtree nothing.
  */
 @ExperimentalLithoApi
-class PlaceableScope
+@LayoutScopeMarker
+class PlacementScope
 internal constructor(
+    /** The container's resource resolver, which [toPixels] converts through. */
+    private val resourceResolver: ResourceResolver,
     childCount: Int,
     /** The width the container declared, which a right-to-left placement mirrors against. */
     private val declaredWidth: Int = 0,
@@ -386,6 +436,9 @@ internal constructor(
 
   /** The placeable placed for each child, whose layout is the one that mounts. */
   internal val placedWith: Array<Placeable?> = arrayOfNulls(childCount)
+
+  /** This dimension in pixels, as the container's resources resolve it. */
+  fun Dimen.toPixels(): Int = toPixels(resourceResolver)
 
   /**
    * Position this child at [start] from this container's start edge and [top] from its top, so a
@@ -411,7 +464,7 @@ internal constructor(
    */
   fun Placeable.place(x: Int = 0, y: Int = 0) {
     val index = childIndex
-    require(this.owner === this@PlaceableScope.owner) {
+    require(this.owner === this@PlacementScope.owner) {
       "Cannot place a child of another container. A placeable belongs to the container whose " +
           "layout function measured it."
     }
@@ -433,7 +486,7 @@ private fun atMostConstraints(maxWidth: Int, maxHeight: Int): SizeConstraints =
     SizeConstraints(maxWidth = maxWidth, maxHeight = maxHeight)
 
 /**
- * What a layout function that never called [LayoutScope.layout] is told.
+ * What a layout function that never called [MeasureScope.layout] is told.
  *
  * Shared by every place a layout function runs, so a container hears the same thing whether it was
  * asked for an intrinsic size, measured by Yoga, or laid out because its size was already definite.

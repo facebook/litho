@@ -28,8 +28,8 @@ import com.facebook.litho.flexbox.border
 import com.facebook.litho.flexbox.layoutDirection
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.layout.LayoutFunctionN
-import com.facebook.litho.layout.LayoutScope
 import com.facebook.litho.layout.Measurable
+import com.facebook.litho.layout.MeasureScope
 import com.facebook.litho.layout.flexbox.Column
 import com.facebook.litho.layout.flexbox.Row
 import com.facebook.litho.stats.LithoStats
@@ -166,7 +166,7 @@ class CustomLayoutNestedContainerTest {
      */
     val INNER = LayoutFunctionN { ms, c -> stackChildren(ms, c) }
 
-    fun LayoutScope.stackChildren(ms: List<Measurable>, c: SizeConstraints) {
+    fun MeasureScope.stackChildren(ms: List<Measurable>, c: SizeConstraints) {
       val ps = ms.map {
         it.measure(SizeConstraints(maxWidth = c.maxWidth, maxHeight = c.maxHeight))
       }

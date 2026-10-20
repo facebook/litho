@@ -32,9 +32,10 @@ import com.facebook.litho.flexbox.border
 import com.facebook.litho.flexbox.flex
 import com.facebook.litho.flexbox.layoutDirection
 import com.facebook.litho.flexbox.useHeightAsBaseline
+import com.facebook.litho.layout.LayoutDirection
 import com.facebook.litho.layout.LayoutFunctionN
-import com.facebook.litho.layout.LayoutScope
 import com.facebook.litho.layout.Measurable
+import com.facebook.litho.layout.MeasureScope
 import com.facebook.litho.layout.Placeable
 import com.facebook.litho.layout.RenderWithConstraints
 import com.facebook.litho.layout.flexbox.Column
@@ -50,6 +51,7 @@ import com.facebook.litho.widget.Text
 import com.facebook.rendercore.LayoutCache
 import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.SizeConstraints
+import com.facebook.rendercore.dp
 import com.facebook.rendercore.primitives.LayoutBehavior
 import com.facebook.rendercore.primitives.LayoutScope as PrimitiveLayoutScope
 import com.facebook.rendercore.primitives.PrimitiveLayoutResult
@@ -71,6 +73,7 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.annotation.Config
 
 /**
  * Verifies the guarantees a [LayoutFunction] may rely on.
@@ -811,7 +814,7 @@ class CustomLayoutApiTest {
   /**
    * A layout function runs once per layout pass when the size it asks for is the size it gets.
    *
-   * This is what makes the API affordable, and it holds because a [LayoutScope] carries its
+   * This is what makes the API affordable, and it holds because a [MeasureScope] carries its
    * placement block unevaluated: the measure function can answer Yoga without committing to a
    * placement, so its result survives to be replayed instead of recomputed.
    *
@@ -1556,6 +1559,69 @@ class CustomLayoutApiTest {
         .containsExactly(0, STRIDE)
   }
 
+  // ─────────────────────────────────────────────── what every scope reads
+
+  /**
+   * Measuring and placing both read the container's direction and convert dp through its resources,
+   * so a layout function needs neither captured from outside.
+   */
+  @Config(qualifiers = "xhdpi")
+  @Test
+  fun `a layout function reads its direction and converts dp in every scope`() {
+    val measuring = AtomicReference<Pair<LayoutDirection, Int>>()
+    val placing = AtomicReference<Pair<LayoutDirection, Int>>()
+    renderAndFindContainer(
+        Layout(fixedLeaf(), style = Style.layoutDirection(YogaDirection.RTL)) { child, _ ->
+          measuring.set(layoutDirection to DP_INSET.dp.toPixels())
+          val p = child.measure(SizeConstraints.exact(CHILD, CHILD))
+          layout(CHILD, CHILD) {
+            placing.set(layoutDirection to DP_INSET.dp.toPixels())
+            p.place(0, 0)
+          }
+        },
+    )
+
+    assertThat(measuring.get())
+        .describedAs("measuring sees the node's direction and the density")
+        .isEqualTo(LayoutDirection.RTL to DP_INSET * DENSITY)
+    assertThat(placing.get())
+        .describedAs("and so does placing")
+        .isEqualTo(LayoutDirection.RTL to DP_INSET * DENSITY)
+  }
+
+  // ─────────────────────────────────────────────── intrinsic defaults
+
+  /**
+   * A default intrinsic runs the layout function, and the children it measures there are measured
+   * as in any other run: a placeable keeps the size the child took, not only the room it occupies.
+   * So a function that declares `p.measuredWidth` answers the width it measures its child at.
+   */
+  @Test
+  fun `a default intrinsic answers the raw size the function measures`() {
+    val seen = CopyOnWriteArrayList<Placeable>()
+    val declaresRaw = LayoutFunctionN { ms, c ->
+      val p = ms[0].measure(SizeConstraints(maxWidth = CHILD, maxHeight = c.maxHeight))
+      seen.add(p)
+      layout(p.measuredWidth, p.height) { p.place(0, 0) }
+    }
+    val answers = AtomicReference<Pair<Int, Int>>()
+    renderAndFindContainer(
+        Layout(SimpleMountSpecTester(style = Style.width(WIDE.px).height(CHILD.px))) { child, c ->
+          val max = with(declaresRaw) { maxIntrinsicWidth(listOf(child), c.maxHeight) }
+          val min = with(declaresRaw) { minIntrinsicWidth(listOf(child), c.maxHeight) }
+          answers.set(max to min)
+          val p = child.measure(SizeConstraints.exact(CHILD, CHILD))
+          layout(CHILD, CHILD) { p.place(0, 0) }
+        },
+    )
+
+    assertThat(seen.map { it.width }).describedAs("the room the child occupies").containsOnly(CHILD)
+    assertThat(answers.get().first)
+        .describedAs("the default max answers the size the child took")
+        .isEqualTo(WIDE)
+    assertThat(answers.get().second).describedAs("and so does the default min").isEqualTo(WIDE)
+  }
+
   private fun container(
       childCount: Int,
       layout: LayoutFunctionN,
@@ -1912,6 +1978,7 @@ class CustomLayoutApiTest {
     private const val NARROW_ANSWER = 60
     private const val CHILD = 100
     private const val STRIDE = 150
+    private const val WIDE = 150
     private const val SQUEEZE = 150
     private const val TEXT_SQUEEZE = 16
     private const val WORDS = "aaaaaaaaaa bbbb"
