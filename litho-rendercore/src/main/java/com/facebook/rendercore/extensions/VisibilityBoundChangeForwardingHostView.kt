@@ -51,7 +51,7 @@ import com.facebook.rendercore.RenderCoreSystrace
  */
 open class VisibilityBoundChangeForwardingHostView(
     context: Context,
-    private val notifier: VisibilityBoundsChangeNotifier,
+    private val notifier: VisibilityBoundsChangeNotifier = HostVisibilityNotifier(),
     private val isHostResumed: (() -> Boolean)? = null,
     private val forwardScrollChanges: Boolean = true,
 ) : FrameLayout(context) {

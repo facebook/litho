@@ -49,7 +49,7 @@ import com.facebook.rendercore.thread.utils.ThreadUtils.assertMainThread
  * @see VisibilityBoundsChangeNotifier
  */
 class HostVisibilityNotifier : VisibilityBoundsChangeNotifier {
-  private val hostSubscribers = mutableSetOf<RenderCoreExtensionHost>()
+  private var hostSubscribers: MutableSet<RenderCoreExtensionHost>? = null
 
   /**
    * Subscribe a [RenderCoreExtensionHost] view to receive visibility bounds change notifications.
@@ -59,7 +59,9 @@ class HostVisibilityNotifier : VisibilityBoundsChangeNotifier {
   @UiThread
   fun subscribe(host: RenderCoreExtensionHost) {
     assertMainThread()
-    hostSubscribers.add(host)
+    (hostSubscribers ?: mutableSetOf<RenderCoreExtensionHost>().also { hostSubscribers = it }).add(
+        host,
+    )
   }
 
   /**
@@ -71,14 +73,16 @@ class HostVisibilityNotifier : VisibilityBoundsChangeNotifier {
   @UiThread
   fun unsubscribe(host: RenderCoreExtensionHost) {
     assertMainThread()
-    hostSubscribers.remove(host)
+    hostSubscribers?.remove(host)
   }
 
   @UiThread
   override fun notifyVisibleBoundsChanged(hostView: View, reason: VisibilityChangeReason) {
     assertMainThread()
-    for (host in hostSubscribers) {
-      host.notifyVisibleBoundsChanged(reason)
+    hostSubscribers?.let { subscribers ->
+      for (host in subscribers) {
+        host.notifyVisibleBoundsChanged(reason)
+      }
     }
   }
 
@@ -89,8 +93,10 @@ class HostVisibilityNotifier : VisibilityBoundsChangeNotifier {
       reason: VisibilityChangeReason,
   ) {
     assertMainThread()
-    for (host in hostSubscribers) {
-      host.notifyVisibleBoundsChanged(reason)
+    hostSubscribers?.let { subscribers ->
+      for (host in subscribers) {
+        host.notifyVisibleBoundsChanged(reason)
+      }
     }
   }
 }

@@ -17,7 +17,10 @@
 package com.facebook.rendercore.extensions
 
 import android.view.View
+import android.view.ViewGroup
+import androidx.annotation.UiThread
 import com.facebook.rendercore.RenderCoreExtensionHost
+import com.facebook.rendercore.thread.utils.ThreadUtils.assertMainThread
 
 /**
  * Extension function to find the nearest [HostVisibilityNotifier] in the view hierarchy.
@@ -39,6 +42,28 @@ fun View.findHostVisibilityNotifier(): HostVisibilityNotifier? {
     currentView = currentView.parent as? View
   }
   return null
+}
+
+/**
+ * Installs a [HostVisibilityNotifier] on this view group so nested [RenderCoreExtensionHost] views
+ * can find it with [findHostVisibilityNotifier] and subscribe for visible-bounds updates.
+ *
+ * Install at the root of the hierarchy that receives the scroll/translate/offset calls, and have
+ * the nested hosts call [subscribeToVisibilityNotifications] on attach and
+ * [unsubscribeFromVisibilityNotifications] on detach.
+ *
+ * @return the installed notifier
+ */
+@UiThread
+fun ViewGroup.installVisibilityBoundsChangeNotifier(
+    notifier: HostVisibilityNotifier = HostVisibilityNotifier(),
+): HostVisibilityNotifier {
+  assertMainThread()
+  setTag(
+      VisibilityBoundChangeForwardingHostView.VISIBILITY_BOUNDS_CHANGE_NOTIFIER_TAG_KEY,
+      notifier,
+  )
+  return notifier
 }
 
 /**
