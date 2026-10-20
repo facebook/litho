@@ -1,0 +1,18 @@
+name: Build Yoga for the host
+description: Builds Yoga's JNI library for the CI machine, so JVM unit tests can load it.
+
+runs:
+  using: composite
+  steps:
+    - name: Build libyoga for the host
+      shell: bash
+      # The JNI sources are written against the NDK's jni.h. The JDK's jni.h doesn't include
+      # <cstdint> and declares JNINativeMethod's strings as char*, not const char*.
+      run: |
+        cmake -S lib/yoga/java -B build/yoga-host \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_C_COMPILER=clang \
+          -DCMAKE_CXX_COMPILER=clang++ \
+          -DCMAKE_CXX_FLAGS="-I$JAVA_HOME/include -I$JAVA_HOME/include/linux -include cstdint -Wno-writable-strings"
+        cmake --build build/yoga-host --parallel
+        echo "LD_LIBRARY_PATH=$PWD/build/yoga-host${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" >> "$GITHUB_ENV"

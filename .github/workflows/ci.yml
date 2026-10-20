@@ -23,18 +23,12 @@ jobs:
         uses: actions/checkout@v4
       - name: Set up build
         uses: ./.github/actions/setup-build
-      # These modules' tests load Yoga's JNI library, which is only built for Android ABIs.
+      - name: Build Yoga for the host
+        uses: ./.github/actions/build-yoga-host
+      # litho-it's tests compile litho-processor's test helpers, which use javax.lang.model.
+      # Android unit-test compilation doesn't provide it.
       - name: Run tests
-        run: >-
-          ./gradlew test --stacktrace
-          -x :litho-core:test
-          -x :litho-coroutines-kotlin:test
-          -x :litho-it:test
-          -x :litho-it-spec:test
-          -x :litho-live-data:test
-          -x :litho-surface:test
-          -x :litho-testing:test
-          -x :sample:test
+        run: ./gradlew test -x :litho-it:test --stacktrace
   deploy-check:
     name: Skip deploy if PR or Fork or not a SNAPSHOT version
     needs: [build, tests]
