@@ -29,7 +29,7 @@ class HookIdentityTransformerTest : AbstractCompilerTest() {
 
   @Test
   fun call_site_indexes() {
-    runHookIdentityTest("test-data/HookIdentity.call-site-indexes.kt")
+    runTest("test-data/HookIdentity.call-site-indexes.kt")
   }
 
   @Test
@@ -46,8 +46,7 @@ class HookIdentityTransformerTest : AbstractCompilerTest() {
 
   private fun compileCallSiteIds(packageName: String): List<Int> {
     val processor = HookIdentityCallProcessor()
-    val result = compileWithHookIdentity(
-        processor,
+    val result = compile(
         SourceFile.kotlin(
             "$packageName.kt",
             """
@@ -63,6 +62,7 @@ class HookIdentityTransformerTest : AbstractCompilerTest() {
                 """
                 .trimIndent(),
         ),
+        processor = processor,
     )
     assertThat(result.exitCode).isEqualTo(KotlinCompilation.ExitCode.OK)
     return processor.callSiteIds

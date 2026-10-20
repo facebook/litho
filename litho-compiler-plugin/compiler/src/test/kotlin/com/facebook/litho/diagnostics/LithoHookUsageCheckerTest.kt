@@ -30,11 +30,11 @@ class LithoHookUsageCheckerTest : AbstractCompilerTest() {
    */
   @Test
   fun hooks_misuse() {
-    runHookIdentityTest("test-data/Hooks.misuse.kt")
+    runTest("test-data/Hooks.misuse.kt")
   }
 
   @Test
   fun hooks_good_use() {
-    runHookIdentityTest("test-data/Hooks.good.kt")
+    runTest("test-data/Hooks.good.kt")
   }
 }

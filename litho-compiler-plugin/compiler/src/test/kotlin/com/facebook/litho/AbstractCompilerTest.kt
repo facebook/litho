@@ -29,22 +29,35 @@ import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 
 abstract class AbstractCompilerTest {
 
-  fun compileWithHookIdentity(
-      processor: AbstractTestProcessor,
+  /**
+   * Compiles [code] with the Litho plugin installed.
+   *
+   * [plugins] is the seam for a test that needs a feature configured differently from the one
+   * [LithoCompilerPlugins.ALL] ships -- the plugin instance carries its own configuration, so no
+   * compiler option is involved.
+   */
+  fun compile(
       vararg code: SourceFile,
+      plugins: List<LithoCompilerPlugin> = LithoCompilerPlugins.ALL,
+      processor: AbstractTestProcessor? = null,
   ): JvmCompilationResult {
     val compilation = newCompilation {
       sources = code.asList()
-      compilerPluginRegistrars =
-          listOf(LithoCompilerPluginRegistrar(), TestComponentRegistrar(processor))
+      compilerPluginRegistrars = buildList {
+        add(LithoCompilerPluginRegistrar(plugins))
+        processor?.let { add(TestComponentRegistrar(it)) }
+      }
     }
     return compilation.compile()
   }
 
-  fun runHookIdentityTest(path: String) {
+  fun runTest(path: String, plugins: List<LithoCompilerPlugin> = LithoCompilerPlugins.ALL) {
     val testData = testData(path)
-    val compilationResult =
-        compileWithHookIdentity(testData.processor, *testData.sourceFiles.toTypedArray())
+    val compilationResult = compile(
+        *testData.sourceFiles.toTypedArray(),
+        plugins = plugins,
+        processor = testData.processor,
+    )
     val processorActualResult = testData.processor.getProcessorResult()
     val compilerActualResult = testData.processor.extractCompilerResult(compilationResult)
     assertThat(processorActualResult).isEqualTo(testData.processorExpectedOutput)

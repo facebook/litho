@@ -37,6 +37,12 @@ object LithoNames {
   val Unconditional: ClassId = ClassId.fromString("com/facebook/litho/annotations/Unconditional")
   val Hook: ClassId = ClassId.fromString("com/facebook/litho/annotations/Hook")
 
+  // Auto Deps annotations live in RenderCore, not litho-core: rendercore-primitives carries two of
+  // the target APIs and does not depend on litho-core.
+  val AutoDeps: ClassId = ClassId.fromString("com/facebook/rendercore/annotations/AutoDeps")
+  val Deps: ClassId = ClassId.fromString("com/facebook/rendercore/annotations/Deps")
+  val DepsFrom: ClassId = ClassId.fromString("com/facebook/rendercore/annotations/DepsFrom")
+
   val getProps: Name = Name.identifier("getProps")
   val EMPTY_ARRAY: Name = Name.identifier("EMPTY_ARRAY")
   val render: Name = Name.identifier("render")

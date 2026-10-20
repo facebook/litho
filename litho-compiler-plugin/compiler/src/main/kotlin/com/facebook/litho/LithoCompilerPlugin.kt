@@ -16,6 +16,7 @@
 
 package com.facebook.litho
 
+import com.facebook.litho.ir.AutoDepsPlugin
 import com.facebook.litho.ir.HookIdentityPlugin
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
@@ -55,7 +56,8 @@ object LithoCompilerPlugins {
 
   /**
    * Every feature, in the order their IR transforms run. The order is explicit because each
-   * transform sees the IR left behind by the ones before it.
+   * transform sees the IR left behind by the ones before it: Auto Deps reads the closure of a
+   * lambda as it was written, so it has to run before hook identity rewrites the calls inside it.
    */
-  val ALL: List<LithoCompilerPlugin> = listOf(HookIdentityPlugin)
+  val ALL: List<LithoCompilerPlugin> = listOf(AutoDepsPlugin(), HookIdentityPlugin)
 }
