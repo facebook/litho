@@ -51,6 +51,7 @@ public class IncrementalMountWithCustomViewContainerActivity extends Navigatable
     final ComponentTree componentTree =
         ComponentTree.create(
                 lithoView.getComponentContext(),
+                this,
                 SimpleListComponent.create(lithoView.getComponentContext()))
             // Another alternative:
             // If you don't need incremental mount for your view, you can also just turn it off
