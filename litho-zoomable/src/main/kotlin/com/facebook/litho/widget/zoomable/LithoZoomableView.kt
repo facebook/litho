@@ -56,13 +56,13 @@ class LithoZoomableView(context: Context, forwardScrollChanges: Boolean = true) 
     super.detachViewFromParent(child)
   }
 
-  override fun onAttachedToWindow() {
+  protected override fun onAttachedToWindow() {
     super.onAttachedToWindow()
     nestedScrollingChildHelper.isNestedScrollingEnabled = true
     renderTreeView.subscribeToVisibilityNotifications()
   }
 
-  override fun onDetachedFromWindow() {
+  protected override fun onDetachedFromWindow() {
     renderTreeView.unsubscribeFromVisibilityNotifications()
     nestedScrollingChildHelper.isNestedScrollingEnabled = false
     super.onDetachedFromWindow()
