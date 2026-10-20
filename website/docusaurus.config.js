@@ -156,6 +156,14 @@ module.exports = {
     ossRepoPath: 'fbandroid/libraries/components',
   },
   plugins: [
+    // Mermaid lazy-loads elkjs only for `flowchart-elk` diagrams, which these docs
+    // don't use. Its number tables trip GitHub secret scanning on the gh-pages push.
+    () => ({
+      name: 'exclude-elkjs',
+      configureWebpack: () => ({
+        resolve: {alias: {'elkjs/lib/elk.bundled.js': false}},
+      }),
+    }),
     [
       '@docusaurus/plugin-client-redirects',
       {
