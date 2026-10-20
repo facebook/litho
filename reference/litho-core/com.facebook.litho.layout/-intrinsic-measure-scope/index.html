@@ -2,7 +2,7 @@
 <html class="no-js">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
-    <title>PlaceableScope</title>
+    <title>IntrinsicMeasureScope</title>
 <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../";</script>
     <script>document.documentElement.classList.replace("no-js","js");</script>
     <script>const storage = localStorage.getItem("dokka-dark-mode")
@@ -58,23 +58,23 @@
                 <div class="sidebar--inner" id="sideMenu"></div>
             </div>
             <div id="main">
-<div class="main-content" data-page-type="classlike" id="content" pageids="litho-core::com.facebook.litho.layout/PlaceableScope///PointingToDeclaration//947585829">
-  <div class="breadcrumbs"><a href="../../index.html">litho-core</a><span class="delimiter">/</span><a href="../index.html">com.facebook.litho.layout</a><span class="delimiter">/</span><span class="current">PlaceableScope</span></div>
+<div class="main-content" data-page-type="classlike" id="content" pageids="litho-core::com.facebook.litho.layout/IntrinsicMeasureScope///PointingToDeclaration//947585829">
+  <div class="breadcrumbs"><a href="../../index.html">litho-core</a><span class="delimiter">/</span><a href="../index.html">com.facebook.litho.layout</a><span class="delimiter">/</span><span class="current">IntrinsicMeasureScope</span></div>
   <div class="cover ">
-    <h1 class="cover"><span>Placeable</span><wbr><span><span>Scope</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="../../com.facebook.litho.annotations/-experimental-litho-api/index.html"><span class="token annotation builtin">ExperimentalLithoApi</span></a></div></div><span class="token keyword">class </span><a href="index.html">PlaceableScope</a></div><p class="paragraph">Receiver for the placement pass.</p><p class="paragraph">A child that is never placed occupies no space and will not be mounted. Declining to place is therefore how a container drops a child: measuring one to see whether it fits and then leaving it out costs its subtree nothing.</p></div></div>
+    <h1 class="cover"><span>Intrinsic</span><wbr><span>Measure</span><wbr><span><span>Scope</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="../../com.facebook.litho.annotations/-experimental-litho-api/index.html"><span class="token annotation builtin">ExperimentalLithoApi</span></a></div></div><span class="token keyword">sealed </span><span class="token keyword">class </span><a href="index.html">IntrinsicMeasureScope</a></div><p class="paragraph">What a layout function can do whether it is answering an intrinsic question or measuring: read its environment. Receiver for a <a href="../-layout-function/index.html">LayoutFunction</a>'s intrinsic overrides, which answer a number: they may not measure, declare a size or place. <a href="../-measure-scope/index.html">MeasureScope</a> adds measuring and declaring.</p><p class="paragraph">Nothing in Litho asks a layout function's intrinsic overrides yet: Yoga measures a <code class="lang-kotlin">Layout</code> by running <a href="../-layout-function/measure.html">LayoutFunction.measure</a>.</p><p class="paragraph">Sealed: only Litho provides one.</p><h4 class="">Inheritors</h4><div class="table"><div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="../-measure-scope/index.html">MeasureScope</a></div></span></div><div></div></div></div></div></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
     <div class="tabs-section-body">
       <div data-togglable="PROPERTY">
         <h2 class="">Properties</h2>
-        <div class="table"><a data-name="594308874%2FProperties%2F947585829" anchor-label="layoutDirection" id="594308874%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
+        <div class="table"><a data-name="1767007990%2FProperties%2F947585829" anchor-label="layoutDirection" id="1767007990%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
           <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="layout-direction.html"><span>layout</span><wbr><span><span>Direction</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="594308874%2FProperties%2F947585829"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1767007990%2FProperties%2F947585829"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
@@ -88,32 +88,17 @@
       </div>
       <div data-togglable="FUNCTION">
         <h2 class="">Functions</h2>
-        <div class="table"><a data-name="-1012522733%2FFunctions%2F947585829" anchor-label="place" id="-1012522733%2FFunctions%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
+        <div class="table"><a data-name="-270366104%2FFunctions%2F947585829" anchor-label="toPixels" id="-270366104%2FFunctions%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
           <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="place.html"><span><span>place</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1012522733%2FFunctions%2F947585829"></span>
+                  <div><a href="to-pixels.html"><span>to</span><wbr><span><span>Pixels</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-270366104%2FFunctions%2F947585829"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-placeable/index.html">Placeable</a><span class="token punctuation">.</span><a href="place.html"><span class="token function">place</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">x<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span><span class="token constant">0</span><span class="token punctuation">, </span></span><span class="parameter ">y<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span><span class="token constant">0</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Position this child at <a href="place.html">x</a>, <a href="place.html">y</a> relative to this container's top-left.</p></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="-440161113%2FFunctions%2F947585829" anchor-label="placeRelative" id="-440161113%2FFunctions%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="place-relative.html"><span>place</span><wbr><span><span>Relative</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-440161113%2FFunctions%2F947585829"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-placeable/index.html">Placeable</a><span class="token punctuation">.</span><a href="place-relative.html"><span class="token function">placeRelative</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">start<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span><span class="token constant">0</span><span class="token punctuation">, </span></span><span class="parameter ">top<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span><span class="token constant">0</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Position this child at <a href="place-relative.html">start</a> from this container's start edge and <a href="place-relative.html">top</a> from its top, so a right-to-left container mirrors it: the left edge in left-to-right, the right edge in right-to-left, against the width this container declared.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token punctuation">.</span><a href="to-pixels.html"><span class="token function">toPixels</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a></div><div class="brief "><p class="paragraph">This dimension in pixels, as the container's resources resolve it: <code class="lang-kotlin">16.dp.toPixels()</code>.</p></div></div></div>
                 </div>
               </div>
             </div>
