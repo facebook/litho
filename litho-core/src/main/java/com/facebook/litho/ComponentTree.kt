@@ -28,11 +28,13 @@ import android.util.Log
 import android.view.Choreographer
 import android.view.View
 import android.view.accessibility.AccessibilityManager
+import androidx.activity.ComponentActivity
 import androidx.annotation.Keep
 import androidx.annotation.RestrictTo
 import androidx.annotation.UiThread
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LifecycleOwner
+import androidx.savedstate.SavedStateRegistryOwner
 import com.facebook.infer.annotation.ThreadConfined
 import com.facebook.infer.annotation.ThreadSafe
 import com.facebook.litho.ComponentsSystrace.trace
@@ -2961,6 +2963,7 @@ open class ComponentTree protected constructor(builder: Builder) :
     internal var measureListener: MeasureListener? = null
     internal var lithoVisibilityEventsController: LithoVisibilityEventsController? = null
     internal var lifecycleOwner: LifecycleOwner? = null
+    internal var savedStateRegistryOwner: SavedStateRegistryOwner? = null
     internal var lithoViewModelStore: LithoViewModelStore? = null
     internal var lithoSaveableStateRegistry: LithoSaveableStateRegistry? = null
     internal var nestedTreeSaveableStateKey: String? = null
@@ -2972,6 +2975,8 @@ open class ComponentTree protected constructor(builder: Builder) :
     internal var stateUpdater: StateUpdater? = null
 
     internal var poolScope: PoolScope = PoolScope.None
+
+    internal var saveableStateKey: String? = null
 
     init {
       config = context.lithoConfiguration.componentsConfig
@@ -3150,6 +3155,19 @@ open class ComponentTree protected constructor(builder: Builder) :
       return this
     }
 
+    /**
+     * Names this root tree for `useSaveableState` under the [SavedStateRegistryOwner] passed to
+     * [create]. The key replaces the root component's class as the tree's identity, so a screen can
+     * save two trees with the same root, and the next tree with this key takes over its values even
+     * when it replaces this tree while the screen is still visible. Nested trees ignore it.
+     */
+    @ExperimentalLithoApi
+    fun withSaveableStateKey(key: String): Builder {
+      require(key.isNotEmpty()) { "A ComponentTree saveable-state key cannot be empty" }
+      saveableStateKey = key
+      return this
+    }
+
     /** Builds a [ComponentTree] using the parameters specified in this builder. */
     @Suppress("DEPRECATION") // Bridges the deprecated enableChildClipping into the config.
     fun build(): ComponentTree {
@@ -3247,6 +3265,67 @@ open class ComponentTree protected constructor(builder: Builder) :
     fun create(context: ComponentContext): Builder {
       return Builder(context)
     }
+
+    /** Creates a root ComponentTree hosted by [activity], which is also its context. */
+    @JvmStatic fun create(activity: ComponentActivity): Builder = create(activity, activity)
+
+    @JvmStatic
+    fun create(activity: ComponentActivity, root: Component.Builder<*>): Builder =
+        create(activity, root.build())
+
+    @JvmStatic
+    fun create(activity: ComponentActivity, root: Component?): Builder =
+        create(activity).apply { root?.let(::withRoot) }
+
+    /**
+     * Creates a root ComponentTree hosted by [host], the Fragment or Activity that creates it.
+     *
+     * [host] is both the tree's lifecycle owner, exposed to components through
+     * [LifecycleOwnerTreeProp], and its saved-state owner. A Fragment passes itself, not
+     * `viewLifecycleOwner`, so it can create the tree as early as `onCreate`. [context] is the
+     * context the tree renders with, which can differ from the host's, such as a themed wrapper.
+     * Nested ComponentTrees should continue to use [createNestedComponentTree] so they inherit
+     * these dependencies from their parent.
+     */
+    @JvmStatic
+    fun create(context: Context, host: SavedStateRegistryOwner): Builder =
+        create(ComponentContext(context), host)
+
+    /**
+     * Like `create(Context, SavedStateRegistryOwner)`, keeping the Litho configuration and
+     * TreeProps already installed on [context].
+     */
+    @JvmStatic
+    fun create(context: ComponentContext, host: SavedStateRegistryOwner): Builder =
+        Builder(context).apply {
+          withLifecycleOwnerTreeProp(host)
+          savedStateRegistryOwner = host
+        }
+
+    @JvmStatic
+    fun create(
+        context: Context,
+        host: SavedStateRegistryOwner,
+        root: Component.Builder<*>,
+    ): Builder = create(context, host, root.build())
+
+    @JvmStatic
+    fun create(context: Context, host: SavedStateRegistryOwner, root: Component?): Builder =
+        create(context, host).apply { root?.let(::withRoot) }
+
+    @JvmStatic
+    fun create(
+        context: ComponentContext,
+        host: SavedStateRegistryOwner,
+        root: Component.Builder<*>,
+    ): Builder = create(context, host, root.build())
+
+    @JvmStatic
+    fun create(
+        context: ComponentContext,
+        host: SavedStateRegistryOwner,
+        root: Component?,
+    ): Builder = create(context, host).apply { root?.let(::withRoot) }
 
     @JvmStatic
     fun create(context: ComponentContext, root: Component.Builder<*>): Builder {
