@@ -17,10 +17,16 @@
 package com.facebook.litho.flexbox
 
 import android.annotation.SuppressLint
+import android.graphics.Color
+import com.facebook.litho.Border
 import com.facebook.litho.Column
+import com.facebook.litho.Component
 import com.facebook.litho.DynamicValue
+import com.facebook.litho.EventDispatchInfo
+import com.facebook.litho.EventHandler
 import com.facebook.litho.Row
 import com.facebook.litho.Style
+import com.facebook.litho.annotations.EventHandlerRebindMode
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.core.height
 import com.facebook.litho.core.padding
@@ -215,10 +221,7 @@ class FlexboxLegacyBuilderTest {
   fun eachStyleProp_wrapperReconcilesIdenticallyToDsl() {
     // The wrapper's setters call the SAME Style extensions as the Kotlin DSL, so a builder-built
     // KRow is structurally identical to the DSL-built one. This asserts they reconcile identically
-    // per prop — i.e. the wrapper is never *worse* than the launched DSL path. (A few props such as
-    // flex/alignSelf/backgroundColor don't structurally reconcile even via the DSL; the wrapper
-    // must
-    // match that, which is what this verifies.)
+    // per prop — i.e. the wrapper is never *worse* than the launched DSL path.
     val cases: List<Triple<String, (Row.Builder) -> Row.Builder, () -> KRow>> = listOf(
         Triple("widthPx", { b -> b.widthPx(100) }, { KRowDsl(style = Style.width(100.px)) }),
         Triple("heightPx", { b -> b.heightPx(50) }, { KRowDsl(style = Style.height(50.px)) }),
@@ -263,6 +266,70 @@ class FlexboxLegacyBuilderTest {
   @Test
   fun emptyBuilder_equivalentToDsl() {
     assertThat((Row.create(c).build() as KRow).isEquivalentTo(KRowDsl())).isTrue()
+  }
+
+  // ===== Re-render equivalence matches the legacy path =====
+
+  // Spec code re-creates its handlers on every render. REBIND handlers share the component's
+  // EventDispatchInfo, so handlers from two renders are isEquivalentTo but not identical.
+  private val dispatchInfo = EventDispatchInfo(null, null)
+
+  private fun <E> rebindHandler(id: Int): EventHandler<E> =
+      EventHandler(id, EventHandlerRebindMode.REBIND, dispatchInfo, arrayOf<Any?>("model"))
+
+  private fun redBorder(color: Int = Color.RED): Border =
+      Border.create(c).widthPx(YogaEdge.ALL, 2).color(YogaEdge.ALL, color).build()
+
+  @Test
+  fun identicalReRender_isEquivalent_inBothFlagStates() {
+    val cases: List<Pair<String, () -> Component>> = listOf(
+        "clickHandler" to { Row.create(c).clickHandler(rebindHandler(1)).build() },
+        "touchHandler" to { Row.create(c).touchHandler(rebindHandler(2)).build() },
+        "visibleHandler" to { Row.create(c).visibleHandler(0.5f, 0.5f, rebindHandler(3)).build() },
+        "fullImpressionHandler" to
+            {
+              Row.create(c).fullImpressionHandler(rebindHandler(4)).build()
+            },
+        "onInitializeAccessibilityNodeInfoHandler" to
+            {
+              Row.create(c).onInitializeAccessibilityNodeInfoHandler(rebindHandler(5)).build()
+            },
+        "dispatchPopulateAccessibilityEventHandler" to
+            {
+              Row.create(c).dispatchPopulateAccessibilityEventHandler(rebindHandler(6)).build()
+            },
+        "border" to { Row.create(c).border(redBorder()).build() },
+        "child with clickHandler" to
+            {
+              Column.create(c).child(Row.create(c).clickHandler(rebindHandler(7))).build()
+            },
+    )
+    val mismatches = mutableListOf<String>()
+    for (enabled in listOf(true, false)) {
+      setFlag(enabled)
+      for ((name, build) in cases) {
+        if (!build().isEquivalentTo(build())) {
+          mismatches.add("$name (flag=$enabled)")
+        }
+      }
+    }
+    assertThat(mismatches).isEmpty()
+  }
+
+  @Test
+  fun differentHandler_isNotEquivalent() {
+    val first = Row.create(c).clickHandler(rebindHandler(1)).build()
+    val second = Row.create(c).clickHandler(rebindHandler(2)).build()
+
+    assertThat(first.isEquivalentTo(second)).isFalse()
+  }
+
+  @Test
+  fun differentBorder_isNotEquivalent() {
+    val first = Row.create(c).border(redBorder()).build()
+    val second = Row.create(c).border(redBorder(Color.BLUE)).build()
+
+    assertThat(first.isEquivalentTo(second)).isFalse()
   }
 
   // ===== flex shorthand =====

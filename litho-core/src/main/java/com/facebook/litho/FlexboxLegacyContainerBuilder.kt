@@ -70,7 +70,6 @@ import com.facebook.litho.core.width
 import com.facebook.litho.core.widthPercent
 import com.facebook.litho.flexbox.alignSelf
 import com.facebook.litho.flexbox.aspectRatio
-import com.facebook.litho.flexbox.border
 import com.facebook.litho.flexbox.flex
 import com.facebook.litho.flexbox.isReferenceBaseline
 import com.facebook.litho.flexbox.layoutDirection
@@ -560,7 +559,10 @@ protected constructor(
       }
 
   override fun border(border: Border?): T =
-      legacyOrStyled({ super.border(border) }) { if (border != null) it.border(border) else it }
+      legacyOrStyled({ super.border(border) }) {
+        if (border != null) it + LegacyCommonPropStyleItem(LegacyCommonPropField.BORDER, border)
+        else it
+      }
 
   override fun alpha(alpha: Float): T = legacyOrStyled({ super.alpha(alpha) }) { it.alpha(alpha) }
 
@@ -1164,12 +1166,42 @@ private enum class LegacyCommonPropField : StyleItemField {
   DISPATCH_POPULATE_ACCESSIBILITY_EVENT_HANDLER,
   STATE_LIST_ANIMATOR_RES,
   SHADOW_ELEVATION_PX,
+  BORDER,
 }
+
+/**
+ * Matches how the legacy path compares these values in [CommonProps.isEquivalentTo]. Spec code
+ * re-creates its EventHandlers and Borders on every render, and neither overrides `equals`, so an
+ * identity comparison would make every re-render of a builder-built KRow/KColumn non-equivalent —
+ * defeating the equivalence checks collections use to skip re-rendering unchanged items.
+ */
+private fun isEquivalentValue(a: Any?, b: Any?): Boolean =
+    when {
+      a === b -> true
+      a is EventHandler<*> && b is EventHandler<*> -> a.isEquivalentTo(b)
+      a is Border && b is Border -> a.isEquivalentTo(b)
+      else -> a == b
+    }
+
+/** Equivalent EventHandlers share an id; Borders expose no content to hash. */
+private fun equivalenceHashCode(value: Any?): Int =
+    when (value) {
+      is EventHandler<*> -> value.id
+      is Border -> 0
+      else -> value?.hashCode() ?: 0
+    }
 
 private data class LegacyCommonPropStyleItem(
     override val field: LegacyCommonPropField,
     override val value: Any?,
 ) : StyleItem<Any?> {
+
+  override fun equals(other: Any?): Boolean =
+      other is LegacyCommonPropStyleItem &&
+          field == other.field &&
+          isEquivalentValue(value, other.value)
+
+  override fun hashCode(): Int = 31 * field.hashCode() + equivalenceHashCode(value)
 
   @Suppress("UNCHECKED_CAST")
   override fun applyCommonProps(context: ComponentContext, commonProps: CommonProps) {
@@ -1188,6 +1220,7 @@ private data class LegacyCommonPropStyleItem(
           commonProps.shadowElevationPx(
               value as? Float ?: error("SHADOW_ELEVATION_PX requires a Float value"),
           )
+      LegacyCommonPropField.BORDER -> commonProps.border(value as Border?)
     }
   }
 }
@@ -1197,6 +1230,13 @@ private data class RawEventHandlerStyleItem(
     override val field: StyleItemField,
     override val value: EventHandler<*>?,
 ) : StyleItem<EventHandler<*>?> {
+
+  override fun equals(other: Any?): Boolean =
+      other is RawEventHandlerStyleItem &&
+          field == other.field &&
+          isEquivalentValue(value, other.value)
+
+  override fun hashCode(): Int = 31 * field.hashCode() + equivalenceHashCode(value)
 
   override fun applyCommonProps(context: ComponentContext, commonProps: CommonProps) {
     when (val handlerField = field) {
