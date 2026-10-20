@@ -134,10 +134,9 @@ object ViewPredicates {
     return Predicate { input -> input.visibility == View.VISIBLE }
   }
 
-  @Suppress("UNCHECKED_CAST")
   @JvmStatic
   fun isClass(clazz: Class<out View>): Predicate<View> {
-    return Predicates.instanceOf<View>(clazz) as Predicate<View>
+    return Predicates.instanceOf<View>(clazz)
   }
 
   /** Tries to extract the description of a drawn drawable from a canvas (legacy graphics mode) */
