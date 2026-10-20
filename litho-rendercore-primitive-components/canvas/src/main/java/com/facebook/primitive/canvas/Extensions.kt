@@ -57,14 +57,12 @@ fun Canvas.withLayer(
  *    as a full circle, regardless of direction (clockwise or counter clockwise)
  */
 fun standardizeArc(startDegrees: Float, endDegrees: Float, clockwise: Boolean): Pair<Float, Float> {
-  var start: Float
-  var end = endDegrees
+  val start: Float
   var sweep = endDegrees - startDegrees
   if (sweep >= 360F || sweep <= -360F) {
     start = 0F
     sweep = 360F
   } else {
-    end = endDegrees.mod(360F)
     start = startDegrees.mod(360F)
     sweep = sweep.mod(360F)
     if (!clockwise) {
