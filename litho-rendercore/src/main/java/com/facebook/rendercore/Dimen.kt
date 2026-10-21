@@ -159,11 +159,11 @@ operator fun Float.times(other: Dimen): Dimen = other * this
 operator fun Int.times(other: Dimen): Dimen = other * this
 
 /** Creates a Dimen with a constant dp (density-independent pixels) value. */
-inline val Int.dp: Dimen
+val Int.dp: Dimen
   get() = Dimen(doubleToRawLongBits(this.toDouble()))
 
 /** Creates a Dimen with a constant dp (density-independent pixels) value. */
-inline val Float.dp: Dimen
+val Float.dp: Dimen
   get() = Dimen(doubleToRawLongBits(this.toDouble()))
 
 /**
@@ -171,15 +171,15 @@ inline val Float.dp: Dimen
  *
  * The value will be narrowed to a float automatically.
  */
-inline val Double.dp: Dimen
+val Double.dp: Dimen
   get() = Dimen(doubleToRawLongBits(this))
 
 /** Creates a Dimen with a constant sp (scale-independent pixels) value. */
-inline val Int.sp: Dimen
+val Int.sp: Dimen
   get() = Dimen(encodeSpFloat(this.toFloat()))
 
 /** Creates a Dimen with a constant sp (scale-independent pixels) value. */
-inline val Float.sp: Dimen
+val Float.sp: Dimen
   get() = Dimen(encodeSpFloat(this))
 
 /**
@@ -187,11 +187,11 @@ inline val Float.sp: Dimen
  *
  * The value will be narrowed to a float automatically.
  */
-inline val Double.sp: Dimen
+val Double.sp: Dimen
   get() = Dimen(encodeSpFloat(this.toFloat()))
 
 /** Creates a Dimen with a constant pixel value. */
-inline val Int.px: Dimen
+val Int.px: Dimen
   get() = Dimen(encodePxInt(this))
 
 /**
@@ -199,7 +199,7 @@ inline val Int.px: Dimen
  *
  * The value will automatically be converted to an int first.
  */
-inline val Float.px: Dimen
+val Float.px: Dimen
   get() = Dimen(encodePxInt(this.toInt()))
 
 /**
@@ -207,7 +207,7 @@ inline val Float.px: Dimen
  *
  * The value will automatically be converted to an int first.
  */
-inline val Double.px: Dimen
+val Double.px: Dimen
   get() = Dimen(encodePxInt(this.toInt()))
 
 //
