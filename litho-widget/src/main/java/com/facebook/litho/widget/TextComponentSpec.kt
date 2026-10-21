@@ -202,6 +202,7 @@ object TextComponentSpec {
   const val DEFAULT_COLOR: Int = 0
   private const val TAG = "TextComponentSpec"
   private const val WRONG_TEXT_SIZE = "TextComponentSpec:WrongTextSize"
+  private const val MAX_CUSTOM_ELLIPSIS_STEP_BACKS = 16
 
   val DEFAULT_TEXT_COLOR_STATE_LIST_STATES: Array<IntArray> = arrayOf(intArrayOf(0))
   val DEFAULT_TEXT_COLOR_STATE_LIST_COLORS: IntArray = intArrayOf(Color.BLACK)
@@ -907,7 +908,7 @@ object TextComponentSpec {
         val finalLayoutAlignment = customEllipsisLayout.alignment
         val isRtl: Boolean = finalTextDirection.isRtl(text, 0, text.length) == true
         val isAlignedLeft = isRtl xor (finalLayoutAlignment == Layout.Alignment.ALIGN_NORMAL)
-        val truncated = truncateText(
+        var truncated = truncateText(
             text,
             customEllipsisText,
             checkNotNull(textLayout.get()),
@@ -918,41 +919,61 @@ object TextComponentSpec {
             isRtl,
         )
 
-        val newLayout = createTextLayout(
-            c,
-            makeSizeSpec(layoutWidth.toInt(), EXACTLY),
-            null,
-            shouldIncludeFontPadding,
-            Int.MAX_VALUE,
-            shadowRadius,
-            shadowDx,
-            shadowDy,
-            shadowColor,
-            isSingleLine,
-            truncated,
-            textColor,
-            textColorStateList,
-            linkColor,
-            textSize,
-            extraSpacing,
-            spacingMultiplier,
-            letterSpacing,
-            textStyle,
-            typeface,
-            getTextAlignment(textAlignment, alignment),
-            glyphWarming,
-            layout.resolvedLayoutDirection,
-            minEms,
-            maxEms,
-            minTextWidth,
-            maxTextWidth,
-            c.androidContext.resources.displayMetrics.density,
-            breakStrategy,
-            hyphenationFrequency,
-            justificationMode,
-            textDirection,
-            lineHeight,
-        )
+        val layoutTruncatedText = { candidate: CharSequence ->
+          createTextLayout(
+              c,
+              makeSizeSpec(layoutWidth.toInt(), EXACTLY),
+              null,
+              shouldIncludeFontPadding,
+              Int.MAX_VALUE,
+              shadowRadius,
+              shadowDx,
+              shadowDy,
+              shadowColor,
+              isSingleLine,
+              candidate,
+              textColor,
+              textColorStateList,
+              linkColor,
+              textSize,
+              extraSpacing,
+              spacingMultiplier,
+              letterSpacing,
+              textStyle,
+              typeface,
+              getTextAlignment(textAlignment, alignment),
+              glyphWarming,
+              layout.resolvedLayoutDirection,
+              minEms,
+              maxEms,
+              minTextWidth,
+              maxTextWidth,
+              c.androidContext.resources.displayMetrics.density,
+              breakStrategy,
+              hyphenationFrequency,
+              justificationMode,
+              textDirection,
+              lineHeight,
+          )
+        }
+        var newLayout = layoutTruncatedText(truncated)
+        if (
+            truncated !== text &&
+                newLayout.lineCount > ellipsizedLineNumber + 1 &&
+                ComponentsConfiguration.fitCustomEllipsisOnTruncatedLine
+        ) {
+          val fitting = fitCustomEllipsisOnLine(
+              text,
+              customEllipsisText,
+              truncated.length - customEllipsisText.length,
+              ellipsizedLineNumber,
+              layoutTruncatedText,
+          )
+          if (fitting != null) {
+            truncated = fitting.first
+            newLayout = fitting.second
+          }
+        }
 
         processedText.set(truncated)
         textLayout.set(newLayout)
@@ -1143,6 +1164,80 @@ object TextComponentSpec {
       }
     }
     return -1
+  }
+
+  /**
+   * Shortens the prefix kept before [customEllipsisText] one grapheme at a time until the custom
+   * ellipsis fits on [lastVisibleLine]. If the step-back limit is reached, the longest fitting
+   * shorter prefix is binary searched. Returns null if no prefix fits.
+   */
+  private fun fitCustomEllipsisOnLine(
+      text: CharSequence,
+      customEllipsisText: CharSequence,
+      prefixLength: Int,
+      lastVisibleLine: Int,
+      layoutFor: (CharSequence) -> Layout,
+  ): Pair<CharSequence, Layout>? {
+    val graphemes = BreakIterator.getCharacterInstance()
+    graphemes.setText(text.toString())
+    var prefix = prefixLength
+    repeat(MAX_CUSTOM_ELLIPSIS_STEP_BACKS) {
+      prefix = precedingUnsplitBoundary(text, graphemes, prefix)
+      if (prefix == BreakIterator.DONE) {
+        return null
+      }
+      val candidate = TextUtils.concat(text.subSequence(0, prefix), customEllipsisText)
+      val candidateLayout = layoutFor(candidate)
+      if (candidateLayout.lineCount <= lastVisibleLine + 1) {
+        return Pair(candidate, candidateLayout)
+      }
+    }
+    val boundaries = ArrayList<Int>()
+    var offset = 0
+    while (offset != BreakIterator.DONE && offset < prefix) {
+      if (!isInsideReplacementSpan(text, offset)) {
+        boundaries.add(offset)
+      }
+      offset = graphemes.following(offset)
+    }
+    var best: Pair<CharSequence, Layout>? = null
+    var low = 0
+    var high = boundaries.size - 1
+    while (low <= high) {
+      val middle = (low + high) ushr 1
+      val candidate = TextUtils.concat(text.subSequence(0, boundaries[middle]), customEllipsisText)
+      val candidateLayout = layoutFor(candidate)
+      if (candidateLayout.lineCount <= lastVisibleLine + 1) {
+        best = Pair(candidate, candidateLayout)
+        low = middle + 1
+      } else {
+        high = middle - 1
+      }
+    }
+    return best
+  }
+
+  /**
+   * The grapheme boundary before [offset] that is not inside a [ReplacementSpan] (such as an
+   * [ImageSpan]), or [BreakIterator.DONE] if there is none.
+   */
+  private fun precedingUnsplitBoundary(
+      text: CharSequence,
+      graphemes: BreakIterator,
+      offset: Int,
+  ): Int {
+    var boundary = if (offset > 0) graphemes.preceding(offset) else BreakIterator.DONE
+    while (boundary > 0 && isInsideReplacementSpan(text, boundary)) {
+      boundary = graphemes.preceding(boundary)
+    }
+    return boundary
+  }
+
+  private fun isInsideReplacementSpan(text: CharSequence, offset: Int): Boolean {
+    val spanned = text as? Spanned ?: return false
+    return spanned.getSpans(offset, offset, ReplacementSpan::class.java).any { span ->
+      spanned.getSpanStart(span) < offset && offset < spanned.getSpanEnd(span)
+    }
   }
 
   @OnCreateMountContent

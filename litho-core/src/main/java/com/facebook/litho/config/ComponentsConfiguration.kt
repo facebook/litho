@@ -397,6 +397,12 @@ internal constructor(
      */
     @JvmField var fixRtlCustomEllipsisTruncation: Boolean = false
 
+    /**
+     * Steps a custom ellipsis truncation back by grapheme until the custom ellipsis fits on the
+     * last visible line, instead of letting it wrap onto a line that is clipped.
+     */
+    @JvmField var fitCustomEllipsisOnTruncatedLine: Boolean = false
+
     /** This flag is to enable usage of new onTouch behaviour within TextSpec touchableSpan */
     @JvmField var enableNewHandleTouchForSpansMethod: Boolean = false
 
