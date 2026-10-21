@@ -52,6 +52,7 @@ kotlin {
 dependencies {
     implementation project(':litho-core')
     implementation project(':range-manager')
+    implementation deps.supportDynamicAnimations
     implementation deps.supportRecyclerView
     implementation deps.supportSwipeRefresh
     implementation deps.supportCore

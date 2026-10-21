@@ -38,6 +38,7 @@ import com.facebook.litho.sections.common.OnCheckIsSameContentEvent
 import com.facebook.litho.sections.common.OnCheckIsSameItemEvent
 import com.facebook.litho.useState
 import com.facebook.litho.widget.ComponentRenderInfo
+import com.facebook.litho.widget.LazyCollectionItemAnimator
 import com.facebook.litho.widget.LithoRecyclerView
 import com.facebook.litho.widget.LithoRecyclerView.OnAfterLayoutListener
 import com.facebook.litho.widget.LithoRecyclerView.OnBeforeLayoutListener
@@ -92,6 +93,15 @@ class LazyCollection(
 
   override fun ComponentScope.render(): Component {
     val childTracker = useState { ChildVisibilityTracker() }.value
+    val resolvedItemAnimator =
+        when {
+          itemAnimator !== CollectionRecyclerSpec.itemAnimator -> itemAnimator
+          !context.lithoConfiguration.componentsConfig.useDefaultItemAnimatorInLazyCollections ->
+              null
+          // Generated ids are positional, so animations would play on the wrong rows.
+          lazyCollectionChildren.hasGeneratedIds -> null
+          else -> LazyCollectionItemAnimator.Default
+        }
 
     val combinedOnViewportChanged: OnViewportChanged =
         {
@@ -163,7 +173,7 @@ class LazyCollection(
           contentComparator = { previousItem, nextItem ->
             isChildEquivalent(previousItem, nextItem)
           },
-          itemAnimator = itemAnimator,
+          itemAnimator = resolvedItemAnimator,
           itemDecoration = itemDecoration,
           clipToPadding = clipToPadding ?: true,
           clipChildren = clipToPadding ?: true,
@@ -253,7 +263,7 @@ class LazyCollection(
       return CollectionRecycler.create(context)
           .section(section)
           .recyclerConfiguration(layout.recyclerConfiguration)
-          .itemAnimator(itemAnimator)
+          .itemAnimator(resolvedItemAnimator)
           .itemDecoration(itemDecoration)
           .clipToPadding(clipToPadding)
           .clipChildren(clipChildren)

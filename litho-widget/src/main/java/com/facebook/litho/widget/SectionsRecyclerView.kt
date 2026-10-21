@@ -122,7 +122,7 @@ open class SectionsRecyclerView(context: Context, recyclerView: RecyclerView) :
 
   fun setItemAnimator(itemAnimator: RecyclerView.ItemAnimator?) {
     detachedItemAnimator = recyclerView.itemAnimator
-    recyclerView.itemAnimator = itemAnimator
+    recyclerView.itemAnimator = LazyCollectionItemAnimator.resolve(itemAnimator)
   }
 
   fun resetItemAnimator() {

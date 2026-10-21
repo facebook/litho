@@ -67,6 +67,37 @@ class SectionsRecyclerViewTest {
     assertThat(sectionsRecyclerView.isLayoutRequested).isTrue
   }
 
+  @Test
+  fun `setting the lazy collection marker attaches a new animator instead of the marker`() {
+    sectionsRecyclerView.setItemAnimator(LazyCollectionItemAnimator.Default)
+
+    val attached = sectionsRecyclerView.recyclerView.itemAnimator
+    assertThat(attached).isInstanceOf(LazyCollectionItemAnimator::class.java)
+    assertThat(attached).isNotSameAs(LazyCollectionItemAnimator.Default)
+  }
+
+  @Test
+  fun `every bind with the marker attaches a different animator`() {
+    sectionsRecyclerView.setItemAnimator(LazyCollectionItemAnimator.Default)
+    val first = sectionsRecyclerView.recyclerView.itemAnimator
+    sectionsRecyclerView.resetItemAnimator()
+
+    sectionsRecyclerView.setItemAnimator(LazyCollectionItemAnimator.Default)
+    val second = sectionsRecyclerView.recyclerView.itemAnimator
+
+    assertThat(second).isNotSameAs(first)
+  }
+
+  @Test
+  fun `resetting after the marker restores the previous animator`() {
+    val previous = sectionsRecyclerView.recyclerView.itemAnimator
+
+    sectionsRecyclerView.setItemAnimator(LazyCollectionItemAnimator.Default)
+    sectionsRecyclerView.resetItemAnimator()
+
+    assertThat(sectionsRecyclerView.recyclerView.itemAnimator).isSameAs(previous)
+  }
+
   private fun layOut() {
     sectionsRecyclerView.measure(exactly(100), exactly(100))
     sectionsRecyclerView.layout(0, 0, 100, 100)

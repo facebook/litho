@@ -155,7 +155,8 @@ class LazyGridScope(override val context: ComponentContext) : ResourcesScope {
    * loops for better diffing — see R27.
    *
    * @param items Data models to be rendered as children
-   * @param id A function to create a unique id from index and data model
+   * @param id A function to create a unique id from index and data model. The id must identify the
+   *   data model, not its index: index ids break diffing and item animations when items move
    * @param isSticky A function that indicates if the child should fix to the top of the collection
    *   when it is scrolled out of view
    * @param isFullSpan A function that indicates whether the child should span across all columns
@@ -187,7 +188,8 @@ class LazyGridScope(override val context: ComponentContext) : ResourcesScope {
    * models, providing the index of each item.
    *
    * @param items Data models to be rendered as children
-   * @param id A function to create a unique id from index and data model
+   * @param id A function to create a unique id from index and data model. The id must identify the
+   *   data model, not its index: index ids break diffing and item animations when items move
    * @param deps A function to create a list of deps from index and data model
    * @param isSticky A function that indicates if the child should fix to the top of the collection
    *   when it is scrolled out of view

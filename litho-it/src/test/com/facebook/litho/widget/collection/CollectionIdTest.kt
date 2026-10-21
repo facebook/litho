@@ -105,4 +105,49 @@ class CollectionIdTest {
     assertThat(ids2.first()).isEqualTo(ids1.first())
     assertThat(ids2.last()).isEqualTo(ids1.last())
   }
+
+  @Test
+  fun `hasGeneratedIds is false when every child has an explicit id`() {
+    val children =
+        LazyCollectionChildren().apply {
+          add(id = 1, component = textComponent())
+          add(id = 2, deps = arrayOf()) { emptyComponent() }
+        }
+
+    assertThat(children.hasGeneratedIds).isFalse()
+  }
+
+  @Test
+  fun `hasGeneratedIds is true when a component child has no id`() {
+    val children =
+        LazyCollectionChildren().apply {
+          add(id = 1, component = textComponent())
+          add(textComponent())
+        }
+
+    assertThat(children.hasGeneratedIds).isTrue()
+  }
+
+  @Test
+  fun `hasGeneratedIds is true when a lambda child has no id`() {
+    val children =
+        LazyCollectionChildren().apply {
+          add(id = 1, component = textComponent())
+          add(deps = arrayOf()) { emptyComponent() }
+        }
+
+    assertThat(children.hasGeneratedIds).isTrue()
+  }
+
+  @Test
+  fun `hasGeneratedIds ignores null components that are not added`() {
+    val children =
+        LazyCollectionChildren().apply {
+          add(id = 1, component = textComponent())
+          add(null)
+        }
+
+    assertThat(children.collectionChildren).hasSize(1)
+    assertThat(children.hasGeneratedIds).isFalse()
+  }
 }

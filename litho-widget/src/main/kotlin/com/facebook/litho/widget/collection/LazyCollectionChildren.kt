@@ -31,6 +31,13 @@ class LazyCollectionChildren {
   internal val idToChild: MutableMap<Any, CollectionChild> by lazy { mutableMapOf() }
 
   private val collectionChildrenBuilder = mutableListOf<CollectionChild>()
+  /**
+   * Whether any added child relies on a generated id. Generated ids are positional, so item
+   * animations would play on the wrong rows when such children are inserted, removed or moved.
+   */
+  internal var hasGeneratedIds: Boolean = false
+    private set
+
   private var nextStaticId = 0
   private val typeToFreq: MutableMap<Int, Int> by lazy { mutableMapOf() }
 
@@ -76,6 +83,9 @@ class LazyCollectionChildren {
   ) {
     val resolvedId = getResolvedId(id, component)
     component ?: return
+    if (id == null) {
+      hasGeneratedIds = true
+    }
     val child = CollectionChild(
         resolvedId,
         component,
@@ -104,6 +114,9 @@ class LazyCollectionChildren {
       parentHeightPercent: Float = -1f,
       componentFunction: () -> Component?,
   ) {
+    if (id == null) {
+      hasGeneratedIds = true
+    }
     val child = CollectionChild(
         getResolvedId(id),
         null,

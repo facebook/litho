@@ -47,7 +47,6 @@ import com.facebook.litho.annotations.Hook
 import com.facebook.litho.choreographercompat.ChoreographerCompat
 import com.facebook.litho.choreographercompat.ChoreographerCompatImpl
 import com.facebook.litho.config.ComponentsConfiguration
-import com.facebook.litho.config.PrimitiveRecyclerBinderStrategy
 import com.facebook.litho.config.RunnableHandlerProvider
 import com.facebook.litho.debug.DebugInfoReporter
 import com.facebook.litho.debug.LithoDebugEvent
@@ -55,7 +54,6 @@ import com.facebook.litho.debug.LithoDebugEventAttributes
 import com.facebook.litho.effects.useEffect as useLayoutEffect
 import com.facebook.litho.onCleanup
 import com.facebook.litho.sections.widget.GridRecyclerConfiguration
-import com.facebook.litho.sections.widget.NoUpdateItemAnimator
 import com.facebook.litho.sections.widget.RecyclerConfiguration
 import com.facebook.litho.sections.widget.StaggeredGridRecyclerConfiguration
 import com.facebook.litho.useCached
@@ -335,32 +333,10 @@ class CollectionRecyclerComponent(
     val remeasureCallback: () -> Unit = useCallback { -> measureVersion.update { it + 1 } }
     val pullToRefreshCallback: () -> Unit = useCallback { -> onPullToRefresh?.invoke() }
     val internalPullToRefreshEnabled = (layoutConfig.orientation.isVertical && pullToRefreshEnabled)
-    /*
-     * This is a temporary solution while we experiment with offering the same behavior regarding
-     * the default item animators as in
-     * [com.facebook.litho.sections.widget.RecyclerCollectionComponent].
-     *
-     * This is needed because we will have a crash if we re-use the same animator instance across
-     * different RV instances. In this approach we identify if the client opted by using the
-     * "default" animator, and if so, it will pass on a new instance of the same type, to avoid a
-     * crash that happens due to re-using the same instances in different RVs.
-     */
+    // LazyCollection resolves the default sentinel before it gets here; the sentinel is a shared
+    // instance and must never be attached to a RecyclerView.
     val itemAnimatorToUse =
-        when (itemAnimator) {
-          CollectionRecyclerSpec.itemAnimator -> {
-            if (
-                context.lithoConfiguration.componentsConfig
-                    .useDefaultItemAnimatorInLazyCollections &&
-                    context.lithoConfiguration.componentsConfig.primitiveRecyclerBinderStrategy ==
-                        PrimitiveRecyclerBinderStrategy.SPLIT_BINDERS
-            ) {
-              NoUpdateItemAnimator()
-            } else {
-              null
-            }
-          }
-          else -> itemAnimator
-        }
+        if (itemAnimator === CollectionRecyclerSpec.itemAnimator) null else itemAnimator
     val padding =
         useStateWithDeps(startPadding, topPadding, endPadding, bottomPadding) {
               Padding(
@@ -610,10 +586,11 @@ internal class LatestCommittedData(
  * new one and cross-fading between them. This avoids an unnecessary ViewHolder allocation and the
  * cross-fade change animation for the default animator.
  *
- * Note: [NoUpdateItemAnimator] (used by Litho when [useDefaultItemAnimatorInLazyCollections] is
- * enabled) already sets [SimpleItemAnimator.setSupportsChangeAnimations] to `false`, so
- * [canReuseUpdatedViewHolder] returns `true` regardless of the payload. The payload is still passed
- * here as a defensive measure for cases where a custom [RecyclerView.ItemAnimator] is set.
+ * Note: [com.facebook.litho.widget.LazyCollectionItemAnimator] (the Lazy Collection default when
+ * [ComponentsConfiguration.useDefaultItemAnimatorInLazyCollections] is enabled) already sets
+ * [SimpleItemAnimator.setSupportsChangeAnimations] to `false`, so [canReuseUpdatedViewHolder]
+ * returns `true` regardless of the payload. The payload is still passed here as a defensive measure
+ * for cases where a custom [RecyclerView.ItemAnimator] is set.
  */
 private object SizeRebindPayload
 
@@ -1464,20 +1441,21 @@ private fun PrimitiveComponentScope.CollectionPrimitiveViewMountBehavior(
       }
     }
 
+    val mountDeps = arrayOf<Any?>(
+        measureVersion,
+        clipToPadding,
+        padding,
+        clipChildren,
+        scrollBarStyle,
+        horizontalFadingEdgeEnabled,
+        verticalFadingEdgeEnabled,
+        fadingEdgeLength,
+        refreshProgressBarBackgroundColor,
+        refreshProgressBarColor,
+    )
+
     withDescription("recycler-equivalent-mount") {
-      bind(
-          measureVersion,
-          clipToPadding,
-          padding,
-          clipChildren,
-          scrollBarStyle,
-          horizontalFadingEdgeEnabled,
-          verticalFadingEdgeEnabled,
-          fadingEdgeLength,
-          refreshProgressBarBackgroundColor,
-          refreshProgressBarColor,
-          itemAnimator?.javaClass,
-      ) { sectionsRecyclerView ->
+      bind(*mountDeps) { sectionsRecyclerView ->
         bindLegacyMountBinder(
             sectionsRecyclerView = sectionsRecyclerView,
             contentDescription = "", // not supported yet, using default value instead
@@ -1503,7 +1481,6 @@ private fun PrimitiveComponentScope.CollectionPrimitiveViewMountBehavior(
             edgeFactory = null, // // not supported yet, using default value instead
             refreshProgressBarBackgroundColor = refreshProgressBarBackgroundColor,
             refreshProgressBarColor = refreshProgressBarColor,
-            itemAnimator = itemAnimator,
         )
 
         onUnbind {
@@ -1514,6 +1491,17 @@ private fun PrimitiveComponentScope.CollectionPrimitiveViewMountBehavior(
               snapHelper = snapHelper,
           )
         }
+      }
+    }
+
+    // Its own binder, so that changing the animator's class doesn't rebind the mount binder.
+    // It also rebinds with the mount binder, which picks up a new animator instance as before.
+    // Unlike Recycler, the mount binder here never reattaches the adapter, so it needs no fade-in
+    // skip; the adapter binder below runs after this one.
+    withDescription("recycler-item-animator") {
+      bind(itemAnimator?.javaClass, *mountDeps) { sectionsRecyclerView ->
+        sectionsRecyclerView.setItemAnimator(itemAnimator)
+        onUnbind { sectionsRecyclerView.resetItemAnimator() }
       }
     }
 

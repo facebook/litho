@@ -183,27 +183,38 @@ constructor(
           }
         }
 
+        val mountDeps = arrayOf<Any?>(
+            measureVersion.value,
+            binder,
+            hasFixedSize,
+            isClipToPaddingEnabled,
+            leftPadding,
+            topPadding,
+            rightPadding,
+            bottomPadding,
+            isClipChildrenEnabled,
+            scrollBarStyle,
+            isHorizontalFadingEdgeEnabled,
+            isVerticalFadingEdgeEnabled,
+            fadingEdgeLength,
+            refreshProgressBarBackgroundColor,
+            refreshProgressBarColor,
+            removeAccessibilityListRole,
+        )
+
+        // Its own binder, so that changing the animator's class never remounts the adapter. It also
+        // rebinds with the mount binder, which picks up a new animator instance as before, and
+        // comes first so the animator is in place when the adapter is reattached.
+        withDescription("recycler-item-animator") {
+          bind(itemAnimator?.javaClass, *mountDeps) { sectionsRecyclerView ->
+            sectionsRecyclerView.setItemAnimator(itemAnimator)
+            onUnbind { sectionsRecyclerView.resetItemAnimator() }
+          }
+        }
+
         // RecyclerSpec's @OnMount and @OnUnmount
         withDescription("recycler-equivalent-mount") {
-          bind(
-              measureVersion.value,
-              binder,
-              hasFixedSize,
-              isClipToPaddingEnabled,
-              leftPadding,
-              topPadding,
-              rightPadding,
-              bottomPadding,
-              isClipChildrenEnabled,
-              scrollBarStyle,
-              isHorizontalFadingEdgeEnabled,
-              isVerticalFadingEdgeEnabled,
-              fadingEdgeLength,
-              refreshProgressBarBackgroundColor,
-              refreshProgressBarColor,
-              itemAnimator?.javaClass,
-              removeAccessibilityListRole,
-          ) { sectionsRecyclerView ->
+          bind(*mountDeps) { sectionsRecyclerView ->
             val recyclerView = sectionsRecyclerView.requireLithoRecyclerView()
 
             bindLegacyMountBinder(
@@ -231,11 +242,11 @@ constructor(
                 edgeFactory = edgeFactory,
                 refreshProgressBarBackgroundColor = refreshProgressBarBackgroundColor,
                 refreshProgressBarColor = refreshProgressBarColor,
-                itemAnimator = itemAnimator,
                 removeAccessibilityListRole = removeAccessibilityListRole,
             )
 
             binder.mount(recyclerView)
+            recyclerView.skipFadeInsAfterAdapterMount()
 
             onUnbind {
               unbindLegacyMountBinder(
@@ -344,25 +355,36 @@ constructor(
           }
         }
 
+        val mountDeps = arrayOf<Any?>(
+            measureVersion.value,
+            hasFixedSize,
+            isClipToPaddingEnabled,
+            leftPadding,
+            topPadding,
+            rightPadding,
+            bottomPadding,
+            isClipChildrenEnabled,
+            scrollBarStyle,
+            isHorizontalFadingEdgeEnabled,
+            isVerticalFadingEdgeEnabled,
+            fadingEdgeLength,
+            refreshProgressBarBackgroundColor,
+            refreshProgressBarColor,
+            removeAccessibilityListRole,
+        )
+
+        // Its own binder, so that changing the animator's class never remounts the adapter. It also
+        // rebinds with the mount binder, which picks up a new animator instance as before, and
+        // comes first so the animator is in place when the adapter is reattached.
+        withDescription("recycler-item-animator") {
+          bind(itemAnimator?.javaClass, *mountDeps) { sectionsRecyclerView ->
+            sectionsRecyclerView.setItemAnimator(itemAnimator)
+            onUnbind { sectionsRecyclerView.resetItemAnimator() }
+          }
+        }
+
         withDescription("recycler-equivalent-mount") {
-          bind(
-              measureVersion.value,
-              hasFixedSize,
-              isClipToPaddingEnabled,
-              leftPadding,
-              topPadding,
-              rightPadding,
-              bottomPadding,
-              isClipChildrenEnabled,
-              scrollBarStyle,
-              isHorizontalFadingEdgeEnabled,
-              isVerticalFadingEdgeEnabled,
-              fadingEdgeLength,
-              refreshProgressBarBackgroundColor,
-              refreshProgressBarColor,
-              itemAnimator?.javaClass,
-              removeAccessibilityListRole,
-          ) { sectionsRecyclerView ->
+          bind(*mountDeps) { sectionsRecyclerView ->
             bindLegacyMountBinder(
                 sectionsRecyclerView = sectionsRecyclerView,
                 contentDescription = contentDescription,
@@ -388,7 +410,6 @@ constructor(
                 edgeFactory = edgeFactory,
                 refreshProgressBarBackgroundColor = refreshProgressBarBackgroundColor,
                 refreshProgressBarColor = refreshProgressBarColor,
-                itemAnimator = itemAnimator,
                 removeAccessibilityListRole = removeAccessibilityListRole,
             )
 
@@ -430,6 +451,7 @@ constructor(
           bind(binder) { sectionsRecyclerView ->
             val recyclerView = sectionsRecyclerView.requireLithoRecyclerView()
             binder.mount(recyclerView)
+            recyclerView.skipFadeInsAfterAdapterMount()
             onUnbind { binder.unmount(recyclerView) }
           }
         }
@@ -476,6 +498,15 @@ constructor(
           id = R.id.recycler_view_container_id
         }
   }
+}
+
+/**
+ * The mount binder reattaches the adapter on padding or size changes while the list stays on
+ * screen. RecyclerView then treats every visible row as newly added, so without this they would all
+ * fade in. On a first mount it has no effect: RecyclerView never animates its first layout.
+ */
+private fun RecyclerView.skipFadeInsAfterAdapterMount() {
+  (itemAnimator as? LazyCollectionItemAnimator)?.skipFadeInsInNextLayout(this)
 }
 
 fun SectionsRecyclerView.requireLithoRecyclerView(): LithoRecyclerView =
@@ -539,7 +570,6 @@ fun ResourcesScope.bindLegacyMountBinder(
     edgeFactory: RecyclerView.EdgeEffectFactory?,
     @ColorInt refreshProgressBarBackgroundColor: Int?,
     @ColorInt refreshProgressBarColor: Int,
-    itemAnimator: ItemAnimator?,
     removeAccessibilityListRole: Boolean = false,
 ): LithoRecyclerView {
   val recyclerView = sectionsRecyclerView.requireLithoRecyclerView()
@@ -579,8 +609,6 @@ fun ResourcesScope.bindLegacyMountBinder(
 
   sectionsRecyclerView.setColorSchemeColors(refreshProgressBarColor)
 
-  sectionsRecyclerView.setItemAnimator(itemAnimator)
-
   // Remove the accessibility list role to prevent TalkBack from announcing
   // the entire RecyclerView as a list when it should only expose actual lists.
   if (removeAccessibilityListRole) {
@@ -616,8 +644,6 @@ fun unbindLegacyMountBinder(
   }
 
   snapHelper?.attachToRecyclerView(null)
-
-  sectionsRecyclerView.resetItemAnimator()
 }
 
 /**

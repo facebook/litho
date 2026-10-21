@@ -79,9 +79,11 @@ internal constructor(
     /** Visibility Events related */
     @JvmField val enableCheckVisibilityAggregated: Boolean = false,
     /**
-     * This flag is used to enable the use of default item animators in lazy collections, so that
-     * the behavior is compatible to what exists nowadays in the
-     * [com.facebook.litho.sections.widget.RecyclerCollectionComponent].
+     * Gives Lazy Collections that keep the default item animator structural item animations (fade
+     * on insert and remove, slide on move), as
+     * [com.facebook.litho.sections.widget.RecyclerCollectionComponent] has. Only lists whose
+     * children all have explicit ids are animated, since generated ids are positional. Each
+     * RecyclerView gets its own animator instance.
      */
     @JvmField val useDefaultItemAnimatorInLazyCollections: Boolean = false,
     /**

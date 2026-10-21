@@ -36,7 +36,6 @@ import com.facebook.litho.annotations.PropDefault
 import com.facebook.litho.annotations.Reason
 import com.facebook.litho.annotations.ResType
 import com.facebook.litho.annotations.State
-import com.facebook.litho.config.PrimitiveRecyclerBinderStrategy
 import com.facebook.litho.sections.Section
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.SectionTree
@@ -119,31 +118,10 @@ object CollectionRecyclerSpec {
         recyclerConfiguration.recyclerBinderConfiguration.primitiveRecyclerBinderStrategy
             ?: componentsConfiguration.primitiveRecyclerBinderStrategy
 
-    /**
-     * This is a temporary solution while we experiment with offering the same behavior regarding
-     * the default item animators as in
-     * [com.facebook.litho.sections.widget.RecyclerCollectionComponent].
-     *
-     * This is needed because we will have a crash if we re-use the same animator instance across
-     * different RV instances. In this approach we identify if the client opted by using the
-     * "default" animator, and if so, it will pass on a new instance of the same type, to avoid a
-     * crash that happens due to re-using the same instances in different RVs.
-     */
+    // LazyCollection resolves the default sentinel before it gets here; the sentinel is a shared
+    // instance and must never be attached to a RecyclerView.
     val itemAnimatorToUse =
-        when (itemAnimator) {
-          CollectionRecyclerSpec.itemAnimator -> {
-            if (
-                c.lithoConfiguration.componentsConfig.useDefaultItemAnimatorInLazyCollections &&
-                    c.lithoConfiguration.componentsConfig.primitiveRecyclerBinderStrategy ==
-                        PrimitiveRecyclerBinderStrategy.SPLIT_BINDERS
-            ) {
-              NoUpdateItemAnimator()
-            } else {
-              null
-            }
-          }
-          else -> itemAnimator
-        }
+        if (itemAnimator === CollectionRecyclerSpec.itemAnimator) null else itemAnimator
 
     return Recycler(
         binderStrategy = primitiveRecyclerBinderStrategy,
