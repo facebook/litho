@@ -50,15 +50,15 @@ fun Size(width: Float, height: Float) = Size(pack2Floats(width, height))
 @JvmInline
 value class Size(val packedValue: Long) {
 
-  inline val width: Float
+  val width: Float
     get() = unpackFloat1(packedValue)
 
-  inline val height: Float
+  val height: Float
     get() = unpackFloat2(packedValue)
 
-  @Suppress("NOTHING_TO_INLINE") inline operator fun component1(): Float = width
+  operator fun component1(): Float = width
 
-  @Suppress("NOTHING_TO_INLINE") inline operator fun component2(): Float = height
+  operator fun component2(): Float = height
 
   /** Returns a copy of this Size instance optionally overriding the width or height parameter */
   fun copy(
@@ -124,11 +124,11 @@ value class Size(val packedValue: Long) {
 }
 
 /** `false` when this is [Size.Unspecified]. */
-inline val Size.isSpecified: Boolean
+val Size.isSpecified: Boolean
   get() = packedValue != 0x7fc00000_7fc00000L // NaN_NaN, see UnspecifiedPackedFloats
 
 /** `true` when this is [Size.Unspecified]. */
-inline val Size.isUnspecified: Boolean
+val Size.isUnspecified: Boolean
   get() = packedValue == 0x7fc00000_7fc00000L // NaN_NaN, see UnspecifiedPackedFloats
 
 /**
