@@ -249,7 +249,9 @@ In this example, `alpha` uses the `tween(...)` spec and `scale` uses the
 ## Current limitations
 
 `Style.transition {}` currently supports change animations only. Enter and exit
-transitions, stagger, sequence, delays, translation, elevation, background
-color, and custom properties are not part of this API's surface. Continuous
+transitions, translation, elevation, background color, and custom properties are
+not part of this API's surface. There is no stagger or sequence combinator, but
+each property's spec can carry a delay, such as `tween(200.ms, delay = 100.ms)`,
+to offset hosts against each other. Continuous
 looping animations (shimmer, pulse, spinners) have their own API —
 [`useInfiniteAnimationGroup`](state-based-animations.mdx#infinite-animations).

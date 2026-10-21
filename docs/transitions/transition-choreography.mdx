@@ -11,6 +11,10 @@ keywords:
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
+:::caution
+**Deprecated:** transition sets, animators, and `transitionEndHandler` are part of the legacy transition API. For new code, animate several properties together in one [`Style.transition { }`](style-transitions.mdx), and use [State-Based Animations](state-based-animations.mdx) for the rest: `useAnimationGroup` for coordinated animations and a settle callback, `keyframes` and `tween(delay = ...)` for timing.
+:::
+
 Litho provides several APIs to customise many aspects of transitions and animate different components together.
 
 ## Sequence, Stagger, and Parallel sets

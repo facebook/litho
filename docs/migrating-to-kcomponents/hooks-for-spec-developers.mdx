@@ -126,6 +126,10 @@ For more information, see the [useErrorBoundary](../state-and-side-effects/use-e
 
 `useTransition` registers a transition to be applied when the current layout is committed. It corresponds to the Spec API's `@OnCreateTransition` functionality.
 
+:::caution
+`useTransition` is deprecated. When converting a Spec, move its transitions to [Style Transitions](../transitions/style-transitions.mdx) or [Animated Containers](../transitions/animated-containers.mdx) rather than to `useTransition`.
+:::
+
 <Tabs
   groupId="transition"
   defaultValue="kotlin_transition"

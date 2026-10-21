@@ -7,6 +7,10 @@ keywords:
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
+:::caution
+**Deprecated:** `Transition.allLayout()` is part of the legacy transition API. For new code, declare bounds on the components that should animate with [Style Transitions](style-transitions.mdx): `bounds`, or a single axis such as `height`. Use `bounds(spec, reflow = true)` when siblings should follow the resize every frame.
+:::
+
 
 :::caution
 `Transition.allLayout()` may cause unexpected transitions because it adds transitions to ALL components present in the layout tree, which may include components higher than the target component in the hierarchy. Please use it carefully.

@@ -8,6 +8,10 @@ keywords:
     - key scoping
 ---
 
+:::caution
+**Deprecated:** transition keys belong to the legacy transition API. [Style Transitions](style-transitions.mdx) needs no transition keys: it follows a component through Litho's own identity, which you control with `key(...)`.
+:::
+
 Transition keys control which components should be animated when layout changes occur. Understanding transition key scoping is essential when coordinating animations across different components in your hierarchy.
 
 ## Understanding Key Scopes

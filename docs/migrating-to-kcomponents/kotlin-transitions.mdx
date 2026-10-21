@@ -7,6 +7,10 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import VersionedCodeBlock from '@theme/VersionedCodeBlock';
 
+:::caution
+**Deprecated:** `useTransition` is the legacy transition API. When converting `@OnCreateTransition` or `@OnUpdateStateWithTransition`, target [Style Transitions](../transitions/style-transitions.mdx) for changes to a component's properties and bounds, and [Animated Containers](../transitions/animated-containers.mdx) for components entering or leaving. Use `compatSpring()` and `compatTiming()` to keep the existing motion.
+:::
+
 Transitions are an important concept in Litho, and the Kotlin API provides a set of powerful hooks for transition support. This makes it possible to replicate the behaviors of both `@OnCreateTransition` and `@OnUpdateStateWithTransition` in Kotlin.
 
 ## useTransition APIs
