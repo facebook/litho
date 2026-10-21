@@ -20,15 +20,19 @@ import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.text.Layout
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.ClickableSpan
+import android.text.style.ReplacementSpan
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewParent
 import com.facebook.rendercore.HostView
 import com.facebook.rendercore.LayoutCache
 import com.facebook.rendercore.LayoutContext
@@ -53,6 +57,382 @@ class RCTextViewTest {
   @Rule @JvmField val renderCoreTestRule = RenderCoreTestRule()
   private val UNSPECIFIED_WIDTH_SPEC =
       View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+
+  private class InlineViewTracker {
+    var createCount = 0
+    var bindCount = 0
+    var layoutCount = 0
+    var releaseCount = 0
+  }
+
+  private class TestInlineViewSpan(
+      private val childWidth: Int,
+      private val childHeight: Int,
+      private val leftInset: Int = 0,
+      private val reuseKey: Any = Any(),
+      private val tracker: InlineViewTracker = InlineViewTracker(),
+  ) : ReplacementSpan(), InlineViewSpan {
+    var createdView: View? = null
+    var boundView: View? = null
+    var releasedView: View? = null
+    var releasedViewParent: ViewParent? = null
+    val touchActions = mutableListOf<Int>()
+
+    override fun getSize(
+        paint: Paint,
+        text: CharSequence,
+        start: Int,
+        end: Int,
+        fontMetrics: Paint.FontMetricsInt?,
+    ): Int {
+      fontMetrics?.let { metrics ->
+        metrics.ascent = minOf(metrics.ascent, -childHeight)
+        metrics.top = minOf(metrics.top, -childHeight)
+      }
+      return leftInset + childWidth
+    }
+
+    override fun draw(
+        canvas: Canvas,
+        text: CharSequence,
+        start: Int,
+        end: Int,
+        x: Float,
+        top: Int,
+        y: Int,
+        bottom: Int,
+        paint: Paint,
+    ) = Unit
+
+    override fun getInlineViewReuseKey(): Any = reuseKey
+
+    override fun createInlineView(context: android.content.Context): View =
+        object : View(context) {
+              override fun onLayout(
+                  changed: Boolean,
+                  left: Int,
+                  top: Int,
+                  right: Int,
+                  bottom: Int,
+              ) {
+                tracker.layoutCount++
+              }
+
+              override fun onTouchEvent(event: MotionEvent): Boolean {
+                touchActions.add(event.action)
+                return true
+              }
+            }
+            .also { view ->
+              tracker.createCount++
+              createdView = view
+            }
+
+    override fun bindInlineView(view: View) {
+      tracker.bindCount++
+      boundView = view
+      // Like RenderTreeHostView.setMountInput, which defers mounting to onLayout.
+      view.requestLayout()
+    }
+
+    override fun releaseInlineView(view: View) {
+      tracker.releaseCount++
+      releasedView = view
+      releasedViewParent = view.parent
+    }
+
+    override fun getInlineViewBounds(lineAscent: Int, lineDescent: Int): Rect =
+        Rect(leftInset, -childHeight, leftInset + childWidth, 0)
+  }
+
+  private fun renderTextWithInlineSpan(
+      text: String,
+      spanStart: Int,
+      width: Int = 200,
+      inlineSpan: TestInlineViewSpan =
+          TestInlineViewSpan(childWidth = 20, childHeight = 10, leftInset = 3),
+  ): Pair<RCTextView, TestInlineViewSpan> {
+    val spannable = SpannableString(text)
+    spannable.setSpan(inlineSpan, spanStart, spanStart + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+    val textStyle = TextStyle().also { it.textSize = 20 }
+    val root = RichTextPrimitive(id = 1, text = spannable, style = textStyle)
+    renderCoreTestRule.useRootNode(root).setSizePx(width, 100).render()
+    val host = renderCoreTestRule.rootHost as HostView
+    return Pair(host.getChildAt(0) as RCTextView, inlineSpan)
+  }
+
+  @Test
+  fun hostsInlineViewAtPlaceholderAndDispatchesTouchToChild() {
+    val (textView, span) = renderTextWithInlineSpan("A\uFFFCB", spanStart = 1)
+    val child = span.createdView!!
+
+    assertThat(textView.childCount).isEqualTo(1)
+    assertThat(child.parent).isSameAs(textView)
+    assertThat(child.width).isEqualTo(20)
+    assertThat(child.height).isEqualTo(10)
+    assertThat(child.left).isGreaterThan(0)
+    assertThat(child.translationX).isZero()
+    assertThat(child.translationY).isZero()
+
+    val touchX = (child.left + child.right) / 2f
+    val touchY = (child.top + child.bottom) / 2f
+    textView.dispatchTouchEvent(
+        MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, touchX, touchY, 0),
+    )
+
+    assertThat(span.touchActions).containsExactly(MotionEvent.ACTION_DOWN)
+  }
+
+  @Test
+  fun inlineViewSpansOptIntoNestedRenderTreeHostMounting() {
+    val inlineSpan = TestInlineViewSpan(childWidth = 20, childHeight = 10)
+    val text = SpannableString("\uFFFC")
+    text.setSpan(inlineSpan, 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+    val primitive = RichTextPrimitive(id = 1, text = text, style = TextStyle())
+
+    assertThat(primitive.renderUnit.doesMountRenderTreeHosts()).isTrue()
+    assertThat(TextRenderUnit(2, true).doesMountRenderTreeHosts()).isTrue()
+    assertThat(TextRenderUnit(3).doesMountRenderTreeHosts()).isFalse()
+  }
+
+  @Test
+  fun mountsOneInlineViewPerReuseKey() {
+    val tracker = InlineViewTracker()
+    val text = SpannableString("\uFFFC\uFFFC")
+    repeat(2) { index ->
+      text.setSpan(
+          TestInlineViewSpan(
+              childWidth = 20,
+              childHeight = 10,
+              reuseKey = "component",
+              tracker = tracker,
+          ),
+          index,
+          index + 1,
+          Spanned.SPAN_EXCLUSIVE_EXCLUSIVE,
+      )
+    }
+    renderCoreTestRule
+        .useRootNode(RichTextPrimitive(id = 1, text = text, style = TextStyle()))
+        .setSizePx(200, 100)
+        .render()
+    val textView = (renderCoreTestRule.rootHost as HostView).getChildAt(0) as RCTextView
+
+    assertThat(textView.childCount).isEqualTo(1)
+    assertThat(tracker.createCount).isEqualTo(1)
+    assertThat(tracker.bindCount).isEqualTo(1)
+    assertThat(textView.getChildAt(0).visibility).isEqualTo(View.VISIBLE)
+  }
+
+  @Test
+  fun remountWithoutInlineSpanReleasesInlineView() {
+    val (textView, span) = renderTextWithInlineSpan("A\uFFFC", spanStart = 1)
+    val child = span.createdView!!
+
+    renderCoreTestRule
+        .useRootNode(RichTextPrimitive(id = 1, text = "plain", style = TextStyle()))
+        .setSizePx(200, 100)
+        .render()
+
+    assertThat((renderCoreTestRule.rootHost as HostView).getChildAt(0)).isSameAs(textView)
+    assertThat(span.releasedView).isSameAs(child)
+    assertThat(span.releasedViewParent).isNull()
+    assertThat(textView.childCount).isZero()
+  }
+
+  @Test
+  fun hidesInlineViewBeyondLastVisibleLineWithoutEllipsis() {
+    val inlineSpan = TestInlineViewSpan(childWidth = 20, childHeight = 10)
+    val text = SpannableString("visible\nhidden\uFFFC")
+    text.setSpan(
+        inlineSpan,
+        text.length - 1,
+        text.length,
+        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE,
+    )
+    val layout = mock<Layout>()
+    whenever(layout.getLineForOffset(text.length - 1)).thenReturn(0)
+    whenever(layout.getLineVisibleEnd(0)).thenReturn("visible".length)
+    whenever(layout.getPrimaryHorizontal(any()))
+        .thenThrow(
+            AssertionError("Hidden span offsets must not be measured"),
+        )
+    val textLayout =
+        TextMeasurementUtils.TextLayout().also { textLayout ->
+          textLayout.layout = layout
+          textLayout.processedText = text
+          textLayout.textStyle = TextStyle()
+        }
+    val textView = RCTextView(renderCoreTestRule.context)
+
+    textView.mount(textLayout)
+    textView.measure(
+        View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
+        View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
+    )
+    textView.layout(0, 0, 100, 100)
+
+    assertThat(inlineSpan.boundView?.visibility).isEqualTo(View.GONE)
+  }
+
+  @Test
+  fun hidesInlineViewWhoseEndOverlapsEllipsizedText() {
+    val inlineSpan = TestInlineViewSpan(childWidth = 20, childHeight = 10)
+    val text = SpannableString("abc")
+    text.setSpan(inlineSpan, 0, 2, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+    val layout = mock<Layout>()
+    whenever(layout.getLineForOffset(0)).thenReturn(0)
+    whenever(layout.getLineVisibleEnd(0)).thenReturn(text.length)
+    whenever(layout.getLineStart(0)).thenReturn(0)
+    whenever(layout.getEllipsisStart(0)).thenReturn(1)
+    whenever(layout.getEllipsisCount(0)).thenReturn(1)
+    whenever(layout.getPrimaryHorizontal(any()))
+        .thenThrow(AssertionError("Ellipsized span offsets must not be measured"))
+    val textLayout =
+        TextMeasurementUtils.TextLayout().also { textLayout ->
+          textLayout.layout = layout
+          textLayout.processedText = text
+          textLayout.textStyle = TextStyle()
+        }
+    val textView = RCTextView(renderCoreTestRule.context)
+
+    textView.mount(textLayout)
+    textView.measure(
+        View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
+        View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
+    )
+    textView.layout(0, 0, 100, 100)
+
+    assertThat(inlineSpan.boundView?.visibility).isEqualTo(View.GONE)
+  }
+
+  @Test
+  fun placesInlineViewOnWrappedTextLine() {
+    val (textView, span) =
+        renderTextWithInlineSpan("prefix prefix \uFFFC", spanStart = 14, width = 70)
+    val child = span.createdView!!
+
+    assertThat(child.top).isGreaterThan(0)
+    assertThat(child.left).isGreaterThanOrEqualTo(textView.paddingLeft)
+    assertThat(child.right).isLessThanOrEqualTo(textView.width - textView.paddingRight)
+  }
+
+  @Test
+  fun updateUnmountRetainsInlineViewUntilFinalUnmount() {
+    val tracker = InlineViewTracker()
+    val inlineSpan = TestInlineViewSpan(
+        childWidth = 20,
+        childHeight = 10,
+        reuseKey = "component",
+        tracker = tracker,
+    )
+    val (textView, span) =
+        renderTextWithInlineSpan("\uFFFC", spanStart = 0, inlineSpan = inlineSpan)
+    val child = span.createdView!!
+
+    textView.unmount()
+
+    assertThat(tracker.releaseCount).isZero()
+    assertThat(textView.childCount).isEqualTo(1)
+    assertThat(child.parent).isSameAs(textView)
+    assertThat(child.visibility).isEqualTo(View.GONE)
+
+    textView.finalUnmount()
+
+    assertThat(span.releasedView).isSameAs(child)
+    assertThat(span.releasedViewParent).isNull()
+    assertThat(tracker.releaseCount).isEqualTo(1)
+    assertThat(textView.childCount).isZero()
+    assertThat(child.parent).isNull()
+  }
+
+  @Test
+  fun remountReusesInlineViewForSameComponent() {
+    val tracker = InlineViewTracker()
+    val firstSpan = TestInlineViewSpan(
+        childWidth = 20,
+        childHeight = 10,
+        reuseKey = "component",
+        tracker = tracker,
+    )
+    val (firstTextView, _) =
+        renderTextWithInlineSpan("A\uFFFC", spanStart = 1, inlineSpan = firstSpan)
+    val firstChild = firstSpan.boundView!!
+    val secondSpan = TestInlineViewSpan(
+        childWidth = 30,
+        childHeight = 15,
+        reuseKey = "component",
+        tracker = tracker,
+    )
+
+    val (secondTextView, _) =
+        renderTextWithInlineSpan("B\uFFFC", spanStart = 1, inlineSpan = secondSpan)
+
+    assertThat(secondTextView).isSameAs(firstTextView)
+    assertThat(secondSpan.boundView).isSameAs(firstChild)
+    assertThat(tracker.createCount).isEqualTo(1)
+    assertThat(tracker.bindCount).isEqualTo(2)
+    assertThat(tracker.releaseCount).isZero()
+    assertThat(firstChild.width).isEqualTo(30)
+    assertThat(firstChild.height).isEqualTo(15)
+    assertThat(firstChild.visibility).isEqualTo(View.VISIBLE)
+  }
+
+  @Test
+  fun remountWithUnchangedBoundsLaysOutReboundInlineView() {
+    val tracker = InlineViewTracker()
+    val textView = RCTextView(renderCoreTestRule.context)
+    val exactly100 = View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY)
+    fun mountAndLayOut() {
+      val text = SpannableString("A\uFFFC")
+      text.setSpan(
+          TestInlineViewSpan(
+              childWidth = 20,
+              childHeight = 10,
+              reuseKey = "component",
+              tracker = tracker,
+          ),
+          1,
+          2,
+          Spanned.SPAN_EXCLUSIVE_EXCLUSIVE,
+      )
+      val textLayout =
+          TextMeasurementUtils.layout(
+                  renderCoreTestRule.context,
+                  exactly100,
+                  exactly100,
+                  text,
+                  TextStyle(),
+                  false,
+              )
+              .second
+      textView.mount(textLayout)
+      textView.measure(exactly100, exactly100)
+      textView.layout(0, 0, 100, 100)
+    }
+    mountAndLayOut()
+    val layoutCountAfterFirstMount = tracker.layoutCount
+
+    textView.unmount()
+    mountAndLayOut()
+
+    assertThat(tracker.createCount).isEqualTo(1)
+    assertThat(tracker.layoutCount).isGreaterThan(layoutCountAfterFirstMount)
+  }
+
+  @Test
+  fun plainTextKeepsRCTextViewChildless() {
+    val root = RichTextPrimitive(id = 1, text = "plain text", style = TextStyle())
+    renderCoreTestRule.useRootNode(root).setSizePx(100, 100).render()
+    val host = renderCoreTestRule.rootHost as HostView
+    val textView = host.getChildAt(0) as RCTextView
+    val holdersField = RCTextView::class.java.getDeclaredField("mInlineViewHolders")
+    holdersField.isAccessible = true
+
+    assertThat(textView.childCount).isZero()
+    assertThat(holdersField.get(textView)).isNull()
+  }
 
   private fun setupClickableSpanTest(
       shouldSpanBeNull: Boolean = false,

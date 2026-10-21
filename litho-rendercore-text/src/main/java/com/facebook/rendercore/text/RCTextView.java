@@ -53,6 +53,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
@@ -75,8 +76,11 @@ import com.facebook.rendercore.text.accessibility.AccessibilityUtils;
 import com.facebook.rendercore.text.accessibility.RCAccessibleClickableSpan;
 import com.facebook.rendercore.text.selection.RCTextEditor;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * A custom Android View that behaves like a TextView providing support for spans, custom drawing
@@ -84,7 +88,7 @@ import java.util.Locale;
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
 @DoNotStrip
-public class RCTextView extends View {
+public class RCTextView extends ViewGroup {
   private static final String ACCESSIBILITY_CLASS_BUTTON = "android.widget.Button";
   // See TextView#getTextForAccessibility()
   private static final int SAFE_PARCELABLE_SIZE = 1000000;
@@ -146,6 +150,7 @@ public class RCTextView extends View {
   private boolean mExposeClickableSpansToAccessibility = true;
   @Nullable private Handler mLongClickHandler;
   @Nullable private LongClickRunnable mLongClickRunnable;
+  @Nullable private Map<Object, InlineViewHolder> mInlineViewHolders;
 
   // Text selection support
   private boolean mTextIsSelectable;
@@ -162,6 +167,7 @@ public class RCTextView extends View {
   @SuppressWarnings("this-escape")
   public RCTextView(Context context) {
     super(context);
+    setWillNotDraw(false);
 
     if (getImportantForAccessibility() == IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
       mRCTextAccessibilityDelegate = new RCTextAccessibilityDelegate();
@@ -171,6 +177,179 @@ public class RCTextView extends View {
     } else {
       mRCTextAccessibilityDelegate = null;
       mAccessibilityManager = null;
+    }
+  }
+
+  @Override
+  protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+    if (mLayout == null || !(mText instanceof Spanned) || mInlineViewHolders == null) {
+      return;
+    }
+
+    final Spanned text = (Spanned) mText;
+    for (InlineViewHolder holder : mInlineViewHolders.values()) {
+      if (!holder.active) {
+        continue;
+      }
+      final InlineViewSpan span = holder.span;
+      final View child = holder.view;
+      final int spanStart = text.getSpanStart(span);
+      final int spanEnd = text.getSpanEnd(span);
+      if (spanStart < 0 || spanEnd <= spanStart) {
+        child.setVisibility(GONE);
+        continue;
+      }
+
+      final int line = mLayout.getLineForOffset(spanStart);
+      final int visibleLineEnd = mLayout.getLineVisibleEnd(line);
+      if (spanStart >= visibleLineEnd || spanEnd > visibleLineEnd) {
+        child.setVisibility(GONE);
+        continue;
+      }
+      if (isSpanEllipsized(mLayout, line, spanStart, spanEnd)) {
+        child.setVisibility(GONE);
+        continue;
+      }
+
+      final float startX = mLayout.getPrimaryHorizontal(spanStart);
+      final float endX = mLayout.getPrimaryHorizontal(spanEnd);
+      final Rect childBounds =
+          span.getInlineViewBounds(mLayout.getLineAscent(line), mLayout.getLineDescent(line));
+      final int spanLeft =
+          Math.round(getPaddingLeft() + mLayoutTranslationX + Math.min(startX, endX));
+      final int baseline =
+          Math.round(getPaddingTop() + mLayoutTranslationY + mLayout.getLineBaseline(line));
+      final int childWidth = childBounds.width();
+      final int childHeight = childBounds.height();
+      child.measure(
+          MeasureSpec.makeMeasureSpec(childWidth, MeasureSpec.EXACTLY),
+          MeasureSpec.makeMeasureSpec(childHeight, MeasureSpec.EXACTLY));
+      child.setVisibility(VISIBLE);
+      child.layout(
+          spanLeft + childBounds.left,
+          baseline + childBounds.top,
+          spanLeft + childBounds.right,
+          baseline + childBounds.bottom);
+    }
+  }
+
+  private static boolean isSpanEllipsized(Layout layout, int line, int spanStart, int spanEnd) {
+    final int ellipsisCount = layout.getEllipsisCount(line);
+    if (ellipsisCount == 0) {
+      return false;
+    }
+    final int ellipsisStart = layout.getLineStart(line) + layout.getEllipsisStart(line);
+    final int ellipsisEnd = ellipsisStart + ellipsisCount;
+    return spanStart < ellipsisEnd && spanEnd > ellipsisStart;
+  }
+
+  void mountInlineView(InlineViewSpan span) {
+    final Object reuseKey = span.getInlineViewReuseKey();
+    InlineViewHolder holder = mInlineViewHolders == null ? null : mInlineViewHolders.get(reuseKey);
+    if (holder != null && holder.active) {
+      ErrorReporter.report(
+          LogLevel.ERROR,
+          "RCTextView:DuplicateInlineViewKey",
+          "Cannot mount the same inline component more than once in one text layout");
+      return;
+    }
+
+    if (holder == null) {
+      final View child = span.createInlineView(getContext());
+      if (child == null) {
+        return;
+      }
+      final ViewParent parent = child.getParent();
+      if (parent != null) {
+        ErrorReporter.report(
+            LogLevel.ERROR,
+            "RCTextView:InlineViewAlreadyParented",
+            "Cannot mount inline view already attached to " + parent.getClass().getName());
+        span.releaseInlineView(child);
+        return;
+      }
+      addView(child);
+      holder = new InlineViewHolder(span, child);
+      if (mInlineViewHolders == null) {
+        mInlineViewHolders = new HashMap<>();
+      }
+      mInlineViewHolders.put(reuseKey, holder);
+    } else {
+      holder.span = span;
+    }
+
+    final View child = holder.view;
+    span.bindInlineView(child);
+    child.setVisibility(VISIBLE);
+    holder.active = true;
+  }
+
+  void unmountInlineView(InlineViewSpan span) {
+    if (mInlineViewHolders == null) {
+      return;
+    }
+    final InlineViewHolder holder = mInlineViewHolders.get(span.getInlineViewReuseKey());
+    if (holder == null || holder.span != span) {
+      return;
+    }
+    holder.active = false;
+    holder.view.setVisibility(GONE);
+  }
+
+  private void releaseAllInlineViews() {
+    if (mInlineViewHolders == null) {
+      return;
+    }
+    final List<InlineViewHolder> holders = new ArrayList<>(mInlineViewHolders.values());
+    mInlineViewHolders = null;
+    removeAllViews();
+    for (InlineViewHolder holder : holders) {
+      holder.span.releaseInlineView(holder.view);
+    }
+  }
+
+  private void deactivateInlineViews() {
+    if (mInlineViewHolders == null) {
+      return;
+    }
+    for (InlineViewHolder holder : mInlineViewHolders.values()) {
+      holder.active = false;
+    }
+  }
+
+  private void releaseInactiveInlineViews() {
+    if (mInlineViewHolders == null) {
+      return;
+    }
+    final Iterator<InlineViewHolder> iterator = mInlineViewHolders.values().iterator();
+    while (iterator.hasNext()) {
+      final InlineViewHolder holder = iterator.next();
+      if (holder.active) {
+        continue;
+      }
+      removeView(holder.view);
+      holder.span.releaseInlineView(holder.view);
+      iterator.remove();
+    }
+    if (mInlineViewHolders.isEmpty()) {
+      mInlineViewHolders = null;
+    } else {
+      requestLayout();
+    }
+  }
+
+  public void finalUnmount() {
+    releaseAllInlineViews();
+  }
+
+  private static final class InlineViewHolder {
+    private InlineViewSpan span;
+    private final View view;
+    private boolean active;
+
+    private InlineViewHolder(InlineViewSpan span, View view) {
+      this.span = span;
+      this.view = view;
     }
   }
 
@@ -497,9 +676,11 @@ public class RCTextView extends View {
     }
 
     final MountableSpan[] mountableSpans = getMountableSpans();
+    deactivateInlineViews();
     for (MountableSpan mountableSpan : mountableSpans) {
       mountableSpan.onMount(this);
     }
+    releaseInactiveInlineViews();
     if (mRCTextAccessibilityDelegate != null) {
       mRCTextAccessibilityDelegate.clearIneligibleAccessibilityFocus();
     }

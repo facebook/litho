@@ -29,12 +29,20 @@ import com.facebook.rendercore.text.TextMeasurementUtils.TextLayout;
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class TextRenderUnit extends RenderUnit<RCTextView> implements ContentAllocator<RCTextView> {
   private long mId;
+  private final boolean mDoesMountRenderTreeHosts;
 
   @SuppressWarnings("this-escape")
   public TextRenderUnit(long id) {
+    this(id, false);
+  }
+
+  @SuppressWarnings("this-escape")
+  public TextRenderUnit(long id, boolean doesMountRenderTreeHosts) {
     super();
     mId = id;
-    addOptionalMountBinder(createDelegateBinder(this, sMountUnmount));
+    mDoesMountRenderTreeHosts = doesMountRenderTreeHosts;
+    addOptionalMountBinders(
+        createDelegateBinder(this, sFinalUnmount), createDelegateBinder(this, sMountUnmount));
   }
 
   @Override
@@ -55,6 +63,11 @@ public class TextRenderUnit extends RenderUnit<RCTextView> implements ContentAll
   @Override
   public long getId() {
     return mId;
+  }
+
+  @Override
+  public boolean doesMountRenderTreeHosts() {
+    return mDoesMountRenderTreeHosts;
   }
 
   public static Binder<TextRenderUnit, RCTextView, Void> sMountUnmount =
@@ -91,6 +104,37 @@ public class TextRenderUnit extends RenderUnit<RCTextView> implements ContentAll
             @Nullable Object layoutData,
             Void bindData) {
           textView.unmount();
+        }
+      };
+
+  public static Binder<TextRenderUnit, RCTextView, Void> sFinalUnmount =
+      new Binder<TextRenderUnit, RCTextView, Void>() {
+        @Override
+        public boolean shouldUpdate(
+            TextRenderUnit currentValue,
+            TextRenderUnit newValue,
+            @Nullable Object currentLayoutData,
+            @Nullable Object newLayoutData) {
+          return false;
+        }
+
+        @Override
+        public @Nullable Void bind(
+            Context context,
+            RCTextView textView,
+            TextRenderUnit textRenderUnit,
+            @Nullable Object layoutData) {
+          return null;
+        }
+
+        @Override
+        public void unbind(
+            Context context,
+            RCTextView textView,
+            TextRenderUnit textRenderUnit,
+            @Nullable Object layoutData,
+            Void bindData) {
+          textView.finalUnmount();
         }
       };
 }

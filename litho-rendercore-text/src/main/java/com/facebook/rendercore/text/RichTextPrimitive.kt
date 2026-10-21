@@ -95,6 +95,10 @@ fun RichTextPrimitive(
                     RCTextView(c)
                   },
           ) {
+            doesMountRenderTreeHosts =
+                text is Spanned &&
+                    text.getSpans(0, text.length, InlineViewSpan::class.java).isNotEmpty()
+            bind(Unit) { content -> onUnbind { content.finalUnmount() } }
             bindWithLayoutData<RichTextLayoutData>(Unit) { content, layoutData ->
               content.mount(layoutData.textLayout)
               onUnbind { content.unmount() }

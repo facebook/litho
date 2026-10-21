@@ -1,0 +1,47 @@
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.facebook.rendercore.text
+
+import android.content.Context
+import android.graphics.Rect
+import android.view.View
+
+/** A text span that supplies a child view hosted and positioned by [RCTextView]. */
+interface InlineViewSpan : MountableSpan {
+
+  override fun onMount(view: View) {
+    (view as? RCTextView)?.mountInlineView(this)
+  }
+
+  override fun onUnmount(view: View) {
+    (view as? RCTextView)?.unmountInlineView(this)
+  }
+
+  fun getInlineViewReuseKey(): Any
+
+  fun createInlineView(context: Context): View?
+
+  fun bindInlineView(view: View)
+
+  fun releaseInlineView(view: View)
+
+  /**
+   * Returns the child bounds relative to the replacement span's physical left edge and the text
+   * baseline.
+   */
+  fun getInlineViewBounds(lineAscent: Int, lineDescent: Int): Rect
+}
