@@ -123,6 +123,7 @@ import com.facebook.samples.litho.kotlin.collection.FriendsCollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.GridCollectionExample
 import com.facebook.samples.litho.kotlin.collection.HorizontalCardCarouselComponent
 import com.facebook.samples.litho.kotlin.collection.HorizontalScrollKComponent
+import com.facebook.samples.litho.kotlin.collection.LazyListItemAnimationsComponent
 import com.facebook.samples.litho.kotlin.collection.ModularCollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.MultiListCollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.PaginationCollectionKComponent
@@ -416,6 +417,10 @@ class Demos {
                     name = "Collections",
                     listOf(
                         SingleDemo(name = "Fixed Items", component = CollectionKComponent()),
+                        SingleDemo(
+                            name = "Item Animations",
+                            component = LazyListItemAnimationsComponent(),
+                        ),
                         SingleDemo(
                             name = "Changeable items",
                             component = ChangeableItemsCollectionKComponent(),
