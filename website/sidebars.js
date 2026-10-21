@@ -107,6 +107,7 @@ module.exports = {
         'transitions/dynamic-props-bindto',
         {
           'Legacy Transitions': [
+            'transitions/migrating-from-transitions',
             'transitions/transition-basics',
             'transitions/transition-types',
             'transitions/transition-all-layout',

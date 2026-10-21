@@ -1,0 +1,112 @@
+---
+id: migrating-from-transitions
+title: Migrating from Transitions
+keywords:
+    - animations
+    - transitions
+    - migration
+    - useTransition
+    - transitionKey
+    - compatSpring
+    - compatTiming
+---
+
+This page maps the legacy transition API (`useTransition`, `Transition.create`, `Style.transitionKey`) onto the animation APIs in `com.facebook.litho.animation`. The new APIs are `@ExperimentalLithoApi`, so opt in with `@OptIn(ExperimentalLithoApi::class)`.
+
+## Change animations
+
+A transition that animates a property when it changes becomes a [Style Transition](style-transitions.mdx) on the component itself. There is no key to pair: `Style.transition` follows the component through Litho's identity, which you control with `key(...)`.
+
+Before:
+
+```kotlin
+class Square(private val expanded: Boolean) : KComponent() {
+  override fun ComponentScope.render(): Component {
+    useTransition(
+        Transition.create("square")
+            .animate(AnimatedProperties.HEIGHT)
+            .animator(Transition.timing(300)))
+    return Row(
+        style =
+            Style.width(80.dp)
+                .height(if (expanded) 160.dp else 80.dp)
+                .transitionKey(context, "square"))
+  }
+}
+```
+
+After:
+
+```kotlin
+@OptIn(ExperimentalLithoApi::class)
+class Square(private val expanded: Boolean) : KComponent() {
+  override fun ComponentScope.render(): Component =
+      Row(
+          style =
+              Style.width(80.dp)
+                  .height(if (expanded) 160.dp else 80.dp)
+                  .transition { height = compatTiming(300) })
+}
+```
+
+Move every property of a host in one step. `Style.transition` and `Style.transitionKey` can't be combined on the same component.
+
+### Properties
+
+| `AnimatedProperties` | `Style.transition { }` |
+| :-- | :-- |
+| `X`, `Y`, `WIDTH`, `HEIGHT` | `x`, `y`, `width`, `height` |
+| `AUTO_LAYOUT_PROPERTIES` (all four) | `bounds` |
+| `ALPHA` | `alpha` |
+| `SCALE` | `scale` |
+| `ROTATION`, `ROTATION_X`, `ROTATION_Y` | `rotation`, `rotationX`, `rotationY` |
+| `SCALE_X`, `SCALE_Y`, `RELATIVE_X`, `RELATIVE_Y` | No equivalent yet |
+
+### Animators
+
+The legacy and modern defaults differ. A legacy transition with no `.animator(...)` springs with overshoot, while `spring()` doesn't overshoot, and `Transition.timing` eases with accelerate-decelerate, while `tween()` uses `FastOutSlowIn`. Use the compat specs to keep the existing motion:
+
+| Legacy animator | Spec |
+| :-- | :-- |
+| None (the default) | `compatSpring()` |
+| `Transition.SPRING_WITH_OVERSHOOT` | `compatSpring()` |
+| `Transition.SPRING_WITHOUT_OVERSHOOT` | `compatSpringNoOvershoot()` |
+| `Transition.springWithConfig(tension, friction)` | `compatSpring(tension, friction)` |
+| `Transition.timing(durationMs)` | `compatTiming(durationMs)` |
+| `Transition.timing(durationMs, interpolator)` | `compatTiming(durationMs, interpolator)` |
+
+Use `spring()` or `tween()` instead only when changing the motion is intended.
+
+## Appear and disappear
+
+`appearFrom` and `disappearTo` animate a component entering or leaving the tree. Wrap the conditional content in [`AnimatedVisibility`](animated-containers.mdx) instead of rendering it conditionally:
+
+```kotlin
+child(
+    AnimatedVisibility(
+        visible = shown,
+        enter = fadeIn(compatSpring()),
+        exit = fadeOut(compatSpring()),
+    ) {
+      Row(style = Style.width(80.dp).height(80.dp))
+    })
+```
+
+| Legacy property | Enter | Exit |
+| :-- | :-- | :-- |
+| `ALPHA` | `fadeIn` | `fadeOut` |
+| `X`, `Y` | `slideInHorizontally`, `slideInVertically` | `slideOutHorizontally`, `slideOutVertically` |
+| `SCALE` | `scaleIn` | `scaleOut` |
+| `WIDTH`, `HEIGHT` | `expandHorizontally`, `expandVertically` | `shrinkHorizontally`, `shrinkVertically` |
+
+Combine factories with `+`, such as `fadeIn() + scaleIn()`. The slide factories take a pixel offset relative to the component, computed from its size, while `appearFrom` and `disappearTo` values can be absolute, so convert the value rather than copying it. To swap one piece of content for another, use [`AnimatedContent`](animated-containers.mdx).
+
+To maintain similar motion characteristics during a migration from the legacy API, pass the compat spec to each factory, such as `fadeIn(compatSpring())`.
+
+## Other cases
+
+- **`Transition.allLayout()`**: declare `bounds` on each component that should animate. Use `bounds(spec, reflow = true)` when siblings should follow the resize every frame.
+- **`Transition.sequence`, `stagger` and `delay`**: give each host's spec a delay, such as `tween(200.ms, delay = 100.ms)`, or coordinate the values with [`useAnimationGroup`](state-based-animations.mdx).
+- **`transitionEndHandler`**: drive the animation from [`useAnimationGroup`](state-based-animations.mdx) and use its settle callback.
+- **`useTransition(deps) { }`**: the legacy transition only applies on renders where a dep changed. `Style.transition` animates every change to the property, so check whether other changes should animate too.
+- **`TransitionKeyType.GLOBAL`, or a key whose transition and host live in different components**: there is no direct equivalent yet. Move the transition onto the component that owns the host.
