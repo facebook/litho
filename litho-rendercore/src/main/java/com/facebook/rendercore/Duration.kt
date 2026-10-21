@@ -37,25 +37,25 @@ import kotlin.time.Duration.Companion.seconds
  */
 
 /** Creates a [Duration] with the given value in milliseconds. */
-inline val Int.ms: Duration
+val Int.ms: Duration
   get() = this.milliseconds
 
 /** Creates a [Duration] with the given value in milliseconds. */
-inline val Long.ms: Duration
+val Long.ms: Duration
   get() = this.milliseconds
 
 /** Creates a [Duration] with the given value in milliseconds. */
-inline val Double.ms: Duration
+val Double.ms: Duration
   get() = this.milliseconds
 
 /** Creates a [Duration] with the given value in seconds. */
-inline val Int.s: Duration
+val Int.s: Duration
   get() = this.seconds
 
 /** Creates a [Duration] with the given value in seconds. */
-inline val Long.s: Duration
+val Long.s: Duration
   get() = this.seconds
 
 /** Creates a [Duration] with the given value in seconds. */
-inline val Double.s: Duration
+val Double.s: Duration
   get() = this.seconds
