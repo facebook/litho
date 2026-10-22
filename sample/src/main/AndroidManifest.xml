@@ -61,9 +61,6 @@
             android:name=".playground.XMLPlaygroundActivity"
             android:exported="true" />
         <activity
-            android:name=".playground.ViewModelPlaygroundActivity"
-            android:exported="true" />
-        <activity
             android:name=".java.dynamicprops.DynamicPropsActivity"
             android:exported="true" />
         <activity

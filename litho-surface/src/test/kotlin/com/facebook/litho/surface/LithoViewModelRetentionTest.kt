@@ -24,7 +24,6 @@ import androidx.activity.ComponentActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.savedstate.SavedStateRegistry
@@ -40,8 +39,6 @@ import com.facebook.litho.State
 import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.useSaveableState
-import com.facebook.litho.useViewModel
-import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -59,53 +56,6 @@ class LithoViewModelRetentionTest {
   @After
   fun tearDown() {
     SaveableStateActivity.state.set(null)
-    SaveableStateActivity.viewModel.set(null)
-  }
-
-  @Test
-  fun `setLithoContent retains component ViewModels across tree recreation`() {
-    val context = ApplicationProvider.getApplicationContext<Context>()
-    val ownerStore = ViewModelStore()
-    val host =
-        ViewModelProvider.create(
-                ownerStore,
-                LithoViewModelFactory(
-                    key = "test",
-                    componentsConfiguration = null,
-                    treePropsFactory = null,
-                    isExplicitlyConfigured = false,
-                ),
-            )["test", LithoViewModel::class]
-    val firstOwner = TestSavedStateOwner()
-    val firstModel = AtomicReference<TrackingViewModel>()
-
-    host.bind(
-        contextProvider = { context },
-        instanceOwnerProvider = { firstOwner },
-        viewOwnerProvider = { firstOwner },
-    )
-    host.setLithoContent { CapturingComponent(firstModel::set) }
-    render(host.getLithoView())
-    val retainedModel = firstModel.get()
-
-    firstOwner.destroy()
-    assertThat(retainedModel.clearCount).hasValue(0)
-
-    val secondOwner = TestSavedStateOwner()
-    val secondModel = AtomicReference<TrackingViewModel>()
-    host.bind(
-        contextProvider = { context },
-        instanceOwnerProvider = { secondOwner },
-        viewOwnerProvider = { secondOwner },
-    )
-    host.setLithoContent { CapturingComponent(secondModel::set) }
-    render(host.getLithoView())
-
-    assertThat(secondModel.get()).isSameAs(retainedModel)
-
-    ownerStore.clear()
-    ShadowLooper.runUiThreadTasksIncludingDelayedTasks()
-    assertThat(retainedModel.clearCount).hasValue(1)
   }
 
   @Test
@@ -154,18 +104,15 @@ class LithoViewModelRetentionTest {
    * Android requests saved state
    * Registry snapshots 9       ----->  Android restores the Bundle
    * Destroy Activity                   Create a new LithoViewModel and tree
-   * Clear the old ViewModel             Create a new component ViewModel
-   *                                    First render restores state = 9
+   * Clear the old LithoViewModel       First render restores state = 9
    * ```
    */
   @Test
-  fun `new Android owner resets ViewModel and restores saveable state`() {
+  fun `new Android owner restores saveable state`() {
     SaveableStateActivity.state.set(null)
-    SaveableStateActivity.viewModel.set(null)
     val firstController =
         Robolectric.buildActivity(SaveableStateActivity::class.java).create().start().resume()
     val firstState = checkNotNull(SaveableStateActivity.state.get())
-    val firstViewModel = checkNotNull(SaveableStateActivity.viewModel.get())
     firstState.updateSync(9)
     ShadowLooper.runUiThreadTasksIncludingDelayedTasks()
     val savedState = Bundle()
@@ -173,30 +120,9 @@ class LithoViewModelRetentionTest {
     firstController.pause().saveInstanceState(savedState).stop().destroy()
     ShadowLooper.runUiThreadTasksIncludingDelayedTasks()
     SaveableStateActivity.state.set(null)
-    SaveableStateActivity.viewModel.set(null)
     Robolectric.buildActivity(SaveableStateActivity::class.java).create(savedState).start().resume()
 
-    assertThat(SaveableStateActivity.viewModel.get()).isNotSameAs(firstViewModel)
-    assertThat(firstViewModel.clearCount).hasValue(1)
     assertThat(checkNotNull(SaveableStateActivity.state.get()).value).isEqualTo(9)
-  }
-
-  private class CapturingComponent(
-      private val onModel: (TrackingViewModel) -> Unit,
-  ) : KComponent() {
-    override fun ComponentScope.render(): Component {
-      val model by useViewModel { TrackingViewModel() }
-      onModel(model)
-      return EmptyComponent()
-    }
-  }
-
-  class TrackingViewModel : ViewModel() {
-    val clearCount = AtomicInteger()
-
-    override fun onCleared() {
-      clearCount.incrementAndGet()
-    }
   }
 
   @SuppressLint("EndpointWithoutSwitchOff")
@@ -211,7 +137,6 @@ class LithoViewModelRetentionTest {
 
     companion object {
       val state = AtomicReference<State<Int>>()
-      val viewModel = AtomicReference<TrackingViewModel>()
     }
   }
 
@@ -220,9 +145,7 @@ class LithoViewModelRetentionTest {
   ) : KComponent() {
     override fun ComponentScope.render(): Component {
       val state = useSaveableState { 0 }
-      val viewModel by useViewModel { TrackingViewModel() }
       onState(state)
-      SaveableStateActivity.viewModel.set(viewModel)
       return EmptyComponent()
     }
   }
@@ -270,10 +193,6 @@ class LithoViewModelRetentionTest {
     }
 
     fun save(): Bundle = Bundle().also(controller::performSave)
-
-    fun destroy() {
-      lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
-    }
   }
 
   private companion object {

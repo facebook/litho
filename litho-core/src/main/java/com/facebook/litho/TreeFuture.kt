@@ -264,195 +264,184 @@ abstract class TreeFuture<T : PotentiallyPartialResult>(
    *
    * @param source The calculate-layout source, indicating whether or not it's running from a sync
    *   layout.
-   * @param viewModelStore An optional store retained while this invocation calculates or waits.
    * @return The expected result of calculation, or null if this future was released.
    */
   @SuppressLint("BadMethodUse-java.util.concurrent.Future.get")
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  fun runAndGet(
-      @RenderSource source: Int,
-      type: FutureExecutionType? = null,
-      viewModelStore: LithoViewModelStore? = null,
-  ): TreeFutureResult<T> {
-    val calculationLease = viewModelStore?.tryAcquireCalculationLease()
+  fun runAndGet(@RenderSource source: Int, type: FutureExecutionType? = null): TreeFutureResult<T> {
+    val myTid = Process.myTid()
+    if (runningThreadId.compareAndSet(-1, myTid)) {
+      futureTask.run()
+    }
+    val runningThreadId = runningThreadId.get()
+    val notRunningOnMyThread = runningThreadId != myTid
+    val originalThreadPriority: Int
+    val didRaiseThreadPriority: Boolean
+    val raisedThreadPriority: Int
+    val shouldWaitForResult = !futureTask.isDone && notRunningOnMyThread
+    if (shouldWaitForResult && !isMainThread && !isFromSyncLayout(source)) {
+      return TreeFutureResult.interruptWithMessage(
+          type = type,
+          state = FutureState.WAITING,
+          description = FUTURE_RESULT_NULL_REASON_SYNC_RESULT_NON_MAIN_THREAD,
+      )
+    }
+    if (isMainThread && shouldWaitForResult) {
+      // This means the UI thread is about to be blocked by the bg thread. Instead of waiting,
+      // the bg task is interrupted.
+      if (isInterruptionEnabled) {
+        if (tryMoveToInterruptedState()) {
+          interrupt(treeId, getDescription())
+          interruptToken = WorkContinuationInstrumenter.onAskForWorkToContinue("interruptCalculate")
+        }
+      }
+      val desiredPriority =
+          if (ComponentsConfiguration.enableRaisePriorityToMain) {
+            min(Process.getThreadPriority(myTid), Process.THREAD_PRIORITY_DISPLAY)
+          } else {
+            Process.THREAD_PRIORITY_DISPLAY
+          }
+
+      val threadPriorityPair = tryRaiseThreadPriority(runningThreadId, desiredPriority)
+      originalThreadPriority = threadPriorityPair.first
+      raisedThreadPriority = threadPriorityPair.second
+      didRaiseThreadPriority = originalThreadPriority != raisedThreadPriority
+    } else {
+      originalThreadPriority = Process.THREAD_PRIORITY_DEFAULT
+      raisedThreadPriority = Process.THREAD_PRIORITY_DEFAULT
+      didRaiseThreadPriority = false
+    }
+    var treeFutureResult: TreeFutureResult<T>
+    val shouldTrace = notRunningOnMyThread && ComponentsSystrace.isTracing
+    val waitTraceId =
+        if (notRunningOnMyThread) {
+          beginWait(treeId, getDescription(), runningThreadId)
+        } else {
+          null
+        }
     try {
-      val myTid = Process.myTid()
-      if (runningThreadId.compareAndSet(-1, myTid)) {
-        futureTask.run()
-      }
-      val runningThreadId = runningThreadId.get()
-      val notRunningOnMyThread = runningThreadId != myTid
-      val originalThreadPriority: Int
-      val didRaiseThreadPriority: Boolean
-      val raisedThreadPriority: Int
-      val shouldWaitForResult = !futureTask.isDone && notRunningOnMyThread
-      if (shouldWaitForResult && !isMainThread && !isFromSyncLayout(source)) {
-        return TreeFutureResult.interruptWithMessage(
-            type = type,
-            state = FutureState.WAITING,
-            description = FUTURE_RESULT_NULL_REASON_SYNC_RESULT_NON_MAIN_THREAD,
-        )
-      }
-      if (isMainThread && shouldWaitForResult) {
-        // This means the UI thread is about to be blocked by the bg thread. Instead of waiting,
-        // the bg task is interrupted.
-        if (isInterruptionEnabled) {
-          if (tryMoveToInterruptedState()) {
-            interrupt(treeId, getDescription())
-            interruptToken =
-                WorkContinuationInstrumenter.onAskForWorkToContinue("interruptCalculate")
-          }
+
+      // TODO (T133699532): Do we really need 2 lifecycle events here? If not, we can get rid
+      // of one of these (and equivalent onEnd).
+      onGetStart(shouldTrace)
+      onWaitStart(shouldTrace)
+
+      // Calling mFutureTask.get() - One of two things could happen here:
+      // 1. This is the 1st time this future is triggered, in which case mFutureTask.get() will
+      //    calculate the result, which may be interrupted and return a partial result.
+      // 2. The future task has already been triggered, and its result has been cached by the
+      //    future itself. If the future is being triggered again, then the cached result is
+      //    returned immediately, and it is assumed that this result is partial. The partial result
+      //    will then be resumed later in this method.
+      treeFutureResult = futureTask.get()
+      val isPartialResult =
+          treeFutureResult.result != null && treeFutureResult.result.isPartialResult == true
+      if (runningThreadId == myTid) {
+        if (isPartialResult) {
+          getPartial(treeId, getDescription())
+        } else {
+          get(treeId, getDescription())
         }
-        val desiredPriority =
-            if (ComponentsConfiguration.enableRaisePriorityToMain) {
-              min(Process.getThreadPriority(myTid), Process.THREAD_PRIORITY_DISPLAY)
-            } else {
-              Process.THREAD_PRIORITY_DISPLAY
+      }
+      onWaitEnd(shouldTrace, false, waitTraceId)
+      if (didRaiseThreadPriority) {
+        // Reset the running thread's priority after we're unblocked.
+        try {
+          val currentThreadPriority = Process.getThreadPriority(runningThreadId)
+          Process.setThreadPriority(runningThreadId, originalThreadPriority)
+
+          // Log the scenario where the running thread's priority was raised, but between running
+          // the thread and resetting the priority, the running thread's priority was changed
+          // again.
+          if (currentThreadPriority != raisedThreadPriority) {
+            DebugInfoReporter.report(category = "TreeFuturePriorityInversion") {
+              this["event"] = "ResettingAfterExternalModification"
+              this["originalThreadPriority"] = "$originalThreadPriority"
+              this["raisedThreadPriority"] = "$raisedThreadPriority"
+              this["currentThreadPriority"] = "$currentThreadPriority"
             }
-
-        val threadPriorityPair = tryRaiseThreadPriority(runningThreadId, desiredPriority)
-        originalThreadPriority = threadPriorityPair.first
-        raisedThreadPriority = threadPriorityPair.second
-        didRaiseThreadPriority = originalThreadPriority != raisedThreadPriority
-      } else {
-        originalThreadPriority = Process.THREAD_PRIORITY_DEFAULT
-        raisedThreadPriority = Process.THREAD_PRIORITY_DEFAULT
-        didRaiseThreadPriority = false
-      }
-      var treeFutureResult: TreeFutureResult<T>
-      val shouldTrace = notRunningOnMyThread && ComponentsSystrace.isTracing
-      val waitTraceId =
-          if (notRunningOnMyThread) {
-            beginWait(treeId, getDescription(), runningThreadId)
-          } else {
-            null
           }
-      try {
-
-        // TODO (T133699532): Do we really need 2 lifecycle events here? If not, we can get rid
-        // of one of these (and equivalent onEnd).
-        onGetStart(shouldTrace)
-        onWaitStart(shouldTrace)
-
-        // Calling mFutureTask.get() - One of two things could happen here:
-        // 1. This is the 1st time this future is triggered, in which case mFutureTask.get() will
-        //    calculate the result, which may be interrupted and return a partial result.
-        // 2. The future task has already been triggered, and its result has been cached by the
-        //    future itself. If the future is being triggered again, then the cached result is
-        //    returned immediately, and it is assumed this result is partial. The partial result is
-        //    then resumed later in this method.
-        treeFutureResult = futureTask.get()
-        val isPartialResult =
-            treeFutureResult.result != null && treeFutureResult.result.isPartialResult == true
-        if (runningThreadId == myTid) {
-          if (isPartialResult) {
-            getPartial(treeId, getDescription())
-          } else {
-            get(treeId, getDescription())
+        } catch (ignored: IllegalArgumentException) {
+          DebugInfoReporter.report(category = "TreeFuturePriorityInversion") {
+            this["event"] = "IllegalArgumentExceptionWhenResetting"
+          }
+        } catch (ignored: SecurityException) {
+          DebugInfoReporter.report(category = "TreeFuturePriorityInversion") {
+            this["event"] = "SecurityExceptionWhenResetting"
           }
         }
-        onWaitEnd(shouldTrace, false, waitTraceId)
-        if (didRaiseThreadPriority) {
-          // Reset the running thread's priority after we're unblocked.
+      }
+      if (interruptState.get() == INTERRUPTED && isPartialResult) {
+        if (isMainThread) {
+          // This means that the bg task was interrupted and it returned a partially resolved
+          // InternalNode. We need to finish computing this LayoutState.
+          val token =
+              WorkContinuationInstrumenter.onBeginWorkContinuation(
+                  "continuePartial",
+                  continuationToken,
+              )
+          continuationToken = null
           try {
-            val currentThreadPriority = Process.getThreadPriority(runningThreadId)
-            Process.setThreadPriority(runningThreadId, originalThreadPriority)
-
-            // Log the scenario where the running thread's priority was raised, but between running
-            // the thread and resetting the priority, the running thread's priority was changed
-            // again.
-            if (currentThreadPriority != raisedThreadPriority) {
-              DebugInfoReporter.report(category = "TreeFuturePriorityInversion") {
-                this["event"] = "ResettingAfterExternalModification"
-                this["originalThreadPriority"] = "$originalThreadPriority"
-                this["raisedThreadPriority"] = "$raisedThreadPriority"
-                this["currentThreadPriority"] = "$currentThreadPriority"
-              }
-            }
-          } catch (ignored: IllegalArgumentException) {
-            DebugInfoReporter.report(category = "TreeFuturePriorityInversion") {
-              this["event"] = "IllegalArgumentExceptionWhenResetting"
-            }
-          } catch (ignored: SecurityException) {
-            DebugInfoReporter.report(category = "TreeFuturePriorityInversion") {
-              this["event"] = "SecurityExceptionWhenResetting"
-            }
-          }
-        }
-        if (interruptState.get() == INTERRUPTED && isPartialResult) {
-          if (isMainThread) {
-            // This means that the bg task was interrupted and it returned a partially resolved
-            // InternalNode. We need to finish computing this LayoutState.
-            val token =
-                WorkContinuationInstrumenter.onBeginWorkContinuation(
-                    "continuePartial",
-                    continuationToken,
-                )
-            continuationToken = null
-            try {
-              // Resuming here. We are on the main-thread.
-              resume(treeId, getDescription())
-              treeFutureResult =
-                  TreeFutureResult.finishWithResult(resumeCalculation(treeFutureResult.result))
-              get(treeId, getDescription())
-            } catch (th: Throwable) {
-              WorkContinuationInstrumenter.markFailure(token, th)
-              throw th
-            } finally {
-              WorkContinuationInstrumenter.onEndWorkContinuation(token)
-            }
-          } else {
-            // This means that the bg task was interrupted and the UI thread will pick up the rest
-            // of the work. No need to return a LayoutState.
+            // Resuming here. We are on the main-thread.
+            resume(treeId, getDescription())
             treeFutureResult =
-                TreeFutureResult.interruptWithMessage(
-                    type = type,
-                    state = FutureState.INTERRUPTED,
-                    description = FUTURE_RESULT_NULL_REASON_RESUME_NON_MAIN_THREAD,
-                )
-            continuationToken =
-                WorkContinuationInstrumenter.onOfferWorkForContinuation(
-                    "offerPartial",
-                    interruptToken,
-                )
-            interruptToken = null
+                TreeFutureResult.finishWithResult(resumeCalculation(treeFutureResult.result))
+            get(treeId, getDescription())
+          } catch (th: Throwable) {
+            WorkContinuationInstrumenter.markFailure(token, th)
+            throw th
+          } finally {
+            WorkContinuationInstrumenter.onEndWorkContinuation(token)
           }
-        }
-      } catch (e: ExecutionException) {
-        onWaitEnd(shouldTrace, true, waitTraceId)
-        val cause = e.cause
-        if (cause is RuntimeException) {
-          throw cause
         } else {
-          throw RuntimeException(e.message, e)
+          // This means that the bg task was interrupted and the UI thread will pick up the rest
+          // of the work. No need to return a LayoutState.
+          treeFutureResult =
+              TreeFutureResult.interruptWithMessage(
+                  type = type,
+                  state = FutureState.INTERRUPTED,
+                  description = FUTURE_RESULT_NULL_REASON_RESUME_NON_MAIN_THREAD,
+              )
+          continuationToken =
+              WorkContinuationInstrumenter.onOfferWorkForContinuation(
+                  "offerPartial",
+                  interruptToken,
+              )
+          interruptToken = null
         }
-      } catch (e: InterruptedException) {
-        onWaitEnd(shouldTrace, true, waitTraceId)
-        val cause = e.cause
-        if (cause is RuntimeException) {
-          throw cause
-        } else {
-          throw RuntimeException(e.message, e)
-        }
-      } catch (e: CancellationException) {
-        onWaitEnd(shouldTrace, true, waitTraceId)
-        val cause = e.cause
-        if (cause is RuntimeException) {
-          throw cause
-        } else {
-          throw RuntimeException(e.message, e)
-        }
-      } finally {
-        onGetEnd(shouldTrace)
       }
-      synchronized(this@TreeFuture) {
-        if (isReleased) {
-          return TreeFutureResult.interruptWithMessage(state = FutureState.RELEASED)
-        }
-        return treeFutureResult
+    } catch (e: ExecutionException) {
+      onWaitEnd(shouldTrace, true, waitTraceId)
+      val cause = e.cause
+      if (cause is RuntimeException) {
+        throw cause
+      } else {
+        throw RuntimeException(e.message, e)
+      }
+    } catch (e: InterruptedException) {
+      onWaitEnd(shouldTrace, true, waitTraceId)
+      val cause = e.cause
+      if (cause is RuntimeException) {
+        throw cause
+      } else {
+        throw RuntimeException(e.message, e)
+      }
+    } catch (e: CancellationException) {
+      onWaitEnd(shouldTrace, true, waitTraceId)
+      val cause = e.cause
+      if (cause is RuntimeException) {
+        throw cause
+      } else {
+        throw RuntimeException(e.message, e)
       }
     } finally {
-      calculationLease?.close()
+      onGetEnd(shouldTrace)
+    }
+    synchronized(this@TreeFuture) {
+      if (isReleased) {
+        return TreeFutureResult.interruptWithMessage(state = FutureState.RELEASED)
+      }
+      return treeFutureResult
     }
   }
 
@@ -533,7 +522,6 @@ abstract class TreeFuture<T : PotentiallyPartialResult>(
      * @param mutex Synchronization lock for the future list
      * @param futureExecutionListener Optional listener
      * @param scope The [InitialStateScope] to close after compute and commit
-     * @param viewModelStore An optional store retained while the calculation runs
      * @param onResult Called with the non-null result to perform commit logic
      * @return The result holder from running the future
      */
@@ -545,18 +533,11 @@ abstract class TreeFuture<T : PotentiallyPartialResult>(
         mutex: Any,
         futureExecutionListener: FutureExecutionListener?,
         scope: InitialStateScope,
-        viewModelStore: LithoViewModelStore?,
         onResult: (T) -> Unit,
     ): TreeFutureResult<T> {
       return try {
-        val holder = trackAndRunTreeFuture(
-            treeFuture,
-            futureList,
-            source,
-            mutex,
-            futureExecutionListener,
-            viewModelStore,
-        )
+        val holder =
+            trackAndRunTreeFuture(treeFuture, futureList, source, mutex, futureExecutionListener)
         if (holder.result != null) {
           onResult(holder.result)
         }
@@ -585,7 +566,6 @@ abstract class TreeFuture<T : PotentiallyPartialResult>(
      * @param mutex A mutex to use to synchronize access to the provided future list
      * @param futureExecutionListener optional listener that will be invoked just before the future
      *   is run
-     * @param viewModelStore An optional store retained by [runAndGet]
      * @param <T> The generic type of the provided future & expected result
      * @return The result holder of running the future. It will contain the result if there were no
      *   issues running the future, or a message explaining why the result is null. </T>
@@ -598,7 +578,6 @@ abstract class TreeFuture<T : PotentiallyPartialResult>(
         @RenderSource source: Int,
         mutex: Any,
         futureExecutionListener: FutureExecutionListener?,
-        viewModelStore: LithoViewModelStore? = null,
     ): TreeFutureResult<T> {
       var future = treeFuture
       val isSync = isFromSyncLayout(source)
@@ -645,7 +624,7 @@ abstract class TreeFuture<T : PotentiallyPartialResult>(
       )
 
       // Run and get the result
-      val result: TreeFutureResult<T> = future.runAndGet(source, executionType, viewModelStore)
+      val result: TreeFutureResult<T> = future.runAndGet(source, executionType)
       synchronized(mutex) {
         futureExecutionListener?.onPostExecution(
             future.getVersion(),

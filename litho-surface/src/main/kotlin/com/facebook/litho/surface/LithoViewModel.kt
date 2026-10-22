@@ -29,11 +29,9 @@ import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentTree
 import com.facebook.litho.LithoSaveableStateRegistry
 import com.facebook.litho.LithoView
-import com.facebook.litho.LithoViewModelStore
 import com.facebook.litho.LithoVisibilityEventsController.LithoVisibilityState
 import com.facebook.litho.TreePropContainer
 import com.facebook.litho.TreeState
-import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.debug.DebugInfoReporter
 import com.facebook.rendercore.LogLevel
@@ -121,7 +119,6 @@ internal constructor(
   // Snapshot taken on instance.onDestroy. Consumed (nulled) by the next buildTree().
   private var savedTreeState: TreeState? = null
 
-  private val componentViewModelStore = LithoViewModelStore()
   private var componentSaveableStateRegistry: LithoSaveableStateRegistry? = null
   @SuppressLint("ViewModelRetainsLifecycleOwner")
   private var savedStateRegistryOwner: SavedStateRegistryOwner? = null
@@ -318,7 +315,6 @@ internal constructor(
     viewOwnerProvider = null
     latestContent = null
     savedTreeState = null
-    componentViewModelStore.close()
     componentSaveableStateRegistry?.close()
     componentSaveableStateRegistry = null
     val toRun = closeActions.toList()
@@ -465,7 +461,6 @@ internal constructor(
     viewLifecycleObserver = null
   }
 
-  @OptIn(ExperimentalLithoApi::class)
   private fun buildTree(
       context: Context,
       instanceOwner: LifecycleOwner,
@@ -480,7 +475,6 @@ internal constructor(
             )
             .withLithoVisibilityEventsController(controller)
             .withLifecycleOwnerTreeProp(instanceOwner)
-            .withLithoViewModelStore(componentViewModelStore)
     if (instanceOwner is SavedStateRegistryOwner) {
       builder.withLithoSaveableStateRegistry(
           checkNotNull(componentSaveableStateRegistry) {

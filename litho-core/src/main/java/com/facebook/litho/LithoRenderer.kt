@@ -597,7 +597,6 @@ class LithoRenderer(
   private fun resolve(resolveInputs: ResolveInputs, retryTimes: Int): ResolveResult? {
     val componentContext = createComponentContext(resolveInputs.treePropContainer)
     val initialStateScope = InitialStateScope.forResolve(resolveInputs.localTreeState)
-    val viewModelStore = resolveInputs.treePropContainer?.get(LithoViewModelStoreTreeProp)
     val future = LithoResolveTreeFuture(
         componentContext = componentContext,
         treeId = id,
@@ -616,7 +615,6 @@ class LithoRenderer(
             resolveFutureLock,
             null,
             initialStateScope,
-            viewModelStore,
         ) { result ->
           commitResolveResult(result)
         }
@@ -657,7 +655,6 @@ class LithoRenderer(
     val resolveResult = requireNotNull(layoutInputs.currentResolveResult)
     val constraints = requireNotNull(layoutInputs.constraints)
     val initialStateScope = InitialStateScope.forLayout(layoutInputs.localTreeState)
-    val viewModelStore = resolveResult.context.treePropContainer?.get(LithoViewModelStoreTreeProp)
     val future = LithoLayoutTreeFuture(
         treeId = id,
         version = layoutInputs.layoutVersion,
@@ -675,7 +672,6 @@ class LithoRenderer(
             layoutFutureLock,
             null,
             initialStateScope,
-            viewModelStore,
         ) { layoutState ->
           layoutState.toRenderTree()
 

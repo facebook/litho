@@ -154,9 +154,6 @@ open class ComponentTree protected constructor(builder: Builder) :
 
   private var preAllocator: ContentPreAllocator? = null
 
-  @GuardedBy("this")
-  private var lithoViewModelStore: LithoViewModelStore? =
-      builder.lithoViewModelStore ?: builder.treePropContainer?.get(LithoViewModelStoreTreeProp)
   private val lithoSaveableStateRegistry =
       builder.lithoSaveableStateRegistry
           ?: builder.treePropContainer
@@ -165,8 +162,6 @@ open class ComponentTree protected constructor(builder: Builder) :
   private val hasExternalLithoSaveableStateRegistry = builder.lithoSaveableStateRegistry != null
 
   @GuardedBy("this") private var lithoSaveableStateRegistryAcquired = false
-
-  private val hasDirectViewModelStore = builder.lithoViewModelStore != null
 
   // These variables are only accessed from the main thread.
   @ThreadConfined(ThreadConfined.UI) private var isMeasuring: Boolean = false
@@ -1752,7 +1747,6 @@ open class ComponentTree protected constructor(builder: Builder) :
     var currentRoot = root
     val currentIsAsync = isAsync
     val currentSource = source
-    var shouldForceLayout = forceLayout
 
     val requestedWidthSpec: Int
     val requestedHeightSpec: Int
@@ -1789,16 +1783,6 @@ open class ComponentTree protected constructor(builder: Builder) :
         this.externalRootVersion = externalRootVersion
       }
 
-      val viewModelStoreFromTreeProp = treePropContainer?.get(LithoViewModelStoreTreeProp)
-      if (viewModelStoreFromTreeProp != null && !hasDirectViewModelStore) {
-        shouldForceLayout = shouldForceLayout || lithoViewModelStore !== viewModelStoreFromTreeProp
-        lithoViewModelStore = viewModelStoreFromTreeProp
-        implicitTreePropContainer =
-            (TreePropContainer.copy(implicitTreePropContainer) ?: TreePropContainer()).apply {
-              put(LithoViewModelStoreTreeProp, viewModelStoreFromTreeProp)
-            }
-      }
-
       if (currentRoot != null) {
         val committedTreeState = getCommittedTreeStateSync()
         if (committedTreeState != null && committedTreeState.hasUncommittedUpdates()) {
@@ -1824,7 +1808,7 @@ open class ComponentTree protected constructor(builder: Builder) :
       val mostRecentLayoutState = committedLayoutState
 
       if (
-          !shouldForceLayout &&
+          !forceLayout &&
               resolvedRoot != null &&
               mostRecentLayoutState != null &&
               mostRecentLayoutState.isCompatibleComponentAndSpec(
@@ -1861,7 +1845,7 @@ open class ComponentTree protected constructor(builder: Builder) :
         _root = currentRoot
       }
 
-      if (shouldForceLayout && _root != null) {
+      if (forceLayout && _root != null) {
         val oldRootId = _root?.instanceId
         _root = _root?.makeShallowCopyWithNewId()
         dispatchRootClonedEvent(
@@ -2086,7 +2070,6 @@ open class ComponentTree protected constructor(builder: Builder) :
     val isInterruptible = !isFromSyncLayout(source)
 
     val initialStateScope = InitialStateScope.forResolve(treeState)
-    val viewModelStore = resolveContext.treePropContainer?.get(LithoViewModelStoreTreeProp)
     val treeFuture = ResolveTreeFuture(
         resolveContext,
         localRoot,
@@ -2108,7 +2091,6 @@ open class ComponentTree protected constructor(builder: Builder) :
             resolveResultFutureLock,
             futureExecutionListener,
             initialStateScope,
-            viewModelStore,
         ) { result ->
           commitResolveResult(result)
         }
@@ -2245,7 +2227,6 @@ open class ComponentTree protected constructor(builder: Builder) :
     }
 
     val initialStateScope = InitialStateScope.forLayout(layoutTreeState)
-    val viewModelStore = treePropContainer?.get(LithoViewModelStoreTreeProp)
     val layoutTreeFuture = LayoutTreeFuture(
         resolveResult,
         currentLayoutState,
@@ -2266,7 +2247,6 @@ open class ComponentTree protected constructor(builder: Builder) :
         layoutStateFutureLock,
         futureExecutionListener,
         initialStateScope,
-        viewModelStore,
     ) { layoutState ->
       if (output != null) {
         output.width = layoutState.width
@@ -2613,9 +2593,6 @@ open class ComponentTree protected constructor(builder: Builder) :
   private fun createImplicitTreePropContainer(lifecycleOwner: LifecycleOwner): TreePropContainer {
     val treePropContainer = TreePropContainer()
     treePropContainer.put(LifecycleOwnerTreeProp, lifecycleOwner)
-    lithoViewModelStore?.let { store ->
-      treePropContainer.put(LithoViewModelStoreTreeProp, store)
-    }
     lithoSaveableStateRegistry?.let { registry ->
       treePropContainer.put(LithoSaveableStateRegistryTreeProp, registry)
     }
@@ -2964,7 +2941,6 @@ open class ComponentTree protected constructor(builder: Builder) :
     internal var lithoVisibilityEventsController: LithoVisibilityEventsController? = null
     internal var lifecycleOwner: LifecycleOwner? = null
     internal var savedStateRegistryOwner: SavedStateRegistryOwner? = null
-    internal var lithoViewModelStore: LithoViewModelStore? = null
     internal var lithoSaveableStateRegistry: LithoSaveableStateRegistry? = null
     internal var nestedTreeSaveableStateKey: String? = null
     internal var renderUnitIdGenerator: RenderUnitIdGenerator? = null
@@ -3016,24 +2992,6 @@ open class ComponentTree protected constructor(builder: Builder) :
 
     fun withLifecycleOwnerTreeProp(lifecycleOwner: LifecycleOwner?): Builder {
       this.lifecycleOwner = lifecycleOwner
-      return this
-    }
-
-    /**
-     * Supplies a retained ViewModel scope owned by surrounding framework infrastructure.
-     *
-     * Every root [ComponentTree] that uses [useViewModel] must configure a store before its first
-     * resolve. Call [ViewModelStoreOwner.getLithoViewModelStore] on the main thread, then pass the
-     * retained store here when constructing a tree on any thread.
-     *
-     * Nested ComponentTrees created from the parent [ComponentContext] inherit its current store
-     * through TreeProps. A nested tree adopts a different inherited store when a later root update
-     * supplies one, while a store supplied directly to this builder remains fixed and takes
-     * precedence. Releasing this [ComponentTree] does not close the externally owned store.
-     */
-    @ExperimentalLithoApi
-    fun withLithoViewModelStore(store: LithoViewModelStore): Builder {
-      lithoViewModelStore = store
       return this
     }
 

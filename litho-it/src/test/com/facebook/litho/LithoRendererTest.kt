@@ -192,21 +192,6 @@ class LithoRendererTest {
     assertThat(view.layoutState?.sizeConstraints).isEqualTo(newConstraints)
   }
 
-  @Test
-  fun `sync render without ViewModels succeeds after ViewModel owner is cleared`() {
-    val store = LithoViewModelStore()
-    val treeProps = TreePropContainer().apply { put(LithoViewModelStoreTreeProp, store) }
-    renderer =
-        LithoRenderer(
-            context = context,
-            componentsConfig = ComponentsConfiguration.defaultInstance,
-            treePropContainer = treeProps,
-        )
-    store.close()
-
-    assertThat(renderer.renderSync(testComponent, testConstraints)).isNotNull()
-  }
-
   // ========== Rebind Guard Condition Tests ==========
   // These tests verify the guard conditions inside rebind() method:
   // 1. Same instance check (layoutState === uiThreadLayoutState)

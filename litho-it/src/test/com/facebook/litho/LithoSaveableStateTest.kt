@@ -17,7 +17,6 @@
 package com.facebook.litho
 
 import android.annotation.SuppressLint
-import androidx.lifecycle.ViewModel
 import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.layout.flexbox.Row
 import com.facebook.litho.testing.LithoTestRule
@@ -269,46 +268,29 @@ class LithoSaveableStateTest {
    * First process scope                Recreated process scope
    * -------------------                -----------------------
    * ComponentTree A                    ComponentTree B
-   * ViewModel A                        New ViewModel B
    * Saveable state = 7  -- Bundle -->  Restored saveable state = 7
-   * Process owner closes store A
    * ```
    */
   @Test
-  fun `snapshot restores state but not ViewModels into a new tree`() {
+  fun `snapshot restores state into a new tree`() {
     val firstRegistry = LithoSaveableStateRegistry()
-    val firstViewModelStore = LithoViewModelStore()
     val firstState = AtomicReference<State<Int>>()
-    val firstModel = AtomicReference<ProcessViewModel>()
-    val firstTree = createTree(
-        firstRegistry,
-        ProcessStateComponent(onState = firstState::set, onModel = firstModel::set),
-        firstViewModelStore,
-    )
+    val firstTree = createTree(firstRegistry, CapturingStateComponent(onState = firstState::set))
     val firstView = render(firstTree)
     firstState.get().updateSync(7)
     val savedState = firstRegistry.snapshot()
 
     firstView.release()
-    firstViewModelStore.close()
     firstRegistry.close()
 
     val restoredRegistry = LithoSaveableStateRegistry(savedState)
-    val restoredViewModelStore = LithoViewModelStore()
     val restoredState = AtomicReference<State<Int>>()
-    val restoredModel = AtomicReference<ProcessViewModel>()
-    val restoredTree = createTree(
-        restoredRegistry,
-        ProcessStateComponent(onState = restoredState::set, onModel = restoredModel::set),
-        restoredViewModelStore,
-    )
+    val restoredTree =
+        createTree(restoredRegistry, CapturingStateComponent(onState = restoredState::set))
     val restoredView = render(restoredTree)
 
-    assertThat(firstModel.get().clearCount).hasValue(1)
-    assertThat(restoredModel.get()).isNotSameAs(firstModel.get())
     assertThat(restoredState.get().value).isEqualTo(7)
     restoredView.release()
-    restoredViewModelStore.close()
     restoredRegistry.close()
   }
 
@@ -432,11 +414,9 @@ class LithoSaveableStateTest {
   private fun createTree(
       registry: LithoSaveableStateRegistry,
       component: Component,
-      viewModelStore: LithoViewModelStore? = null,
   ): ComponentTree =
       ComponentTree.create(lithoTestRule.context, component)
           .withLithoSaveableStateRegistry(registry)
-          .apply { viewModelStore?.let(::withLithoViewModelStore) }
           .build()
 
   private fun createNestedTree(
@@ -522,27 +502,6 @@ class LithoSaveableStateTest {
         0
       }
       return EmptyComponent()
-    }
-  }
-
-  private class ProcessStateComponent(
-      private val onState: (State<Int>) -> Unit,
-      private val onModel: (ProcessViewModel) -> Unit,
-  ) : KComponent() {
-    override fun ComponentScope.render(): Component {
-      val state = useSaveableState { 0 }
-      val model by useViewModel { ProcessViewModel() }
-      onState(state)
-      onModel(model)
-      return EmptyComponent()
-    }
-  }
-
-  private class ProcessViewModel : ViewModel() {
-    val clearCount = AtomicInteger()
-
-    override fun onCleared() {
-      clearCount.incrementAndGet()
     }
   }
 
