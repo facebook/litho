@@ -39,8 +39,11 @@ import com.facebook.litho.TreePropContainer
 import com.facebook.litho.TreeState
 import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.rendercore.ErrorReporter
+import com.facebook.rendercore.LogLevel
 import com.facebook.rendercore.PoolScope
 import com.facebook.rendercore.RunnableHandler
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 import javax.annotation.concurrent.GuardedBy
 import javax.annotation.concurrent.ThreadSafe
@@ -322,7 +325,11 @@ open class ComponentTreeHolder @VisibleForTesting internal constructor(builder: 
   @GuardedBy("this")
   private fun ensureComponentTree(context: ComponentContext): ComponentTree {
     if (_componentTree == null) {
-      if (lithoVisibilityEventsController != null) {
+      val parentController = lithoVisibilityEventsController
+      if (parentController != null) {
+        if (parentController.visibilityState == LithoVisibilityState.DESTROYED) {
+          reportTreeCreatedOnDestroyedController(parentController)
+        }
         visibilityEventsController = ComponentTreeHolderVisibilityEventsController()
       }
 
@@ -463,8 +470,33 @@ open class ComponentTreeHolder @VisibleForTesting internal constructor(builder: 
       get() = (lithoVisibilityEventsController as? AOSPLifecycleOwnerProvider)?.lifecycleOwner
   }
 
+  /**
+   * A destroyed controller never dispatches again, so a tree subscribed to it is never released and
+   * its effect cleanups never run. Reported once per root component per process; the cause carries
+   * the stack of whoever requested the layout.
+   */
+  private fun reportTreeCreatedOnDestroyedController(controller: LithoVisibilityEventsController) {
+    val rootName = renderInfo.name
+    if (reportedTreesOnDestroyedController.putIfAbsent(rootName, Unit) != null) {
+      return
+    }
+    val owner = (controller as? AOSPLifecycleOwnerProvider)?.lifecycleOwner
+    ErrorReporter.report(
+        LogLevel.ERROR,
+        TREE_CREATED_ON_DESTROYED_CONTROLLER,
+        "ComponentTree created on a DESTROYED LithoVisibilityEventsController; it will never be " +
+            "released. root=$rootName, thread=${Thread.currentThread().name}, " +
+            "controller=${controller.javaClass.name}, owner=${owner?.javaClass?.name}, " +
+            "ownerState=${owner?.lifecycle?.currentState}",
+        IllegalStateException("ComponentTree created on a DESTROYED controller"),
+    )
+  }
+
   companion object {
     private const val UNINITIALIZED = -1
+    const val TREE_CREATED_ON_DESTROYED_CONTROLLER: String =
+        "LITHO:COMPONENT_TREE_HOLDER:TREE_CREATED_ON_DESTROYED_CONTROLLER"
+    private val reportedTreesOnDestroyedController = ConcurrentHashMap<String, Unit>()
     const val PREVENT_RELEASE_TAG: String = "prevent_release"
     const val ACQUIRE_STATE_HANDLER_ON_RELEASE: String = "acquire_state_handler"
     const val RENDER_UNINITIALIZED: Int = 0
@@ -472,6 +504,12 @@ open class ComponentTreeHolder @VisibleForTesting internal constructor(builder: 
     const val RENDER_DRAWN: Int = 2
 
     @JvmStatic fun create(configuration: ComponentsConfiguration): Builder = Builder(configuration)
+
+    @VisibleForTesting
+    @JvmStatic
+    fun resetReportedTreesOnDestroyedController() {
+      reportedTreesOnDestroyedController.clear()
+    }
 
     private fun stableSaveableStateKey(renderInfo: RenderInfo): String? =
         when (val id = renderInfo.getCustomAttribute(RecyclerBinder.ID_CUSTOM_ATTR_KEY)) {

@@ -25,6 +25,9 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.EventHandler;
+import com.facebook.litho.LithoVisibilityEventsController;
+import com.facebook.litho.LithoVisibilityEventsController.LithoVisibilityState;
+import com.facebook.litho.LithoVisibilityEventsControllerDelegate;
 import com.facebook.litho.RenderCompleteEvent;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
@@ -32,6 +35,11 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.viewcompat.ViewBinder;
 import com.facebook.litho.viewcompat.ViewCreator;
+import com.facebook.rendercore.DefaultErrorReporter;
+import com.facebook.rendercore.ErrorReporter;
+import java.util.ArrayList;
+import java.util.List;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -72,6 +80,11 @@ public class ComponentTreeHolderTest {
             .viewCreator(mock(ViewCreator.class))
             .build();
     mLayoutThreadShadowLooper = Shadow.extract(ComponentTree.getDefaultLayoutThreadLooper());
+  }
+
+  @After
+  public void tearDown() {
+    ErrorReporter.provide(new DefaultErrorReporter());
   }
 
   private void runToEndOfTasks() {
@@ -276,6 +289,67 @@ public class ComponentTreeHolderTest {
   public void testGetRenderCompleteHandlerDoesNotCrash() {
     ComponentTreeHolder holder = createComponentTreeHolder(mComponentRenderInfo);
     holder.getRenderInfo().getRenderCompleteEventHandler();
+  }
+
+  @Test
+  public void testReportsTreeCreatedOnDestroyedController() {
+    List<String> reportedCategories = captureErrorReports();
+
+    ComponentTreeHolder holder =
+        createComponentTreeHolder(mComponentRenderInfo, destroyedController());
+    holder.computeLayoutSync(mContext, mWidthSpec, mHeightSpec, new Size());
+
+    assertThat(reportedCategories)
+        .containsExactly(ComponentTreeHolder.TREE_CREATED_ON_DESTROYED_CONTROLLER);
+  }
+
+  @Test
+  public void testReportsTreeCreatedOnDestroyedControllerOncePerRoot() {
+    List<String> reportedCategories = captureErrorReports();
+
+    createComponentTreeHolder(mComponentRenderInfo, destroyedController())
+        .computeLayoutSync(mContext, mWidthSpec, mHeightSpec, new Size());
+    createComponentTreeHolder(mComponentRenderInfo, destroyedController())
+        .computeLayoutSync(mContext, mWidthSpec, mHeightSpec, new Size());
+
+    assertThat(reportedCategories).hasSize(1);
+  }
+
+  @Test
+  public void testDoesNotReportTreeCreatedOnLiveController() {
+    List<String> reportedCategories = captureErrorReports();
+
+    ComponentTreeHolder holder =
+        createComponentTreeHolder(
+            mComponentRenderInfo, new LithoVisibilityEventsControllerDelegate());
+    holder.computeLayoutSync(mContext, mWidthSpec, mHeightSpec, new Size());
+
+    assertThat(reportedCategories).isEmpty();
+  }
+
+  private List<String> captureErrorReports() {
+    ComponentTreeHolder.resetReportedTreesOnDestroyedController();
+    List<String> categories = new ArrayList<>();
+    ErrorReporter.provide(
+        (level, categoryKey, message, cause, samplingFrequency, metadata) ->
+            categories.add(categoryKey));
+    return categories;
+  }
+
+  private static LithoVisibilityEventsController destroyedController() {
+    LithoVisibilityEventsControllerDelegate controller =
+        new LithoVisibilityEventsControllerDelegate();
+    controller.moveToVisibilityState(LithoVisibilityState.HINT_INVISIBLE);
+    controller.moveToVisibilityState(LithoVisibilityState.DESTROYED);
+    return controller;
+  }
+
+  private ComponentTreeHolder createComponentTreeHolder(
+      RenderInfo info, LithoVisibilityEventsController controller) {
+    return ComponentTreeHolder.create(ComponentsConfiguration.defaultInstance)
+        .renderInfo(info)
+        .lithoVisibilityEventsController(controller)
+        .build();
   }
 
   private ComponentTreeHolder createComponentTreeHolder(RenderInfo info) {
