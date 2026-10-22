@@ -75,6 +75,9 @@ class TreePropContainer {
     map.clear()
   }
 
+  /** Whether no tree prop is set. */
+  fun isEmpty(): Boolean = map.isEmpty()
+
   override fun equals(other: Any?): Boolean {
     if (this === other) {
       return true

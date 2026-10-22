@@ -41,6 +41,18 @@ class TreePropsTest {
   }
 
   @Test
+  fun `a container is empty until a tree prop is set and again after reset`() {
+    val container = TreePropContainer()
+    assertThat(container.isEmpty()).isTrue
+
+    container.put(TestIntTreeProp, 1)
+    assertThat(container.isEmpty()).isFalse
+
+    container.reset()
+    assertThat(container.isEmpty()).isTrue
+  }
+
+  @Test
   fun `when ComponentTree is created with TreeProps then component should receive tree props`() {
     val tree = ComponentTree.create(parentContext).build()
     val assertion = AtomicReference<ComponentScope.() -> Unit>()
