@@ -53,6 +53,9 @@ fun <T> Saver(save: (T) -> Any?, restore: (Any?) -> T): Saver<T> =
  * The [saver] must encode the value into a type supported by Android [android.os.Bundle]. The
  * default saver stores Bundle-compatible values directly. The factory and saver may run on a Litho
  * resolve thread and must not access Views or other main-thread-only objects.
+ *
+ * Without an owning registry, this behaves like [useState]: the value lasts for the current
+ * ComponentTree and is not restored after it is released.
  */
 @ExperimentalLithoApi
 @Hook
@@ -61,12 +64,7 @@ fun <T> ComponentScope.useSaveableState(
     saver: Saver<T> = autoSaver(),
     initializer: () -> T,
 ): State<T> {
-  val registry =
-      checkNotNull(LithoSaveableStateRegistryTreeProp.value) {
-        "No LithoSaveableStateRegistry is available for the current ComponentTree. " +
-            "Create this tree through a lifecycle-backed Litho host that supplies saveable-state " +
-            "ownership."
-      }
+  val registry = LithoSaveableStateRegistryTreeProp.value
   val hookLocalKey = requireCurrentHookKey()
   val storageKey = saveableStateKey(
       globalKey = context.globalKey,
@@ -76,7 +74,7 @@ fun <T> ComponentScope.useSaveableState(
   )
   val state =
       useStateWithDeps(storageKey) {
-        val restored = registry.restoredValue(storageKey)
+        val restored = registry?.restoredValue(storageKey)
         if (restored == null) initializer() else saver.restore(restored.value)
       }
   val latestProvider = useState { AtomicReference<() -> Any?>({ saver.save(state.value) }) }.value
@@ -87,8 +85,9 @@ fun <T> ComponentScope.useSaveableState(
   }
 
   useEffect(registry, storageKey) {
-    val registration = registry.registerProvider(storageKey) { latestProvider.get().invoke() }
-    onCleanup(registration::close)
+    registry
+        ?.registerProvider(storageKey) { latestProvider.get().invoke() }
+        ?.let { registration -> onCleanup(registration::close) }
   }
 
   return state

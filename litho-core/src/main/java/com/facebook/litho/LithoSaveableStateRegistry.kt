@@ -20,6 +20,9 @@ import android.os.Bundle
 import androidx.annotation.GuardedBy
 import androidx.annotation.RestrictTo
 import androidx.core.os.bundleOf
+import com.facebook.litho.debug.DebugInfoReporter
+import com.facebook.rendercore.LogLevel
+import java.lang.ref.WeakReference
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -33,8 +36,14 @@ import java.util.concurrent.atomic.AtomicBoolean
  *
  * This type is thread-safe. Provider code is evaluated outside the registry lock, while each
  * individual provider is serialized to prevent concurrent saver calls. The owner defines the
- * registry lifetime and must close it when the corresponding tree or navigation entry is
- * permanently removed.
+ * registry lifetime and closes it when the corresponding tree or navigation entry is permanently
+ * removed. A closed registry is inert: calculations that still hold it read no restored values,
+ * register nothing, and snapshot nothing.
+ *
+ * A child registry created without a key cannot be told apart from its siblings, so it keeps its
+ * values only for its own lifetime and never reads or writes its parent's saved state. The same
+ * applies to two open children with the same key: from the moment the second one reads, the key is
+ * neither restored nor saved for the rest of the parent's lifetime.
  *
  * @param restoredState a snapshot produced by a previous registry instance and restored through
  *   Android's saved-state mechanism, or `null` for a new state scope.
@@ -57,6 +66,8 @@ private constructor(
 
   @GuardedBy("parentConnectionLock") private var parentRegistration: Registration? = null
 
+  @GuardedBy("parentConnectionLock") private var parentKeyAmbiguous = false
+
   @GuardedBy("lock")
   private val retainedValues =
       Bundle(restoredState ?: Bundle()).apply {
@@ -64,6 +75,15 @@ private constructor(
       }
 
   @GuardedBy("lock") private val providers = mutableMapOf<String, Provider>()
+
+  /** The open child holding each child key. Weak, so a child dropped without closing frees it. */
+  @GuardedBy("lock")
+  private val childKeyHolders = mutableMapOf<String, WeakReference<LithoSaveableStateRegistry>>()
+
+  @GuardedBy("lock") private val ambiguousChildKeys = mutableSetOf<String>()
+
+  /** Keys two live providers registered at once; values under them are no longer saved. */
+  @GuardedBy("lock") private val ambiguousKeys = mutableSetOf<String>()
 
   @GuardedBy("lock") private var closed = false
 
@@ -75,51 +95,67 @@ private constructor(
   /** Returns restored state without consuming it during a potentially speculative resolve. */
   internal fun restoredValue(key: String): RestoredSaveableState? {
     restoreParentStateIfNeeded()
-    return synchronized(lock) {
-      checkOpen()
-      try {
-        if (!retainedValues.containsKey(key)) {
-          return@synchronized null
-        }
-        val retainedValue = retainedValues.getBundle(key)
-        if (retainedValue == null) {
-          discardRetainedValue(key)
-          return@synchronized null
-        }
-        val valueBundle = Bundle(retainedValue)
-        valueBundle.classLoader = valueClassLoader
-        @Suppress("DEPRECATION") RestoredSaveableState(valueBundle.get(VALUE_KEY))
-      } catch (_: RuntimeException) {
+    return synchronized(lock) { restoredValueLocked(key) }
+  }
+
+  @GuardedBy("lock")
+  private fun restoredValueLocked(key: String): RestoredSaveableState? {
+    if (closed) return null
+    return try {
+      if (!retainedValues.containsKey(key)) return null
+      val retainedValue = retainedValues.getBundle(key)
+      if (retainedValue == null) {
         discardRetainedValue(key)
-        null
+        return null
       }
+      val valueBundle = Bundle(retainedValue)
+      valueBundle.classLoader = valueClassLoader
+      @Suppress("DEPRECATION") RestoredSaveableState(valueBundle.get(VALUE_KEY))
+    } catch (_: RuntimeException) {
+      discardRetainedValue(key)
+      null
     }
   }
 
   /**
    * Registers the value provider for a committed hook and consumes any previously restored value.
+   *
+   * Two live providers with one key can't be told apart, as when separate trees share this
+   * registry. Then neither is saved and the key's restored value is dropped, as with an ambiguous
+   * child key: both hooks keep working like `useState`, and the first clash is reported.
    */
   internal fun registerProvider(key: String, provider: () -> Any?): Registration {
     restoreParentStateIfNeeded()
     val registeredProvider = Provider(provider)
+    if (synchronized(lock) { closed }) return Registration(this, key, registeredProvider)
     // Validate the value now so unsupported types fail at registration instead of state saving.
     registeredProvider.savedValue(key)
-    val previousRetainedValue: Bundle?
+    var previousRetainedValue: Bundle? = null
+    var duplicate = false
+    var firstDuplicate = false
 
     synchronized(lock) {
       // The registry may close or another provider may claim this key during validation.
-      checkOpen()
-      check(!providers.containsKey(key)) {
-        "A saveable-state provider is already registered for key '$key'"
+      if (closed) return Registration(this, key, registeredProvider)
+      if (key in ambiguousKeys || providers.containsKey(key)) {
+        duplicate = true
+        firstDuplicate = ambiguousKeys.add(key)
+        providers.remove(key)
+        discardRetainedValue(key)
+      } else {
+        providers[key] = registeredProvider
+        previousRetainedValue =
+            try {
+              retainedValues.getBundle(key)?.let(::Bundle)
+            } catch (_: RuntimeException) {
+              null
+            }
+        discardRetainedValue(key)
       }
-      providers[key] = registeredProvider
-      previousRetainedValue =
-          try {
-            retainedValues.getBundle(key)?.let(::Bundle)
-          } catch (_: RuntimeException) {
-            null
-          }
-      discardRetainedValue(key)
+    }
+    if (duplicate) {
+      if (firstDuplicate) reportDuplicateKey(key)
+      return Registration(this, key, registeredProvider)
     }
 
     try {
@@ -142,7 +178,9 @@ private constructor(
   private fun snapshotLocal(): Bundle {
     val (snapshot, activeProviders) =
         synchronized(lock) {
-          checkOpen()
+          if (closed) {
+            return Bundle().apply { classLoader = valueClassLoader }
+          }
           copyRetainedValues() to providers.toList()
         }
     activeProviders.forEach { (key, provider) ->
@@ -162,7 +200,7 @@ private constructor(
     restoreParentStateIfNeeded()
     val activeProviders =
         synchronized(lock) {
-          checkOpen()
+          if (closed) return
           providers.toList()
         }
     val values = activeProviders.map { (key, provider) ->
@@ -180,20 +218,20 @@ private constructor(
     }
   }
 
-  /** Clears this registry and rejects future registrations, restored-state reads, and snapshots. */
+  /** Clears this registry; later registrations, restored-state reads, and snapshots are no-ops. */
   override fun close() {
     val registration =
         synchronized(parentConnectionLock) {
+          synchronized(lock) {
+            closed = true
+            providers.clear()
+            retainedValues.clear()
+            childKeyHolders.clear()
+          }
           parentRegistration.also { parentRegistration = null }
         }
     registration?.close()
-
-    synchronized(lock) {
-      if (closed) return
-      closed = true
-      providers.clear()
-      retainedValues.clear()
-    }
+    parentStorageKey?.let { key -> parentRegistry?.releaseChildKey(key, this) }
   }
 
   /** Creates an independently keyed registry whose snapshot is owned by this registry. */
@@ -208,13 +246,13 @@ private constructor(
 
   private fun restoreParentStateIfNeeded() {
     val parent = parentRegistry ?: return
+    val storageKey = parentStorageKey ?: return
     synchronized(parentConnectionLock) {
-      if (parentStateRestored) return
-      val storageKey = requireParentStorageKey()
-      val restoredState = parent.restoredValue(storageKey)?.value as? Bundle
+      if (parentStateRestored || synchronized(lock) { closed }) return
+      val restoredState = parent.claimChildKey(storageKey, this)
       if (restoredState != null) {
         synchronized(lock) {
-          checkOpen()
+          if (closed) return
           retainedValues.putAll(Bundle(restoredState).apply { classLoader = valueClassLoader })
         }
       }
@@ -224,20 +262,79 @@ private constructor(
 
   private fun registerWithParentIfNeeded() {
     val parent = parentRegistry ?: return
+    val storageKey = parentStorageKey ?: return
     restoreParentStateIfNeeded()
     synchronized(parentConnectionLock) {
-      if (parentRegistration != null) return
-      val storageKey = requireParentStorageKey()
-      parentRegistration = parent.registerProvider(storageKey, ::snapshotLocal)
+      if (parentRegistration != null || parentKeyAmbiguous) return
+      if (synchronized(lock) { closed }) return
+      val registration = parent.registerChildProvider(storageKey, this, ::snapshotLocal)
+      if (registration == null) {
+        parentKeyAmbiguous = true
+      } else {
+        parentRegistration = registration
+      }
     }
   }
 
-  private fun requireParentStorageKey(): String =
-      checkNotNull(parentStorageKey) {
-        "A nested ComponentTree using useSaveableState needs a stable identity. Give the " +
-            "nested tree a stable item key or configure its ComponentTree with " +
-            "withNestedTreeSaveableStateKey()."
+  /**
+   * Gives [child] the child key [key] and returns the values saved under it. If another open child
+   * already holds the key, the key becomes ambiguous instead: the holder stops being saved, and
+   * neither child gets any values.
+   */
+  private fun claimChildKey(key: String, child: LithoSaveableStateRegistry): Bundle? {
+    restoreParentStateIfNeeded()
+    synchronized(lock) {
+      if (closed || key in ambiguousChildKeys) return null
+      val holder = childKeyHolders[key]?.get()
+      if (holder != null && holder !== child && !holder.isClosed()) {
+        ambiguousChildKeys += key
+        childKeyHolders.remove(key)
+        providers.remove(key)
+        discardRetainedValue(key)
+        return null
       }
+      childKeyHolders[key] = WeakReference(child)
+      return restoredValueLocked(key)?.value as? Bundle
+    }
+  }
+
+  private fun releaseChildKey(key: String, child: LithoSaveableStateRegistry) {
+    synchronized(lock) {
+      if (childKeyHolders[key]?.get() === child) {
+        childKeyHolders.remove(key)
+      }
+    }
+  }
+
+  /** Registers [child]'s snapshot under [key], or returns `null` unless [child] holds the key. */
+  private fun registerChildProvider(
+      key: String,
+      child: LithoSaveableStateRegistry,
+      provider: () -> Any?,
+  ): Registration? {
+    restoreParentStateIfNeeded()
+    val registeredProvider = Provider(provider)
+    synchronized(lock) {
+      if (closed || childKeyHolders[key]?.get() !== child || providers.containsKey(key)) {
+        return null
+      }
+      providers[key] = registeredProvider
+      discardRetainedValue(key)
+    }
+    registerWithParentIfNeeded()
+    return Registration(this, key, registeredProvider)
+  }
+
+  private fun reportDuplicateKey(key: String) {
+    DebugInfoReporter.report(
+        category = DUPLICATE_KEY_CATEGORY,
+        level = LogLevel.WARNING,
+    ) {
+      this["key"] = key
+    }
+  }
+
+  private fun isClosed(): Boolean = synchronized(lock) { closed }
 
   private fun unregister(key: String, provider: Provider) {
     synchronized(lock) {
@@ -260,11 +357,6 @@ private constructor(
         retainedValues.putBundle(key, previousRetainedValue)
       }
     }
-  }
-
-  @GuardedBy("lock")
-  private fun checkOpen() {
-    check(!closed) { "Cannot access saveable state after its Litho scope was cleared" }
   }
 
   @GuardedBy("lock")
@@ -339,6 +431,7 @@ private constructor(
   private companion object {
     const val CHILD_REGISTRY_PREFIX: String = "litho-child-registry:"
     const val VALUE_KEY: String = "value"
+    const val DUPLICATE_KEY_CATEGORY: String = "LithoSaveableState:DuplicateKey"
   }
 }
 

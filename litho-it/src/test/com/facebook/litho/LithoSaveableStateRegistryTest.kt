@@ -20,6 +20,7 @@ import android.os.BadParcelableException
 import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
+import androidx.core.os.bundleOf
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.FutureTask
@@ -29,6 +30,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.shadows.ShadowLog
 
 @RunWith(LithoTestRunner::class)
 class LithoSaveableStateRegistryTest {
@@ -42,6 +44,24 @@ class LithoSaveableStateRegistryTest {
     val restored = LithoSaveableStateRegistry(registry.snapshot())
 
     assertThat(restored.restoredValue("counter")?.value).isEqualTo(3)
+  }
+
+  @Test
+  fun `a second provider for a key saves neither and keeps working`() {
+    ShadowLog.clear()
+    val restored = LithoSaveableStateRegistry(bundleOf("counter" to bundleOf("value" to 5)))
+    val first = restored.registerProvider("counter") { 1 }
+    val second = restored.registerProvider("counter") { 2 }
+    val third = restored.registerProvider("counter") { 3 }
+
+    assertThat(restored.restoredValue("counter")).isNull()
+    assertThat(restored.snapshot().containsKey("counter")).isFalse()
+    assertThat(duplicateKeyWarnings()).isEqualTo(1)
+
+    first.close()
+    second.close()
+    third.close()
+    assertThat(restored.snapshot().isEmpty).isTrue()
   }
 
   @Test
@@ -190,25 +210,20 @@ class LithoSaveableStateRegistryTest {
    * ---------------------           ---------------------
    * Register provider for key
    *                                 Register provider for the same key
-   * Keep the registration           Fail instead of replacing A
+   * Neither provider is saved; both registrations succeed
    * ```
    */
   @Test
-  fun `concurrent registration keeps one provider per key`() {
+  fun `concurrent registration of one key saves neither provider`() {
     val registry = LithoSaveableStateRegistry()
     val start = CountDownLatch(1)
     val registered = AtomicInteger()
-    val rejected = AtomicInteger()
     val tasks =
         List(2) { value ->
           FutureTask {
             check(start.await(TIMEOUT_SECONDS, TimeUnit.SECONDS))
-            try {
-              registry.registerProvider("shared") { value }
-              registered.incrementAndGet()
-            } catch (_: IllegalStateException) {
-              rejected.incrementAndGet()
-            }
+            registry.registerProvider("shared") { value }
+            registered.incrementAndGet()
           }
         }
     val threads = tasks.map(::Thread)
@@ -218,8 +233,8 @@ class LithoSaveableStateRegistryTest {
       start.countDown()
       tasks.forEach { it.get(TIMEOUT_SECONDS, TimeUnit.SECONDS) }
 
-      assertThat(registered).hasValue(1)
-      assertThat(rejected).hasValue(1)
+      assertThat(registered).hasValue(2)
+      assertThat(registry.snapshot().containsKey("shared")).isFalse()
     } finally {
       threads.forEach(Thread::interrupt)
       registry.close()
@@ -233,24 +248,20 @@ class LithoSaveableStateRegistryTest {
    * Validate provider value
    *                                 Close registry
    * Attempt to commit provider
-   * Reject the ended state scope
+   * Ignore the ended state scope
    * ```
    */
   @Test
-  fun `close rejects a registration that has not committed`() {
+  fun `close ignores a registration that has not committed`() {
     val registry = LithoSaveableStateRegistry()
     val providerStarted = CountDownLatch(1)
     val allowProviderToFinish = CountDownLatch(1)
     val registration = FutureTask {
-      assertThatThrownBy {
-            registry.registerProvider("counter") {
-              providerStarted.countDown()
-              check(allowProviderToFinish.await(TIMEOUT_SECONDS, TimeUnit.SECONDS))
-              1
-            }
-          }
-          .isInstanceOf(IllegalStateException::class.java)
-          .hasMessageContaining("scope was cleared")
+      registry.registerProvider("counter") {
+        providerStarted.countDown()
+        check(allowProviderToFinish.await(TIMEOUT_SECONDS, TimeUnit.SECONDS))
+        1
+      }
     }
     val registrationThread = Thread(registration)
 
@@ -261,6 +272,7 @@ class LithoSaveableStateRegistryTest {
       allowProviderToFinish.countDown()
 
       registration.get(TIMEOUT_SECONDS, TimeUnit.SECONDS)
+      assertThat(registry.snapshot().isEmpty).isTrue()
     } finally {
       allowProviderToFinish.countDown()
       registrationThread.interrupt()
@@ -342,20 +354,52 @@ class LithoSaveableStateRegistryTest {
   }
 
   @Test
-  fun `close is idempotent and rejects later access`() {
-    val registry = LithoSaveableStateRegistry()
-    registry.registerProvider("counter") { 1 }
+  fun `close is idempotent and makes later access inert`() {
+    val source = LithoSaveableStateRegistry()
+    source.registerProvider("counter") { 1 }
+    val registry = LithoSaveableStateRegistry(source.snapshot())
+    registry.registerProvider("other") { 1 }
 
     registry.close()
     registry.close()
 
-    assertThatThrownBy { registry.snapshot() }
-        .isInstanceOf(IllegalStateException::class.java)
-        .hasMessageContaining("scope was cleared")
-    assertThatThrownBy { registry.registerProvider("other") { 2 } }
-        .isInstanceOf(IllegalStateException::class.java)
-        .hasMessageContaining("scope was cleared")
+    assertThat(registry.snapshot().isEmpty).isTrue()
+    assertThat(registry.restoredValue("counter")).isNull()
+    val lateProviderCalls = AtomicInteger()
+    registry.registerProvider("late") { lateProviderCalls.incrementAndGet() }.close()
+    registry.retainActiveValues()
+    assertThat(registry.snapshot().isEmpty).isTrue()
+    assertThat(lateProviderCalls.get()).isZero()
+    source.close()
   }
+
+  /**
+   * ```text
+   * Background calculation             Main thread
+   * ----------------------             -----------
+   * Read the nested tree's registry
+   *                                    Release the nested tree
+   *                                    Save the parent
+   * Read and register again
+   * ```
+   */
+  @Test
+  fun `closing a nested registry mid-calculation keeps parent saves working`() {
+    val parent = LithoSaveableStateRegistry()
+    val child = parent.createChildRegistry("child")
+    child.registerProvider("counter") { 7 }
+
+    child.close()
+
+    assertThat(parent.snapshot().isEmpty).isTrue()
+    assertThat(child.restoredValue("counter")).isNull()
+    child.registerProvider("again") { 8 }.close()
+    assertThat(parent.snapshot().isEmpty).isTrue()
+    parent.close()
+  }
+
+  private fun duplicateKeyWarnings(): Int =
+      ShadowLog.getLogs().count { it.msg.orEmpty().startsWith("LithoSaveableState:DuplicateKey") }
 
   private companion object {
     const val TIMEOUT_SECONDS: Long = 5

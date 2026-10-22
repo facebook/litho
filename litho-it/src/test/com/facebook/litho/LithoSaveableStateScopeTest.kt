@@ -122,9 +122,7 @@ class LithoSaveableStateScopeTest {
     tree.release()
     scope.close()
 
-    assertThatThrownBy { registry.snapshot() }
-        .isInstanceOf(IllegalStateException::class.java)
-        .hasMessageContaining("after its Litho scope was cleared")
+    assertThat(registry.snapshot().isEmpty).isTrue()
     assertThatThrownBy {
           ComponentTree.create(ComponentContext(RuntimeEnvironment.getApplication()))
               .withSaveableStateScope(scope)

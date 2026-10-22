@@ -110,21 +110,15 @@ class LithoSaveableStateTest {
   }
 
   @Test
-  fun `unhosted tree rejects saveable state`() {
+  fun `unhosted tree keeps saveable state for the tree lifetime`() {
+    val state = AtomicReference<State<Int>>()
     val tree = ComponentTree.create(lithoTestRule.context).build()
     val sizeSpec = SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY)
 
-    assertThatThrownBy {
-          tree.setRootAndSizeSpecSync(
-              CapturingStateComponent(onState = {}),
-              sizeSpec,
-              sizeSpec,
-          )
-        }
-        .isInstanceOf(LithoMetadataExceptionWrapper::class.java)
-        .hasRootCauseInstanceOf(IllegalStateException::class.java)
-        .hasStackTraceContaining("No LithoSaveableStateRegistry")
-        .hasStackTraceContaining("lifecycle-backed Litho host")
+    tree.setRootAndSizeSpecSync(CapturingStateComponent(onState = state::set), sizeSpec, sizeSpec)
+    state.get().updateSync(4)
+
+    assertThat(state.get().value).isEqualTo(4)
     tree.release()
   }
 
@@ -348,37 +342,96 @@ class LithoSaveableStateTest {
   }
 
   @Test
-  fun `nested tree without a stable identity fails before reading restored state`() {
+  fun `nested tree without a stable identity keeps its values locally`() {
     val parentRegistry = LithoSaveableStateRegistry()
     val childRegistry = parentRegistry.createChildRegistry(key = null)
 
-    assertThatThrownBy { childRegistry.restoredValue("counter") }
-        .isInstanceOf(IllegalStateException::class.java)
-        .hasMessageContaining("stable identity")
-        .hasMessageContaining("withNestedTreeSaveableStateKey")
+    childRegistry.registerProvider("counter") { 1 }
+    childRegistry.retainActiveValues()
 
+    assertThat(childRegistry.snapshot().isEmpty).isFalse()
+    assertThat(parentRegistry.snapshot().isEmpty).isTrue()
+    childRegistry.close()
+    parentRegistry.close()
+  }
+
+  /**
+   * ```text
+   * Keyless nested row             RecyclerBinder
+   * ------------------             --------------
+   * Render under a parent registry
+   *                                Row leaves the range
+   *                                Acquire the row's registry
+   *                                Release the row's tree
+   * Retain values locally, no crash
+   * ```
+   */
+  @Test
+  fun `releasing a keyless nested tree after acquiring its registry does not throw`() {
+    val parentRegistry = LithoSaveableStateRegistry()
+    val state = AtomicReference<State<Int>>()
+    val tree = createNestedTree(parentRegistry, key = null, onState = state::set)
+    val view = render(tree)
+    state.get().updateSync(5)
+    val childRegistry = checkNotNull(tree.acquireLithoSaveableStateRegistry())
+
+    view.release()
+
+    assertThat(parentRegistry.snapshot().isEmpty).isTrue()
     childRegistry.close()
     parentRegistry.close()
   }
 
   @Test
-  fun `failed nested registration rolls back the child provider`() {
+  fun `sibling nested registries with the same key are not saved`() {
     val parentRegistry = LithoSaveableStateRegistry()
     val firstChild = parentRegistry.createChildRegistry("shared")
     firstChild.registerProvider("counter") { 1 }
     val secondChild = parentRegistry.createChildRegistry("shared")
 
-    assertThatThrownBy { secondChild.registerProvider("counter") { 2 } }
-        .isInstanceOf(IllegalStateException::class.java)
-        .hasMessageContaining("already registered")
-
-    firstChild.close()
-    secondChild.registerProvider("counter") { 3 }
+    secondChild.registerProvider("counter") { 2 }
     val restoredParent = LithoSaveableStateRegistry(parentRegistry.snapshot())
     val restoredChild = restoredParent.createChildRegistry("shared")
 
-    assertThat(restoredChild.restoredValue("counter")?.value).isEqualTo(3)
+    assertThat(restoredChild.restoredValue("counter")).isNull()
+    firstChild.close()
+    secondChild.close()
+    assertThat(parentRegistry.snapshot().isEmpty).isTrue()
+    restoredChild.close()
+    restoredParent.close()
+    parentRegistry.close()
+  }
 
+  @Test
+  fun `a second nested registry with the same key restores nothing`() {
+    val source = LithoSaveableStateRegistry()
+    source.createChildRegistry("shared").registerProvider("counter") { 41 }
+    val parentRegistry = LithoSaveableStateRegistry(source.snapshot())
+    val firstChild = parentRegistry.createChildRegistry("shared")
+    val secondChild = parentRegistry.createChildRegistry("shared")
+
+    assertThat(firstChild.restoredValue("counter")?.value).isEqualTo(41)
+    assertThat(secondChild.restoredValue("counter")).isNull()
+    assertThat(parentRegistry.snapshot().isEmpty).isTrue()
+    firstChild.close()
+    secondChild.close()
+    parentRegistry.close()
+    source.close()
+  }
+
+  @Test
+  fun `a nested registry can take a key over after its holder closes`() {
+    val parentRegistry = LithoSaveableStateRegistry()
+    val firstChild = parentRegistry.createChildRegistry("shared")
+    firstChild.registerProvider("counter") { 1 }
+
+    firstChild.close()
+    val secondChild = parentRegistry.createChildRegistry("shared")
+    secondChild.registerProvider("counter") { 2 }
+    val restoredParent = LithoSaveableStateRegistry(parentRegistry.snapshot())
+    val restoredChild = restoredParent.createChildRegistry("shared")
+
+    assertThat(restoredChild.restoredValue("counter")?.value).isEqualTo(2)
     secondChild.close()
     restoredChild.close()
     restoredParent.close()
@@ -421,7 +474,7 @@ class LithoSaveableStateTest {
 
   private fun createNestedTree(
       parentRegistry: LithoSaveableStateRegistry,
-      key: String,
+      key: String?,
       onState: (State<Int>) -> Unit,
   ): ComponentTree {
     val treeProps =
@@ -432,7 +485,7 @@ class LithoSaveableStateTest {
             ComponentContext(lithoTestRule.context.androidContext, treePropContainer = treeProps),
             CapturingStateComponent(onState = onState),
         )
-        .withNestedTreeSaveableStateKey(key)
+        .apply { key?.let(::withNestedTreeSaveableStateKey) }
         .build()
   }
 
