@@ -289,6 +289,46 @@ class NestedLithoTreeStateVersioningTest {
     assertThat(state.currentLayoutState).isNull()
   }
 
+  /** Test that committing a layout again after cleanup, as on remount, revives the tree */
+  @Test
+  fun commit_afterCleanup_restoresTreeStateAndReattachesEffects() {
+    val nestedState = NestedLithoTreeState(treeState = TreeState())
+    val context = ComponentTree.create(lithoTestRule.context).build().context
+    val steps = mutableListOf<String>()
+    val result =
+        NestedLithoTree.resolve(
+            id = nestedState.id,
+            context = context,
+            root = NestedTreeEffectTestComponent(name = "v1", steps = steps),
+            treeProps = null,
+            state = nestedState.getUpdatedState(),
+            current = null,
+            version = 1,
+        )
+    val layoutState =
+        NestedLithoTree.layout(
+            result = result,
+            sizeConstraints =
+                SizeConstraints.fromMeasureSpecs(
+                    makeSizeSpec(100, SizeSpec.EXACTLY),
+                    makeSizeSpec(100, SizeSpec.EXACTLY),
+                ),
+            current = null,
+            version = 1,
+        )
+    assertThat(nestedState.commitAndRunEffects(layoutState)).isTrue
+
+    nestedState.cleanup()
+    assertThat(nestedState.treeState).isNull()
+
+    assertThat(nestedState.commitAndRunEffects(layoutState)).isTrue
+    assertThat(nestedState.treeState).isNotNull()
+    assertThat(nestedState.currentLayoutState).isSameAs(layoutState)
+
+    nestedState.cleanup()
+    assertThat(steps).containsExactly("attach:v1", "detach:v1", "attach:v1", "detach:v1")
+  }
+
   /** Test that commit rejects stale layout state with lower version */
   @Test
   fun commit_rejectsStaleLayoutState() {

@@ -402,10 +402,11 @@ data class NestedLithoTreeState(
 
       beforeCommit()
 
-      treeState?.apply {
-        commitResolveState(layoutState.resolveResult.treeState)
-        commitLayoutState(layoutState.treeState)
-      }
+      // A cleaned-up tree is committed again when its host is mounted again, e.g. after a
+      // RecyclerView rebinds the recycled row that holds it.
+      val committedTreeState = treeState ?: TreeState(layoutState.treeState).also { treeState = it }
+      committedTreeState.commitResolveState(layoutState.resolveResult.treeState)
+      committedTreeState.commitLayoutState(layoutState.treeState)
       currentResolveResult = layoutState.resolveResult
       currentLayoutState = layoutState
 
