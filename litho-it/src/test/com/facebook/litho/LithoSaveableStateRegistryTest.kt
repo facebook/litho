@@ -398,6 +398,94 @@ class LithoSaveableStateRegistryTest {
     parent.close()
   }
 
+  /**
+   * ```text
+   * Root -> "list" -> "row-0" reads before the values arrive   row-0 reads nothing
+   * The root adopts the late restored values                   row-0 reads "row 0" again
+   * ```
+   */
+  @Test
+  fun `a late restore reaches nested registries that read before it`() {
+    val root = LithoSaveableStateRegistry.ownerBacked(null) { null }
+    val row = root.createChildRegistry("list").createChildRegistry("row-0")
+    assertThat(row.restoredValue("label")).isNull()
+
+    root.adoptLateRestoredValues(savedList())
+
+    assertThat(row.restoreGeneration("label")).isEqualTo(1)
+    assertThat(row.restoredValue("label")?.value).isEqualTo("row 0")
+  }
+
+  @Test
+  fun `a nested registry created after a late restore claims its restored values`() {
+    val root = LithoSaveableStateRegistry.ownerBacked(null) { null }
+    val list = root.createChildRegistry("list")
+    assertThat(list.createChildRegistry("row-0").restoredValue("label")).isNull()
+
+    root.adoptLateRestoredValues(savedList())
+
+    val row = list.createChildRegistry("row-1")
+    assertThat(row.restoredValue("label")?.value).isEqualTo("row 1")
+    assertThat(row.restoreGeneration("label")).isZero()
+  }
+
+  /**
+   * ```text
+   * row-0 reads before the values arrive, then the root adopts them
+   * row-0 registers its restored value, so "list" replaces the root's copy with its own snapshot
+   * Save                                     row-0 and row-1, which never read, are still saved
+   * ```
+   */
+  @Test
+  fun `a save after a late restore keeps the restored values of nested registries`() {
+    val root = LithoSaveableStateRegistry.ownerBacked(null) { null }
+    val row = root.createChildRegistry("list").createChildRegistry("row-0")
+    assertThat(row.restoredValue("label")).isNull()
+    root.adoptLateRestoredValues(savedList())
+
+    val label = row.restoredValue("label")?.value
+    row.registerProvider("label") { label }
+
+    val saved = root.snapshotForOwner()
+    assertThat(savedLabel(saved, "row-0")).isEqualTo("row 0")
+    assertThat(savedLabel(saved, "row-1")).isEqualTo("row 1")
+  }
+
+  @Test
+  fun `a late restore keeps ambiguous keys dropped`() {
+    val root = LithoSaveableStateRegistry.ownerBacked(null) { null }
+    root.registerProvider("header") { "first" }
+    root.registerProvider("header") { "second" }
+    val first = root.createChildRegistry("list")
+    val second = root.createChildRegistry("list")
+    assertThat(first.restoredValue("label")).isNull()
+    assertThat(second.restoredValue("label")).isNull()
+
+    root.adoptLateRestoredValues(savedList())
+
+    assertThat(root.restoredValue("header")).isNull()
+    assertThat(first.createChildRegistry("row-0").restoredValue("label")).isNull()
+    assertThat(second.createChildRegistry("row-0").restoredValue("label")).isNull()
+    assertThat(root.snapshotForOwner().isEmpty).isTrue()
+  }
+
+  /** A saved root with a "header" and the rows "row-0" and "row-1" in its nested "list". */
+  private fun savedList(): Bundle {
+    val root = LithoSaveableStateRegistry()
+    root.registerProvider("header") { "header" }
+    val list = root.createChildRegistry("list")
+    list.createChildRegistry("row-0").registerProvider("label") { "row 0" }
+    list.createChildRegistry("row-1").registerProvider("label") { "row 1" }
+    return root.snapshot()
+  }
+
+  private fun savedLabel(saved: Bundle, row: String): Any? =
+      LithoSaveableStateRegistry(saved)
+          .createChildRegistry("list")
+          .createChildRegistry(row)
+          .restoredValue("label")
+          ?.value
+
   private fun duplicateKeyWarnings(): Int =
       ShadowLog.getLogs().count { it.msg.orEmpty().startsWith("LithoSaveableState:DuplicateKey") }
 

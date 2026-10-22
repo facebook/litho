@@ -56,7 +56,10 @@ import java.util.concurrent.atomic.AtomicBoolean
  * for Android. A dropped key starts from initial values when it comes back, and the first drop is
  * reported.
  *
- * Claims may happen on any thread. Android saved-state access happens on the main thread.
+ * Claims may happen on any thread. Android saved-state access happens on the main thread, so a tree
+ * that renders before the owner takes its restored values from Android claims nothing at first.
+ * When the values arrive, that tree gets them if it hasn't been attached yet, and renders again
+ * before anything is shown.
  */
 internal class ComponentTreeSaveableStateOwner
 private constructor(
@@ -70,7 +73,10 @@ private constructor(
   /** The Android registry this owner is connected to, set on the first main-thread setup. */
   @GuardedBy("lock") private var registry: SavedStateRegistry? = null
 
-  /** Whether this owner's Bundle was already taken from Android; it is taken only once. */
+  /**
+   * Whether this owner's Bundle was taken from Android and its values applied; it is taken only
+   * once. A tree that claims before then can still get its values late.
+   */
   @GuardedBy("lock") private var restoredConsumed = false
 
   /** Set once the store is destroyed or another provider owns our key; nothing is saved after. */
@@ -81,6 +87,9 @@ private constructor(
 
   /** A dropped parked key is reported once per owner. */
   private val parkedKeyDropReported = AtomicBoolean(false)
+
+  /** Runs between taking Android's restored values and delivering late ones, for tests. */
+  @VisibleForTesting @Volatile internal var beforeLateRestoreDelivery: (() -> Unit)? = null
 
   /**
    * Called once per tree at its first saveable read, on any thread. Returns the values to restore,
@@ -113,14 +122,14 @@ private constructor(
    * screen, the takeover is reported.
    *
    * Taking over reads the old tree's values outside the lock, so the tree holding the key can
-   * change while they are read. Then the claim is tried once more; if it changes again, the tree
-   * starts from initial values, as with `useState`.
+   * change, or take late restored values, while they are read. Then the claim is tried once more;
+   * if that happens again, the tree starts from initial values, as with `useState`.
    */
   private fun claimKey(binding: ComponentTreeSaveableStateBinding, identity: String): Bundle? {
-    // At most two attempts. A second one only happens if a different tree came to hold the key
-    // while its values were being read.
+    // At most two attempts. A second one only happens if a different tree came to hold the key, or
+    // the holder took late restored values, while its values were being read.
     repeat(2) {
-      val holder =
+      val (holder, lateRestoreCount) =
           synchronized(lock) {
             if (disabled || binding.released) return null
             val entry = entries.getOrPut(identity) { Entry() }
@@ -133,10 +142,11 @@ private constructor(
               entry.claimant = WeakReference(binding)
               entry.everClaimed = true
               val parked = entry.parked.remove(binding.lineage)
+              binding.claimedBeforeRestore = !restoredConsumed && parked?.startingValues != false
               parkedKeys.remove(identity)
               return parked?.values ?: entry.restored.also { entry.restored = null }
             }
-            live
+            live to entry.lateRestoreCount
           }
       // A live tree holds the key. If it is still attached, two visible trees may share a key.
       if (holder.attached) reportKeyTakenFromAttachedTree(identity)
@@ -145,9 +155,14 @@ private constructor(
       synchronized(lock) {
         if (disabled || binding.released) return null
         val entry = entries[identity] ?: return null
-        // Take over only if the same tree still holds the key; otherwise try again.
-        if (entry.liveClaimant() === holder) {
+        // Take over only if the same tree still holds the key and took no late restored values
+        // since they were read; otherwise try again.
+        if (entry.liveClaimant() === holder && entry.lateRestoreCount == lateRestoreCount) {
           entry.claimant = WeakReference(binding)
+          // Before the restore, the new tree only copied starting values unless the old one was
+          // shown, so it can take the restored values in its place.
+          binding.claimedBeforeRestore =
+              !restoredConsumed && holder.claimedBeforeRestore && !holder.mayHaveShownValues()
           entry.parked.clear()
           parkedKeys.remove(identity)
           return values
@@ -201,8 +216,9 @@ private constructor(
         }
         entry.claimant = WeakReference(binding)
         entry.everClaimed = true
-        entry.parked.remove(binding.lineage)?.values
-            ?: entry.restored.also { entry.restored = null }
+        val parked = entry.parked.remove(binding.lineage)
+        binding.claimedBeforeRestore = !restoredConsumed && parked?.startingValues != false
+        parked?.values ?: entry.restored.also { entry.restored = null }
       }
 
   /**
@@ -257,12 +273,13 @@ private constructor(
     val identity = binding.identity ?: return
     // Snapshots run providers, including Savers and nested registries, so take them outside lock.
     val values = binding.snapshotValues()
+    val startingValues = binding.claimedBeforeRestore && !binding.mayHaveShownValues()
     val dropped =
         synchronized(lock) {
           val entry = entries[identity] ?: return
           if (entry.liveClaimant() !== binding) return
           entry.claimant = null
-          entry.parked[binding.lineage] = Parked(values, WeakReference(binding))
+          entry.parked[binding.lineage] = Parked(values, WeakReference(binding), startingValues)
           if (binding.keyed) addParkedKey(identity) else null
         }
     if (dropped != null && parkedKeyDropReported.compareAndSet(false, true)) {
@@ -403,9 +420,12 @@ private constructor(
    * setup and from each lifecycle event, so a restore that lands after setup is still picked up.
    *
    * Each saved identity becomes an [Entry.restored] value that waits for a tree to claim it, unless
-   * a tree already claimed that identity in this session or it is ambiguous; those values are
-   * dropped. An identity that can't be read is reported and skipped, and the others are still
-   * restored.
+   * a tree already claimed that identity in this session or it is ambiguous. If trees claimed it
+   * before this Bundle was taken, by being built and rendered off the main thread, and none of them
+   * has been shown, they only have starting values, so the restored values still win: the tree
+   * holding the identity gets them and renders again, or, if a tree parked its starting values and
+   * nobody holds it, the next tree to claim it gets them. Otherwise they are dropped. An identity
+   * that can't be read is reported and skipped, and the others are still restored.
    *
    * For example, after process death the Fragment's first tree is built in `onCreateView`; its
    * `initializeOnMain` call takes the Bundle here, before the tree's first render claims its
@@ -413,37 +433,33 @@ private constructor(
    */
   private fun consumeRestoredStateIfReady(savedStateRegistry: SavedStateRegistry) {
     if (!savedStateRegistry.isRestored) return
-    val shouldConsume =
-        synchronized(lock) {
-          if (restoredConsumed || disabled) {
-            false
-          } else {
-            restoredConsumed = true
-            true
-          }
-        }
-    if (!shouldConsume) return
-    val restored = savedStateRegistry.consumeRestoredStateForKey(PROVIDER_KEY) ?: return
-    // Reading the keys unparcels the roots Bundle, so it can throw on unreadable saved state too.
-    val (roots, identities) =
-        try {
-          restored.classLoader = valueClassLoader
-          val roots =
-              restored.getBundle(ROOTS_KEY)?.apply { classLoader = valueClassLoader } ?: return
-          roots to roots.keySet().toList()
-        } catch (exception: RuntimeException) {
-          reportSaveableStateRestoreFailure("owner restore", exception)
-          return
-        }
+    if (synchronized(lock) { restoredConsumed || disabled }) return
+    val (roots, identities) = readRestoredRoots(savedStateRegistry) ?: (Bundle() to emptyList())
     val failures = mutableListOf<RuntimeException>()
+    val lateIdentities = mutableListOf<String>()
     synchronized(lock) {
+      // Set together with the entries, so a claim on another thread sees both or neither.
+      restoredConsumed = true
       identities.forEach { identity ->
         try {
           val saved = roots.getBundle(identity) ?: return@forEach
           saved.classLoader = valueClassLoader
           val values = saved.getBundle(VALUES_KEY) ?: return@forEach
           val entry = entries.getOrPut(identity) { Entry() }
-          if (entry.everClaimed || entry.ambiguous) return@forEach
+          if (entry.ambiguous) return@forEach
+          if (entry.everClaimed) {
+            val carry = saved.getInt(CARRY_KEY)
+            val live = entry.liveClaimant()
+            if (live?.claimedBeforeRestore == true) {
+              // Kept with the identity rather than this tree: a newer tree may take it over first.
+              entry.lateRestored = values
+              entry.lateRestoredCarry = carry
+              lateIdentities += identity
+            } else if (live == null) {
+              restoreOverStartingValues(identity, entry, values, carry)
+            }
+            return@forEach
+          }
           entry.restored = values
           entry.restoredCarry = saved.getInt(CARRY_KEY)
         } catch (exception: RuntimeException) {
@@ -452,6 +468,69 @@ private constructor(
       }
     }
     failures.forEach { reportSaveableStateRestoreFailure("owner restore", it) }
+    beforeLateRestoreDelivery?.invoke()
+    lateIdentities.forEach(::deliverLateRestore)
+  }
+
+  /**
+   * Gives an identity's late restored values to the tree holding it now. The tree takes them under
+   * the lock, so a tree replaced before delivery never gets them, and renders outside it. A
+   * takeover that read the holder's values before they were taken reads them again, because
+   * [Entry.lateRestoreCount] changed, so the new holder ends up with the restored values too.
+   */
+  @MainThread
+  private fun deliverLateRestore(identity: String) {
+    val holder =
+        synchronized(lock) {
+          val entry = entries[identity] ?: return
+          val values = entry.lateRestored ?: return
+          entry.lateRestored = null
+          val holder = entry.liveClaimant()
+          if (holder == null) {
+            restoreOverStartingValues(identity, entry, values, entry.lateRestoredCarry)
+            return
+          }
+          if (!holder.adoptLateRestore(values)) return
+          entry.lateRestoreCount++
+          holder
+        }
+    holder.renderLateRestore()
+  }
+
+  /**
+   * Keeps restored values for the next tree of an identity nobody holds, in place of parked values
+   * that are only starting values: left by trees that claimed before the restore and were never
+   * shown. Parked values from a tree that was shown win, since the user may have changed them.
+   */
+  @GuardedBy("lock")
+  private fun restoreOverStartingValues(
+      identity: String,
+      entry: Entry,
+      values: Bundle,
+      carry: Int,
+  ) {
+    if (entry.parked.isEmpty() || entry.parked.values.any { !it.startingValues }) return
+    entry.parked.clear()
+    parkedKeys.remove(identity)
+    entry.restored = values
+    entry.restoredCarry = carry
+  }
+
+  /** Takes the restored roots from Android, or null when there are none or they can't be read. */
+  private fun readRestoredRoots(
+      savedStateRegistry: SavedStateRegistry,
+  ): Pair<Bundle, List<String>>? {
+    val restored = savedStateRegistry.consumeRestoredStateForKey(PROVIDER_KEY) ?: return null
+    // Reading the keys unparcels the roots Bundle, so it can throw on unreadable saved state too.
+    return try {
+      restored.classLoader = valueClassLoader
+      val roots =
+          restored.getBundle(ROOTS_KEY)?.apply { classLoader = valueClassLoader } ?: return null
+      roots to roots.keySet().toList()
+    } catch (exception: RuntimeException) {
+      reportSaveableStateRestoreFailure("owner restore", exception)
+      null
+    }
   }
 
   /** Unregisters from Android and stops saving; later claims get nothing. */
@@ -477,10 +556,15 @@ private constructor(
   private fun savedEntry(values: Bundle, carry: Int): Bundle =
       bundleOf(VALUES_KEY to values, CARRY_KEY to carry)
 
-  /** Values a torn-down tree left for its replacement, and the tree that left them. */
+  /**
+   * Values a torn-down tree left for its replacement, and the tree that left them. [startingValues]
+   * is set when that tree claimed before the restore and was never shown, so restored values that
+   * arrive later replace these.
+   */
   private class Parked(
       val values: Bundle,
       val parkedBy: WeakReference<ComponentTreeSaveableStateBinding>,
+      val startingValues: Boolean,
   )
 
   /**
@@ -515,6 +599,18 @@ private constructor(
     /** A tree claimed this identity in this session, so values restored later are dropped. */
     var everClaimed: Boolean = false
 
+    /**
+     * Restored values that arrived after a tree claimed this identity, waiting to be delivered to
+     * whichever tree holds it then.
+     */
+    var lateRestored: Bundle? = null
+
+    /** The saved carry count of [lateRestored]. */
+    var lateRestoredCarry: Int = 0
+
+    /** How many times the holder took late restored values; a takeover checks it hasn't changed. */
+    var lateRestoreCount: Int = 0
+
     fun liveClaimant(): ComponentTreeSaveableStateBinding? =
         claimant?.get().also { if (it == null) claimant = null }
 
@@ -522,6 +618,7 @@ private constructor(
       ambiguous = true
       claimant = null
       restored = null
+      lateRestored = null
       parked.clear()
     }
   }

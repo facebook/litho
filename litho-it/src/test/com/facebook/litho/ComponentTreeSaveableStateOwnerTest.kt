@@ -32,7 +32,9 @@ import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.TestLithoView
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import java.lang.ref.WeakReference
+import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.atomic.AtomicReference
+import kotlin.concurrent.thread
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
@@ -843,6 +845,270 @@ class ComponentTreeSaveableStateOwnerTest {
     return WeakReference(dialog)
   }
 
+  /**
+   * ```
+   * Step                                        Expected
+   * ----                                        --------
+   * Process death with 7 saved
+   * Build and render the tree off main thread   Renders 0: restored values not taken yet
+   * Set it on a LithoView on main, then mount   Renders 7 before mounting, mounts 7
+   * ```
+   */
+  @Test
+  fun `a tree built and rendered off the main thread restores before it mounts`() {
+    val savedState = savedStateWithFirstValue(7)
+    val restoredOwner = TestSavedStateOwner(savedState)
+    val values = CopyOnWriteArrayList<Int>()
+    val restored = AtomicReference<State<Int>>()
+    val root = FirstStateComponent { state ->
+      restored.set(state)
+      values += state.value
+    }
+
+    val tree = renderOffMainThread(root) { createTree(restoredOwner, it) }
+    assertThat(values).containsExactly(0)
+    render(tree)
+    shadowOf(Looper.getMainLooper()).idle()
+
+    assertThat(restored.get().value).isEqualTo(7)
+    assertThat(values.drop(1)).isNotEmpty.allMatch { it == 7 }
+    restoredOwner.destroy()
+  }
+
+  @Test
+  fun `a keyed tree built and rendered off the main thread restores before it mounts`() {
+    val firstOwner = TestSavedStateOwner()
+    val first = AtomicReference<State<Int>>()
+    render(createKeyedTree(firstOwner, "feed", FirstStateComponent(first::set)))
+    first.get().updateSync(8)
+    val savedState = firstOwner.save()
+    firstOwner.destroy()
+
+    val restoredOwner = TestSavedStateOwner(savedState)
+    val restored = AtomicReference<State<Int>>()
+    val tree =
+        renderOffMainThread(FirstStateComponent(restored::set)) {
+          createKeyedTree(restoredOwner, "feed", it)
+        }
+    render(tree)
+
+    assertThat(restored.get().value).isEqualTo(8)
+    restoredOwner.destroy()
+  }
+
+  /**
+   * ```text
+   * Before process death: feed = 8
+   * Build and render tree A off the main thread   A claims "feed" before restore, renders 0
+   * Main thread takes Android's restored values   8 waits for whoever holds "feed"
+   * Tree B takes "feed" over from A               B copies A's 0 and holds "feed"
+   * The 8 is delivered                            B gets 8; A, replaced, keeps 0
+   * ```
+   */
+  @Test
+  fun `late restored values go to the tree that took the key over before delivery`() {
+    val restoredOwner = TestSavedStateOwner(savedKeyedState("feed", 8))
+    val superseded = AtomicReference<State<Int>>()
+    val replacement = AtomicReference<State<Int>>()
+    val replacementTree = AtomicReference<ComponentTree>()
+    val supersededTree =
+        renderOffMainThread(FirstStateComponent(superseded::set)) {
+          createKeyedTree(restoredOwner, "feed", it)
+        }
+    val owner = saveableStateOwner(restoredOwner)
+    owner.beforeLateRestoreDelivery = {
+      owner.beforeLateRestoreDelivery = null
+      replacementTree.set(
+          renderOffMainThread(FirstStateComponent(replacement::set)) {
+            createKeyedTree(restoredOwner, "feed", it)
+          },
+      )
+    }
+    render(supersededTree)
+
+    assertThat(replacement.get().value).isEqualTo(8)
+    assertThat(superseded.get().value).isEqualTo(0)
+    assertThat(restoredKeyedValue(restoredOwner, "feed")).isEqualTo(8)
+  }
+
+  /**
+   * ```text
+   * Before process death: feed = 8
+   * Build and render tree A off the main thread   A claims "feed" before restore, renders 0
+   * Tree B takes "feed" over off the main thread  B copies A's 0, also before restore
+   * Show B: the main thread takes the restore     B renders 8 before it mounts
+   * ```
+   */
+  @Test
+  fun `a keyed tree that took the key over before restore gets the restored values`() {
+    val restoredOwner = TestSavedStateOwner(savedKeyedState("feed", 8))
+    val superseded = AtomicReference<State<Int>>()
+    val replacement = AtomicReference<State<Int>>()
+    val supersededTree =
+        renderOffMainThread(FirstStateComponent(superseded::set)) {
+          createKeyedTree(restoredOwner, "feed", it)
+        }
+    val replacementTree =
+        renderOffMainThread(FirstStateComponent(replacement::set)) {
+          createKeyedTree(restoredOwner, "feed", it)
+        }
+
+    render(replacementTree)
+
+    assertThat(replacement.get().value).isEqualTo(8)
+    assertThat(superseded.get().value).isEqualTo(0)
+    assertThat(restoredKeyedValue(restoredOwner, "feed")).isEqualTo(8)
+    supersededTree.release()
+  }
+
+  /**
+   * ```text
+   * Before process death: feed = 8
+   * Build and render tree A off the main thread   A claims "feed" before restore, renders 0
+   * Release A                                     A parks its starting 0
+   * Build B on the main thread                    The restore replaces A's 0 with 8
+   * Show B                                        B claims "feed" and renders 8
+   * ```
+   */
+  @Test
+  fun `restored values replace starting values parked before restore`() {
+    val restoredOwner = TestSavedStateOwner(savedKeyedState("feed", 8))
+    val released = AtomicReference<State<Int>>()
+    val replacement = AtomicReference<State<Int>>()
+    val releasedTree =
+        renderOffMainThread(FirstStateComponent(released::set)) {
+          createKeyedTree(restoredOwner, "feed", it)
+        }
+
+    releasedTree.release()
+    render(createKeyedTree(restoredOwner, "feed", FirstStateComponent(replacement::set)))
+
+    assertThat(replacement.get().value).isEqualTo(8)
+    assertThat(restoredKeyedValue(restoredOwner, "feed")).isEqualTo(8)
+  }
+
+  /**
+   * ```text
+   * Before process death: feed = 8; the owner is not restored yet
+   * Show tree A and set it to 2                   A claims "feed" before restore
+   * Release A                                     A parks 2, which the user saw
+   * Android restores, then tree B claims "feed"   B gets A's 2, not 8
+   * ```
+   */
+  @Test
+  fun `values parked by a shown tree win over values restored later`() {
+    val owner = TestSavedStateOwner(savedKeyedState("feed", 8), restoreNow = false)
+    val shown = AtomicReference<State<Int>>()
+    val shownTree = createKeyedTree(owner, "feed", FirstStateComponent(shown::set))
+    render(shownTree)
+    shown.get().updateSync(2)
+
+    shownTree.release()
+    owner.restore()
+    owner.moveTo(Lifecycle.State.RESUMED)
+    val next = AtomicReference<State<Int>>()
+    render(createKeyedTree(owner, "feed", FirstStateComponent(next::set)))
+
+    assertThat(next.get().value).isEqualTo(2)
+    owner.destroy()
+  }
+
+  /**
+   * ```text
+   * Before process death: scroll = 7; the filter isn't shown, so nothing is saved for it
+   * Render the tree, not shown, before Android restores   (scroll 0, filter 0)
+   * Set the filter to 2                                   (scroll 0, filter 2)
+   * Android restores                                      (scroll 7, filter 2)
+   * ```
+   */
+  @Test
+  fun `a late restore keeps values that are not in the restored state`() {
+    val firstOwner = TestSavedStateOwner()
+    val firstScroll = AtomicReference<State<Int>>()
+    render(createKeyedTree(firstOwner, "feed", FeedComponent(false, firstScroll::set)))
+    firstScroll.get().updateSync(7)
+    val restoredOwner = TestSavedStateOwner(firstOwner.save(), restoreNow = false)
+    firstOwner.destroy()
+    val scroll = AtomicReference<State<Int>>()
+    val filter = AtomicReference<State<Int>>()
+    val root = FeedComponent(true, scroll::set, filter::set)
+    val sizeSpec = SizeSpec.makeSizeSpec(VIEW_SIZE_PX, SizeSpec.EXACTLY)
+    val tree = createKeyedTree(restoredOwner, "feed", root)
+    tree.setRootAndSizeSpecSync(root, sizeSpec, sizeSpec)
+    filter.get().updateSync(2)
+    assertThat(scroll.get().value to filter.get().value).isEqualTo(0 to 2)
+
+    restoredOwner.restore()
+    restoredOwner.moveTo(Lifecycle.State.RESUMED)
+
+    assertThat(scroll.get().value to filter.get().value).isEqualTo(7 to 2)
+    tree.release()
+    restoredOwner.destroy()
+  }
+
+  @Test
+  fun `a tree that mounted before restored values arrived keeps its own values`() {
+    val savedState = savedStateWithFirstValue(7)
+    val owner = TestSavedStateOwner(savedState, restoreNow = false)
+    val state = AtomicReference<State<Int>>()
+    render(createTree(owner, FirstStateComponent(state::set)))
+    state.get().updateSync(2)
+
+    owner.restore()
+    owner.moveTo(Lifecycle.State.RESUMED)
+
+    assertThat(state.get().value).isEqualTo(2)
+    owner.destroy()
+  }
+
+  private fun savedStateWithFirstValue(value: Int): Bundle {
+    val owner = TestSavedStateOwner()
+    val state = AtomicReference<State<Int>>()
+    render(createTree(owner, FirstStateComponent(state::set)))
+    state.get().updateSync(value)
+    return owner.save().also { owner.destroy() }
+  }
+
+  /** Builds and lays out a tree on a background thread, with no main-thread call into it. */
+  private fun renderOffMainThread(
+      root: Component,
+      create: (Component) -> ComponentTree,
+  ): ComponentTree {
+    val sizeSpec = SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY)
+    val tree = AtomicReference<ComponentTree>()
+    val failure = AtomicReference<Throwable>()
+    thread {
+      try {
+        tree.set(create(root).apply { setRootAndSizeSpecSync(root, sizeSpec, sizeSpec) })
+      } catch (throwable: Throwable) {
+        failure.set(throwable)
+      }
+    }
+        .join()
+    failure.get()?.let { throw it }
+    return tree.get()
+  }
+
+  private fun savedKeyedState(key: String, value: Int): Bundle {
+    val owner = TestSavedStateOwner()
+    val state = AtomicReference<State<Int>>()
+    render(createKeyedTree(owner, key, FirstStateComponent(state::set)))
+    state.get().updateSync(value)
+    return owner.save().also { owner.destroy() }
+  }
+
+  /** Saves [owner], destroys it, and returns the value a keyed tree restores from that save. */
+  private fun restoredKeyedValue(owner: TestSavedStateOwner, key: String): Int {
+    val nextOwner = TestSavedStateOwner(owner.save())
+    owner.destroy()
+    val next = AtomicReference<State<Int>>()
+    render(createKeyedTree(nextOwner, key, FirstStateComponent(next::set)))
+    return next.get().value.also { nextOwner.destroy() }
+  }
+
+  private fun saveableStateOwner(store: SavedStateRegistryOwner): ComponentTreeSaveableStateOwner =
+      ComponentTreeSaveableStateOwner.of(store, lithoTestRule.context.androidContext.classLoader)
+
   private fun createTree(owner: SavedStateRegistryOwner, root: Component): ComponentTree =
       ComponentTree.create(lithoTestRule.context.androidContext, owner, root).build()
 
@@ -931,6 +1197,18 @@ class ComponentTreeSaveableStateOwnerTest {
     }
   }
 
+  /** A scroll value, and a filter value in a child shown only when [showFilter]. */
+  private class FeedComponent(
+      private val showFilter: Boolean,
+      private val onScroll: (State<Int>) -> Unit,
+      private val onFilter: (State<Int>) -> Unit = {},
+  ) : KComponent() {
+    override fun ComponentScope.render(): Component {
+      onScroll(useSaveableState { 0 })
+      return if (showFilter) FirstStateComponent(onFilter) else EmptyComponent()
+    }
+  }
+
   private class LateStateComponent(
       private val readsState: Boolean,
       private val onRegistry: (LithoSaveableStateRegistry) -> Unit = {},
@@ -954,7 +1232,14 @@ class ComponentTreeSaveableStateOwnerTest {
     }
   }
 
-  private class TestSavedStateOwner(restoredState: Bundle? = null) : SavedStateRegistryOwner {
+  /**
+   * With [restoreNow] false, the owner stays INITIALIZED and unrestored until [restore], as an
+   * Activity is before `super.onCreate()` restores it.
+   */
+  private class TestSavedStateOwner(
+      private val restoredState: Bundle? = null,
+      restoreNow: Boolean = true,
+  ) : SavedStateRegistryOwner {
     private val lifecycleRegistry = LifecycleRegistry(this)
     private val controller = SavedStateRegistryController.create(this)
 
@@ -963,8 +1248,14 @@ class ComponentTreeSaveableStateOwnerTest {
 
     init {
       controller.performAttach()
+      if (restoreNow) {
+        controller.performRestore(restoredState)
+        lifecycleRegistry.currentState = Lifecycle.State.RESUMED
+      }
+    }
+
+    fun restore() {
       controller.performRestore(restoredState)
-      lifecycleRegistry.currentState = Lifecycle.State.RESUMED
     }
 
     fun moveTo(state: Lifecycle.State) {

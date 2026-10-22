@@ -172,6 +172,8 @@ open class ComponentTree protected constructor(builder: Builder) :
                 builder.androidContext.classLoader,
                 keyed = builder.saveableStateKey != null,
                 rootIdentity = ::saveableRootIdentity,
+                hasMounted = ::hasMounted,
+                renderRestoredValues = ::renderRestoredSaveableState,
             )
           }
 
@@ -1396,6 +1398,27 @@ open class ComponentTree protected constructor(builder: Builder) :
       attributes[LithoDebugEventAttributes.Reason] = reason
       attributes[LithoDebugEventAttributes.Attribution] = attribution
     }
+  }
+
+  /**
+   * Renders again after restored saveable values arrived for a tree that rendered before them. It
+   * runs synchronously so the restored values, not the initial ones, are what the first mount
+   * shows.
+   */
+  @UiThread
+  private fun renderRestoredSaveableState() {
+    setRootAndSizeSpecInternal(
+        root = null,
+        widthSpec = SIZE_UNINITIALIZED,
+        heightSpec = SIZE_UNINITIALIZED,
+        isAsync = false,
+        output = null,
+        source = RenderSource.UPDATE_STATE_SYNC,
+        externalRootVersion = INVALID_LAYOUT_VERSION,
+        extraAttribution = "saveable state restored",
+        treePropContainer = null,
+        forceLayout = true,
+    )
   }
 
   internal fun updateStateInternal(isAsync: Boolean, attribution: String?) {

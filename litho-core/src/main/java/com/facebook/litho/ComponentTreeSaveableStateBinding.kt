@@ -47,6 +47,8 @@ internal class ComponentTreeSaveableStateBinding(
     valueClassLoader: ClassLoader,
     internal val keyed: Boolean,
     private val rootIdentity: () -> String?,
+    private val hasMounted: () -> Boolean,
+    private val renderRestoredValues: () -> Unit,
 ) {
   private val owner: ComponentTreeSaveableStateOwner
   private val storeRef: WeakReference<SavedStateRegistryOwner>
@@ -86,6 +88,15 @@ internal class ComponentTreeSaveableStateBinding(
   internal var attached: Boolean = false
     private set
 
+  /**
+   * Set when this tree claimed before the owner took its restored values from Android, as when the
+   * tree is built and rendered off the main thread before any main-thread call.
+   */
+  @Volatile internal var claimedBeforeRestore: Boolean = false
+
+  /** A tree attached to a window may have shown its values, so late restored values skip it. */
+  @Volatile private var everAttached: Boolean = false
+
   private fun claim(): Bundle? {
     val claimedIdentity = rootIdentity() ?: return null
     identity = claimedIdentity
@@ -99,6 +110,28 @@ internal class ComponentTreeSaveableStateBinding(
    */
   internal fun snapshotValues(): Bundle = StateReadRecorder.untracked {
     registry.snapshotForOwner()
+  }
+
+  /**
+   * Takes restored values that arrived after this tree's first render, and returns whether it did.
+   * Nothing has been shown before the tree is attached and mounted, so until then the values
+   * replace the initial ones and [renderLateRestore] renders them; afterwards they are dropped and
+   * the tree keeps its `useState` behaviour. Called under the owner's lock, so the tree still holds
+   * its identity when it takes them.
+   */
+  internal fun adoptLateRestore(values: Bundle): Boolean {
+    if (released || mayHaveShownValues()) return false
+    registry.adoptLateRestoredValues(values)
+    return true
+  }
+
+  /** Whether this tree was attached or mounted, so the user may have seen or changed its values. */
+  internal fun mayHaveShownValues(): Boolean = everAttached || hasMounted()
+
+  /** Renders again with the values taken by [adoptLateRestore], before the first mount. */
+  @MainThread
+  internal fun renderLateRestore() {
+    renderRestoredValues()
   }
 
   /** Connects to Android saved state when the store allows it; safe to call repeatedly. */
@@ -116,6 +149,8 @@ internal class ComponentTreeSaveableStateBinding(
     attached = true
     initializeOnMain()
     owner.attach(this)
+    // Set after setup: restored values delivered during this first attach still precede the mount.
+    everAttached = true
   }
 
   /**

@@ -90,6 +90,15 @@ private constructor(
 
   @GuardedBy("lock") private var closed = false
 
+  /**
+   * Per key, bumped when a restored value for it arrives after components already read this
+   * registry. Hooks key their state on it, so only those keys read the restored value again.
+   */
+  @GuardedBy("lock") private val restoreGenerations = mutableMapOf<String, Int>()
+
+  /** Set once any late restored value arrives, so hooks skip [restoreGeneration] until then. */
+  @Volatile private var lateRestored = false
+
   constructor(
       restoredState: Bundle? = null,
       valueClassLoader: ClassLoader? = null,
@@ -99,6 +108,49 @@ private constructor(
    * Returns retained values and the latest value of every provider, for the owning scope's save.
    */
   internal fun snapshotForOwner(): Bundle = snapshotLocal()
+
+  /**
+   * Adopts restored values that arrived after the tree's first render. Only called before the tree
+   * mounts, when no provider is registered yet, so the restored values replace the initial ones.
+   *
+   * An open child that already read its key never reads it again, so it adopts the values saved
+   * under that key the same way, and its own children after it. Ambiguous keys stay dropped.
+   */
+  internal fun adoptLateRestoredValues(values: Bundle) {
+    val children = mutableListOf<Pair<LithoSaveableStateRegistry, Bundle>>()
+    val failure =
+        synchronized(lock) {
+          if (closed) return
+          try {
+            val restored = Bundle(values).apply { classLoader = valueClassLoader }
+            restored.keySet().toList().forEach { key ->
+              if (key in ambiguousKeys || key in ambiguousChildKeys) return@forEach
+              restored.getBundle(key)?.let { value ->
+                retainedValues.putBundle(key, Bundle(value))
+                restoreGenerations[key] = (restoreGenerations[key] ?: 0) + 1
+                lateRestored = true
+                childKeyHolders[key]
+                    ?.get()
+                    ?.takeIf { !it.isClosed() }
+                    ?.let { child ->
+                      (restoredValueLocked(key)?.value as? Bundle)?.let { children += child to it }
+                    }
+              }
+            }
+            null
+          } catch (exception: RuntimeException) {
+            exception
+          }
+        }
+    failure?.let { reportSaveableStateRestoreFailure("late restore", it) }
+    children.forEach { (child, childValues) -> child.adoptLateRestoredValues(childValues) }
+  }
+
+  /** How many late restored values arrived for [key]; see [adoptLateRestoredValues]. */
+  internal fun restoreGeneration(key: String): Int =
+      synchronized(lock) { restoreGenerations[key] ?: 0 }
+
+  internal fun hasLateRestoredValues(): Boolean = lateRestored
 
   /** Returns restored state without consuming it during a potentially speculative resolve. */
   internal fun restoredValue(key: String): RestoredSaveableState? {
@@ -278,8 +330,10 @@ private constructor(
    * so a calculation finishing after release cannot take the values from the next tree.
    *
    * The claim runs under [parentConnectionLock] so a concurrent first read waits for the merge
-   * instead of reading defaults. This is safe because the owner never calls into a registry while
-   * holding its own lock.
+   * instead of reading defaults. This can't deadlock with the owner: under its own lock, the owner
+   * only takes registries' [lock]s, to hand over late restored values, never a
+   * [parentConnectionLock]; and nothing holding a [lock] calls the owner or takes a
+   * [parentConnectionLock].
    */
   private fun claimRootStateIfNeeded() {
     val claim = claimRootState ?: return

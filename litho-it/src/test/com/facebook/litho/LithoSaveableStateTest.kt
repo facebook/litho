@@ -18,6 +18,7 @@ package com.facebook.litho
 
 import android.annotation.SuppressLint
 import com.facebook.litho.annotations.ExperimentalLithoApi
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.layout.flexbox.Row
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -220,6 +221,58 @@ class LithoSaveableStateTest {
     assertThat(saveCalls).hasValue(1)
     assertThat(registry.restoredValueForTest()).isEqualTo("2:0")
     assertThat(saveCalls).hasValue(2)
+    view.release()
+    registry.close()
+  }
+
+  @Test
+  fun `changing only the explicit key saves under the new key`() {
+    val first = AtomicReference<State<Int>>()
+    val second = AtomicReference<State<Int>>()
+    val registry = LithoSaveableStateRegistry()
+    val view =
+        render(createTree(registry, CapturingStateComponent(key = "first", onState = first::set)))
+    first.get().updateSync(8)
+
+    view.setRoot(CapturingStateComponent(key = "second", onState = second::set))
+    second.get().updateSync(3)
+    val snapshot = registry.snapshot()
+    view.release()
+    registry.close()
+
+    val restored = AtomicReference<State<Int>>()
+    val restoredRegistry = LithoSaveableStateRegistry(snapshot)
+    val restoredView = render(
+        createTree(
+            restoredRegistry,
+            CapturingStateComponent(key = "second", onState = restored::set),
+        ),
+    )
+    assertThat(snapshot.keySet()).hasSize(1)
+    assertThat(restored.get().value).isEqualTo(3)
+    restoredView.release()
+    restoredRegistry.close()
+  }
+
+  @Test
+  fun `a value updated after the first commit is saved when read tracking is off`() {
+    val state = AtomicReference<State<Int>>()
+    val registry = LithoSaveableStateRegistry()
+    val config =
+        ComponentsConfiguration.defaultInstance.copy(
+            enableStateReadTracking = false,
+            detachStateIdFromValue = true,
+        )
+    val tree =
+        ComponentTree.create(lithoTestRule.context, CapturingStateComponent(onState = state::set))
+            .componentsConfiguration(config)
+            .withRetainedSaveableStateRegistryForTreeReplacement(registry)
+            .build()
+    val view = render(tree)
+
+    state.get().updateSync(7)
+
+    assertThat(registry.restoredValueForTest()).isEqualTo(7)
     view.release()
     registry.close()
   }

@@ -77,28 +77,41 @@ fun <T> ComponentScope.useSaveableState(
     initializer: () -> T,
 ): State<T> {
   val registry = LithoSaveableStateRegistryTreeProp.value
+  val globalKey = context.globalKey
   val hookLocalKey = requireCurrentHookKey()
-  val storageKey = saveableStateKey(
-      globalKey = context.globalKey,
-      hookLocalKey = hookLocalKey,
-      explicitKey = key,
-      componentName = context.componentScope?.simpleName ?: "unknown component",
-  )
+  val component = context.componentScope
+  val storageKey = lazy {
+    saveableStateKey(
+        globalKey = globalKey,
+        hookLocalKey = hookLocalKey,
+        explicitKey = key,
+        componentName = component?.simpleName ?: "unknown component",
+    )
+  }
+  val restoreGeneration =
+      if (registry?.hasLateRestoredValues() == true) registry.restoreGeneration(storageKey.value)
+      else 0
+  // State and effects are already identified by the component's global key and the hook's
+  // position, so only the explicit key can change the storage key of a live hook.
   val state =
-      useStateWithDeps(storageKey) {
-        val restored = registry?.restoredValue(storageKey)
+      useStateWithDeps(key, restoreGeneration) {
+        val restored = registry?.restoredValue(storageKey.value)
         if (restored == null) initializer() else saver.restore(restored.value)
       }
-  val latestProvider = useState { AtomicReference<() -> Any?>({ saver.save(state.value) }) }.value
+  // Saves read the committed value, so they don't depend on read tracking or on which State the
+  // provider captured.
+  val stateProvider = (context.lithoTree ?: error("LithoTree is null")).stateProvider
+  val save: () -> Any? = { saver.save(stateProvider.getValue(state)) }
+  val latestProvider = useState { AtomicReference(save) }.value
 
-  useEffect(saver, state) {
-    latestProvider.set { saver.save(state.value) }
+  useEffect(saver, stateProvider) {
+    latestProvider.set(save)
     null
   }
 
-  useEffect(registry, storageKey) {
+  useEffect(registry, key) {
     registry
-        ?.registerProvider(storageKey) { latestProvider.get().invoke() }
+        ?.registerProvider(storageKey.value) { latestProvider.get().invoke() }
         ?.let { registration -> onCleanup(registration::close) }
   }
 
