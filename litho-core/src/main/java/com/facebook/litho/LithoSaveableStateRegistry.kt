@@ -21,6 +21,7 @@ import androidx.annotation.GuardedBy
 import androidx.annotation.RestrictTo
 import androidx.core.os.bundleOf
 import com.facebook.litho.debug.DebugInfoReporter
+import com.facebook.litho.state.StateReadRecorder
 import com.facebook.rendercore.LogLevel
 import java.lang.ref.WeakReference
 import java.util.concurrent.atomic.AtomicBoolean
@@ -71,6 +72,15 @@ private constructor(
 
   @GuardedBy("parentConnectionLock") private var parentKeyAmbiguous = false
 
+  /** Whether [detachFromParent] stopped saving this child, until [attachToParent]. */
+  @GuardedBy("parentConnectionLock") private var detachedFromParent = false
+
+  /** Whether [detachFromParent] gave up this child's key, which it claims again when saved. */
+  @GuardedBy("parentConnectionLock") private var parentKeyReleased = false
+
+  /** Whether this child was saved in its parent when detached, so [attachToParent] saves it. */
+  @GuardedBy("parentConnectionLock") private var savedWhenDetached = false
+
   @GuardedBy("lock")
   private val retainedValues =
       Bundle(restoredState ?: Bundle()).apply {
@@ -89,6 +99,12 @@ private constructor(
   @GuardedBy("lock") private val ambiguousKeys = mutableSetOf<String>()
 
   @GuardedBy("lock") private var closed = false
+
+  /** Whether this child is in its parent's snapshot; see [setSavedInParent]. */
+  @GuardedBy("lock") private var savedInParent = true
+
+  /** Child keys [discardChildState] dropped before this registry restored its saved values. */
+  @GuardedBy("lock") private val keysDiscardedBeforeRestore = mutableSetOf<String>()
 
   /**
    * Per key, bumped when a restored value for it arrives after components already read this
@@ -151,6 +167,13 @@ private constructor(
       synchronized(lock) { restoreGenerations[key] ?: 0 }
 
   internal fun hasLateRestoredValues(): Boolean = lateRestored
+
+  /**
+   * How many late restored values arrived, for all keys. Content that rendered before the count
+   * changed reads them only when it renders again, which a host reusing its layout has to force.
+   */
+  @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+  fun lateRestoreCount(): Int = synchronized(lock) { restoreGenerations.values.sum() }
 
   /** Returns restored state without consuming it during a potentially speculative resolve. */
   internal fun restoredValue(key: String): RestoredSaveableState? {
@@ -241,7 +264,9 @@ private constructor(
           if (closed) {
             return Bundle().apply { classLoader = valueClassLoader }
           }
-          copyRetainedValues() to providers.toList()
+          val unsavedKeys = unsavedChildKeys()
+          val retained = copyRetainedValues().apply { unsavedKeys.forEach(::remove) }
+          retained to providers.filterKeys { it !in unsavedKeys }.toList()
         }
     activeProviders.forEach { (key, provider) ->
       snapshot.putBundle(key, provider.savedValue(key))
@@ -250,18 +275,24 @@ private constructor(
   }
 
   /**
-   * Retains active values before an owner replaces its ComponentTree.
+   * Retains active values before an owner replaces its ComponentTree or unbinds a collection row.
    *
    * Ordinary provider removal discards the value so dynamic components cannot accumulate retained
-   * state for the entire registry lifetime. Tree and navigation owners call this operation only
-   * when the same logical state scope will continue in a replacement tree.
+   * state for the entire registry lifetime. Tree, navigation and collection-row owners call this
+   * operation only when the same logical state scope will continue, in a replacement tree or when
+   * the row is bound again. With no active provider there is nothing to retain, and nothing is
+   * claimed from the parent or owner either. A child left out of this registry's snapshot
+   * ([setSavedInParent]) keeps its values itself, so they are not retained here.
    */
-  internal fun retainActiveValues() {
+  @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+  fun retainActiveValues() {
+    if (synchronized(lock) { providers.isEmpty() }) return
     restoreParentStateIfNeeded()
     val activeProviders =
         synchronized(lock) {
           if (closed) return
-          providers.toList()
+          val unsavedKeys = unsavedChildKeys()
+          providers.filterKeys { it !in unsavedKeys }.toList()
         }
     val values = activeProviders.map { (key, provider) ->
       Triple(key, provider, provider.savedValue(key))
@@ -269,9 +300,10 @@ private constructor(
 
     synchronized(lock) {
       if (closed) return
+      val unsavedKeys = unsavedChildKeys()
       values.forEach { (key, provider, value) ->
         val currentProvider = providers[key]
-        if (currentProvider === provider) {
+        if (currentProvider === provider && key !in unsavedKeys) {
           retainedValues.putBundle(key, value)
         }
       }
@@ -294,6 +326,106 @@ private constructor(
     parentStorageKey?.let { key -> parentRegistry?.releaseChildKey(key, this) }
   }
 
+  /**
+   * Stops saving this child in its parent and gives up its key, but keeps its values, while the
+   * content using it is detached and may come back with its state. Until [attachToParent], this
+   * child claims nothing from its parent and is not saved there, even when providers register, as
+   * the rows of a removed list still may.
+   */
+  @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+  fun detachFromParent() {
+    val registration =
+        synchronized(parentConnectionLock) {
+          detachedFromParent = true
+          parentKeyReleased = true
+          savedWhenDetached = savedWhenDetached || parentRegistration != null
+          parentRegistration.also { parentRegistration = null }
+        }
+    registration?.close()
+    parentStorageKey?.let { key -> parentRegistry?.releaseChildKey(key, this) }
+  }
+
+  /**
+   * Ends [detachFromParent]: this child takes its key back and is saved in its parent again, right
+   * away if it was saved when detached or has providers now, otherwise on its next registration.
+   */
+  @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+  fun attachToParent() {
+    val register =
+        synchronized(parentConnectionLock) {
+          if (!detachedFromParent) return
+          detachedFromParent = false
+          savedWhenDetached.also { savedWhenDetached = false } ||
+              synchronized(lock) { providers.isNotEmpty() }
+        }
+    if (register) registerWithParentIfNeeded()
+  }
+
+  /**
+   * Sets whether this child is saved in its parent, which it is by default.
+   *
+   * While it isn't, the parent leaves it out of its snapshot, with no entry for its key, and keeps
+   * no copy of the values this child read from it. This child still holds its key, keeps its values
+   * and its own children, and can read the values restored for it. Saving it again saves its
+   * current values. This claims nothing from the parent: values restored for this child stay in the
+   * parent's snapshot until this child reads them.
+   */
+  @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+  fun setSavedInParent(saved: Boolean) {
+    synchronized(lock) {
+      if (closed || savedInParent == saved) return
+      savedInParent = saved
+    }
+    val parent = parentRegistry ?: return
+    val storageKey = parentStorageKey ?: return
+    if (!saved) {
+      parent.dropValuesOfUnsavedChild(storageKey, this)
+    } else if (synchronized(parentConnectionLock) { parentStateRestored }) {
+      // The parent dropped its copy of the values this child read, so this child provides them.
+      registerWithParentIfNeeded()
+    }
+  }
+
+  /**
+   * Whether this registry holds anything to save: a provider, a retained value, or an open child
+   * holding a key. One that holds nothing can be closed without losing a value: values its parent
+   * restored for it that it has not read stay in the parent, for the next child with its key.
+   */
+  @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+  fun holdsState(): Boolean =
+      synchronized(lock) {
+        if (closed) return false
+        if (providers.isNotEmpty()) return true
+        val hasRetainedValues =
+            try {
+              !retainedValues.isEmpty
+            } catch (_: RuntimeException) {
+              true
+            }
+        hasRetainedValues || childKeyHolders.values.any { it.get()?.isClosed() == false }
+      }
+
+  /**
+   * Drops the values saved for the child registry created with [key], including values restored for
+   * a child that was never created again. A child that already read them keeps its copy. This
+   * claims nothing from the parent or owner: values this registry has not restored yet are dropped
+   * when it restores them.
+   */
+  @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+  fun discardChildState(key: String) {
+    val storageKey = "$CHILD_REGISTRY_PREFIX$key"
+    synchronized(parentConnectionLock) {
+      val restorePending =
+          (parentStorageKey != null && !parentStateRestored) ||
+              (claimRootState != null && !rootStateClaimed)
+      synchronized(lock) {
+        if (closed) return
+        discardRetainedValue(storageKey)
+        if (restorePending) keysDiscardedBeforeRestore += storageKey
+      }
+    }
+  }
+
   /** Creates an independently keyed registry whose snapshot is owned by this registry. */
   @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
   fun createChildRegistry(
@@ -312,13 +444,15 @@ private constructor(
     }
     val storageKey = parentStorageKey ?: return
     synchronized(parentConnectionLock) {
-      if (parentStateRestored || synchronized(lock) { closed }) return
+      if (parentStateRestored || detachedFromParent || synchronized(lock) { closed }) return
       val restoredState = parent.claimChildKey(storageKey, this)
-      if (restoredState != null) {
-        synchronized(lock) {
-          if (closed) return
+      synchronized(lock) {
+        if (closed) return
+        if (restoredState != null) {
           retainedValues.putAll(Bundle(restoredState).apply { classLoader = valueClassLoader })
         }
+        keysDiscardedBeforeRestore.forEach(::discardRetainedValue)
+        keysDiscardedBeforeRestore.clear()
       }
       parentStateRestored = true
     }
@@ -341,14 +475,22 @@ private constructor(
         synchronized(parentConnectionLock) {
           if (rootStateClaimed) return
           rootStateClaimed = true
-          if (synchronized(lock) { closed }) return
+          val discardedKeys =
+              synchronized(lock) {
+                if (closed) return
+                keysDiscardedBeforeRestore.toSet().also { keysDiscardedBeforeRestore.clear() }
+              }
           val claimedState = claim() ?: return
           synchronized(lock) {
             if (closed) return
             try {
               val restored = Bundle(claimedState).apply { classLoader = valueClassLoader }
               restored.keySet().toList().forEach { key ->
-                if (!providers.containsKey(key) && !retainedValues.containsKey(key)) {
+                if (
+                    key !in discardedKeys &&
+                        !providers.containsKey(key) &&
+                        !retainedValues.containsKey(key)
+                ) {
                   restored.getBundle(key)?.let { retainedValues.putBundle(key, Bundle(it)) }
                 }
               }
@@ -366,8 +508,13 @@ private constructor(
     val storageKey = parentStorageKey ?: return
     restoreParentStateIfNeeded()
     synchronized(parentConnectionLock) {
-      if (parentRegistration != null || parentKeyAmbiguous) return
+      if (detachedFromParent || parentRegistration != null || parentKeyAmbiguous) return
       if (synchronized(lock) { closed }) return
+      if (parentKeyReleased) {
+        // The values saved under the key are older than the ones this child kept, so they stay.
+        parent.claimChildKey(storageKey, this)
+        parentKeyReleased = false
+      }
       val registration = parent.registerChildProvider(storageKey, this, ::snapshotLocal)
       if (registration == null) {
         parentKeyAmbiguous = true
@@ -395,7 +542,9 @@ private constructor(
         return null
       }
       childKeyHolders[key] = WeakReference(child)
-      return restoredValueLocked(key)?.value as? Bundle
+      val restoredState = restoredValueLocked(key)?.value as? Bundle
+      if (!child.isSavedInParent()) discardRetainedValue(key)
+      return restoredState
     }
   }
 
@@ -406,6 +555,26 @@ private constructor(
       }
     }
   }
+
+  /** Drops this registry's copy of [child]'s values while [child] holds [key] unsaved. */
+  private fun dropValuesOfUnsavedChild(key: String, child: LithoSaveableStateRegistry) {
+    synchronized(lock) {
+      if (childKeyHolders[key]?.get() === child && !child.isSavedInParent()) {
+        discardRetainedValue(key)
+      }
+    }
+  }
+
+  /** The keys held by children that [setSavedInParent] left out of this registry's snapshot. */
+  @GuardedBy("lock")
+  private fun unsavedChildKeys(): Set<String> {
+    if (childKeyHolders.isEmpty()) return emptySet()
+    return childKeyHolders.entries.mapNotNullTo(HashSet()) { (key, holder) ->
+      key.takeIf { holder.get()?.isSavedInParent() == false }
+    }
+  }
+
+  private fun isSavedInParent(): Boolean = synchronized(lock) { savedInParent }
 
   /** Registers [child]'s snapshot under [key], or returns `null` unless [child] holds the key. */
   private fun registerChildProvider(
@@ -512,7 +681,15 @@ private constructor(
   internal inner class Provider(private val value: () -> Any?) {
     private val lock = Any()
 
-    fun savedValue(key: String): Bundle = synchronized(lock) { valueBundle(key, value()) }
+    /**
+     * Reads the provider's value. It runs outside the render of the tree that registered it,
+     * sometimes inside another tree's render, as when a list releases a row while it lays out,
+     * where a tracked read would count as a cross-tree read that returns a stale value or crashes.
+     */
+    fun savedValue(key: String): Bundle =
+        synchronized(lock) {
+          valueBundle(key, StateReadRecorder.untracked { value() })
+        }
   }
 
   internal class Registration(

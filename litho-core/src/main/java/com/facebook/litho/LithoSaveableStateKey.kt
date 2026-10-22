@@ -16,6 +16,8 @@
 
 package com.facebook.litho
 
+import androidx.annotation.RestrictTo
+
 /**
  * Encodes Litho's structural component and hook identities for Android saved state.
  *
@@ -30,7 +32,15 @@ internal fun saveableStateKey(
     componentName: String,
 ): String = buildString {
   appendPart(KEY_FORMAT_VERSION)
-  appendGlobalKeyPath(globalKey, componentName)
+  appendGlobalKeyPath(globalKey) { typeId ->
+    Component.typeNameForId(typeId)
+        ?: error(
+            "useSaveableState cannot derive a persistent identity for $componentName because " +
+                "component type id $typeId in its component path has no registered class " +
+                "identity. Give the component represented by that unresolved path segment an " +
+                "explicit Litho component key.",
+        )
+  }
   appendHookPath(hookLocalKey)
   if (explicitKey == null) {
     appendPart(NO_EXPLICIT_KEY)
@@ -40,7 +50,24 @@ internal fun saveableStateKey(
   }
 }
 
-private fun StringBuilder.appendGlobalKeyPath(globalKey: GlobalKey, componentName: String) {
+/**
+ * Encodes the persistent identity of the component [context] renders, to key a child registry that
+ * holds the saveable state of that component's content. Returns `null` when a component in its path
+ * has no class name to persist.
+ */
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+fun saveableStateComponentKey(context: ComponentContext): String? {
+  var persistent = true
+  val key = buildString {
+    appendPart(KEY_FORMAT_VERSION)
+    appendGlobalKeyPath(context.globalKey) { typeId ->
+      Component.typeNameForId(typeId) ?: "".also { persistent = false }
+    }
+  }
+  return key.takeIf { persistent }
+}
+
+private fun StringBuilder.appendGlobalKeyPath(globalKey: GlobalKey, typeName: (Int) -> String) {
   val chain = ArrayList<GlobalKey>(DEFAULT_COMPONENT_DEPTH)
   var current: GlobalKey? = globalKey
   while (current != null) {
@@ -51,27 +78,11 @@ private fun StringBuilder.appendGlobalKeyPath(globalKey: GlobalKey, componentNam
   appendPart(COMPONENT_PATH)
   for (index in chain.indices.reversed()) {
     when (val segment = chain[index]) {
-      is DefaultGlobalKey -> appendDefaultComponent(segment.key, segment.position, componentName)
+      is DefaultGlobalKey -> appendDefaultComponent(typeName(segment.key), segment.position)
       is ManualGlobalKey -> appendManualComponent(segment.key, segment.position)
-      is StringGlobalKey -> appendLegacyComponentPath(segment.key, componentName)
+      is StringGlobalKey -> appendLegacyComponentPath(segment.key, typeName)
     }
   }
-}
-
-private fun StringBuilder.appendDefaultComponent(
-    typeId: Int,
-    position: Int,
-    componentName: String,
-) {
-  val typeName =
-      Component.typeNameForId(typeId)
-          ?: error(
-              "useSaveableState cannot derive a persistent identity for $componentName because " +
-                  "component type id $typeId in its component path has no registered class " +
-                  "identity. Give the component represented by that unresolved path segment an " +
-                  "explicit Litho component key.",
-          )
-  appendDefaultComponent(typeName, position)
 }
 
 private fun StringBuilder.appendDefaultComponent(typeName: String, position: Int) {
@@ -87,7 +98,7 @@ private fun StringBuilder.appendManualComponent(key: String, position: Int) {
 }
 
 /** Converts the legacy flattened GlobalKey without retaining its process-local type ids. */
-private fun StringBuilder.appendLegacyComponentPath(key: String, componentName: String) {
+private fun StringBuilder.appendLegacyComponentPath(key: String, typeName: (Int) -> String) {
   val segments = key.split(LEGACY_COMPONENT_SEPARATOR)
   for (segment in segments) {
     val positionSeparator = segment.lastIndexOf(COMPONENT_POSITION_SEPARATOR)
@@ -101,7 +112,7 @@ private fun StringBuilder.appendLegacyComponentPath(key: String, componentName: 
     val typeId = body.toIntOrNull()
     when {
       body.startsWith(MANUAL_KEY_PREFIX) -> appendManualComponent(body, position ?: 0)
-      typeId != null -> appendDefaultComponent(typeId, position ?: 0, componentName)
+      typeId != null -> appendDefaultComponent(typeName(typeId), position ?: 0)
       else -> {
         appendPart(STABLE_LITERAL_COMPONENT)
         appendPart(body)

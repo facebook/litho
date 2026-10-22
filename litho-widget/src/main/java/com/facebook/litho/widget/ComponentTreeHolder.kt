@@ -17,6 +17,7 @@
 package com.facebook.litho.widget
 
 import androidx.annotation.IntDef
+import androidx.annotation.RestrictTo
 import androidx.annotation.UiThread
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LifecycleOwner
@@ -512,6 +513,15 @@ open class ComponentTreeHolder @VisibleForTesting internal constructor(builder: 
     }
 
     private fun stableSaveableStateKey(renderInfo: RenderInfo): String? =
+        stableIdSaveableStateKey(renderInfo)
+            ?: ComponentTree.stableNestedTreeSaveableStateKey(renderInfo.component)
+
+    /**
+     * Encodes the row id of [renderInfo], or returns `null` for a missing id or an id whose type
+     * has no stable encoding.
+     */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    fun stableIdSaveableStateKey(renderInfo: RenderInfo): String? =
         when (val id = renderInfo.getCustomAttribute(RecyclerBinder.ID_CUSTOM_ATTR_KEY)) {
           is String -> "string:${id.length}:$id"
           is Byte,
@@ -521,7 +531,7 @@ open class ComponentTreeHolder @VisibleForTesting internal constructor(builder: 
           is Boolean,
           is Char -> "${id.javaClass.name}:$id"
           is Enum<*> -> "${id.javaClass.name}:${id.name}"
-          else -> ComponentTree.stableNestedTreeSaveableStateKey(renderInfo.component)
+          else -> null
         }
   }
 }

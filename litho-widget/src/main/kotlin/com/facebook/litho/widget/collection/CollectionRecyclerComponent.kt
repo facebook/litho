@@ -37,6 +37,7 @@ import com.facebook.litho.ComponentsSystrace
 import com.facebook.litho.LithoExtraContextForLayoutScope
 import com.facebook.litho.LithoPrimitive
 import com.facebook.litho.LithoRenderTreeView
+import com.facebook.litho.LithoSaveableStateRegistryTreeProp
 import com.facebook.litho.LithoStartupLogger
 import com.facebook.litho.PrimitiveComponent
 import com.facebook.litho.PrimitiveComponentScope
@@ -53,6 +54,7 @@ import com.facebook.litho.debug.LithoDebugEvent
 import com.facebook.litho.debug.LithoDebugEventAttributes
 import com.facebook.litho.effects.useEffect as useLayoutEffect
 import com.facebook.litho.onCleanup
+import com.facebook.litho.saveableStateComponentKey
 import com.facebook.litho.sections.widget.GridRecyclerConfiguration
 import com.facebook.litho.sections.widget.RecyclerConfiguration
 import com.facebook.litho.sections.widget.StaggeredGridRecyclerConfiguration
@@ -163,7 +165,19 @@ class CollectionRecyclerComponent(
       recyclerConfiguration.getLayoutInfo(context)
     }
         .value
-    val latestCommittedData = useState { LatestCommittedData(layoutInfo, layoutConfig) }.value
+    val latestCommittedData = useState {
+      LatestCommittedData(
+          layoutInfo,
+          layoutConfig,
+          saveableStateRegistries =
+              CollectionSaveableStateRegistries(
+                  context.getTreeProp(LithoSaveableStateRegistryTreeProp)?.let {
+                    saveableStateComponentKey(context)
+                  },
+              ),
+      )
+    }
+        .value
     val adapter = useState { CollectionPrimitiveViewAdapter() }.value
     val collectionPreparationManager =
         useStateWithDeps(layoutInfo, adapter) { CollectionPreparationManager(layoutInfo, adapter) }
@@ -301,7 +315,13 @@ class CollectionRecyclerComponent(
       }
     }
 
-    useEffect(Unit) { onCleanup { poolScope.releaseScope() } }
+    useEffect(Unit) {
+      latestCommittedData.saveableStateRegistries.attach()
+      onCleanup {
+        poolScope.releaseScope()
+        latestCommittedData.saveableStateRegistries.detach()
+      }
+    }
 
     val componentRendererCallback = useCallback { index: Int, model: CollectionChild ->
       componentRenderer(index, model)
@@ -377,6 +397,7 @@ class CollectionRecyclerComponent(
                 layoutConfig = layoutConfig,
                 layoutInfo = layoutInfo,
                 adapter = adapter,
+                saveableStateRegistries = latestCommittedData.saveableStateRegistries,
                 preparationManager = collectionPreparationManager,
                 scroller = collectionPrimitiveViewScroller,
                 clipChildren = clipChildren,
@@ -513,6 +534,7 @@ class CollectionRecyclerComponent(
  *   last notified to rebind. Compared against the current measure version each layout pass to
  *   detect whether a [CrossAxisWrapMode.Dynamic] child-measurement cycle has occurred and visible
  *   items need to be rebound.
+ * @param saveableStateRegistries The registries for the rows' saveable state, one per row key.
  */
 internal class LatestCommittedData(
     @Volatile var layoutInfo: LayoutInfo,
@@ -524,6 +546,8 @@ internal class LatestCommittedData(
     @Volatile var collectionConstraints: SizeConstraints = SizeConstraints(),
     @Volatile var collectionSize: IntSize = IntSize.Invalid,
     @Volatile var lastAppliedMeasureVersion: Int = 0,
+    val saveableStateRegistries: CollectionSaveableStateRegistries =
+        CollectionSaveableStateRegistries(),
 ) {
 
   private val lock = Any()
@@ -540,6 +564,7 @@ internal class LatestCommittedData(
         items = it
       }
     }
+    changeset.rowKeys?.let(saveableStateRegistries::onCommit)
   }
 
   /**
@@ -639,6 +664,7 @@ private fun buildCollectionItems(
     renderer: (index: Int, model: CollectionChild) -> RenderInfo,
     updateOperation: CollectionUpdateOperation<CollectionChild>,
     onChildMeasured: (LithoCollectionItem, IntSize) -> Unit,
+    saveableStateRegistries: CollectionSaveableStateRegistries,
 ): List<CollectionItem<*>> {
   val itemsNeedToRefreshRenderInfo = mutableSetOf<Int>()
   for (operation in updateOperation.operations) {
@@ -653,6 +679,7 @@ private fun buildCollectionItems(
                 runnableHandlerProvider = runnableHandlerProvider,
                 onChildMeasured = onChildMeasured,
                 prioritizeBoundRows = runnableHandlerProvider is PoolingThreadHandlerProvider,
+                saveableStateRegistries = saveableStateRegistries,
             )
             updatedItems.add(position, item)
             itemsNeedToRefreshRenderInfo.add(item.id)
@@ -709,6 +736,7 @@ private fun buildCollectionItems(
           runnableHandlerProvider = runnableHandlerProvider,
           onChildMeasured = onChildMeasured,
           prioritizeBoundRows = runnableHandlerProvider is PoolingThreadHandlerProvider,
+          saveableStateRegistries = saveableStateRegistries,
       )
       updatedItems.add(item)
     }
@@ -1251,11 +1279,14 @@ private fun resolveCollectionChangeType(operations: List<CollectionOperation>): 
  *   operations that need to be applied to transform the collection from its previous state
  * @param items The resulting list of collection items after applying the update operations, or null
  *   if no changes were detected and no new items need to be generated
+ * @param rowKeys The saveable-state keys of [items], read where the items were built, or null if
+ *   there are no new items or the collection has no saveable-state registry
  */
 @DataClassGenerate(toString = Mode.OMIT, equalsHashCode = Mode.KEEP)
 internal data class Changeset(
     val operation: CollectionUpdateOperation<CollectionChild>,
     val items: List<CollectionItem<*>>?,
+    val rowKeys: Set<String>? = null,
 )
 
 /**
@@ -1325,23 +1356,26 @@ private fun generateChangeset(
       sameItemComparator = idComparator,
       sameContentComparator = contentComparator,
   )
-  val items =
-      if (operation.hasChanges) {
-        // We're creating a speculative changeset for measurement without side effects,
-        // which may be discarded if the dataset changes before committing the result,
-        // so we need to duplicate the items and apply modifications to the copy.
-        buildCollectionItems(
-            context = componentContext,
-            runnableHandlerProvider = runnableHandlerProvider,
-            updatedItems = currentItems,
-            renderer = componentRenderer,
-            updateOperation = operation,
-            onChildMeasured = onChildMeasured,
-        )
-      } else {
-        null
+  if (!operation.hasChanges) return Changeset(operation, null)
+
+  val saveableStateRegistries = latestCommittedData.saveableStateRegistries
+  // We're creating a speculative changeset for measurement without side effects,
+  // which may be discarded if the dataset changes before committing the result,
+  // so we need to duplicate the items and apply modifications to the copy.
+  val items = buildCollectionItems(
+      context = componentContext,
+      runnableHandlerProvider = runnableHandlerProvider,
+      updatedItems = currentItems,
+      renderer = componentRenderer,
+      updateOperation = operation,
+      onChildMeasured = onChildMeasured,
+      saveableStateRegistries = saveableStateRegistries,
+  )
+  val rowKeys =
+      componentContext.getTreeProp(LithoSaveableStateRegistryTreeProp)?.let { registry ->
+        saveableStateRegistries.onItemsBuilt(registry, items)
       }
-  return Changeset(operation, items)
+  return Changeset(operation, items, rowKeys)
 }
 
 /**
@@ -1371,6 +1405,7 @@ private fun PrimitiveComponentScope.CollectionPrimitiveViewMountBehavior(
     layoutConfig: CollectionLayoutConfig,
     layoutInfo: LayoutInfo,
     adapter: CollectionPrimitiveViewAdapter,
+    saveableStateRegistries: CollectionSaveableStateRegistries,
     preparationManager: CollectionPreparationManager,
     scroller: CollectionPrimitiveViewScroller,
     clipChildren: Boolean,
@@ -1528,7 +1563,7 @@ private fun PrimitiveComponentScope.CollectionPrimitiveViewMountBehavior(
       bind(adapter) { sectionsRecyclerView ->
         val recyclerView = sectionsRecyclerView.requireLithoRecyclerView()
         recyclerView.adapter = adapter
-        onUnbind { recyclerView.adapter = null }
+        onUnbind { saveableStateRegistries.keepRowsSavedWhile { recyclerView.adapter = null } }
       }
     }
 

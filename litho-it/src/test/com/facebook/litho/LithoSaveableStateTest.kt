@@ -20,6 +20,7 @@ import android.annotation.SuppressLint
 import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.layout.flexbox.Row
+import com.facebook.litho.state.StateReadRecorder
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import java.util.concurrent.FutureTask
@@ -293,6 +294,38 @@ class LithoSaveableStateTest {
 
     assertThat(LithoSaveableStateRegistry(registry.snapshot()).restoredValueForTest()).isEqualTo(6)
     registry.close()
+  }
+
+  /**
+   * A list may release a row's tree while it lays out, inside its host tree's render. The row's
+   * values are read for retention there, and must not count as reads of the host tree.
+   */
+  @Test
+  fun `a tree released during another tree's render retains its latest value`() {
+    val config = ComponentsConfiguration.defaultInstance
+    ComponentsConfiguration.defaultInstance =
+        config.copy(crossTreeStateReadPolicy = ComponentsConfiguration.LogicViolationPolicy.CRASH)
+    try {
+      val state = AtomicReference<State<Int>>()
+      val registry = LithoSaveableStateRegistry()
+      // With detached state ids, the saver reads the state itself, not the value a render captured.
+      val tree =
+          ComponentTree.create(lithoTestRule.context, CapturingStateComponent(onState = state::set))
+              .withRetainedSaveableStateRegistryForTreeReplacement(registry)
+              .componentsConfiguration(config.copy(detachStateIdFromValue = true))
+              .build()
+      val view = render(tree)
+      state.get().updateSync(6)
+      val otherTree = ComponentTree.create(lithoTestRule.context).build()
+
+      StateReadRecorder.record(otherTree.id) { view.release() }
+
+      assertThat(LithoSaveableStateRegistry(registry.snapshot()).restoredValueForTest())
+          .isEqualTo(6)
+      registry.close()
+    } finally {
+      ComponentsConfiguration.defaultInstance = config
+    }
   }
 
   @Test

@@ -469,6 +469,264 @@ class LithoSaveableStateRegistryTest {
     assertThat(root.snapshotForOwner().isEmpty).isTrue()
   }
 
+  @Test
+  fun `a detached child is not saved when a provider registers`() {
+    val parent = LithoSaveableStateRegistry()
+    val child = parent.createChildRegistry("child")
+    child.registerProvider("first") { 1 }
+
+    child.detachFromParent()
+    child.registerProvider("second") { 2 }
+
+    assertThat(parent.snapshot().isEmpty).isTrue()
+  }
+
+  @Test
+  fun `a child detached before it reads claims nothing when a provider registers`() {
+    val parent = LithoSaveableStateRegistry(savedChild("child", 5))
+    val detached = parent.createChildRegistry("child")
+    detached.detachFromParent()
+
+    detached.registerProvider("other") { 1 }
+
+    assertThat(parent.createChildRegistry("child").restoredValue("counter")?.value).isEqualTo(5)
+  }
+
+  @Test
+  fun `attaching a child saves the values registered while it was detached`() {
+    val parent = LithoSaveableStateRegistry()
+    val child = parent.createChildRegistry("child")
+    child.detachFromParent()
+    child.registerProvider("counter") { 3 }
+
+    child.attachToParent()
+
+    assertThat(restoredChild(parent.snapshot(), "child").restoredValue("counter")?.value)
+        .isEqualTo(3)
+  }
+
+  @Test
+  fun `attaching a child that was saved when detached saves it again`() {
+    val parent = LithoSaveableStateRegistry()
+    val child = parent.createChildRegistry("child")
+    val value = AtomicInteger(1)
+    child.registerProvider("counter") { value.get() }
+    child.detachFromParent()
+    value.set(4)
+    assertThat(parent.snapshot().isEmpty).isTrue()
+
+    child.attachToParent()
+
+    assertThat(restoredChild(parent.snapshot(), "child").restoredValue("counter")?.value)
+        .isEqualTo(4)
+  }
+
+  @Test
+  fun `retaining a child without providers claims nothing from its parent`() {
+    val parent = LithoSaveableStateRegistry(savedChild("child", 5))
+
+    parent.createChildRegistry("child").retainActiveValues()
+
+    assertThat(parent.createChildRegistry("child").restoredValue("counter")?.value).isEqualTo(5)
+  }
+
+  @Test
+  fun `retaining a root without providers claims nothing from its owner`() {
+    val claims = AtomicInteger()
+    val root =
+        LithoSaveableStateRegistry.ownerBacked(null) {
+          claims.incrementAndGet()
+          null
+        }
+
+    root.retainActiveValues()
+
+    assertThat(claims.get()).isZero()
+  }
+
+  @Test
+  fun `a child left out of its parent's snapshot keeps its values and children`() {
+    val parent = LithoSaveableStateRegistry()
+    val child = parent.createChildRegistry("child")
+    child.registerProvider("counter") { 3 }
+    child.createChildRegistry("nested").registerProvider("counter") { 4 }
+
+    child.setSavedInParent(false)
+
+    assertThat(parent.snapshot().isEmpty).isTrue()
+    val childValues = LithoSaveableStateRegistry(child.snapshot())
+    assertThat(childValues.restoredValue("counter")?.value).isEqualTo(3)
+    assertThat(childValues.createChildRegistry("nested").restoredValue("counter")?.value)
+        .isEqualTo(4)
+  }
+
+  @Test
+  fun `a child left out of its parent's snapshot still holds its key`() {
+    val parent = LithoSaveableStateRegistry()
+    val child = parent.createChildRegistry("child")
+    child.registerProvider("counter") { 1 }
+    child.setSavedInParent(false)
+
+    parent.createChildRegistry("child").registerProvider("counter") { 2 }
+    child.setSavedInParent(true)
+
+    assertThat(parent.snapshot().isEmpty).isTrue()
+  }
+
+  @Test
+  fun `a child saved in its parent again is saved with its current values`() {
+    val parent = LithoSaveableStateRegistry()
+    val child = parent.createChildRegistry("child")
+    val value = AtomicInteger(1)
+    child.registerProvider("counter") { value.get() }
+    child.setSavedInParent(false)
+    value.set(6)
+
+    child.setSavedInParent(true)
+
+    assertThat(restoredChild(parent.snapshot(), "child").restoredValue("counter")?.value)
+        .isEqualTo(6)
+  }
+
+  @Test
+  fun `a child left out of its parent's snapshot reads its restored values without saving them`() {
+    val parent = LithoSaveableStateRegistry(savedChild("child", 5))
+    val child = parent.createChildRegistry("child")
+    child.setSavedInParent(false)
+
+    assertThat(child.restoredValue("counter")?.value).isEqualTo(5)
+
+    assertThat(parent.snapshot().isEmpty).isTrue()
+    child.close()
+    assertThat(parent.snapshot().isEmpty).isTrue()
+  }
+
+  @Test
+  fun `a parent keeps no older copy of a child left out of its snapshot`() {
+    val parent = LithoSaveableStateRegistry()
+    val child = parent.createChildRegistry("child")
+    child.registerProvider("counter") { 1 }
+    parent.retainActiveValues()
+
+    child.setSavedInParent(false)
+    child.close()
+
+    assertThat(parent.snapshot().isEmpty).isTrue()
+  }
+
+  @Test
+  fun `retaining a parent does not keep a child left out of its snapshot`() {
+    val parent = LithoSaveableStateRegistry()
+    val child = parent.createChildRegistry("child")
+    child.registerProvider("counter") { 1 }
+    child.setSavedInParent(false)
+
+    parent.retainActiveValues()
+    child.close()
+
+    assertThat(parent.snapshot().isEmpty).isTrue()
+  }
+
+  @Test
+  fun `a child that read its restored values and is saved again saves them`() {
+    val parent = LithoSaveableStateRegistry(savedChild("child", 5))
+    val child = parent.createChildRegistry("child")
+    assertThat(child.restoredValue("counter")?.value).isEqualTo(5)
+    child.setSavedInParent(false)
+
+    child.setSavedInParent(true)
+
+    assertThat(restoredChild(parent.snapshot(), "child").restoredValue("counter")?.value)
+        .isEqualTo(5)
+  }
+
+  @Test
+  fun `leaving out a child that has not read claims nothing and keeps its restored values saved`() {
+    val parent = LithoSaveableStateRegistry(savedChild("child", 5))
+    val child = parent.createChildRegistry("child")
+
+    child.setSavedInParent(false)
+    assertThat(restoredChild(parent.snapshot(), "child").restoredValue("counter")?.value)
+        .isEqualTo(5)
+    child.setSavedInParent(true)
+
+    assertThat(parent.createChildRegistry("child").restoredValue("counter")?.value).isEqualTo(5)
+  }
+
+  @Test
+  fun `discarding child state before the claim drops the restored value and claims nothing`() {
+    val claims = AtomicInteger()
+    val saved = LithoSaveableStateRegistry()
+    saved.createChildRegistry("dropped").registerProvider("counter") { 1 }
+    saved.createChildRegistry("kept").registerProvider("counter") { 2 }
+    val root =
+        LithoSaveableStateRegistry.ownerBacked(null) {
+          claims.incrementAndGet()
+          saved.snapshot()
+        }
+
+    root.discardChildState("dropped")
+
+    assertThat(claims.get()).isZero()
+    assertThat(root.createChildRegistry("dropped").restoredValue("counter")).isNull()
+    assertThat(root.createChildRegistry("kept").restoredValue("counter")?.value).isEqualTo(2)
+  }
+
+  @Test
+  fun `a child discarding child state before it restores claims nothing from its parent`() {
+    val claims = AtomicInteger()
+    val saved = LithoSaveableStateRegistry()
+    val savedList = saved.createChildRegistry("list")
+    savedList.createChildRegistry("dropped").registerProvider("counter") { 1 }
+    savedList.createChildRegistry("kept").registerProvider("counter") { 2 }
+    val root =
+        LithoSaveableStateRegistry.ownerBacked(null) {
+          claims.incrementAndGet()
+          saved.snapshot()
+        }
+    val list = root.createChildRegistry("list")
+
+    list.discardChildState("dropped")
+
+    assertThat(claims.get()).isZero()
+    assertThat(list.createChildRegistry("dropped").restoredValue("counter")).isNull()
+    assertThat(list.createChildRegistry("kept").restoredValue("counter")?.value).isEqualTo(2)
+  }
+
+  @Test
+  fun `a registry holds state while it has a provider, a retained value or an open child`() {
+    val parent = LithoSaveableStateRegistry()
+    val withProvider = parent.createChildRegistry("provider")
+    withProvider.registerProvider("counter") { 1 }
+    val withRetainedValue = parent.createChildRegistry("retained")
+    val registration = withRetainedValue.registerProvider("counter") { 2 }
+    withRetainedValue.retainActiveValues()
+    registration.close()
+    val withChild = parent.createChildRegistry("parent")
+    val child = withChild.createChildRegistry("child")
+    child.restoredValue("counter")
+
+    assertThat(parent.createChildRegistry("empty").holdsState()).isFalse()
+    assertThat(withProvider.holdsState()).isTrue()
+    assertThat(withRetainedValue.holdsState()).isTrue()
+    assertThat(withChild.holdsState()).isTrue()
+    child.close()
+    assertThat(withChild.holdsState()).isFalse()
+    withProvider.close()
+    assertThat(withProvider.holdsState()).isFalse()
+  }
+
+  @Test
+  fun `closing a child that holds nothing leaves its restored values to the next child`() {
+    val parent = LithoSaveableStateRegistry(savedChild("child", 5))
+    val child = parent.createChildRegistry("child")
+    assertThat(child.holdsState()).isFalse()
+
+    child.close()
+
+    assertThat(parent.createChildRegistry("child").restoredValue("counter")?.value).isEqualTo(5)
+  }
+
   /** A saved root with a "header" and the rows "row-0" and "row-1" in its nested "list". */
   private fun savedList(): Bundle {
     val root = LithoSaveableStateRegistry()
@@ -491,6 +749,16 @@ class LithoSaveableStateRegistryTest {
 
   private companion object {
     const val TIMEOUT_SECONDS: Long = 5
+
+    /** A snapshot with one child registry, [key], whose `counter` is [value]. */
+    private fun savedChild(key: String, value: Int): Bundle {
+      val source = LithoSaveableStateRegistry()
+      source.createChildRegistry(key).registerProvider("counter") { value }
+      return source.snapshot()
+    }
+
+    private fun restoredChild(snapshot: Bundle, key: String): LithoSaveableStateRegistry =
+        LithoSaveableStateRegistry(snapshot).createChildRegistry(key)
 
     fun parcelRoundTrip(bundle: Bundle): Bundle {
       val bytes =

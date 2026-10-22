@@ -21,12 +21,15 @@ import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentTree
 import com.facebook.litho.LithoRenderTreeView
 import com.facebook.litho.LithoRenderer
+import com.facebook.litho.LithoSaveableStateRegistry
+import com.facebook.litho.LithoSaveableStateRegistryTreeProp
 import com.facebook.litho.LithoTree
 import com.facebook.litho.LithoVisibilityEventsController
 import com.facebook.litho.TreePropContainer
 import com.facebook.litho.componentsConfig
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.config.RunnableHandlerProvider
+import com.facebook.litho.widget.ComponentTreeHolder
 import com.facebook.litho.widget.RenderInfo
 import com.facebook.rendercore.IntSize
 import com.facebook.rendercore.SizeConstraints
@@ -43,6 +46,10 @@ class LithoCollectionItem(
     // Lets bound rows post their background render ahead of other work. Only for a handler the
     // collection owns; on a shared layout thread it would jump ahead of other trees.
     private val prioritizeBoundRows: Boolean = false,
+    // The collection's registries for its rows' saveable state. An item outside a collection gets
+    // its own, which save nothing.
+    private val saveableStateRegistries: CollectionSaveableStateRegistries =
+        CollectionSaveableStateRegistries(),
 ) : CollectionItem<LithoRenderTreeView>(id, viewType, renderInfo) {
 
   // Capture values from componentContext for deferred LithoRenderer creation.
@@ -58,8 +65,36 @@ class LithoCollectionItem(
       componentContext.parentTreePropContainer
   private val _visibilityController: LithoVisibilityEventsController? =
       componentContext.lithoVisibilityEventsController
+  private val parentSaveableStateRegistry: LithoSaveableStateRegistry? =
+      _treePropContainer?.get(LithoSaveableStateRegistryTreeProp)
+
+  /**
+   * The key read from [renderInfo] when the renderer took its registry; it stays the item's key.
+   */
+  @Volatile private var registryKey: RowKey? = null
+
+  /** The key last read from a [renderInfo], read again only when [renderInfo] changes. */
+  @Volatile private var lastReadKey: RowKey? = null
+
+  /**
+   * The collection's registry for this item's key, so items rooted at the same component don't
+   * share saveable-state keys. Taken with the renderer, once the collection has set [renderInfo].
+   */
+  @Volatile private var saveableStateRegistry: LithoSaveableStateRegistry? = null
+
+  /** The late restores of [saveableStateRegistry] that the renderer's layout may have read. */
+  @Volatile private var renderedLateRestoreCount: Int = 0
 
   private val _lazyRenderer = lazy {
+    parentSaveableStateRegistry?.let { parent ->
+      // A bare `renderInfo` here is the constructor argument, which inserted items replace later.
+      val key = readKey(this.renderInfo)
+      registryKey = key
+      val registry = saveableStateRegistries.registryFor(parent, key.key)
+      _treePropContainer?.put(LithoSaveableStateRegistryTreeProp, registry)
+      saveableStateRegistry = registry
+      renderedLateRestoreCount = registry.lateRestoreCount()
+    }
     LithoRenderer(
         context = _androidContext,
         id = id,
@@ -141,7 +176,16 @@ class LithoCollectionItem(
     // Track the view we're binding to
     currentBoundView = view
 
+    // Restored values that arrived after this row rendered, before the collection was first shown,
+    // are read only by a new render, so the layout from before them is dropped.
+    saveableStateRegistry?.lateRestoreCount()?.let { count ->
+      if (count != renderedLateRestoreCount) {
+        renderedLateRestoreCount = count
+        renderer.cleanup()
+      }
+    }
     renderer.bindTo(view)
+    if (previousView == null) saveableStateRegistry?.let(saveableStateRegistries::onItemBound)
     // Getting size constraints from the scope is the safest way to ensure rendering the correct
     // size constraints, like in the following scenarios:
     // 1) We missed chances to prepare content ahead of time
@@ -173,15 +217,30 @@ class LithoCollectionItem(
       return
     }
 
-    // This is the view we're currently managing - clean it up
+    // This is the view we're currently managing - clean it up. Unbinding cleans up the item's
+    // effects, which would drop its saveable values, so they are retained until it binds again.
+    saveableStateRegistry?.retainActiveValues()
     rendererOrNull?.unbind()
     view.clean()
     currentBoundView = null
+    saveableStateRegistry?.let(saveableStateRegistries::onItemUnbound)
   }
 
   override fun PrepareScope.unprepare() {
     rendererOrNull?.cleanup()
   }
+
+  /** The key of this item's registry in [CollectionSaveableStateRegistries]. */
+  internal val saveableStateKey: String?
+    get() = (registryKey ?: readKey(renderInfo)).key
+
+  private fun readKey(info: RenderInfo): RowKey =
+      lastReadKey?.takeIf { it.renderInfo === info }
+          ?: RowKey(info, ComponentTreeHolder.stableIdSaveableStateKey(info)).also {
+            lastReadKey = it
+          }
+
+  private class RowKey(val renderInfo: RenderInfo, val key: String?)
 
   companion object {
     const val DEFAULT_COMPONENT_VIEW_TYPE: Int = 0
