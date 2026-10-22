@@ -101,6 +101,15 @@ internal constructor(
      */
     @JvmField val enableFixForIM: Boolean = false,
     /**
+     * When true, [com.facebook.litho.BaseMountingView.notifyVisibleBoundsChanged] returns early
+     * when the view is fully visible and its last mount already covered all of it, so a parent can
+     * notify every nested view on each scroll frame (e.g. through a
+     * [com.facebook.rendercore.extensions.HostVisibilityNotifier]) without each one redoing its
+     * mount pass. It only skips after a pass that processed visibility for the same bounds, so the
+     * next notify after an unbind, a detach or a visibility hint change still runs a full pass.
+     */
+    @JvmField val skipMountWhenFullyShownAndMounted: Boolean = false,
+    /**
      * When true, uses an empty visible rect for visibility processing when the root host view is
      * detached from the window. This causes all visibility outputs to be treated as invisible,
      * properly firing InvisibleEvent, UnfocusedVisibleEvent, etc. This prevents incorrect
@@ -635,6 +644,10 @@ internal constructor(
 
     fun enableFixForIM(enabled: Boolean): Builder = apply {
       config = config.copy(enableFixForIM = enabled)
+    }
+
+    fun skipMountWhenFullyShownAndMounted(enabled: Boolean): Builder = apply {
+      config = config.copy(skipMountWhenFullyShownAndMounted = enabled)
     }
 
     fun useEmptyVisibleRectOnDetach(enabled: Boolean): Builder = apply {

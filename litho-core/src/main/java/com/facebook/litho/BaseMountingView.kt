@@ -110,6 +110,13 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
 
   val previousMountBounds: Rect = Rect()
 
+  /**
+   * Whether the pass that set [previousMountBounds] also processed visibility, and the extensions
+   * still hold what it found. Only [ComponentsConfiguration.skipMountWhenFullyShownAndMounted]
+   * reads it: full bounds alone don't show that `onVisible` was dispatched for them.
+   */
+  private var isVisibilityProcessedForMountBounds = false
+
   @get:VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   val mountDelegateTarget: MountDelegateTarget
     get() = mountState
@@ -338,11 +345,13 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
    */
   fun unbind() {
     mountState.detach()
+    isVisibilityProcessedForMountBounds = false
   }
 
   protected open fun onDetached() {
     maybeUnmountComponents()
     mountState.detach()
+    isVisibilityProcessedForMountBounds = false
   }
 
   private fun maybeUnmountComponents() {
@@ -528,6 +537,7 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
     } else {
       previousMountBounds.set(visibleRectToUse)
     }
+    isVisibilityProcessedForMountBounds = visibleRectToUse != null && processVisibilityOutputs
 
     val needsMount = isMountStateDirty || mountStateNeedsRemount()
     if (visibleRectToUse != null && !needsMount) {
@@ -863,6 +873,13 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
       val actualVisibleRect = Rect()
       areBoundsVisible = getLocalVisibleRect(actualVisibleRect)
       visibleRectToUse = actualVisibleRect
+      if (
+          areBoundsVisible &&
+              config?.skipMountWhenFullyShownAndMounted == true &&
+              isFullyShownAndMounted(actualVisibleRect)
+      ) {
+        return
+      }
     } else {
       // Since we don't have a reliable way to determine if the current view is visible or not, we
       // have to use an empty rect to unmount all components.
@@ -884,6 +901,22 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
       mountComponent(visibleRectToUse, true, reason)
     }
   }
+
+  /**
+   * Whether [visibleRect] covers all of this view and the last mount already processed exactly that
+   * rect, so mounting again can't mount, unmount or dispatch anything. A visibility transformer can
+   * redefine the bounds without the view moving, so a view with one is never skipped.
+   */
+  private fun isFullyShownAndMounted(visibleRect: Rect): Boolean =
+      !visibleRect.isEmpty &&
+          visibleRect.left == 0 &&
+          visibleRect.top == 0 &&
+          visibleRect.right == width &&
+          visibleRect.bottom == height &&
+          visibleRect == previousMountBounds &&
+          isVisibilityProcessedForMountBounds &&
+          configuration?.visibilityBoundsTransformer == null &&
+          !mountStateNeedsRemount()
 
   // This is used to detect if the rect is visible or not, more details could be found at here:
   // https://developer.android.com/reference/android/view/View#getLocalVisibleRect(android.graphics.Rect)
@@ -954,6 +987,7 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
       )
 
       previousMountBounds.set(requireNotNull(currentVisibleArea))
+      isVisibilityProcessedForMountBounds = true
     }
   }
 
@@ -1159,6 +1193,7 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
 
   private fun clearVisibilityItems(reason: VisibilityChangeReason) {
     lithoHostListenerCoordinator?.clearVisibilityItems(reason)
+    isVisibilityProcessedForMountBounds = false
   }
 
   /** This should be called when setting a null component tree to the litho view. */
