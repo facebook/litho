@@ -423,7 +423,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
     return node
   }
 
-  open fun createLayoutResult(layoutOutput: YogaLayoutOutput): LithoLayoutResult =
+  open fun createLayoutResult(layoutOutput: LithoLayoutOutput): LithoLayoutResult =
       if (layoutFunction != null) {
         CustomLayoutResult(context = tailComponentContext, node = this, layoutOutput = layoutOutput)
       } else {

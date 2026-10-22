@@ -19,6 +19,7 @@
 package com.facebook.litho
 
 import com.facebook.litho.ComponentsSystrace.trace
+import com.facebook.litho.YogaLayoutOutput.Companion.yogaLayoutOutput
 import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.layout.ChildBox
 import com.facebook.litho.layout.LayoutDirection
@@ -47,7 +48,7 @@ import com.facebook.yoga.YogaNode
 internal class CustomLayoutResult(
     context: ComponentContext,
     node: LithoNode,
-    layoutOutput: YogaLayoutOutput,
+    layoutOutput: LithoLayoutOutput,
 ) : LithoLayoutResult(context = context, node = node, layoutOutput = layoutOutput) {
 
   /** This pass's invocations of the layout function, oldest first. */
@@ -176,13 +177,13 @@ internal class CustomLayoutResult(
       // An answer from memory may already be placed by another measurement of this container, in
       // which case this one places a copy.
       val result = checkNotNull(placeable.result).acquireForPlacement(this)
-      result.layoutOutput.placedX =
+      result.yogaLayoutOutput.placedX =
           insetLeft +
               startOffset +
               scope.placements[i * 2] +
               placeable.offsetX +
               placeable.marginLeft
-      result.layoutOutput.placedY =
+      result.yogaLayoutOutput.placedY =
           insetTop + scope.placements[i * 2 + 1] + placeable.offsetY + placeable.marginTop
       addChild(result)
     }
@@ -206,7 +207,7 @@ internal class CustomLayoutResult(
         StateReadRecorder.record(requireNotNull(context.renderContext).treeId, description) {
           result = attempt(block)
         }
-    layoutOutput.addStateReads(reads)
+    yogaLayoutOutput.addStateReads(reads)
     return result
   }
 
@@ -250,7 +251,7 @@ internal class CustomLayoutResult(
 
   /** Adds the state read anywhere in [result]'s subtree to this container's output. */
   private fun collectSubtreeReads(result: LithoLayoutResult) {
-    result.layoutOutput.stateReads?.let { layoutOutput.addStateReads(it) }
+    result.yogaLayoutOutput.stateReads?.let { yogaLayoutOutput.addStateReads(it) }
     for (i in 0 until result.childCount) {
       collectSubtreeReads(result.getChildAt(i))
     }

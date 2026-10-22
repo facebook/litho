@@ -58,7 +58,7 @@ constructor(
   }
 
   override fun createLayoutResult(
-      layoutOutput: YogaLayoutOutput,
+      layoutOutput: LithoLayoutOutput,
   ): DeferredLithoLayoutResult = DeferredLithoLayoutResult(
       c = tailComponentContext,
       deferredNode = this,

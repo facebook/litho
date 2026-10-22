@@ -29,7 +29,7 @@ class DeferredLithoLayoutResult
 constructor(
     c: ComponentContext,
     deferredNode: DeferredLithoNode,
-    layoutOutput: YogaLayoutOutput,
+    layoutOutput: LithoLayoutOutput,
 ) : LithoLayoutResult(c, deferredNode, layoutOutput) {
 
   val result: LithoLayoutResult?

@@ -19,6 +19,7 @@ package com.facebook.litho
 import android.graphics.drawable.Drawable
 import android.util.SparseArray
 import com.facebook.litho.YogaLayoutOutput.Companion.getYogaNode
+import com.facebook.litho.YogaLayoutOutput.Companion.yogaLayoutOutput
 import com.facebook.litho.layout.IntEdges
 import com.facebook.litho.layout.LayoutDirection
 import com.facebook.yoga.YogaAlign
@@ -133,7 +134,7 @@ class DebugLayoutNode internal constructor(private val result: LithoLayoutResult
 
   /** A leaf its `Layout` laid out directly has no Yoga layout, so its edges are read there. */
   fun getBorderWidth(edge: YogaEdge): Float =
-      result.layoutOutput.boxGeometry?.let { it.border.at(edge, it.direction) }
+      result.yogaLayoutOutput.boxGeometry?.let { it.border.at(edge, it.direction) }
           ?: result.getYogaNode().getBorder(edge)
 
   val commonDynamicProps: SparseArray<DynamicValue<*>>?
@@ -155,15 +156,15 @@ class DebugLayoutNode internal constructor(private val result: LithoLayoutResult
     get() = result.height.toFloat()
 
   fun getLayoutMargin(edge: YogaEdge): Float =
-      result.layoutOutput.resolvedMargins?.at(edge, result.layoutOutput.layoutDirection)
+      result.yogaLayoutOutput.resolvedMargins?.at(edge, result.layoutOutput.layoutDirection)
           ?: result.getYogaNode().getLayoutMargin(edge)
 
   fun getLayoutPadding(edge: YogaEdge): Float =
-      result.layoutOutput.boxGeometry?.let { it.padding.at(edge, it.direction) }
+      result.yogaLayoutOutput.boxGeometry?.let { it.padding.at(edge, it.direction) }
           ?: result.getYogaNode().getLayoutPadding(edge)
 
   fun getLayoutBorderWidth(edge: YogaEdge): Float =
-      result.layoutOutput.boxGeometry?.let { it.border.at(edge, it.direction) }
+      result.yogaLayoutOutput.boxGeometry?.let { it.border.at(edge, it.direction) }
           ?: result.getYogaNode().getLayoutBorder(edge)
 
   private fun IntEdges.at(edge: YogaEdge, direction: LayoutDirection): Float? {
@@ -178,4 +179,15 @@ class DebugLayoutNode internal constructor(private val result: LithoLayoutResult
       else -> null
     }?.toFloat()
   }
+}
+
+/**
+ * This result's layout as Litho's inspector reads it, from its tail component.
+ *
+ * Test helper for reading a result's margins or Yoga style without depending on Yoga internals.
+ */
+fun LithoLayoutResult.debugLayoutNode(): DebugLayoutNode {
+  var component = checkNotNull(DebugComponent.getInstance(this, 0, 0))
+  while (!component.isLayoutNode) component = component.childComponents.single()
+  return checkNotNull(component.layoutNode)
 }

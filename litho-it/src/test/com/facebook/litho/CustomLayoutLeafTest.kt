@@ -19,6 +19,7 @@
 package com.facebook.litho
 
 import android.view.View
+import com.facebook.litho.YogaLayoutOutput.Companion.yogaLayoutOutput
 import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.core.height
 import com.facebook.litho.core.margin
@@ -78,11 +79,11 @@ class CustomLayoutLeafTest {
     val root = view.componentTree.mainThreadLayoutState?.rootLayoutResult as LithoLayoutResult
     val container = root.getChildAt(0)
 
-    assertThat(container.getChildAt(0).layoutOutput.boxGeometry).describedAs("Text").isNotNull()
-    assertThat(container.getChildAt(1).layoutOutput.boxGeometry)
+    assertThat(container.getChildAt(0).yogaLayoutOutput.boxGeometry).describedAs("Text").isNotNull()
+    assertThat(container.getChildAt(1).yogaLayoutOutput.boxGeometry)
         .describedAs("Primitive")
         .isNotNull()
-    assertThat(container.getChildAt(2).layoutOutput.boxGeometry)
+    assertThat(container.getChildAt(2).yogaLayoutOutput.boxGeometry)
         .describedAs("Column subtree")
         .isNull()
     assertThat(container.getChildAt(1).width).isEqualTo(30)
@@ -125,7 +126,7 @@ class CustomLayoutLeafTest {
             as LithoLayoutResult
     val child = DebugLayoutNode(root.getChildAt(0))
 
-    assertThat(root.getChildAt(0).layoutOutput.boxGeometry).isNotNull()
+    assertThat(root.getChildAt(0).yogaLayoutOutput.boxGeometry).isNotNull()
     assertThat(child.layoutWidth).isEqualTo(30f)
     assertThat(child.layoutHeight).isEqualTo(20f)
     assertThat(child.getLayoutMargin(YogaEdge.LEFT)).isEqualTo(7f)

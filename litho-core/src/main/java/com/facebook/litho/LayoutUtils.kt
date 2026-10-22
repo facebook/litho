@@ -19,6 +19,7 @@ package com.facebook.litho
 import android.content.Context
 import androidx.collection.mutableScatterSetOf
 import com.facebook.litho.ComponentsSystrace.traceWithArgs
+import com.facebook.litho.YogaLayoutOutput.Companion.yogaLayoutOutput
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.transition.MutableTransitionData
 import com.facebook.rendercore.LayoutCache
@@ -118,7 +119,7 @@ internal object LayoutUtils {
     val currentLayout: LithoLayoutResult? = holder.result
     // Set new created LayoutResult for future access
     if (layout != null && layout !== currentLayout) {
-      holder.layoutOutput._actualDeferredNodeResult = layout
+      holder.yogaLayoutOutput._actualDeferredNodeResult = layout
     }
     return layout
   }
@@ -408,7 +409,7 @@ internal object LayoutUtils {
 
       if (newNode == null) {
         // mark as error to prevent from resolving it again.
-        holderResult.layoutOutput._measureHadExceptions = true
+        holderResult.yogaLayoutOutput._measureHadExceptions = true
         return null
       }
 

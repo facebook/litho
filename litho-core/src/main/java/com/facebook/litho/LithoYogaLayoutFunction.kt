@@ -28,6 +28,7 @@ import com.facebook.litho.ComponentsSystrace.trace
 import com.facebook.litho.ComponentsSystrace.traceWithArgs
 import com.facebook.litho.YogaLayoutOutput.Companion.getYogaNode
 import com.facebook.litho.YogaLayoutOutput.Companion.layoutDirection
+import com.facebook.litho.YogaLayoutOutput.Companion.yogaLayoutOutput
 import com.facebook.litho.animation.ReflowReadView
 import com.facebook.litho.animation.reflowStateId
 import com.facebook.litho.config.ComponentsConfiguration
@@ -125,9 +126,9 @@ internal object LithoYogaLayoutFunction {
           )
         }
     // Recorded as its tree was built, or carried by the result the cache copied.
-    val boxProps = checkNotNull(result.layoutOutput.childBoxProps)
+    val boxProps = checkNotNull(result.yogaLayoutOutput.childBoxProps)
     val box = resolveChildBox(constraints, boxProps, node.layoutDirection.isRTL)
-    result.layoutOutput.resolvedMargins = box.margins
+    result.yogaLayoutOutput.resolvedMargins = box.margins
     if (isLayoutLeaf(node)) {
       trace({ "layout.leaf:${node.headComponent.simpleName}" }) {
         layOutLeaf(context, result, box)
@@ -158,7 +159,7 @@ internal object LithoYogaLayoutFunction {
       result: LithoLayoutResult,
       box: ChildBox,
   ) {
-    val output = result.layoutOutput
+    val output = result.yogaLayoutOutput
     val direction =
         if (result.node.layoutDirection.isRTL) LayoutDirection.RTL else LayoutDirection.LTR
     // Set before measuring, with no size yet: a Primitive's layout scope reads the direction.
@@ -183,7 +184,7 @@ internal object LithoYogaLayoutFunction {
       result: CustomLayoutResult,
       box: ChildBox,
   ) {
-    val output = result.layoutOutput
+    val output = result.yogaLayoutOutput
     val direction =
         if (result.node.layoutDirection.isRTL) LayoutDirection.RTL else LayoutDirection.LTR
     // Set before running the function, with no size yet: it reads the container's direction.
@@ -248,7 +249,7 @@ internal object LithoYogaLayoutFunction {
           SizeSpec.getSize(heightSpec).toFloat()
         }
 
-    layoutResult.layoutOutput.setSizeSpec(widthSpec, heightSpec)
+    layoutResult.yogaLayoutOutput.setSizeSpec(widthSpec, heightSpec)
 
     trace({ "layout.yogaCalculateLayout:${lithoNode.headComponent.simpleName}" }) {
       yogaRoot.calculateLayout(width, height)
@@ -389,7 +390,7 @@ internal object LithoYogaLayoutFunction {
     // currentDiffNode before this function was called. If the type didn't match or the context
     // was released, currentDiffNode is null and the entire subtree gets no DiffNode assignments.
     if (currentDiffNode != null) {
-      result.layoutOutput._diffNode = currentDiffNode
+      result.yogaLayoutOutput._diffNode = currentDiffNode
     }
 
     saveLithoLayoutResultIntoCache(context, node, result, skipTransitionCapture)
@@ -450,7 +451,7 @@ internal object LithoYogaLayoutFunction {
     // Subscribe to the reflow value's StateId so an animation frame re-runs this node's layout. The
     // value is minted on the main-thread commit, not here, and this must be recorded every layout:
     // LayoutState.stateReads is rebuilt from the layout output each pass.
-    result.layoutOutput.addStateRead(stateId)
+    result.yogaLayoutOutput.addStateRead(stateId)
 
     if (isReflowAnimationFrameFor(stateId)) {
       // This node's own value drove the pass: apply the interpolated size so siblings and nested
@@ -490,13 +491,13 @@ internal object LithoYogaLayoutFunction {
    */
   private fun LithoLayoutResult.restoreDeclaredSize() {
     val yogaNode = getYogaNode()
-    val declaredWidth = layoutOutput.widthFromStyle
+    val declaredWidth = yogaLayoutOutput.widthFromStyle
     when (declaredWidth.unit) {
       YogaUnit.POINT -> yogaNode.setWidth(declaredWidth.value)
       YogaUnit.PERCENT -> yogaNode.setWidthPercent(declaredWidth.value)
       else -> if (!yogaNode.width.isUndeclared()) yogaNode.setWidthAuto()
     }
-    val declaredHeight = layoutOutput.heightFromStyle
+    val declaredHeight = yogaLayoutOutput.heightFromStyle
     when (declaredHeight.unit) {
       YogaUnit.POINT -> yogaNode.setHeight(declaredHeight.value)
       YogaUnit.PERCENT -> yogaNode.setHeightPercent(declaredHeight.value)
@@ -600,7 +601,7 @@ internal object LithoYogaLayoutFunction {
       layoutResult = copyLayoutResult(cachedLayoutResult, currentNode, clonedNode)
       if (hasReflowFrameUpdateInDeferredSubtree) {
         // Keep the resolved subtree so the frame reruns Yoga without resolving the boundary.
-        layoutResult.layoutOutput._actualDeferredNodeResult =
+        layoutResult.yogaLayoutOutput._actualDeferredNodeResult =
             cachedLayoutResult.layoutOutput.actualDeferredNodeResult
         clonedNode.dirty()
       } else if (currentNode is DeferredLithoNode && maybeDirty) {
@@ -750,7 +751,7 @@ internal object LithoYogaLayoutFunction {
       sizeConstraints: SizeConstraints,
   ) {
     val yogaNode: YogaNode = layoutResult.getYogaNode()
-    val output = layoutResult.layoutOutput
+    val output = layoutResult.yogaLayoutOutput
 
     // Reset to original style values
     // For new nodes: no-op since current == style.
@@ -969,7 +970,7 @@ internal object LithoYogaLayoutFunction {
       isDirty: Boolean,
   ) {
     val result: LithoLayoutResult = getLayoutResultFromYogaNode(currentYogaNode)
-    val yogaOutput: YogaLayoutOutput = result.layoutOutput
+    val yogaOutput: YogaLayoutOutput = result.yogaLayoutOutput
 
     val component: Component = currentNode.tailComponent
 
@@ -1038,7 +1039,7 @@ internal object LithoYogaLayoutFunction {
         requireNotNull(context.renderContext) { "render context should not be null" }
 
     var size: MeasureResult
-    val yogaOutput = layoutResult.layoutOutput
+    val yogaOutput = layoutResult.yogaLayoutOutput
     yogaOutput._wasMeasured = true
     if (renderContext.isFutureReleased) {
 
@@ -1101,7 +1102,7 @@ internal object LithoYogaLayoutFunction {
   fun onBoundsDefined(layoutResult: LithoLayoutResult) {
     val context = layoutResult.node.tailComponentContext
     val component = layoutResult.node.tailComponent
-    val yogaOutput = layoutResult.layoutOutput
+    val yogaOutput = layoutResult.yogaLayoutOutput
     val hasLayoutSizeChanged: Boolean
 
     // Since `measure` is called without padding and border sizes, save the size without padding and
@@ -1344,7 +1345,7 @@ internal object LithoYogaLayoutFunction {
     val component: Component = node.tailComponent
     val componentScopedContext: ComponentContext = node.tailComponentContext
     val isReadTrackingEnabled = componentScopedContext.isReadTrackingEnabled
-    val yogaOutput: YogaLayoutOutput = lithoLayoutResult.layoutOutput
+    val yogaOutput: YogaLayoutOutput = lithoLayoutResult.yogaLayoutOutput
     val diffNode: DiffNode? =
         if (lithoLayoutResult.cachedMeasuresValid) lithoLayoutResult.diffNode else null
     val width: Int
@@ -1633,7 +1634,7 @@ internal object LithoYogaLayoutFunction {
       bounds.right -= lithoLayoutResult.paddingRight
       bounds.bottom -= lithoLayoutResult.paddingBottom
     }
-    lithoLayoutResult.layoutOutput._adjustedBounds.set(bounds)
+    lithoLayoutResult.yogaLayoutOutput._adjustedBounds.set(bounds)
   }
 
   // This is used when we need to create a new output other than the YogaNode for layout caching.
@@ -1644,7 +1645,7 @@ internal object LithoYogaLayoutFunction {
   ): LithoLayoutResult =
       lithoNode.createLayoutResult(
           layoutOutput =
-              layoutResult.layoutOutput
+              layoutResult.yogaLayoutOutput
                   .copy(
                       yogaNode = yogaNode,
                       _isCachedLayout = true,
@@ -1655,8 +1656,8 @@ internal object LithoYogaLayoutFunction {
                       _actualDeferredNodeResult = null, // disable deferred node caching
                       _adjustedBounds = Rect(layoutResult.layoutOutput.adjustedBounds),
                   )
-                  .inheritStateReads(layoutResult.layoutOutput)
-                  .also { it.childBoxProps = layoutResult.layoutOutput.childBoxProps },
+                  .inheritStateReads(layoutResult.yogaLayoutOutput)
+                  .also { it.childBoxProps = layoutResult.yogaLayoutOutput.childBoxProps },
       )
 
   private fun LithoLayoutResult.shouldDrawBorders(): Boolean =
@@ -1685,7 +1686,7 @@ internal object LithoYogaLayoutFunction {
   }
 
   private fun recursivelyResolveLayoutDirection(result: LithoLayoutResult): YogaDirection {
-    result.layoutOutput.boxGeometry?.let {
+    result.yogaLayoutOutput.boxGeometry?.let {
       return it.direction.toYogaDirection()
     }
     val direction = result.getYogaNode().layoutDirection
@@ -1870,7 +1871,7 @@ internal object LithoYogaLayoutFunction {
  * [LithoYogaLayoutFunction].
  */
 @DataClassGenerate(toString = Mode.KEEP, equalsHashCode = Mode.KEEP)
-data class YogaLayoutOutput(
+internal data class YogaLayoutOutput(
     val yogaNode: YogaNode,
     val widthFromStyle: YogaValue,
     val heightFromStyle: YogaValue,
@@ -2067,7 +2068,16 @@ data class YogaLayoutOutput(
   companion object {
     private const val UNSPECIFIED: Int = -1
 
-    fun LithoLayoutResult.getYogaNode(): YogaNode = layoutOutput.yogaNode
+    /** This result's output; it throws for an output a Yoga pass didn't build. */
+    @Suppress("NOTHING_TO_INLINE")
+    inline val LithoLayoutResult.yogaLayoutOutput: YogaLayoutOutput
+      get() = layoutOutput as? YogaLayoutOutput ?: notYogaOutput(this)
+
+    @Suppress("NOTHING_TO_INLINE")
+    inline fun LithoLayoutResult.getYogaNode(): YogaNode = yogaLayoutOutput.yogaNode
+
+    fun notYogaOutput(result: LithoLayoutResult): Nothing =
+        error("${result.node.headComponent.simpleName} has no Yoga layout output")
 
     val LithoLayoutResult.layoutDirection: LayoutDirection
       get() = layoutOutput.layoutDirection

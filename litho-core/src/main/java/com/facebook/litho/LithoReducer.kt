@@ -25,6 +25,7 @@ import androidx.collection.mutableScatterSetOf
 import androidx.core.view.ViewCompat
 import com.facebook.litho.ComponentsSystrace.trace
 import com.facebook.litho.LithoLayoutData.Companion.NO_Z_INDEX
+import com.facebook.litho.YogaLayoutOutput.Companion.yogaLayoutOutput
 import com.facebook.litho.animation.StructuralStyleTransitionId
 import com.facebook.litho.animation.StyleTransitionData
 import com.facebook.litho.animation.StyleTransitionId
@@ -663,7 +664,7 @@ internal object LithoReducer {
     // Track which (state, owner-key) pairs this layout result reads. State updates use these
     // pairs to invalidate exactly the affected subtrees on the next pass.
     val ownerGlobalKey = context.nullableGlobalKey
-    val layoutOutputStateReads = result.layoutOutput.stateReads
+    val layoutOutputStateReads = result.yogaLayoutOutput.stateReads
     if (ownerGlobalKey != null && layoutOutputStateReads != null) {
       val accumulatedStateReads = reductionState.getOrCreateStateReads()
       layoutOutputStateReads.forEach { stateIdentifier ->
@@ -1022,7 +1023,7 @@ internal object LithoReducer {
     diffNode.lastMeasuredHeight = result.contentHeight
     diffNode.layoutData = result.layoutData
     diffNode.effects = result.effects
-    diffNode.stateReads = result.layoutOutput.stateReads
+    diffNode.stateReads = result.yogaLayoutOutput.stateReads
     diffNode.primitive = result.node.primitive
     diffNode.delegate = result.delegate
   }

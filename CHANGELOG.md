@@ -8,6 +8,7 @@ _release-date_
 * [BREAKING] Remove `LegacyLithoViewRule` from `com.facebook.litho.testing`, please use `LithoTestRule` and `TestLithoView` instead.
 * [BREAKING] Replace `ComponentsConfiguration.useIncrementalMountGapWorker` and `enableGapWorkerIncrementalUnmount` with a single `gapWorkerMode: GapWorkerMode` (default `OFF`). Migrate `useIncrementalMountGapWorker(true)` to `gapWorkerMode(GapWorkerMode.PREMOUNT)`, or `COST_AWARE_PREMOUNT` / `COST_AWARE_PREMOUNT_WITH_INCREMENTAL_UNMOUNT`. `IncrementalMountExtensionConfigs.useGapWorker` and `useCostAwareGapWorkerPremount` are removed: the tree's mode alone decides the route.
 * [BREAKING] Remove the Unit-returning `Style.onPerformAccessibilityAction`, `Style.onRequestSendAccessibilityEvent` and `Style.onPerformActionForVirtualView`, please use `onPerformAccessibilityActionWithResult`, `onRequestSendAccessibilityEventWithResult` and `onPerformActionForVirtualViewWithResult` instead.
+* [BREAKING] `LithoLayoutResult.layoutOutput`, `LithoNode.createLayoutResult` and the layout result constructors take a `LithoLayoutOutput` instead of a `YogaLayoutOutput`, and `YogaLayoutOutput` and `getYogaNode()` are internal. To inspect a result's margins or Yoga style, use `LithoLayoutResult.debugLayoutNode()` (`DebugLayoutNode`).
 
 ## Version 0.50.2
 _2024-10-07_

@@ -18,6 +18,7 @@ package com.facebook.litho
 
 import android.graphics.Rect
 import androidx.annotation.Px
+import com.facebook.litho.YogaLayoutOutput.Companion.yogaLayoutOutput
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.rendercore.LayoutResult
 
@@ -25,8 +26,7 @@ import com.facebook.rendercore.LayoutResult
 open class LithoLayoutResult(
     val context: ComponentContext,
     open val node: LithoNode,
-    // Eventually, this will be replaced by LithoLayoutOutput.
-    val layoutOutput: YogaLayoutOutput,
+    val layoutOutput: LithoLayoutOutput,
 ) : LayoutResult {
 
   private val children: MutableList<LithoLayoutResult> = ArrayList()
@@ -62,7 +62,7 @@ open class LithoLayoutResult(
     get() = layoutOutput.isCachedLayout
 
   val isDiffedLayout: Boolean
-    get() = layoutOutput._isDiffedLayout
+    get() = yogaLayoutOutput._isDiffedLayout
 
   val cachedMeasuresValid: Boolean
     get() = layoutOutput.cachedMeasuresValid
@@ -206,7 +206,7 @@ open class LithoLayoutResult(
    * calculation they can be released to free up memory.
    */
   open fun releaseLayoutPhaseData() {
-    layoutOutput.clear()
+    yogaLayoutOutput.clear()
     for (i in 0 until childCount) {
       getChildAt(i).releaseLayoutPhaseData()
     }
@@ -239,7 +239,7 @@ open class LithoLayoutResult(
    * their positions are within it.
    */
   protected open fun copyForPlacement(): LithoLayoutResult {
-    val output = layoutOutput
+    val output = yogaLayoutOutput
     val copy =
         node.createLayoutResult(
             layoutOutput =
@@ -250,9 +250,9 @@ open class LithoLayoutResult(
     for (i in 0 until childCount) {
       copy.addChild(getChildAt(i))
     }
-    copy.layoutOutput.boxGeometry = output.boxGeometry
-    copy.layoutOutput.resolvedMargins = output.resolvedMargins
-    copy.layoutOutput.childBoxProps = output.childBoxProps
+    copy.yogaLayoutOutput.boxGeometry = output.boxGeometry
+    copy.yogaLayoutOutput.resolvedMargins = output.resolvedMargins
+    copy.yogaLayoutOutput.childBoxProps = output.childBoxProps
     copy.subtreeHasCustomLayout = subtreeHasCustomLayout
     return copy
   }
