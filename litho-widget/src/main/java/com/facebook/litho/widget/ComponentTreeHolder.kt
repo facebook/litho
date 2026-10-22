@@ -350,7 +350,9 @@ open class ComponentTreeHolder @VisibleForTesting internal constructor(builder: 
               .treeState(treeState)
               .measureListener(componentTreeMeasureListenerFactory?.create(this))
 
-      lithoSaveableStateRegistry?.let(builder::withRetainedSaveableStateRegistryForTreeReplacement)
+      lithoSaveableStateRegistry
+          ?.also { it.setSavedInParent(true) }
+          ?.let(builder::withRetainedSaveableStateRegistryForTreeReplacement)
           ?: stableSaveableStateKey(renderInfo)?.let(builder::withNestedTreeSaveableStateKey)
 
       val stateUpdaterDelegator =
@@ -421,6 +423,8 @@ open class ComponentTreeHolder @VisibleForTesting internal constructor(builder: 
       if (!tree.isReleased) {
         lithoSaveableStateRegistry = tree.acquireRetainedSaveableStateRegistryForTreeReplacement()
       }
+      // Only rendered rows are saved; this row keeps its values in memory until it renders again.
+      lithoSaveableStateRegistry?.setSavedInParent(false)
     }
   }
 

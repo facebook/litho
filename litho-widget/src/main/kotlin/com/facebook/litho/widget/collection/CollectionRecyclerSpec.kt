@@ -190,6 +190,7 @@ object CollectionRecyclerSpec {
             .startupLogger(startupLogger)
             .recyclerBinderConfig(binderConfiguration.recyclerBinderConfig)
             .poolScope(poolScope)
+            .keySaveableStateByComponent()
             .build(c)
 
     val targetBinder =

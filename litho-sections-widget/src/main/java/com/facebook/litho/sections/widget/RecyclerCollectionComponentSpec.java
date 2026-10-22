@@ -420,7 +420,8 @@ public class RecyclerCollectionComponentSpec {
             .layoutInfo(newLayoutInfo)
             .stickyHeaderControllerFactory(stickyHeaderControllerFactory)
             .startupLogger(startupLogger)
-            .poolScope(poolScope);
+            .poolScope(poolScope)
+            .keySaveableStateByComponent();
 
     if (additionalPostDispatchDrawListeners != null) {
       recyclerBinderBuilder.addAdditionalPostDispatchDrawListeners(

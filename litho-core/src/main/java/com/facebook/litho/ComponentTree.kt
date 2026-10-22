@@ -193,6 +193,10 @@ open class ComponentTree protected constructor(builder: Builder) :
 
   @GuardedBy("this") private var retainedLithoSaveableStateRegistryAcquired = false
 
+  /** The late restores of [lithoSaveableStateRegistry] that this tree's layouts may have read. */
+  @Volatile
+  private var renderedLateRestoreCount: Int = lithoSaveableStateRegistry?.lateRestoreCount() ?: 0
+
   // These variables are only accessed from the main thread.
   @ThreadConfined(ThreadConfined.UI) private var isMeasuring: Boolean = false
 
@@ -655,6 +659,7 @@ open class ComponentTree protected constructor(builder: Builder) :
       throw IllegalStateException("Trying to attach a ComponentTree without a set View")
     }
     ownerSaveableStateBinding?.onAttach()
+    renderLateRestoredNestedState()
     inAttach = true
     try {
       val currentLithoView =
@@ -1419,6 +1424,20 @@ open class ComponentTree protected constructor(builder: Builder) :
         treePropContainer = null,
         forceLayout = true,
     )
+  }
+
+  /**
+   * Renders a tree without an owner again when restored values reached its registry through its
+   * parent after it rendered, as for a list row laid out before its host tree's late restore. The
+   * host tree had not mounted then, so this tree has shown nothing yet.
+   */
+  @UiThread
+  private fun renderLateRestoredNestedState() {
+    if (ownerSaveableStateBinding != null) return
+    val count = lithoSaveableStateRegistry?.lateRestoreCount() ?: return
+    if (count == renderedLateRestoreCount) return
+    renderedLateRestoreCount = count
+    renderRestoredSaveableState()
   }
 
   internal fun updateStateInternal(isAsync: Boolean, attribution: String?) {

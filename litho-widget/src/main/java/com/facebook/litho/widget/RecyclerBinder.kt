@@ -31,6 +31,7 @@ import android.view.ViewParent
 import android.view.ViewTreeObserver.OnPreDrawListener
 import androidx.annotation.AnyThread
 import androidx.annotation.IntDef
+import androidx.annotation.RestrictTo
 import androidx.annotation.UiThread
 import androidx.annotation.VisibleForTesting
 import androidx.core.view.ViewCompat
@@ -52,6 +53,8 @@ import com.facebook.litho.ComponentsReporter
 import com.facebook.litho.ComponentsSystrace
 import com.facebook.litho.ComponentsSystrace.trace
 import com.facebook.litho.EventHandler
+import com.facebook.litho.LithoSaveableStateRegistry
+import com.facebook.litho.LithoSaveableStateRegistryTreeProp
 import com.facebook.litho.LithoStartupLogger
 import com.facebook.litho.LithoView
 import com.facebook.litho.LithoVisibilityEventsController
@@ -72,6 +75,7 @@ import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.debug.CollectionRangeTrigger
 import com.facebook.litho.debug.LithoDebugEvent
 import com.facebook.litho.debug.LithoDebugEventAttributes
+import com.facebook.litho.saveableStateComponentKey
 import com.facebook.litho.viewcompat.ViewBinder
 import com.facebook.litho.widget.ComponentTreeHolder.ComponentTreeMeasureListenerFactory
 import com.facebook.litho.widget.ComponentWarmer.ComponentTreeHolderPreparer
@@ -134,6 +138,9 @@ class RecyclerBinder private constructor(builder: Builder) :
   private val enableStableIds: Boolean
   private val asyncInsertHandler: RunnableHandler?
   private val lithoVisibilityEventsController: LithoVisibilityEventsController?
+
+  /** The rows' parent registry, if [Builder.keySaveableStateByComponent] gave the list its own. */
+  private val saveableStateRegistry: LithoSaveableStateRegistry?
   private val rangeTraverser: RecyclerRangeTraverser
   private val hScrollAsyncMode: Boolean
   private val isSubAdapter: Boolean
@@ -394,6 +401,10 @@ class RecyclerBinder private constructor(builder: Builder) :
 
     var poolScope: PoolScope = PoolScope.None
 
+    private var saveableStateKeyedByComponent = false
+
+    internal var saveableStateRegistry: LithoSaveableStateRegistry? = null
+
     /**
      * Associates a [RecyclerBinderConfig] to the [RecyclerBinder] created by this builder.
      *
@@ -535,13 +546,33 @@ class RecyclerBinder private constructor(builder: Builder) :
       return this
     }
 
+    /**
+     * Saves the rows' saveable state in a registry of this list's own, keyed by the identity of the
+     * component whose context [build] gets, so lists with the same row ids never compete for keys.
+     * Only for a collection component that builds one binder from its own context: binders built
+     * from one context would compete for the key, and none of their rows would be saved.
+     */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    fun keySaveableStateByComponent(): Builder {
+      saveableStateKeyedByComponent = true
+      return this
+    }
+
     /** @param c The [ComponentContext] the RecyclerBinder will use. */
     fun build(c: ComponentContext): RecyclerBinder {
       if (recyclerBinderConfig == null) {
         recyclerBinderConfig = RecyclerBinderConfig()
       }
 
-      this.componentContext = ComponentContext.makeCopyForNestedTree(c)
+      val context = ComponentContext.makeCopyForNestedTree(c)
+      this.componentContext = context
+      // The copy has tree props of its own, so only this binder's rows read the list's registry.
+      val treeProps = context.treePropContainer?.takeIf { saveableStateKeyedByComponent }
+      saveableStateRegistry =
+          treeProps
+              ?.get(LithoSaveableStateRegistryTreeProp)
+              ?.createChildRegistry(saveableStateComponentKey(c))
+              ?.also { treeProps.put(LithoSaveableStateRegistryTreeProp, it) }
       if (lithoVisibilityEventsController == null) {
         this.lithoVisibilityEventsController = ComponentTree.getLithoVisibilityEventsController(c)
       }
@@ -574,6 +605,9 @@ class RecyclerBinder private constructor(builder: Builder) :
   }
 
   override fun detach() {
+    // For a list that comes back with its state, as after a tree replacement.
+    saveableStateRegistry?.retainActiveValues()
+    saveableStateRegistry?.detachFromParent()
     if (lithoVisibilityEventsController != null) {
       return
     }
@@ -2487,6 +2521,8 @@ class RecyclerBinder private constructor(builder: Builder) :
       throw RuntimeException("Can't mount a RecyclerView in sub adapter mode")
     }
 
+    saveableStateRegistry?.attachToParent()
+
     val mountedView = this.mountedView
     if (mountedView === view) {
       return
@@ -3962,6 +3998,7 @@ class RecyclerBinder private constructor(builder: Builder) :
 
     this.componentContext = builder.componentContext
     this.lithoVisibilityEventsController = builder.lithoVisibilityEventsController
+    this.saveableStateRegistry = builder.saveableStateRegistry
 
     this.recyclerBinderConfig = checkNotNull(builder.recyclerBinderConfig)
     this.componentTreeHolderFactory = checkNotNull(builder.componentTreeHolderFactory)
