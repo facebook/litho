@@ -154,11 +154,37 @@ open class ComponentTree protected constructor(builder: Builder) :
 
   private var preAllocator: ContentPreAllocator? = null
 
+  private val parentLithoSaveableStateRegistry =
+      builder.treePropContainer?.get(LithoSaveableStateRegistryTreeProp)
+
+  private val saveableStateKey: String? = builder.saveableStateKey
+
+  private val ownerSaveableStateBinding: ComponentTreeSaveableStateBinding? =
+      builder.savedStateRegistryOwner
+          ?.takeIf {
+            builder.lithoSaveableStateRegistry == null && parentLithoSaveableStateRegistry == null
+          }
+          ?.let { store ->
+            ComponentTreeSaveableStateBinding(
+                store,
+                builder.lifecycleOwner,
+                builder.androidContext.classLoader,
+                keyed = builder.saveableStateKey != null,
+                rootIdentity = ::saveableRootIdentity,
+            )
+          }
+
+  // Read by saveable-state claims on resolve threads; mirrors the latest root of a tree with an
+  // owner binding, and is cleared on release.
+  @Volatile
+  private var saveableIdentityRoot: Component? =
+      builder.root.takeIf { ownerSaveableStateBinding != null }
   private val lithoSaveableStateRegistry =
       builder.lithoSaveableStateRegistry
-          ?: builder.treePropContainer
-              ?.get(LithoSaveableStateRegistryTreeProp)
-              ?.createChildRegistry(builder.nestedTreeSaveableStateKey)
+          ?: parentLithoSaveableStateRegistry?.createChildRegistry(
+              builder.nestedTreeSaveableStateKey,
+          )
+          ?: ownerSaveableStateBinding?.registry
   private val hasExternalLithoSaveableStateRegistry = builder.lithoSaveableStateRegistry != null
 
   @GuardedBy("this") private var lithoSaveableStateRegistryAcquired = false
@@ -373,6 +399,10 @@ open class ComponentTree protected constructor(builder: Builder) :
 
     accessibilityManager =
         context.androidContext.getSystemService(ACCESSIBILITY_SERVICE) as? AccessibilityManager
+
+    if (isMainThread) {
+      ownerSaveableStateBinding?.initializeOnMain()
+    }
 
     ComponentTreeRegistry.register(this)
   }
@@ -620,6 +650,7 @@ open class ComponentTree protected constructor(builder: Builder) :
     if (_lithoView == null) {
       throw IllegalStateException("Trying to attach a ComponentTree without a set View")
     }
+    ownerSaveableStateBinding?.onAttach()
     inAttach = true
     try {
       val currentLithoView =
@@ -683,6 +714,7 @@ open class ComponentTree protected constructor(builder: Builder) :
     }
 
     synchronized(this) { _isAttached = false }
+    ownerSaveableStateBinding?.onDetach()
   }
 
   internal fun isAttached(): Boolean {
@@ -696,6 +728,7 @@ open class ComponentTree protected constructor(builder: Builder) :
    */
   internal fun setLithoView(view: LithoView) {
     assertMainThread()
+    ownerSaveableStateBinding?.initializeOnMain()
 
     if (_lithoView == view) {
       return
@@ -1693,6 +1726,9 @@ open class ComponentTree protected constructor(builder: Builder) :
   fun acquireLithoSaveableStateRegistry(): LithoSaveableStateRegistry? {
     assertMainThread()
     check(!released) { "Cannot acquire a saveable-state registry from a released ComponentTree" }
+    check(ownerSaveableStateBinding == null) {
+      "A ComponentTree cannot transfer a registry owned by its SavedStateRegistryOwner"
+    }
     val registry = lithoSaveableStateRegistry ?: return null
     check(!lithoSaveableStateRegistryAcquired) {
       "The ComponentTree saveable-state registry has already been acquired"
@@ -1744,6 +1780,10 @@ open class ComponentTree protected constructor(builder: Builder) :
       treePropContainer: TreePropContainer?,
       forceLayout: Boolean,
   ) {
+    if (isMainThread) {
+      ownerSaveableStateBinding?.initializeOnMain()
+    }
+
     var currentRoot = root
     val currentIsAsync = isAsync
     val currentSource = source
@@ -1843,6 +1883,7 @@ open class ComponentTree protected constructor(builder: Builder) :
 
       if (rootInitialized) {
         _root = currentRoot
+        if (ownerSaveableStateBinding != null) saveableIdentityRoot = currentRoot
       }
 
       if (forceLayout && _root != null) {
@@ -2429,6 +2470,7 @@ open class ComponentTree protected constructor(builder: Builder) :
       throw IllegalStateException("Releasing a ComponentTree that is currently being mounted")
     }
 
+    val wasReleased = synchronized(this) { released }
     val shouldRetainLithoSaveableStateRegistry =
         synchronized(this) {
           !released &&
@@ -2437,6 +2479,9 @@ open class ComponentTree protected constructor(builder: Builder) :
         }
     if (shouldRetainLithoSaveableStateRegistry) {
       lithoSaveableStateRegistry?.retainActiveValues()
+    }
+    if (!wasReleased) {
+      ownerSaveableStateBinding?.onRelease()
     }
 
     val effectsHandler: EffectHandler?
@@ -2489,6 +2534,7 @@ open class ComponentTree protected constructor(builder: Builder) :
       _lithoView?.componentTree = null
       released = true
       _root = null
+      saveableIdentityRoot = null
 
       // Clear mWorkingRangeStatusHandler before releasing LayoutState because we need them to help
       // dispatch OnExitRange events.
@@ -2542,6 +2588,19 @@ open class ComponentTree protected constructor(builder: Builder) :
   @Synchronized
   fun getSimpleName(): String? {
     return _root?.simpleName
+  }
+
+  /**
+   * The persistent identity of this root tree: its saveable-state key, otherwise its root
+   * component's class and manual key.
+   */
+  private fun saveableRootIdentity(): String? {
+    saveableStateKey?.let {
+      return ComponentTreeSaveableStateOwner.KEYED_IDENTITY_PREFIX + it
+    }
+    val root = saveableIdentityRoot ?: return null
+    val typeName = Component.typeNameForId(root.typeId) ?: return null
+    return if (root.hasManualKey()) "$typeName#${root.key}" else typeName
   }
 
   @Synchronized

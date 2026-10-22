@@ -58,11 +58,14 @@ private constructor(
     private val valueClassLoader: ClassLoader? = null,
     private val parentRegistry: LithoSaveableStateRegistry? = null,
     private val parentStorageKey: String? = null,
+    private val claimRootState: (() -> Bundle?)? = null,
 ) : AutoCloseable {
   private val lock = Any()
   private val parentConnectionLock = Any()
 
   @GuardedBy("parentConnectionLock") private var parentStateRestored = false
+
+  @GuardedBy("parentConnectionLock") private var rootStateClaimed = false
 
   @GuardedBy("parentConnectionLock") private var parentRegistration: Registration? = null
 
@@ -90,7 +93,12 @@ private constructor(
   constructor(
       restoredState: Bundle? = null,
       valueClassLoader: ClassLoader? = null,
-  ) : this(restoredState, valueClassLoader, null, null)
+  ) : this(restoredState, valueClassLoader, null, null, null)
+
+  /**
+   * Returns retained values and the latest value of every provider, for the owning scope's save.
+   */
+  internal fun snapshotForOwner(): Bundle = snapshotLocal()
 
   /** Returns restored state without consuming it during a potentially speculative resolve. */
   internal fun restoredValue(key: String): RestoredSaveableState? {
@@ -245,7 +253,11 @@ private constructor(
   )
 
   private fun restoreParentStateIfNeeded() {
-    val parent = parentRegistry ?: return
+    val parent = parentRegistry
+    if (parent == null) {
+      claimRootStateIfNeeded()
+      return
+    }
     val storageKey = parentStorageKey ?: return
     synchronized(parentConnectionLock) {
       if (parentStateRestored || synchronized(lock) { closed }) return
@@ -258,6 +270,41 @@ private constructor(
       }
       parentStateRestored = true
     }
+  }
+
+  /**
+   * Claims this root's saved values from its owner on the first read. Values the tree already
+   * established are kept, so a claim never overwrites live state. A closed registry never claims,
+   * so a calculation finishing after release cannot take the values from the next tree.
+   *
+   * The claim runs under [parentConnectionLock] so a concurrent first read waits for the merge
+   * instead of reading defaults. This is safe because the owner never calls into a registry while
+   * holding its own lock.
+   */
+  private fun claimRootStateIfNeeded() {
+    val claim = claimRootState ?: return
+    val failure =
+        synchronized(parentConnectionLock) {
+          if (rootStateClaimed) return
+          rootStateClaimed = true
+          if (synchronized(lock) { closed }) return
+          val claimedState = claim() ?: return
+          synchronized(lock) {
+            if (closed) return
+            try {
+              val restored = Bundle(claimedState).apply { classLoader = valueClassLoader }
+              restored.keySet().toList().forEach { key ->
+                if (!providers.containsKey(key) && !retainedValues.containsKey(key)) {
+                  restored.getBundle(key)?.let { retainedValues.putBundle(key, Bundle(it)) }
+                }
+              }
+              null
+            } catch (exception: RuntimeException) {
+              exception
+            }
+          }
+        }
+    failure?.let { reportSaveableStateRestoreFailure("root claim", it) }
   }
 
   private fun registerWithParentIfNeeded() {
@@ -428,12 +475,33 @@ private constructor(
     }
   }
 
-  private companion object {
-    const val CHILD_REGISTRY_PREFIX: String = "litho-child-registry:"
-    const val VALUE_KEY: String = "value"
-    const val DUPLICATE_KEY_CATEGORY: String = "LithoSaveableState:DuplicateKey"
+  internal companion object {
+    private const val CHILD_REGISTRY_PREFIX: String = "litho-child-registry:"
+    private const val VALUE_KEY: String = "value"
+    private const val DUPLICATE_KEY_CATEGORY: String = "LithoSaveableState:DuplicateKey"
+
+    /**
+     * Creates a root ComponentTree's registry whose saved values come from [claimState] when a
+     * component first reads saveable state.
+     */
+    fun ownerBacked(
+        valueClassLoader: ClassLoader?,
+        claimState: () -> Bundle?,
+    ): LithoSaveableStateRegistry =
+        LithoSaveableStateRegistry(null, valueClassLoader, null, null, claimState)
   }
 }
 
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 class RestoredSaveableState internal constructor(val value: Any?)
+
+/**
+ * Reports saved values that could not be read; the affected values start from their initializers.
+ */
+internal fun reportSaveableStateRestoreFailure(source: String, exception: RuntimeException) {
+  DebugInfoReporter.report(category = "LithoSaveableState:RestoreFailed") {
+    this["source"] = source
+    this["exception"] = exception.javaClass.name
+    this["message"] = exception.message
+  }
+}

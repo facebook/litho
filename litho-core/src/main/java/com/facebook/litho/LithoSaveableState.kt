@@ -54,6 +54,18 @@ fun <T> Saver(save: (T) -> Any?, restore: (Any?) -> T): Saver<T> =
  * default saver stores Bundle-compatible values directly. The factory and saver may run on a Litho
  * resolve thread and must not access Views or other main-thread-only objects.
  *
+ * A root ComponentTree created with a [androidx.savedstate.SavedStateRegistryOwner] saves its
+ * values under its root component's class and manual key:
+ * - Two root trees with the same identity on screen at the same time are not saved; give them
+ *   distinct manual keys with `key(...) { ... }`.
+ * - A tree that replaces another of its identity, such as a new tree set on the same view, starts
+ *   from initial values and is saved from then on.
+ * - A tree built with [ComponentTree.Builder.withSaveableStateKey] is saved under that key instead,
+ *   and the next tree with the key takes its values over, even while the screen is visible. Only
+ *   the 32 most recently released keys keep their values.
+ *
+ * Nested ComponentTrees save inside their parent tree.
+ *
  * Without an owning registry, this behaves like [useState]: the value lasts for the current
  * ComponentTree and is not restored after it is released.
  */
