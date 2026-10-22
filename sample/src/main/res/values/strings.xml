@@ -18,4 +18,15 @@
 <resources>
   <string name="app_name">Litho Sample</string>
   <string name="name_string" description="name string for documentation example">Rohit Sharma</string>
+  <string name="saveable_state_playground_title" translatable="false">Saveable state</string>
+  <string name="saveable_state_playground_saved_count" translatable="false">Saved count (useSaveableState): %d</string>
+  <string name="saveable_state_playground_unsaved_count" translatable="false">Unsaved count (useState): %d</string>
+  <string name="saveable_state_playground_increment" translatable="false">Increment both</string>
+  <string name="saveable_state_playground_remove_component" translatable="false">Remove counter component</string>
+  <string name="saveable_state_playground_restore_component" translatable="false">Restore counter component</string>
+  <string name="saveable_state_playground_component_removed" translatable="false">Counter component is not in the tree</string>
+  <string name="saveable_state_playground_recreate" translatable="false">Recreate Activity</string>
+  <string name="saveable_state_playground_scroll_position" translatable="false">Scroll position in saved state: %d px</string>
+  <string name="saveable_state_playground_header_taps" translatable="false">Header taps in saved state: %d</string>
+  <string name="saveable_state_playground_scroll_item" translatable="false">Item %d</string>
 </resources>

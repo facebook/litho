@@ -183,6 +183,7 @@ import com.facebook.samples.litho.onboarding.UserFeedWithStoriesKComponent
 import com.facebook.samples.litho.onboarding.model.Feed
 import com.facebook.samples.litho.onboarding.model.NebulasPost
 import com.facebook.samples.litho.onboarding.model.UserStories
+import com.facebook.samples.litho.playground.SaveableStatePlaygroundActivity
 import com.facebook.samples.litho.playground.XMLPlaygroundActivity
 
 class Demos {
@@ -201,6 +202,10 @@ class Demos {
                         SingleDemo(
                             name = "Kotlin API Playground",
                             component = PlaygroundKComponent(),
+                        ),
+                        SingleDemo(
+                            name = "Saveable State Playground",
+                            klass = SaveableStatePlaygroundActivity::class.java,
                         ),
                         SingleDemo(
                             name = "XML Playground",
