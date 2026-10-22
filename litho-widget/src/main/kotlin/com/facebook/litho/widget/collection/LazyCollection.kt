@@ -84,7 +84,8 @@ class LazyCollection(
     private val shouldExcludeFromIncrementalMount: Boolean = false,
     private val onBeforeLayout: OnBeforeLayoutListener? = null,
     private val onAfterLayout: OnAfterLayoutListener? = null,
-    private val useLegacyInfra: Boolean = false,
+    /** Selects which collection infra backs this collection. Defaults to the global config. */
+    private val infraOverride: CollectionInfraOverride = CollectionInfraOverride.DEFAULT,
     private val lazyCollectionChildren: LazyCollectionChildren,
 ) : KComponent() {
 
@@ -102,6 +103,13 @@ class LazyCollection(
           lazyCollectionChildren.hasGeneratedIds -> null
           else -> LazyCollectionItemAnimator.Default
         }
+    val useNewInfra =
+        when (infraOverride) {
+          CollectionInfraOverride.FORCE_NEW -> true
+          CollectionInfraOverride.FORCE_LEGACY -> false
+          CollectionInfraOverride.DEFAULT ->
+              context.lithoConfiguration.componentsConfig.enableNewCollection
+        }
 
     val combinedOnViewportChanged: OnViewportChanged =
         {
@@ -116,7 +124,7 @@ class LazyCollection(
               firstVisibleIndex,
               lastVisibleIndex,
           )
-          if (useLegacyInfra || !context.lithoConfiguration.componentsConfig.enableNewCollection) {
+          if (!useNewInfra) {
             onNearEnd?.let {
               if (lastVisibleIndex >= totalCount - 1 - it.offset) {
                 it.callback()
@@ -155,7 +163,7 @@ class LazyCollection(
           )
         }
 
-    if (!useLegacyInfra && context.lithoConfiguration.componentsConfig.enableNewCollection) {
+    if (useNewInfra) {
       val combinedScrollListeners =
           if (onScrollListeners == null && onScrollListener == null) {
             null

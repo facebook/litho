@@ -23,6 +23,7 @@ import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.visibility.onInvisible
 import com.facebook.litho.visibility.onVisible
+import com.facebook.litho.widget.collection.CollectionInfraOverride
 import com.facebook.litho.widget.collection.LazyList
 import com.facebook.rendercore.sp
 import org.assertj.core.api.Assertions.assertThat
@@ -45,7 +46,10 @@ class LithoVisibilityEventsControllerForNestedViewTest {
   @Test
   fun `test visibility events for nested LithoView`() {
     val testLithoView = lithoTestRule.render {
-      LazyList(style = Style.height(100.sp).width(100.sp), useLegacyInfra = true) {
+      LazyList(
+          style = Style.height(100.sp).width(100.sp),
+          infraOverride = CollectionInfraOverride.FORCE_LEGACY,
+      ) {
         for (i in 0 until 10) {
           child(component = VisibilityTrackingComponent(tag = i, invisibleTracking = invisibleTags))
         }

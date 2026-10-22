@@ -95,7 +95,8 @@ inline fun ResourcesScope.LazyStaggeredGrid(
         context.lithoConfiguration.componentsConfig.useStableIdsInRecyclerBinder,
     onBeforeLayout: OnBeforeLayoutListener? = null,
     onAfterLayout: OnAfterLayoutListener? = null,
-    useLegacyInfra: Boolean = false,
+    /** Selects which collection infra backs this grid. Defaults to the global config. */
+    infraOverride: CollectionInfraOverride = CollectionInfraOverride.DEFAULT,
     crossinline init: LazyGridScope.() -> Unit,
 ): Component {
   val lazyStaggeredGridScope = LazyGridScope(context).apply { init() }
@@ -151,8 +152,8 @@ inline fun ResourcesScope.LazyStaggeredGrid(
       shouldExcludeFromIncrementalMount,
       onBeforeLayout,
       onAfterLayout,
-      useLegacyInfra,
-      lazyStaggeredGridScope.children,
+      infraOverride = infraOverride,
+      lazyCollectionChildren = lazyStaggeredGridScope.children,
   )
 }
 
@@ -214,7 +215,8 @@ inline fun LazyStaggeredGridCompat(
     staggeredGridlayoutInfoFactory: StaggeredGridLayoutInfoFactory? = null,
     enableStableIds: Boolean =
         context.lithoConfiguration.componentsConfig.useStableIdsInRecyclerBinder,
-    useLegacyInfra: Boolean = false,
+    /** Selects which collection infra backs this grid. Defaults to the global config. */
+    infraOverride: CollectionInfraOverride = CollectionInfraOverride.DEFAULT,
     onBeforeLayout: OnBeforeLayoutListener? = null,
     onAfterLayout: OnAfterLayoutListener? = null,
     crossinline init: LazyGridScope.() -> Unit,
@@ -272,7 +274,7 @@ inline fun LazyStaggeredGridCompat(
       shouldExcludeFromIncrementalMount,
       onBeforeLayout,
       onAfterLayout,
-      useLegacyInfra,
-      lazyStaggeredGridScope.children,
+      infraOverride = infraOverride,
+      lazyCollectionChildren = lazyStaggeredGridScope.children,
   )
 }

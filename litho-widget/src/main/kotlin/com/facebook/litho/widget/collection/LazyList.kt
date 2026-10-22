@@ -91,7 +91,8 @@ inline fun ResourcesScope.LazyList(
     linearLayoutInfoFactory: LinearLayoutInfoFactory? = null,
     onBeforeLayout: OnBeforeLayoutListener? = null,
     onAfterLayout: OnAfterLayoutListener? = null,
-    useLegacyInfra: Boolean = false,
+    /** Selects which collection infra backs this list. Defaults to the global config. */
+    infraOverride: CollectionInfraOverride = CollectionInfraOverride.DEFAULT,
     crossinline init: LazyListScope.() -> Unit,
 ): Component {
   val lazyListScope = LazyListScope(context).apply { init() }
@@ -152,7 +153,7 @@ inline fun ResourcesScope.LazyList(
       shouldExcludeFromIncrementalMount = shouldExcludeFromIncrementalMount,
       onBeforeLayout = onBeforeLayout,
       onAfterLayout = onAfterLayout,
-      useLegacyInfra = useLegacyInfra,
+      infraOverride = infraOverride,
       lazyCollectionChildren = lazyListScope.children,
   )
 }
@@ -220,7 +221,8 @@ inline fun LazyListCompat(
     linearLayoutInfoFactory: LinearLayoutInfoFactory? = null,
     onBeforeLayout: OnBeforeLayoutListener? = null,
     onAfterLayout: OnAfterLayoutListener? = null,
-    useLegacyInfra: Boolean = false,
+    /** Selects which collection infra backs this list. Defaults to the global config. */
+    infraOverride: CollectionInfraOverride = CollectionInfraOverride.DEFAULT,
     crossinline init: LazyListScope.() -> Unit,
 ): Component {
 
@@ -282,7 +284,7 @@ inline fun LazyListCompat(
       shouldExcludeFromIncrementalMount = shouldExcludeFromIncrementalMount,
       onBeforeLayout = onBeforeLayout,
       onAfterLayout = onAfterLayout,
-      useLegacyInfra = useLegacyInfra,
+      infraOverride = infraOverride,
       lazyCollectionChildren = lazyListScope.children,
   )
 }

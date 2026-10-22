@@ -89,7 +89,8 @@ inline fun ResourcesScope.LazyGrid(
     gridLayoutInfoFactory: GridLayoutInfoFactory? = null,
     onBeforeLayout: OnBeforeLayoutListener? = null,
     onAfterLayout: OnAfterLayoutListener? = null,
-    useLegacyInfra: Boolean = false,
+    /** Selects which collection infra backs this grid. Defaults to the global config. */
+    infraOverride: CollectionInfraOverride = CollectionInfraOverride.DEFAULT,
     crossinline init: LazyGridScope.() -> Unit,
 ): Component {
   val lazyGridScope = LazyGridScope(context).apply { init() }
@@ -148,8 +149,8 @@ inline fun ResourcesScope.LazyGrid(
       shouldExcludeFromIncrementalMount,
       onBeforeLayout,
       onAfterLayout,
-      useLegacyInfra,
-      lazyGridScope.children,
+      infraOverride = infraOverride,
+      lazyCollectionChildren = lazyGridScope.children,
   )
 }
 
@@ -215,7 +216,8 @@ inline fun LazyGridCompat(
     gridLayoutInfoFactory: GridLayoutInfoFactory? = null,
     onBeforeLayout: OnBeforeLayoutListener? = null,
     onAfterLayout: OnAfterLayoutListener? = null,
-    useLegacyInfra: Boolean = false,
+    /** Selects which collection infra backs this grid. Defaults to the global config. */
+    infraOverride: CollectionInfraOverride = CollectionInfraOverride.DEFAULT,
     crossinline init: LazyGridScope.() -> Unit,
 ): Component {
   val lazyGridScope = LazyGridScope(context).apply { init() }
@@ -274,7 +276,7 @@ inline fun LazyGridCompat(
       shouldExcludeFromIncrementalMount,
       onBeforeLayout,
       onAfterLayout,
-      useLegacyInfra,
-      lazyGridScope.children,
+      infraOverride = infraOverride,
+      lazyCollectionChildren = lazyGridScope.children,
   )
 }

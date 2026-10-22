@@ -36,6 +36,7 @@ import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.layout.flexbox.Row
 import com.facebook.litho.testing.testrunner.LithoTestRunner
+import com.facebook.litho.widget.collection.CollectionInfraOverride
 import com.facebook.litho.widget.collection.LazyList
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.px
@@ -156,12 +157,14 @@ class LithoCollectionItemNestedCollectionTest {
   }
 
   private class NestedCollection : KComponent() {
-    override fun ComponentScope.render(): Component =
-        LazyList(style = Style.width(SIZE.px).height(SIZE.px), useLegacyInfra = true) {
-          for (i in 0 until NESTED_ITEMS) {
-            child(id = i, component = Row(style = Style.width(SIZE.px).height(20.px)))
-          }
-        }
+    override fun ComponentScope.render(): Component = LazyList(
+        style = Style.width(SIZE.px).height(SIZE.px),
+        infraOverride = CollectionInfraOverride.FORCE_LEGACY,
+    ) {
+      for (i in 0 until NESTED_ITEMS) {
+        child(id = i, component = Row(style = Style.width(SIZE.px).height(20.px)))
+      }
+    }
   }
 
   /** A row whose item gets these [LithoCollectionItem] options; the rest are fixed. */

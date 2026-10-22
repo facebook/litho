@@ -27,6 +27,7 @@ import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.TestLithoView
 import com.facebook.litho.testing.assertj.LithoAssertions
 import com.facebook.litho.testing.testrunner.LithoTestRunner
+import com.facebook.litho.widget.collection.CollectionInfraOverride
 import com.facebook.litho.widget.collection.LazyList
 import com.facebook.rendercore.ContentAllocator
 import com.facebook.rendercore.MountContentPools
@@ -127,7 +128,11 @@ class NestedPreallocationTest {
         child(Text("Title"))
 
         val items = (1..10).map { it }
-        child(LazyList(useLegacyInfra = true) { children(items, { it }) { MyPrimitive(it) } })
+        child(
+            LazyList(infraOverride = CollectionInfraOverride.FORCE_LEGACY) {
+              children(items, { it }) { MyPrimitive(it) }
+            },
+        )
       }
     }
   }
