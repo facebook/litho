@@ -349,7 +349,7 @@ open class ComponentTreeHolder @VisibleForTesting internal constructor(builder: 
               .treeState(treeState)
               .measureListener(componentTreeMeasureListenerFactory?.create(this))
 
-      lithoSaveableStateRegistry?.let(builder::withLithoSaveableStateRegistry)
+      lithoSaveableStateRegistry?.let(builder::withRetainedSaveableStateRegistryForTreeReplacement)
           ?: stableSaveableStateKey(renderInfo)?.let(builder::withNestedTreeSaveableStateKey)
 
       val stateUpdaterDelegator =
@@ -418,7 +418,7 @@ open class ComponentTreeHolder @VisibleForTesting internal constructor(builder: 
       // holder gave it, or closed the child registry it created itself. The registry referenced
       // below therefore stays correct, while acquiring from a released tree would throw.
       if (!tree.isReleased) {
-        lithoSaveableStateRegistry = tree.acquireLithoSaveableStateRegistry()
+        lithoSaveableStateRegistry = tree.acquireRetainedSaveableStateRegistryForTreeReplacement()
       }
     }
   }

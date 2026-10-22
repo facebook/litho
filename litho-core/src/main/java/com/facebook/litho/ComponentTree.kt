@@ -162,7 +162,8 @@ open class ComponentTree protected constructor(builder: Builder) :
   private val ownerSaveableStateBinding: ComponentTreeSaveableStateBinding? =
       builder.savedStateRegistryOwner
           ?.takeIf {
-            builder.lithoSaveableStateRegistry == null && parentLithoSaveableStateRegistry == null
+            builder.retainedLithoSaveableStateRegistry == null &&
+                parentLithoSaveableStateRegistry == null
           }
           ?.let { store ->
             ComponentTreeSaveableStateBinding(
@@ -180,14 +181,15 @@ open class ComponentTree protected constructor(builder: Builder) :
   private var saveableIdentityRoot: Component? =
       builder.root.takeIf { ownerSaveableStateBinding != null }
   private val lithoSaveableStateRegistry =
-      builder.lithoSaveableStateRegistry
+      builder.retainedLithoSaveableStateRegistry
           ?: parentLithoSaveableStateRegistry?.createChildRegistry(
               builder.nestedTreeSaveableStateKey,
           )
           ?: ownerSaveableStateBinding?.registry
-  private val hasExternalLithoSaveableStateRegistry = builder.lithoSaveableStateRegistry != null
+  private val hasRetainedLithoSaveableStateRegistry =
+      builder.retainedLithoSaveableStateRegistry != null
 
-  @GuardedBy("this") private var lithoSaveableStateRegistryAcquired = false
+  @GuardedBy("this") private var retainedLithoSaveableStateRegistryAcquired = false
 
   // These variables are only accessed from the main thread.
   @ThreadConfined(ThreadConfined.UI) private var isMeasuring: Boolean = false
@@ -1715,25 +1717,24 @@ open class ComponentTree protected constructor(builder: Builder) :
   }
 
   /**
-   * Transfers this tree's [LithoSaveableStateRegistry] to the caller so it can be supplied to a
-   * replacement tree with [Builder.withLithoSaveableStateRegistry]. The caller becomes responsible
-   * for closing the registry when the logical UI scope ends. Returns `null` when the tree has no
-   * saveable-state owner.
+   * Retains this nested tree's [LithoSaveableStateRegistry] for a replacement tree managed by the
+   * same framework owner. The caller becomes responsible for closing the registry when that nested
+   * tree is permanently removed.
    */
   @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
   @UiThread
   @Synchronized
-  fun acquireLithoSaveableStateRegistry(): LithoSaveableStateRegistry? {
+  fun acquireRetainedSaveableStateRegistryForTreeReplacement(): LithoSaveableStateRegistry? {
     assertMainThread()
     check(!released) { "Cannot acquire a saveable-state registry from a released ComponentTree" }
     check(ownerSaveableStateBinding == null) {
       "A ComponentTree cannot transfer a registry owned by its SavedStateRegistryOwner"
     }
     val registry = lithoSaveableStateRegistry ?: return null
-    check(!lithoSaveableStateRegistryAcquired) {
-      "The ComponentTree saveable-state registry has already been acquired"
+    check(!retainedLithoSaveableStateRegistryAcquired) {
+      "The ComponentTree saveable-state registry has already been transferred"
     }
-    lithoSaveableStateRegistryAcquired = true
+    retainedLithoSaveableStateRegistryAcquired = true
     return registry
   }
 
@@ -2475,7 +2476,7 @@ open class ComponentTree protected constructor(builder: Builder) :
         synchronized(this) {
           !released &&
               lithoSaveableStateRegistry != null &&
-              (hasExternalLithoSaveableStateRegistry || lithoSaveableStateRegistryAcquired)
+              (hasRetainedLithoSaveableStateRegistry || retainedLithoSaveableStateRegistryAcquired)
         }
     if (shouldRetainLithoSaveableStateRegistry) {
       lithoSaveableStateRegistry?.retainActiveValues()
@@ -2567,8 +2568,8 @@ open class ComponentTree protected constructor(builder: Builder) :
 
       shouldCloseLithoSaveableStateRegistry =
           lithoSaveableStateRegistry != null &&
-              !hasExternalLithoSaveableStateRegistry &&
-              !lithoSaveableStateRegistryAcquired
+              !hasRetainedLithoSaveableStateRegistry &&
+              !retainedLithoSaveableStateRegistryAcquired
     }
 
     ComponentTreeRegistry.markReleased(this)
@@ -3000,7 +3001,7 @@ open class ComponentTree protected constructor(builder: Builder) :
     internal var lithoVisibilityEventsController: LithoVisibilityEventsController? = null
     internal var lifecycleOwner: LifecycleOwner? = null
     internal var savedStateRegistryOwner: SavedStateRegistryOwner? = null
-    internal var lithoSaveableStateRegistry: LithoSaveableStateRegistry? = null
+    internal var retainedLithoSaveableStateRegistry: LithoSaveableStateRegistry? = null
     internal var nestedTreeSaveableStateKey: String? = null
     internal var renderUnitIdGenerator: RenderUnitIdGenerator? = null
 
@@ -3054,13 +3055,12 @@ open class ComponentTree protected constructor(builder: Builder) :
       return this
     }
 
-    /**
-     * Supplies the saveable-state registry owned by the surrounding lifecycle or navigation scope.
-     * A root tree using `useSaveableState` must be created through a host that supplies this scope.
-     */
+    /** Retains a nested tree's registry while its framework owner replaces the ComponentTree. */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    fun withLithoSaveableStateRegistry(registry: LithoSaveableStateRegistry): Builder {
-      lithoSaveableStateRegistry = registry
+    fun withRetainedSaveableStateRegistryForTreeReplacement(
+        registry: LithoSaveableStateRegistry,
+    ): Builder {
+      retainedLithoSaveableStateRegistry = registry
       return this
     }
 

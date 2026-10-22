@@ -476,7 +476,7 @@ internal constructor(
             .withLithoVisibilityEventsController(controller)
             .withLifecycleOwnerTreeProp(instanceOwner)
     if (instanceOwner is SavedStateRegistryOwner) {
-      builder.withLithoSaveableStateRegistry(
+      builder.withRetainedSaveableStateRegistryForTreeReplacement(
           checkNotNull(componentSaveableStateRegistry) {
             "[$key] Saved-state registry was not bound before building the ComponentTree"
           },

@@ -225,16 +225,16 @@ class LithoSaveableStateTest {
   }
 
   @Test
-  fun `acquired registry survives tree release`() {
+  fun `retained nested registry survives tree replacement`() {
     val state = AtomicReference<State<Int>>()
     val registry = LithoSaveableStateRegistry()
     val tree = createTree(registry, CapturingStateComponent(onState = state::set))
     val view = render(tree)
     state.get().updateSync(6)
-    assertThat(tree.acquireLithoSaveableStateRegistry()).isSameAs(registry)
-    assertThatThrownBy { tree.acquireLithoSaveableStateRegistry() }
+    assertThat(tree.acquireRetainedSaveableStateRegistryForTreeReplacement()).isSameAs(registry)
+    assertThatThrownBy { tree.acquireRetainedSaveableStateRegistryForTreeReplacement() }
         .isInstanceOf(IllegalStateException::class.java)
-        .hasMessageContaining("already been acquired")
+        .hasMessageContaining("already been transferred")
 
     view.release()
 
@@ -243,10 +243,11 @@ class LithoSaveableStateTest {
   }
 
   @Test
-  fun `registry acquisition is restricted to the main thread`() {
+  fun `retained registry transfer is restricted to the main thread`() {
     val tree = ComponentTree.create(lithoTestRule.context).build()
     val acquire = FutureTask {
-      runCatching { tree.acquireLithoSaveableStateRegistry() }.exceptionOrNull()
+      runCatching { tree.acquireRetainedSaveableStateRegistryForTreeReplacement() }
+          .exceptionOrNull()
     }
 
     Thread(acquire).start()
@@ -373,7 +374,7 @@ class LithoSaveableStateTest {
     val tree = createNestedTree(parentRegistry, key = null, onState = state::set)
     val view = render(tree)
     state.get().updateSync(5)
-    val childRegistry = checkNotNull(tree.acquireLithoSaveableStateRegistry())
+    val childRegistry = checkNotNull(tree.acquireRetainedSaveableStateRegistryForTreeReplacement())
 
     view.release()
 
@@ -445,7 +446,8 @@ class LithoSaveableStateTest {
     val firstTree = createNestedTree(parentRegistry, "child", first::set)
     val firstView = render(firstTree)
     first.get().updateSync(13)
-    val childRegistry = checkNotNull(firstTree.acquireLithoSaveableStateRegistry())
+    val childRegistry =
+        checkNotNull(firstTree.acquireRetainedSaveableStateRegistryForTreeReplacement())
 
     firstView.release()
 
@@ -469,7 +471,7 @@ class LithoSaveableStateTest {
       component: Component,
   ): ComponentTree =
       ComponentTree.create(lithoTestRule.context, component)
-          .withLithoSaveableStateRegistry(registry)
+          .withRetainedSaveableStateRegistryForTreeReplacement(registry)
           .build()
 
   private fun createNestedTree(
