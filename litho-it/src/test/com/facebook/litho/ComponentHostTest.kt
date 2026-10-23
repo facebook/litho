@@ -177,9 +177,7 @@ class ComponentHostTest {
 
   @Test
   fun testGetMountItemAt() {
-    assertThat(host.getMountItemAt(0)).isNull()
-    assertThat(host.getMountItemAt(1)).isNull()
-    assertThat(host.getMountItemAt(2)).isNull()
+    assertThat(host.mountItemCount).isEqualTo(0)
     val mountItem1 = mount(0, ColorDrawable())
     val mountItem2 = mount(1, View(context.androidContext))
     val mountItem3 = mount(5, ColorDrawable())
@@ -195,9 +193,7 @@ class ComponentHostTest {
 
   @Test
   fun testOnTouchWithTouchables() {
-    assertThat(host.getMountItemAt(0)).isNull()
-    assertThat(host.getMountItemAt(1)).isNull()
-    assertThat(host.getMountItemAt(2)).isNull()
+    assertThat(host.mountItemCount).isEqualTo(0)
 
     // Touchables are traversed backwards as drawing order.
     // The n.4 is the first parsed, and returning false means the n.2 will be parsed too.
@@ -222,9 +218,7 @@ class ComponentHostTest {
 
   @Test
   fun testOnTouchWithDisableTouchables() {
-    assertThat(host.getMountItemAt(0)).isNull()
-    assertThat(host.getMountItemAt(1)).isNull()
-    assertThat(host.getMountItemAt(2)).isNull()
+    assertThat(host.mountItemCount).isEqualTo(0)
     val mountItem1 = mount(0, ColorDrawable())
     val mountItem2 = mount(1, TouchableDrawable(), LithoRenderUnit.LAYOUT_FLAG_DISABLE_TOUCHABLE)
     val mountItem3 = mount(2, View(context.androidContext))
