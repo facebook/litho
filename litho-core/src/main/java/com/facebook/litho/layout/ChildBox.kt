@@ -20,7 +20,7 @@ import com.facebook.rendercore.FastMath
 import com.facebook.rendercore.SizeConstraints
 
 /** Resolved edges — margins, padding or border — in pixels, by physical edge. */
-internal class IntEdges(val left: Int, val top: Int, val right: Int, val bottom: Int) {
+internal data class IntEdges(val left: Int, val top: Int, val right: Int, val bottom: Int) {
   val horizontal: Int
     get() = left + right
 
@@ -40,7 +40,7 @@ internal class IntEdges(val left: Int, val top: Int, val right: Int, val bottom:
  * child's own width, height, min and max win over them, so the container coerces the child's answer
  * into them.
  */
-internal class ChildBox(
+internal data class ChildBox(
     val margins: IntEdges,
     val padding: IntEdges,
     val border: IntEdges,

@@ -152,6 +152,43 @@ internal object LithoYogaLayoutFunction {
   }
 
   /**
+   * A `Layout`'s child's tree, not laid out yet: a copy of the last pass's when the layout cache
+   * has it, never the cached tree itself: that belongs to the committed layout, which other passes
+   * and the main thread read. Its root carries no box props: the `Layout` resolves them into the
+   * box [layOutTree] takes. It isn't written to the cache: only [buildTree] writes it, once it's
+   * placed.
+   */
+  internal fun newTree(
+      context: LayoutContext<LithoLayoutContext>,
+      node: LithoNode,
+      previousDiffNode: DiffNode?,
+  ): LithoLayoutResult = TODO()
+
+  /**
+   * Lays [tree] out within [box], in place: its border box within [ChildBox.borderBoxConstraints],
+   * with the padding and border its node doesn't carry. A node that fails holds its failure on its
+   * result, reported only if the result reaches the final tree; each layout replaces the last's.
+   */
+  internal fun layOutTree(
+      context: LayoutContext<LithoLayoutContext>,
+      tree: LithoLayoutResult,
+      box: ChildBox,
+  ): Unit = TODO()
+
+  /** [tree], placed: the `Layout`s in it built, then the tree written to the layout cache. */
+  internal fun buildTree(
+      context: LayoutContext<LithoLayoutContext>,
+      tree: LithoLayoutResult,
+  ): LithoLayoutResult = TODO()
+
+  /**
+   * Discards [tree], which nothing placed: discards the `Layout`s in it, reached through their Yoga
+   * nodes, adding the tree's state reads to [reads] when they're tracked.
+   */
+  internal fun discardTree(tree: LithoLayoutResult, reads: MutableScatterSet<StateId>?): Unit =
+      TODO()
+
+  /**
    * With shadow validation on, checks a child whose layout holds a subtree copied whole from the
    * last pass, at its root or anywhere below.
    */
