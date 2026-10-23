@@ -906,6 +906,75 @@ class RecyclerBinder private constructor(builder: Builder) :
     }
   }
 
+  /**
+   * Describes the pending async batches and the conditions that gate applying them, or returns null
+   * when none are pending. Read-only and safe to call from any thread. Binder-owned queue state is
+   * snapshotted atomically; RecyclerView flags and holder/tree details are best-effort observations
+   * for off-main callers, not an atomic prediction that applying the batch will proceed. Intended
+   * for bug-report diagnostics; the format is not stable.
+   */
+  @AnyThread
+  fun getPendingAsyncBatchesDebugInfo(): String? {
+    val snapshot =
+        synchronized(this) {
+          val firstBatch = asyncBatches.peekFirst() ?: return null
+          PendingAsyncBatchesDebugSnapshot(
+              binderState =
+                  "batches=${asyncBatches.size}" +
+                      " hasBatchesToCheck=${hasAsyncBatchesToCheck.get()}" +
+                      " measured=${_isMeasured.get()}" +
+                      " requiresRemeasure=${requiresRemeasure.get()}" +
+                      " inMeasure=${isInMeasure.get()}" +
+                      " measuredSize=${measuredSize?.let { "${it.width}x${it.height}" }}" +
+                      " items=${_componentTreeHolders.size}",
+              firstBatch = firstBatch,
+              recyclerView = if (isSubAdapter) subAdapterRecyclerView else mountedView,
+              commitPolicy = firstBatch.commitPolicy,
+              operations = firstBatch.operations.toList(),
+          )
+        }
+    val policy =
+        if (snapshot.commitPolicy == CommitPolicy.IMMEDIATE) "IMMEDIATE" else "LAYOUT_BEFORE_INSERT"
+    return buildString {
+      append(snapshot.binderState)
+      append(" recyclerView=")
+      append(
+          snapshot.recyclerView?.let {
+            "[attached=${it.isAttachedToWindow} computingLayout=${it.isComputingLayout}]"
+          },
+      )
+      append(
+          " firstBatch=[policy=$policy ready=${isBatchReady(snapshot.commitPolicy, snapshot.operations)}",
+      )
+      append(" ops=${snapshot.operations.size}")
+      for (operation in snapshot.operations.take(MAX_DEBUG_OPERATIONS)) {
+        append(" {").append(describeOperationForDebug(operation)).append("}")
+      }
+      append("]")
+      append(
+          " stillPending=${synchronized(this@RecyclerBinder) { asyncBatches.peekFirst() === snapshot.firstBatch }}",
+      )
+    }
+  }
+
+  private fun describeOperationForDebug(operation: AsyncOperation): String =
+      when (operation) {
+        is Insert -> {
+          val holder = operation.holder
+          val tree = holder.componentTree
+          val treeState =
+              if (tree == null) "hasTree=false"
+              else "readyListener=${tree.newLayoutStateReadyListener != null}"
+          "insert pos=${operation.position} name=${holder.renderInfo.name} completed=${holder.hasCompletedLatestLayout()} treeValid=${holder.isTreeValid} $treeState"
+        }
+        is Update -> "update pos=${operation.position}"
+        is UpdateRange ->
+            "updateRange pos=${operation.position} count=${operation.renderInfos.size}"
+        is Remove -> "remove pos=${operation.position}"
+        is RemoveRange -> "removeRange pos=${operation.position} count=${operation.count}"
+        is Move -> "move from=${operation.fromPosition} to=${operation.toPosition}"
+      }
+
   @UiThread
   private fun applyBatch(batch: AsyncBatch) {
     val startNs = System.nanoTime()
@@ -3458,6 +3527,14 @@ class RecyclerBinder private constructor(builder: Builder) :
     class Move(val fromPosition: Int, val toPosition: Int) : AsyncOperation(Operation.MOVE)
   }
 
+  private class PendingAsyncBatchesDebugSnapshot(
+      val binderState: String,
+      val firstBatch: AsyncBatch,
+      val recyclerView: RecyclerView?,
+      @CommitPolicy val commitPolicy: Int,
+      val operations: List<AsyncOperation>,
+  )
+
   /**
    * A batch of [AsyncOperation]s that should be applied all at once. The OnDataBoundListener should
    * be called once all these operations are applied.
@@ -4205,6 +4282,7 @@ class RecyclerBinder private constructor(builder: Builder) :
     private val UNINITIALIZED = MeasureSpecUtils.unspecified()
     const val UNSET: Int = -1
     const val APPLY_READY_BATCHES_RETRY_LIMIT: Int = 100
+    private const val MAX_DEBUG_OPERATIONS = 3
     const val ID_CUSTOM_ATTR_KEY: String = "id"
 
     @UiThread
@@ -4230,13 +4308,18 @@ class RecyclerBinder private constructor(builder: Builder) :
 
     private fun isMatchingParentSize(percent: Float): Boolean = percent in 0.0..100.0
 
-    private fun isBatchReady(batch: AsyncBatch): Boolean {
-      if (batch.commitPolicy == CommitPolicy.IMMEDIATE) {
+    private fun isBatchReady(batch: AsyncBatch): Boolean =
+        isBatchReady(batch.commitPolicy, batch.operations)
+
+    private fun isBatchReady(
+        @CommitPolicy commitPolicy: Int,
+        operations: List<AsyncOperation>,
+    ): Boolean {
+      if (commitPolicy == CommitPolicy.IMMEDIATE) {
         return true
       }
 
-      for (i in 0 until batch.operations.size) {
-        val operation = batch.operations[i]
+      for (operation in operations) {
         if (operation is Insert && !operation.holder.hasCompletedLatestLayout()) {
           return false
         }

@@ -65,6 +65,7 @@ import com.facebook.rendercore.LogLevel
 import com.facebook.rendercore.RunnableHandler
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicReference
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Assert
@@ -3148,6 +3149,191 @@ class RecyclerBinderTest {
     assertThat(holder.renderInfo.component.isEquivalentTo(component)).isTrue
     assertThat(holder.hasCompletedLatestLayout()).isTrue
     assertThat(holder.isTreeValid).isTrue
+  }
+
+  @Test
+  fun testPendingAsyncBatchesDebugInfo_describesInsertWaitingForMeasure() {
+    val recyclerBinder =
+        RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(componentContext)
+    recyclerBinder.setCommitPolicy(RecyclerBinder.CommitPolicy.LAYOUT_BEFORE_INSERT)
+    val component = SimpleMountSpecTester(StyleCompat.widthPx(100).heightPx(100).build())
+    val renderInfo = ComponentRenderInfo.create().component(component).build()
+
+    assertThat(recyclerBinder.getPendingAsyncBatchesDebugInfo()).isNull()
+
+    recyclerBinder.insertItemAtAsync(0, renderInfo)
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK)
+
+    assertThat(recyclerBinder.getPendingAsyncBatchesDebugInfo())
+        .contains("batches=1")
+        .contains("measured=false")
+        .contains("recyclerView=null")
+        .contains("items=0")
+        .contains("firstBatch=[policy=LAYOUT_BEFORE_INSERT ready=false ops=1")
+        .contains("stillPending=true")
+        .contains(
+            "{insert pos=0 name=${renderInfo.name} completed=false treeValid=false hasTree=false}",
+        )
+
+    recyclerBinder.measure(Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null)
+    runToEndOfTasks()
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(1)
+    assertThat(recyclerBinder.getPendingAsyncBatchesDebugInfo()).isNull()
+  }
+
+  @Test
+  fun testPendingAsyncBatchesDebugInfo_describesReadyButUnappliedBatch() {
+    val recyclerBinder =
+        RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(componentContext)
+    recyclerBinder.setCommitPolicy(RecyclerBinder.CommitPolicy.LAYOUT_BEFORE_INSERT)
+    val normal = createTestComponentRenderInfo()
+    val empty = ComponentRenderInfo.createEmpty()
+    try {
+      ShadowLooper.pauseMainLooper()
+      recyclerBinder.measure(
+          Size(),
+          makeSizeSpec(1000, EXACTLY),
+          makeSizeSpec(1000, EXACTLY),
+          null,
+      )
+      recyclerBinder.insertItemAtAsync(0, normal)
+      recyclerBinder.insertItemAtAsync(1, empty)
+      recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK)
+
+      val normalCompleted = "{insert pos=0 name=${normal.name} completed=true"
+      var steps = 0
+      while (recyclerBinder.getPendingAsyncBatchesDebugInfo()?.contains(normalCompleted) != true) {
+        check(steps++ < 10) { "The normal insert layout was never completed" }
+        runOneTask()
+      }
+
+      // The normal layout wakes the binder while the empty layout is still pending.
+      ShadowLooper.runMainLooperOneTask()
+      assertThat(recyclerBinder.getItemCount()).isZero()
+
+      val emptyCompleted = "{insert pos=1 name=${empty.name} completed=true"
+      steps = 0
+      while (recyclerBinder.getPendingAsyncBatchesDebugInfo()?.contains(emptyCompleted) != true) {
+        check(steps++ < 10) { "The empty insert layout was never completed" }
+        runOneTask()
+      }
+      ShadowLooper.runUiThreadTasks()
+
+      assertThat(recyclerBinder.getItemCount()).isZero()
+      assertThat(recyclerBinder.getPendingAsyncBatchesDebugInfo())
+          .contains(
+              "batches=1",
+              "items=0",
+              "firstBatch=[policy=LAYOUT_BEFORE_INSERT ready=true ops=2",
+              "stillPending=true",
+          )
+          .contains("insert pos=0 name=${normal.name} completed=true treeValid=true")
+          .contains("insert pos=1 name=${empty.name} completed=true treeValid=true")
+    } finally {
+      ShadowLooper.unPauseMainLooper()
+    }
+  }
+
+  @Test
+  fun testPendingAsyncBatchesDebugInfo_doesNotHoldBinderLockWhileInspectingHolder() {
+    lateinit var pendingHolder: ComponentTreeHolder
+    val holderFactory =
+        RecyclerBinder.ComponentTreeHolderFactory {
+            renderInfo,
+            layoutHandler,
+            measureListenerFactory,
+            componentsConfiguration,
+            lifecycleProvider ->
+          ComponentTreeHolder.create(componentsConfiguration)
+              .renderInfo(renderInfo)
+              .layoutHandler(layoutHandler)
+              .componentTreeMeasureListenerFactory(measureListenerFactory)
+              .lithoVisibilityEventsController(lifecycleProvider)
+              .build()
+              .also { pendingHolder = it }
+        }
+    val recyclerBinder =
+        RecyclerBinder.Builder()
+            .componentTreeHolderFactory(holderFactory)
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(componentContext)
+    recyclerBinder.setCommitPolicy(RecyclerBinder.CommitPolicy.IMMEDIATE)
+    val failure = AtomicReference<Throwable?>()
+    val backgroundDone = CountDownLatch(1)
+    val releaseDone = CountDownLatch(1)
+
+    try {
+      ShadowLooper.pauseMainLooper()
+      recyclerBinder.insertItemAtAsync(0, createTestComponentRenderInfo())
+      recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK)
+      pendingHolder.computeLayoutSync(
+          componentContext,
+          makeSizeSpec(1000, EXACTLY),
+          makeSizeSpec(1000, EXACTLY),
+          null,
+      )
+      val tree = checkNotNull(pendingHolder.componentTree)
+      val backgroundReader = Thread(
+          {
+            try {
+              recyclerBinder.getPendingAsyncBatchesDebugInfo()
+            } catch (throwable: Throwable) {
+              failure.compareAndSet(null, throwable)
+            } finally {
+              backgroundDone.countDown()
+            }
+          },
+          "pending-batch-debug-reader",
+      )
+          .apply { isDaemon = true }
+      tree.addOnReleaseListener {
+        backgroundReader.start()
+        val deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5)
+        while (
+            backgroundReader.state != Thread.State.BLOCKED &&
+                backgroundReader.isAlive &&
+                System.nanoTime() < deadline
+        ) {
+          Thread.yield()
+        }
+        check(backgroundReader.state == Thread.State.BLOCKED) {
+          "Background diagnostics did not block on the holder monitor"
+        }
+        recyclerBinder.getPendingAsyncBatchesDebugInfo()
+      }
+
+      com.facebook.litho.ThreadUtils.setMainThreadOverride(
+          com.facebook.litho.ThreadUtils.OVERRIDE_MAIN_THREAD_TRUE,
+      )
+      Thread(
+          {
+            try {
+              pendingHolder.releaseTree()
+            } catch (throwable: Throwable) {
+              failure.compareAndSet(null, throwable)
+            } finally {
+              releaseDone.countDown()
+            }
+          },
+          "pending-holder-release",
+      )
+          .apply { isDaemon = true }
+          .start()
+
+      assertThat(releaseDone.await(5, TimeUnit.SECONDS)).isTrue
+      assertThat(backgroundDone.await(5, TimeUnit.SECONDS)).isTrue
+      assertThat(failure.get()).isNull()
+    } finally {
+      com.facebook.litho.ThreadUtils.setMainThreadOverride(
+          com.facebook.litho.ThreadUtils.OVERRIDE_DISABLED,
+      )
+      ShadowLooper.unPauseMainLooper()
+    }
   }
 
   @Test
