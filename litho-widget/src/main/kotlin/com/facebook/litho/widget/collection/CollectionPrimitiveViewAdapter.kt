@@ -140,8 +140,17 @@ class CollectionPrimitiveViewAdapter @PublishedApi internal constructor() :
     viewHolder.delegate.data = item as CollectionItem<View>
     latestCommittedData?.createLayoutScope()?.let { scope ->
       with(item) {
-        viewHolder.itemView.layoutParams = scope.generateLayoutParams(item)
+        val layoutParams = scope.generateLayoutParams(item)
+        // A row that has never been bound has no params. Give it the new ones now: RecyclerView
+        // crashes, instead of returning NO_POSITION, when asked about a row without params.
+        if (viewHolder.itemView.layoutParams == null) {
+          viewHolder.itemView.layoutParams = layoutParams
+        }
+        // Swap the params only after binding. RecyclerView finds a row's position through the
+        // row's current params, and new params can't do that until RecyclerView updates them after
+        // this method returns. Effects that run while the row binds can still find its position.
         scope.onBindView(viewHolder.delegate.view)
+        viewHolder.itemView.layoutParams = layoutParams
       }
     }
   }
