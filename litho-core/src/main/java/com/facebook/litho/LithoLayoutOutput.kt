@@ -47,8 +47,6 @@ sealed interface LithoLayoutOutput {
   val borderBottom: Int
   val contentRenderUnit: LithoRenderUnit?
   val hostRenderUnit: LithoRenderUnit?
-  val backgroundRenderUnit: LithoRenderUnit?
-  val foregroundRenderUnit: LithoRenderUnit?
   val borderRenderUnit: LithoRenderUnit?
   val effects: List<Attachable>?
   val delegate: LayoutResult?

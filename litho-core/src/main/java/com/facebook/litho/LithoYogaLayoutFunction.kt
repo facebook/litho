@@ -1089,8 +1089,6 @@ internal object LithoYogaLayoutFunction {
         layoutResult.isCachedLayout &&
             (layoutResult.contentWidth != size.width || layoutResult.contentHeight != size.height)
     ) {
-      yogaOutput._backgroundRenderUnit = null
-      yogaOutput._foregroundRenderUnit = null
       yogaOutput._borderRenderUnit = null
     }
     yogaOutput._lastMeasuredSize = YogaMeasureOutput.make(size.width, size.height)
@@ -1237,24 +1235,6 @@ internal object LithoYogaLayoutFunction {
     }
     if (layoutResult.hostRenderUnit == null) {
       yogaOutput._hostRenderUnit = LithoNodeUtils.createHostRenderUnit(layoutResult.node)
-    }
-    if (layoutResult.backgroundRenderUnit == null || hasLayoutSizeChanged) {
-      yogaOutput._backgroundRenderUnit =
-          LithoNodeUtils.createBackgroundRenderUnit(
-              layoutResult.node,
-              layoutResult.width,
-              layoutResult.height,
-              layoutResult.diffNode,
-          )
-    }
-    if (layoutResult.foregroundRenderUnit == null || hasLayoutSizeChanged) {
-      yogaOutput._foregroundRenderUnit =
-          LithoNodeUtils.createForegroundRenderUnit(
-              layoutResult.node,
-              layoutResult.width,
-              layoutResult.height,
-              layoutResult.diffNode,
-          )
     }
     if (
         layoutResult.shouldDrawBorders() &&
@@ -1895,8 +1875,6 @@ internal data class YogaLayoutOutput(
     internal var _boundsDefined: Boolean = false,
     internal var _contentRenderUnit: LithoRenderUnit? = null,
     internal var _hostRenderUnit: LithoRenderUnit? = null,
-    internal var _backgroundRenderUnit: LithoRenderUnit? = null,
-    internal var _foregroundRenderUnit: LithoRenderUnit? = null,
     internal var _borderRenderUnit: LithoRenderUnit? = null,
     internal var _diffNode: DiffNode? = null,
     internal var _delegate: LayoutResult? = null,
@@ -2022,12 +2000,6 @@ internal data class YogaLayoutOutput(
 
   override val hostRenderUnit: LithoRenderUnit?
     get() = _hostRenderUnit
-
-  override val backgroundRenderUnit: LithoRenderUnit?
-    get() = _backgroundRenderUnit
-
-  override val foregroundRenderUnit: LithoRenderUnit?
-    get() = _foregroundRenderUnit
 
   override val borderRenderUnit: LithoRenderUnit?
     get() = _borderRenderUnit

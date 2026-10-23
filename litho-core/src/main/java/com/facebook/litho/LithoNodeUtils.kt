@@ -99,7 +99,6 @@ object LithoNodeUtils {
               null
             } else {
               createViewAttributesForBinder(
-                  context = context,
                   lithoNode = node,
                   component = component,
                   willMountView = true,
@@ -152,7 +151,6 @@ object LithoNodeUtils {
         debugKey = getLithoNodeDebugKey(node, OutputUnitType.HOST),
         viewAttributes =
             createViewAttributesForBinder(
-                context = context,
                 lithoNode = node,
                 component = hostComponent,
                 willMountView = true,
@@ -199,53 +197,12 @@ object LithoNodeUtils {
         debugKey = getLithoNodeDebugKey(node, OutputUnitType.HOST),
         viewAttributes =
             createViewAttributesForBinder(
-                context = context,
                 lithoNode = node,
                 component = hostComponent,
                 willMountView = true,
                 importantForAccessibility = node.importantForAccessibility,
             ),
     )
-  }
-
-  /** Creates a [LithoRenderUnit] for the background output iff the result has a background. */
-  @JvmStatic
-  fun createBackgroundRenderUnit(
-      node: LithoNode,
-      width: Int,
-      height: Int,
-      diffNode: DiffNode? = null,
-  ): LithoRenderUnit? {
-    val background: Drawable? = node.background
-
-    // Only create a background output when the component does not mount a View because
-    // the background will get set in the output of the component.
-    return if (background != null && !node.willMountView) {
-      createDrawableRenderUnit(node, background, width, height, OutputUnitType.BACKGROUND, diffNode)
-    } else {
-      null
-    }
-  }
-
-  /** Creates a [LithoRenderUnit] for the foreground output iff the result has a foreground. */
-  @JvmStatic
-  fun createForegroundRenderUnit(
-      node: LithoNode,
-      width: Int,
-      height: Int,
-      diffNode: DiffNode? = null,
-  ): LithoRenderUnit? {
-    val foreground: Drawable? = node.foreground
-
-    /// Only create a foreground output when the component does not mount a View because
-    // the foreground has already been set in the output of the component.
-    return if (
-        foreground != null && (!node.willMountView || Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
-    ) {
-      createDrawableRenderUnit(node, foreground, width, height, OutputUnitType.FOREGROUND, diffNode)
-    } else {
-      null
-    }
   }
 
   /** Creates a [LithoRenderUnit] for the border output iff the result has borders. */
@@ -279,8 +236,6 @@ object LithoNodeUtils {
     val recycle: LithoRenderUnit? =
         if (diffNode != null) {
           when (outputType) {
-            OutputUnitType.BACKGROUND -> diffNode.backgroundOutput
-            OutputUnitType.FOREGROUND -> diffNode.foregroundOutput
             OutputUnitType.BORDER -> diffNode.borderOutput
             OutputUnitType.CONTENT,
             OutputUnitType.HOST ->
@@ -371,12 +326,6 @@ object LithoNodeUtils {
     }
     if (hasHostView) {
       flags = flags or LithoRenderUnit.LAYOUT_FLAG_MATCH_HOST_BOUNDS
-    }
-    if (
-        ComponentContext.getComponentsConfig(node.headComponentContext)
-            .shouldAddRootHostViewOrDisableBgFgOutputs
-    ) {
-      flags = flags or LithoRenderUnit.LAYOUT_FLAG_DRAWABLE_OUTPUTS_DISABLED
     }
     if (nodeInfo?.hasTouchEventHandlers() == true) {
       flags = flags or LithoRenderUnit.LAYOUT_FLAG_HAS_TOUCH_EVENT_HANDLERS
@@ -520,15 +469,12 @@ object LithoNodeUtils {
    */
   @JvmStatic
   internal fun createViewAttributesForBinder(
-      context: ComponentContext,
       lithoNode: LithoNode,
       component: Component,
       willMountView: Boolean,
       @ImportantForAccessibility importantForAccessibility: Int,
   ): ViewAttributes? {
     val nodeInfo = lithoNode.nodeInfo
-    val disableBgFgOutputs =
-        context.lithoConfiguration.componentsConfig.shouldAddRootHostViewOrDisableBgFgOutputs
     if (nodeInfo == null && !willMountView) {
       return null
     }
@@ -537,18 +483,11 @@ object LithoNodeUtils {
     attrs.isHostSpec = Component.isHostSpec(component)
     attrs.componentName = component.simpleName
     attrs.importantForAccessibility = importantForAccessibility
-    attrs.disableDrawableOutputs = disableBgFgOutputs
     nodeInfo?.copyInto(attrs)
 
-    // The following only applies if bg/fg outputs are NOT disabled:
-    // backgrounds and foregrounds should not be set for HostComponents
-    // because those will either be set on the content output or explicit outputs
-    // will be created for backgrounds and foreground.
-    if (disableBgFgOutputs || !attrs.isHostSpec) {
-      attrs.background = lithoNode.background
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        VersionedAndroidApis.M.setForeground(attrs, lithoNode.foreground)
-      }
+    attrs.background = lithoNode.background
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      VersionedAndroidApis.M.setForeground(attrs, lithoNode.foreground)
     }
     attrs.layoutDirection = lithoNode.layoutDirection
     attrs.layerType = lithoNode.layerType

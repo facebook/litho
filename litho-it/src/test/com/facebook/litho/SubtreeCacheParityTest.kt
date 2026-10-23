@@ -1790,12 +1790,6 @@ class SubtreeCacheParityTest {
           .describedAs("DiffNode at $path: hostOutput component class")
           .isEqualTo(off.hostOutput!!.component.javaClass)
     }
-    assertThat(on.backgroundOutput == null)
-        .describedAs("DiffNode at $path: backgroundOutput presence")
-        .isEqualTo(off.backgroundOutput == null)
-    assertThat(on.foregroundOutput == null)
-        .describedAs("DiffNode at $path: foregroundOutput presence")
-        .isEqualTo(off.foregroundOutput == null)
     assertThat(on.borderOutput == null)
         .describedAs("DiffNode at $path: borderOutput presence")
         .isEqualTo(off.borderOutput == null)

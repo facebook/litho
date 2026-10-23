@@ -71,7 +71,6 @@ protected constructor(
     const val LAYOUT_FLAG_DUPLICATE_PARENT_STATE = 1 shl 0
     const val LAYOUT_FLAG_DISABLE_TOUCHABLE = 1 shl 1
     const val LAYOUT_FLAG_MATCH_HOST_BOUNDS = 1 shl 2
-    const val LAYOUT_FLAG_DRAWABLE_OUTPUTS_DISABLED = 1 shl 3
     const val LAYOUT_FLAG_DUPLICATE_CHILDREN_STATES = 1 shl 4
     const val LAYOUT_FLAG_HAS_TOUCH_EVENT_HANDLERS = 1 shl 5
     /**
@@ -119,10 +118,6 @@ protected constructor(
     @JvmStatic
     fun isTouchableDisabled(flags: Int): Boolean =
         flags and LAYOUT_FLAG_DISABLE_TOUCHABLE == LAYOUT_FLAG_DISABLE_TOUCHABLE
-
-    @JvmStatic
-    fun areDrawableOutputsDisabled(flags: Int): Boolean =
-        flags and LAYOUT_FLAG_DRAWABLE_OUTPUTS_DISABLED != 0
 
     @JvmStatic
     fun isMountableView(unit: RenderUnit<*>): Boolean = unit.renderType == RenderType.VIEW

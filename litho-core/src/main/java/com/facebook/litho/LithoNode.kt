@@ -583,13 +583,11 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
    * Unit.
    */
   private fun addViewAttributesBinderIfForPrimitive() {
-    val componentContext = headComponentContext
     val nodePrimitive = primitive
 
     if (nodePrimitive != null && willMountView) {
       val viewAttributes: ViewAttributes? =
           LithoNodeUtils.createViewAttributesForBinder(
-              context = componentContext,
               lithoNode = this,
               component = tailComponent,
               willMountView = true,
@@ -1493,9 +1491,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
       // so that such flag is applied in the resulting view hierarchy after the component
       // tree is mounted. Click handling is also considered accessibility content but
       // this is already covered separately i.e. click handler is not null.
-      val hasBackgroundOrForeground =
-          ComponentContext.getComponentsConfig(c).shouldAddRootHostViewOrDisableBgFgOutputs &&
-              (node.background != null || node.foreground != null)
+      val hasBackgroundOrForeground = node.background != null || node.foreground != null
       val hasAccessibilityContent =
           (context?.isAccessibilityEnabled == true) &&
               (importantForAccessibility != ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO) &&

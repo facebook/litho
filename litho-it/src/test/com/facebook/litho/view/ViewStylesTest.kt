@@ -40,7 +40,6 @@ import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.LayerType
 import com.facebook.litho.LithoView
-import com.facebook.litho.MatrixDrawable
 import com.facebook.litho.Style
 import com.facebook.litho.assertMatches
 import com.facebook.litho.child
@@ -81,7 +80,10 @@ class ViewStylesTest {
           Row(style = Style.width(100.px).height(100.px).background(ColorDrawable(Color.WHITE)))
         }
 
-    assertHasColorDrawableOfColor(testLithoView.lithoView, Color.WHITE)
+    assertIsColorDrawableOfColor(
+        testLithoView.lithoView.hostDrawable { it.background },
+        Color.WHITE,
+    )
   }
 
   @Test
@@ -154,7 +156,10 @@ class ViewStylesTest {
           Row(style = Style.width(100.px).height(100.px).backgroundColor(Color.WHITE))
         }
 
-    assertHasColorDrawableOfColor(testLithoView.lithoView, Color.WHITE)
+    assertIsColorDrawableOfColor(
+        testLithoView.lithoView.hostDrawable { it.background },
+        Color.WHITE,
+    )
   }
 
   @Test
@@ -296,13 +301,17 @@ class ViewStylesTest {
   }
 
   @Test
+  @RequiresApi(Build.VERSION_CODES.M)
   fun foreground_whenSet_isRespected() {
     val testLithoView =
         lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) {
           Row(style = Style.width(100.px).height(100.px).foreground(ColorDrawable(Color.WHITE)))
         }
 
-    assertHasColorDrawableOfColor(testLithoView.lithoView, Color.WHITE)
+    assertIsColorDrawableOfColor(
+        testLithoView.lithoView.hostDrawable { it.foreground },
+        Color.WHITE,
+    )
   }
 
   @Test
@@ -1107,13 +1116,22 @@ class ViewStylesTest {
     assertThat(testLithoView.lithoView.layerType).isEqualTo(View.LAYER_TYPE_HARDWARE)
   }
 
-  private fun assertHasColorDrawableOfColor(componentHost: ComponentHost, color: Int) {
-    assertThat(componentHost.drawables).hasSize(1).first().isInstanceOf(MatrixDrawable::class.java)
-    assertThat((componentHost.drawables[0] as MatrixDrawable<ColorDrawable>).mountedDrawable)
+  private fun assertIsColorDrawableOfColor(drawable: Drawable?, color: Int) {
+    assertThat(drawable)
         .isInstanceOf(ColorDrawable::class.java)
         .extracting("color")
         .isEqualTo(color)
   }
+
+  /** The first drawable [get] returns for this host or a [ComponentHost] under it, depth first. */
+  private fun ComponentHost.hostDrawable(get: (View) -> Drawable?): Drawable? =
+      get(this)
+          ?: (0 until childCount)
+              .map(::getChildAt)
+              .filterIsInstance<ComponentHost>()
+              .firstNotNullOfOrNull {
+                it.hostDrawable(get)
+              }
 
   private fun getMotionEvent() = MotionEvent.obtain(0L, 1L, MotionEvent.ACTION_DOWN, 0f, 0f, 0)
 

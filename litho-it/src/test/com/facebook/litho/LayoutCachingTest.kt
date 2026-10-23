@@ -48,38 +48,6 @@ class LayoutCachingTest {
   @JvmField @Rule var lithoTestRule = LithoTestRule()
 
   @Test
-  fun `verify the background of container is properly reused or created with layout caching`() {
-    val c = lithoTestRule.context
-    val caller = SimpleStateUpdateEmulatorSpec.Caller()
-
-    val component =
-        Column.create(c)
-            .backgroundColor(Color.LTGRAY)
-            .child(
-                SimpleStateUpdateEmulator.create(c)
-                    .prefix("\n\n\n")
-                    .initialCount(0)
-                    .caller(caller)
-                    .build(),
-            )
-            .build()
-
-    val testLithoView = lithoTestRule.render { component }
-
-    val background1 = testLithoView.committedLayoutState?.getMountableOutputAt(1)?.renderUnit
-
-    // the height should be changed so we're not supposed to reuse the background outputs
-    caller.increment()
-    val background2 = testLithoView.committedLayoutState?.getMountableOutputAt(1)?.renderUnit
-    Assertions.assertThat(background1 != background2).isTrue
-
-    // the height should not be changed so we could reuse the background outputs
-    caller.increment()
-    val background3 = testLithoView.committedLayoutState?.getMountableOutputAt(1)?.renderUnit
-    Assertions.assertThat(background2 === background3).isTrue
-  }
-
-  @Test
   fun `verify the layout behavior of container with background, padding is as expected`() {
     val c = lithoTestRule.context
 

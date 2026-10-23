@@ -33,8 +33,6 @@ internal constructor(
 
   private val _children: MutableList<DiffNode> = ArrayList(4)
   override var contentOutput: LithoRenderUnit? = null
-  override var backgroundOutput: LithoRenderUnit? = null
-  override var foregroundOutput: LithoRenderUnit? = null
   override var borderOutput: LithoRenderUnit? = null
   override var hostOutput: LithoRenderUnit? = null
   override var visibilityOutput: VisibilityOutput? = null

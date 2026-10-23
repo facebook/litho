@@ -65,8 +65,6 @@ interface DiffNode : Cloneable {
 
   var contentOutput: LithoRenderUnit?
   var visibilityOutput: VisibilityOutput?
-  var backgroundOutput: LithoRenderUnit?
-  var foregroundOutput: LithoRenderUnit?
   var borderOutput: LithoRenderUnit?
   var hostOutput: LithoRenderUnit?
   var delegate: LayoutResult?

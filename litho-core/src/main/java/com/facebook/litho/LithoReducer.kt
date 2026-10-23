@@ -476,14 +476,14 @@ internal object LithoReducer {
    * 1. Look up the cached `SubtreeSnapshot` for this node (`cachedSubtreeSnapshot`)
    * 2. Setup: tail/context, diffNode, hostRenderUnit, transition state save
    * 3. Accumulate layout-result state reads
-   * 4. Steps 1-3 of baseline output emission: host -> background -> content RTNs
+   * 4. Steps 1-2 of baseline output emission: host -> content RTNs
    *    (host insertion mutates `parentRenderTreeNode` so descendants attach to it)
    * 5. Stamp diff-node metadata + accumulate effects/attachables
    * 6. SNAPSHOT descendant START boundaries (mountable, vis, test, scope, attach)
    * 7. Either splice cached descendants OR recurse via `collectChildResults`
    * 8. SNAPSHOT descendant END boundaries
-   * 9. Steps 5-8 of baseline output emission via `addPostChildrenOutputs`:
-   *    border -> foreground -> visibility -> test outputs
+   * 9. Steps 3-5 of baseline output emission via `addPostChildrenOutputs`:
+   *    border -> visibility -> test outputs
    * 10. Append root's own Spec scopes/handles
    * 11. If eligible, record this subtree's descendant-only range to `reductionState.subtreeSnapshots`
    * 12. Restore transition state (current id + affinity group) for the caller
@@ -716,25 +716,6 @@ internal object LithoReducer {
       parentRenderTreeNode = reductionState.mountableOutputs[hostLayoutPosition]
     }
 
-    // 2. Add background if defined.
-    if (!context.lithoConfiguration.componentsConfig.shouldAddRootHostViewOrDisableBgFgOutputs) {
-      result.backgroundRenderUnit?.let { backgroundRenderUnit ->
-        val backgroundRenderTreeNode = addDrawableRenderTreeNode(
-            unit = backgroundRenderUnit,
-            bounds = bounds,
-            parent = parentRenderTreeNode,
-            result = result,
-            reductionState = reductionState,
-            expandedTouchBounds = result.expandedTouchBounds,
-            hierarchy = hierarchy,
-            type = OutputUnitType.BACKGROUND,
-            matchHostBoundsTransitions = needsHostView,
-        )
-
-        diffNode.backgroundOutput = backgroundRenderTreeNode.renderUnit as LithoRenderUnit
-      }
-    }
-
     // Generate the RenderTreeNode for the given node.
     val contentRenderTreeNode: RenderTreeNode? = createContentRenderTreeNode(
         result = result,
@@ -747,7 +728,7 @@ internal object LithoReducer {
         debugHierarchyNode = hierarchy,
     )
 
-    // 3. Now add the MountSpec (either View or Drawable) to the outputs.
+    // 2. Now add the MountSpec (either View or Drawable) to the outputs.
     contentRenderTreeNode?.let { treeNode ->
       val contentRenderUnit: LithoRenderUnit = treeNode.renderUnit as LithoRenderUnit
 
@@ -844,7 +825,6 @@ internal object LithoReducer {
         diffNode = diffNode,
         reductionState = reductionState,
         hierarchy = hierarchy,
-        componentsConfig = context.lithoConfiguration.componentsConfig,
     )
     addRootSpecScopesAndHandles(node, reductionState)
 
@@ -1044,11 +1024,11 @@ internal object LithoReducer {
   }
 
   /**
-   * Emit the subtree root's post-children outputs: border, foreground, visibility, and test
-   * outputs. Called after the splice/recursion block has populated descendant outputs.
+   * Emit the subtree root's post-children outputs: border, visibility, and test outputs. Called
+   * after the splice/recursion block has populated descendant outputs.
    *
    * Each phase is independently optional and runs against the same [bounds]/[parentRenderTreeNode]
-   * shared with steps 1-4 (host/background/content) emitted before the splice block.
+   * shared with steps 1-2 (host/content) emitted before the splice block.
    */
   private fun addPostChildrenOutputs(
       result: LithoLayoutResult,
@@ -1060,9 +1040,8 @@ internal object LithoReducer {
       diffNode: DiffNode,
       reductionState: ReductionState,
       hierarchy: DebugHierarchy.Node?,
-      componentsConfig: ComponentsConfiguration,
   ) {
-    // 5. Border.
+    // 3. Border.
     result.borderRenderUnit?.let { borderRenderUnit ->
       val borderRenderTreeNode = addDrawableRenderTreeNode(
           unit = borderRenderUnit,
@@ -1078,25 +1057,7 @@ internal object LithoReducer {
       diffNode.borderOutput = borderRenderTreeNode.renderUnit as LithoRenderUnit
     }
 
-    // 6. Foreground.
-    if (!componentsConfig.shouldAddRootHostViewOrDisableBgFgOutputs) {
-      result.foregroundRenderUnit?.let { foregroundRenderUnit ->
-        val foregroundRenderTreeNode = addDrawableRenderTreeNode(
-            unit = foregroundRenderUnit,
-            bounds = bounds,
-            parent = parentRenderTreeNode,
-            result = result,
-            reductionState = reductionState,
-            expandedTouchBounds = result.expandedTouchBounds,
-            hierarchy = hierarchy,
-            type = OutputUnitType.FOREGROUND,
-            matchHostBoundsTransitions = needsHostView,
-        )
-        diffNode.foregroundOutput = foregroundRenderTreeNode.renderUnit as LithoRenderUnit
-      }
-    }
-
-    // 7. VisibilityOutput when this node has visibility-event handlers.
+    // 4. VisibilityOutput when this node has visibility-event handlers.
     if (node.hasVisibilityHandlers()) {
       val visibilityOutput = createVisibilityOutput(
           node = node,
@@ -1108,7 +1069,7 @@ internal object LithoReducer {
       diffNode.visibilityOutput = visibilityOutput
     }
 
-    // 8. TestOutput when running under an end-to-end testing environment AND a testKey is set.
+    // 5. TestOutput when running under an end-to-end testing environment AND a testKey is set.
     if (reductionState.testOutputs != null && !node.testKey.isNullOrEmpty()) {
       val testOutput = createTestOutput(
           node = node,

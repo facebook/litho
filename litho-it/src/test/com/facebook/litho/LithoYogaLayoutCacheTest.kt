@@ -693,8 +693,6 @@ private class TestDiffNode(
   override var effects: List<Attachable>? = null
   override var stateReads: ScatterSet<StateId>? = null
   override var contentOutput: LithoRenderUnit? = null
-  override var backgroundOutput: LithoRenderUnit? = null
-  override var foregroundOutput: LithoRenderUnit? = null
   override var borderOutput: LithoRenderUnit? = null
   override var hostOutput: LithoRenderUnit? = null
   override var visibilityOutput: VisibilityOutput? = null

@@ -19,7 +19,8 @@ package com.facebook.litho.widget
 import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
-import com.facebook.litho.MatrixDrawable
+import android.view.View
+import com.facebook.litho.ComponentHost
 import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.core.margin
@@ -69,10 +70,9 @@ class DividerTest {
             }
             .lithoView
 
-    assertThat(lithoView.drawables).hasSize(1)
-    val drawable = lithoView.drawables.single() as MatrixDrawable<ColorDrawable>
-    assertThat(drawable.bounds).isEqualTo(Rect(7, 0, 100, 2))
-    assertThat(drawable.mountedDrawable?.color).isEqualTo(Color.RED)
+    val divider = lithoView.dividerHost()
+    assertThat(divider.bounds()).isEqualTo(Rect(7, 0, 100, 2))
+    assertThat((divider.background as ColorDrawable).color).isEqualTo(Color.RED)
   }
 
   @Test
@@ -84,7 +84,7 @@ class DividerTest {
             }
             .lithoView
 
-    assertThat(lithoView.drawables.single().bounds).isEqualTo(Rect(0, 0, 100, 2))
+    assertThat(lithoView.dividerHost().bounds()).isEqualTo(Rect(0, 0, 100, 2))
   }
 
   @Test
@@ -109,10 +109,9 @@ class DividerTest {
             }
             .lithoView
 
-    assertThat(lithoView.drawables).hasSize(1)
-    val drawable = lithoView.drawables.single() as MatrixDrawable<ColorDrawable>
-    assertThat(drawable.bounds).isEqualTo(Rect(0, 7, 2, 100))
-    assertThat(drawable.mountedDrawable?.color).isEqualTo(Color.BLUE)
+    val divider = lithoView.dividerHost()
+    assertThat(divider.bounds()).isEqualTo(Rect(0, 7, 2, 100))
+    assertThat((divider.background as ColorDrawable).color).isEqualTo(Color.BLUE)
   }
 
   @Test
@@ -124,6 +123,11 @@ class DividerTest {
             }
             .lithoView
 
-    assertThat(lithoView.drawables.single().bounds).isEqualTo(Rect(0, 0, 2, 100))
+    assertThat(lithoView.dividerHost().bounds()).isEqualTo(Rect(0, 0, 2, 100))
   }
+
+  private fun ComponentHost.dividerHost(): ComponentHost =
+      (0 until childCount).map(::getChildAt).filterIsInstance<ComponentHost>().single()
+
+  private fun View.bounds(): Rect = Rect(left, top, right, bottom)
 }

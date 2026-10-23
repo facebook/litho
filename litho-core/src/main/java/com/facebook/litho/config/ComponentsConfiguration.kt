@@ -45,7 +45,6 @@ internal constructor(
      * that also releases seen items as they leave the screen. See [GapWorkerMode].
      */
     @JvmField val gapWorkerMode: GapWorkerMode = GapWorkerMode.OFF,
-    internal val shouldDisableBgFgOutputs: Boolean = false,
     /** The handler [ComponentTree] will be used to run the pre-allocation process */
     @JvmField val preAllocationHandler: PreAllocationHandler? = null,
     /** Whether the [com.facebook.rendercore.MountState] can be mounted using incremental mount. */
@@ -229,9 +228,6 @@ internal constructor(
      */
     @JvmField val useKComponentForLegacyRowColumn: Boolean = false,
 ) {
-
-  val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =
-      shouldAddHostViewForRootComponent || shouldDisableBgFgOutputs
 
   companion object {
 
@@ -564,15 +560,6 @@ internal constructor(
 
     fun shouldAddHostViewForRootComponent(enabled: Boolean): Builder = apply {
       config = config.copy(shouldAddHostViewForRootComponent = enabled)
-    }
-
-    /**
-     * Sets whether a component with a background or foreground mounts its own host View (true) or
-     * draws them in its parent's host (false). False takes effect only while
-     * [shouldAddHostViewForRootComponent] is also false.
-     */
-    fun shouldDisableBgFgOutputs(enabled: Boolean): Builder = apply {
-      config = config.copy(shouldDisableBgFgOutputs = enabled)
     }
 
     fun withPreAllocationHandler(handler: PreAllocationHandler?): Builder = apply {

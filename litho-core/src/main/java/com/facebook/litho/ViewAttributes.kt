@@ -49,7 +49,6 @@ class ViewAttributes {
 
   var isHostSpec: Boolean = false
   var componentName: String = ""
-  var disableDrawableOutputs: Boolean = false
 
   var visibility: Visibility?
     get() = binderMigratedAttributes?.visibility
@@ -369,7 +368,6 @@ class ViewAttributes {
     // Properties with framework plumbing
     if (isHostSpec != other.isHostSpec) return false
     if (componentName != other.componentName) return false
-    if (disableDrawableOutputs != other.disableDrawableOutputs) return false
     if (flags != other.flags) return false
     if (!equals(contentDescription, other.contentDescription)) return false
     if (importantForAccessibility != other.importantForAccessibility) return false
@@ -388,7 +386,6 @@ class ViewAttributes {
     // Properties with framework plumbing
     var result = isHostSpec.hashCode()
     result = 31 * result + componentName.hashCode()
-    result = 31 * result + disableDrawableOutputs.hashCode()
     result = 31 * result + flags
     result = 31 * result + (contentDescription?.hashCode() ?: 0)
     result = 31 * result + importantForAccessibility
@@ -406,7 +403,6 @@ class ViewAttributes {
     // Properties with framework plumbing
     target.isHostSpec = isHostSpec
     target.componentName = componentName
-    target.disableDrawableOutputs = disableDrawableOutputs
     contentDescription?.let { target.contentDescription = it }
     target.importantForAccessibility = importantForAccessibility
     accessibilityPaneTitle?.let { target.accessibilityPaneTitle = it }
@@ -487,23 +483,14 @@ class ViewAttributes {
       val isHostSpec = attributes.isHostSpec
       setViewLayerType(content, attributes)
       setViewStateListAnimator(content, attributes)
-      if (attributes.disableDrawableOutputs) {
-        setViewBackground(content, attributes)
-        setViewForeground(content, attributes.foreground)
-
-        // when background outputs are disabled, they are wrapped by a ComponentHost.
+      setViewBackground(content, attributes)
+      setViewForeground(content, attributes.foreground)
+      if (isHostSpec) {
         // A background can set the padding of a view, but ComponentHost should not have
         // any padding because the layout calculation has already accounted for padding by
         // translating the bounds of its children.
-        if (isHostSpec) {
-          content.setPadding(0, 0, 0, 0)
-        }
-      }
-      if (!isHostSpec) {
-        // Set view background, if applicable.  Do this before padding
-        // as it otherwise overrides the padding.
-        setViewBackground(content, attributes)
-        setViewForeground(content, attributes.foreground)
+        content.setPadding(0, 0, 0, 0)
+      } else {
         setViewLayoutDirection(content, attributes)
       }
 
@@ -603,15 +590,9 @@ class ViewAttributes {
         unsetImportantForAccessibility(content)
       }
       unsetAccessibilityDelegate(content)
-      // Host view doesn't set its own padding, but gets absolute positions for inner content from
-      // Yoga. Also bg/fg is used as separate drawables instead of using View's bg/fg attribute.
-      if (attributes.disableDrawableOutputs) {
-        unsetViewBackground(content, attributes)
-        unsetViewForeground(content, attributes)
-      }
+      unsetViewBackground(content, attributes)
+      unsetViewForeground(content, attributes)
       if (!isHostView) {
-        unsetViewBackground(content, attributes)
-        unsetViewForeground(content, attributes)
         unsetViewLayoutDirection(content)
       }
       unsetViewLayerType(content, mountFlags)

@@ -130,12 +130,6 @@ open class LithoLayoutResult(
   val hostRenderUnit: LithoRenderUnit?
     get() = layoutOutput.hostRenderUnit
 
-  val backgroundRenderUnit: LithoRenderUnit?
-    get() = layoutOutput.backgroundRenderUnit
-
-  val foregroundRenderUnit: LithoRenderUnit?
-    get() = layoutOutput.foregroundRenderUnit
-
   val borderRenderUnit: LithoRenderUnit?
     get() = layoutOutput.borderRenderUnit
 

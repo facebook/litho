@@ -22,7 +22,6 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.view.ContextThemeWrapper
 import androidx.test.core.app.ApplicationProvider
-import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.config.TempComponentsConfigurations
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
@@ -177,27 +176,18 @@ class MountStateViewTest {
   }
 
   @Test
-  fun shouldDisableBgFgOutputs_setsWhetherABackgroundMountsAHost() {
-    val withHosts = ComponentsConfiguration.create().shouldDisableBgFgOutputs(true).build()
-    val withoutHosts =
-        ComponentsConfiguration.create(withHosts).shouldDisableBgFgOutputs(false).build()
-
-    assertThat(withHosts.shouldAddHostViewForRootComponent).isFalse()
-    assertThat(countHostsForABackground(withHosts)).isEqualTo(1)
-    assertThat(countHostsForABackground(withoutHosts)).isEqualTo(0)
-  }
-
-  private fun countHostsForABackground(config: ComponentsConfiguration): Int {
-    val tree = ComponentTree.create(context).componentsConfiguration(config).build()
+  fun aBackgroundMountsItsOwnHost() {
     val lithoView =
         lithoTestRule
-            .render(componentTree = tree) {
+            .render {
               Row {
                 child(Row(style = Style.width(10.px).height(10.px).backgroundColor(Color.RED)))
               }
             }
             .lithoView
-    return (0 until lithoView.childCount).count { lithoView.getChildAt(it) is ComponentHost }
+
+    assertThat((0 until lithoView.childCount).count { lithoView.getChildAt(it) is ComponentHost })
+        .isEqualTo(1)
   }
 
   @Test
