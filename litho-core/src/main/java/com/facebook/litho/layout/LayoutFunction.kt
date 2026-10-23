@@ -16,15 +16,10 @@
 
 package com.facebook.litho.layout
 
-import com.facebook.litho.CustomLayoutResult
-import com.facebook.litho.LithoLayoutContext
-import com.facebook.litho.LithoLayoutResult
-import com.facebook.litho.LithoNode
 import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.measureChild
 import com.facebook.rendercore.Dimen
 import com.facebook.rendercore.IntSize
-import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.ResourceResolver
 import com.facebook.rendercore.SizeConstraints
 
@@ -183,97 +178,6 @@ private fun List<Measurable>.requireArity(expected: Int) {
     "A layout function naming $expected children was handed $size. The constructors pair the two, " +
         "so one of the declared children resolved to no node at all."
   }
-}
-
-/**
- * A child that has been resolved but not yet laid out.
- *
- * Created by the framework during layout, where the context needed to lay a child out exists. An
- * instance is only meaningful inside the [LayoutFunction] call that received it. It has no public
- * members: the scope that call runs in measures it ([MeasureScope]).
- *
- * Final, and only Litho creates one: its constructor is internal, so a member added later is not a
- * breaking change. A layout function is tested by rendering a tree that holds its container.
- */
-@ExperimentalLithoApi
-class Measurable
-internal constructor(
-    /** The child's declaration index in its container. */
-    internal val index: Int,
-    /** The child's node. */
-    internal val node: LithoNode,
-    /** The layout context the child is measured in. */
-    internal val context: LayoutContext<LithoLayoutContext>,
-    /** The container whose layout function was handed this child. */
-    internal val owner: CustomLayoutResult,
-)
-
-/**
- * A child that has been laid out and knows its size, but not yet where it sits.
- *
- * Only the framework can make one — the constructor is internal — which is what lets
- * [PlacementScope.place] trust [childIndex]. `place` is an extension on this type rather than a
- * function taking an index, so the index travels with the placeable and cannot be fabricated to
- * place a child at the wrong slot.
- */
-@ExperimentalLithoApi
-class Placeable
-internal constructor(
-    /**
-     * The width this child occupies, margins included, within the constraints it was measured at.
-     */
-    val width: Int,
-    /**
-     * The height this child occupies, margins included, within the constraints it was measured at.
-     */
-    val height: Int,
-    /**
-     * The declaration index this child came from. Framework-only: it is how `place` finds a slot.
-     */
-    internal val childIndex: Int,
-    /**
-     * The width this child asked for, margins included, before it was kept within its constraints.
-     * Differs from [width] only when the child does not fit them: it is then centred in [width].
-     */
-    val measuredWidth: Int = width,
-    /** The height this child asked for. The other axis of [measuredWidth]. */
-    val measuredHeight: Int = height,
-    /** The layout this measurement made, which is what mounts if it is placed. */
-    internal val result: LithoLayoutResult? = null,
-    /** Where the child's border box sits inside [measuredWidth]: its left and top margins. */
-    internal val marginLeft: Int = 0,
-    internal val marginTop: Int = 0,
-    /** The container whose layout function was handed this child. */
-    internal val owner: Any? = null,
-    /** The constraints this child was measured under. */
-    internal val constraints: SizeConstraints,
-) {
-  /**
-   * This measurement, handed to [container] for the same child: the same layout, placeable there.
-   */
-  internal fun forContainer(container: Any): Placeable =
-      if (owner === container) this
-      else
-          Placeable(
-              width = width,
-              height = height,
-              childIndex = childIndex,
-              measuredWidth = measuredWidth,
-              measuredHeight = measuredHeight,
-              result = result,
-              marginLeft = marginLeft,
-              marginTop = marginTop,
-              owner = container,
-              constraints = constraints,
-          )
-
-  /** How far this child is shifted to centre [measuredWidth] in [width]. */
-  internal val offsetX: Int
-    get() = (width - measuredWidth) / 2
-
-  /** How far this child is shifted to centre [measuredHeight] in [height]. */
-  internal val offsetY: Int
-    get() = (height - measuredHeight) / 2
 }
 
 /**
@@ -465,8 +369,8 @@ internal constructor(
    *   its index happens to fall outside this one's.
    */
   fun Placeable.place(x: Int = 0, y: Int = 0) {
-    val index = childIndex
-    require(this.owner === this@PlacementScope.owner) {
+    val index = measurable.index
+    require(measurable.owner === this@PlacementScope.owner) {
       "Cannot place a child of another container. A placeable belongs to the container whose " +
           "layout function measured it."
     }

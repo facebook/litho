@@ -34,6 +34,7 @@ import com.facebook.litho.layout.PlacementScope
 import com.facebook.litho.state.StateId
 import com.facebook.litho.state.StateReadRecorder
 import com.facebook.litho.stats.LithoStats
+import com.facebook.rendercore.IntSize
 import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.yoga.YogaConstants
@@ -178,7 +179,7 @@ internal class CustomLayoutResult(
       val placeable = scope.placedWith[i] ?: continue
       // A reused measurement may already be placed by another measurement of this container, in
       // which case this one places a copy.
-      val result = checkNotNull(placeable.result).acquireForPlacement(this)
+      val result = placeable.result.acquireForPlacement(this)
       result.yogaLayoutOutput.placedX =
           insetLeft +
               startOffset +
@@ -245,7 +246,7 @@ internal class CustomLayoutResult(
       val placedResult = placed?.placedWith?.get(i)?.result
       for (measurement in measurements) {
         val result = measurement.result
-        if (result != null && result !== placedResult) {
+        if (result !== placedResult) {
           reads = recordReadsOf(result, reads)
         }
       }
@@ -417,6 +418,10 @@ internal object CustomLayoutMeasureFunction : YogaMeasureFunction {
  * Measures a `Layout`'s child under [constraints]. Each measurement applies the child's own box
  * props within the constraints it was given and lays the child out as a tree of its own, so the
  * placeable it returns owns that layout.
+ *
+ * A layout this pass already made of its node under the same constraints, by an earlier measure, an
+ * earlier run of its container's function, or another container, is reused; otherwise it is laid
+ * out. The placeable keeps the size it measured then, whatever lays the child out afterwards.
  */
 internal fun Measurable.measureChild(constraints: SizeConstraints): Placeable {
   // A child is measured only during a layout pass, whose context holds its measurements so far.
@@ -425,45 +430,53 @@ internal fun Measurable.measureChild(constraints: SizeConstraints): Placeable {
   val cached = measurements.firstOrNull { it.constraints == constraints }
   if (cached != null) {
     LithoStats.count(LithoStats.customLayoutMeasurementReusedCount)
-    return cached.forContainer(owner)
+    return cached.forMeasurable(this)
   }
   return layOut(constraints).also { measurements.add(it) }
 }
 
+/**
+ * This placeable, handed to [measurable] for the same child in another container: the same layout,
+ * placeable there.
+ */
+internal fun Placeable.forMeasurable(measurable: Measurable): Placeable =
+    if (measurable === this.measurable) this
+    else
+        Placeable(
+            measurable,
+            constraints,
+            IntSize(measuredWidth, measuredHeight),
+            marginLeft,
+            marginTop,
+            result,
+        )
+
+/** Lays this child out under [constraints]: its placeable keeps the size it measured there. */
 private fun Measurable.layOut(constraints: SizeConstraints): Placeable =
     StateReadRecorder.untracked {
-      layOutChild(constraints)
+      LithoStats.count(LithoStats.customLayoutChildLayoutCount)
+      val (result, box) =
+          trace({ "layout.measureChild:${node.headComponent.simpleName}" }) {
+            LithoYogaLayoutFunction.layoutSubtree(
+                context,
+                node,
+                constraints,
+                (owner as CustomLayoutResult).previousDiffNode(index, node),
+            )
+          }
+      val margins = box.margins
+      Placeable(
+          this,
+          constraints,
+          IntSize(
+              (result.width + margins.horizontal).coerceAtLeast(0),
+              (result.height + margins.vertical).coerceAtLeast(0),
+          ),
+          margins.left,
+          margins.top,
+          result,
+      )
     }
-
-private fun Measurable.layOutChild(constraints: SizeConstraints): Placeable {
-  LithoStats.count(LithoStats.customLayoutChildLayoutCount)
-  val (result, box) =
-      trace({ "layout.measureChild:${node.headComponent.simpleName}" }) {
-        LithoYogaLayoutFunction.layoutSubtree(
-            context,
-            node,
-            constraints,
-            owner.previousDiffNode(index, node),
-        )
-      }
-  val margins = box.margins
-  // A child's margins are part of what it occupies, and a size below 0 means nothing to a layout
-  // function, which would hand it on to `layout`.
-  val measuredWidth = (result.width + margins.horizontal).coerceAtLeast(0)
-  val measuredHeight = (result.height + margins.vertical).coerceAtLeast(0)
-  return Placeable(
-      width = measuredWidth.coerceIn(constraints.minWidth, constraints.maxWidth),
-      height = measuredHeight.coerceIn(constraints.minHeight, constraints.maxHeight),
-      childIndex = index,
-      measuredWidth = measuredWidth,
-      measuredHeight = measuredHeight,
-      result = result,
-      marginLeft = margins.left,
-      marginTop = margins.top,
-      owner = owner,
-      constraints = constraints,
-  )
-}
 
 /**
  * Lays this Yoga root out within [box], the room its container resolved from the child's own box

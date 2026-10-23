@@ -202,7 +202,7 @@ constructor(
   private fun releaseCachedMeasurements() {
     cachedMeasurements?.values?.forEach { measurements ->
       for (measurement in measurements) {
-        measurement.result?.releaseLayoutPhaseData()
+        measurement.result.releaseLayoutPhaseData()
       }
     }
     cachedMeasurements = null
