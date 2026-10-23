@@ -20,11 +20,19 @@ import android.view.View
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
+import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.layout.LayoutFunctionN
+import com.facebook.litho.layout.RenderWithConstraints
 import com.facebook.litho.layout.flexbox.Column
+import com.facebook.litho.layout.flexbox.FlexboxScope
+import com.facebook.litho.layout.flexbox.Row
+import com.facebook.litho.stateupdates.ComponentWithMeasureCall
+import com.facebook.litho.stats.LithoStats
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.TestLithoView
 import com.facebook.litho.testing.testrunner.LithoTestRunner
+import com.facebook.litho.view.viewTag
+import com.facebook.litho.view.wrapInView
 import com.facebook.litho.widget.SimpleMountSpecTester
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.primitives.LayoutBehavior
@@ -33,6 +41,7 @@ import com.facebook.rendercore.primitives.MountBehavior
 import com.facebook.rendercore.primitives.PrimitiveLayoutResult
 import com.facebook.rendercore.primitives.ViewAllocator
 import com.facebook.rendercore.px
+import com.facebook.rendercore.sp
 import com.facebook.yoga.YogaAlign
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
@@ -302,6 +311,151 @@ class CustomLayoutStateReadTest {
     assertThat(containerOf(testView).childCount).describedAs("placed once it fits").isEqualTo(1)
   }
 
+  /**
+   * A child left out because it did not fit, a Row whose leaf reads state only while laying out, is
+   * placed once that state shrinks it: its last layout, which the layout cache keeps, is not taken
+   * again as it was.
+   */
+  @Test
+  fun `a Row child left out because it did not fit is placed once its leaf's state shrinks it`() {
+    lateinit var width: State<Int>
+
+    class Host : KComponent() {
+      @Suppress("KComponentUncachedAllocationDetector")
+      override fun ComponentScope.render(): Component {
+        val state = useState { CHILD * 2 }
+        width = state
+        return Layout(listOf(Row { child(WidthFromState(state)) }), layout = placesIfNarrow)
+      }
+    }
+
+    val testView = lithoTestRule.render(widthPx = VIEWPORT, heightPx = VIEWPORT) { Host() }
+    assertThat(containerOf(testView).childCount).describedAs("too wide: left out").isEqualTo(0)
+
+    lithoTestRule.act(testView) { width.update(CHILD / 2) }
+    lithoTestRule.idle()
+
+    assertThat(containerOf(testView).childCount).describedAs("fits now: placed").isEqualTo(1)
+  }
+
+  /** As above, with the child deferred content holding the leaf. */
+  @Test
+  fun `a deferred child left out because it did not fit is placed once its content's state shrinks it`() {
+    lateinit var width: State<Int>
+
+    class Host : KComponent() {
+      @Suppress("KComponentUncachedAllocationDetector")
+      override fun ComponentScope.render(): Component {
+        val state = useState { CHILD * 2 }
+        width = state
+        return Layout(
+            listOf(RenderWithConstraints { WidthFromState(state) }),
+            layout = placesIfNarrow,
+        )
+      }
+    }
+
+    val testView = lithoTestRule.render(widthPx = VIEWPORT, heightPx = VIEWPORT) { Host() }
+    assertThat(containerOf(testView).childCount).describedAs("too wide: left out").isEqualTo(0)
+
+    lithoTestRule.act(testView) { width.update(CHILD / 2) }
+    lithoTestRule.idle()
+
+    assertThat(containerOf(testView).childCount).describedAs("fits now: placed").isEqualTo(1)
+  }
+
+  /**
+   * A child left out renders no more often when state it read laying out changes than a placed
+   * child does, and its container runs again to place it.
+   */
+  @Test
+  fun `a child left out renders no more often on its state's update than a placed one`() {
+    for (deferred in listOf(false, true)) {
+      val placed = rendersOnUpdate(deferred, initialWidth = CHILD / 2)
+      val leftOut = rendersOnUpdate(deferred, initialWidth = CHILD * 2)
+      assertThat(leftOut.second).describedAs("function runs, deferred=$deferred").isGreaterThan(0)
+      assertThat(leftOut.first)
+          .describedAs("renders left out vs placed, deferred=$deferred")
+          .isLessThanOrEqualTo(placed.first)
+    }
+  }
+
+  /** The child's renders and the container's function runs across one update of its state. */
+  private fun rendersOnUpdate(deferred: Boolean, initialWidth: Int): Pair<Int, Int> {
+    lateinit var width: State<Int>
+    var renders = 0
+
+    @Suppress("KComponentStateInConstructorDetector")
+    class Counted(private val state: State<Int>) : KComponent() {
+      override fun ComponentScope.render(): Component {
+        renders++
+        return Row { child(WidthFromState(state)) }
+      }
+    }
+
+    class Host : KComponent() {
+      @Suppress("KComponentUncachedAllocationDetector")
+      override fun ComponentScope.render(): Component {
+        val state = useState { initialWidth }
+        width = state
+        val child = if (deferred) RenderWithConstraints { Counted(state) } else Counted(state)
+        return Layout(listOf(child), layout = placesIfNarrow)
+      }
+    }
+
+    val testView = lithoTestRule.render(widthPx = VIEWPORT, heightPx = VIEWPORT) { Host() }
+    renders = 0
+    LithoStats.resetAllCounters()
+    lithoTestRule.act(testView) { width.update(CHILD / 4) }
+    lithoTestRule.idle()
+    assertThat(containerOf(testView).childCount).describedAs("placed after").isEqualTo(1)
+    return renders to LithoStats.customLayoutFunctionRunCount.get().toInt()
+  }
+
+  /**
+   * A container whose own function reads state keeps its placed child's last layout when that state
+   * changes: the child is taken from the cache, not laid out again.
+   */
+  @Test
+  fun `a container reading its own state keeps its placed child's cached layout`() {
+    lateinit var offset: State<Int>
+
+    class Collapsing : KComponent() {
+      @Suppress("KComponentUncachedAllocationDetector")
+      override fun ComponentScope.render(): Component {
+        val state = useState { 0 }
+        offset = state
+        return Layout(
+            listOf(
+                Row {
+                  child(SimpleMountSpecTester(style = Style.width(CHILD.px).height(CHILD.px)))
+                },
+            ),
+            layout =
+                LayoutFunctionN { measurables, _ ->
+                  val p = measurables[0].measure(SizeConstraints.exact(CHILD, CHILD))
+                  val y = state.value
+                  layout(CHILD, CHILD + y) { p.place(x = 0, y = y) }
+                },
+        )
+      }
+    }
+
+    val testView = lithoTestRule.render(widthPx = VIEWPORT, heightPx = VIEWPORT) { Collapsing() }
+    lithoTestRule.act(testView) { offset.update(OFFSET) }
+    lithoTestRule.idle()
+
+    val container = containerOf(testView)
+    assertThat(container.getYForChildAtIndex(0)).describedAs("laid out again").isEqualTo(OFFSET)
+    assertThat(container.getChildAt(0).isCachedLayout).describedAs("from the cache").isTrue()
+  }
+
+  /** Places its only child, measured unbounded, only if it is at most [CHILD] wide. */
+  private val placesIfNarrow = LayoutFunctionN { ms, c ->
+    val p = ms[0].measure(SizeConstraints(maxWidth = SizeConstraints.Infinity, maxHeight = CHILD))
+    layout(c.maxWidth, CHILD) { if (p.width <= CHILD) p.place(0, 0) }
+  }
+
   private fun rootOf(testView: TestLithoView): LithoLayoutResult =
       checkNotNull(testView.componentTree.mainThreadLayoutState?.rootLayoutResult)
           as LithoLayoutResult
@@ -323,10 +477,316 @@ class CustomLayoutStateReadTest {
     return null
   }
 
+  @Test
+  fun `a child's read while it lays out is recorded under the child's own key`() {
+    var width: State<Int>? = null
+    class Host : KComponent() {
+      @Suppress("KComponentUncachedAllocationDetector")
+      override fun ComponentScope.render(): Component {
+        val state = useState { CHILD }
+        width = state
+        return Layout(listOf(WidthFromState(state)), layout = tallAsChild)
+      }
+    }
+    val testView = lithoTestRule.render(widthPx = VIEWPORT, heightPx = VIEWPORT) { Host() }
+
+    val leaf = containerOf(testView).getChildAt(0)
+    val readers =
+        checkNotNull(testView.componentTree.mainThreadLayoutState?.stateReads)
+            .getValue(checkNotNull(width).stateId)
+    assertThat(readers.contains(leaf.node.tailComponentKey))
+        .describedAs("the leaf is recorded as the state's reader")
+        .isTrue()
+  }
+
+  /**
+   * A nested `Layout` measured but not placed keeps its own unplaced measurements' readers: here
+   * the only record of the leaf's read, since the measurement placed asks the inner `Layout` under
+   * room where it measures nothing.
+   */
+  @Test
+  fun `a nested Layout measured but not placed keeps its unplaced child's readers`() {
+    lateinit var width: State<Int>
+
+    class Host : KComponent() {
+      @Suppress("KComponentUncachedAllocationDetector")
+      override fun ComponentScope.render(): Component {
+        val state = useState { CHILD * 2 }
+        width = state
+        val inner = Layout(listOf(Row { child(WidthFromState(state)) }), layout = measuresIfRoomy)
+        return Layout(listOf(inner), layout = placesIfRoomyAnswerFits)
+      }
+    }
+
+    val testView = lithoTestRule.render(widthPx = VIEWPORT, heightPx = VIEWPORT) { Host() }
+    assertThat(containerOf(testView).childCount).describedAs("too wide: left out").isEqualTo(0)
+
+    lithoTestRule.act(testView) { width.update(CHILD / 2) }
+    lithoTestRule.idle()
+
+    assertThat(containerOf(testView).childCount).describedAs("fits now: placed").isEqualTo(1)
+  }
+
+  /**
+   * As above, with the inner `Layout` measuring its child at every size: the measurement placed
+   * also holds the leaf's read.
+   */
+  @Test
+  fun `a nested Layout measured twice keeps its child's readers`() {
+    lateinit var width: State<Int>
+
+    class Host : KComponent() {
+      @Suppress("KComponentUncachedAllocationDetector")
+      override fun ComponentScope.render(): Component {
+        val state = useState { CHILD * 2 }
+        width = state
+        val inner = Layout(listOf(Row { child(WidthFromState(state)) }), layout = placesIfNarrow)
+        return Layout(listOf(inner), layout = measuresTwicePlacesSecond)
+      }
+    }
+
+    val testView = lithoTestRule.render(widthPx = VIEWPORT, heightPx = VIEWPORT) { Host() }
+    assertThat(leafPlaced(testView)).describedAs("too wide: left out").isFalse()
+
+    lithoTestRule.act(testView) { width.update(CHILD / 2) }
+    lithoTestRule.idle()
+
+    assertThat(leafPlaced(testView)).describedAs("fits now: placed").isTrue()
+  }
+
+  /**
+   * With subtree caching on, a `Column` of `Text`s inside a `Layout`'s child is not spliced from
+   * the last pass: a splice replays only Spec components' reads, and the leaf beside them reads its
+   * width while it lays out. A `Column` of `Text`s outside any `Layout` is spliced.
+   */
+  @Test
+  fun `a subtree splice does not drop a read inside a Layout's child`() {
+    withSubtreeCaching {
+      val leaf = StateLeaf()
+      val testView =
+          lithoTestRule.render(widthPx = VIEWPORT, heightPx = VIEWPORT) {
+            Column {
+              child(Layout(listOf(Column { textsAnd(threeTexts(), leaf) }), layout = tallAsChild))
+              child(Column { textsAnd(threeTexts(), null) })
+              child(Bump())
+            }
+          }
+
+      assertSplicedElsewhereThenLaidOutAgain(testView)
+    }
+  }
+
+  /** As above, with the `Column` of `Text`s holding the `Layout`. */
+  @Test
+  fun `a subtree splice does not drop a read inside a Layout it holds`() {
+    withSubtreeCaching {
+      val leaf = StateLeaf()
+      val testView =
+          lithoTestRule.render(widthPx = VIEWPORT, heightPx = VIEWPORT) {
+            Column {
+              child(
+                  Column {
+                    textsAnd(threeTexts(), null)
+                    child(Layout(listOf(leaf), layout = tallAsChild))
+                  },
+              )
+              child(Column { textsAnd(threeTexts(), null) })
+              child(Bump())
+            }
+          }
+
+      assertSplicedElsewhereThenLaidOutAgain(testView)
+    }
+  }
+
+  private var bump: State<Int>? = null
+
+  /** A sibling with its own state: updating it keeps every other node. */
+  private inner class Bump : KComponent() {
+    override fun ComponentScope.render(): Component {
+      val state = useState { 0 }
+      bump = state
+      return Column(style = Style.width((10 + state.value).px).height(10.px))
+    }
+  }
+
+  private var stateLeafWidth: State<Int>? = null
+
+  /** A leaf owning the state it reads only while it lays out: its render reads nothing. */
+  private inner class StateLeaf : KComponent() {
+    override fun ComponentScope.render(): Component {
+      val state = useState { CHILD }
+      stateLeafWidth = state
+      return WidthFromState(state)
+    }
+  }
+
+  /** Three `Text`s: Spec components, enough scopes for a subtree snapshot. */
+  private fun ResourcesScope.threeTexts(): List<Component> =
+      List(3) { i -> Text(text = "text $i", textSize = 10.sp) }
+
+  /** [texts], then [leaf] if given. */
+  private fun FlexboxScope.textsAnd(texts: List<Component>, leaf: Component?) {
+    texts.forEach { child(it) }
+    leaf?.let { child(it) }
+  }
+
+  private fun assertSplicedElsewhereThenLaidOutAgain(testView: TestLithoView) {
+    LithoStats.resetAllCounters()
+    lithoTestRule.act(testView) { checkNotNull(bump).update(1) }
+    lithoTestRule.idle()
+    assertThat(LithoStats.subtreeCacheHitCount.get())
+        .describedAs("the Column outside the Layout is spliced")
+        .isGreaterThan(0)
+
+    lithoTestRule.act(testView) { checkNotNull(stateLeafWidth).update(CHILD * 2) }
+    lithoTestRule.idle()
+
+    assertThat(findLeaf(rootOf(testView))?.width)
+        .describedAs("the leaf laid out again with its new width")
+        .isEqualTo(CHILD * 2)
+  }
+
+  /**
+   * State that a deferred child's content read while it rendered, for a measurement its container
+   * left out, is kept under the component that read it, not only under the holder: its container's
+   * unplaced reads name that reader.
+   */
+  @Test
+  fun `an unplaced deferred child's render reads are kept under their reader`() {
+    var readerKey: GlobalKey? = null
+    var readerState: State<Int>? = null
+
+    class Reader : KComponent() {
+      override fun ComponentScope.render(): Component {
+        val size = useState { 10 }
+        readerKey = context.globalKey
+        readerState = size
+        return Column(style = Style.width(size.value.px).height(size.value.px))
+      }
+    }
+
+    val leavesOut = LayoutFunctionN { ms, c ->
+      ms[0].measure(SizeConstraints(maxWidth = c.maxWidth, maxHeight = CHILD))
+      layout(c.maxWidth, CHILD) {}
+    }
+
+    val testView =
+        lithoTestRule.render(widthPx = VIEWPORT, heightPx = VIEWPORT) {
+          Layout(listOf(RenderWithConstraints { Reader() }), layout = leavesOut)
+        }
+
+    val unplacedReads = checkNotNull((containerOf(testView) as CustomLayoutResult).unplacedReads)
+    assertThat(
+        checkNotNull(unplacedReads[checkNotNull(readerKey)])
+            .contains(checkNotNull(readerState).stateId),
+    )
+        .describedAs("the StateId is kept under the reader")
+        .isTrue()
+  }
+
+  @Test
+  fun `content measured at render reads its state after an unrelated sibling update`() {
+    var width: State<Int>? = null
+
+    class StateWidth : KComponent() {
+      override fun ComponentScope.render(): Component {
+        val state = useState { CHILD }
+        width = state
+        return Column(
+            style = Style.width(state.value.px).height(CHILD.px).wrapInView().viewTag("measured"),
+        )
+      }
+    }
+
+    val testView =
+        lithoTestRule.render(widthPx = VIEWPORT, heightPx = VIEWPORT) {
+          Column(alignItems = YogaAlign.FLEX_START) {
+            child(
+                Layout(
+                    listOf(
+                        Row {
+                          child(
+                              ComponentWithMeasureCall.create(lithoTestRule.context)
+                                  .component(StateWidth())
+                                  .widthSpec(SizeSpec.makeSizeSpec(VIEWPORT, SizeSpec.AT_MOST))
+                                  .shouldCacheResult(true)
+                                  .build(),
+                          )
+                        },
+                    ),
+                    layout = tallAsChild,
+                ),
+            )
+            child(Bump())
+          }
+        }
+    assertThat(testView.lithoView.findViewWithTag<View>("measured").width).isEqualTo(CHILD)
+
+    lithoTestRule.act(testView) { checkNotNull(bump).update(1) }
+    assertThat(testView.lithoView.findViewWithTag<View>("measured").width).isEqualTo(CHILD)
+
+    lithoTestRule.act(testView) { checkNotNull(width).update(CHILD * 2) }
+    assertThat(testView.lithoView.findViewWithTag<View>("measured").width).isEqualTo(CHILD * 2)
+  }
+
+  private inline fun withSubtreeCaching(block: () -> Unit) {
+    val cachingWas = ComponentsConfiguration.enableSubtreeCaching
+    ComponentsConfiguration.enableSubtreeCaching = true
+    try {
+      block()
+    } finally {
+      ComponentsConfiguration.enableSubtreeCaching = cachingWas
+    }
+  }
+
+  private fun findLeaf(result: LithoLayoutResult): LithoLayoutResult? {
+    if (result.node.tailComponent is WidthFromState) return result
+    for (i in 0 until result.childCount) {
+      findLeaf(result.getChildAt(i))?.let {
+        return it
+      }
+    }
+    return null
+  }
+
+  private fun leafPlaced(testView: TestLithoView): Boolean = findLeaf(rootOf(testView)) != null
+
+  /**
+   * Measures its only child unbounded only with room for [ROOMY], and places it only if it is at
+   * most [CHILD] wide. It declares the width placed: none when it places nothing.
+   */
+  private val measuresIfRoomy = LayoutFunctionN { ms, c ->
+    val p =
+        if (c.maxWidth >= ROOMY) {
+          ms[0].measure(SizeConstraints(maxWidth = SizeConstraints.Infinity, maxHeight = CHILD))
+        } else null
+    val fits = p != null && p.width <= CHILD
+    layout(if (fits) checkNotNull(p).width else 0, CHILD) { if (fits) checkNotNull(p).place(0, 0) }
+  }
+
+  /**
+   * Measures its only child with room for [ROOMY], left unplaced, then within [CHILD]; places the
+   * second only if the first declared some width.
+   */
+  private val placesIfRoomyAnswerFits = LayoutFunctionN { ms, c ->
+    val roomy = ms[0].measure(SizeConstraints(maxWidth = ROOMY, maxHeight = CHILD))
+    val narrow = ms[0].measure(SizeConstraints(maxWidth = CHILD, maxHeight = CHILD))
+    layout(c.maxWidth, CHILD) { if (roomy.width > 0) narrow.place(0, 0) }
+  }
+
+  /** Measures its only child at two widths, and places the second. */
+  private val measuresTwicePlacesSecond = LayoutFunctionN { ms, c ->
+    ms[0].measure(SizeConstraints(maxWidth = ROOMY, maxHeight = CHILD))
+    val second = ms[0].measure(SizeConstraints(maxWidth = ROOMY + 1, maxHeight = CHILD))
+    layout(c.maxWidth, CHILD) { second.place(0, 0) }
+  }
+
   companion object {
     private const val VIEWPORT = 1000
     private const val CHILD = 100
     private const val OFFSET = 30
+    private const val ROOMY = 400
   }
 
   /** As tall and wide as its only child, measured without a height bound. */

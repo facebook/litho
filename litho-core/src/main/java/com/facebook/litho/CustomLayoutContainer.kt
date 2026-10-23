@@ -18,17 +18,20 @@
 
 package com.facebook.litho
 
+import androidx.collection.MutableScatterMap
+import androidx.collection.MutableScatterSet
+import androidx.collection.ScatterSet
 import com.facebook.litho.ComponentsSystrace.trace
 import com.facebook.litho.YogaLayoutOutput.Companion.yogaLayoutOutput
 import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.layout.ChildBox
 import com.facebook.litho.layout.LayoutDirection
-import com.facebook.litho.layout.LayoutFunction
 import com.facebook.litho.layout.Measurable
 import com.facebook.litho.layout.MeasureScope
 import com.facebook.litho.layout.NO_SIZE_DECLARED
 import com.facebook.litho.layout.Placeable
 import com.facebook.litho.layout.PlacementScope
+import com.facebook.litho.state.StateId
 import com.facebook.litho.state.StateReadRecorder
 import com.facebook.litho.stats.LithoStats
 import com.facebook.rendercore.LayoutContext
@@ -60,18 +63,17 @@ internal class CustomLayoutResult(
   /** What the layout function threw, reported if this container is placed. */
   private var failure: Exception? = null
 
+  /**
+   * The state the children's measurements nothing placed read, by the key of the node in them that
+   * read it, as a placed tree's reads are. Those layouts are in no tree, but the layout cache keeps
+   * them: read under the reader's key, the reader is laid out again when the state changes, and not
+   * taken from the cache as it was. A deferred holder also counts its content's reads.
+   */
+  internal var unplacedReads: MutableScatterMap<GlobalKey, MutableScatterSet<StateId>>? = null
+    private set
+
   /** One invocation of the layout function, under [constraints], and what it declared. */
   private class LayoutInvocation(val constraints: SizeConstraints, val scope: MeasureScope)
-
-  private val layoutFunction: LayoutFunction
-    get() = checkNotNull(node.layoutFunction)
-
-  /**
-   * The direction the layout function measures in: the node's own, since Yoga's reaches Java only
-   * once the layout is done.
-   */
-  private val functionDirection: LayoutDirection
-    get() = if (node.layoutDirection.isRTL) LayoutDirection.RTL else LayoutDirection.LTR
 
   /**
    * The size this container answers under [constraints], the room inside its padding and border:
@@ -107,13 +109,13 @@ internal class CustomLayoutResult(
         List(node.childCount) { i ->
           Measurable(i, node.getChildAt(i), context, owner = this)
         }
-    val scope = MeasureScope(this.context.resourceResolver, functionDirection)
+    val scope = MeasureScope(this.context.resourceResolver, layoutFunctionDirection())
     LithoStats.count(LithoStats.customLayoutFunctionRunCount)
     // State the function reads lays the container out again when it changes: the function may be
     // its only reader.
     runRecordingReads(context, "layout function") {
           trace({ "layout.layoutFunction:${node.headComponent.simpleName}" }) {
-            with(layoutFunction) { scope.measure(measurables, constraints) }
+            with(checkNotNull(node.layoutFunction)) { scope.measure(measurables, constraints) }
           }
           checkNotNull(scope.placement) { NO_SIZE_DECLARED }
         }
@@ -174,7 +176,7 @@ internal class CustomLayoutResult(
     val startOffset = if (direction.isRTL) contentWidth - invocation.scope.width else 0
     for (i in 0 until node.childCount) {
       val placeable = scope.placedWith[i] ?: continue
-      // An answer from memory may already be placed by another measurement of this container, in
+      // A reused measurement may already be placed by another measurement of this container, in
       // which case this one places a copy.
       val result = checkNotNull(placeable.result).acquireForPlacement(this)
       result.yogaLayoutOutput.placedX =
@@ -237,33 +239,104 @@ internal class CustomLayoutResult(
       return
     }
     val measurementsByChild = context.renderContext?.cachedMeasurements ?: return
+    var reads: MutableScatterSet<StateId>? = null
     for (i in 0 until node.childCount) {
       val measurements = measurementsByChild[node.getChildAt(i)] ?: continue
       val placedResult = placed?.placedWith?.get(i)?.result
       for (measurement in measurements) {
         val result = measurement.result
         if (result != null && result !== placedResult) {
-          collectSubtreeReads(result)
+          reads = recordReadsOf(result, reads)
         }
       }
     }
+    reads?.let { yogaLayoutOutput.addStateReads(it) }
   }
 
-  /** Adds the state read anywhere in [result]'s subtree to this container's output. */
-  private fun collectSubtreeReads(result: LithoLayoutResult) {
-    result.yogaLayoutOutput.stateReads?.let { yogaLayoutOutput.addStateReads(it) }
+  /**
+   * Adds the state read anywhere in [result]'s subtree to [into], each read also recorded in
+   * [unplacedReads] under its reader's key. A deferred holder's content hangs off it, not under it
+   * as a child: its reads count against the holder too, whose size is its content's. A nested
+   * `Layout`'s own measurements nothing placed are not its children either: their readers come from
+   * its [unplacedReads].
+   */
+  private fun recordReadsOf(
+      result: LithoLayoutResult,
+      into: MutableScatterSet<StateId>?,
+  ): MutableScatterSet<StateId>? {
+    var reads =
+        recordUnplacedReads(result.node.tailComponentKey, result.yogaLayoutOutput.stateReads, into)
     for (i in 0 until result.childCount) {
-      collectSubtreeReads(result.getChildAt(i))
+      reads = recordReadsOf(result.getChildAt(i), reads)
     }
+    (result as? CustomLayoutResult)?.unplacedReads?.forEach { readerKey, readerReads ->
+      reads = recordUnplacedReads(readerKey, readerReads, reads)
+    }
+    (result as? DeferredLithoLayoutResult)?.result?.let { content ->
+      // State the content read while it was rendered for this measurement. Placed content hands
+      // its pass these at the end of the pass, which an unplaced measurement's content never
+      // reaches: without them an update to that state finds nothing dirty.
+      val contentReads = recordRenderReads(content.node, recordReadsOf(content, null))
+      reads = recordUnplacedReads(result.node.tailComponentKey, contentReads, reads)
+    }
+    return reads
   }
 
-  /** A copy also takes this container's failure, so it is reported if the copy is placed. */
-  override fun copyForPlacement(): LithoLayoutResult =
-      super.copyForPlacement().also { (it as CustomLayoutResult).carryFailureFrom(this) }
+  private fun recordRenderReads(
+      node: LithoNode,
+      into: MutableScatterSet<StateId>?,
+  ): MutableScatterSet<StateId>? {
+    var reads = into
+    for (i in 0 until node.childCount) {
+      reads = recordRenderReads(node.getChildAt(i), reads)
+    }
+    Resolver.forEachStateReadOn(node) { state, reader ->
+      val allReads = reads ?: MutableScatterSet<StateId>().also { reads = it }
+      allReads.add(state)
+      unplacedReadsOf(reader).add(state)
+    }
+    return reads
+  }
 
-  /** Takes [other]'s failure, for a copy of it that a second container places. */
-  private fun carryFailureFrom(other: CustomLayoutResult) {
+  /**
+   * Records [reads] in [unplacedReads] under [readerKey], their reader's, and adds them to [into].
+   */
+  private fun recordUnplacedReads(
+      readerKey: GlobalKey,
+      reads: ScatterSet<StateId>?,
+      into: MutableScatterSet<StateId>?,
+  ): MutableScatterSet<StateId>? {
+    if (reads == null || reads.isEmpty()) {
+      return into
+    }
+    unplacedReadsOf(readerKey).addAll(reads)
+    return (into ?: MutableScatterSet<StateId>()).also { it.addAll(reads) }
+  }
+
+  /** The reads recorded in [unplacedReads] under [readerKey], created empty the first time. */
+  private fun unplacedReadsOf(readerKey: GlobalKey): MutableScatterSet<StateId> {
+    val byReader =
+        unplacedReads
+            ?: MutableScatterMap<GlobalKey, MutableScatterSet<StateId>>().also {
+              unplacedReads = it
+            }
+    return byReader.getOrPut(readerKey) { MutableScatterSet() }
+  }
+
+  /**
+   * A copy also takes this container's failure, so it is reported if the copy is placed, and the
+   * reads of the measurements it did not place.
+   */
+  override fun copyForPlacement(): LithoLayoutResult =
+      super.copyForPlacement().also { (it as CustomLayoutResult).takeUnplacedStateFrom(this) }
+
+  /**
+   * Takes [other]'s failure and unplaced reads, for a copy of it that a second container places.
+   * The map is shared with the copy, not copied: nothing writes it after settle.
+   */
+  private fun takeUnplacedStateFrom(other: CustomLayoutResult) {
     failure = other.failure
+    unplacedReads = other.unplacedReads
   }
 
   override fun onFinalized(lithoLayoutContext: LithoLayoutContext) {
@@ -305,6 +378,13 @@ internal class CustomLayoutResult(
 }
 
 /**
+ * The direction the layout function measures in: the node's own, since Yoga's reaches Java only
+ * once the layout is done.
+ */
+private fun LithoLayoutResult.layoutFunctionDirection(): LayoutDirection =
+    if (node.layoutDirection.isRTL) LayoutDirection.RTL else LayoutDirection.LTR
+
+/**
  * Yoga's measure callback for a `Layout`: runs its layout function under the room Yoga offers, and
  * answers the size it declared, kept within that room. A failure answers 0x0 and is held on the
  * result, so nothing a layout function throws crosses into Yoga's native code.
@@ -344,7 +424,7 @@ internal fun Measurable.measureChild(constraints: SizeConstraints): Placeable {
   val measurements = lsc.cachedMeasurementsFor(node)
   val cached = measurements.firstOrNull { it.constraints == constraints }
   if (cached != null) {
-    LithoStats.count(LithoStats.customLayoutAnswerReusedCount)
+    LithoStats.count(LithoStats.customLayoutMeasurementReusedCount)
     return cached.forContainer(owner)
   }
   return layOut(constraints).also { measurements.add(it) }

@@ -377,6 +377,7 @@ internal object LithoYogaLayoutFunction {
       cachedResult: LithoLayoutResult,
       diffNode: DiffNode?,
       skipTransitionCapture: Boolean = false,
+      inContainer: Boolean = false,
   ): LithoLayoutResult = cloneCachedSubtree(
       context = context,
       cachedResult = cachedResult,
@@ -384,6 +385,7 @@ internal object LithoYogaLayoutFunction {
       clonedYogaNode = cachedResult.getYogaNode().cloneWithChildren(),
       currentDiffNode = diffNode,
       skipTransitionCapture = skipTransitionCapture,
+      inContainer = inContainer,
   )
 
   /**
@@ -396,6 +398,8 @@ internal object LithoYogaLayoutFunction {
    * `cloneWithChildren` is a deep clone: cloning per call would re-clone every descendant at every
    * level and turn a linear walk quadratic. Each level instead hands its children the clones it
    * already made.
+   *
+   * [inContainer]: the subtree is a `Layout`'s child, or inside one.
    */
   private fun cloneCachedSubtree(
       context: LayoutContext<LithoLayoutContext>,
@@ -403,15 +407,32 @@ internal object LithoYogaLayoutFunction {
       clonedYogaNode: YogaNode,
       currentDiffNode: DiffNode?,
       skipTransitionCapture: Boolean = false,
+      inContainer: Boolean = false,
   ): LithoLayoutResult {
     val node: LithoNode = cachedResult.node
     val result: LithoLayoutResult = copyLayoutResult(cachedResult, node, clonedYogaNode)
     clonedYogaNode.data = Pair<Any, Any>(context, result)
-    // The copy drops the resolved content, but Yoga would reuse its cached measurement under a
-    // stricter AT_MOST the old size fits, or under a size that rounds to the old one, so the
-    // content would be laid out only at that old size. Dirtying makes Yoga measure it under this
-    // pass's constraints.
-    if (
+    // The copy drops the resolved content but keeps Yoga's cached measurements: under the same
+    // constraints Yoga wouldn't measure it again, and the content would be resolved only at its
+    // final size. Dirty it so it's resolved under the constraints it's measured with. Under a
+    // `Layout`, content `Component.measure` sized is kept instead, with Yoga's measurement of it: a
+    // fresh render takes the size and the layout that call cached, which a relayout without a
+    // render no longer has. Kept, it is placed as it is, so only content holding no deferred
+    // content and no `Layout`, which a pass lays out again, is. Outside a `Layout`, a deferred node
+    // is dirtied only with `remeasureDeferredNodesInCachedSubtree` on.
+    if (inContainer && node is DeferredLithoNode) {
+      val content = cachedResult.layoutOutput.actualDeferredNodeResult
+      if (
+          !Component.isLayoutSpecWithSizeSpec(node.tailComponent) &&
+              content != null &&
+              !content.subtreeHasCustomLayout &&
+              !holdsDeferredContent(content)
+      ) {
+        result.yogaLayoutOutput._actualDeferredNodeResult = content
+      } else {
+        clonedYogaNode.dirty()
+      }
+    } else if (
         ComponentsConfiguration.remeasureDeferredNodesInCachedSubtree && node is DeferredLithoNode
     ) {
       clonedYogaNode.dirty()
@@ -442,11 +463,17 @@ internal object LithoYogaLayoutFunction {
           clonedYogaNode = clonedYogaNode.getChildAt(i),
           currentDiffNode = childDiffNode,
           skipTransitionCapture = skipTransitionCapture,
+          inContainer = inContainer,
       )
       result.addChild(child)
     }
     return result
   }
+
+  /** Whether [result] or a result below it is a deferred node's. */
+  private fun holdsDeferredContent(result: LithoLayoutResult): Boolean =
+      result is DeferredLithoLayoutResult ||
+          (0 until result.childCount).any { holdsDeferredContent(result.getChildAt(it)) }
 
   /**
    * Saves a LithoLayoutResult into the LayoutCache, using the node itself and its ID as keys.
@@ -618,6 +645,7 @@ internal object LithoYogaLayoutFunction {
             cachedLayoutResult as LithoLayoutResult,
             diffNode,
             skipTransitionCapture = inContainer,
+            inContainer = inContainer,
         )
             .also {
               if (ComponentsConfiguration.customLayoutShadowValidation) {

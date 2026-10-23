@@ -105,6 +105,9 @@ internal data class ReductionState(
     // structural reason such snapshots cannot be spliced. Per-pass state — fresh ReductionState
     // per reduce — so an exception mid-recursion that aborts the pass is not a leak.
     var deferredEnterCount: Int = 0,
+    // How many `Layout`s `collectResults` is inside. Under one, a subtree is never spliced: a
+    // splice replays only Spec components' state reads, and a `Layout`'s children carry their own.
+    var customLayoutDepth: Int = 0,
 )
 
 /**

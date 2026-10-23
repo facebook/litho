@@ -248,7 +248,9 @@ internal constructor(
     /** The constraints this child was measured under. */
     internal val constraints: SizeConstraints,
 ) {
-  /** This answer, handed to [container] for the same child: the same layout, placeable there. */
+  /**
+   * This measurement, handed to [container] for the same child: the same layout, placeable there.
+   */
   internal fun forContainer(container: Any): Placeable =
       if (owner === container) this
       else

@@ -441,11 +441,16 @@ object Resolver {
       // collect transitions
       node.transitionData?.let { transitionData -> collectedTransitionData.add(transitionData) }
     }
-    if (c.isReadTrackingEnabled) {
+    forEachStateReadOn(node) { s, reader ->
+      collectedStateReads.getOrPut(s) { mutableScatterSetOf() }.add(reader)
+    }
+  }
+
+  /** Runs [action] on each state a component of [node] read while it rendered, with its reader. */
+  internal inline fun forEachStateReadOn(node: LithoNode, action: (StateId, GlobalKey) -> Unit) {
+    if (node.tailComponentContext.isReadTrackingEnabled) {
       for (info in node.scopedComponentInfos) {
-        info.stateReads?.forEach { s ->
-          collectedStateReads.getOrPut(s) { mutableScatterSetOf() }.add(info.context.globalKey)
-        }
+        info.stateReads?.forEach { s -> action(s, info.context.globalKey) }
       }
     }
   }

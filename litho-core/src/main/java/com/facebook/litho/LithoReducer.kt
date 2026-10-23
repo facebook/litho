@@ -578,7 +578,11 @@ internal object LithoReducer {
             ComponentsConfiguration.enableSubtreeCaching &&
                 result.isCachedLayout &&
                 parent != null &&
-                result.hostRenderUnit == null
+                result.hostRenderUnit == null &&
+                // Not at or below a `Layout`, nor holding one: a splice replays only Spec
+                // components' state reads, and a `Layout`'s children carry their own.
+                reductionState.customLayoutDepth == 0 &&
+                !result.subtreeHasCustomLayout
         ) {
           // Counter semantics: increment ONLY when a recorded snapshot exists but the gate
           // rejects it (true Tier 1 rejection). Nodes never recorded as subtree roots are
@@ -671,6 +675,14 @@ internal object LithoReducer {
         accumulatedStateReads
             .getOrPut(stateIdentifier) { mutableScatterSetOf() }
             .add(ownerGlobalKey)
+      }
+    }
+    // A `Layout` child's measurement nothing placed is in no tree: its reads count against the
+    // keys of the nodes in it that read them as well, whose layouts the layout cache keeps.
+    (result as? CustomLayoutResult)?.unplacedReads?.forEach { readerKey, reads ->
+      val accumulatedStateReads = reductionState.getOrCreateStateReads()
+      reads.forEach { stateIdentifier ->
+        accumulatedStateReads.getOrPut(stateIdentifier) { mutableScatterSetOf() }.add(readerKey)
       }
     }
 
@@ -970,23 +982,33 @@ internal object LithoReducer {
       // range boundaries so the next pass's splice can apply per-child position offsets.
       perChildRangeStarts: IntArray? = null,
   ) {
-    for (childIndex in 0 until result.childCount) {
-      perChildRangeStarts?.set(childIndex, reductionState.mountableOutputs.size)
-      val child = result.getChildAt(childIndex)
-      try {
-        collectResults(
-            parentContext = parentContext,
-            result = child,
-            reductionState = reductionState,
-            lithoLayoutContext = lithoLayoutContext,
-            x = parentX + result.getXForChildAtIndex(childIndex),
-            y = parentY + result.getYForChildAtIndex(childIndex),
-            parent = parentRenderTreeNode,
-            parentDiffNode = parentDiffNode,
-            parentHierarchy = hierarchy,
-        )
-      } catch (exception: Exception) {
-        throw ComponentUtils.wrapWithMetadata(parentContext, exception)
+    val isCustomLayout = result is CustomLayoutResult
+    if (isCustomLayout) {
+      reductionState.customLayoutDepth++
+    }
+    try {
+      for (childIndex in 0 until result.childCount) {
+        perChildRangeStarts?.set(childIndex, reductionState.mountableOutputs.size)
+        val child = result.getChildAt(childIndex)
+        try {
+          collectResults(
+              parentContext = parentContext,
+              result = child,
+              reductionState = reductionState,
+              lithoLayoutContext = lithoLayoutContext,
+              x = parentX + result.getXForChildAtIndex(childIndex),
+              y = parentY + result.getYForChildAtIndex(childIndex),
+              parent = parentRenderTreeNode,
+              parentDiffNode = parentDiffNode,
+              parentHierarchy = hierarchy,
+          )
+        } catch (exception: Exception) {
+          throw ComponentUtils.wrapWithMetadata(parentContext, exception)
+        }
+      }
+    } finally {
+      if (isCustomLayout) {
+        reductionState.customLayoutDepth--
       }
     }
   }

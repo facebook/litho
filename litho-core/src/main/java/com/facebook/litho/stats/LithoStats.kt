@@ -72,8 +72,8 @@ object LithoStats {
   /** Of [customLayoutChildLayoutCount], the leaves laid out directly, without a Yoga pass. */
   @JvmField val customLayoutLeafCount: AtomicLong = AtomicLong(0)
 
-  /** Measurements of a `Layout`'s child answered from an earlier one in the same pass. */
-  @JvmField val customLayoutAnswerReusedCount: AtomicLong = AtomicLong(0)
+  /** Measurements of a `Layout`'s child that reused an earlier one from the same pass. */
+  @JvmField val customLayoutMeasurementReusedCount: AtomicLong = AtomicLong(0)
 
   /** Layouts reused from an earlier pass checked against a fresh one (shadow validation). */
   @JvmField val customLayoutShadowCheckCount: AtomicLong = AtomicLong(0)
@@ -393,7 +393,7 @@ object LithoStats {
     subtreeCacheDeferredSkippedCount.set(0)
     customLayoutFunctionRunCount.set(0)
     customLayoutChildLayoutCount.set(0)
-    customLayoutAnswerReusedCount.set(0)
+    customLayoutMeasurementReusedCount.set(0)
     customLayoutLeafCount.set(0)
     customLayoutNestedContainerCount.set(0)
     customLayoutShadowCheckCount.set(0)

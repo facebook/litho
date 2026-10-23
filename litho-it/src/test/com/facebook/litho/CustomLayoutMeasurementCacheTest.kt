@@ -41,24 +41,24 @@ import org.junit.runner.RunWith
 
 /** A question a `Layout`'s child was already asked this pass costs nothing to ask again. */
 @RunWith(LithoTestRunner::class)
-class CustomLayoutAnswerTest {
+class CustomLayoutMeasurementCacheTest {
 
   @JvmField @Rule val lithoTestRule = LithoTestRule()
 
   @Test
-  fun `a child asked the same question twice answers with the layout it made`() {
+  fun `a child measured twice under the same constraints reuses the layout it made`() {
     LithoStats.resetAllCounters()
     val asksTwice = LayoutFunctionN { ms, c ->
       val first = ms[0].measure(SizeConstraints.exact(LEAF, LEAF))
       val again = ms[0].measure(SizeConstraints.exact(LEAF, LEAF))
-      check(first === again) { "the repeat was not answered from memory" }
+      check(first === again) { "the repeat was not reused" }
       layout(c.maxWidth, LEAF) { again.place(0, 0) }
     }
 
-    render { Layout(listOf(AnswerLeaf()), style = Style.width(100.px), layout = asksTwice) }
+    render { Layout(listOf(CachedLeaf()), style = Style.width(100.px), layout = asksTwice) }
 
     assertThat(LithoStats.customLayoutChildLayoutCount.get()).describedAs("layouts").isEqualTo(1)
-    assertThat(LithoStats.customLayoutAnswerReusedCount.get()).isEqualTo(1)
+    assertThat(LithoStats.customLayoutMeasurementReusedCount.get()).isEqualTo(1)
   }
 
   @Test
@@ -67,7 +67,7 @@ class CustomLayoutAnswerTest {
     // Yoga measures it at the Column's width, where it declares only its children's width; the
     // Column then stretches it to that width, so it runs again there and asks each child the same
     // question.
-    val column = Column { child(Layout(List(CHILDREN) { AnswerLeaf() }, layout = UNBOUNDED_ROW)) }
+    val column = Column { child(Layout(List(CHILDREN) { CachedLeaf() }, layout = UNBOUNDED_ROW)) }
 
     render { column }
 
@@ -75,7 +75,7 @@ class CustomLayoutAnswerTest {
     assertThat(LithoStats.customLayoutChildLayoutCount.get())
         .describedAs("one layout per child")
         .isEqualTo(CHILDREN.toLong())
-    assertThat(LithoStats.customLayoutAnswerReusedCount.get()).isEqualTo(CHILDREN.toLong())
+    assertThat(LithoStats.customLayoutMeasurementReusedCount.get()).isEqualTo(CHILDREN.toLong())
   }
 
   @Test
@@ -86,7 +86,7 @@ class CustomLayoutAnswerTest {
       val p = ms[0].measure(SizeConstraints.exact(LEAF, LEAF))
       layout(c.maxWidth, LEAF) { p.place(c.maxWidth - LEAF, 0) }
     }
-    val inner = Layout(listOf(AnswerLeaf()), layout = atEnd)
+    val inner = Layout(listOf(CachedLeaf()), layout = atEnd)
     val placesFirst = LayoutFunctionN { ms, c ->
       val narrow = ms[0].measure(SizeConstraints.exact(60, LEAF))
       ms[0].measure(SizeConstraints.exact(90, LEAF))
@@ -96,14 +96,14 @@ class CustomLayoutAnswerTest {
     LithoStats.resetAllCounters()
     val leaves = leafFrames(render { Layout(listOf(inner), layout = placesFirst) })
 
-    assertThat(LithoStats.customLayoutAnswerReusedCount.get()).isPositive()
+    assertThat(LithoStats.customLayoutMeasurementReusedCount.get()).isPositive()
     assertThat(leaves)
         .describedAs("at the end of the 60 it was placed in")
         .containsExactly("40,0 20x20")
   }
 
   @Test
-  fun `every question a child was asked this pass is answered from memory`() {
+  fun `every measurement a child made this pass is reused`() {
     LithoStats.resetAllCounters()
     // Six different questions, then each of them again.
     val widths = listOf(10, 20, 30, 40, 50, 60)
@@ -113,7 +113,7 @@ class CustomLayoutAnswerTest {
       layout(c.maxWidth, LEAF) { last.place(0, 0) }
     }
 
-    render { Layout(listOf(AnswerLeaf()), layout = asksEach) }
+    render { Layout(listOf(CachedLeaf()), layout = asksEach) }
 
     assertThat(LithoStats.customLayoutChildLayoutCount.get())
         .describedAs("one layout per distinct question")
@@ -121,8 +121,8 @@ class CustomLayoutAnswerTest {
   }
 
   @Test
-  fun `a shared answer that is itself a Layout is placed by each container at its own position`() {
-    // The shared answer is itself a Layout, whose leaf sits 5 into it.
+  fun `a shared measurement that is itself a Layout is placed by each container at its own position`() {
+    // The shared measurement is itself a Layout, whose leaf sits 5 into it.
     val leafAt5 = LayoutFunctionN { ms, _ ->
       val p = ms[0].measure(SizeConstraints.exact(LEAF, LEAF))
       layout(LEAF + 5, LEAF) { p.place(5, 0) }
@@ -131,7 +131,7 @@ class CustomLayoutAnswerTest {
       val p = ms[0].measure(SizeConstraints(maxWidth = c.maxWidth, maxHeight = LEAF))
       layout(c.maxWidth, LEAF) { p.place(c.maxWidth - p.width, 0) }
     }
-    val inner = Layout(listOf(Layout(listOf(AnswerLeaf()), layout = leafAt5)), layout = atEnd)
+    val inner = Layout(listOf(Layout(listOf(CachedLeaf()), layout = leafAt5)), layout = atEnd)
     val placesFirst = LayoutFunctionN { ms, c ->
       val narrow = ms[0].measure(SizeConstraints.exact(60, LEAF))
       ms[0].measure(SizeConstraints.exact(90, LEAF))
@@ -153,14 +153,14 @@ class CustomLayoutAnswerTest {
   private fun render(root: () -> Component): TestLithoView =
       lithoTestRule.render(widthPx = VIEWPORT, heightPx = VIEWPORT) { root() }
 
-  /** Each AnswerLeaf's frame in the root's coordinates, in tree order. */
+  /** Each CachedLeaf's frame in the root's coordinates, in tree order. */
   private fun leafFrames(view: TestLithoView): List<String> {
     val root =
         checkNotNull(view.componentTree.mainThreadLayoutState?.rootLayoutResult)
             as LithoLayoutResult
     val frames = ArrayList<String>()
     fun walk(result: LithoLayoutResult, x: Int, y: Int) {
-      if (result.node.tailComponent is AnswerLeaf) {
+      if (result.node.tailComponent is CachedLeaf) {
         frames.add("$x,$y ${result.width}x${result.height}")
       }
       for (i in 0 until result.childCount) {
@@ -195,15 +195,15 @@ class CustomLayoutAnswerTest {
 }
 
 /** A Primitive that takes whatever size it is offered within 20x20, or exactly what is exact. */
-private class AnswerLeaf : PrimitiveComponent() {
+private class CachedLeaf : PrimitiveComponent() {
   override fun PrimitiveComponentScope.render(): LithoPrimitive = LithoPrimitive(
-      layoutBehavior = AnswerFill,
+      layoutBehavior = CachedFill,
       mountBehavior = MountBehavior(ViewAllocator { context -> View(context) }) {},
       style = null,
   )
 }
 
-private object AnswerFill : LayoutBehavior {
+private object CachedFill : LayoutBehavior {
   override fun PrimitiveLayoutScope.layout(
       sizeConstraints: SizeConstraints,
   ): PrimitiveLayoutResult = PrimitiveLayoutResult(

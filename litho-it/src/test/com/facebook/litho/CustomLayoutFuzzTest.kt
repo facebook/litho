@@ -532,17 +532,14 @@ class CustomLayoutFuzzTest {
     var crossPassReuse: Boolean = false
 
     /**
-     * Seeds known to fail on the code below, by mode, recorded on `1991d0737deb` with this diff's
-     * shadow validation, at 400 seeds. Every one holds a `RenderWithConstraints` under a `Layout`
-     * child copied from the last pass, and a frame shows the branch its content resolved for its
-     * old constraints, not the one a fresh layout resolves. A change that fixes one removes it; one
-     * that passes and is still listed fails the test.
+     * Seeds known to fail on the code below, by mode, each with its reason. A listed seed that
+     * passes fails the test.
      */
     val KNOWN_FAILURES: Map<Mode, Set<Int>> = mapOf(
-        Mode.CROSS_PASS_OFF to setOf(64, 66, 80, 93, 284, 338, 358),
-        Mode.CROSS_PASS_ON to setOf(64, 66, 80, 93, 284, 338, 358),
-        Mode.RTL to setOf(64, 66, 80, 93, 284, 338, 358),
-        Mode.READ_TRACKING_OFF to setOf(64, 80, 93, 212, 338, 358),
+        Mode.CROSS_PASS_OFF to emptySet(),
+        Mode.CROSS_PASS_ON to emptySet(),
+        Mode.RTL to emptySet(),
+        Mode.READ_TRACKING_OFF to emptySet(),
     )
 
     const val SEEDS = 400

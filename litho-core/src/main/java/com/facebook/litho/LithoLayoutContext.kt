@@ -92,9 +92,10 @@ constructor(
 
   /**
    * This pass's measurements of `Layout` children, by child and by the constraints each was
-   * measured under. A child asked the same question again in this pass answers with the layout it
-   * made the first time, whichever measurement of its container asks. Every measurement is kept:
-   * each is a layout this pass already made, so what is kept grows only with the work done.
+   * measured under. A child measured again under the same constraints in this pass reuses the
+   * layout it made the first time, whichever measurement of its container asks. Every measurement
+   * is kept: each is a layout this pass already made, so what is kept grows only with the work
+   * done.
    */
   internal var cachedMeasurements: IdentityHashMap<LithoNode, ArrayList<Placeable>>? = null
 
