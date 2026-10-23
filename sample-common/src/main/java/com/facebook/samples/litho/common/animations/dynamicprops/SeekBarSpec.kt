@@ -16,18 +16,9 @@
 
 package com.facebook.samples.litho.common.animations.dynamicprops
 
-import android.content.Context
 import com.facebook.litho.Component
-import com.facebook.litho.ComponentContext
 import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Style
-import com.facebook.litho.annotations.ExcuseMySpec
-import com.facebook.litho.annotations.MountSpec
-import com.facebook.litho.annotations.OnCreateMountContent
-import com.facebook.litho.annotations.OnMount
-import com.facebook.litho.annotations.OnUnmount
-import com.facebook.litho.annotations.Prop
-import com.facebook.litho.annotations.Reason
 import com.facebook.litho.core.height
 import com.facebook.litho.core.margin
 import com.facebook.litho.flexbox.flex
@@ -35,52 +26,6 @@ import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.layout.flexbox.Row
 import com.facebook.rendercore.dp
 import com.facebook.samples.litho.kotlin.animations.dynamicprops.SeekBarPrimitive
-
-@ExcuseMySpec(reason = Reason.LEGACY)
-@MountSpec
-object SeekBarSpec {
-
-  private const val MAX = 256
-
-  @OnCreateMountContent
-  fun onCreateMountContent(c: Context): android.widget.SeekBar {
-    return android.widget.SeekBar(c)
-  }
-
-  @OnMount
-  fun onMount(
-      c: ComponentContext,
-      seekBar: android.widget.SeekBar,
-      @Prop initialValue: Float = 1f,
-      @Prop onProgressChanged: (Float) -> Unit,
-  ) {
-    seekBar.max = MAX
-    seekBar.progress = (initialValue * MAX).toInt()
-    seekBar.setOnSeekBarChangeListener(
-        object : android.widget.SeekBar.OnSeekBarChangeListener {
-          override fun onProgressChanged(
-              seekBar: android.widget.SeekBar,
-              progress: Int,
-              fromUser: Boolean,
-          ) {
-            onProgressChanged(progress / MAX.toFloat())
-          }
-
-          override fun onStartTrackingTouch(seekBar: android.widget.SeekBar) = Unit
-
-          override fun onStopTrackingTouch(seekBar: android.widget.SeekBar) = Unit
-        },
-    )
-  }
-
-  @OnUnmount
-  fun onUnmount(
-      c: ComponentContext,
-      seekBar: android.widget.SeekBar,
-  ) {
-    seekBar.setOnSeekBarChangeListener(null)
-  }
-}
 
 fun ResourcesScope.SeekBar(
     initialValue: Float = 1f,
