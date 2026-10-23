@@ -19,6 +19,7 @@ package com.facebook.litho
 import android.graphics.Point
 import android.util.Pair
 import androidx.collection.MutableScatterMap
+import androidx.collection.MutableScatterSet
 import com.facebook.litho.animation.ReflowGeneration
 import com.facebook.litho.animation.ReflowReadView
 import com.facebook.litho.layout.Placeable
@@ -90,14 +91,6 @@ constructor(
   internal var reflowReadView: ReflowReadView = ReflowGeneration.EMPTY
 
   /**
-   * The reflow-declaring layout results collected during the current Yoga root's build walk, so the
-   * post-layout capture iterates only these instead of recursing the whole result tree.
-   *
-   * Scoped to one `LithoYogaLayoutFunction.calculateLayout` invocation, not to this context: a
-   * deferred node re-enters that function on this same context, and each pass must only pin and
-   * capture the nodes its own walk collected.
-   */
-  /**
    * This pass's measurements of `Layout` children, by child and by the constraints each was
    * measured under. A child asked the same question again in this pass answers with the layout it
    * made the first time, whichever measurement of its container asks. Every measurement is kept:
@@ -113,6 +106,20 @@ constructor(
     return map.getOrPut(child) { ArrayList(2) }
   }
 
+  /**
+   * The roots of the subtrees this pass copied whole from the last pass's layout cache, kept only
+   * with shadow validation on, which checks the layouts holding them.
+   */
+  internal var wholeSubtreeCopies: MutableScatterSet<LithoLayoutResult>? = null
+
+  /**
+   * The reflow-declaring layout results collected during the current Yoga root's build walk, so the
+   * post-layout capture iterates only these instead of recursing the whole result tree.
+   *
+   * Scoped to one `LithoYogaLayoutFunction.calculateLayout` invocation, not to this context: a
+   * deferred node re-enters that function on this same context, and each pass must only pin and
+   * capture the nodes its own walk collected.
+   */
   internal var reflowResults: MutableList<LithoLayoutResult>? = null
 
   internal fun inheritReflowInputsFrom(parent: LithoLayoutContext) {
@@ -208,6 +215,7 @@ constructor(
     reflowTargetSizes = null
     reflowReadView = ReflowGeneration.EMPTY
     reflowResults = null
+    wholeSubtreeCopies = null
     releaseCachedMeasurements()
     reflowFrameUpdates = null
     isReleased = true

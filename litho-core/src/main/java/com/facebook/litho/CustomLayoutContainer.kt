@@ -108,7 +108,7 @@ internal class CustomLayoutResult(
           Measurable(i, node.getChildAt(i), context, owner = this)
         }
     val scope = MeasureScope(this.context.resourceResolver, functionDirection)
-    LithoStats.customLayoutFunctionRunCount.incrementAndGet()
+    LithoStats.count(LithoStats.customLayoutFunctionRunCount)
     // State the function reads lays the container out again when it changes: the function may be
     // its only reader.
     runRecordingReads(context, "layout function") {
@@ -344,7 +344,7 @@ internal fun Measurable.measureChild(constraints: SizeConstraints): Placeable {
   val measurements = lsc.cachedMeasurementsFor(node)
   val cached = measurements.firstOrNull { it.constraints == constraints }
   if (cached != null) {
-    LithoStats.customLayoutAnswerReusedCount.incrementAndGet()
+    LithoStats.count(LithoStats.customLayoutAnswerReusedCount)
     return cached.forContainer(owner)
   }
   return layOut(constraints).also { measurements.add(it) }
@@ -356,7 +356,7 @@ private fun Measurable.layOut(constraints: SizeConstraints): Placeable =
     }
 
 private fun Measurable.layOutChild(constraints: SizeConstraints): Placeable {
-  LithoStats.customLayoutChildLayoutCount.incrementAndGet()
+  LithoStats.count(LithoStats.customLayoutChildLayoutCount)
   val (result, box) =
       trace({ "layout.measureChild:${node.headComponent.simpleName}" }) {
         LithoYogaLayoutFunction.layoutSubtree(

@@ -17,6 +17,7 @@
 package com.facebook.litho.stats
 
 import androidx.annotation.VisibleForTesting
+import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicLong
 
 /** Provides global counters about Litho internals. Useful for performance analyses. */
@@ -73,6 +74,53 @@ object LithoStats {
 
   /** Measurements of a `Layout`'s child answered from an earlier one in the same pass. */
   @JvmField val customLayoutAnswerReusedCount: AtomicLong = AtomicLong(0)
+
+  /** Layouts reused from an earlier pass checked against a fresh one (shadow validation). */
+  @JvmField val customLayoutShadowCheckCount: AtomicLong = AtomicLong(0)
+
+  /**
+   * Whether counting is suppressed on this thread, as a holder set once per thread: entering and
+   * leaving [suppressed] is a field write, never a thread-local insert or removal.
+   */
+  @PublishedApi
+  internal class Suppression {
+    @JvmField var on: Boolean = false
+  }
+
+  private val suppression = ThreadLocal<Suppression>()
+
+  /**
+   * How many [suppressed] blocks are running on any thread, so [count] reads the thread-local only
+   * while one is.
+   */
+  @PublishedApi internal val suppressedAnywhere: AtomicInteger = AtomicInteger(0)
+
+  /** Adds [by] to [counter] unless [suppressed] is running on this thread. */
+  @JvmStatic
+  @JvmOverloads
+  fun count(counter: AtomicLong, by: Long = 1) {
+    if (suppressedAnywhere.get() == 0 || suppression.get()?.on != true) {
+      counter.addAndGet(by)
+    }
+  }
+
+  /** Runs [block] with counting through [count] suppressed on this thread. */
+  inline fun <T> suppressed(block: () -> T): T {
+    val holder = suppressionOnThisThread()
+    val was = holder.on
+    holder.on = true
+    suppressedAnywhere.incrementAndGet()
+    try {
+      return block()
+    } finally {
+      suppressedAnywhere.decrementAndGet()
+      holder.on = was
+    }
+  }
+
+  @PublishedApi
+  internal fun suppressionOnThisThread(): Suppression =
+      suppression.get() ?: Suppression().also { suppression.set(it) }
 
   @get:JvmStatic
   val componentAppliedStateUpdateCount: Long
@@ -348,5 +396,6 @@ object LithoStats {
     customLayoutAnswerReusedCount.set(0)
     customLayoutLeafCount.set(0)
     customLayoutNestedContainerCount.set(0)
+    customLayoutShadowCheckCount.set(0)
   }
 }

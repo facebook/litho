@@ -133,6 +133,7 @@ internal object LithoYogaLayoutFunction {
       trace({ "layout.leaf:${node.headComponent.simpleName}" }) {
         layOutLeaf(context, result, box)
       }
+      checkReused(context, node, constraints, result)
       return result to box
     }
     if (result is CustomLayoutResult) {
@@ -146,7 +147,42 @@ internal object LithoYogaLayoutFunction {
       yogaRoot.layOutWithin(box)
       settleCustomLayouts(context, customLayouts)
     }
+    checkReused(context, node, constraints, result)
     return result to box
+  }
+
+  /**
+   * With shadow validation on, checks a child whose layout holds a subtree copied whole from the
+   * last pass, at its root or anywhere below.
+   */
+  private fun checkReused(
+      context: LayoutContext<LithoLayoutContext>,
+      node: LithoNode,
+      constraints: SizeConstraints,
+      result: LithoLayoutResult,
+  ) {
+    if (!ComponentsConfiguration.customLayoutShadowValidation) {
+      return
+    }
+    val copies = context.renderContext?.wholeSubtreeCopies ?: return
+    if (holdsWholeSubtreeCopy(result, copies)) {
+      CustomLayoutShadowValidation.check(context, node, constraints, result)
+    }
+  }
+
+  private fun holdsWholeSubtreeCopy(
+      result: LithoLayoutResult,
+      copies: ScatterSet<LithoLayoutResult>,
+  ): Boolean {
+    if (result in copies) {
+      return true
+    }
+    for (i in 0 until result.childCount) {
+      if (holdsWholeSubtreeCopy(result.getChildAt(i), copies)) {
+        return true
+      }
+    }
+    return false
   }
 
   /**
@@ -170,7 +206,7 @@ internal object LithoYogaLayoutFunction {
           content.width to content.height
         }
     output.boxGeometry = BoxGeometry(direction, box.padding, box.border, size.width, size.height)
-    LithoStats.customLayoutLeafCount.incrementAndGet()
+    LithoStats.count(LithoStats.customLayoutLeafCount)
   }
 
   /**
@@ -199,7 +235,7 @@ internal object LithoYogaLayoutFunction {
           YogaMeasureOutput.getWidth(answer).toInt() to YogaMeasureOutput.getHeight(answer).toInt()
         }
     output.boxGeometry = BoxGeometry(direction, box.padding, box.border, size.width, size.height)
-    LithoStats.customLayoutNestedContainerCount.incrementAndGet()
+    LithoStats.count(LithoStats.customLayoutNestedContainerCount)
     // Its tree holds only itself, so it is settled here rather than with a Yoga tree's.
     result.settle(context)
   }
@@ -583,6 +619,15 @@ internal object LithoYogaLayoutFunction {
             diffNode,
             skipTransitionCapture = inContainer,
         )
+            .also {
+              if (ComponentsConfiguration.customLayoutShadowValidation) {
+                (renderContext.wholeSubtreeCopies
+                        ?: MutableScatterSet<LithoLayoutResult>().also { copies ->
+                          renderContext.wholeSubtreeCopies = copies
+                        })
+                    .add(it)
+              }
+            }
       }
     }
 

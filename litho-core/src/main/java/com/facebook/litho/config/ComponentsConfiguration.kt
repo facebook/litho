@@ -542,6 +542,14 @@ internal constructor(
     @JvmField var enableSubtreeCaching: Boolean = false
 
     /**
+     * Checks each `Layout` child whose layout holds a subtree copied whole from the last pass's
+     * layout cache against a fresh layout, on sizes, and the positions of every descendant that is
+     * not deferred content; deferred content is compared by its holder's size only. Throws on a
+     * difference (`CustomLayoutShadowValidation`). Off by default; for tests and debug builds.
+     */
+    @JvmField var customLayoutShadowValidation: Boolean = false
+
+    /**
      * This method is only used so that Java clients can have a builder like approach to override a
      * configuration.
      */

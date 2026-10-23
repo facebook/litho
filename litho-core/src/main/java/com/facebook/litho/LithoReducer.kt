@@ -585,7 +585,7 @@ internal object LithoReducer {
           // ineligible from the start and are not counted as misses.
           val snapshot = reductionState.currentLayoutState?.subtreeSnapshots?.get(node)
           if (snapshot != null && !directChildSizesMatch(snapshot, result)) {
-            LithoStats.subtreeCacheGateRejectCount.incrementAndGet()
+            LithoStats.count(LithoStats.subtreeCacheGateRejectCount)
             null
           } else if (snapshot != null && !externalParentMatches(snapshot, parent)) {
             // The splice copies prev's parent-relative descendant bounds and feeds them
@@ -595,7 +595,7 @@ internal object LithoReducer {
             // which propagates to IMO bounds (built via `getAbsoluteBounds()`), then to
             // incremental-mount diff decisions, and ultimately to mount-state desync
             // (e.g. ComponentHost.viewMountItems out of sync with actual View children).
-            LithoStats.subtreeCacheGateRejectCount.incrementAndGet()
+            LithoStats.count(LithoStats.subtreeCacheGateRejectCount)
             null
           } else if (snapshot != null && snapshot.containsDeferredDescendant) {
             // Symmetric defense to the recording-time gate in [shouldRecordSubtreeSnapshot]: a
@@ -605,15 +605,15 @@ internal object LithoReducer {
             // flag (recording rejects them), but stale snapshots from a carry-forward path or
             // from a future code path that bypasses the recording gate must still be rejected
             // here so the gate is load-bearing rather than purely advisory.
-            LithoStats.subtreeCacheGateRejectCount.incrementAndGet()
-            LithoStats.subtreeCacheDeferredSkippedCount.incrementAndGet()
+            LithoStats.count(LithoStats.subtreeCacheGateRejectCount)
+            LithoStats.count(LithoStats.subtreeCacheDeferredSkippedCount)
             null
           } else {
             snapshot
           }
         } else null
     if (ComponentsConfiguration.enableSubtreeCaching) {
-      LithoStats.subtreeCacheOutputsTraversedCount.incrementAndGet()
+      LithoStats.count(LithoStats.subtreeCacheOutputsTraversedCount)
     }
 
     val tail: ScopedComponentInfo = node.tailScopedComponentInfo
@@ -790,7 +790,7 @@ internal object LithoReducer {
           diffNode,
           result,
       )
-      LithoStats.subtreeCacheHitCount.incrementAndGet()
+      LithoStats.count(LithoStats.subtreeCacheHitCount)
     } else {
       collectChildResults(
           result = result,
@@ -834,7 +834,7 @@ internal object LithoReducer {
       // Tick before delegating to shouldRecordSubtreeSnapshot so the counter reflects the
       // deferred-driven skip even when the subtree would also have been rejected for another
       // reason (host view, threshold). Pairs with the splice-time tick in the gate above.
-      LithoStats.subtreeCacheDeferredSkippedCount.incrementAndGet()
+      LithoStats.count(LithoStats.subtreeCacheDeferredSkippedCount)
     }
     if (
         shouldRecordSubtreeSnapshot(
@@ -1381,7 +1381,7 @@ internal object LithoReducer {
       }
     }
 
-    LithoStats.subtreeCacheOutputsSplicedCount.addAndGet(count.toLong())
+    LithoStats.count(LithoStats.subtreeCacheOutputsSplicedCount, count.toLong())
   }
 
   /**

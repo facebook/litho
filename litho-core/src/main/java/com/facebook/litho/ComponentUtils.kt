@@ -520,6 +520,10 @@ object ComponentUtils {
    */
   @JvmStatic
   fun handleWithHierarchy(parent: ComponentContext, component: Component?, exception: Exception) {
+    // A shadow-validation layout handles no errors: the check turns them into a Mismatch.
+    if (CustomLayoutShadowValidation.isRunning) {
+      throw exception
+    }
     val nextHandler = parent.errorEventHandler
     var exceptionToThrow = exception
     val lastHandler =
@@ -558,6 +562,9 @@ object ComponentUtils {
    */
   @JvmStatic
   fun handle(c: ComponentContext, exception: Exception) {
+    if (CustomLayoutShadowValidation.isRunning) {
+      throw exception
+    }
     trace({ "handleError" }) {
       try {
         if (c.componentScope != null) {
