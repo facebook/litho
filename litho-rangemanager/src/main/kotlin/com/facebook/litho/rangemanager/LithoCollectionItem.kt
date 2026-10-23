@@ -420,10 +420,7 @@ class LithoCollectionItem<T>(
     }
 
     if (componentTree == null) {
-      val builder =
-          ComponentTree.create(ComponentContext(context))
-              .treeState(cachedTreeState)
-              .enableChildClipping(true)
+      val builder = ComponentTree.create(ComponentContext(context)).treeState(cachedTreeState)
       val childController = visibilityEventsController?.let(TreeVisibilityEventsController::childOf)
       var tree: ComponentTree? = null
       try {

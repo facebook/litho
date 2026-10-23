@@ -360,7 +360,6 @@ open class ComponentTreeHolder @VisibleForTesting internal constructor(builder: 
 
       builder.stateUpdater(stateUpdaterDelegator)
       builder.poolScope(poolScope)
-      builder.enableChildClipping(true)
 
       _componentTree =
           builder.build().also { tree ->
