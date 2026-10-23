@@ -30,6 +30,7 @@ import com.facebook.litho.layout.flexbox.Row
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.CardClip
+import com.facebook.litho.widget.PrimitiveWithLayoutEffect
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.dp
 import com.facebook.rendercore.primitives.LayoutBehavior
@@ -329,6 +330,79 @@ class NestedLithoTreeStateVersioningTest {
     assertThat(steps).containsExactly("attach:v1", "detach:v1", "attach:v1", "detach:v1")
   }
 
+  /**
+   * Test that a resolve which read the committed result before cleanup and the tree state after it
+   * does not attach effects that the remounted tree already attached.
+   */
+  @Test
+  fun commit_resolveStraddlingCleanup_runsEffectsOnCommittedHandler() {
+    val nestedState = NestedLithoTreeState(treeState = TreeState())
+    val context = ComponentTree.create(lithoTestRule.context).build().context
+    val steps = mutableListOf<String>()
+    val sizeConstraints =
+        SizeConstraints.fromMeasureSpecs(
+            makeSizeSpec(100, SizeSpec.EXACTLY),
+            makeSizeSpec(100, SizeSpec.EXACTLY),
+        )
+
+    fun createLayoutState(
+        label: String,
+        state: TreeState,
+        current: ResolveResult?,
+        currentLayout: LayoutState?,
+        version: Int,
+    ): LayoutState {
+      val result =
+          NestedLithoTree.resolve(
+              id = nestedState.id,
+              context = context,
+              root = NestedTreeEffectsWithLabelComponent(label = label, steps = steps),
+              treeProps = null,
+              state = state,
+              current = current,
+              version = version,
+          )
+      return NestedLithoTree.layout(
+          result = result,
+          sizeConstraints = sizeConstraints,
+          current = currentLayout,
+          version = version,
+      )
+    }
+
+    val layoutState1 = createLayoutState(
+        label = "v1",
+        state = nestedState.getUpdatedState(),
+        current = null,
+        currentLayout = null,
+        version = 1,
+    )
+    assertThat(nestedState.commitAndRunEffects(layoutState1)).isTrue
+
+    val committedResolve = nestedState.currentResolveResult
+    val committedLayout = nestedState.currentLayoutState
+    nestedState.cleanup()
+    val stateAfterCleanup = nestedState.getUpdatedState()
+    assertThat(nestedState.commitAndRunEffects(layoutState1)).isTrue
+
+    val layoutState2 = createLayoutState(
+        label = "v2",
+        state = stateAfterCleanup,
+        current = committedResolve,
+        currentLayout = committedLayout,
+        version = 2,
+    )
+    assertThat(layoutState2.treeState.effectsHandler)
+        .isNotSameAs(layoutState1.treeState.effectsHandler)
+    assertThat(layoutState2.attachables).containsAnyElementsOf(layoutState1.attachables.orEmpty())
+
+    assertThat(nestedState.commitAndRunEffects(layoutState2)).isTrue
+
+    nestedState.cleanup()
+    assertThat(steps)
+        .containsExactly("attach:effect", "detach:effect", "attach:effect", "detach:effect")
+  }
+
   /** Test that commit rejects stale layout state with lower version */
   @Test
   fun commit_rejectsStaleLayoutState() {
@@ -588,6 +662,17 @@ private class NestedTreeEffectTestComponent(
       }
     }
     return EmptyComponent()
+  }
+}
+
+private class NestedTreeEffectsWithLabelComponent(
+    private val label: String,
+    private val steps: MutableList<String>,
+) : KComponent() {
+  override fun ComponentScope.render(): Component = Row {
+    child(key("label") { Text(text = label) })
+    child(key("effect") { NestedTreeEffectTestComponent(name = "effect", steps = steps) })
+    child(key("layoutEffect") { PrimitiveWithLayoutEffect(id = 1) })
   }
 }
 

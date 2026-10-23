@@ -26,6 +26,7 @@ import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.annotations.Hook
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.effects.EffectContext
+import com.facebook.litho.effects.EffectHandler
 import com.facebook.rendercore.ContentAllocator
 import com.facebook.rendercore.primitives.MountBehavior as PrimitiveMountBehavior
 import com.facebook.rendercore.primitives.MountConfigurationScope
@@ -357,11 +358,11 @@ data class NestedLithoTreeState(
     var commitSucceeded = false
     try {
       commitSucceeded =
-          commit(layoutState = layoutState) {
+          commit(layoutState = layoutState) { effectsHandler ->
             // updateEffects() mutates the EffectHandler's internal state, so it must run only
             // after stale layouts are rejected. It must still run before committing new tree state
             // because outgoing effect cleanup observes the previously committed state.
-            with(layoutState.treeState.effectsHandler) {
+            with(effectsHandler) {
               effectRunnable = effectContext.updateEffects(layoutState.attachables)
             }
           }
@@ -383,7 +384,10 @@ data class NestedLithoTreeState(
     return commitSucceeded
   }
 
-  private inline fun commit(layoutState: LayoutState, beforeCommit: () -> Unit): Boolean {
+  private inline fun commit(
+      layoutState: LayoutState,
+      beforeCommit: (EffectHandler) -> Unit,
+  ): Boolean {
     synchronized(this) {
       // Only reject if versions are strictly older (stale results)
       // Equal versions are allowed because resolve() may return cached results
@@ -400,11 +404,16 @@ data class NestedLithoTreeState(
         return false
       }
 
-      beforeCommit()
-
       // A cleaned-up tree is committed again when its host is mounted again, e.g. after a
       // RecyclerView rebinds the recycled row that holds it.
-      val committedTreeState = treeState ?: TreeState(layoutState.treeState).also { treeState = it }
+      val committedTreeState = treeState ?: TreeState(layoutState.treeState)
+
+      // Effects run on the committed tree's handler, not the layout's: a resolve that read
+      // getUpdatedState() after cleanup() carries a new handler that does not know which effect
+      // instances, possibly reused from the previous layout, are already attached.
+      beforeCommit(committedTreeState.effectsHandler)
+
+      treeState = committedTreeState
       committedTreeState.commitResolveState(layoutState.resolveResult.treeState)
       committedTreeState.commitLayoutState(layoutState.treeState)
       currentResolveResult = layoutState.resolveResult
