@@ -174,6 +174,7 @@ object MountSpecPureRenderLifecycleTesterSpec {
     return 0
   }
 
+  @Suppress("MountSpecTreePropDetector")
   @JvmStatic
   @OnCreateTreeProp
   fun onCreateTreePropRect(c: ComponentContext, @Prop lifecycleTracker: LifecycleTracker): Rect {

@@ -84,6 +84,7 @@ public class TestMountSpec<S extends View> implements TestTag {
   static <S extends View> void createInitialState(
       ComponentContext c, @Prop int prop1, StateValue<S> state2) {}
 
+  @SuppressWarnings("MountSpecTreePropDetector")
   @OnCreateTreeProp
   static TestTreeProp onCreateFeedPrefetcherProp(ComponentContext c, @Prop long prop6) {
     return new TestTreeProp(prop6);
