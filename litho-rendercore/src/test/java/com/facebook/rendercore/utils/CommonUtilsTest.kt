@@ -113,9 +113,9 @@ class CommonUtilsTest {
   fun `an evicted class's section name is recomputed`() {
     val reads = HashMap<Class<*>, Int>()
     val cache = SectionNameCache(
-        {
-          reads[it] = (reads[it] ?: 0) + 1
-          it.simpleName
+        { tracedClass ->
+          reads[tracedClass] = (reads[tracedClass] ?: 0) + 1
+          tracedClass.simpleName
         },
         maxSize = 2,
     )
