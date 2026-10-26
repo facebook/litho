@@ -43,7 +43,6 @@ class LithoViewWithLifecycleOwnerFragment : Fragment() {
     val componentTree =
         ComponentTree.create(componentContext, LifecycleOwnerTreePropSampleComponent())
             .withLifecycleOwnerTreeProp(this)
-            .enableChildClipping(true)
             .build()
 
     // Create a LithoView with the ComponentTree

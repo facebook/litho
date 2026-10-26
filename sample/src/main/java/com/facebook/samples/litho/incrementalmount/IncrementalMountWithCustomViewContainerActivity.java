@@ -60,7 +60,6 @@ public class IncrementalMountWithCustomViewContainerActivity extends Navigatable
             //
             //   .incrementalMount(false)
             //
-            .enableChildClipping(true)
             .build();
     lithoView.setComponentTree(componentTree);
 

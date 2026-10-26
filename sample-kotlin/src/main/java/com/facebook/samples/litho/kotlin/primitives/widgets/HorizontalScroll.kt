@@ -94,7 +94,6 @@ class HorizontalScroll(
     val childComponentTree = useCached {
       ComponentTree.createNestedComponentTree(context)
           .incrementalMount(incrementalMountEnabled)
-          .enableChildClipping(true)
           .build()
     }
 

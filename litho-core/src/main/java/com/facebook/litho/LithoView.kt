@@ -422,8 +422,7 @@ constructor(
   open fun setComponent(component: Component?) {
     val tree = _componentTree
     if (tree == null) {
-      componentTree =
-          ComponentTree.create(componentContext, component).enableChildClipping(true).build()
+      componentTree = ComponentTree.create(componentContext, component).build()
     } else {
       tree.root = component
     }
@@ -436,8 +435,7 @@ constructor(
   open fun setComponentAsync(component: Component?) {
     val tree = _componentTree
     if (tree == null) {
-      componentTree =
-          ComponentTree.create(componentContext, component).enableChildClipping(true).build()
+      componentTree = ComponentTree.create(componentContext, component).build()
     } else {
       tree.setRootAsync(component)
     }
@@ -847,10 +845,7 @@ constructor(
     @JvmStatic
     fun create(context: Context, component: Component?): LithoView {
       val lithoView = LithoView(context)
-      lithoView.componentTree =
-          ComponentTree.create(ComponentContext(context), component)
-              .enableChildClipping(true)
-              .build()
+      lithoView.componentTree = ComponentTree.create(ComponentContext(context), component).build()
       return lithoView
     }
 
@@ -872,8 +867,7 @@ constructor(
     @JvmStatic
     fun create(context: ComponentContext, component: Component?): LithoView {
       val lithoView = LithoView(context)
-      lithoView.componentTree =
-          ComponentTree.create(context, component).enableChildClipping(true).build()
+      lithoView.componentTree = ComponentTree.create(context, component).build()
       return lithoView
     }
 
@@ -893,7 +887,6 @@ constructor(
           ComponentTree.create(context, component)
               .withLithoVisibilityEventsController(controller)
               .withLifecycleOwnerTreeProp(lifecycleOwner)
-              .enableChildClipping(true)
               .build()
       return lithoView
     }

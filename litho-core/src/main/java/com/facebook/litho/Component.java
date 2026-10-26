@@ -760,7 +760,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       if (lithoTree == null) {
         // This is a temporary tree that will be only used as a way of measuring a component.
         // we could be using a treeless context here as well. Might be worth revisiting later.
-        ComponentTree ct = ComponentTree.create(c).enableChildClipping(true).build();
+        ComponentTree ct = ComponentTree.create(c).build();
         componentTreeId = ct.getId();
 
         c =

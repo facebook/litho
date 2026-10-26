@@ -129,7 +129,6 @@ class VisibilityBoundsTransformerActivity : NavigatableDemoActivity() {
                         visibilityBoundsTransformer = visibilityBoundsTransformer,
                     ),
                 )
-                .enableChildClipping(true)
                 .build(),
         )
     occludingHeaderView =

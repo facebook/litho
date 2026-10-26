@@ -109,7 +109,6 @@ class VerticalScroll(
     val componentTree = useCached {
       ComponentTree.createNestedComponentTree(context)
           .incrementalMount(incrementalMountEnabled)
-          .enableChildClipping(true)
           .build()
     }
 
