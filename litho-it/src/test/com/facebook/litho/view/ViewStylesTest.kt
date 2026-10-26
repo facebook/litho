@@ -17,6 +17,7 @@
 package com.facebook.litho.view
 
 import android.content.pm.ApplicationInfo
+import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Outline
 import android.graphics.Path
@@ -24,6 +25,7 @@ import android.graphics.Rect
 import android.graphics.RectF
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.StateListDrawable
 import android.os.Build
 import android.text.Layout
@@ -35,6 +37,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.graphics.drawable.toDrawable
 import com.facebook.litho.CommonProps
 import com.facebook.litho.Component
+import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentHost
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
@@ -45,6 +48,8 @@ import com.facebook.litho.assertMatches
 import com.facebook.litho.child
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
+import com.facebook.litho.drawable.ComparableCircleDrawable
+import com.facebook.litho.drawable.ComparableGradientDrawable
 import com.facebook.litho.key
 import com.facebook.litho.kotlin.widget.TextInput
 import com.facebook.litho.layout.flexbox.Row
@@ -63,7 +68,10 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.robolectric.annotation.Config
 import org.robolectric.util.ReflectionHelpers
 
@@ -1004,6 +1012,116 @@ class ViewStylesTest {
     val bounds = RectF()
     ReflectionHelpers.getField<Path>(outline, "mPath").computeBounds(bounds, true)
     assertThat(bounds).isEqualTo(RectF(0f, 0f, 100f, 50f))
+  }
+
+  /** Tests for background() with (color, Shape) */
+  @Test
+  fun background_withShapeRoundedRectangle_setsGradientDrawableWithoutClipping() {
+    val testLithoView =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) {
+          Row(
+              style =
+                  Style.width(100.px)
+                      .height(100.px)
+                      .background(Color.RED, Shape.RoundedRectangle(16.dp)),
+          )
+        }
+
+    val density = testLithoView.lithoView.resources.displayMetrics.density
+    val expected =
+        ComparableGradientDrawable.create().apply {
+          setShape(GradientDrawable.RECTANGLE)
+          setCornerRadius((16 * density + 0.5f).toInt().toFloat())
+          setColor(Color.RED)
+        }
+    val mountedDrawable = testLithoView.lithoView.hostDrawable { it.background }
+    assertThat(mountedDrawable).isInstanceOf(ComparableGradientDrawable::class.java)
+    assertThat((mountedDrawable as ComparableGradientDrawable).isEquivalentTo(expected)).isTrue
+
+    val nodeInfo = testLithoView.currentRootNode?.node?.nodeInfo
+    assertThat(nodeInfo?.clipToOutline ?: false).isFalse
+  }
+
+  @Test
+  fun background_withShapeCircle_setsCircleDrawableWithoutClipping() {
+    val testLithoView =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) {
+          Row(style = Style.width(100.px).height(100.px).background(Color.RED, Shape.Circle))
+        }
+
+    val mountedDrawable = testLithoView.lithoView.hostDrawable { it.background }
+    assertThat(mountedDrawable).isEqualTo(ComparableCircleDrawable.create(Color.RED))
+
+    val nodeInfo = testLithoView.currentRootNode?.node?.nodeInfo
+    assertThat(nodeInfo?.clipToOutline ?: false).isFalse
+  }
+
+  @Test
+  fun background_withLongColorLiteral_setsCircleDrawable() {
+    val testLithoView =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) {
+          Row(style = Style.width(100.px).height(100.px).background(0xFF1877F2, Shape.Circle))
+        }
+
+    val mountedDrawable = testLithoView.lithoView.hostDrawable { it.background }
+    assertThat(mountedDrawable).isEqualTo(ComparableCircleDrawable.create(0xFF1877F2.toInt()))
+  }
+
+  @Test
+  fun backgroundShapeStyleItem_appliesEditedColorAndShape() {
+    val item = BackgroundShapeStyleItem(BackgroundShapeStyleItemParams(Color.RED, CircleShape))
+    ReflectionHelpers.setField(
+        item,
+        "value",
+        BackgroundShapeStyleItemParams(Color.BLUE, RoundedRectangleShape(16.px)),
+    )
+    val testLithoView =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) {
+          Row(style = Style.width(100.px).height(100.px) + item)
+        }
+    val expected =
+        ComparableGradientDrawable.create().apply {
+          setCornerRadius(16f)
+          setColor(Color.BLUE)
+        }
+    val mountedDrawable = testLithoView.lithoView.hostDrawable { it.background }
+
+    assertThat(mountedDrawable).isInstanceOf(ComparableGradientDrawable::class.java)
+    assertThat((mountedDrawable as ComparableGradientDrawable).isEquivalentTo(expected)).isTrue
+  }
+
+  @Test
+  fun background_withShapeCircle_onNonSquareBounds_drawsInscribedCircle() {
+    val testLithoView =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) {
+          Row(style = Style.width(200.px).height(80.px).background(Color.RED, Shape.Circle))
+        }
+
+    val mountedDrawable = testLithoView.lithoView.hostDrawable { it.background }
+    val canvas = mock<Canvas>()
+    checkNotNull(mountedDrawable).apply { setBounds(0, 0, 200, 80) }.draw(canvas)
+
+    verify(canvas).drawCircle(eq(100f), eq(40f), eq(40f), any())
+  }
+
+  @Test
+  fun background_withCustomShape_fallsBackToColorDrawableAndClip() {
+    val customOutlineProvider = ViewOutlineProvider.BOUNDS
+    val customShape =
+        object : Shape {
+          override fun getOutlineProvider(context: ComponentContext): ViewOutlineProvider =
+              customOutlineProvider
+        }
+
+    val testLithoView =
+        lithoTestRule.render(widthSpec = unspecified(), heightSpec = unspecified()) {
+          Row(style = Style.width(100.px).height(100.px).background(Color.RED, customShape))
+        }
+
+    assertIsColorDrawableOfColor(testLithoView.lithoView.hostDrawable { it.background }, Color.RED)
+    val nodeInfo = testLithoView.currentRootNode?.node?.nodeInfo
+    assertThat(nodeInfo?.outlineProvider).isEqualTo(customOutlineProvider)
+    assertThat(nodeInfo?.clipToOutline).isTrue
   }
 
   @Test

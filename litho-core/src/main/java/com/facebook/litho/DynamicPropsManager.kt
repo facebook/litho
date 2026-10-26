@@ -16,10 +16,13 @@
 
 package com.facebook.litho
 
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.util.Pair
 import android.util.SparseArray
 import android.view.View
+import androidx.annotation.ColorInt
 import androidx.annotation.VisibleForTesting
 import com.facebook.litho.CollectionsUtils.isNotNullOrEmpty
 import com.facebook.litho.ComponentUtils.handle
@@ -48,6 +51,7 @@ class DynamicPropsManager : DynamicValue.OnValueChangeListener<Any?> {
       HashMap()
   private val affectingDynamicValues: MutableMap<Component, Set<DynamicValue<Any?>?>> = HashMap()
   private val contents: MutableMap<Component, Any> = HashMap()
+  private val backgroundsBeforeDynamic: MutableMap<View, Drawable?> = HashMap()
 
   fun onBindComponentToContent(
       component: Component,
@@ -61,6 +65,10 @@ class DynamicPropsManager : DynamicValue.OnValueChangeListener<Any?> {
     }
     val dynamicValues: MutableSet<DynamicValue<Any?>?> = HashSet()
     if (commonDynamicProps != null && hasCommonDynamicPropsToBind) {
+      val view = content as View
+      if (hasDynamicBackground(commonDynamicProps) && view !in backgroundsBeforeDynamic) {
+        backgroundsBeforeDynamic[view] = view.background
+      }
       // Go through all common dynamic props
       for (i in 0 until commonDynamicProps.size()) {
         val key = commonDynamicProps.keyAt(i)
@@ -102,6 +110,7 @@ class DynamicPropsManager : DynamicValue.OnValueChangeListener<Any?> {
       return
     }
     contents.remove(component)
+    restoreBackground(content)
     val dynamicValues = affectingDynamicValues[component] ?: return
     for (value in dynamicValues) {
       removeDependentComponentAndUnsubscribeIfNeeded(value, Pair(component, commonDynamicProps))
@@ -115,6 +124,16 @@ class DynamicPropsManager : DynamicValue.OnValueChangeListener<Any?> {
       }
     }
     affectingDynamicValues.remove(component)
+  }
+
+  private fun restoreBackground(content: Any) {
+    if (content !is View || content !in backgroundsBeforeDynamic) {
+      return
+    }
+    val background = backgroundsBeforeDynamic.remove(content)
+    if (content.background !== background) {
+      content.background = background
+    }
   }
 
   private fun addDependentComponentAndSubscribeIfNeeded(
@@ -244,11 +263,6 @@ class DynamicPropsManager : DynamicValue.OnValueChangeListener<Any?> {
             if (content.rotationY != 0f) {
               content.rotationY = 0f
             }
-        KEY_BACKGROUND_COLOR,
-        KEY_BACKGROUND_DRAWABLE ->
-            if (content.background != null) {
-              content.background = null
-            }
         KEY_FOREGROUND_COLOR ->
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && content.foreground != null) {
               setViewForeground(content, null)
@@ -269,7 +283,7 @@ class DynamicPropsManager : DynamicValue.OnValueChangeListener<Any?> {
         KEY_SCALE_X -> target.scaleX = resolve(value)
         KEY_SCALE_Y -> target.scaleY = resolve(value)
         KEY_ELEVATION -> target.elevation = resolve(value)
-        KEY_BACKGROUND_COLOR -> target.setBackgroundColor(resolve(value))
+        KEY_BACKGROUND_COLOR -> setDynamicBackgroundColor(target, resolve(value))
         KEY_ROTATION -> target.rotation = resolve(value)
         KEY_ROTATION_X -> target.rotationX = resolve(value)
         KEY_ROTATION_Y -> target.rotationY = resolve(value)
@@ -278,6 +292,20 @@ class DynamicPropsManager : DynamicValue.OnValueChangeListener<Any?> {
         KEY_VISIBILITY -> target.visibility = resolve<Visibility>(value).toViewVisibility()
       }
     }
+
+    private fun setDynamicBackgroundColor(target: View, @ColorInt color: Int) {
+      if (target.background is DynamicBackgroundColorDrawable) {
+        target.setBackgroundColor(color)
+      } else {
+        target.background = DynamicBackgroundColorDrawable(color)
+      }
+    }
+
+    private fun hasDynamicBackground(
+        commonDynamicProps: SparseArray<out DynamicValue<*>>,
+    ): Boolean =
+        commonDynamicProps.indexOfKey(KEY_BACKGROUND_COLOR) >= 0 ||
+            commonDynamicProps.indexOfKey(KEY_BACKGROUND_DRAWABLE) >= 0
 
     @Suppress("UNCHECKED_CAST")
     private fun <T> resolve(dynamicValue: DynamicValue<*>): T {
@@ -311,4 +339,10 @@ class DynamicPropsManager : DynamicValue.OnValueChangeListener<Any?> {
       else emptyArray()
     }
   }
+
+  /**
+   * The background a dynamic background color sets, so it never recolors a static [ColorDrawable]
+   * that [View.setBackgroundColor] would update in place.
+   */
+  private class DynamicBackgroundColorDrawable(@ColorInt color: Int) : ColorDrawable(color)
 }

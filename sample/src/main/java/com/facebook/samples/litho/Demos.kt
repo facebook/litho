@@ -139,6 +139,7 @@ import com.facebook.samples.litho.kotlin.collection.StickyHeaderCollectionKCompo
 import com.facebook.samples.litho.kotlin.collection.TabsCollectionKComponent
 import com.facebook.samples.litho.kotlin.commonprops.PerCornerRoundedRectangleExampleComponent
 import com.facebook.samples.litho.kotlin.commonprops.RoundedCornerExampleComponent
+import com.facebook.samples.litho.kotlin.commonprops.ShapeBackgroundExampleComponent
 import com.facebook.samples.litho.kotlin.documentation.VisibilityChangeReasonExampleComponent
 import com.facebook.samples.litho.kotlin.errors.ErrorHandlingKotlinActivity
 import com.facebook.samples.litho.kotlin.flexbox.FlexboxLayoutExamples
@@ -616,6 +617,10 @@ class Demos {
                         SingleDemo(
                             name = "Per-corner RoundedRectangle",
                             component = PerCornerRoundedRectangleExampleComponent(),
+                        ),
+                        SingleDemo(
+                            name = "Shape Backgrounds",
+                            component = ShapeBackgroundExampleComponent(),
                         ),
                         SingleDemo(
                             name = "Flexbox Layout Examples",

@@ -17,6 +17,7 @@
 package com.facebook.litho.view
 
 import android.animation.StateListAnimator
+import android.content.Context
 import android.graphics.Color
 import android.graphics.Outline
 import android.graphics.Paint
@@ -59,20 +60,26 @@ import com.facebook.litho.SupportsPivotTransform
 import com.facebook.litho.SupportsPivotTransform.Companion.BadPivotClassErrorMessage
 import com.facebook.litho.TouchEvent
 import com.facebook.litho.binders.onBindViewWithDescription
+import com.facebook.litho.binders.viewBinder
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.core.CoreDimenField
 import com.facebook.litho.core.CoreDimenStyleItem
 import com.facebook.litho.debug.DebugInfoReporter
 import com.facebook.litho.debug.getComponentStackTraceElement
+import com.facebook.litho.drawable.ComparableCircleDrawable
 import com.facebook.litho.drawable.ComparableColorDrawable
+import com.facebook.litho.drawable.ComparableGradientDrawable
 import com.facebook.litho.drawable.DrawableUtils
+import com.facebook.litho.drawable.inscribedSquare
 import com.facebook.litho.eventHandler
 import com.facebook.litho.eventHandlerWithReturn
 import com.facebook.litho.utils.VersionedAndroidApis
 import com.facebook.rendercore.Dimen
+import com.facebook.rendercore.RenderUnit
 import com.facebook.rendercore.ResourceCache
 import com.facebook.rendercore.ResourceResolver
 import com.facebook.rendercore.px
+import com.facebook.rendercore.utils.areObjectsEquivalent
 import com.facebook.yoga.YogaEdge
 import kotlin.math.ceil
 
@@ -333,12 +340,7 @@ fun Style.background(background: Drawable?): Style {
   if (!ComponentsConfiguration.defaultInstance.useViewStyleBinders) {
     return this + BackgroundStyleItem(background, background?.let(DrawableUtils::getPaddingOrNull))
   }
-  var style =
-      this +
-          Style.onBindViewWithDescription({ "background" }, background) { content ->
-            content.background = background
-            onUnbind { content.background = null }
-          }
+  var style = viewBinder(BackgroundBinder, background)
   if (background != null) {
     val paddingRect = DrawableUtils.getPaddingOrNull(background)
     if (paddingRect != null) {
@@ -370,11 +372,7 @@ fun Style.background(background: Drawable?): Style {
  */
 fun Style.backgroundColor(@ColorInt backgroundColor: Int): Style =
     if (ComponentsConfiguration.defaultInstance.useViewStyleBinders) {
-      this +
-          Style.onBindViewWithDescription({ "background" }, backgroundColor) { content ->
-            content.background = ComparableColorDrawable.create(backgroundColor)
-            onUnbind { content.background = null }
-          }
+      viewBinder(BackgroundBinder, ColorBackground(backgroundColor))
     } else {
       this +
           ObjectStyleItem(ObjectField.BACKGROUND, ComparableColorDrawable.create(backgroundColor))
@@ -382,6 +380,81 @@ fun Style.backgroundColor(@ColorInt backgroundColor: Int): Style =
 
 fun Style.backgroundColor(@ColorInt backgroundColor: Long): Style =
     backgroundColor(backgroundColor.toInt())
+
+/**
+ * Draws a filled background of the given [color] in the given [shape] on the View this Component
+ * mounts to, without clipping its children (for [Shape.Circle] and [Shape.RoundedRectangle]; other
+ * shapes fall back to [clip], see below).
+ *
+ * Unlike [clip] — which uses [android.view.View.setClipToOutline] and therefore also clips children
+ * — this paints a drawable shaped like [shape]. Use it for filled rounded or circular surfaces; use
+ * [clip] when you need to clip content (e.g. images) to a shape.
+ *
+ * [Shape.Circle] and [Shape.RoundedRectangle] are drawn exactly on all API levels, matching the
+ * region [clip] would use. Any other [Shape] only exposes a [ViewOutlineProvider], so it falls back
+ * to [backgroundColor] + [clip], which does clip children.
+ */
+fun Style.background(@ColorInt color: Int, shape: Shape): Style =
+    if (shape !is PaintableShape) {
+      backgroundColor(color).clip(shape)
+    } else if (ComponentsConfiguration.defaultInstance.useViewStyleBinders) {
+      viewBinder(BackgroundBinder, ShapeBackground(color, shape))
+    } else {
+      this + BackgroundShapeStyleItem(BackgroundShapeStyleItemParams(color, shape))
+    }
+
+fun Style.background(@ColorInt color: Long, shape: Shape): Style = background(color.toInt(), shape)
+
+/**
+ * Sets [View.setBackground] for the static [background] and [backgroundColor] Styles when
+ * [ComponentsConfiguration.useViewStyleBinders] is on. Their shared binder key retains the last
+ * background model at the first background's insertion position. Custom binders and dynamic
+ * background Styles write independently and may run after this binder. Caller-provided drawables
+ * retain their mutable state when rebound.
+ */
+private object BackgroundBinder : RenderUnit.Binder<Any?, View, Any> {
+  override val description: String
+    get() = "background"
+
+  override fun shouldUpdate(
+      currentModel: Any?,
+      newModel: Any?,
+      currentLayoutData: Any?,
+      nextLayoutData: Any?,
+  ): Boolean = !areObjectsEquivalent(currentModel, newModel)
+
+  override fun bind(context: Context, content: View, model: Any?, layoutData: Any?): Any? {
+    content.background =
+        when (model) {
+          is ColorBackground -> ComparableColorDrawable.create(model.color)
+          is ShapeBackground ->
+              model.shape.createBackground(
+                  model.color,
+                  ResourceResolver(
+                      context,
+                      ResourceCache.getLatest(context.resources.configuration),
+                  ),
+              )
+          else -> model as Drawable?
+        }
+    return null
+  }
+
+  override fun unbind(
+      context: Context,
+      content: View,
+      model: Any?,
+      layoutData: Any?,
+      bindData: Any?,
+  ) {
+    content.background = null
+  }
+}
+
+@DataClassGenerate private data class ColorBackground(@ColorInt val color: Int)
+
+@DataClassGenerate
+private data class ShapeBackground(@ColorInt val color: Int, val shape: PaintableShape)
 
 /**
  * Sets if the View this Component mounts to should be clickable. Setting this property will cause
@@ -1570,22 +1643,39 @@ interface Shape {
   }
 }
 
-internal object CircleShape : ViewOutlineProvider(), Shape {
+/**
+ * A [Shape] that [background] can paint as well as clip to. Its background and its outline must
+ * cover the same region.
+ */
+internal interface PaintableShape : Shape {
+  fun createBackground(@ColorInt color: Int, resourceResolver: ResourceResolver): Drawable
+}
+
+internal object CircleShape : ViewOutlineProvider(), PaintableShape {
   override fun getOutlineProvider(context: ComponentContext): ViewOutlineProvider = this
 
   override fun getOutline(view: View, outline: Outline) {
-    val size = minOf(view.width, view.height)
-    val offsetX = (view.width - size) / 2
-    val offsetY = (view.height - size) / 2
-    outline.setOval(offsetX, offsetY, offsetX + size, offsetY + size)
+    val box = Rect(0, 0, view.width, view.height)
+    outline.setOval(inscribedSquare(box, box))
   }
+
+  override fun createBackground(color: Int, resourceResolver: ResourceResolver): Drawable =
+      ComparableCircleDrawable.create(color)
 }
 
 @DataClassGenerate
-internal data class RoundedRectangleShape(val cornerRadius: Dimen) : Shape {
+internal data class RoundedRectangleShape(val cornerRadius: Dimen) : PaintableShape {
   override fun getOutlineProvider(context: ComponentContext): ViewOutlineProvider {
     val cornerRadiusPx = cornerRadius.toPixels(context.resourceResolver).toFloat()
     return RoundedRectangleOutlineProvider(cornerRadiusPx)
+  }
+
+  override fun createBackground(color: Int, resourceResolver: ResourceResolver): Drawable {
+    val cornerRadiusPx = cornerRadius.toPixels(resourceResolver).toFloat()
+    return ComparableGradientDrawable.create().apply {
+      setCornerRadius(cornerRadiusPx)
+      setColor(color)
+    }
   }
 }
 
@@ -1686,6 +1776,29 @@ internal class PerCornerRoundedRectangleOutlineProvider(
 enum class ClipStyleField : StyleItemField {
   CLIP,
 }
+
+enum class BackgroundShapeStyleField : StyleItemField {
+  BACKGROUND_SHAPE,
+}
+
+@DataClassGenerate
+internal data class BackgroundShapeStyleItem(
+    override val value: BackgroundShapeStyleItemParams,
+) : StyleItem<BackgroundShapeStyleItemParams> {
+  override fun applyCommonProps(context: ComponentContext, commonProps: CommonProps) {
+    commonProps.background(
+        value.shape.createBackground(value.color, context.resourceResolver),
+    )
+  }
+
+  override val field: BackgroundShapeStyleField = BackgroundShapeStyleField.BACKGROUND_SHAPE
+}
+
+@DataClassGenerate
+internal data class BackgroundShapeStyleItemParams(
+    @ColorInt val color: Int,
+    val shape: PaintableShape,
+)
 
 @PublishedApi
 @DataClassGenerate
