@@ -183,6 +183,7 @@ import com.facebook.samples.litho.onboarding.UserFeedWithStoriesKComponent
 import com.facebook.samples.litho.onboarding.model.Feed
 import com.facebook.samples.litho.onboarding.model.NebulasPost
 import com.facebook.samples.litho.onboarding.model.UserStories
+import com.facebook.samples.litho.playground.HostPlaygroundActivity
 import com.facebook.samples.litho.playground.SaveableStatePlaygroundActivity
 import com.facebook.samples.litho.playground.XMLPlaygroundActivity
 
@@ -210,6 +211,10 @@ class Demos {
                         SingleDemo(
                             name = "XML Playground",
                             klass = XMLPlaygroundActivity::class.java,
+                        ),
+                        SingleDemo(
+                            name = "Host Playground",
+                            klass = HostPlaygroundActivity::class.java,
                         ),
                     ),
                 ),

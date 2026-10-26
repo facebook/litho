@@ -61,6 +61,9 @@
             android:name=".playground.XMLPlaygroundActivity"
             android:exported="true" />
         <activity
+            android:name=".playground.HostPlaygroundActivity"
+            android:exported="true" />
+        <activity
             android:name=".playground.SaveableStatePlaygroundActivity"
             android:exported="true" />
         <activity
