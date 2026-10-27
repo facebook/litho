@@ -16,19 +16,23 @@
 
 package com.facebook.litho.animation
 
+import androidx.annotation.MainThread
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.annotations.ExperimentalLithoApi
+import com.facebook.litho.getUpdatedState
 import com.facebook.litho.layout.ContentPosition
 import com.facebook.litho.layout.StackLayout
 import com.facebook.litho.onCleanup
 import com.facebook.litho.useEffect
 import com.facebook.litho.useState
+import com.facebook.litho.withNewScope
 import com.facebook.rendercore.IntSize
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaJustify
+import java.util.concurrent.atomic.AtomicLong
 
 /**
  * Describes how an [AnimatedContent] transitions between two states: how the target content enters
@@ -92,8 +96,8 @@ internal constructor(
  * overlapping [StackLayout]) until each exit settles — the same container-owned retention model as
  * [AnimatedVisibility]. No `DisappearingHost` / rendercore machinery is involved.
  *
- * Content is keyed by [contentKey]; reusing the same key does not animate. The default transition
- * is a cross-fade.
+ * Content is keyed by [contentKey]; reusing the same key updates the content inputs without a swap.
+ * The default transition is a cross-fade.
  *
  * ```kotlin
  * child(AnimatedContent(targetState = page) { p -> PageContent(p) })
@@ -106,7 +110,8 @@ internal constructor(
  * @param targetState The state whose content should currently be shown.
  * @param transitionSpec Declares the transition via [AnimatedContentTransitionScope.enter] /
  *   [AnimatedContentTransitionScope.exit]. Defaults to a cross-fade.
- * @param contentKey Identity for a state's content; reusing a key does not animate.
+ * @param contentKey Identity for a state's content; reusing a key preserves the slot and its
+ *   motion. Keys must have stable equality and hash codes while retained.
  * @param contentPosition Alignment of overlapping content.
  * @param style Style applied to the container.
  * @param label Debug label for the underlying transitions.
@@ -127,45 +132,37 @@ class AnimatedContent<T>(
 ) : KComponent() {
 
   override fun ComponentScope.render(): Component {
-    // The active slots: states currently rendered, with the target last. Outgoing states are
-    // retained here until their exit settles, then removed.
-    val activeStates = useState { listOf(targetState) }
     val targetKey = contentKey(targetState)
+    val retainedContent = useState { AnimatedContentState.create(targetKey, targetState) }
+    val retained = retainedContent.value
+    val requested = retained.withTarget(targetKey, targetState)
+    val identities = arrayOfNulls<AnimatedContentSlotIdentity>(requested.slots.size)
+    for (i in requested.slots.indices) {
+      identities[i] =
+          withNewScope(requested.slots[i].key ?: NullContentKey) {
+            getUpdatedState { AnimatedContentSlotIdentity("slot-${nextSlotId.getAndIncrement()}") }
+          }
+    }
+    val current = requested.withIdentities(identities)
+    val needsPreparation = current !== retained
 
-    // The state the current target is transitioning *from*, exposed to `transitionSpec` as
-    // `initialState`. Tracked explicitly so it stays stable for the target's lifetime. Deriving it
-    // from `activeStates` is unreliable: as outgoing slots finish exiting, the list shrinks and
-    // eventually collapses to just the target, which would make `initialState == targetState` and
-    // flip the transition's apparent direction mid-animation.
-    val initialState = useState { targetState }
-
-    // The initial content appears without an enter animation (matching Compose); only content shown
-    // after the first composition enters. Without this, the initial content would start mid-enter
-    // (alpha 0) and, never ticked to Visible, would have a no-op exit and be released instantly.
+    // Initial content uses resting values; only later targets play an enter transition.
     val hasStarted = useState { false }
     useEffect(Unit) {
       hasStarted.update(true)
       null
     }
 
-    // On a target change, record the outgoing target as the new initialState and move the target to
-    // last (current). Reusing the same key leaves the list untouched, so no new slot and no
-    // animation.
-    useEffect(targetKey) {
-      val current = activeStates.value
-      val lastKey = current.lastOrNull()?.let { contentKey(it) }
-      if (lastKey != targetKey) {
-        current.lastOrNull()?.let { initialState.update(it) }
-        activeStates.update { states ->
-          states.filterNot { contentKey(it) == targetKey } + targetState
-        }
-      }
+    // Child group commit and retarget effects finish before this parent effect freezes eligibility.
+    useEffect(current, needsPreparation) {
+      val eligible = current.withoutCompletedExits()
+      retainedContent.update { it.acceptCommitted(eligible) }
       null
     }
 
-    val states = activeStates.value
+    val slots = current.slots
     val transform =
-        AnimatedContentTransitionScope(initialState.value, targetState)
+        AnimatedContentTransitionScope(current.initialState, targetState)
             .apply(transitionSpec)
             .buildContentTransform()
 
@@ -178,29 +175,170 @@ class AnimatedContent<T>(
         justifyContent = contentPosition.toJustifyContent(),
         style = style,
     ) {
-      for (i in states.indices.reversed()) {
-        val state = states[i]
-        val key = contentKey(state)
-        val isTarget = key == targetKey
+      for (i in slots.indices.reversed()) {
+        val slot = slots[i]
+        val isTarget = i == slots.lastIndex
         child(
             component =
                 AnimatedContentSlot(
-                    state = state,
+                    state = slot.state,
                     enter = transform.targetContentEnter,
                     exit = transform.initialContentExit,
                     isTarget = isTarget,
+                    identity = checkNotNull(slot.identity),
                     animateEnter = hasStarted.value,
                     label = label,
                     onExitSettled = {
-                      activeStates.update { current -> current.filterNot { contentKey(it) == key } }
+                      if (slot.identity?.hasExited == true) {
+                        retainedContent.update { it.removeExited(slot) }
+                      }
                     },
                     content = content,
                 ),
             zIndex = i,
-            key = key.toString(),
+            key = checkNotNull(slot.identity).key,
         )
       }
     }
+  }
+
+  private companion object {
+    val nextSlotId = AtomicLong()
+
+    object NullContentKey
+  }
+}
+
+/**
+ * Hook-owned slot lifetime. Render reads only [key]; committed effects own the runtime binding. UI
+ * eligibility checks validate the current exit, including after reentry. Tree-state transfer can
+ * preserve the same runtime instance; the old tree must release before the replacement tree rebinds
+ * this identity.
+ */
+internal class AnimatedContentSlotIdentity(val key: String) {
+  @get:MainThread
+  internal var animation: AnimationGroupState<EnterExitState>? = null
+    private set
+
+  private var hasExitAnimation = false
+  private var hasBeenTarget = false
+
+  /**
+   * A slot from a discarded resolve that never committed as a target has no displayed content to
+   * animate out. It can release immediately; previously targeted slots with an exit animation
+   * retain pending work, including delays.
+   */
+  @get:MainThread
+  val hasExited: Boolean
+    get() {
+      val animation = animation ?: return false
+      return animation.targetState == EnterExitState.AfterExit &&
+          (!hasBeenTarget || !hasExitAnimation || !animation.hasAnimator)
+    }
+
+  @MainThread
+  fun bind(
+      animation: AnimationGroupState<EnterExitState>,
+      hasExitAnimation: Boolean,
+  ) {
+    this.animation = animation
+    this.hasExitAnimation = hasExitAnimation
+    hasBeenTarget = hasBeenTarget || animation.targetState != EnterExitState.AfterExit
+  }
+
+  @MainThread
+  fun clear() {
+    animation = null
+  }
+}
+
+internal data class AnimatedContentEntry<T>(
+    val key: Any?,
+    val state: T,
+    val identity: AnimatedContentSlotIdentity? = null,
+)
+
+/**
+ * Immutable content membership; the final entry is the target. Only committed parent effects
+ * install projections, in UI commit order. Exit reports only remove matching slot lifetimes.
+ * Eligibility is frozen on the UI thread before queuing an updater; replayed updaters must not
+ * inspect the identities' mutable animation runtime.
+ */
+internal class AnimatedContentState<T>
+private constructor(
+    val slots: List<AnimatedContentEntry<T>>,
+    val initialState: T,
+) {
+  fun withTarget(key: Any?, state: T): AnimatedContentState<T> {
+    val previousTarget = slots.last()
+    if (previousTarget.key == key) {
+      if (previousTarget.state == state) return this
+      val updated = ArrayList(slots)
+      updated[updated.lastIndex] = previousTarget.copy(state = state)
+      return AnimatedContentState(updated, initialState)
+    }
+
+    val existingIndex = slots.indexOfFirst { it.key == key }
+    val target =
+        if (existingIndex >= 0) slots[existingIndex].copy(state = state)
+        else AnimatedContentEntry(key, state)
+    val updated = ArrayList<AnimatedContentEntry<T>>(slots.size + if (existingIndex < 0) 1 else 0)
+    for (i in 0 until slots.lastIndex) {
+      if (i != existingIndex) updated.add(slots[i])
+    }
+    updated.add(previousTarget)
+    updated.add(target)
+    return AnimatedContentState(updated, previousTarget.state)
+  }
+
+  fun withIdentities(identities: Array<AnimatedContentSlotIdentity?>): AnimatedContentState<T> {
+    var updated: ArrayList<AnimatedContentEntry<T>>? = null
+    for (i in slots.indices) {
+      if (slots[i].identity !== identities[i]) {
+        if (updated == null) updated = ArrayList(slots)
+        updated[i] = slots[i].copy(identity = identities[i])
+      }
+    }
+    return if (updated == null) this else AnimatedContentState(updated, initialState)
+  }
+
+  /** Freeze this result before constructing an updater, which may run on a background thread. */
+  @MainThread
+  fun withoutCompletedExits(): AnimatedContentState<T> {
+    var updated: ArrayList<AnimatedContentEntry<T>>? = null
+    for (i in 0 until slots.lastIndex) {
+      if (slots[i].identity?.hasExited == true) {
+        if (updated == null) {
+          updated = ArrayList(slots.size)
+          for (previous in 0 until i) updated.add(slots[previous])
+        }
+      } else {
+        updated?.add(slots[i])
+      }
+    }
+    if (updated == null) return this
+    updated.add(slots.last())
+    return AnimatedContentState(updated, initialState)
+  }
+
+  fun acceptCommitted(projection: AnimatedContentState<T>): AnimatedContentState<T> {
+    if (this === projection) return this
+    if (slots == projection.slots && initialState == projection.initialState) return this
+    return projection
+  }
+
+  fun removeExited(slot: AnimatedContentEntry<T>): AnimatedContentState<T> {
+    val index = slots.indexOfFirst { it.key == slot.key }
+    if (index < 0 || index == slots.lastIndex) return this
+    if (slots[index].identity !== slot.identity) return this
+    val updated = ArrayList(slots)
+    updated.removeAt(index)
+    return AnimatedContentState(updated, initialState)
+  }
+
+  companion object {
+    fun <T> create(key: Any?, state: T): AnimatedContentState<T> =
+        AnimatedContentState(listOf(AnimatedContentEntry(key, state)), state)
   }
 }
 
@@ -212,13 +350,14 @@ class AnimatedContent<T>(
  */
 @ExperimentalLithoApi
 internal class AnimatedContentSlot<T>(
-    private val state: T,
+    internal val state: T,
     private val enter: EnterTransition,
     private val exit: ExitTransition,
     private val isTarget: Boolean,
+    internal val identity: AnimatedContentSlotIdentity,
     private val animateEnter: Boolean,
     private val label: String,
-    private val onExitSettled: () -> Unit,
+    internal val onExitSettled: () -> Unit,
     private val content: ComponentScope.(T) -> Component?,
 ) : KComponent() {
 
@@ -227,7 +366,6 @@ internal class AnimatedContentSlot<T>(
         with(enter.data) { fade != null || scale != null || slide != null || changeSize != null }
     val hasExitAnimation =
         with(exit.data) { fade != null || scale != null || slide != null || changeSize != null }
-    val wasTarget = useState { isTarget }
     val started = useState { !hasEnterAnimation || !animateEnter }
 
     val driveState =
@@ -241,28 +379,23 @@ internal class AnimatedContentSlot<T>(
     // Allocate effect slots unconditionally (before the content-null guard) for stable slot count.
     val progresses = buildEnterExitProgresses(transition, enter.data, exit.data)
 
-    // Begin the enter once mounted (BeforeEnter -> Visible) when this slot is the target.
     useEffect(Unit) {
-      if (isTarget) {
-        started.update(true)
-      }
-      null
+      onCleanup { identity.clear() }
     }
 
-    // Exit/settle handling, idempotent against re-targeting.
-    useEffect(isTarget) {
+    // The group is fresh each render, refreshing both the runtime binding and completion capture.
+    useEffect(transition) {
+      identity.bind(transition.state, hasExitAnimation)
       if (isTarget) {
+        // A slot may first commit as outgoing and become the target before removal applies.
+        if (!started.value) started.update(true)
         transition.onSettled = null
         null
-      } else if (!wasTarget.value || !hasExitAnimation) {
-        // Never shown, or no exit animation to play (e.g. exit = None): nothing to animate, so
-        // release immediately. Without this, an exit with no animated values would never fire
-        // `onSettled` (it is driven by AnimatedValue.onComplete), leaving the outgoing content
-        // mounted on top of the new content forever.
+      } else if (identity.hasExited) {
         onExitSettled()
         null
       } else {
-        transition.onSettled = { onExitSettled() }
+        transition.onSettled = onExitSettled
         onCleanup { transition.onSettled = null }
       }
     }
