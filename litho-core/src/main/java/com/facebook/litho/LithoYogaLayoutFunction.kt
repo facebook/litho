@@ -797,7 +797,7 @@ internal object LithoYogaLayoutFunction {
     // contributes no automatic minimum, as no leaf does by default.
     if (layoutResult is CustomLayoutResult) {
       layoutResult.subtreeHasCustomLayout = true
-      yogaNode.setMeasureFunction(CustomLayoutMeasureFunction)
+      yogaNode.setMeasureFunction(DefaultLayoutMeasureFunction)
       yogaNode.setMinContentWidth(0f)
       yogaNode.setMinContentHeight(0f)
       customLayouts.add(layoutResult)

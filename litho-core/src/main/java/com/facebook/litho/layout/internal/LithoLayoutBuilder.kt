@@ -24,8 +24,8 @@ import com.facebook.rendercore.IntSize
 
 /**
  * Lays one node out for one pass, within the boxes its parent resolves for it: measured any number
- * of times, then either built once into its result or discarded if nothing placed it. It holds
- * nothing after either.
+ * of times, then either built once into its result or discarded if nothing placed it. Nothing can
+ * be asked of it after either.
  */
 internal sealed interface LithoLayoutBuilder {
 

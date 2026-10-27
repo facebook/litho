@@ -390,7 +390,7 @@ private fun LithoLayoutResult.layoutFunctionDirection(): LayoutDirection =
  * answers the size it declared, kept within that room. A failure answers 0x0 and is held on the
  * result, so nothing a layout function throws crosses into Yoga's native code.
  */
-internal object CustomLayoutMeasureFunction : YogaMeasureFunction {
+internal object DefaultLayoutMeasureFunction : YogaMeasureFunction {
 
   override fun measure(
       cssNode: YogaNode,

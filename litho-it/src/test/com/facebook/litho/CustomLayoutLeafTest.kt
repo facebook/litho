@@ -35,6 +35,7 @@ import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.SimpleMountSpecTester
 import com.facebook.litho.widget.Text
+import com.facebook.rendercore.IntSize
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.primitives.LayoutBehavior
 import com.facebook.rendercore.primitives.LayoutScope as PrimitiveLayoutScope
@@ -191,7 +192,7 @@ class CustomLayoutLeafTest {
                       setMeasureFunction(content)
                       layOutWithin(box)
                     }
-                    .let { MeasuredSize(it.layoutWidth.toInt(), it.layoutHeight.toInt()) }
+                    .let { node -> IntSize(node.layoutWidth.toInt(), node.layoutHeight.toInt()) }
             val direct =
                 boxSize(box) { widthSpec, heightSpec ->
                   measureFixed(contentWidth, widthSpec) to measureFixed(contentHeight, heightSpec)

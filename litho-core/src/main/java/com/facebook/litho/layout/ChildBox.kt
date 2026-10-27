@@ -46,7 +46,15 @@ internal data class ChildBox(
     val border: IntEdges,
     /** The constraints for the border box. An exact axis has `min == max`. */
     val borderBoxConstraints: SizeConstraints,
-)
+) {
+  /** The padding and border across: what its content box is narrower than its border box by. */
+  val edgesAcross: Int
+    get() = padding.horizontal + border.horizontal
+
+  /** The padding and border down: what its content box is shorter than its border box by. */
+  val edgesDown: Int
+    get() = padding.vertical + border.vertical
+}
 
 /**
  * Applies a container child's own box props within [constraints], the room its container measures

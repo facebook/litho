@@ -19,6 +19,7 @@ package com.facebook.litho
 import com.facebook.litho.layout.ChildBox
 import com.facebook.litho.layout.IntEdges
 import com.facebook.litho.layout.LayoutDirection
+import com.facebook.rendercore.IntSize
 import com.facebook.rendercore.SizeConstraints
 
 /**
@@ -33,9 +34,6 @@ internal class BoxGeometry(
     val height: Int,
 )
 
-/** The size a child's border box settled on. */
-internal data class MeasuredSize(val width: Int, val height: Int)
-
 /**
  * Whether [node] is a leaf Litho measures itself — a measurable MountSpec or a Primitive, which the
  * resolver gives Litho's measure function — and so can be laid out without a Yoga pass. Not
@@ -49,35 +47,39 @@ internal fun isLayoutLeaf(node: LithoNode): Boolean =
         node.yogaMeasureFunction is LithoYogaMeasureFunction
 
 /**
- * The border box a leaf in [box] settles on, given [measure], which measures its content under a
- * width and a height spec. [measure] is not called when both axes are exact, as Yoga does not call
- * a leaf's measure function then.
+ * The border-box size a leaf in [box] settles on, given [measure], which measures its content under
+ * a width and a height spec. [measure] is not called when both axes are exact, as Yoga does not
+ * call a leaf's measure function then.
  *
- * On an exact axis the size is the constraint; otherwise it is the content plus the padding and
- * border, within the box's minimum and maximum. Either way it is at least the padding and border.
+ * It's the border-box size around the content it measures: [borderBoxSizeAround].
  */
 internal inline fun boxSize(
     box: ChildBox,
     measure: (Int, Int) -> Pair<Int, Int>,
-): MeasuredSize {
+): IntSize {
   val room = box.borderBoxConstraints
-  val edgesAcross = box.padding.horizontal + box.border.horizontal
-  val edgesDown = box.padding.vertical + box.border.vertical
   if (room.hasExactWidth && room.hasExactHeight) {
-    return MeasuredSize(
-        width = maxOf(room.maxWidth, edgesAcross),
-        height = maxOf(room.maxHeight, edgesDown),
-    )
+    return borderBoxSizeAround(0, 0, box)
   }
   val (contentWidth, contentHeight) =
       measure(
-          contentSpec(room.hasExactWidth, room.hasBoundedWidth, room.maxWidth, edgesAcross),
-          contentSpec(room.hasExactHeight, room.hasBoundedHeight, room.maxHeight, edgesDown),
+          contentSpec(room.hasExactWidth, room.hasBoundedWidth, room.maxWidth, box.edgesAcross),
+          contentSpec(room.hasExactHeight, room.hasBoundedHeight, room.maxHeight, box.edgesDown),
       )
-  return MeasuredSize(
-      width = axisSize(room.hasExactWidth, room.minWidth, room.maxWidth, contentWidth, edgesAcross),
-      height =
-          axisSize(room.hasExactHeight, room.minHeight, room.maxHeight, contentHeight, edgesDown),
+  return borderBoxSizeAround(contentWidth, contentHeight, box)
+}
+
+/**
+ * The border-box size around content of [contentWidth] × [contentHeight] in [box], as Yoga bounds a
+ * measured root: on an exact axis it's the constraint, whatever the content; otherwise the content
+ * plus the padding and border, within the box's minimum and maximum. Either way it's at least the
+ * padding and border.
+ */
+internal fun borderBoxSizeAround(contentWidth: Int, contentHeight: Int, box: ChildBox): IntSize {
+  val room = box.borderBoxConstraints
+  return IntSize(
+      axisSize(room.hasExactWidth, room.minWidth, room.maxWidth, contentWidth, box.edgesAcross),
+      axisSize(room.hasExactHeight, room.minHeight, room.maxHeight, contentHeight, box.edgesDown),
   )
 }
 
@@ -89,12 +91,16 @@ internal fun contentSpec(exact: Boolean, bounded: Boolean, max: Int, edges: Int)
       else -> SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED)
     }
 
-/** The border box along one axis, as Yoga bounds a measured leaf root. */
+/**
+ * The border box along one axis, as Yoga bounds a measured root. Unbounded content, such as a
+ * function declaring its unbounded maximum, stays unbounded with the edges added.
+ */
 internal fun axisSize(exact: Boolean, min: Int, max: Int, content: Int, edges: Int): Int {
   if (exact) {
     return maxOf(max, edges)
   }
-  var size = content + edges
+  var size =
+      if (content > SizeConstraints.Infinity - edges) SizeConstraints.Infinity else content + edges
   if (max != SizeConstraints.Infinity && size > max) {
     size = max
   } else if (min > 0 && size < min) {
