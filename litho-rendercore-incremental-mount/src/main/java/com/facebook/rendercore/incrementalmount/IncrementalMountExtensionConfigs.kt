@@ -36,4 +36,12 @@ object IncrementalMountExtensionConfigs {
    * `1.0` holds back the whole frame, which stops premounting.
    */
   var gapWorkerMarginFraction: Double = 0.0
+
+  /**
+   * When positive, a seen item that scrolls off screen in a
+   * [GapWorkerMode.COST_AWARE_PREMOUNT_WITH_INCREMENTAL_UNMOUNT] tree is queued and unmounted by
+   * the gap worker in spare frame time instead of inside the scroll. At most this many wait per
+   * tree; past that the oldest is released immediately. `0` releases immediately.
+   */
+  var maxPendingOffscreenReleases: Int = 0
 }

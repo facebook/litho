@@ -304,6 +304,13 @@ private constructor(
   ): Boolean {
     val incrementalMountState =
         extensionState as ExtensionState<IncrementalMountExtension.IncrementalMountExtensionState>
+    // Releases first: they are owed, while premounting is speculative.
+    delegate.startNotifyVisibleBoundsChangedSection()
+    try {
+      extension.releaseQueuedOffscreenForGapWorker(incrementalMountState, deadlineNs, nanoTime)
+    } finally {
+      delegate.endNotifyVisibleBoundsChangedSection()
+    }
     while (!hasReachedDeadline(deadlineNs)) {
       // One catch for the whole body: any throw leaves the pending sample behind, and a stale one
       // would be attributed to whatever the next ask mounts.
@@ -347,7 +354,9 @@ private constructor(
           return true
         }
         PremountResult.YIELD -> return true
-        PremountResult.EXHAUSTED -> return false
+        // Read now, not before premounting: a mount callback can have queued a release since.
+        PremountResult.EXHAUSTED ->
+            return extension.hasQueuedOffscreenReleases(incrementalMountState)
       }
     }
     return true

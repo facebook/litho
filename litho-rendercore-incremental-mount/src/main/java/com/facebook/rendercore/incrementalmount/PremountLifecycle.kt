@@ -17,6 +17,7 @@
 package com.facebook.rendercore.incrementalmount
 
 import androidx.collection.MutableLongIntMap
+import androidx.collection.MutableLongList
 import java.util.concurrent.atomic.AtomicLong
 
 /**
@@ -85,9 +86,16 @@ internal class PremountLifecycle {
   private var session: PremountSession? = null
   private var nextSessionId = 1L
 
+  /**
+   * Off-screen items waiting for the gap worker to release them, oldest first. Kept across
+   * [renewSession]; see [IncrementalMountExtensionConfigs.maxPendingOffscreenReleases].
+   */
+  val pendingReleases: MutableLongList = MutableLongList(0)
+
   /** The tree registered for premount. Clears all state. */
   fun startSession(): PremountSession {
     stateByOutputId.clear()
+    pendingReleases.clear()
     return newSession().also { session = it }
   }
 
@@ -105,6 +113,7 @@ internal class PremountLifecycle {
   fun stopSession() {
     session = null
     stateByOutputId.clear()
+    pendingReleases.clear()
   }
 
   fun currentSession(): PremountSession? = session

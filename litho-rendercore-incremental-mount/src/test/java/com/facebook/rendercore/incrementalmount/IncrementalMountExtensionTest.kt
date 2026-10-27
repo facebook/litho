@@ -21,9 +21,12 @@ import android.graphics.Rect
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.TextView
+import androidx.collection.MutableLongList
 import androidx.test.core.app.ApplicationProvider
+import com.facebook.rendercore.BindData
 import com.facebook.rendercore.HostView
 import com.facebook.rendercore.LayoutResult
+import com.facebook.rendercore.MountContext
 import com.facebook.rendercore.MountState
 import com.facebook.rendercore.RenderState
 import com.facebook.rendercore.RenderTree
@@ -1953,6 +1956,431 @@ class IncrementalMountExtensionTest {
     assertThat(lifecycle.isReleased(output.id)).isTrue()
   }
 
+  @Test
+  fun `scroll exit queues a seen leaf until the gap worker releases it`() =
+      withQueuedReleases(4) {
+        val output = output(id = 1, index = 1, top = 20)
+        val fixture = createCostAwareFixture(
+            listOf(output),
+            mode = COST_AWARE_PREMOUNT_WITH_INCREMENTAL_UNMOUNT,
+        )
+        fixture.premount(frameSequence = 1)
+
+        showThenHide(fixture, output)
+
+        assertThat(fixture.extensionState.ownsReference(output.id)).isTrue()
+        assertThat(fixture.queuedReleases.contains(output.id)).isTrue()
+
+        assertThat(fixture.releaseQueued()).isFalse()
+
+        assertThat(fixture.extensionState.ownsReference(output.id)).isFalse()
+        assertThat(fixture.mountState.getContentById(output.id)).isNull()
+        assertThat(fixture.extensionState.state.premountLifecycle?.stateOf(output.id))
+            .isEqualTo(PremountLifecycle.State.RELEASED)
+      }
+
+  @Test
+  fun `scroll that empties the visible rect queues seen leaves`() =
+      withQueuedReleases(4) {
+        val output = output(id = 1, index = 1, top = 20)
+        val fixture = createCostAwareFixture(
+            listOf(output),
+            mode = COST_AWARE_PREMOUNT_WITH_INCREMENTAL_UNMOUNT,
+        )
+        scroll(fixture, output.bounds)
+
+        scroll(fixture, Rect())
+
+        assertThat(fixture.extensionState.ownsReference(output.id)).isTrue()
+        assertThat(fixture.queuedReleases.contains(output.id)).isTrue()
+
+        fixture.releaseQueued()
+
+        assertThat(fixture.extensionState.ownsReference(output.id)).isFalse()
+        assertThat(fixture.extensionState.state.premountLifecycle?.isReleased(output.id)).isTrue()
+      }
+
+  @Test
+  fun `gap worker releases queued leaves oldest first and stops at the deadline`() =
+      withQueuedReleases(4) {
+        val outputs = listOf(
+            output(id = 1, index = 1, top = 20),
+            output(id = 2, index = 2, top = 40),
+            output(id = 3, index = 3, top = 60),
+        )
+        val fixture =
+            createCostAwareFixture(outputs, mode = COST_AWARE_PREMOUNT_WITH_INCREMENTAL_UNMOUNT)
+        scroll(fixture, Rect(0, 0, 10, 100))
+        scroll(fixture, Rect(0, 200, 10, 300))
+        var nowNs = 0L
+
+        // Each clock read moves time on by 10ns, so a 15ns deadline leaves room for two.
+        val hasMore =
+            fixture.releaseQueued(deadlineNs = 15L) {
+              nowNs.also { nowNs += 10L }
+            }
+
+        assertThat(hasMore).isTrue()
+        assertThat(fixture.extensionState.ownsReference(1L)).isFalse()
+        assertThat(fixture.extensionState.ownsReference(2L)).isFalse()
+        assertThat(fixture.extensionState.ownsReference(3L)).isTrue()
+        assertThat(fixture.queuedReleases.size).isEqualTo(1)
+
+        assertThat(fixture.releaseQueued()).isFalse()
+        assertThat(fixture.extensionState.ownsReference(3L)).isFalse()
+      }
+
+  @Test
+  fun `scrolling a queued leaf back on screen cancels its release`() =
+      withQueuedReleases(4) {
+        val output = output(id = 1, index = 1, top = 20)
+        val fixture = createCostAwareFixture(
+            listOf(output),
+            mode = COST_AWARE_PREMOUNT_WITH_INCREMENTAL_UNMOUNT,
+        )
+        fixture.premount(frameSequence = 1)
+        showThenHide(fixture, output)
+
+        scroll(fixture, output.bounds)
+        fixture.releaseQueued()
+
+        assertThat(fixture.queuedReleases.isEmpty()).isTrue()
+        assertThat(fixture.extensionState.ownsReference(output.id)).isTrue()
+        assertThat(fixture.mountState.getContentById(output.id)).isNotNull()
+        assertThat(fixture.extensionState.state.premountLifecycle?.stateOf(output.id))
+            .isEqualTo(PremountLifecycle.State.SEEN)
+      }
+
+  @Test
+  fun `offscreen host is never queued while its leaf is`() =
+      withQueuedReleases(4) {
+        val host = output(id = 10, index = 1, top = 0, bottom = 30)
+        val child = output(id = 11, index = 2, top = 20, hostOutput = host, hostId = host.id)
+        val fixture = createCostAwareFixture(
+            listOf(host, child),
+            hostOutputIds = setOf(host.id),
+            mode = COST_AWARE_PREMOUNT_WITH_INCREMENTAL_UNMOUNT,
+        )
+        fixture.premount(frameSequence = 1)
+        fixture.premount(frameSequence = 2)
+        scroll(fixture, Rect(0, 0, 10, 30))
+        scroll(fixture, Rect(0, 100, 10, 110))
+
+        assertThat(fixture.queuedReleases.contains(child.id)).isTrue()
+        assertThat(fixture.queuedReleases.contains(host.id)).isFalse()
+
+        fixture.releaseQueued()
+
+        assertThat(fixture.extensionState.ownsReference(child.id)).isFalse()
+        assertThat(fixture.extensionState.ownsReference(host.id)).isTrue()
+      }
+
+  @Test
+  fun `premounted leaf that was never seen is not queued`() =
+      withQueuedReleases(4) {
+        val output = output(id = 1, index = 1, top = 20)
+        val fixture = createCostAwareFixture(
+            listOf(output),
+            mode = COST_AWARE_PREMOUNT_WITH_INCREMENTAL_UNMOUNT,
+        )
+        (fixture.extensionState.rootHost as View).layout(0, 0, 10, 1_000)
+        scroll(fixture, Rect(0, 0, 10, 15))
+        fixture.premount(frameSequence = 1)
+
+        scroll(fixture, Rect(0, 100, 10, 115))
+
+        assertThat(fixture.queuedReleases.isEmpty()).isTrue()
+        assertThat(fixture.extensionState.ownsReference(output.id)).isTrue()
+      }
+
+  @Test
+  fun `queue at its limit releases the oldest leaf inside the scroll`() =
+      withQueuedReleases(2) {
+        val outputs = listOf(
+            output(id = 1, index = 1, top = 20),
+            output(id = 2, index = 2, top = 40),
+            output(id = 3, index = 3, top = 60),
+        )
+        val fixture =
+            createCostAwareFixture(outputs, mode = COST_AWARE_PREMOUNT_WITH_INCREMENTAL_UNMOUNT)
+        scroll(fixture, Rect(0, 0, 10, 100))
+
+        scroll(fixture, Rect(0, 200, 10, 300))
+
+        assertThat(fixture.extensionState.ownsReference(1L)).isFalse()
+        assertThat(fixture.queuedReleases.size).isEqualTo(2)
+        assertThat(fixture.queuedReleases[0]).isEqualTo(2L)
+        assertThat(fixture.queuedReleases[1]).isEqualTo(3L)
+      }
+
+  @Test
+  fun `queue overflow keeps an item that is back inside the current rect`() =
+      withQueuedReleases(1) {
+        val first = output(id = 1, index = 1, top = 20)
+        val second = output(id = 2, index = 2, top = 40)
+        val fixture = createCostAwareFixture(
+            listOf(first, second),
+            mode = COST_AWARE_PREMOUNT_WITH_INCREMENTAL_UNMOUNT,
+        )
+        (fixture.extensionState.rootHost as View).layout(0, 0, 10, 1_000)
+        scroll(fixture, Rect(0, 0, 10, 100))
+        // On screen but still queued, as if a re-entry path had missed the cancel.
+        fixture.queuedReleases.add(first.id)
+
+        scroll(fixture, Rect(0, 0, 10, 35))
+
+        assertThat(fixture.extensionState.ownsReference(first.id)).isTrue()
+        assertThat(fixture.mountState.getContentById(first.id)).isNotNull()
+        assertThat(fixture.queuedReleases.size).isEqualTo(1)
+        assertThat(fixture.queuedReleases[0]).isEqualTo(second.id)
+      }
+
+  @Test
+  fun `overflow skips a queued leaf the new layout already released`() =
+      withQueuedReleases(1) {
+        val first = output(id = 1, index = 1, top = 20)
+        val second = output(id = 2, index = 2, top = 40)
+        val fixture = createCostAwareFixture(
+            listOf(first, second),
+            mode = COST_AWARE_PREMOUNT_WITH_INCREMENTAL_UNMOUNT,
+        )
+        (fixture.extensionState.rootHost as View).layout(0, 0, 10, 1_000)
+        scroll(fixture, Rect(0, 0, 10, 100))
+        scroll(fixture, Rect(0, 35, 10, 100))
+        assertThat(fixture.queuedReleases.contains(first.id)).isTrue()
+
+        fixture.extension.beforeMount(
+            fixture.extensionState,
+            TestIncrementalMountExtensionInput(second),
+            Rect(0, 35, 10, 100),
+        )
+        fixture.extension.afterMount(fixture.extensionState)
+
+        assertThat(fixture.extensionState.ownsReference(first.id)).isFalse()
+        assertThat(fixture.queuedReleases.contains(first.id)).isTrue()
+
+        scroll(fixture, Rect(0, 200, 10, 300))
+
+        assertThat(fixture.extensionState.ownsReference(first.id)).isFalse()
+        assertThat(fixture.extensionState.ownsReference(second.id)).isTrue()
+        assertThat(fixture.queuedReleases.size).isEqualTo(1)
+        assertThat(fixture.queuedReleases[0]).isEqualTo(second.id)
+      }
+
+  @Test
+  fun `starved worker leaves at most the cap queued`() =
+      withQueuedReleases(2) {
+        val outputs = listOf(
+            output(id = 1, index = 1, top = 20),
+            output(id = 2, index = 2, top = 40),
+            output(id = 3, index = 3, top = 60),
+        )
+        val fixture =
+            createCostAwareFixture(outputs, mode = COST_AWARE_PREMOUNT_WITH_INCREMENTAL_UNMOUNT)
+
+        repeat(2) {
+          scroll(fixture, Rect(0, 0, 10, 100))
+          scroll(fixture, Rect(0, 200, 10, 300))
+
+          // Past its deadline the worker releases nothing and keeps the tree scheduled.
+          assertThat(fixture.releaseQueued(deadlineNs = 0L) { 0L }).isTrue()
+          assertThat(fixture.queuedReleases.size).isEqualTo(2)
+          assertThat(fixture.extensionState.ownsReference(1L)).isFalse()
+          assertThat(fixture.extensionState.ownsReference(2L)).isTrue()
+          assertThat(fixture.extensionState.ownsReference(3L)).isTrue()
+        }
+      }
+
+  @Test
+  fun `queued leaf the new layout shows is kept mounted`() =
+      withQueuedReleases(4) {
+        val output = output(id = 1, index = 1, top = 20)
+        val fixture = createCostAwareFixture(
+            listOf(output),
+            mode = COST_AWARE_PREMOUNT_WITH_INCREMENTAL_UNMOUNT,
+        )
+        fixture.premount(frameSequence = 1)
+        showThenHide(fixture, output)
+
+        fixture.extension.beforeMount(
+            fixture.extensionState,
+            TestIncrementalMountExtensionInput(output),
+            output.bounds,
+        )
+        fixture.releaseQueued()
+
+        assertThat(fixture.queuedReleases.isEmpty()).isTrue()
+        assertThat(fixture.extensionState.ownsReference(output.id)).isTrue()
+      }
+
+  @Test
+  fun `queued leaf the new layout removes is skipped by the worker`() =
+      withQueuedReleases(4) {
+        val output = output(id = 1, index = 1, top = 20)
+        val fixture = createCostAwareFixture(
+            listOf(output),
+            mode = COST_AWARE_PREMOUNT_WITH_INCREMENTAL_UNMOUNT,
+        )
+        fixture.premount(frameSequence = 1)
+        showThenHide(fixture, output)
+
+        fixture.extension.beforeMount(
+            fixture.extensionState,
+            TestIncrementalMountExtensionInput(),
+            Rect(),
+        )
+
+        assertThat(fixture.extensionState.ownsReference(output.id)).isFalse()
+        assertThat(fixture.releaseQueued()).isFalse()
+        assertThat(fixture.extensionState.state.premountLifecycle?.stateOf(output.id)).isNull()
+      }
+
+  @Test
+  fun `unregistering drops queued releases and stops the session`() =
+      withQueuedReleases(4) {
+        val output = output(id = 1, index = 1, top = 20)
+        val fixture = createCostAwareFixture(
+            listOf(output),
+            mode = COST_AWARE_PREMOUNT_WITH_INCREMENTAL_UNMOUNT,
+        )
+        fixture.premount(frameSequence = 1)
+        showThenHide(fixture, output)
+
+        fixture.extension.onUnregisterForPremount(fixture.extensionState)
+
+        assertThat(fixture.queuedReleases.isEmpty()).isTrue()
+        assertThat(fixture.releaseQueued()).isFalse()
+        assertThat(fixture.extensionState.state.premountLifecycle?.currentSession()).isNull()
+      }
+
+  @Test
+  fun `teardown drops queued releases so stale work does nothing`() =
+      withQueuedReleases(4) {
+        val output = output(id = 1, index = 1, top = 20)
+        val fixture = createCostAwareFixture(
+            listOf(output),
+            mode = COST_AWARE_PREMOUNT_WITH_INCREMENTAL_UNMOUNT,
+        )
+        fixture.premount(frameSequence = 1)
+        showThenHide(fixture, output)
+
+        fixture.extension.onBeforeUnmount(fixture.extensionState)
+
+        assertThat(fixture.queuedReleases.isEmpty()).isTrue()
+        assertThat(fixture.releaseQueued()).isFalse()
+        assertThat(fixture.extensionState.state.premountLifecycle?.stateOf(output.id)).isNull()
+      }
+
+  @Test
+  fun `release queued by a premount callback keeps the tree in the gap worker`() =
+      withQueuedReleases(4) {
+        val seen = output(id = 1, index = 1, top = 20)
+        val premounted = output(id = 2, index = 2, top = 40)
+        lateinit var fixture: CostAwarePremountFixture
+        fixture =
+            createCostAwareFixture(
+                listOf(seen, premounted),
+                mode = COST_AWARE_PREMOUNT_WITH_INCREMENTAL_UNMOUNT,
+                onCreateById = mapOf(premounted.id to { scroll(fixture, Rect(0, 35, 10, 55)) }),
+            )
+        (fixture.extensionState.rootHost as View).layout(0, 0, 10, 1_000)
+        scroll(fixture, seen.bounds)
+        val worker = fixture.startGapWorker()
+
+        worker.run()
+
+        assertThat(fixture.premountResults)
+            .containsExactly(PremountResult.MOUNTED, PremountResult.EXHAUSTED)
+        assertThat(fixture.queuedReleases.contains(seen.id)).isTrue()
+        assertThat(fixture.extensionState.ownsReference(seen.id)).isTrue()
+
+        worker.run()
+
+        assertThat(fixture.queuedReleases.isEmpty()).isTrue()
+        assertThat(fixture.extensionState.ownsReference(seen.id)).isFalse()
+        assertThat(fixture.extensionState.ownsReference(premounted.id)).isTrue()
+      }
+
+  @Test
+  fun `overflow release that unregisters the tree releases the new item instead of queueing it`() =
+      withQueuedReleases(1) {
+        val first = output(id = 1, index = 1, top = 20)
+        val second = output(id = 2, index = 2, top = 40)
+        var unregisterOnUnmount = false
+        lateinit var fixture: CostAwarePremountFixture
+        fixture =
+            createCostAwareFixture(
+                listOf(first, second),
+                mode = COST_AWARE_PREMOUNT_WITH_INCREMENTAL_UNMOUNT,
+                onUnmountById =
+                    mapOf(
+                        first.id to
+                            {
+                              if (unregisterOnUnmount) {
+                                fixture.extension.onUnregisterForPremount(fixture.extensionState)
+                              }
+                            },
+                    ),
+            )
+        (fixture.extensionState.rootHost as View).layout(0, 0, 10, 1_000)
+        scroll(fixture, Rect(0, 0, 10, 100))
+        scroll(fixture, Rect(0, 35, 10, 100))
+        assertThat(fixture.queuedReleases.contains(first.id)).isTrue()
+        val worker = fixture.startGapWorker()
+        unregisterOnUnmount = true
+
+        scroll(fixture, Rect(0, 55, 10, 100))
+
+        assertThat(fixture.extensionState.state.isRegisteredWithGapWorker).isFalse()
+        assertThat(fixture.queuedReleases.isEmpty()).isTrue()
+        assertThat(fixture.extensionState.ownsReference(first.id)).isFalse()
+        assertThat(fixture.extensionState.ownsReference(second.id)).isFalse()
+
+        worker.run()
+        worker.run()
+
+        assertThat(fixture.premountResults).isEmpty()
+      }
+
+  @Test
+  fun `nested visibility pass during an overflow release cannot push the queue past its cap`() =
+      withQueuedReleases(1) {
+        val first = output(id = 1, index = 1, top = 20)
+        val second = output(id = 2, index = 2, top = 40)
+        val third = output(id = 3, index = 3, top = 80)
+        var scrollOnUnmount = false
+        lateinit var fixture: CostAwarePremountFixture
+        fixture =
+            createCostAwareFixture(
+                listOf(first, second, third),
+                mode = COST_AWARE_PREMOUNT_WITH_INCREMENTAL_UNMOUNT,
+                onUnmountById =
+                    mapOf(
+                        first.id to
+                            {
+                              if (scrollOnUnmount) {
+                                scrollOnUnmount = false
+                                // Only the bottom edge moves, so this pass queues `third`.
+                                scroll(fixture, Rect(0, 35, 10, 75))
+                              }
+                            },
+                    ),
+            )
+        (fixture.extensionState.rootHost as View).layout(0, 0, 10, 1_000)
+        scroll(fixture, Rect(0, 0, 10, 100))
+        scroll(fixture, Rect(0, 35, 10, 100))
+        assertThat(fixture.queuedReleases.contains(first.id)).isTrue()
+        scrollOnUnmount = true
+
+        scroll(fixture, Rect(0, 55, 10, 75))
+
+        assertThat(scrollOnUnmount).isFalse()
+        assertThat(fixture.queuedReleases.size).isEqualTo(1)
+        assertThat(fixture.queuedReleases[0]).isEqualTo(second.id)
+        assertThat(fixture.extensionState.ownsReference(first.id)).isFalse()
+        assertThat(fixture.extensionState.ownsReference(third.id)).isFalse()
+      }
+
   private fun nodeFor(output: IncrementalMountOutput): RenderTreeNode =
       RenderTreeNode(null, TestRenderUnit(output.id), null, output.bounds, null, 0)
 
@@ -1993,6 +2421,7 @@ class IncrementalMountExtensionTest {
         inputOutputs: List<IncrementalMountOutput> = outputs,
         mode: GapWorkerMode = PREMOUNT,
         onCreateById: Map<Long, () -> Unit> = emptyMap(),
+        onUnmountById: Map<Long, () -> Unit> = emptyMap(),
     ): CostAwarePremountFixture {
       val context = ApplicationProvider.getApplicationContext<Context>()
       val extension = IncrementalMountExtension.getInstance(mode)
@@ -2020,8 +2449,14 @@ class IncrementalMountExtensionTest {
         val renderUnit =
             if (hostOutputIds.contains(output.id)) {
               TestHostRenderUnit(output.id)
-            } else if (onCreateById.containsKey(output.id)) {
-              CallbackTestRenderUnit(output.id, requireNotNull(onCreateById[output.id]))
+            } else if (
+                onCreateById.containsKey(output.id) || onUnmountById.containsKey(output.id)
+            ) {
+              CallbackTestRenderUnit(
+                  output.id,
+                  onCreateById[output.id] ?: {},
+                  onUnmountById[output.id] ?: {},
+              )
             } else {
               TestRenderUnit(output.id)
             }
@@ -2079,6 +2514,25 @@ class IncrementalMountExtensionTest {
       )
     }
 
+    private fun scroll(fixture: CostAwarePremountFixture, rect: Rect) {
+      fixture.extension.onVisibleBoundsChanged(
+          fixture.extensionState,
+          rect,
+          VisibilityChangeReason.SCROLL,
+      )
+    }
+
+    private fun withQueuedReleases(maxPending: Int, block: () -> Unit) {
+      val saved = IncrementalMountExtensionConfigs.maxPendingOffscreenReleases
+      IncrementalMountExtensionConfigs.maxPendingOffscreenReleases = maxPending
+      try {
+        block()
+      } finally {
+        IncrementalMountExtensionConfigs.maxPendingOffscreenReleases = saved
+        IncrementalMountGapWorker.resetWorkerForTesting()
+      }
+    }
+
     private fun rejectOnDistinctFrames(
         fixture: CostAwarePremountFixture,
         frameSequences: LongRange,
@@ -2107,10 +2561,21 @@ class IncrementalMountExtensionTest {
   private class CallbackTestRenderUnit(
       id: Long,
       private val onCreate: () -> Unit,
+      private val onUnmount: () -> Unit,
   ) : TestRenderUnit(id) {
     override fun createContent(c: Context): View {
       onCreate()
       return super.createContent(c)
+    }
+
+    override fun unmountBinders(
+        context: MountContext,
+        content: Any,
+        layoutData: Any?,
+        bindData: BindData,
+    ) {
+      onUnmount()
+      super.unmountBinders(context, content, layoutData, bindData)
     }
   }
 
@@ -2119,6 +2584,41 @@ class IncrementalMountExtensionTest {
       val extensionState: ExtensionState<IncrementalMountExtensionState>,
       val mountState: MountState,
   ) {
+    val queuedReleases: MutableLongList
+      get() = checkNotNull(extensionState.state.premountLifecycle).pendingReleases
+
+    val premountResults: MutableList<PremountResult> = mutableListOf()
+
+    /** Releases queued items and returns whether any are still queued. */
+    fun releaseQueued(deadlineNs: Long = Long.MAX_VALUE, nanoTime: () -> Long = { 0L }): Boolean {
+      extension.releaseQueuedOffscreenForGapWorker(extensionState, deadlineNs, nanoTime)
+      return queuedReleases.isNotEmpty()
+    }
+
+    /** A gap worker on the real premount dispatcher that records each result. */
+    fun startGapWorker(): IncrementalMountGapWorker {
+      IncrementalMountGapWorker.resetWorkerForTesting()
+      val worker =
+          IncrementalMountGapWorker.get(
+              null,
+              extensionState.tracer,
+              { 0L },
+              EwmaPremountCostEstimator(),
+          ) { extension, extensionState, deadlineNs, frameSequence, nanoTime, estimator ->
+            extension
+                .premountNextForGapWorker(
+                    extensionState,
+                    deadlineNs,
+                    frameSequence,
+                    nanoTime,
+                    estimator,
+                )
+                .also { premountResults.add(it) }
+          }
+      worker.add(extensionState.mountDelegate, null, costAware = true)
+      return worker
+    }
+
     fun premount(
         frameSequence: Long,
         runwayNs: Long = ONE_SECOND_NS,

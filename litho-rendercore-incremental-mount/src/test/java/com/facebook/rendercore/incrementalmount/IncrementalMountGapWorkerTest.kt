@@ -263,6 +263,37 @@ class IncrementalMountGapWorkerTest {
   }
 
   @Test
+  fun `cost-aware path keeps an exhausted delegate while releases are still queued`() {
+    var clockReads = 0
+    var readsBeforeDeadline = 2
+    val fixture = createCostAwareFixture(
+        PremountResult.EXHAUSTED,
+        mode = GapWorkerMode.COST_AWARE_PREMOUNT_WITH_INCREMENTAL_UNMOUNT,
+    )
+    val queued = checkNotNull(fixture.extensionState.state.premountLifecycle).pendingReleases
+    queued.add(1L)
+    queued.add(2L)
+    // Two reads in time: the frame's own check, then one release.
+    val worker = createWorker(
+        { if (clockReads++ < readsBeforeDeadline) 0L else Long.MAX_VALUE },
+        fixture.dispatcher,
+    )
+    worker.add(fixture.extensionState.mountDelegate, null, costAware = true)
+
+    worker.run()
+
+    assertThat(queued.size).isEqualTo(1)
+    assertThat(queued[0]).isEqualTo(2L)
+    assertThat(fixture.resultsReturned).isEmpty()
+
+    readsBeforeDeadline = Int.MAX_VALUE
+    worker.run()
+
+    assertThat(queued.isEmpty()).isTrue()
+    assertThat(fixture.resultsReturned).containsExactly(PremountResult.EXHAUSTED)
+  }
+
+  @Test
   fun `cost-aware path removes an exhausted delegate`() {
     val fixture = createCostAwareFixture(PremountResult.EXHAUSTED)
     val worker = createWorker({ 0L }, fixture.dispatcher)

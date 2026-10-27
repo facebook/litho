@@ -399,6 +399,43 @@ class IncrementalMountExtension(
     scan.pendingMountStartNs = 0L
   }
 
+  /** Releases queued off-screen items, oldest first, until [deadlineNs]. */
+  internal fun releaseQueuedOffscreenForGapWorker(
+      extensionState: ExtensionState<IncrementalMountExtensionState>,
+      deadlineNs: Long,
+      nanoTime: () -> Long,
+  ) {
+    val state = extensionState.state
+    val pending = state.premountLifecycle?.pendingReleases
+    if (pending == null || pending.isEmpty()) {
+      return
+    }
+    val isTracing = extensionState.tracer.isTracing()
+    if (isTracing) {
+      extensionState.tracer
+          .beginSectionWithArgs("IncrementalMountExtension.releaseQueuedOffscreen")
+          .arg("queued", pending.size)
+          .flush()
+    }
+    try {
+      while (pending.isNotEmpty() && nanoTime() < deadlineNs) {
+        val id = pending.removeAt(0)
+        val output = state.input?.getIncrementalMountOutputForId(id)
+        if (output != null && !isVisibleInLatestLayout(state, id)) {
+          maybeReleaseOffscreenReference(extensionState, output, true)
+        }
+      }
+    } finally {
+      if (isTracing) {
+        extensionState.tracer.endSection()
+      }
+    }
+  }
+
+  internal fun hasQueuedOffscreenReleases(
+      extensionState: ExtensionState<IncrementalMountExtensionState>,
+  ): Boolean = extensionState.state.premountLifecycle?.pendingReleases?.isNotEmpty() == true
+
   private fun premountNextOutput(
       extensionState: ExtensionState<IncrementalMountExtensionState>,
   ) {
@@ -1037,6 +1074,9 @@ class IncrementalMountExtension(
     private const val TRACE_PREMOUNT_SEEN = "IM.premountLifecycle.SEEN"
     private const val TRACE_PREMOUNT_RELEASE = "IM.premountLifecycle.RELEASE"
     private const val TRACE_PREMOUNT_RELEASED = "IM.premountLifecycle.RELEASED"
+    private const val TRACE_PENDING_RELEASE_QUEUED = "IM.pendingRelease.QUEUED"
+    private const val TRACE_PENDING_RELEASE_CANCELLED = "IM.pendingRelease.CANCELLED"
+    private const val TRACE_PENDING_RELEASE_OVERFLOW = "IM.pendingRelease.OVERFLOW"
 
     val instance: IncrementalMountExtension = IncrementalMountExtension(GapWorkerMode.OFF)
     private val PremountInstance = IncrementalMountExtension(GapWorkerMode.PREMOUNT)
@@ -1365,6 +1405,83 @@ class IncrementalMountExtension(
       return !extensionState.ownsReference(id)
     }
 
+    /**
+     * The scroll path's release: queues the item for the gap worker when the tree allows it,
+     * otherwise releases it now. Returns whether the reference was released now.
+     */
+    private fun releaseOrQueueOffscreenReference(
+        extensionState: ExtensionState<IncrementalMountExtensionState>,
+        output: IncrementalMountOutput,
+        localVisibleRect: Rect,
+    ): Boolean {
+      val maxPending = IncrementalMountExtensionConfigs.maxPendingOffscreenReleases
+      val lifecycle = extensionState.state.premountLifecycle
+      if (maxPending <= 0 || lifecycle == null) {
+        return maybeReleaseOffscreenReference(extensionState, output, true)
+      }
+      val pending = lifecycle.pendingReleases
+      // Re-checked after every overflow release: its unmount callbacks can unregister the tree or
+      // run a nested visibility pass that refills the queue.
+      while (true) {
+        if (!canQueueOffscreenRelease(extensionState, lifecycle, output.id)) {
+          return maybeReleaseOffscreenReference(extensionState, output, true)
+        }
+        if (pending.contains(output.id)) {
+          return false
+        }
+        if (pending.size < maxPending) {
+          break
+        }
+        val oldest = pending.removeAt(0)
+        traceInstant(extensionState, TRACE_PENDING_RELEASE_OVERFLOW, oldest)
+        val oldestOutput = extensionState.state.input?.getIncrementalMountOutputForId(oldest)
+        // Checked against this pass's rect: previousLocalVisibleRect still holds the last one.
+        if (oldestOutput != null && !isVisibleIn(oldestOutput, localVisibleRect)) {
+          maybeReleaseOffscreenReference(extensionState, oldestOutput, true)
+        }
+      }
+      pending.add(output.id)
+      // The worker drops a tree once it has nothing to premount, so it has to be woken again.
+      getGapWorker(extensionState).add(extensionState.mountDelegate, null, costAware = true)
+      traceInstant(extensionState, TRACE_PENDING_RELEASE_QUEUED, output.id)
+      return false
+    }
+
+    /** Whether [maybeReleaseOffscreenReference] would release this item rather than keep it. */
+    private fun canQueueOffscreenRelease(
+        extensionState: ExtensionState<IncrementalMountExtensionState>,
+        lifecycle: PremountLifecycle,
+        id: Long,
+    ): Boolean {
+      return extensionState.state.isRegisteredWithGapWorker &&
+          lifecycle.currentSession() != null &&
+          extensionState.ownsReference(id) &&
+          lifecycle.stateOf(id) != PremountLifecycle.State.PREMOUNTED &&
+          getContentById(extensionState, id) !is Host
+    }
+
+    private fun cancelQueuedOffscreenRelease(
+        extensionState: ExtensionState<IncrementalMountExtensionState>,
+        id: Long,
+    ) {
+      val pending = extensionState.state.premountLifecycle?.pendingReleases
+      if (pending != null && pending.isNotEmpty() && pending.remove(id)) {
+        traceInstant(extensionState, TRACE_PENDING_RELEASE_CANCELLED, id)
+      }
+    }
+
+    private fun traceInstant(
+        extensionState: ExtensionState<IncrementalMountExtensionState>,
+        name: String,
+        outputId: Long,
+    ) {
+      val tracer = extensionState.tracer
+      if (tracer.isTracing()) {
+        tracer.beginSectionWithArgs(name).arg("outputId", outputId).flush()
+        tracer.endSection()
+      }
+    }
+
     private fun maybeAcquireReference(
         extensionState: ExtensionState<IncrementalMountExtensionState>,
         localVisibleRect: Rect?,
@@ -1384,6 +1501,9 @@ class IncrementalMountExtension(
               isRootItem(id) ||
               incrementalMountOutput.excludeFromIncrementalMount()
       markSeen(extensionState, localVisibleRect, incrementalMountOutput)
+      if (isMountable) {
+        cancelQueuedOffscreenRelease(extensionState, id)
+      }
       val hasAcquiredMountRef = extensionState.ownsReference(id)
       if (isMountable && !hasAcquiredMountRef) {
         extensionState.acquireMountReference(incrementalMountOutput.id, isMounting)
@@ -1392,7 +1512,11 @@ class IncrementalMountExtension(
               hasAcquiredMountRef &&
               !isUnmeasuredEmptyPass(extensionState, localVisibleRect)
       ) {
-        maybeReleaseOffscreenReference(extensionState, incrementalMountOutput, isMounting)
+        if (isMounting && localVisibleRect != null) {
+          releaseOrQueueOffscreenReference(extensionState, incrementalMountOutput, localVisibleRect)
+        } else {
+          maybeReleaseOffscreenReference(extensionState, incrementalMountOutput, isMounting)
+        }
       }
     }
 
@@ -1459,7 +1583,7 @@ class IncrementalMountExtension(
           if (
               !node.excludeFromIncrementalMount() &&
                   !RenderCoreConfig.disableIncrementalUnmounting &&
-                  maybeReleaseOffscreenReference(extensionState, node, true)
+                  releaseOrQueueOffscreenReference(extensionState, node, localVisibleRect)
           ) {
             if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
               itemsUnmounted++
@@ -1483,6 +1607,7 @@ class IncrementalMountExtension(
                   byBottomBounds.get(state.previousBottomsIndex - 1).bounds.top
           ) {
             markSeen(extensionState, localVisibleRect, node)
+            cancelQueuedOffscreenRelease(extensionState, id)
             if (!extensionState.ownsReference(id)) {
               extensionState.acquireMountReference(node.id, true)
               state.componentIdsMountedInThisFrameBitmap.set(node.index)
@@ -1511,6 +1636,7 @@ class IncrementalMountExtension(
           // Item should still be in the view port.
           if (localVisibleRect.top <= byTopBounds.get(state.previousTopsIndex).bounds.bottom) {
             markSeen(extensionState, localVisibleRect, node)
+            cancelQueuedOffscreenRelease(extensionState, id)
             if (!extensionState.ownsReference(id)) {
               extensionState.acquireMountReference(node.id, true)
               state.componentIdsMountedInThisFrameBitmap.set(node.index)
@@ -1532,7 +1658,7 @@ class IncrementalMountExtension(
           if (
               !node.excludeFromIncrementalMount() &&
                   !RenderCoreConfig.disableIncrementalUnmounting &&
-                  maybeReleaseOffscreenReference(extensionState, node, true)
+                  releaseOrQueueOffscreenReference(extensionState, node, localVisibleRect)
           ) {
             if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
               itemsUnmounted++
@@ -1662,10 +1788,12 @@ class IncrementalMountExtension(
     // plain incremental mount would.
     private fun isVisibleInLatestLayout(state: IncrementalMountExtensionState, id: Long): Boolean {
       val output = state.input?.getIncrementalMountOutputForId(id) ?: return false
-      val visibleRect = state.previousLocalVisibleRect
-      return output.excludeFromIncrementalMount() ||
-          (!visibleRect.isEmpty && Rect.intersects(visibleRect, output.bounds))
+      return isVisibleIn(output, state.previousLocalVisibleRect)
     }
+
+    private fun isVisibleIn(output: IncrementalMountOutput, visibleRect: Rect): Boolean =
+        output.excludeFromIncrementalMount() ||
+            (!visibleRect.isEmpty && Rect.intersects(visibleRect, output.bounds))
 
     private fun isMountedHostWithChildContent(content: Any?): Boolean {
       return content is Host && content.mountItemCount > 0
