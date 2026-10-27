@@ -158,6 +158,41 @@ class AnimationFrameInvalidationTest {
   }
 
   @Test
+  fun publishingCommand_preservesReplacementStartedDuringSynchronousBind() {
+    for (firstOutcome in listOf(AnimationEnd.Finished, AnimationEnd.Interrupted)) {
+      val outcomes = mutableListOf<Pair<String, AnimationEnd>>()
+      var replaceOnBind = false
+      val testView = lithoTestRule.render {
+        ImperativeAlphaComponent {
+          if (replaceOnBind) {
+            replaceOnBind = false
+            checkNotNull(capturedAnimatable).animateTo(0f, snap()) {
+              outcomes.add("replacement" to it)
+            }
+          }
+        }
+      }
+      lithoTestRule.idle()
+      val animatable = checkNotNull(capturedAnimatable)
+      animatable.animateTo(1f, tween(1_000.milliseconds)) { outcomes.add("first" to it) }
+      replaceOnBind = true
+
+      if (firstOutcome == AnimationEnd.Finished) animatable.finish() else animatable.snapTo(1f)
+
+      assertThat(testView.lithoView.alpha).isEqualTo(1f)
+      assertThat(replaceOnBind).isFalse()
+      assertThat(outcomes).isEmpty()
+      assertThat(AnimationController.hasRunningAnimations).isTrue()
+      animationRule.runNextFrame()
+      assertThat(testView.lithoView.alpha).isEqualTo(0f)
+      assertThat(outcomes)
+          .containsExactly("first" to firstOutcome, "replacement" to AnimationEnd.Finished)
+      assertThat(animationRule.hasScheduledFrames()).isFalse()
+      testView.release()
+    }
+  }
+
+  @Test
   fun valueReadAtBothBindAndResolve_takesLayoutPathNotBindFastPath() {
     val testView = lithoTestRule.render { BindAndResolveAlphaComponent(target = 0f) }
     shadowOf(getMainLooper()).idle()
@@ -384,17 +419,22 @@ class AnimationFrameInvalidationTest {
     }
   }
 
-  private inner class ImperativeAlphaComponent : KComponent() {
-    override fun ComponentScope.render(): Component = Row(
-        style =
-            Style.width(100.px)
-                .height(100.px)
-                .alpha(
-                    useAnimatable(0f, FloatTypeConverter, label = "alpha")
-                        .also { capturedAnimatable = it }
-                        .value,
-                ),
-    )
+  private inner class ImperativeAlphaComponent(private val onValueRead: ((Float) -> Unit)? = null) :
+      KComponent() {
+    override fun ComponentScope.render(): Component {
+      val animated =
+          useAnimatable(0f, FloatTypeConverter, label = "alpha")
+              .also { capturedAnimatable = it }
+              .value
+      val value =
+          if (onValueRead == null) animated
+          else
+              object : Value<Float> {
+                override val value: Float
+                  get() = animated.value.also { onValueRead.invoke(it) }
+              }
+      return Row(style = Style.width(100.px).height(100.px).alpha(value))
+    }
   }
 
   /** Reads the value at both bind (`Style.alpha(Value)`) and resolve (`value.value` in render). */

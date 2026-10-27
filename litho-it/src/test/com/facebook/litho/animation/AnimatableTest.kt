@@ -198,13 +198,162 @@ class AnimatableTest {
     assertThat(checkNotNull(capturedAnimatable).isRunning).isFalse()
   }
 
-  private inner class ImperativeAlphaComponent : KComponent() {
+  @Test
+  fun noOpCommand_completesAsynchronouslyWithoutAnAnimator() {
+    lithoTestRule.render { ImperativeAlphaComponent() }
+    lithoTestRule.idle()
+    val outcomes = mutableListOf<AnimationEnd>()
+    val animatable = checkNotNull(capturedAnimatable)
+
+    animatable.animateTo(0f, snap()) { firstOutcome ->
+      outcomes.add(firstOutcome)
+      animatable.animateTo(0f, snap()) { secondOutcome -> outcomes.add(secondOutcome) }
+    }
+
+    assertThat(outcomes).isEmpty()
+    assertThat(animatable.isRunning).isFalse()
+    assertThat(AnimationController.hasRunningAnimations).isFalse()
+    assertThat(animationRule.hasScheduledFrames()).isTrue()
+    animationRule.runNextFrame()
+    assertThat(outcomes).containsExactly(AnimationEnd.Finished)
+    assertThat(animationRule.hasScheduledFrames()).isTrue()
+    animationRule.runNextFrame()
+    assertThat(outcomes).containsExactly(AnimationEnd.Finished, AnimationEnd.Finished)
+    assertThat(animationRule.hasScheduledFrames()).isFalse()
+  }
+
+  @Test
+  fun equalEndpointCommand_preservesTimedWork() {
+    lithoTestRule.render { ImperativeAlphaComponent() }
+    lithoTestRule.idle()
+    val outcomes = mutableListOf<AnimationEnd>()
+    val animatable = checkNotNull(capturedAnimatable)
+
+    animatable.animateTo(0f, tween(duration = 1_000.ms)) { outcomes.add(it) }
+    animationRule.advanceBy(500.ms)
+
+    assertThat(animatable.isRunning).isTrue()
+    assertThat(outcomes).isEmpty()
+    animationRule.advanceBy(500.ms)
+    assertThat(outcomes).containsExactly(AnimationEnd.Finished)
+    assertThat(animationRule.hasScheduledFrames()).isFalse()
+  }
+
+  @Test
+  fun replacementAndStop_keepEachCommandsTerminalOutcome() {
+    val view = lithoTestRule.render { ImperativeAlphaComponent() }
+    lithoTestRule.idle()
+    val outcomes = mutableListOf<Pair<String, AnimationEnd>>()
+    val animatable = checkNotNull(capturedAnimatable)
+    val spec = tween<Float>(duration = 1_000.ms, easing = Easing.Linear)
+    animatable.animateTo(1f, spec) { outcomes.add("first" to it) }
+    animationRule.advanceBy(200.ms)
+    view.setRoot(ImperativeAlphaComponent(label = "updated alpha"))
+    lithoTestRule.idle()
+    assertThat(capturedAnimatable).isSameAs(animatable)
+    val progress = view.lithoView.alpha
+
+    animatable.animateTo(0f, spec) { outcomes.add("second" to it) }
+    animatable.stop()
+
+    assertThat(outcomes).isEmpty()
+    assertThat(view.lithoView.alpha).isEqualTo(progress)
+    animationRule.runNextFrame()
+    assertThat(outcomes)
+        .containsExactly(
+            "first" to AnimationEnd.Interrupted,
+            "second" to AnimationEnd.Cancelled,
+        )
+    assertThat(animationRule.hasScheduledFrames()).isFalse()
+  }
+
+  @Test
+  fun finishedCommand_isNotReclassifiedByReplacementBeforeDelivery() {
+    val view = lithoTestRule.render { ImperativeAlphaComponent() }
+    lithoTestRule.idle()
+    val outcomes = mutableListOf<Pair<String, AnimationEnd>>()
+    val animatable = checkNotNull(capturedAnimatable)
+    animatable.animateTo(1f, snap()) { outcomes.add("first" to it) }
+    AnimationController.enqueueCompletion {
+      animatable.animateTo(0f, snap()) { outcomes.add("second" to it) }
+    }
+
+    animationRule.runNextFrame()
+
+    assertThat(view.lithoView.alpha).isEqualTo(1f)
+    assertThat(outcomes).containsExactly("first" to AnimationEnd.Finished)
+    animationRule.runNextFrame()
+    assertThat(view.lithoView.alpha).isEqualTo(0f)
+    assertThat(outcomes)
+        .containsExactly(
+            "first" to AnimationEnd.Finished,
+            "second" to AnimationEnd.Finished,
+        )
+    assertThat(animationRule.hasScheduledFrames()).isFalse()
+  }
+
+  @Test
+  fun snapTo_interruptsTheCommandAfterPublishingItsValue() {
+    val view = lithoTestRule.render { ImperativeAlphaComponent() }
+    lithoTestRule.idle()
+    val outcomes = mutableListOf<Pair<AnimationEnd, Float>>()
+    val animatable = checkNotNull(capturedAnimatable)
+    animatable.animateTo(1f, tween(1_000.ms)) { outcomes.add(it to view.lithoView.alpha) }
+    animationRule.advanceBy(200.ms)
+
+    animatable.snapTo(0.5f)
+    lithoTestRule.idle()
+
+    assertThat(outcomes).isEmpty()
+    animationRule.runNextFrame()
+    assertThat(outcomes).containsExactly(AnimationEnd.Interrupted to 0.5f)
+    assertThat(animationRule.hasScheduledFrames()).isFalse()
+  }
+
+  @Test
+  fun finish_publishesTargetAndKeepsFinishedOutcomeAcrossStop() {
+    val view = lithoTestRule.render { ImperativeAlphaComponent() }
+    lithoTestRule.idle()
+    val outcomes = mutableListOf<Pair<AnimationEnd, Float>>()
+    val animatable = checkNotNull(capturedAnimatable)
+    animatable.animateTo(1f, tween(1_000.ms)) { outcomes.add(it to view.lithoView.alpha) }
+
+    animatable.finish()
+    animatable.finish()
+    animatable.stop()
+    lithoTestRule.idle()
+
+    assertThat(view.lithoView.alpha).isEqualTo(1f)
+    assertThat(outcomes).isEmpty()
+    animationRule.runNextFrame()
+    assertThat(outcomes).containsExactly(AnimationEnd.Finished to 1f)
+    assertThat(animationRule.hasScheduledFrames()).isFalse()
+  }
+
+  @Test
+  fun unmount_cancelsPreparedCommandAndStillDeliversItsOutcome() {
+    val view = lithoTestRule.render { ImperativeAlphaComponent() }
+    lithoTestRule.idle()
+    val outcomes = mutableListOf<AnimationEnd>()
+    checkNotNull(capturedAnimatable).animateTo(1f, tween(1_000.ms)) { outcomes.add(it) }
+
+    view.release()
+    lithoTestRule.idle()
+
+    assertThat(outcomes).isEmpty()
+    assertThat(animationRule.hasScheduledFrames()).isTrue()
+    animationRule.runNextFrame()
+    assertThat(outcomes).containsExactly(AnimationEnd.Cancelled)
+    assertThat(animationRule.hasScheduledFrames()).isFalse()
+  }
+
+  private inner class ImperativeAlphaComponent(private val label: String = "alpha") : KComponent() {
     override fun ComponentScope.render(): Component = Row(
         style =
             Style.width(100.px)
                 .height(100.px)
                 .alpha(
-                    useAnimatable(0f, FloatTypeConverter, label = "alpha")
+                    useAnimatable(0f, FloatTypeConverter, label = label)
                         .also { capturedAnimatable = it }
                         .value,
                 ),

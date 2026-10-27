@@ -19,6 +19,7 @@ package com.facebook.litho.animation
 import com.facebook.rendercore.ms
 import kotlin.time.Duration
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -69,6 +70,111 @@ class AnimationControllerTest {
 
       assertThat(AnimationController.hasRunningAnimations).isFalse()
       assertThat(frameDriver.hasScheduledFrameCallbacks()).isFalse()
+    }
+  }
+
+  @Test
+  fun completionWithoutAnimations_waitsForAFrameAndSurvivesLastUnregister() {
+    val driver = TestAnimationFrameDriver()
+    val notifications = mutableListOf<String>()
+    val animation = FrameDrivenAnimation { true }
+    AnimationController.withFrameDriverForTest(driver) {
+      AnimationController.register(animation)
+      AnimationController.enqueueCompletion({ notifications.add("completed") })
+      AnimationController.unregister(animation)
+
+      assertThat(notifications).isEmpty()
+      assertThat(AnimationController.hasRunningAnimations).isFalse()
+      assertThat(driver.hasScheduledFrameCallbacks()).isTrue()
+      driver.runNextFrame(16.ms)
+      assertThat(notifications).containsExactly("completed")
+      assertThat(driver.hasScheduledFrameCallbacks()).isFalse()
+    }
+  }
+
+  @Test
+  fun completionProducedDuringTick_isDeliveredAfterAllAnimationsTick() {
+    val driver = TestAnimationFrameDriver()
+    val events = mutableListOf<String>()
+    AnimationController.withFrameDriverForTest(driver) {
+      AnimationController.register(
+          FrameDrivenAnimation {
+            events.add("first tick")
+            AnimationController.enqueueCompletion({ events.add("completion") })
+            false
+          },
+      )
+      AnimationController.register(
+          FrameDrivenAnimation {
+            events.add("second tick")
+            false
+          },
+      )
+
+      driver.runNextFrame(16.ms)
+
+      assertThat(events).containsExactly("first tick", "second tick", "completion")
+      assertThat(driver.hasScheduledFrameCallbacks()).isFalse()
+    }
+  }
+
+  @Test
+  fun completionProducedDuringDelivery_waitsForTheNextFrame() {
+    val driver = TestAnimationFrameDriver()
+    val notifications = mutableListOf<String>()
+    AnimationController.withFrameDriverForTest(driver) {
+      AnimationController.enqueueCompletion(
+          {
+            notifications.add("first")
+            AnimationController.enqueueCompletion({ notifications.add("second") })
+          },
+      )
+
+      driver.runNextFrame(16.ms)
+      assertThat(notifications).containsExactly("first")
+      assertThat(driver.hasScheduledFrameCallbacks()).isTrue()
+      driver.runNextFrame(16.ms)
+      assertThat(notifications).containsExactly("first", "second")
+      assertThat(driver.hasScheduledFrameCallbacks()).isFalse()
+    }
+  }
+
+  @Test
+  fun failingCompletion_preservesRemainingDeliveryAndNewWork() {
+    val driver = TestAnimationFrameDriver()
+    val notifications = mutableListOf<String>()
+    val failure = IllegalStateException("completion failed")
+    AnimationController.withFrameDriverForTest(driver) {
+      AnimationController.enqueueCompletion(
+          {
+            AnimationController.enqueueCompletion({ notifications.add("next frame") })
+            throw failure
+          },
+      )
+      AnimationController.enqueueCompletion({ notifications.add("same frame") })
+
+      assertThatThrownBy { driver.runNextFrame(16.ms) }.isSameAs(failure)
+      assertThat(notifications).containsExactly("same frame")
+      assertThat(driver.hasScheduledFrameCallbacks()).isTrue()
+      driver.runNextFrame(16.ms)
+      assertThat(notifications).containsExactly("same frame", "next frame")
+      assertThat(driver.hasScheduledFrameCallbacks()).isFalse()
+    }
+  }
+
+  @Test
+  fun driverReset_discardsPendingCompletions() {
+    val first = TestAnimationFrameDriver()
+    val second = TestAnimationFrameDriver()
+    val notifications = mutableListOf<String>()
+    AnimationController.withFrameDriverForTest(first) {
+      AnimationController.enqueueCompletion({ notifications.add("discarded") })
+    }
+    AnimationController.withFrameDriverForTest(second) {
+      second.runNextFrame(16.ms)
+      assertThat(notifications).isEmpty()
+      assertThat(first.hasScheduledFrameCallbacks()).isFalse()
+      assertThat(second.hasScheduledFrameCallbacks()).isFalse()
     }
   }
 
