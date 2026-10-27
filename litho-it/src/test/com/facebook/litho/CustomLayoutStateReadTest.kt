@@ -17,6 +17,7 @@
 package com.facebook.litho
 
 import android.view.View
+import com.facebook.litho.animation.width
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
@@ -34,6 +35,7 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.viewTag
 import com.facebook.litho.view.wrapInView
 import com.facebook.litho.widget.SimpleMountSpecTester
+import com.facebook.rendercore.Dimen
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.primitives.LayoutBehavior
 import com.facebook.rendercore.primitives.LayoutScope as PrimitiveLayoutScope
@@ -92,9 +94,9 @@ class CustomLayoutStateReadTest {
             listOf(SimpleMountSpecTester(style = Style.width(CHILD.px).height(CHILD.px))),
             layout =
                 LayoutFunctionN { measurables, _ ->
-                  val p = measurables[0].measure(SizeConstraints.exact(CHILD, CHILD))
+                  val placeable = measurables[0].measure(SizeConstraints.exact(CHILD, CHILD))
                   val y = state.value
-                  layout(CHILD, CHILD + y) { p.place(x = 0, y = y) }
+                  layout(CHILD, CHILD + y) { placeable.place(x = 0, y = y) }
                 },
         )
       }
@@ -152,9 +154,9 @@ class CustomLayoutStateReadTest {
         return Layout(
             listOf(SimpleMountSpecTester(style = Style.width(CHILD.px).height(CHILD.px))),
             layout =
-                LayoutFunctionN { ms, _ ->
-                  val p = ms[0].measure(SizeConstraints.exact(CHILD, CHILD))
-                  layout(CHILD, s.value) { p.place(0, 0) }
+                LayoutFunctionN { measurables, _ ->
+                  val placeable = measurables[0].measure(SizeConstraints.exact(CHILD, CHILD))
+                  layout(CHILD, s.value) { placeable.place(0, 0) }
                 },
         )
       }
@@ -184,9 +186,11 @@ class CustomLayoutStateReadTest {
         return Layout(
             listOf(SimpleMountSpecTester(style = Style.width(CHILD.px).height(CHILD.px))),
             layout =
-                LayoutFunctionN { measurables, c ->
-                  val p = measurables[0].measure(SizeConstraints.exact(CHILD, CHILD))
-                  layout(c.maxWidth, CHILD * 2) { p.place(x = 0, y = state.value) }
+                LayoutFunctionN { measurables, constraints ->
+                  val placeable = measurables[0].measure(SizeConstraints.exact(CHILD, CHILD))
+                  layout(constraints.maxWidth, CHILD * 2) {
+                    placeable.place(x = 0, y = state.value)
+                  }
                 },
         )
       }
@@ -217,16 +221,19 @@ class CustomLayoutStateReadTest {
         return Layout(
             listOf(SimpleMountSpecTester(style = Style.width(CHILD.px).height(CHILD.px))),
             layout =
-                LayoutFunctionN { ms, _ ->
-                  val p = ms[0].measure(SizeConstraints.exact(CHILD, CHILD))
-                  layout(s.value, CHILD) { p.place(0, 0) }
+                LayoutFunctionN { measurables, _ ->
+                  val placeable = measurables[0].measure(SizeConstraints.exact(CHILD, CHILD))
+                  layout(s.value, CHILD) { placeable.place(0, 0) }
                 },
         )
       }
     }
-    val placesIfFits = LayoutFunctionN { ms, c ->
-      val p = ms[0].measure(SizeConstraints(maxWidth = SizeConstraints.Infinity, maxHeight = CHILD))
-      layout(c.maxWidth, CHILD) { if (p.width <= CHILD) p.place(0, 0) }
+    val placesIfFits = LayoutFunctionN { measurables, constraints ->
+      val placeable =
+          measurables[0].measure(
+              SizeConstraints(maxWidth = SizeConstraints.Infinity, maxHeight = CHILD),
+          )
+      layout(constraints.maxWidth, CHILD) { if (placeable.width <= CHILD) placeable.place(0, 0) }
     }
 
     val testView =
@@ -257,11 +264,11 @@ class CustomLayoutStateReadTest {
         return Layout(
             listOf(SimpleMountSpecTester(style = Style.width(CHILD.px).height(CHILD.px))),
             layout =
-                LayoutFunctionN { ms, c ->
-                  val p = ms[0].measure(SizeConstraints.exact(CHILD, CHILD))
-                  layout(c.maxWidth, CHILD) {
+                LayoutFunctionN { measurables, constraints ->
+                  val placeable = measurables[0].measure(SizeConstraints.exact(CHILD, CHILD))
+                  layout(constraints.maxWidth, CHILD) {
                     check(state.value) { "not ready" }
-                    p.place(0, 0)
+                    placeable.place(0, 0)
                   }
                 },
         )
@@ -293,10 +300,11 @@ class CustomLayoutStateReadTest {
         return Layout(
             listOf(WidthFromState(state)),
             layout =
-                LayoutFunctionN { ms, c ->
-                  val p = ms[0].measure(SizeConstraints(maxWidth = SizeConstraints.Infinity))
-                  check(p.width <= CHILD) { "too wide" }
-                  layout(c.maxWidth, CHILD) { p.place(0, 0) }
+                LayoutFunctionN { measurables, constraints ->
+                  val placeable =
+                      measurables[0].measure(SizeConstraints(maxWidth = SizeConstraints.Infinity))
+                  check(placeable.width <= CHILD) { "too wide" }
+                  layout(constraints.maxWidth, CHILD) { placeable.place(0, 0) }
                 },
         )
       }
@@ -433,9 +441,9 @@ class CustomLayoutStateReadTest {
             ),
             layout =
                 LayoutFunctionN { measurables, _ ->
-                  val p = measurables[0].measure(SizeConstraints.exact(CHILD, CHILD))
+                  val placeable = measurables[0].measure(SizeConstraints.exact(CHILD, CHILD))
                   val y = state.value
-                  layout(CHILD, CHILD + y) { p.place(x = 0, y = y) }
+                  layout(CHILD, CHILD + y) { placeable.place(x = 0, y = y) }
                 },
         )
       }
@@ -451,9 +459,12 @@ class CustomLayoutStateReadTest {
   }
 
   /** Places its only child, measured unbounded, only if it is at most [CHILD] wide. */
-  private val placesIfNarrow = LayoutFunctionN { ms, c ->
-    val p = ms[0].measure(SizeConstraints(maxWidth = SizeConstraints.Infinity, maxHeight = CHILD))
-    layout(c.maxWidth, CHILD) { if (p.width <= CHILD) p.place(0, 0) }
+  private val placesIfNarrow = LayoutFunctionN { measurables, constraints ->
+    val placeable =
+        measurables[0].measure(
+            SizeConstraints(maxWidth = SizeConstraints.Infinity, maxHeight = CHILD),
+        )
+    layout(constraints.maxWidth, CHILD) { if (placeable.width <= CHILD) placeable.place(0, 0) }
   }
 
   private fun rootOf(testView: TestLithoView): LithoLayoutResult =
@@ -528,6 +539,80 @@ class CustomLayoutStateReadTest {
   }
 
   /**
+   * As above, with the inner `Layout` inside a `Column` its parent leaves out: discarding the
+   * `Column`'s tree discards the inner `Layout` through its builder, which adds its unplaced
+   * child's read.
+   */
+  @Test
+  fun `a nested Layout in a discarded Yoga tree keeps its unplaced child's readers`() {
+    lateinit var width: State<Int>
+
+    class Host : KComponent() {
+      @Suppress("KComponentUncachedAllocationDetector")
+      override fun ComponentScope.render(): Component {
+        val state = useState { CHILD * 2 }
+        width = state
+        val inner = Layout(listOf(Row { child(WidthFromState(state)) }), layout = measuresIfRoomy)
+        return Layout(listOf(Column { child(inner) }), layout = placesIfRoomyAnswerFits)
+      }
+    }
+
+    val testView = lithoTestRule.render(widthPx = VIEWPORT, heightPx = VIEWPORT) { Host() }
+    assertThat(containerOf(testView).childCount).describedAs("too wide: left out").isEqualTo(0)
+
+    lithoTestRule.act(testView) { width.update(CHILD / 2) }
+    lithoTestRule.idle()
+
+    assertThat(containerOf(testView).childCount).describedAs("fits now: placed").isEqualTo(1)
+  }
+
+  /**
+   * As above, with deferred content beside the inner `Layout`, so each tree made for the `Column`
+   * keeps its builder, and with neither of the `Column`'s measurements placed: discarding that kept
+   * builder adds its unplaced child's read.
+   */
+  @Test
+  fun `a kept Layout in a discarded Yoga tree keeps its unplaced child's readers`() {
+    lateinit var width: State<Int>
+    val sizedByRoomyLeftOut = LayoutFunctionN { measurables, _ ->
+      val roomy = measurables[0].measure(SizeConstraints(maxWidth = ROOMY, maxHeight = CHILD))
+      measurables[0].measure(SizeConstraints(maxWidth = CHILD, maxHeight = CHILD))
+      layout(roomy.width, CHILD) {}
+    }
+
+    class Host : KComponent() {
+      @Suppress("KComponentUncachedAllocationDetector")
+      override fun ComponentScope.render(): Component {
+        val state = useState { CHILD * 2 }
+        width = state
+        val inner = Layout(listOf(Row { child(WidthFromState(state)) }), layout = measuresIfRoomy)
+        val deferred = RenderWithConstraints { Column(style = Style.width(10.px).height(10.px)) }
+        return Row {
+          child(
+              Layout(
+                  listOf(
+                      Column {
+                        child(deferred)
+                        child(inner)
+                      },
+                  ),
+                  layout = sizedByRoomyLeftOut,
+              ),
+          )
+        }
+      }
+    }
+
+    val testView = lithoTestRule.render(widthPx = VIEWPORT, heightPx = VIEWPORT) { Host() }
+    assertThat(containerOf(testView).width).describedAs("too wide: the content's").isEqualTo(10)
+
+    lithoTestRule.act(testView) { width.update(CHILD / 2) }
+    lithoTestRule.idle()
+
+    assertThat(containerOf(testView).width).describedAs("fits now").isEqualTo(CHILD / 2)
+  }
+
+  /**
    * As above, with the inner `Layout` measuring its child at every size: the measurement placed
    * also holds the leaf's read.
    */
@@ -552,6 +637,41 @@ class CustomLayoutStateReadTest {
     lithoTestRule.idle()
 
     assertThat(leafPlaced(testView)).describedAs("fits now: placed").isTrue()
+  }
+
+  /**
+   * A leaf whose box props read state (its width, from a State read as the props are recorded)
+   * holds that read itself: an update lays it out again at the new width without its owner
+   * rendering again.
+   */
+  @Test
+  fun `a leaf's box props that read state lay it out again when the state changes`() {
+    lateinit var width: State<Dimen>
+    var renders = 0
+
+    class Host : KComponent() {
+      @Suppress("KComponentUncachedAllocationDetector")
+      override fun ComponentScope.render(): Component {
+        renders++
+        val state = useState<Dimen> { 30.px }
+        width = state
+        return Layout(
+            listOf(SimpleMountSpecTester(style = Style.width(state).height(20.px))),
+            layout = tallAsChild,
+        )
+      }
+    }
+
+    val testView = lithoTestRule.render(widthPx = VIEWPORT, heightPx = VIEWPORT) { Host() }
+    assertThat(containerOf(testView).getChildAt(0).width).describedAs("first pass").isEqualTo(30)
+
+    lithoTestRule.act(testView) { width.update(60.px) }
+    lithoTestRule.idle()
+
+    assertThat(containerOf(testView).getChildAt(0).width)
+        .describedAs("after the update")
+        .isEqualTo(60)
+    assertThat(renders).describedAs("a layout-only update").isEqualTo(1)
   }
 
   /**
@@ -649,40 +769,47 @@ class CustomLayoutStateReadTest {
 
   /**
    * State that a deferred child's content read while it rendered, for a measurement its container
-   * left out, is kept under the component that read it, not only under the holder: its container's
-   * unplaced reads name that reader.
+   * left out, is its container's own: updating it lays the container out again.
    */
   @Test
-  fun `an unplaced deferred child's render reads are kept under their reader`() {
-    var readerKey: GlobalKey? = null
+  fun `an unplaced deferred child's render reads are its Layout's own`() {
     var readerState: State<Int>? = null
 
     class Reader : KComponent() {
       override fun ComponentScope.render(): Component {
         val size = useState { 10 }
-        readerKey = context.globalKey
         readerState = size
         return Column(style = Style.width(size.value.px).height(size.value.px))
       }
     }
 
-    val leavesOut = LayoutFunctionN { ms, c ->
-      ms[0].measure(SizeConstraints(maxWidth = c.maxWidth, maxHeight = CHILD))
-      layout(c.maxWidth, CHILD) {}
+    // As wide as its unplaced child measures, so it's only right if it runs again.
+    val sizedByProbe = LayoutFunctionN { measurables, constraints ->
+      val probe =
+          measurables[0].measure(
+              SizeConstraints(maxWidth = constraints.maxWidth, maxHeight = CHILD),
+          )
+      layout(probe.width, CHILD) {}
     }
 
     val testView =
         lithoTestRule.render(widthPx = VIEWPORT, heightPx = VIEWPORT) {
-          Layout(listOf(RenderWithConstraints { Reader() }), layout = leavesOut)
+          Row {
+            child(Layout(listOf(RenderWithConstraints { Reader() }), layout = sizedByProbe))
+          }
         }
 
-    val unplacedReads = checkNotNull((containerOf(testView) as CustomLayoutResult).unplacedReads)
     assertThat(
-        checkNotNull(unplacedReads[checkNotNull(readerKey)])
-            .contains(checkNotNull(readerState).stateId),
+        checkNotNull(containerOf(testView).stateReads).contains(checkNotNull(readerState).stateId),
     )
-        .describedAs("the StateId is kept under the reader")
+        .describedAs("the Layout's reads hold the reader's state")
         .isTrue()
+    assertThat(containerOf(testView).width).describedAs("as wide as the reader").isEqualTo(10)
+
+    lithoTestRule.act(testView) { checkNotNull(readerState).update(20) }
+    lithoTestRule.idle()
+
+    assertThat(containerOf(testView).width).describedAs("laid out again").isEqualTo(20)
   }
 
   @Test
@@ -756,30 +883,34 @@ class CustomLayoutStateReadTest {
    * Measures its only child unbounded only with room for [ROOMY], and places it only if it is at
    * most [CHILD] wide. It declares the width placed: none when it places nothing.
    */
-  private val measuresIfRoomy = LayoutFunctionN { ms, c ->
-    val p =
-        if (c.maxWidth >= ROOMY) {
-          ms[0].measure(SizeConstraints(maxWidth = SizeConstraints.Infinity, maxHeight = CHILD))
+  private val measuresIfRoomy = LayoutFunctionN { measurables, constraints ->
+    val placeable =
+        if (constraints.maxWidth >= ROOMY) {
+          measurables[0].measure(
+              SizeConstraints(maxWidth = SizeConstraints.Infinity, maxHeight = CHILD),
+          )
         } else null
-    val fits = p != null && p.width <= CHILD
-    layout(if (fits) checkNotNull(p).width else 0, CHILD) { if (fits) checkNotNull(p).place(0, 0) }
+    val fits = placeable != null && placeable.width <= CHILD
+    layout(if (fits) checkNotNull(placeable).width else 0, CHILD) {
+      if (fits) checkNotNull(placeable).place(0, 0)
+    }
   }
 
   /**
    * Measures its only child with room for [ROOMY], left unplaced, then within [CHILD]; places the
    * second only if the first declared some width.
    */
-  private val placesIfRoomyAnswerFits = LayoutFunctionN { ms, c ->
-    val roomy = ms[0].measure(SizeConstraints(maxWidth = ROOMY, maxHeight = CHILD))
-    val narrow = ms[0].measure(SizeConstraints(maxWidth = CHILD, maxHeight = CHILD))
-    layout(c.maxWidth, CHILD) { if (roomy.width > 0) narrow.place(0, 0) }
+  private val placesIfRoomyAnswerFits = LayoutFunctionN { measurables, constraints ->
+    val roomy = measurables[0].measure(SizeConstraints(maxWidth = ROOMY, maxHeight = CHILD))
+    val narrow = measurables[0].measure(SizeConstraints(maxWidth = CHILD, maxHeight = CHILD))
+    layout(constraints.maxWidth, CHILD) { if (roomy.width > 0) narrow.place(0, 0) }
   }
 
   /** Measures its only child at two widths, and places the second. */
-  private val measuresTwicePlacesSecond = LayoutFunctionN { ms, c ->
-    ms[0].measure(SizeConstraints(maxWidth = ROOMY, maxHeight = CHILD))
-    val second = ms[0].measure(SizeConstraints(maxWidth = ROOMY + 1, maxHeight = CHILD))
-    layout(c.maxWidth, CHILD) { second.place(0, 0) }
+  private val measuresTwicePlacesSecond = LayoutFunctionN { measurables, constraints ->
+    measurables[0].measure(SizeConstraints(maxWidth = ROOMY, maxHeight = CHILD))
+    val second = measurables[0].measure(SizeConstraints(maxWidth = ROOMY + 1, maxHeight = CHILD))
+    layout(constraints.maxWidth, CHILD) { second.place(0, 0) }
   }
 
   companion object {
@@ -790,9 +921,12 @@ class CustomLayoutStateReadTest {
   }
 
   /** As tall and wide as its only child, measured without a height bound. */
-  private val tallAsChild = LayoutFunctionN { ms, c ->
-    val p = ms[0].measure(SizeConstraints(0, c.maxWidth, 0, SizeConstraints.Infinity))
-    layout(p.width, p.height) { p.place(0, 0) }
+  private val tallAsChild = LayoutFunctionN { measurables, constraints ->
+    val placeable =
+        measurables[0].measure(
+            SizeConstraints(0, constraints.maxWidth, 0, SizeConstraints.Infinity),
+        )
+    layout(placeable.width, placeable.height) { placeable.place(0, 0) }
   }
 }
 

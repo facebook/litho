@@ -16,13 +16,12 @@
 
 package com.facebook.litho.layout
 
-import com.facebook.litho.LithoLayoutResult
 import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.rendercore.IntSize
 import com.facebook.rendercore.SizeConstraints
 
 /**
- * A child that has been laid out and knows its size, but not yet where it sits.
+ * A child that has been measured and knows its size, but not yet where it sits.
  *
  * Only the framework can make one — the constructor is internal — which is what lets
  * [PlacementScope.place] trust its child. `place` is an extension on this type rather than a
@@ -39,18 +38,15 @@ internal constructor(
     internal val measurable: Measurable,
     /** The constraints this child was measured under. */
     internal val constraints: SizeConstraints,
-    /** What the child measured, margins included, kept the moment its layout returned. */
+    /** What the child measured, margins included, kept the moment its measure returned. */
     measured: IntSize,
-    /** Where the child's border box sits inside [measuredWidth]: its left and top margins. */
-    internal val marginLeft: Int,
-    internal val marginTop: Int,
-    /** The layout this measurement made, which is what mounts if it is placed. */
-    internal val result: LithoLayoutResult,
+    /** The box the child was measured in, which it's built in if it's placed. */
+    internal val box: BoxConstraints,
 ) {
 
   /**
    * The width this child asked for, margins included, before it was kept within its constraints.
-   * Differs from [width] only when the child does not fit them: it is then centred in [width].
+   * Differs from [width] only when the child does not fit them: it is then centered in [width].
    */
   val measuredWidth: Int = measured.width
 
@@ -65,11 +61,18 @@ internal constructor(
    */
   val height: Int = measuredHeight.coerceIn(constraints.minHeight, constraints.maxHeight)
 
-  /** How far this child is shifted to centre [measuredWidth] in [width]. */
+  /** Where the child's border box sits inside [measuredWidth]: its left and top margins. */
+  internal val marginLeft: Int
+    get() = box.margins.left
+
+  internal val marginTop: Int
+    get() = box.margins.top
+
+  /** How far this child is shifted to center [measuredWidth] in [width]. */
   internal val offsetX: Int
     get() = (width - measuredWidth) / 2
 
-  /** How far this child is shifted to centre [measuredHeight] in [height]. */
+  /** How far this child is shifted to center [measuredHeight] in [height]. */
   internal val offsetY: Int
     get() = (height - measuredHeight) / 2
 }

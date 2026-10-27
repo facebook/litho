@@ -18,6 +18,7 @@
 
 package com.facebook.litho
 
+import android.graphics.Color
 import android.graphics.Rect
 import android.view.View
 import android.view.ViewGroup
@@ -25,8 +26,11 @@ import com.facebook.litho.accessibility.contentDescription
 import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.core.height
+import com.facebook.litho.core.margin
 import com.facebook.litho.core.padding
 import com.facebook.litho.core.width
+import com.facebook.litho.flexbox.border
+import com.facebook.litho.flexbox.layoutDirection
 import com.facebook.litho.layout.LayoutFunctionN
 import com.facebook.litho.layout.RenderWithConstraints
 import com.facebook.litho.layout.flexbox.Column
@@ -45,6 +49,8 @@ import com.facebook.rendercore.primitives.MountBehavior
 import com.facebook.rendercore.primitives.PrimitiveLayoutResult
 import com.facebook.rendercore.primitives.ViewAllocator
 import com.facebook.rendercore.px
+import com.facebook.yoga.YogaDirection
+import com.facebook.yoga.YogaEdge
 import java.util.concurrent.atomic.AtomicLong
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -108,6 +114,75 @@ class CustomLayoutShadowValidationTest {
         .isGreaterThan(0)
   }
 
+  /**
+   * A reused child with margins, padding, a border, RTL and a nested `Layout` matches a fresh one,
+   * and a fresh one placing the nested `Layout`'s child a pixel over is a mismatch: positions
+   * inside the nested `Layout` are compared too.
+   */
+  @Test
+  fun `a reused child with box edges, RTL and a nested Layout is checked to its positions`() {
+    val child = {
+      Column(
+          style =
+              Style.layoutDirection(YogaDirection.RTL)
+                  .padding(start = 5.px, top = 3.px)
+                  .border(
+                      Border.create(lithoTestRule.context)
+                          .widthPx(YogaEdge.LEFT, 2)
+                          .widthPx(YogaEdge.RIGHT, 4)
+                          .color(YogaEdge.ALL, Color.BLACK)
+                          .build(),
+                  ),
+      ) {
+        child(
+            Layout(
+                listOf(FixedLeaf()),
+                style = Style.margin(start = 6.px, top = 2.px),
+                layout = STACKED,
+            ),
+        )
+      }
+    }
+    val view = renderWithReusedChild(child())
+    updateElsewhere(view)
+    assertThat(LithoStats.customLayoutShadowCheckCount.get())
+        .describedAs("the reused child was checked")
+        .isGreaterThan(0)
+
+    CustomLayoutShadowValidation.testOnlyAlterExpected = { it.nudgeDeepest() }
+    assertThatThrownBy { updateElsewhere(view) }
+        .hasStackTraceContaining(CustomLayoutShadowValidation.Mismatch::class.java.simpleName)
+  }
+
+  /** This geometry with its deepest first child moved one pixel right. */
+  private fun CustomLayoutShadowValidation.Geometry.nudgeDeepest():
+      CustomLayoutShadowValidation.Geometry {
+    val first = children.firstOrNull() ?: return this
+    val moved =
+        if (first.geometry.children.isEmpty()) first.copy(x = first.x + 1)
+        else first.copy(geometry = first.geometry.nudgeDeepest())
+    return copy(children = listOf(moved) + children.drop(1))
+  }
+
+  /**
+   * A leaf directly under a `Layout`, copied from the layout cache when a sibling's state changes,
+   * is checked as a copy too: a fresh layout that differs from it is a mismatch.
+   */
+  @Test
+  fun `a leaf under a Layout copied from the layout cache is checked`() {
+    val view =
+        lithoTestRule.render(widthPx = 300, heightPx = 300) {
+          Column {
+            child(Layout(listOf(FixedLeaf()), layout = STACKED))
+            child(Footer())
+          }
+        }
+    CustomLayoutShadowValidation.testOnlyAlterExpected = { it.copy(width = it.width + 1) }
+
+    assertThatThrownBy { updateElsewhere(view) }
+        .hasStackTraceContaining(CustomLayoutShadowValidation.Mismatch::class.java.simpleName)
+  }
+
   @Test
   fun `a reused layout that differs from a fresh one throws`() {
     val view = renderWithReusedChild(FixedLeaf())
@@ -130,8 +205,8 @@ class CustomLayoutShadowValidationTest {
     updateElsewhere(view)
 
     assertThat(LithoStats.customLayoutShadowCheckCount.get()).isGreaterThan(0)
-    assertThat(without.getValue("customLayoutLeafCount"))
-        .describedAs("the reused leaf is laid out by the pass")
+    assertThat(without.getValue("customLayoutChildLayoutCount"))
+        .describedAs("the `Layout`'s child is measured by the pass")
         .isGreaterThan(0)
     assertThat(layoutCounters())
         .describedAs("counters, with the check's own layout not counted")
@@ -171,10 +246,11 @@ class CustomLayoutShadowValidationTest {
     lateinit var width: State<Int>
 
     class Host : KComponent() {
+      @Suppress("KComponentUncachedAllocationDetector")
       override fun ComponentScope.render(): Component {
         val state = useState { 40 }
         width = state
-        return Layout(listOf(ReadsWidth(state)), layout = STACKED)
+        return Layout(listOf(Column { child(ReadsWidth(state)) }), layout = STACKED)
       }
     }
 
@@ -209,11 +285,14 @@ class CustomLayoutShadowValidationTest {
     }
   }
 
-  /** A `Layout` whose child is reused when a sibling's state changes. */
+  /**
+   * A `Layout` whose child, [child] in a Yoga tree, is reused from the layout cache, as a whole
+   * Yoga subtree, when a sibling's state changes.
+   */
   private fun renderWithReusedChild(child: Component): TestLithoView =
       lithoTestRule.render(widthPx = 300, heightPx = 300) {
         Column {
-          child(Layout(listOf(child), layout = STACKED))
+          child(Layout(listOf(Column { child(child) }), layout = STACKED))
           child(Footer())
         }
       }

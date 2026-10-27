@@ -32,7 +32,6 @@ import com.facebook.litho.layout.Measurable
 import com.facebook.litho.layout.MeasureScope
 import com.facebook.litho.layout.flexbox.Column
 import com.facebook.litho.layout.flexbox.Row
-import com.facebook.litho.stats.LithoStats
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.rendercore.SizeConstraints
@@ -45,9 +44,9 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
- * A nested container laid out directly, against the same container wrapped in a `Column`, where
- * Yoga lays it out as a leaf of the Column's tree: its size, its children's positions and its
- * baseline come out the same either way.
+ * A nested container built by its parent's builder, against the same container wrapped in a
+ * `Column`, where Yoga lays it out as a leaf of the Column's tree: its size, its children's
+ * positions and its baseline come out the same either way.
  */
 @RunWith(LithoTestRunner::class)
 class CustomLayoutNestedContainerTest {
@@ -55,15 +54,20 @@ class CustomLayoutNestedContainerTest {
   @JvmField @Rule val lithoTestRule = LithoTestRule()
 
   @Test
-  fun `a nested container is laid out directly where its parent is a container`() {
-    LithoStats.resetAllCounters()
-    lithoTestRule.render(widthPx = VIEWPORT, heightPx = VIEWPORT) { outer(inner()) }
+  fun `a nested container is built by its parent where its parent is a container`() {
+    val view = lithoTestRule.render(widthPx = VIEWPORT, heightPx = VIEWPORT) { outer(inner()) }
+    val root =
+        checkNotNull(view.componentTree.mainThreadLayoutState?.rootLayoutResult)
+            as LithoLayoutResult
+    val inner = checkNotNull(find(root) { it.node.layoutFunction === INNER })
 
-    assertThat(LithoStats.customLayoutNestedContainerCount.get()).isGreaterThan(0)
+    assertThat((inner.measureOutput as DefaultMeasureOutput).yogaNode)
+        .describedAs("built by its parent's builder, with no Yoga node")
+        .isNull()
   }
 
   @Test
-  fun `a nested container laid out directly places its children as a Yoga pass does`() {
+  fun `a nested container built by its parent places its children as a Yoga pass does`() {
     for (rtl in listOf(false, true)) {
       val direct = innerBounds { outer(inner(), rtl) }
       val throughYoga = innerBounds { outer(Column { child(inner()) }, rtl) }
@@ -72,13 +76,83 @@ class CustomLayoutNestedContainerTest {
     }
   }
 
+  /**
+   * The inner container's children start inside its padding (5) and border (2) on its start, top
+   * and bottom: at the left edge in LTR, against the right edge in RTL. Absolute, so a mistake
+   * shared with the Yoga pass above still shows.
+   */
   @Test
-  fun `a nested container laid out directly has the baseline a Yoga pass gives it`() {
+  fun `a nested container's children are inset by its padding and border, in both directions`() {
+    for (rtl in listOf(false, true)) {
+      val view =
+          lithoTestRule.render(widthPx = VIEWPORT, heightPx = VIEWPORT) { outer(inner(), rtl) }
+      val root =
+          checkNotNull(view.componentTree.mainThreadLayoutState?.rootLayoutResult)
+              as LithoLayoutResult
+      val inner = checkNotNull(find(root) { it.node.layoutFunction === INNER })
+
+      for (i in 0 until inner.childCount) {
+        val child = inner.getChildAt(i)
+        val childX = inner.getXForChildAtIndex(i)
+        val gap = if (rtl) inner.width - (childX + child.width) else childX
+        assertThat(gap).describedAs("child %s from its start edge, rtl=%s", i, rtl).isEqualTo(INSET)
+      }
+      assertThat(inner.getYForChildAtIndex(0))
+          .describedAs("first child's top, rtl=%s", rtl)
+          .isEqualTo(INSET)
+      val lastIndex = inner.childCount - 1
+      assertThat(
+          inner.height -
+              (inner.getYForChildAtIndex(lastIndex) + inner.getChildAt(lastIndex).height),
+      )
+          .describedAs("last child's bottom gap, rtl=%s", rtl)
+          .isEqualTo(INSET)
+    }
+  }
+
+  @Test
+  fun `a nested container built by its parent has the baseline a Yoga pass gives it`() {
     // The nested container is the outer one's only child, so the outer baseline is its own.
     val direct = siblingY { Layout(listOf(inner()), layout = STACK) }
     val throughYoga = siblingY { Layout(listOf(Column { child(inner()) }), layout = STACK) }
 
     assertThat(direct).isEqualTo(throughYoga)
+  }
+
+  /**
+   * Measured at 300 and then at 200 inside a Yoga child, and built at 200, a nested `Layout` places
+   * its child from the run under 200: its function right-aligns the child, so the child's position
+   * shows which run it was built from.
+   */
+  @Test
+  fun `a nested Layout in a Yoga child built at its last width places from that run`() {
+    val rightAligns = LayoutFunctionN { measurables, constraints ->
+      val placeable = measurables[0].measure(SizeConstraints(maxWidth = 40, maxHeight = 20))
+      layout(constraints.maxWidth, placeable.height) {
+        placeable.place(constraints.maxWidth - placeable.width, 0)
+      }
+    }
+    val wideThenNarrow = LayoutFunctionN { measurables, _ ->
+      measurables[0].measure(SizeConstraints(maxWidth = 300, maxHeight = 50))
+      val placeable = measurables[0].measure(SizeConstraints(maxWidth = 200, maxHeight = 50))
+      layout(300, placeable.height) { placeable.place(0, 0) }
+    }
+    val inner =
+        Layout(listOf(Column(style = Style.width(40.px).height(20.px))), layout = rightAligns)
+
+    val view =
+        lithoTestRule.render(widthPx = VIEWPORT, heightPx = VIEWPORT) {
+          Layout(listOf(Column { child(inner) }), layout = wideThenNarrow)
+        }
+    val root =
+        checkNotNull(view.componentTree.mainThreadLayoutState?.rootLayoutResult)
+            as LithoLayoutResult
+    val result = checkNotNull(find(root) { it.node.layoutFunction === rightAligns })
+
+    assertThat(result.width).describedAs("its width").isEqualTo(200)
+    assertThat(result.getXForChildAtIndex(0))
+        .describedAs("its child, right-aligned in 200")
+        .isEqualTo(160)
   }
 
   /** A container with padding and a border, holding text and a fixed leaf, stacked. */
@@ -157,22 +231,31 @@ class CustomLayoutNestedContainerTest {
     const val VIEWPORT = 400
     const val SIBLING = 40
 
+    /** The inner container's padding (5) plus its border (2). */
+    const val INSET = 7
+
     /** Stacks the children from the start edge, so a right-to-left container mirrors them. */
-    val STACK = LayoutFunctionN { ms, c -> stackChildren(ms, c) }
+    val STACK = LayoutFunctionN { measurables, constraints ->
+      stackChildren(measurables, constraints)
+    }
 
     /**
      * [STACK] again, written out separately: a lambda that captures nothing is a single shared
      * instance, so this is how the inner container gets a function of its own to be found by.
      */
-    val INNER = LayoutFunctionN { ms, c -> stackChildren(ms, c) }
+    val INNER = LayoutFunctionN { measurables, constraints ->
+      stackChildren(measurables, constraints)
+    }
 
-    fun MeasureScope.stackChildren(ms: List<Measurable>, c: SizeConstraints) {
-      val ps = ms.map {
-        it.measure(SizeConstraints(maxWidth = c.maxWidth, maxHeight = c.maxHeight))
+    fun MeasureScope.stackChildren(measurables: List<Measurable>, constraints: SizeConstraints) {
+      val placeables = measurables.map {
+        it.measure(
+            SizeConstraints(maxWidth = constraints.maxWidth, maxHeight = constraints.maxHeight),
+        )
       }
-      layout(ps.maxOf { it.width }, ps.sumOf { it.height }) {
+      layout(placeables.maxOf { it.width }, placeables.sumOf { it.height }) {
         var y = 0
-        ps.forEach { placeable ->
+        placeables.forEach { placeable ->
           placeable.placeRelative(0, y)
           y += placeable.height
         }

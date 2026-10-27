@@ -22,13 +22,16 @@ import android.graphics.Rect
 import android.view.View
 import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.core.height
+import com.facebook.litho.core.margin
 import com.facebook.litho.core.padding
 import com.facebook.litho.core.width
+import com.facebook.litho.flexbox.flex
 import com.facebook.litho.layout.LayoutFunctionN
 import com.facebook.litho.layout.RenderWithConstraints
 import com.facebook.litho.layout.flexbox.Column
 import com.facebook.litho.layout.flexbox.Row
 import com.facebook.litho.stateupdates.ComponentWithMeasureCall
+import com.facebook.litho.stats.LithoStats
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.TestLithoView
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -151,6 +154,165 @@ class CustomLayoutDeferredContentTest {
         .isEqualTo(fresh)
   }
 
+  /**
+   * A `Layout`'s child it measures and doesn't place, holding content `Component.measure` sized at
+   * render: a 50-high column around a Primitive that measures 20 high and grows to 50, so it's
+   * measured again at its final size once placed. The child the layout cache copies keeps that
+   * content, which a resize then places.
+   */
+  @Test
+  fun `a grown Primitive in content measured at render, unplaced, is measured again once placed`() {
+    val view = lithoTestRule.render(widthPx = 240, heightPx = VIEWPORT) { grownInUnplacedContent() }
+    assertThat(frameOf(view, "measured")).describedAs("not placed").isNull()
+
+    view.setSizePx(480, VIEWPORT).measure().layout()
+
+    assertThat(frameOf(view, "measured"))
+        .describedAs("placed after a resize")
+        .isEqualTo(Rect(120, 0, 220, 50))
+  }
+
+  /**
+   * The same content, placed in two passes after the first, each copying the child from the layout
+   * cache: each pass lays out a copy of the content it keeps, not the committed layout's, which
+   * other passes read.
+   */
+  @Test
+  fun `a pass that places kept content lays out its own copy of it`() {
+    val view = lithoTestRule.render(widthPx = 240, heightPx = VIEWPORT) { grownInUnplacedContent() }
+    view.setSizePx(480, VIEWPORT).measure().layout()
+    val committed = keptContentOf(view)
+
+    view.setSizePx(470, VIEWPORT).measure().layout()
+
+    assertThat(keptContentOf(view)).isNotSameAs(committed)
+    assertThat(frameOf(view, "measured")).isEqualTo(Rect(120, 0, 220, 50))
+  }
+
+  private fun keptContentOf(view: TestLithoView): LithoLayoutResult {
+    val root =
+        checkNotNull(view.componentTree.mainThreadLayoutState?.rootLayoutResult)
+            as LithoLayoutResult
+    return checkNotNull(holderIn(root)?.actualDeferredNodeResult)
+  }
+
+  private fun holderIn(result: LithoLayoutResult): DeferredLithoLayoutResult? =
+      result as? DeferredLithoLayoutResult
+          ?: (0 until result.childCount).firstNotNullOfOrNull { holderIn(result.getChildAt(it)) }
+
+  /**
+   * A `Layout`'s second child, measured and placed only if it fits, holds content
+   * `Component.measure` sized at render: a 50-high column around a Primitive that measures 20 high
+   * and grows to 50.
+   */
+  private fun grownInUnplacedContent(): Component {
+    val placesIfItFits = LayoutFunctionN { ms, c ->
+      val ps = ms.map { it.measure(SizeConstraints(maxWidth = SizeConstraints.Infinity)) }
+      layout(c.maxWidth, ps.maxOf { it.height }) {
+        var x = 0
+        for (p in ps) {
+          if (x + p.width <= c.maxWidth) {
+            p.place(x, 0)
+            x += p.width
+          }
+        }
+      }
+    }
+    return Layout(
+        listOf(
+            Column(style = Style.width(120.px).height(20.px)),
+            Row {
+              child(
+                  ComponentWithMeasureCall.create(lithoTestRule.context)
+                      .component(
+                          Column(style = Style.height(50.px)) {
+                            child(
+                                MeasuredContentPrimitive(
+                                    Style.flex(grow = 1f).wrapInView().viewTag("measured"),
+                                ),
+                            )
+                          },
+                      )
+                      .widthSpec(SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY))
+                      .heightSpec(SizeSpec.makeSizeSpec(50, SizeSpec.EXACTLY))
+                      .shouldCacheResult(true)
+                      .build(),
+              )
+              child(Column(style = Style.width(200.px).height(20.px)))
+            },
+        ),
+        layout = placesIfItFits,
+    )
+  }
+
+  /**
+   * A child the `Layout` measures and doesn't place, holding content `Component.measure` sized at
+   * render beside a leaf whose width is state read while it's laid out. The `Layout` declares the
+   * child's width, so updating that state must lay the child out again, not take it from the layout
+   * cache as it was.
+   */
+  @Test
+  fun `an unplaced child with content measured at render is laid out again on its state change`() {
+    var width: State<Int>? = null
+    val probesWidth = LayoutFunctionN { measurables, constraints ->
+      val probed = measurables[0].measure(SizeConstraints(maxWidth = SizeConstraints.Infinity))
+      layout(probed.width, 10) {}
+    }
+    val tree = {
+      Row {
+        child(
+            Layout(
+                style = Style.wrapInView().viewTag("probe"),
+                components =
+                    listOf(
+                        Row {
+                          child(
+                              ComponentWithMeasureCall.create(lithoTestRule.context)
+                                  .component(MeasuredContentPrimitive(Style))
+                                  .widthSpec(SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY))
+                                  .heightSpec(SizeSpec.makeSizeSpec(20, SizeSpec.EXACTLY))
+                                  .shouldCacheResult(true)
+                                  .build(),
+                          )
+                          child(LayoutStateWidth { width = it })
+                        },
+                    ),
+                layout = probesWidth,
+            ),
+        )
+      }
+    }
+    val view = lithoTestRule.render(widthPx = 480, heightPx = VIEWPORT) { tree() }
+    assertThat(frameOf(view, "probe")?.width()).describedAs("before").isEqualTo(110)
+
+    lithoTestRule.act(view) { checkNotNull(width).update(30) }
+    lithoTestRule.idle()
+
+    assertThat(frameOf(view, "probe")?.width()).describedAs("after the update").isEqualTo(130)
+  }
+
+  /** Its holder places deferred content at its margins, as it places a Yoga root's. */
+  @Test
+  fun `deferred content whose root is a Layout is placed at its margins`() {
+    val view =
+        lithoTestRule.render(widthPx = 300, heightPx = 300) {
+          Column {
+            child(
+                RenderWithConstraints {
+                  Layout(
+                      listOf(tagged("inner", 40, 20)),
+                      style = Style.margin(left = 10.px, top = 6.px),
+                      layout = SIDE_BY_SIDE,
+                  )
+                },
+            )
+          }
+        }
+
+    assertThat(frameOf(view, "inner")?.left).describedAs("left").isEqualTo(10)
+    assertThat(frameOf(view, "inner")?.top).describedAs("top").isEqualTo(6)
+  }
+
   @Test
   fun `state read rendering an unplaced measurement's deferred content lays it out again`() {
     // The Layout measures the deferred child unbounded, which renders the wide content, a
@@ -182,12 +344,146 @@ class CustomLayoutDeferredContentTest {
         .isEqualTo(listOf(Rect(0, 0, 20, 20), null))
   }
 
+  /**
+   * Each level of a chain of `Layout`s measures its Column, which holds deferred content and the
+   * next level, unbounded and then exactly at its width, so each tree holding the content is laid
+   * out in two boxes. Each is laid out again in place, keeping the builders of the `Layout`s in it,
+   * so the content renders a number of times linear in the depth.
+   */
+  @Test
+  fun `deferred content under nested Layouts renders a number of times linear in their depth`() {
+    val placingLatest =
+        (1..6).map { depth ->
+          countsOf(depth, deferred = true, placesLatest = true).renders
+        }
+    val placingEarlier =
+        (1..6).map { depth ->
+          countsOf(depth, deferred = true, placesLatest = false).renders
+        }
+
+    assertThat(placingLatest)
+        .describedAs("renders by depth, placing the latest measurement: 3 x depth - 1")
+        .containsExactly(2, 5, 8, 11, 14, 17)
+    assertThat(placingEarlier)
+        .describedAs("renders by depth, placing the earlier measurement: 5 x depth - 2")
+        .containsExactly(3, 8, 13, 18, 23, 28)
+  }
+
+  /**
+   * The same chain, its content `Component.measure` sized at render: laid out again in another box,
+   * the content is measured again, not rendered again, so it renders once per level, as it would
+   * under no `Layout`.
+   */
+  @Test
+  fun `content measured at render under nested Layouts renders once per level`() {
+    val renders =
+        (1..6).map { depth ->
+          val count = intArrayOf(0)
+          lithoTestRule.render(widthPx = 360, heightPx = VIEWPORT) {
+            nestedMeasured(depth, measuresUnboundedThenExactly(placesLatest = true), count)
+          }
+          count[0]
+        }
+
+    assertThat(renders).describedAs("renders by depth").containsExactly(1, 2, 3, 4, 5, 6)
+  }
+
+  /** The same chain six deep runs as many functions and lays out as many children either way. */
+  @Test
+  fun `nested Layouts lay out as much with deferred content as without it`() {
+    for (placesLatest in listOf(true, false)) {
+      val withoutContent = countsOf(depth = 6, deferred = false, placesLatest = placesLatest)
+      val withContent = countsOf(depth = 6, deferred = true, placesLatest = placesLatest)
+
+      assertThat(withoutContent.functionRuns to withoutContent.childLayouts)
+          .describedAs("without deferred content, placing the latest: $placesLatest")
+          .isEqualTo((if (placesLatest) 15L else 20L) to 17L)
+      assertThat(withContent.functionRuns to withContent.childLayouts)
+          .describedAs("with deferred content, placing the latest: $placesLatest")
+          .isEqualTo(withoutContent.functionRuns to withoutContent.childLayouts)
+    }
+  }
+
+  private class PassCounts(val renders: Int, val functionRuns: Long, val childLayouts: Long)
+
+  private fun countsOf(depth: Int, deferred: Boolean, placesLatest: Boolean): PassCounts {
+    val renders = intArrayOf(0)
+    val layout = measuresUnboundedThenExactly(placesLatest)
+    LithoStats.resetAllCounters()
+    lithoTestRule.render(widthPx = 360, heightPx = VIEWPORT) {
+      nested(depth, deferred, layout, renders)
+    }
+    return PassCounts(
+        renders[0],
+        LithoStats.customLayoutFunctionRunCount.get(),
+        LithoStats.customLayoutChildLayoutCount.get(),
+    )
+  }
+
+  /** [depth] `Layout`s, each over a Column of a 10 x 10 leaf, deferred or not, and the next. */
+  private fun nested(
+      depth: Int,
+      deferred: Boolean,
+      layout: LayoutFunctionN,
+      renders: IntArray,
+  ): Component {
+    if (depth == 0) return square()
+    return Layout(
+        listOf(
+            Column {
+              if (deferred) {
+                child(
+                    RenderWithConstraints { _ ->
+                      renders[0]++
+                      square()
+                    },
+                )
+              } else {
+                child(square())
+              }
+              child(nested(depth - 1, deferred, layout, renders))
+            },
+        ),
+        layout = layout,
+    )
+  }
+
+  /** As [nested], each level's content a 10 x 10 leaf `Component.measure` sized at render. */
+  private fun nestedMeasured(depth: Int, layout: LayoutFunctionN, renders: IntArray): Component {
+    if (depth == 0) return square()
+    return Layout(
+        listOf(
+            Column {
+              child(
+                  ComponentWithMeasureCall.create(lithoTestRule.context)
+                      .component(CountsRenders(renders))
+                      .widthSpec(SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY))
+                      .heightSpec(SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY))
+                      .shouldCacheResult(true)
+                      .build(),
+              )
+              child(nestedMeasured(depth - 1, layout, renders))
+            },
+        ),
+        layout = layout,
+    )
+  }
+
   /** The wide content: [onState] gets its own state, 260 wide until updated. */
   private class StateWidth(private val onState: (State<Int>) -> Unit) : KComponent() {
     override fun ComponentScope.render(): Component {
       val state = useState { 260 }
       onState(state)
       return tagged("wide", state.value, 20)
+    }
+  }
+
+  /** A leaf [onState] gets the state of, whose width is that state read while it's laid out. */
+  private class LayoutStateWidth(private val onState: (State<Int>) -> Unit) : KComponent() {
+    override fun ComponentScope.render(): Component {
+      val state = useState { 10 }
+      onState(state)
+      return StateWidthPrimitive(state)
     }
   }
 
@@ -214,6 +510,28 @@ class CustomLayoutDeferredContentTest {
 
     /** The narrow content, 140 across, placed at the wide content's 260: no wide content shown. */
     private fun placedBefore(): List<Rect?> = listOf(Rect(0, 0, 140, 20), null)
+
+    private fun square(): Component = Column(style = Style.width(10.px).height(10.px))
+
+    /**
+     * Measures its only child unbounded, then exactly at its own width, and places the latest
+     * measurement or the earlier one.
+     */
+    private fun measuresUnboundedThenExactly(placesLatest: Boolean) =
+        LayoutFunctionN { measurables, constraints ->
+          val width = if (constraints.hasBoundedWidth) constraints.maxWidth else 300
+          val unbounded =
+              measurables[0].measure(
+                  SizeConstraints(maxWidth = SizeConstraints.Infinity, maxHeight = VIEWPORT),
+              )
+          val exact =
+              measurables[0].measure(
+                  SizeConstraints(minWidth = width, maxWidth = width, maxHeight = VIEWPORT),
+              )
+          layout(width, unbounded.height) {
+            (if (placesLatest) exact else unbounded).place(0, 0)
+          }
+        }
 
     private fun tagged(tag: String, w: Int, h: Int): Component =
         Column(style = Style.width(w.px).height(h.px).wrapInView().viewTag(tag))
@@ -246,6 +564,14 @@ class CustomLayoutDeferredContentTest {
   }
 }
 
+/** A 10 x 10 leaf counting its renders in [renders]. */
+private class CountsRenders(private val renders: IntArray) : KComponent() {
+  override fun ComponentScope.render(): Component {
+    renders[0]++
+    return Column(style = Style.width(10.px).height(10.px))
+  }
+}
+
 /** A Primitive that is always 100 x 20, mounting a plain View. */
 private class MeasuredContentPrimitive(private val style: Style) : PrimitiveComponent() {
   override fun PrimitiveComponentScope.render(): LithoPrimitive = LithoPrimitive(
@@ -259,4 +585,21 @@ private object MeasuredContentPrimitiveBehavior : LayoutBehavior {
   override fun PrimitiveLayoutScope.layout(
       sizeConstraints: SizeConstraints,
   ): PrimitiveLayoutResult = PrimitiveLayoutResult(width = 100, height = 20)
+}
+
+/** A Primitive 20 high, whose width is [width] read while it's laid out. */
+// It reads the state while it's laid out, the read under test, so it takes the state, not a value.
+@Suppress("KComponentStateInConstructorDetector")
+private class StateWidthPrimitive(private val width: State<Int>) : PrimitiveComponent() {
+  override fun PrimitiveComponentScope.render(): LithoPrimitive = LithoPrimitive(
+      layoutBehavior = StateWidthBehavior(width),
+      mountBehavior = MountBehavior(ViewAllocator { context -> View(context) }) {},
+      style = null,
+  )
+}
+
+private class StateWidthBehavior(private val width: State<Int>) : LayoutBehavior {
+  override fun PrimitiveLayoutScope.layout(
+      sizeConstraints: SizeConstraints,
+  ): PrimitiveLayoutResult = PrimitiveLayoutResult(width = width.value, height = 20)
 }

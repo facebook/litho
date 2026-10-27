@@ -16,34 +16,86 @@
 
 package com.facebook.litho.layout.internal
 
-import androidx.collection.MutableScatterSet
+import androidx.collection.ScatterSet
+import com.facebook.litho.BoxLayoutPropsRecorder
+import com.facebook.litho.DiffNode
+import com.facebook.litho.LithoLayoutContext
 import com.facebook.litho.LithoLayoutResult
+import com.facebook.litho.LithoNode
+import com.facebook.litho.isReadTrackingEnabled
 import com.facebook.litho.layout.BoxConstraints
+import com.facebook.litho.layout.BoxLayoutProps
 import com.facebook.litho.state.StateId
 import com.facebook.rendercore.IntSize
+import com.facebook.rendercore.LayoutContext
 
 /**
  * Lays one node out for one pass, within the boxes its parent resolves for it: measured any number
- * of times, then either built once into its result or discarded if nothing placed it. Nothing can
- * be asked of it after either.
+ * of times, then either built once into its result or discarded if nothing placed it. After either,
+ * it can't be measured or built, and discarding it again does nothing.
  */
 internal sealed interface LithoLayoutBuilder {
 
+  /** The box props its node declares, which its parent resolves into the boxes it's laid out in. */
+  val boxProps: BoxLayoutProps
+
   /**
-   * Its border-box size within [box]. A layout that fails measures 0 × 0 inside its padding and
-   * border; its failure rides on its result, reported only if the result reaches the final tree.
+   * Its border-box size within [box]. A `Layout` that fails measures 0 x 0 inside its padding and
+   * border, and its failure rides on its result, reported only if the result reaches the final
+   * tree. A Yoga tree reports a failure as it's measured.
    */
   fun measure(box: BoxConstraints): IntSize
 
   /**
-   * Its result within [box]. Under a `Layout`, [box] is one it was measured in; under Yoga, it's
-   * the box of its final size, which Yoga may not have measured it in.
+   * Its result within [box], one it was measured in. The result carries the state read by what it
+   * built; what it made for its measures but didn't build is [unbuiltReads].
    */
   fun build(box: BoxConstraints): LithoLayoutResult
 
   /**
-   * Nothing placed it: adds the state reads of what it made to [reads], null when reads aren't
+   * Once built, the state read by what it made for its measures but didn't build, or null: what it
+   * measured to may depend on them, so its parent's result carries them. A builder that makes one
+   * result for all its measures, as a `Layout`'s does, has none.
+   */
+  val unbuiltReads: ScatterSet<StateId>?
+
+  /**
+   * Nothing placed it: the state read by what it made, or null if it read none or reads aren't
    * tracked. It never reaches the final tree, so its parent's result carries them.
    */
-  fun discard(reads: MutableScatterSet<StateId>?)
+  fun discard(): ScatterSet<StateId>?
+}
+
+/**
+ * [this] node's builder for the pass, as a `Layout`'s child; [previousDiffNode] is its diff node
+ * from the last pass:
+ * - a `Layout`'s own;
+ * - a Yoga tree, for anything else.
+ */
+internal fun LithoNode.newLayoutBuilder(
+    context: LayoutContext<LithoLayoutContext>,
+    previousDiffNode: DiffNode?,
+): LithoLayoutBuilder =
+    when {
+      layoutFunction != null -> DefaultLayoutBuilder(context, this, previousDiffNode)
+      else -> YogaTreeBuilder(context, this, previousDiffNode)
+    }
+
+/**
+ * [node]'s box props, replayed into a recorder rather than onto a Yoga node, with the state they
+ * read handed to [onReads]. A padding is recorded on the node, as Yoga records one it carries.
+ */
+internal inline fun recordBoxPropsOf(
+    context: LayoutContext<LithoLayoutContext>,
+    node: LithoNode,
+    onReads: (ScatterSet<StateId>) -> Unit,
+): BoxLayoutProps {
+  val props = BoxLayoutProps()
+  val recorder = BoxLayoutPropsRecorder(props, recordsOwnEdges = true)
+  val reads = node.copyLayoutPropsInto(context, recorder)
+  if (node.tailComponentContext.isReadTrackingEnabled && reads.isNotEmpty()) {
+    onReads(reads)
+  }
+  node.isPaddingSet = recorder.isPaddingSet
+  return props
 }

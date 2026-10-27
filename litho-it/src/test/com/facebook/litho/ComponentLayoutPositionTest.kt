@@ -17,7 +17,9 @@
 package com.facebook.litho
 
 import android.graphics.Rect
+import com.facebook.litho.core.margin
 import com.facebook.litho.core.padding
+import com.facebook.litho.layout.LayoutFunctionN
 import com.facebook.litho.layout.RenderWithConstraints
 import com.facebook.litho.layout.flexbox.Column
 import com.facebook.litho.testing.LithoTestRule
@@ -98,6 +100,47 @@ class ComponentLayoutPositionTest {
     assertThat(second.left to second.top).describedAs("laid out again").isEqualTo(12 to 12)
   }
 
+  /**
+   * Deferred content whose root is a `Layout` sits at the root's margins in the content's own tree,
+   * which its holder places it at; its MountSpec reads where the `Layout` placed it.
+   */
+  @Test
+  fun `a MountSpec in deferred content under a Layout root mounts at the root's margins`() {
+    val tracker = LifecycleTracker()
+
+    val view =
+        lithoTestRule.render(widthPx = VIEWPORT, heightPx = VIEWPORT) {
+          Column(style = Style.padding(start = 7.px, top = 9.px)) {
+            child(DeferredLayoutLeaf(tracker))
+          }
+        }
+
+    assertThat(tracker.definedBounds.left to tracker.definedBounds.top)
+        .describedAs("what @OnBoundsDefined reads")
+        .isEqualTo(2 to 4)
+    val mounted = mountBoundsOf(view)
+    assertThat(mounted.left to mounted.top).describedAs("where it mounts").isEqualTo(14 to 16)
+  }
+
+  /** Laid out again, deferred content under a `Layout` root mounts where it did too. */
+  @Test
+  fun `deferred content under a Layout root mounts at the same place when laid out again`() {
+    val tracker = LifecycleTracker()
+    val view =
+        lithoTestRule.render(widthPx = VIEWPORT, heightPx = VIEWPORT) {
+          Column(style = Style.padding(start = 7.px, top = 9.px)) {
+            child(DeferredLayoutLeaf(tracker))
+          }
+        }
+    val first = mountBoundsOf(view)
+
+    view.setSizePx(VIEWPORT, VIEWPORT - 100).measure().layout()
+
+    val second = mountBoundsOf(view)
+    assertThat(first.left to first.top).describedAs("the first pass").isEqualTo(14 to 16)
+    assertThat(second.left to second.top).describedAs("laid out again").isEqualTo(14 to 16)
+  }
+
   /** The MountSpec's mount bounds, in its host's coordinates. */
   private fun mountBoundsOf(view: TestLithoView): Rect {
     val layoutState = checkNotNull(view.committedLayoutState)
@@ -131,4 +174,28 @@ private class DeferredLeaf(private val tracker: LifecycleTracker) : KComponent()
         .marginPx(YogaEdge.TOP, 3)
         .build()
   }
+}
+
+/**
+ * Deferred content whose root is a `Layout` at a left margin of 5 and a top margin of 3, placing
+ * its MountSpec at 2 across and 4 down.
+ */
+private class DeferredLayoutLeaf(private val tracker: LifecycleTracker) : KComponent() {
+  override fun ComponentScope.render(): Component = RenderWithConstraints { _ ->
+    Layout(
+        listOf(
+            MountSpecLifecycleTester.create(context)
+                .lifecycleTracker(tracker)
+                .intrinsicSize(Size(40, 30))
+                .build(),
+        ),
+        style = Style.margin(left = 5.px, top = 3.px),
+        layout = PLACES_AT_2_4,
+    )
+  }
+}
+
+private val PLACES_AT_2_4 = LayoutFunctionN { measurables, constraints ->
+  val placeable = measurables[0].measure(constraints)
+  layout(placeable.width + 2, placeable.height + 4) { placeable.place(2, 4) }
 }

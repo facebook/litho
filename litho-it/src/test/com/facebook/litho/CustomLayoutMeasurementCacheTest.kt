@@ -48,11 +48,11 @@ class CustomLayoutMeasurementCacheTest {
   @Test
   fun `a child measured twice under the same constraints reuses the layout it made`() {
     LithoStats.resetAllCounters()
-    val asksTwice = LayoutFunctionN { ms, c ->
-      val first = ms[0].measure(SizeConstraints.exact(LEAF, LEAF))
-      val again = ms[0].measure(SizeConstraints.exact(LEAF, LEAF))
+    val asksTwice = LayoutFunctionN { measurables, constraints ->
+      val first = measurables[0].measure(SizeConstraints.exact(LEAF, LEAF))
+      val again = measurables[0].measure(SizeConstraints.exact(LEAF, LEAF))
       check(first === again) { "the repeat was not reused" }
-      layout(c.maxWidth, LEAF) { again.place(0, 0) }
+      layout(constraints.maxWidth, LEAF) { again.place(0, 0) }
     }
 
     render { Layout(listOf(CachedLeaf()), style = Style.width(100.px), layout = asksTwice) }
@@ -79,18 +79,19 @@ class CustomLayoutMeasurementCacheTest {
   }
 
   @Test
-  fun `a layout two measurements of a container share is placed by each at its own position`() {
+  fun `a leaf two measurements of its container share is placed by the one built`() {
     // Both measurements of the inner container ask its leaf the same question, so they share the
-    // leaf's layout, and each places it against its own width. The outer one places the first.
-    val atEnd = LayoutFunctionN { ms, c ->
-      val p = ms[0].measure(SizeConstraints.exact(LEAF, LEAF))
-      layout(c.maxWidth, LEAF) { p.place(c.maxWidth - LEAF, 0) }
+    // leaf's placeable; only the measurement the outer places is built, and it places the leaf
+    // against its own width.
+    val atEnd = LayoutFunctionN { measurables, constraints ->
+      val placeable = measurables[0].measure(SizeConstraints.exact(LEAF, LEAF))
+      layout(constraints.maxWidth, LEAF) { placeable.place(constraints.maxWidth - LEAF, 0) }
     }
     val inner = Layout(listOf(CachedLeaf()), layout = atEnd)
-    val placesFirst = LayoutFunctionN { ms, c ->
-      val narrow = ms[0].measure(SizeConstraints.exact(60, LEAF))
-      ms[0].measure(SizeConstraints.exact(90, LEAF))
-      layout(c.maxWidth, LEAF) { narrow.place(0, 0) }
+    val placesFirst = LayoutFunctionN { measurables, constraints ->
+      val narrow = measurables[0].measure(SizeConstraints.exact(60, LEAF))
+      measurables[0].measure(SizeConstraints.exact(90, LEAF))
+      layout(constraints.maxWidth, LEAF) { narrow.place(0, 0) }
     }
 
     LithoStats.resetAllCounters()
@@ -107,10 +108,11 @@ class CustomLayoutMeasurementCacheTest {
     LithoStats.resetAllCounters()
     // Six different questions, then each of them again.
     val widths = listOf(10, 20, 30, 40, 50, 60)
-    val asksEach = LayoutFunctionN { ms, c ->
-      for (w in widths) ms[0].measure(SizeConstraints.exact(w, LEAF))
-      val last = widths.map { ms[0].measure(SizeConstraints.exact(it, LEAF)) }.last()
-      layout(c.maxWidth, LEAF) { last.place(0, 0) }
+    val asksEach = LayoutFunctionN { measurables, constraints ->
+      for (width in widths) measurables[0].measure(SizeConstraints.exact(width, LEAF))
+      val lastPlaceable =
+          widths.map { measurables[0].measure(SizeConstraints.exact(it, LEAF)) }.last()
+      layout(constraints.maxWidth, LEAF) { lastPlaceable.place(0, 0) }
     }
 
     render { Layout(listOf(CachedLeaf()), layout = asksEach) }
@@ -121,26 +123,29 @@ class CustomLayoutMeasurementCacheTest {
   }
 
   @Test
-  fun `a shared measurement that is itself a Layout is placed by each container at its own position`() {
-    // The shared measurement is itself a Layout, whose leaf sits 5 into it.
-    val leafAt5 = LayoutFunctionN { ms, _ ->
-      val p = ms[0].measure(SizeConstraints.exact(LEAF, LEAF))
-      layout(LEAF + 5, LEAF) { p.place(5, 0) }
+  fun `a Layout child measured at two widths is built from the measurement placed`() {
+    // The inner container's child is itself a Layout, whose leaf sits 5 into it.
+    val leafAt5 = LayoutFunctionN { measurables, _ ->
+      val placeable = measurables[0].measure(SizeConstraints.exact(LEAF, LEAF))
+      layout(LEAF + 5, LEAF) { placeable.place(5, 0) }
     }
-    val atEnd = LayoutFunctionN { ms, c ->
-      val p = ms[0].measure(SizeConstraints(maxWidth = c.maxWidth, maxHeight = LEAF))
-      layout(c.maxWidth, LEAF) { p.place(c.maxWidth - p.width, 0) }
+    val atEnd = LayoutFunctionN { measurables, constraints ->
+      val placeable =
+          measurables[0].measure(SizeConstraints(maxWidth = constraints.maxWidth, maxHeight = LEAF))
+      layout(constraints.maxWidth, LEAF) {
+        placeable.place(constraints.maxWidth - placeable.width, 0)
+      }
     }
     val inner = Layout(listOf(Layout(listOf(CachedLeaf()), layout = leafAt5)), layout = atEnd)
-    val placesFirst = LayoutFunctionN { ms, c ->
-      val narrow = ms[0].measure(SizeConstraints.exact(60, LEAF))
-      ms[0].measure(SizeConstraints.exact(90, LEAF))
-      layout(c.maxWidth, LEAF) { narrow.place(0, 0) }
+    val placesFirst = LayoutFunctionN { measurables, constraints ->
+      val narrow = measurables[0].measure(SizeConstraints.exact(60, LEAF))
+      measurables[0].measure(SizeConstraints.exact(90, LEAF))
+      layout(constraints.maxWidth, LEAF) { narrow.place(0, 0) }
     }
-    val placesSecond = LayoutFunctionN { ms, c ->
-      ms[0].measure(SizeConstraints.exact(60, LEAF))
-      val wide = ms[0].measure(SizeConstraints.exact(90, LEAF))
-      layout(c.maxWidth, LEAF) { wide.place(0, 0) }
+    val placesSecond = LayoutFunctionN { measurables, constraints ->
+      measurables[0].measure(SizeConstraints.exact(60, LEAF))
+      val wide = measurables[0].measure(SizeConstraints.exact(90, LEAF))
+      layout(constraints.maxWidth, LEAF) { wide.place(0, 0) }
     }
 
     val first = leafFrames(render { Layout(listOf(inner), layout = placesFirst) })
@@ -181,11 +186,13 @@ class CustomLayoutMeasurementCacheTest {
     const val CHILDREN = 5
 
     /** Measures each child unbounded and lays them out in a row, declaring their total width. */
-    val UNBOUNDED_ROW = LayoutFunctionN { ms, c ->
-      val ps = ms.map { it.measure(SizeConstraints(maxWidth = LEAF, maxHeight = LEAF)) }
-      layout(ps.sumOf { it.width }.coerceAtMost(c.maxWidth), LEAF) {
+    val UNBOUNDED_ROW = LayoutFunctionN { measurables, constraints ->
+      val placeables = measurables.map {
+        it.measure(SizeConstraints(maxWidth = LEAF, maxHeight = LEAF))
+      }
+      layout(placeables.sumOf { it.width }.coerceAtMost(constraints.maxWidth), LEAF) {
         var x = 0
-        ps.forEach { placeable ->
+        placeables.forEach { placeable ->
           placeable.place(x, 0)
           x += placeable.width
         }

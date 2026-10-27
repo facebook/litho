@@ -22,12 +22,10 @@ import androidx.collection.MutableScatterMap
 import androidx.collection.MutableScatterSet
 import com.facebook.litho.animation.ReflowGeneration
 import com.facebook.litho.animation.ReflowReadView
-import com.facebook.litho.layout.Placeable
 import com.facebook.litho.state.DirtyScopeIndex
 import com.facebook.litho.state.StateId
 import com.facebook.rendercore.IntSize
 import com.facebook.rendercore.LayoutCache
-import java.util.IdentityHashMap
 
 /**
  * Wraps objects which should only be available for the duration of a LayoutState, to access them in
@@ -89,23 +87,6 @@ constructor(
    * the layout walk go through this stable reference, never the store directly.
    */
   internal var reflowReadView: ReflowReadView = ReflowGeneration.EMPTY
-
-  /**
-   * This pass's measurements of `Layout` children, by child and by the constraints each was
-   * measured under. A child measured again under the same constraints in this pass reuses the
-   * layout it made the first time, whichever measurement of its container asks. Every measurement
-   * is kept: each is a layout this pass already made, so what is kept grows only with the work
-   * done.
-   */
-  internal var cachedMeasurements: IdentityHashMap<LithoNode, ArrayList<Placeable>>? = null
-
-  /** [child]'s measurements so far in this pass, an empty list the first time it is asked. */
-  internal fun cachedMeasurementsFor(child: LithoNode): ArrayList<Placeable> {
-    val map =
-        cachedMeasurements
-            ?: IdentityHashMap<LithoNode, ArrayList<Placeable>>().also { cachedMeasurements = it }
-    return map.getOrPut(child) { ArrayList(2) }
-  }
 
   /**
    * The roots of the subtrees this pass copied whole from the last pass's layout cache, kept only
@@ -193,21 +174,6 @@ constructor(
     return _currentDiffNodeForDeferredNode.apply { _currentDiffNodeForDeferredNode = null }
   }
 
-  /**
-   * Releases the layout-phase data of every measurement this pass's `Layout` children made, as a
-   * pass releases its final tree's. A measurement nothing placed is outside the final tree, so
-   * nothing else releases it, and its Yoga nodes would keep this pass reachable, and through the
-   * layout cache the passes before it.
-   */
-  private fun releaseCachedMeasurements() {
-    cachedMeasurements?.values?.forEach { measurements ->
-      for (measurement in measurements) {
-        measurement.result.releaseLayoutPhaseData()
-      }
-    }
-    cachedMeasurements = null
-  }
-
   fun release() {
     _treeState = null
     _future = null
@@ -217,7 +183,6 @@ constructor(
     reflowReadView = ReflowGeneration.EMPTY
     reflowResults = null
     wholeSubtreeCopies = null
-    releaseCachedMeasurements()
     reflowFrameUpdates = null
     isReleased = true
   }

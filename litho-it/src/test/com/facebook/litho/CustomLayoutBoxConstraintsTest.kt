@@ -114,9 +114,9 @@ private val UNSTRETCHED_ONLY: Set<String> = setOf(
 
 /** Measures the only child under [constraints] and places it at the origin. */
 private fun measuringUnder(constraints: (SizeConstraints) -> SizeConstraints): LayoutFunctionN =
-    LayoutFunctionN { ms, c ->
-      val p = ms[0].measure(constraints(c))
-      layout(c.maxWidth, p.height) { p.place(0, 0) }
+    LayoutFunctionN { measurables, layoutConstraints ->
+      val placeable = measurables[0].measure(constraints(layoutConstraints))
+      layout(layoutConstraints.maxWidth, placeable.height) { placeable.place(0, 0) }
     }
 
 /**
@@ -193,8 +193,12 @@ class CustomLayoutBoxConstraintsTest {
 
   @Test
   fun `a flexbox-item prop on a container child is not written to its node`() {
+    // A container child, whose Yoga node is the root of a tree of its own: no flexbox parent reads
+    // it.
     val child =
-        SimpleMountSpecTester(style = Style.width(CHILD.px).height(CHILD.px).flex(grow = 1f))
+        Row(style = Style.width(CHILD.px).height(CHILD.px).flex(grow = 1f)) {
+          child(SimpleMountSpecTester())
+        }
 
     val result = renderAndFindContainer(
         Layout(listOf(child), layout = measuringUnder { it.copy(minWidth = 0) }),
@@ -285,6 +289,66 @@ class CustomLayoutBoxConstraintsTest {
       }
     }
     assertThat(mismatches).isEmpty()
+  }
+
+  /**
+   * A leaf with start padding and a border, in both directions, has the size and the physical
+   * padding and border edges under a container that it has in a Column: start padding lands on the
+   * right in RTL, and the border, declared on physical edges, stays where it was declared.
+   */
+  @Test
+  fun `a leaf's start padding and border resolve as in a Column, in both directions`() {
+    val leaf = {
+      Text.create(lithoTestRule.context)
+          .text("custom layout parity")
+          .kotlinStyle(
+              Style.padding(start = 7.px, top = 2.px)
+                  .border(
+                      Border.create(lithoTestRule.context)
+                          .widthPx(YogaEdge.LEFT, 3)
+                          .widthPx(YogaEdge.RIGHT, 1)
+                          .color(YogaEdge.ALL, Color.BLACK)
+                          .build(),
+                  ),
+          )
+          .build()
+    }
+    fun edgesOf(subject: Component, direction: YogaDirection): List<Int> {
+      val testView =
+          lithoTestRule.render(widthPx = VIEWPORT, heightPx = VIEWPORT) {
+            Column(alignItems = YogaAlign.FLEX_START, style = Style.layoutDirection(direction)) {
+              child(subject)
+            }
+          }
+      val root =
+          checkNotNull(testView.componentTree.mainThreadLayoutState?.rootLayoutResult)
+              as LithoLayoutResult
+      var result = root.getChildAt(0)
+      while (result.childCount > 0) result = result.getChildAt(0)
+      return listOf(
+          result.width,
+          result.height,
+          result.paddingLeft,
+          result.paddingTop,
+          result.paddingRight,
+          result.paddingBottom,
+          result.borderLeft,
+          result.borderRight,
+      )
+    }
+
+    for (direction in listOf(YogaDirection.LTR, YogaDirection.RTL)) {
+      val underContainer = edgesOf(inContainer(leaf(), stretch = false), direction)
+      val inColumn = edgesOf(inColumn(leaf(), stretch = false), direction)
+
+      assertThat(underContainer).describedAs("%s", direction).isEqualTo(inColumn)
+      val startPadding =
+          if (direction == YogaDirection.RTL) underContainer[4] else underContainer[2]
+      assertThat(startPadding).describedAs("start padding, %s", direction).isEqualTo(7)
+      assertThat(underContainer[6] to underContainer[7])
+          .describedAs("border, %s", direction)
+          .isEqualTo(3 to 1)
+    }
   }
 
   /**
@@ -397,13 +461,13 @@ class CustomLayoutBoxConstraintsTest {
   private fun inContainer(child: Component, stretch: Boolean): Component = Layout(
       listOf(child),
       layout =
-          LayoutFunctionN { ms, _ ->
+          LayoutFunctionN { measurables, _ ->
             val constraints =
                 if (stretch)
                     SizeConstraints(PARITY_WIDTH, PARITY_WIDTH, 0, SizeConstraints.Infinity)
                 else SizeConstraints(maxWidth = PARITY_WIDTH)
-            val p = ms[0].measure(constraints)
-            layout(p.width, p.height) { p.place(0, 0) }
+            val placeable = measurables[0].measure(constraints)
+            layout(placeable.width, placeable.height) { placeable.place(0, 0) }
           },
   )
 

@@ -23,6 +23,7 @@ import androidx.collection.ScatterSet
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.layout.BoxLayoutProps
 import com.facebook.litho.layout.IntEdges
+import com.facebook.litho.layout.internal.DefaultLayoutBuilder
 import com.facebook.litho.state.StateId
 import com.facebook.rendercore.LayoutResult
 import com.facebook.yoga.YogaMeasureOutput
@@ -35,8 +36,15 @@ import com.facebook.yoga.YogaMeasureOutput
 open class LithoLayoutResult(
     val context: ComponentContext,
     open val node: LithoNode,
-    val measureOutput: LithoMeasureOutput,
+    measureOutput: LithoMeasureOutput,
 ) : LayoutResult {
+
+  /**
+   * The geometry its engine built. A `Layout` in a Yoga tree is laid out by Yoga, then takes the
+   * output its builder builds in the box Yoga settled.
+   */
+  var measureOutput: LithoMeasureOutput = measureOutput
+    internal set
 
   private val children: MutableList<LithoLayoutResult> = ArrayList()
 
@@ -89,10 +97,7 @@ open class LithoLayoutResult(
   var cachedMeasuresValid: Boolean = false
     internal set
 
-  /**
-   * Whether a MountSpec's `@OnBoundsDefined` outputs are in [layoutData]. A cached copy of a result
-   * its pass measured but left out of its tree, which a `Layout` can do, has none.
-   */
+  /** Whether a MountSpec's `@OnBoundsDefined` outputs are in [layoutData]. */
   internal var boundsDefined: Boolean = false
 
   internal var actualDeferredNodeResult: LithoLayoutResult? = null
@@ -122,14 +127,21 @@ open class LithoLayoutResult(
   internal var failure: Exception? = null
 
   /**
-   * The box props of a `Layout`'s child, recorded as its tree was built and kept off its node,
-   * which its container resolves within the constraints of each measurement. Null for any other
-   * result.
+   * The box props a `Layout`'s builder resolved this result's box from, kept off its node: a
+   * `Layout`'s child, or a root `Layout`. Null for any other result: Yoga resolves its box from its
+   * node.
    */
   internal var childBoxProps: BoxLayoutProps? = null
 
-  /** The margins a `Layout` resolved for this result, its child; null for any other result. */
+  /** The margins a `Layout`'s child, or a root `Layout`, was resolved with; null for any other. */
   internal var resolvedMargins: IntEdges? = null
+
+  /**
+   * The builder a `Layout` in a Yoga tree holds on its result until the tree is laid out and it's
+   * built, or the tree is dropped: then it's discarded, or kept for the next tree its builder
+   * makes. Null after either, and for any other result.
+   */
+  internal var defaultLayoutBuilder: DefaultLayoutBuilder? = null
 
   internal fun setSizeSpec(widthSpec: Int, heightSpec: Int) {
     this.widthSpec = widthSpec
@@ -175,7 +187,7 @@ open class LithoLayoutResult(
     source.stateReads?.let(::addStateReads)
     childBoxProps = source.childBoxProps
     // Not carried: no deferred node's content is cached; only a `Layout`'s result fails, and it's
-    // never cached; and `layoutSubtree` resolves the margins again on the root it copies.
+    // never cached; and the builder that builds a copy sets its margins.
   }
 
   val childCount: Int
@@ -330,46 +342,12 @@ open class LithoLayoutResult(
    * Called once for each result in a pass's final tree, after layout and before the tree is
    * reduced, for work only a result in that tree may do. Most results have none.
    */
-  internal open fun onFinalized(lithoLayoutContext: LithoLayoutContext) {}
-
-  /** The `Layout` that placed this result, which holds its position; null for any other. */
-  private var placedBy: LithoLayoutResult? = null
-
-  /**
-   * This result for [container] to place: itself, the first time or for the container already
-   * placing it; otherwise a copy, since a result runs `@OnBoundsDefined` and reports its failure at
-   * one position. This is how two measurements of a container that share a child's layout each
-   * place it at a position of its own.
-   */
-  internal fun acquireForPlacement(container: LithoLayoutResult): LithoLayoutResult {
-    if (placedBy == null || placedBy === container) {
-      placedBy = container
-      return this
-    }
-    return copyForPlacement().also { it.placedBy = container }
-  }
-
-  /**
-   * A copy of this result for a second container to place: the same layout, sharing its measure
-   * output, its children and their positions.
-   */
-  protected open fun copyForPlacement(): LithoLayoutResult {
-    val copy = node.createLayoutResult(measureOutput = measureOutput)
-    copy.copyCachedFrom(this)
-    // The same pass's layout: what a cache copy resets or leaves out is the source's.
-    copy.isCachedLayout = isCachedLayout
-    copy.isDiffedLayout = isDiffedLayout
-    copy.cachedMeasuresValid = cachedMeasuresValid
-    copy.wasMeasured = wasMeasured
-    copy.measureHadExceptions = measureHadExceptions
-    copy.failure = failure
-    copy.actualDeferredNodeResult = actualDeferredNodeResult
-    copy.resolvedMargins = resolvedMargins
-    for (i in 0 until childCount) {
-      copy.addChild(getChildAt(i))
-    }
-    copy.subtreeHasCustomLayout = subtreeHasCustomLayout
-    return copy
+  internal fun onFinalized() {
+    // What a `Layout`'s function or placement threw reaches its error boundary only now, so a
+    // failure in a child nothing placed is never reported.
+    val thrown = failure ?: return
+    failure = null
+    ComponentUtils.handle(node.tailComponentContext, thrown)
   }
 
   /** Whether this result is a `Layout`'s, or holds one below it. */

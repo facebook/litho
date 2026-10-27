@@ -17,7 +17,7 @@
 package com.facebook.litho.layout
 
 import com.facebook.litho.annotations.ExperimentalLithoApi
-import com.facebook.litho.measureChild
+import com.facebook.litho.layout.internal.DefaultLayoutBuilder
 import com.facebook.rendercore.Dimen
 import com.facebook.rendercore.IntSize
 import com.facebook.rendercore.ResourceResolver
@@ -191,8 +191,8 @@ private fun List<Measurable>.requireArity(expected: Int) {
  * its environment. Receiver for a [LayoutFunction]'s intrinsic overrides, which answer a number:
  * they may not measure, declare a size or place. [MeasureScope] adds measuring and declaring.
  *
- * Nothing in Litho asks a layout function's intrinsic overrides yet: Yoga measures a `Layout` by
- * running [LayoutFunction.measure].
+ * Nothing in Litho asks a layout function's intrinsic overrides yet: a `Layout`'s builder runs
+ * [LayoutFunction.measure].
  *
  * Sealed: only Litho provides one.
  */
@@ -249,23 +249,29 @@ internal constructor(
 ) : IntrinsicMeasureScope(resourceResolver, layoutDirection) {
 
   /**
-   * Lay this child out under [constraints] and report the size it took.
+   * Measure this child under [constraints] and report the size it took.
    *
    * **May be called more than once per pass.** CSS Flexbox §9.7 resolves flexible lengths by
    * measuring a child at its flex basis, distributing free space, and measuring again at the
    * resolved size, so a flexbox written on this API necessarily measures twice.
    *
-   * Each call lays the child out under its constraints, and the [Placeable] it returns carries that
-   * layout: whichever placeable the container places is what mounts, so measuring a child once to
-   * probe it and again to place it costs the probe and nothing more.
+   * Measured again under the same constraints in the same pass, a child returns the same
+   * [Placeable] and isn't measured again. Only a child whose placeable the container places is
+   * built and mounted; one measured and not placed is discarded. Placing a placeable from an
+   * earlier measurement than the child's latest may lay that child out again.
    *
    * The child's own size props — width, min and max, aspect ratio, margins, padding and border —
    * apply within [constraints], and the placeable reports the size it took, kept within them.
    *
    * Not from the placement block: placing only chooses among the measurements already made. Not
    * from an intrinsic override either, which answers a number.
+   *
+   * @throws IllegalStateException if called while the layout function isn't running: from the
+   *   placement block, or on a [Measurable] kept from an earlier pass or used after the function
+   *   returned.
    */
-  fun Measurable.measure(constraints: SizeConstraints): Placeable = measureChild(constraints)
+  fun Measurable.measure(constraints: SizeConstraints): Placeable =
+      owner.measureChildUnder(this, constraints)
 
   internal var width: Int = 0
     private set
@@ -318,7 +324,7 @@ internal constructor(
  *
  * A child that is never placed occupies no space and will not be mounted. Declining to place is
  * therefore how a container drops a child: measuring one to see whether it fits and then leaving it
- * out costs its subtree nothing.
+ * out costs only its measurement, since it isn't built or mounted.
  */
 @ExperimentalLithoApi
 @LayoutScopeMarker
@@ -328,20 +334,24 @@ internal constructor(
     private val resourceResolver: ResourceResolver,
     childCount: Int,
     /** The width the container declared, which a right-to-left placement mirrors against. */
-    private val declaredWidth: Int = 0,
+    private val declaredWidth: Int,
     /** The direction the container is laid out in. */
-    val layoutDirection: LayoutDirection = LayoutDirection.LTR,
+    val layoutDirection: LayoutDirection,
     /** The container placing, whose children's placeables are the only ones it may place. */
-    private val owner: Any? = null,
+    private val owner: DefaultLayoutBuilder,
 ) {
 
   internal val placements: IntArray = IntArray(childCount * 2)
 
-  /** Which children were placed. What is false here is left out of the mounted output entirely. */
-  internal val placed: BooleanArray = BooleanArray(childCount)
-
-  /** The placeable placed for each child, whose layout is the one that mounts. */
+  /**
+   * The placeable placed for each child, whose box the child is built in. A child with none is left
+   * out of the mounted output entirely.
+   */
   internal val placedWith: Array<Placeable?> = arrayOfNulls(childCount)
+
+  /** How many children were placed. */
+  internal var placedCount: Int = 0
+    private set
 
   /** This dimension in pixels, as the container's resources resolve it. */
   fun Dimen.toPixels(): Int = toPixels(resourceResolver)
@@ -364,9 +374,8 @@ internal constructor(
    *
    * @throws IllegalStateException if this child has already been placed, since one of the two
    *   positions would be discarded
-   * @throws IllegalArgumentException if this placeable's child index is out of range for this
-   *   container. That is how a placeable belonging to another container is caught, though only when
-   *   its index happens to fall outside this one's.
+   * @throws IllegalArgumentException if this placeable was measured by another container's layout
+   *   function
    */
   fun Placeable.place(x: Int = 0, y: Int = 0) {
     val index = measurable.index
@@ -374,15 +383,12 @@ internal constructor(
       "Cannot place a child of another container. A placeable belongs to the container whose " +
           "layout function measured it."
     }
-    require(index in placed.indices) {
-      "Cannot place child $index: this container has ${placed.size} children"
-    }
-    check(!placed[index]) {
+    check(placedWith[index] == null) {
       "Child $index has already been placed. Placing twice means one of the two positions is " +
           "silently discarded."
     }
-    placed[index] = true
     placedWith[index] = this
+    placedCount++
     placements[index * 2] = x
     placements[index * 2 + 1] = y
   }
@@ -395,7 +401,7 @@ private fun atMostConstraints(maxWidth: Int, maxHeight: Int): SizeConstraints =
  * What a layout function that never called [MeasureScope.layout] is told.
  *
  * Shared by every place a layout function runs, so a container hears the same thing whether it was
- * asked for an intrinsic size, measured by Yoga, or laid out because its size was already definite.
+ * asked for an intrinsic size, measured by its parent or by Yoga, or built.
  */
 internal const val NO_SIZE_DECLARED: String =
     "A layout function must finish by calling layout(width, height) { … }. This one returned " +

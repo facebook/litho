@@ -17,7 +17,10 @@
 package com.facebook.litho
 
 import androidx.annotation.VisibleForTesting
+import androidx.collection.ScatterSet
 import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.layout.internal.newLayoutBuilder
+import com.facebook.litho.layout.resolveBoxConstraints
 import com.facebook.litho.state.DirtyScopeIndex
 import com.facebook.litho.state.StateReadRecorder
 import com.facebook.litho.stats.LithoStats
@@ -70,6 +73,40 @@ internal object CustomLayoutShadowValidation {
   class Mismatch(message: String, cause: Throwable? = null) : AssertionError(message, cause)
 
   /**
+   * With shadow validation on, checks a child whose layout holds a subtree copied whole from the
+   * last pass, at its root or anywhere below.
+   */
+  fun checkReused(
+      context: LayoutContext<LithoLayoutContext>,
+      node: LithoNode,
+      constraints: SizeConstraints,
+      result: LithoLayoutResult,
+  ) {
+    if (!ComponentsConfiguration.customLayoutShadowValidation) {
+      return
+    }
+    val copies = context.renderContext?.wholeSubtreeCopies ?: return
+    if (holdsWholeSubtreeCopy(result, copies)) {
+      check(context, node, constraints, result)
+    }
+  }
+
+  private fun holdsWholeSubtreeCopy(
+      result: LithoLayoutResult,
+      copies: ScatterSet<LithoLayoutResult>,
+  ): Boolean {
+    if (result in copies) {
+      return true
+    }
+    for (i in 0 until result.childCount) {
+      if (holdsWholeSubtreeCopy(result.getChildAt(i), copies)) {
+        return true
+      }
+    }
+    return false
+  }
+
+  /**
    * Checks [used], the layout of [node] under [constraints] that this pass took from an earlier
    * one, against a cold layout of [node] under the same constraints.
    */
@@ -85,7 +122,11 @@ internal object CustomLayoutShadowValidation {
     val pass = context.renderContext ?: return
     // An animation frame forces interpolated sizes onto reflow nodes, which the cold layout, with
     // no reflow inputs, would not reproduce.
-    if (pass.reflowFrameUpdates != null || holdsMeasuredContent(used)) {
+    if (
+        pass.reflowFrameUpdates != null ||
+            LithoYogaLayoutFunction.deferredContentOf(used) ==
+                LithoYogaLayoutFunction.DeferredContent.MEASURED
+    ) {
       return
     }
     LithoStats.count(LithoStats.customLayoutShadowCheckCount)
@@ -98,26 +139,6 @@ internal object CustomLayoutShadowValidation {
               "$constraints differs from a fresh one: fresh $compared, reused $actual",
       )
     }
-  }
-
-  /**
-   * Whether [result]'s subtree holds content `Component.measure` sized when it was rendered. A
-   * fresh render takes the size that call cached; a cold layout, with no render, sizes the content
-   * under the constraints Yoga gives it instead.
-   */
-  private fun holdsMeasuredContent(result: LithoLayoutResult): Boolean {
-    if (
-        result is DeferredLithoLayoutResult &&
-            !Component.isLayoutSpecWithSizeSpec(result.node.tailComponent)
-    ) {
-      return true
-    }
-    for (i in 0 until result.childCount) {
-      if (holdsMeasuredContent(result.getChildAt(i))) {
-        return true
-      }
-    }
-    return false
   }
 
   private fun coldLayoutOf(
@@ -147,9 +168,10 @@ internal object CustomLayoutShadowValidation {
       componentContext.setLithoLayoutContext(cold)
       return LithoStats.suppressed {
         StateReadRecorder.untracked {
-          val (result, _) =
-              LithoYogaLayoutFunction.layoutSubtree(coldContext, node, constraints, null)
-          geometryOf(result)
+          val builder = node.newLayoutBuilder(coldContext, previousDiffNode = null)
+          val box = resolveBoxConstraints(constraints, builder.boxProps, node.layoutDirection.isRTL)
+          builder.measure(box)
+          geometryOf(builder.build(box))
         }
       }
     } catch (e: Mismatch) {

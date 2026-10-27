@@ -16,6 +16,9 @@
 
 package com.facebook.litho
 
+import android.graphics.Point
+import com.facebook.litho.layout.internal.DefaultLayoutBuilder
+import com.facebook.litho.layout.resolveRootBox
 import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.SizeConstraints
 
@@ -43,9 +46,11 @@ internal sealed interface CustomLayoutFunction {
   }
 
   /**
-   * Lays a `Layout` out through its own layout function. It is a leaf to Yoga, so on its own it is
-   * a one-node Yoga tree whose measure callback runs the function; under a flexbox parent, the
-   * parent's Yoga tree holds it the same way.
+   * Lays a `Layout` out through its own layout function, with no Yoga tree: laid out on its own, it
+   * resolves its box within [sizeConstraints] by the root rule (`resolveRootBox`) and builds it
+   * with `DefaultLayoutBuilder.buildRoot`. Its margins are the root offset, and [sizeConstraints]
+   * its specs. Under a flexbox parent, the parent's Yoga tree holds it as a leaf instead, whose
+   * measure callback runs its function.
    */
   data object Container : CustomLayoutFunction {
 
@@ -53,6 +58,15 @@ internal sealed interface CustomLayoutFunction {
         context: LayoutContext<LithoLayoutContext>,
         node: LithoNode,
         sizeConstraints: SizeConstraints,
-    ): LithoLayoutResult = LithoYogaLayoutFunction.calculateLayout(context, sizeConstraints, node)
+    ): LithoLayoutResult {
+      LithoYogaLayoutFunction.applyOverridesRecursive(node)
+      val renderContext = checkNotNull(context.renderContext)
+      val previousDiffNode = LithoYogaLayoutFunction.rootDiffNode(renderContext, node)
+      val builder = DefaultLayoutBuilder(context, node, previousDiffNode)
+      val box = resolveRootBox(sizeConstraints, builder.boxProps, node.layoutDirection.isRTL)
+      val result = builder.buildRoot(box, sizeConstraints)
+      renderContext.rootOffset = Point(box.margins.left, box.margins.top)
+      return result
+    }
   }
 }

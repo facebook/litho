@@ -43,8 +43,11 @@ constructor(
       throw IllegalArgumentException("Deferred Node Result has only one child")
     }
 
-    val output = result?.measureOutput as? YogaLayoutOutput ?: return 0
-    return if (output.boxGeometry != null) 0 else output.yogaNode.layoutX.toInt()
+    val content = result ?: return 0
+    return when (val output = content.measureOutput) {
+      is YogaLayoutOutput -> output.yogaNode.layoutX.toInt()
+      else -> content.resolvedMargins?.left ?: 0
+    }
   }
 
   override fun getYForChildAtIndex(index: Int): Int {
@@ -52,8 +55,11 @@ constructor(
       throw IllegalArgumentException("Deferred Node Result has only one child")
     }
 
-    val output = result?.measureOutput as? YogaLayoutOutput ?: return 0
-    return if (output.boxGeometry != null) 0 else output.yogaNode.layoutY.toInt()
+    val content = result ?: return 0
+    return when (val output = content.measureOutput) {
+      is YogaLayoutOutput -> output.yogaNode.layoutY.toInt()
+      else -> content.resolvedMargins?.top ?: 0
+    }
   }
 
   override fun releaseLayoutPhaseData() {

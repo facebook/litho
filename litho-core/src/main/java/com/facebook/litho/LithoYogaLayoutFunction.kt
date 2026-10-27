@@ -21,7 +21,6 @@ import android.graphics.Rect
 import android.util.Pair
 import androidx.collection.MutableScatterMap
 import androidx.collection.MutableScatterSet
-import androidx.collection.ScatterSet
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
 import com.facebook.litho.ComponentsSystrace.trace
@@ -37,11 +36,10 @@ import com.facebook.litho.debug.DebugInfoReporter
 import com.facebook.litho.drawable.BorderColorDrawable
 import com.facebook.litho.layout.BoxConstraints
 import com.facebook.litho.layout.BoxLayoutProps
+import com.facebook.litho.layout.IntEdges
 import com.facebook.litho.layout.LayoutDirection
-import com.facebook.litho.layout.resolveBoxConstraints
-import com.facebook.litho.state.StateId
+import com.facebook.litho.layout.internal.DefaultLayoutBuilder
 import com.facebook.litho.state.StateReadRecorder
-import com.facebook.litho.stats.LithoStats
 import com.facebook.rendercore.FastMath
 import com.facebook.rendercore.IntSize
 import com.facebook.rendercore.LayoutCache
@@ -59,8 +57,11 @@ import com.facebook.yoga.YogaDirection
 import com.facebook.yoga.YogaDisplay
 import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaGutter
+import com.facebook.yoga.YogaMeasureFunction
+import com.facebook.yoga.YogaMeasureMode
 import com.facebook.yoga.YogaMeasureOutput
 import com.facebook.yoga.YogaNode
+import com.facebook.yoga.YogaNodeType
 import com.facebook.yoga.YogaUnit
 import com.facebook.yoga.YogaValue
 
@@ -97,192 +98,100 @@ internal object LithoYogaLayoutFunction {
   }
 
   /**
-   * Lays [node] out as a `Layout`'s child under [constraints]: a Yoga root of its own, in the box
-   * the child's own box props resolve to within them. Those props are kept off its node, which
-   * carries only what shapes its content, and the box is written onto the root instead. Its
-   * direction was resolved with the tree, from its own or its ancestors'. [diffNode] is its
-   * DiffNode from the last pass, which a root would otherwise look up as the whole tree's.
-   *
-   * Every call builds the subtree afresh, so each measurement owns the layout it returns.
-   */
-  internal fun layoutSubtree(
-      context: LayoutContext<LithoLayoutContext>,
-      node: LithoNode,
-      constraints: SizeConstraints,
-      diffNode: DiffNode?,
-  ): kotlin.Pair<LithoLayoutResult, BoxConstraints> {
-    // The `Layout`s in this child's Yoga tree, settled once it is laid out.
-    val customLayouts = ArrayList<CustomLayoutResult>(0)
-    val result =
-        trace({ "layout.buildYogaTree:${node.headComponent.simpleName}" }) {
-          buildYogaTree(
-              context = context,
-              currentNode = node,
-              childBoxProps = BoxLayoutProps(),
-              inContainer = true,
-              rootDiffNode = diffNode,
-              customLayouts = customLayouts,
-          )
-        }
-    // Recorded as its tree was built, or carried by the result the cache copied.
-    val boxProps = checkNotNull(result.childBoxProps)
-    val box = resolveBoxConstraints(constraints, boxProps, node.layoutDirection.isRTL)
-    result.resolvedMargins = box.margins
-    if (isLayoutLeaf(node)) {
-      trace({ "layout.leaf:${node.headComponent.simpleName}" }) {
-        layOutLeaf(context, result, box)
-      }
-      checkReused(context, node, constraints, result)
-      return result to box
-    }
-    if (result is CustomLayoutResult) {
-      trace({ "layout.nestedContainer:${node.headComponent.simpleName}" }) {
-        layOutNestedContainer(context, result, box)
-      }
-      return result to box
-    }
-    val yogaRoot = result.getYogaNode()
-    trace({ "layout.yogaCalculateLayout:${node.headComponent.simpleName}" }) {
-      yogaRoot.layOutWithin(box)
-      settleCustomLayouts(context, customLayouts)
-    }
-    checkReused(context, node, constraints, result)
-    return result to box
-  }
-
-  /**
-   * A `Layout`'s child's tree, not laid out yet: a copy of the last pass's when the layout cache
-   * has it, never the cached tree itself: that belongs to the committed layout, which other passes
-   * and the main thread read. Its root carries no box props: the `Layout` resolves them into the
-   * box [layOutTree] takes. It isn't written to the cache: only [buildTree] writes it, once it's
-   * placed.
+   * A `Layout`'s child's tree, not laid out yet. It's a copy of the last pass's tree when the
+   * layout cache has one, never the cached tree itself, which belongs to the committed layout that
+   * other passes and the main thread read. Its root carries no box props, which the `Layout`
+   * resolves into the boxes it's laid out in. It isn't written to the cache as it's made: its
+   * builder writes it once it's built, or when it drops a tree holding content measured at render.
    */
   internal fun newTree(
       context: LayoutContext<LithoLayoutContext>,
       node: LithoNode,
       previousDiffNode: DiffNode?,
-  ): LithoLayoutResult = TODO()
-
-  /**
-   * Lays [tree] out within [box], in place: its border box within [BoxConstraints.borderBox], with
-   * the padding and border its node doesn't carry. A node that fails holds its failure on its
-   * result, reported only if the result reaches the final tree; each layout replaces the last's.
-   */
-  internal fun layOutTree(
-      context: LayoutContext<LithoLayoutContext>,
-      tree: LithoLayoutResult,
-      box: BoxConstraints,
-  ): Unit = TODO()
+  ): LithoLayoutResult =
+      trace({ "layout.buildYogaTree:${node.headComponent.simpleName}" }) {
+        buildYogaTree(
+            context = context,
+            currentNode = node,
+            isLayoutChild = true,
+            inContainer = true,
+            rootDiffNode = previousDiffNode,
+            savesIntoCache = false,
+        )
+      }
 
   /** [tree], placed: the `Layout`s in it built, then the tree written to the layout cache. */
   internal fun buildTree(
       context: LayoutContext<LithoLayoutContext>,
       tree: LithoLayoutResult,
-  ): LithoLayoutResult = TODO()
+  ): LithoLayoutResult {
+    if (tree.subtreeHasCustomLayout) buildLayoutsIn(tree)
+    saveTreeIntoCache(context, tree)
+    return tree
+  }
 
   /**
-   * Discards [tree], which nothing placed: discards the `Layout`s in it, reached through their Yoga
-   * nodes, adding the tree's state reads to [reads] when they're tracked.
+   * Builds each `Layout` in [result]'s Yoga tree, just laid out, through the builder its result
+   * holds, in the box Yoga settled: its size, and Yoga's padding and border. Its result takes the
+   * output its builder builds, placed where Yoga placed it.
    */
-  internal fun discardTree(tree: LithoLayoutResult, reads: MutableScatterSet<StateId>?): Unit =
-      TODO()
+  private fun buildLayoutsIn(result: LithoLayoutResult) {
+    forEachCustomLayoutIn(result) { layout ->
+      val builder =
+          checkNotNull(layout.defaultLayoutBuilder) {
+            "${layout.node.headComponent.simpleName}, a `Layout` in a Yoga tree, has no builder"
+          }
+      builder.buildInYogaTree(layout, settledBoxOf(layout))
+    }
+  }
 
   /**
-   * With shadow validation on, checks a child whose layout holds a subtree copied whole from the
-   * last pass, at its root or anywhere below.
+   * Runs [action] on the result of each `Layout` in [result]'s Yoga tree, not below one: a
+   * `Layout`'s own children are its builder's.
    */
-  private fun checkReused(
-      context: LayoutContext<LithoLayoutContext>,
-      node: LithoNode,
-      constraints: SizeConstraints,
+  internal fun forEachCustomLayoutIn(
       result: LithoLayoutResult,
+      action: (LithoLayoutResult) -> Unit,
   ) {
-    if (!ComponentsConfiguration.customLayoutShadowValidation) {
+    if (!result.subtreeHasCustomLayout) {
       return
     }
-    val copies = context.renderContext?.wholeSubtreeCopies ?: return
-    if (holdsWholeSubtreeCopy(result, copies)) {
-      CustomLayoutShadowValidation.check(context, node, constraints, result)
-    }
-  }
-
-  private fun holdsWholeSubtreeCopy(
-      result: LithoLayoutResult,
-      copies: ScatterSet<LithoLayoutResult>,
-  ): Boolean {
-    if (result in copies) {
-      return true
+    if (result.node.layoutFunction != null) {
+      action(result)
+      return
     }
     for (i in 0 until result.childCount) {
-      if (holdsWholeSubtreeCopy(result.getChildAt(i), copies)) {
-        return true
-      }
+      forEachCustomLayoutIn(result.getChildAt(i), action)
     }
-    return false
   }
 
+  private fun settledBoxOf(result: LithoLayoutResult): BoxConstraints = BoxConstraints(
+      margins = IntEdges.None,
+      padding =
+          edgesOf(result.paddingLeft, result.paddingTop, result.paddingRight, result.paddingBottom),
+      border =
+          edgesOf(result.borderLeft, result.borderTop, result.borderRight, result.borderBottom),
+      borderBox = SizeConstraints.exact(result.width, result.height),
+  )
+
+  private fun edgesOf(left: Int, top: Int, right: Int, bottom: Int): IntEdges =
+      if (left == 0 && top == 0 && right == 0 && bottom == 0) IntEdges.None
+      else IntEdges(left, top, right, bottom)
+
   /**
-   * Lays a leaf out within [box] without a Yoga pass: Litho measures its content, as Yoga's measure
-   * callback would, and the box is sized as Yoga sizes a leaf root. The geometry goes on its
-   * measure output, which reads it in place of its Yoga node's.
+   * Writes [result]'s tree to the layout cache, as [buildYogaTree] writes a tree it builds. A
+   * `Layout` is never cached, and the trees it placed are written by whatever laid them out.
    */
-  private fun layOutLeaf(
+  internal fun saveTreeIntoCache(
       context: LayoutContext<LithoLayoutContext>,
       result: LithoLayoutResult,
-      box: BoxConstraints,
   ) {
-    val output = result.yogaLayoutOutput
-    val direction =
-        if (result.node.layoutDirection.isRTL) LayoutDirection.RTL else LayoutDirection.LTR
-    // Set before measuring, with no size yet: a Primitive's layout scope reads the direction.
-    output.boxGeometry = BoxGeometry(direction, box.padding, box.border, width = 0, height = 0)
-    val size =
-        boxSize(box) { widthSpec, heightSpec ->
-          val content = measure(context, result, widthSpec, heightSpec)
-          content.width to content.height
-        }
-    output.boxGeometry = BoxGeometry(direction, box.padding, box.border, size.width, size.height)
-    LithoStats.count(LithoStats.customLayoutLeafCount)
-  }
-
-  /**
-   * Lays a `Layout` out within [box] without a Yoga root, doing what a one-node Yoga tree would:
-   * its function runs under the room Yoga's measure callback would get, inside the padding and
-   * border; its declared size is kept within that room; and the box is sized as Yoga sizes a leaf
-   * root, which applies the box's minimum and maximum. It is then placed in that box.
-   */
-  private fun layOutNestedContainer(
-      context: LayoutContext<LithoLayoutContext>,
-      result: CustomLayoutResult,
-      box: BoxConstraints,
-  ) {
-    val output = result.yogaLayoutOutput
-    val direction =
-        if (result.node.layoutDirection.isRTL) LayoutDirection.RTL else LayoutDirection.LTR
-    // Set before running the function, with no size yet: it reads the container's direction.
-    output.boxGeometry = BoxGeometry(direction, box.padding, box.border, width = 0, height = 0)
-    val size =
-        boxSize(box) { widthSpec, heightSpec ->
-          if (context.renderContext?.isFutureReleased == true) {
-            return@boxSize 0 to 0
-          }
-          val answer =
-              result.measure(context, SizeConstraints.fromMeasureSpecs(widthSpec, heightSpec))
-          YogaMeasureOutput.getWidth(answer).toInt() to YogaMeasureOutput.getHeight(answer).toInt()
-        }
-    output.boxGeometry = BoxGeometry(direction, box.padding, box.border, size.width, size.height)
-    LithoStats.count(LithoStats.customLayoutNestedContainerCount)
-    // Its tree holds only itself, so it is settled here rather than with a Yoga tree's.
-    result.settle(context)
-  }
-
-  /** Settles each `Layout` in the Yoga tree just laid out, in the box Yoga gave it. */
-  private fun settleCustomLayouts(
-      context: LayoutContext<LithoLayoutContext>,
-      containers: List<CustomLayoutResult>,
-  ) {
-    for (container in containers) {
-      container.settle(context)
+    if (result.node.layoutFunction != null) {
+      return
+    }
+    saveLithoLayoutResultIntoCache(context, result.node, result, skipTransitionCapture = true)
+    for (i in 0 until result.childCount) {
+      saveTreeIntoCache(context, result.getChildAt(i))
     }
   }
 
@@ -291,11 +200,9 @@ internal object LithoYogaLayoutFunction {
       sizeConstraints: SizeConstraints,
       lithoNode: LithoNode,
   ): LithoLayoutResult {
-    // The `Layout`s in this Yoga tree, settled once it is laid out.
-    val customLayouts = ArrayList<CustomLayoutResult>(0)
     val layoutResult: LithoLayoutResult =
         trace({ "layout.buildYogaTree:${lithoNode.headComponent.simpleName}" }) {
-          buildYogaTree(context = context, currentNode = lithoNode, customLayouts = customLayouts)
+          buildYogaTree(context = context, currentNode = lithoNode)
         }
     val yogaRoot: YogaNode = layoutResult.getYogaNode()
 
@@ -340,7 +247,7 @@ internal object LithoYogaLayoutFunction {
         }
       }
 
-      settleCustomLayouts(context, customLayouts)
+      if (layoutResult.subtreeHasCustomLayout) buildLayoutsIn(layoutResult)
 
       context.renderContext?.rootOffset =
           Point(
@@ -408,12 +315,18 @@ internal object LithoYogaLayoutFunction {
     }
   }
 
+  private fun isYogaTreeCopyable(item: LayoutCache.CacheItem?): Boolean {
+    val cached = item?.layoutResult as? LithoLayoutResult ?: return false
+    return !cached.subtreeHasCustomLayout
+  }
+
   private fun buildYogaTreeFromCache(
       context: LayoutContext<LithoLayoutContext>,
       cachedResult: LithoLayoutResult,
       diffNode: DiffNode?,
       skipTransitionCapture: Boolean = false,
       inContainer: Boolean = false,
+      savesIntoCache: Boolean = true,
   ): LithoLayoutResult = cloneCachedSubtree(
       context = context,
       cachedResult = cachedResult,
@@ -422,6 +335,7 @@ internal object LithoYogaLayoutFunction {
       currentDiffNode = diffNode,
       skipTransitionCapture = skipTransitionCapture,
       inContainer = inContainer,
+      savesIntoCache = savesIntoCache,
   )
 
   /**
@@ -435,7 +349,8 @@ internal object LithoYogaLayoutFunction {
    * level and turn a linear walk quadratic. Each level instead hands its children the clones it
    * already made.
    *
-   * [inContainer]: the subtree is a `Layout`'s child, or inside one.
+   * [inContainer]: the subtree is a `Layout`'s child, or inside one. [savesIntoCache]: written to
+   * the layout cache as it's copied, or left to [buildTree].
    */
   private fun cloneCachedSubtree(
       context: LayoutContext<LithoLayoutContext>,
@@ -444,6 +359,7 @@ internal object LithoYogaLayoutFunction {
       currentDiffNode: DiffNode?,
       skipTransitionCapture: Boolean = false,
       inContainer: Boolean = false,
+      savesIntoCache: Boolean = true,
   ): LithoLayoutResult {
     val node: LithoNode = cachedResult.node
     val result: LithoLayoutResult = copyLayoutResult(cachedResult, node, clonedYogaNode)
@@ -464,7 +380,8 @@ internal object LithoYogaLayoutFunction {
               !content.subtreeHasCustomLayout &&
               !holdsDeferredContent(content)
       ) {
-        result.actualDeferredNodeResult = content
+        result.actualDeferredNodeResult =
+            copyForPass(context, content, content.getYogaNode().cloneWithChildren())
       } else {
         clonedYogaNode.dirty()
       }
@@ -486,7 +403,9 @@ internal object LithoYogaLayoutFunction {
       result.diffNode = currentDiffNode
     }
 
-    saveLithoLayoutResultIntoCache(context, node, result, skipTransitionCapture)
+    if (savesIntoCache) {
+      saveLithoLayoutResultIntoCache(context, node, result, skipTransitionCapture)
+    }
     // Walk children by index without type validation. This is safe because cloneCachedSubtree is
     // only reached from buildYogaTreeFromCache, which requires !maybeDirty and an identity cache
     // hit — guaranteeing the component tree structure is identical to the DiffNode tree.
@@ -500,16 +419,72 @@ internal object LithoYogaLayoutFunction {
           currentDiffNode = childDiffNode,
           skipTransitionCapture = skipTransitionCapture,
           inContainer = inContainer,
+          savesIntoCache = savesIntoCache,
       )
       result.addChild(child)
     }
     return result
   }
 
+  /**
+   * A copy of [content], content a copied holder keeps, for this pass, its results copied and its
+   * Yoga nodes cloned as [cloneCachedSubtree] copies the rest. [content] is the committed layout's,
+   * which other passes and the main thread read, and released, while this pass writes its results
+   * as it defines their bounds, and measures a leaf Yoga grew again through its Yoga node. It holds
+   * no deferred content, which is why it is kept, so the copy walks plain results.
+   */
+  private fun copyForPass(
+      context: LayoutContext<LithoLayoutContext>,
+      content: LithoLayoutResult,
+      clonedYogaNode: YogaNode,
+  ): LithoLayoutResult {
+    val result = copyLayoutResult(content, content.node, clonedYogaNode)
+    clonedYogaNode.data = Pair<Any, Any>(context, result)
+    for (i in 0 until content.childCount) {
+      result.addChild(copyForPass(context, content.getChildAt(i), clonedYogaNode.getChildAt(i)))
+    }
+    return result
+  }
+
+  internal enum class DeferredContent {
+    NONE,
+    DEFERRED,
+    MEASURED,
+  }
+
+  /**
+   * What [result]'s subtree holds, in one walk: content `Component.measure` sized when it was
+   * rendered, else any deferred node's, else neither. A fresh render takes the size that call
+   * cached; a layout without that render sizes the content under the constraints Yoga gives it.
+   */
+  internal fun deferredContentOf(result: LithoLayoutResult): DeferredContent {
+    var found = DeferredContent.NONE
+    if (result is DeferredLithoLayoutResult) {
+      if (!Component.isLayoutSpecWithSizeSpec(result.node.tailComponent)) {
+        return DeferredContent.MEASURED
+      }
+      found = DeferredContent.DEFERRED
+    }
+    for (i in 0 until result.childCount) {
+      val below = deferredContentOf(result.getChildAt(i))
+      if (below == DeferredContent.MEASURED) return below
+      if (below == DeferredContent.DEFERRED) found = below
+    }
+    return found
+  }
+
   /** Whether [result] or a result below it is a deferred node's. */
-  private fun holdsDeferredContent(result: LithoLayoutResult): Boolean =
-      result is DeferredLithoLayoutResult ||
-          (0 until result.childCount).any { holdsDeferredContent(result.getChildAt(it)) }
+  private fun holdsDeferredContent(result: LithoLayoutResult): Boolean {
+    if (result is DeferredLithoLayoutResult) {
+      return true
+    }
+    for (i in 0 until result.childCount) {
+      if (holdsDeferredContent(result.getChildAt(i))) {
+        return true
+      }
+    }
+    return false
+  }
 
   /**
    * Saves a LithoLayoutResult into the LayoutCache, using the node itself and its ID as keys.
@@ -615,17 +590,17 @@ internal object LithoYogaLayoutFunction {
 
   /**
    * Builds the YogaNode tree from this tree of LithoNodes while building the LayoutResult tree and
-   * setting it in the data of the corresponding YogaNodes. Each `Layout` in it goes into
-   * [customLayouts], to be settled once the tree is laid out.
+   * setting it in the data of the corresponding YogaNodes. [savesIntoCache]: each node is written
+   * to the layout cache as it's built, or left to [buildTree].
    */
   private fun buildYogaTree(
       context: LayoutContext<LithoLayoutContext>,
       currentNode: LithoNode,
       parentNode: YogaNode? = null,
-      childBoxProps: BoxLayoutProps? = null,
+      isLayoutChild: Boolean = false,
       inContainer: Boolean = false,
       rootDiffNode: DiffNode? = null,
-      customLayouts: MutableList<CustomLayoutResult>,
+      savesIntoCache: Boolean = true,
   ): LithoLayoutResult {
 
     val renderContext: LithoLayoutContext? = context.renderContext
@@ -656,7 +631,7 @@ internal object LithoYogaLayoutFunction {
     // Resolve the DiffNode once — used by both the cached and non-cached paths. A `Layout`'s child
     // is a root of its own, so its container hands it the one it had.
     val diffNode: DiffNode? =
-        if (childBoxProps != null) validDiffNode(renderContext, currentNode, rootDiffNode)
+        if (isLayoutChild) validDiffNode(renderContext, currentNode, rootDiffNode)
         else findDiffNode(renderContext, currentNode, parentNode)
 
     // A `Layout`'s result holds the layouts its function placed, which no Yoga node beneath it
@@ -665,10 +640,7 @@ internal object LithoYogaLayoutFunction {
     // with its box props on its result, a flexbox child with them on its node.
     val isCustomLayout = currentNode.layoutFunction != null
     val usesCache = !isCustomLayout
-    if (
-        !usesCache ||
-            (cacheItem?.layoutResult as? LithoLayoutResult)?.subtreeHasCustomLayout == true
-    ) {
+    if (!usesCache || !isYogaTreeCopyable(cacheItem)) {
       cacheItem = null
     }
     if (cacheItem != null && !maybeDirty) {
@@ -681,6 +653,7 @@ internal object LithoYogaLayoutFunction {
             diffNode,
             skipTransitionCapture = inContainer,
             inContainer = inContainer,
+            savesIntoCache = savesIntoCache,
         )
             .also {
               if (ComponentsConfiguration.customLayoutShadowValidation) {
@@ -722,6 +695,7 @@ internal object LithoYogaLayoutFunction {
     if (layoutResult == null) {
       val writer: YogaLayoutProps = currentNode.createYogaNodeWriter()
       // A `Layout`'s child keeps its box props off its node: its container applies them.
+      val childBoxProps = if (isLayoutChild) BoxLayoutProps() else null
       val props: LayoutProps =
           if (childBoxProps != null) {
             val isDeferred = currentNode is DeferredLithoNode
@@ -754,12 +728,7 @@ internal object LithoYogaLayoutFunction {
       //
       // This should get cleaned up once the implementation is general enough for
       // PrimitiveComponents.
-      val layoutData =
-          if (currentNode.tailComponent is SpecGeneratedComponent) {
-            (currentNode.tailComponent as SpecGeneratedComponent).createInterStagePropsContainer()
-          } else {
-            null
-          }
+      val layoutData = newInterStagePropsOf(currentNode)
 
       layoutResult =
           currentNode.createLayoutResult(
@@ -786,24 +755,30 @@ internal object LithoYogaLayoutFunction {
       applyDiffNode(renderContext, currentNode, yogaNode, diffNode, isDirty)
     }
 
-    // A `Layout` is a leaf to Yoga: its measure callback runs its layout function, which lays its
-    // children out as trees of their own, and it is placed once this tree is laid out. It
-    // contributes no automatic minimum, as no leaf does by default.
-    if (layoutResult is CustomLayoutResult) {
+    // A `Layout` is a leaf to Yoga, laid out by its builder, which its result holds until it's
+    // built, or the tree is dropped: Yoga's measure callback measures it, and [buildLayoutsIn]
+    // builds it in the box Yoga settled. It contributes no automatic minimum, as no leaf does by
+    // default. Setting a measure function makes it a text node to Yoga, whose size is rounded up; a
+    // `Layout` is rounded as its builder rounds, to the nearest pixel, so it's built in the size it
+    // measured.
+    if (currentNode.layoutFunction != null) {
       layoutResult.subtreeHasCustomLayout = true
+      layoutResult.defaultLayoutBuilder = DefaultLayoutBuilder(context, currentNode, diffNode)
       yogaNode.setMeasureFunction(DefaultLayoutMeasureFunction)
+      yogaNode.setNodeType(YogaNodeType.DEFAULT)
       yogaNode.setMinContentWidth(0f)
       yogaNode.setMinContentHeight(0f)
-      customLayouts.add(layoutResult)
       return layoutResult
     }
 
-    saveLithoLayoutResultIntoCache(
-        context,
-        currentNode,
-        layoutResult,
-        skipTransitionCapture = inContainer,
-    )
+    if (savesIntoCache) {
+      saveLithoLayoutResultIntoCache(
+          context,
+          currentNode,
+          layoutResult,
+          skipTransitionCapture = inContainer,
+      )
+    }
 
     for (i in 0 until currentNode.childCount) {
       val childLayoutResult: LithoLayoutResult = buildYogaTree(
@@ -811,7 +786,7 @@ internal object LithoYogaLayoutFunction {
           currentNode = currentNode.getChildAt(i),
           parentNode = yogaNode,
           inContainer = inContainer,
-          customLayouts = customLayouts,
+          savesIntoCache = savesIntoCache,
       )
 
       yogaNode.addChildAt(childLayoutResult.getYogaNode(), yogaNode.childCount)
@@ -828,7 +803,7 @@ internal object LithoYogaLayoutFunction {
    * [diffNode], handed over by a `Layout` for its child, if it is for the same kind of component:
    * the check [findDiffNode] applies to one it looks up.
    */
-  private fun validDiffNode(
+  internal fun validDiffNode(
       renderContext: LithoLayoutContext,
       currentNode: LithoNode,
       diffNode: DiffNode?,
@@ -991,7 +966,7 @@ internal object LithoYogaLayoutFunction {
     }
   }
 
-  private fun applyOverridesRecursive(node: LithoNode) {
+  internal fun applyOverridesRecursive(node: LithoNode) {
     if (LithoDebugConfigurations.isDebugModeEnabled) {
       DebugComponent.applyOverrides(node.tailComponentContext, node)
       for (i in 0 until node.childCount) {
@@ -1022,15 +997,7 @@ internal object LithoYogaLayoutFunction {
     }
     val diffNode: DiffNode? =
         if (parentYogaNode == null) {
-          // Root: use the diff tree root, or the deferred node's DiffNode
-          if (
-              Component.isLayoutSpecWithSizeSpec(currentNode.headComponent) &&
-                  renderContext.hasDiffNodeSetForDeferredNode()
-          ) {
-            renderContext.consumeDiffNodeForDeferredNode()
-          } else {
-            renderContext.currentDiffTree
-          }
+          rootDiffNode(renderContext, currentNode)
         } else {
           // Child: look up from the parent's already-resolved DiffNode
           val parentResult = getLayoutResultFromYogaNode(parentYogaNode)
@@ -1060,6 +1027,23 @@ internal object LithoYogaLayoutFunction {
     }
   }
 
+  /** A new inter-stage props container for [node]'s tail component, if it's spec-generated. */
+  internal fun newInterStagePropsOf(node: LithoNode): InterStagePropsContainer? =
+      (node.tailComponent as? SpecGeneratedComponent)?.createInterStagePropsContainer()
+
+  /**
+   * [root]'s DiffNode from the last pass, laid out on its own, unchecked (see [validDiffNode]): the
+   * diff tree's root, or the one set aside for a deferred node's content.
+   */
+  internal fun rootDiffNode(renderContext: LithoLayoutContext, root: LithoNode): DiffNode? =
+      when {
+        renderContext.isReleased -> null
+        Component.isLayoutSpecWithSizeSpec(root.headComponent) &&
+            renderContext.hasDiffNodeSetForDeferredNode() ->
+            renderContext.consumeDiffNodeForDeferredNode()
+        else -> renderContext.currentDiffTree
+      }
+
   /**
    * Applies the given [DiffNode] to the layout result at [currentYogaNode], performing equivalence
    * checks and copying inter-stage props for equivalent components.
@@ -1074,12 +1058,28 @@ internal object LithoYogaLayoutFunction {
       isDirty: Boolean,
   ) {
     val result: LithoLayoutResult = getLayoutResultFromYogaNode(currentYogaNode)
+    if (applyDiffNodeTo(current, currentNode, result, diff, isDirty)) {
+      currentYogaNode.dirty()
+    }
+  }
 
+  /**
+   * [applyDiffNode] for [result]: whether the last pass's measurement may be reused, and its
+   * inter-stage props. Returns whether a MountSpec that measures can't reuse it, so its Yoga node
+   * must be dirtied.
+   */
+  internal fun applyDiffNodeTo(
+      current: LithoLayoutContext,
+      currentNode: LithoNode,
+      result: LithoLayoutResult,
+      diff: DiffNode,
+      isDirty: Boolean,
+  ): Boolean {
     val component: Component = currentNode.tailComponent
 
     result.diffNode = diff
 
-    trace({ "layout.shouldRemeasure:${currentNode.headComponent.simpleName}" }) {
+    return trace({ "layout.shouldRemeasure:${currentNode.headComponent.simpleName}" }) {
       val haveEquivalentProps =
           if (currentNode.primitive != null) {
             allNotNull(currentNode.primitive?.layoutBehavior, diff.primitive?.layoutBehavior) {
@@ -1108,9 +1108,6 @@ internal object LithoYogaLayoutFunction {
       // the props, so a measurement from the other direction can't be reused.
       val isEquivalent = haveEquivalentProps && diff.layoutDirection == currentNode.layoutDirection
       val isMountSpecWithMeasure = component.canMeasure() && Component.isMountSpec(component)
-      if (isMountSpecWithMeasure && !isEquivalent) {
-        result.getYogaNode().dirty()
-      }
       result.cachedMeasuresValid = isEquivalent
 
       if (currentNode.primitive != null) {
@@ -1129,6 +1126,7 @@ internal object LithoYogaLayoutFunction {
           )
         }
       }
+      isMountSpecWithMeasure && !isEquivalent
     }
   }
 
@@ -1536,10 +1534,7 @@ internal object LithoYogaLayoutFunction {
     val specComponent = component as SpecGeneratedComponent
     // Not placed yet: it sees where its own engine positioned it, its Yoga node's last position, or
     // the origin under a `Layout`.
-    val yogaNode =
-        (lithoLayoutResult.measureOutput as? YogaLayoutOutput)
-            ?.takeIf { output -> output.boxGeometry == null }
-            ?.yogaNode
+    val yogaNode = (lithoLayoutResult.measureOutput as? YogaLayoutOutput)?.yogaNode
     val specLayout = SpecGeneratedComponentLayout(
         x = yogaNode?.layoutX?.toInt() ?: 0,
         y = yogaNode?.layoutY?.toInt() ?: 0,
@@ -1620,10 +1615,7 @@ internal object LithoYogaLayoutFunction {
     val specComponent = component as SpecGeneratedComponent
     // Not placed yet: it sees where its own engine positioned it, its Yoga node's last position, or
     // the origin under a `Layout`.
-    val yogaNode =
-        (lithoLayoutResult.measureOutput as? YogaLayoutOutput)
-            ?.takeIf { output -> output.boxGeometry == null }
-            ?.yogaNode
+    val yogaNode = (lithoLayoutResult.measureOutput as? YogaLayoutOutput)?.yogaNode
     val specLayout = SpecGeneratedComponentLayout(
         x = yogaNode?.layoutX?.toInt() ?: 0,
         y = yogaNode?.layoutY?.toInt() ?: 0,
@@ -1771,8 +1763,8 @@ internal object LithoYogaLayoutFunction {
   }
 
   private fun recursivelyResolveLayoutDirection(result: LithoLayoutResult): YogaDirection {
-    result.yogaLayoutOutput.boxGeometry?.let {
-      return it.direction.toYogaDirection()
+    if (result.measureOutput !is YogaLayoutOutput) {
+      return result.measureOutput.layoutDirection.toYogaDirection()
     }
     val direction = result.getYogaNode().layoutDirection
     check(direction != YogaDirection.INHERIT) {
@@ -1966,49 +1958,42 @@ internal data class YogaLayoutOutput(
     val maxHeightFromStyle: YogaValue,
 ) : LithoMeasureOutput() {
 
-  /**
-   * Set for a leaf its `Layout` laid out without a Yoga pass: its geometry is read from here, since
-   * no layout pass touched [yogaNode]. Null for any other result.
-   */
-  internal var boxGeometry: BoxGeometry? = null
-
   override fun childX(index: Int): Int = yogaNode.getChildAt(index).layoutX.toInt()
 
   override fun childY(index: Int): Int = yogaNode.getChildAt(index).layoutY.toInt()
 
   override val width: Int
-    get() = boxGeometry?.width ?: yogaNode.layoutWidth.toInt()
+    get() = yogaNode.layoutWidth.toInt()
 
   override val height: Int
-    get() = boxGeometry?.height ?: yogaNode.layoutHeight.toInt()
+    get() = yogaNode.layoutHeight.toInt()
 
   override val paddingLeft: Int
-    get() = boxGeometry?.padding?.left ?: FastMath.round(yogaNode.getLayoutPadding(YogaEdge.LEFT))
+    get() = FastMath.round(yogaNode.getLayoutPadding(YogaEdge.LEFT))
 
   override val paddingTop: Int
-    get() = boxGeometry?.padding?.top ?: FastMath.round(yogaNode.getLayoutPadding(YogaEdge.TOP))
+    get() = FastMath.round(yogaNode.getLayoutPadding(YogaEdge.TOP))
 
   override val paddingRight: Int
-    get() = boxGeometry?.padding?.right ?: FastMath.round(yogaNode.getLayoutPadding(YogaEdge.RIGHT))
+    get() = FastMath.round(yogaNode.getLayoutPadding(YogaEdge.RIGHT))
 
   override val paddingBottom: Int
-    get() =
-        boxGeometry?.padding?.bottom ?: FastMath.round(yogaNode.getLayoutPadding(YogaEdge.BOTTOM))
+    get() = FastMath.round(yogaNode.getLayoutPadding(YogaEdge.BOTTOM))
 
   override val borderLeft: Int
-    get() = boxGeometry?.border?.left ?: FastMath.round(yogaNode.getLayoutBorder(YogaEdge.LEFT))
+    get() = FastMath.round(yogaNode.getLayoutBorder(YogaEdge.LEFT))
 
   override val borderTop: Int
-    get() = boxGeometry?.border?.top ?: FastMath.round(yogaNode.getLayoutBorder(YogaEdge.TOP))
+    get() = FastMath.round(yogaNode.getLayoutBorder(YogaEdge.TOP))
 
   override val borderRight: Int
-    get() = boxGeometry?.border?.right ?: FastMath.round(yogaNode.getLayoutBorder(YogaEdge.RIGHT))
+    get() = FastMath.round(yogaNode.getLayoutBorder(YogaEdge.RIGHT))
 
   override val borderBottom: Int
-    get() = boxGeometry?.border?.bottom ?: FastMath.round(yogaNode.getLayoutBorder(YogaEdge.BOTTOM))
+    get() = FastMath.round(yogaNode.getLayoutBorder(YogaEdge.BOTTOM))
 
   override val layoutDirection: LayoutDirection
-    get() = boxGeometry?.direction ?: yogaNode.layoutDirection.toLayoutDirection()
+    get() = yogaNode.layoutDirection.toLayoutDirection()
 
   override fun releaseLayoutContext() {
     yogaNode.data = null
@@ -2042,3 +2027,33 @@ private class LeafMeasureResult(
     val delegate: LayoutResult? = null,
     val effects: List<Attachable>? = null,
 )
+
+/**
+ * Yoga's measure callback for a `Layout` in a Yoga tree: its builder, which its result holds until
+ * it's built, measures it within the room Yoga offers its content. A failure measures as if it
+ * declared 0 x 0 and is held until it's built, so no exception a layout function throws crosses
+ * into Yoga's native code.
+ */
+internal object DefaultLayoutMeasureFunction : YogaMeasureFunction {
+
+  override fun measure(
+      cssNode: YogaNode,
+      width: Float,
+      widthMode: YogaMeasureMode,
+      height: Float,
+      heightMode: YogaMeasureMode,
+  ): Long {
+    val result = LithoYogaLayoutFunction.getLayoutResultFromYogaNode(cssNode)
+    val builder =
+        checkNotNull(result.defaultLayoutBuilder) {
+          "${result.node.headComponent.simpleName} measured by Yoga after it was built or discarded"
+        }
+    val room =
+        SizeConstraints.fromMeasureSpecs(
+            widthSpec = SizeSpec.makeSizeSpecFromCssSpec(width, widthMode),
+            heightSpec = SizeSpec.makeSizeSpecFromCssSpec(height, heightMode),
+        )
+    val size = builder.measureUnder(room)
+    return YogaMeasureOutput.make(size.width, size.height)
+  }
+}

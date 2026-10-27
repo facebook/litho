@@ -18,8 +18,9 @@ package com.facebook.litho
 
 import android.graphics.drawable.Drawable
 import android.util.SparseArray
-import com.facebook.litho.YogaLayoutOutput.Companion.getYogaNode
-import com.facebook.litho.YogaLayoutOutput.Companion.yogaLayoutOutput
+import com.facebook.litho.layout.BoxEdge
+import com.facebook.litho.layout.BoxLayoutProps
+import com.facebook.litho.layout.BoxLength
 import com.facebook.litho.layout.IntEdges
 import com.facebook.litho.layout.LayoutDirection
 import com.facebook.yoga.YogaAlign
@@ -27,7 +28,9 @@ import com.facebook.yoga.YogaDirection
 import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaFlexDirection
 import com.facebook.yoga.YogaJustify
+import com.facebook.yoga.YogaNode
 import com.facebook.yoga.YogaPositionType
+import com.facebook.yoga.YogaUnit
 import com.facebook.yoga.YogaValue
 import com.facebook.yoga.YogaWrap
 
@@ -39,6 +42,33 @@ import com.facebook.yoga.YogaWrap
 class DebugLayoutNode internal constructor(private val result: LithoLayoutResult) {
 
   private val node: LithoNode = result.node
+
+  /**
+   * The Yoga node Yoga laid it out with, which holds its style: its own, or a `Layout`'s in a Yoga
+   * tree. Null for a `Layout` laid out on its own or under a `Layout`.
+   */
+  private val yogaNode: YogaNode?
+    get() =
+        when (val output = result.measureOutput) {
+          is YogaLayoutOutput -> output.yogaNode
+          is DefaultMeasureOutput -> output.yogaNode
+        }
+
+  /**
+   * Its flexbox style, and its box style when it has no [boxProps]; with no Yoga node, Yoga's
+   * defaults.
+   */
+  private val styleNode: YogaNode
+    get() = yogaNode ?: defaultStyle
+
+  /**
+   * Its box style, which a `Layout`'s builder records off its node: a `Layout`'s child, or a root
+   * `Layout`. What it doesn't declare is Yoga's default: its root's Yoga node holds the box it was
+   * laid out in, not its style.
+   */
+  private val boxProps: BoxLayoutProps?
+    get() = result.childBoxProps
+
   val foreground: Drawable?
     get() = node.foreground
 
@@ -73,69 +103,82 @@ class DebugLayoutNode internal constructor(private val result: LithoLayoutResult
     get() = node.nodeInfo?.contentDescription
 
   val layoutDirection: YogaDirection
-    get() = result.getYogaNode().styleDirection
+    get() = styleNode.styleDirection
 
   val flexDirection: YogaFlexDirection
-    get() = result.getYogaNode().flexDirection
+    get() = styleNode.flexDirection
 
   val justifyContent: YogaJustify
-    get() = result.getYogaNode().justifyContent
+    get() = styleNode.justifyContent
 
   val alignItems: YogaAlign
-    get() = result.getYogaNode().alignItems
+    get() = styleNode.alignItems
 
   val alignSelf: YogaAlign
-    get() = result.getYogaNode().alignSelf
+    get() = styleNode.alignSelf
 
   val alignContent: YogaAlign
-    get() = result.getYogaNode().alignContent
+    get() = styleNode.alignContent
 
   val positionType: YogaPositionType
-    get() = result.getYogaNode().positionType
+    get() = styleNode.positionType
 
   val wrap: YogaWrap
-    get() = result.getYogaNode().wrap
+    get() = styleNode.wrap
 
   val flexGrow: Float
-    get() = result.getYogaNode().flexGrow
+    get() = styleNode.flexGrow
 
   val flexShrink: Float
-    get() = result.getYogaNode().flexShrink
+    get() = styleNode.flexShrink
 
   val flexBasis: YogaValue
-    get() = result.getYogaNode().flexBasis
+    get() = styleNode.flexBasis
 
   val width: YogaValue
-    get() = result.getYogaNode().width
+    get() = boxProps?.run { width.toYogaValue() ?: defaultStyle.width } ?: styleNode.width
 
   val minWidth: YogaValue
-    get() = result.getYogaNode().minWidth
+    get() = boxProps?.run { minWidth.toYogaValue() ?: defaultStyle.minWidth } ?: styleNode.minWidth
 
   val maxWidth: YogaValue
-    get() = result.getYogaNode().maxWidth
+    get() = boxProps?.run { maxWidth.toYogaValue() ?: defaultStyle.maxWidth } ?: styleNode.maxWidth
 
   val height: YogaValue
-    get() = result.getYogaNode().height
+    get() = boxProps?.run { height.toYogaValue() ?: defaultStyle.height } ?: styleNode.height
 
   val minHeight: YogaValue
-    get() = result.getYogaNode().minHeight
+    get() =
+        boxProps?.run { minHeight.toYogaValue() ?: defaultStyle.minHeight } ?: styleNode.minHeight
 
   val maxHeight: YogaValue
-    get() = result.getYogaNode().maxHeight
+    get() =
+        boxProps?.run { maxHeight.toYogaValue() ?: defaultStyle.maxHeight } ?: styleNode.maxHeight
 
   val aspectRatio: Float
-    get() = result.getYogaNode().aspectRatio
+    get() =
+        boxProps?.run { aspectRatio.takeUnless { it.isNaN() } ?: defaultStyle.aspectRatio }
+            ?: styleNode.aspectRatio
 
-  fun getMargin(edge: YogaEdge): YogaValue = result.getYogaNode().getMargin(edge)
+  fun getMargin(edge: YogaEdge): YogaValue =
+      boxProps?.run { margin[edge.toBoxEdge()].toYogaValue() ?: defaultStyle.getMargin(edge) }
+          ?: styleNode.getMargin(edge)
 
-  fun getPadding(edge: YogaEdge): YogaValue = result.getYogaNode().getPadding(edge)
+  fun getPadding(edge: YogaEdge): YogaValue =
+      boxProps?.run { padding[edge.toBoxEdge()].toYogaValue() ?: defaultStyle.getPadding(edge) }
+          ?: styleNode.getPadding(edge)
 
-  fun getPosition(edge: YogaEdge): YogaValue = result.getYogaNode().getPosition(edge)
+  fun getPosition(edge: YogaEdge): YogaValue = styleNode.getPosition(edge)
 
-  /** A leaf its `Layout` laid out directly has no Yoga layout, so its edges are read there. */
+  /**
+   * With no Yoga node its edges are its output's. So for START and END it answers the resolved
+   * edge, where a Yoga node answers its style, which `Border` declares only on physical edges
+   * (NaN).
+   */
   fun getBorderWidth(edge: YogaEdge): Float =
-      result.yogaLayoutOutput.boxGeometry?.let { it.border.at(edge, it.direction) }
-          ?: result.getYogaNode().getBorder(edge)
+      yogaNode?.getBorder(edge)
+          ?: borderOf(result).at(edge, result.measureOutput.layoutDirection)
+          ?: 0f
 
   val commonDynamicProps: SparseArray<DynamicValue<*>>?
     get() = LithoNodeUtils.mergeCommonDynamicProps(node.scopedComponentInfos)
@@ -146,8 +189,8 @@ class DebugLayoutNode internal constructor(private val result: LithoLayoutResult
   val touchHandler: EventHandler<TouchEvent>?
     get() = node.nodeInfo?.touchHandler
 
-  // The laid-out geometry is read from the result, which knows a `Layout` child's: a leaf laid out
-  // directly has no Yoga layout, and a child's margins are applied by its container.
+  // The laid-out geometry is read from the result, not its Yoga node: a `Layout`'s output has its
+  // own, and a `Layout` child's margins are applied by its container.
 
   val layoutWidth: Float
     get() = result.width.toFloat()
@@ -157,15 +200,39 @@ class DebugLayoutNode internal constructor(private val result: LithoLayoutResult
 
   fun getLayoutMargin(edge: YogaEdge): Float =
       result.resolvedMargins?.at(edge, result.measureOutput.layoutDirection)
-          ?: result.getYogaNode().getLayoutMargin(edge)
+          ?: styleNode.getLayoutMargin(edge)
 
-  fun getLayoutPadding(edge: YogaEdge): Float =
-      result.yogaLayoutOutput.boxGeometry?.let { it.padding.at(edge, it.direction) }
-          ?: result.getYogaNode().getLayoutPadding(edge)
+  /** Yoga's own value, unrounded, for a node Yoga laid out; otherwise its output's. */
+  fun getLayoutPadding(edge: YogaEdge): Float {
+    val output = result.measureOutput
+    return yogaNode?.getLayoutPadding(edge)
+        ?: IntEdges(
+            output.paddingLeft,
+            output.paddingTop,
+            output.paddingRight,
+            output.paddingBottom,
+        )
+            .at(edge, output.layoutDirection)
+        ?: 0f
+  }
 
   fun getLayoutBorderWidth(edge: YogaEdge): Float =
-      result.yogaLayoutOutput.boxGeometry?.let { it.border.at(edge, it.direction) }
-          ?: result.getYogaNode().getLayoutBorder(edge)
+      yogaNode?.getLayoutBorder(edge)
+          ?: borderOf(result).at(edge, result.measureOutput.layoutDirection)
+          ?: 0f
+
+  /** As Yoga holds it: null when not declared, so Yoga's default answers. */
+  private fun BoxLength.toYogaValue(): YogaValue? =
+      when (this) {
+        is BoxLength.Px -> YogaValue(value, YogaUnit.POINT)
+        is BoxLength.Percent -> YogaValue(value, YogaUnit.PERCENT)
+        BoxLength.Unset -> null
+      }
+
+  private fun YogaEdge.toBoxEdge(): BoxEdge = BoxEdge.valueOf(name)
+
+  private fun borderOf(result: LithoLayoutResult): IntEdges =
+      IntEdges(result.borderLeft, result.borderTop, result.borderRight, result.borderBottom)
 
   private fun IntEdges.at(edge: YogaEdge, direction: LayoutDirection): Float? {
     val isRtl = direction.isRTL
@@ -191,3 +258,6 @@ fun LithoLayoutResult.debugLayoutNode(): DebugLayoutNode {
   while (!component.isLayoutNode) component = component.childComponents.single()
   return checkNotNull(component.layoutNode)
 }
+
+/** Yoga's default style, never written: what a result with no Yoga node reads as. */
+private val defaultStyle: YogaNode by lazy { NodeConfig.createYogaNode() }

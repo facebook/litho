@@ -16,7 +16,9 @@
 
 package com.facebook.litho.layout
 
+import com.facebook.litho.SizeSpec
 import com.facebook.rendercore.FastMath
+import com.facebook.rendercore.IntSize
 import com.facebook.rendercore.SizeConstraints
 
 /** Resolved edges — margins, padding or border — in pixels, by physical edge. */
@@ -89,45 +91,49 @@ internal fun resolveBoxConstraints(
     props: BoxLayoutProps,
     isRtl: Boolean,
 ): BoxConstraints {
-  val widthBase = if (constraints.hasBoundedWidth) constraints.maxWidth else null
+  val roomMinWidth = constraints.minWidth
+  val roomMaxWidth = constraints.maxWidth
+  val roomMinHeight = constraints.minHeight
+  val roomMaxHeight = constraints.maxHeight
+  val widthBase = if (roomMaxWidth != SizeConstraints.Infinity) roomMaxWidth else null
   val margins = props.margin.resolve(isRtl, widthBase, allowNegative = true)
   val padding = props.padding.resolve(isRtl, widthBase)
   val border = props.border.resolve(isRtl, percentBase = null)
 
-  val w = AxisRange(constraints.minWidth, constraints.maxWidth)
-  val h = AxisRange(constraints.minHeight, constraints.maxHeight)
-  w.removeMargins(margins.horizontal)
-  h.removeMargins(margins.vertical)
+  val widthRange = AxisRange(roomMinWidth, roomMaxWidth)
+  val heightRange = AxisRange(roomMinHeight, roomMaxHeight)
+  widthRange.removeMargins(margins.horizontal)
+  heightRange.removeMargins(margins.vertical)
 
-  val heightBase = if (constraints.hasBoundedHeight) constraints.maxHeight else null
+  val heightBase = if (roomMaxHeight != SizeConstraints.Infinity) roomMaxHeight else null
   val minWidth = props.minWidth.toPx(widthBase)
   val maxWidth = props.maxWidth.toPx(widthBase)
   val minHeight = props.minHeight.toPx(heightBase)
   val maxHeight = props.maxHeight.toPx(heightBase)
-  w.requireWithin(minWidth, maxWidth)
-  h.requireWithin(minHeight, maxHeight)
-  w.fixAt(props.width, widthBase, minWidth, maxWidth)
-  h.fixAt(props.height, heightBase, minHeight, maxHeight)
+  widthRange.requireWithin(minWidth, maxWidth)
+  heightRange.requireWithin(minHeight, maxHeight)
+  widthRange.fixAt(props.width, widthBase, minWidth, maxWidth)
+  heightRange.fixAt(props.height, heightBase, minHeight, maxHeight)
   val ratio = props.aspectRatio
   if (ratio.isFinite() && ratio > 0f) {
-    if (w.isExact && !h.isExact) {
-      h.fix(coerceOwn(FastMath.round(w.min / ratio), minHeight, maxHeight))
-    } else if (h.isExact && !w.isExact) {
-      w.fix(coerceOwn(FastMath.round(h.min * ratio), minWidth, maxWidth))
+    if (widthRange.isExact && !heightRange.isExact) {
+      heightRange.fix(coerceOwn(FastMath.round(widthRange.min / ratio), minHeight, maxHeight))
+    } else if (heightRange.isExact && !widthRange.isExact) {
+      widthRange.fix(coerceOwn(FastMath.round(heightRange.min * ratio), minWidth, maxWidth))
     }
   }
-  w.floorAt(padding.horizontal + border.horizontal)
-  h.floorAt(padding.vertical + border.vertical)
+  widthRange.floorAt(padding.horizontal + border.horizontal)
+  heightRange.floorAt(padding.vertical + border.vertical)
   return BoxConstraints(
       margins = margins,
       padding = padding,
       border = border,
       borderBox =
           encodableConstraints(
-              minWidth = w.min,
-              maxWidth = w.max,
-              minHeight = h.min,
-              maxHeight = h.max,
+              minWidth = widthRange.min,
+              maxWidth = widthRange.max,
+              minHeight = heightRange.min,
+              maxHeight = heightRange.max,
           ),
   )
 }
@@ -456,4 +462,48 @@ private class AxisRange(var min: Int, var max: Int) {
   private companion object {
     const val INFINITY: Int = SizeConstraints.Infinity
   }
+}
+
+/**
+ * The border-box size around content of [contentWidth] x [contentHeight] in [box], as Yoga bounds a
+ * measured root: on an exact axis it's the constraint, whatever the content; otherwise the content
+ * plus the padding and border, within the box's minimum and maximum. Either way it's at least the
+ * padding and border.
+ */
+internal fun borderBoxSizeAround(
+    contentWidth: Int,
+    contentHeight: Int,
+    box: BoxConstraints,
+): IntSize {
+  val room = box.borderBox
+  return IntSize(
+      axisSize(room.hasExactWidth, room.minWidth, room.maxWidth, contentWidth, box.edgesAcross),
+      axisSize(room.hasExactHeight, room.minHeight, room.maxHeight, contentHeight, box.edgesDown),
+  )
+}
+
+/** The measure spec for the content: the room inside the padding and border. */
+internal fun contentSpec(exact: Boolean, bounded: Boolean, max: Int, edges: Int): Int =
+    when {
+      exact -> SizeSpec.makeSizeSpec(maxOf(0, max - edges), SizeSpec.EXACTLY)
+      bounded -> SizeSpec.makeSizeSpec(maxOf(0, max - edges), SizeSpec.AT_MOST)
+      else -> SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED)
+    }
+
+/**
+ * The border box along one axis, as Yoga bounds a measured root. Unbounded content, such as a
+ * function declaring its unbounded maximum, stays unbounded with the edges added.
+ */
+internal fun axisSize(exact: Boolean, min: Int, max: Int, content: Int, edges: Int): Int {
+  if (exact) {
+    return maxOf(max, edges)
+  }
+  var size =
+      if (content > SizeConstraints.Infinity - edges) SizeConstraints.Infinity else content + edges
+  if (max != SizeConstraints.Infinity && size > max) {
+    size = max
+  } else if (min > 0 && size < min) {
+    size = min
+  }
+  return maxOf(size, edges)
 }

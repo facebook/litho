@@ -676,14 +676,6 @@ internal object LithoReducer {
             .add(ownerGlobalKey)
       }
     }
-    // A `Layout` child's measurement nothing placed is in no tree: its reads count against the
-    // keys of the nodes in it that read them as well, whose layouts the layout cache keeps.
-    (result as? CustomLayoutResult)?.unplacedReads?.forEach { readerKey, reads ->
-      val accumulatedStateReads = reductionState.getOrCreateStateReads()
-      reads.forEach { stateIdentifier ->
-        accumulatedStateReads.getOrPut(stateIdentifier) { mutableScatterSetOf() }.add(readerKey)
-      }
-    }
 
     val bounds = Rect(x, y, x + result.width, y + result.height)
     val padding =
@@ -981,7 +973,7 @@ internal object LithoReducer {
       // range boundaries so the next pass's splice can apply per-child position offsets.
       perChildRangeStarts: IntArray? = null,
   ) {
-    val isCustomLayout = result is CustomLayoutResult
+    val isCustomLayout = result.node.layoutFunction != null
     if (isCustomLayout) {
       reductionState.customLayoutDepth++
     }

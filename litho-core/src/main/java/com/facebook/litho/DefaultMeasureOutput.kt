@@ -18,6 +18,7 @@ package com.facebook.litho
 
 import com.facebook.litho.layout.IntEdges
 import com.facebook.litho.layout.LayoutDirection
+import com.facebook.yoga.YogaNode
 
 /**
  * A `Layout`'s measure output, written once when its builder builds it: its border box and where it
@@ -31,6 +32,11 @@ internal class DefaultMeasureOutput(
     override val layoutDirection: LayoutDirection,
     /** Each built child's left and top within this border box, in its result's child order. */
     private val positions: IntArray,
+    /**
+     * In a Yoga tree, the node Yoga laid it out with, which holds its style; null laid out on its
+     * own or under a `Layout`.
+     */
+    val yogaNode: YogaNode? = null,
 ) : LithoMeasureOutput() {
 
   override val paddingLeft: Int
@@ -60,6 +66,10 @@ internal class DefaultMeasureOutput(
   override fun childX(index: Int): Int = positions[index * 2]
 
   override fun childY(index: Int): Int = positions[index * 2 + 1]
+
+  override fun releaseLayoutContext() {
+    yogaNode?.data = null
+  }
 }
 
 /** The positions of a `Layout` that built no child. */

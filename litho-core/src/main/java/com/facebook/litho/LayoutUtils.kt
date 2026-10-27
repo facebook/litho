@@ -148,7 +148,7 @@ internal object LayoutUtils {
       // Exit early if the layout future as been released or if this result had exceptions.
       return
     }
-    result.onFinalized(lithoLayoutContext)
+    result.onFinalized()
     val lithoNode: LithoNode = result.node
     val component: Component = lithoNode.tailComponent
 

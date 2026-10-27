@@ -16,17 +16,15 @@
 
 package com.facebook.litho.layout
 
-import com.facebook.litho.LithoLayoutContext
-import com.facebook.litho.LithoNode
 import com.facebook.litho.annotations.ExperimentalLithoApi
-import com.facebook.rendercore.LayoutContext
+import com.facebook.litho.layout.internal.DefaultLayoutBuilder
 
 /**
  * A child that has been resolved but not yet laid out.
  *
- * Created by the framework during layout, where the context needed to lay a child out exists. An
- * instance is only meaningful inside the [LayoutFunction] call that received it. It has no public
- * members: the scope that call runs in measures it ([MeasureScope]).
+ * Made by its container's builder for one pass: the child's index under that builder, which
+ * measures it. An instance is only meaningful inside the [LayoutFunction] call that received it. It
+ * has no public members: the scope that call runs in measures it ([MeasureScope]).
  *
  * Final, and only Litho creates one: its constructor is internal, so a member added later is not a
  * breaking change. A layout function is tested by rendering a tree that holds its container.
@@ -36,13 +34,8 @@ class Measurable
 internal constructor(
     /** The child's declaration index in its container. */
     internal val index: Int,
-    /** The child's node. */
-    internal val node: LithoNode,
-    /** The layout context the child is measured in. */
-    internal val context: LayoutContext<LithoLayoutContext>,
     /**
      * The container whose layout function was handed this child: only its placement may place it.
-     * Untyped while two kinds of container make children.
      */
-    internal val owner: Any,
+    internal val owner: DefaultLayoutBuilder,
 )

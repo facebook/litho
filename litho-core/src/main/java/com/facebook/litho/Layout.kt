@@ -67,6 +67,11 @@ import com.facebook.rendercore.utils.areObjectsEquivalent
  * reconciliation, incremental mount and visibility keep working across them without forwarding
  * anything by hand.
  *
+ * In a flexbox parent, a `Layout` is rounded to whole pixels as a `Column` is, to the nearest. A
+ * component that measures its own content, such as one rendering with `RenderWithConstraints` or a
+ * size spec, is rounded as text is, never narrower than it measured. So a `Layout` that replaces
+ * one can come out 1 px narrower when its parent gives it a fractional width.
+ *
  * A `Layout` mounts no content, so it gets a host of its own only when a [style] needs one.
  * `onClick`, `viewTag`, `focusable`, a shadow and a transition name each create a host, as on any
  * other component. Intercepting touch, cooperating with a nested scroll, or transforming children

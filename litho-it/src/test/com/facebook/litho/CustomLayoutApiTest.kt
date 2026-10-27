@@ -172,9 +172,11 @@ class CustomLayoutApiTest {
   @Test
   fun `a placeable is placed at its own index`() {
     val layout = LayoutFunctionN { measurables, constraints ->
-      val ps = measurables.map { it.measure(SizeConstraints.exact(CHILD, CHILD)) }
+      val placeables = measurables.map { it.measure(SizeConstraints.exact(CHILD, CHILD)) }
       layout(constraints.maxWidth, CHILD) {
-        ps.withIndex().reversed().forEach { (i, p) -> p.place(x = i * STRIDE, y = 0) }
+        placeables.withIndex().reversed().forEach { (i, placeable) ->
+          placeable.place(x = i * STRIDE, y = 0)
+        }
       }
     }
 
@@ -191,8 +193,8 @@ class CustomLayoutApiTest {
   @Test
   fun `placeRelative mirrors under RTL`() {
     val layout = LayoutFunctionN { measurables, constraints ->
-      val p = measurables[0].measure(SizeConstraints.exact(CHILD, CHILD))
-      layout(constraints.maxWidth, CHILD) { p.placeRelative(start = 0, top = 0) }
+      val placeable = measurables[0].measure(SizeConstraints.exact(CHILD, CHILD))
+      layout(constraints.maxWidth, CHILD) { placeable.placeRelative(start = 0, top = 0) }
     }
 
     assertThat(renderAndFindContainer(container(1, layout)).getXForChildAtIndex(0))
@@ -216,8 +218,8 @@ class CustomLayoutApiTest {
   @Test
   fun `placeRelative mirrors against the width the container ends up with`() {
     val layout = LayoutFunctionN { measurables, _ ->
-      val p = measurables[0].measure(SizeConstraints.exact(CHILD, CHILD))
-      layout(CHILD, CHILD) { p.placeRelative(start = 0, top = 0) }
+      val placeable = measurables[0].measure(SizeConstraints.exact(CHILD, CHILD))
+      layout(CHILD, CHILD) { placeable.placeRelative(start = 0, top = 0) }
     }
 
     val result =
@@ -242,8 +244,8 @@ class CustomLayoutApiTest {
   @Test
   fun `placeRelative mirrors under an inherited RTL`() {
     val layout = LayoutFunctionN { measurables, constraints ->
-      val p = measurables[0].measure(SizeConstraints.exact(CHILD, CHILD))
-      layout(constraints.maxWidth, CHILD) { p.placeRelative(start = 0, top = 0) }
+      val placeable = measurables[0].measure(SizeConstraints.exact(CHILD, CHILD))
+      layout(constraints.maxWidth, CHILD) { placeable.placeRelative(start = 0, top = 0) }
     }
 
     val testView =
@@ -277,8 +279,8 @@ class CustomLayoutApiTest {
     // Asks for CHILD, so the Column's stretch overrides it and the placement pass runs it again.
     val layout = LayoutFunctionN { measurables, constraints ->
       widthsSeen.add(constraints.maxWidth)
-      val p = measurables[0].measure(SizeConstraints.exact(CHILD, CHILD))
-      layout(CHILD, CHILD) { p.place(0, 0) }
+      val placeable = measurables[0].measure(SizeConstraints.exact(CHILD, CHILD))
+      layout(CHILD, CHILD) { placeable.place(0, 0) }
     }
 
     val result = renderAndFindContainer(container(1, layout, PADDED_AND_BORDERED))
@@ -307,8 +309,8 @@ class CustomLayoutApiTest {
 
     val layout = LayoutFunctionN { measurables, constraints ->
       runs.incrementAndGet()
-      val p = measurables[0].measure(SizeConstraints.exact(CHILD, CHILD))
-      layout(constraints.maxWidth, CHILD) { p.place(0, 0) }
+      val placeable = measurables[0].measure(SizeConstraints.exact(CHILD, CHILD))
+      layout(constraints.maxWidth, CHILD) { placeable.place(0, 0) }
     }
 
     renderAndFindContainer(container(1, layout, PADDED_AND_BORDERED))
@@ -320,8 +322,8 @@ class CustomLayoutApiTest {
   @Test
   fun `placeRelative mirrors inside the padding and border`() {
     val layout = LayoutFunctionN { measurables, constraints ->
-      val p = measurables[0].measure(SizeConstraints.exact(CHILD, CHILD))
-      layout(constraints.maxWidth, CHILD) { p.placeRelative(start = 0, top = 0) }
+      val placeable = measurables[0].measure(SizeConstraints.exact(CHILD, CHILD))
+      layout(constraints.maxWidth, CHILD) { placeable.placeRelative(start = 0, top = 0) }
     }
 
     val rtl = container(1, layout, PADDED_AND_BORDERED.layoutDirection(YogaDirection.RTL))
@@ -439,8 +441,9 @@ class CustomLayoutApiTest {
   fun `a percent margin is resolved again under each bound`() {
     val layout = LayoutFunctionN { measurables, _ ->
       measurables[0].measure(SizeConstraints(maxHeight = CHILD))
-      val p = measurables[0].measure(SizeConstraints(maxWidth = PERCENT_BASE, maxHeight = CHILD))
-      layout(PERCENT_BASE, CHILD) { p.place(0, 0) }
+      val placeable =
+          measurables[0].measure(SizeConstraints(maxWidth = PERCENT_BASE, maxHeight = CHILD))
+      layout(PERCENT_BASE, CHILD) { placeable.place(0, 0) }
     }
 
     val result = renderAndFindContainer(Layout(listOf(percentMarginedLeaf()), layout = layout))
@@ -587,14 +590,14 @@ class CustomLayoutApiTest {
    */
   @Test
   fun `four children go through the list form, named by destructuring`() {
-    val stack = LayoutFunctionN { measurables, c ->
+    val stack = LayoutFunctionN { measurables, constraints ->
       val (first, second, third, fourth) = measurables
-      val ps =
+      val placeables =
           listOf(first, second, third, fourth).map {
             it.measure(SizeConstraints.exact(CHILD, CHILD))
           }
-      layout(CHILD, CHILD * ps.size) {
-        ps.forEachIndexed { i, p -> p.place(x = 0, y = i * CHILD) }
+      layout(CHILD, CHILD * placeables.size) {
+        placeables.forEachIndexed { i, placeable -> placeable.place(x = 0, y = i * CHILD) }
       }
     }
 
@@ -629,6 +632,38 @@ class CustomLayoutApiTest {
         .hasMessageContaining("must finish by calling layout(width, height)")
   }
 
+  @Test
+  fun `a child measured from the placement block is refused`() {
+    val measuresWhilePlacing = LayoutFunctionN { measurables, _ ->
+      val scope = this
+      layout(CHILD, CHILD) {
+        with(scope) { measurables[0].measure(SizeConstraints.exact(CHILD, CHILD)) }.place(0, 0)
+      }
+    }
+
+    assertThatThrownBy {
+          renderAndFindContainer(container(childCount = 1, layout = measuresWhilePlacing))
+        }
+        .hasMessageContaining("can only be measured by its layout function")
+  }
+
+  @Test
+  fun `a child measured through a measurable kept from an earlier pass is refused`() {
+    var kept: Measurable? = null
+    val keepsItsFirstMeasurable = LayoutFunctionN { measurables, constraints ->
+      val measurable = kept ?: measurables[0].also { kept = it }
+      val placeable = measurable.measure(SizeConstraints.exact(CHILD, CHILD))
+      layout(constraints.maxWidth, CHILD) { placeable.place(0, 0) }
+    }
+    val view =
+        lithoTestRule.render(widthPx = VIEWPORT, heightPx = VIEWPORT) {
+          container(childCount = 1, layout = keepsItsFirstMeasurable)
+        }
+
+    assertThatThrownBy { view.setSizePx(VIEWPORT / 2, VIEWPORT).measure().layout() }
+        .hasMessageContaining("can only be measured by its layout function")
+  }
+
   /**
    * A container's child can be a whole component tree, not only a leaf or another container.
    *
@@ -643,8 +678,8 @@ class CustomLayoutApiTest {
   @Test
   fun `a deep child subtree lays out and is placed under the container`() {
     val layout = LayoutFunctionN { measurables, constraints ->
-      val p = measurables[0].measure(SizeConstraints.exact(CHILD, CHILD))
-      layout(constraints.maxWidth, CHILD) { p.place(x = STRIDE, y = 0) }
+      val placeable = measurables[0].measure(SizeConstraints.exact(CHILD, CHILD))
+      layout(constraints.maxWidth, CHILD) { placeable.place(x = STRIDE, y = 0) }
     }
     val container = Layout(listOf(DeepChild(DEPTH)), layout = layout)
 
@@ -695,7 +730,7 @@ class CustomLayoutApiTest {
    * A container whose child is another container: both place, and the inner one places against the
    * size the outer assigned it rather than anything it was born with.
    *
-   * Worth pinning because the two are placed from a flat list, not by recursing the tree.
+   * Worth pinning because the inner one is built in the box the outer's placeable measured it in.
    */
   @Test
   fun `a container inside a container places against the size it was given`() {
@@ -703,12 +738,14 @@ class CustomLayoutApiTest {
     // width the outer container assigns when it measures. Run before the outer, it sees a stale
     // one.
     val inner = LayoutFunctionN { measurables, constraints ->
-      val p = measurables[0].measure(SizeConstraints.exact(CHILD, CHILD))
-      layout(constraints.maxWidth, CHILD) { p.place(x = constraints.maxWidth - CHILD, y = 0) }
+      val placeable = measurables[0].measure(SizeConstraints.exact(CHILD, CHILD))
+      layout(constraints.maxWidth, CHILD) {
+        placeable.place(x = constraints.maxWidth - CHILD, y = 0)
+      }
     }
     val outer = LayoutFunctionN { measurables, constraints ->
-      val p = measurables[0].measure(SizeConstraints.exact(CHILD * 4, CHILD))
-      layout(constraints.maxWidth, CHILD) { p.place(x = CHILD, y = 0) }
+      val placeable = measurables[0].measure(SizeConstraints.exact(CHILD * 4, CHILD))
+      layout(constraints.maxWidth, CHILD) { placeable.place(x = CHILD, y = 0) }
     }
 
     val result = renderAndFindContainer(Nested(outer, inner))
@@ -731,9 +768,9 @@ class CustomLayoutApiTest {
    */
   @Test
   fun `a container inside deferred content passes the pre-reduce check`() {
-    val fit = LayoutFunctionN { measurables, c ->
-      val p = measurables[0].measure(c)
-      layout(p.width, p.height) { p.place(x = 0, y = 0) }
+    val fit = LayoutFunctionN { measurables, constraints ->
+      val placeable = measurables[0].measure(constraints)
+      layout(placeable.width, placeable.height) { placeable.place(x = 0, y = 0) }
     }
 
     // Debug mode is on under `LithoTestRule`, so the check runs before reduce.
@@ -757,20 +794,20 @@ class CustomLayoutApiTest {
   @Test
   fun `a container laid out for a released future runs no layout function`() {
     val runs = AtomicInteger(0)
-    val layout = LayoutFunctionN { measurables, c ->
+    val layout = LayoutFunctionN { measurables, constraints ->
       runs.incrementAndGet()
-      val p = measurables[0].measure(c)
-      layout(p.width, p.height) { p.place(x = 0, y = 0) }
+      val placeable = measurables[0].measure(constraints)
+      layout(placeable.width, placeable.height) { placeable.place(x = 0, y = 0) }
     }
     // A fresh context, as `LithoYogaLayoutCacheTest` uses: the rule's context belongs to its own
     // tree.
-    val c = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
+    val componentContext = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
     fun layOutFor(future: TreeFuture<*>): LithoLayoutResult {
-      val resolveContext = c.setRenderStateContextForTests()
+      val resolveContext = componentContext.setRenderStateContextForTests()
       val node = requireNotNull(
           Resolver.resolveTree(
               resolveContext,
-              c,
+              componentContext,
               // A plain child: a Primitive needs the render state only a full tree sets up.
               Layout(
                   listOf(Column(style = Style.width(CHILD.px).height(CHILD.px))),
@@ -782,7 +819,7 @@ class CustomLayoutApiTest {
       val lithoLayoutContext = LithoLayoutContext(
           resolveContext.treeId,
           resolveContext.cache,
-          c,
+          componentContext,
           resolveContext.treeState,
           resolveContext.layoutVersion,
           resolveContext.rootComponentId,
@@ -793,7 +830,13 @@ class CustomLayoutApiTest {
       )
       return requireNotNull(
           node.calculateLayout(
-              LayoutContext(c.androidContext, lithoLayoutContext, 0, layoutCache, null),
+              LayoutContext(
+                  componentContext.androidContext,
+                  lithoLayoutContext,
+                  0,
+                  layoutCache,
+                  null,
+              ),
               SizeConstraints(maxWidth = VIEWPORT, maxHeight = VIEWPORT),
           ),
       )
@@ -812,15 +855,52 @@ class CustomLayoutApiTest {
   }
 
   /**
+   * No builder outlives its pass: a `Layout` in a Yoga tree holds its builder on its result until
+   * the tree is built, and lets go of it then.
+   */
+  @Test
+  fun `a Layout in a Yoga tree holds no builder once its pass is done`() {
+    val view =
+        lithoTestRule.render(widthPx = VIEWPORT, heightPx = VIEWPORT) {
+          container(
+              childCount = 0,
+              layout = LayoutFunctionN { _, _ -> layout(CHILD, CHILD) {} },
+          )
+              .let { inner ->
+                Layout(
+                    listOf(Column { child(inner) }),
+                    layout =
+                        LayoutFunctionN { measurables, constraints ->
+                          val placeable = measurables[0].measure(constraints)
+                          layout(placeable.width, placeable.height) { placeable.place(0, 0) }
+                        },
+                )
+              }
+        }
+    val root =
+        checkNotNull(view.componentTree.mainThreadLayoutState?.rootLayoutResult)
+            as LithoLayoutResult
+    val layouts = ArrayList<LithoLayoutResult>()
+    fun collect(result: LithoLayoutResult) {
+      if (result.node.layoutFunction != null) layouts.add(result)
+      for (i in 0 until result.childCount) collect(result.getChildAt(i))
+    }
+    for (i in 0 until root.childCount) collect(root.getChildAt(i))
+
+    assertThat(layouts).describedAs("the Layout in the root's Yoga child").hasSize(1)
+    assertThat(layouts.single().defaultLayoutBuilder).isNull()
+  }
+
+  /**
    * A layout function runs once per layout pass when the size it asks for is the size it gets.
    *
    * This is what makes the API affordable, and it holds because a [MeasureScope] carries its
    * placement block unevaluated: the measure function can answer Yoga without committing to a
    * placement, so its result survives to be replayed instead of recomputed.
    *
-   * The constraints witness which path ran it. Yoga measures a stretched container with an exact
-   * width and an open height; only the fallback in `layoutChildren` passes both axes exact. One run
-   * with an open height means the measure function ran it and the placement pass reused it.
+   * The constraints witness which run was kept. Yoga measures a stretched container with an exact
+   * width and an open height; its build, in the size Yoga settled, has both axes exact. One run
+   * with an open height means the measure callback ran it and the build reused it.
    */
   @Test
   fun `a layout function runs once when its size is not overridden`() {
@@ -833,10 +913,10 @@ class CustomLayoutApiTest {
       constraintsSeen.add(
           "exactW=${constraints.hasExactWidth},exactH=${constraints.hasExactHeight}",
       )
-      val p = measurables[0].measure(SizeConstraints.exact(CHILD, CHILD))
+      val placeable = measurables[0].measure(SizeConstraints.exact(CHILD, CHILD))
       layout(constraints.maxWidth, CHILD) {
         placements.incrementAndGet()
-        p.place(0, 0)
+        placeable.place(0, 0)
       }
     }
 
@@ -865,9 +945,11 @@ class CustomLayoutApiTest {
       constraintsSeen.add(
           "exactW=${constraints.hasExactWidth},exactH=${constraints.hasExactHeight}",
       )
-      val p = measurables[0].measure(SizeConstraints.exact(CHILD, CHILD))
+      val placeable = measurables[0].measure(SizeConstraints.exact(CHILD, CHILD))
       // Where the child goes depends on the run, so the placement that stands names its run.
-      layout(CHILD, CHILD) { p.place(x = if (constraints.hasExactHeight) STRIDE else 0, y = 0) }
+      layout(CHILD, CHILD) {
+        placeable.place(x = if (constraints.hasExactHeight) STRIDE else 0, y = 0)
+      }
     }
 
     val result = renderAndFindContainer(container(childCount = 1, layout = layout))
@@ -893,8 +975,8 @@ class CustomLayoutApiTest {
     val overflowing = VIEWPORT * 2
     // Declares more than it is allowed; the answer Yoga gets is coerced into the allowance.
     val layout = LayoutFunctionN { measurables, _ ->
-      val p = measurables[0].measure(SizeConstraints.exact(CHILD, CHILD))
-      layout(CHILD, overflowing) { p.place(x = 0, y = 0) }
+      val placeable = measurables[0].measure(SizeConstraints.exact(CHILD, CHILD))
+      layout(CHILD, overflowing) { placeable.place(x = 0, y = 0) }
     }
 
     val testView =
@@ -930,11 +1012,11 @@ class CustomLayoutApiTest {
   fun `an exact width with an open height is measured at that width, once`() {
     val runs = AtomicInteger(0)
     val seen = CopyOnWriteArrayList<String>()
-    val halfAsTallAsWide = LayoutFunctionN { measurables, c ->
+    val halfAsTallAsWide = LayoutFunctionN { measurables, constraints ->
       runs.incrementAndGet()
-      seen.add(c.toString())
-      val p = measurables[0].measure(SizeConstraints.exact(CHILD, CHILD))
-      layout(c.minWidth, c.minWidth / 2) { p.place(x = 0, y = 0) }
+      seen.add(constraints.toString())
+      val placeable = measurables[0].measure(SizeConstraints.exact(CHILD, CHILD))
+      layout(constraints.minWidth, constraints.minWidth / 2) { placeable.place(x = 0, y = 0) }
     }
 
     val testView =
@@ -971,10 +1053,10 @@ class CustomLayoutApiTest {
 
     val layout = LayoutFunctionN { measurables, _ ->
       runs.incrementAndGet()
-      val p = measurables[0].measure(SizeConstraints.exact(CHILD, CHILD))
+      val placeable = measurables[0].measure(SizeConstraints.exact(CHILD, CHILD))
       layout(CHILD, CHILD) {
         placements.incrementAndGet()
-        p.place(0, 0)
+        placeable.place(0, 0)
       }
     }
 
@@ -1010,20 +1092,13 @@ class CustomLayoutApiTest {
 
   // ─────────────────────────────────────────────── the layout cache
 
-  /**
-   * A container reached through a layout-cache hit is still placed.
-   *
-   * Placement is driven by a list a container joins when its result is created. One that never
-   * joins is never placed, and nothing throws — no child is simply mounted — so this is asserted
-   * rather than waited for.
-   */
   @Test
   fun `a minimum reaches the child, not just the reported size`() {
     val reported = AtomicInteger(0)
 
     val layout = LayoutFunctionN { measurables, _ ->
       // The child declares CHILD; ask for it no narrower than three times that.
-      val p =
+      val placeable =
           measurables[0].measure(
               SizeConstraints(
                   minWidth = CHILD * 3,
@@ -1032,8 +1107,8 @@ class CustomLayoutApiTest {
                   maxHeight = VIEWPORT,
               ),
           )
-      reported.set(p.width)
-      layout(p.width, p.height) { p.place(0, 0) }
+      reported.set(placeable.width)
+      layout(placeable.width, placeable.height) { placeable.place(0, 0) }
     }
 
     val result =
@@ -1091,9 +1166,11 @@ class CustomLayoutApiTest {
   /** The list form takes whatever it is given, which is the point of it. */
   @Test
   fun `the list form accepts any number of children`() {
-    val anyNumber = LayoutFunctionN { measurables, c ->
-      val ps = measurables.map { it.measure(SizeConstraints.exact(CHILD, CHILD)) }
-      layout(c.maxWidth, CHILD) { ps.forEachIndexed { i, p -> p.place(x = i * STRIDE, y = 0) } }
+    val anyNumber = LayoutFunctionN { measurables, constraints ->
+      val placeables = measurables.map { it.measure(SizeConstraints.exact(CHILD, CHILD)) }
+      layout(constraints.maxWidth, CHILD) {
+        placeables.forEachIndexed { i, placeable -> placeable.place(x = i * STRIDE, y = 0) }
+      }
     }
 
     val result = renderAndFindContainer(container(childCount = 5, layout = anyNumber))
@@ -1143,8 +1220,8 @@ class CustomLayoutApiTest {
     val runs = AtomicInteger(0)
     val fit = LayoutFunctionN { measurables, constraints ->
       runs.incrementAndGet()
-      val p = measurables[0].measure(constraints)
-      layout(p.width, p.height) { p.place(x = 0, y = 0) }
+      val placeable = measurables[0].measure(constraints)
+      layout(placeable.width, placeable.height) { placeable.place(x = 0, y = 0) }
     }
     var component: Component = SimpleMountSpecTester(style = Style.width(CHILD.px).height(CHILD.px))
     repeat(depth) { component = Layout(listOf(component), layout = fit) }
@@ -1194,10 +1271,10 @@ class CustomLayoutApiTest {
     val errors = CopyOnWriteArrayList<Exception>()
     val sizes = CopyOnWriteArrayList<Int>()
     val squeeze = LayoutFunctionN { measurables, _ ->
-      val p =
+      val placeable =
           measurables[0].measure(SizeConstraints(minWidth = 50, maxWidth = 60, maxHeight = CHILD))
-      sizes.add(p.width)
-      layout(60, CHILD) { p.place(0, 0) }
+      sizes.add(placeable.width)
+      layout(60, CHILD) { placeable.place(0, 0) }
     }
 
     lithoTestRule.render(widthPx = VIEWPORT, heightPx = VIEWPORT) {
@@ -1234,11 +1311,11 @@ class CustomLayoutApiTest {
   @Test
   fun `a container asked at a bounded width with an open height is asked at that width`() {
     val asked = CopyOnWriteArrayList<Int>()
-    val byRoom = LayoutFunctionN { measurables, c ->
-      asked.add(c.maxWidth)
-      val p = measurables[0].measure(SizeConstraints.exact(CHILD, CHILD))
-      val wide = c.maxWidth >= STRIDE
-      layout(if (wide) STRIDE else NARROW_ANSWER, CHILD) { p.place(0, 0) }
+    val byRoom = LayoutFunctionN { measurables, constraints ->
+      asked.add(constraints.maxWidth)
+      val placeable = measurables[0].measure(SizeConstraints.exact(CHILD, CHILD))
+      val wide = constraints.maxWidth >= STRIDE
+      layout(if (wide) STRIDE else NARROW_ANSWER, CHILD) { placeable.place(0, 0) }
     }
 
     // The height is left open all the way up, so Yoga measures the container's height as
@@ -1273,10 +1350,10 @@ class CustomLayoutApiTest {
   @Test
   fun `layout function runs and child layouts are counted`() {
     val runs = AtomicInteger(0)
-    val twoChildren = LayoutFunctionN { measurables, c ->
+    val twoChildren = LayoutFunctionN { measurables, constraints ->
       runs.incrementAndGet()
-      val ps = measurables.map { it.measure(SizeConstraints.exact(CHILD, CHILD)) }
-      layout(c.maxWidth, CHILD) { ps.forEach { it.place(0, 0) } }
+      val placeables = measurables.map { it.measure(SizeConstraints.exact(CHILD, CHILD)) }
+      layout(constraints.maxWidth, CHILD) { placeables.forEach { it.place(0, 0) } }
     }
     com.facebook.litho.stats.LithoStats.resetAllCounters()
 
@@ -1299,13 +1376,13 @@ class CustomLayoutApiTest {
   fun `a run under an unbounded width is counted`() {
     val runs = AtomicInteger(0)
     val intrinsicRuns = AtomicInteger(0)
-    val sizedByItsChild = LayoutFunctionN { measurables, c ->
+    val sizedByItsChild = LayoutFunctionN { measurables, constraints ->
       runs.incrementAndGet()
-      if (c.maxWidth == SizeConstraints.Infinity) {
+      if (constraints.maxWidth == SizeConstraints.Infinity) {
         intrinsicRuns.incrementAndGet()
       }
-      val p = measurables[0].measure(SizeConstraints.exact(CHILD, CHILD))
-      layout(CHILD, CHILD) { p.place(0, 0) }
+      val placeable = measurables[0].measure(SizeConstraints.exact(CHILD, CHILD))
+      layout(CHILD, CHILD) { placeable.place(0, 0) }
     }
     val testView =
         lithoTestRule.render(widthPx = VIEWPORT, heightPx = VIEWPORT) {
@@ -1341,11 +1418,13 @@ class CustomLayoutApiTest {
         Column(style = Style.width(CHILD.px).height(CHILD.px)),
         Column(style = Style.width(CHILD.px).height(CHILD.px).margin(start = 5.px, top = 3.px)),
     )
-    val stacksThem = LayoutFunctionN { measurables, c ->
-      val ps = measurables.map { it.measure(SizeConstraints(maxWidth = c.maxWidth)) }
-      layout(c.maxWidth, ps.sumOf { it.height }) {
+    val stacksThem = LayoutFunctionN { measurables, constraints ->
+      val placeables = measurables.map {
+        it.measure(SizeConstraints(maxWidth = constraints.maxWidth))
+      }
+      layout(constraints.maxWidth, placeables.sumOf { it.height }) {
         var y = 0
-        ps.forEach { placeable ->
+        placeables.forEach { placeable ->
           placeable.place(x = 0, y = y)
           y += placeable.height
         }
@@ -1537,33 +1616,35 @@ class CustomLayoutApiTest {
     val exact = SizeConstraints.exact(CHILD, CHILD)
     val one =
         Layout(fixedLeaf()) { only: Measurable, _ ->
-          val p = only.measure(exact)
-          layout(CHILD, CHILD) { p.place(STRIDE, 0) }
+          val placeable = only.measure(exact)
+          layout(CHILD, CHILD) { placeable.place(STRIDE, 0) }
         }
     val two =
         Layout(fixedLeaf(), fixedLeaf()) { first, second, _ ->
-          val a = first.measure(exact)
-          val b = second.measure(exact)
+          val firstPlaceable = first.measure(exact)
+          val secondPlaceable = second.measure(exact)
           layout(CHILD, CHILD) {
-            a.place(0, 0)
-            b.place(STRIDE, 0)
+            firstPlaceable.place(0, 0)
+            secondPlaceable.place(STRIDE, 0)
           }
         }
     val three =
         Layout(fixedLeaf(), fixedLeaf(), fixedLeaf()) { first, second, third, _ ->
-          val a = first.measure(exact)
-          val b = second.measure(exact)
-          val c = third.measure(exact)
+          val firstPlaceable = first.measure(exact)
+          val secondPlaceable = second.measure(exact)
+          val thirdPlaceable = third.measure(exact)
           layout(CHILD, CHILD) {
-            a.place(0, 0)
-            b.place(STRIDE, 0)
-            c.place(STRIDE * 2, 0)
+            firstPlaceable.place(0, 0)
+            secondPlaceable.place(STRIDE, 0)
+            thirdPlaceable.place(STRIDE * 2, 0)
           }
         }
     val general =
         Layout(listOf(fixedLeaf(), fixedLeaf())) { measurables, _ ->
-          val ps = measurables.map { it.measure(exact) }
-          layout(CHILD, CHILD) { ps.forEachIndexed { i, p -> p.place(i * STRIDE, 0) } }
+          val placeables = measurables.map { it.measure(exact) }
+          layout(CHILD, CHILD) {
+            placeables.forEachIndexed { index, placeable -> placeable.place(index * STRIDE, 0) }
+          }
         }
 
     fun placedXs(component: Component): List<Int> {
@@ -1598,10 +1679,10 @@ class CustomLayoutApiTest {
     renderAndFindContainer(
         Layout(fixedLeaf(), style = Style.layoutDirection(YogaDirection.RTL)) { child, _ ->
           measuring.set(layoutDirection to DP_INSET.dp.toPixels())
-          val p = child.measure(SizeConstraints.exact(CHILD, CHILD))
+          val placeable = child.measure(SizeConstraints.exact(CHILD, CHILD))
           layout(CHILD, CHILD) {
             placing.set(layoutDirection to DP_INSET.dp.toPixels())
-            p.place(0, 0)
+            placeable.place(0, 0)
           }
         },
     )
@@ -1624,19 +1705,24 @@ class CustomLayoutApiTest {
   @Test
   fun `a default intrinsic answers the raw size the function measures`() {
     val seen = CopyOnWriteArrayList<Placeable>()
-    val declaresRaw = LayoutFunctionN { ms, c ->
-      val p = ms[0].measure(SizeConstraints(maxWidth = CHILD, maxHeight = c.maxHeight))
-      seen.add(p)
-      layout(p.measuredWidth, p.height) { p.place(0, 0) }
+    val declaresRaw = LayoutFunctionN { measurables, constraints ->
+      val placeable =
+          measurables[0].measure(
+              SizeConstraints(maxWidth = CHILD, maxHeight = constraints.maxHeight),
+          )
+      seen.add(placeable)
+      layout(placeable.measuredWidth, placeable.height) { placeable.place(0, 0) }
     }
     val answers = AtomicReference<Pair<Int, Int>>()
     renderAndFindContainer(
-        Layout(SimpleMountSpecTester(style = Style.width(WIDE.px).height(CHILD.px))) { child, c ->
-          val max = with(declaresRaw) { maxIntrinsicWidth(listOf(child), c.maxHeight) }
-          val min = with(declaresRaw) { minIntrinsicWidth(listOf(child), c.maxHeight) }
+        Layout(SimpleMountSpecTester(style = Style.width(WIDE.px).height(CHILD.px))) {
+            child,
+            constraints ->
+          val max = with(declaresRaw) { maxIntrinsicWidth(listOf(child), constraints.maxHeight) }
+          val min = with(declaresRaw) { minIntrinsicWidth(listOf(child), constraints.maxHeight) }
           answers.set(max to min)
-          val p = child.measure(SizeConstraints.exact(CHILD, CHILD))
-          layout(CHILD, CHILD) { p.place(0, 0) }
+          val placeable = child.measure(SizeConstraints.exact(CHILD, CHILD))
+          layout(CHILD, CHILD) { placeable.place(0, 0) }
         },
     )
 
@@ -1664,9 +1750,9 @@ class CustomLayoutApiTest {
   fun `a placeable is never smaller than 0`() {
     val answered = AtomicReference<Pair<Int, Int>>()
     val fit = LayoutFunctionN { measurables, _ ->
-      val p = measurables[0].measure(SizeConstraints())
-      answered.set(p.width to p.height)
-      layout(p.width, p.height) { p.place(x = 0, y = 0) }
+      val placeable = measurables[0].measure(SizeConstraints())
+      answered.set(placeable.width to placeable.height)
+      layout(placeable.width, placeable.height) { placeable.place(x = 0, y = 0) }
     }
     val pulledIn = SimpleMountSpecTester(
         style =
@@ -1685,28 +1771,28 @@ class CustomLayoutApiTest {
   // ─────────────────────────────────────────────── placement re-enters layout
 
   /**
-   * A container is placed while a deferred descendant builds a container of its own.
+   * A container is built while a deferred descendant builds a container of its own.
    *
-   * Placing measures, and re-measuring a deferred child that was measured through the
-   * `Component.measure` API rebuilds its subtree against *this* layout context —
-   * `LayoutUtils.measureDeferredNode` hands the enclosing `LithoLayoutContext` straight to
-   * `measureTree` when the cached size spec no longer fits. So a container inside that subtree
-   * joins the list of containers awaiting placement while that list is being walked, and walking it
-   * with an iterator threw `ConcurrentModificationException`, taking the layout pass down.
+   * Re-measuring a deferred child that was measured through the `Component.measure` API rebuilds
+   * its subtree against *this* layout context — `LayoutUtils.measureDeferredNode` hands the
+   * enclosing `LithoLayoutContext` straight to `measureTree` when the cached size spec no longer
+   * fits. So a container inside that subtree is laid out by a pass nested in the outer container's
+   * build, which must still build its child, and the container after it.
    *
    * Four things are deliberate. The outer container has a definite size, which is what makes Yoga
-   * skip its measure function so the measuring happens during placement rather than before it. It
+   * skip its measure callback so the measuring happens during its build rather than before it. It
    * measures its child against a bound, so the child has to answer rather than be handed a size.
    * That bound differs from the size the child was measured at, which is what makes the cached
-   * result unusable and forces the rebuild. And a second container follows it in the walk: the
-   * nested pass trims what it added before returning, so only a walk that still has an entry to
-   * visit after the re-entry would notice the list changed underneath it.
+   * result unusable and forces the rebuild. And a second container follows it, so a build after the
+   * nested pass is checked too.
    */
   @Test
   fun `a deferred descendant may build a container while one is being placed`() {
     val stack = LayoutFunctionN { measurables, _ ->
-      val ps = measurables.map { it.measure(SizeConstraints(maxWidth = CHILD, maxHeight = CHILD)) }
-      layout(CHILD, CHILD) { ps.forEach { it.place(x = 0, y = 0) } }
+      val placeables = measurables.map {
+        it.measure(SizeConstraints(maxWidth = CHILD, maxHeight = CHILD))
+      }
+      layout(CHILD, CHILD) { placeables.forEach { it.place(x = 0, y = 0) } }
     }
     val inner =
         Layout(listOf(Column(style = Style.width(CHILD.px).height(CHILD.px))), layout = stack)
@@ -1751,11 +1837,11 @@ class CustomLayoutApiTest {
   /**
    * A nested pass leaves its caller's containers alone.
    *
-   * Nesting a pass inside *placement* is covered separately, and is harmless: every size has
-   * settled by then. This nests one inside the enclosing Yoga layout instead, which is where the
-   * two passes can disagree — the container under test exists once the tree is built but has no
-   * size until that layout ends. A nested pass that committed it would place it against a box of
-   * zero, and the commit happens once per pass, so the enclosing pass would not get to correct it.
+   * Nesting a pass inside a container's build is covered separately, and is harmless: every size
+   * has settled by then. This nests one inside the enclosing Yoga layout instead, which is where
+   * the two passes can disagree — the container under test exists once the tree is made but has no
+   * size until that layout ends. A nested pass that built it would build it in a box of zero, and
+   * it's built once per pass, so the enclosing pass would not get to correct it.
    *
    * The deferred sibling is declared first so the nested pass runs before Yoga reaches the
    * container, and is measured at a size the viewport will not satisfy so that the cached result is
@@ -1764,20 +1850,23 @@ class CustomLayoutApiTest {
    *
    * Every part of that shape is load-bearing, and the whole test is vacuous without it. Giving the
    * deferred sibling a plain `Column` instead of a container of its own is enough: the re-measure
-   * is then answered from cache, no pass ever nests, and the test passes whatever the placement
-   * code does. If this needs changing, check it still fails when `LithoLayoutContext.layoutPass`
-   * reports every pass as the outermost.
+   * is then answered from cache, no pass ever nests, and the test passes whatever the build code
+   * does.
    */
   @Test
   fun `a nested pass leaves a container its caller has not sized yet`() {
     // Right-aligns, so where the child lands reports which width the container was placed against.
     val rightAlign = LayoutFunctionN { measurables, constraints ->
-      val p = measurables[0].measure(SizeConstraints.exact(NARROW, CHILD))
-      layout(constraints.maxWidth, CHILD) { p.place(x = constraints.maxWidth - NARROW, y = 0) }
+      val placeable = measurables[0].measure(SizeConstraints.exact(NARROW, CHILD))
+      layout(constraints.maxWidth, CHILD) {
+        placeable.place(x = constraints.maxWidth - NARROW, y = 0)
+      }
     }
     val stack = LayoutFunctionN { measurables, _ ->
-      val ps = measurables.map { it.measure(SizeConstraints(maxWidth = CHILD, maxHeight = CHILD)) }
-      layout(CHILD, CHILD) { ps.forEach { it.place(x = 0, y = 0) } }
+      val placeables = measurables.map {
+        it.measure(SizeConstraints(maxWidth = CHILD, maxHeight = CHILD))
+      }
+      layout(CHILD, CHILD) { placeables.forEach { it.place(x = 0, y = 0) } }
     }
     val deferred =
         ComponentWithMeasureCall.create(lithoTestRule.context)
@@ -1849,9 +1938,9 @@ class CustomLayoutApiTest {
   @Test
   fun `a container flattens its children as a Row does`() {
     val layout = LayoutFunctionN { measurables, constraints ->
-      val ps = measurables.map { it.measure(SizeConstraints.exact(CHILD, CHILD)) }
+      val placeables = measurables.map { it.measure(SizeConstraints.exact(CHILD, CHILD)) }
       layout(constraints.maxWidth, CHILD) {
-        ps.forEachIndexed { i, p -> p.place(x = i * STRIDE, y = 0) }
+        placeables.forEachIndexed { i, placeable -> placeable.place(x = i * STRIDE, y = 0) }
       }
     }
     val inContainer =
@@ -1899,8 +1988,8 @@ class CustomLayoutApiTest {
     val constraintsSeen = CopyOnWriteArrayList<SizeConstraints>()
     val layout = LayoutFunctionN { measurables, constraints ->
       constraintsSeen.add(constraints)
-      val p = measurables[0].measure(SizeConstraints.exact(CHILD, CHILD))
-      layout(constraints.maxWidth, CHILD) { p.place(x = STRIDE, y = 0) }
+      val placeable = measurables[0].measure(SizeConstraints.exact(CHILD, CHILD))
+      layout(constraints.maxWidth, CHILD) { placeable.place(x = STRIDE, y = 0) }
     }
 
     val result = renderAndFindContainer(
@@ -1927,8 +2016,8 @@ class CustomLayoutApiTest {
     val threads = CopyOnWriteArrayList<Thread>()
     val layout = LayoutFunctionN { measurables, _ ->
       threads.add(Thread.currentThread())
-      val p = measurables[0].measure(SizeConstraints.exact(CHILD, CHILD))
-      layout(CHILD * 2, CHILD) { p.place(CHILD, 0) }
+      val placeable = measurables[0].measure(SizeConstraints.exact(CHILD, CHILD))
+      layout(CHILD * 2, CHILD) { placeable.place(CHILD, 0) }
     }
     val root = wrap(Layout(listOf(fixedLeaf()), layout = layout))
     val tree = ComponentTree.create(lithoTestRule.context).build()
@@ -1979,11 +2068,13 @@ class CustomLayoutApiTest {
 
   companion object {
     /** Measures each child with the width it has, and stacks them top to bottom. */
-    val STACKS_VERTICALLY = LayoutFunctionN { measurables, c ->
-      val ps = measurables.map { it.measure(SizeConstraints(maxWidth = c.maxWidth)) }
-      layout(ps.maxOf { it.width }, ps.sumOf { it.height }) {
+    val STACKS_VERTICALLY = LayoutFunctionN { measurables, constraints ->
+      val placeables = measurables.map {
+        it.measure(SizeConstraints(maxWidth = constraints.maxWidth))
+      }
+      layout(placeables.maxOf { it.width }, placeables.sumOf { it.height }) {
         var y = 0
-        ps.forEach { placeable ->
+        placeables.forEach { placeable ->
           placeable.place(x = 0, y = y)
           y += placeable.height
         }
@@ -1994,8 +2085,8 @@ class CustomLayoutApiTest {
 
     /** Measures its only child with no bound, and places it. */
     val MEASURES_UNBOUNDED = LayoutFunctionN { measurables, _ ->
-      val p = measurables[0].measure(SizeConstraints())
-      layout(CHILD, CHILD) { p.place(x = 0, y = 0) }
+      val placeable = measurables[0].measure(SizeConstraints())
+      layout(CHILD, CHILD) { placeable.place(x = 0, y = 0) }
     }
 
     private const val VIEWPORT = 1000
@@ -2068,16 +2159,17 @@ class CustomLayoutApiTest {
     private const val CRASH = "layout function crash"
 
     /** Fills the width it is given and puts its one child at the origin. */
-    private val FILL_WIDTH = LayoutFunctionN { measurables, c ->
-      val p = measurables[0].measure(SizeConstraints.exact(CHILD, CHILD))
-      layout(c.maxWidth, CHILD) { p.place(x = 0, y = 0) }
+    private val FILL_WIDTH = LayoutFunctionN { measurables, constraints ->
+      val placeable = measurables[0].measure(SizeConstraints.exact(CHILD, CHILD))
+      layout(constraints.maxWidth, CHILD) { placeable.place(x = 0, y = 0) }
     }
 
     /** Measures its child loosely and puts it at the leading top corner, as a `Column` would. */
-    private val PLACE_LIKE_A_COLUMN = LayoutFunctionN { measurables, c ->
-      val loose = SizeConstraints(maxWidth = c.maxWidth, maxHeight = c.maxHeight)
-      val p = measurables[0].measure(loose)
-      layout(p.width, p.height) { p.placeRelative(start = 0, top = 0) }
+    private val PLACE_LIKE_A_COLUMN = LayoutFunctionN { measurables, constraints ->
+      val loose =
+          SizeConstraints(maxWidth = constraints.maxWidth, maxHeight = constraints.maxHeight)
+      val placeable = measurables[0].measure(loose)
+      layout(placeable.width, placeable.height) { placeable.placeRelative(start = 0, top = 0) }
     }
   }
 

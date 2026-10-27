@@ -63,14 +63,11 @@ object LithoStats {
   /** Runs of a `Layout`'s layout function. */
   @JvmField val customLayoutFunctionRunCount: AtomicLong = AtomicLong(0)
 
-  /** Layouts of a `Layout`'s children, one per measurement. */
+  /** Measurements of a `Layout`'s children that reused no earlier placeable. */
   @JvmField val customLayoutChildLayoutCount: AtomicLong = AtomicLong(0)
 
-  /** Of [customLayoutChildLayoutCount], the `Layout`s laid out directly, without a Yoga root. */
+  /** Of [customLayoutChildLayoutCount], the children that are `Layout`s themselves. */
   @JvmField val customLayoutNestedContainerCount: AtomicLong = AtomicLong(0)
-
-  /** Of [customLayoutChildLayoutCount], the leaves laid out directly, without a Yoga pass. */
-  @JvmField val customLayoutLeafCount: AtomicLong = AtomicLong(0)
 
   /** Measurements of a `Layout`'s child that reused an earlier one from the same pass. */
   @JvmField val customLayoutMeasurementReusedCount: AtomicLong = AtomicLong(0)
@@ -394,7 +391,6 @@ object LithoStats {
     customLayoutFunctionRunCount.set(0)
     customLayoutChildLayoutCount.set(0)
     customLayoutMeasurementReusedCount.set(0)
-    customLayoutLeafCount.set(0)
     customLayoutNestedContainerCount.set(0)
     customLayoutShadowCheckCount.set(0)
   }

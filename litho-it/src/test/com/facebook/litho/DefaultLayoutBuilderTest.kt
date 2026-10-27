@@ -18,34 +18,45 @@ package com.facebook.litho
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
+import com.facebook.litho.core.height
+import com.facebook.litho.core.margin
+import com.facebook.litho.core.padding
+import com.facebook.litho.core.width
 import com.facebook.litho.flexbox.layoutDirection
 import com.facebook.litho.layout.BoxConstraints
 import com.facebook.litho.layout.IntEdges
 import com.facebook.litho.layout.LayoutDirection
 import com.facebook.litho.layout.LayoutFunctionN
+import com.facebook.litho.layout.Measurable
 import com.facebook.litho.layout.MeasureScope
 import com.facebook.litho.layout.NO_SIZE_DECLARED
+import com.facebook.litho.layout.Placeable
 import com.facebook.litho.layout.internal.DefaultLayoutBuilder
+import com.facebook.litho.layout.resolveBoxConstraints
 import com.facebook.litho.testing.testrunner.LithoTestRunner
+import com.facebook.litho.widget.SimpleMountSpecTester
 import com.facebook.rendercore.IntSize
 import com.facebook.rendercore.LayoutCache
 import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.SizeConstraints
+import com.facebook.rendercore.px
 import com.facebook.yoga.YogaDirection
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.doAnswer
+import org.mockito.kotlin.mock
 
 /**
  * The rules [DefaultLayoutBuilder] lays a `Layout` out by, checked on the builder directly: when
- * its function runs, the size it answers, and what a failure does. The `Layout`s here have no
- * children: measuring and building children is wired up with the builders, and tested there.
+ * its function runs, the size it answers, what a failure does, and how it measures, places and
+ * builds its children.
  */
 @RunWith(LithoTestRunner::class)
 class DefaultLayoutBuilderTest {
 
-  // ─────────────────────────────────────────────── the box it answers
+  // The box it answers
 
   @Test
   fun `it answers the size its function declared, within the box`() {
@@ -124,7 +135,7 @@ class DefaultLayoutBuilderTest {
     assertThat(seen).isEqualTo(LayoutDirection.RTL)
   }
 
-  // ─────────────────────────────────────────────── its output
+  // Its output
 
   @Test
   fun `its output is its border box, edges and direction, and it has no failure or reads`() {
@@ -175,7 +186,7 @@ class DefaultLayoutBuilderTest {
     assertThat(output.layoutDirection).isEqualTo(LayoutDirection.LTR)
   }
 
-  // ─────────────────────────────────────────────── when its function runs
+  // When its function runs
 
   @Test
   fun `measured again in the same box, its function doesn't run again`() {
@@ -253,7 +264,7 @@ class DefaultLayoutBuilderTest {
     assertThat(result.width).isEqualTo(200)
   }
 
-  // ─────────────────────────────────────────────── a failure
+  // A failure
 
   @Test
   fun `a function that throws measures nothing inside its edges, and its result carries it`() {
@@ -269,7 +280,7 @@ class DefaultLayoutBuilderTest {
   }
 
   /**
-   * The parent already laid out around its 0 × 0, so a later success would be placed unmeasured.
+   * The parent already laid out around its 0 x 0, so a later success would be placed unmeasured.
    */
   @Test
   fun `a failure is final for the pass`() {
@@ -288,6 +299,30 @@ class DefaultLayoutBuilderTest {
     assertThat(runs).isEqualTo(1)
     assertThat(size).isEqualTo(IntSize(0, 0))
     assertThat(result.failure).isSameAs(failure)
+  }
+
+  /** A canceled pass's tree is never committed: its function's earlier run is dropped too. */
+  @Test
+  fun `once its pass's future is released, its function doesn't run and it places nothing`() {
+    var released = false
+    val future: TreeFuture<*> = mock { on { isReleased } doAnswer { released } }
+    var runs = 0
+    val builder =
+        builderFor(children = listOf(leaf(30, 20)), future = future) { measurables, _ ->
+          runs++
+          val placeable = measurables[0].measure(atMost(200, 200))
+          layout(40, 30) { placeable.place(0, 0) }
+        }
+
+    assertThat(builder.measure(boxUnder(atMost(300, 300)))).isEqualTo(IntSize(40, 30))
+    released = true
+    val size = builder.measure(boxUnder(atMost(100, 100)))
+    val result = builder.build(boxUnder(atMost(100, 100)))
+
+    assertThat(runs).isEqualTo(1)
+    assertThat(size).isEqualTo(IntSize(0, 0))
+    assertThat(result.childCount).isZero()
+    assertThat(positionsOf(result)).isEmpty()
   }
 
   @Test
@@ -320,7 +355,123 @@ class DefaultLayoutBuilderTest {
         .isInstanceOf(AssertionError::class.java)
   }
 
-  // ─────────────────────────────────────────────── its lifetime
+  // Its children
+
+  @Test
+  fun `it measures a child under the constraints its function asks, and builds what it placed`() {
+    val placeables = mutableListOf<Placeable>()
+    val builder =
+        builderFor(children = listOf(leaf(30, 20), leaf(40, 10, margin = 2))) { measurables, _ ->
+          val first = measurables[0].measure(SizeConstraints(maxWidth = 200, maxHeight = 200))
+          val second = measurables[1].measure(SizeConstraints(maxWidth = 200, maxHeight = 200))
+          placeables.add(first)
+          placeables.add(second)
+          layout(100, 50) {
+            first.place(5, 6)
+            second.place(50, 0)
+          }
+        }
+
+    val result = builder.build(boxUnder(atMost(300, 300)))
+
+    assertThat(
+        placeables.map { placeable ->
+          IntSize(placeable.measuredWidth, placeable.measuredHeight)
+        },
+    )
+        .containsExactly(IntSize(30, 20), IntSize(44, 14))
+    assertThat(placeables.map { placeable -> placeable.constraints })
+        .containsOnly(SizeConstraints(maxWidth = 200, maxHeight = 200))
+    assertThat(result.childCount).isEqualTo(2)
+    assertThat(IntSize(result.getChildAt(1).width, result.getChildAt(1).height))
+        .isEqualTo(IntSize(40, 10))
+    // Each child's border box: where it was placed, past its left and top margins.
+    assertThat(positionsOf(result)).containsExactly(5, 6, 52, 2)
+  }
+
+  @Test
+  fun `measured again under the same constraints, a child answers the same placeable`() {
+    val placeables = mutableListOf<Placeable>()
+    val builder =
+        builderFor(children = listOf(leaf(30, 20))) { measurables, _ ->
+          placeables.add(measurables[0].measure(atMost(200, 200)))
+          placeables.add(measurables[0].measure(atMost(200, 200)))
+          layout(30, 20) { placeables[0].place(0, 0) }
+        }
+
+    builder.measure(boxUnder(atMost(300, 300)))
+
+    assertThat(placeables[1]).isSameAs(placeables[0])
+  }
+
+  @Test
+  fun `a child it measures but doesn't place isn't built`() {
+    val builder =
+        builderFor(children = listOf(leaf(30, 20), leaf(40, 10))) { measurables, _ ->
+          val first = measurables[0].measure(atMost(200, 200))
+          measurables[1].measure(atMost(200, 200))
+          layout(30, 20) { first.place(0, 0) }
+        }
+
+    val result = builder.build(boxUnder(atMost(300, 300)))
+
+    assertThat(result.childCount).isEqualTo(1)
+    assertThat(result.getChildAt(0).width).isEqualTo(30)
+  }
+
+  @Test
+  fun `a Layout child is laid out by its own builder`() {
+    val inner = Layout(
+        listOf(leaf(10, 10)),
+        layout =
+            LayoutFunctionN { measurables, _ ->
+              val placeable = measurables[0].measure(atMost(100, 100))
+              layout(60, 30) { placeable.place(3, 4) }
+            },
+    )
+    val builder =
+        builderFor(children = listOf(inner)) { measurables, _ ->
+          val placeable = measurables[0].measure(atMost(200, 200))
+          layout(100, 50) { placeable.place(0, 0) }
+        }
+
+    val child = builder.build(boxUnder(atMost(300, 300))).getChildAt(0)
+
+    assertThat(IntSize(child.width, child.height)).isEqualTo(IntSize(60, 30))
+    assertThat(positionsOf(child)).containsExactly(3, 4)
+  }
+
+  @Test
+  fun `right to left, a child placed from the start is mirrored within the declared width`() {
+    val builder =
+        builderFor(Style.layoutDirection(YogaDirection.RTL), children = listOf(leaf(30, 20))) {
+            measurables,
+            _ ->
+          val placeable = measurables[0].measure(atMost(200, 200))
+          layout(100, 50) { placeable.placeRelative(start = 10) }
+        }
+
+    val result = builder.build(boxUnder(atMost(300, 300)))
+
+    assertThat(positionsOf(result)).containsExactly(60, 0)
+  }
+
+  @Test
+  fun `its box props are its node's own`() {
+    val builder =
+        builderFor(Style.width(120.px).margin(all = 4.px).padding(all = 6.px)) { _ ->
+          layout(10, 10) {}
+        }
+
+    val box = resolveBoxConstraints(atMost(300, 300), builder.boxProps, false)
+
+    assertThat(box.margins).isEqualTo(edges(4))
+    assertThat(box.padding).isEqualTo(edges(6))
+    assertThat(box.borderBox.hasExactWidth).isTrue
+    assertThat(box.borderBox.maxWidth).isEqualTo(120)
+  }
+
+  // Its lifetime
 
   @Test
   fun `its result is marked as holding a Layout`() {
@@ -334,41 +485,63 @@ class DefaultLayoutBuilderTest {
     val builder = builderFor { _ -> layout(10, 10) {} }
     builder.build(boxUnder(atMost(300, 300)))
 
+    assertThatThrownBy { builder.boxProps }.isInstanceOf(IllegalStateException::class.java)
     assertThatThrownBy { builder.measure(boxUnder(atMost(300, 300))) }
+        .isInstanceOf(IllegalStateException::class.java)
+    assertThatThrownBy { builder.measureUnder(atMost(300, 300)) }
         .isInstanceOf(IllegalStateException::class.java)
     assertThatThrownBy { builder.build(boxUnder(atMost(300, 300))) }
         .isInstanceOf(IllegalStateException::class.java)
-    builder.discard(null)
+    assertThat(builder.discard()).describedAs("discarded after it was built").isNull()
   }
 
   @Test
   fun `discarded, it can't be measured or built`() {
     val builder = builderFor { _ -> layout(10, 10) {} }
     builder.measure(boxUnder(atMost(300, 300)))
-    builder.discard(null)
+    builder.discard()
 
+    assertThatThrownBy { builder.boxProps }.isInstanceOf(IllegalStateException::class.java)
     assertThatThrownBy { builder.measure(boxUnder(atMost(300, 300))) }
+        .isInstanceOf(IllegalStateException::class.java)
+    assertThatThrownBy { builder.measureUnder(atMost(300, 300)) }
         .isInstanceOf(IllegalStateException::class.java)
     assertThatThrownBy { builder.build(boxUnder(atMost(300, 300))) }
         .isInstanceOf(IllegalStateException::class.java)
+    assertThat(builder.discard()).describedAs("discarded twice").isNull()
   }
 
-  // ─────────────────────────────────────────────── helpers
+  // Helpers
 
   private fun builderFor(
       style: Style = Style,
+      future: TreeFuture<*>? = null,
       function: MeasureScope.(SizeConstraints) -> Unit,
+  ): DefaultLayoutBuilder =
+      builderFor(style, emptyList(), future) { _, constraints -> function(this, constraints) }
+
+  private fun builderFor(
+      style: Style = Style,
+      children: List<Component>,
+      future: TreeFuture<*>? = null,
+      function: MeasureScope.(List<Measurable>, SizeConstraints) -> Unit,
   ): DefaultLayoutBuilder {
-    val c = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    val resolveContext = c.setRenderStateContextForTests()
+    val componentContext =
+        ComponentTree.create(ComponentContext(ApplicationProvider.getApplicationContext<Context>()))
+            .build()
+            .context
+    val resolveContext = componentContext.setRenderStateContextForTests()
     val node = requireNotNull(
         Resolver.resolveTree(
             resolveContext,
-            c,
+            componentContext,
             Layout(
-                emptyList(),
+                children,
                 style = style,
-                layout = LayoutFunctionN { _, constraints -> function(this, constraints) },
+                layout =
+                    LayoutFunctionN { measurables, constraints ->
+                      function(this, measurables, constraints)
+                    },
             ),
         ),
     )
@@ -376,18 +549,19 @@ class DefaultLayoutBuilderTest {
     val lithoLayoutContext = LithoLayoutContext(
         resolveContext.treeId,
         resolveContext.cache,
-        c,
+        componentContext,
         resolveContext.treeState,
         resolveContext.layoutVersion,
         resolveContext.rootComponentId,
         resolveContext.isAccessibilityEnabled,
         layoutCache,
         null,
-        null,
+        future,
     )
     return DefaultLayoutBuilder(
-        LayoutContext(c.androidContext, lithoLayoutContext, 0, layoutCache, null),
+        LayoutContext(componentContext.androidContext, lithoLayoutContext, 0, layoutCache, null),
         node,
+        previousDiffNode = null,
     )
   }
 
@@ -401,6 +575,9 @@ class DefaultLayoutBuilderTest {
       SizeConstraints(maxWidth = width, maxHeight = height)
 
   private fun edges(all: Int): IntEdges = IntEdges(all, all, all, all)
+
+  private fun leaf(width: Int, height: Int, margin: Int = 0): Component =
+      SimpleMountSpecTester(style = Style.width(width.px).height(height.px).margin(all = margin.px))
 
   private fun outputOf(result: LithoLayoutResult): DefaultMeasureOutput =
       result.measureOutput as DefaultMeasureOutput

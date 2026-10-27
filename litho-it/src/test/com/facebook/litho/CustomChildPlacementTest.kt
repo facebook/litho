@@ -102,7 +102,7 @@ class CustomChildPlacementTest {
     // The height is what tells: measured at CHILD_H, where the child's own content is INNER_H.
     for (i in 0 until result.childCount) {
       assertThat(result.getChildAt(i).width)
-          .describedAs("child $i width — zero here means nothing laid out the child's own subtree")
+          .describedAs("child $i width: zero here means nothing laid out the child's own subtree")
           .isEqualTo(CHILD_W)
       assertThat(result.getChildAt(i).height).describedAs("child $i height").isEqualTo(CHILD_H)
     }
@@ -222,9 +222,7 @@ class CustomChildPlacementTest {
    * A re-layout at a new size keeps the container's placements.
    *
    * Not the cache-clone guard in `LithoYogaLayoutFunction.buildYogaTree`: the clone path needs a
-   * clean node, and changing size specs dirties it, so it is never reached from here. That guard is
-   * covered in `LithoYogaLayoutCacheTest` by `a container that positions its own children is saved
-   * into the layout cache` and the diff-node tests that reuse a cached container.
+   * clean node, and changing size specs dirties it, so it is never reached from here.
    */
   @Test
   fun `a re-layout at a new size keeps the container's placements`() {
@@ -243,7 +241,7 @@ class CustomChildPlacementTest {
     lithoTestRule.idle()
 
     val root = checkNotNull(testView.componentTree.mainThreadLayoutState?.rootLayoutResult)
-    val container = checkNotNull(findCustomLayoutResult(root as LithoLayoutResult))
+    val container = checkNotNull(findLayoutResult(root as LithoLayoutResult))
 
     assertThat(container.childCount).isEqualTo(3)
     assertThat(container.getXForChildAtIndex(2))
@@ -261,7 +259,7 @@ class CustomChildPlacementTest {
     }
     val root = checkNotNull(testView.componentTree.mainThreadLayoutState?.rootLayoutResult)
 
-    assertThat(findCustomLayoutResult(root as LithoLayoutResult))
+    assertThat(findLayoutResult(root as LithoLayoutResult))
         .describedAs("nothing asked to place its own children, so no custom result should exist")
         .isNull()
     assertThat(root.getYForChildAtIndex(1))
@@ -270,17 +268,14 @@ class CustomChildPlacementTest {
   }
 
   private fun renderContainer(fn: LayoutFunctionN, childCount: Int): LithoLayoutResult {
-    // Wrapped in a Column deliberately: Yoga does not call a measure function on a node whose size
-    // is already definite, so a container used directly as the root under exact constraints would
-    // never run its layout function.
     val testView =
         lithoTestRule.render(widthPx = VIEWPORT_W, heightPx = VIEWPORT_H) {
           Column { child(Container(fn, childCount)) }
         }
     val root = checkNotNull(testView.componentTree.mainThreadLayoutState?.rootLayoutResult)
 
-    return checkNotNull(findCustomLayoutResult(root as LithoLayoutResult)) {
-      "no CustomLayoutResult in the tree — the container did not take the custom layout path"
+    return checkNotNull(findLayoutResult(root as LithoLayoutResult)) {
+      "no `Layout` result in the tree: the container did not take the custom layout path"
     }
   }
 
@@ -340,10 +335,10 @@ class CustomChildPlacementTest {
     ): PrimitiveLayoutResult = PrimitiveLayoutResult(size = IntSize(width(), CHILD_H))
   }
 
-  private fun findCustomLayoutResult(result: LithoLayoutResult): LithoLayoutResult? {
-    if (result is CustomLayoutResult) return result
+  private fun findLayoutResult(result: LithoLayoutResult): LithoLayoutResult? {
+    if (result.node.layoutFunction != null) return result
     for (i in 0 until result.childCount) {
-      findCustomLayoutResult(result.getChildAt(i))?.let {
+      findLayoutResult(result.getChildAt(i))?.let {
         return it
       }
     }

@@ -25,6 +25,7 @@ import com.facebook.litho.core.width
 import com.facebook.litho.layout.LayoutFunctionN
 import com.facebook.litho.layout.flexbox.Column
 import com.facebook.litho.layout.flexbox.Row
+import com.facebook.litho.stateupdates.ComponentWithMeasureCall
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.TestLithoView
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -58,8 +59,8 @@ class CustomLayoutReuseTest {
 
   /**
    * A child the function measured but did not place gets its bounds defined when a later pass
-   * places its copy: the `Text` in it mounts. The child is a `Row`, so the `Text` is laid out by
-   * Yoga, not measured directly as a leaf would be.
+   * places its copy: the `Text` in it mounts. The child is a `Row`, so the `Text` is laid out in
+   * the `Row`'s Yoga tree.
    */
   @Test
   fun `a Text under a child left out of one pass mounts when a later pass places it`() {
@@ -104,29 +105,71 @@ class CustomLayoutReuseTest {
   }
 
   @Test
-  fun `a measurement nothing placed is released with its pass`() {
-    // Places a bounded measurement, then probes its child unbounded: the probe is in no tree, and
-    // is
-    // the child's last layout this pass, the one the layout cache keeps for the next.
-    val placesThenProbes = LayoutFunctionN { ms, c ->
-      val p = ms[0].measure(SizeConstraints(maxWidth = 100, maxHeight = 100))
-      ms[0].measure(SizeConstraints(maxWidth = SizeConstraints.Infinity, maxHeight = 100))
-      layout(c.maxWidth, p.height) { p.place(0, 0) }
+  fun `a child measured in two boxes has its cached layout released with its pass`() {
+    // Places a bounded measurement, then probes its child unbounded: the child's one tree is laid
+    // out in each box, then again in the placed box, the layout the layout cache keeps.
+    val placesThenProbes = LayoutFunctionN { measurables, constraints ->
+      val placeable = measurables[0].measure(SizeConstraints(maxWidth = 100, maxHeight = 100))
+      measurables[0].measure(SizeConstraints(maxWidth = SizeConstraints.Infinity, maxHeight = 100))
+      layout(constraints.maxWidth, placeable.height) { placeable.place(0, 0) }
     }
+    // A Yoga tree, whose builder writes the cache only with the layout it builds.
     val view =
         render(width = 300) {
           Layout(
-              listOf(SimpleMountSpecTester(style = Style.width(20.px).height(20.px))),
+              listOf(
+                  Column(style = Style.width(20.px).height(20.px)) {
+                    child(SimpleMountSpecTester())
+                  },
+              ),
               layout = placesThenProbes,
           )
         }
-    val probe = lastLayoutOfChild(view)
+    val cachedLayout = lastLayoutOfChild(view)
 
     for (width in listOf(400, 300, 400, 300)) {
       view.setSizePx(width, VIEWPORT).measure().layout()
     }
 
-    assertThat(collected(probe)).describedAs("the first pass's probe").isTrue()
+    assertThat(collected(cachedLayout)).describedAs("the first pass's cached layout").isTrue()
+  }
+
+  @Test
+  fun `a child's tree dropped into the layout cache holds no builder`() {
+    // Measures its child and doesn't place it: the child's tree is dropped, not built.
+    val measuresOnly = LayoutFunctionN { measurables, constraints ->
+      measurables[0].measure(constraints)
+      layout(constraints.maxWidth, 0) {}
+    }
+    // Content `Component.measure` sized at render: the dropped tree is written to the cache.
+    val view =
+        render(width = 300) {
+          Layout(
+              listOf(
+                  Column {
+                    child(
+                        Layout(emptyList(), layout = LayoutFunctionN { _, _ -> layout(10, 10) {} }),
+                    )
+                    child(
+                        ComponentWithMeasureCall.create(lithoTestRule.context)
+                            .component(
+                                SimpleMountSpecTester(style = Style.width(10.px).height(10.px)),
+                            )
+                            .widthSpec(SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY))
+                            .heightSpec(SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY))
+                            .shouldCacheResult(true)
+                            .build(),
+                    )
+                  },
+              ),
+              layout = measuresOnly,
+          )
+        }
+    val cachedTree = checkNotNull(lastLayoutOfChild(view).get())
+    val layoutResult = cachedTree.getChildAt(0)
+
+    assertThat(layoutResult.node.layoutFunction).describedAs("the cached Layout").isNotNull()
+    assertThat(layoutResult.defaultLayoutBuilder).describedAs("its builder").isNull()
   }
 
   /** The child's layout the layout cache kept from this pass, held weakly. */

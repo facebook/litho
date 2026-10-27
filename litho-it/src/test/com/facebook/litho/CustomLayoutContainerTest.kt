@@ -40,6 +40,7 @@ import com.facebook.rendercore.primitives.PrimitiveLayoutResult
 import com.facebook.rendercore.primitives.ViewAllocator
 import com.facebook.rendercore.px
 import com.facebook.yoga.YogaDirection
+import com.facebook.yoga.YogaEdge
 import java.util.concurrent.atomic.AtomicInteger
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -47,19 +48,19 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-/** What it means that each measurement of a `Layout`'s child owns its layout. */
+/** A `Layout`'s child is built in the box of the measurement its container places. */
 @RunWith(LithoTestRunner::class)
 class CustomLayoutContainerTest {
 
   @JvmField @Rule val lithoTestRule = LithoTestRule()
 
   @Test
-  fun `placing an earlier measurement mounts the layout that measurement made`() {
+  fun `placing an earlier measurement builds the child in that measurement's box`() {
     // Measures the child twice and places the first: the mounted child is the first's size.
-    val measuresTwicePlacesFirst = LayoutFunctionN { ms, c ->
-      val wide = ms[0].measure(SizeConstraints.exact(80, 20))
-      ms[0].measure(SizeConstraints.exact(30, 20))
-      layout(c.maxWidth, 20) { wide.place(0, 0) }
+    val measuresTwicePlacesFirst = LayoutFunctionN { measurables, constraints ->
+      val wide = measurables[0].measure(SizeConstraints.exact(80, 20))
+      measurables[0].measure(SizeConstraints.exact(30, 20))
+      layout(constraints.maxWidth, 20) { wide.place(0, 0) }
     }
 
     val leaf =
@@ -72,10 +73,13 @@ class CustomLayoutContainerTest {
   fun `a container stretched by its flexbox parent places its children in the stretched box`() {
     // Declares the children's width; the Column stretches it to the full width, so the function
     // runs again under exactly that box and places from there.
-    val rightAligned = LayoutFunctionN { ms, c ->
-      val p = ms[0].measure(SizeConstraints(maxWidth = c.maxWidth, maxHeight = c.maxHeight))
-      val w = if (c.hasExactWidth) c.maxWidth else p.width
-      layout(w, p.height) { p.place(w - p.width, 0) }
+    val rightAligned = LayoutFunctionN { measurables, constraints ->
+      val placeable =
+          measurables[0].measure(
+              SizeConstraints(maxWidth = constraints.maxWidth, maxHeight = constraints.maxHeight),
+          )
+      val width = if (constraints.hasExactWidth) constraints.maxWidth else placeable.width
+      layout(width, placeable.height) { placeable.place(width - placeable.width, 0) }
     }
 
     val leaf = leafFrames(
@@ -206,6 +210,48 @@ class CustomLayoutContainerTest {
         .containsExactly("${VIEWPORT - 5 - LEAF},0 ${LEAF}x$LEAF")
   }
 
+  /**
+   * In a Yoga tree, a `Layout` is laid out by Yoga and built by its builder: its result ends with
+   * the builder's output, placing its children itself, at the position Yoga gave it, which its
+   * parent's output holds; its Yoga node lets go of it, and its margins are Yoga's, for the
+   * inspector.
+   */
+  @Test
+  fun `in a Yoga tree, its result takes its builder's output where Yoga placed it`() {
+    val view = render {
+      Column(style = Style.width(300.px)) {
+        child(CountingLeaf())
+        child(
+            Layout(
+                listOf(CountingLeaf(), CountingLeaf()),
+                style = Style.margin(left = 7.px, top = 3.px),
+                layout = STACK,
+            ),
+        )
+      }
+    }
+
+    val column =
+        checkNotNull(view.componentTree.mainThreadLayoutState?.rootLayoutResult)
+            as LithoLayoutResult
+    val layout = column.getChildAt(1)
+    val output = layout.measureOutput as DefaultMeasureOutput
+    assertThat(column.getXForChildAtIndex(1) to column.getYForChildAtIndex(1))
+        .isEqualTo(7 to LEAF + 3)
+    assertThat(listOf(output.childX(0), output.childY(0), output.childX(1), output.childY(1)))
+        .containsExactly(0, 0, 0, LEAF)
+    assertThat(checkNotNull(output.yogaNode).data).isNull()
+    val inspected = DebugLayoutNode(layout)
+    assertThat(inspected.getLayoutMargin(YogaEdge.LEFT) to inspected.getLayoutMargin(YogaEdge.TOP))
+        .isEqualTo(7f to 3f)
+    assertThat(leafFrames(view))
+        .containsExactly(
+            "0,0 300x$LEAF",
+            "7,${LEAF + 3} ${LEAF}x$LEAF",
+            "7,${2 * LEAF + 3} ${LEAF}x$LEAF",
+        )
+  }
+
   private fun render(root: () -> Component): TestLithoView =
       lithoTestRule.render(widthPx = VIEWPORT, heightPx = VIEWPORT) { root() }
 
@@ -235,13 +281,15 @@ class CustomLayoutContainerTest {
     const val VIEWPORT = 500
     const val LEAF = 20
 
-    val STACK = LayoutFunctionN { ms, c ->
-      val ps = ms.map {
-        it.measure(SizeConstraints(maxWidth = c.maxWidth, maxHeight = c.maxHeight))
+    val STACK = LayoutFunctionN { measurables, constraints ->
+      val placeables = measurables.map {
+        it.measure(
+            SizeConstraints(maxWidth = constraints.maxWidth, maxHeight = constraints.maxHeight),
+        )
       }
-      layout(ps.maxOf { it.width }, ps.sumOf { it.height }) {
+      layout(placeables.maxOf { it.width }, placeables.sumOf { it.height }) {
         var y = 0
-        ps.forEach { placeable ->
+        placeables.forEach { placeable ->
           placeable.place(0, y)
           y += placeable.height
         }

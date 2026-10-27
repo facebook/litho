@@ -20,7 +20,6 @@ package com.facebook.litho
 
 import android.graphics.Color
 import android.graphics.Rect
-import androidx.collection.MutableScatterMap
 import androidx.collection.MutableScatterSet
 import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.config.ComponentsConfiguration
@@ -33,7 +32,6 @@ import com.facebook.litho.core.width
 import com.facebook.litho.flexbox.border
 import com.facebook.litho.layout.BoxLayoutProps
 import com.facebook.litho.layout.IntEdges
-import com.facebook.litho.layout.LayoutDirection
 import com.facebook.litho.layout.LayoutFunctionN
 import com.facebook.litho.layout.flexbox.Column
 import com.facebook.litho.state.StateId
@@ -60,17 +58,14 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
- * Pins what each copy of a [LithoLayoutResult] takes from its source, field by field: the cache
- * copy (`LithoYogaLayoutFunction.copyLayoutResult`, for full and partial reuse) and the placement
- * copy ([LithoLayoutResult.acquireForPlacement], for a measurement two measurements of a `Layout`
- * share).
+ * Pins what the cache copy of a [LithoLayoutResult] (`LithoYogaLayoutFunction.copyLayoutResult`,
+ * for full and partial reuse) takes from its source, field by field.
  *
- * Each per-pass field is classified once, in [CACHE_COPY] and [PLACEMENT_COPY], and a reflection
- * guard fails when a field is added to [RECORD_CLASSES] without a classification. The Yoga node,
- * its style inputs and `boxGeometry` are on [YogaLayoutOutput], the result's measure output; the
- * rest of the record is on the result itself, which `copyCachedFrom` copies. The placement copy
- * then takes the source's own values of what a cache copy resets or leaves out. Fields are looked
- * up by name, with any leading `_` dropped, on the result and on its measure output.
+ * Each per-pass field is classified once, in [CACHE_COPY], and a reflection guard fails when a
+ * field is added to [RECORD_CLASSES] without a classification. The Yoga node and its style inputs
+ * are on [YogaLayoutOutput], the result's measure output; Litho's record of the pass is on the
+ * result itself, which `copyCachedFrom` copies. Fields are looked up by name, with any leading `_`
+ * dropped, on the result and on its measure output.
  */
 @RunWith(LithoTestRunner::class)
 class LayoutResultCopyIsolationTest {
@@ -90,18 +85,12 @@ class LayoutResultCopyIsolationTest {
   }
 
   @Test
-  fun `every field of the record is classified for each copy`() {
+  fun `every field of the record is classified`() {
     assertThat(recordFieldNames(RECORD_CLASSES).distinct())
         .describedAs("cache copy classification")
         .containsExactlyInAnyOrderElementsOf(CACHE_COPY.keys)
-    assertThat(recordFieldNames(RECORD_CLASSES).distinct())
-        .describedAs("placement copy classification")
-        .containsExactlyInAnyOrderElementsOf(PLACEMENT_COPY.keys)
-    assertThat(recordFieldNames(listOf(CustomLayoutResult::class.java)))
-        .describedAs("a Layout's placement copy classification")
-        .containsExactlyInAnyOrderElementsOf(CUSTOM_LAYOUT_PLACEMENT_COPY.keys)
     assertThat(recordFieldNames(RESULT_SUBCLASSES_WITHOUT_FIELDS))
-        .describedAs("fields neither copy carries")
+        .describedAs("fields the copy doesn't carry")
         .isEmpty()
   }
 
@@ -122,46 +111,6 @@ class LayoutResultCopyIsolationTest {
   }
 
   @Test
-  fun `a placement copy carries each field as classified`() {
-    val tree = renderTree()
-    val source = tree.leaf
-    populate(source, PLACEMENT_COPY, tree)
-    val container = tree.root
-
-    val copy = source.acquireForPlacement(container)
-
-    assertThat(copy).describedAs("placed elsewhere already, so a copy").isNotSameAs(source)
-    assertThat(copy.javaClass).isEqualTo(source.javaClass)
-    assertCopy(source, copy, PLACEMENT_COPY)
-    assertPlacementCopyStructure(source, copy, container)
-  }
-
-  @Test
-  fun `a Layout's placement copy also carries its unplaced reads`() {
-    val tree = renderTree()
-    val source = tree.customLayout
-    val rules: Map<String, CopyRule> =
-        LinkedHashMap(PLACEMENT_COPY).apply { putAll(CUSTOM_LAYOUT_PLACEMENT_COPY) }
-    populate(source, rules, tree)
-    val container = tree.root
-
-    val copy = source.acquireForPlacement(container)
-
-    assertThat(copy).isInstanceOf(CustomLayoutResult::class.java).isNotSameAs(source)
-    assertCopy(source, copy, rules)
-    assertPlacementCopyStructure(source, copy, container)
-  }
-
-  @Test
-  fun `a result its container already places is not copied`() {
-    val tree = renderTree()
-    val source = tree.leaf
-
-    assertThat(source.acquireForPlacement(tree.root)).isSameAs(source)
-    assertThat(source.acquireForPlacement(tree.root)).isSameAs(source)
-  }
-
-  @Test
   fun `a cache copy's bounds and state reads are its own`() {
     val tree = renderTree()
     val source = tree.leaf
@@ -173,18 +122,7 @@ class LayoutResultCopyIsolationTest {
   }
 
   @Test
-  fun `a placement copy's bounds and state reads are its own`() {
-    val tree = renderTree()
-    val source = tree.leaf
-    populate(source, PLACEMENT_COPY, tree)
-
-    val copy = source.acquireForPlacement(tree.root)
-
-    assertMutationIsolated(source, copy)
-  }
-
-  @Test
-  fun `releasing a result clears only its diff node and Yoga node data and copies still read it`() {
+  fun `release clears only a result's diff node and Yoga node data, and a cache copy reads it`() {
     val tree = renderTree()
     val source = tree.leaf
     populate(source, CACHE_COPY, tree)
@@ -212,19 +150,13 @@ class LayoutResultCopyIsolationTest {
     assertCopy(source, cached, CACHE_COPY - "diffNode", requireObservable = false)
     assertThat(cached.diffNode).isNull()
 
-    val placed = source.acquireForPlacement(tree.root)
-    assertCopy(source, placed, PLACEMENT_COPY - "diffNode", requireObservable = false)
-    assertThat(placed.diffNode).isNull()
-
-    // What the mount and the next pass read from a released copy.
-    for (copy in listOf(cached, placed)) {
-      assertThat(copy.contentRenderUnit).isSameAs(source.contentRenderUnit).isNotNull()
-      assertThat(copy.layoutData).isSameAs(source.layoutData).isNotNull()
-      assertThat(copy.lastMeasuredSize).isEqualTo(source.lastMeasuredSize)
-      assertThat(copy.widthSpec).isEqualTo(source.widthSpec)
-      assertThat(copy.heightSpec).isEqualTo(source.heightSpec)
-      assertThat(adjustedBoundsOf(copy)).isEqualTo(adjustedBoundsOf(source))
-    }
+    // What the mount and the next pass read from a copy of a released result.
+    assertThat(cached.contentRenderUnit).isSameAs(source.contentRenderUnit).isNotNull()
+    assertThat(cached.layoutData).isSameAs(source.layoutData).isNotNull()
+    assertThat(cached.lastMeasuredSize).isEqualTo(source.lastMeasuredSize)
+    assertThat(cached.widthSpec).isEqualTo(source.widthSpec)
+    assertThat(cached.heightSpec).isEqualTo(source.heightSpec)
+    assertThat(adjustedBoundsOf(cached)).isEqualTo(adjustedBoundsOf(source))
   }
 
   /** How a copy takes one field from its source. */
@@ -251,7 +183,6 @@ class LayoutResultCopyIsolationTest {
   private class Tree(
       val root: LithoLayoutResult,
       val leaf: LithoLayoutResult,
-      val customLayout: CustomLayoutResult,
       val all: List<LithoLayoutResult>,
   )
 
@@ -284,7 +215,6 @@ class LayoutResultCopyIsolationTest {
     return Tree(
         root = root,
         leaf = all.single { it.node.headComponent is SourceLeaf },
-        customLayout = all.filterIsInstance<CustomLayoutResult>().single(),
         all = all,
     )
   }
@@ -320,19 +250,6 @@ class LayoutResultCopyIsolationTest {
         in BOOLEANS -> setValue(source, name, true)
         "widthSpec" -> setValue(source, name, SizeSpec.makeSizeSpec(123, SizeSpec.EXACTLY))
         "heightSpec" -> setValue(source, name, SizeSpec.makeSizeSpec(45, SizeSpec.AT_MOST))
-        "childPositions" -> setValue(source, name, intArrayOf(7, 9))
-        "boxGeometry" ->
-            setValue(
-                source,
-                name,
-                BoxGeometry(
-                    LayoutDirection.LTR,
-                    IntEdges(1, 2, 3, 4),
-                    IntEdges(1, 1, 1, 1),
-                    30,
-                    20,
-                ),
-            )
         "lastMeasuredSize" -> setValue(source, name, YogaMeasureOutput.make(12, 34))
         "layoutData" -> setValue(source, name, Any())
         "diffNode" ->
@@ -346,20 +263,11 @@ class LayoutResultCopyIsolationTest {
                 ),
             )
         "delegate",
-        "actualDeferredNodeResult",
-        "placedBy" -> setValue(source, name, donorResults.next())
+        "actualDeferredNodeResult" -> setValue(source, name, donorResults.next())
         "effects" -> setValue(source, name, ArrayList<Attachable>())
         "resolvedMargins" -> setValue(source, name, IntEdges(2, 3, 4, 5))
         "childBoxProps" -> setValue(source, name, BoxLayoutProps())
         "failure" -> setValue(source, name, RuntimeException("sentinel failure"))
-        "unplacedReads" ->
-            setValue(
-                source,
-                name,
-                MutableScatterMap<GlobalKey, MutableScatterSet<StateId>>().also {
-                  it[node.tailComponentKey] = MutableScatterSet()
-                },
-            )
         else -> error("no sentinel for $name: give it one")
       }
     }
@@ -431,23 +339,6 @@ class LayoutResultCopyIsolationTest {
           is Ignored -> Unit
         }
       }
-    }
-  }
-
-  private fun assertPlacementCopyStructure(
-      source: LithoLayoutResult,
-      copy: LithoLayoutResult,
-      container: LithoLayoutResult,
-  ) {
-    assertThat(copy.measureOutput).describedAs("the source's output").isSameAs(source.measureOutput)
-    assertThat(valueOf(copy, "placedBy")).describedAs("placed by").isSameAs(container)
-    val sourceChildren = valueOf(source, "children") as List<*>
-    val copyChildren = valueOf(copy, "children") as List<*>
-    assertThat(sourceChildren).describedAs("source children").isNotEmpty()
-    assertThat(copyChildren).describedAs("a list of its own").isNotSameAs(sourceChildren)
-    assertThat(copyChildren.size).isEqualTo(sourceChildren.size)
-    for (i in sourceChildren.indices) {
-      assertThat(copyChildren[i]).describedAs("child $i").isSameAs(sourceChildren[i])
     }
   }
 
@@ -535,7 +426,7 @@ class LayoutResultCopyIsolationTest {
         LithoLayoutResult::class.java,
     )
 
-    /** Results either copy creates whose own fields it would not carry. */
+    /** Results the copy creates whose own fields it would not carry. */
     val RESULT_SUBCLASSES_WITHOUT_FIELDS: List<Class<*>> =
         listOf(DeferredLithoLayoutResult::class.java, NullLithoLayoutResult::class.java)
 
@@ -570,7 +461,6 @@ class LayoutResultCopyIsolationTest {
 
     const val BY_RESETS = "copyCachedFrom's resets"
     const val NOT_CARRIED = "copyCachedFrom, which leaves it at its default"
-    const val NEW_OUTPUT = "data class copy(), which does not carry body vars"
 
     /** `LithoYogaLayoutFunction.copyLayoutResult`. */
     val CACHE_COPY: Map<String, CopyRule> = mapOf(
@@ -583,7 +473,6 @@ class LayoutResultCopyIsolationTest {
         "maxWidthFromStyle" to ByValue,
         "minHeightFromStyle" to ByValue,
         "maxHeightFromStyle" to ByValue,
-        "boxGeometry" to Reset(null, NEW_OUTPUT),
         // The record of the pass, on the result, copied by copyCachedFrom.
         "widthSpec" to ByValue,
         "heightSpec" to ByValue,
@@ -607,71 +496,15 @@ class LayoutResultCopyIsolationTest {
         "adjustedBounds" to DeepCopied("adjustedBounds.set in copyCachedFrom"),
         "stateReads" to DeepCopied("addStateReads in copyCachedFrom"),
         "resolvedMargins" to Reset(null, NOT_CARRIED),
+        "defaultLayoutBuilder" to
+            Ignored("held by a `Layout` in a Yoga tree, which is never cached"),
         "childBoxProps" to Shared,
         // LithoLayoutResult's structure.
         "context" to Shared,
         "node" to Checked("the node passed in"),
         "measureOutput" to Checked("an output of its own"),
         "children" to Reset(emptyList<Any>(), "createLayoutResult: cloneCachedSubtree adds them"),
-        "placedBy" to Reset(null, "createLayoutResult"),
         "subtreeHasCustomLayout" to Reset(false, "createLayoutResult"),
-    )
-
-    /** [LithoLayoutResult.copyForPlacement], through [LithoLayoutResult.acquireForPlacement]. */
-    val PLACEMENT_COPY: Map<String, CopyRule> = mapOf(
-        // YogaLayoutOutput, which the copy shares: the same layout.
-        "yogaNode" to Shared,
-        "widthFromStyle" to ByValue,
-        "heightFromStyle" to ByValue,
-        "minWidthFromStyle" to ByValue,
-        "maxWidthFromStyle" to ByValue,
-        "minHeightFromStyle" to ByValue,
-        "maxHeightFromStyle" to ByValue,
-        "boxGeometry" to Shared,
-        // The record of the pass, copied by copyCachedFrom and then, for what it resets or leaves
-        // out, by copyForPlacement. Its own position is its container's.
-        "widthSpec" to ByValue,
-        "heightSpec" to ByValue,
-        "lastMeasuredSize" to ByValue,
-        "isCachedLayout" to ByValue,
-        "isDiffedLayout" to ByValue,
-        "cachedMeasuresValid" to ByValue,
-        "wasMeasured" to ByValue,
-        "measureHadExceptions" to ByValue,
-        "boundsDefined" to ByValue,
-        "diffNode" to Shared,
-        "layoutData" to Shared,
-        "contentRenderUnit" to Shared,
-        "hostRenderUnit" to Shared,
-        "borderRenderUnit" to Shared,
-        "delegate" to Shared,
-        // So the copy reports it if placed.
-        "failure" to Shared,
-        "effects" to Shared,
-        "actualDeferredNodeResult" to Shared,
-        "adjustedBounds" to DeepCopied("adjustedBounds.set in copyCachedFrom"),
-        "stateReads" to DeepCopied("addStateReads in copyCachedFrom"),
-        "resolvedMargins" to Shared,
-        "childBoxProps" to Shared,
-        // LithoLayoutResult's structure.
-        "context" to Shared,
-        "node" to Shared,
-        "measureOutput" to Checked("the source's output"),
-        "children" to Checked("a list of its own holding the same children"),
-        "placedBy" to Checked("the container that acquired it"),
-        "subtreeHasCustomLayout" to ByValue,
-    )
-
-    /** [CustomLayoutResult]'s own fields, for its override of copyForPlacement. */
-    val CUSTOM_LAYOUT_PLACEMENT_COPY: Map<String, CopyRule> = mapOf(
-        // Where it placed its children, which the copy shares with them.
-        "childPositions" to Shared,
-        // The readers of the measurements it didn't place, shared: nothing writes them after
-        // settle.
-        "unplacedReads" to Shared,
-        // The source's own function runs, this pass; a placement copy runs none.
-        "invocations" to Ignored("this pass's function runs"),
-        "diffChildrenByKey" to Ignored("read while measuring, before any placement"),
     )
 
     /** Places its child's first measurement at the origin. */
