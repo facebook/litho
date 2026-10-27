@@ -41,9 +41,10 @@ import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaNode
 
 /**
- * Lays out a `Layout`'s child that isn't a `Layout` as a Yoga tree of its own: one tree, laid out
- * again in place when it's measured within another box, as Yoga does with any node it measures
- * twice. Built, it hands that tree over; discarded, it drops it.
+ * Lays out a `Layout`'s child that is neither a `Layout` nor a leaf it lays out itself: a
+ * container, or a deferred, null or externally measured leaf, as a Yoga tree of its own: one tree,
+ * laid out again in place when it's measured within another box, as Yoga does with any node it
+ * measures twice. Built, it hands that tree over; discarded, it drops it.
  *
  * A tree holding content resolved under its constraints drops that content before it's laid out in
  * a new box: laid out again in place, the content would keep what it resolved to under an earlier
@@ -164,10 +165,10 @@ internal class YogaTreeBuilder(
 
   /**
    * Lays [tree] out within [box], in place: its border box within [BoxConstraints.borderBox], with
-   * the padding and border its node doesn't carry. A leaf is a tree of one node.
+   * the padding and border its node doesn't carry.
    */
   private fun layOutTree(tree: LithoLayoutResult, box: BoxConstraints) {
-    // TODO: a leaf that throws reports it as it's measured, as in any Yoga tree; hold it on its
+    // TODO: content that throws reports it as it's measured, as in any Yoga tree; hold it on its
     // result instead, until the tree is built.
     trace({ "layout.yogaCalculateLayout:${tree.node.headComponent.simpleName}" }) {
       tree.getYogaNode().layOutWithin(box)

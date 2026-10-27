@@ -18,6 +18,7 @@
 
 package com.facebook.litho
 
+import android.annotation.SuppressLint
 import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.core.height
 import com.facebook.litho.core.margin
@@ -35,6 +36,7 @@ import com.facebook.litho.widget.TextDrawable
 import com.facebook.rendercore.LayoutCache
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.px
+import com.facebook.yoga.YogaAlign
 import java.lang.ref.WeakReference
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
@@ -113,7 +115,8 @@ class CustomLayoutReuseTest {
       measurables[0].measure(SizeConstraints(maxWidth = SizeConstraints.Infinity, maxHeight = 100))
       layout(constraints.maxWidth, placeable.height) { placeable.place(0, 0) }
     }
-    // A Yoga tree, whose builder writes the cache only with the layout it builds.
+    // A Yoga tree, not a leaf: its builder, like a leaf's, writes the cache only with the layout it
+    // builds.
     val view =
         render(width = 300) {
           Layout(
@@ -223,6 +226,52 @@ class CustomLayoutReuseTest {
             listOf("5,0 70x20", "5,0 20x20"),
             listOf("5,0 70x20", "5,0 20x20"),
         )
+  }
+
+  /**
+   * A leaf whose keyed parent switches between a `Layout` and a Column is a direct leaf of a
+   * `Layout` one pass and a Yoga node's child the next. The layout cache holds what the other
+   * builder made for it, which its builder doesn't copy, so it's laid out as it is fresh each pass.
+   */
+  @Test
+  fun `a leaf that switches between a Layout's leaf and a Column's child keeps its box`() {
+    lateinit var inColumn: State<Boolean>
+
+    class Switching : KComponent() {
+      @Suppress("KComponentUncachedAllocationDetector")
+      override fun ComponentScope.render(): Component {
+        val state = useState { false }
+        inColumn = state
+        return key("parent") {
+          if (state.value) Column(alignItems = YogaAlign.FLEX_START) { child(LeafOwner()) }
+          else Layout(listOf(LeafOwner()), layout = AT_MOST_100)
+        }
+      }
+    }
+
+    val view = render(300) { Switching() }
+    fun leafBox(): String {
+      val root = rootResult(view)
+      val leaf = root.getChildAt(0)
+      val position = "${root.getXForChildAtIndex(0)},${root.getYForChildAtIndex(0)}"
+      return "$position ${leaf.width}x${leaf.height}"
+    }
+    val passes = arrayListOf(leafBox())
+    for (value in listOf(true, false, true, false)) {
+      // Sync, so the pass is committed before its box is read.
+      @SuppressLint("KComponentSyncUpdateDetector")
+      lithoTestRule.act(view) { inColumn.updateSync(value) }
+      lithoTestRule.idle()
+      passes.add(leafBox())
+    }
+
+    assertThat(passes).containsOnly("5,0 40x30").hasSize(5)
+  }
+
+  /** Owns the leaf, so the leaf isn't rendered again when only its parent changes. */
+  private class LeafOwner : KComponent() {
+    override fun ComponentScope.render(): Component =
+        SimpleMountSpecTester(style = Style.width(40.px).height(30.px).margin(start = 5.px))
   }
 
   private fun container(): Component = Layout(

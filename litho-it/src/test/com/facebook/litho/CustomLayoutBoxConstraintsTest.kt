@@ -193,8 +193,8 @@ class CustomLayoutBoxConstraintsTest {
 
   @Test
   fun `a flexbox-item prop on a container child is not written to its node`() {
-    // A container child, whose Yoga node is the root of a tree of its own: no flexbox parent reads
-    // it.
+    // A container child, not a leaf: a leaf has no Yoga node to check, and a container child's is
+    // the root of its own tree, which no flexbox parent reads.
     val child =
         Row(style = Style.width(CHILD.px).height(CHILD.px).flex(grow = 1f)) {
           child(SimpleMountSpecTester())

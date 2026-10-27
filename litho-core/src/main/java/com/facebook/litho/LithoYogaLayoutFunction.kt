@@ -20,7 +20,6 @@ import android.graphics.Point
 import android.graphics.Rect
 import android.util.Pair
 import androidx.collection.MutableScatterMap
-import androidx.collection.MutableScatterSet
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
 import com.facebook.litho.ComponentsSystrace.trace
@@ -317,7 +316,7 @@ internal object LithoYogaLayoutFunction {
 
   private fun isYogaTreeCopyable(item: LayoutCache.CacheItem?): Boolean {
     val cached = item?.layoutResult as? LithoLayoutResult ?: return false
-    return !cached.subtreeHasCustomLayout
+    return !cached.subtreeHasCustomLayout && cached.measureOutput is YogaLayoutOutput
   }
 
   private fun buildYogaTreeFromCache(
@@ -638,6 +637,7 @@ internal object LithoYogaLayoutFunction {
     // does, so it is never cached, and a cached subtree holding one is never copied whole. Any
     // other node is reused from its own last layout, so in the role it had then: a `Layout`'s child
     // with its box props on its result, a flexbox child with them on its node.
+    // A `Layout`'s leaf child is cached without a Yoga node, which no Yoga tree can copy.
     val isCustomLayout = currentNode.layoutFunction != null
     val usesCache = !isCustomLayout
     if (!usesCache || !isYogaTreeCopyable(cacheItem)) {
@@ -655,21 +655,15 @@ internal object LithoYogaLayoutFunction {
             inContainer = inContainer,
             savesIntoCache = savesIntoCache,
         )
-            .also {
-              if (ComponentsConfiguration.customLayoutShadowValidation) {
-                (renderContext.wholeSubtreeCopies
-                        ?: MutableScatterSet<LithoLayoutResult>().also { copies ->
-                          renderContext.wholeSubtreeCopies = copies
-                        })
-                    .add(it)
-              }
-            }
+            .also { copy -> renderContext.addWholeSubtreeCopy(copy) }
       }
     }
 
     cacheItem =
         if (usesCache) {
-          layoutCache.get<LayoutCache.CacheItem>(currentNode.id.toLong())
+          layoutCache.get<LayoutCache.CacheItem>(currentNode.id.toLong())?.takeIf {
+            (it.layoutResult as? LithoLayoutResult)?.measureOutput is YogaLayoutOutput
+          }
         } else {
           null
         }
@@ -1065,8 +1059,8 @@ internal object LithoYogaLayoutFunction {
 
   /**
    * [applyDiffNode] for [result]: whether the last pass's measurement may be reused, and its
-   * inter-stage props. Returns whether a MountSpec that measures can't reuse it, so its Yoga node
-   * must be dirtied.
+   * inter-stage props. Returns whether a MountSpec that measures can't reuse it: its Yoga node, if
+   * it has one, must then be dirtied.
    */
   internal fun applyDiffNodeTo(
       current: LithoLayoutContext,
@@ -1298,7 +1292,12 @@ internal object LithoYogaLayoutFunction {
       if (layoutResult.delegate == null || hasLayoutSizeChanged) {
 
         // Check whether to run measure for a Primitive that was skipped due to a fixed size.
-        val layoutContext = getLayoutContextFromYogaNode(layoutResult.getYogaNode())
+        val layoutContext =
+            when (val output = layoutResult.measureOutput) {
+              is YogaLayoutOutput -> getLayoutContextFromYogaNode(output.yogaNode)
+              is LeafLayoutOutput -> checkNotNull(output.layoutContext)
+              is DefaultMeasureOutput -> error("A Layout's result is never a Primitive's")
+            }
         measure(
             layoutContext,
             layoutResult,
@@ -1773,7 +1772,7 @@ internal object LithoYogaLayoutFunction {
     return direction
   }
 
-  private fun shouldAlwaysRemeasure(component: Component): Boolean =
+  internal fun shouldAlwaysRemeasure(component: Component): Boolean =
       if (component is SpecGeneratedComponent) {
         component.shouldAlwaysRemeasure()
       } else {
@@ -1794,7 +1793,7 @@ internal object LithoYogaLayoutFunction {
    * been clamped by the constraint and could produce a different (larger) result under a different
    * constraint.
    */
-  private fun isSpecCompatible(
+  internal fun isSpecCompatible(
       oldSpec: Int,
       newSpec: Int,
       measuredSize: Int,

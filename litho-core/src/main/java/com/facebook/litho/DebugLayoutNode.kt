@@ -45,13 +45,14 @@ class DebugLayoutNode internal constructor(private val result: LithoLayoutResult
 
   /**
    * The Yoga node Yoga laid it out with, which holds its style: its own, or a `Layout`'s in a Yoga
-   * tree. Null for a `Layout` laid out on its own or under a `Layout`.
+   * tree. Null for a `Layout` laid out on its own or under a `Layout`, and for a `Layout`'s leaf.
    */
   private val yogaNode: YogaNode?
     get() =
         when (val output = result.measureOutput) {
           is YogaLayoutOutput -> output.yogaNode
           is DefaultMeasureOutput -> output.yogaNode
+          is LeafLayoutOutput -> null
         }
 
   /**

@@ -17,14 +17,20 @@
 package com.facebook.litho.layout
 
 import com.facebook.litho.NodeConfig
+import com.facebook.litho.SizeSpec
 import com.facebook.litho.layout.BoxConstraintsCases.text
+import com.facebook.litho.layout.internal.layOutWithin
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.rendercore.FastMath
+import com.facebook.rendercore.IntSize
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaConstants
 import com.facebook.yoga.YogaDirection
 import com.facebook.yoga.YogaEdge
+import com.facebook.yoga.YogaMeasureFunction
+import com.facebook.yoga.YogaMeasureMode
+import com.facebook.yoga.YogaMeasureOutput
 import com.facebook.yoga.YogaNode
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -141,6 +147,84 @@ class BoxConstraintsYogaParityTest {
     fun px(edge: YogaEdge): Int = FastMath.round(layout(edge))
     return "(${px(YogaEdge.LEFT)}, ${px(YogaEdge.TOP)}, ${px(YogaEdge.RIGHT)}, ${px(YogaEdge.BOTTOM)})"
   }
+
+  /**
+   * For generated box props under a range of constraints, in both directions, the size
+   * [borderBoxSize] gives a leaf is the size a Yoga pass gives it: [borderBoxSize] against
+   * `layOutWithin` on a Yoga leaf with the same content.
+   */
+  @Test
+  fun `a leaf measured with no Yoga node is sized as a Yoga pass sizes it`() {
+    val constraintsToTry = listOf(
+        SizeConstraints(0, 200, 0, SizeConstraints.Infinity),
+        SizeConstraints(0, 333, 0, SizeConstraints.Infinity),
+        SizeConstraints(200, 200, 0, SizeConstraints.Infinity),
+        SizeConstraints(),
+        SizeConstraints(0, SizeConstraints.Infinity, 0, 90),
+        SizeConstraints(0, SizeConstraints.Infinity, 90, 90),
+        SizeConstraints(120, 120, 80, 80),
+        SizeConstraints(0, 150, 0, 60),
+        SizeConstraints(40, 150, 30, 60),
+        SizeConstraints(0, 12, 0, 8),
+    )
+    val contents = listOf(30 to 25, 0 to 0, 400 to 300)
+    val mismatches = ArrayList<String>()
+    var compared = 0
+    for ((contentWidth, contentHeight) in contents) {
+      val content = YogaMeasureFunction { _, width, widthMode, height, heightMode ->
+        YogaMeasureOutput.make(
+            fit(contentWidth.toFloat(), width, widthMode),
+            fit(contentHeight.toFloat(), height, heightMode),
+        )
+      }
+      for (direction in listOf(YogaDirection.LTR, YogaDirection.RTL)) {
+        for (declared in BoxConstraintsCases.generated(count = 200, seed = 7)) {
+          for (constraints in constraintsToTry) {
+            val box =
+                resolveBoxConstraints(constraints, declared.build(), direction == YogaDirection.RTL)
+            val yoga =
+                NodeConfig.createYogaNode()
+                    .apply {
+                      setDirection(direction)
+                      setMeasureFunction(content)
+                      layOutWithin(box)
+                    }
+                    .let { node -> IntSize(node.layoutWidth.toInt(), node.layoutHeight.toInt()) }
+            val direct =
+                borderBoxSize(box) { widthSpec, heightSpec ->
+                  IntSize(
+                      measureFixed(contentWidth, widthSpec),
+                      measureFixed(contentHeight, heightSpec),
+                  )
+                }
+            compared++
+            if (direct != yoga) {
+              mismatches.add(
+                  "content ${contentWidth}x$contentHeight $direction $declared $constraints: " +
+                      "yoga ${yoga.width}x${yoga.height}, direct ${direct.width}x${direct.height}",
+              )
+            }
+          }
+        }
+      }
+    }
+    assertThat(mismatches).describedAs("of %s compared", compared).isEmpty()
+  }
+
+  /** What content of a fixed size answers under [spec], as [fit] does for Yoga. */
+  private fun measureFixed(size: Int, spec: Int): Int =
+      when (SizeSpec.getMode(spec)) {
+        SizeSpec.EXACTLY -> SizeSpec.getSize(spec)
+        SizeSpec.AT_MOST -> minOf(size, SizeSpec.getSize(spec))
+        else -> size
+      }
+
+  private fun fit(size: Float, space: Float, mode: YogaMeasureMode): Float =
+      when (mode) {
+        YogaMeasureMode.EXACTLY -> space
+        YogaMeasureMode.AT_MOST -> minOf(size, space)
+        else -> size
+      }
 }
 
 /**

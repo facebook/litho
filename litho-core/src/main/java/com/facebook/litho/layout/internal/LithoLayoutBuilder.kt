@@ -18,10 +18,13 @@ package com.facebook.litho.layout.internal
 
 import androidx.collection.ScatterSet
 import com.facebook.litho.BoxLayoutPropsRecorder
+import com.facebook.litho.DeferredLithoNode
 import com.facebook.litho.DiffNode
 import com.facebook.litho.LithoLayoutContext
 import com.facebook.litho.LithoLayoutResult
 import com.facebook.litho.LithoNode
+import com.facebook.litho.LithoYogaMeasureFunction
+import com.facebook.litho.NullNode
 import com.facebook.litho.isReadTrackingEnabled
 import com.facebook.litho.layout.BoxConstraints
 import com.facebook.litho.layout.BoxLayoutProps
@@ -55,7 +58,7 @@ internal sealed interface LithoLayoutBuilder {
   /**
    * Once built, the state read by what it made for its measures but didn't build, or null: what it
    * measured to may depend on them, so its parent's result carries them. A builder that makes one
-   * result for all its measures, as a `Layout`'s does, has none.
+   * result for all its measures, a leaf's or a `Layout`'s, has none.
    */
   val unbuiltReads: ScatterSet<StateId>?
 
@@ -70,6 +73,7 @@ internal sealed interface LithoLayoutBuilder {
  * [this] node's builder for the pass, as a `Layout`'s child; [previousDiffNode] is its diff node
  * from the last pass:
  * - a `Layout`'s own;
+ * - a leaf's, measured with no Yoga node;
  * - a Yoga tree, for anything else.
  */
 internal fun LithoNode.newLayoutBuilder(
@@ -78,8 +82,21 @@ internal fun LithoNode.newLayoutBuilder(
 ): LithoLayoutBuilder =
     when {
       layoutFunction != null -> DefaultLayoutBuilder(context, this, previousDiffNode)
+      isLeaf() -> LeafLayoutBuilder(context, this, previousDiffNode)
       else -> YogaTreeBuilder(context, this, previousDiffNode)
     }
+
+/**
+ * Whether it's a leaf whose content Litho measures, or that has none: no children, and none of a
+ * deferred node's resolution or a null node's absence, which only a Yoga tree handles.
+ */
+private fun LithoNode.isLeaf(): Boolean {
+  if (childCount != 0 || this is DeferredLithoNode || this is NullNode) {
+    return false
+  }
+  val measureFunction = yogaMeasureFunction
+  return measureFunction == null || measureFunction is LithoYogaMeasureFunction
+}
 
 /**
  * [node]'s box props, replayed into a recorder rather than onto a Yoga node, with the state they

@@ -21,7 +21,8 @@ import com.facebook.litho.layout.LayoutDirection
 /**
  * A node's geometry, as the engine that laid it out built it: its size and edges, and where it
  * placed its children. What the pass recorded about measuring its content is on its
- * [LithoLayoutResult].
+ * [LithoLayoutResult]. A leaf's output also keeps engine state a Yoga node keeps: its last
+ * measurements and the context of the pass that laid it out.
  *
  * Read-only outside Litho: only its layout engines subclass it. Its internal members are where it
  * placed its children, which its result reports, and what the end of its pass asks of it. Its own

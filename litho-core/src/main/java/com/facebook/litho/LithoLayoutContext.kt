@@ -22,6 +22,7 @@ import androidx.collection.MutableScatterMap
 import androidx.collection.MutableScatterSet
 import com.facebook.litho.animation.ReflowGeneration
 import com.facebook.litho.animation.ReflowReadView
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.state.DirtyScopeIndex
 import com.facebook.litho.state.StateId
 import com.facebook.rendercore.IntSize
@@ -93,6 +94,15 @@ constructor(
    * with shadow validation on, which checks the layouts holding them.
    */
   internal var wholeSubtreeCopies: MutableScatterSet<LithoLayoutResult>? = null
+
+  /** Adds [copy] to [wholeSubtreeCopies], with shadow validation on. */
+  internal fun addWholeSubtreeCopy(copy: LithoLayoutResult) {
+    if (ComponentsConfiguration.customLayoutShadowValidation) {
+      (wholeSubtreeCopies
+              ?: MutableScatterSet<LithoLayoutResult>().also { wholeSubtreeCopies = it })
+          .add(copy)
+    }
+  }
 
   /**
    * The reflow-declaring layout results collected during the current Yoga root's build walk, so the

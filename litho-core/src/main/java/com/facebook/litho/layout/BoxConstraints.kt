@@ -465,6 +465,28 @@ private class AxisRange(var min: Int, var max: Int) {
 }
 
 /**
+ * The border-box size [box] gives a leaf, given [measure], which measures its content under a width
+ * and a height spec. [measure] is not called when both axes are exact, as Yoga does not call a
+ * leaf's measure function then.
+ *
+ * It's the border-box size around the content it measures: [borderBoxSizeAround].
+ */
+internal inline fun borderBoxSize(
+    box: BoxConstraints,
+    measure: (Int, Int) -> IntSize,
+): IntSize {
+  val room = box.borderBox
+  if (room.hasExactWidth && room.hasExactHeight) {
+    return borderBoxSizeAround(0, 0, box)
+  }
+  val content = measure(
+      contentSpec(room.hasExactWidth, room.hasBoundedWidth, room.maxWidth, box.edgesAcross),
+      contentSpec(room.hasExactHeight, room.hasBoundedHeight, room.maxHeight, box.edgesDown),
+  )
+  return borderBoxSizeAround(content.width, content.height, box)
+}
+
+/**
  * The border-box size around content of [contentWidth] x [contentHeight] in [box], as Yoga bounds a
  * measured root: on an exact axis it's the constraint, whatever the content; otherwise the content
  * plus the padding and border, within the box's minimum and maximum. Either way it's at least the
