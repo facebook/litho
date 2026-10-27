@@ -127,21 +127,21 @@ class DefaultLayoutBuilderTest {
   // ─────────────────────────────────────────────── its output
 
   @Test
-  fun `its output is its border box, edges and direction, with nothing failed or read`() {
+  fun `its output is its border box, edges and direction, and it has no failure or reads`() {
     val builder = builderFor(Style.layoutDirection(YogaDirection.RTL)) { _ -> layout(100, 50) {} }
 
-    val output = outputOf(
+    val result =
         builder.build(
             boxUnder(
                 atMost(300, 300),
                 padding = IntEdges(1, 2, 3, 4),
                 border = IntEdges(5, 6, 7, 8),
             ),
-        ),
-    )
+        )
+    val output = outputOf(result)
 
     assertThat(IntSize(output.width, output.height)).isEqualTo(IntSize(116, 70))
-    assertThat(IntSize(output.contentWidth, output.contentHeight)).isEqualTo(IntSize(100, 50))
+    assertThat(IntSize(result.contentWidth, result.contentHeight)).isEqualTo(IntSize(100, 50))
     assertThat(
         listOf(output.paddingLeft, output.paddingTop, output.paddingRight, output.paddingBottom),
     )
@@ -149,21 +149,29 @@ class DefaultLayoutBuilderTest {
     assertThat(listOf(output.borderLeft, output.borderTop, output.borderRight, output.borderBottom))
         .containsExactly(5, 6, 7, 8)
     assertThat(output.layoutDirection).isEqualTo(LayoutDirection.RTL)
-    assertThat(output.childPositions).isEmpty()
-    assertThat(output.stateReads).isNull()
-    assertThat(output.pendingFailure).isNull()
+    assertThat(positionsOf(result)).isEmpty()
+    assertThat(result.stateReads).isNull()
+    assertThat(result.failure).isNull()
   }
 
-  /** Its content box is its border box less its edges, not what its function declared. */
+  /**
+   * Its content box is its border box less its edges, not what its function declared; its specs are
+   * the content constraints its function ran under.
+   */
   @Test
   fun `built in an exact box larger than it declared, its content box fills the box`() {
     val builder = builderFor { _ -> layout(100, 50) {} }
 
-    val output =
-        outputOf(builder.build(boxUnder(SizeConstraints.exact(300, 200), padding = edges(10))))
+    val result = builder.build(boxUnder(SizeConstraints.exact(300, 200), padding = edges(10)))
+    val output = outputOf(result)
 
     assertThat(IntSize(output.width, output.height)).isEqualTo(IntSize(300, 200))
-    assertThat(IntSize(output.contentWidth, output.contentHeight)).isEqualTo(IntSize(280, 180))
+    assertThat(IntSize(result.contentWidth, result.contentHeight)).isEqualTo(IntSize(280, 180))
+    assertThat(listOf(result.widthSpec, result.heightSpec))
+        .containsExactly(
+            SizeSpec.makeSizeSpec(280, SizeSpec.EXACTLY),
+            SizeSpec.makeSizeSpec(180, SizeSpec.EXACTLY),
+        )
     assertThat(output.layoutDirection).isEqualTo(LayoutDirection.LTR)
   }
 
@@ -253,11 +261,11 @@ class DefaultLayoutBuilderTest {
     val builder = builderFor { _ -> throw failure }
 
     val size = builder.measure(boxUnder(atMost(300, 300), padding = edges(10)))
-    val output = outputOf(builder.build(boxUnder(atMost(300, 300), padding = edges(10))))
+    val result = builder.build(boxUnder(atMost(300, 300), padding = edges(10)))
 
     assertThat(size).isEqualTo(IntSize(20, 20))
-    assertThat(output.pendingFailure).isSameAs(failure)
-    assertThat(output.childPositions).isEmpty()
+    assertThat(result.failure).isSameAs(failure)
+    assertThat(positionsOf(result)).isEmpty()
   }
 
   /**
@@ -275,20 +283,20 @@ class DefaultLayoutBuilderTest {
 
     builder.measure(boxUnder(atMost(300, 300)))
     val size = builder.measure(boxUnder(atMost(100, 100)))
-    val output = outputOf(builder.build(boxUnder(SizeConstraints.exact(0, 0))))
+    val result = builder.build(boxUnder(SizeConstraints.exact(0, 0)))
 
     assertThat(runs).isEqualTo(1)
     assertThat(size).isEqualTo(IntSize(0, 0))
-    assertThat(output.pendingFailure).isSameAs(failure)
+    assertThat(result.failure).isSameAs(failure)
   }
 
   @Test
   fun `a function that declares no size fails`() {
     val builder = builderFor { _ -> }
 
-    val output = outputOf(builder.build(boxUnder(atMost(300, 300))))
+    val result = builder.build(boxUnder(atMost(300, 300)))
 
-    assertThat(output.pendingFailure)
+    assertThat(result.failure)
         .isInstanceOf(IllegalStateException::class.java)
         .hasMessage(NO_SIZE_DECLARED)
   }
@@ -301,7 +309,7 @@ class DefaultLayoutBuilderTest {
     val result = builder.build(boxUnder(atMost(300, 300)))
 
     assertThat(IntSize(result.width, result.height)).isEqualTo(IntSize(40, 30))
-    assertThat(outputOf(result).pendingFailure).isSameAs(failure)
+    assertThat(result.failure).isSameAs(failure)
   }
 
   @Test
@@ -394,6 +402,14 @@ class DefaultLayoutBuilderTest {
 
   private fun edges(all: Int): IntEdges = IntEdges(all, all, all, all)
 
-  private fun outputOf(result: LithoLayoutResult): CustomLayoutOutput =
-      result.layoutOutput as CustomLayoutOutput
+  private fun outputOf(result: LithoLayoutResult): DefaultMeasureOutput =
+      result.measureOutput as DefaultMeasureOutput
+
+  /** Each built child's left and top, as [result]'s output places them. */
+  private fun positionsOf(result: LithoLayoutResult): List<Int> {
+    val output = outputOf(result)
+    return (0 until result.childCount).flatMap { index ->
+      listOf(output.childX(index), output.childY(index))
+    }
+  }
 }

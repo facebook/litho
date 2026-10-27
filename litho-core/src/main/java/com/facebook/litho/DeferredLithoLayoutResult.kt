@@ -29,11 +29,11 @@ class DeferredLithoLayoutResult
 constructor(
     c: ComponentContext,
     deferredNode: DeferredLithoNode,
-    layoutOutput: LithoLayoutOutput,
-) : LithoLayoutResult(c, deferredNode, layoutOutput) {
+    measureOutput: LithoMeasureOutput,
+) : LithoLayoutResult(c, deferredNode, measureOutput) {
 
   val result: LithoLayoutResult?
-    get() = layoutOutput.actualDeferredNodeResult
+    get() = actualDeferredNodeResult
 
   override val node: DeferredLithoNode
     get() = super.node as DeferredLithoNode
@@ -43,7 +43,8 @@ constructor(
       throw IllegalArgumentException("Deferred Node Result has only one child")
     }
 
-    return result?.layoutOutput?.x ?: 0
+    val output = result?.measureOutput as? YogaLayoutOutput ?: return 0
+    return if (output.boxGeometry != null) 0 else output.yogaNode.layoutX.toInt()
   }
 
   override fun getYForChildAtIndex(index: Int): Int {
@@ -51,7 +52,8 @@ constructor(
       throw IllegalArgumentException("Deferred Node Result has only one child")
     }
 
-    return result?.layoutOutput?.y ?: 0
+    val output = result?.measureOutput as? YogaLayoutOutput ?: return 0
+    return if (output.boxGeometry != null) 0 else output.yogaNode.layoutY.toInt()
   }
 
   override fun releaseLayoutPhaseData() {

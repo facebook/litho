@@ -37,14 +37,18 @@ val LithoLayoutResult.isNullNodeResult: Boolean
  */
 class NullNode : LithoNode() {
 
-  override fun createLayoutResult(layoutOutput: LithoLayoutOutput): LithoLayoutResult {
-    return NullLithoLayoutResult(c = tailComponentContext, node = this, layoutOutput = layoutOutput)
+  override fun createLayoutResult(measureOutput: LithoMeasureOutput): LithoLayoutResult {
+    return NullLithoLayoutResult(
+        c = tailComponentContext,
+        node = this,
+        measureOutput = measureOutput,
+    )
   }
 }
 
 class NullLithoLayoutResult
-internal constructor(c: ComponentContext, node: NullNode, layoutOutput: LithoLayoutOutput) :
-    LithoLayoutResult(context = c, node = node, layoutOutput = layoutOutput)
+internal constructor(c: ComponentContext, node: NullNode, measureOutput: LithoMeasureOutput) :
+    LithoLayoutResult(context = c, node = node, measureOutput = measureOutput)
 
 class NullWriter internal constructor() : YogaLayoutProps(node = NodeConfig.createYogaNode()) {
 

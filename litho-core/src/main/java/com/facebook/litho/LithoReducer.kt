@@ -25,7 +25,6 @@ import androidx.collection.mutableScatterSetOf
 import androidx.core.view.ViewCompat
 import com.facebook.litho.ComponentsSystrace.trace
 import com.facebook.litho.LithoLayoutData.Companion.NO_Z_INDEX
-import com.facebook.litho.YogaLayoutOutput.Companion.yogaLayoutOutput
 import com.facebook.litho.animation.StructuralStyleTransitionId
 import com.facebook.litho.animation.StyleTransitionData
 import com.facebook.litho.animation.StyleTransitionId
@@ -668,10 +667,10 @@ internal object LithoReducer {
     // Track which (state, owner-key) pairs this layout result reads. State updates use these
     // pairs to invalidate exactly the affected subtrees on the next pass.
     val ownerGlobalKey = context.nullableGlobalKey
-    val layoutOutputStateReads = result.yogaLayoutOutput.stateReads
-    if (ownerGlobalKey != null && layoutOutputStateReads != null) {
+    val stateReads = result.stateReads
+    if (ownerGlobalKey != null && stateReads != null) {
       val accumulatedStateReads = reductionState.getOrCreateStateReads()
-      layoutOutputStateReads.forEach { stateIdentifier ->
+      stateReads.forEach { stateIdentifier ->
         accumulatedStateReads
             .getOrPut(stateIdentifier) { mutableScatterSetOf() }
             .add(ownerGlobalKey)
@@ -1025,7 +1024,7 @@ internal object LithoReducer {
     diffNode.lastMeasuredHeight = result.contentHeight
     diffNode.layoutData = result.layoutData
     diffNode.effects = result.effects
-    diffNode.stateReads = result.yogaLayoutOutput.stateReads
+    diffNode.stateReads = result.stateReads
     diffNode.primitive = result.node.primitive
     diffNode.delegate = result.delegate
   }
@@ -1139,7 +1138,7 @@ internal object LithoReducer {
    * - Subtrees containing a deferred descendant ([containsDeferredDescendant]) are never cached.
    *   The recording-pass snapshot bakes in a deferred subtree whose shape is not guaranteed to
    *   match the next pass's measure-time `actualResult` — `copyLayoutResult` nulls
-   *   `_actualDeferredNodeResult` on Yoga cache hit so `measureDeferredNode` re-resolves, and that
+   *   `actualDeferredNodeResult` on Yoga cache hit so `measureDeferredNode` re-resolves, and that
    *   re-resolution can produce a different mountable-output shape. The splice-time gate
    *   ([containsDeferredDescendant] check on the snapshot itself) is the load-bearing rejection;
    *   this recording-time skip avoids storing snapshots that could never be safely spliced.
@@ -1293,7 +1292,7 @@ internal object LithoReducer {
     // StateReads — replay the cached subtree's layout-phase state-read attributions into the
     // current pass's accumulator so the resulting LayoutState carries the full read graph for
     // the next pass's [LayoutTreeFuture.willSkipLayout] check. Layout-phase reads come from
-    // [LithoLayoutOutput.stateReads] (Spec MountSpec / Primitive measure-time reads); KComponent
+    // [LithoLayoutResult.stateReads] (Spec MountSpec / Primitive measure-time reads); KComponent
     // useState reads flow through the resolve-phase tracker independently, so this map only
     // contains the layout-phase attributions and is typically empty in modern KComponent code.
     snapshot.stateReads?.forEach { (stateId, keys) ->

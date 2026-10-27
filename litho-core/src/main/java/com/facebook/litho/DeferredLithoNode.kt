@@ -58,11 +58,11 @@ constructor(
   }
 
   override fun createLayoutResult(
-      layoutOutput: LithoLayoutOutput,
+      measureOutput: LithoMeasureOutput,
   ): DeferredLithoLayoutResult = DeferredLithoLayoutResult(
       c = tailComponentContext,
       deferredNode = this,
-      layoutOutput = layoutOutput,
+      measureOutput = measureOutput,
   )
 
   fun copyInto(target: LithoNode) {

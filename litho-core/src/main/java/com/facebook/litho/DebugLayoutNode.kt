@@ -156,7 +156,7 @@ class DebugLayoutNode internal constructor(private val result: LithoLayoutResult
     get() = result.height.toFloat()
 
   fun getLayoutMargin(edge: YogaEdge): Float =
-      result.yogaLayoutOutput.resolvedMargins?.at(edge, result.layoutOutput.layoutDirection)
+      result.resolvedMargins?.at(edge, result.measureOutput.layoutDirection)
           ?: result.getYogaNode().getLayoutMargin(edge)
 
   fun getLayoutPadding(edge: YogaEdge): Float =

@@ -33,7 +33,7 @@ import com.facebook.litho.state.StateId
  * absolute origin so the splice can offset descendant bounds when the subtree shifts position.
  *
  * [stateReads] carries the subtree's layout-phase state-read attributions (collected in
- * [LithoReducer.kt]'s per-output accumulator from [LithoLayoutOutput.stateReads], which captures
+ * [LithoReducer.kt]'s per-output accumulator from [LithoLayoutResult.stateReads], which captures
  * Spec MountSpec / Primitive measure-time reads). Splice replays these into the current pass's
  * [ReductionState.stateReads] so the next pass's [LayoutTreeFuture.willSkipLayout] check sees the
  * full read graph. KComponent useState reads flow through the resolve-phase tracker ([Resolver.kt])

@@ -20,34 +20,35 @@ import android.graphics.drawable.Drawable
 import com.facebook.yoga.YogaDirection
 
 class SpecGeneratedComponentLayout(
-    private val layoutOutput: LithoLayoutOutput,
+    /**
+     * Its position in its parent; while it is measured, before anything places it, where its own
+     * engine positioned it.
+     */
+    override val x: Int,
+    /** Its vertical position, as [x] is its horizontal one. */
+    override val y: Int,
+    private val measureOutput: LithoMeasureOutput,
     private val paddingSet: Boolean,
     private val backgroundDrawable: Drawable?,
 ) : ComponentLayout {
 
-  override val x: Int
-    get() = layoutOutput.x
-
-  override val y: Int
-    get() = layoutOutput.y
-
   override val width: Int
-    get() = layoutOutput.width
+    get() = measureOutput.width
 
   override val height: Int
-    get() = layoutOutput.height
+    get() = measureOutput.height
 
   override val paddingTop: Int
-    get() = layoutOutput.paddingTop
+    get() = measureOutput.paddingTop
 
   override val paddingRight: Int
-    get() = layoutOutput.paddingRight
+    get() = measureOutput.paddingRight
 
   override val paddingBottom: Int
-    get() = layoutOutput.paddingBottom
+    get() = measureOutput.paddingBottom
 
   override val paddingLeft: Int
-    get() = layoutOutput.paddingLeft
+    get() = measureOutput.paddingLeft
 
   override val isPaddingSet: Boolean
     get() = paddingSet
@@ -56,5 +57,5 @@ class SpecGeneratedComponentLayout(
     get() = backgroundDrawable
 
   override val resolvedLayoutDirection: YogaDirection
-    get() = layoutOutput.layoutDirection.toYogaDirection()
+    get() = measureOutput.layoutDirection.toYogaDirection()
 }

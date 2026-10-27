@@ -16,6 +16,7 @@
 
 package com.facebook.litho
 
+import android.graphics.Point
 import android.graphics.Rect
 import com.facebook.litho.LifecycleStep.StepInfo
 
@@ -44,6 +45,17 @@ class LifecycleTracker {
 
   val height: Int
     get() = (getInfo(LifecycleStep.ON_BOUNDS_DEFINED).args?.get(0) as? Rect)?.height() ?: 0
+
+  /** The position each `@OnMeasure` read, in order. */
+  val measuredAt: List<Point>
+    get() =
+        _steps
+            .filter { it.step == LifecycleStep.ON_MEASURE }
+            .mapNotNull { it.args?.getOrNull(1) as? Point }
+
+  /** The bounds the first `@OnBoundsDefined` read: where its parent placed it, and its size. */
+  val definedBounds: Rect
+    get() = (getInfo(LifecycleStep.ON_BOUNDS_DEFINED).args?.get(0) as? Rect) ?: Rect()
 
   val steps: List<LifecycleStep>
     get() = LifecycleStep.getSteps(_steps)

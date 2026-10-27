@@ -18,6 +18,7 @@ package com.facebook.litho.widget
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Point
 import android.graphics.Rect
 import android.view.View
 import androidx.annotation.UiThread
@@ -105,7 +106,7 @@ object MountSpecLifecycleTesterSpec {
       size.width = width
       size.height = height
     }
-    lifecycleTracker.addStep(LifecycleStep.ON_MEASURE, size)
+    lifecycleTracker.addStep(LifecycleStep.ON_MEASURE, size, Point(layout.x, layout.y))
   }
 
   @JvmStatic

@@ -22,7 +22,6 @@ import androidx.collection.MutableScatterMap
 import androidx.collection.MutableScatterSet
 import androidx.collection.ScatterSet
 import com.facebook.litho.ComponentsSystrace.trace
-import com.facebook.litho.YogaLayoutOutput.Companion.yogaLayoutOutput
 import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.layout.ChildBox
 import com.facebook.litho.layout.LayoutDirection
@@ -52,17 +51,14 @@ import com.facebook.yoga.YogaNode
 internal class CustomLayoutResult(
     context: ComponentContext,
     node: LithoNode,
-    layoutOutput: LithoLayoutOutput,
-) : LithoLayoutResult(context = context, node = node, layoutOutput = layoutOutput) {
+    measureOutput: LithoMeasureOutput,
+) : LithoLayoutResult(context = context, node = node, measureOutput = measureOutput) {
 
   /** This pass's invocations of the layout function, oldest first. */
   private val invocations = ArrayList<LayoutInvocation>(2)
 
   /** Last pass's DiffNodes of this container's children, by the key they were placed under. */
   private var diffChildrenByKey: Map<GlobalKey, DiffNode>? = null
-
-  /** What the layout function threw, reported if this container is placed. */
-  private var failure: Exception? = null
 
   /**
    * The state the children's measurements nothing placed read, by the key of the node in them that
@@ -72,6 +68,9 @@ internal class CustomLayoutResult(
    */
   internal var unplacedReads: MutableScatterMap<GlobalKey, MutableScatterSet<StateId>>? = null
     private set
+
+  /** Where it placed each of its children, in child order, left then top: written as it settles. */
+  private var childPositions: IntArray = NO_POSITIONS
 
   /** One invocation of the layout function, under [constraints], and what it declared. */
   private class LayoutInvocation(val constraints: SizeConstraints, val scope: MeasureScope)
@@ -153,7 +152,7 @@ internal class CustomLayoutResult(
     if (invocation == null) {
       return
     }
-    val direction = layoutOutput.layoutDirection
+    val direction = measureOutput.layoutDirection
     val scope = PlacementScope(
         this.context.resourceResolver,
         node.childCount,
@@ -175,25 +174,34 @@ internal class CustomLayoutResult(
     collectUnplacedMeasurementReads(context, placed = scope)
     // The declared box sits at the start of the content box: its right edge in right-to-left.
     val startOffset = if (direction.isRTL) contentWidth - invocation.scope.width else 0
+    var placedCount = 0
+    for (i in 0 until node.childCount) {
+      if (scope.placedWith[i] != null) placedCount++
+    }
+    // Its children's positions are its own, in the order they are added.
+    val positions = if (placedCount == 0) NO_POSITIONS else IntArray(placedCount * 2)
+    childPositions = positions
+    var slot = 0
     for (i in 0 until node.childCount) {
       val placeable = scope.placedWith[i] ?: continue
       // A reused measurement may already be placed by another measurement of this container, in
       // which case this one places a copy.
       val result = placeable.result.acquireForPlacement(this)
-      result.yogaLayoutOutput.placedX =
+      positions[slot] =
           insetLeft +
               startOffset +
               scope.placements[i * 2] +
               placeable.offsetX +
               placeable.marginLeft
-      result.yogaLayoutOutput.placedY =
+      positions[slot + 1] =
           insetTop + scope.placements[i * 2 + 1] + placeable.offsetY + placeable.marginTop
+      slot += 2
       addChild(result)
     }
   }
 
   /**
-   * Runs [block], adding the state it reads to this container's output, and returns whether it
+   * Runs [block], adding the state it reads to this container's result, and returns whether it
    * threw. The reads are kept when it throws too: a failure that depends on state recovers once
    * that state changes.
    */
@@ -210,7 +218,7 @@ internal class CustomLayoutResult(
         StateReadRecorder.record(requireNotNull(context.renderContext).treeId, description) {
           result = attempt(block)
         }
-    yogaLayoutOutput.addStateReads(reads)
+    addStateReads(reads)
     return result
   }
 
@@ -251,7 +259,7 @@ internal class CustomLayoutResult(
         }
       }
     }
-    reads?.let { yogaLayoutOutput.addStateReads(it) }
+    reads?.let { addStateReads(it) }
   }
 
   /**
@@ -265,8 +273,7 @@ internal class CustomLayoutResult(
       result: LithoLayoutResult,
       into: MutableScatterSet<StateId>?,
   ): MutableScatterSet<StateId>? {
-    var reads =
-        recordUnplacedReads(result.node.tailComponentKey, result.yogaLayoutOutput.stateReads, into)
+    var reads = recordUnplacedReads(result.node.tailComponentKey, result.stateReads, into)
     for (i in 0 until result.childCount) {
       reads = recordReadsOf(result.getChildAt(i), reads)
     }
@@ -324,19 +331,27 @@ internal class CustomLayoutResult(
     return byReader.getOrPut(readerKey) { MutableScatterSet() }
   }
 
-  /**
-   * A copy also takes this container's failure, so it is reported if the copy is placed, and the
-   * reads of the measurements it did not place.
-   */
-  override fun copyForPlacement(): LithoLayoutResult =
-      super.copyForPlacement().also { (it as CustomLayoutResult).takeUnplacedStateFrom(this) }
+  override fun getXForChildAtIndex(index: Int): Int = childPositions[index * 2]
+
+  override fun getYForChildAtIndex(index: Int): Int = childPositions[index * 2 + 1]
 
   /**
-   * Takes [other]'s failure and unplaced reads, for a copy of it that a second container places.
-   * The map is shared with the copy, not copied: nothing writes it after settle.
+   * A copy also shares its children's positions, and takes the reads of the measurements this
+   * container did not place; the base copy gives it the failure, so it is reported if the copy is
+   * placed.
+   */
+  override fun copyForPlacement(): LithoLayoutResult =
+      super.copyForPlacement().also { copy ->
+        copy as CustomLayoutResult
+        copy.childPositions = childPositions
+        copy.takeUnplacedStateFrom(this)
+      }
+
+  /**
+   * Takes [other]'s unplaced reads, for a copy of it that a second container places. The map is
+   * shared with the copy, not copied: nothing writes it after settle.
    */
   private fun takeUnplacedStateFrom(other: CustomLayoutResult) {
-    failure = other.failure
     unplacedReads = other.unplacedReads
   }
 

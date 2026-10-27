@@ -281,6 +281,8 @@ class LayoutTreeFuture(
                     lithoLayoutContext = lsc,
                     reductionState = reductionState,
                     result = root,
+                    xInParent = reductionState.rootX,
+                    yInParent = reductionState.rootY,
                 )
               } catch (e: Exception) {
                 throw ComponentUtils.wrapWithMetadata(c, e)

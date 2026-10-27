@@ -423,11 +423,19 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
     return node
   }
 
-  open fun createLayoutResult(layoutOutput: LithoLayoutOutput): LithoLayoutResult =
+  open fun createLayoutResult(measureOutput: LithoMeasureOutput): LithoLayoutResult =
       if (layoutFunction != null) {
-        CustomLayoutResult(context = tailComponentContext, node = this, layoutOutput = layoutOutput)
+        CustomLayoutResult(
+            context = tailComponentContext,
+            node = this,
+            measureOutput = measureOutput,
+        )
       } else {
-        LithoLayoutResult(context = tailComponentContext, node = this, layoutOutput = layoutOutput)
+        LithoLayoutResult(
+            context = tailComponentContext,
+            node = this,
+            measureOutput = measureOutput,
+        )
       }
 
   open fun border(widths: IntArray, colors: IntArray, radii: FloatArray, effect: PathEffect?) {

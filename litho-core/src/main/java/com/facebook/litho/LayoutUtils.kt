@@ -19,7 +19,6 @@ package com.facebook.litho
 import android.content.Context
 import androidx.collection.mutableScatterSetOf
 import com.facebook.litho.ComponentsSystrace.traceWithArgs
-import com.facebook.litho.YogaLayoutOutput.Companion.yogaLayoutOutput
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.transition.MutableTransitionData
 import com.facebook.rendercore.LayoutCache
@@ -119,7 +118,7 @@ internal object LayoutUtils {
     val currentLayout: LithoLayoutResult? = holder.result
     // Set new created LayoutResult for future access
     if (layout != null && layout !== currentLayout) {
-      holder.yogaLayoutOutput._actualDeferredNodeResult = layout
+      holder.actualDeferredNodeResult = layout
     }
     return layout
   }
@@ -131,6 +130,10 @@ internal object LayoutUtils {
    * 2. Measure Primitive that were skipped due to fixed size.<br></br>
    * 3. Invoke OnBoundsDefined for all MountSpecs.<br></br>
    * 4. Let each result do what only a result in the final tree may (`onFinalized`).<br></br>
+   *
+   * @param xInParent where its parent placed [result] across; for a root, its tree's offset
+   *   (`LithoLayoutContext.rootOffset`).
+   * @param yInParent where its parent placed [result] down; for a root, its tree's offset.
    */
   @JvmStatic
   fun measurePendingSubtrees(
@@ -138,6 +141,8 @@ internal object LayoutUtils {
       lithoLayoutContext: LithoLayoutContext,
       reductionState: ReductionState,
       result: LithoLayoutResult,
+      xInParent: Int,
+      yInParent: Int,
   ) {
     if (lithoLayoutContext.isFutureReleased || result.measureHadExceptions) {
       // Exit early if the layout future as been released or if this result had exceptions.
@@ -207,6 +212,8 @@ internal object LayoutUtils {
             lithoLayoutContext = lithoLayoutContext,
             reductionState = reductionState,
             result = actualLayoutResult,
+            xInParent = result.getXForChildAtIndex(0),
+            yInParent = result.getYForChildAtIndex(0),
         )
       } catch (e: Exception) {
         throw ComponentUtils.wrapWithMetadata(parentContext, e)
@@ -227,6 +234,8 @@ internal object LayoutUtils {
               lithoLayoutContext = lithoLayoutContext,
               reductionState = reductionState,
               result = child,
+              xInParent = result.getXForChildAtIndex(i),
+              yInParent = result.getYForChildAtIndex(i),
           )
         } catch (e: Exception) {
           throw ComponentUtils.wrapWithMetadata(context, e)
@@ -234,7 +243,7 @@ internal object LayoutUtils {
       }
     }
 
-    LithoYogaLayoutFunction.onBoundsDefined(result)
+    LithoYogaLayoutFunction.onBoundsDefined(result, xInParent, yInParent)
 
     registerWorkingRange(reductionState, result)
   }
@@ -409,7 +418,7 @@ internal object LayoutUtils {
 
       if (newNode == null) {
         // mark as error to prevent from resolving it again.
-        holderResult.yogaLayoutOutput._measureHadExceptions = true
+        holderResult.measureHadExceptions = true
         return null
       }
 

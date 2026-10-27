@@ -19,7 +19,7 @@ package com.facebook.litho.layout.internal
 import androidx.collection.MutableLongObjectMap
 import androidx.collection.MutableScatterSet
 import androidx.collection.mutableScatterSetOf
-import com.facebook.litho.CustomLayoutOutput
+import com.facebook.litho.DefaultMeasureOutput
 import com.facebook.litho.LithoLayoutContext
 import com.facebook.litho.LithoLayoutResult
 import com.facebook.litho.LithoNode
@@ -40,6 +40,8 @@ import com.facebook.litho.state.StateReadRecorder
 import com.facebook.rendercore.IntSize
 import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.SizeConstraints
+import com.facebook.rendercore.toHeightSpec
+import com.facebook.rendercore.toWidthSpec
 
 /**
  * Lays out a `Layout` for one pass. Each measure runs its layout function, unless its latest run
@@ -125,17 +127,25 @@ internal class DefaultLayoutBuilder(
     }
 
     val positions = if (builtCount == 0) NO_POSITIONS else IntArray(builtCount * 2)
-    val output = CustomLayoutOutput(
+    val output = DefaultMeasureOutput(
         size.width,
         size.height,
         box.padding,
         box.border,
         layoutDirection,
-        childPositions = positions,
-        stateReads = stateReads,
-        pendingFailure = failure,
+        positions = positions,
     )
     val result = LithoLayoutResult(node.tailComponentContext, node, output)
+    val contentWidth = (size.width - box.edgesAcross).coerceAtLeast(0)
+    val contentHeight = (size.height - box.edgesDown).coerceAtLeast(0)
+    result.recordMeasurement(
+        declaredUnder.toWidthSpec(),
+        declaredUnder.toHeightSpec(),
+        contentWidth,
+        contentHeight,
+    )
+    result.failure = failure
+    stateReads?.let(result::adoptStateReads)
     // The reducer and the layout cache treat a subtree holding a `Layout` apart.
     result.subtreeHasCustomLayout = true
     if (placed == null) {
@@ -153,7 +163,7 @@ internal class DefaultLayoutBuilder(
     // edge. x is where the placement put the child's placeable. offsetX centres what the child
     // measured within its placeable's width, which differ when the measured size didn't fit the
     // child's constraints. Its border box starts after its left margin.
-    val start = if (layoutDirection.isRTL) output.contentWidth - checkNotNull(declared).width else 0
+    val start = if (layoutDirection.isRTL) contentWidth - checkNotNull(declared).width else 0
     for (i in 0 until node.childCount) {
       val placeable = placed.placedWith[i] ?: continue
       val slot = result.childCount * 2

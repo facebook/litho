@@ -1330,10 +1330,9 @@ class CustomLayoutApiTest {
   /**
    * A child reports where its container placed it, as a Column's child does.
    *
-   * Each child is laid out as its own Yoga root, so its node's own position is that root's, 0. What
-   * a MountSpec's `@OnBoundsDefined` reads from its `ComponentLayout` must still be where it sits:
-   * compared here with the same children in a Column with the same padding, the second with
-   * margins.
+   * Each child is laid out as its own Yoga root, so its node's own position is that root's, 0. The
+   * position its container reports for it must still be where it sits: compared here with the same
+   * children in a Column with the same padding, the second with margins.
    */
   @Test
   fun `a child reports where it was placed, as a Column's child does`() {
@@ -1355,8 +1354,7 @@ class CustomLayoutApiTest {
 
     fun positions(result: LithoLayoutResult): List<Pair<Int, Int>> =
         (0 until result.childCount).map { i ->
-          val layout = SpecGeneratedComponentLayout(result.getChildAt(i).layoutOutput, false, null)
-          layout.x to layout.y
+          result.getXForChildAtIndex(i) to result.getYForChildAtIndex(i)
         }
 
     val container = renderAndFindContainer(Layout(children(), style = padded, layout = stacksThem))
@@ -1368,15 +1366,42 @@ class CustomLayoutApiTest {
     val column = (root as LithoLayoutResult).getChildAt(0)
 
     assertThat(positions(container))
-        .describedAs("what @OnBoundsDefined reads, against a Column's children")
+        .describedAs("against a Column's children")
         .isEqualTo(positions(column))
-    assertThat(positions(container))
-        .describedAs("and where the container placed them")
-        .isEqualTo(
-            (0 until 2).map {
-              container.getXForChildAtIndex(it) to container.getYForChildAtIndex(it)
-            },
-        )
+  }
+
+  /**
+   * The position a MountSpec's `@OnBoundsDefined` reads is where its parent placed it: a Column's
+   * child inside the Column's padding, and a `Layout`'s child where its function placed it.
+   */
+  @Test
+  fun `a MountSpec's bounds are where its parent placed it`() {
+    val inColumn = LifecycleTracker()
+    val inLayout = LifecycleTracker()
+    fun leaf(tracker: LifecycleTracker): Component =
+        MountSpecLifecycleTester.create(lithoTestRule.context)
+            .lifecycleTracker(tracker)
+            .widthPx(CHILD)
+            .heightPx(CHILD)
+            .build()
+    val placesAt13And17 = LayoutFunctionN { measurables, constraints ->
+      val placeable = measurables[0].measure(SizeConstraints.exact(CHILD, CHILD))
+      layout(constraints.maxWidth, CHILD * 2) { placeable.place(13, 17) }
+    }
+
+    lithoTestRule.render(widthPx = VIEWPORT, heightPx = VIEWPORT) {
+      Column(style = Style.padding(start = 7.px, top = 9.px)) {
+        child(leaf(inColumn))
+        child(Layout(listOf(leaf(inLayout)), layout = placesAt13And17))
+      }
+    }
+
+    assertThat(inColumn.definedBounds.left to inColumn.definedBounds.top)
+        .describedAs("a Column's child")
+        .isEqualTo(7 to 9)
+    assertThat(inLayout.definedBounds.left to inLayout.definedBounds.top)
+        .describedAs("a Layout's child")
+        .isEqualTo(13 to 17)
   }
 
   /** A container whose own style asks for its height as its baseline keeps that. */

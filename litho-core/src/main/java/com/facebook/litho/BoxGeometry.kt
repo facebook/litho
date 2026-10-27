@@ -23,8 +23,8 @@ import com.facebook.rendercore.IntSize
 import com.facebook.rendercore.SizeConstraints
 
 /**
- * A result's geometry when its `Layout` laid it out without a Yoga pass: its layout output reads it
- * in place of its Yoga node's, which no layout pass touched.
+ * A result's geometry when its `Layout` laid it out without a Yoga pass: its measure output reads
+ * it in place of its Yoga node's, which no layout pass touched.
  */
 internal class BoxGeometry(
     val direction: LayoutDirection,

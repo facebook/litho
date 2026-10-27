@@ -29,7 +29,6 @@ import androidx.core.view.ViewCompat
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.LifecycleStep.StepInfo
 import com.facebook.litho.SizeSpec.makeSizeSpec
-import com.facebook.litho.YogaLayoutOutput.Companion.yogaLayoutOutput
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.core.height
 import com.facebook.litho.core.orDefault
@@ -976,7 +975,7 @@ class LayoutStateCalculateTest {
     val heightSpec = makeSizeSpec(100, EXACTLY)
     innerComponent.measure(componentContext, widthSpec, heightSpec, size)
     val internalNode: LithoLayoutResult? = resolveContext.cache.getCachedResult(innerComponent)
-    internalNode?.yogaLayoutOutput?.setSizeSpec(widthSpec, heightSpec)
+    internalNode?.setSizeSpec(widthSpec, heightSpec)
     innerComponent.resetInteractions()
     val component: Component =
         object : InlineLayoutSpec() {
@@ -1016,7 +1015,7 @@ class LayoutStateCalculateTest {
     val heightSpec = makeSizeSpec(100, AT_MOST)
     innerComponent.measure(componentContext, widthSpec, heightSpec, size)
     val internalNode: LithoLayoutResult? = resolveContext.cache.getCachedResult(innerComponent)
-    internalNode?.yogaLayoutOutput?.setSizeSpec(widthSpec, heightSpec)
+    internalNode?.setSizeSpec(widthSpec, heightSpec)
     innerComponent.resetInteractions()
     val component: Component =
         object : InlineLayoutSpec() {
@@ -1055,7 +1054,7 @@ class LayoutStateCalculateTest {
     val heightSpec = makeSizeSpec(0, UNSPECIFIED)
     innerComponent.measure(componentContext, widthSpec, heightSpec, size)
     val internalNode: LithoLayoutResult? = resolveContext.cache.getCachedResult(innerComponent)
-    internalNode?.yogaLayoutOutput?.setSizeSpec(widthSpec, heightSpec)
+    internalNode?.setSizeSpec(widthSpec, heightSpec)
     innerComponent.resetInteractions()
     val component: Component =
         object : InlineLayoutSpec() {
@@ -1092,7 +1091,7 @@ class LayoutStateCalculateTest {
     val heightSpec = makeSizeSpec(100, AT_MOST)
     innerComponent.measure(treeContext, widthSpec, heightSpec, size)
     val internalNode: LithoLayoutResult? = resolveContext.cache.getCachedResult(innerComponent)
-    internalNode?.yogaLayoutOutput?.setSizeSpec(widthSpec, heightSpec)
+    internalNode?.setSizeSpec(widthSpec, heightSpec)
     innerComponent.resetInteractions()
     val component: Component =
         object : InlineLayoutSpec() {

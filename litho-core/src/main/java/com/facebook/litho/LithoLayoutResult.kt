@@ -18,54 +18,165 @@ package com.facebook.litho
 
 import android.graphics.Rect
 import androidx.annotation.Px
-import com.facebook.litho.YogaLayoutOutput.Companion.yogaLayoutOutput
+import androidx.collection.MutableScatterSet
+import androidx.collection.ScatterSet
 import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.layout.BoxLayoutProps
+import com.facebook.litho.layout.IntEdges
+import com.facebook.litho.state.StateId
 import com.facebook.rendercore.LayoutResult
+import com.facebook.yoga.YogaMeasureOutput
 
-/** This is the default implementation of a [LayoutResult] for Litho. */
+/**
+ * This is the default implementation of a [LayoutResult] for Litho. Its [measureOutput] is the
+ * geometry its engine built; the result itself is the record of its pass: how its content was
+ * measured, what it was reused from, and what it mounts.
+ */
 open class LithoLayoutResult(
     val context: ComponentContext,
     open val node: LithoNode,
-    val layoutOutput: LithoLayoutOutput,
+    val measureOutput: LithoMeasureOutput,
 ) : LayoutResult {
 
   private val children: MutableList<LithoLayoutResult> = ArrayList()
 
-  val widthSpec: Int
-    get() = layoutOutput.widthSpec
+  /** The specs it was last measured or sized under, which its DiffNode keeps for the next pass. */
+  var widthSpec: Int = DiffNode.UNSPECIFIED
+    private set
 
-  val heightSpec: Int
-    get() = layoutOutput.heightSpec
+  var heightSpec: Int = DiffNode.UNSPECIFIED
+    private set
 
-  val delegate: LayoutResult?
-    get() = layoutOutput.delegate
+  /** What measuring produced that mounts: a Primitive's delegate. */
+  var delegate: LayoutResult? = null
+    internal set
 
-  val diffNode: DiffNode?
-    get() = layoutOutput.diffNode
+  /**
+   * Whether measuring its content or its `@OnBoundsDefined` threw, or its deferred content failed
+   * to resolve.
+   */
+  var measureHadExceptions: Boolean = false
+    internal set
 
-  val measureHadExceptions: Boolean
-    get() = layoutOutput.measureHadExceptions
+  /** Whether its content's measure ran this pass, even if it took the size from its DiffNode. */
+  var wasMeasured: Boolean = false
+    internal set
 
-  val wasMeasured: Boolean
-    get() = layoutOutput.wasMeasured
+  /**
+   * The size its content last measured to, inside its padding and border, packed with
+   * `YogaMeasureOutput`; `Long.MIN_VALUE` until it is measured.
+   */
+  var lastMeasuredSize: Long = Long.MIN_VALUE
+    internal set
 
   val contentWidth: Int
-    get() = layoutOutput.contentWidth
+    get() = YogaMeasureOutput.getWidth(lastMeasuredSize).toInt()
 
   val contentHeight: Int
-    get() = layoutOutput.contentHeight
+    get() = YogaMeasureOutput.getHeight(lastMeasuredSize).toInt()
 
-  val lastMeasuredSize: Long
-    get() = layoutOutput.lastMeasuredSize
+  var diffNode: DiffNode? = null
+    internal set
 
-  val isCachedLayout: Boolean
-    get() = layoutOutput.isCachedLayout
+  var isCachedLayout: Boolean = false
+    internal set
 
-  val isDiffedLayout: Boolean
-    get() = yogaLayoutOutput._isDiffedLayout
+  /** Whether its content's measurement was taken from its DiffNode. */
+  var isDiffedLayout: Boolean = false
+    internal set
 
-  val cachedMeasuresValid: Boolean
-    get() = layoutOutput.cachedMeasuresValid
+  /** Whether its content's last-pass measurements, on its DiffNode, may be reused. */
+  var cachedMeasuresValid: Boolean = false
+    internal set
+
+  /**
+   * Whether a MountSpec's `@OnBoundsDefined` outputs are in [layoutData]. A cached copy of a result
+   * its pass measured but left out of its tree, which a `Layout` can do, has none.
+   */
+  internal var boundsDefined: Boolean = false
+
+  internal var actualDeferredNodeResult: LithoLayoutResult? = null
+
+  private var _stateReads: MutableScatterSet<StateId>? = null
+  internal val stateReads: ScatterSet<StateId>?
+    get() = _stateReads
+
+  internal fun addStateReads(stateIds: ScatterSet<StateId>) {
+    if (stateIds.isEmpty()) return
+    val stateReads =
+        _stateReads ?: MutableScatterSet<StateId>(stateIds.size).also { _stateReads = it }
+    stateReads.addAll(stateIds)
+  }
+
+  /** Adds [stateIds], taking the set itself when this result has none: the caller gives it up. */
+  internal fun adoptStateReads(stateIds: MutableScatterSet<StateId>) {
+    if (_stateReads == null) _stateReads = stateIds else addStateReads(stateIds)
+  }
+
+  internal fun addStateRead(stateId: StateId) {
+    val stateReads = _stateReads ?: MutableScatterSet<StateId>(1).also { _stateReads = it }
+    stateReads.add(stateId)
+  }
+
+  /** What a `Layout`'s function or placement threw, reported only if it reaches the final tree. */
+  internal var failure: Exception? = null
+
+  /**
+   * The box props of a `Layout`'s child, recorded as its tree was built and kept off its node,
+   * which its container resolves within the constraints of each measurement. Null for any other
+   * result.
+   */
+  internal var childBoxProps: BoxLayoutProps? = null
+
+  /** The margins a `Layout` resolved for this result, its child; null for any other result. */
+  internal var resolvedMargins: IntEdges? = null
+
+  internal fun setSizeSpec(widthSpec: Int, heightSpec: Int) {
+    this.widthSpec = widthSpec
+    this.heightSpec = heightSpec
+  }
+
+  /** Records that its content measured [contentWidth] x [contentHeight] under these specs. */
+  internal fun recordMeasurement(
+      widthSpec: Int,
+      heightSpec: Int,
+      contentWidth: Int,
+      contentHeight: Int,
+  ) {
+    this.widthSpec = widthSpec
+    this.heightSpec = heightSpec
+    lastMeasuredSize = YogaMeasureOutput.make(contentWidth, contentHeight)
+  }
+
+  /**
+   * Takes [source]'s record as a copy from the layout cache, for a result just created; its
+   * geometry is the engine's to copy. Its measurements are valid for this pass, and what belongs to
+   * a pass that ran is reset. The bounds and the state reads are copied, since concurrent layouts
+   * can still reach the source, and added to this result's own; the rest is shared.
+   */
+  internal fun copyCachedFrom(source: LithoLayoutResult) {
+    widthSpec = source.widthSpec
+    heightSpec = source.heightSpec
+    lastMeasuredSize = source.lastMeasuredSize
+    isCachedLayout = true
+    isDiffedLayout = false
+    cachedMeasuresValid = true
+    wasMeasured = false
+    measureHadExceptions = false
+    diffNode = source.diffNode
+    layoutData = source.layoutData
+    delegate = source.delegate
+    boundsDefined = source.boundsDefined
+    contentRenderUnit = source.contentRenderUnit
+    hostRenderUnit = source.hostRenderUnit
+    borderRenderUnit = source.borderRenderUnit
+    effects = source.effects
+    adjustedBounds.set(source.adjustedBounds)
+    source.stateReads?.let(::addStateReads)
+    childBoxProps = source.childBoxProps
+    // Not carried: no deferred node's content is cached; only a `Layout`'s result fails, and it's
+    // never cached; and `layoutSubtree` resolves the margins again on the root it copies.
+  }
 
   val childCount: Int
     get() = children.size
@@ -124,41 +235,41 @@ open class LithoLayoutResult(
       }
     }
 
-  val contentRenderUnit: LithoRenderUnit?
-    get() = layoutOutput.contentRenderUnit
+  var contentRenderUnit: LithoRenderUnit? = null
+    internal set
 
-  val hostRenderUnit: LithoRenderUnit?
-    get() = layoutOutput.hostRenderUnit
+  var hostRenderUnit: LithoRenderUnit? = null
+    internal set
 
-  val borderRenderUnit: LithoRenderUnit?
-    get() = layoutOutput.borderRenderUnit
+  var borderRenderUnit: LithoRenderUnit? = null
+    internal set
 
-  val effects: List<Attachable>?
-    get() = layoutOutput.effects
+  var effects: List<Attachable>? = null
+    internal set
 
   @get:Px
   override val width: Int
-    get() = layoutOutput.width
+    get() = measureOutput.width
 
   @get:Px
   override val height: Int
-    get() = layoutOutput.height
+    get() = measureOutput.height
 
   @get:Px
   override val paddingTop: Int
-    get() = layoutOutput.paddingTop
+    get() = measureOutput.paddingTop
 
   @get:Px
   override val paddingRight: Int
-    get() = layoutOutput.paddingRight
+    get() = measureOutput.paddingRight
 
   @get:Px
   override val paddingBottom: Int
-    get() = layoutOutput.paddingBottom
+    get() = measureOutput.paddingBottom
 
   @get:Px
   override val paddingLeft: Int
-    get() = layoutOutput.paddingLeft
+    get() = measureOutput.paddingLeft
 
   override val renderUnit: LithoRenderUnit?
     get() = null // Unimplemented.
@@ -168,39 +279,48 @@ open class LithoLayoutResult(
 
   override fun getChildAt(index: Int): LithoLayoutResult = children[index]
 
-  override fun getXForChildAtIndex(index: Int): Int = children[index].layoutOutput.x
+  override fun getXForChildAtIndex(index: Int): Int = measureOutput.childX(index)
 
-  override fun getYForChildAtIndex(index: Int): Int = children[index].layoutOutput.y
+  override fun getYForChildAtIndex(index: Int): Int = measureOutput.childY(index)
 
-  override val layoutData: Any?
-    get() = layoutOutput.layoutData
+  /** What its content's measure and `@OnBoundsDefined` produced that mounts. */
+  override var layoutData: Any? = null
+    internal set
 
   val borderTop: Int
-    get() = layoutOutput.borderTop
+    get() = measureOutput.borderTop
 
   val borderRight: Int
-    get() = layoutOutput.borderRight
+    get() = measureOutput.borderRight
 
   val borderBottom: Int
-    get() = layoutOutput.borderBottom
+    get() = measureOutput.borderBottom
 
   val borderLeft: Int
-    get() = layoutOutput.borderLeft
+    get() = measureOutput.borderLeft
 
-  fun adjustedLeft(): Int = layoutOutput.adjustedBounds.left
+  /**
+   * To avoid redundant calculations in [LithoYogaLayoutFunction.adjustRenderUnitBounds], we save
+   * the adjustments in a Rect that is initialised during layout, specifically inside
+   * [LithoYogaLayoutFunction.onBoundsDefined].
+   */
+  internal val adjustedBounds: Rect = Rect()
 
-  fun adjustedTop(): Int = layoutOutput.adjustedBounds.top
+  fun adjustedLeft(): Int = adjustedBounds.left
 
-  fun adjustedRight(): Int = layoutOutput.adjustedBounds.right
+  fun adjustedTop(): Int = adjustedBounds.top
 
-  fun adjustedBottom(): Int = layoutOutput.adjustedBounds.bottom
+  fun adjustedRight(): Int = adjustedBounds.right
+
+  fun adjustedBottom(): Int = adjustedBounds.bottom
 
   /**
    * Since layout data like the layout context and the diff node are not required after layout
    * calculation they can be released to free up memory.
    */
   open fun releaseLayoutPhaseData() {
-    yogaLayoutOutput.clear()
+    diffNode = null
+    measureOutput.releaseLayoutContext()
     for (i in 0 until childCount) {
       getChildAt(i).releaseLayoutPhaseData()
     }
@@ -217,8 +337,9 @@ open class LithoLayoutResult(
 
   /**
    * This result for [container] to place: itself, the first time or for the container already
-   * placing it; otherwise a copy, since a result holds one position. This is how two measurements
-   * of a container that share a child's layout each place it at a position of its own.
+   * placing it; otherwise a copy, since a result runs `@OnBoundsDefined` and reports its failure at
+   * one position. This is how two measurements of a container that share a child's layout each
+   * place it at a position of its own.
    */
   internal fun acquireForPlacement(container: LithoLayoutResult): LithoLayoutResult {
     if (placedBy == null || placedBy === container) {
@@ -229,24 +350,24 @@ open class LithoLayoutResult(
   }
 
   /**
-   * A copy of this result with a position of its own: the same layout, sharing its children, since
-   * their positions are within it.
+   * A copy of this result for a second container to place: the same layout, sharing its measure
+   * output, its children and their positions.
    */
   protected open fun copyForPlacement(): LithoLayoutResult {
-    val output = yogaLayoutOutput
-    val copy =
-        node.createLayoutResult(
-            layoutOutput =
-                output
-                    .copy(_adjustedBounds = Rect(output.adjustedBounds))
-                    .inheritStateReads(output),
-        )
+    val copy = node.createLayoutResult(measureOutput = measureOutput)
+    copy.copyCachedFrom(this)
+    // The same pass's layout: what a cache copy resets or leaves out is the source's.
+    copy.isCachedLayout = isCachedLayout
+    copy.isDiffedLayout = isDiffedLayout
+    copy.cachedMeasuresValid = cachedMeasuresValid
+    copy.wasMeasured = wasMeasured
+    copy.measureHadExceptions = measureHadExceptions
+    copy.failure = failure
+    copy.actualDeferredNodeResult = actualDeferredNodeResult
+    copy.resolvedMargins = resolvedMargins
     for (i in 0 until childCount) {
       copy.addChild(getChildAt(i))
     }
-    copy.yogaLayoutOutput.boxGeometry = output.boxGeometry
-    copy.yogaLayoutOutput.resolvedMargins = output.resolvedMargins
-    copy.yogaLayoutOutput.childBoxProps = output.childBoxProps
     copy.subtreeHasCustomLayout = subtreeHasCustomLayout
     return copy
   }
@@ -258,5 +379,5 @@ open class LithoLayoutResult(
     children.add(child)
   }
 
-  private fun isDirectionRtl(): Boolean = layoutOutput.layoutDirection.isRTL
+  private fun isDirectionRtl(): Boolean = measureOutput.layoutDirection.isRTL
 }

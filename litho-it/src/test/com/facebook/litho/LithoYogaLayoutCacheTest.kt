@@ -100,7 +100,7 @@ class LithoYogaLayoutCacheTest {
     assertThat(layoutResult2).isNotNull
 
     // Verify that the layout was not marked as cached (meaning fresh calculation happened)
-    assertThat(requireNotNull(layoutResult2).layoutOutput.isCachedLayout)
+    assertThat(requireNotNull(layoutResult2).isCachedLayout)
         .describedAs("Layout should NOT be from cache when component is dirty")
         .isFalse()
   }
@@ -142,7 +142,7 @@ class LithoYogaLayoutCacheTest {
     assertThat(layoutResult2).isNotNull
 
     // When not dirty, the cache CAN be used (partial reuse path)
-    assertThat(requireNotNull(layoutResult2).layoutOutput.isCachedLayout)
+    assertThat(requireNotNull(layoutResult2).isCachedLayout)
         .describedAs("Layout can be from cache when component is not dirty")
         .isTrue()
   }
@@ -181,9 +181,7 @@ class LithoYogaLayoutCacheTest {
     val result2 = requireNotNull(layoutResult2)
 
     // Verify the layout was taken from the full cache path
-    assertThat(result2.layoutOutput.isCachedLayout)
-        .describedAs("Layout should be from cache")
-        .isTrue()
+    assertThat(result2.isCachedLayout).describedAs("Layout should be from cache").isTrue()
 
     // Verify that DiffNode was applied from the diff tree.
     // Before the fix, this was null because applyDiffNode was not called for cached paths.
@@ -234,7 +232,7 @@ class LithoYogaLayoutCacheTest {
     val result2 = requireNotNull(layoutResult2)
 
     // The parent should NOT be from cache (it's dirty)
-    assertThat(result2.layoutOutput.isCachedLayout)
+    assertThat(result2.isCachedLayout)
         .describedAs("Parent should not be from cache when dirty")
         .isFalse()
 
@@ -249,7 +247,7 @@ class LithoYogaLayoutCacheTest {
         .isGreaterThan(0)
 
     val childResult = result2.getChildAt(0)
-    assertThat(childResult.layoutOutput.isCachedLayout)
+    assertThat(childResult.isCachedLayout)
         .describedAs("Child should be from cache when not dirty")
         .isTrue()
     assertThat(childResult.diffNode)

@@ -701,7 +701,7 @@ class SubtreeCacheParityTest {
 
   // ── Deferred descendant inside a cacheable subtree ── //
   // A `RenderWithConstraints` leaf's `actualResult` is computed at measure time and may evolve
-  // across passes — `copyLayoutResult` nulls `_actualDeferredNodeResult` whenever an outer cached
+  // across passes — `copyLayoutResult` nulls `actualDeferredNodeResult` whenever an outer cached
   // layout is reused, forcing `measureDeferredNode` to re-resolve. The splice path stores
   // descendant outputs by index range at recording time, so when the outer subtree's snapshot is
   // replayed on a later pass the spliced range still describes the previous actualResult — even
