@@ -42,4 +42,19 @@ interface VisibilityBoundsTransformer {
   fun getViewportRect(view: View, outRect: Rect)
 
   fun shouldUseTransformedVisibleRect(visibilityOutput: VisibilityOutput): Boolean
+
+  /**
+   * Whether each visibility pass that runs records the transformed visible rect it used, so that
+   * the next pass skips only if that rect has not changed. With the default, false, only passes
+   * that find the local visible rect unchanged record it, and mount passes clear it. A later pass
+   * can then compare against an older rect and wrongly skip: a row that one scroll frame carries
+   * from visible to fully occluded, while its local visible rect stays the same, can keep counting
+   * as visible. Return true to avoid this. The first unchanged pass after a mount then skips too,
+   * as it does with no transformer.
+   *
+   * A tree with no visibility outputs of its own computes no transformed rect on a pass whose local
+   * visible rect changed, so it records nothing then, even when it hosts nested trees, and those
+   * nested trees can still miss the pass that hides them.
+   */
+  fun shouldRecordTransformedVisibleRectAtEveryPass(): Boolean = false
 }

@@ -765,6 +765,14 @@ class VisibilityMountExtension<Input : VisibilityExtensionInput> private constru
       if (isDirty) {
         clearVisibilityItems(extensionState, reason)
       }
+      // clearVisibilityItems empties the recorded rect, so record it after: the next pass compares
+      // against it to decide whether it can skip.
+      if (
+          transformedLocalVisibleRect != null &&
+              transformer?.shouldRecordTransformedVisibleRectAtEveryPass() == true
+      ) {
+        state.previousTransformedVisibleRect.set(transformedLocalVisibleRect)
+      }
     }
 
     private fun createVisibilityDebugAttributes(
