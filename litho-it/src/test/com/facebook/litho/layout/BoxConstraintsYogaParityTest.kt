@@ -17,7 +17,7 @@
 package com.facebook.litho.layout
 
 import com.facebook.litho.NodeConfig
-import com.facebook.litho.layout.ChildBoxCases.text
+import com.facebook.litho.layout.BoxConstraintsCases.text
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.rendercore.FastMath
 import com.facebook.rendercore.SizeConstraints
@@ -36,7 +36,7 @@ import org.junit.runner.RunWith
  * compared where the classes that lay a child out arrive, in the diff above.
  */
 @RunWith(LithoTestRunner::class)
-class ChildBoxYogaParityTest {
+class BoxConstraintsYogaParityTest {
 
   /**
    * Covers every [BoxEdge] a prop can be declared on, pixels and percent, negative values, a later
@@ -48,7 +48,7 @@ class ChildBoxYogaParityTest {
   fun `resolved edges are the edges Yoga resolves for the same child`() {
     val mismatches = ArrayList<String>()
     var checked = 0
-    for (declared in ChildBoxCases.generated(count = 400, seed = 11)) {
+    for (declared in BoxConstraintsCases.generated(count = 400, seed = 11)) {
       for (width in listOf(200, 333, null)) {
         for (direction in listOf(YogaDirection.LTR, YogaDirection.RTL)) {
           checked++
@@ -68,21 +68,21 @@ class ChildBoxYogaParityTest {
     for (value in listOf(Float.NaN, Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY)) {
       for (isPercent in listOf(false, true)) {
         val declared =
-            ChildBoxCases.Declared(
+            BoxConstraintsCases.Declared(
                 margins =
                     listOf(
-                        ChildBoxCases.EdgeDecl(BoxEdge.ALL, 10f),
-                        ChildBoxCases.EdgeDecl(BoxEdge.LEFT, value, isPercent),
+                        BoxConstraintsCases.EdgeDecl(BoxEdge.ALL, 10f),
+                        BoxConstraintsCases.EdgeDecl(BoxEdge.LEFT, value, isPercent),
                     ),
                 paddings =
                     listOf(
-                        ChildBoxCases.EdgeDecl(BoxEdge.ALL, 4f),
-                        ChildBoxCases.EdgeDecl(BoxEdge.START, value, isPercent),
+                        BoxConstraintsCases.EdgeDecl(BoxEdge.ALL, 4f),
+                        BoxConstraintsCases.EdgeDecl(BoxEdge.START, value, isPercent),
                     ),
                 borders =
                     listOf(
-                        ChildBoxCases.EdgeDecl(BoxEdge.ALL, 2f),
-                        ChildBoxCases.EdgeDecl(BoxEdge.TOP, value),
+                        BoxConstraintsCases.EdgeDecl(BoxEdge.ALL, 2f),
+                        BoxConstraintsCases.EdgeDecl(BoxEdge.TOP, value),
                     ),
             )
         for (width in listOf(200, null)) {
@@ -99,12 +99,12 @@ class ChildBoxYogaParityTest {
 
   /** How [declared]'s resolved edges differ from Yoga's in a Column [width] wide, or null. */
   private fun mismatch(
-      declared: ChildBoxCases.Declared,
+      declared: BoxConstraintsCases.Declared,
       width: Int?,
       direction: YogaDirection,
   ): String? {
     val yoga = layOutInColumn(declared, width, direction)
-    val box = resolveChildBox(
+    val box = resolveBoxConstraints(
         SizeConstraints(0, width ?: SizeConstraints.Infinity, 0, SizeConstraints.Infinity),
         declared.build(),
         isRtl = direction == YogaDirection.RTL,
@@ -120,7 +120,7 @@ class ChildBoxYogaParityTest {
 
   /** Lays [declared]'s edges out on a Yoga child of a Column [width] wide, or content-sized. */
   private fun layOutInColumn(
-      declared: ChildBoxCases.Declared,
+      declared: BoxConstraintsCases.Declared,
       width: Int?,
       direction: YogaDirection,
   ): YogaNode {
@@ -147,7 +147,7 @@ class ChildBoxYogaParityTest {
  * Declares [declared]'s margins, padding and border on a Yoga node, as a flexbox child has them.
  * Each [BoxEdge] is the [YogaEdge] of the same name.
  */
-private fun declareEdges(node: YogaNode, declared: ChildBoxCases.Declared) {
+private fun declareEdges(node: YogaNode, declared: BoxConstraintsCases.Declared) {
   for (edge in declared.margins) {
     val yoga = YogaEdge.valueOf(edge.edge.name)
     if (edge.isPercent) node.setMarginPercent(yoga, edge.value)

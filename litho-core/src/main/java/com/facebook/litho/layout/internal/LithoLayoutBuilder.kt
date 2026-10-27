@@ -18,7 +18,7 @@ package com.facebook.litho.layout.internal
 
 import androidx.collection.MutableScatterSet
 import com.facebook.litho.LithoLayoutResult
-import com.facebook.litho.layout.ChildBox
+import com.facebook.litho.layout.BoxConstraints
 import com.facebook.litho.state.StateId
 import com.facebook.rendercore.IntSize
 
@@ -33,13 +33,13 @@ internal sealed interface LithoLayoutBuilder {
    * Its border-box size within [box]. A layout that fails measures 0 × 0 inside its padding and
    * border; its failure rides on its result, reported only if the result reaches the final tree.
    */
-  fun measure(box: ChildBox): IntSize
+  fun measure(box: BoxConstraints): IntSize
 
   /**
    * Its result within [box]. Under a `Layout`, [box] is one it was measured in; under Yoga, it's
    * the box of its final size, which Yoga may not have measured it in.
    */
-  fun build(box: ChildBox): LithoLayoutResult
+  fun build(box: BoxConstraints): LithoLayoutResult
 
   /**
    * Nothing placed it: adds the state reads of what it made to [reads], null when reads aren't

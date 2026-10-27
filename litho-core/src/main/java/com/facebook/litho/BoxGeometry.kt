@@ -16,7 +16,7 @@
 
 package com.facebook.litho
 
-import com.facebook.litho.layout.ChildBox
+import com.facebook.litho.layout.BoxConstraints
 import com.facebook.litho.layout.IntEdges
 import com.facebook.litho.layout.LayoutDirection
 import com.facebook.rendercore.IntSize
@@ -54,10 +54,10 @@ internal fun isLayoutLeaf(node: LithoNode): Boolean =
  * It's the border-box size around the content it measures: [borderBoxSizeAround].
  */
 internal inline fun boxSize(
-    box: ChildBox,
+    box: BoxConstraints,
     measure: (Int, Int) -> Pair<Int, Int>,
 ): IntSize {
-  val room = box.borderBoxConstraints
+  val room = box.borderBox
   if (room.hasExactWidth && room.hasExactHeight) {
     return borderBoxSizeAround(0, 0, box)
   }
@@ -75,8 +75,12 @@ internal inline fun boxSize(
  * plus the padding and border, within the box's minimum and maximum. Either way it's at least the
  * padding and border.
  */
-internal fun borderBoxSizeAround(contentWidth: Int, contentHeight: Int, box: ChildBox): IntSize {
-  val room = box.borderBoxConstraints
+internal fun borderBoxSizeAround(
+    contentWidth: Int,
+    contentHeight: Int,
+    box: BoxConstraints,
+): IntSize {
+  val room = box.borderBox
   return IntSize(
       axisSize(room.hasExactWidth, room.minWidth, room.maxWidth, contentWidth, box.edgesAcross),
       axisSize(room.hasExactHeight, room.minHeight, room.maxHeight, contentHeight, box.edgesDown),

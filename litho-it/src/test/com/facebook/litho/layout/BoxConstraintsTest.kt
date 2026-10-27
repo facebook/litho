@@ -16,8 +16,8 @@
 
 package com.facebook.litho.layout
 
-import com.facebook.litho.layout.ChildBoxCases.summary
-import com.facebook.litho.layout.ChildBoxCases.text
+import com.facebook.litho.layout.BoxConstraintsCases.summary
+import com.facebook.litho.layout.BoxConstraintsCases.text
 import com.facebook.rendercore.SizeConstraints
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -35,33 +35,37 @@ private fun exact(width: Int, height: Int) = SizeConstraints.exact(width, height
 private fun props(block: BoxLayoutProps.() -> Unit = {}) = BoxLayoutProps().apply(block)
 
 private fun resolve(constraints: SizeConstraints, props: BoxLayoutProps, isRtl: Boolean = false) =
-    resolveChildBox(constraints, props, isRtl)
+    resolveBoxConstraints(constraints, props, isRtl)
 
-/** The rules a container applies to a child's own box props, within the constraints it asks. */
-class ChildBoxTest {
+private fun resolveRoot(constraints: SizeConstraints, props: BoxLayoutProps) =
+    resolveRootBox(constraints, props, isRtl = false)
+
+/**
+ * The rules a container applies to a child's own box props, within the constraints it asks, and the
+ * rule a root `Layout` resolves its box by.
+ */
+class BoxConstraintsTest {
 
   @Test
   fun `the child's own width wins even over exact constraints`() {
     val b = resolve(exact(200, 50), props { width = px(80) })
 
-    assertThat(b.borderBoxConstraints.minWidth).isEqualTo(80)
-    assertThat(b.borderBoxConstraints.maxWidth).isEqualTo(80)
+    assertThat(b.borderBox.minWidth).isEqualTo(80)
+    assertThat(b.borderBox.maxWidth).isEqualTo(80)
   }
 
   @Test
   fun `an own width wins over a bound`() {
-    assertThat(resolve(atMost(300), props { width = px(80) }).borderBoxConstraints.maxWidth)
-        .isEqualTo(80)
+    assertThat(resolve(atMost(300), props { width = px(80) }).borderBox.maxWidth).isEqualTo(80)
     val over = resolve(atMost(60), props { width = px(80) })
-    assertThat(over.borderBoxConstraints.maxWidth).isEqualTo(80)
+    assertThat(over.borderBox.maxWidth).isEqualTo(80)
   }
 
   @Test
   fun `a percent width is taken of the constraints, and ignored without a bound`() {
-    assertThat(resolve(atMost(300), props { width = pct(50f) }).borderBoxConstraints.maxWidth)
-        .isEqualTo(150)
+    assertThat(resolve(atMost(300), props { width = pct(50f) }).borderBox.maxWidth).isEqualTo(150)
     assertThat(
-        resolve(SizeConstraints(), props { width = pct(50f) }).borderBoxConstraints.hasBoundedWidth,
+        resolve(SizeConstraints(), props { width = pct(50f) }).borderBox.hasBoundedWidth,
     )
         .isFalse()
   }
@@ -70,8 +74,8 @@ class ChildBoxTest {
   fun `margins come out of the constraints and are reported`() {
     val b = resolve(exact(200, 100), props { margin[BoxEdge.ALL] = BoxLength.Px(10f) })
 
-    assertThat(b.borderBoxConstraints.maxWidth).isEqualTo(180)
-    assertThat(b.borderBoxConstraints.maxHeight).isEqualTo(80)
+    assertThat(b.borderBox.maxWidth).isEqualTo(180)
+    assertThat(b.borderBox.maxHeight).isEqualTo(80)
     assertThat(b.margins.horizontal).isEqualTo(20)
   }
 
@@ -94,7 +98,7 @@ class ChildBoxTest {
   fun `a negative margin makes the border box's constraints larger`() {
     val b = resolve(exact(100, 100), props { margin[BoxEdge.LEFT] = BoxLength.Px(-10f) })
 
-    assertThat(b.borderBoxConstraints.maxWidth).isEqualTo(110)
+    assertThat(b.borderBox.maxWidth).isEqualTo(110)
   }
 
   @Test
@@ -119,16 +123,16 @@ class ChildBoxTest {
         },
     )
 
-    assertThat(b.borderBoxConstraints.minWidth).isEqualTo(40)
-    assertThat(b.borderBoxConstraints.maxWidth).isEqualTo(120)
+    assertThat(b.borderBox.minWidth).isEqualTo(40)
+    assertThat(b.borderBox.maxWidth).isEqualTo(120)
   }
 
   @Test
   fun `an own min wins over the constraints`() {
     val b = resolve(atMost(100), props { minWidth = px(150) })
 
-    assertThat(b.borderBoxConstraints.minWidth).isEqualTo(150)
-    assertThat(b.borderBoxConstraints.maxWidth).isEqualTo(150)
+    assertThat(b.borderBox.minWidth).isEqualTo(150)
+    assertThat(b.borderBox.maxWidth).isEqualTo(150)
   }
 
   @Test
@@ -141,8 +145,8 @@ class ChildBoxTest {
         },
     )
 
-    assertThat(b.borderBoxConstraints.minWidth).isEqualTo(50)
-    assertThat(b.borderBoxConstraints.maxWidth).isEqualTo(50)
+    assertThat(b.borderBox.minWidth).isEqualTo(50)
+    assertThat(b.borderBox.maxWidth).isEqualTo(50)
   }
 
   @Test
@@ -154,48 +158,45 @@ class ChildBoxTest {
           maxWidth = px(100)
         },
     )
-    assertThat(both.borderBoxConstraints.minWidth).isEqualTo(100)
-    assertThat(both.borderBoxConstraints.maxWidth).isEqualTo(100)
+    assertThat(both.borderBox.minWidth).isEqualTo(100)
+    assertThat(both.borderBox.maxWidth).isEqualTo(100)
 
     // The own max narrows even an exact question, as in a Column that stretches its children.
     val max = resolve(exact(200, 50), props { maxWidth = px(100) })
-    assertThat(max.borderBoxConstraints.minWidth).isEqualTo(100)
-    assertThat(max.borderBoxConstraints.maxWidth).isEqualTo(100)
+    assertThat(max.borderBox.minWidth).isEqualTo(100)
+    assertThat(max.borderBox.maxWidth).isEqualTo(100)
 
     // An own min replaces the exact minimum, as `requiredWidthIn` does: the content chooses.
     val min = resolve(exact(200, 50), props { minWidth = px(120) })
-    assertThat(min.borderBoxConstraints.minWidth).isEqualTo(120)
-    assertThat(min.borderBoxConstraints.maxWidth).isEqualTo(200)
+    assertThat(min.borderBox.minWidth).isEqualTo(120)
+    assertThat(min.borderBox.maxWidth).isEqualTo(200)
 
     // So declaring a min of 0 is not the same as leaving it unset.
     val zero = resolve(exact(200, 50), props { minWidth = px(0) })
-    assertThat(zero.borderBoxConstraints.minWidth).isEqualTo(0)
-    assertThat(zero.borderBoxConstraints.maxWidth).isEqualTo(200)
+    assertThat(zero.borderBox.minWidth).isEqualTo(0)
+    assertThat(zero.borderBox.maxWidth).isEqualTo(200)
   }
 
   @Test
   fun `a range far past any screen stays one constraints can encode`() {
     // A range with a minimum above 0 encodes a minimum up to 8190 and a maximum up to 262142.
     val bigMin = resolve(exact(20_000, 50), props { minWidth = px(9_000) })
-    assertThat(bigMin.borderBoxConstraints.minWidth)
-        .describedAs("fixed at its min")
-        .isEqualTo(9_000)
-    assertThat(bigMin.borderBoxConstraints.maxWidth).isEqualTo(9_000)
+    assertThat(bigMin.borderBox.minWidth).describedAs("fixed at its min").isEqualTo(9_000)
+    assertThat(bigMin.borderBox.maxWidth).isEqualTo(9_000)
 
     val bigMax = resolve(atMost(300_000), props { minWidth = px(100) })
-    assertThat(bigMax.borderBoxConstraints.minWidth).isEqualTo(100)
-    assertThat(bigMax.borderBoxConstraints.maxWidth).describedAs("cut to 262142").isEqualTo(262_142)
+    assertThat(bigMax.borderBox.minWidth).isEqualTo(100)
+    assertThat(bigMax.borderBox.maxWidth).describedAs("cut to 262142").isEqualTo(262_142)
   }
 
   @Test
   fun `a percentage size fills as fillMaxWidth does`() {
     // Within an exact room it fills the room, as `fillMaxWidth(0.5f)` does.
     val exactRoom = resolve(exact(200, 50), props { width = pct(50f) })
-    assertThat(exactRoom.borderBoxConstraints.maxWidth).isEqualTo(200)
-    assertThat(exactRoom.borderBoxConstraints.minWidth).isEqualTo(200)
+    assertThat(exactRoom.borderBox.maxWidth).isEqualTo(200)
+    assertThat(exactRoom.borderBox.minWidth).isEqualTo(200)
     // Above 100% it is all of the room.
-    assertThat(resolve(atMost(300), props { width = pct(150f) }).borderBoxConstraints.maxWidth)
-        .isEqualTo(300)
+    assertThat(resolve(atMost(300), props { width = pct(150f) }).borderBox.maxWidth).isEqualTo(300)
     // Taken of the room before margins, then kept inside them.
     val margined = resolve(
         atMost(300),
@@ -204,7 +205,7 @@ class ChildBoxTest {
           margin[BoxEdge.HORIZONTAL] = BoxLength.Px(10f)
         },
     )
-    assertThat(margined.borderBoxConstraints.maxWidth).isEqualTo(280)
+    assertThat(margined.borderBox.maxWidth).isEqualTo(280)
   }
 
   @Test
@@ -217,8 +218,8 @@ class ChildBoxTest {
         },
     )
 
-    assertThat(b.borderBoxConstraints.maxHeight).isEqualTo(60)
-    assertThat(b.borderBoxConstraints.minHeight).isEqualTo(60)
+    assertThat(b.borderBox.maxHeight).isEqualTo(60)
+    assertThat(b.borderBox.minHeight).isEqualTo(60)
   }
 
   @Test
@@ -230,7 +231,7 @@ class ChildBoxTest {
           aspectRatio = 2f
         },
     )
-    assertThat(b.borderBoxConstraints.maxHeight).describedAs("past the 40 bound").isEqualTo(60)
+    assertThat(b.borderBox.maxHeight).describedAs("past the 40 bound").isEqualTo(60)
 
     val capped = resolve(
         SizeConstraints(0, 200, 0, 40),
@@ -240,7 +241,7 @@ class ChildBoxTest {
           aspectRatio = 2f
         },
     )
-    assertThat(capped.borderBoxConstraints.maxHeight).isEqualTo(50)
+    assertThat(capped.borderBox.maxHeight).isEqualTo(50)
   }
 
   @Test
@@ -249,21 +250,21 @@ class ChildBoxTest {
 
     assertThat(b.padding.left).isEqualTo(10)
     assertThat(b.padding.top).isEqualTo(10)
-    assertThat(b.borderBoxConstraints.minWidth).isEqualTo(20)
+    assertThat(b.borderBox.minWidth).isEqualTo(20)
   }
 
   @Test
   fun `padding that does not fit answers the smallest box`() {
     val b = resolve(exact(10, 10), props { padding[BoxEdge.ALL] = BoxLength.Px(8f) })
 
-    assertThat(b.borderBoxConstraints.maxWidth).isEqualTo(16)
+    assertThat(b.borderBox.maxWidth).isEqualTo(16)
   }
 
   @Test
   fun `margins that do not fit leave the border box no room`() {
     val b = resolve(exact(10, 10), props { margin[BoxEdge.LEFT] = BoxLength.Px(20f) })
 
-    assertThat(b.borderBoxConstraints.maxWidth).isEqualTo(0)
+    assertThat(b.borderBox.maxWidth).isEqualTo(0)
   }
 
   @Test
@@ -300,25 +301,22 @@ class ChildBoxTest {
           continue
         }
         checked++
-        assertThat(b.borderBoxConstraints.minWidth + b.margins.horizontal)
+        assertThat(b.borderBox.minWidth + b.margins.horizontal)
             .describedAs("min width in $q")
             .isGreaterThanOrEqualTo(q.minWidth)
-        assertThat(b.borderBoxConstraints.minHeight + b.margins.vertical)
-            .isGreaterThanOrEqualTo(q.minHeight)
+        assertThat(b.borderBox.minHeight + b.margins.vertical).isGreaterThanOrEqualTo(q.minHeight)
         if (q.hasBoundedWidth) {
-          assertThat(b.borderBoxConstraints.maxWidth + b.margins.horizontal)
+          assertThat(b.borderBox.maxWidth + b.margins.horizontal)
               .describedAs("max width in $q")
               .isLessThanOrEqualTo(q.maxWidth)
         }
         if (q.hasBoundedHeight) {
-          assertThat(b.borderBoxConstraints.maxHeight + b.margins.vertical)
+          assertThat(b.borderBox.maxHeight + b.margins.vertical)
               .describedAs("max height in $q")
               .isLessThanOrEqualTo(q.maxHeight)
         }
-        assertThat(b.borderBoxConstraints.minWidth)
-            .isLessThanOrEqualTo(b.borderBoxConstraints.maxWidth)
-        assertThat(b.borderBoxConstraints.minHeight)
-            .isLessThanOrEqualTo(b.borderBoxConstraints.maxHeight)
+        assertThat(b.borderBox.minWidth).isLessThanOrEqualTo(b.borderBox.maxWidth)
+        assertThat(b.borderBox.minHeight).isLessThanOrEqualTo(b.borderBox.maxHeight)
       }
     }
     assertThat(checked).isGreaterThan(40)
@@ -327,12 +325,12 @@ class ChildBoxTest {
   @Test
   fun `an own height fixes the height, and a percentage height fills its share`() {
     val fixed = resolve(SizeConstraints(0, 300, 0, 300), props { height = px(80) })
-    assertThat(fixed.borderBoxConstraints.minHeight).isEqualTo(80)
-    assertThat(fixed.borderBoxConstraints.maxHeight).isEqualTo(80)
+    assertThat(fixed.borderBox.minHeight).isEqualTo(80)
+    assertThat(fixed.borderBox.maxHeight).isEqualTo(80)
 
     val share = resolve(SizeConstraints(0, 300, 0, 200), props { height = pct(50f) })
-    assertThat(share.borderBoxConstraints.minHeight).isEqualTo(100)
-    assertThat(share.borderBoxConstraints.maxHeight).isEqualTo(100)
+    assertThat(share.borderBox.minHeight).isEqualTo(100)
+    assertThat(share.borderBox.maxHeight).isEqualTo(100)
   }
 
   @Test
@@ -344,22 +342,22 @@ class ChildBoxTest {
           maxHeight = px(120)
         },
     )
-    assertThat(both.borderBoxConstraints.minHeight).isEqualTo(40)
-    assertThat(both.borderBoxConstraints.maxHeight).isEqualTo(120)
+    assertThat(both.borderBox.minHeight).isEqualTo(40)
+    assertThat(both.borderBox.maxHeight).isEqualTo(120)
 
     val max = resolve(exact(50, 200), props { maxHeight = px(100) })
-    assertThat(max.borderBoxConstraints.minHeight).isEqualTo(100)
-    assertThat(max.borderBoxConstraints.maxHeight).isEqualTo(100)
+    assertThat(max.borderBox.minHeight).isEqualTo(100)
+    assertThat(max.borderBox.maxHeight).isEqualTo(100)
   }
 
   @Test
   fun `an own max only narrows the room, as maxWidth does in a Column`() {
     val above = resolve(atMost(250), props { maxWidth = px(280) })
-    assertThat(above.borderBoxConstraints.maxWidth).isEqualTo(250)
+    assertThat(above.borderBox.maxWidth).isEqualTo(250)
 
     val aboveExact = resolve(exact(200, 50), props { maxWidth = px(280) })
-    assertThat(aboveExact.borderBoxConstraints.minWidth).isEqualTo(200)
-    assertThat(aboveExact.borderBoxConstraints.maxWidth).isEqualTo(200)
+    assertThat(aboveExact.borderBox.minWidth).isEqualTo(200)
+    assertThat(aboveExact.borderBox.maxWidth).isEqualTo(200)
 
     val margined = resolve(
         atMost(300),
@@ -368,15 +366,12 @@ class ChildBoxTest {
           margin[BoxEdge.HORIZONTAL] = BoxLength.Px(20f)
         },
     )
-    assertThat(margined.borderBoxConstraints.maxWidth)
-        .describedAs("inside the margins")
-        .isEqualTo(260)
+    assertThat(margined.borderBox.maxWidth).describedAs("inside the margins").isEqualTo(260)
   }
 
   @Test
   fun `an own size stays within its own min and max, the max over the min`() {
-    fun box(block: BoxLayoutProps.() -> Unit) =
-        resolve(atMost(300), props(block)).borderBoxConstraints
+    fun box(block: BoxLayoutProps.() -> Unit) = resolve(atMost(300), props(block)).borderBox
 
     assertThat(
         box {
@@ -413,8 +408,8 @@ class ChildBoxTest {
         },
     )
 
-    assertThat(b.borderBoxConstraints.minWidth).isEqualTo(120)
-    assertThat(b.borderBoxConstraints.maxWidth).isEqualTo(120)
+    assertThat(b.borderBox.minWidth).isEqualTo(120)
+    assertThat(b.borderBox.maxWidth).isEqualTo(120)
   }
 
   @Test
@@ -428,8 +423,8 @@ class ChildBoxTest {
         },
     )
 
-    assertThat(b.borderBoxConstraints.minHeight).isEqualTo(80)
-    assertThat(b.borderBoxConstraints.maxHeight).isEqualTo(80)
+    assertThat(b.borderBox.minHeight).isEqualTo(80)
+    assertThat(b.borderBox.maxHeight).isEqualTo(80)
   }
 
   @Test
@@ -442,12 +437,12 @@ class ChildBoxTest {
           aspectRatio = 2f
         },
     )
-    assertThat(bothFixed.borderBoxConstraints.maxHeight).isEqualTo(30)
+    assertThat(bothFixed.borderBox.maxHeight).isEqualTo(30)
 
     val infinite =
         resolve(SizeConstraints.fixedWidth(200), props { aspectRatio = Float.POSITIVE_INFINITY })
-    assertThat(infinite.borderBoxConstraints.minHeight).isEqualTo(0)
-    assertThat(infinite.borderBoxConstraints.hasBoundedHeight).isFalse()
+    assertThat(infinite.borderBox.minHeight).isEqualTo(0)
+    assertThat(infinite.borderBox.hasBoundedHeight).isFalse()
     val fromHeight = resolve(
         atMost(300),
         props {
@@ -455,18 +450,18 @@ class ChildBoxTest {
           aspectRatio = Float.POSITIVE_INFINITY
         },
     )
-    assertThat(fromHeight.borderBoxConstraints.minWidth).isEqualTo(0)
-    assertThat(fromHeight.borderBoxConstraints.maxWidth).isEqualTo(300)
+    assertThat(fromHeight.borderBox.minWidth).isEqualTo(0)
+    assertThat(fromHeight.borderBox.maxWidth).isEqualTo(300)
   }
 
   @Test
   fun `a percentage min, max or size has no effect when its axis is unbounded`() {
     val max = resolve(SizeConstraints(), props { maxWidth = pct(50f) })
-    assertThat(max.borderBoxConstraints.hasBoundedWidth).isFalse()
+    assertThat(max.borderBox.hasBoundedWidth).isFalse()
 
     val height = resolve(atMost(300), props { height = pct(50f) })
-    assertThat(height.borderBoxConstraints.minHeight).isEqualTo(0)
-    assertThat(height.borderBoxConstraints.hasBoundedHeight).isFalse()
+    assertThat(height.borderBox.minHeight).isEqualTo(0)
+    assertThat(height.borderBox.hasBoundedHeight).isFalse()
   }
 
   @Test
@@ -479,18 +474,18 @@ class ChildBoxTest {
         },
     )
 
-    assertThat(b.borderBoxConstraints.minWidth).isEqualTo(300)
-    assertThat(b.borderBoxConstraints.maxWidth).isEqualTo(300)
+    assertThat(b.borderBox.minWidth).isEqualTo(300)
+    assertThat(b.borderBox.maxWidth).isEqualTo(300)
   }
 
   @Test
   fun `padding and border set the smallest the border box can be, after the aspect ratio`() {
     val bordered = resolve(exact(4, 4), props { border[BoxEdge.HORIZONTAL] = BoxLength.Px(5f) })
-    assertThat(bordered.borderBoxConstraints.minWidth).isEqualTo(10)
+    assertThat(bordered.borderBox.minWidth).isEqualTo(10)
 
     val padded = resolve(SizeConstraints(), props { padding[BoxEdge.VERTICAL] = BoxLength.Px(8f) })
-    assertThat(padded.borderBoxConstraints.minHeight).isEqualTo(16)
-    assertThat(padded.borderBoxConstraints.hasBoundedHeight).isFalse()
+    assertThat(padded.borderBox.minHeight).isEqualTo(16)
+    assertThat(padded.borderBox.hasBoundedHeight).isFalse()
 
     val derived = resolve(
         SizeConstraints(0, 1000, 0, 1000),
@@ -500,7 +495,7 @@ class ChildBoxTest {
           padding[BoxEdge.VERTICAL] = BoxLength.Px(40f)
         },
     )
-    assertThat(derived.borderBoxConstraints.minHeight)
+    assertThat(derived.borderBox.minHeight)
         .describedAs("60 from the ratio, raised to the padding")
         .isEqualTo(80)
   }
@@ -509,39 +504,39 @@ class ChildBoxTest {
   fun `a negative margin raises both bounds of the room`() {
     val b = resolve(atMost(200), props { margin[BoxEdge.HORIZONTAL] = BoxLength.Px(-20f) })
 
-    assertThat(b.borderBoxConstraints.minWidth).isEqualTo(40)
-    assertThat(b.borderBoxConstraints.maxWidth).isEqualTo(240)
+    assertThat(b.borderBox.minWidth).isEqualTo(40)
+    assertThat(b.borderBox.maxWidth).isEqualTo(240)
   }
 
   @Test
   fun `the height stays encodable too, and no size is past what an axis stores`() {
     val bigMin = resolve(exact(50, 20_000), props { minHeight = px(9_000) })
-    assertThat(bigMin.borderBoxConstraints.minHeight).isEqualTo(9_000)
-    assertThat(bigMin.borderBoxConstraints.maxHeight).isEqualTo(9_000)
+    assertThat(bigMin.borderBox.minHeight).isEqualTo(9_000)
+    assertThat(bigMin.borderBox.maxHeight).isEqualTo(9_000)
 
     val wide = resolve(atMost(1080), props { width = px(1_200_000_000) })
-    assertThat(wide.borderBoxConstraints.maxWidth).isEqualTo(1_073_741_822)
+    assertThat(wide.borderBox.maxWidth).isEqualTo(1_073_741_822)
     val loose = resolve(SizeConstraints(), props { maxWidth = BoxLength.Px(1.5e9f) })
-    assertThat(loose.borderBoxConstraints.maxWidth).isEqualTo(1_073_741_822)
+    assertThat(loose.borderBox.maxWidth).isEqualTo(1_073_741_822)
   }
 
   @Test
   fun `a size or an edge that is not a finite number counts as unset, as in Yoga`() {
     val nan = resolve(atMost(300), props { width = BoxLength.Px(Float.NaN) })
-    assertThat(nan.borderBoxConstraints.minWidth).isEqualTo(0)
-    assertThat(nan.borderBoxConstraints.maxWidth).isEqualTo(300)
+    assertThat(nan.borderBox.minWidth).isEqualTo(0)
+    assertThat(nan.borderBox.maxWidth).isEqualTo(300)
 
     val infiniteMin =
         resolve(atMost(1080), props { minWidth = BoxLength.Px(Float.POSITIVE_INFINITY) })
-    assertThat(infiniteMin.borderBoxConstraints.minWidth).isEqualTo(0)
-    assertThat(infiniteMin.borderBoxConstraints.maxWidth).isEqualTo(1080)
+    assertThat(infiniteMin.borderBox.minWidth).isEqualTo(0)
+    assertThat(infiniteMin.borderBox.maxWidth).isEqualTo(1080)
 
     val infiniteShare =
         resolve(atMost(300), props { width = BoxLength.Percent(Float.POSITIVE_INFINITY) })
-    assertThat(infiniteShare.borderBoxConstraints.minWidth).isEqualTo(0)
+    assertThat(infiniteShare.borderBox.minWidth).isEqualTo(0)
 
     val nanMax = resolve(atMost(300), props { maxWidth = BoxLength.Percent(Float.NaN) })
-    assertThat(nanMax.borderBoxConstraints.maxWidth).isEqualTo(300)
+    assertThat(nanMax.borderBox.maxWidth).isEqualTo(300)
 
     val edge = resolve(
         atMost(300),
@@ -596,15 +591,15 @@ class ChildBoxTest {
       val edgesWidth = b.margins.horizontal + b.padding.horizontal + b.border.horizontal
       val edgesHeight = b.margins.vertical + b.padding.vertical + b.border.vertical
       if (constraints.hasExactWidth && edgesWidth <= constraints.maxWidth) {
-        assertThat(b.borderBoxConstraints.minWidth)
+        assertThat(b.borderBox.minWidth)
             .describedAs("%s in %s", declared, constraints)
-            .isEqualTo(b.borderBoxConstraints.maxWidth)
+            .isEqualTo(b.borderBox.maxWidth)
             .isEqualTo(constraints.maxWidth - b.margins.horizontal)
       }
       if (constraints.hasExactHeight && edgesHeight <= constraints.maxHeight) {
-        assertThat(b.borderBoxConstraints.minHeight)
+        assertThat(b.borderBox.minHeight)
             .describedAs("%s in %s", declared, constraints)
-            .isEqualTo(b.borderBoxConstraints.maxHeight)
+            .isEqualTo(b.borderBox.maxHeight)
             .isEqualTo(constraints.maxHeight - b.margins.vertical)
       }
     }
@@ -697,15 +692,157 @@ class ChildBoxTest {
     assertThat(percentLast.margin[BoxEdge.TOP]).isEqualTo(BoxLength.Unset)
   }
 
-  private fun forEachCase(block: (SizeConstraints, ChildBoxCases.Declared) -> Unit) {
+  @Test
+  fun `a root's ratio moves its decided axis to the size in range that keeps it`() {
+    val box = resolveRoot(
+        atMost(200, 50),
+        props {
+          minWidth = px(186)
+          maxWidth = px(276)
+          maxHeight = px(385)
+          aspectRatio = 3.7f
+        },
+    )
+
+    assertThat(box.borderBox).isEqualTo(exact(186, 50))
+  }
+
+  @Test
+  fun `a root's ratio keeps its declared height when the derived width leaves its range`() {
+    val declared = props {
+      height = px(50)
+      maxWidth = px(100)
+      aspectRatio = 3f
+    }
+
+    assertThat(resolveRoot(atMost(200, 200), declared).borderBox).isEqualTo(exact(100, 50))
+    assertThat(resolve(atMost(200, 200), declared).borderBox).isEqualTo(exact(100, 50))
+  }
+
+  @Test
+  fun `a root derives its height from its width as a child does`() {
+    val declared = props {
+      width = px(18)
+      aspectRatio = 2.4f
+    }
+
+    assertThat(resolveRoot(atMost(300, 300), declared).borderBox)
+        .isEqualTo(resolve(atMost(300, 300), declared).borderBox)
+  }
+
+  @Test
+  fun `a root's ratio derives from its declared width raised to its padding floor`() {
+    val declared = props {
+      width = px(50)
+      padding[BoxEdge.LEFT] = px(50)
+      padding[BoxEdge.RIGHT] = px(50)
+      aspectRatio = 1f
+    }
+
+    assertThat(resolveRoot(atMost(300, 300), declared).borderBox).isEqualTo(exact(100, 100))
+    assertThat(resolve(atMost(300, 300), declared).borderBox).isEqualTo(exact(100, 50))
+  }
+
+  @Test
+  fun `a root's ratio moves the width its holder fills`() {
+    val box = resolveRoot(
+        SizeConstraints(200, 200, 0, 300),
+        props {
+          maxHeight = px(50)
+          aspectRatio = 1f
+        },
+    )
+
+    assertThat(box.borderBox).isEqualTo(exact(50, 50))
+  }
+
+  @Test
+  fun `a root's ratio leaves the width its holder fills when no width in range keeps it`() {
+    val box = resolveRoot(
+        SizeConstraints(200, 200, 0, 300),
+        props {
+          minWidth = px(150)
+          maxHeight = px(50)
+          aspectRatio = 1f
+        },
+    )
+
+    assertThat(box.borderBox).isEqualTo(exact(200, 50))
+  }
+
+  @Test
+  fun `a root's ratio yields when no size in both ranges keeps it`() {
+    val box = resolveRoot(
+        SizeConstraints(100, 100, 0, 300),
+        props {
+          minHeight = px(200)
+          aspectRatio = 1f
+        },
+    )
+
+    assertThat(box.borderBox).isEqualTo(exact(100, 200))
+  }
+
+  @Test
+  fun `a root's declared width stays when its padding floors the derived height`() {
+    val constraints = SizeConstraints(200, 200, 0, 300)
+    val declared = props {
+      width = px(100)
+      padding[BoxEdge.TOP] = px(150)
+      aspectRatio = 1f
+    }
+
+    assertThat(resolveRoot(constraints, declared).borderBox).isEqualTo(exact(100, 150))
+    assertThat(resolve(constraints, declared).borderBox).isEqualTo(exact(100, 150))
+  }
+
+  @Test
+  fun `a root fills an exact axis and wraps its content on an at-most one`() {
+    val box = resolveRoot(SizeConstraints(200, 200, 0, 300), props())
+
+    assertThat(box.borderBox).isEqualTo(SizeConstraints(200, 200, 0, 300))
+  }
+
+  @Test
+  fun `a root's own max wins over an own min above it`() {
+    val box = resolveRoot(
+        atMost(300, 300),
+        props {
+          minWidth = px(200)
+          maxWidth = px(100)
+        },
+    )
+
+    assertThat(box.borderBox).isEqualTo(SizeConstraints(100, 100, 0, 300))
+  }
+
+  @Test
+  fun `a root's ratio whose inverse is not finite counts as none`() {
+    val box = resolveRoot(
+        SizeConstraints(100, 100, 0, 300),
+        props { aspectRatio = Float.MIN_VALUE },
+    )
+
+    assertThat(box.borderBox).isEqualTo(SizeConstraints(100, 100, 0, 300))
+  }
+
+  @Test
+  fun `a root rounds a percentage as a child does`() {
+    val declared = props { width = pct(26.5f) }
+
+    assertThat(resolveRoot(atMost(100), declared).borderBox.maxWidth).isEqualTo(26)
+    assertThat(resolve(atMost(100), declared).borderBox.maxWidth).isEqualTo(26)
+  }
+
+  private fun forEachCase(block: (SizeConstraints, BoxConstraintsCases.Declared) -> Unit) {
     for (declared in CASES) {
-      for (constraints in ChildBoxCases.constraints) {
+      for (constraints in BoxConstraintsCases.constraints) {
         block(constraints, declared)
       }
     }
   }
 
   private companion object {
-    val CASES: List<ChildBoxCases.Declared> = ChildBoxCases.generated(count = 600)
+    val CASES: List<BoxConstraintsCases.Declared> = BoxConstraintsCases.generated(count = 600)
   }
 }

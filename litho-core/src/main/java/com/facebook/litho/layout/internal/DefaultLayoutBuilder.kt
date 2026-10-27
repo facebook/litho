@@ -28,7 +28,7 @@ import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.borderBoxSizeAround
 import com.facebook.litho.contentSpec
 import com.facebook.litho.isReadTrackingEnabled
-import com.facebook.litho.layout.ChildBox
+import com.facebook.litho.layout.BoxConstraints
 import com.facebook.litho.layout.LayoutDirection
 import com.facebook.litho.layout.Measurable
 import com.facebook.litho.layout.MeasureScope
@@ -88,13 +88,13 @@ internal class DefaultLayoutBuilder(
   private var stateReads: MutableScatterSet<StateId>? = null
   private var isDone = false
 
-  override fun measure(box: ChildBox): IntSize {
+  override fun measure(box: BoxConstraints): IntSize {
     check(!isDone) { "${node.headComponent.simpleName} measured after it was built or discarded" }
     declareIn(box)
     return borderBoxSizeIn(box)
   }
 
-  override fun build(box: ChildBox): LithoLayoutResult {
+  override fun build(box: BoxConstraints): LithoLayoutResult {
     check(!isDone) { "${node.headComponent.simpleName} built twice, or after it was discarded" }
     isDone = true
     declareIn(box)
@@ -247,7 +247,7 @@ internal class DefaultLayoutBuilder(
    *     build(exactly 280)    -> stretched past what A declared: runs again, exactly
    * ```
    */
-  private fun declareIn(box: ChildBox) {
+  private fun declareIn(box: BoxConstraints) {
     if (functionFailure != null) return
     val constraints = box.contentConstraints()
     val latest = declared
@@ -273,7 +273,7 @@ internal class DefaultLayoutBuilder(
   }
 
   /** Its border-box size in [box], around what its latest run declared: none if it failed. */
-  private fun borderBoxSizeIn(box: ChildBox): IntSize =
+  private fun borderBoxSizeIn(box: BoxConstraints): IntSize =
       borderBoxSizeAround(declared?.width ?: 0, declared?.height ?: 0, box)
 
   /**
@@ -314,7 +314,7 @@ internal class DefaultLayoutBuilder(
  * child up to it. [borderBoxSizeAround] applies the minimum to what it declares.
  *
  * ```
- *   +------------- border box, within box.borderBoxConstraints --------------+
+ *   +------------- border box, within box.borderBox --------------+
  *   |  +----------------- padding box: inside the border -----------------+  |
  *   |  |  +---------- content box, within what this returns -----------+  |  |
  *   |  |  |                                                            |  |  |
@@ -323,8 +323,8 @@ internal class DefaultLayoutBuilder(
  *   +------------------------------------------------------------------------+
  * ```
  */
-private fun ChildBox.contentConstraints(): SizeConstraints {
-  val room = borderBoxConstraints
+private fun BoxConstraints.contentConstraints(): SizeConstraints {
+  val room = borderBox
   return SizeConstraints.fromMeasureSpecs(
       contentSpec(room.hasExactWidth, room.hasBoundedWidth, room.maxWidth, edgesAcross),
       contentSpec(room.hasExactHeight, room.hasBoundedHeight, room.maxHeight, edgesDown),

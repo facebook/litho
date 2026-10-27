@@ -23,7 +23,7 @@ import androidx.collection.MutableScatterSet
 import androidx.collection.ScatterSet
 import com.facebook.litho.ComponentsSystrace.trace
 import com.facebook.litho.annotations.ExperimentalLithoApi
-import com.facebook.litho.layout.ChildBox
+import com.facebook.litho.layout.BoxConstraints
 import com.facebook.litho.layout.LayoutDirection
 import com.facebook.litho.layout.Measurable
 import com.facebook.litho.layout.MeasureScope
@@ -495,16 +495,16 @@ private fun Measurable.layOut(constraints: SizeConstraints): Placeable =
 
 /**
  * Lays this Yoga root out within [box], the room its container resolved from the child's own box
- * props, which its node does not carry: only [ChildBox.borderBoxConstraints] and the resolved
- * padding and border are written here.
+ * props, which its node does not carry: only [BoxConstraints.borderBox] and the resolved padding
+ * and border are written here.
  *
  * **An upper bound is not a size.** With no size or maximum of its own, Yoga stretches a root to a
  * definite owner dimension. So a bound is written as the root's maximum, which puts Yoga on its
  * fit-to-content path, and only then handed on as the owner dimension; an unbounded axis is handed
  * on as undefined.
  */
-internal fun YogaNode.layOutWithin(box: ChildBox) {
-  val room = box.borderBoxConstraints
+internal fun YogaNode.layOutWithin(box: BoxConstraints) {
+  val room = box.borderBox
   if (room.hasExactWidth) {
     setWidth(room.maxWidth.toFloat())
     setMinWidth(YogaConstants.UNDEFINED)

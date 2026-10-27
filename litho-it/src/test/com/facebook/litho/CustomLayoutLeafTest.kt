@@ -25,11 +25,11 @@ import com.facebook.litho.core.height
 import com.facebook.litho.core.margin
 import com.facebook.litho.core.width
 import com.facebook.litho.flexbox.layoutDirection
-import com.facebook.litho.layout.ChildBoxCases
+import com.facebook.litho.layout.BoxConstraintsCases
 import com.facebook.litho.layout.LayoutDirection
 import com.facebook.litho.layout.LayoutFunctionN
 import com.facebook.litho.layout.flexbox.Column
-import com.facebook.litho.layout.resolveChildBox
+import com.facebook.litho.layout.resolveBoxConstraints
 import com.facebook.litho.stats.LithoStats
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -182,9 +182,10 @@ class CustomLayoutLeafTest {
         )
       }
       for (direction in listOf(YogaDirection.LTR, YogaDirection.RTL)) {
-        for (declared in ChildBoxCases.generated(count = 200, seed = 7)) {
+        for (declared in BoxConstraintsCases.generated(count = 200, seed = 7)) {
           for (constraints in constraintsToTry) {
-            val box = resolveChildBox(constraints, declared.build(), direction == YogaDirection.RTL)
+            val box =
+                resolveBoxConstraints(constraints, declared.build(), direction == YogaDirection.RTL)
             val yoga =
                 NodeConfig.createYogaNode()
                     .apply {

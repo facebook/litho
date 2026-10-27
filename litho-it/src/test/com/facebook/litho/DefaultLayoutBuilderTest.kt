@@ -19,7 +19,7 @@ package com.facebook.litho
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.flexbox.layoutDirection
-import com.facebook.litho.layout.ChildBox
+import com.facebook.litho.layout.BoxConstraints
 import com.facebook.litho.layout.IntEdges
 import com.facebook.litho.layout.LayoutDirection
 import com.facebook.litho.layout.LayoutFunctionN
@@ -395,7 +395,7 @@ class DefaultLayoutBuilderTest {
       room: SizeConstraints,
       padding: IntEdges = IntEdges.None,
       border: IntEdges = IntEdges.None,
-  ): ChildBox = ChildBox(IntEdges.None, padding, border, room)
+  ): BoxConstraints = BoxConstraints(IntEdges.None, padding, border, room)
 
   private fun atMost(width: Int, height: Int): SizeConstraints =
       SizeConstraints(maxWidth = width, maxHeight = height)

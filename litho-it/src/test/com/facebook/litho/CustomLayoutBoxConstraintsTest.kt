@@ -125,7 +125,7 @@ private fun measuringUnder(constraints: (SizeConstraints) -> SizeConstraints): L
  * only the child's content.
  */
 @RunWith(LithoTestRunner::class)
-class CustomLayoutChildBoxTest {
+class CustomLayoutBoxConstraintsTest {
 
   @JvmField @Rule val lithoTestRule = LithoTestRule()
 

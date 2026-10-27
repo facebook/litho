@@ -35,10 +35,10 @@ import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.debug.DebugInfoReporter
 import com.facebook.litho.drawable.BorderColorDrawable
+import com.facebook.litho.layout.BoxConstraints
 import com.facebook.litho.layout.BoxLayoutProps
-import com.facebook.litho.layout.ChildBox
 import com.facebook.litho.layout.LayoutDirection
-import com.facebook.litho.layout.resolveChildBox
+import com.facebook.litho.layout.resolveBoxConstraints
 import com.facebook.litho.state.StateId
 import com.facebook.litho.state.StateReadRecorder
 import com.facebook.litho.stats.LithoStats
@@ -110,7 +110,7 @@ internal object LithoYogaLayoutFunction {
       node: LithoNode,
       constraints: SizeConstraints,
       diffNode: DiffNode?,
-  ): kotlin.Pair<LithoLayoutResult, ChildBox> {
+  ): kotlin.Pair<LithoLayoutResult, BoxConstraints> {
     // The `Layout`s in this child's Yoga tree, settled once it is laid out.
     val customLayouts = ArrayList<CustomLayoutResult>(0)
     val result =
@@ -126,7 +126,7 @@ internal object LithoYogaLayoutFunction {
         }
     // Recorded as its tree was built, or carried by the result the cache copied.
     val boxProps = checkNotNull(result.childBoxProps)
-    val box = resolveChildBox(constraints, boxProps, node.layoutDirection.isRTL)
+    val box = resolveBoxConstraints(constraints, boxProps, node.layoutDirection.isRTL)
     result.resolvedMargins = box.margins
     if (isLayoutLeaf(node)) {
       trace({ "layout.leaf:${node.headComponent.simpleName}" }) {
@@ -164,14 +164,14 @@ internal object LithoYogaLayoutFunction {
   ): LithoLayoutResult = TODO()
 
   /**
-   * Lays [tree] out within [box], in place: its border box within [ChildBox.borderBoxConstraints],
-   * with the padding and border its node doesn't carry. A node that fails holds its failure on its
+   * Lays [tree] out within [box], in place: its border box within [BoxConstraints.borderBox], with
+   * the padding and border its node doesn't carry. A node that fails holds its failure on its
    * result, reported only if the result reaches the final tree; each layout replaces the last's.
    */
   internal fun layOutTree(
       context: LayoutContext<LithoLayoutContext>,
       tree: LithoLayoutResult,
-      box: ChildBox,
+      box: BoxConstraints,
   ): Unit = TODO()
 
   /** [tree], placed: the `Layout`s in it built, then the tree written to the layout cache. */
@@ -229,7 +229,7 @@ internal object LithoYogaLayoutFunction {
   private fun layOutLeaf(
       context: LayoutContext<LithoLayoutContext>,
       result: LithoLayoutResult,
-      box: ChildBox,
+      box: BoxConstraints,
   ) {
     val output = result.yogaLayoutOutput
     val direction =
@@ -254,7 +254,7 @@ internal object LithoYogaLayoutFunction {
   private fun layOutNestedContainer(
       context: LayoutContext<LithoLayoutContext>,
       result: CustomLayoutResult,
-      box: ChildBox,
+      box: BoxConstraints,
   ) {
     val output = result.yogaLayoutOutput
     val direction =

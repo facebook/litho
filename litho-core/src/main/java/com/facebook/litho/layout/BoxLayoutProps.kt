@@ -138,7 +138,8 @@ internal class BoxEdges {
  *
  * A flexbox parent reads a child's margins, size, min/max, aspect ratio, padding and border off the
  * child's Yoga node. A custom layout applies them itself, against the constraints it measures the
- * child under ([resolveChildBox]), so they are kept here rather than on the child's Yoga node.
+ * child under ([resolveBoxConstraints]), so they are kept here rather than on the child's Yoga
+ * node.
  */
 internal class BoxLayoutProps {
   var width: BoxLength = BoxLength.Unset

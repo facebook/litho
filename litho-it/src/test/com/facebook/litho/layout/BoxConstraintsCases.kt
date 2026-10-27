@@ -23,7 +23,7 @@ import kotlin.random.Random
  * Generated container children for the child box's tests: a child's declared box props as data, so
  * one case can be built, mirrored or rewritten, and the constraints to try each under.
  */
-internal object ChildBoxCases {
+internal object BoxConstraintsCases {
 
   /** One declared edge of a box prop, in pixels or, with [isPercent], a percentage. */
   data class EdgeDecl(val edge: BoxEdge, val value: Float, val isPercent: Boolean = false)
@@ -155,10 +155,10 @@ internal object ChildBoxCases {
     }
   }
 
-  /** Everything a [ChildBox] says, with left and right swapped when [mirrored]. */
-  fun summary(box: ChildBox, mirrored: Boolean = false): String =
+  /** Everything a [BoxConstraints] says, with left and right swapped when [mirrored]. */
+  fun summary(box: BoxConstraints, mirrored: Boolean = false): String =
       "margins ${text(box.margins, mirrored)} padding ${text(box.padding, mirrored)} " +
-          "border ${text(box.border, mirrored)} constraints ${box.borderBoxConstraints}"
+          "border ${text(box.border, mirrored)} constraints ${box.borderBox}"
 
   fun text(edges: IntEdges, mirrored: Boolean = false): String =
       if (mirrored) "(${edges.right}, ${edges.top}, ${edges.left}, ${edges.bottom})"

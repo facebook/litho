@@ -22,7 +22,7 @@ import com.facebook.litho.LithoLayoutContext
 import com.facebook.litho.LithoLayoutResult
 import com.facebook.litho.LithoNode
 import com.facebook.litho.LithoYogaLayoutFunction
-import com.facebook.litho.layout.ChildBox
+import com.facebook.litho.layout.BoxConstraints
 import com.facebook.litho.state.StateId
 import com.facebook.rendercore.IntSize
 import com.facebook.rendercore.LayoutContext
@@ -39,16 +39,16 @@ internal class YogaTreeBuilder(
 ) : LithoLayoutBuilder {
 
   private var tree: LithoLayoutResult? = null
-  private var laidOutIn: ChildBox? = null
+  private var laidOutIn: BoxConstraints? = null
   private var isDone = false
 
-  override fun measure(box: ChildBox): IntSize {
+  override fun measure(box: BoxConstraints): IntSize {
     check(!isDone) { "${node.headComponent.simpleName} measured after it was built or discarded" }
     val tree = treeIn(box)
     return IntSize(tree.width, tree.height)
   }
 
-  override fun build(box: ChildBox): LithoLayoutResult {
+  override fun build(box: BoxConstraints): LithoLayoutResult {
     check(!isDone) { "${node.headComponent.simpleName} built twice, or after it was discarded" }
     val tree = treeIn(box)
     isDone = true
@@ -66,7 +66,7 @@ internal class YogaTreeBuilder(
   }
 
   /** Its tree, laid out within [box] unless it already is; only [measure] makes it. */
-  private fun treeIn(box: ChildBox): LithoLayoutResult {
+  private fun treeIn(box: BoxConstraints): LithoLayoutResult {
     val tree =
         tree
             ?: LithoYogaLayoutFunction.newTree(context, node, previousDiffNode).also { made ->
