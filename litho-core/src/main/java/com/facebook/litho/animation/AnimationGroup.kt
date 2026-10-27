@@ -17,6 +17,7 @@
 package com.facebook.litho.animation
 
 import androidx.annotation.MainThread
+import com.facebook.litho.ComponentContext
 import com.facebook.litho.GlobalKey
 import com.facebook.litho.HookGlobalKey
 import com.facebook.litho.HookKey
@@ -165,6 +166,7 @@ internal class AnimationGroupState<S>(
     private set
 
   private var hasCommitted: Boolean = false
+  private val settlement = AnimationSettlement(initialState)
 
   /**
    * Returns the long-lived [AnimatedValue] for [slot], or `null` if it has not been committed yet.
@@ -181,9 +183,14 @@ internal class AnimationGroupState<S>(
    * commits of concurrent resolves converge on the same instances.
    */
   @MainThread
-  internal fun commit(record: AnimationGroupRecord<S>) {
+  internal fun commit(
+      record: AnimationGroupRecord<S>,
+      onSettled: ((S) -> Unit)? = null,
+      context: ComponentContext? = null,
+  ) {
     validateRecord(record)
     if (!hasCommitted) {
+      currentState = record.targetValue
       val slots = record.descriptors
       animatedValues = List(slots.size) { i -> createAnimatedValue(slots[i]) }
       hasCommitted = true
@@ -191,11 +198,11 @@ internal class AnimationGroupState<S>(
         record.targetValue != this.record.targetValue && currentState != this.record.targetValue
     ) {
       // Interrupted mid-run: step to the target we were heading for so [segment] describes the leg
-      // being animated. Must stay in the `hasCommitted` branch — [createAnimatedValue] seeds slots
-      // from [currentState], so moving it earlier would change their initial values.
+      // being animated.
       currentState = this.record.targetValue
     }
     this.record = record
+    settlement.commit(record.targetValue, onSettled, context)
   }
 
   @Suppress("UNCHECKED_CAST")
@@ -246,6 +253,7 @@ internal class AnimationGroupState<S>(
       retargetAnimation(descriptors[slot], value, seg)
       needsRegistration = needsRegistration || (!wasActive && value.hasAnimator)
     }
+    checkCompletion()
     return needsRegistration
   }
 
@@ -257,26 +265,35 @@ internal class AnimationGroupState<S>(
   ) {
     val typed = description as AnimationDescriptor<S, Any?>
     val animatedValue = value as AnimatedValue<Any?>
-    animatedValue.retarget(typed.targetValueByState(seg.targetState), typed.transitionSpec(seg))
+    val target = typed.targetValueByState(seg.targetState)
+    val spec = typed.transitionSpec(seg)
+    animatedValue.retarget(target, spec, preserveEqualTargetTiming = settlement.isPending)
   }
 
   /**
-   * Optional callback invoked once when all animations finish and [currentState] advances to
-   * [targetState]. Runs on the main thread from within the frame loop. Set to `null` to clear.
+   * Synchronous lifecycle observer called when [currentState] advances to [targetState], before
+   * invalidation. Container retention is independent of queued user callback delivery.
    */
-  internal var onSettled: (() -> Unit)? = null
+  internal var onStateSettled: (() -> Unit)? = null
 
   /**
    * Checks whether all animations have finished. If so, advances [currentState] to [targetState]
-   * and invokes [onSettled]. Called via [AnimatedValue.onComplete] when each child animation
-   * finishes.
-   *
-   * The `currentState != targetState` guard makes [onSettled] fire exactly once per settle.
+   * and notifies its internal observer. User delivery is queued independently of state advancement.
    */
   internal fun checkCompletion() {
-    if (!hasAnimator && currentState != targetState) {
-      currentState = targetState
-      onSettled?.invoke()
+    if (hasAnimator) return
+    val changed = currentState != targetState
+    currentState = targetState
+    settlement.complete()
+    if (changed) onStateSettled?.invoke()
+  }
+
+  internal fun unmount() {
+    settlement.unmount()
+    onStateSettled = null
+    for (value in animatedValues) {
+      value.stop()
+      AnimationController.unregister(value.frameAnimation)
     }
   }
 
@@ -393,18 +410,6 @@ internal constructor(
   /** Per-render slot counter. Each [animateFloat]/[animateDimen]/etc. call claims one slot. */
   private var renderSlot = 0
   private val pendingDescriptors = mutableListOf<AnimationDescriptor<S, *>>()
-
-  /**
-   * Optional callback invoked once when all animations in this group finish and the group settles.
-   * Runs on the main thread from within the frame loop. Register it from an effect and clear it
-   * (set to `null`) on cleanup. Writes through to the shared [AnimationGroupState], so setting it
-   * is stable across renders.
-   */
-  var onSettled: (() -> Unit)?
-    get() = state.onSettled
-    set(value) {
-      state.onSettled = value
-    }
 
   /** Freezes the slots declared this render into the immutable record committed into [state]. */
   internal fun createRecord(): AnimationGroupRecord<S> =

@@ -38,8 +38,6 @@ import com.facebook.litho.core.width
 import com.facebook.litho.flexbox.alignSelf
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.layout.flexbox.Column
-import com.facebook.litho.onCleanup
-import com.facebook.litho.useEffect
 import com.facebook.litho.useState
 import com.facebook.litho.view.backgroundColor
 import com.facebook.litho.view.onClick
@@ -68,7 +66,18 @@ class AnimationCallbackComponent : KComponent() {
     val travelX = (TRACK_WIDTH.toPixels() - BLOCK_SIZE.toPixels()).toFloat()
 
     // start_example
-    val motion = useAnimationGroup(atEnd.value, label = "callback")
+    val motion = useAnimationGroup(
+        atEnd.value,
+        label = "callback",
+        onSettled = {
+          settledCount.update { it + 1 }
+          if (isLooping) {
+            atEnd.update { !it }
+          } else {
+            animating.update(false)
+          }
+        },
+    )
     val x =
         motion.animateFloat(
             transitionSpec = { tween(MOVE_DURATION, easing = Easing.FastOutSlowIn) },
@@ -86,17 +95,6 @@ class AnimationCallbackComponent : KComponent() {
           if (end) 1.4f else 1f
         }
 
-    useEffect(isLooping) {
-      motion.onSettled = {
-        settledCount.update { it + 1 }
-        if (isLooping) {
-          atEnd.update { !it }
-        } else {
-          animating.update(false)
-        }
-      }
-      onCleanup { motion.onSettled = null }
-    }
     // end_example
 
     val count = settledCount.value

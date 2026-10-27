@@ -99,14 +99,16 @@ class AnimatedVisibility(
     useEffect(visible) {
       if (visible) {
         keepMounted.update(true)
-        transition.onSettled = null
+        transition.state.onStateSettled = null
         null
       } else if (!hasExitAnimation) {
         keepMounted.update(false)
         null
       } else {
-        transition.onSettled = { if (!visible) keepMounted.update(false) }
-        onCleanup { transition.onSettled = null }
+        transition.state.onStateSettled = {
+          if (transition.state.targetState == EnterExitState.AfterExit) keepMounted.update(false)
+        }
+        onCleanup { transition.state.onStateSettled = null }
       }
     }
 

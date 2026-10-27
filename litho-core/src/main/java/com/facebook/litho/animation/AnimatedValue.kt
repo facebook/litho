@@ -134,10 +134,24 @@ internal constructor(
    */
   @MainThread
   fun retarget(target: T, spec: AnimationSpec<T>) {
-    if (_currentValue == target && currentAnimator == null) return
+    retarget(target, spec, preserveEqualTargetTiming = false)
+  }
+
+  @MainThread
+  internal fun retarget(target: T, spec: AnimationSpec<T>, preserveEqualTargetTiming: Boolean) {
+    val stationary = _currentValue == target && currentAnimator == null
+    if (stationary && !preserveEqualTargetTiming) return
     val velocity = currentVelocity()
     val interrupting = currentAnimator != null && startTimeNanos != UNSET_START_TIME_NANOS
-    currentAnimator = spec.createAnimator(_currentValue, target, typeConverter, velocity)
+    val animator = spec.createAnimator(_currentValue, target, typeConverter, velocity)
+    val noOp = _currentValue == target && animator.isFinished(0L) && animator.getValue(0L) == target
+    if (noOp) {
+      currentAnimator = null
+      resetFrameState()
+      isActive = false
+      return
+    }
+    currentAnimator = animator
     if (interrupting) {
       // Preserve animation continuity during retargeting: anchor the new animator to the last
       // frame's timestamp so it starts with accumulated play time. This prevents re-emitting
@@ -199,9 +213,20 @@ internal constructor(
     isActive = false
   }
 
+  @MainThread
+  internal fun finish(target: T) {
+    if (currentAnimator == null) return
+    currentAnimator = null
+    _currentValue = target
+    resetFrameState()
+    isActive = false
+    onComplete?.invoke()
+    invalidate(dirty = true)
+  }
+
   /**
-   * Optional callback invoked when the animation finishes naturally (not on [stop] or [snapTo]).
-   * Used by [AnimationGroupState] for completion detection.
+   * Internal observer invoked on natural completion or [finish], before invalidation can replace
+   * the completed work. User notifications are queued by the owner.
    */
   internal var onComplete: (() -> Unit)? = null
 
@@ -209,7 +234,7 @@ internal constructor(
    * Called by [AnimationController] on each frame to advance the animation.
    *
    * Updates [_currentValue] based on the elapsed play time and triggers a re-render. If the
-   * animation finishes, invokes [onComplete] after the re-render signal.
+   * animation finishes, advances its owner's internal completion before the re-render signal.
    */
   @MainThread
   private fun onFrame(frameTimeNanos: Long): Boolean {
@@ -227,11 +252,9 @@ internal constructor(
     if (finished) {
       currentAnimator = null
       isActive = false
-    }
-    invalidate(dirty = changed || finished)
-    if (finished) {
       onComplete?.invoke()
     }
+    invalidate(dirty = changed || finished)
     return currentAnimator != null
   }
 

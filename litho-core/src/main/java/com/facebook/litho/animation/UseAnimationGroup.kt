@@ -50,6 +50,8 @@ import com.facebook.litho.useEffect
  * @param trigger Controls when the animation begins receiving frame callbacks. Defaults to
  *   [AnimationTrigger.Immediate].
  * @param label Optional label for debugging/tracing.
+ * @param onSettled Receives the latest committed target once all slots settle. Initial composition
+ *   is silent; superseded or unmounted generations do not notify. Uses the latest callback.
  * @return An [AnimationGroup] for adding animations.
  * @see AnimationGroup
  * @see AnimationGroupRecord
@@ -62,6 +64,7 @@ fun <S> ComponentScope.useAnimationGroup(
     targetState: S,
     trigger: AnimationTrigger = AnimationTrigger.Immediate,
     label: String = "transition",
+    onSettled: ((S) -> Unit)? = null,
 ): AnimationGroup<S> {
   val baseHookKey = animationHookKey()
   val lithoTree = context.lithoTree ?: error("useAnimationGroup must be called within a LithoTree")
@@ -79,12 +82,13 @@ fun <S> ComponentScope.useAnimationGroup(
   }
 
   val group = AnimationGroup(groupState, targetState, resourceResolver)
+  val completionContext = context
 
   // Commit this render's immutable declaration into the runtime, creating the long-lived
   // AnimatedValues on the main thread. Runs every render (group is fresh each time) and before the
   // retarget effect below, so retarget reads the just-committed declaration.
   useEffect(group) {
-    groupState.commit(group.createRecord())
+    groupState.commit(group.createRecord(), onSettled, completionContext)
     null
   }
 
@@ -110,13 +114,7 @@ fun <S> ComponentScope.useAnimationGroup(
 
   // Clean up on unmount
   useEffect(Unit) {
-    onCleanup {
-      for (animatedValue in groupState.animatedValues) {
-        animatedValue.stop()
-        AnimationController.unregister(animatedValue.frameAnimation)
-      }
-      groupState.onSettled = null
-    }
+    onCleanup { groupState.unmount() }
   }
 
   return group

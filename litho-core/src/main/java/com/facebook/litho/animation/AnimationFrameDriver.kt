@@ -46,6 +46,11 @@ internal fun interface FrameDrivenAnimation {
   fun onFrame(frameTimeNanos: Long): Boolean
 }
 
+internal fun interface PostFrameCallback {
+  /** Runs after the controller has applied this frame's animation invalidations. */
+  fun onPostFrame()
+}
+
 /**
  * Default [AnimationFrameDriver] backed by Android's [Choreographer].
  *

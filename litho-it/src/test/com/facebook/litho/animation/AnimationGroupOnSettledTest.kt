@@ -26,11 +26,9 @@ import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.layout.flexbox.Row
-import com.facebook.litho.onCleanup
 import com.facebook.litho.testing.LithoAnimationTestRule
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
-import com.facebook.litho.useEffect
 import com.facebook.rendercore.ms
 import com.facebook.rendercore.px
 import org.assertj.core.api.Assertions.assertThat
@@ -42,10 +40,8 @@ import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.LooperMode
 
 /**
- * Tests for the group-level [AnimationGroup.onSettled] completion callback: it must fire exactly
- * once when all animations in the group settle (i.e. `currentState` advances to `targetState`),
- * never mid-flight, and again on each subsequent transition. This is the signal container APIs
- * (`AnimatedVisibility` / `AnimatedContent`) use to drive content unmount after an exit animation.
+ * Tests that the group callback fires once after every property settles, never during the run, and
+ * again for each subsequent target generation.
  */
 @OptIn(ExperimentalLithoApi::class)
 @LooperMode(LooperMode.Mode.PAUSED)
@@ -135,11 +131,7 @@ class AnimationGroupOnSettledTest {
 
   private inner class SettleComponent(private val expanded: Boolean) : KComponent() {
     override fun ComponentScope.render(): Component {
-      val group = useAnimationGroup(expanded)
-      useEffect(Unit) {
-        group.onSettled = { settleCount++ }
-        onCleanup { group.onSettled = null }
-      }
+      val group = useAnimationGroup(expanded, onSettled = { settleCount++ })
       val alpha =
           group.animateFloat(
               transitionSpec = { tween(duration = 1_000.ms, easing = Easing.Linear) },
@@ -152,11 +144,7 @@ class AnimationGroupOnSettledTest {
 
   private inner class MultiSlotSettleComponent(private val expanded: Boolean) : KComponent() {
     override fun ComponentScope.render(): Component {
-      val group = useAnimationGroup(expanded)
-      useEffect(Unit) {
-        group.onSettled = { settleCount++ }
-        onCleanup { group.onSettled = null }
-      }
+      val group = useAnimationGroup(expanded, onSettled = { settleCount++ })
       val alpha =
           group.animateFloat(
               transitionSpec = { tween(duration = 1_000.ms, easing = Easing.Linear) },

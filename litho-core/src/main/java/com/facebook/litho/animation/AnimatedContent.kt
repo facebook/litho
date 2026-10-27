@@ -389,14 +389,14 @@ internal class AnimatedContentSlot<T>(
       if (isTarget) {
         // A slot may first commit as outgoing and become the target before removal applies.
         if (!started.value) started.update(true)
-        transition.onSettled = null
+        transition.state.onStateSettled = null
         null
       } else if (identity.hasExited) {
         onExitSettled()
         null
       } else {
-        transition.onSettled = onExitSettled
-        onCleanup { transition.onSettled = null }
+        transition.state.onStateSettled = onExitSettled
+        onCleanup { transition.state.onStateSettled = null }
       }
     }
 

@@ -77,6 +77,7 @@ fun ComponentScope.useAnimatedFloat(
     spec: FiniteAnimationSpec<Float> = spring(),
     trigger: AnimationTrigger = AnimationTrigger.Immediate,
     label: String = "float",
+    onSettled: ((Float) -> Unit)? = null,
 ): Value<Float>
 ```
 
@@ -95,6 +96,7 @@ fun ComponentScope.useAnimatedInt(
     spec: FiniteAnimationSpec<Int> = spring(),
     trigger: AnimationTrigger = AnimationTrigger.Immediate,
     label: String = "int",
+    onSettled: ((Int) -> Unit)? = null,
 ): Value<Int>
 ```
 
@@ -108,6 +110,7 @@ fun ComponentScope.useAnimatedColor(
     spec: FiniteAnimationSpec<Color> = spring(),
     trigger: AnimationTrigger = AnimationTrigger.Immediate,
     label: String = "color",
+    onSettled: ((Color) -> Unit)? = null,
 ): Value<Color>
 ```
 
@@ -121,6 +124,7 @@ fun ComponentScope.useAnimatedDimen(
     spec: FiniteAnimationSpec<Dimen> = spring(),
     trigger: AnimationTrigger = AnimationTrigger.Immediate,
     label: String = "dimen",
+    onSettled: ((Dimen) -> Unit)? = null,
 ): Value<Dimen>
 ```
 
@@ -145,10 +149,62 @@ fun <T> ComponentScope.useAnimatedValue(
     spec: FiniteAnimationSpec<T> = spring(),
     trigger: AnimationTrigger = AnimationTrigger.Immediate,
     label: String = "",
+    onSettled: ((T) -> Unit)? = null,
 ): Value<T>
 ```
 
 All typed hooks (`useAnimatedFloat`, `useAnimatedInt`, etc.) delegate to this internally.
+
+### Completion callbacks
+
+Pass `onSettled` to a target hook to receive its latest committed target after settlement:
+
+```kotlin
+val alpha = useAnimatedFloat(
+    targetValue = if (enabled) 1f else 0.4f,
+    onSettled = { target -> /* animation settled at target */ },
+)
+```
+
+Delivery is asynchronous, after animation invalidations, and uses the latest committed callback.
+Initial composition is silent, including the first mount after restoring tree state. A target superseded
+before delivery and an unmounted owner do not notify. Updating only the callback preserves animation progress.
+
+A no-op target change settles asynchronously without starting an animation. A positive duration or
+explicit delay is timed work even when its displayed value is constant; keyframes can also make an
+excursion between equal endpoints. A no-op does not need a deferred-start gate to open; timed work does.
+
+### Imperative animation with useAnimatable
+
+`useAnimatable` retains a component-owned handle across renders. Invoke its commands on the main
+thread from event handlers, and pass its `value` directly to a `Style` binding:
+
+```kotlin
+val alpha = useAnimatable(0.4f, FloatTypeConverter)
+// In an event handler:
+alpha.animateTo(1f, tween(300.ms)) { outcome ->
+    when (outcome) {
+        AnimationEnd.Finished -> { /* reached the command target */ }
+        AnimationEnd.Interrupted -> { /* replaced by animateTo or snapTo */ }
+        AnimationEnd.Cancelled -> { /* stopped or unmounted */ }
+    }
+}
+// In a later event handler, publish the accepted target immediately:
+alpha.finish()
+
+Row(style = Style.alpha(alpha.value))
+```
+
+| Command | Value behavior | Outcome for an active command |
+|---------|----------------|-------------------------------|
+| `animateTo(target, spec, onEnd)` | Animates toward the new target | `Interrupted` for the replaced command |
+| `snapTo(target)` | Publishes the new value immediately | `Interrupted` |
+| `stop()` | Holds the current value | `Cancelled` |
+| `finish()` | Publishes the active command's target immediately | `Finished` |
+
+`onEnd` is queued, including for no-op commands. Each command retains its own callback and immutable
+outcome even if a replacement arrives before delivery. Starting another command from `onEnd` is safe.
+Owner unmount cancels active commands.
 
 ### Retargeting
 
@@ -375,12 +431,12 @@ unmount, or `Style.transition` convergence.
 
 ```kotlin
 fun ComponentScope.useInfiniteAnimationGroup(
-    running: Boolean = true,
+    shouldRun: Boolean = true,
     label: String = "infinite",
-): InfiniteAnimation
+): InfiniteAnimationGroup
 ```
 
-The returned `InfiniteAnimation` declares child loops; each loops between an explicit `from` and
+The returned `InfiniteAnimationGroup` declares child loops; each loops between an explicit `from` and
 `to`. `animateInt`, `animateColor`, `animateDimen`, and a generic `animateValue(..., typeConverter)`
 mirror `animateFloat`:
 
@@ -432,21 +488,21 @@ is baked into the spec and so repeats every cycle:
 - `StartOffset(ms, StartOffsetType.Delay)` — hold at `from` for `ms`, then begin the first cycle.
 - `StartOffset(ms, StartOffsetType.FastForward)` — begin immediately, already `ms` into the cycle. Because the loop is periodic this is a persistent phase shift — the natural way to stagger several otherwise-identical loops.
 
-### Pausing with `running`
+### Stopping loops with `shouldRun`
 
-`running = false` unregisters the loops and holds their current values; flipping back to `true`
+`shouldRun = false` unregisters the loops and holds their current values; flipping back to `true`
 restarts each loop from its `from` (a stop/hold + restart, not an elapsed-time resume). Wire it to
 visibility so off-screen content isn't animating:
 
 ```kotlin
-val infinite = useInfiniteAnimationGroup(running = isVisible)
+val infinite = useInfiniteAnimationGroup(shouldRun = isVisible)
 ```
 
 :::caution Performance
 A running infinite animation keeps a frame callback scheduled every frame for as long as it is
 mounted — even a cheap alpha pulse, and even when scrolled off-screen but still mounted. Prefer
 bind-phase properties (alpha / scale / rotation / translation); a loop that animates layout
-(width / height) re-lays-out every frame. Gate `running` on visibility for off-screen content.
+(width / height) re-lays-out every frame. Gate `shouldRun` on visibility for off-screen content.
 :::
 
 ### When to use which
@@ -502,8 +558,7 @@ use `useAnimationGroup` instead of individual hooks. It provides:
 
 - **Directional spec selection** — choose different animation specs based on the direction
   of a state change (e.g., bouncy spring for expand, quick tween for collapse)
-- **Coordinated completion** — `currentState` only updates when ALL animations
-  finish
+- **Coordinated completion** — `onSettled` receives the target when all slots finish
 - **Unified retargeting** — all animations retarget together when state changes mid-flight
 
 ```kotlin
@@ -511,6 +566,7 @@ fun <S> ComponentScope.useAnimationGroup(
     targetState: S,
     trigger: AnimationTrigger = AnimationTrigger.Immediate,
     label: String = "transition",
+    onSettled: ((S) -> Unit)? = null,
 ): AnimationGroup<S>
 ```
 
@@ -571,15 +627,24 @@ val offsetX = group.animateFloat(
 }
 ```
 
-### currentState vs targetState
+### Group completion and interruption
 
-| Property | Updates when | Use |
-|----------|-------------|-----|
-| `targetState` | Immediately when `useAnimationGroup` receives a new value | Where animations are heading |
-| `currentState` | Only when ALL child animations finish | Last settled state |
+Register the callback on the hook, rather than mutating the returned group:
 
-`currentState` lagging behind `targetState` is intentional — it enables future features
-like exit animations where a component needs to stay mounted while animating out.
+```kotlin
+val group = useAnimationGroup(
+    expanded,
+    onSettled = { target -> /* all slots settled at target */ },
+)
+```
+
+The group follows the [completion callback rules](#completion-callbacks) above. Empty groups and
+no-op slots still settle asynchronously on a target change. Slots with remaining timed work keep the
+group pending, even when their endpoints are equal.
+
+`targetState` is the render's target. Runtime settled state is internal; inside `transitionSpec`, the
+`Segment` exposes `initialState` and `targetState`. On interruption, `initialState` advances to the
+previous target so the spec describes the new leg. Use `onSettled` to observe completion.
 
 ### Complete example
 

@@ -171,20 +171,26 @@ class UseAnimationGroupTest {
 
   @Test
   fun useAnimationGroup_reverseBeforeSettle_segmentDescribesTheReversedLeg() {
-    val testView = lithoTestRule.render { ThreeStateComponent(state = "A") }
+    val reverseSpec: Segment<String>.() -> FiniteAnimationSpec<Float> = {
+      if ("B" isTransitioningTo "A") tween(1_000.milliseconds) else snap()
+    }
+    val testView = lithoTestRule.render { ThreeStateComponent("A", reverseSpec) }
     lithoTestRule.idle()
     animationRule.runNextFrame()
     assertThat(capturedStringGroup!!.state.segment).isEqualTo(Segment("A", "A"))
 
-    testView.setRoot(ThreeStateComponent(state = "B"))
+    testView.setRoot(ThreeStateComponent("B", reverseSpec))
     lithoTestRule.idle()
     assertThat(capturedStringGroup!!.state.segment).isEqualTo(Segment("A", "B"))
 
     // Reverse before the run to "B" settles. Reported from the last settled state the segment
     // would collapse to ("A", "A") and a directional transitionSpec would match no branch.
-    testView.setRoot(ThreeStateComponent(state = "A"))
+    testView.setRoot(ThreeStateComponent("A", reverseSpec))
     lithoTestRule.idle()
     assertThat(capturedStringGroup!!.state.segment).isEqualTo(Segment("B", "A"))
+    assertThat(capturedStringGroup!!.state.hasAnimator).isTrue()
+    animationRule.advanceBy(1_000.milliseconds)
+    assertThat(capturedStringGroup!!.state.segment).isEqualTo(Segment("A", "A"))
   }
 
   @Test
@@ -327,13 +333,14 @@ class UseAnimationGroupTest {
 
   private inner class ThreeStateComponent(
       private val state: String,
+      private val transitionSpec: Segment<String>.() -> FiniteAnimationSpec<Float> = { snap() },
   ) : KComponent() {
     override fun ComponentScope.render(): Component? {
       val group = useAnimationGroup(state)
       capturedStringGroup = group
       val alpha =
           group.animateFloat(
-              transitionSpec = { snap() },
+              transitionSpec = transitionSpec,
           ) { s ->
             when (s) {
               "A" -> 0f

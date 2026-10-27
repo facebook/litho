@@ -19,13 +19,14 @@ package com.facebook.litho.animation
 import android.view.Choreographer
 import androidx.annotation.MainThread
 import com.facebook.rendercore.thread.utils.ThreadUtils
+import java.util.ArrayDeque
 
 /**
  * Coalesces active [FrameDrivenAnimation]s onto a shared [AnimationFrameDriver].
  *
- * On each frame, all registered animations are ticked via [FrameDrivenAnimation.onFrame]. This
- * controller has no knowledge of the state update mechanism or mounted content writes. Those are
- * the responsibility of the registered animation.
+ * On each frame, all registered animations are ticked via [FrameDrivenAnimation.onFrame]. Terminal
+ * notifications are delivered after value invalidations flush. A frame remains scheduled while
+ * either animations or notifications need work.
  *
  * ## Frame Coalescing
  *
@@ -42,8 +43,10 @@ import com.facebook.rendercore.thread.utils.ThreadUtils
 object AnimationController {
 
   private val activeAnimations = mutableSetOf<FrameDrivenAnimation>()
+  private val completions = ArrayDeque<PostFrameCallback>()
   private val frameCallback = Choreographer.FrameCallback(::onFrame)
   private var frameScheduled = false
+  private var isDispatchingFrame = false
   private var frameDriver: AnimationFrameDriver = ChoreographerAnimationFrameDriver
 
   /** Returns true if any animations are currently running. */
@@ -69,9 +72,16 @@ object AnimationController {
   @MainThread
   internal fun unregister(animation: FrameDrivenAnimation) {
     ThreadUtils.assertMainThread()
-    if (activeAnimations.remove(animation) && activeAnimations.isEmpty()) {
+    if (activeAnimations.remove(animation) && activeAnimations.isEmpty() && completions.isEmpty()) {
       cancelScheduledFrame()
     }
+  }
+
+  @MainThread
+  internal fun enqueueCompletion(completion: PostFrameCallback) {
+    ThreadUtils.assertMainThread()
+    completions.addLast(completion)
+    scheduleFrame()
   }
 
   /**
@@ -98,7 +108,7 @@ object AnimationController {
   }
 
   private fun scheduleFrame() {
-    if (frameScheduled) return
+    if (frameScheduled || isDispatchingFrame) return
     frameScheduled = true
     frameDriver.postFrameCallback(frameCallback)
   }
@@ -110,35 +120,52 @@ object AnimationController {
   }
 
   private fun resetControllerState() {
+    check(!isDispatchingFrame)
     cancelScheduledFrame()
     activeAnimations.clear()
+    completions.clear()
     AnimationInvalidationDispatcher.clear()
   }
 
   @MainThread
   private fun onFrame(frameTimeNanos: Long) {
     ThreadUtils.assertMainThread()
+    check(!isDispatchingFrame) { "AnimationController frame dispatch is not re-entrant" }
     frameScheduled = false
-    if (activeAnimations.isEmpty()) return
-
-    // Snapshot before ticking: onFrame() may change registrations while we iterate.
-    val snapshot = activeAnimations.toTypedArray()
-
-    // Tick within a dispatcher frame so this frame's invalidations coalesce into one batch per
-    // tree.
-    AnimationInvalidationDispatcher.batch {
-      for (animation in snapshot) {
-        if (!activeAnimations.contains(animation)) {
-          continue
-        }
-        if (!animation.onFrame(frameTimeNanos)) {
-          activeAnimations.remove(animation)
+    isDispatchingFrame = true
+    try {
+      if (activeAnimations.isNotEmpty()) {
+        // Ticking may change registrations; completion delivery happens after the batch flush.
+        val snapshot = activeAnimations.toTypedArray()
+        AnimationInvalidationDispatcher.batch {
+          for (animation in snapshot) {
+            if (!activeAnimations.contains(animation)) continue
+            if (!animation.onFrame(frameTimeNanos)) {
+              activeAnimations.remove(animation)
+            }
+          }
         }
       }
+      dispatchCompletions()
+    } finally {
+      isDispatchingFrame = false
+      if (activeAnimations.isNotEmpty() || completions.isNotEmpty()) scheduleFrame()
     }
+  }
 
-    if (activeAnimations.isNotEmpty()) {
-      scheduleFrame()
+  private fun dispatchCompletions() {
+    var failure: Exception? = null
+    // Notifications produced by callbacks or error handlers belong to a later frame.
+    repeat(completions.size) {
+      val completion = completions.removeFirst()
+      try {
+        completion.onPostFrame()
+      } catch (exception: Exception) {
+        val previous = failure
+        if (previous == null) failure = exception
+        else if (previous !== exception) previous.addSuppressed(exception)
+      }
     }
+    failure?.let { throw it }
   }
 }

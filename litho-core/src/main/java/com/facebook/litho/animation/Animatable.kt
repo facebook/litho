@@ -17,6 +17,7 @@
 package com.facebook.litho.animation
 
 import androidx.annotation.MainThread
+import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.HookGlobalKey
 import com.facebook.litho.RenderScope
@@ -27,6 +28,14 @@ import com.facebook.litho.getUpdatedState
 import com.facebook.litho.onCleanup
 import com.facebook.litho.state.StateId
 import com.facebook.litho.useEffect
+import com.facebook.rendercore.thread.utils.ThreadUtils
+
+/** The immutable terminal outcome of an imperative animation command. */
+enum class AnimationEnd {
+  Finished,
+  Interrupted,
+  Cancelled,
+}
 
 /**
  * Imperative wrapper around [AnimatedValue].
@@ -39,6 +48,13 @@ class Animatable<T>
 internal constructor(
     internal val animatedValue: AnimatedValue<T>,
 ) {
+  private var target = animatedValue.currentValueRaw
+  private var onEnd: ((AnimationEnd) -> Unit)? = null
+  internal var completionContext: ComponentContext? = null
+
+  init {
+    animatedValue.onComplete = { completeCommand(AnimationEnd.Finished) }
+  }
 
   /** The current animated value, suitable for passing to `Style.*` APIs. */
   val value: Value<T>
@@ -48,12 +64,24 @@ internal constructor(
   val isRunning: Boolean
     get() = animatedValue.isRunning
 
-  /** Starts an animation toward [target] using [spec]. Must be called on the main thread. */
+  /**
+   * Starts an animation toward [target]. [onEnd] is delivered asynchronously after frame
+   * invalidations, including for commands that require no animation. Replacement interrupts the
+   * previous command; [stop] or owner unmount cancels it.
+   */
   @MainThread
-  fun animateTo(target: T, spec: FiniteAnimationSpec<T>) {
-    animatedValue.retarget(target, spec)
+  @JvmOverloads
+  fun animateTo(target: T, spec: FiniteAnimationSpec<T>, onEnd: ((AnimationEnd) -> Unit)? = null) {
+    ThreadUtils.assertMainThread()
+    animatedValue.retarget(target, spec, preserveEqualTargetTiming = true)
+    completeCommand(AnimationEnd.Interrupted)
+    this.target = target
+    this.onEnd = onEnd
     if (animatedValue.hasAnimator) {
       AnimationController.register(animatedValue.frameAnimation)
+    } else {
+      completeCommand(AnimationEnd.Finished)
+      AnimationController.unregister(animatedValue.frameAnimation)
     }
   }
 
@@ -62,15 +90,48 @@ internal constructor(
    */
   @MainThread
   fun snapTo(target: T) {
+    ThreadUtils.assertMainThread()
+    completeCommand(AnimationEnd.Interrupted)
+    this.target = target
     animatedValue.snapTo(target)
-    AnimationController.unregister(animatedValue.frameAnimation)
+    if (!animatedValue.hasAnimator) AnimationController.unregister(animatedValue.frameAnimation)
   }
 
   /** Stops the current animation at its present value. Must be called on the main thread. */
   @MainThread
   fun stop() {
+    ThreadUtils.assertMainThread()
+    completeCommand(AnimationEnd.Cancelled)
     animatedValue.stop()
     AnimationController.unregister(animatedValue.frameAnimation)
+  }
+
+  /**
+   * Publishes the active command's target and ends it [AnimationEnd.Finished] asynchronously.
+   *
+   * ```kotlin
+   * val alpha = useAnimatable(0.4f, FloatTypeConverter)
+   * // From an event handler:
+   * alpha.animateTo(1f, tween(300.ms)) { outcome -> /* handle completion */ }
+   * // From a later event handler, complete the command immediately:
+   * alpha.finish()
+   * ```
+   */
+  @MainThread
+  fun finish() {
+    ThreadUtils.assertMainThread()
+    animatedValue.finish(target)
+    if (!animatedValue.hasAnimator) AnimationController.unregister(animatedValue.frameAnimation)
+  }
+
+  private fun completeCommand(outcome: AnimationEnd) {
+    target = animatedValue.currentValueRaw
+    val callback = onEnd ?: return
+    onEnd = null
+    val context = completionContext
+    AnimationController.enqueueCompletion {
+      dispatchAnimationCompletion(context) { callback(outcome) }
+    }
   }
 }
 
@@ -98,23 +159,31 @@ fun <T> ComponentScope.useAnimatable(
       ),
   )
 
-  val animatedValue = getUpdatedState {
-    AnimatedValue(
-        initialValue = initialValue,
-        typeConverter = typeConverter,
-        stateId = stateId,
-        isLayoutContext = context.isContextForLayout,
-        stateUpdater = lithoTree.stateUpdater,
-        label = label,
+  val animatable = getUpdatedState {
+    Animatable(
+        AnimatedValue(
+            initialValue = initialValue,
+            typeConverter = typeConverter,
+            stateId = stateId,
+            isLayoutContext = context.isContextForLayout,
+            stateUpdater = lithoTree.stateUpdater,
+            label = label,
+        ),
     )
+  }
+
+  val completionContext = context
+  useEffect(completionContext) {
+    animatable.completionContext = completionContext
+    null
   }
 
   useEffect(Unit) {
     onCleanup {
-      animatedValue.stop()
-      AnimationController.unregister(animatedValue.frameAnimation)
+      animatable.stop()
+      animatable.completionContext = null
     }
   }
 
-  return Animatable(animatedValue)
+  return animatable
 }
