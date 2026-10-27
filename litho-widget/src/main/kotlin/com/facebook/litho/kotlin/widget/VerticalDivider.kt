@@ -42,7 +42,7 @@ import com.facebook.yoga.YogaAlign
  * @param style Additional Style applied before the divider's thickness and alignment
  */
 class VerticalDivider(
-    @ColorInt private val color: Int = Color.GRAY,
+    @param:ColorInt private val color: Int = Color.GRAY,
     private val thickness: Dimen = 1.dp,
     private val style: Style = Style,
 ) : KComponent() {
