@@ -437,6 +437,20 @@ object MountContentPools {
     }
   }
 
+  /**
+   * Evicts ONLY the pool entry keyed by exactly [context] (identity match).
+   *
+   * For display contexts RenderCore cannot observe (dialogs, presentations): unlike
+   * [onContextDestroyed] it neither sweeps sibling wrapper keys nor marks the host root destroyed,
+   * so the host Activity keeps pooling.
+   */
+  @JvmStatic
+  fun onNonActivityContextDestroyed(context: Context) {
+    synchronized(mountContentLock) {
+      mountContentPoolsByContext.remove(context)?.clear()
+    }
+  }
+
   @GuardedBy("mountContentLock")
   private fun clearMatchingContexts(
       context: Context,

@@ -19,6 +19,7 @@ package com.facebook.rendercore
 import android.app.Activity
 import android.app.Service
 import android.content.Context
+import android.view.ContextThemeWrapper
 import android.view.View
 import android.widget.FrameLayout
 import androidx.lifecycle.LifecycleService
@@ -26,6 +27,7 @@ import com.facebook.rendercore.MountContentPools.acquireMountContent
 import com.facebook.rendercore.MountContentPools.clear
 import com.facebook.rendercore.MountContentPools.getContentPoolItemCount
 import com.facebook.rendercore.MountContentPools.onContextDestroyed
+import com.facebook.rendercore.MountContentPools.onNonActivityContextDestroyed
 import com.facebook.rendercore.MountContentPools.prefillMountContentPool
 import com.facebook.rendercore.MountContentPools.recycle
 import com.facebook.rendercore.MountContentPools.setMountContentPoolFactory
@@ -653,6 +655,35 @@ class MountContentPoolsTest {
     clear()
     // After clear the pool is empty
     Assertions.assertThat(getContentPoolItemCount(activity, testRenderUnit)).isZero
+  }
+
+  @Test
+  fun testOnNonActivityContextDestroyedEvictsOnlyExactKey() {
+    val testRenderUnit = TestRenderUnit(0)
+    val dialogContext = ContextThemeWrapper(activity, android.R.style.Theme)
+
+    val dialogContent = acquireMountContent(dialogContext, testRenderUnit)
+    recycle(dialogContext, testRenderUnit, dialogContent)
+    val activityContent = acquireMountContent(activity, testRenderUnit)
+    recycle(activity, testRenderUnit, activityContent)
+    Assertions.assertThat(getContentPoolItemCount(dialogContext, testRenderUnit)).isEqualTo(1)
+    Assertions.assertThat(getContentPoolItemCount(activity, testRenderUnit)).isEqualTo(1)
+
+    // Evict only the dialog-scoped entry.
+    onNonActivityContextDestroyed(dialogContext)
+
+    // Dialog key was evicted: pool is empty and next acquire creates new content.
+    Assertions.assertThat(getContentPoolItemCount(dialogContext, testRenderUnit)).isZero
+    Assertions.assertThat(acquireMountContent(dialogContext, testRenderUnit))
+        .isNotSameAs(dialogContent)
+
+    // Sibling activity key is untouched: pooled content is still reused.
+    Assertions.assertThat(getContentPoolItemCount(activity, testRenderUnit)).isEqualTo(1)
+    Assertions.assertThat(acquireMountContent(activity, testRenderUnit)).isSameAs(activityContent)
+
+    // Host activity keeps pooling (its root was NOT marked destroyed).
+    recycle(activity, testRenderUnit, activityContent)
+    Assertions.assertThat(acquireMountContent(activity, testRenderUnit)).isSameAs(activityContent)
   }
 
   class TestRenderUnit(
