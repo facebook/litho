@@ -25,10 +25,7 @@ import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Style
 import com.facebook.litho.animation.FiniteAnimationSpec
 import com.facebook.litho.animation.transition
-import com.facebook.litho.animation.translationX
-import com.facebook.litho.animation.translationY
 import com.facebook.litho.animation.tween
-import com.facebook.litho.animation.useAnimationGroup
 import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.core.height
 import com.facebook.litho.core.margin
@@ -43,6 +40,7 @@ import com.facebook.rendercore.dp
 import com.facebook.rendercore.ms
 import com.facebook.rendercore.sp
 import com.facebook.yoga.YogaAlign
+import com.facebook.yoga.YogaJustify
 import kotlin.time.Duration
 
 /**
@@ -54,9 +52,8 @@ import kotlin.time.Duration
  * - **Sequence**: each block starts when the previous one finishes.
  * - **Stagger**: starts are offset by less than the duration, so the motions overlap. The last
  *   block waits an extra fixed delay.
- * - **Same component**: one block moves down, then across. [Style.transition] animates `bounds`
- *   with a single spec, so this row drives `translationY` and a delayed `translationX` from one
- *   [useAnimationGroup] instead.
+ * - **Same component**: one block moves down, then across. It animates `y` and `x` with separate
+ *   specs, and the `x` spec is delayed until `y` finishes.
  *
  * Every row reacts to the same state change, and each block's transition runs independently.
  */
@@ -74,24 +71,6 @@ class ChoreographyComponent : KComponent() {
           tween<Float>(DURATION, delay = STAGGER_STEP * i + extraDelay)
         }
     // end_example
-
-    val travelX = (TRACK_WIDTH.toPixels() - BLOCK_WIDTH.toPixels()).toFloat()
-    val travelY = (SAME_TRACK_HEIGHT.toPixels() - BLOCK_HEIGHT.toPixels()).toFloat()
-    val sameBlockMotion = useAnimationGroup(atEnd.value, label = "sameComponent")
-    val sameBlockY =
-        sameBlockMotion.animateFloat(
-            transitionSpec = { tween(DURATION) },
-            label = "y",
-        ) { end ->
-          if (end) travelY else 0f
-        }
-    val sameBlockX =
-        sameBlockMotion.animateFloat(
-            transitionSpec = { tween(DURATION, delay = DURATION) },
-            label = "x",
-        ) { end ->
-          if (end) travelX else 0f
-        }
 
     return Column(style = Style.padding(all = 16.dp).onClick { atEnd.update { !it } }) {
       child(
@@ -111,6 +90,8 @@ class ChoreographyComponent : KComponent() {
       child(rowLabel("Same component: Y, then X"))
       child(
           Column(
+              justifyContent = if (atEnd.value) YogaJustify.FLEX_END else YogaJustify.FLEX_START,
+              alignItems = if (atEnd.value) YogaAlign.FLEX_END else YogaAlign.FLEX_START,
               style =
                   Style.width(TRACK_WIDTH).height(SAME_TRACK_HEIGHT).backgroundColor(TRACK_COLOR),
           ) {
@@ -120,8 +101,10 @@ class ChoreographyComponent : KComponent() {
                         Style.width(BLOCK_WIDTH)
                             .height(BLOCK_HEIGHT)
                             .backgroundColor(BLOCK_COLORS.first())
-                            .translationX(sameBlockX)
-                            .translationY(sameBlockY),
+                            .transition {
+                              y = tween(DURATION)
+                              x = tween(DURATION, delay = DURATION)
+                            },
                 ),
             )
           },
