@@ -60,6 +60,9 @@ class LazyCollectionController {
 
   internal var recyclerEventsController: RecyclerEventsController? = null
     set(value) {
+      if (field !== value) {
+        field?.setOnRecyclerUpdateListener(null)
+      }
       field = value
       if (value != null) {
         pendingRefreshing?.let { pending ->
