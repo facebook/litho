@@ -86,6 +86,10 @@ internal constructor(
      */
     @JvmField val useDefaultItemAnimatorInLazyCollections: Boolean = false,
     /**
+     * Enables refresh shortcuts while a refreshable collection or its non-editor child has focus.
+     */
+    @JvmField val enableKeyboardPullToRefresh: Boolean = false,
+    /**
      * This defines which strategy we will use to bind the
      * [com.facebook.litho.sections.widget.ExperimentalRecycler].
      *
@@ -635,6 +639,10 @@ internal constructor(
 
     fun useDefaultItemAnimatorInLazyCollections(enabled: Boolean): Builder = apply {
       config = config.copy(useDefaultItemAnimatorInLazyCollections = enabled)
+    }
+
+    fun enableKeyboardPullToRefresh(enabled: Boolean): Builder = apply {
+      config = config.copy(enableKeyboardPullToRefresh = enabled)
     }
 
     fun enableFixForIM(enabled: Boolean): Builder = apply {

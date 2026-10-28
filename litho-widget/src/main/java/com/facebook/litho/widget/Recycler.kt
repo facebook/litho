@@ -290,6 +290,8 @@ constructor(
                 sectionsRecyclerView = sectionsRecyclerView,
                 sectionsViewLogger = sectionsViewLogger,
                 isPullToRefreshEnabled = isPullToRefreshEnabled,
+                enableKeyboardPullToRefresh =
+                    context.lithoConfiguration.componentsConfig.enableKeyboardPullToRefresh,
                 onRefresh = onRefresh,
                 onScrollListeners = onScrollListeners,
                 touchInterceptor = touchInterceptor,
@@ -462,6 +464,8 @@ constructor(
                 sectionsRecyclerView = sectionsRecyclerView,
                 sectionsViewLogger = sectionsViewLogger,
                 isPullToRefreshEnabled = isPullToRefreshEnabled,
+                enableKeyboardPullToRefresh =
+                    context.lithoConfiguration.componentsConfig.enableKeyboardPullToRefresh,
                 onRefresh = onRefresh,
                 onScrollListeners = onScrollListeners,
                 touchInterceptor = touchInterceptor,
@@ -661,6 +665,7 @@ fun bindLegacyAttachBinder(
     onItemTouchListener: RecyclerView.OnItemTouchListener?,
     snapHelper: SnapHelper?,
     recyclerEventsController: RecyclerEventsController?,
+    enableKeyboardPullToRefresh: Boolean = false,
 ): LithoRecyclerView {
   val recyclerView = sectionsRecyclerView.requireLithoRecyclerView()
 
@@ -671,6 +676,7 @@ fun bindLegacyAttachBinder(
   sectionsRecyclerView.contentDescription = null
 
   sectionsRecyclerView.isEnabled = isPullToRefreshEnabled && onRefresh != null
+  sectionsRecyclerView.onKeyboardRefresh = if (enableKeyboardPullToRefresh) onRefresh else null
 
   if (onRefresh != null) {
     sectionsRecyclerView.setOnRefreshListener { onRefresh() }
@@ -743,4 +749,5 @@ fun unbindLegacyAttachBinder(
   recyclerView.setTouchInterceptor(null)
 
   sectionsRecyclerView.setOnRefreshListener(null)
+  sectionsRecyclerView.onKeyboardRefresh = null
 }

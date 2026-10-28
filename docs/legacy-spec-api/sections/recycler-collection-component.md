@@ -96,6 +96,12 @@ For more information on these methods, see the [Horizontal Scrolling and Measure
 
 `RecyclerCollectionComponent` enables pull-to-refresh by default and sends an event handler to the underlying `Recycler` that will trigger a refresh on the SectionTree.
 
+With `ComponentsConfiguration.enableKeyboardPullToRefresh` enabled, a focused
+collection or non-editor child can refresh with Ctrl+R, F5, or the keyboard's
+Refresh key. This uses the same SectionTree refresh path and loading callbacks
+as the gesture. See [Keyboard refresh](../../lazycollections/lazycollections-interactions.mdx#keyboard-refresh)
+for focus scope and limitations.
+
 To disable this functionality, set the `disablePTR` prop to true:
 
 ```java

@@ -1626,6 +1626,8 @@ private fun PrimitiveComponentScope.CollectionPrimitiveViewMountBehavior(
             sectionsRecyclerView = sectionsRecyclerView,
             sectionsViewLogger = sectionsViewLogger,
             isPullToRefreshEnabled = pullToRefreshEnabled,
+            enableKeyboardPullToRefresh =
+                context.lithoConfiguration.componentsConfig.enableKeyboardPullToRefresh,
             onRefresh = onRefresh,
             onScrollListeners = onScrollListeners,
             touchInterceptor = touchInterceptor,

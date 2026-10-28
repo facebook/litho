@@ -71,3 +71,27 @@ To dismiss the refreshing indicator, take the following two steps:
 
 ```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/collection/Interactions.kt start=start_pull_to_refresh_example end=end_pull_to_refresh_example
 ```
+
+### Keyboard refresh
+
+When `ComponentsConfiguration.enableKeyboardPullToRefresh` is enabled, press
+**Ctrl+R**, **F5** (including **Fn+F5**), or the keyboard's **Refresh** key while the
+collection, its sticky header, or a non-editor descendant has keyboard focus.
+The collection must have pull-to-refresh enabled. The shortcut starts the
+existing refresh indicator and calls the same callback as the gesture; dismiss
+it with `LazyCollectionController.setRefreshing(false)` as usual. Held repeats
+do not retrigger refresh. While the collection's refresh indicator is set, a new
+press is consumed without another callback. If the callback clears the indicator
+immediately, a second distinct press can call it again, even while the data
+request is still running.
+
+Focused children handle a new press first. Text editors keep their own keyboard
+input. Nested collections use the nearest eligible refreshable ancestor: a
+nonrefreshable horizontal carousel can refresh its containing vertical
+collection. The shortcut handler itself does not move focus or scroll; reloaded
+data may change either.
+
+This is a focused-collection shortcut. It does not add a focusable refresh
+control, an activity-wide shortcut, or a keyboard shortcut help entry. A screen
+whose collection has no keyboard focus path still needs an accessible refresh
+action supplied by that screen.

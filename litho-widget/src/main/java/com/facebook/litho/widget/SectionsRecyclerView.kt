@@ -19,6 +19,7 @@ package com.facebook.litho.widget
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Rect
+import android.view.KeyEvent
 import android.view.View
 import androidx.core.view.isGone
 import androidx.recyclerview.widget.RecyclerView
@@ -77,6 +78,10 @@ open class SectionsRecyclerView(context: Context, recyclerView: RecyclerView) :
    * unmounts the list, so a pooled view comes back with it off; new props or a new measure keep it.
    */
   var skipsRedundantBringToFront: Boolean = false
+
+  internal var onKeyboardRefresh: (() -> Unit)? = null
+
+  private var keyboardRefreshPresses: ArrayList<KeyboardRefreshPress>? = null
 
   private var sectionsRecyclerViewLogger: SectionsRecyclerViewLogger? = null
   private var isFirstLayout = true
@@ -195,6 +200,7 @@ open class SectionsRecyclerView(context: Context, recyclerView: RecyclerView) :
 
   override fun onDetachedFromWindow() {
     super.onDetachedFromWindow()
+    keyboardRefreshPresses = null
     hasBeenDetachedFromWindow = true
   }
 
@@ -225,6 +231,84 @@ open class SectionsRecyclerView(context: Context, recyclerView: RecyclerView) :
     }
     super.bringChildToFront(child)
   }
+
+  override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+    if (consumeKeyboardRefreshPress(event)) {
+      return true
+    }
+    if (super.dispatchKeyEvent(event)) {
+      return true
+    }
+    // A child may have redispatched and claimed this press.
+    if (consumeKeyboardRefreshPress(event)) {
+      return true
+    }
+
+    val refresh = onKeyboardRefresh ?: return false
+    if (
+        !isEnabled ||
+            !recyclerView.isEnabled ||
+            event.action != KeyEvent.ACTION_DOWN ||
+            event.repeatCount != 0 ||
+            event.isCanceled ||
+            !isRefreshShortcut(event) ||
+            !hasRefreshKeyboardFocus()
+    ) {
+      return false
+    }
+
+    val presses =
+        keyboardRefreshPresses
+            ?: ArrayList<KeyboardRefreshPress>().also {
+              keyboardRefreshPresses = it
+            }
+    presses.add(KeyboardRefreshPress(event.deviceId, event.keyCode, event.downTime))
+    if (!isRefreshing) {
+      isRefreshing = true
+      refresh()
+    }
+    return true
+  }
+
+  private fun hasRefreshKeyboardFocus(): Boolean {
+    val focused = findFocus() ?: return false
+    return !focused.onCheckIsTextEditor()
+  }
+
+  private fun isRefreshShortcut(event: KeyEvent): Boolean =
+      when (event.keyCode) {
+        KeyEvent.KEYCODE_R -> event.hasModifiers(KeyEvent.META_CTRL_ON)
+        KeyEvent.KEYCODE_F5 ->
+            KeyEvent.metaStateHasNoModifiers(event.metaState and KeyEvent.META_FUNCTION_ON.inv())
+        KeyEvent.KEYCODE_REFRESH -> true
+        else -> false
+      }
+
+  private fun consumeKeyboardRefreshPress(event: KeyEvent): Boolean {
+    val presses = keyboardRefreshPresses ?: return false
+    val index = presses.indexOfFirst {
+      it.deviceId == event.deviceId && it.keyCode == event.keyCode
+    }
+    if (index < 0) {
+      return false
+    }
+    // Chording can change downTime on repeats and UP; only an initial DOWN replaces a stale owner.
+    if (
+        event.action == KeyEvent.ACTION_UP ||
+            (event.action == KeyEvent.ACTION_DOWN &&
+                event.repeatCount == 0 &&
+                (event.isCanceled || presses[index].downTime != event.downTime))
+    ) {
+      presses.removeAt(index)
+      if (presses.isEmpty()) {
+        keyboardRefreshPresses = null
+      }
+      return event.action == KeyEvent.ACTION_UP
+    }
+    return event.action == KeyEvent.ACTION_DOWN
+  }
+
+  private class KeyboardRefreshPress(val deviceId: Int, val keyCode: Int, val downTime: Long)
 
   @SuppressLint("ClickableViewAccessibility")
   override fun setOnTouchListener(listener: OnTouchListener?) {
