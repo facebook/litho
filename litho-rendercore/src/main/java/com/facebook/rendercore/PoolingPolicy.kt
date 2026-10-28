@@ -16,8 +16,6 @@
 
 package com.facebook.rendercore
 
-import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
-
 /**
  * Defines which behaviors the mount pool can allow regarding acquire and release. This allows for
  * fine-grained control, such that for example one can only acquire from the pool and not release
@@ -26,7 +24,6 @@ import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClas
  * This can be useful in specific cases where we would want to warm-up the pools with pre-allocation
  * but not recycle them back into the pool due to known issues with recycling.
  */
-@DataClassGenerate
 sealed class PoolingPolicy(
     @JvmField val canAcquireContent: Boolean,
     @JvmField val canReleaseContent: Boolean,

@@ -85,7 +85,6 @@ data class CanvasTransform(
 
 /** A definition for a child transform which inverts the transform it is contained in. * */
 @SuppressLint("NotInvokedPrivateMethod")
-@DataClassGenerate
 object CanvasInverseTransform : CanvasTransformChildModel {
   override fun applyTo(matrix: Matrix) {
     if (!matrix.invert(matrix)) {

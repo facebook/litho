@@ -1325,7 +1325,6 @@ internal data class Padding(
  *   needs to be mutable because diff calculations may occur inside useLayoutEffect conditionally,
  *   requiring the ability to update the list with new changeset results.
  */
-@DataClassGenerate(toString = Mode.OMIT, equalsHashCode = Mode.KEEP)
 internal class CollectionLayoutData(
     val measuredVersion: Int,
     val sizeConstraints: SizeConstraints,
