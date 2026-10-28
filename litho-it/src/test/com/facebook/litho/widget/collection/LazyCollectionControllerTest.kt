@@ -214,6 +214,7 @@ class LazyCollectionControllerTest {
     // controller's lifetime and auto-re-attached on every bind, so the second controller must also
     // receive it without the caller re-registering.
     lazyCollectionController.recyclerEventsController = null
+    verify(firstController).setOnRecyclerUpdateListener(null)
     val secondController = spy<RecyclerEventsController>()
     lazyCollectionController.recyclerEventsController = secondController
 
