@@ -72,7 +72,6 @@ import com.facebook.samples.litho.kotlin.accessibility.PaneTitleComponent
 import com.facebook.samples.litho.kotlin.accessibility.StateDescriptionComponent
 import com.facebook.samples.litho.kotlin.animations.SimpleAnimatableKComponent
 import com.facebook.samples.litho.kotlin.animations.animatedbadge.AnimatedBadgeKotlin
-import com.facebook.samples.litho.kotlin.animations.animationcomposition.ComposedAnimationsComponentKotlin
 import com.facebook.samples.litho.kotlin.animations.blur.BlurKComponent
 import com.facebook.samples.litho.kotlin.animations.bounds.BoundsAnimationComponent
 import com.facebook.samples.litho.kotlin.animations.diffbased.ChoreographyComponent
@@ -267,17 +266,10 @@ class Demos {
                             name = "Transitions",
                             component = TransitionsComponent(),
                         ),
-                        SingleDemo(
-                            name = "Animated Badge (Legacy)",
-                            component = AnimatedBadgeKotlin(),
-                        ),
+                        SingleDemo(name = "Animated Badge", component = AnimatedBadgeKotlin()),
                         SingleDemo(
                             name = "Bounds Animation (Legacy)",
                             component = BoundsAnimationComponent(),
-                        ),
-                        SingleDemo(
-                            name = "Animations Composition (Legacy)",
-                            component = ComposedAnimationsComponentKotlin(),
                         ),
                         SingleDemo(
                             name = "Expandable Element (Legacy)",

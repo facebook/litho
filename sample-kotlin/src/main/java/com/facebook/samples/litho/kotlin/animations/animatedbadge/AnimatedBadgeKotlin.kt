@@ -23,59 +23,47 @@ import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Style
-import com.facebook.litho.Transition
-import com.facebook.litho.animation.AnimatedProperties
+import com.facebook.litho.animation.FiniteAnimationSpec
+import com.facebook.litho.animation.transition
+import com.facebook.litho.animation.tween
+import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.core.height
 import com.facebook.litho.core.margin
 import com.facebook.litho.core.padding
 import com.facebook.litho.core.width
+import com.facebook.litho.flexbox.alignSelf
 import com.facebook.litho.flexbox.position
 import com.facebook.litho.flexbox.positionType
-import com.facebook.litho.key
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.layout.flexbox.Column
 import com.facebook.litho.layout.flexbox.Row
-import com.facebook.litho.transition.transitionKey
-import com.facebook.litho.transition.useTransition
 import com.facebook.litho.useState
+import com.facebook.litho.view.alpha
 import com.facebook.litho.view.background
+import com.facebook.litho.view.clipChildren
 import com.facebook.litho.view.onClick
+import com.facebook.rendercore.Dimen
 import com.facebook.rendercore.dp
+import com.facebook.rendercore.ms
 import com.facebook.samples.litho.kotlin.drawable.RoundedRect
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaPositionType
 
+private val badgeMotion: FiniteAnimationSpec<Float> = tween(300.ms)
+
 /**
- * Demonstrates Litho's legacy transition API (`useTransition`, `Style.transitionKey`), kept as a
- * reference for existing code. New code should use `Style.transition { }` or `AnimatedVisibility` /
- * `AnimatedContent`; see the `animations/diffbased` and `animations/statebased` samples.
+ * Two comment badges that grow when tapped. The first reveals a "Top Follower" label; the second
+ * widens and slides its avatars apart. Every node that moves animates its own `x` or `width` with
+ * [Style.transition], so nothing relayouts while the badges animate. Tap to step through the four
+ * combinations.
  */
+@OptIn(ExperimentalLithoApi::class)
 class AnimatedBadgeKotlin : KComponent() {
-  private val ANIMATION_DURATION = 300
-  private val ANIMATOR = Transition.timing(ANIMATION_DURATION)
-  private val TRANSITION_KEY_TEXT = "text"
 
   override fun ComponentScope.render(): Component {
     val state = useState { 0 }
     val expanded1 = state.value == 1 || state.value == 2
     val expanded2 = state.value == 2 || state.value == 3
-
-    // start_example
-    useTransition(
-        Transition.parallel<Transition.BaseTransitionUnitsBuilder>(
-            Transition.allLayout().animator(ANIMATOR),
-            Transition.create(Transition.TransitionKeyType.GLOBAL, TRANSITION_KEY_TEXT)
-                .animate(AnimatedProperties.WIDTH)
-                .appearFrom(0f)
-                .disappearTo(0f)
-                .animator(ANIMATOR)
-                .animate(AnimatedProperties.ALPHA)
-                .appearFrom(0f)
-                .disappearTo(0f)
-                .animator(ANIMATOR),
-        ),
-    )
-    // end_example
 
     return Column(style = Style.padding(all = 8.dp).onClick { state.update { (it + 1) % 4 } }) {
       child(Row(style = Style.margin(top = 8.dp)) { child(buildComment1(expanded1)) })
@@ -84,7 +72,7 @@ class AnimatedBadgeKotlin : KComponent() {
   }
 
   private fun ResourcesScope.buildComment1(expanded: Boolean): Component =
-      Column(style = Style.padding(all = 8.dp).background(RoundedRect(0xFFDDDDDD, 20.dp))) {
+      Column(style = bubbleStyle()) {
         child(
             Row(alignItems = YogaAlign.CENTER) {
               child(Text("Cristobal Castilla", textSize = 16.dp, textStyle = Typeface.BOLD))
@@ -93,7 +81,8 @@ class AnimatedBadgeKotlin : KComponent() {
                       style =
                           Style.margin(start = 8.dp)
                               .padding(all = 3.dp)
-                              .background(RoundedRect(Color.WHITE, 12.dp)),
+                              .background(RoundedRect(Color.WHITE, 12.dp))
+                              .transition { width = badgeMotion },
                       alignItems = YogaAlign.CENTER,
                   ) {
                     child(
@@ -104,28 +93,39 @@ class AnimatedBadgeKotlin : KComponent() {
                                     .background(RoundedRect(0xffffb74b, 9.dp)),
                         ),
                     )
-                    if (expanded) {
-                      child(
-                          key("text") {
-                            Text(
-                                "Top Follower",
-                                style =
-                                    Style.margin(left = 8.dp)
-                                        .transitionKey(
-                                            context,
-                                            TRANSITION_KEY_TEXT,
-                                            Transition.TransitionKeyType.GLOBAL,
-                                        ),
-                                textSize = 12.dp,
-                                clipToBounds = true,
-                            )
-                          },
-                      )
-                    }
+                    // While collapsed, the label is absolute so it keeps its one-line width and
+                    // the zero-width wrapper clips it.
+                    child(
+                        Row(
+                            alignItems = YogaAlign.CENTER,
+                            style =
+                                (if (expanded) Style.alpha(1f) else Style.width(0.dp).alpha(0f))
+                                    .alignSelf(YogaAlign.STRETCH)
+                                    .clipChildren(true)
+                                    .transition {
+                                      width = badgeMotion
+                                      alpha = badgeMotion
+                                    },
+                        ) {
+                          child(
+                              Text(
+                                  "Top Follower",
+                                  style =
+                                      Style.margin(left = 8.dp).plusIf(!expanded) {
+                                        Style.positionType(YogaPositionType.ABSOLUTE)
+                                      },
+                                  textSize = 12.dp,
+                              ),
+                          )
+                        },
+                    )
                     child(
                         Text(
                             "+1",
-                            style = Style.margin(left = 8.dp, right = 4.dp),
+                            style =
+                                Style.margin(left = 8.dp, right = 4.dp).transition {
+                                  x = badgeMotion
+                                },
                             textSize = 12.dp,
                             textColor = Color.BLUE,
                         ),
@@ -138,7 +138,7 @@ class AnimatedBadgeKotlin : KComponent() {
       }
 
   private fun ResourcesScope.buildComment2(expanded: Boolean): Component =
-      Column(style = Style.padding(all = 8.dp).background(RoundedRect(0xFFDDDDDD, 20.dp))) {
+      Column(style = bubbleStyle()) {
         child(
             Row(alignItems = YogaAlign.CENTER) {
               child(Text("Cristobal Castilla", textSize = 16.dp, textStyle = Typeface.BOLD))
@@ -148,31 +148,12 @@ class AnimatedBadgeKotlin : KComponent() {
                           Style.width(if (expanded) 48.dp else 24.dp)
                               .margin(start = 8.dp)
                               .padding(all = 3.dp)
-                              .background(RoundedRect(Color.WHITE, 12.dp)),
+                              .background(RoundedRect(Color.WHITE, 12.dp))
+                              .transition { width = badgeMotion },
                       alignItems = YogaAlign.CENTER,
                   ) {
-                    child(
-                        Column(
-                            style =
-                                Style.positionType(YogaPositionType.ABSOLUTE)
-                                    .position(start = if (expanded) 27.dp else 3.dp)
-                                    .positionType(YogaPositionType.ABSOLUTE)
-                                    .height(18.dp)
-                                    .width(18.dp)
-                                    .background(RoundedRect(0xFFB2CFE5, 9.dp)),
-                        ),
-                    )
-                    child(
-                        Column(
-                            style =
-                                Style.positionType(YogaPositionType.ABSOLUTE)
-                                    .position(start = if (expanded) 15.dp else 3.dp)
-                                    .positionType(YogaPositionType.ABSOLUTE)
-                                    .height(18.dp)
-                                    .width(18.dp)
-                                    .background(RoundedRect(0xFF4B8C61, 9.dp)),
-                        ),
-                    )
+                    child(avatar(start = if (expanded) 27.dp else 3.dp, color = 0xFFB2CFE5))
+                    child(avatar(start = if (expanded) 15.dp else 3.dp, color = 0xFF4B8C61))
                     child(
                         Column(
                             style =
@@ -187,4 +168,19 @@ class AnimatedBadgeKotlin : KComponent() {
         )
         child(Text("So awesome!", textSize = 18.dp))
       }
+
+  private fun ResourcesScope.bubbleStyle(): Style =
+      Style.padding(all = 8.dp).background(RoundedRect(0xFFDDDDDD, 20.dp)).transition {
+        width = badgeMotion
+      }
+
+  private fun ResourcesScope.avatar(start: Dimen, color: Long): Component = Column(
+      style =
+          Style.positionType(YogaPositionType.ABSOLUTE)
+              .position(start = start)
+              .height(18.dp)
+              .width(18.dp)
+              .background(RoundedRect(color, 9.dp))
+              .transition { x = badgeMotion },
+  )
 }
