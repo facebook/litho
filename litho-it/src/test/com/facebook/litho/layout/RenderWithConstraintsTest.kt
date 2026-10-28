@@ -16,6 +16,7 @@
 
 package com.facebook.litho.layout
 
+import android.view.View
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.EmptyComponent
@@ -27,11 +28,14 @@ import com.facebook.litho.animation.AnimatedProperties
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
+import com.facebook.litho.flexbox.flex
 import com.facebook.litho.handle
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.layout.flexbox.Column
+import com.facebook.litho.layout.flexbox.Row
 import com.facebook.litho.onCleanup
 import com.facebook.litho.testing.LithoTestRule
+import com.facebook.litho.testing.TestLithoView
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.transition.useTransition
 import com.facebook.litho.useCached
@@ -40,8 +44,10 @@ import com.facebook.litho.useHandle
 import com.facebook.litho.useState
 import com.facebook.litho.view.onClick
 import com.facebook.litho.view.viewTag
+import com.facebook.litho.view.wrapInView
 import com.facebook.rendercore.LayoutResult
 import com.facebook.rendercore.px
+import com.facebook.yoga.YogaAlign
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
@@ -126,6 +132,90 @@ class RenderWithConstraintsTest {
 
     assertThat(handle.committedLayoutState!!.transitions).hasSize(2)
   }
+
+  /**
+   * The Column's flex basis measures the content under `maxWidth` 1080, where it's the 100 wide
+   * content. Shrunk to 380, the Column lays it out within 380, which that size still fits, so it
+   * isn't measured again: the content stays the one chosen under 1080, unlike in a Column 380 wide
+   * from the start.
+   */
+  @Test
+  fun `content chosen under looser constraints is kept under tighter ones it still fits`() {
+    val shrunk = ArrayList<Int>()
+    val shrunkView =
+        lithoTestRule.render(widthPx = 1080, heightPx = 2000) {
+          inColumn(chooses(wideWidth = 100, shrunk), shrinks = true)
+        }
+    val fixed = ArrayList<Int>()
+    val fixedView =
+        lithoTestRule.render(widthPx = 1080, heightPx = 2000) {
+          inColumn(chooses(wideWidth = 100, fixed), shrinks = false)
+        }
+
+    assertThat(widthOf(shrunkView, "column")).isEqualTo(380)
+    assertThat(shrunk).describedAs("maxWidth it was rendered with").containsExactly(1080)
+    assertThat(shows(shrunkView)).isEqualTo("wide")
+    assertThat(widthOf(fixedView, "column")).isEqualTo(380)
+    assertThat(fixed).describedAs("maxWidth it was rendered with").containsExactly(380)
+    assertThat(shows(fixedView)).isEqualTo("narrow")
+  }
+
+  /**
+   * The same Column, the content chosen above the threshold 500 wide: shrunk to 380, it no longer
+   * fits, so it's rendered again under 380 and the narrow content is chosen, as in a Column 380
+   * wide from the start.
+   */
+  @Test
+  fun `content bigger than its threshold is chosen again under constraints below it`() {
+    val maxWidths = ArrayList<Int>()
+    val view =
+        lithoTestRule.render(widthPx = 1080, heightPx = 2000) {
+          inColumn(chooses(wideWidth = 500, maxWidths), shrinks = true)
+        }
+
+    assertThat(widthOf(view, "column")).isEqualTo(380)
+    assertThat(maxWidths).describedAs("maxWidth it was rendered with").containsExactly(1080, 380)
+    assertThat(shows(view)).isEqualTo("narrow")
+  }
+
+  /** Narrow content within 400 across, [wideWidth] wide content beyond, recording each maxWidth. */
+  private fun chooses(wideWidth: Int, maxWidths: MutableList<Int>): Component =
+      RenderWithConstraints { constraints ->
+        maxWidths.add(constraints.maxWidth)
+        if (constraints.maxWidth <= 400) tagged("narrow", 100, 40)
+        else tagged("wide", wideWidth, 10)
+      }
+
+  /**
+   * [content] in a Column 380 wide in a 1080 Row: shrunk to it beside a 700 wide sibling from a
+   * flex basis of 600, or that wide from the start.
+   */
+  private fun inColumn(content: Component, shrinks: Boolean): Component = Row {
+    child(
+        Column(
+            style =
+                (if (shrinks) Style.flex(shrink = 1f) else Style.width(380.px))
+                    .wrapInView()
+                    .viewTag("column"),
+            alignItems = YogaAlign.FLEX_START,
+        ) {
+          child(content)
+          child(Column(style = Style.width(600.px).height(5.px)))
+        },
+    )
+    child(Column(style = Style.width(700.px).height(5.px).flex(shrink = 0f)))
+  }
+
+  private fun tagged(tag: String, width: Int, height: Int): Component =
+      Column(style = Style.width(width.px).height(height.px).wrapInView().viewTag(tag))
+
+  private fun shows(view: TestLithoView): String =
+      listOf("narrow", "wide")
+          .filter { view.lithoView.findViewWithTag<View>(it) != null }
+          .joinToString("+")
+
+  private fun widthOf(view: TestLithoView, tag: String): Int? =
+      view.lithoView.findViewWithTag<View>(tag)?.width
 
   @Test
   fun `when child component is measured then return a valid LayoutResult`() {

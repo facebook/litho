@@ -75,6 +75,20 @@ internal constructor(
   }
 }
 
+/**
+ * Renders the component [render] returns for the constraints it's measured with, so the content can
+ * depend on them: a compact version below some width, for example.
+ *
+ * Like any node, it isn't measured again when its constraints only get tighter and the size it
+ * measured still fits them: Yoga and Litho reuse that measurement, and the content chosen with it.
+ * So content chosen under looser constraints is kept under tighter ones it fits. Content 100 wide,
+ * chosen while `maxWidth` was 1080, stays when a flex parent is then shrunk to 380, where a
+ * `maxWidth <= 400` branch would choose other content. It's chosen again when the constraints get
+ * looser, when the size it measured no longer fits, or when they're exact at another size.
+ *
+ * To switch content at a threshold, make the content chosen above it bigger than the threshold:
+ * then it never fits the constraints below, and the content is always chosen again there.
+ */
 class RenderWithConstraints(
     private val style: Style = Style,
     private val render: RenderWithConstraintsScope.(SizeConstraints) -> Component?,
