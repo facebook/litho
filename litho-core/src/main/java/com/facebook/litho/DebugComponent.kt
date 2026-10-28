@@ -27,6 +27,7 @@ import com.facebook.rendercore.RenderUnit
 import com.facebook.rendercore.incrementalmount.ExcludeFromIncrementalMountBinder
 import com.facebook.rendercore.visibility.VisibilityMountExtension
 import com.facebook.rendercore.visibility.VisibilityOutput
+import java.util.IdentityHashMap
 
 /**
  * A DebugComponent represents a node in Litho's component hierarchy. DebugComponent removes the
@@ -354,6 +355,105 @@ private constructor(
       }
       return null
     }
+
+  /** Read-only lookup caches for one uninterrupted inspection of the mounted hierarchy. */
+  class Inspection(private val checkActive: () -> Unit = {}) {
+    private val mounts = IdentityHashMap<BaseMountingView, MountIndex>()
+    private val visibleKeys = IdentityHashMap<BaseMountingView, Set<String>>()
+    private val children = IdentityHashMap<DebugComponent, List<DebugComponent>>()
+    private val keys = IdentityHashMap<DebugComponent, String>()
+
+    fun childComponents(component: DebugComponent): List<DebugComponent> {
+      checkActive()
+      return children.getOrPut(component) { component.childComponents }
+    }
+
+    fun isVisible(component: DebugComponent, host: BaseMountingView): Boolean {
+      checkActive()
+      val visible =
+          visibleKeys.getOrPut(host) {
+            val state = host.visibilityExtensionState ?: return@getOrPut emptySet()
+            val result = mutableSetOf<String>()
+            for (key in VisibilityMountExtension.getVisibilityIdToItemMap(state).keys) {
+              checkActive()
+              result.add(key.toString())
+            }
+            result
+          }
+      return keys.getOrPut(component) { component.componentGlobalKey } in visible
+    }
+
+    fun mountedView(component: DebugComponent): View? {
+      checkActive()
+      if (!component.isLayoutNode) return null
+      val index = mountIndex(component) ?: return null
+      val tail = component.node.tailComponent
+      if (index.firstContent.containsKey(tail)) return index.firstContent[tail] as? View
+      index.failure?.let { throw it }
+      return null
+    }
+
+    fun textContent(component: DebugComponent): String? {
+      checkActive()
+      val index = mountIndex(component) ?: return null
+      val id = component.component.instanceId
+      if (index.text.containsKey(id)) return index.text[id]
+      for (content in index.contentsById[id].orEmpty()) {
+        checkActive()
+        val textContent = ComponentHostUtils.asTextContent(content)
+        val text =
+            if (textContent != null) {
+              textContent.textList.joinToString("") { text ->
+                checkActive()
+                text
+              }
+            } else {
+              (content as? TextView)?.text?.toString()
+            }
+        if (!text.isNullOrEmpty()) {
+          index.text[id] = text
+          return text
+        }
+      }
+      index.failure?.let { throw it }
+      index.text[id] = null
+      return null
+    }
+
+    private fun mountIndex(component: DebugComponent): MountIndex? {
+      val host = component.lithoView ?: return null
+      return mounts.getOrPut(host) {
+        val index = MountIndex()
+        val target = host.mountDelegateTarget ?: return@getOrPut index
+        val count = target.getRenderUnitCount()
+        for (i in 0 until count) {
+          checkActive()
+          try {
+            val item = target.getMountItemAt(i) ?: continue
+            val mountedComponent = getRenderUnit(item).component
+            if (!index.firstContent.containsKey(mountedComponent)) {
+              index.firstContent[mountedComponent] = item.content
+            }
+            index.contentsById
+                .getOrPut(mountedComponent.instanceId) { mutableListOf() }
+                .add(item.content)
+          } catch (failure: Exception) {
+            index.failure = failure
+            break
+          }
+        }
+        checkActive()
+        index
+      }
+    }
+
+    private class MountIndex {
+      val firstContent = IdentityHashMap<Component, Any?>()
+      val contentsById = mutableMapOf<Int, MutableList<Any?>>()
+      val text = mutableMapOf<Int, String?>()
+      var failure: Exception? = null
+    }
+  }
 
   companion object {
     private val overriders: MutableMap<String, Overrider> = HashMap()
