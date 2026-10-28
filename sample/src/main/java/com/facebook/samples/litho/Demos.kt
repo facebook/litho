@@ -264,6 +264,10 @@ class Demos {
                             component = RenderWithConstraintsKComponent(),
                         ),
                         SingleDemo(
+                            name = "Transitions",
+                            component = TransitionsComponent(),
+                        ),
+                        SingleDemo(
                             name = "Animated Badge (Legacy)",
                             component = AnimatedBadgeKotlin(),
                         ),
@@ -281,10 +285,6 @@ class Demos {
                                 ExpandableElementRootKotlinKComponent(
                                     initialMessages = Message.Messages,
                                 ),
-                        ),
-                        SingleDemo(
-                            name = "Transitions (Legacy)",
-                            component = TransitionsComponent(),
                         ),
                     ),
                 ),

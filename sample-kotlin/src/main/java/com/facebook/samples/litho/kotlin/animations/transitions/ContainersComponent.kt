@@ -20,12 +20,12 @@ import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
+import com.facebook.litho.animation.AnimatedContent
+import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.core.height
 import com.facebook.litho.core.margin
 import com.facebook.litho.core.width
 import com.facebook.litho.layout.flexbox.Column
-import com.facebook.litho.transition.CrossFade
-import com.facebook.litho.transition.ExpandToReveal
 import com.facebook.litho.useState
 import com.facebook.litho.view.background
 import com.facebook.litho.view.onClick
@@ -33,15 +33,15 @@ import com.facebook.rendercore.dp
 import com.facebook.samples.litho.kotlin.drawable.RoundedRect
 
 /**
- * Demonstrates Litho's legacy transition API (`useTransition`, `Style.transitionKey`), kept as a
- * reference for existing code. New code should use `Style.transition { }` or `AnimatedVisibility` /
- * `AnimatedContent`; see the `animations/diffbased` and `animations/statebased` samples.
+ * Reveals one box with [ExpandToReveal] and swaps two boxes with [AnimatedContent]. Tap the box
+ * above each one to toggle it.
  */
+@OptIn(ExperimentalLithoApi::class)
 class ContainersComponent : KComponent() {
 
   override fun ComponentScope.render(): Component? {
 
-    val isExpanded = useState { true }
+    val isExpanded = useState { false }
     val showSecondComponent = useState { false }
 
     val firstComponent = Column(
@@ -67,7 +67,7 @@ class ContainersComponent : KComponent() {
                       .height(50.dp)
                       .margin(all = 5.dp)
                       .background(RoundedRect(0xff6ab071, 8.dp))
-                      .onClick { isExpanded.update(!isExpanded.value) },
+                      .onClick { isExpanded.update { !it } },
           ),
       )
 
@@ -90,10 +90,14 @@ class ContainersComponent : KComponent() {
                       .height(50.dp)
                       .margin(all = 5.dp)
                       .background(RoundedRect(0xffa4dece, 8.dp))
-                      .onClick { showSecondComponent.update(!showSecondComponent.value) },
+                      .onClick { showSecondComponent.update { !it } },
           ),
       )
-      child(CrossFade(showSecondComponent.value, firstComponent, secondComponent))
+      child(
+          AnimatedContent(showSecondComponent.value) { showSecond ->
+            if (showSecond) secondComponent else firstComponent
+          },
+      )
     }
   }
 }

@@ -20,17 +20,15 @@ import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
-import com.facebook.litho.Transition
-import com.facebook.litho.animated.useBinding
-import com.facebook.litho.animation.AnimatedProperties
+import com.facebook.litho.animation.DampingRatio
+import com.facebook.litho.animation.spring
+import com.facebook.litho.animation.transition
 import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.core.height
 import com.facebook.litho.core.margin
 import com.facebook.litho.core.width
 import com.facebook.litho.flexbox.alignSelf
 import com.facebook.litho.kotlin.widget.Text
-import com.facebook.litho.transition.transitionKey
-import com.facebook.litho.transition.useTransition
 import com.facebook.litho.useState
 import com.facebook.litho.view.background
 import com.facebook.litho.view.onClick
@@ -44,31 +42,17 @@ import kotlin.math.absoluteValue
 import kotlin.random.Random
 
 /**
- * Demonstrates Litho's legacy transition API (`useTransition`, `Style.transitionKey`), kept as a
- * reference for existing code. New code should use `Style.transition { }` or `AnimatedVisibility` /
- * `AnimatedContent`; see the `animations/diffbased` and `animations/statebased` samples.
+ * Scales a bubble with [Style.transition] and shows how much its number changed. The click handler
+ * computes the change from the previous number, so nothing needs the previous render.
  */
+@OptIn(ExperimentalLithoApi::class)
 class DeltaDemoComponent : KComponent() {
-  companion object {
-    private const val MIN = -999
-    private const val MAX = +999
-  }
 
-  @OptIn(ExperimentalLithoApi::class)
-  // start_example
   override fun ComponentScope.render(): Component {
     val number = useState { 0 }
-    val delta = useBinding(0)
-    useTransition(number.value) {
-      val (previous, next) = diffOf(number.value)
-      val d = if (previous == null || next == null) next ?: 0 else next - previous
-      delta.set(d)
-      Transition.create(Transition.TransitionKeyType.GLOBAL, "bubble")
-          .animate(AnimatedProperties.SCALE)
-          .animator(Transition.springWithConfig(250.0, 10.0))
-    }
+    val delta = useState { 0 }
     val text = buildString {
-      val d = delta.get()
+      val d = delta.value
       if (d == 0) append("Tap me") else append(if (d > 0) "+" else "-").append(d.absoluteValue)
     }
     return Text(
@@ -79,15 +63,22 @@ class DeltaDemoComponent : KComponent() {
             Style.width(100.dp)
                 .height(100.dp)
                 .alignSelf(YogaAlign.CENTER)
-                .transitionKey(context, "bubble", Transition.TransitionKeyType.GLOBAL)
                 .margin(all = 10.dp)
                 .scale(lerp((number.value - MIN) / (MAX - MIN).toFloat(), 0.5f, 1.5f))
                 .background(RoundedRect(0xff6ab071, 8.dp))
-                .onClick { number.update(Random.nextInt(MIN, MAX)) },
+                .transition { scale = spring(dampingRatio = DampingRatio.HighBouncy) }
+                .onClick {
+                  val next = Random.nextInt(MIN, MAX)
+                  delta.update(next - number.value)
+                  number.update(next)
+                },
     )
   }
 
-  // end_example
-
   private fun lerp(fraction: Float, from: Float, to: Float): Float = from + fraction * (to - from)
+
+  private companion object {
+    const val MIN = -999
+    const val MAX = +999
+  }
 }

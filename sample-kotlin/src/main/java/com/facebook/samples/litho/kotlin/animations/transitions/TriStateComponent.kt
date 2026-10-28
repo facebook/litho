@@ -17,13 +17,16 @@
 package com.facebook.samples.litho.kotlin.animations.transitions
 
 import android.graphics.Color
-import android.view.animation.AccelerateDecelerateInterpolator
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
-import com.facebook.litho.Transition
-import com.facebook.litho.animation.AnimatedProperties
+import com.facebook.litho.animation.DampingRatio
+import com.facebook.litho.animation.FiniteAnimationSpec
+import com.facebook.litho.animation.snap
+import com.facebook.litho.animation.spring
+import com.facebook.litho.animation.transition
+import com.facebook.litho.animation.tween
 import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.core.height
 import com.facebook.litho.core.margin
@@ -32,42 +35,26 @@ import com.facebook.litho.core.widthPercent
 import com.facebook.litho.flexbox.alignSelf
 import com.facebook.litho.layout.flexbox.Column
 import com.facebook.litho.layout.flexbox.Row
-import com.facebook.litho.transition.transitionKey
-import com.facebook.litho.transition.useTransition
 import com.facebook.litho.useState
 import com.facebook.litho.view.alpha
 import com.facebook.litho.view.background
 import com.facebook.litho.view.onClick
 import com.facebook.rendercore.dp
+import com.facebook.rendercore.ms
 import com.facebook.samples.litho.kotlin.drawable.RoundedRect
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaJustify
 
 /**
- * Demonstrates Litho's legacy transition API (`useTransition`, `Style.transitionKey`), kept as a
- * reference for existing code. New code should use `Style.transition { }` or `AnimatedVisibility` /
- * `AnimatedContent`; see the `animations/diffbased` and `animations/statebased` samples.
+ * Picks a [Style.transition] spec from the direction of a state change. The click handler records
+ * the state being left, so the spec can depend on both the previous and the next state.
  */
+@OptIn(ExperimentalLithoApi::class)
 class TriStateComponent : KComponent() {
 
-  @OptIn(ExperimentalLithoApi::class)
   override fun ComponentScope.render(): Component {
-    // start_example
-    val state = useState { TriState.HEIGHT }
-    useTransition(state.value) {
-      val (previous, next) = diffOf(state.value)
-      val animator =
-          when (if (previous == null || next == null) 0 else previous.ordinal + next.ordinal) {
-            1 -> Transition.SPRING_WITH_OVERSHOOT
-            2 -> Transition.timing(1_000, AccelerateDecelerateInterpolator())
-            3 -> Transition.springWithConfig(250.0, 10.0)
-            else -> Transition.timing(0)
-          }
-      Transition.create(Transition.TransitionKeyType.GLOBAL, "fancy-component")
-          .animate(*AnimatedProperties.AUTO_LAYOUT_PROPERTIES)
-          .animator(animator)
-    }
-    // end_example
+    val change = useState { TriState.HEIGHT to TriState.HEIGHT }
+    val (previous, current) = change.value
     return Column {
       child(
           Row(
@@ -81,9 +68,11 @@ class TriStateComponent : KComponent() {
                           Style.width(50.dp)
                               .height(50.dp)
                               .margin(all = 5.dp)
-                              .alpha(if (state.value == entry) 1f else 0.3f)
+                              .alpha(if (current == entry) 1f else 0.3f)
                               .background(RoundedRect(entry.color, 8.dp))
-                              .onClick { state.update(entry) },
+                              .onClick {
+                                if (entry != current) change.update(current to entry)
+                              },
                   ),
               )
             }
@@ -92,24 +81,28 @@ class TriStateComponent : KComponent() {
       child(
           Column(
               style =
-                  Style.width(if (state.value == TriState.WIDTH) 150.dp else 50.dp)
-                      .height(if (state.value == TriState.HEIGHT) 150.dp else 50.dp)
-                      .transitionKey(
-                          context,
-                          "fancy-component",
-                          Transition.TransitionKeyType.GLOBAL,
-                      )
+                  Style.width(if (current == TriState.WIDTH) 150.dp else 50.dp)
+                      .height(if (current == TriState.HEIGHT) 150.dp else 50.dp)
                       .alignSelf(
-                          if (state.value == TriState.ALIGN) YogaAlign.FLEX_END
+                          if (current == TriState.ALIGN) YogaAlign.FLEX_END
                           else YogaAlign.FLEX_START,
                       )
                       .margin(all = 5.dp)
-                      .background(RoundedRect(Color.RED, 8.dp)),
+                      .background(RoundedRect(Color.RED, 8.dp))
+                      .transition { bounds(specFor(previous, current), reflow = true) },
           ),
       )
     }
   }
 }
+
+private fun specFor(previous: TriState, current: TriState): FiniteAnimationSpec<Float> =
+    when (setOf(previous, current)) {
+      setOf(TriState.HEIGHT, TriState.WIDTH) -> spring()
+      setOf(TriState.HEIGHT, TriState.ALIGN) -> tween(1_000.ms)
+      setOf(TriState.WIDTH, TriState.ALIGN) -> spring(dampingRatio = DampingRatio.HighBouncy)
+      else -> snap()
+    }
 
 private enum class TriState(val color: Long) {
   HEIGHT(0xffbf678d),
