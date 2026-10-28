@@ -62,6 +62,19 @@ class VisibilityBoundsTransformerScrollTest {
     assertThat(isVisible).isFalse()
   }
 
+  @Test
+  fun `a row that one scroll frame carries from fully under the band to clear is fully seen`() {
+    occlusion.bandTopPx = 80
+    var fullImpressions = 0
+    val row = renderRowInList(Style.onFullImpression { fullImpressions++ })
+    row.lithoView.offsetTopAndBottom(80)
+    val fullImpressionsUnderBand = fullImpressions
+
+    row.lithoView.offsetTopAndBottom(-80)
+
+    assertThat(fullImpressions).isEqualTo(fullImpressionsUnderBand + 1)
+  }
+
   /** Renders a 100 x 20 px row at the top of a 100 x 100 px list. */
   private fun renderRowInList(style: Style): TestLithoView {
     val list = FrameLayout(lithoTestRule.context.androidContext)

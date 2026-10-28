@@ -166,6 +166,8 @@ class VisibilityMountExtension<Input : VisibilityExtensionInput> private constru
     // Reusable Rect instances for transformer calls to avoid allocations during scroll
     internal val transformerOutputRect: Rect = Rect()
     internal val viewportOutputRect: Rect = Rect()
+    // Not transformerOutputRect: a running pass holds that one, and its callbacks can move views.
+    internal val skipCheckRect: Rect = Rect()
 
     internal var visibilityOutputs: List<VisibilityOutput> = emptyList()
     internal var renderUnitIdsWhichHostRenderTrees: LongSet? = null
@@ -1026,6 +1028,37 @@ class VisibilityMountExtension<Input : VisibilityExtensionInput> private constru
 
       val host = getRootHost(extensionState)
       return host == null || !host.hasTransientState()
+    }
+
+    /**
+     * Whether a visibility pass for this tree, given [visibleRect] as its local visible rect, would
+     * end in the extension's own skip: the last pass saw [visibleRect] as both its local and its
+     * transformed rect, and the transformer, run on the root host now, still returns it whole. This
+     * doesn't measure the root host's local visible rect, so the caller must already know it is
+     * [visibleRect]. Only a tree with visibility outputs of its own, under a transformer that
+     * records the transformed rect at every pass, keeps that record current, so any other tree
+     * answers false.
+     */
+    @UiThread
+    @JvmStatic
+    fun isVisibleRectStillUntransformed(
+        extensionState: ExtensionState<VisibilityMountExtensionState>,
+        visibleRect: Rect,
+    ): Boolean {
+      val state = extensionState.state
+      val transformer = state.visibilityBoundsTransformer ?: return false
+      val wasLastPassUntransformed =
+          transformer.shouldRecordTransformedVisibleRectAtEveryPass() &&
+              state.visibilityOutputs.isNotEmpty() &&
+              !visibleRect.isEmpty &&
+              state.previousLocalVisibleRect == visibleRect &&
+              state.previousTransformedVisibleRect == visibleRect
+      if (!wasLastPassUntransformed) {
+        return false
+      }
+      val transformedRect = state.skipCheckRect.apply { setEmpty() }
+      transformer.getTransformedLocalVisibleRect(extensionState.rootHost, transformedRect)
+      return transformedRect == visibleRect
     }
 
     private fun getRootHost(extensionState: ExtensionState<VisibilityMountExtensionState>): Host? {

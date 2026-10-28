@@ -75,6 +75,7 @@ import com.facebook.rendercore.visibility.InvisibleEvent
 import com.facebook.rendercore.visibility.UnfocusedVisibleEvent
 import com.facebook.rendercore.visibility.VisibilityChangeReason
 import com.facebook.rendercore.visibility.VisibilityExtensionConfigs
+import com.facebook.rendercore.visibility.VisibilityMountExtension.Companion.isVisibleRectStillUntransformed
 import com.facebook.rendercore.visibility.VisibilityMountExtension.VisibilityMountExtensionState
 import com.facebook.rendercore.visibility.VisibilityOutput
 import com.facebook.rendercore.visibility.VisibilityUtils.dispatchOnFocused
@@ -112,8 +113,8 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
 
   /**
    * Whether the pass that set [previousMountBounds] also processed visibility, and the extensions
-   * still hold what it found. Only [ComponentsConfiguration.skipMountWhenFullyShownAndMounted]
-   * reads it: full bounds alone don't show that `onVisible` was dispatched for them.
+   * still hold what it found. [isFullyShownAndMounted] and [isTransformerNoOp] read it: full bounds
+   * alone don't show that `onVisible` was dispatched for them.
    */
   private var isVisibilityProcessedForMountBounds = false
 
@@ -1370,12 +1371,6 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
     val right = right + translationX
     val previousRect = previousMountBounds
 
-    // Since we could have customized visible bounds, which means we should still run visibility
-    // extension to see if there's any visibility event to dispatch and cannot simply early return
-    // due to fully visible.
-    val configuration = configuration
-    val hasVisibilityBoundsTransformer = configuration?.visibilityBoundsTransformer != null
-
     if (
         left >= 0 &&
             top >= 0 &&
@@ -1387,7 +1382,7 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
             previousRect.bottom <= parentHeight &&
             previousRect.width() == width &&
             previousRect.height() == height &&
-            !hasVisibilityBoundsTransformer
+            isTransformerNoOp()
     ) {
       // View is fully visible, and has already been completely mounted.
       return
@@ -1411,6 +1406,23 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
     }
 
     notifyVisibleBoundsChanged(rect, true, VisibilityChangeReason.SCROLL)
+  }
+
+  /**
+   * Whether the visibility bounds transformer, if any, would leave this view's visible rect
+   * unchanged where the view is now, so the view can take the same early return as a view without
+   * one. A transformer can change the visible rect without the view moving, so this also needs the
+   * last pass to have processed the whole view untransformed. The extension checks the record flag
+   * and the recorded rects before it runs the transform, so the transform never runs here for a
+   * transformer that doesn't record at every pass.
+   */
+  private fun isTransformerNoOp(): Boolean {
+    if (configuration?.visibilityBoundsTransformer == null) {
+      return true
+    }
+    val extensionState = lithoHostListenerCoordinator?.visibilityExtensionState ?: return false
+    return isVisibilityProcessedForMountBounds &&
+        isVisibleRectStillUntransformed(extensionState, previousMountBounds)
   }
 
   val visibilityExtensionState: VisibilityMountExtensionState?

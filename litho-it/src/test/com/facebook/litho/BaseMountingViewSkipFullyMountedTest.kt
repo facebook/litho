@@ -39,6 +39,7 @@ import com.facebook.rendercore.extensions.VisibilityChangeReason
 import com.facebook.rendercore.extensions.VisibleBoundsCallbacks
 import com.facebook.rendercore.px
 import com.facebook.rendercore.visibility.VisibilityBoundsTransformer
+import com.facebook.rendercore.visibility.VisibilityOutput
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -46,7 +47,7 @@ import org.mockito.kotlin.mock
 import org.robolectric.Robolectric
 import org.robolectric.Shadows.shadowOf
 
-/** Tests [ComponentsConfiguration.skipMountWhenFullyShownAndMounted]. */
+/** Tests when a fully shown [BaseMountingView] that has mounted all of itself skips its pass. */
 @RunWith(LithoTestRunner::class)
 class BaseMountingViewSkipFullyMountedTest {
 
@@ -107,6 +108,30 @@ class BaseMountingViewSkipFullyMountedTest {
     val passes = countPasses(lithoView)
 
     lithoView.notifyVisibleBoundsChanged(VisibilityChangeReason.SCROLL)
+
+    assertThat(passes.count).isEqualTo(1)
+  }
+
+  @Test
+  fun `skips a moved view that its transformer leaves unchanged`() {
+    val transformer = UnchangedBoundsTransformer(recordsAtEveryPass = true)
+    val lithoView = showInRow(skip = false, transformer = transformer)
+    val passes = countPasses(lithoView)
+
+    lithoView.offsetTopAndBottom(VIEW_SIZE / 2)
+
+    assertThat(passes.count).isEqualTo(0)
+  }
+
+  @Test
+  fun `mounts a moved view whose transformer doesn't record at every pass`() {
+    val transformer = UnchangedBoundsTransformer(recordsAtEveryPass = false)
+    val lithoView = showInRow(skip = false, transformer = transformer)
+    // This unchanged pass records the whole rect, so only recordsAtEveryPass stops the skip.
+    lithoView.notifyVisibleBoundsChanged(VisibilityChangeReason.SCROLL)
+    val passes = countPasses(lithoView)
+
+    lithoView.offsetTopAndBottom(VIEW_SIZE / 2)
 
     assertThat(passes.count).isEqualTo(1)
   }
@@ -252,6 +277,24 @@ class BaseMountingViewSkipFullyMountedTest {
     ) {
       count++
     }
+  }
+
+  /** Leaves every visible rect as it is. */
+  private class UnchangedBoundsTransformer(private val recordsAtEveryPass: Boolean) :
+      VisibilityBoundsTransformer {
+    override fun getTransformedLocalVisibleRect(host: ViewGroup, outRect: Rect) {
+      if (!host.getLocalVisibleRect(outRect)) {
+        outRect.setEmpty()
+      }
+    }
+
+    override fun getViewportRect(view: View, outRect: Rect) {
+      view.getLocalVisibleRect(outRect)
+    }
+
+    override fun shouldUseTransformedVisibleRect(visibilityOutput: VisibilityOutput): Boolean = true
+
+    override fun shouldRecordTransformedVisibleRectAtEveryPass(): Boolean = recordsAtEveryPass
   }
 
   private inner class VisibilityCounting : KComponent() {
