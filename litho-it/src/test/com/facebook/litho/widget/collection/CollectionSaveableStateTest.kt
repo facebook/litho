@@ -17,9 +17,14 @@
 package com.facebook.litho.widget.collection
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.pm.ApplicationInfo
 import android.graphics.Rect
 import android.os.Bundle
+import android.os.Looper
 import android.view.View
+import android.view.ViewGroup
+import android.widget.FrameLayout
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleRegistry
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -44,6 +49,7 @@ import com.facebook.litho.TreeState
 import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.core.height
+import com.facebook.litho.core.width
 import com.facebook.litho.key
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.layout.flexbox.Column
@@ -54,6 +60,7 @@ import com.facebook.litho.useSaveableState
 import com.facebook.litho.view.viewTag
 import com.facebook.litho.widget.ComponentRenderInfo
 import com.facebook.litho.widget.LinearLayoutInfo
+import com.facebook.litho.widget.LithoRecyclerView.OnAfterLayoutListener
 import com.facebook.litho.widget.RecyclerBinder
 import com.facebook.litho.widget.RenderInfo
 import com.facebook.litho.widget.SectionsRecyclerView
@@ -64,6 +71,7 @@ import com.facebook.rendercore.utils.MeasureSpecUtils.exactly
 import java.util.Collections
 import java.util.IdentityHashMap
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.concurrent.thread
@@ -71,6 +79,10 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.Robolectric
+import org.robolectric.RuntimeEnvironment
+import org.robolectric.Shadows.shadowOf
+import org.robolectric.annotation.LooperMode
 
 @OptIn(ExperimentalLithoApi::class)
 @RunWith(LithoTestRunner::class)
@@ -806,6 +818,276 @@ class CollectionSaveableStateTest {
     assertThat(ids.map(restored::value)).containsExactly(10, 11, 0)
   }
 
+  @Test
+  fun `a list saving its scroll position restores its first visible row and offset after recreation`() {
+    val owner = TestSavedStateOwner()
+    val view = render(owner, ScrollList(SCROLL_IDS))
+    scrollBy(view, 10 * ROW_HEIGHT_PX + 30)
+    assertThat(shownRowAndOffset(view)).isEqualTo(10 to -30)
+
+    val restored = recreate(owner, ScrollList(SCROLL_IDS))
+
+    assertThat(shownRowAndOffset(restored)).isEqualTo(10 to -30)
+  }
+
+  @Test
+  fun `a restored scroll position waits for rows that load after recreation`() {
+    listOf(false, true).forEach { async ->
+      val owner = TestSavedStateOwner()
+      val view = render(owner, ScrollList(SCROLL_IDS))
+      scrollBy(view, 10 * ROW_HEIGHT_PX + 30)
+
+      val restored = recreate(owner, ScrollList(ids = null))
+      assertThat(scrollListRecyclerView(restored).adapter?.itemCount).isEqualTo(0)
+      if (async) {
+        restored.componentTree.setRootAndSizeSpecAsync(
+            ScrollList(SCROLL_IDS),
+            exactly(WIDTH_PX),
+            exactly(LIST_HEIGHT_PX),
+        )
+        lithoTestRule.finishAsyncUpdates()
+      } else {
+        restored.setRoot(ScrollList(SCROLL_IDS))
+      }
+      lithoTestRule.idle()
+
+      assertThat(shownRowAndOffset(restored)).describedAs("async=$async").isEqualTo(10 to -30)
+    }
+  }
+
+  @Test
+  fun `a restored scroll position past the last row scrolls to the last row`() {
+    val owner = TestSavedStateOwner()
+    val view = render(owner, ScrollList(SCROLL_IDS))
+    scrollBy(view, ROW_COUNT * ROW_HEIGHT_PX)
+    assertThat(shownRowAndOffset(view).first).isGreaterThan(30)
+
+    val restored = recreate(owner, ScrollList(NEW_IDS.take(30)))
+
+    shownRowAndOffset(restored)
+    val recyclerView = scrollListRecyclerView(restored)
+    val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+    assertThat(layoutManager.findLastCompletelyVisibleItemPosition()).isEqualTo(29)
+    assertThat(recyclerView.canScrollVertically(1)).isFalse
+  }
+
+  @Test
+  fun `a list not saving its scroll position starts at the top after recreation`() {
+    val owner = TestSavedStateOwner()
+    val view = render(owner, ScrollList(SCROLL_IDS, save = false))
+    scrollBy(view, 10 * ROW_HEIGHT_PX + 30)
+    assertThat(shownRowAndOffset(view)).isEqualTo(10 to -30)
+
+    // Restored into a list that saves, so a position saved by the first list would be restored.
+    val restored = recreate(owner, ScrollList(SCROLL_IDS))
+
+    assertThat(shownRowAndOffset(restored)).isEqualTo(0 to 0)
+    scrollBy(restored, 5 * ROW_HEIGHT_PX)
+    assertThat(shownRowAndOffset(restored)).isEqualTo(5 to 0)
+  }
+
+  @Test
+  fun `a restored scroll position is applied only once`() {
+    val owner = TestSavedStateOwner()
+    val view = render(owner, ScrollList(SCROLL_IDS))
+    scrollBy(view, 10 * ROW_HEIGHT_PX + 30)
+    val restoredOwner = TestSavedStateOwner(owner.save())
+    owner.destroy()
+    val restored = render(restoredOwner, ScrollList(SCROLL_IDS))
+    assertThat(shownRowAndOffset(restored)).isEqualTo(10 to -30)
+
+    scrollBy(restored, 20 * ROW_HEIGHT_PX)
+    restored.setRoot(ScrollList(SCROLL_IDS + ROW_COUNT))
+    lithoTestRule.idle()
+    assertThat(shownRowAndOffset(restored)).isEqualTo(30 to -30)
+    unmountListAndMountAgain(restored)
+    assertThat(shownRowAndOffset(restored)).isEqualTo(30 to -30)
+
+    val restoredAgain = recreate(restoredOwner, ScrollList(SCROLL_IDS + ROW_COUNT))
+    assertThat(shownRowAndOffset(restoredAgain)).isEqualTo(30 to -30)
+  }
+
+  @Test
+  fun `a scroll that keeps the same rows visible restores its last pixel`() {
+    val owner = TestSavedStateOwner()
+    val view = render(owner, ScrollList(SCROLL_IDS))
+    scrollBy(view, 10 * ROW_HEIGHT_PX + 30)
+    scrollBy(view, 10)
+    assertThat(currentRowAndOffset(view)).isEqualTo(10 to -40)
+
+    val restored = recreate(owner, ScrollList(SCROLL_IDS))
+
+    assertThat(shownRowAndOffset(restored)).isEqualTo(10 to -40)
+  }
+
+  @Test
+  fun `a list scrolled in small steps restores the offset it stopped at`() {
+    val owner = TestSavedStateOwner()
+    val view = render(owner, ScrollList(SCROLL_IDS))
+    val recyclerView = scrollListRecyclerView(view)
+    lithoTestRule.act(view) { repeat(103) { recyclerView.scrollBy(0, 10) } }
+    assertThat(currentRowAndOffset(view)).isEqualTo(10 to -30)
+
+    val restored = recreate(owner, ScrollList(SCROLL_IDS))
+
+    assertThat(shownRowAndOffset(restored)).isEqualTo(10 to -30)
+  }
+
+  @Test
+  fun `a jump by the list's controller that keeps the same rows visible restores its last pixel`() {
+    var callerLayouts = 0
+    // Without and with an onAfterLayout of the list's own, which is still called.
+    listOf(null, OnAfterLayoutListener { callerLayouts++ }).forEach { onAfterLayout ->
+      val owner = TestSavedStateOwner()
+      val controller = LazyCollectionController()
+      val view = render(
+          owner,
+          ScrollList(SCROLL_IDS, controller = controller, onAfterLayout = onAfterLayout),
+      )
+      scrollBy(view, 10 * ROW_HEIGHT_PX + 30)
+      lithoTestRule.act(view) { controller.scrollToIndex(10, -40) }
+      assertThat(shownRowAndOffset(view)).isEqualTo(10 to -40)
+
+      val restored = recreate(owner, ScrollList(SCROLL_IDS))
+
+      assertThat(shownRowAndOffset(restored))
+          .describedAs("with onAfterLayout: ${onAfterLayout != null}")
+          .isEqualTo(10 to -40)
+    }
+    assertThat(callerLayouts).isGreaterThan(0)
+  }
+
+  /**
+   * Row 15 has focus, so when row 12 shrinks by 20px the list keeps row 15 in place and moves the
+   * rows above it down: row 10 goes from -30 to -10 without a scroll. In a real window the list
+   * applies the change without calling its `onLayout`, so its after-layout listener doesn't run.
+   */
+  @LooperMode(LooperMode.Mode.PAUSED)
+  @Test
+  fun `a data change that moves the first visible row without scrolling restores its new offset`() {
+    val owner = TestSavedStateOwner()
+    val view = renderInWindow(owner, ScrollList(SCROLL_IDS))
+    scrollBy(view, 10 * ROW_HEIGHT_PX + 30)
+    val row15 = checkNotNull(scrollListRecyclerView(view).layoutManager?.findViewByPosition(15))
+    lithoTestRule.act(view) {
+      row15.isFocusableInTouchMode = true
+      row15.requestFocus()
+    }
+    val rowLengths = mapOf(12 to ROW_HEIGHT_PX - 20)
+
+    view.setRoot(ScrollList(SCROLL_IDS, rowLengths = rowLengths))
+    idleThroughNextFrame()
+
+    assertThat(currentRowAndOffset(view)).isEqualTo(10 to -10)
+    val restored = recreate(owner, ScrollList(SCROLL_IDS, rowLengths = rowLengths))
+    assertThat(shownRowAndOffset(restored)).isEqualTo(10 to -10)
+  }
+
+  @Test
+  fun `a scrolled reverse list restores its first visible row and offset`() {
+    val owner = TestSavedStateOwner()
+    val view = render(owner, ScrollList(SCROLL_IDS, reverse = true))
+    // Row 0 is at the bottom, so the later rows are up; row 10 is cut by 30px at the bottom.
+    scrollBy(view, -(10 * ROW_HEIGHT_PX + 30))
+    val rowTop = LIST_HEIGHT_PX - HEADER_HEIGHT_PX + 30 - ROW_HEIGHT_PX
+    assertThat(shownRowAndOffset(view)).isEqualTo(10 to rowTop)
+
+    val restored = recreate(owner, ScrollList(SCROLL_IDS, reverse = true))
+
+    assertThat(shownRowAndOffset(restored)).isEqualTo(10 to rowTop)
+  }
+
+  @Test
+  fun `a scrolled horizontal RTL list restores its first visible row and offset`() {
+    val applicationInfo = lithoTestRule.context.androidContext.applicationInfo
+    applicationInfo.flags = applicationInfo.flags or ApplicationInfo.FLAG_SUPPORTS_RTL
+    RuntimeEnvironment.setQualifiers("+ldrtl")
+    val owner = TestSavedStateOwner()
+    val view = render(owner, ScrollList(SCROLL_IDS, orientation = RecyclerView.HORIZONTAL))
+    // Row 0 is at the right, so the later rows are to the left; row 10 is cut by 30px at the right.
+    lithoTestRule.act(view) {
+      scrollListRecyclerView(view).scrollBy(-(10 * ROW_HEIGHT_PX + 30), 0)
+    }
+    assertThat(shownRowAndOffset(view)).isEqualTo(10 to WIDTH_PX + 30 - ROW_HEIGHT_PX)
+
+    val restored = recreate(owner, ScrollList(SCROLL_IDS, orientation = RecyclerView.HORIZONTAL))
+
+    assertThat(shownRowAndOffset(restored)).isEqualTo(10 to WIDTH_PX + 30 - ROW_HEIGHT_PX)
+  }
+
+  @Test
+  fun `a scrolled list with padding restores its first visible row and offset in every direction`() {
+    val applicationInfo = lithoTestRule.context.androidContext.applicationInfo
+    applicationInfo.flags = applicationInfo.flags or ApplicationInfo.FLAG_SUPPORTS_RTL
+    RuntimeEnvironment.setQualifiers("+ldrtl")
+    listOf(RecyclerView.VERTICAL, RecyclerView.HORIZONTAL).forEach { orientation ->
+      listOf(false, true).forEach { reverse ->
+        val list = {
+          ScrollList(SCROLL_IDS, orientation = orientation, reverse = reverse, padded = true)
+        }
+        val horizontal = orientation == RecyclerView.HORIZONTAL
+        // A horizontal list lays out from the right in a right-to-left layout, unless reversed.
+        val distance = (10 * ROW_HEIGHT_PX + 30) * if (reverse != horizontal) -1 else 1
+        val owner = TestSavedStateOwner()
+        val view = render(owner, list())
+        lithoTestRule.act(view) {
+          val recyclerView = scrollListRecyclerView(view)
+          if (horizontal) recyclerView.scrollBy(distance, 0) else recyclerView.scrollBy(0, distance)
+        }
+        val scrolled = shownRowAndOffset(view)
+        assertThat(scrolled.first).isEqualTo(10)
+
+        val restored = recreate(owner, list())
+
+        assertThat(shownRowAndOffset(restored))
+            .describedAs("orientation=$orientation, reverse=$reverse")
+            .isEqualTo(scrolled)
+      }
+    }
+  }
+
+  @Test
+  fun `a circular list that saves its scroll position starts where a list that does not save starts`() {
+    val notSaving =
+        render(TestSavedStateOwner(), ScrollList(SCROLL_IDS, save = false, circular = true))
+    val owner = TestSavedStateOwner()
+    val view = render(owner, ScrollList(SCROLL_IDS, circular = true))
+    scrollBy(view, 2 * ROW_HEIGHT_PX + 30)
+
+    val restored = recreate(owner, ScrollList(SCROLL_IDS, circular = true))
+
+    assertThat(shownRowAndOffset(restored)).isEqualTo(shownRowAndOffset(notSaving))
+  }
+
+  /**
+   * ```text
+   * Before process death: the list shows row 10 at -30; the owner is not restored yet
+   * Render the tree on the main thread    The list renders at the top
+   * Android restores, then show the tree  The list shows row 10 at -30
+   * Scroll by 15 rows, save and restore   The list shows row 25 at -30
+   * ```
+   */
+  @Test
+  fun `a list rendered before a late restore shows its restored scroll position and saves later scrolls`() {
+    val session = TestSavedStateOwner()
+    val sessionView = render(session, ScrollList(SCROLL_IDS))
+    scrollBy(sessionView, 10 * ROW_HEIGHT_PX + 30)
+    val owner = TestSavedStateOwner(session.save(), restoreNow = false)
+    session.destroy()
+    val root = ScrollList(SCROLL_IDS)
+    val tree = tree(owner, root)
+    tree.setRootAndSizeSpecSync(root, exactly(WIDTH_PX), exactly(LIST_HEIGHT_PX))
+
+    owner.restore()
+    val view = show(tree)
+
+    assertThat(shownRowAndOffset(view)).isEqualTo(10 to -30)
+    scrollBy(view, 15 * ROW_HEIGHT_PX)
+    assertThat(shownRowAndOffset(view)).isEqualTo(25 to -30)
+    val restored = recreate(owner, ScrollList(SCROLL_IDS))
+    assertThat(shownRowAndOffset(restored)).isEqualTo(25 to -30)
+  }
+
   /** Saves a [SaveableList] of [ids] with rows 0 and 1 set to 10 and 11. */
   private fun savedRows(ids: List<Int>): Bundle {
     val owner = TestSavedStateOwner()
@@ -893,6 +1175,34 @@ class CollectionSaveableStateTest {
             views += view
           }
 
+  /**
+   * Renders [root] into a real Activity window, where the list applies a data change in a layout of
+   * its own, without calling its `onLayout`, as it does on a device.
+   */
+  private fun renderInWindow(owner: SavedStateRegistryOwner, root: Component): TestLithoView {
+    val activity = Robolectric.buildActivity(Activity::class.java).setup().get()
+    lithoTestRule.useContext(ComponentContext(activity))
+    val view =
+        lithoTestRule.createTestLithoView(
+            componentTree = tree(owner, root),
+            widthPx = WIDTH_PX,
+            heightPx = LIST_HEIGHT_PX,
+        )
+    activity
+        .findViewById<ViewGroup>(android.R.id.content)
+        .addView(view.lithoView, FrameLayout.LayoutParams(WIDTH_PX, LIST_HEIGHT_PX))
+    view.measure().layout()
+    idleThroughNextFrame()
+    views += view
+    return view
+  }
+
+  /** Runs the paused main looper past the next frame, in which a real window lays out. */
+  private fun idleThroughNextFrame() {
+    shadowOf(Looper.getMainLooper()).idleFor(100, TimeUnit.MILLISECONDS)
+    lithoTestRule.idle()
+  }
+
   /** Saves [owner], destroys it, and renders [root] under an owner restored from that save. */
   private fun recreate(owner: TestSavedStateOwner, root: Component): TestLithoView {
     val savedState = owner.save()
@@ -903,6 +1213,52 @@ class CollectionSaveableStateTest {
   private fun recyclerView(view: TestLithoView): RecyclerView =
       ((view.findViewWithTag(LIST_TAG) as LithoView).getChildAt(0) as SectionsRecyclerView)
           .recyclerView
+
+  private fun scrollListRecyclerView(view: TestLithoView): RecyclerView =
+      (view.findViewWithTag(SCROLL_LIST_TAG) as SectionsRecyclerView).recyclerView
+
+  private fun scrollBy(view: TestLithoView, dy: Int) {
+    val recyclerView = scrollListRecyclerView(view)
+    lithoTestRule.act(view) { recyclerView.scrollBy(0, dy) }
+  }
+
+  /**
+   * Lays the [ScrollList] out again, which applies a scroll it was asked for since it last laid
+   * out, and returns its [currentRowAndOffset].
+   */
+  private fun shownRowAndOffset(view: TestLithoView): Pair<Int, Int?> {
+    val recyclerView = scrollListRecyclerView(view)
+    recyclerView.measure(exactly(recyclerView.width), exactly(recyclerView.height))
+    recyclerView.layout(
+        recyclerView.left,
+        recyclerView.top,
+        recyclerView.right,
+        recyclerView.bottom,
+    )
+    lithoTestRule.idle()
+    return currentRowAndOffset(view)
+  }
+
+  /** The [ScrollList]'s first visible row and that row's top, or left in a horizontal list. */
+  private fun currentRowAndOffset(view: TestLithoView): Pair<Int, Int?> {
+    val layoutManager = scrollListRecyclerView(view).layoutManager as LinearLayoutManager
+    val row = layoutManager.findFirstVisibleItemPosition()
+    val rowView = layoutManager.findViewByPosition(row)
+    return row to
+        if (layoutManager.orientation == RecyclerView.HORIZONTAL) rowView?.left else rowView?.top
+  }
+
+  /** Unmounts the [ScrollList] with incremental mount, then mounts it again. */
+  private fun unmountListAndMountAgain(view: TestLithoView) {
+    val recyclerView = scrollListRecyclerView(view)
+    lithoTestRule.act(view) {
+      view.lithoView.mountComponent(Rect(0, 0, WIDTH_PX, HEADER_HEIGHT_PX / 2), true)
+    }
+    assertThat(recyclerView.adapter).isNull()
+    lithoTestRule.act(view) {
+      view.lithoView.mountComponent(Rect(0, 0, WIDTH_PX, LIST_HEIGHT_PX), true)
+    }
+  }
 
   private fun contextWith(
       registry: LithoSaveableStateRegistry,
@@ -1004,6 +1360,51 @@ class CollectionSaveableStateTest {
         LazyList(style = Style.height(LIST_HEIGHT_PX.px).viewTag(LIST_TAG)) {
           ids.forEach { id -> child(SaveableRow(id, rows), id = id, isSticky = id == stickyId) }
         }
+  }
+
+  /**
+   * A list of [ids] that saves its scroll position if [save], below a header; no rows if null. Its
+   * rows are [ROW_HEIGHT_PX] long along its [orientation], except those [rowLengths] gives a
+   * length. If [padded], it has a different padding on each side, which its rows scroll into.
+   */
+  private class ScrollList(
+      private val ids: List<Int>?,
+      private val save: Boolean = true,
+      private val orientation: Int = RecyclerView.VERTICAL,
+      private val reverse: Boolean = false,
+      private val circular: Boolean = false,
+      private val padded: Boolean = false,
+      private val controller: LazyCollectionController? = null,
+      private val onAfterLayout: OnAfterLayoutListener? = null,
+      private val rowLengths: Map<Int, Int> = emptyMap(),
+  ) : KComponent() {
+    override fun ComponentScope.render(): Component = Column {
+      child(Text(text = "header", style = Style.height(HEADER_HEIGHT_PX.px)))
+      child(
+          LazyList(
+              orientation = orientation,
+              reverse = reverse,
+              clipToPadding = if (padded) false else null,
+              startPadding = if (padded) 10.px else null,
+              endPadding = if (padded) 20.px else null,
+              topPadding = if (padded) 30.px else null,
+              bottomPadding = if (padded) 40.px else null,
+              lazyCollectionController = controller,
+              isCircular = circular,
+              onAfterLayout = onAfterLayout,
+              saveScrollPosition = save,
+              style = Style.height((LIST_HEIGHT_PX - HEADER_HEIGHT_PX).px).viewTag(SCROLL_LIST_TAG),
+          ) {
+            ids?.forEach { id ->
+              val length = (rowLengths[id] ?: ROW_HEIGHT_PX).px
+              val rowStyle =
+                  if (orientation == RecyclerView.HORIZONTAL) Style.width(length)
+                  else Style.height(length)
+              child(id = id, component = Text(text = "row_$id", style = rowStyle))
+            }
+          },
+      )
+    }
   }
 
   /** A list whose rows record their registry but use no saveable state. */
@@ -1213,6 +1614,7 @@ class CollectionSaveableStateTest {
   private companion object {
     const val LIST_TAG: String = "list"
     const val ROW_KEY: String = "row"
+    const val SCROLL_LIST_TAG: String = "scroll_list"
     const val COLLECTION_KEY: String = "list"
     const val SHARED_ID: Int = 100
     const val FAR_ROW: Int = 50
@@ -1222,6 +1624,9 @@ class CollectionSaveableStateTest {
     const val HEADER_HEIGHT_PX: Int = 100
     const val ROW_COUNT: Int = 60
     val KEYED_LIST_IDS: List<Int> = listOf(0, 1, 2)
+    val SCROLL_IDS: List<Int> = List(ROW_COUNT) { it }
+    /** Ids no row of [SCROLL_IDS] has. */
+    val NEW_IDS: List<Int> = List(ROW_COUNT) { 1000 + it }
     val ROW_CONSTRAINTS: SizeConstraints = SizeConstraints.exact(WIDTH_PX, ROW_HEIGHT_PX)
     val NEW_COLLECTION: ComponentsConfiguration =
         ComponentsConfiguration.defaultInstance.copy(enableNewCollection = true)

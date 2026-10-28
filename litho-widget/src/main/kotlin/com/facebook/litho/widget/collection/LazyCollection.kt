@@ -27,6 +27,7 @@ import com.facebook.litho.Handle
 import com.facebook.litho.KComponent
 import com.facebook.litho.LithoStartupLogger
 import com.facebook.litho.Style
+import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.eventHandlerWithReturn
 import com.facebook.litho.handle
 import com.facebook.litho.kotlinStyle
@@ -36,6 +37,8 @@ import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.common.DataDiffSection
 import com.facebook.litho.sections.common.OnCheckIsSameContentEvent
 import com.facebook.litho.sections.common.OnCheckIsSameItemEvent
+import com.facebook.litho.useEffect
+import com.facebook.litho.useSaveableState
 import com.facebook.litho.useState
 import com.facebook.litho.widget.ComponentRenderInfo
 import com.facebook.litho.widget.LazyCollectionItemAnimator
@@ -87,6 +90,7 @@ class LazyCollection(
     /** Selects which collection infra backs this collection. Defaults to the global config. */
     private val infraOverride: CollectionInfraOverride = CollectionInfraOverride.DEFAULT,
     private val lazyCollectionChildren: LazyCollectionChildren,
+    private val saveScrollPosition: Boolean = false,
 ) : KComponent() {
 
   // There's a conflict with Component.handle, so use a different name
@@ -110,6 +114,27 @@ class LazyCollection(
           CollectionInfraOverride.DEFAULT ->
               context.lithoConfiguration.componentsConfig.enableNewCollection
         }
+    val isCircular =
+        layout.recyclerConfiguration.recyclerBinderConfiguration.recyclerBinderConfig.isCircular
+    // A circular list shows virtual positions, which don't map back to its children.
+    val savesScrollPosition = saveScrollPosition && useNewInfra && !isCircular
+    @OptIn(ExperimentalLithoApi::class)
+    val scrollPosition =
+        if (savesScrollPosition) {
+          useSaveableState(saver = SavedScrollPosition.saver) { SavedScrollPosition() }.value
+        } else {
+          null
+        }
+    val controller =
+        lazyCollectionController ?: if (savesScrollPosition) useLazyCollectionController() else null
+    if (scrollPosition != null && controller != null) {
+      val childrenSize = lazyCollectionChildren.collectionChildren.size
+      // A restore after the first render replaces the holder, which then applies its own position.
+      useEffect(scrollPosition, childrenSize > 0) {
+        scrollPosition.restore(controller, childrenSize)
+        null
+      }
+    }
 
     val combinedOnViewportChanged: OnViewportChanged =
         {
@@ -118,6 +143,9 @@ class LazyCollection(
             totalCount,
             firstFullyVisibleIndex,
             lastFullyVisibleIndex ->
+          if (scrollPosition != null) {
+            controller?.recyclerView?.let { scrollPosition.record(it) }
+          }
           childTracker.onScrollOrUpdated(
               lazyCollectionChildren.effectiveIndexToId,
               lazyCollectionChildren.idToChild,
@@ -165,13 +193,23 @@ class LazyCollection(
 
     if (useNewInfra) {
       val combinedScrollListeners =
-          if (onScrollListeners == null && onScrollListener == null) {
+          if (onScrollListeners == null && onScrollListener == null && scrollPosition == null) {
             null
           } else {
             val listeners = mutableListOf<RecyclerView.OnScrollListener>()
             onScrollListeners?.filterNotNullTo(listeners)
             onScrollListener?.let { listeners.add(it) }
+            scrollPosition?.scrollListener?.let { listeners.add(it) }
             listeners
+          }
+      val combinedOnAfterLayout =
+          if (onAfterLayout != null && scrollPosition != null) {
+            OnAfterLayoutListener { recyclerView ->
+              onAfterLayout.onAfterLayout(recyclerView)
+              scrollPosition.layoutListener.onAfterLayout(recyclerView)
+            }
+          } else {
+            onAfterLayout ?: scrollPosition?.layoutListener
           }
       val fadingEdgeLengthPx = fadingEdgeLength?.toPixels() ?: 0
       val component = CollectionRecyclerComponent(
@@ -210,10 +248,10 @@ class LazyCollection(
           onNearEnd = onNearEnd,
           onScrollListeners = combinedScrollListeners,
           onViewportChanged = combinedOnViewportChanged,
-          lazyCollectionController = lazyCollectionController,
+          lazyCollectionController = controller,
           shouldExcludeFromIncrementalMount = shouldExcludeFromIncrementalMount,
           onBeforeLayoutListener = onBeforeLayout,
-          onAfterLayoutListener = onAfterLayout,
+          onAfterLayoutListener = combinedOnAfterLayout,
           componentRenderer = { _: Int, model: CollectionChild ->
             val component: Component? = model.component ?: model.componentFunction?.invoke()
             if (component != null) {

@@ -34,7 +34,18 @@ import com.facebook.litho.widget.SnapUtil
 import com.facebook.rendercore.Dimen
 import com.facebook.rendercore.dp
 
-/** A scrollable collection of components arranged linearly */
+/**
+ * A scrollable collection of components arranged linearly
+ *
+ * @param saveScrollPosition Experimental: whether the list saves its first visible child's index
+ *   and offset, so it shows that child again after its Activity is recreated or its process is
+ *   restored. A position restored before the children load is used once, when they first arrive,
+ *   with the index clamped to the number of children. This applies only on the new collection
+ *   (`enableNewCollection` or `infraOverride = FORCE_NEW`); a list on the legacy infra doesn't save
+ *   its position. A circular list ([isCircular]) doesn't save its position. This needs a tree
+ *   created with a [androidx.savedstate.SavedStateRegistryOwner] (`ComponentTree.create(context,
+ *   owner)`); without one, the position is not restored.
+ */
 @Suppress("FunctionName")
 inline fun ResourcesScope.LazyList(
     @RecyclerView.Orientation orientation: Int = RecyclerView.VERTICAL,
@@ -93,6 +104,7 @@ inline fun ResourcesScope.LazyList(
     onAfterLayout: OnAfterLayoutListener? = null,
     /** Selects which collection infra backs this list. Defaults to the global config. */
     infraOverride: CollectionInfraOverride = CollectionInfraOverride.DEFAULT,
+    saveScrollPosition: Boolean = false,
     crossinline init: LazyListScope.() -> Unit,
 ): Component {
   val lazyListScope = LazyListScope(context).apply { init() }
@@ -155,6 +167,7 @@ inline fun ResourcesScope.LazyList(
       onAfterLayout = onAfterLayout,
       infraOverride = infraOverride,
       lazyCollectionChildren = lazyListScope.children,
+      saveScrollPosition = saveScrollPosition,
   )
 }
 
