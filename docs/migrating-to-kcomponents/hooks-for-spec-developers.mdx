@@ -70,9 +70,9 @@ In the Spec API, `@OnAttached`/`@OnDetached` would be called only once, when the
 
 ### Listening to Prop/State Changes
 
-An important functionality that `useEffect` adds over `@OnAttached`/`@OnDetached` is the ability to trigger code when props/state change. For example, this can be used to trigger an animation as a side-effect whenever a prop changes:
+An important functionality that `useEffect` adds over `@OnAttached`/`@OnDetached` is the ability to trigger code when props/state change. In this example, the effect shows a toast each time `count` changes:
 
-```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/animations/animatedcounter/AnimatedCounter.kt start=start_example end=end_example
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/documentation/UseEffectWithDependencyComponent.kt start=start_example end=end_example
 ```
 
 For more information, see the [useEffect](../state-and-side-effects/use-effect.mdx) page in the 'Main Concepts' section.

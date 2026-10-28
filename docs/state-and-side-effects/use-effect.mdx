@@ -121,9 +121,9 @@ In rare cases you may need to pass `Any()` as a dependency arg. In such a case, 
 
 ### Listening to Prop/State Changes
 
-An important functionality that `useEffect` adds is the ability to trigger code when props/state change. As an example, this could be used to trigger an animation as a side-effect whenever some prop changes:
+An important functionality that `useEffect` adds is the ability to trigger code when props/state change. In this example, the effect shows a toast each time `count` changes:
 
-```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/animations/animatedcounter/AnimatedCounter.kt start=start_example end=end_example
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/documentation/UseEffectWithDependencyComponent.kt start=start_example end=end_example
 ```
 
 ## Known issues

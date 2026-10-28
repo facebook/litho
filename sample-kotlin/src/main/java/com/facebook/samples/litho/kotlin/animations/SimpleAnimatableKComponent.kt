@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-package com.facebook.samples.litho.kotlin.animations.dynamicprops
+package com.facebook.samples.litho.kotlin.animations
 
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
-import com.facebook.litho.animated.alpha
-import com.facebook.litho.animated.scaleX
-import com.facebook.litho.animated.scaleY
-import com.facebook.litho.animated.useBinding
+import com.facebook.litho.animation.FloatTypeConverter
+import com.facebook.litho.animation.alpha
+import com.facebook.litho.animation.scale
+import com.facebook.litho.animation.useAnimatable
+import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.core.height
 import com.facebook.litho.core.padding
 import com.facebook.litho.core.width
@@ -38,11 +39,12 @@ import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaJustify
 
 // start_example
-class CommonDynamicPropsKComponent : KComponent() {
+@OptIn(ExperimentalLithoApi::class)
+class SimpleAnimatableKComponent : KComponent() {
 
   override fun ComponentScope.render(): Component? {
-    val scale = useBinding(1f)
-    val alpha = useBinding(1f)
+    val scale = useAnimatable(1f, FloatTypeConverter)
+    val alpha = useAnimatable(1f, FloatTypeConverter)
 
     val square = Column(
         style =
@@ -50,15 +52,14 @@ class CommonDynamicPropsKComponent : KComponent() {
                 .height(100.dp)
                 .backgroundColor(colorRes(R.color.primaryColor))
                 .alignSelf(YogaAlign.CENTER)
-                .scaleX(scale)
-                .scaleY(scale)
-                .alpha(alpha),
+                .scale(scale.value)
+                .alpha(alpha.value),
     )
 
     return Column(justifyContent = YogaJustify.SPACE_BETWEEN, style = Style.padding(all = 20.dp)) {
-      child(SeekBar(onProgressChanged = { alpha.set(it) }))
+      child(SeekBar(onProgressChanged = { alpha.snapTo(it) }))
       child(square)
-      child(SeekBar(onProgressChanged = { scale.set(it) }))
+      child(SeekBar(onProgressChanged = { scale.snapTo(it) }))
     }
   }
 }

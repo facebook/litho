@@ -70,10 +70,8 @@ import com.facebook.samples.litho.kotlin.accessibility.KeyboardTraversalComponen
 import com.facebook.samples.litho.kotlin.accessibility.LiveRegionModeComponent
 import com.facebook.samples.litho.kotlin.accessibility.PaneTitleComponent
 import com.facebook.samples.litho.kotlin.accessibility.StateDescriptionComponent
-import com.facebook.samples.litho.kotlin.animations.UseStateVsUseBindingExample
-import com.facebook.samples.litho.kotlin.animations.animatedapi.AnimatedComponent
+import com.facebook.samples.litho.kotlin.animations.SimpleAnimatableKComponent
 import com.facebook.samples.litho.kotlin.animations.animatedbadge.AnimatedBadgeKotlin
-import com.facebook.samples.litho.kotlin.animations.animatedcounter.AnimatingCounterRootComponent
 import com.facebook.samples.litho.kotlin.animations.animationcomposition.ComposedAnimationsComponentKotlin
 import com.facebook.samples.litho.kotlin.animations.blur.BlurKComponent
 import com.facebook.samples.litho.kotlin.animations.bounds.BoundsAnimationComponent
@@ -86,7 +84,6 @@ import com.facebook.samples.litho.kotlin.animations.diffbased.DiffReusableMotion
 import com.facebook.samples.litho.kotlin.animations.diffbased.PageIndicatorsComponent
 import com.facebook.samples.litho.kotlin.animations.dynamicprops.AllCommonDynamicPropsKComponent
 import com.facebook.samples.litho.kotlin.animations.dynamicprops.AnimateDynamicPropsKComponent
-import com.facebook.samples.litho.kotlin.animations.dynamicprops.CommonDynamicPropsKComponent
 import com.facebook.samples.litho.kotlin.animations.dynamicprops.CustomDynamicPropsKComponent
 import com.facebook.samples.litho.kotlin.animations.expandableelement.ExpandableElementRootKotlinKComponent
 import com.facebook.samples.litho.kotlin.animations.messages.Message
@@ -103,6 +100,7 @@ import com.facebook.samples.litho.kotlin.animations.statebased.InfiniteAnimation
 import com.facebook.samples.litho.kotlin.animations.statebased.PathMotionComponent
 import com.facebook.samples.litho.kotlin.animations.statebased.SpecComparisonComponent
 import com.facebook.samples.litho.kotlin.animations.statebased.SpringComparisonComponent
+import com.facebook.samples.litho.kotlin.animations.statebased.StaggeredEntranceComponent
 import com.facebook.samples.litho.kotlin.animations.transitions.TransitionsComponent
 import com.facebook.samples.litho.kotlin.bordereffects.BorderEffectsComponentKotlin
 import com.facebook.samples.litho.kotlin.canvas.DrawAnimatedSquareCanvasKComponent
@@ -244,15 +242,10 @@ class Demos {
                 DemoGrouping(
                     name = "Animations",
                     listOf(
-                        SingleDemo(name = "Animated API Demo", component = AnimatedComponent()),
                         SingleDemo(name = "Blur Animation", component = BlurKComponent()),
                         SingleDemo(
-                            name = "Animated Counter",
-                            component = AnimatingCounterRootComponent(),
-                        ),
-                        SingleDemo(
-                            name = "[KComponent] Common Dynamic Props",
-                            component = CommonDynamicPropsKComponent(),
+                            name = "Simple Animatable",
+                            component = SimpleAnimatableKComponent(),
                         ),
                         SingleDemo(
                             name = "All Common Dynamic Props",
@@ -269,10 +262,6 @@ class Demos {
                         SingleDemo(
                             name = "[KComponent] RenderWithConstraints",
                             component = RenderWithConstraintsKComponent(),
-                        ),
-                        SingleDemo(
-                            name = "useState vs useBinding",
-                            component = UseStateVsUseBindingExample(),
                         ),
                         SingleDemo(
                             name = "Animated Badge (Legacy)",
@@ -338,6 +327,10 @@ class Demos {
                         SingleDemo(
                             name = "Expandable Card",
                             component = ExpandableCardComponent(),
+                        ),
+                        SingleDemo(
+                            name = "Staggered Entrance",
+                            component = StaggeredEntranceComponent(),
                         ),
                         SingleDemo(
                             name = "Animated Properties",

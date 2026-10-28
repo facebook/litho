@@ -137,9 +137,6 @@
             android:name=".kotlin.errors.ErrorHandlingKotlinActivity"
             android:exported="true" />
         <activity
-            android:name=".kotlin.animations.animatedcounter.AnimatedCounterActivity"
-            android:exported="true" />
-        <activity
             android:name=".kotlin.visibility.SetVisibilityActivity"
             android:exported="true" />
         <activity
