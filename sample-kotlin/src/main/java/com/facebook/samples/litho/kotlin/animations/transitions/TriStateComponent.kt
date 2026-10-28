@@ -50,6 +50,7 @@ import com.facebook.yoga.YogaJustify
  * the state being left, so the spec can depend on both the previous and the next state.
  */
 @OptIn(ExperimentalLithoApi::class)
+// start_example
 class TriStateComponent : KComponent() {
 
   override fun ComponentScope.render(): Component {
@@ -103,6 +104,8 @@ private fun specFor(previous: TriState, current: TriState): FiniteAnimationSpec<
       setOf(TriState.WIDTH, TriState.ALIGN) -> spring(dampingRatio = DampingRatio.HighBouncy)
       else -> snap()
     }
+
+// end_example
 
 private enum class TriState(val color: Long) {
   HEIGHT(0xffbf678d),

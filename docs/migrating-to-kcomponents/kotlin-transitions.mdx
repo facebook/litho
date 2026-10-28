@@ -3,95 +3,68 @@ id: kotlin-transitions
 title: Transitions
 ---
 
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
-import VersionedCodeBlock from '@theme/VersionedCodeBlock';
+This page shows how to convert Spec transitions (`@OnCreateTransition` and `@OnUpdateStateWithTransition`) to the Kotlin animation APIs. Most conversions use one of three APIs from `com.facebook.litho.animation`:
 
-:::caution
-**Deprecated:** `useTransition` is the legacy transition API. When converting `@OnCreateTransition` or `@OnUpdateStateWithTransition`, target [Style Transitions](../transitions/style-transitions.mdx) for changes to a component's properties and bounds, and [Animated Containers](../transitions/animated-containers.mdx) for components entering or leaving. [Migrating from Transitions](../transitions/migrating-from-transitions.mdx) maps each legacy API, and `compatSpring()` and `compatTiming()` keep the existing motion.
-:::
+- [`Style.transition { }`](../transitions/style-transitions.mdx) animates a component's properties, position or size whenever they change between renders.
+- [`useAnimationGroup`](../transitions/state-based-animations.mdx) animates values derived from a state, and can pick a different animation depending on the state you're coming from.
+- [`AnimatedVisibility`](../transitions/animated-containers.mdx) animates content as it's added or removed.
 
-Transitions are an important concept in Litho, and the Kotlin API provides a set of powerful hooks for transition support. This makes it possible to replicate the behaviors of both `@OnCreateTransition` and `@OnUpdateStateWithTransition` in Kotlin.
+These APIs are marked `@ExperimentalLithoApi`, so add `@OptIn(ExperimentalLithoApi::class)` to the component. If your code already uses `useTransition`, see [Migrating from Transitions](../transitions/migrating-from-transitions.mdx) instead.
 
-## useTransition APIs
-`useTransition` registers a transition (or set of transitions) to be applied when the current layout is committed. Two variants of this API are available for different use-cases.
+## How the Kotlin APIs differ
 
-When a transition is unconditional, and does not have any dependencies, such case can be represented by the simple and efficient useTransition API. This corresponds to the simplest use-case of the Spec API's `@OnCreateTransition`.
+- **No transition keys.** In the Spec API, `@OnCreateTransition` returns a `Transition`, and Litho matches it to components through transition keys. In Kotlin, you add `Style.transition { }` to the component that should animate. If that component can move around, for example in a list, give it a stable `key(...)` so Litho recognizes it from one render to the next.
+- **Only changes animate.** `Style.transition` animates a property only when its value changes, so you don't need `Diff<T>` to check whether something changed.
+- **Previous and next values come from `useAnimationGroup`.** When the animation depends on what the value was before, `useAnimationGroup` gives its `transitionSpec` both the previous state (`initialState`) and the new one (`targetState`).
+- **Different default motion.** A Spec transition with no animator springs with overshoot, while `spring()` doesn't overshoot. `Transition.timing` eases differently from `tween()`. To keep the existing motion, use `compatSpring()` or `compatTiming(durationMs)`. [Animators](../transitions/migrating-from-transitions.mdx#animators) maps each legacy animator to its spec. The examples on this page use `spring()` and `tween()` for brevity.
 
-```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/documentation/AlphaTransitionComponent.kt start=component_start end=component_end
-```
+| Spec API | Kotlin API |
+| :-- | :-- |
+| `@OnCreateTransition` that animates a property, position or size | `Style.transition { }` on that component |
+| `Transition.allLayout()` | `bounds` in `Style.transition { }` on each component that should animate |
+| `.animator(...)` | The matching compat spec, such as `compatSpring()` or `compatTiming(durationMs)`. See [Animators](../transitions/migrating-from-transitions.mdx#animators) |
+| `Transition.sequence`, `stagger` or `delay` | A delay on each component's spec, such as `tween(200.ms, delay = 100.ms)` |
+| `Diff<T>` to check whether a value changed | Not needed: `Style.transition` only animates changes |
+| `Diff<T>` to choose an animation from the previous and next value | `useAnimationGroup`, whose `transitionSpec` receives `initialState` and `targetState` |
+| `@OnUpdateStateWithTransition` | Update the state as usual; `Style.transition` or `useAnimationGroup` animates the change |
+| `appearFrom` / `disappearTo` | `AnimatedVisibility` |
+| `transitionEndHandler` | The `onSettled` parameter of `useAnimationGroup` or `useAnimatedFloat` (and the other `useAnimated*` hooks) |
+| `TransitionKeyType.GLOBAL`, or a transition key whose component lives elsewhere | No direct equivalent yet. Move the transition onto the component that should animate |
 
-However, for more complex use-cases where the transition is directly anchored to a set of dependencies. These may be states, props, or derived values. In such case, the more powerful `useTransition` with dependency API may be used. This API makes it possible to re-evaluate the transition whenever any of the dependencies change. It also provides access to the previous and next values of the declared dependency so that they may participate in the evaluation of the resulting transition. This ensures full parity with all variations of `@OnCreateTransition` as well as the transition part of `@OnUpdateStateWithTransition`
+## Scenarios
 
-<Tabs
-  groupId="transition"
-  defaultValue="kotlin_transition"
-  values={[
-    {label: 'Kotlin API', value: 'kotlin_transition'},
-  ]}>
-  <TabItem value="kotlin_transition">
-
-```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/animations/docs/TriStateComponent.kt start=start_example end=end_example
-```
-
-  </TabItem>
-</Tabs>
-
-## Which useTransition to use when?
-| Scenario                                                                          | simple useTransition | useTransition with dependencies |
-| --------------------------------------------------------------------------------- | -------------------- | ------------------------------- |
-| The same transition is always applied unconditionally                             | ✅                   |                                 |
-| Transition only needs access to the current value of state, prop or derived value | ✅                   |                                 |
-| Transition may change depending on some value                                     |                      | ✅                              |
-| Transition is only applied whenever specific value changes                        |                      | ✅                              |
-| Resulting transition depends on the previous and/or next value of some dependency |                      | ✅                              |
-
-<Tabs
-  groupId="transition"
-  defaultValue="kotlin_transition"
-  values={[
-    {label: 'Kotlin API', value: 'kotlin_transition'},
-  ]}>
-  <TabItem value="kotlin_transition">
-
-```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/animations/docs/DeltaDemoComponent.kt start=start_example end=end_example
-```
-
-  </TabItem>
-</Tabs>
-
-## Migrating from @OnCreateTransition/@OnUpdateStateWithTransition
-The table below shows a comparison of different scenarios implemented via Spec-Gen API and their equivalent Kotlin API
-
-### Scenarios
-#### Simple transition without parameters
+### Simple transition without parameters
 
 <table>
 <tr>
-<th>Spec-Gen API</th>
+<th>Spec API</th>
 <th>Kotlin API</th>
 </tr>
 <tr><td>
 
 ```kotlin
 @OnCreateTransition
-fun createTransition(context: ComponentContext): Transition {
+fun createTransition(c: ComponentContext): Transition {
   return Transition.allLayout()
 }
 ```
 </td><td>
 
 ```kotlin
-useTransition(Transition.allLayout())
+Column(style = Style.height(height).transition { bounds = spring() })
 ```
 </td></tr>
 </table>
 
-#### Transition needs only current value of state/prop/derived value
+`bounds` animates the component's position and size. Add it to each component that should animate. Components without their own `Style.transition` jump to their final positions. If they should follow the animated size frame by frame, use `bounds(spring(), reflow = true)`. That recalculates the layout on every frame, so only use it where you need it.
+
+### Transition depends on the current value
+
+Choose the animation spec from the value. `snap()` applies the change without animating it.
 
 <table>
 <tr>
-<th>Spec-Gen API</th>
+<th>Spec API</th>
 <th>Kotlin API</th>
 </tr>
 <tr><td>
@@ -99,34 +72,37 @@ useTransition(Transition.allLayout())
 ```kotlin
 @OnCreateTransition
 fun createTransition(
-  context: ComponentContext
+  c: ComponentContext,
   @State someEnum: EnumType
-): Transition {
-  return when(someEnum) {
-    EnumType.VALUE_1 -> Transition.parallel(...)
+): Transition? {
+  return when (someEnum) {
+    EnumType.VALUE_1 -> Transition.create(...)
     EnumType.VALUE_2 -> Transition.create(...)
     else -> null
+  }
 }
 ```
 </td><td>
 
 ```kotlin
-useTransition(
-  when(someEnum) {
-    EnumType.VALUE_1 -> Transition.parallel(...)
-    EnumType.VALUE_2 -> Transition.create(...)
-    else -> null
+Style.transition {
+  bounds = when (someEnum) {
+    EnumType.VALUE_1 -> spring()
+    EnumType.VALUE_2 -> tween(300.ms)
+    else -> snap()
   }
-)
+}
 ```
 </td></tr>
 </table>
 
-#### Evaluate transition only if state has changed
+### Transition only when a value changed
+
+`Style.transition` only animates a property whose value changed, so you can drop the check.
 
 <table>
 <tr>
-<th>Spec-Gen API</th>
+<th>Spec API</th>
 <th>Kotlin API</th>
 </tr>
 <tr><td>
@@ -134,11 +110,10 @@ useTransition(
 ```kotlin
 @OnCreateTransition
 fun createTransition(
-  context: ComponentContext,
+  c: ComponentContext,
   @State isEnabled: Diff<Boolean>
-): Transition {
-  val hasStateChanged = isEnabled.previous != isEnabled.next
-  return if (hasStateChanged) {
+): Transition? {
+  return if (isEnabled.previous != isEnabled.next) {
     Transition.allLayout()
   } else {
     null
@@ -148,18 +123,23 @@ fun createTransition(
 </td><td>
 
 ```kotlin
-useTransition(isEnabled) {
-  Transition.allLayout()
-}
+Column(
+    style =
+        Style.height(if (isEnabled) 120.dp else 48.dp)
+            .transition { bounds = spring() })
 ```
 </td></tr>
 </table>
 
-#### Dependency change from specific value to another
+There's one difference to check. The Spec version only animated renders where `isEnabled` changed. `Style.transition` animates the height whenever it changes, whatever the cause. If something else can change the height and that change shouldn't animate, use `useAnimationGroup` with `isEnabled` as its state, as in the next scenario.
+
+### Transition depends on the previous and next value
+
+Use `useAnimationGroup` with the state as its target. Its `transitionSpec` runs with the previous state as `initialState` and the new state as `targetState`. `A isTransitioningTo B` is shorthand for `initialState == A && targetState == B`.
 
 <table>
 <tr>
-<th>Spec-Gen API</th>
+<th>Spec API</th>
 <th>Kotlin API</th>
 </tr>
 <tr><td>
@@ -168,118 +148,73 @@ useTransition(isEnabled) {
 @OnCreateTransition
 fun onCreateTransition(
   c: ComponentContext,
-  @Prop storyContext: StoryContext,
-  @State hidden: Diff<Boolean>,
-  @State collapsed: Diff<Boolean>,
-): Transition? {
-  if (collapsed.previous == false && collapsed.next == true) {
-    return …
+  @State visibility: Diff<Visibility>
+): Transition {
+  return when {
+    visibility.previous == INVISIBLE -> ...
+    visibility.next == INVISIBLE -> ...
+    visibility.previous == PARTLY_VISIBLE &&
+      visibility.next == VISIBLE -> ...
+    else -> ...
   }
-  if (collapsed.previous == true && collapsed.next == false) {
-    return …
-  }
-  if (hidden.previous == false && hidden.next == true) {
-    return …
-  }
-  ...
-  return null
 }
 ```
 </td><td>
 
 ```kotlin
-useTransition(storyContext, hidden, collapsed) {
-  val hidden = diffOf(hidden)
-  val collapsed = diffOf(collapsed)
-  if (collapsed.previous == false && collapsed.next == true) {
-    return@useTransition …
-  }
-  if (collapsed.previous == true && collapsed.next == false) {
-    return@useTransition …
-  }
-  if (hidden.previous == false && hidden.next == true) {
-    return@useTransition …
-  }
-  ...
-  null
-}
+val group = useAnimationGroup(visibility)
+val alpha =
+    group.animateFloat(
+        transitionSpec = {
+          when {
+            initialState == INVISIBLE -> tween(150.ms)
+            targetState == INVISIBLE -> tween(300.ms)
+            PARTLY_VISIBLE isTransitioningTo VISIBLE ->
+                spring(dampingRatio = DampingRatio.MediumBouncy)
+            else -> spring()
+          }
+        },
+    ) { state -> alphaFor(state) }
+
+Row(style = Style.alpha(alpha))
 ```
 </td></tr>
 </table>
 
-#### Another complex use-case
+If only one value animates and its spec doesn't depend on the previous state, `useAnimatedFloat` (or another `useAnimated*` hook) is simpler: `val alpha = useAnimatedFloat(alphaFor(visibility), tween(300.ms))`.
+
+If the component already animates through `Style.transition` and only the spec depends on the direction, you can keep `Style.transition`: record the state you're leaving when you update it, and choose the spec from both values. This component picks a different spec for each pair of its three states:
+
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/animations/transitions/TriStateComponent.kt start=start_example end=end_example
+```
+
+### Transition depends on how much a value changed
+
+Compute the change where you update the state, and keep it in state if the UI needs it. This component shows how much a number changed and animates its scale to the new number:
+
+```kotlin file=sample-kotlin/src/main/java/com/facebook/samples/litho/kotlin/animations/transitions/DeltaDemoComponent.kt start=start_example end=end_example
+```
+
+### Updating state with a transition
+
+`@OnUpdateStateWithTransition` attached a transition to one particular state update. In Kotlin, update the state as usual. The component declares how the property animates, so the change animates whichever update caused it. If other updates to the same property shouldn't animate, see [Transition only when a value changed](#transition-only-when-a-value-changed).
 
 <table>
 <tr>
-<th>Spec-Gen API</th>
-<th>Kotlin API</th>
-</tr>
-<tr><td>
-
-```kotlin
-@OnCreateTransition
-fun onCreateTransition(
-  c: ComponentContext,
-  @Prop playerType: PlayerType,
-  @State visibility: Diff<Visibility>
-): Transition {
-  when {
-    visibility.previous == INVISIBLE -> return ...
-
-    visibility.next == INVISIBLE -> return ...
-
-    visibility.previous == PARTLY_VISIBLE &&
-      visibility.next == VISIBLE -> return ...
-
-    visibility.previous == VISIBLE &&
-      visibility.next == PARTLY_VISIBLE -> return ...
-
-    else -> return ...
-  }
-}
-```
-</td>
-<td>
-
-```kotlin
-useTransition(playerType, visibility) {
-  val visibility = diffOf(visibility)
-  when {
-    visibility.previous == INVISIBLE -> Transition(...)
-
-    visibility.next == INVISIBLE -> Transition(...)
-
-    visibility.previous == PARTLY_VISIBLE &&
-      visibility.next == VISIBLE -> Transition(...)
-
-    visibility.previous == VISIBLE &&
-      visibility.next == PARTLY_VISIBLE -> Transition(...)
-
-    else -> Transition(...)
-  }
-}
-```
-</td></tr>
-</table>
-
-#### Interplay of state and transition
-
-<table>
-<tr>
-<th>Spec-Gen API</th>
+<th>Spec API</th>
 <th>Kotlin API</th>
 </tr>
 <tr><td>
 
 ```kotlin
 @OnEvent(ClickEvent::class)
-fun triggerClickEvent(c: ComponentContext) {
+fun onClick(c: ComponentContext) {
   SomeComponent.onUpdateShiftWithTransition(c, newShiftValue)
 }
 
 @OnUpdateStateWithTransition
 fun onUpdateShift(
-  shiftPx: StateValue<Int>, 
+  shiftPx: StateValue<Int>,
   newShiftValue: Int
 ): Transition {
   shiftPx.set(newShiftValue)
@@ -290,16 +225,42 @@ fun onUpdateShift(
 </td><td>
 
 ```kotlin
-fun ComponentScope.render() {
-  ...
-  useTransition(shiftPx) {
-    Transition.create(SHIFT_TRANSITION_KEY)
-      .animate(AnimatedProperties.Y)
-  }
-  ...
-  return SomeComponent(
-    style = Style.onClick { shiftPx.update(newShiftValue) })
-}
+val shift = useState { 0.dp }
+...
+Column(
+    style =
+        Style.margin(top = shift.value)
+            .transition { y = spring() }
+            .onClick { shift.update(newShift) })
 ```
 </td></tr>
 </table>
+
+### Running code when a transition ends
+
+Replace `transitionEndHandler` with the `onSettled` parameter of `useAnimationGroup`. It runs once every animation in the group has finished, and receives the state the group settled on.
+
+```kotlin
+val group =
+    useAnimationGroup(expanded, onSettled = { settledState -> onExpandFinished(settledState) })
+val height = group.animateDimen { state -> if (state) 200.dp else 56.dp }
+```
+
+For a single value, `useAnimatedFloat` and the other `useAnimated*` hooks take the same `onSettled` parameter. `Style.transition` doesn't have an end callback yet. If you need one, animate that value with `useAnimationGroup` or a `useAnimated*` hook instead.
+
+### Appear and disappear
+
+Wrap content that used `appearFrom` or `disappearTo` in an [`AnimatedVisibility`](../transitions/animated-containers.mdx) instead of adding and removing it conditionally:
+
+```kotlin
+child(
+    AnimatedVisibility(
+        visible = shown,
+        enter = fadeIn() + expandVertically(),
+        exit = fadeOut() + shrinkVertically(),
+    ) {
+      Row(style = Style.width(80.dp).height(80.dp))
+    })
+```
+
+[Migrating from Transitions](../transitions/migrating-from-transitions.mdx#appear-and-disappear) lists the enter and exit animation for each property.

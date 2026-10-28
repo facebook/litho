@@ -48,6 +48,7 @@ import kotlin.random.Random
 @OptIn(ExperimentalLithoApi::class)
 class DeltaDemoComponent : KComponent() {
 
+  // start_example
   override fun ComponentScope.render(): Component {
     val number = useState { 0 }
     val delta = useState { 0 }
@@ -74,6 +75,8 @@ class DeltaDemoComponent : KComponent() {
                 },
     )
   }
+
+  // end_example
 
   private fun lerp(fraction: Float, from: Float, to: Float): Float = from + fraction * (to - from)
 
