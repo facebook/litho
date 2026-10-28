@@ -23,6 +23,7 @@ import com.facebook.litho.layout.LayoutFunction1
 import com.facebook.litho.layout.LayoutFunction2
 import com.facebook.litho.layout.LayoutFunction3
 import com.facebook.litho.layout.LayoutFunctionN
+import com.facebook.litho.layout.LayoutProps
 import com.facebook.rendercore.utils.areObjectsEquivalent
 
 /**
@@ -47,6 +48,10 @@ import com.facebook.rendercore.utils.areObjectsEquivalent
  * Layout(items.map { Page(it).key(it.id) }) { measurables, c -> … }   // N children
  * Layout(avatar, name, timestamp) { avatar, name, timestamp, c -> … } // three, named
  * ```
+ *
+ * A layout that needs per-child values — an angle, an alignment, a column — reads them with
+ * `measurable.layoutProps`, as [LayoutProps] classes its children set in their own `Style` with
+ * `layoutProps`.
  *
  * **A container is unchanged only when its layout function is the same one.** It is compared with
  * `equals`, never by class. An `object`, or a lambda that captures nothing, is the same instance on
@@ -82,7 +87,8 @@ import com.facebook.rendercore.utils.areObjectsEquivalent
  *   node: size, padding, margin, background, and so on. Its padding and border are the one way it
  *   reaches the children: the layout function works inside them, so they narrow the constraints it
  *   receives. Anything else that configures the arrangement — spacing, alignment — the layout
- *   function captures, or the component returning this `Layout` takes as a prop.
+ *   function captures, or the component returning this `Layout` takes as a prop. A [LayoutProps]
+ *   set here is read by this container's parent, not by this container.
  * @param layout measures and places the children
  */
 @ExperimentalLithoApi

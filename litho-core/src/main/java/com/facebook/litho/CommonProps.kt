@@ -35,6 +35,7 @@ import com.facebook.litho.Transition.TransitionKeyType
 import com.facebook.litho.animation.StyleTransitionData
 import com.facebook.litho.drawable.DrawableUtils
 import com.facebook.litho.layout.LayoutDirection
+import com.facebook.litho.layout.LayoutProps as ParentLayoutProps
 import com.facebook.litho.visibility.Visibility
 import com.facebook.rendercore.BinderKey
 import com.facebook.rendercore.Dimen
@@ -94,6 +95,31 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
   internal fun getOrCreateLayoutValues(): LayoutValues {
     return _layoutValues ?: LayoutValues().also { _layoutValues = it }
   }
+
+  /**
+   * Values this component carries for whichever `Layout` reads them, keyed by their
+   * [ParentLayoutProps] class: `com.facebook.litho.layout.LayoutProps`, imported under that name
+   * because this class implements [LayoutProps], its own Yoga props. Unrelated to [LayoutValues],
+   * which holds this component's animated width and height.
+   *
+   * Part of [isEquivalentTo], which decides whether a change reaches the container at all:
+   * reconciliation and a LazyList row both reuse a component that compares equal, and for a Spec
+   * component this map is the only place the value lives. Null for a component that sets none.
+   */
+  private var _valuesForParentLayout: MutableMap<Class<out ParentLayoutProps>, ParentLayoutProps>? =
+      null
+
+  internal fun <T : ParentLayoutProps> setValueForParentLayout(type: Class<T>, value: T) {
+    val map =
+        _valuesForParentLayout
+            ?: HashMap<Class<out ParentLayoutProps>, ParentLayoutProps>().also {
+              _valuesForParentLayout = it
+            }
+    map[type] = value
+  }
+
+  internal fun <T : ParentLayoutProps> getValueForParentLayout(type: Class<T>): T? =
+      _valuesForParentLayout?.get(type)?.let(type::cast)
 
   private var _commonDynamicProps: SparseArray<DynamicValue<*>>? = null
   val commonDynamicProps: SparseArray<DynamicValue<*>>?
@@ -788,6 +814,7 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
             isEquivalentTo(_nodeInfo, other._nodeInfo) &&
             isEquivalentTo(_layoutProps, other._layoutProps) &&
             equals(_layoutValues, other._layoutValues) &&
+            equals(_valuesForParentLayout, other._valuesForParentLayout) &&
             equals(_testKey, other._testKey) &&
             equals(componentTag, other.componentTag) &&
             equals(_commonDynamicProps, other._commonDynamicProps))

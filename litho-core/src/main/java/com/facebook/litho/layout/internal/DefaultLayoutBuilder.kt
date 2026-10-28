@@ -38,6 +38,7 @@ import com.facebook.litho.isReadTrackingEnabled
 import com.facebook.litho.layout.BoxConstraints
 import com.facebook.litho.layout.BoxLayoutProps
 import com.facebook.litho.layout.LayoutDirection
+import com.facebook.litho.layout.LayoutProps
 import com.facebook.litho.layout.Measurable
 import com.facebook.litho.layout.MeasureScope
 import com.facebook.litho.layout.NO_SIZE_DECLARED
@@ -46,6 +47,7 @@ import com.facebook.litho.layout.PlacementScope
 import com.facebook.litho.layout.axisSize
 import com.facebook.litho.layout.borderBoxSizeAround
 import com.facebook.litho.layout.contentSpec
+import com.facebook.litho.layout.readLayoutProps
 import com.facebook.litho.layout.resolveBoxConstraints
 import com.facebook.litho.state.StateId
 import com.facebook.litho.state.StateReadRecorder
@@ -439,6 +441,10 @@ internal class DefaultLayoutBuilder(
     previousChildrenByKey = map
     return map
   }
+
+  /** The [LayoutProps] of [type] child [index] carries, or null. */
+  internal fun <T : LayoutProps> layoutPropsOf(index: Int, type: Class<T>): T? =
+      node.getChildAt(index).readLayoutProps(type)
 
   /** The box child [index]'s own props resolve to within [constraints]. */
   private fun boxConstraintsUnder(
