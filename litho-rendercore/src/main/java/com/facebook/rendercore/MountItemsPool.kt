@@ -44,6 +44,9 @@ object MountContentPools {
 
   private var mountItemPoolsReleaseValidator: MountItemPoolsReleaseValidator? = null
 
+  const val ATTACHED_VIEW_RELEASED_CATEGORY: String = "MountContentPools:ReleasedAttachedView"
+  private const val MAX_REPORTED_PARENTS: Int = 4
+
   /** A factory used to create [MountContentPools.ContentPool]s. */
   fun interface Factory {
 
@@ -165,6 +168,10 @@ object MountContentPools {
         return
       }
 
+      if (mountContent is View && mountContent.parent != null) {
+        reportAttachedViewReleased(mountContent, poolableMountContent.poolKeyTypeName)
+      }
+
       if (mountItemPoolsReleaseValidator != null && mountContent is View) {
         mountItemPoolsReleaseValidator?.assertValidRelease(
             mountContent,
@@ -184,6 +191,34 @@ object MountContentPools {
         RenderCoreSystrace.endSection()
       }
     }
+  }
+
+  /**
+   * A pooled View that still has a parent crashes the next mount that acquires it, in
+   * `ViewGroup.addView` ("The specified child already has a parent"), far from the code that
+   * released it. Reporting here captures the release stack instead.
+   */
+  private fun reportAttachedViewReleased(view: View, poolKey: String) {
+    val message =
+        "Released a View to the mount content pool while it is still attached: " +
+            "content=${view.javaClass.name}, pool=$poolKey, " +
+            "attachedToWindow=${view.isAttachedToWindow}, parents=${describeParents(view)}"
+    ErrorReporter.report(
+        LogLevel.ERROR,
+        ATTACHED_VIEW_RELEASED_CATEGORY,
+        message,
+        IllegalStateException(message),
+    )
+  }
+
+  private fun describeParents(view: View): String {
+    val parents = ArrayList<String>(MAX_REPORTED_PARENTS)
+    var parent = view.parent
+    while (parent != null && parents.size < MAX_REPORTED_PARENTS) {
+      parents.add(parent.javaClass.name)
+      parent = parent.parent
+    }
+    return parents.joinToString(" > ")
   }
 
   @JvmStatic

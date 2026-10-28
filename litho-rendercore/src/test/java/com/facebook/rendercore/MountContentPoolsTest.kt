@@ -20,6 +20,7 @@ import android.app.Activity
 import android.app.Service
 import android.content.Context
 import android.view.View
+import android.widget.FrameLayout
 import androidx.lifecycle.LifecycleService
 import com.facebook.rendercore.MountContentPools.acquireMountContent
 import com.facebook.rendercore.MountContentPools.clear
@@ -66,6 +67,45 @@ class MountContentPoolsTest {
   @After
   fun cleanup() {
     setMountContentPoolFactory(null)
+    ErrorReporter.provide(DefaultErrorReporter())
+  }
+
+  @Test
+  fun testReleasingAttachedViewReportsError() {
+    val reports = captureReports()
+    val testRenderUnit = TestRenderUnit(0)
+    val content = acquireMountContent(context, testRenderUnit) as View
+    val parent = FrameLayout(context)
+    parent.addView(content)
+
+    recycle(context, testRenderUnit, content)
+
+    Assertions.assertThat(reports).hasSize(1)
+    Assertions.assertThat(reports[0].first).isEqualTo(LogLevel.ERROR)
+    Assertions.assertThat(reports[0].second)
+        .isEqualTo(MountContentPools.ATTACHED_VIEW_RELEASED_CATEGORY)
+    Assertions.assertThat(reports[0].third)
+        .contains(View::class.java.name)
+        .contains("parents=${FrameLayout::class.java.name}")
+  }
+
+  @Test
+  fun testReleasingDetachedViewDoesNotReportError() {
+    val reports = captureReports()
+    val testRenderUnit = TestRenderUnit(0)
+    val content = acquireMountContent(context, testRenderUnit)
+
+    recycle(context, testRenderUnit, content)
+
+    Assertions.assertThat(reports).isEmpty()
+  }
+
+  private fun captureReports(): MutableList<Triple<LogLevel, String, String>> {
+    val reports = mutableListOf<Triple<LogLevel, String, String>>()
+    ErrorReporter.provide { level, categoryKey, message, _, _, _ ->
+      reports.add(Triple(level, categoryKey, message))
+    }
+    return reports
   }
 
   @Test
