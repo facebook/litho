@@ -37,6 +37,13 @@ private const val YellowKey = "YellowKey"
 private const val BlueKey = "BlueKey"
 private const val MagentaKey = "MagentaKey"
 
+/**
+ * Demonstrates Litho's legacy transition API (`useTransition`, `Style.transitionKey`), kept as a
+ * reference for existing code. For the modern version, see the "Parallel" row of
+ * [com.facebook.samples.litho.kotlin.animations.diffbased.ChoreographyComponent], and
+ * [com.facebook.samples.litho.kotlin.animations.statebased.SpecComparisonComponent] for a different
+ * spec per block.
+ */
 class ParallelTransitionWithAnimatorsComponent : KComponent() {
 
   override fun ComponentScope.render(): Component {

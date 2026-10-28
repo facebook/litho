@@ -45,6 +45,11 @@ import com.facebook.samples.litho.kotlin.drawable.RoundedRect
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaPositionType
 
+/**
+ * Demonstrates Litho's legacy transition API (`useTransition`, `Style.transitionKey`), kept as a
+ * reference for existing code. New code should use `Style.transition { }` or `AnimatedVisibility` /
+ * `AnimatedContent`; see the `animations/diffbased` and `animations/statebased` samples.
+ */
 class AnimatedBadgeKotlin : KComponent() {
   private val ANIMATION_DURATION = 300
   private val ANIMATOR = Transition.timing(ANIMATION_DURATION)

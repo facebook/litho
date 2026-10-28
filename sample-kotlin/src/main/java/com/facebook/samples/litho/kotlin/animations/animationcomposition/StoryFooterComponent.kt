@@ -44,6 +44,11 @@ import com.facebook.rendercore.sp
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaJustify
 
+/**
+ * Demonstrates Litho's legacy transition API (`useTransition`, `Style.transitionKey`), kept as a
+ * reference for existing code. For modern choreography, see
+ * [com.facebook.samples.litho.kotlin.animations.diffbased.ChoreographyComponent].
+ */
 class StoryFooterComponent : KComponent() {
 
   override fun ComponentScope.render(): Component? {

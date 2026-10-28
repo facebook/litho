@@ -32,6 +32,11 @@ import com.facebook.litho.view.onClick
 import com.facebook.rendercore.dp
 import com.facebook.samples.litho.kotlin.drawable.RoundedRect
 
+/**
+ * Demonstrates Litho's legacy transition API (`useTransition`, `Style.transitionKey`), kept as a
+ * reference for existing code. New code should use `Style.transition { }` or `AnimatedVisibility` /
+ * `AnimatedContent`; see the `animations/diffbased` and `animations/statebased` samples.
+ */
 class ContainersComponent : KComponent() {
 
   override fun ComponentScope.render(): Component? {

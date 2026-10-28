@@ -34,6 +34,11 @@ import com.facebook.yoga.YogaJustify
 
 private const val YellowKey = "YellowKey"
 
+/**
+ * Demonstrates Litho's legacy transition API (`useTransition`, `Style.transitionKey`), kept as a
+ * reference for existing code. For the modern version, see the "Same component" row of
+ * [com.facebook.samples.litho.kotlin.animations.diffbased.ChoreographyComponent].
+ */
 // start_example
 class StaggerTransitionSameComponent : KComponent() {
 

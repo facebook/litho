@@ -40,6 +40,11 @@ import com.facebook.yoga.YogaAlign
 private const val TRANSITION_KEY_TEXT = "key"
 private const val TRANSITION_KEY2_TEXT = "key2"
 
+/**
+ * Demonstrates Litho's legacy transition API (`useTransition`, `Style.transitionKey`), kept as a
+ * reference for existing code. New code should use `Style.transition { }` or `AnimatedVisibility` /
+ * `AnimatedContent`; see the `animations/diffbased` and `animations/statebased` samples.
+ */
 class TransitionsComponent : KComponent() {
 
   override fun ComponentScope.render(): Component? {

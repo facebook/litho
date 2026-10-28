@@ -33,6 +33,11 @@ import com.facebook.litho.widget.SolidColor
 import com.facebook.rendercore.dp
 import com.facebook.yoga.YogaAlign
 
+/**
+ * Demonstrates Litho's legacy transition API (`useTransition`, `Style.transitionKey`), kept as a
+ * reference for existing code. For the modern version, see the "Parallel" row of
+ * [com.facebook.samples.litho.kotlin.animations.diffbased.ChoreographyComponent].
+ */
 class SimpleAllLayoutTransitionKComponent : KComponent() {
 
   // layout_start

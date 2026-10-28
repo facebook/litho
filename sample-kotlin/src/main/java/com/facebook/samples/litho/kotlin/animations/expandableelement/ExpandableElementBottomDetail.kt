@@ -31,6 +31,11 @@ import com.facebook.rendercore.dp
 import com.facebook.rendercore.sp
 import com.facebook.yoga.YogaAlign
 
+/**
+ * Demonstrates Litho's legacy transition API (`useTransition`, `Style.transitionKey`), kept as a
+ * reference for existing code. There is no modern version of this demo yet. The closest is
+ * [com.facebook.samples.litho.kotlin.animations.statebased.AnimatedVisibilityDemoComponent].
+ */
 class ExpandableElementBottomDetail(private val seen: Boolean) : KComponent() {
 
   override fun ComponentScope.render(): Component {

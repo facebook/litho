@@ -37,6 +37,11 @@ import com.facebook.yoga.YogaAlign
 
 private const val SQUARE_KEY = "square"
 
+/**
+ * Demonstrates Litho's legacy transition API (`useTransition`, `Style.transitionKey`), kept as a
+ * reference for existing code. `Style.transition` has no transition keys, so this has no modern
+ * version.
+ */
 // start_working_parent
 // Parent component that defines the transition for the GLOBAL key
 class GlobalKeyParentComponent : KComponent() {

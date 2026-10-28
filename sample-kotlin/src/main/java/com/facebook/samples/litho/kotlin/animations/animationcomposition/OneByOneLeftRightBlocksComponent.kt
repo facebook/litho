@@ -41,6 +41,11 @@ private const val TRANSITION_KEY_GREEN = "green"
 private val ALL_TRANSITION_KEYS =
     arrayOf(TRANSITION_KEY_RED, TRANSITION_KEY_BLUE, TRANSITION_KEY_GREEN)
 
+/**
+ * Demonstrates Litho's legacy transition API (`useTransition`, `Style.transitionKey`), kept as a
+ * reference for existing code. For modern choreography, see
+ * [com.facebook.samples.litho.kotlin.animations.diffbased.ChoreographyComponent].
+ */
 class OneByOneLeftRightBlocksComponent : KComponent() {
 
   override fun ComponentScope.render(): Component? {

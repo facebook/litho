@@ -38,6 +38,13 @@ private const val YellowKey = "YellowKey"
 private const val BlueKey = "BlueKey"
 private const val MagentaKey = "MagentaKey"
 
+/**
+ * Demonstrates Litho's legacy transition API (`useTransition`, `Style.transitionKey`), kept as a
+ * reference for existing code. For the modern version, see the "Sequence" row of
+ * [com.facebook.samples.litho.kotlin.animations.diffbased.ChoreographyComponent], and
+ * [com.facebook.samples.litho.kotlin.animations.statebased.AnimationCallbackComponent] for looping
+ * when an animation settles.
+ */
 // start_example
 class SequenceTransitionLoopComponent : KComponent() {
 

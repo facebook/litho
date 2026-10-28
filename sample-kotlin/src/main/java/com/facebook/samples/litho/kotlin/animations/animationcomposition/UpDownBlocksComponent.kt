@@ -35,6 +35,11 @@ import com.facebook.litho.view.onClick
 import com.facebook.rendercore.dp
 import com.facebook.yoga.YogaAlign
 
+/**
+ * Demonstrates Litho's legacy transition API (`useTransition`, `Style.transitionKey`), kept as a
+ * reference for existing code. For modern choreography, see
+ * [com.facebook.samples.litho.kotlin.animations.diffbased.ChoreographyComponent].
+ */
 class UpDownBlocksComponent : KComponent() {
 
   override fun ComponentScope.render(): Component? {

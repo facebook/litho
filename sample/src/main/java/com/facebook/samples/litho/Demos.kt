@@ -84,10 +84,6 @@ import com.facebook.samples.litho.kotlin.animations.diffbased.DiffInterruptionPr
 import com.facebook.samples.litho.kotlin.animations.diffbased.DiffReflowToggleComponent
 import com.facebook.samples.litho.kotlin.animations.diffbased.DiffReusableMotionComponent
 import com.facebook.samples.litho.kotlin.animations.diffbased.PageIndicatorsComponent
-import com.facebook.samples.litho.kotlin.animations.docs.ParallelTransitionWithAnimatorsComponent as KotlinParallelTransitionWithAnimatorsComponent
-import com.facebook.samples.litho.kotlin.animations.docs.SequenceTransitionLoopComponent as KotlinSequenceTransitionLoopComponent
-import com.facebook.samples.litho.kotlin.animations.docs.StaggerTransitionComponent as KotlinStaggerTransitionComponent
-import com.facebook.samples.litho.kotlin.animations.docs.StaggerTransitionSameComponent as KotlinStaggerTransitionSameComponent
 import com.facebook.samples.litho.kotlin.animations.dynamicprops.AllCommonDynamicPropsKComponent
 import com.facebook.samples.litho.kotlin.animations.dynamicprops.AnimateDynamicPropsKComponent
 import com.facebook.samples.litho.kotlin.animations.dynamicprops.CommonDynamicPropsKComponent
@@ -249,43 +245,10 @@ class Demos {
                     name = "Animations",
                     listOf(
                         SingleDemo(name = "Animated API Demo", component = AnimatedComponent()),
-                        SingleDemo(name = "Animated Badge", component = AnimatedBadgeKotlin()),
                         SingleDemo(name = "Blur Animation", component = BlurKComponent()),
-                        SingleDemo(
-                            name = "Bounds Animation",
-                            component = BoundsAnimationComponent(),
-                        ),
                         SingleDemo(
                             name = "Animated Counter",
                             component = AnimatingCounterRootComponent(),
-                        ),
-                        SingleDemo(
-                            name = "Animations Composition",
-                            component = ComposedAnimationsComponentKotlin(),
-                        ),
-                        SingleDemo(
-                            name = "Expandable Element",
-                            component =
-                                ExpandableElementRootKotlinKComponent(
-                                    initialMessages = Message.Messages,
-                                ),
-                        ),
-                        SingleDemo(name = "Transitions", component = TransitionsComponent()),
-                        SingleDemo(
-                            name = "Stagger Transition",
-                            component = KotlinStaggerTransitionComponent(),
-                        ),
-                        SingleDemo(
-                            name = "Stagger Transition on Same Component",
-                            component = KotlinStaggerTransitionSameComponent(),
-                        ),
-                        SingleDemo(
-                            name = "Parallel Transition with Animators",
-                            component = KotlinParallelTransitionWithAnimatorsComponent(),
-                        ),
-                        SingleDemo(
-                            name = "Sequence Transition Loop",
-                            component = KotlinSequenceTransitionLoopComponent(),
                         ),
                         SingleDemo(
                             name = "[KComponent] Common Dynamic Props",
@@ -310,6 +273,29 @@ class Demos {
                         SingleDemo(
                             name = "useState vs useBinding",
                             component = UseStateVsUseBindingExample(),
+                        ),
+                        SingleDemo(
+                            name = "Animated Badge (Legacy)",
+                            component = AnimatedBadgeKotlin(),
+                        ),
+                        SingleDemo(
+                            name = "Bounds Animation (Legacy)",
+                            component = BoundsAnimationComponent(),
+                        ),
+                        SingleDemo(
+                            name = "Animations Composition (Legacy)",
+                            component = ComposedAnimationsComponentKotlin(),
+                        ),
+                        SingleDemo(
+                            name = "Expandable Element (Legacy)",
+                            component =
+                                ExpandableElementRootKotlinKComponent(
+                                    initialMessages = Message.Messages,
+                                ),
+                        ),
+                        SingleDemo(
+                            name = "Transitions (Legacy)",
+                            component = TransitionsComponent(),
                         ),
                     ),
                 ),

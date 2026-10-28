@@ -43,6 +43,11 @@ import com.facebook.yoga.YogaAlign
 import kotlin.math.absoluteValue
 import kotlin.random.Random
 
+/**
+ * Demonstrates Litho's legacy transition API (`useTransition`, `Style.transitionKey`), kept as a
+ * reference for existing code. New code should use `Style.transition { }` or `AnimatedVisibility` /
+ * `AnimatedContent`; see the `animations/diffbased` and `animations/statebased` samples.
+ */
 class DeltaDemoComponent : KComponent() {
   companion object {
     private const val MIN = -999

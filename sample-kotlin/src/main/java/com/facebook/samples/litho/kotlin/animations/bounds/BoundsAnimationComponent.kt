@@ -62,6 +62,11 @@ private const val TRANSITION_KEY_CHILD_ALL_TOGETHER_TOP_END = "child_all_togethe
 private const val TRANSITION_KEY_CHILD_ALL_TOGETHER_BOTTOM_START = "child_all_together_bottom_start"
 private const val TRANSITION_KEY_CHILD_ALL_TOGETHER_BOTTOM_END = "child_all_together_bottom_end"
 
+/**
+ * Demonstrates Litho's legacy transition API (`useTransition`, `Style.transitionKey`), kept as a
+ * reference for existing code. There is no modern version of this demo yet. The closest is
+ * [com.facebook.samples.litho.kotlin.animations.diffbased.DiffReflowToggleComponent].
+ */
 class BoundsAnimationComponent : KComponent() {
   override fun ComponentScope.render(): Component {
     val autoBoundsTransitionEnabled = useState { false }

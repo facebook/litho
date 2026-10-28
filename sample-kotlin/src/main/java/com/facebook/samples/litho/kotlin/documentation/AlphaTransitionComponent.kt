@@ -35,6 +35,11 @@ import com.facebook.litho.view.backgroundColor
 import com.facebook.litho.view.onClick
 import com.facebook.rendercore.dp
 
+/**
+ * Demonstrates Litho's legacy transition API (`useTransition`, `Style.transitionKey`), kept as a
+ * reference for existing code. For the modern version, see
+ * [com.facebook.samples.litho.kotlin.animations.diffbased.DiffFadeToggleComponent].
+ */
 // component_start
 class AlphaTransitionKComponent : KComponent() {
 
