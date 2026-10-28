@@ -43,6 +43,7 @@ import com.facebook.rendercore.text.TouchableSpanListener
 import java.lang.Deprecated
 
 @ExcuseMySpec(reason = Reason.J2K_CONVERSION)
+@kotlin.Deprecated("Use RichText instead")
 @LayoutSpec
 object TextSpec {
 

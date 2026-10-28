@@ -181,6 +181,7 @@ import kotlin.math.min
  * @prop isHintOnOneLine See [TextInputSpec].
  */
 @ExcuseMySpec(reason = Reason.J2K_CONVERSION)
+@Deprecated("Use ExperimentalTextInput instead")
 @MountSpec(
     isPureRender = true,
     events =

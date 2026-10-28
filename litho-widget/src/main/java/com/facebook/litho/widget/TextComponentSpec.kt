@@ -187,6 +187,7 @@ import kotlin.math.min
  *   line of text).
  */
 @ExcuseMySpec(reason = Reason.J2K_CONVERSION)
+@Deprecated("Use RichText instead")
 @MountSpec(
     isPureRender = true,
     hasIntrinsicSize = true,

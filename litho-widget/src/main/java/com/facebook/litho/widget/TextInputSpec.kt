@@ -149,6 +149,7 @@ import com.facebook.litho.config.ComponentsConfiguration
  *   input's width, whatever [maxLines] allows. Accessibility still reads the whole hint.
  */
 @ExcuseMySpec(reason = Reason.J2K_CONVERSION)
+@Deprecated("Use ExperimentalTextInput instead")
 @LayoutSpec(
     events =
         [

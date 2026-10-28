@@ -134,7 +134,7 @@ import java.util.concurrent.atomic.AtomicReference
             SetTextEvent::class,
         ],
 )
-@Deprecated("")
+@Deprecated("Use ExperimentalTextInput instead")
 internal object EditTextSpec {
 
   private val ALIGNMENT: Array<Layout.Alignment> = Layout.Alignment.entries.toTypedArray()

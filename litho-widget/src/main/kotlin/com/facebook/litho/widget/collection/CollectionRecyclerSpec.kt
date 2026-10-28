@@ -56,6 +56,7 @@ import com.facebook.litho.widget.ViewportInfo.ViewportChanged
 import com.facebook.rendercore.PoolScope
 
 @ExcuseMySpec(Reason.LEGACY)
+@Deprecated("Use LazyList instead")
 @LayoutSpec(events = [PTRRefreshEvent::class])
 object CollectionRecyclerSpec {
 

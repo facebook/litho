@@ -117,7 +117,7 @@ import kotlin.Unit;
  *     RecyclerBinderConfiguration} allows to make {@link Recycler} circular.
  * @see Section
  * @see GroupSectionSpec
- * @deprecated Use LazyCollections instead.
+ * @deprecated Use LazyList, LazyGrid, or Recycler instead.
  */
 @Deprecated
 @Nullsafe(Nullsafe.Mode.LOCAL)
