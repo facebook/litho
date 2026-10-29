@@ -410,6 +410,7 @@ class LayoutPropsTest {
     val inner = Layout(
         listOf(box()),
         style = Style.width(CHILD.px).height(CHILD.px).testOffset(40),
+        deps = emptyArray(),
         layout =
             LayoutFunctionN { ms, _ ->
               innerSaw = ms[0].offset()

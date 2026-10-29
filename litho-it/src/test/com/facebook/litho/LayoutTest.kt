@@ -170,9 +170,10 @@ class LayoutTest {
         .isTrue()
 
     assertThat(
-        Layout(emptyList(), layout = InARow).isEquivalentTo(Layout(listOf(null), layout = InARow)),
+        Layout(emptyList(), layout = InARow)
+            .isEquivalentTo(Layout(listOf(Column()), layout = InARow)),
     )
-        .describedAs("a declared child is a difference, even one that is null")
+        .describedAs("a declared child is a difference, even an empty one")
         .isFalse()
 
     assertThat(
@@ -192,6 +193,21 @@ class LayoutTest {
                 "subtree that was rebuilt but did not change",
         )
         .isTrue()
+  }
+
+  /**
+   * A null child is refused when the container is built, however it got into the list, so it fails
+   * the same way on every path rather than only when resolve is interrupted.
+   */
+  @Test
+  fun `a null child smuggled into the list is refused when the container is built`() {
+    @Suppress("UNCHECKED_CAST") val children = listOf(Column(), null) as List<Component>
+
+    val failure = runCatching { Layout(children, layout = InARow) }.exceptionOrNull()
+
+    assertThat(failure)
+        .isInstanceOf(IllegalArgumentException::class.java)
+        .hasMessageContaining("child 1")
   }
 
   /**
@@ -234,42 +250,50 @@ class LayoutTest {
   }
 
   /**
-   * A container is equivalent to the last one only when its layout function is the same one; it is
-   * compared by `equals`, never by class.
+   * A container is equivalent to the last one when its layout function is of the same class and
+   * what the function captured is equivalent: the Litho compiler plugin infers the deps of a lambda
+   * written at the call site from its captures.
    *
-   * An `object` layout function, or a lambda that captures nothing, is the same instance on every
-   * render, so an unchanged container is equivalent and its layout is reused. A lambda that
-   * captures a value is a new instance each render, so its container is never equivalent and lays
-   * out again — which is correct even when the captured value changed, where comparing the class
-   * would keep the container laid out against the stale value.
+   * So a lambda re-created on every render is the same container while the values it captured stay
+   * the same, and a different one when one changes, where comparing the class alone would keep the
+   * container laid out against the stale value. A lambda that captures only values the plugin
+   * ignores, such as the component context, has no deps, so its class alone decides. A function
+   * passed in rather than written at the call site, such as an `object`, is compared with `equals`.
    */
   @Test
-  fun `the layout function itself decides equivalence, never its class`() {
+  fun `the layout function's class and its captured values decide equivalence`() {
     val child = Column()
+    val context = lithoTestRule.context
     fun nonCapturing(): Layout =
         Layout(listOf(child), layout = { _, con -> layout(con.maxWidth, CHILD) {} })
     fun capturing(height: Int): Layout =
         Layout(listOf(child), layout = { _, con -> layout(con.maxWidth, height) {} })
+    fun capturingOnlyTheContext(): Layout = Layout(
+        listOf(child),
+        layout = { _, constraints ->
+          val screenWidth = context.androidContext.resources.displayMetrics.widthPixels
+          layout(minOf(constraints.maxWidth, screenWidth), CHILD) {}
+        },
+    )
 
     assertThat(
         Layout(listOf(child), layout = FixedHeight)
-            .isEquivalentTo(
-                Layout(listOf(child), layout = FixedHeight),
-            ),
+            .isEquivalentTo(Layout(listOf(child), layout = FixedHeight)),
     )
         .describedAs("the same object function over the same children: the same container")
         .isTrue()
     assertThat(nonCapturing().isEquivalentTo(nonCapturing()))
-        .describedAs("a lambda capturing nothing is one instance: still the same container")
+        .describedAs("a lambda capturing nothing: still the same container")
+        .isTrue()
+    assertThat(capturing(1).isEquivalentTo(capturing(1)))
+        .describedAs("a new lambda capturing the same value: still the same container")
         .isTrue()
     assertThat(capturing(1).isEquivalentTo(capturing(2)))
         .describedAs("a captured value changed: a different container, though the class is shared")
         .isFalse()
-    assertThat(capturing(1).isEquivalentTo(capturing(1)))
-        .describedAs(
-            "a capturing lambda is a new instance each render, so it always lays out again",
-        )
-        .isFalse()
+    assertThat(capturingOnlyTheContext().isEquivalentTo(capturingOnlyTheContext()))
+        .describedAs("a new lambda capturing only the ignored context: still the same container")
+        .isTrue()
     assertThat(
         Layout(listOf(child), layout = FixedHeight)
             .isEquivalentTo(
@@ -278,6 +302,45 @@ class LayoutTest {
     )
         .describedAs("switching to a different function is a change")
         .isFalse()
+  }
+
+  /**
+   * Deps passed by hand are compared whenever both sides pass them, even for one function: the
+   * function is the same instance in the first assertions here, so only the deps can tell the
+   * containers apart. `deps = emptyArray()` says the function depends on nothing, so its class
+   * alone decides, whatever the lambda captured. A side that passes nothing keeps the default and
+   * has its function compared with `equals` instead, as for a function the plugin could not read.
+   */
+  @Test
+  fun `deps passed by hand decide equivalence for one function`() {
+    val child = Column()
+    fun explicitlyNone(height: Int): Layout = Layout(
+        listOf(child),
+        deps = emptyArray(),
+        layout = { _, constraints -> layout(constraints.maxWidth, height) {} },
+    )
+
+    assertThat(
+        Layout(listOf(child), deps = arrayOf(1), layout = FixedHeight)
+            .isEquivalentTo(Layout(listOf(child), deps = arrayOf(1), layout = FixedHeight)),
+    )
+        .describedAs("the same deps by hand: the same container")
+        .isTrue()
+    assertThat(
+        Layout(listOf(child), deps = arrayOf(1), layout = FixedHeight)
+            .isEquivalentTo(Layout(listOf(child), deps = arrayOf(2), layout = FixedHeight)),
+    )
+        .describedAs("deps that differ by hand: a different container, though the function is one")
+        .isFalse()
+    assertThat(explicitlyNone(1).isEquivalentTo(explicitlyNone(2)))
+        .describedAs("no deps by hand: the class alone decides, whatever the lambda captured")
+        .isTrue()
+    assertThat(
+        Layout(listOf(child), deps = arrayOf(1), layout = FixedHeight)
+            .isEquivalentTo(Layout(listOf(child), layout = FixedHeight)),
+    )
+        .describedAs("deps on one side only fall back to the function, which is the same one")
+        .isTrue()
   }
 
   /**

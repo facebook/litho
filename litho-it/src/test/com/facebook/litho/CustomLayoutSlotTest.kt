@@ -33,14 +33,14 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-/** A `Layout`'s children keep the slots they were declared in, present or not. */
+/** A `Layout`'s children keep the slots they were declared in, whether they render or not. */
 @RunWith(LithoTestRunner::class)
 class CustomLayoutSlotTest {
 
   @JvmField @Rule val lithoTestRule = LithoTestRule()
 
   @Test
-  fun `a function naming three children gets all three when the middle one is null`() {
+  fun `a function naming three children gets all three when the middle one renders nothing`() {
     val sizes = ArrayList<String>()
     val three = LayoutFunction3 { a, b, c, constraints ->
       val pa = a.measure(SizeConstraints(maxWidth = constraints.maxWidth, maxHeight = 100))
@@ -54,7 +54,7 @@ class CustomLayoutSlotTest {
     }
 
     lithoTestRule.render(widthPx = 200, heightPx = 200) {
-      Layout(leaf(), null, leaf(), layout = three)
+      Layout(leaf(), RendersNothing(), leaf(), layout = three)
     }
 
     assertThat(sizes).containsExactly("10x10", "0x0", "10x10")
