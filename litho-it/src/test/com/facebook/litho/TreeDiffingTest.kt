@@ -16,7 +16,6 @@
 
 package com.facebook.litho
 
-import android.R
 import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
@@ -598,7 +597,7 @@ class TreeDiffingTest {
     override fun onCreateLayout(c: ComponentContext): Component {
       return Column.create(c)
           .background(RedDrawable)
-          .foregroundRes(R.drawable.btn_default)
+          .foregroundRes(android.R.drawable.btn_default)
           .child(
               TestDrawableComponent.create(c)
                   .background(if (changeChildDrawable) RedDrawable else BlackDrawable),

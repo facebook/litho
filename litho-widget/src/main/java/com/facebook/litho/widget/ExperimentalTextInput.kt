@@ -16,7 +16,6 @@
 
 package com.facebook.litho.widget
 
-import android.R
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.res.ColorStateList
@@ -294,7 +293,7 @@ class ExperimentalTextInput(
       if (highlightColor != null) {
         highlightColor
       } else {
-        val attrs = context.obtainStyledAttributes(intArrayOf(R.attr.textColorHighlight), 0)
+        val attrs = context.obtainStyledAttributes(intArrayOf(android.R.attr.textColorHighlight), 0)
         try {
           attrs.getColor(0, 0)
         } finally {
@@ -857,8 +856,8 @@ internal fun createAndMeasureEditText(
 
 fun getBackgroundOrDefault(context: Context, specifiedBackground: Drawable?): Drawable? {
   if (specifiedBackground === UNSET_DRAWABLE) {
-    val attrs = intArrayOf(R.attr.background)
-    val a = context.obtainStyledAttributes(null, attrs, R.attr.editTextStyle, 0)
+    val attrs = intArrayOf(android.R.attr.background)
+    val a = context.obtainStyledAttributes(null, attrs, android.R.attr.editTextStyle, 0)
     val defaultBackground = a.getDrawable(0)
     a.recycle()
     return defaultBackground
@@ -1128,7 +1127,7 @@ internal class EditTextWithEventHandlers(context: Context?) :
   }
 
   override fun onTextContextMenuItem(id: Int): Boolean {
-    if (id == R.id.paste && onTextPasted != null) {
+    if (id == android.R.id.paste && onTextPasted != null) {
       isTextPasted = true
     }
     return super.onTextContextMenuItem(id)

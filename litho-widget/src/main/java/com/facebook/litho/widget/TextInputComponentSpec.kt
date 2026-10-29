@@ -16,7 +16,6 @@
 
 package com.facebook.litho.widget
 
-import android.R
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -259,7 +258,7 @@ internal object TextInputComponentSpec {
   @JvmStatic
   @OnLoadStyle
   fun onLoadStyle(c: ComponentContext, highlightColor: Output<Int?>) {
-    val a = c.obtainStyledAttributes(intArrayOf(R.attr.textColorHighlight), 0)
+    val a = c.obtainStyledAttributes(intArrayOf(android.R.attr.textColorHighlight), 0)
     try {
       highlightColor.set(a.getColor(0, 0))
     } finally {
@@ -1112,8 +1111,8 @@ internal object TextInputComponentSpec {
   @JvmStatic
   fun getBackgroundOrDefault(c: ComponentContext, specifiedBackground: Drawable?): Drawable? {
     if (specifiedBackground === UNSET_DRAWABLE) {
-      val attrs = intArrayOf(R.attr.background)
-      val a = c.androidContext.obtainStyledAttributes(null, attrs, R.attr.editTextStyle, 0)
+      val attrs = intArrayOf(android.R.attr.background)
+      val a = c.androidContext.obtainStyledAttributes(null, attrs, android.R.attr.editTextStyle, 0)
       val defaultBackground = a.getDrawable(0)
       a.recycle()
       return defaultBackground
@@ -1429,7 +1428,7 @@ internal object TextInputComponentSpec {
     }
 
     override fun onTextContextMenuItem(id: Int): Boolean {
-      if (id == R.id.paste && textPastedEventHandler != null) {
+      if (id == android.R.id.paste && textPastedEventHandler != null) {
         isTextPasted = true
       }
       return super.onTextContextMenuItem(id)
