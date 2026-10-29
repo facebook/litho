@@ -564,6 +564,64 @@ class AutoDepsTransformerTest : AbstractCompilerTest() {
   }
 
   @Test
+  fun `keeps the deps default for a non-literal argument when the parameter opts in`() {
+    val deps = depsOf(
+        """
+        fun subject() {
+          val f = LayoutFunction { w -> w }
+          KeepsDefault(func = f)
+        }
+        """,
+    )
+    assertThat(deps).containsExactly("default")
+  }
+
+  @Test
+  fun `still infers a lambda literal when the parameter opts in`() {
+    val deps = depsOf(
+        """
+        fun subject() {
+          val count = 42
+          KeepsDefault { w -> w + count }
+        }
+        """,
+    )
+    assertThat(deps).containsExactly(42)
+  }
+
+  @Test
+  fun `still rejects a var capture when the parameter opts in`() {
+    val result = compileSubject(
+        """
+        fun subject() {
+          var count = 1
+          count++
+          KeepsDefault { w -> w + count }
+        }
+        """,
+    )
+    assertThat(result.exitCode).isEqualTo(KotlinCompilation.ExitCode.COMPILATION_ERROR)
+    assertThat(result.messages).contains("AUTODEPS_MUTABLE_CAPTURE")
+  }
+
+  @Test
+  fun `still reports another argument's problem when one keeps the default`() {
+    val result = compileSubject(
+        """
+        fun subject() {
+          val f = {}
+          var count = 1
+          count++
+          onKeepsDefaultAndThing(first = f) { println(count) }
+        }
+        """,
+    )
+    assertThat(result.exitCode).isEqualTo(KotlinCompilation.ExitCode.COMPILATION_ERROR)
+    assertThat(result.messages).contains("AUTODEPS_MUTABLE_CAPTURE")
+    assertThat(result.messages).doesNotContain("AUTODEPS_NON_LITERAL_TARGET")
+  }
+
+  @Test
   fun `drops captures of an ignored type`() {
     val deps = depsOf(
         """

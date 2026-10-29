@@ -39,7 +39,9 @@ import org.jetbrains.kotlin.ir.declarations.IrField
 import org.jetbrains.kotlin.ir.declarations.IrFile
 import org.jetbrains.kotlin.ir.declarations.IrFunction
 import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
+import org.jetbrains.kotlin.ir.declarations.IrValueParameter
 import org.jetbrains.kotlin.ir.expressions.IrCall
+import org.jetbrains.kotlin.ir.expressions.IrConst
 import org.jetbrains.kotlin.ir.expressions.IrConstructorCall
 import org.jetbrains.kotlin.ir.expressions.IrDelegatingConstructorCall
 import org.jetbrains.kotlin.ir.expressions.IrExpression
@@ -50,6 +52,7 @@ import org.jetbrains.kotlin.ir.types.isArray
 import org.jetbrains.kotlin.ir.types.isNullableAny
 import org.jetbrains.kotlin.ir.types.typeWith
 import org.jetbrains.kotlin.ir.util.deepCopyWithSymbols
+import org.jetbrains.kotlin.ir.util.getAnnotation
 import org.jetbrains.kotlin.ir.util.getArrayElementType
 import org.jetbrains.kotlin.ir.util.hasAnnotation
 import org.jetbrains.kotlin.ir.util.parentAsClass
@@ -240,8 +243,19 @@ class AutoDepsTransformer(
 
     val captures =
         analysis.analyse(sources.mapNotNull(call::getValueArgumentCompat), constructing.toSet())
-    captures.problems.forEach(::report)
-    if (captures.hasErrors) return
+    // A parameter that keeps the default when its argument has no closure to read leaves the call
+    // as written: the declaration tells its default apart and compares the argument instead.
+    // Every other problem is still reported, from any of the call's arguments.
+    val keptDefault =
+        captures.problems.filter { problem ->
+          problem.kind == CaptureProblem.Kind.NON_LITERAL_TARGET &&
+              sources.any { index ->
+                parameters[index].keepsDefaultIfNotLiteral &&
+                    call.getValueArgumentCompat(index) === problem.element
+              }
+        }
+    captures.problems.filterNot { it in keptDefault }.forEach(::report)
+    if (keptDefault.isNotEmpty() || captures.hasErrors) return
 
     val builder = DeclarationIrBuilder(
         pluginContext,
@@ -258,6 +272,10 @@ class AutoDepsTransformer(
         else builder.irArrayOfAnyN(elements),
     )
   }
+
+  /** Whether this `@DepsFrom` parameter is declared with `keepsDefaultIfNotLiteral = true`. */
+  private val IrValueParameter.keepsDefaultIfNotLiteral: Boolean
+    get() = (getAnnotation(DEPS_FROM)?.getValueArgumentCompat(0) as? IrConst)?.value == true
 
   /**
    * `arrayOf<Any?>(...)`. An [org.jetbrains.kotlin.ir.expressions.IrVararg] is only valid in a

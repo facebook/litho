@@ -60,6 +60,31 @@ class Layout(@Deps vararg val deps: Any?, @DepsFrom val func: LayoutFunction) {
   }
 }
 
+/**
+ * A `@DepsFrom` that keeps the `@Deps` default when its argument is not a lambda literal, the shape
+ * the Custom Layout `Layout` uses. The default holds a marker so a test can tell it from any
+ * inferred array.
+ */
+@AutoDeps
+class KeepsDefault(
+    @Deps val deps: Array<Any?> = arrayOf("default"),
+    @DepsFrom(keepsDefaultIfNotLiteral = true) val func: LayoutFunction,
+) {
+  init {
+    DepsRecorder.record(deps)
+  }
+}
+
+/** [KeepsDefault]'s opt-in next to a `@DepsFrom` without it. */
+@AutoDeps
+fun onKeepsDefaultAndThing(
+    @Deps deps: Array<Any?> = arrayOf("default"),
+    @DepsFrom(keepsDefaultIfNotLiteral = true) first: () -> Unit,
+    @DepsFrom second: () -> Unit,
+) {
+  DepsRecorder.record(deps)
+}
+
 /** Top-level function taking a plain function type. */
 @AutoDeps
 fun onThing(@Deps vararg deps: Any?, @DepsFrom func: () -> Unit) {

@@ -57,7 +57,13 @@ annotation class Deps
  * More than one parameter may carry it, in which case the dependency set is the union of their
  * captures. The argument must be a lambda literal: a variable or a method reference has no visible
  * closure to read.
+ *
+ * @property keepsDefaultIfNotLiteral when the argument isn't a lambda literal and the call omits
+ *   the [Deps] argument, the call keeps the [Deps] parameter's default instead of failing to
+ *   compile. Set it only when the declaration can tell that default apart from any inferred array
+ *   and compares the argument itself instead, as `Layout` compares its layout function with
+ *   `equals`.
  */
 @Retention(AnnotationRetention.BINARY)
 @Target(AnnotationTarget.VALUE_PARAMETER)
-annotation class DepsFrom
+annotation class DepsFrom(val keepsDefaultIfNotLiteral: Boolean = false)
