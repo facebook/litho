@@ -16,6 +16,8 @@
 
 package com.facebook.litho.processor
 
+import com.facebook.kotlin.compilercompat.compatValueParameters
+import com.facebook.kotlin.compilercompat.getValueArgumentCompat
 import com.facebook.litho.common.LithoNames
 import org.jetbrains.kotlin.DeprecatedForRemovalCompilerApi
 import org.jetbrains.kotlin.ir.IrElement
@@ -39,12 +41,12 @@ class HookIdentityCallProcessor : AbstractTestProcessor() {
 
           override fun visitCall(expression: IrCall) {
             if (expression.symbol.owner.name == LithoNames.enterHook) {
-              val callSiteId = (expression.getValueArgument(0) as? IrConst)?.value as? Int
+              val callSiteId = (expression.getValueArgumentCompat(0) as? IrConst)?.value as? Int
               if (callSiteId != null) {
                 callSiteIds.add(callSiteId)
               }
               appendLine(
-                  "enterHook arguments=${expression.symbol.owner.valueParameters.size}",
+                  "enterHook arguments=${expression.symbol.owner.compatValueParameters.size}",
               )
             }
             super.visitCall(expression)
