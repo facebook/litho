@@ -3035,7 +3035,6 @@ open class ComponentTree protected constructor(builder: Builder) :
     internal var config: ComponentsConfiguration
 
     private var incrementalMountEnabled: Boolean? = null
-    private var enableChildClipping: Boolean? = null
     internal var layoutThreadHandler: RunnableHandler? = null
     internal var treeState: TreeState? = null
     internal var overrideComponentTreeId: Int = INVALID_ID
@@ -3129,18 +3128,6 @@ open class ComponentTree protected constructor(builder: Builder) :
     }
 
     /**
-     * @param isEnabled a boolean value to enable or disable child clipping.
-     * @deprecated This method is exposed only for backward compatibility purposes. Its usage should
-     *   be replaced by setting clipping properties directly on the components that require such
-     *   behavior. This helps promote more flexible configuration.
-     */
-    @Deprecated("")
-    fun enableChildClipping(isEnabled: Boolean): Builder {
-      enableChildClipping = isEnabled
-      return this
-    }
-
-    /**
      * Specify the looper to use for running layouts on. Note that in rare cases layout must run on
      * the UI thread. For example, if you rotate the screen, we must measure on the UI thread. If
      * you don't specify a Looper here, the Components default Looper will be used.
@@ -3228,7 +3215,6 @@ open class ComponentTree protected constructor(builder: Builder) :
     }
 
     /** Builds a [ComponentTree] using the parameters specified in this builder. */
-    @Suppress("DEPRECATION") // Bridges the deprecated enableChildClipping into the config.
     fun build(): ComponentTree {
       // Setting root to default to allow users to initialise without a root.
       if (root == null) {
@@ -3237,14 +3223,11 @@ open class ComponentTree protected constructor(builder: Builder) :
 
       val incrementalMountToUse = incrementalMountEnabled ?: config.incrementalMountEnabled
 
-      val childClippingToUse = enableChildClipping ?: config.enableChildClipping
-
       val logTag = config.logTag
 
       config =
           ComponentsConfiguration.create(config)
               .logTag(logTag ?: root?.simpleName.orEmpty())
-              .enableChildClipping(childClippingToUse)
               .incrementalMountEnabled(
                   incrementalMountToUse &&
                       !LithoDebugConfigurations.isIncrementalMountGloballyDisabled,

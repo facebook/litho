@@ -56,11 +56,6 @@ protected constructor(
     val host = convertContent as ComponentHost
 
     host.setImplementsVirtualViews(implementsVirtualViews)
-    if (c != null) {
-      val componentsConfiguration: ComponentsConfiguration = c.lithoConfiguration.componentsConfig
-      @Suppress("DEPRECATION")
-      host.clipChildren = componentsConfiguration.enableChildClipping
-    }
   }
 
   override fun onUnmount(

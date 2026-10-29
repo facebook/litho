@@ -177,19 +177,6 @@ internal constructor(
     /** When enabled, contextual effects use the optimized handler implementation. */
     @JvmField val useOptimizedContextualEffectHandler: Boolean = true,
 
-    /**
-     * This flag enables child clipping by default
-     *
-     * @deprecated Clipping is a property of the components that need it, not of the tree. Set
-     *   `Style.clipChildren` on those components instead.
-     */
-    @Deprecated(
-        "Set Style.clipChildren on the components that need clipping instead of configuring it " +
-            "for the whole tree.",
-    )
-    @JvmField
-    val enableChildClipping: Boolean = false,
-
     /** This flag enables the use of Component State for cached values */
     @JvmField val useStateForCachedValues: Boolean = false,
 
@@ -603,20 +590,6 @@ internal constructor(
 
     fun errorEventHandler(handler: ErrorEventHandler): Builder = apply {
       config = config.copy(errorEventHandler = handler)
-    }
-
-    /**
-     * @param enabled a boolean value to enable or disable child clipping for the whole tree.
-     * @deprecated Clipping is a property of the components that need it, not of the tree. Set
-     *   `Style.clipChildren` (or `Component.Builder.clipChildren` / `StyleCompat.clipChildren` from
-     *   Java) on those components instead, which keeps the rest of the tree unaffected.
-     */
-    @Deprecated(
-        "Set Style.clipChildren on the components that need clipping instead of configuring it " +
-            "for the whole tree.",
-    )
-    fun enableChildClipping(enabled: Boolean): Builder = apply {
-      config = config.copy(enableChildClipping = enabled)
     }
 
     fun logTag(tag: String?): Builder = apply { config = config.copy(logTag = tag) }
