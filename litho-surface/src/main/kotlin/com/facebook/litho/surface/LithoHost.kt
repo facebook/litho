@@ -24,6 +24,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.savedstate.SavedStateRegistryOwner
 import com.facebook.litho.Component
@@ -80,6 +81,8 @@ internal constructor(
   private var boundViewOwner: LifecycleOwner? = null
   private var destroyed = false
   private var observedLifecycle: Lifecycle? = null
+  private var contextOwnerLifecycle: Lifecycle? = null
+  private var contextOwnerObserver: LifecycleObserver? = null
   private var content: (() -> Component)? = null
   private var reportedUseAfterDestroy = false
 
@@ -161,18 +164,30 @@ internal constructor(
    * retained Fragment's tree is during an Activity recreation, even if the Fragment has no view to
    * rebuild it from. The released tree parks its saveable values under this host's key, so the next
    * tree takes them.
+   *
+   * The host stops watching once [tree] is released or forgotten, so a Fragment destroyed before
+   * its Activity isn't kept reachable from it.
    */
   private fun releaseWhenContextOwnerDestroyed(context: Context, tree: ComponentTree) {
     val contextOwner = context as? LifecycleOwner ?: return
     if (contextOwner === owner) return
-    contextOwner.lifecycle.addObserver(
+    stopWatchingContextOwner()
+    val observer =
         object : DefaultLifecycleObserver {
           override fun onDestroy(owner: LifecycleOwner) {
-            owner.lifecycle.removeObserver(this)
+            stopWatchingContextOwner()
             if (componentTree === tree) releaseTree()
           }
-        },
-    )
+        }
+    contextOwner.lifecycle.addObserver(observer)
+    contextOwnerLifecycle = contextOwner.lifecycle
+    contextOwnerObserver = observer
+  }
+
+  private fun stopWatchingContextOwner() {
+    contextOwnerObserver?.let { contextOwnerLifecycle?.removeObserver(it) }
+    contextOwnerLifecycle = null
+    contextOwnerObserver = null
   }
 
   /** Makes [tree] the host's tree, and shows it in the current view if there is one. */
@@ -186,12 +201,15 @@ internal constructor(
    * the owner lives on, so the host builds a new one from its last content.
    */
   private fun forgetReleasedTree() {
-    if (componentTree?.isReleased == true) componentTree = null
+    if (componentTree?.isReleased != true) return
+    stopWatchingContextOwner()
+    componentTree = null
   }
 
   /** Releases the view and the tree. */
   private fun releaseTree() {
     releaseView()
+    stopWatchingContextOwner()
     componentTree?.release()
     componentTree = null
   }

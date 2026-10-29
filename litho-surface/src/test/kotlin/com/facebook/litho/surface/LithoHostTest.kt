@@ -28,6 +28,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.LifecycleRegistry
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.EmptyComponent
@@ -529,6 +530,38 @@ class LithoHostTest {
   }
 
   @Test
+  fun `a Fragment host destroyed before its Activity leaves no observer on the Activity`() {
+    val controller = launch<FragmentActivity>()
+    val activity = controller.get()
+    val observersBefore = activity.observerCount()
+    val fragment = HostFragment()
+    controller.add(fragment)
+    render(fragment.lithoView)
+
+    controller.remove(fragment)
+
+    assertThat(activity.observerCount()).isEqualTo(observersBefore)
+  }
+
+  @Test
+  fun `a Fragment host that rebuilds its tree keeps one observer on its Activity`() {
+    val controller = launch<FragmentActivity>()
+    val activity = controller.get()
+    val fragment = ControlledHostFragment()
+    controller.add(fragment)
+    render(fragment.lithoView)
+    val observersWithTree = activity.observerCount()
+
+    controller.detach(fragment)
+    fragment.visibility.moveToVisibilityState(LithoVisibilityState.HINT_INVISIBLE)
+    fragment.visibility.moveToVisibilityState(LithoVisibilityState.DESTROYED)
+    controller.attach(fragment)
+    render(fragment.lithoView)
+
+    assertThat(activity.observerCount()).isEqualTo(observersWithTree)
+  }
+
+  @Test
   fun `a host drops content set after its owner is destroyed`() {
     val controller = launch<SingleHostActivity>()
     val activity = controller.get()
@@ -637,6 +670,9 @@ class LithoHostTest {
 
   private val Fragment.lithoView: LithoView
     get() = requireView() as LithoView
+
+  private fun ComponentActivity.observerCount(): Int =
+      (lifecycle as LifecycleRegistry).observerCount
 
   @Suppress("DEPRECATION")
   private fun retainedHostFragment(): HostFragment = HostFragment().apply { retainInstance = true }
