@@ -30,6 +30,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
 import androidx.annotation.RequiresApi
+import androidx.core.widget.TextViewCompat
 import com.facebook.rendercore.text.TextMeasurementUtils.TextLayout
 
 /**
@@ -151,6 +152,8 @@ class SelectableTextView(context: Context) : TextView(context) {
       // Use line height directly
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
         lineHeight = style.lineHeight.toInt()
+      } else {
+        TextViewCompat.setLineHeight(this, style.lineHeight.toInt())
       }
     } else if (style.lineHeightMultiplier != 1f || style.lineSpacingExtra != 0f) {
       setLineSpacing(style.lineSpacingExtra, style.lineHeightMultiplier)
