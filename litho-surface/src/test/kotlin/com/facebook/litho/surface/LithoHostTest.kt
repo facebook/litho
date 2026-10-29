@@ -312,17 +312,19 @@ class LithoHostTest {
   }
 
   @Test
-  fun `a host's view shows content set after the view was taken`() {
+  fun `a view taken before content lays out the first content at its next measure`() {
     val activity = launch<ComponentActivity>().get()
     val host by activity.lithoHost()
-    val view = render(host.getLithoView())
-    val tree = checkNotNull(view.componentTree)
+    val view = host.getLithoView()
+    activity.setContentView(view)
+    ShadowLooper.idleMainLooper()
+    assertThat(view.componentTree).isNull()
 
     host.setContent { Screen("after-view") }
-    backgroundLayoutLooper.runToEndOfTasksSync()
-    render(view)
 
-    assertThat(view.componentTree).isSameAs(tree)
+    assertThat(view.isLayoutRequested).isTrue()
+    ShadowLooper.idleMainLooper()
+    assertThat(view.componentTree).isNotNull
     assertThat(RENDERED).containsKey("after-view")
   }
 

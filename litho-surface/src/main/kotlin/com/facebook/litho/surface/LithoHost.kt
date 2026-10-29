@@ -30,7 +30,6 @@ import androidx.savedstate.SavedStateRegistryOwner
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentTree
-import com.facebook.litho.EmptyComponent
 import com.facebook.litho.LithoSaveableStateRegistryTreeProp
 import com.facebook.litho.LithoView
 import com.facebook.litho.LithoVisibilityEventsController
@@ -119,14 +118,16 @@ internal constructor(
 
   /**
    * Returns the [LithoView] showing this host's tree for the current view lifecycle, the same one
-   * for every call within it. Before the first [setContent] the view is empty, and the content
-   * shows once it is set.
+   * for every call within it. Before the first [setContent] the view has no tree and shows nothing.
+   * The first [setContent] gives it one, and the view lays out that content at its next measure, as
+   * `LithoView.setComponentAsync` does for a view without a tree. Later content is laid out in the
+   * background.
    */
   @MainThread
   fun getLithoView(): LithoView {
     checkUsable("getLithoView")
     val context = requireContext("getLithoView")
-    val tree = ensureTree(context)
+    val tree = content?.let { ensureTree(context, it) }
     bindViewLifecycle()
     boundView?.let {
       return it
@@ -246,15 +247,13 @@ internal constructor(
   }
 
   /**
-   * Gives the host a tree built with [context] from its last content: a new one for a new Context,
-   * or when it has none, as for a Fragment added again or content set before it had a Context.
-   * Without content yet, the tree starts empty.
+   * Gives the host a tree built with [context] from [content]: a new one for a new Context, or when
+   * it has none, as for a Fragment added again or content set before it had a Context.
    */
-  private fun ensureTree(context: Context): ComponentTree {
+  private fun ensureTree(context: Context, content: () -> Component): ComponentTree {
     releaseTreeIfContextChanged(context)
     forgetReleasedTree()
-    return componentTree
-        ?: buildTree(context, content?.invoke() ?: EmptyComponent()).also(::showTree)
+    return componentTree ?: buildTree(context, content()).also(::showTree)
   }
 
   /** Follows the view lifecycle the LithoView belongs to, and lets go of the view when it ends. */
