@@ -568,19 +568,32 @@ open class ComponentTree protected constructor(builder: Builder) :
         },
     ) {
       val layoutStateUpdated: Boolean
+      val promotedLayoutStateReadyListener: NewLayoutStateReadyListener?
       synchronized(this) {
         if (_root == null) {
           // We have been released. Abort.
           return
         }
-        if (committedLayoutState == null) {
-          throw RuntimeException("Unexpected null mCommittedLayoutState")
-        }
+        val committedLayoutState =
+            committedLayoutState ?: throw RuntimeException("Unexpected null mCommittedLayoutState")
 
+        val layoutStatePromoted = committedLayoutState !== _mainThreadLayoutState
         layoutStateUpdated = maybePromoteCommittedLayoutStateToUI()
+        val listener = newLayoutStateReadyListener
+        promotedLayoutStateReadyListener =
+            if (
+                !layoutStateUpdated &&
+                    layoutStatePromoted &&
+                    listener?.dispatchOnPromotedLayout == true
+            ) {
+              listener
+            } else {
+              null
+            }
       }
 
       if (!layoutStateUpdated) {
+        promotedLayoutStateReadyListener?.onNewLayoutStateReady(this)
         if (DEBUG_LOGS) {
           debugLog("backgroundLayoutStateUpdated", "Abort: LayoutState was not updated", _root)
         }
@@ -710,6 +723,18 @@ open class ComponentTree protected constructor(builder: Builder) :
   fun hasCompatibleLayout(widthSpec: Int, heightSpec: Int): Boolean {
     return isCompatibleSpec(_mainThreadLayoutState, widthSpec, heightSpec) ||
         isCompatibleSpec(committedLayoutState, widthSpec, heightSpec)
+  }
+
+  @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+  @Synchronized
+  fun hasComponentAndSizeCompatibleLayoutIgnoringAccessibility(
+      widthSpec: Int,
+      heightSpec: Int,
+  ): Boolean {
+    val rootId = _root?.instanceId ?: INVALID_ID
+    return _mainThreadLayoutState?.isCompatibleComponentAndSpec(rootId, widthSpec, heightSpec) ==
+        true ||
+        committedLayoutState?.isCompatibleComponentAndSpec(rootId, widthSpec, heightSpec) == true
   }
 
   internal fun detach() {
@@ -1640,6 +1665,29 @@ open class ComponentTree protected constructor(builder: Builder) :
     )
   }
 
+  /** When forced, bypasses compatible-layout reuse by cloning the root identity. */
+  @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+  fun setRootAndSizeSpecAsync(
+      root: Component?,
+      widthSpec: Int,
+      heightSpec: Int,
+      treePropContainer: TreePropContainer?,
+      forceLayout: Boolean,
+  ) {
+    setRootAndSizeSpecAndWrapper(
+        root = root,
+        widthSpec = widthSpec,
+        heightSpec = heightSpec,
+        isAsync = true,
+        output = null,
+        source = RenderSource.SET_ROOT_ASYNC,
+        externalRootVersion = INVALID_LAYOUT_VERSION,
+        extraAttribution = null,
+        treePropContainer = treePropContainer,
+        forceLayout = forceLayout,
+    )
+  }
+
   /** Compute a new layout with the given component root and sizes */
   fun setRootAndSizeSpecSync(root: Component?, widthSpec: Int, heightSpec: Int) {
     setRootAndSizeSpecAndWrapper(
@@ -1686,6 +1734,30 @@ open class ComponentTree protected constructor(builder: Builder) :
         externalRootVersion = INVALID_LAYOUT_VERSION,
         extraAttribution = null,
         treePropContainer = treePropContainer,
+    )
+  }
+
+  /** When forced, bypasses compatible-layout reuse by cloning the root identity. */
+  @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+  fun setRootAndSizeSpecSync(
+      root: Component?,
+      widthSpec: Int,
+      heightSpec: Int,
+      output: Size?,
+      treePropContainer: TreePropContainer?,
+      forceLayout: Boolean,
+  ) {
+    setRootAndSizeSpecAndWrapper(
+        root = root,
+        widthSpec = widthSpec,
+        heightSpec = heightSpec,
+        isAsync = false,
+        output = output,
+        source = RenderSource.SET_ROOT_SYNC,
+        externalRootVersion = INVALID_LAYOUT_VERSION,
+        extraAttribution = null,
+        treePropContainer = treePropContainer,
+        forceLayout = forceLayout,
     )
   }
 
@@ -1794,6 +1866,7 @@ open class ComponentTree protected constructor(builder: Builder) :
       externalRootVersion: Int,
       extraAttribution: String?,
       treePropContainer: TreePropContainer?,
+      forceLayout: Boolean = false,
   ) {
     val resolvedRoot = root ?: EmptyComponent()
 
@@ -1807,7 +1880,7 @@ open class ComponentTree protected constructor(builder: Builder) :
         externalRootVersion,
         extraAttribution,
         treePropContainer,
-        false,
+        forceLayout,
     )
   }
 
@@ -3023,6 +3096,10 @@ open class ComponentTree protected constructor(builder: Builder) :
    */
   fun interface NewLayoutStateReadyListener {
     fun onNewLayoutStateReady(componentTree: ComponentTree)
+
+    /** Whether promotion without mount work should still notify this listener. */
+    val dispatchOnPromotedLayout: Boolean
+      get() = false
   }
 
   /** A builder class that can be used to create a [ComponentTree]. */

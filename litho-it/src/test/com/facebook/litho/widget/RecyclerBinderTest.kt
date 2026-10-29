@@ -21,6 +21,7 @@ import android.graphics.Canvas
 import android.graphics.Rect
 import android.view.View
 import android.view.ViewGroup
+import android.view.accessibility.AccessibilityManager
 import android.widget.FrameLayout
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -31,6 +32,7 @@ import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
+import com.facebook.litho.AccessibilityUtils
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentTree
@@ -89,6 +91,7 @@ import org.mockito.Mockito.verify
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.whenever
+import org.robolectric.Shadows
 import org.robolectric.annotation.LooperMode
 import org.robolectric.shadow.api.Shadow
 import org.robolectric.shadows.ShadowLooper
@@ -2855,6 +2858,375 @@ class RecyclerBinderTest {
     recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK)
     verify(recyclerBinder).applyReadyBatches()
   }
+
+  @Test
+  fun testInsertAsync_staleAccessibilityLayoutStaysPendingWhenFixDisabled() {
+    for (initialAccessibility in listOf(false, true)) {
+      val result = insertWarmedLayoutAfterAccessibilityChange(
+          enableLivenessFix = false,
+          initialAccessibility = initialAccessibility,
+      )
+
+      assertThat(result.itemCount).isZero()
+      assertThat(result.pendingBatches).isNotNull()
+    }
+  }
+
+  @Test
+  fun testInsertAsync_staleAccessibilityLayoutRelayoutsWhenFixEnabled() {
+    for (initialAccessibility in listOf(false, true)) {
+      val result = insertWarmedLayoutAfterAccessibilityChange(
+          enableLivenessFix = true,
+          initialAccessibility = initialAccessibility,
+      )
+
+      assertThat(result.itemCount).isEqualTo(1)
+      assertThat(result.pendingBatches).isNull()
+    }
+  }
+
+  @Test
+  fun testInsertAsync_accessibilityRelayoutIsNotRestartedWhileInFlight() {
+    val result = insertWarmedLayoutAfterAccessibilityChange(
+        enableLivenessFix = true,
+        initialAccessibility = false,
+        repeatMeasureBeforeLayoutCompletes = true,
+    )
+
+    assertThat(result.itemCount).isEqualTo(1)
+    assertThat(result.pendingBatches).isNull()
+  }
+
+  @Test
+  fun testInsertAsync_widthRemeasureStaysPendingWhenFixDisabled() {
+    val result = insertFreshThenWarmedLayoutWithWidthChange(enableLivenessFix = false)
+
+    assertThat(result.itemCount).isZero()
+    assertThat(result.pendingBatches).isNotNull()
+  }
+
+  @Test
+  fun testInsertAsync_widthRemeasureDrainsBatchWhenFixEnabled() {
+    val result = insertFreshThenWarmedLayoutWithWidthChange(enableLivenessFix = true)
+
+    assertThat(result.itemCount).isEqualTo(2)
+    assertThat(result.pendingBatches).isNull()
+  }
+
+  @Test
+  fun testInsertAsync_emptyLayoutCompletesLast_staysPendingWhenFixDisabled() {
+    val result = insertNormalThenEmptyLayout(enableLivenessFix = false)
+
+    assertThat(result.itemCount).isZero()
+    assertThat(result.pendingBatches).isNotNull()
+  }
+
+  @Test
+  fun testInsertAsync_emptyLayoutCompletesLast_drainsBatchWhenFixEnabled() {
+    val result = insertNormalThenEmptyLayout(enableLivenessFix = true)
+
+    assertThat(result.itemCount).isEqualTo(2)
+    assertThat(result.pendingBatches).isNull()
+  }
+
+  @Test
+  fun testInsertAsync_emptyLayoutPromotionDispatchesCapturedListener() {
+    lateinit var pendingHolder: ComponentTreeHolder
+    val holderFactory =
+        RecyclerBinder.ComponentTreeHolderFactory {
+            renderInfo,
+            layoutHandler,
+            measureListenerFactory,
+            componentsConfiguration,
+            lifecycleProvider ->
+          ComponentTreeHolder.create(componentsConfiguration)
+              .renderInfo(renderInfo)
+              .layoutHandler(layoutHandler)
+              .componentTreeMeasureListenerFactory(measureListenerFactory)
+              .lithoVisibilityEventsController(lifecycleProvider)
+              .build()
+              .also { pendingHolder = it }
+        }
+    val recyclerBinder =
+        RecyclerBinder.Builder()
+            .componentTreeHolderFactory(holderFactory)
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create()
+                    .rangeRatio(RANGE_RATIO)
+                    .enableAsyncInsertLivenessFix(true)
+                    .build(),
+            )
+            .build(componentContext)
+    recyclerBinder.setCommitPolicy(RecyclerBinder.CommitPolicy.LAYOUT_BEFORE_INSERT)
+
+    try {
+      ShadowLooper.pauseMainLooper()
+      recyclerBinder.measure(
+          Size(),
+          makeSizeSpec(1000, EXACTLY),
+          makeSizeSpec(1000, EXACTLY),
+          null,
+      )
+      recyclerBinder.insertItemAtAsync(0, ComponentRenderInfo.createEmpty())
+      recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK)
+
+      val tree = checkNotNull(pendingHolder.componentTree)
+      val delegate = checkNotNull(tree.newLayoutStateReadyListener)
+      tree.newLayoutStateReadyListener =
+          object : ComponentTree.NewLayoutStateReadyListener {
+            override val dispatchOnPromotedLayout: Boolean
+              get() {
+                tree.newLayoutStateReadyListener = null
+                return true
+              }
+
+            override fun onNewLayoutStateReady(componentTree: ComponentTree) {
+              delegate.onNewLayoutStateReady(componentTree)
+            }
+          }
+
+      runToEndOfTasks()
+      ShadowLooper.runUiThreadTasks()
+
+      assertThat(recyclerBinder.getItemCount()).isEqualTo(1)
+      assertThat(recyclerBinder.getPendingAsyncBatchesDebugInfo()).isNull()
+    } finally {
+      ShadowLooper.unPauseMainLooper()
+    }
+  }
+
+  @Test
+  fun testInsertAsync_listenerDoesNotReturnAfterAppliedHolderRebuild() {
+    val recyclerBinder = createLayoutBeforeInsertBinder(enableLivenessFix = true)
+    recyclerBinder.measure(
+        Size(),
+        makeSizeSpec(1000, EXACTLY),
+        makeSizeSpec(1000, EXACTLY),
+        null,
+    )
+    recyclerBinder.insertItemAtAsync(0, createTestComponentRenderInfo())
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK)
+    runToEndOfTasks()
+
+    val holder = recyclerBinder.getComponentTreeHolderAt(0)
+    assertThat(checkNotNull(holder.componentTree).newLayoutStateReadyListener).isNull()
+
+    holder.releaseTree()
+    holder.computeLayoutSync(
+        componentContext,
+        makeSizeSpec(1000, EXACTLY),
+        makeSizeSpec(1000, EXACTLY),
+        null,
+    )
+
+    assertThat(checkNotNull(holder.componentTree).newLayoutStateReadyListener).isNull()
+  }
+
+  private fun insertWarmedLayoutAfterAccessibilityChange(
+      enableLivenessFix: Boolean,
+      initialAccessibility: Boolean,
+      repeatMeasureBeforeLayoutCompletes: Boolean = false,
+  ): AsyncInsertLivenessResult {
+    val previousAccessibility =
+        AccessibilityUtils.isAccessibilityEnabled(getApplicationContext<Context>())
+    try {
+      setAccessibilityEnabled(initialAccessibility)
+      val recyclerBinder = createLayoutBeforeInsertBinder(
+          enableLivenessFix,
+          wrapContent = repeatMeasureBeforeLayoutCompletes,
+      )
+      recyclerBinder.measure(
+          Size(),
+          makeSizeSpec(1000, EXACTLY),
+          makeSizeSpec(1000, EXACTLY),
+          null,
+      )
+      val component = createTestComponentRenderInfo().component
+      val renderInfo = ComponentRenderInfo.create().component(component).build()
+      val warmer = ComponentWarmer(recyclerBinder)
+      warmer.prepare("stale-accessibility", renderInfo, null)
+      val warmedHolder = checkNotNull(warmer.cache["stale-accessibility"])
+      assertThat(warmedHolder.hasCompletedLatestLayout()).isTrue()
+      setAccessibilityEnabled(!initialAccessibility)
+      assertThat(warmedHolder.hasCompletedLatestLayout()).isFalse()
+
+      try {
+        ShadowLooper.pauseMainLooper()
+        recyclerBinder.insertItemAtAsync(
+            0,
+            ComponentRenderInfo.create()
+                .component(component)
+                .customAttribute(ComponentWarmer.COMPONENT_WARMER_TAG, "stale-accessibility")
+                .build(),
+        )
+        recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK)
+        if (repeatMeasureBeforeLayoutCompletes) {
+          val tree = checkNotNull(warmedHolder.componentTree)
+          val forcedRootId = checkNotNull(tree.root).instanceId
+          recyclerBinder.measure(
+              Size(),
+              makeSizeSpec(1000, EXACTLY),
+              makeSizeSpec(1000, EXACTLY),
+              null,
+          )
+          assertThat(checkNotNull(tree.root).instanceId).isEqualTo(forcedRootId)
+        }
+        runToEndOfTasks()
+        ShadowLooper.runUiThreadTasks()
+        val completedLatestLayout = warmedHolder.hasCompletedLatestLayout()
+        assertThat(completedLatestLayout)
+            .withFailMessage(
+                "completed=%s itemCount=%s pending=%s",
+                completedLatestLayout,
+                recyclerBinder.getItemCount(),
+                recyclerBinder.getPendingAsyncBatchesDebugInfo(),
+            )
+            .isEqualTo(enableLivenessFix)
+
+        return AsyncInsertLivenessResult(
+            itemCount = recyclerBinder.getItemCount(),
+            pendingBatches = recyclerBinder.getPendingAsyncBatchesDebugInfo(),
+        )
+      } finally {
+        ShadowLooper.unPauseMainLooper()
+      }
+    } finally {
+      setAccessibilityEnabled(previousAccessibility)
+    }
+  }
+
+  private fun insertFreshThenWarmedLayoutWithWidthChange(
+      enableLivenessFix: Boolean,
+  ): AsyncInsertLivenessResult {
+    val recyclerBinder = createLayoutBeforeInsertBinder(enableLivenessFix)
+    recyclerBinder.measure(
+        Size(),
+        makeSizeSpec(1000, EXACTLY),
+        makeSizeSpec(1000, EXACTLY),
+        null,
+    )
+    val warmed = createTestComponentRenderInfo() as ComponentRenderInfo
+    val warmer = ComponentWarmer(recyclerBinder)
+    warmer.prepare("width-change", warmed, null)
+    val warmedHolder = checkNotNull(warmer.cache["width-change"])
+
+    try {
+      ShadowLooper.pauseMainLooper()
+      recyclerBinder.insertItemAtAsync(0, createTestComponentRenderInfo())
+      recyclerBinder.insertItemAtAsync(
+          1,
+          ComponentRenderInfo.create()
+              .component(warmed.component)
+              .customAttribute(ComponentWarmer.COMPONENT_WARMER_TAG, "width-change")
+              .build(),
+      )
+      recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK)
+      assertThat(checkNotNull(warmedHolder.componentTree).newLayoutStateReadyListener != null)
+          .isEqualTo(enableLivenessFix)
+      recyclerBinder.measure(
+          Size(),
+          makeSizeSpec(1100, EXACTLY),
+          makeSizeSpec(1000, EXACTLY),
+          null,
+      )
+      runToEndOfTasks()
+      ShadowLooper.runUiThreadTasks()
+
+      return AsyncInsertLivenessResult(
+          itemCount = recyclerBinder.getItemCount(),
+          pendingBatches = recyclerBinder.getPendingAsyncBatchesDebugInfo(),
+      )
+    } finally {
+      ShadowLooper.unPauseMainLooper()
+    }
+  }
+
+  private fun setAccessibilityEnabled(enabled: Boolean) {
+    val manager =
+        getApplicationContext<Context>().getSystemService(Context.ACCESSIBILITY_SERVICE)
+            as AccessibilityManager
+    val shadowManager = Shadows.shadowOf(manager)
+    shadowManager.setEnabled(enabled)
+    shadowManager.setTouchExplorationEnabled(enabled)
+    AccessibilityUtils.invalidateCachedIsAccessibilityEnabled()
+  }
+
+  private fun insertNormalThenEmptyLayout(enableLivenessFix: Boolean): AsyncInsertLivenessResult {
+    val recyclerBinder = createLayoutBeforeInsertBinder(enableLivenessFix)
+    val normal = createTestComponentRenderInfo()
+    val empty = ComponentRenderInfo.createEmpty()
+    try {
+      ShadowLooper.pauseMainLooper()
+      recyclerBinder.measure(
+          Size(),
+          makeSizeSpec(1000, EXACTLY),
+          makeSizeSpec(1000, EXACTLY),
+          null,
+      )
+      recyclerBinder.insertItemAtAsync(0, normal)
+      recyclerBinder.insertItemAtAsync(1, empty)
+      recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK)
+
+      val normalCompleted = "{insert pos=0 name=${normal.name} completed=true"
+      var steps = 0
+      while (recyclerBinder.getPendingAsyncBatchesDebugInfo()?.contains(normalCompleted) != true) {
+        check(steps++ < 10) { "The normal insert layout was never completed" }
+        runOneTask()
+      }
+      assertThat(recyclerBinder.getPendingAsyncBatchesDebugInfo())
+          .contains("{insert pos=1 name=${empty.name} completed=false")
+
+      // The normal layout wakes the binder while the empty layout is still pending.
+      ShadowLooper.runMainLooperOneTask()
+      assertThat(recyclerBinder.getItemCount()).isZero()
+      assertThat(recyclerBinder.getPendingAsyncBatchesDebugInfo())
+          .contains(
+              "insert pos=0 name=${normal.name} completed=true treeValid=true " +
+                  "readyListener=$enableLivenessFix",
+          )
+
+      val emptyCompleted = "{insert pos=1 name=${empty.name} completed=true"
+      steps = 0
+      while (
+          recyclerBinder.getItemCount() == 0 &&
+              recyclerBinder.getPendingAsyncBatchesDebugInfo()?.contains(emptyCompleted) != true
+      ) {
+        check(steps++ < 10) { "The empty insert layout was never completed" }
+        runOneTask()
+      }
+      ShadowLooper.runUiThreadTasks()
+
+      return AsyncInsertLivenessResult(
+          itemCount = recyclerBinder.getItemCount(),
+          pendingBatches = recyclerBinder.getPendingAsyncBatchesDebugInfo(),
+      )
+    } finally {
+      ShadowLooper.unPauseMainLooper()
+    }
+  }
+
+  private fun createLayoutBeforeInsertBinder(
+      enableLivenessFix: Boolean,
+      wrapContent: Boolean = false,
+  ): RecyclerBinder {
+    val recyclerBinder =
+        RecyclerBinder.Builder()
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create()
+                    .rangeRatio(RANGE_RATIO)
+                    .wrapContent(wrapContent)
+                    .enableAsyncInsertLivenessFix(enableLivenessFix)
+                    .build(),
+            )
+            .build(componentContext)
+    recyclerBinder.setCommitPolicy(RecyclerBinder.CommitPolicy.LAYOUT_BEFORE_INSERT)
+    return recyclerBinder
+  }
+
+  private data class AsyncInsertLivenessResult(
+      val itemCount: Int,
+      val pendingBatches: String?,
+  )
 
   private class NewLayoutStateReadyListener : ComponentTree.NewLayoutStateReadyListener {
     var timesCalled = 0

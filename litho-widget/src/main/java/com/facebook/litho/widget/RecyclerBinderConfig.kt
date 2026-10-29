@@ -152,6 +152,11 @@ data class RecyclerBinderConfig(
      * index.
      */
     @JvmField val resolvePaginationTargetOnCommit: Boolean = false,
+    /**
+     * Keeps async insert layout listeners armed until their insert is applied and wakes ready
+     * batches after a promoted layout that does not dirty mount state.
+     */
+    @JvmField val enableAsyncInsertLivenessFix: Boolean = false,
 ) {
 
   init {
@@ -203,6 +208,7 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
   private var recyclerViewItemPrefetch = configuration.recyclerViewItemPrefetch
   private var itemViewCacheSize = configuration.itemViewCacheSize
   private var componentsConfiguration = configuration.componentsConfiguration
+  private var enableAsyncInsertLivenessFix = configuration.enableAsyncInsertLivenessFix
   private var rangeRatio = configuration.rangeRatio
   private var layoutHandlerFactory = configuration.layoutHandlerFactory
   private var enableStableIds = configuration.enableStableIds
@@ -252,6 +258,10 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
       componentsConfiguration: ComponentsConfiguration?,
   ): RecyclerBinderConfigBuilder = also { this.componentsConfiguration = componentsConfiguration }
 
+  fun enableAsyncInsertLivenessFix(enabled: Boolean): RecyclerBinderConfigBuilder = also {
+    enableAsyncInsertLivenessFix = enabled
+  }
+
   fun rangeRatio(rangeRatio: Float): RecyclerBinderConfigBuilder = also {
     this.rangeRatio = rangeRatio
   }
@@ -283,6 +293,7 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
   fun build(): RecyclerBinderConfig {
     return RecyclerBinderConfig(
         componentsConfiguration = componentsConfiguration,
+        enableAsyncInsertLivenessFix = enableAsyncInsertLivenessFix,
         isCircular = isCircular,
         lithoViewFactory = lithoViewFactory,
         hScrollAsyncMode = hScrollAsyncMode,

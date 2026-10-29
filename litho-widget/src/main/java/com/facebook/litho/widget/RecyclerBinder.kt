@@ -255,10 +255,18 @@ class RecyclerBinder private constructor(builder: Builder) :
     }
   }
 
-  private val asyncLayoutReadyListener = NewLayoutStateReadyListener { componentTree ->
-    applyReadyBatches()
-    componentTree.newLayoutStateReadyListener = null
-  }
+  private val asyncLayoutReadyListener =
+      object : NewLayoutStateReadyListener {
+        override val dispatchOnPromotedLayout: Boolean
+          get() = recyclerBinderConfig.enableAsyncInsertLivenessFix
+
+        override fun onNewLayoutStateReady(componentTree: ComponentTree) {
+          applyReadyBatches()
+          if (!recyclerBinderConfig.enableAsyncInsertLivenessFix) {
+            componentTree.newLayoutStateReadyListener = null
+          }
+        }
+      }
 
   private val applyReadyBatchesCallback: ChoreographerCompat.FrameCallback =
       object : ChoreographerCompat.FrameCallback() {
@@ -1012,6 +1020,9 @@ class RecyclerBinder private constructor(builder: Builder) :
   private fun applyAsyncInsert(operation: Insert) {
     if (operation.holder.isInserted) {
       return
+    }
+    if (recyclerBinderConfig.enableAsyncInsertLivenessFix) {
+      operation.holder.clearNewLayoutReadyListener()
     }
 
     if (SectionsDebug.ENABLED) {
@@ -2324,8 +2335,16 @@ class RecyclerBinder private constructor(builder: Builder) :
     val widthSpec = getActualChildrenWidthSpec(holder, measuredSize, lastWidthSpec)
     val heightSpec = getActualChildrenHeightSpec(holder, measuredSize, lastHeightSpec)
 
-    if (holder.isTreeValidForSizeSpecs(widthSpec, heightSpec)) {
-      if (holder.hasCompletedLatestLayout()) {
+    val isTreeValidForSizeSpecs = holder.isTreeValidForSizeSpecs(widthSpec, heightSpec)
+    val hasCompletedLatestLayout = isTreeValidForSizeSpecs && holder.hasCompletedLatestLayout()
+    val needsForcedRelayout =
+        recyclerBinderConfig.enableAsyncInsertLivenessFix &&
+            isTreeValidForSizeSpecs &&
+            !hasCompletedLatestLayout &&
+            holder.hasComponentAndSizeCompatibleLayoutIgnoringAccessibility()
+
+    if (isTreeValidForSizeSpecs && !needsForcedRelayout) {
+      if (hasCompletedLatestLayout && !recyclerBinderConfig.enableAsyncInsertLivenessFix) {
         val componentTree = holder.componentTree
         val listener = componentTree?.newLayoutStateReadyListener
         if (listener != null) {
@@ -2336,17 +2355,39 @@ class RecyclerBinder private constructor(builder: Builder) :
       return
     }
 
+    val currentComponentContext = checkNotNull(componentContext)
     if (asyncInsertHandler != null) {
       asyncInsertHandler.post(
           {
-            holder.computeLayoutSync(checkNotNull(componentContext), widthSpec, heightSpec, Size())
+            if (needsForcedRelayout) {
+              holder.computeLayoutSync(
+                  currentComponentContext,
+                  widthSpec,
+                  heightSpec,
+                  Size(),
+                  forceLayout = true,
+              )
+            } else {
+              holder.computeLayoutSync(currentComponentContext, widthSpec, heightSpec, Size())
+            }
           },
           "AsyncInsertLayout",
       )
+    } else if (needsForcedRelayout) {
+      holder.computeLayoutAsync(
+          currentComponentContext,
+          widthSpec,
+          heightSpec,
+          measureListener = null,
+          forceLayout = true,
+      )
     } else {
-      holder.computeLayoutAsync(checkNotNull(componentContext), widthSpec, heightSpec)
+      holder.computeLayoutAsync(currentComponentContext, widthSpec, heightSpec)
     }
   }
+
+  @VisibleForTesting
+  fun isAsyncInsertLivenessFixEnabled(): Boolean = recyclerBinderConfig.enableAsyncInsertLivenessFix
 
   /**
    * Gets the number of items currently in the adapter attached to this binder (i.e. the number of

@@ -203,6 +203,12 @@ open class ComponentTreeHolder @VisibleForTesting internal constructor(builder: 
   }
 
   @Synchronized
+  fun clearNewLayoutReadyListener() {
+    pendingNewLayoutListener = null
+    _componentTree?.newLayoutStateReadyListener = null
+  }
+
+  @Synchronized
   fun setPoolScope(poolScope: PoolScope) {
     this.poolScope = poolScope
   }
@@ -212,6 +218,20 @@ open class ComponentTreeHolder @VisibleForTesting internal constructor(builder: 
       widthSpec: Int,
       heightSpec: Int,
       size: Size?,
+  ) {
+    computeLayoutSync(context, widthSpec, heightSpec, size, forceLayout = false)
+  }
+
+  /**
+   * Internal forced-layout variant; the regular overload remains the subclass customization seam.
+   */
+  @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+  open fun computeLayoutSync(
+      context: ComponentContext,
+      widthSpec: Int,
+      heightSpec: Int,
+      size: Size?,
+      forceLayout: Boolean,
   ) {
     val componentTree: ComponentTree
     val component: Component
@@ -230,7 +250,14 @@ open class ComponentTreeHolder @VisibleForTesting internal constructor(builder: 
       treePropContainer = (renderInfo as? TreePropsWrappedRenderInfo)?.treePropContainer
     }
 
-    componentTree.setRootAndSizeSpecSync(component, widthSpec, heightSpec, size, treePropContainer)
+    componentTree.setRootAndSizeSpecSync(
+        component,
+        widthSpec,
+        heightSpec,
+        size,
+        treePropContainer,
+        forceLayout,
+    )
 
     synchronized(this) {
       if (componentTree === this._componentTree && component === renderInfo.component) {
@@ -248,6 +275,20 @@ open class ComponentTreeHolder @VisibleForTesting internal constructor(builder: 
       widthSpec: Int,
       heightSpec: Int,
       measureListener: MeasureListener? = null,
+  ) {
+    computeLayoutAsync(context, widthSpec, heightSpec, measureListener, forceLayout = false)
+  }
+
+  /**
+   * Internal forced-layout variant; the regular overload remains the subclass customization seam.
+   */
+  @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+  open fun computeLayoutAsync(
+      context: ComponentContext,
+      widthSpec: Int,
+      heightSpec: Int,
+      measureListener: MeasureListener?,
+      forceLayout: Boolean,
   ) {
     val componentTree: ComponentTree
     val component: Component
@@ -270,7 +311,13 @@ open class ComponentTreeHolder @VisibleForTesting internal constructor(builder: 
       componentTree.addMeasureListener(measureListener)
     }
 
-    componentTree.setRootAndSizeSpecAsync(component, widthSpec, heightSpec, treePropContainer)
+    componentTree.setRootAndSizeSpecAsync(
+        component,
+        widthSpec,
+        heightSpec,
+        treePropContainer,
+        forceLayout,
+    )
 
     synchronized(this) {
       if (this._componentTree === componentTree && component === renderInfo.component) {
@@ -321,6 +368,15 @@ open class ComponentTreeHolder @VisibleForTesting internal constructor(builder: 
       renderInfo.rendersView() ||
           (_componentTree?.hasCompatibleLayout(lastRequestedWidthSpec, lastRequestedHeightSpec) ==
               true)
+
+  @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+  @Synchronized
+  fun hasComponentAndSizeCompatibleLayoutIgnoringAccessibility(): Boolean =
+      renderInfo.rendersView() ||
+          (_componentTree?.hasComponentAndSizeCompatibleLayoutIgnoringAccessibility(
+              lastRequestedWidthSpec,
+              lastRequestedHeightSpec,
+          ) == true)
 
   @OptIn(ExperimentalLithoApi::class)
   @GuardedBy("this")
