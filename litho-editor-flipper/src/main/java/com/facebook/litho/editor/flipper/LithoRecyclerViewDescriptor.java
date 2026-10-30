@@ -34,6 +34,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
+@SuppressWarnings({"rawtypes", "unchecked"}) // debug-only: cross-hierarchy reuse
 public class LithoRecyclerViewDescriptor extends NodeDescriptor<LithoRecyclerView> {
 
   @Override

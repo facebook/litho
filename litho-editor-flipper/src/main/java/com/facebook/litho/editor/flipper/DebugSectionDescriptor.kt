@@ -82,9 +82,7 @@ class DebugSectionDescriptor : NodeDescriptor<DebugSection>() {
     node ?: return data
 
     val propData = getPropData(node)
-    if (propData != null) {
-      data.addAll(propData)
-    }
+    data.addAll(propData)
 
     val stateData = getStateData(node)
     if (stateData != null) {
@@ -132,6 +130,7 @@ class DebugSectionDescriptor : NodeDescriptor<DebugSection>() {
     } else {
       for (i in 0..<childCount) {
         val child = getChildAt(node, i)
+        @Suppress("UNCHECKED_CAST") // Flipper descriptor narrowing (debug-only, kept)
         val descriptor = descriptorForClass(child.javaClass) as NodeDescriptor<Any?>?
         checkNotNull(descriptor).setHighlighted(child, selected, isAlignmentMode)
       }
@@ -227,6 +226,7 @@ class DebugSectionDescriptor : NodeDescriptor<DebugSection>() {
 
   @Throws(Exception::class)
   override fun matches(query: String, node: DebugSection?): Boolean {
+    @Suppress("UNCHECKED_CAST") // Flipper descriptor narrowing (debug-only, kept)
     val descriptor = descriptorForClass(Any::class.java) as NodeDescriptor<Any?>?
     return checkNotNull(descriptor).matches(query, node)
   }

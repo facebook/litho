@@ -118,6 +118,7 @@ class DebugComponentDescriptor : NodeDescriptor<DebugComponent>() {
 
   @Throws(Exception::class)
   override fun getName(node: DebugComponent?): String? {
+    @Suppress("UNCHECKED_CAST") // Flipper descriptor narrowing (debug-only, kept)
     val componentDescriptor = descriptorForClass(node?.component?.javaClass) as NodeDescriptor<Any>?
     if (checkNotNull(componentDescriptor).javaClass != ObjectDescriptor::class.java) {
       return componentDescriptor.getName(node?.component)
@@ -142,6 +143,7 @@ class DebugComponentDescriptor : NodeDescriptor<DebugComponent>() {
 
   @Throws(Exception::class)
   override fun getData(node: DebugComponent?): List<Named<FlipperObject>> {
+    @Suppress("UNCHECKED_CAST") // Flipper descriptor narrowing (debug-only, kept)
     val componentDescriptor =
         descriptorForClass(node?.component?.javaClass) as NodeDescriptor<Component>?
     if (checkNotNull(componentDescriptor).javaClass != ObjectDescriptor::class.java) {
@@ -216,6 +218,7 @@ class DebugComponentDescriptor : NodeDescriptor<DebugComponent>() {
 
     node ?: return extraInfo.build()
 
+    @Suppress("UNCHECKED_CAST") // Flipper descriptor narrowing (debug-only, kept)
     val descriptor = descriptorForClass(View::class.java) as NodeDescriptor<View>?
     val hostView: View? = node.componentHost
     val lithoView: View? = node.lithoView
@@ -313,6 +316,7 @@ class DebugComponentDescriptor : NodeDescriptor<DebugComponent>() {
   @Throws(Exception::class)
   override fun getDecoration(node: DebugComponent?): String {
     if (node?.component != null) {
+      @Suppress("UNCHECKED_CAST") // Flipper descriptor narrowing (debug-only, kept)
       val componentDescriptor = descriptorForClass(node.component.javaClass) as NodeDescriptor<Any>?
       if (checkNotNull(componentDescriptor).javaClass != ObjectDescriptor::class.java) {
         return componentDescriptor.getDecoration(node.component)
@@ -323,6 +327,7 @@ class DebugComponentDescriptor : NodeDescriptor<DebugComponent>() {
 
   @Throws(Exception::class)
   override fun matches(query: String, node: DebugComponent?): Boolean {
+    @Suppress("UNCHECKED_CAST") // Flipper descriptor narrowing (debug-only, kept)
     val descriptor = descriptorForClass(Any::class.java) as NodeDescriptor<Any>?
     return descriptor?.matches(query, node) == true || getId(node) == query
   }
