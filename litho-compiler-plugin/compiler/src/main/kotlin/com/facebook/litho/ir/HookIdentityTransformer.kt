@@ -79,6 +79,7 @@ class HookIdentityTransformer(private val pluginContext: IrPluginContext) :
     pluginContext.referenceClass(LithoNames.ComponentScope)
   }
 
+  @OptIn(DeprecatedForRemovalCompilerApi::class) // compatValueParameters
   private val enterHookFun: IrSimpleFunctionSymbol? by lazy {
     componentScopeClassSymbol?.let { classSymbol ->
       classSymbol.owner.declarations
@@ -88,6 +89,7 @@ class HookIdentityTransformer(private val pluginContext: IrPluginContext) :
     }
   }
 
+  @OptIn(DeprecatedForRemovalCompilerApi::class) // compatValueParameters
   private val enterHookWithKnownIndexFun: IrSimpleFunctionSymbol? by lazy {
     componentScopeClassSymbol?.let { classSymbol ->
       classSymbol.owner.declarations
@@ -97,6 +99,7 @@ class HookIdentityTransformer(private val pluginContext: IrPluginContext) :
     }
   }
 
+  @OptIn(DeprecatedForRemovalCompilerApi::class) // compatValueParameters
   private val exitHookFun: IrSimpleFunctionSymbol? by lazy {
     componentScopeClassSymbol?.let { classSymbol ->
       classSymbol.owner.declarations
@@ -148,6 +151,7 @@ class HookIdentityTransformer(private val pluginContext: IrPluginContext) :
     }
   }
 
+  @OptIn(DeprecatedForRemovalCompilerApi::class) // compatPutValueArgument
   override fun visitCall(expression: IrCall): IrExpression {
     // First, transform children (nested hook calls in arguments, etc.)
     val transformed = super.visitCall(expression) as IrCall
@@ -208,6 +212,7 @@ class HookIdentityTransformer(private val pluginContext: IrPluginContext) :
    * functions on ComponentScope (or subclasses), so we look at the extension receiver first, then
    * dispatch receiver.
    */
+  @OptIn(DeprecatedForRemovalCompilerApi::class) // compatExtensionReceiver
   private fun findComponentScopeReceiver(call: IrCall): IrExpression? {
     val scopeClass = componentScopeClassSymbol ?: return null
 

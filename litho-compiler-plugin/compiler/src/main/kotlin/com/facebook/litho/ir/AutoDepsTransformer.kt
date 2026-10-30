@@ -21,6 +21,7 @@ import com.facebook.kotlin.compilercompat.getValueArgumentCompat
 import com.facebook.kotlin.compilercompat.putValueArgumentCompat
 import com.facebook.litho.common.AutoDepsConfig
 import com.facebook.litho.common.LithoNames
+import org.jetbrains.kotlin.DeprecatedForRemovalCompilerApi
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.backend.common.lower.DeclarationIrBuilder
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageLocation
@@ -197,6 +198,8 @@ class AutoDepsTransformer(
    * leave the parameter's empty default in place, so each way it can be malformed is an error at
    * the call instead.
    */
+  @OptIn(DeprecatedForRemovalCompilerApi::class) // compatValueParameters, getValueArgumentCompat,
+  // putValueArgumentCompat
   private fun inferDeps(
       call: IrMemberAccessExpression<*>,
       callee: IrFunction,
@@ -274,6 +277,7 @@ class AutoDepsTransformer(
   }
 
   /** Whether this `@DepsFrom` parameter is declared with `keepsDefaultIfNotLiteral = true`. */
+  @OptIn(DeprecatedForRemovalCompilerApi::class) // getValueArgumentCompat
   private val IrValueParameter.keepsDefaultIfNotLiteral: Boolean
     get() = (getAnnotation(DEPS_FROM)?.getValueArgumentCompat(0) as? IrConst)?.value == true
 
@@ -281,6 +285,7 @@ class AutoDepsTransformer(
    * `arrayOf<Any?>(...)`. An [org.jetbrains.kotlin.ir.expressions.IrVararg] is only valid in a
    * vararg slot, so a `@Deps` parameter declared `Array<Any?>` needs the array built explicitly.
    */
+  @OptIn(DeprecatedForRemovalCompilerApi::class) // putValueArgumentCompat
   private fun IrBuilderWithScope.irArrayOfAnyN(elements: List<IrExpression>): IrExpression {
     val elementType = pluginContext.irBuiltIns.anyNType
     return irCall(

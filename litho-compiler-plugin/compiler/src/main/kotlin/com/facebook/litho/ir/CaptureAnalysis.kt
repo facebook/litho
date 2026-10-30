@@ -20,6 +20,7 @@ import com.facebook.kotlin.compilercompat.compatDispatchReceiver
 import com.facebook.kotlin.compilercompat.compatExtensionReceiver
 import com.facebook.kotlin.compilercompat.valueArgumentsCountCompat
 import com.facebook.litho.common.AutoDepsConfig
+import org.jetbrains.kotlin.DeprecatedForRemovalCompilerApi
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
@@ -564,6 +565,7 @@ class CaptureAnalysis(
      * the compiler produced for `this.name` is not the analysis's concern. A setter belongs to the
      * same property, and its argument is what tells it apart.
      */
+    @OptIn(DeprecatedForRemovalCompilerApi::class) // valueArgumentsCountCompat
     fun IrExpression.isPathLink(): Boolean =
         pathProperty() != null && (this !is IrCall || valueArgumentsCountCompat == 0)
 
@@ -626,6 +628,7 @@ class CaptureAnalysis(
     }
 
     /** Every receiver a property read goes through. A member extension property has two. */
+    @OptIn(DeprecatedForRemovalCompilerApi::class) // compatExtensionReceiver
     fun IrExpression.pathReceivers(): List<IrExpression> =
         when (this) {
           is IrCall -> listOfNotNull(compatDispatchReceiver, compatExtensionReceiver)
