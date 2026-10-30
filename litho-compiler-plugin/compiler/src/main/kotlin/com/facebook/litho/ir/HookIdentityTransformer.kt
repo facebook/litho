@@ -17,9 +17,9 @@
 package com.facebook.litho.ir
 
 import com.facebook.kotlin.compilercompat.compatExtensionReceiver
-import com.facebook.kotlin.compilercompat.compatFqNameForIrSerialization
 import com.facebook.kotlin.compilercompat.compatPutValueArgument
 import com.facebook.kotlin.compilercompat.compatValueParameters
+import com.facebook.kotlin.compilercompat.fqNameForIrSerialization
 import com.facebook.litho.common.LithoNames
 import org.jetbrains.kotlin.DeprecatedForRemovalCompilerApi
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
@@ -232,7 +232,7 @@ class HookIdentityTransformer(private val pluginContext: IrPluginContext) :
   private fun IrFunction.stableIdentity(enclosingFunctionIdentity: String?): String {
     val callableName =
         fqNameWhenAvailable?.asString()
-            ?: parentClassOrNull?.compatFqNameForIrSerialization?.asString()?.let {
+            ?: parentClassOrNull?.fqNameForIrSerialization?.asString()?.let {
               "$it#${name.asString()}"
             }
             ?: name.asString()

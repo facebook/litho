@@ -41,7 +41,7 @@ class LithoCompilerPluginRegistrar(
     private val plugins: List<LithoCompilerPlugin> = LithoCompilerPlugins.ALL,
 ) : CompilerPluginRegistrarCompat() {
 
-  override val pluginIdCompat: String = LITHO_COMPILER_PLUGIN_ID
+  override val pluginId: String = LITHO_COMPILER_PLUGIN_ID
 
   override fun ExtensionStorage.registerExtensions(configuration: CompilerConfiguration) {
     val messages = configuration.getNotNull(CommonConfigurationKeys.MESSAGE_COLLECTOR_KEY)

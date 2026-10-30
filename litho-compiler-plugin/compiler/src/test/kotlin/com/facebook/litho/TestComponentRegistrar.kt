@@ -27,7 +27,7 @@ import org.jetbrains.kotlin.config.CompilerConfiguration
 class TestComponentRegistrar(private val processor: AbstractTestProcessor) :
     CompilerPluginRegistrarCompat() {
 
-  override val pluginIdCompat: String = "com.facebook.litho.test"
+  override val pluginId: String = "com.facebook.litho.test"
 
   override fun ExtensionStorage.registerExtensions(configuration: CompilerConfiguration) {
     IrGenerationExtension.registerExtension(TestIrExtension(processor))
