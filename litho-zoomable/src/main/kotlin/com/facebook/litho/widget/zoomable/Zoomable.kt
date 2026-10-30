@@ -43,13 +43,16 @@ import com.facebook.yoga.YogaAlign
  * The container is a plain host, which [OverlayZoomController] drives. It takes the gesture from
  * [child] when a second finger lands on it, so content with its own pinch or two-finger gestures,
  * such as a map or an image viewer, stops getting them. It also keeps the touches [child] doesn't
- * handle, so an ancestor's click handler doesn't see those. While zooming, the enclosing LithoView
- * keeps all its content mounted.
+ * handle, so an ancestor's click handler doesn't see those, unless [keepUnhandledTouches] is false:
+ * then those touches go on to the ancestors, and an ancestor that handles them passes a pinch to
+ * [zoomableTouchGestureListener]. While zooming, the enclosing LithoView keeps all its content
+ * mounted.
  */
 @ExperimentalLithoApi
 class Zoomable(
     private val zoomableTouchGestureListener: ZoomableTouchGestureListener? = null,
     private val zoomableEventListener: ZoomableViewBaseController.Listener? = null,
+    private val keepUnhandledTouches: Boolean = true,
     private val style: Style = Style,
     private val child: () -> Component,
 ) : KComponent() {
@@ -90,6 +93,10 @@ class Zoomable(
                             controller.zoomableTouchListener,
                         )
                       }
+                    }
+                    .onBindHostView(controller, keepUnhandledTouches) { _ ->
+                      controller.keepsUnhandledTouches = keepUnhandledTouches
+                      onUnbind { controller.keepsUnhandledTouches = true }
                     }
                     .onBindHostView(controller, zoomableEventListener) { _ ->
                       controller.zoomableEventListener = zoomableEventListener

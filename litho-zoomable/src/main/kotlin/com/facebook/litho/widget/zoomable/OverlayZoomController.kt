@@ -69,6 +69,13 @@ class OverlayZoomController(
   /** Told when a zoom starts and when it has finished, after the copy springs back. */
   var zoomableEventListener: ZoomableViewBaseController.Listener? = null
 
+  /**
+   * Whether the host keeps a gesture its content doesn't handle, so its second finger reaches the
+   * host. When false, such a gesture goes on to the host's ancestors, which then have to pass a
+   * pinch to [zoomableTouchListener] themselves.
+   */
+  var keepsUnhandledTouches: Boolean = true
+
   val zoomableTouchListener: ZoomableTouchListener =
       object : ZoomableTouchListener {
         override fun onTouchEvent(event: MotionEvent): Boolean = onTouch(event)
@@ -203,7 +210,7 @@ class OverlayZoomController(
         }
         if (!claimed && !(event.pointerCount == 2 && host.containsRaw(event))) {
           // Keeps the gesture when the content doesn't, so its second finger reaches the host.
-          return event.actionMasked == MotionEvent.ACTION_DOWN
+          return keepsUnhandledTouches && event.actionMasked == MotionEvent.ACTION_DOWN
         }
       }
       State.ANIMATING -> return false

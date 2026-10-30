@@ -134,6 +134,37 @@ class OverlayZoomControllerTest {
   }
 
   @Test
+  fun aHostThatDoesNotKeepUnhandledTouchesLetsATapGoOnAndStillZoomsAForwardedPinch() {
+    val controller = setUp()
+    controller.keepsUnhandledTouches = false
+    val t = SystemClock.uptimeMillis()
+    assertThat(
+        controller.zoomableTouchListener.onTouchEvent(
+            event(t, MotionEvent.ACTION_DOWN, 50f to 150f),
+        ),
+    )
+        .describedAs("the tap goes on to the host's ancestors")
+        .isFalse()
+
+    // An ancestor that took the gesture passes the pinch on.
+    controller.zoomableTouchListener.onTouchEvent(pointerDown(t + 10))
+    for (step in 1..10) {
+      val half = (200f + 200f * step / 10) / 2
+      controller.zoomableTouchListener.onTouchEvent(
+          event(
+              t + 10 + step * 16L,
+              MotionEvent.ACTION_MOVE,
+              150f - half to 150f,
+              150f + half to 150f,
+          ),
+      )
+    }
+
+    assertThat(controller.zoomableTouchListener.isCurrentlyInZoom).isTrue()
+    assertThat(first.isHiddenForZoom).isTrue()
+  }
+
+  @Test
   fun theWindowsRootViewIsNotZoomedIntoItsOwnOverlay() {
     val controller = setUp()
     val decor = activity.window.decorView
