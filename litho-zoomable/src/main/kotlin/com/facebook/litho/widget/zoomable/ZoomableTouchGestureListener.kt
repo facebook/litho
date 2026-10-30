@@ -37,7 +37,7 @@ class ZoomableTouchGestureListener {
     listeners.remove(listener)
   }
 
-  open fun onTouch(event: MotionEvent): Boolean {
+  fun onTouch(event: MotionEvent): Boolean {
     return listeners.any { it.onTouchEvent(event) }
   }
 }

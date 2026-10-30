@@ -28,6 +28,7 @@ import com.facebook.litho.Style
 import com.facebook.litho.TouchEvent
 import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.bindToRenderTreeView
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.layoutVersion
 import com.facebook.litho.useCached
 import com.facebook.litho.useNestedTree
@@ -62,9 +63,9 @@ class ZoomableComponent(
         root = child(),
         treeProps = context.treePropContainer,
         config =
-            context.lithoConfiguration.componentsConfig.copy(
-                incrementalMountEnabled = enableIncrementalMountForContent,
-            ),
+            ComponentsConfiguration.create(context.lithoConfiguration.componentsConfig)
+                .incrementalMountEnabled(enableIncrementalMountForContent)
+                .build(),
     )
 
     val lithoZoomableController = useCached { LithoZoomableController(androidContext) }
