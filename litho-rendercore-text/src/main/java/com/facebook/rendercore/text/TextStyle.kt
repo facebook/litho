@@ -21,6 +21,8 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.RectF
 import android.graphics.Typeface
+import android.os.Build
+import android.text.Layout
 import android.text.TextUtils
 import android.view.Gravity
 import androidx.annotation.ColorInt
@@ -249,6 +251,17 @@ class TextStyle : Cloneable {
               else -> TextDirectionHeuristicsCompat.LOCALE
             }
         textStyle.textDirection = textDirection
+      }
+    }
+
+    @JvmStatic
+    fun maybeSetHyphens(textStyle: TextStyle, hyphensStr: String?) {
+      if (hyphensStr != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        textStyle.hyphenationFrequency =
+            when (hyphensStr) {
+              "auto" -> Layout.HYPHENATION_FREQUENCY_NORMAL
+              else -> Layout.HYPHENATION_FREQUENCY_NONE
+            }
       }
     }
 
