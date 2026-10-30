@@ -11,7 +11,7 @@
  */
 #pragma once
 
-#include <jni.h>
+#include <jni.h> // @manual
 #include <cstddef>
 #include <type_traits>
 
