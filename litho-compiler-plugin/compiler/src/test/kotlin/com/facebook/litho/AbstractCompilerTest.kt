@@ -70,7 +70,6 @@ abstract class AbstractCompilerTest {
         verbose = false
         inheritClassPath = true
         useK2()
-        languageVersion = "2.1"
         jvmTarget = "11"
         // `@Hook` is an opt-in requirement marker, so a module that calls a hook without the plugin
         // fails to compile. For a real target `litho_hook_identity_decorator` injects the plugin
