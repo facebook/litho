@@ -35,5 +35,6 @@ public @interface ShouldUpdate {
    * @deprecated this param is ignored. MountSpecs with pureRender will now always check
    *     shouldUpdate on the main thread if the information from layout isn't able to be used.
    */
+  @SuppressWarnings("dep-ann")
   boolean onMount() default false;
 }
