@@ -16,6 +16,9 @@
 
 package com.facebook.litho
 
+import com.facebook.rendercore.ErrorReporter
+import com.facebook.rendercore.LogLevel
+
 /** Default implementation of ErrorEvent handler. */
 object DefaultErrorEventHandler : ErrorEventHandler() {
 
@@ -35,7 +38,7 @@ object DefaultErrorEventHandler : ErrorEventHandler() {
         }
       }
       val errorMessage = e.message.orEmpty()
-      ComponentsReporter.emitMessage(ComponentsReporter.LogLevel.ERROR, categoryKey, errorMessage)
+      ErrorReporter.report(LogLevel.ERROR, categoryKey, errorMessage)
     }
     ComponentUtils.rethrow(e)
     return null

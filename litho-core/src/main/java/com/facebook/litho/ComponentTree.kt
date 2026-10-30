@@ -78,6 +78,7 @@ import com.facebook.litho.state.UiStateReadRecords
 import com.facebook.litho.state.UiStateReadRecordsProvider
 import com.facebook.litho.state.hasDirtyScopes
 import com.facebook.litho.stats.LithoStats
+import com.facebook.rendercore.ErrorReporter
 import com.facebook.rendercore.LogLevel
 import com.facebook.rendercore.MountContentPools
 import com.facebook.rendercore.PoolScope
@@ -2213,8 +2214,8 @@ open class ComponentTree protected constructor(builder: Builder) :
               ", root builder context=${root.builderContextName}" +
               ", root=${root.simpleName}" +
               ", ContextTree=${ComponentTreeDumpingHelper.dumpContextTree(this)}"
-      ComponentsReporter.emitMessage(
-          ComponentsReporter.LogLevel.ERROR,
+      ErrorReporter.report(
+          LogLevel.ERROR,
           CT_CONTEXT_IS_DIFFERENT_FROM_ROOT_BUILDER_CONTEXT,
           message,
       )

@@ -69,6 +69,7 @@ import com.facebook.litho.debug.VisibilityCallbackCommonPropsTracker;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.rendercore.Equivalence;
+import com.facebook.rendercore.ErrorReporter;
 import com.facebook.rendercore.LayoutCache;
 import com.facebook.rendercore.LayoutResult;
 import com.facebook.rendercore.LogLevel;
@@ -1721,7 +1722,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
             "Setting a null key from "
                 + componentName
                 + " which is usually a mistake! If it is not, explicitly set the String 'null'";
-        ComponentsReporter.emitMessage(ComponentsReporter.LogLevel.ERROR, NULL_KEY_SET, message);
+        ErrorReporter.report(LogLevel.ERROR, NULL_KEY_SET, message);
         key = "null";
       }
       mComponent.setKey(key);

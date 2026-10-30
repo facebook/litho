@@ -48,7 +48,6 @@ import com.facebook.litho.ComponentHostUtils.maybeSetDrawableState
 import com.facebook.litho.ComponentHostUtils.moveItem
 import com.facebook.litho.ComponentHostUtils.removeItem
 import com.facebook.litho.ComponentHostUtils.scrapItemAt
-import com.facebook.litho.ComponentsReporter.emitMessage
 import com.facebook.litho.ComponentsSystrace.trace
 import com.facebook.litho.EventDispatcherUtils.dispatchOnInterceptTouch
 import com.facebook.litho.LithoLayoutData.Companion.getExpandedTouchBounds
@@ -61,6 +60,7 @@ import com.facebook.litho.ThreadUtils.assertMainThread
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.debug.LithoDebugEvent
 import com.facebook.proguard.annotations.DoNotStrip
+import com.facebook.rendercore.ErrorReporter
 import com.facebook.rendercore.Host
 import com.facebook.rendercore.LogLevel
 import com.facebook.rendercore.MountItem
@@ -1511,8 +1511,8 @@ open class ComponentHost(
           return
         }
         HAS_WARNED_ABOUT_PARTIAL_ALPHA = true
-        emitMessage(
-            ComponentsReporter.LogLevel.ERROR,
+        ErrorReporter.report(
+            LogLevel.ERROR,
             PARTIAL_ALPHA_TEXTURE_TOO_BIG,
             "Partial alpha ($alpha) with large view ($width, $height)",
         )

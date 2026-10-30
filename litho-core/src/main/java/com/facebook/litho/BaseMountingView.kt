@@ -36,7 +36,6 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import com.facebook.infer.annotation.ThreadConfined
 import com.facebook.litho.ComponentUtils.wrapWithMetadata
-import com.facebook.litho.ComponentsReporter.emitMessage
 import com.facebook.litho.ComponentsSystrace.systrace
 import com.facebook.litho.ComponentsSystrace.trace
 import com.facebook.litho.LithoMountData.Companion.getViewAttributeFlags
@@ -58,6 +57,7 @@ import com.facebook.litho.state.UiStateReadRecords
 import com.facebook.litho.stats.LithoStats.incrementComponentMountCount
 import com.facebook.litho.utils.IncrementalMountUtils
 import com.facebook.rendercore.BinderId
+import com.facebook.rendercore.ErrorReporter
 import com.facebook.rendercore.LogLevel
 import com.facebook.rendercore.MountDelegateTarget
 import com.facebook.rendercore.MountState
@@ -797,7 +797,7 @@ constructor(context: ComponentContext, attrs: AttributeSet? = null) :
             ", component=" +
             (if (hasTree) treeName else null))
     // Changed from FATAL to ERROR to prevent crashes during DebugInfoReporter migration
-    emitMessage(ComponentsReporter.LogLevel.ERROR, REENTRANT_MOUNTS_EXCEED_MAX_ATTEMPTS, message)
+    ErrorReporter.report(LogLevel.ERROR, REENTRANT_MOUNTS_EXCEED_MAX_ATTEMPTS, message)
   }
 
   override fun notifyVisibleBoundsChanged(reason: VisibilityChangeReason) {

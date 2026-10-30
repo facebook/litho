@@ -19,8 +19,9 @@ package com.facebook.litho
 import android.graphics.Rect
 import android.view.View
 import android.widget.PopupWindow
-import com.facebook.litho.ComponentsReporter.emitMessage
 import com.facebook.litho.ThreadUtils.assertMainThread
+import com.facebook.rendercore.ErrorReporter
+import com.facebook.rendercore.LogLevel
 
 object LithoTooltipController {
   private const val INVALID_HANDLE = "LithoTooltipController:InvalidHandle"
@@ -68,8 +69,8 @@ object LithoTooltipController {
     val anchorBounds = layoutState.findBoundsForHandle(handle)
     if (anchorBounds == null) {
       val name = componentContext.componentScope?.simpleName ?: "null"
-      emitMessage(
-          ComponentsReporter.LogLevel.ERROR,
+      ErrorReporter.report(
+          LogLevel.ERROR,
           INVALID_HANDLE,
           """Cannot find a component with handle $handle to use as anchor.
 Component: $name""",

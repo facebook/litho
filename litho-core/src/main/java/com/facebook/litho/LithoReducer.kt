@@ -34,8 +34,10 @@ import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.debug.DebugInfoReporter
 import com.facebook.litho.state.StateId
 import com.facebook.litho.stats.LithoStats
+import com.facebook.rendercore.ErrorReporter
 import com.facebook.rendercore.LayoutCache
 import com.facebook.rendercore.LayoutResult
+import com.facebook.rendercore.LogLevel
 import com.facebook.rendercore.MountState
 import com.facebook.rendercore.RenderState
 import com.facebook.rendercore.RenderTreeNode
@@ -1731,8 +1733,8 @@ internal object LithoReducer {
       if (transitionIdMap.put(transitionId, group) != null) {
         // Already seen component with the same manually set transition key
         // Changed from FATAL to ERROR to prevent crashes during DebugInfoReporter migration
-        ComponentsReporter.emitMessage(
-            ComponentsReporter.LogLevel.ERROR,
+        ErrorReporter.report(
+            LogLevel.ERROR,
             DUPLICATE_TRANSITION_IDS,
             """The transitionId '$transitionId' is defined multiple times in the same layout. TransitionIDs must be unique.
                   Tree:

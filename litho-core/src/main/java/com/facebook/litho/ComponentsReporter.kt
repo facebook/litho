@@ -26,8 +26,7 @@ import com.facebook.rendercore.ErrorReporterDelegate
  * [ComponentsReporter.provide].
  */
 @Deprecated(
-    "Use DebugInfoReporter instead",
-    ReplaceWith("DebugInfoReporter", "com.facebook.litho.debug.DebugInfoReporter"),
+    "Use ErrorReporter for app-facing error telemetry; use DebugInfoReporter only for debug-only events.",
 )
 object ComponentsReporter {
 

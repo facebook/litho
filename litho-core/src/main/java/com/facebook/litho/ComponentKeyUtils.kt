@@ -18,6 +18,7 @@ package com.facebook.litho
 
 import androidx.annotation.VisibleForTesting
 import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.rendercore.ErrorReporter
 import com.facebook.rendercore.LogLevel
 
 object ComponentKeyUtils {
@@ -137,8 +138,8 @@ object ComponentKeyUtils {
   }
 
   private fun logDuplicateManualKeyWarning(component: Component, key: String) {
-    ComponentsReporter.emitMessage(
-        ComponentsReporter.LogLevel.WARNING,
+    ErrorReporter.report(
+        LogLevel.WARNING,
         DUPLICATE_MANUAL_KEY,
         "The manual key $key you are setting on this ${component.simpleName} " +
             "is a duplicate and will be changed into a unique one. " +

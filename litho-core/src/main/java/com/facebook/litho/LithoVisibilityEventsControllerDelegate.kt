@@ -19,6 +19,8 @@ package com.facebook.litho
 import androidx.annotation.IntDef
 import androidx.annotation.UiThread
 import com.facebook.litho.LithoVisibilityEventsController.LithoVisibilityState
+import com.facebook.rendercore.ErrorReporter
+import com.facebook.rendercore.LogLevel
 import java.lang.IllegalStateException
 import java.util.ArrayList
 
@@ -62,8 +64,8 @@ class LithoVisibilityEventsControllerDelegate(
     @LifecycleTransitionStatus
     val transitionStatus = getTransitionState(_visibilityState, newVisibilityState)
     if (transitionStatus == LifecycleTransitionStatus.INVALID) {
-      ComponentsReporter.emitMessage(
-          ComponentsReporter.LogLevel.WARNING,
+      ErrorReporter.report(
+          LogLevel.WARNING,
           "LithoVisibilityEventsController",
           "Cannot move from state $_visibilityState to state $newVisibilityState",
       )

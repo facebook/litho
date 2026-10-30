@@ -30,6 +30,8 @@ import androidx.lifecycle.LifecycleOwner
 import com.facebook.litho.ComponentsSystrace.trace
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.proguard.annotations.DoNotStrip
+import com.facebook.rendercore.ErrorReporter
+import com.facebook.rendercore.LogLevel
 import com.facebook.rendercore.utils.CommonUtils
 import com.facebook.rendercore.utils.MeasureSpecUtils
 import com.facebook.rendercore.visibility.VisibilityChangeReason
@@ -476,8 +478,8 @@ constructor(
 
   override fun setVisibilityHint(isVisible: Boolean, skipMountingIfNotVisible: Boolean) {
     if (componentTreeHasVisibilityEventsController()) {
-      ComponentsReporter.emitMessage(
-          ComponentsReporter.LogLevel.WARNING,
+      ErrorReporter.report(
+          LogLevel.WARNING,
           LITHO_VISIBILITY_EVENTS_CONTROLLER_FOUND,
           "Setting visibility hint but a LithoVisibilityEventsController was found, ignoring.",
       )
@@ -489,8 +491,8 @@ constructor(
 
   override fun setVisibilityHint(isVisible: Boolean) {
     if (componentTreeHasVisibilityEventsController()) {
-      ComponentsReporter.emitMessage(
-          ComponentsReporter.LogLevel.WARNING,
+      ErrorReporter.report(
+          LogLevel.WARNING,
           LITHO_VISIBILITY_EVENTS_CONTROLLER_FOUND,
           "Setting visibility hint but a LithoVisibilityEventsController was found, ignoring.",
       )
@@ -596,8 +598,8 @@ constructor(
   fun release() {
     ThreadUtils.assertMainThread()
     if (componentTreeHasVisibilityEventsController()) {
-      ComponentsReporter.emitMessage(
-          ComponentsReporter.LogLevel.WARNING,
+      ErrorReporter.report(
+          LogLevel.WARNING,
           LITHO_VISIBILITY_EVENTS_CONTROLLER_FOUND,
           "Trying to release a LithoView but a LithoVisibilityEventsController was found, ignoring.",
       )
