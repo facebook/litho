@@ -197,7 +197,7 @@ class LayoutTreeFuture(
 
       LithoStats.incrementLayoutCount()
 
-      traceWithArgs(
+      return traceWithArgs(
           { "layoutTree:${resolveResult.component.simpleName}" },
           { scope ->
             scope.attribute("treeId", treeId)
@@ -261,6 +261,7 @@ class LayoutTreeFuture(
         try {
 
           c.setLithoLayoutContext(lsc)
+          val layoutState: LayoutState
           stateProvider.withScope(treeState) {
             val root = measureTree(lsc, c.androidContext, node, sizeConstraints)
 
@@ -289,7 +290,7 @@ class LayoutTreeFuture(
               }
             }
 
-            val layoutState =
+            layoutState =
                 LithoReducer.reduce(
                     lsc,
                     resolveResult,
@@ -301,9 +302,8 @@ class LayoutTreeFuture(
                 )
 
             root?.releaseLayoutPhaseData()
-
-            return layoutState
           }
+          layoutState
         } finally {
           c.calculationStateContext = prevContext
           lsc.release()
