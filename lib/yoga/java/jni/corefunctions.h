@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <jni.h>
+#include <jni.h> // @manual
 #include <cstddef>
 
 namespace facebook::yoga::vanillajni {

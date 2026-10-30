@@ -13,7 +13,7 @@
 #include <yoga/Yoga.h>
 
 #include "common.h"
-#include "jni.h"
+#include "jni.h" // @manual
 
 class PtrJNodeMapVanilla {
   std::map<YGNodeConstRef, jsize> ptrsToIdxs_{};
