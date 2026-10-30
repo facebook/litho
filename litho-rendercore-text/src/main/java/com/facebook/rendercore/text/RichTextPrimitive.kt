@@ -379,7 +379,7 @@ internal class RichTextLayoutData(
 
 object RichTextPrimitiveConfig {
   val canPreallocation: Boolean = true
-  val poolSize: Int = 10
+  val poolSize: Int = 30
 }
 
 object RichTextPrimitiveUtils {
