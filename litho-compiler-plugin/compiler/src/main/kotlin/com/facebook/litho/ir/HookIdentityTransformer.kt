@@ -30,7 +30,9 @@ import org.jetbrains.kotlin.ir.builders.irCall
 import org.jetbrains.kotlin.ir.builders.irInt
 import org.jetbrains.kotlin.ir.declarations.IrDeclarationOrigin
 import org.jetbrains.kotlin.ir.declarations.IrFunction
+import org.jetbrains.kotlin.ir.declarations.IrParameterKind
 import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
+import org.jetbrains.kotlin.ir.declarations.IrValueParameter
 import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.IrGetValue
@@ -242,7 +244,7 @@ class HookIdentityTransformer(private val pluginContext: IrPluginContext) :
         } else {
           "$enclosingFunctionIdentity#$callableName"
         }
-    val receiver = extensionReceiverParameter?.type?.stableName()?.let { "$it." }.orEmpty()
+    val receiver = extensionReceiverParameterCompat?.type?.stableName()?.let { "$it." }.orEmpty()
     val parameters = compatValueParameters.joinToString(",") { it.type.stableName() }
     return "$receiver$scopedName($parameters)"
   }
@@ -272,7 +274,7 @@ class HookIdentityTransformer(private val pluginContext: IrPluginContext) :
     val scopeClass = componentScopeClassSymbol ?: return false
     return overriddenSymbols.isNotEmpty() &&
         name == LithoNames.render &&
-        extensionReceiverParameter?.type?.isSubtypeOfClass(scopeClass) == true
+        extensionReceiverParameterCompat?.type?.isSubtypeOfClass(scopeClass) == true
   }
 
   /** Creates a copy of an IrExpression that is safe to use in multiple positions. */
@@ -295,3 +297,8 @@ class HookIdentityTransformer(private val pluginContext: IrPluginContext) :
     const val RESERVED_CALL_SITE_ID: Int = Int.MIN_VALUE
   }
 }
+
+// `IrFunction.extensionReceiverParameter` was removed in Kotlin 2.4; `parameters` carries the
+// extension receiver on every supported compiler.
+private val IrFunction.extensionReceiverParameterCompat: IrValueParameter?
+  get() = parameters.singleOrNull { it.kind == IrParameterKind.ExtensionReceiver }

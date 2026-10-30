@@ -16,6 +16,7 @@
 
 package com.facebook.litho.k2
 
+import com.facebook.kotlin.compilercompat.DeclarationCheckersCompat
 import com.facebook.litho.k2.diagnostics.AutoDepsClassChecker
 import com.facebook.litho.k2.diagnostics.AutoDepsFunctionChecker
 import org.jetbrains.kotlin.fir.FirSession
@@ -35,8 +36,8 @@ import org.jetbrains.kotlin.fir.analysis.extensions.FirAdditionalCheckersExtensi
 class AutoDepsCheckersExtension(session: FirSession) : FirAdditionalCheckersExtension(session) {
 
   override val declarationCheckers: DeclarationCheckers =
-      object : DeclarationCheckers() {
-        override val simpleFunctionCheckers = setOf(AutoDepsFunctionChecker())
+      object : DeclarationCheckersCompat() {
+        override val namedFunctionCheckers = setOf(AutoDepsFunctionChecker())
         override val regularClassCheckers = setOf(AutoDepsClassChecker())
       }
 }

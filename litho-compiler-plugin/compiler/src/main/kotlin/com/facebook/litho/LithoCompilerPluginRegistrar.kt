@@ -17,14 +17,15 @@
 package com.facebook.litho
 
 import com.facebook.kotlin.compilercompat.CompilerPluginRegistrarCompat
+import com.facebook.kotlin.compilercompat.MessageCollectorAccessCompat as MessageCollectorAccess
 import com.facebook.kotlin.compilercompat.registerDefaultDiagnosticsCompat
 import com.facebook.litho.ir.LithoIrGenerationExtension
 import com.facebook.litho.k2.LithoFirExtensionRegistrar
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.compiler.plugin.CompilerPluginRegistrar.ExtensionStorage
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
-import org.jetbrains.kotlin.config.CommonConfigurationKeys
 import org.jetbrains.kotlin.config.CompilerConfiguration
+import org.jetbrains.kotlin.config.messageCollector
 import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrarAdapter
 
 /**
@@ -36,7 +37,7 @@ import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrarAdapter
  *
  * @see [LithoCompilerPluginCommandLineProcessor]
  */
-@OptIn(ExperimentalCompilerApi::class)
+@OptIn(ExperimentalCompilerApi::class, MessageCollectorAccess::class)
 class LithoCompilerPluginRegistrar(
     private val plugins: List<LithoCompilerPlugin> = LithoCompilerPlugins.ALL,
 ) : CompilerPluginRegistrarCompat() {
@@ -44,7 +45,7 @@ class LithoCompilerPluginRegistrar(
   override val pluginId: String = LITHO_COMPILER_PLUGIN_ID
 
   override fun ExtensionStorage.registerExtensions(configuration: CompilerConfiguration) {
-    val messages = configuration.getNotNull(CommonConfigurationKeys.MESSAGE_COLLECTOR_KEY)
+    val messages = configuration.messageCollector
     IrGenerationExtension.registerExtension(LithoIrGenerationExtension(messages, plugins))
 
     val checkers = plugins.mapNotNull { it.firCheckers }
