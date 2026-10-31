@@ -19,6 +19,7 @@ package com.facebook.litho.animation
 import com.facebook.rendercore.IntSize
 import com.facebook.rendercore.graphics.Color
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.core.data.Offset
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -48,18 +49,22 @@ class SpringSpecTest {
 
   @Test
   fun springAnimator_intSize_reachesTargetPerAxis() {
-    val spec = spring<IntSize>()
-    val animator = spec.createAnimator(IntSize(100, 200), IntSize(200, 100), IntSizeTypeConverter)
-    var settled = false
-    for (i in 1..600) {
-      val t = seconds(i * 0.01)
-      if (animator.isFinished(t)) {
-        assertThat(animator.getValue(t)).isEqualTo(IntSize(200, 100))
-        settled = true
-        break
-      }
-    }
-    assertThat(settled).isTrue()
+    val animator =
+        spring<IntSize>().createAnimator(IntSize(0, 0), IntSize(1, 100), IntSizeTypeConverter)
+    val velocity = AnimationVector2D()
+    animator.getVelocity(seconds(0.5), velocity)
+    assertThat(animator.isFinished(seconds(0.5))).isFalse()
+    assertThat(velocity[0]).isGreaterThan(0f)
+    assertThat(velocity[1]).isGreaterThan(0f)
+    animator.getVelocity(seconds(1.0), velocity)
+    assertThat(animator.isFinished(seconds(1.0))).isTrue()
+    assertThat(animator.getValue(seconds(1.0))).isEqualTo(IntSize(1, 100))
+    assertThat(velocity[0]).isZero()
+    assertThat(velocity[1]).isZero()
+    // Querying a completed animator must not affect earlier play times.
+    animator.getVelocity(seconds(0.5), velocity)
+    assertThat(animator.isFinished(seconds(0.5))).isFalse()
+    assertThat(velocity[0]).isGreaterThan(0f)
   }
 
   @Test
@@ -207,8 +212,7 @@ class SpringSpecTest {
             initialVelocity = 0f,
         )
 
-    // Should be finished within 5 seconds
-    assertThat(solver.isFinished(seconds(5.0))).isTrue()
+    assertThat(solver.durationNanos).isLessThanOrEqualTo(seconds(5.0))
   }
 
   // -- SpringSpec + SpringAnimator tests --
@@ -309,5 +313,163 @@ class SpringSpecTest {
       }
     }
     assertThat(finished).isTrue()
+  }
+
+  @Test
+  fun `quiet frame before a later excursion does not finish a bouncy spring`() {
+    val solver = SpringSolver.create(10f, 0.2f, -1f, 0f)
+    assertThat(solver.getDisplacement(seconds(5.55))).isBetween(-0.01f, 0.01f)
+    assertThat(solver.getVelocity(seconds(5.55))).isBetween(-0.1f, 0.1f)
+    assertThat(solver.durationNanos).isGreaterThan(seconds(5.55))
+    assertThat(solver.getDisplacement(seconds(6.0))).isLessThan(-0.01f)
+    assertThat(solver.durationNanos).isLessThanOrEqualTo(seconds(7.26))
+  }
+
+  @Test
+  fun `small initial velocity at the target can produce a later excursion`() {
+    val animator =
+        spring<Float>(Stiffness(0.01f))
+            .createAnimator(
+                0f,
+                0f,
+                FloatTypeConverter,
+                AnimationVector1D(0.0009f),
+            )
+    assertThat(animator.isFinished(0)).isFalse()
+    assertThat(animator.getValue(seconds(10.0))).isGreaterThan(0.003f)
+    assertThat(animator.isFinished(seconds(34.29))).isFalse()
+    assertThat(animator.isFinished(seconds(34.30))).isTrue()
+  }
+
+  @Test
+  fun `duration covers the last crossing across damping regimes and extreme roots`() {
+    val cases = arrayOf(
+        floatArrayOf(200f, 0.2f, 1f, 0f),
+        floatArrayOf(200f, 0.99f, 1f, -14f), // Starts on the final descending segment.
+        floatArrayOf(200f, 0.99995f, 1f, 20f),
+        floatArrayOf(200f, 1.00005f, 1f, -20f),
+        floatArrayOf(200f, 2f, 1f, -100f),
+        floatArrayOf(200f, 0.000001f, 1f, 0f),
+        floatArrayOf(200f, 100000000f, 1f, 0f),
+    )
+    for (case in cases) {
+      val solver = SpringSolver.create(case[0], case[1], case[2], case[3])
+      val duration = solver.durationNanos
+      assertThat(duration).isGreaterThan(0)
+      for (step in 0..100) {
+        val t = duration + duration / 100 * step
+        assertThat(solver.getDisplacement(t)).isBetween(-0.01f, 0.01f)
+      }
+    }
+  }
+
+  @Test
+  fun `finite springs reject invalid parameters and shapes`() {
+    for (value in
+        floatArrayOf(0f, -1f, Float.NaN, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY)) {
+      assertThatThrownBy { DampingRatio(value) }.isInstanceOf(IllegalArgumentException::class.java)
+      assertThatThrownBy { Stiffness(value) }.isInstanceOf(IllegalArgumentException::class.java)
+    }
+    val spec = spring<Float>()
+    assertThatThrownBy { spec.createAnimator(0f, 0f, FloatTypeConverter, AnimationVector2D()) }
+        .isInstanceOf(IllegalArgumentException::class.java)
+  }
+
+  @Test
+  fun `unsupported durations finish at the target without mutating inherited velocity`() {
+    val cases = arrayOf(
+        floatArrayOf(200f, 1e-12f, 0f, 1f, 0f),
+        floatArrayOf(200f, Float.MIN_VALUE, 0f, 1f, 0f),
+        floatArrayOf(200f, Float.MAX_VALUE, 0f, 1f, 0f),
+        floatArrayOf(Float.MIN_VALUE, 1f, 0f, 1f, 0f),
+        floatArrayOf(Float.MIN_VALUE, 0.2f, 0f, 0f, Float.MAX_VALUE),
+        floatArrayOf(1f, 1e-9f, 0f, 1f, Float.MAX_VALUE),
+    )
+    assertThat(SpringSolver.create(1f, 1e-9f, -1f, 0f).durationNanos)
+        .isNotEqualTo(SpringSolver.UNSUPPORTED_DURATION)
+    for (case in cases) {
+      assertThat(SpringSolver.create(case[0], case[1], case[2] - case[3], case[4]).durationNanos)
+          .isEqualTo(SpringSolver.UNSUPPORTED_DURATION)
+      val inheritedVelocity = AnimationVector1D(case[4])
+      val animator =
+          spring<Float>(Stiffness(case[0]), DampingRatio(case[1]))
+              .createAnimator(case[2], case[3], FloatTypeConverter, inheritedVelocity)
+      val velocity = AnimationVector1D()
+      for (time in longArrayOf(0L, 1L, Long.MAX_VALUE)) {
+        assertThat(animator.isFinished(time)).isTrue()
+        assertThat(animator.getValue(time).toRawBits()).isEqualTo(case[3].toRawBits())
+        velocity[0] = 500f
+        animator.getVelocity(time, velocity)
+        assertThat(velocity[0]).isZero()
+      }
+      assertThat(inheritedVelocity[0].toRawBits()).isEqualTo(case[4].toRawBits())
+    }
+  }
+
+  @Test
+  fun `one unsupported component finishes the entire spring`() {
+    val inheritedVelocity = AnimationVector2D().apply { this[1] = Float.MAX_VALUE }
+    val target = IntSize(1, 2)
+    val animator =
+        spring<IntSize>(Stiffness(1f), DampingRatio(1e-9f))
+            .createAnimator(IntSize(0, 0), target, IntSizeTypeConverter, inheritedVelocity)
+    val velocity = AnimationVector2D()
+    for (time in longArrayOf(0L, 1L, Long.MAX_VALUE)) {
+      assertThat(animator.isFinished(time)).isTrue()
+      assertThat(animator.getValue(time)).isEqualTo(target)
+      velocity[0] = 500f
+      velocity[1] = 500f
+      animator.getVelocity(time, velocity)
+      assertThat(velocity[0]).isZero()
+      assertThat(velocity[1]).isZero()
+    }
+    assertThat(inheritedVelocity[0]).isZero()
+    assertThat(inheritedVelocity[1]).isEqualTo(Float.MAX_VALUE)
+  }
+
+  @Test
+  fun `invalid motion finishes at its target without mutating inherited velocity`() {
+    val cases = arrayOf(
+        floatArrayOf(Float.NaN, 1f, 0f),
+        floatArrayOf(Float.POSITIVE_INFINITY, 1f, 0f),
+        floatArrayOf(Float.NEGATIVE_INFINITY, 1f, 0f),
+        floatArrayOf(0f, Float.NaN, 0f),
+        floatArrayOf(0f, Float.POSITIVE_INFINITY, 0f),
+        floatArrayOf(0f, Float.NEGATIVE_INFINITY, 0f),
+        floatArrayOf(Float.NaN, Float.NaN, 0f),
+        floatArrayOf(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY, 0f),
+        floatArrayOf(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY, 0f),
+        floatArrayOf(0f, 1f, Float.NaN),
+        floatArrayOf(0f, 1f, Float.POSITIVE_INFINITY),
+        floatArrayOf(0f, 1f, Float.NEGATIVE_INFINITY),
+        floatArrayOf(Float.MAX_VALUE, -Float.MAX_VALUE, 0f),
+        floatArrayOf(-Float.MAX_VALUE, Float.MAX_VALUE, 0f),
+    )
+    val spec = spring<Float>()
+    for (case in cases) {
+      val inheritedVelocity = AnimationVector1D(case[2])
+      val animator = spec.createAnimator(case[0], case[1], FloatTypeConverter, inheritedVelocity)
+      assertThat(animator.isFinished(0L)).isTrue()
+      assertThat(animator.getValue(0L).toRawBits()).isEqualTo(case[1].toRawBits())
+      assertThat(animator.getValue(Long.MAX_VALUE).toRawBits()).isEqualTo(case[1].toRawBits())
+      val velocity = AnimationVector1D(500f)
+      animator.getVelocity(0L, velocity)
+      assertThat(velocity[0]).isZero()
+      assertThat(inheritedVelocity[0].toRawBits()).isEqualTo(case[2].toRawBits())
+    }
+    val invalidTargetConverter =
+        object : TypeConverter<Float> {
+          override fun newVector(): AnimationVector = AnimationVector2D()
+
+          override fun toVector(value: Float, vector: AnimationVector) {
+            vector[0] = value
+            vector[1] = Float.NaN
+          }
+
+          override fun fromVector(vector: AnimationVector): Float = vector[0]
+        }
+    val animator = spec.createAnimator(0f, 1f, invalidTargetConverter)
+    assertThat(animator.isFinished(0L)).isTrue()
+    assertThat(animator.getValue(0L)).isEqualTo(1f)
   }
 }

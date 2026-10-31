@@ -81,8 +81,8 @@ interface Animator<out T> {
    * Returns whether the animation has reached its final state at the given elapsed time.
    *
    * For tween animations, this is true when elapsed time exceeds the duration. For spring
-   * animations, this is true when displacement and velocity are both below the convergence
-   * threshold.
+   * animations, this is true at or after the bound settling duration. A stock spring returns its
+   * exact target and zero velocity from that boundary onward.
    *
    * @param playTimeNanos Elapsed time since the animation started, in nanoseconds.
    * @return `true` if the animation is complete.

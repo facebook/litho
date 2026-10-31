@@ -27,6 +27,9 @@ package com.facebook.litho.animation
  * spring<Float>(stiffness = Stiffness.Low, dampingRatio = DampingRatio.HighBouncy)
  * ```
  *
+ * The animation finishes immediately at the supplied target if endpoints, displacement, or velocity
+ * are non-finite, or if its settling duration cannot fit in Long nanoseconds.
+ *
  * @param stiffness Controls spring responsiveness. Higher = faster, snappier.
  * @param dampingRatio Controls bounce. Lower = more overshoot. 1.0 = no overshoot.
  */
@@ -57,26 +60,45 @@ private data class SpringSpec<T>(
       typeConverter: TypeConverter<T>,
       initialVelocity: AnimationVector?,
   ): Animator<T> {
+    val targetVector = typeConverter.newVectorFromValue(targetValue)
+    val valueVector = typeConverter.newVectorFromValue(initialValue)
+    require(
+        valueVector.size == targetVector.size &&
+            (initialVelocity == null || initialVelocity.size == targetVector.size),
+    ) {
+      "Spring initial, target, and velocity vectors must have the same size"
+    }
+    for (i in 0 until targetVector.size) {
+      if (
+          !(valueVector[i] - targetVector[i]).isFinite() ||
+              !(initialVelocity?.get(i) ?: 0f).isFinite()
+      ) {
+        // Non-finite motion cannot settle. Finish at the requested target so completion still
+        // runs without throwing during animation setup.
+        return FinishedAnimator(targetValue)
+      }
+    }
     // Equal endpoints are a no-op only at rest. An interrupted spring can reach its target with
     // non-zero velocity and must move away from it before settling.
     if (initialValue == targetValue && initialVelocity.isNullOrZero()) {
       return FinishedAnimator(targetValue)
     }
 
-    val targetVector = typeConverter.newVectorFromValue(targetValue)
-    // valueVector holds the initial components only while seeding, then becomes the per-frame
-    // buffer.
-    val valueVector = typeConverter.newVectorFromValue(initialValue)
     // Each component gets its own solver seeded with its own inherited velocity, so an interrupted
     // multi-component spring preserves every axis's motion across the retarget.
     val solvers =
         Array(targetVector.size) { i ->
-          SpringSolver.create(
-              stiffness = stiffness.value,
-              dampingRatio = dampingRatio.value,
-              initialDisplacement = valueVector[i] - targetVector[i],
-              initialVelocity = initialVelocity?.get(i) ?: 0f,
-          )
+          val solver =
+              SpringSolver.create(
+                  stiffness = stiffness.value,
+                  dampingRatio = dampingRatio.value,
+                  initialDisplacement = valueVector[i] - targetVector[i],
+                  initialVelocity = initialVelocity?.get(i) ?: 0f,
+              )
+          if (solver.durationNanos == SpringSolver.UNSUPPORTED_DURATION) {
+            return FinishedAnimator(targetValue)
+          }
+          solver
         }
     return SpringAnimator(targetValue, targetVector, valueVector, typeConverter, solvers)
   }
@@ -99,6 +121,12 @@ private class SpringAnimator<T>(
     private val solvers: Array<SpringSolver>,
 ) : Animator<T> {
 
+  private val durationNanos: Long = run {
+    var duration = 0L
+    for (solver in solvers) duration = maxOf(duration, solver.durationNanos)
+    duration
+  }
+
   override fun getValue(playTimeNanos: Long): T {
     if (isFinished(playTimeNanos)) return targetValue
     for (i in solvers.indices) {
@@ -108,13 +136,14 @@ private class SpringAnimator<T>(
   }
 
   override fun getVelocity(playTimeNanos: Long, velocity: AnimationVector) {
+    if (isFinished(playTimeNanos)) {
+      velocity.reset()
+      return
+    }
     for (i in solvers.indices) velocity[i] = solvers[i].getVelocity(playTimeNanos)
   }
 
-  override fun isFinished(playTimeNanos: Long): Boolean {
-    for (solver in solvers) if (!solver.isFinished(playTimeNanos)) return false
-    return true
-  }
+  override fun isFinished(playTimeNanos: Long): Boolean = playTimeNanos >= durationNanos
 }
 
 /** An [Animator] that is immediately finished and always returns the given value. */

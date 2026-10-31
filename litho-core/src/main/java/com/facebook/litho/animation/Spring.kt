@@ -29,12 +29,14 @@ package com.facebook.litho.animation
  * spring<Float>(stiffness = Stiffness(500f))
  * ```
  *
- * @param value The stiffness value. Must be positive.
+ * @param value The stiffness value. Must be finite and positive.
  */
 @JvmInline
 value class Stiffness(val value: Float) {
   init {
-    require(value > 0) { "Stiffness must be a positive number, but was $value" }
+    require(value.isFinite() && value > 0) {
+      "Stiffness must be finite and positive, but was $value"
+    }
   }
 
   companion object {
@@ -68,19 +70,20 @@ value class Stiffness(val value: Float) {
  *   overshooting.
  * - **Over-damped** (> 1.0): The spring returns to rest without overshooting, but slower than
  *   critically damped.
- * - **Undamped** (= 0.0): The spring oscillates forever without settling.
  *
  * ```kotlin
  * spring<Float>(dampingRatio = DampingRatio.MediumBouncy)
  * spring<Float>(dampingRatio = DampingRatio(0.6f))
  * ```
  *
- * @param value The damping ratio value. Must be non-negative.
+ * @param value The damping ratio value. Must be finite and positive.
  */
 @JvmInline
 value class DampingRatio(val value: Float) {
   init {
-    require(value >= 0) { "Damping ratio must be non-negative, but was $value" }
+    require(value.isFinite() && value > 0) {
+      "Damping ratio must be finite and positive, but was $value"
+    }
   }
 
   companion object {
