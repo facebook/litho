@@ -29,6 +29,7 @@ import com.facebook.litho.state.StateReadRecorder
 import com.facebook.rendercore.Dimen
 import com.facebook.rendercore.ResourceResolver
 import com.facebook.rendercore.graphics.Color
+import com.facebook.rendercore.thread.utils.ThreadUtils
 
 /**
  * Represents a directional transition segment from [initialState] to [targetState].
@@ -288,6 +289,22 @@ internal class AnimationGroupState<S>(
     if (changed) onStateSettled?.invoke()
   }
 
+  @MainThread
+  @Suppress("UNCHECKED_CAST")
+  internal fun finish() {
+    ThreadUtils.assertMainThread()
+    if (!hasAnimator) return
+    val committed = record
+    val targets = committed.descriptors.map { it.targetValueByState(committed.targetValue) }
+    val values = animatedValues
+    for (slot in values.indices) {
+      (values[slot] as AnimatedValue<Any?>).prepareFinish(targets[slot])
+    }
+    driver.stop()
+    checkCompletion()
+    for (slot in values.indices) values[slot].publishFrame()
+  }
+
   internal fun unmount() {
     settlement.unmount()
     onStateSettled = null
@@ -416,6 +433,15 @@ internal constructor(
     val targetState: S,
     private val resourceResolver: ResourceResolver,
 ) {
+
+  /**
+   * Completes the latest committed finite run immediately. All slot targets are published together;
+   * settlement remains asynchronous. Does not change the playback mode or prepare a new run.
+   */
+  @MainThread
+  fun finish() {
+    state.finish()
+  }
 
   /** Per-render slot counter. Each [animateFloat]/[animateDimen]/etc. call claims one slot. */
   private var renderSlot = 0

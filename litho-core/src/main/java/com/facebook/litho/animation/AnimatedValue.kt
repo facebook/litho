@@ -204,13 +204,20 @@ internal constructor(
 
   @MainThread
   internal fun finish(target: T) {
-    if (currentAnimator == null) return
+    if (!prepareFinish(target)) return
+    onComplete?.invoke()
+    publishFrame()
+  }
+
+  /** Stages a finite endpoint so a group can complete every slot before notifying any reader. */
+  internal fun prepareFinish(target: T): Boolean {
+    if (currentAnimator == null) return false
     currentAnimator = null
     _currentValue = target
     resetFrameState()
     isActive = false
-    onComplete?.invoke()
-    invalidate(dirty = true)
+    frameUpdate = FRAME_FINISHED
+    return true
   }
 
   /**

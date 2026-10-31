@@ -278,7 +278,7 @@ subsequent invisibility events. Calling `play()` before work exists permits late
 Control and diagnostics require the main thread and do not cause renders. `state` records desired
 playback; `isRunning` reports actual activity after a frame has started. Initial targets remain
 silent. Genuine no-motion target changes still settle asynchronously while paused; timed work
-and snaps to a different value wait for play.
+and snaps to a different value wait for play or finite owner finish.
 
 Pass the same controller explicitly to value hooks, finite or infinite groups, and animated
 containers to control them together. Each mounted owner stays attached between runs. Rebinding
@@ -658,6 +658,14 @@ group pending, even when their endpoints are equal.
 `targetState` is the render's target. Runtime settled state is internal; inside `transitionSpec`, the
 `Segment` exposes `initialState` and `targetState`. On interruption, `initialState` advances to the
 previous target so the spec describes the new leg. Use `onSettled` to observe completion.
+
+### Finishing a group
+
+Call `group.finish()` from an event or effect on the main thread to complete the latest committed
+run. Every pending slot publishes its target before observers are notified, and `onSettled` remains
+asynchronous. An older group handle still finishes the current committed run. Finish works while
+paused and preserves playback state for future targets. Repeated finish calls and initially settled
+groups do nothing. Do not call it during render.
 
 ### Complete example
 

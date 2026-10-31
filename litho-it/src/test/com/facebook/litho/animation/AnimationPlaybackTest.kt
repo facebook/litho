@@ -204,6 +204,36 @@ class AnimationPlaybackTest {
   }
 
   @Test
+  fun finishPublishesTheWholeLatestGroupAndKeepsFutureRunsPaused() {
+    val playback = AnimationPlayback(false)
+    val notifications = mutableListOf<Float>()
+    val view = lithoTestRule.render { Mixed(0f, playback, withLoop = false) }
+    lithoTestRule.idle()
+    val oldHandle = group
+    val callback: (Float) -> Unit = { notifications.add(it) }
+    view.setRoot(Mixed(1f, playback, withLoop = false, onSettled = callback))
+    lithoTestRule.idle()
+    view.setRoot(Mixed(2f, playback, withLoop = false, onSettled = callback))
+    lithoTestRule.idle()
+    val observed = mutableListOf<List<Any?>>()
+    group.state.onStateSettled = {
+      observed.add(group.state.animatedValues.map { it.currentValueRaw })
+    }
+    oldHandle.finish()
+    oldHandle.finish()
+    assertThat(observed).containsExactly(listOf(2f, 2f))
+    assertThat(notifications).isEmpty()
+    animationRule.runNextFrame()
+    assertThat(notifications).containsExactly(2f)
+    assertThat(playback.state).isEqualTo(PlaybackState.Paused)
+    assertThat(animationRule.hasScheduledFrames()).isFalse()
+    view.setRoot(Mixed(3f, playback, withLoop = false, onSettled = callback))
+    lithoTestRule.idle()
+    assertThat(group.state.animatedValues.map { it.currentValueRaw }).containsExactly(2f, 2f)
+    assertThat(animationRule.hasScheduledFrames()).isFalse()
+  }
+
+  @Test
   fun pausingFromSettlementFreezesOtherOwnersWithoutBlockingNotifications() {
     val playback = AnimationPlayback(true)
     val view = lithoTestRule.render { Mixed(0f, playback) }
