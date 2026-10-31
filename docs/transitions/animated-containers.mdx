@@ -70,6 +70,34 @@ The initial content (visible on first render) appears without an enter animation
 
 `enter` sets how the target content enters and `exit` how the previous content exits; anything you don't set defaults to `None` (an empty `transitionSpec = {}` swaps instantly with no animation). Reusing the same `contentKey` does not animate. The container sizes itself to the **target** content (the incoming content drives the container's size, not the outgoing one).
 
+## Completion callbacks
+
+Both containers accept an optional `onSettled` callback. It receives the latest committed `visible` or `targetState` value after the container's owned animations settle:
+
+| Container target | Completion waits for |
+| --- | --- |
+| `AnimatedVisibility(true)` | All enter effects |
+| `AnimatedVisibility(false)` | All exit effects and a request to remove retained content |
+| `AnimatedContent(targetState)` | The prepared target's enter effects, all retained outgoing exits, and requests to remove completed exits |
+
+```kotlin
+AnimatedVisibility(
+    visible = expanded,
+    onSettled = { settledVisible -> onExpansionSettled(settledVisible) },
+) { ExpandedContent() }
+
+AnimatedContent(
+    targetState = page,
+    onSettled = { settledPage -> onPageSettled(settledPage) },
+) { PageContent(it) }
+```
+
+Initial content is silent. A change of `visible` or `contentKey` notifies asynchronously on the main thread after animation invalidations flush, even without motion. Delivery uses the latest committed listener. A transition superseded before delivery, or a container unmounted before delivery, produces no notification for that transition.
+
+For `A -> B -> C`, C also waits for any still-exiting A content. Updating the payload under the same `contentKey` preserves content identity and animation progress without creating another notification. An outstanding completion receives the latest committed payload, including updates made after completion was queued. Callback-driven payload refreshes therefore do not produce more no-motion callbacks.
+
+Nested animations and unrelated style transitions do not participate. Completion means removal has been requested; it does not guarantee that removal has committed, content has physically unmounted, or a frame has been drawn. The reserved container size-morph path is not implemented.
+
 ## Container-relative slides
 
 `slideIntoContainer(direction)` / `slideOutOfContainer(direction)` slide content across the **container's** bounds, rather than offsetting by the content's own size the way `slideInHorizontally()` and friends do. `direction` is the way the content moves; an optional offset lambda scales the full-slide distance. The [`AnimatedContent` sample](#animatedcontent) above slides each page in the direction of travel:
@@ -82,4 +110,3 @@ val exit = fadeOut() + slideOutOfContainer(towards) + scaleOut()
 ## Choosing motion
 
 Start with the simplest motion that communicates the change. Fades, scales, and slides work well for content that appears over a stable layout. Use container-relative slides for page-like swaps where the old and new content should travel across the same frame.
-

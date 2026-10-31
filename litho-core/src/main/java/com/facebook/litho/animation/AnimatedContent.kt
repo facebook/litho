@@ -18,10 +18,12 @@ package com.facebook.litho.animation
 
 import androidx.annotation.MainThread
 import com.facebook.litho.Component
+import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.annotations.ExperimentalLithoApi
+import com.facebook.litho.annotations.Hook
 import com.facebook.litho.getUpdatedState
 import com.facebook.litho.layout.ContentPosition
 import com.facebook.litho.layout.StackLayout
@@ -115,6 +117,11 @@ internal constructor(
  * @param contentPosition Alignment of overlapping content.
  * @param style Style applied to the container.
  * @param label Debug label for the underlying transitions.
+ * @param onSettled Called asynchronously for the latest committed target after its enter and all
+ *   retained exits settle and removal has been requested. Content-key changes notify even without
+ *   motion. Same-key payload updates do not create notifications; an outstanding completion uses
+ *   the latest committed payload and callback. Initial content is silent. Nested animations are
+ *   excluded. Does not guarantee physical unmount or draw.
  * @param content Builder for the content of a given state.
  */
 @ExperimentalLithoApi
@@ -128,6 +135,7 @@ class AnimatedContent<T>(
     private val contentPosition: ContentPosition = ContentPosition.TopStart,
     private val style: Style = Style,
     private val label: String = "AnimatedContent",
+    private val onSettled: ((T) -> Unit)? = null,
     private val content: ComponentScope.(T) -> Component?,
 ) : KComponent() {
 
@@ -145,18 +153,23 @@ class AnimatedContent<T>(
     }
     val current = requested.withIdentities(identities)
     val needsPreparation = current !== retained
+    val completion = useAnimatedContentSettlement<T>(targetKey)
 
     // Initial content uses resting values; only later targets play an enter transition.
     val hasStarted = useState { false }
     useEffect(Unit) {
       hasStarted.update(true)
-      null
+      onCleanup { completion.unmount() }
     }
 
     // Child group commit and retarget effects finish before this parent effect freezes eligibility.
     useEffect(current, needsPreparation) {
       val eligible = current.withoutCompletedExits()
       retainedContent.update { it.acceptCommitted(eligible) }
+      null
+    }
+    useEffect(current, onSettled, context) {
+      completion.commit(current, onSettled, context)
       null
     }
 
@@ -188,10 +201,11 @@ class AnimatedContent<T>(
                     identity = checkNotNull(slot.identity),
                     animateEnter = hasStarted.value,
                     label = label,
-                    onExitSettled = {
+                    onSlotSettled = {
                       if (slot.identity?.hasExited == true) {
                         retainedContent.update { it.removeExited(slot) }
                       }
+                      completion.onSlotSettled(slot)
                     },
                     content = content,
                 ),
@@ -223,6 +237,13 @@ internal class AnimatedContentSlotIdentity(val key: String) {
   private var hasExitAnimation = false
   private var hasBeenTarget = false
 
+  @get:MainThread
+  val hasEntered: Boolean
+    get() {
+      val animation = animation ?: return false
+      return animation.targetState == EnterExitState.Visible && !animation.hasAnimator
+    }
+
   /**
    * A slot from a discarded resolve that never committed as a target has no displayed content to
    * animate out. It can release immediately; previously targeted slots with an exit animation
@@ -252,6 +273,61 @@ internal class AnimatedContentSlotIdentity(val key: String) {
   }
 }
 
+@Hook
+private fun <T> ComponentScope.useAnimatedContentSettlement(
+    initialKey: Any?,
+): AnimatedContentSettlement<T> = getUpdatedState { AnimatedContentSettlement<T>(initialKey) }
+
+/** Committed membership is also the preparation barrier; BeforeEnter is not a prepared target. */
+private class AnimatedContentSettlement<T>(initialKey: Any?) {
+  private val settlement = AnimationSettlement(initialKey)
+  private var content: AnimatedContentState<T>? = null
+  private var onSettled: ((T) -> Unit)? = null
+  private val reportSettled: (Any?) -> Unit = { key ->
+    val slot = checkNotNull(content).slots.last()
+    check(slot.key == key)
+    onSettled?.invoke(slot.state)
+  }
+
+  @MainThread
+  fun commit(
+      content: AnimatedContentState<T>,
+      onSettled: ((T) -> Unit)?,
+      context: ComponentContext,
+  ) {
+    this.content = content
+    this.onSettled = onSettled
+    settlement.commit(content.slots.last().key, reportSettled, context)
+    checkCompletion()
+  }
+
+  @MainThread
+  fun onSlotSettled(slot: AnimatedContentEntry<T>) {
+    if (!settlement.isPending) return
+    val content = content ?: return
+    if (content.slots.none { it === slot }) return
+    checkCompletion()
+  }
+
+  @MainThread
+  private fun checkCompletion() {
+    if (!settlement.isPending) return
+    val slots = content?.slots ?: return
+    if (slots.last().identity?.hasEntered != true) return
+    for (i in 0 until slots.lastIndex) {
+      if (slots[i].identity?.hasExited != true) return
+    }
+    settlement.complete()
+  }
+
+  @MainThread
+  fun unmount() {
+    content = null
+    onSettled = null
+    settlement.unmount()
+  }
+}
+
 internal data class AnimatedContentEntry<T>(
     val key: Any?,
     val state: T,
@@ -260,9 +336,10 @@ internal data class AnimatedContentEntry<T>(
 
 /**
  * Immutable content membership; the final entry is the target. Only committed parent effects
- * install projections, in UI commit order. Exit reports only remove matching slot lifetimes.
- * Eligibility is frozen on the UI thread before queuing an updater; replayed updaters must not
- * inspect the identities' mutable animation runtime.
+ * install projections, in UI commit order. Exit reports only remove matching immutable entries;
+ * reentry creates a new entry even when the slot lifetime is preserved. Unchanged outgoing entries
+ * preserve their object identity across projections. Eligibility is frozen on the UI thread before
+ * queuing an updater; replayed updaters must not inspect the identities' mutable animation runtime.
  */
 internal class AnimatedContentState<T>
 private constructor(
@@ -323,14 +400,19 @@ private constructor(
 
   fun acceptCommitted(projection: AnimatedContentState<T>): AnimatedContentState<T> {
     if (this === projection) return this
-    if (slots == projection.slots && initialState == projection.initialState) return this
+    if (
+        initialState == projection.initialState &&
+            slots.size == projection.slots.size &&
+            slots.indices.all { slots[it] === projection.slots[it] }
+    )
+        return this
     return projection
   }
 
   fun removeExited(slot: AnimatedContentEntry<T>): AnimatedContentState<T> {
     val index = slots.indexOfFirst { it.key == slot.key }
     if (index < 0 || index == slots.lastIndex) return this
-    if (slots[index].identity !== slot.identity) return this
+    if (slots[index] !== slot) return this
     val updated = ArrayList(slots)
     updated.removeAt(index)
     return AnimatedContentState(updated, initialState)
@@ -344,9 +426,9 @@ private constructor(
 
 /**
  * One content slot of an [AnimatedContent]. Plays the enter animation when it is the target and the
- * exit animation otherwise, reporting back via [onExitSettled] when its exit settles so the
- * container can drop it. A slot that was never the target (superseded before it was shown, e.g. in
- * a rapid `A -> B -> C`) has no real exit to play and releases immediately.
+ * exit animation otherwise, reporting back via [onSlotSettled] so the container can observe
+ * completion and drop exited content. A slot that was never the target (superseded before it was
+ * shown, e.g. in a rapid `A -> B -> C`) has no real exit to play and releases immediately.
  */
 @ExperimentalLithoApi
 internal class AnimatedContentSlot<T>(
@@ -357,7 +439,7 @@ internal class AnimatedContentSlot<T>(
     internal val identity: AnimatedContentSlotIdentity,
     private val animateEnter: Boolean,
     private val label: String,
-    internal val onExitSettled: () -> Unit,
+    internal val onSlotSettled: () -> Unit,
     private val content: ComponentScope.(T) -> Component?,
 ) : KComponent() {
 
@@ -389,15 +471,10 @@ internal class AnimatedContentSlot<T>(
       if (isTarget) {
         // A slot may first commit as outgoing and become the target before removal applies.
         if (!started.value) started.update(true)
-        transition.state.onStateSettled = null
-        null
-      } else if (identity.hasExited) {
-        onExitSettled()
-        null
-      } else {
-        transition.state.onStateSettled = onExitSettled
-        onCleanup { transition.state.onStateSettled = null }
       }
+      transition.state.onStateSettled = onSlotSettled
+      if (identity.hasExited) onSlotSettled()
+      onCleanup { transition.state.onStateSettled = null }
     }
 
     val child = content(this, state) ?: return null

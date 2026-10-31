@@ -24,7 +24,9 @@ import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.Value
 import com.facebook.litho.annotations.ExperimentalLithoApi
+import com.facebook.litho.annotations.Hook
 import com.facebook.litho.flexbox.alignSelf
+import com.facebook.litho.getUpdatedState
 import com.facebook.litho.layout.flexbox.Row
 import com.facebook.litho.onCleanup
 import com.facebook.litho.useEffect
@@ -57,6 +59,10 @@ import kotlin.math.abs
  * @param exit The exit animation. Defaults to [fadeOut].
  * @param style Style applied to the animation wrapper.
  * @param label Debug label for the underlying transition.
+ * @param onSettled Called asynchronously for the latest committed [visible] value after owned
+ *   effects settle. For hidden content, removal is requested first. Initial content is silent. Uses
+ *   the latest committed callback; nested animations are excluded. Does not guarantee unmount or
+ *   draw.
  * @param content Builder for the child component to animate.
  */
 @ExperimentalLithoApi
@@ -66,11 +72,13 @@ class AnimatedVisibility(
     private val exit: ExitTransition = fadeOut(),
     private val style: Style = Style,
     private val label: String = "AnimatedVisibility",
+    private val onSettled: ((Boolean) -> Unit)? = null,
     private val content: ComponentScope.() -> Component?,
 ) : KComponent() {
 
   override fun ComponentScope.render(): Component? {
     val keepMounted = useState { visible }
+    val settlement = useVisibilitySettlement(visible)
 
     // Map the Boolean `visible` prop to the three-state lifecycle:
     // - BeforeEnter: never been visible (keepMounted false, visible false)
@@ -91,25 +99,27 @@ class AnimatedVisibility(
     val hasExitAnimation =
         with(exit.data) { fade != null || scale != null || slide != null || changeSize != null }
 
-    // Keep-mounted lifecycle:
-    // - enter (or re-show mid-exit): keep mounted, drop any pending settle unmount;
-    // - exit with no animation: unmount immediately;
-    // - exit with animation: retain, and unmount on settle — but only if still hidden (idempotent
-    //   against a reverse-mid-exit, where `visible` flips back to true before the group settles).
-    useEffect(visible) {
-      if (visible) {
-        keepMounted.update(true)
-        transition.state.onStateSettled = null
-        null
-      } else if (!hasExitAnimation) {
-        keepMounted.update(false)
-        null
-      } else {
-        transition.state.onStateSettled = {
-          if (transition.state.targetState == EnterExitState.AfterExit) keepMounted.update(false)
+    useEffect(Unit) { onCleanup { settlement.unmount() } }
+
+    // Public generations follow visible; the internal AfterExit -> BeforeEnter reset is silent.
+    useEffect(transition) {
+      settlement.commit(visible, onSettled, context)
+      // Render snapshots exclude queued updates; committed intent must override them.
+      if (visible) keepMounted.update(true)
+      val reportSettled = {
+        if (
+            transition.state.targetState == targetState &&
+                (targetState == EnterExitState.BeforeEnter ||
+                    (!visible && !hasExitAnimation) ||
+                    !transition.state.hasAnimator)
+        ) {
+          if (!visible) keepMounted.update(false)
+          settlement.complete()
         }
-        onCleanup { transition.state.onStateSettled = null }
       }
+      transition.state.onStateSettled = reportSettled
+      reportSettled()
+      onCleanup { transition.state.onStateSettled = null }
     }
 
     if (!visible && !keepMounted.value) {
@@ -130,6 +140,11 @@ class AnimatedVisibility(
     )
   }
 }
+
+@Hook
+private fun ComponentScope.useVisibilitySettlement(
+    visible: Boolean,
+): AnimationSettlement<Boolean> = getUpdatedState { AnimationSettlement(visible) }
 
 /**
  * The per-effect animated progress values for an enter/exit transition (null when not declared).

@@ -116,7 +116,7 @@ class AnimatedContentTest {
   @Test
   fun unshownOutgoingSlotBecomesTargetBeforeRemoval_playsEnter() {
     val identity = AnimatedContentSlotIdentity("A")
-    var exitReports = 0
+    var settlementReports = 0
     fun content(isTarget: Boolean): Component = AnimatedContentSlot(
         state = "A",
         enter = fadeIn(linearFade),
@@ -125,7 +125,7 @@ class AnimatedContentTest {
         identity = identity,
         animateEnter = true,
         label = "unshown-slot",
-        onExitSettled = { exitReports++ },
+        onSlotSettled = { settlementReports++ },
     ) { state ->
       Row(style = Style.width(50.px).height(50.px).viewTag("slot-$state"))
     }
@@ -133,7 +133,7 @@ class AnimatedContentTest {
     val view = lithoTestRule.render { content(isTarget = false) }
     lithoTestRule.idle()
     val runtime = checkNotNull(identity.animation)
-    assertThat(exitReports).isEqualTo(1)
+    assertThat(settlementReports).isEqualTo(1)
     assertThat(identity.hasExited).isTrue()
     assertThat(slotAlpha(view, "A")).isEqualTo(0f)
 
@@ -147,7 +147,7 @@ class AnimatedContentTest {
 
     assertThat(slotAlpha(view, "A")).isEqualTo(1f)
     assertThat(animationRule.hasScheduledFrames()).isFalse()
-    assertThat(exitReports).isEqualTo(1)
+    assertThat(settlementReports).isEqualTo(2)
   }
 
   @Test
@@ -205,6 +205,7 @@ class AnimatedContentTest {
     lithoTestRule.idle()
 
     assertThat(items(restoredView)).containsExactly(Item("Z", "Third"))
+    animationRule.runNextFrame()
     assertThat(animationRule.hasScheduledFrames()).isFalse()
   }
 
@@ -273,7 +274,7 @@ class AnimatedContentTest {
     lithoTestRule.idle()
     animationRule.advanceBy(200.ms)
     val exiting = slot(testView, first)
-    val oldReport = exiting.onExitSettled
+    val oldReport = exiting.onSlotSettled
     val runtime = checkNotNull(exiting.identity.animation)
     val tree = testView.componentTree
     val returned = resolveInBackground(tree, branchingContent(first))
@@ -365,6 +366,43 @@ class AnimatedContentTest {
   }
 
   @Test
+  fun counterReversalBeforeFirstFrame_keepsIntermediateContentInvisible() {
+    fun content(target: Int) = AnimatedContent(
+        targetState = target,
+        transitionSpec = {
+          if (targetState >= initialState) {
+            enter = fadeIn() + slideInHorizontally { it }
+            exit = fadeOut() + slideOutHorizontally { -it }
+          } else {
+            enter = fadeIn() + slideInHorizontally { -it }
+            exit = fadeOut() + slideOutHorizontally { it }
+          }
+        },
+    ) { state ->
+      Row(style = Style.width(50.px).height(50.px).viewTag("slot-$state"))
+    }
+    for (step in listOf(1, -1)) {
+      val view = lithoTestRule.render { content(0) }
+      lithoTestRule.idle()
+      view.setRoot(content(step))
+      lithoTestRule.idle()
+      val intermediate = checkNotNull(view.findViewWithTagOrNull("slot-$step")).parent as View
+      assertThat(intermediate.alpha).isEqualTo(0f)
+      view.setRoot(content(0))
+      lithoTestRule.idle()
+      repeat(10) {
+        animationRule.runNextFrame()
+        view.findViewWithTagOrNull("slot-$step")?.let {
+          assertThat((it.parent as View).alpha).isEqualTo(0f)
+        }
+      }
+      animationRule.advanceBy(2_000.ms)
+      assertThat(view.findViewWithTagOrNull("slot-$step")).isNull()
+      view.release()
+    }
+  }
+
+  @Test
   fun exitBeforeEnter_withoutExitAnimationReleases() {
     val renders = Collections.synchronizedList(mutableListOf<ItemRender>())
     val first = Item("A", "A")
@@ -414,7 +452,7 @@ class AnimatedContentTest {
     lithoTestRule.idle()
     testView.setRoot(itemContent(second, renders, transitions))
     lithoTestRule.idle()
-    val report = slot(testView, first).onExitSettled
+    val report = slot(testView, first).onSlotSettled
     animationRule.advanceBy(2_000.ms)
     assertThat(items(testView)).containsExactly(second)
     transitions.clear()
@@ -461,6 +499,11 @@ class AnimatedContentTest {
     assertThat(returned.initialState).isEqualTo("C")
     assertThat(returned.removeExited(first.slots.first()).slots.map { it.state })
         .containsExactly("C", "B updated")
+
+    val next = returned.withTarget("D", "D")
+    assertThat(next.removeExited(first.slots.last())).isSameAs(next)
+    assertThat(next.removeExited(returned.slots.last()).slots.map { it.state })
+        .containsExactly("A", "C", "D")
   }
 
   @Test
@@ -518,6 +561,7 @@ class AnimatedContentTest {
     for ((index, item) in listOf(original, Item("A", "Updated")).withIndex()) {
       testView.setRoot(content(item, "Changed-$index"))
       lithoTestRule.idle()
+      animationRule.runNextFrame()
       transitions.clear()
       val equal = item.copy()
       assertThat(equal).isEqualTo(item).isNotSameAs(item)
@@ -563,6 +607,7 @@ class AnimatedContentTest {
 
     assertThat(items(testView)).containsExactly(updated)
     assertThat(renders.last().identity).isSameAs(identity)
+    animationRule.runNextFrame()
     assertThat(animationRule.hasScheduledFrames()).isFalse()
     assertThat(transitions).hasSize(2)
     lithoTestRule.idle()
@@ -807,7 +852,7 @@ class AnimatedContentTest {
     val originalIdentity = renders.last().identity
     testView.setRoot(itemContent(second, renders))
     lithoTestRule.idle()
-    val oldReport = slot(testView, first).onExitSettled
+    val oldReport = slot(testView, first).onSlotSettled
     if (releaseBeforeReentry) {
       animationRule.advanceBy(2_000.ms)
       assertThat(items(testView)).containsExactly(second)
