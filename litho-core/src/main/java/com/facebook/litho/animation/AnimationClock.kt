@@ -16,9 +16,9 @@
 
 package com.facebook.litho.animation
 
-/** Owner-local play time shared by all values driven by this registration. */
-internal abstract class AnimationClock : FrameDrivenAnimation {
-  private var lastFrameTimeNanos = UNSET_FRAME_TIME
+/** Owner-local time. Values can read time without access to scheduling or playback control. */
+internal open class AnimationClock {
+  @Volatile private var lastFrameTimeNanos = UNSET_FRAME_TIME
 
   var playTimeNanos: Long = 0L
     private set
@@ -26,33 +26,19 @@ internal abstract class AnimationClock : FrameDrivenAnimation {
   val isTicking: Boolean
     get() = lastFrameTimeNanos != UNSET_FRAME_TIME
 
-  final override fun onFrame(frameTimeNanos: Long): Boolean {
-    if (lastFrameTimeNanos != UNSET_FRAME_TIME) {
-      playTimeNanos += frameTimeNanos - lastFrameTimeNanos
-    }
+  protected fun tick(frameTimeNanos: Long): Long {
+    val previous = lastFrameTimeNanos
+    if (previous != UNSET_FRAME_TIME) playTimeNanos += frameTimeNanos - previous
     lastFrameTimeNanos = frameTimeNanos
-    val pending = advance(playTimeNanos)
-    if (!pending) freeze()
-    return pending
+    return playTimeNanos
   }
 
-  protected abstract fun advance(playTimeNanos: Long): Boolean
-
-  /**
-   * Preserves play time and re-anchors on the next tick. The owner unregisters this clock to
-   * suspend ticks; playback eligibility must also prevent registration while paused.
-   */
-  fun freeze() {
+  /** Preserves play time and re-anchors on the next tick. */
+  protected fun freeze() {
     lastFrameTimeNanos = UNSET_FRAME_TIME
   }
 
   private companion object {
     const val UNSET_FRAME_TIME = Long.MIN_VALUE
-  }
-}
-
-internal inline fun AnimationClock(crossinline onAdvance: (Long) -> Boolean): AnimationClock {
-  return object : AnimationClock() {
-    override fun advance(playTimeNanos: Long) = onAdvance(playTimeNanos)
   }
 }

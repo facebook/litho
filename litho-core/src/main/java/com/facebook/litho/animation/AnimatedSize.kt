@@ -47,9 +47,9 @@ import kotlin.math.roundToInt
 internal fun ComponentScope.useAnimatedSize(
     targetValue: IntSize,
     spec: FiniteAnimationSpec<IntSize> = spring(),
-    trigger: AnimationTrigger = AnimationTrigger.Immediate,
     label: String = "size",
-): Value<IntSize> = useAnimatedValue(targetValue, IntSizeTypeConverter, spec, trigger, label)
+    playback: AnimationPlayback? = null,
+): Value<IntSize> = useAnimatedValue(targetValue, IntSizeTypeConverter, spec, label, playback)
 
 /**
  * Drives the host's layout width and height from a single animated [size]. Each axis is read lazily

@@ -51,9 +51,8 @@ import com.facebook.rendercore.graphics.Color
  * @param targetValue The value to animate toward. Changes trigger new animations.
  * @param typeConverter Converts between [T] and [Float] for animation computation.
  * @param spec The animation specification. Defaults to [spring].
- * @param trigger Controls when the animation begins receiving frame callbacks. Defaults to
- *   [AnimationTrigger.Immediate].
  * @param label Optional label for debugging and tracing attribution.
+ * @param playback Optional durable pause/resume control.
  * @param onSettled Receives the latest committed target after it settles. Initial composition is
  *   silent; superseded or unmounted generations do not notify. Delivery uses the latest callback.
  * @return A [Value] containing the current animated value.
@@ -64,8 +63,8 @@ fun <T> ComponentScope.useAnimatedValue(
     targetValue: T,
     typeConverter: TypeConverter<T>,
     spec: FiniteAnimationSpec<T> = spring(),
-    trigger: AnimationTrigger = AnimationTrigger.Immediate,
     label: String = "",
+    playback: AnimationPlayback? = null,
     onSettled: ((T) -> Unit)? = null,
 ): Value<T> {
   val hookKey = animationHookKey()
@@ -80,43 +79,35 @@ fun <T> ComponentScope.useAnimatedValue(
   )
 
   // Retain the value and its completion owner together across renders and tree-state transfer.
-  val (animatedValue, settlement) =
+  val (animatedValue, driver, settlement) =
       getUpdatedState {
         val settlement = AnimationSettlement(targetValue)
-        val animatedValue = AnimatedValue(
+        createAnimatedValue(
             initialValue = targetValue,
             typeConverter = typeConverter,
             stateId = stateId,
             isLayoutContext = context.isContextForLayout,
             stateUpdater = lithoTree.stateUpdater,
             label = label,
-        )
-            .also { it.onComplete = settlement::complete }
-        animatedValue to settlement
+        ) { value, driver ->
+          value.onComplete = settlement::complete
+          Triple(value, driver, settlement)
+        }
       }
 
   val completionContext = context
-  useEffect(targetValue, onSettled, completionContext) {
+  useEffect(targetValue, onSettled, completionContext, playback) {
+    driver.bind(playback)
     if (settlement.commit(targetValue, onSettled, completionContext)) {
       animatedValue.snapTo(targetValue)
     }
     null
   }
 
-  // Drive animation when target or spec changes.
-  // Registration with the controller is deferred to the AnimationTrigger strategy.
-  // If the value is already active (retargeting), no handle is needed — frames continue.
   useEffect(targetValue, spec) {
     animatedValue.retarget(targetValue, spec, preserveEqualTargetTiming = settlement.isPending)
     if (!animatedValue.hasAnimator) settlement.complete()
-    if (animatedValue.hasAnimator && !animatedValue.isActive) {
-      val handle = AnimationHandle { AnimationController.register(animatedValue.clock) }
-      val cleanup = trigger.onReady(handle)
-      return@useEffect onCleanup {
-        handle.invalidate()
-        cleanup?.onCleanup()
-      }
-    }
+    driver.updatePendingWork(animatedValue.hasAnimator)
     null
   }
 
@@ -125,7 +116,7 @@ fun <T> ComponentScope.useAnimatedValue(
     onCleanup {
       settlement.unmount()
       animatedValue.stop()
-      AnimationController.unregister(animatedValue.clock)
+      driver.unmount()
     }
   }
 
@@ -145,9 +136,8 @@ fun <T> ComponentScope.useAnimatedValue(
  *
  * @param targetValue The value to animate toward. Changes trigger new animations.
  * @param spec The animation specification. Defaults to [spring].
- * @param trigger Controls when the animation begins receiving frame callbacks. Defaults to
- *   [AnimationTrigger.Immediate].
  * @param label Optional label for debugging and tracing attribution.
+ * @param playback Optional durable pause/resume control.
  * @return A [Value] containing the current animated value.
  */
 @ExperimentalLithoApi
@@ -155,19 +145,19 @@ fun <T> ComponentScope.useAnimatedValue(
 fun ComponentScope.useAnimatedFloat(
     targetValue: Float,
     spec: FiniteAnimationSpec<Float> = spring(),
-    trigger: AnimationTrigger = AnimationTrigger.Immediate,
     label: String = "float",
+    playback: AnimationPlayback? = null,
     onSettled: ((Float) -> Unit)? = null,
-): Value<Float> = useAnimatedValue(targetValue, FloatTypeConverter, spec, trigger, label, onSettled)
+): Value<Float> =
+    useAnimatedValue(targetValue, FloatTypeConverter, spec, label, playback, onSettled)
 
 /**
  * Animates an [Int] value, automatically starting a new animation whenever [targetValue] changes.
  *
  * @param targetValue The value to animate toward. Changes trigger new animations.
  * @param spec The animation specification. Defaults to [spring].
- * @param trigger Controls when the animation begins receiving frame callbacks. Defaults to
- *   [AnimationTrigger.Immediate].
  * @param label Optional label for debugging and tracing attribution.
+ * @param playback Optional durable pause/resume control.
  * @return A [Value] containing the current animated value.
  */
 @ExperimentalLithoApi
@@ -175,10 +165,10 @@ fun ComponentScope.useAnimatedFloat(
 fun ComponentScope.useAnimatedInt(
     targetValue: Int,
     spec: FiniteAnimationSpec<Int> = spring(),
-    trigger: AnimationTrigger = AnimationTrigger.Immediate,
     label: String = "int",
+    playback: AnimationPlayback? = null,
     onSettled: ((Int) -> Unit)? = null,
-): Value<Int> = useAnimatedValue(targetValue, IntTypeConverter, spec, trigger, label, onSettled)
+): Value<Int> = useAnimatedValue(targetValue, IntTypeConverter, spec, label, playback, onSettled)
 
 /**
  * Animates a [Color] value with per-channel interpolation, automatically starting a new animation
@@ -186,9 +176,8 @@ fun ComponentScope.useAnimatedInt(
  *
  * @param targetValue The color to animate toward. Changes trigger new animations.
  * @param spec The animation specification. Defaults to [spring].
- * @param trigger Controls when the animation begins receiving frame callbacks. Defaults to
- *   [AnimationTrigger.Immediate].
  * @param label Optional label for debugging and tracing attribution.
+ * @param playback Optional durable pause/resume control.
  * @return A [Value] containing the current interpolated color.
  */
 @ExperimentalLithoApi
@@ -196,10 +185,11 @@ fun ComponentScope.useAnimatedInt(
 fun ComponentScope.useAnimatedColor(
     targetValue: Color,
     spec: FiniteAnimationSpec<Color> = spring(),
-    trigger: AnimationTrigger = AnimationTrigger.Immediate,
     label: String = "color",
+    playback: AnimationPlayback? = null,
     onSettled: ((Color) -> Unit)? = null,
-): Value<Color> = useAnimatedValue(targetValue, ColorTypeConverter, spec, trigger, label, onSettled)
+): Value<Color> =
+    useAnimatedValue(targetValue, ColorTypeConverter, spec, label, playback, onSettled)
 
 /**
  * Animates a [Dimen] value, automatically starting a new animation whenever [targetValue] changes.
@@ -210,9 +200,8 @@ fun ComponentScope.useAnimatedColor(
  *
  * @param targetValue The dimension to animate toward. Changes trigger new animations.
  * @param spec The animation specification. Defaults to [spring].
- * @param trigger Controls when the animation begins receiving frame callbacks. Defaults to
- *   [AnimationTrigger.Immediate].
  * @param label Optional label for debugging and tracing attribution.
+ * @param playback Optional durable pause/resume control.
  * @return A [Value] containing the current animated dimension.
  */
 @ExperimentalLithoApi
@@ -220,14 +209,14 @@ fun ComponentScope.useAnimatedColor(
 fun ComponentScope.useAnimatedDimen(
     targetValue: Dimen,
     spec: FiniteAnimationSpec<Dimen> = spring(),
-    trigger: AnimationTrigger = AnimationTrigger.Immediate,
     label: String = "dimen",
+    playback: AnimationPlayback? = null,
     onSettled: ((Dimen) -> Unit)? = null,
 ): Value<Dimen> = useAnimatedValue(
     targetValue,
     DimenTypeConverter(resourceResolver),
     spec,
-    trigger,
     label,
+    playback,
     onSettled,
 )

@@ -113,7 +113,6 @@ class AnimationGroupSnapshotRaceTest {
             retargeted = true
             state.commit(record(2), { notifications.add(it) })
             state.retarget()
-            AnimationController.register(state.clock)
           }
           null
         }
@@ -123,7 +122,6 @@ class AnimationGroupSnapshotRaceTest {
     state.retarget()
     state.commit(record(1), { notifications.add(it) })
     state.retarget()
-    AnimationController.register(state.clock)
     animationRule.runNextFrame()
     observations.clear()
 

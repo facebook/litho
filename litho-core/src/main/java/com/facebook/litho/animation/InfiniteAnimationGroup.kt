@@ -61,12 +61,14 @@ import com.facebook.rendercore.graphics.Color
  *   restart, not an elapsed-time pause/resume). Wire this to visibility to avoid an always-on frame
  *   loop off-screen.
  * @param label Optional label for debugging/tracing.
+ * @param playback Optional durable pause/resume control that preserves loop progress.
  */
 @ExperimentalLithoApi
 @Hook
 fun ComponentScope.useInfiniteAnimationGroup(
     shouldRun: Boolean = true,
     label: String = "infinite",
+    playback: AnimationPlayback? = null,
 ): InfiniteAnimationGroup {
   val baseHookKey = animationHookKey()
   val lithoTree =
@@ -88,6 +90,7 @@ fun ComponentScope.useInfiniteAnimationGroup(
   // Reconcile record + run state in one effect. The fresh wrapper makes it run every render: it
   // creates the values on the first run, then (re)starts or stops slots as those change.
   useEffect(infinite) {
+    state.driver.bind(playback)
     state.reconcile(infinite.createRecord(), shouldRun)
     null
   }
@@ -160,7 +163,7 @@ internal class InfiniteAnimationGroupState(
     val label: String,
 ) {
 
-  private val clock: AnimationClock = AnimationClock(::onFrame)
+  internal val driver: AnimationDriver = AnimationDriver(::onFrame)
 
   /** The latest committed record. Replaced wholesale (copy-on-write) in [reconcile]. */
   @Volatile
@@ -207,12 +210,7 @@ internal class InfiniteAnimationGroupState(
         else -> stopSlot(slot)
       }
     }
-    if (animatedValues.hasAnimator()) {
-      AnimationController.register(clock)
-    } else {
-      clock.freeze()
-      AnimationController.unregister(clock)
-    }
+    driver.updatePendingWork(animatedValues.hasAnimator())
   }
 
   private fun onFrame(playTimeNanos: Long): Boolean {
@@ -232,7 +230,7 @@ internal class InfiniteAnimationGroupState(
         isLayoutContext = isLayoutContext,
         stateUpdater = stateUpdater,
         label = deriveLabel(typed.label),
-        sharedClock = clock,
+        clock = driver,
     )
   }
 
@@ -276,8 +274,7 @@ internal class InfiniteAnimationGroupState(
   @MainThread
   internal fun dispose() {
     for (slot in animatedValues.indices) stopSlot(slot)
-    clock.freeze()
-    AnimationController.unregister(clock)
+    driver.unmount()
     wasRunning = false
   }
 

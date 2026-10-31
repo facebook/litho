@@ -301,17 +301,17 @@ class AnimationSettlementTest {
   }
 
   @Test
-  fun noOpGroup_settlesAsynchronouslyWithoutOpeningItsStartGate() {
+  fun noOpGroup_settlesAsynchronouslyWhilePaused() {
     for (withSlot in listOf(false, true)) {
       val notifications = mutableListOf<Boolean>()
-      val trigger = AnimationTrigger.Lazy()
+      val playback = AnimationPlayback(false)
       val callback: (Boolean) -> Unit = { notifications.add(it) }
       val view = lithoTestRule.render {
-        ConstantGroup(false, withSlot, snap(), trigger, callback)
+        ConstantGroup(false, withSlot, snap(), playback, callback)
       }
       lithoTestRule.idle()
       assertThat(animationRule.hasScheduledFrames()).isFalse()
-      view.setRoot(ConstantGroup(true, withSlot, snap(), trigger, callback))
+      view.setRoot(ConstantGroup(true, withSlot, snap(), playback, callback))
       lithoTestRule.idle()
 
       assertThat(notifications).isEmpty()
@@ -323,7 +323,7 @@ class AnimationSettlementTest {
   }
 
   @Test
-  fun equalEndpointsWithTimedWork_waitForStartAndFullDuration() {
+  fun equalEndpointsWithTimedWork_waitForPlayAndFullDuration() {
     val specs = listOf(
         tween<Float>(duration = 0.ms, delay = 1_000.ms) to 1f,
         tween<Float>(duration = 1_000.ms) to 1f,
@@ -332,17 +332,17 @@ class AnimationSettlementTest {
     )
     for ((spec, midpoint) in specs) {
       val notifications = mutableListOf<Boolean>()
-      val trigger = AnimationTrigger.Lazy()
+      val playback = AnimationPlayback(false)
       val callback: (Boolean) -> Unit = { notifications.add(it) }
-      val view = lithoTestRule.render { ConstantGroup(false, true, spec, trigger, callback) }
+      val view = lithoTestRule.render { ConstantGroup(false, true, spec, playback, callback) }
       lithoTestRule.idle()
-      view.setRoot(ConstantGroup(true, true, spec, trigger, callback))
+      view.setRoot(ConstantGroup(true, true, spec, playback, callback))
       lithoTestRule.idle()
       animationRule.advanceBy(2_000.ms)
 
       assertThat(notifications).isEmpty()
       assertThat(animationRule.hasScheduledFrames()).isFalse()
-      trigger.start()
+      playback.play()
       animationRule.advanceBy(500.ms)
       assertThat(view.lithoView.alpha).isEqualTo(midpoint)
       assertThat(notifications).isEmpty()
@@ -384,11 +384,11 @@ class AnimationSettlementTest {
       private val target: Boolean,
       private val withSlot: Boolean,
       private val spec: FiniteAnimationSpec<Float>,
-      private val trigger: AnimationTrigger,
+      private val playback: AnimationPlayback,
       private val onSettled: (Boolean) -> Unit,
   ) : KComponent() {
     override fun ComponentScope.render(): Component {
-      val group = useAnimationGroup(target, trigger, onSettled = onSettled)
+      val group = useAnimationGroup(target, playback = playback, onSettled = onSettled)
       return if (withSlot) {
         Row(
             style =

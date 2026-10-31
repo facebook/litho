@@ -124,7 +124,9 @@ internal class AnimationGroupState<S>(
     val label: String,
 ) {
 
-  internal val clock: AnimationClock = AnimationClock(::onFrame)
+  internal val driver: AnimationDriver = AnimationDriver(::onFrame)
+  internal val clock: AnimationClock
+    get() = driver
 
   /**
    * The latest committed immutable record. Replaced wholesale (copy-on-write) in [commit]; the
@@ -217,7 +219,7 @@ internal class AnimationGroupState<S>(
         isLayoutContext = isLayoutContext,
         stateUpdater = stateUpdater,
         label = deriveLabel(typed.label),
-        sharedClock = clock,
+        clock = driver,
     )
         .also { it.onComplete = ::checkCompletion }
   }
@@ -241,25 +243,18 @@ internal class AnimationGroupState<S>(
   }
 
   /**
-   * Retargets all animations toward the committed [targetState], returning `true` if the group
-   * needs a start handle. Called from the [useAnimationGroup] effect on the main thread after
-   * [commit] has published the new record.
+   * Retargets all animations toward the committed [targetState]. Called from the
+   * [useAnimationGroup] effect on the main thread after [commit] has published the new record.
    */
-  internal fun retarget(): Boolean {
+  internal fun retarget() {
     val seg = segment
     val descriptors = record.descriptors
     val values = animatedValues
-    val wasTicking = clock.isTicking
     for (slot in descriptors.indices) {
       retargetAnimation(descriptors[slot], values[slot], seg)
     }
     checkCompletion()
-    val pending = hasAnimator
-    if (!pending) {
-      clock.freeze()
-      AnimationController.unregister(clock)
-    }
-    return pending && !wasTicking
+    driver.updatePendingWork(hasAnimator)
   }
 
   @Suppress("UNCHECKED_CAST")
@@ -297,8 +292,7 @@ internal class AnimationGroupState<S>(
     settlement.unmount()
     onStateSettled = null
     for (value in animatedValues) value.stop()
-    clock.freeze()
-    AnimationController.unregister(clock)
+    driver.unmount()
   }
 
   private fun onFrame(playTimeNanos: Long): Boolean {
@@ -390,8 +384,8 @@ internal class SlotValue<S, T>(
  * [AnimationGroupState] — so concurrent resolves never race. Declaring a slot allocates no
  * [AnimatedValue] and mutates nothing here; it records a [AnimationDescriptor] (committed as an
  * [AnimationGroupRecord]) and returns a [Value] handle. It deliberately exposes no animation
- * runtime — settled state (`currentState`, `isRunning`) lives on [AnimationGroupState] and is read
- * from the main thread / effects, never during `render()`.
+ * runtime observations — settled state (`currentState`, `isRunning`) lives on [AnimationGroupState]
+ * and is read from the main thread / effects, never during `render()`.
  *
  * ```kotlin
  * val transition = useAnimationGroup(expanded)

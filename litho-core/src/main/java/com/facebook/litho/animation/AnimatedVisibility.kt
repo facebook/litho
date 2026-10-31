@@ -63,6 +63,7 @@ import kotlin.math.abs
  *   effects settle. For hidden content, removal is requested first. Initial content is silent. Uses
  *   the latest committed callback; nested animations are excluded. Does not guarantee unmount or
  *   draw.
+ * @param playback Optional durable control of all retained enter and exit animations.
  * @param content Builder for the child component to animate.
  */
 @ExperimentalLithoApi
@@ -73,6 +74,7 @@ class AnimatedVisibility(
     private val style: Style = Style,
     private val label: String = "AnimatedVisibility",
     private val onSettled: ((Boolean) -> Unit)? = null,
+    private val playback: AnimationPlayback? = null,
     private val content: ComponentScope.() -> Component?,
 ) : KComponent() {
 
@@ -91,7 +93,7 @@ class AnimatedVisibility(
           else -> EnterExitState.BeforeEnter
         }
 
-    val transition = useAnimationGroup(targetState, label = label)
+    val transition = useAnimationGroup(targetState, label = label, playback = playback)
 
     // Allocate effect slots unconditionally (before the unmount guard) so the slot count is stable.
     val progresses = buildEnterExitProgresses(transition, enter.data, exit.data)
@@ -173,7 +175,7 @@ internal fun buildEnterExitProgresses(
 ): EnterExitProgresses {
   // Claim all four slots every render, in a fixed order, so the group's count/order is invariant.
   // Each effect is exposed for binding only when actually declared; an absent effect keeps its
-  // (no-op snap) slot but is returned as null, so no binder runs for it.
+  // resting slot but is returned as null, so no binder runs for it.
   val fade = createFadeAnimation(transition, enterData.fade, exitData.fade)
   val scale = createScaleAnimation(transition, enterData.scale, exitData.scale)
   val slide = createSlideAnimation(transition, enterData.slide, exitData.slide)
@@ -304,11 +306,13 @@ private fun createSlideAnimation(
           }
         },
     ) { state ->
-      when (state) {
-        EnterExitState.BeforeEnter -> -1f
-        EnterExitState.Visible -> 0f
-        EnterExitState.AfterExit -> 1f
-      }
+      if (enterSlide == null && exitSlide == null) 0f
+      else
+          when (state) {
+            EnterExitState.BeforeEnter -> -1f
+            EnterExitState.Visible -> 0f
+            EnterExitState.AfterExit -> 1f
+          }
     }
 
 @ExperimentalLithoApi
@@ -331,11 +335,13 @@ private fun createChangeSizeAnimation(
           }
         },
     ) { state ->
-      when (state) {
-        EnterExitState.BeforeEnter -> -1f
-        EnterExitState.Visible -> 0f
-        EnterExitState.AfterExit -> 1f
-      }
+      if (enterChangeSize == null && exitChangeSize == null) 0f
+      else
+          when (state) {
+            EnterExitState.BeforeEnter -> -1f
+            EnterExitState.Visible -> 0f
+            EnterExitState.AfterExit -> 1f
+          }
     }
 
 /** Lazily-initialized default spec (a snap) for effect slots that don't specify their own. */

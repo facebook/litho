@@ -47,9 +47,8 @@ import com.facebook.litho.useEffect
  * ```
  *
  * @param targetState The state to animate toward. Changes trigger retargeting of all animations.
- * @param trigger Controls when the animation begins receiving frame callbacks. Defaults to
- *   [AnimationTrigger.Immediate].
  * @param label Optional label for debugging/tracing.
+ * @param playback Optional durable pause/resume control for this group.
  * @param onSettled Receives the latest committed target once all slots settle. Initial composition
  *   is silent; superseded or unmounted generations do not notify. Uses the latest callback.
  * @return An [AnimationGroup] for adding animations.
@@ -62,8 +61,8 @@ import com.facebook.litho.useEffect
 @Hook
 fun <S> ComponentScope.useAnimationGroup(
     targetState: S,
-    trigger: AnimationTrigger = AnimationTrigger.Immediate,
     label: String = "transition",
+    playback: AnimationPlayback? = null,
     onSettled: ((S) -> Unit)? = null,
 ): AnimationGroup<S> {
   val baseHookKey = animationHookKey()
@@ -88,23 +87,13 @@ fun <S> ComponentScope.useAnimationGroup(
   // AnimatedValues on the main thread. Runs every render (group is fresh each time) and before the
   // retarget effect below, so retarget reads the just-committed declaration.
   useEffect(group) {
+    groupState.driver.bind(playback)
     groupState.commit(group.createRecord(), onSettled, completionContext)
     null
   }
 
-  // Retarget on the main thread, reading the just-committed declaration (the commit effect above
-  // ran first) rather than racing concurrent resolves. Registration is deferred to the
-  // AnimationTrigger: a fresh group needs a start handle; an active group keeps its registration
-  // and all retargeted slots share its last published play time.
   useEffect(targetState) {
-    if (groupState.retarget()) {
-      val handle = AnimationHandle { AnimationController.register(groupState.clock) }
-      val cleanup = trigger.onReady(handle)
-      return@useEffect onCleanup {
-        handle.invalidate()
-        cleanup?.onCleanup()
-      }
-    }
+    groupState.retarget()
     null
   }
 

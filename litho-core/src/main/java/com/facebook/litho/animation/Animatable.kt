@@ -47,6 +47,7 @@ enum class AnimationEnd {
 class Animatable<T>
 internal constructor(
     internal val animatedValue: AnimatedValue<T>,
+    private val driver: AnimationDriver,
 ) {
   private var target = animatedValue.currentValueRaw
   private var onEnd: ((AnimationEnd) -> Unit)? = null
@@ -78,10 +79,10 @@ internal constructor(
     this.target = target
     this.onEnd = onEnd
     if (animatedValue.hasAnimator) {
-      AnimationController.register(animatedValue.clock)
+      driver.updatePendingWork(true)
     } else {
+      driver.stop()
       completeCommand(AnimationEnd.Finished)
-      AnimationController.unregister(animatedValue.clock)
     }
   }
 
@@ -94,7 +95,7 @@ internal constructor(
     completeCommand(AnimationEnd.Interrupted)
     this.target = target
     animatedValue.snapTo(target)
-    if (!animatedValue.hasAnimator) AnimationController.unregister(animatedValue.clock)
+    driver.updatePendingWork(animatedValue.hasAnimator)
   }
 
   /** Stops the current animation at its present value. Must be called on the main thread. */
@@ -103,7 +104,7 @@ internal constructor(
     ThreadUtils.assertMainThread()
     completeCommand(AnimationEnd.Cancelled)
     animatedValue.stop()
-    AnimationController.unregister(animatedValue.clock)
+    driver.stop()
   }
 
   /**
@@ -121,7 +122,7 @@ internal constructor(
   fun finish() {
     ThreadUtils.assertMainThread()
     animatedValue.finish(target)
-    if (!animatedValue.hasAnimator) AnimationController.unregister(animatedValue.clock)
+    driver.updatePendingWork(animatedValue.hasAnimator)
   }
 
   private fun completeCommand(outcome: AnimationEnd) {
@@ -160,16 +161,16 @@ fun <T> ComponentScope.useAnimatable(
   )
 
   val animatable = getUpdatedState {
-    Animatable(
-        AnimatedValue(
-            initialValue = initialValue,
-            typeConverter = typeConverter,
-            stateId = stateId,
-            isLayoutContext = context.isContextForLayout,
-            stateUpdater = lithoTree.stateUpdater,
-            label = label,
-        ),
-    )
+    createAnimatedValue(
+        initialValue = initialValue,
+        typeConverter = typeConverter,
+        stateId = stateId,
+        isLayoutContext = context.isContextForLayout,
+        stateUpdater = lithoTree.stateUpdater,
+        label = label,
+    ) { value, driver ->
+      Animatable(value, driver)
+    }
   }
 
   val completionContext = context

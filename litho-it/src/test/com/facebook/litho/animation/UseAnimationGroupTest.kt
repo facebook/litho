@@ -57,7 +57,7 @@ class UseAnimationGroupTest {
   private var capturedRotation: Value<Float>? = null
   private var capturedShortValue: Value<Float>? = null
   private var capturedLongValue: Value<Float>? = null
-  private var capturedLazyTrigger: AnimationTrigger.Lazy? = null
+  private var capturedPlayback: AnimationPlayback? = null
   private val capturedSegments = mutableListOf<Segment<Boolean>>()
 
   @Before
@@ -68,7 +68,7 @@ class UseAnimationGroupTest {
     capturedRotation = null
     capturedShortValue = null
     capturedLongValue = null
-    capturedLazyTrigger = null
+    capturedPlayback = null
     capturedSegments.clear()
   }
 
@@ -309,19 +309,19 @@ class UseAnimationGroupTest {
   }
 
   @Test
-  fun useAnimationGroup_lazyTriggerPartialRetargetAfterStart_resumesSettledChild() {
-    val testView = lithoTestRule.render { LazyMixedDurationComponent(expanded = false) }
+  fun useAnimationGroup_deferredPlaybackPartialRetargetAfterPlay_resumesSettledChild() {
+    val testView = lithoTestRule.render { DeferredMixedDurationComponent(expanded = false) }
     lithoTestRule.idle()
 
-    testView.setRoot(LazyMixedDurationComponent(expanded = true))
+    testView.setRoot(DeferredMixedDurationComponent(expanded = true))
     lithoTestRule.idle()
-    checkNotNull(capturedLazyTrigger).start()
+    checkNotNull(capturedPlayback).play()
 
     repeat(8) { animationRule.runNextFrame() }
     assertThat(capturedShortValue!!.value).isEqualTo(1f)
     assertThat(capturedLongValue!!.value).isGreaterThan(0f).isLessThan(1f)
 
-    testView.setRoot(LazyMixedDurationComponent(expanded = false))
+    testView.setRoot(DeferredMixedDurationComponent(expanded = false))
     lithoTestRule.idle()
 
     animationRule.runNextFrame()
@@ -449,13 +449,13 @@ class UseAnimationGroupTest {
     }
   }
 
-  private inner class LazyMixedDurationComponent(
+  private inner class DeferredMixedDurationComponent(
       private val expanded: Boolean,
   ) : KComponent() {
     override fun ComponentScope.render(): Component? {
-      val trigger = useLazyAnimationTrigger()
-      capturedLazyTrigger = trigger
-      val group = useAnimationGroup(expanded, trigger = trigger)
+      val playback = useAnimationPlayback(autoPlay = false)
+      capturedPlayback = playback
+      val group = useAnimationGroup(expanded, playback = playback)
       capturedShortValue =
           group.animateFloat(transitionSpec = { tween(32.milliseconds) }) { state ->
             if (state) 1f else 0f

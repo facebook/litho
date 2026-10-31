@@ -75,8 +75,8 @@ Animates a `Float` value. Starts a new animation whenever `targetValue` changes.
 fun ComponentScope.useAnimatedFloat(
     targetValue: Float,
     spec: FiniteAnimationSpec<Float> = spring(),
-    trigger: AnimationTrigger = AnimationTrigger.Immediate,
     label: String = "float",
+    playback: AnimationPlayback? = null,
     onSettled: ((Float) -> Unit)? = null,
 ): Value<Float>
 ```
@@ -94,8 +94,8 @@ Animates an `Int` value.
 fun ComponentScope.useAnimatedInt(
     targetValue: Int,
     spec: FiniteAnimationSpec<Int> = spring(),
-    trigger: AnimationTrigger = AnimationTrigger.Immediate,
     label: String = "int",
+    playback: AnimationPlayback? = null,
     onSettled: ((Int) -> Unit)? = null,
 ): Value<Int>
 ```
@@ -108,8 +108,8 @@ Animates a `Color` value with per-channel interpolation.
 fun ComponentScope.useAnimatedColor(
     targetValue: Color,
     spec: FiniteAnimationSpec<Color> = spring(),
-    trigger: AnimationTrigger = AnimationTrigger.Immediate,
     label: String = "color",
+    playback: AnimationPlayback? = null,
     onSettled: ((Color) -> Unit)? = null,
 ): Value<Color>
 ```
@@ -122,8 +122,8 @@ Animates a `Dimen` value. Dimensions are converted to pixels for animation compu
 fun ComponentScope.useAnimatedDimen(
     targetValue: Dimen,
     spec: FiniteAnimationSpec<Dimen> = spring(),
-    trigger: AnimationTrigger = AnimationTrigger.Immediate,
     label: String = "dimen",
+    playback: AnimationPlayback? = null,
     onSettled: ((Dimen) -> Unit)? = null,
 ): Value<Dimen>
 ```
@@ -147,8 +147,8 @@ fun <T> ComponentScope.useAnimatedValue(
     targetValue: T,
     typeConverter: TypeConverter<T>,
     spec: FiniteAnimationSpec<T> = spring(),
-    trigger: AnimationTrigger = AnimationTrigger.Immediate,
     label: String = "",
+    playback: AnimationPlayback? = null,
     onSettled: ((T) -> Unit)? = null,
 ): Value<T>
 ```
@@ -254,25 +254,37 @@ frames through the shared `AnimationController`.
 | `advanceTo(frameTime)` | Advances animation time to an absolute test timestamp. |
 | `hasScheduledFrames()` | Returns whether any animations are waiting for another frame. |
 
-### Deferred start with AnimationTrigger
+### Playback and deferred start
 
-By default, animations begin receiving frame callbacks immediately (`AnimationTrigger.Immediate`).
-For items in a scrollable collection, this means animations can run to completion while the
-item is still off-screen. Use `useLazyAnimationTrigger()` to get a stable lazy trigger and defer
-animation start until you explicitly trigger it — for example, when the item becomes visible:
+Animations play immediately by default. Use a stable playback controller to defer work until an
+item becomes visible, and to pause it later without losing progress:
 
 ```kotlin
-val trigger = useLazyAnimationTrigger()
+val playback = useAnimationPlayback(autoPlay = false)
 val alpha = useAnimatedFloat(
     targetValue = if (visible) 1f else 0f,
-    trigger = trigger,
+    playback = playback,
 )
 
-// Later, when the item becomes visible on screen:
-trigger.start()
+Style.alpha(alpha)
+    .onVisible { playback.play() }
+    .onInvisible { playback.pause() }
 ```
 
-`start()` is safe to call multiple times — only the first call has effect.
+`autoPlay` sets the initial state only. `play()` starts prepared work, resumes paused work, and
+permits future runs. To play once visibility first permits it, call `play()` without pausing on
+subsequent invisibility events. Calling `play()` before work exists permits later runs too.
+
+Control and diagnostics require the main thread and do not cause renders. `state` records desired
+playback; `isRunning` reports actual activity after a frame has started. Initial targets remain
+silent. Genuine no-motion target changes still settle asynchronously while paused; timed work
+and snaps to a different value wait for play.
+
+Pass the same controller explicitly to value hooks, finite or infinite groups, and animated
+containers to control them together. Each mounted owner stays attached between runs. Rebinding
+uses the new controller's state and preserves play time; unmount detaches the owner. Paused
+container exits remain retained until owned work settles. `playback = null` means independent
+playback; there is no automatic inheritance. Direct `useAnimatable` remains imperative.
 
 ## Animation Specs
 
@@ -433,6 +445,7 @@ unmount, or `Style.transition` convergence.
 fun ComponentScope.useInfiniteAnimationGroup(
     shouldRun: Boolean = true,
     label: String = "infinite",
+    playback: AnimationPlayback? = null,
 ): InfiniteAnimationGroup
 ```
 
@@ -564,8 +577,8 @@ use `useAnimationGroup` instead of individual hooks. It provides:
 ```kotlin
 fun <S> ComponentScope.useAnimationGroup(
     targetState: S,
-    trigger: AnimationTrigger = AnimationTrigger.Immediate,
     label: String = "transition",
+    playback: AnimationPlayback? = null,
     onSettled: ((S) -> Unit)? = null,
 ): AnimationGroup<S>
 ```

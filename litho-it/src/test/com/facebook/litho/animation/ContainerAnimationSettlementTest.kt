@@ -444,12 +444,67 @@ class ContainerAnimationSettlementTest {
     assertThat(animationRule.hasScheduledFrames()).isFalse()
   }
 
+  @Test
+  fun pausedExitsRemainMountedAcrossRebindingAndSettleAfterResuming() {
+    for (surface in Surface.entries) {
+      val first = AnimationPlayback(true)
+      val second = AnimationPlayback(false)
+      val notifications = mutableListOf<String>()
+      val enter = fadeIn(linear)
+      val exit = fadeOut(linear)
+      val view = lithoTestRule.render {
+        container(surface, 1, enter = enter, exit = exit, playback = first)
+      }
+      lithoTestRule.idle()
+      view.setRoot(container(surface, 0, { notifications.add("old") }, enter, exit, first))
+      lithoTestRule.idle()
+      animationRule.advanceBy(200.ms)
+      val frozen = alpha(view, 1)
+      assertThat(frozen).isGreaterThan(0f).isLessThan(1f)
+      first.pause()
+      animationRule.advanceBy(2_000.ms)
+      assertThat(alpha(view, 1)).isEqualTo(frozen)
+      assertThat(notifications).isEmpty()
+      view.setRoot(container(surface, 0, { notifications.add("latest") }, enter, exit, second))
+      lithoTestRule.idle()
+      first.play()
+      assertThat(animationRule.hasScheduledFrames()).isFalse()
+      second.play()
+      animationRule.runNextFrame(2_000.ms)
+      assertThat(alpha(view, 1)).isEqualTo(frozen)
+      animationRule.runNextFrame(800.ms)
+      assertThat(view.findAllComponents(Marker::class).filterIsInstance<Marker>().map { it.target })
+          .doesNotContain(1)
+      assertThat(notifications).containsExactly("latest")
+      view.release()
+    }
+  }
+
+  @Test
+  fun pausedNoMotionContainersStillDeliverSettlementAsynchronously() {
+    for (surface in Surface.entries) {
+      val playback = AnimationPlayback(false)
+      val notifications = mutableListOf<Int>()
+      val view = lithoTestRule.render { container(surface, 0, playback = playback) }
+      lithoTestRule.idle()
+      view.setRoot(container(surface, 1, { notifications.add(it) }, playback = playback))
+      lithoTestRule.idle()
+      assertThat(notifications).isEmpty()
+      animationRule.runNextFrame()
+      assertThat(notifications).containsExactly(1)
+      assertThat(playback.state).isEqualTo(PlaybackState.Paused)
+      assertThat(animationRule.hasScheduledFrames()).isFalse()
+      view.release()
+    }
+  }
+
   private fun container(
       surface: Surface,
       target: Int,
       onSettled: ((Int) -> Unit)? = null,
       enter: EnterTransition = EnterTransition.None,
       exit: ExitTransition = ExitTransition.None,
+      playback: AnimationPlayback? = null,
   ): Component =
       when (surface) {
         Surface.Content ->
@@ -460,6 +515,7 @@ class ContainerAnimationSettlementTest {
                   this.exit = exit
                 },
                 onSettled = onSettled,
+                playback = playback,
             ) {
               marker(it)
             }
@@ -469,6 +525,7 @@ class ContainerAnimationSettlementTest {
                 enter = enter,
                 exit = exit,
                 onSettled = onSettled?.let { callback -> { callback(if (it) 1 else 0) } },
+                playback = playback,
             ) {
               marker(1)
             }

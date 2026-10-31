@@ -76,12 +76,12 @@ internal class ReflowAnimationStore(private val lithoTree: LithoTree) : ReflowPr
   override fun rebuildKeySet(liveSeeds: ScatterMap<GlobalKey, IntSize>) {
     val next = MutableScatterMap<GlobalKey, ReflowGeneration.Entry>(liveSeeds.size)
     liveSeeds.forEach { key, seed ->
-      next[key] = current.entry(key) ?: ReflowGeneration.Entry(mint(key, seed), seed)
+      next[key] = current.entry(key) ?: mint(key, seed)
     }
     current.forEachEntry { key, entry ->
       if (key !in liveSeeds) {
         entry.value.stop()
-        AnimationController.unregister(entry.value.clock)
+        entry.driver.stop()
       }
     }
     if (next.isNotEmpty()) ensureBackstop()
@@ -107,9 +107,7 @@ internal class ReflowAnimationStore(private val lithoTree: LithoTree) : ReflowPr
     // interruption.
     if (!entry.value.isRunning) entry.value.snapTo(committedSize, notify = false)
     entry.value.retarget(target, spec)
-    if (entry.value.hasAnimator && !entry.value.isActive) {
-      AnimationController.register(entry.value.clock)
-    }
+    entry.driver.updatePendingWork(entry.value.hasAnimator)
     // Written last: targetSize is the entry's cross-thread publication marker, so a reader
     // observing
     // the new target is guaranteed to also observe the animator update above.
@@ -149,23 +147,25 @@ internal class ReflowAnimationStore(private val lithoTree: LithoTree) : ReflowPr
   private fun stopAndClear() {
     current.forEachEntry { _, entry ->
       entry.value.stop()
-      AnimationController.unregister(entry.value.clock)
+      entry.driver.stop()
     }
     current = ReflowGeneration.EMPTY
   }
 
-  private fun mint(key: GlobalKey, seed: IntSize): AnimatedValue<IntSize> =
+  private fun mint(key: GlobalKey, seed: IntSize): ReflowGeneration.Entry =
       // isLayoutContext=false keeps the per-frame no-op in the resolve handler, where it drains on
       // the resolve-skip branch; RenderScope.Resolve is the matching identity (similar to
       // useAnimatedValue). Neither flag drives relayout — the layout-phase read does.
-      AnimatedValue(
+      createAnimatedValue(
           initialValue = seed,
           typeConverter = IntSizeTypeConverter,
           stateId = reflowStateId(lithoTree.id, key),
           isLayoutContext = false,
           stateUpdater = lithoTree.stateUpdater,
           label = REFLOW_LABEL,
-      )
+      ) { value, driver ->
+        ReflowGeneration.Entry(value, driver, seed)
+      }
 }
 
 /**

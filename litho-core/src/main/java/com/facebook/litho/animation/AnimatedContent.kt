@@ -122,6 +122,7 @@ internal constructor(
  *   motion. Same-key payload updates do not create notifications; an outstanding completion uses
  *   the latest committed payload and callback. Initial content is silent. Nested animations are
  *   excluded. Does not guarantee physical unmount or draw.
+ * @param playback Optional durable control of all retained enter and exit animations.
  * @param content Builder for the content of a given state.
  */
 @ExperimentalLithoApi
@@ -136,6 +137,7 @@ class AnimatedContent<T>(
     private val style: Style = Style,
     private val label: String = "AnimatedContent",
     private val onSettled: ((T) -> Unit)? = null,
+    private val playback: AnimationPlayback? = null,
     private val content: ComponentScope.(T) -> Component?,
 ) : KComponent() {
 
@@ -201,6 +203,7 @@ class AnimatedContent<T>(
                     identity = checkNotNull(slot.identity),
                     animateEnter = hasStarted.value,
                     label = label,
+                    playback = playback,
                     onSlotSettled = {
                       if (slot.identity?.hasExited == true) {
                         retainedContent.update { it.removeExited(slot) }
@@ -440,6 +443,7 @@ internal class AnimatedContentSlot<T>(
     private val animateEnter: Boolean,
     private val label: String,
     internal val onSlotSettled: () -> Unit,
+    private val playback: AnimationPlayback? = null,
     private val content: ComponentScope.(T) -> Component?,
 ) : KComponent() {
 
@@ -457,7 +461,7 @@ internal class AnimatedContentSlot<T>(
           else -> EnterExitState.BeforeEnter
         }
 
-    val transition = useAnimationGroup(driveState, label = label)
+    val transition = useAnimationGroup(driveState, label = label, playback = playback)
     // Allocate effect slots unconditionally (before the content-null guard) for stable slot count.
     val progresses = buildEnterExitProgresses(transition, enter.data, exit.data)
 

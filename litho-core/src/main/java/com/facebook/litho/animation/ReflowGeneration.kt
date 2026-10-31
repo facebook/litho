@@ -62,7 +62,11 @@ internal class ReflowGeneration(private val entries: ScatterMap<GlobalKey, Entry
    * [targetSize] are mutated in place on the main thread and read cross-thread, so both are
    * `@Volatile` (the [AnimatedValue] fields already are).
    */
-  internal class Entry(val value: AnimatedValue<IntSize>, targetSize: IntSize) {
+  internal class Entry(
+      val value: AnimatedValue<IntSize>,
+      val driver: AnimationDriver,
+      targetSize: IntSize,
+  ) {
     // Seeded at mint, updated by retarget.
     @Volatile var targetSize: IntSize = targetSize
 

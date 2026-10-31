@@ -42,16 +42,16 @@ import com.facebook.litho.state.StateReadRecorder
  * ## Animation Lifecycle
  * - [retarget]: Starts an animation toward a target value. If an animation is already running, it
  *   is interrupted with velocity preservation for smooth retargeting. The caller is responsible for
- *   registering this value with an [AnimationController] for frame callbacks.
+ *   scheduling its owner for frame callbacks.
  * - [snapTo]: Immediately sets the value without animation and triggers a re-render.
  * - [restart]: Restarts an animation from an explicit initial value, published on the next frame.
  * - [stop]: Stops the current animation at its present value.
  *
  * ## Frame Updates
  *
- * The owner clock advances time. Independent values use [onFrame]; groups evaluate every slot via
- * [evaluateFrame] before publishing invalidations via [publishFrame]. Registration is the caller's
- * responsibility.
+ * The owner's [AnimationDriver] advances its clock and schedules frames. Independent values use
+ * [onFrame]; groups evaluate every slot via [evaluateFrame] before publishing invalidations via
+ * [publishFrame]. Values only read their shared [clock].
  *
  * @param T The type of the animated value.
  * @see AnimationController
@@ -67,7 +67,7 @@ internal constructor(
     internal val isLayoutContext: Boolean,
     private val stateUpdater: StateUpdater,
     val label: String,
-    sharedClock: AnimationClock? = null,
+    internal val clock: AnimationClock,
 ) : Value<T> {
 
   @Volatile private var _currentValue: T = initialValue
@@ -75,9 +75,8 @@ internal constructor(
 
   private var runOriginNanos: Long = UNSET_RUN_ORIGIN
   private var frameUpdate: Int = 0
-  private val ownsClock = sharedClock == null
   /**
-   * True if this value is actively receiving frame callbacks.
+   * True after this evaluator has received a frame, including while its clock is paused.
    *
    * Set on the first frame after [retarget], cleared on completion or [stop]. Not reset by
    * [retarget] itself, so retargeting an active animation preserves the active state.
@@ -85,8 +84,6 @@ internal constructor(
   @Volatile
   internal var isActive: Boolean = false
     private set
-
-  internal val clock: AnimationClock = sharedClock ?: AnimationClock(::onFrame)
 
   private val attribution: String =
       if (label.isEmpty()) ANIMATION_ATTRIBUTION else "$ANIMATION_ATTRIBUTION:$label"
@@ -120,7 +117,7 @@ internal constructor(
 
   /** True if an animation is actively running: has an animator AND is receiving frames. */
   val isRunning: Boolean
-    get() = hasAnimator && isActive
+    get() = hasAnimator && isActive && clock.isTicking
 
   /**
    * Starts an animation toward [target] using the given [spec].
@@ -154,12 +151,11 @@ internal constructor(
     }
     currentAnimator = animator
     runOriginNanos = clock.playTimeNanos
-    // Registration with the AnimationController is the caller's responsibility
   }
 
   /**
    * Restarts an animation from an explicit [initialValue] toward [target] with zero initial
-   * velocity. Like [retarget], the caller registers for frames.
+   * velocity. Like [retarget], the caller schedules its owner for frames.
    *
    * Deliberately does not write [_currentValue]: the first frame republishes [initialValue] only
    * when it differs from what is mounted (no redundant bind), so [_currentValue] is stale until
@@ -224,13 +220,13 @@ internal constructor(
   internal var onComplete: (() -> Unit)? = null
 
   /**
-   * Called by this value's clock to advance an independent animation.
+   * Called by this value's owner to advance an independent animation.
    *
    * Updates [_currentValue] based on the elapsed play time and triggers a re-render. If the
    * animation finishes, advances its owner's internal completion before the re-render signal.
    */
   @MainThread
-  private fun onFrame(playTimeNanos: Long): Boolean {
+  internal fun onFrame(playTimeNanos: Long): Boolean {
     val update = evaluateFrame(playTimeNanos)
     if (update and FRAME_FINISHED != 0) onComplete?.invoke()
     publishFrame()
@@ -277,7 +273,6 @@ internal constructor(
 
   private fun resetFrameState() {
     runOriginNanos = UNSET_RUN_ORIGIN
-    if (ownsClock) clock.freeze()
   }
 
   /**
@@ -324,3 +319,30 @@ internal fun List<AnimatedValue<*>>.hasAnimator(): Boolean {
 
 /** The hook-local key used to build an animated value's read-tracking [StateId]. */
 internal fun ComponentScope.animationHookKey(): com.facebook.litho.HookKey = requireCurrentHookKey()
+
+/** Creates an independent value and passes its driver to the owning state before either escapes. */
+internal inline fun <T, R> createAnimatedValue(
+    initialValue: T,
+    typeConverter: TypeConverter<T>,
+    stateId: StateId,
+    isLayoutContext: Boolean,
+    stateUpdater: StateUpdater,
+    label: String,
+    retain: (AnimatedValue<T>, AnimationDriver) -> R,
+): R {
+  val driver =
+      object : AnimationDriver() {
+        val value = AnimatedValue(
+            initialValue,
+            typeConverter,
+            stateId,
+            isLayoutContext,
+            stateUpdater,
+            label,
+            clock = this,
+        )
+
+        override fun advance(playTimeNanos: Long): Boolean = value.onFrame(playTimeNanos)
+      }
+  return retain(driver.value, driver)
+}
