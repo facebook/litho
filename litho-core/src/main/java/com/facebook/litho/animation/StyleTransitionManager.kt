@@ -219,6 +219,12 @@ internal class StyleTransitionManager {
       initialValue: Float,
       startTimeNanos: Long = Long.MIN_VALUE,
   ) {
+    init {
+      require(animator.durationNanos >= 0L) {
+        "Style transitions require an animator with a finite duration."
+      }
+    }
+
     private var startTimeNanos = startTimeNanos
     private var lastPlayTimeNanos = 0L
     // Seeded from the animator's actual start value, which differs from plan.initialValue when this

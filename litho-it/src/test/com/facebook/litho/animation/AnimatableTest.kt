@@ -48,6 +48,7 @@ import com.facebook.rendercore.primitives.PrimitiveLayoutResult
 import com.facebook.rendercore.primitives.ViewAllocator
 import com.facebook.rendercore.px
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -85,6 +86,20 @@ class AnimatableTest {
     animationRule.runNextFrame()
 
     assertThat(testView.lithoView.alpha).isEqualTo(1f)
+  }
+
+  @Test
+  fun useAnimatable_rejectsInfiniteAnimatorFromFiniteSpec() {
+    lithoTestRule.render { ImperativeAlphaComponent() }
+    shadowOf(getMainLooper()).idle()
+    val animatable = checkNotNull(capturedAnimatable)
+
+    assertThatThrownBy {
+          animatable.animateTo(1f, VelocityTrackingAnimationSpec(Animator.DURATION_INFINITE))
+        }
+        .isInstanceOf(IllegalArgumentException::class.java)
+        .hasMessageContaining("FiniteAnimationSpec must create an animator with a finite duration")
+    assertThat(animatable.isRunning).isFalse()
   }
 
   @Test
@@ -404,7 +419,9 @@ class AnimatableTest {
     }
   }
 
-  private class VelocityTrackingAnimationSpec : FiniteAnimationSpec<Float> {
+  private class VelocityTrackingAnimationSpec(
+      private val reportedDurationNanos: Long = 1_000_000_000L,
+  ) : FiniteAnimationSpec<Float> {
     var initialVelocity: Float = Float.NaN
       private set
 
@@ -420,16 +437,17 @@ class AnimatableTest {
       initialVelocityVector = initialVelocity
       this.initialVelocity = initialVelocity?.get(0) ?: 0f
       return object : Animator<Float> {
+        override val durationNanos: Long = reportedDurationNanos
+
         override fun getValue(playTimeNanos: Long): Float {
+          if (isFinished(playTimeNanos)) return targetValue
           val fraction = (playTimeNanos / 1_000_000_000f).coerceIn(0f, 1f)
           return initialValue + (targetValue - initialValue) * fraction
         }
 
         override fun getVelocity(playTimeNanos: Long, velocity: AnimationVector) {
-          velocity[0] = playTimeNanos / 1_000_000f
+          velocity[0] = if (isFinished(playTimeNanos)) 0f else playTimeNanos / 1_000_000f
         }
-
-        override fun isFinished(playTimeNanos: Long): Boolean = false
       }
     }
   }

@@ -142,6 +142,9 @@ internal constructor(
     if (stationary && !preserveEqualTargetTiming) return
     val velocity = currentVelocity()
     val animator = spec.createAnimator(_currentValue, target, typeConverter, velocity)
+    require(spec !is FiniteAnimationSpec<*> || animator.durationNanos >= 0L) {
+      "FiniteAnimationSpec must create an animator with a finite duration."
+    }
     val noOp = _currentValue == target && animator.isFinished(0L) && animator.getValue(0L) == target
     if (noOp) {
       currentAnimator = null

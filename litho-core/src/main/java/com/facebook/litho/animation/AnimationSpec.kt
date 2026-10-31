@@ -17,6 +17,7 @@
 package com.facebook.litho.animation
 
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.nanoseconds
 
 /**
  * An immutable configuration that defines how an animation should behave.
@@ -73,7 +74,7 @@ interface AnimationSpec<T> {
    * Creates an [Animator] configured with the given initial conditions.
    *
    * The returned animator is a stateless computation engine that can be queried at any elapsed time
-   * to produce the animated value, velocity, and completion status.
+   * to produce the animated value and velocity.
    *
    * @param initialValue The value at the start of the animation.
    * @param targetValue The value at the end of the animation.
@@ -100,7 +101,7 @@ interface AnimationSpec<T> {
  * transitions, [SizeTransform]) require finite specs, because their completion-dependent behavior —
  * `onSettled`, retained-content unmount, converging to the resolved mount value — only works if the
  * animation actually finishes. Infinite specs are excluded by type ([InfiniteAnimationSpec] is not
- * a [FiniteAnimationSpec]).
+ * a [FiniteAnimationSpec]). Created animators must report a nonnegative [Animator.durationNanos].
  */
 interface FiniteAnimationSpec<T> : AnimationSpec<T>
 
@@ -121,3 +122,10 @@ interface DurationBasedAnimationSpec<T> : FiniteAnimationSpec<T> {
  * completion.
  */
 interface InfiniteAnimationSpec<T> : AnimationSpec<T>
+
+internal fun Duration.toFiniteNanos(): Long {
+  require(isFinite() && this >= Duration.ZERO && this <= Long.MAX_VALUE.nanoseconds) {
+    "Animation duration must be finite, nonnegative, and fit in Long nanoseconds."
+  }
+  return inWholeNanoseconds
+}

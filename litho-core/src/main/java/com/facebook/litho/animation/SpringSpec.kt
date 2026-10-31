@@ -158,7 +158,7 @@ private class SpringAnimator<T>(
     private val solvers: Array<SpringSolver>,
 ) : Animator<T> {
 
-  private val durationNanos: Long = run {
+  override val durationNanos: Long = run {
     var duration = 0L
     for (solver in solvers) duration = maxOf(duration, solver.durationNanos)
     duration
@@ -179,17 +179,16 @@ private class SpringAnimator<T>(
     }
     for (i in solvers.indices) velocity[i] = solvers[i].getVelocity(playTimeNanos)
   }
-
-  override fun isFinished(playTimeNanos: Long): Boolean = playTimeNanos >= durationNanos
 }
 
 /** An [Animator] that is immediately finished and always returns the given value. */
 internal class FinishedAnimator<T>(private val value: T) : Animator<T> {
+  override val durationNanos: Long
+    get() = 0L
+
   override fun getValue(playTimeNanos: Long): T = value
 
   override fun getVelocity(playTimeNanos: Long, velocity: AnimationVector) {
     velocity.reset()
   }
-
-  override fun isFinished(playTimeNanos: Long): Boolean = true
 }

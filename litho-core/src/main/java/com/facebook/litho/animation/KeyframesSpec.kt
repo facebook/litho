@@ -106,6 +106,10 @@ private data class KeyframesSpec<T>(
     internal val keyframes: List<Keyframe<T>>,
 ) : DurationBasedAnimationSpec<T> {
 
+  init {
+    duration.toFiniteNanos()
+  }
+
   override val totalDuration: Duration = duration
 
   override fun createAnimator(
@@ -114,6 +118,7 @@ private data class KeyframesSpec<T>(
       typeConverter: TypeConverter<T>,
       initialVelocity: AnimationVector?,
   ): Animator<T> {
+    val durationNanos = duration.inWholeNanoseconds
     val resolvedKeyframes = buildList {
       // Ensure initial value at t=0 if not specified
       if (keyframes.isEmpty() || keyframes.first().timeNanos > 0) {
@@ -121,7 +126,6 @@ private data class KeyframesSpec<T>(
       }
       addAll(keyframes)
       // Ensure target value at duration if not specified
-      val durationNanos = duration.inWholeNanoseconds
       if (isEmpty() || last().timeNanos < durationNanos) {
         add(Keyframe(durationNanos, targetValue, Easing.Linear))
       }
@@ -129,7 +133,7 @@ private data class KeyframesSpec<T>(
     return KeyframesAnimator(
         targetValue,
         typeConverter,
-        duration.inWholeNanoseconds,
+        durationNanos,
         resolvedKeyframes,
     )
   }
@@ -143,7 +147,7 @@ internal data class Keyframe<T>(val timeNanos: Long, val value: T, val easing: E
 private class KeyframesAnimator<T>(
     private val targetValue: T,
     private val typeConverter: TypeConverter<T>,
-    private val durationNanos: Long,
+    override val durationNanos: Long,
     private val keyframes: List<Keyframe<T>>,
 ) : Animator<T> {
 
@@ -167,7 +171,7 @@ private class KeyframesAnimator<T>(
       return
     }
     val dt = 1_000_000L // 1ms
-    val t2 = (playTimeNanos + dt).coerceAtMost(durationNanos)
+    val t2 = playTimeNanos + minOf(dt, durationNanos - playTimeNanos)
     getValueVector(playTimeNanos, velocity)
     getValueVector(t2, valueVector)
     val dtSeconds = (t2 - playTimeNanos) / 1_000_000_000f
@@ -209,6 +213,4 @@ private class KeyframesAnimator<T>(
       out[i] = lerp(fromVector[i], toVector[i], fraction)
     }
   }
-
-  override fun isFinished(playTimeNanos: Long): Boolean = playTimeNanos >= durationNanos
 }

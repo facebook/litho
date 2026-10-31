@@ -16,8 +16,6 @@
 
 package com.facebook.litho.animation
 
-import kotlin.time.Duration.Companion.ZERO
-
 /**
  * Creates a [FiniteAnimationSpec] that repeats [animation] for a fixed number of [iterations].
  *
@@ -84,8 +82,18 @@ private data class RepeatableSpec<T>(
     val initialStartOffset: StartOffset,
 ) : FiniteAnimationSpec<T> {
 
-  init {
+  private val durationNanos: Long = run {
     require(iterations > 0) { "iterations must be positive, but was $iterations" }
+    val cycleDurationNanos = animation.totalDuration.toFiniteNanos()
+    require(cycleDurationNanos <= Long.MAX_VALUE / iterations) {
+      "Repeated cycles must fit in Long nanoseconds."
+    }
+    val cyclesDuration = cycleDurationNanos * iterations
+    val startShiftNanos = initialStartOffset.signedNanos
+    require(startShiftNanos >= 0L || cyclesDuration <= Long.MAX_VALUE + startShiftNanos) {
+      "Repeat duration and start delay must fit in Long nanoseconds."
+    }
+    maxOf(0L, cyclesDuration - startShiftNanos)
   }
 
   override fun createAnimator(
@@ -98,6 +106,7 @@ private data class RepeatableSpec<T>(
       repeatMode,
       iterations,
       initialStartOffset,
+      durationNanos,
       initialValue,
       targetValue,
       typeConverter,
@@ -117,7 +126,7 @@ private data class InfiniteRepeatableSpec<T>(
 ) : InfiniteAnimationSpec<T> {
 
   init {
-    require(animation.totalDuration > ZERO) {
+    require(animation.totalDuration.toFiniteNanos() > 0L) {
       "infiniteRepeatable requires a positive cycle duration, but the animation's totalDuration " +
           "is zero (e.g. snap() or a zero-length tween) — it would loop forever with no progress."
     }
@@ -133,6 +142,7 @@ private data class InfiniteRepeatableSpec<T>(
       repeatMode,
       INFINITE,
       initialStartOffset,
+      Animator.DURATION_INFINITE,
       initialValue,
       targetValue,
       typeConverter,
@@ -145,6 +155,7 @@ private fun <T> repeatableAnimator(
     repeatMode: RepeatMode,
     iterations: Int,
     startOffset: StartOffset,
+    durationNanos: Long,
     initialValue: T,
     targetValue: T,
     typeConverter: TypeConverter<T>,
@@ -163,6 +174,7 @@ private fun <T> repeatableAnimator(
       iterations = iterations,
       cycleDurationNanos = animation.totalDuration.inWholeNanoseconds,
       startShiftNanos = startOffset.signedNanos,
+      durationNanos = durationNanos,
       initialValue = initialValue,
       targetValue = targetValue,
   )
@@ -174,47 +186,42 @@ private class RepeatableAnimator<T>(
     private val iterations: Int,
     private val cycleDurationNanos: Long,
     private val startShiftNanos: Long,
+    override val durationNanos: Long,
     private val initialValue: T,
     private val targetValue: T,
 ) : Animator<T> {
 
   override fun getValue(playTimeNanos: Long): T {
+    if (isFinished(playTimeNanos)) {
+      return if (cycleDurationNanos > 0L && iterations % 2 == 0 && reverseAnimator != null)
+          initialValue
+      else targetValue
+    }
     val shifted = playTimeNanos + startShiftNanos
     // Delay offset: hold at the start value until the shifted play time reaches the first cycle.
     if (shifted < 0L) return initialValue
     if (cycleDurationNanos <= 0L) return targetValue
 
-    val iteration = (shifted / cycleDurationNanos).toInt()
-    if (iterations != INFINITE && iteration >= iterations) {
-      return if (iterations % 2 == 0 && reverseAnimator != null) initialValue else targetValue
-    }
-
+    val iteration = shifted / cycleDurationNanos
     val localTime = shifted % cycleDurationNanos
-    val isReversed = reverseAnimator != null && iteration % 2 == 1
+    val isReversed = reverseAnimator != null && iteration % 2 == 1L
     return (if (isReversed) reverseAnimator else innerAnimator).getValue(localTime)
   }
 
   override fun getVelocity(playTimeNanos: Long, velocity: AnimationVector) {
+    if (isFinished(playTimeNanos)) {
+      velocity.reset()
+      return
+    }
     val shifted = playTimeNanos + startShiftNanos
     if (shifted < 0L || cycleDurationNanos <= 0L) {
       velocity.reset()
       return
     }
 
-    val iteration = (shifted / cycleDurationNanos).toInt()
-    if (iterations != INFINITE && iteration >= iterations) {
-      velocity.reset()
-      return
-    }
-
+    val iteration = shifted / cycleDurationNanos
     val localTime = shifted % cycleDurationNanos
-    val isReversed = reverseAnimator != null && iteration % 2 == 1
+    val isReversed = reverseAnimator != null && iteration % 2 == 1L
     (if (isReversed) reverseAnimator else innerAnimator).getVelocity(localTime, velocity)
-  }
-
-  override fun isFinished(playTimeNanos: Long): Boolean {
-    if (iterations == INFINITE) return false
-    if (cycleDurationNanos <= 0L) return true
-    return playTimeNanos + startShiftNanos >= cycleDurationNanos * iterations
   }
 }

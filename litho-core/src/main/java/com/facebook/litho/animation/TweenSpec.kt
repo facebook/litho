@@ -58,6 +58,14 @@ private data class TweenSpec<T>(
     val delay: Duration = ZERO,
 ) : DurationBasedAnimationSpec<T> {
 
+  init {
+    val durationNanos = duration.toFiniteNanos()
+    val delayNanos = delay.toFiniteNanos()
+    require(delayNanos <= Long.MAX_VALUE - durationNanos) {
+      "Tween duration and delay must fit in Long nanoseconds."
+    }
+  }
+
   override val totalDuration: Duration = duration + delay
 
   override fun createAnimator(
@@ -69,7 +77,7 @@ private data class TweenSpec<T>(
       initialValue = initialValue,
       targetValue = targetValue,
       typeConverter = typeConverter,
-      durationNanos = duration.inWholeNanoseconds,
+      animationDurationNanos = duration.inWholeNanoseconds,
       delayNanos = delay.inWholeNanoseconds,
       easing = easing,
   )
@@ -79,12 +87,13 @@ private class TweenAnimator<T>(
     private val initialValue: T,
     private val targetValue: T,
     private val typeConverter: TypeConverter<T>,
-    private val durationNanos: Long,
+    private val animationDurationNanos: Long,
     private val delayNanos: Long,
     private val easing: Easing,
 ) : Animator<T> {
 
-  private val totalNanos = durationNanos + delayNanos
+  override val durationNanos: Long = animationDurationNanos + delayNanos
+
   // Endpoints are fixed for the animator's lifetime, so vectorize them once; only [valueVector] is
   // written per frame, keeping the tick allocation-free apart from the reconstructed value.
   private val initialVector = typeConverter.newVectorFromValue(initialValue)
@@ -92,7 +101,7 @@ private class TweenAnimator<T>(
   private val valueVector = typeConverter.newVector()
 
   override fun getValue(playTimeNanos: Long): T {
-    if (playTimeNanos >= totalNanos) return targetValue
+    if (playTimeNanos >= durationNanos) return targetValue
     if (playTimeNanos < delayNanos) return initialValue
     val fraction = easing.transform(rawFraction(playTimeNanos))
     for (i in 0 until valueVector.size) {
@@ -102,13 +111,15 @@ private class TweenAnimator<T>(
   }
 
   override fun getVelocity(playTimeNanos: Long, velocity: AnimationVector) {
-    if (playTimeNanos >= totalNanos || playTimeNanos < delayNanos || durationNanos <= 0) {
+    if (
+        playTimeNanos >= durationNanos || playTimeNanos < delayNanos || animationDurationNanos <= 0
+    ) {
       velocity.reset()
       return
     }
     // Per-component velocity via finite difference over the shared eased fraction.
     val dt = 1_000_000L // 1ms
-    val t2 = (playTimeNanos + dt).coerceAtMost(totalNanos)
+    val t2 = playTimeNanos + minOf(dt, durationNanos - playTimeNanos)
     val e1 = easing.transform(rawFraction(playTimeNanos))
     val e2 = easing.transform(rawFraction(t2))
     val dtSeconds = (t2 - playTimeNanos) / 1_000_000_000f
@@ -118,10 +129,10 @@ private class TweenAnimator<T>(
     }
   }
 
-  override fun isFinished(playTimeNanos: Long): Boolean = playTimeNanos >= totalNanos
-
   private fun rawFraction(timeNanos: Long): Float {
     val elapsed = timeNanos - delayNanos
-    return if (durationNanos > 0) (elapsed.toFloat() / durationNanos).coerceIn(0f, 1f) else 1f
+    return if (animationDurationNanos > 0)
+        (elapsed.toFloat() / animationDurationNanos).coerceIn(0f, 1f)
+    else 1f
   }
 }

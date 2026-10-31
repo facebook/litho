@@ -20,8 +20,8 @@ package com.facebook.litho.animation
  * A stateless, time-driven computation engine that produces animation values.
  *
  * An [Animator] is created by an [AnimationSpec] with specific initial conditions (initial value,
- * target value, initial velocity) baked in. Once created, it can be queried at any point in time to
- * produce the current value, velocity, and completion status.
+ * target value, initial velocity) baked in. Once created, it exposes the run's duration and can be
+ * queried at any point in time for its value and velocity.
  *
  * ## Stateless Time-Driven Model
  *
@@ -47,13 +47,22 @@ package com.facebook.litho.animation
  * val valueAt100ms = animator.getValue(100_000_000L)  // 100ms in nanos
  * val velocity = FloatTypeConverter.newVector()
  * animator.getVelocity(100_000_000L, velocity)
- * val done = animator.isFinished(100_000_000L)
+ * val durationNanos = animator.durationNanos
+ * val done = durationNanos >= 0L && 100_000_000L >= durationNanos
  * ```
  *
  * @param T The type of value this animator produces.
  * @see AnimationSpec
  */
 interface Animator<out T> {
+
+  /**
+   * Duration of this bound run in logical animation time, including delays. Finite durations are
+   * nonnegative; [getValue] retains its final value at and beyond that boundary.
+   *
+   * [DURATION_INFINITE] denotes perpetual playback. Exclude it before comparing with elapsed time.
+   */
+  val durationNanos: Long
 
   /**
    * Returns the animated value at the given elapsed time.
@@ -77,15 +86,13 @@ interface Animator<out T> {
    */
   fun getVelocity(playTimeNanos: Long, velocity: AnimationVector)
 
-  /**
-   * Returns whether the animation has reached its final state at the given elapsed time.
-   *
-   * For tween animations, this is true when elapsed time exceeds the duration. For spring
-   * animations, this is true at or after the bound settling duration. A stock spring returns its
-   * exact target and zero velocity from that boundary onward.
-   *
-   * @param playTimeNanos Elapsed time since the animation started, in nanoseconds.
-   * @return `true` if the animation is complete.
-   */
-  fun isFinished(playTimeNanos: Long): Boolean
+  companion object {
+    /** No finite boundary. Exclude this negative sentinel before comparing with elapsed time. */
+    const val DURATION_INFINITE: Long = -1L
+  }
+}
+
+internal fun Animator<*>.isFinished(playTimeNanos: Long): Boolean {
+  val duration = durationNanos
+  return duration >= 0L && playTimeNanos >= duration
 }

@@ -43,20 +43,32 @@ internal data class CompositeIntSizeSpec(
       targetValue: IntSize,
       typeConverter: TypeConverter<IntSize>,
       initialVelocity: AnimationVector?,
-  ): Animator<IntSize> = CompositeIntSizeAnimator(
-      width.createAnimator(
-          initialValue.width.toFloat(),
-          targetValue.width.toFloat(),
-          FloatTypeConverter,
-          initialVelocity?.componentVector(0),
-      ),
-      height.createAnimator(
-          initialValue.height.toFloat(),
-          targetValue.height.toFloat(),
-          FloatTypeConverter,
-          initialVelocity?.componentVector(1),
-      ),
-  )
+  ): Animator<IntSize> {
+    val widthAnimator =
+        width.createAnimator(
+            initialValue.width.toFloat(),
+            targetValue.width.toFloat(),
+            FloatTypeConverter,
+            initialVelocity?.componentVector(0),
+        )
+    val heightAnimator =
+        height.createAnimator(
+            initialValue.height.toFloat(),
+            targetValue.height.toFloat(),
+            FloatTypeConverter,
+            initialVelocity?.componentVector(1),
+        )
+    val widthDuration = widthAnimator.durationNanos
+    val heightDuration = heightAnimator.durationNanos
+    require(widthDuration >= 0L && heightDuration >= 0L) {
+      "Size animations must have finite durations."
+    }
+    return CompositeIntSizeAnimator(
+        widthAnimator,
+        heightAnimator,
+        maxOf(widthDuration, heightDuration),
+    )
+  }
 
   /**
    * A 1-component velocity vector carrying this vector's [index] component, or null if it is zero.
@@ -71,6 +83,7 @@ internal data class CompositeIntSizeSpec(
 private class CompositeIntSizeAnimator(
     private val width: Animator<Float>,
     private val height: Animator<Float>,
+    override val durationNanos: Long,
 ) : Animator<IntSize> {
 
   // Each axis reports into this in turn; held rather than allocated per call so a retarget-heavy
@@ -88,7 +101,4 @@ private class CompositeIntSizeAnimator(
     height.getVelocity(playTimeNanos, axisVelocity)
     velocity[1] = axisVelocity[0]
   }
-
-  override fun isFinished(playTimeNanos: Long): Boolean =
-      width.isFinished(playTimeNanos) && height.isFinished(playTimeNanos)
 }

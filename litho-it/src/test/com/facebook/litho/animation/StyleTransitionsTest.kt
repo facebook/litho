@@ -648,6 +648,30 @@ class StyleTransitionsTest {
   }
 
   @Test
+  fun styleTransitionManager_rejectsInfiniteAnimatorFromFiniteSpec() {
+    val manager = StyleTransitionManager()
+    val styleTransitionId = StructuralStyleTransitionId("manager_infinite_animator")
+    val spec = transitionSpec { alpha = CountingAnimationSpec(Animator.DURATION_INFINITE) }
+    val previousTarget = styleTransitionTarget(
+        transitionId = styleTransitionId,
+        spec = spec,
+        animatableItem = animatableItem(id = 1, alpha = 1f, isAlphaSet = true),
+    )
+    val nextTarget = styleTransitionTarget(
+        transitionId = styleTransitionId,
+        spec = spec,
+        animatableItem = animatableItem(id = 2, alpha = 0.2f, isAlphaSet = true),
+    )
+    manager.setup(previousTargets = listOf(previousTarget), nextTargets = listOf(nextTarget))
+
+    assertThatThrownBy {
+          manager.run(StyleTransitionContentResolver { listOf(View(activityController.get())) })
+        }
+        .isInstanceOf(IllegalArgumentException::class.java)
+        .hasMessageContaining("Style transitions require an animator with a finite duration")
+  }
+
+  @Test
   fun styleTransitionManager_recreatesAnimatorWhenSpecChangesAcrossRemount() {
     ShadowLooper.pauseMainLooper()
     val manager = StyleTransitionManager()
@@ -1157,7 +1181,8 @@ class StyleTransitionsTest {
     )
   }
 
-  private class CountingAnimationSpec : FiniteAnimationSpec<Float> {
+  private class CountingAnimationSpec(private val reportedDurationNanos: Long = 0L) :
+      FiniteAnimationSpec<Float> {
     var createAnimatorCalls: Int = 0
     var valueCalls: Int = 0
 
@@ -1169,16 +1194,16 @@ class StyleTransitionsTest {
     ): Animator<Float> {
       createAnimatorCalls++
       return object : Animator<Float> {
+        override val durationNanos: Long = reportedDurationNanos
+
         override fun getValue(playTimeNanos: Long): Float {
           valueCalls++
-          return initialValue
+          return targetValue
         }
 
         override fun getVelocity(playTimeNanos: Long, velocity: AnimationVector) {
           velocity.reset()
         }
-
-        override fun isFinished(playTimeNanos: Long): Boolean = true
       }
     }
   }
