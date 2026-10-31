@@ -66,6 +66,13 @@ interface TypeConverter<T> {
 
   /** Reconstructs a [T] from a [vector] produced by this converter. */
   fun fromVector(vector: AnimationVector): T
+
+  /**
+   * Floor for a spring's default tolerance in [component]'s vector units; finite and nonnegative.
+   * Zero preserves the default. Explicit spring thresholds override this floor. Queried at animator
+   * binding, never on frames.
+   */
+  fun getMinimumVisibleChange(component: Int): Float = 0f
 }
 
 /** Shorthand for [TypeConverter.newVector] followed by [TypeConverter.toVector] for [value]. */
@@ -85,6 +92,8 @@ object FloatTypeConverter : TypeConverter<Float> {
 
 /** [TypeConverter] for [Int] values. Rounds the component back to the nearest integer. */
 object IntTypeConverter : TypeConverter<Int> {
+  override fun getMinimumVisibleChange(component: Int): Float = 0.5f
+
   override fun newVector(): AnimationVector = AnimationVector1D()
 
   override fun toVector(value: Int, vector: AnimationVector) {
@@ -99,6 +108,9 @@ object IntTypeConverter : TypeConverter<Int> {
  * so two colors that would collide under a single-float projection still animate correctly.
  */
 object ColorTypeConverter : TypeConverter<Color> {
+  override fun getMinimumVisibleChange(component: Int): Float =
+      if (component == 0) 0.5f / 255f else 0.5f
+
   override fun newVector(): AnimationVector = AnimationVector4D()
 
   override fun toVector(value: Color, vector: AnimationVector) {
@@ -118,15 +130,16 @@ object ColorTypeConverter : TypeConverter<Color> {
 }
 
 /**
- * [TypeConverter] for [Dimen] values, animating in resolved pixels.
- *
- * @param resourceResolver Used to resolve dp/sp values to pixels.
+ * Converts [Dimen] to pixels, preserving dp/sp fractions. Intermediate [px] output truncates to
+ * whole pixels.
  */
 class DimenTypeConverter(private val resourceResolver: ResourceResolver) : TypeConverter<Dimen> {
+  override fun getMinimumVisibleChange(component: Int): Float = 0.5f
+
   override fun newVector(): AnimationVector = AnimationVector1D()
 
   override fun toVector(value: Dimen, vector: AnimationVector) {
-    vector[0] = value.toFloatPixels(resourceResolver)
+    vector[0] = value.toUnroundedPixels(resourceResolver)
   }
 
   override fun fromVector(vector: AnimationVector): Dimen = vector[0].px

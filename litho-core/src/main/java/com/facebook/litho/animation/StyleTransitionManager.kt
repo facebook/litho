@@ -73,7 +73,15 @@ internal class StyleTransitionManager {
               plan = plan,
               contents = contents,
               animator =
-                  plan.animationSpec.createAnimator(
+                  when (plan.property) {
+                    StyleTransitionProperty.X,
+                    StyleTransitionProperty.Y,
+                    StyleTransitionProperty.WIDTH,
+                    StyleTransitionProperty.HEIGHT ->
+                        (plan.animationSpec as? FiniteAnimationSpec<Float>)
+                            ?.withDefaultVisibilityThreshold(0.5f) ?: plan.animationSpec
+                    else -> plan.animationSpec
+                  }.createAnimator(
                       currentValue,
                       plan.targetValue,
                       FloatTypeConverter,

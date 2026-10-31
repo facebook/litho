@@ -148,6 +148,8 @@ internal class ChangeSizeValue(
  * and settles each axis on its own — two sizes that share a diagonal no longer collide.
  */
 internal object IntSizeTypeConverter : TypeConverter<IntSize> {
+  override fun getMinimumVisibleChange(component: Int): Float = 0.5f
+
   override fun newVector(): AnimationVector = AnimationVector2D()
 
   override fun toVector(value: IntSize, vector: AnimationVector) {

@@ -307,8 +307,27 @@ Physics-based spring animation. Produces natural, interruptible motion.
 fun <T> spring(
     stiffness: Stiffness = Stiffness.Medium,
     dampingRatio: DampingRatio = DampingRatio.NoBouncy,
+    visibilityThreshold: T? = null,
 ): FiniteAnimationSpec<T>
 ```
+
+`visibilityThreshold` controls how close the value must stay to its target for the
+spring to settle. It uses the animated value's units; for sizes, specify a threshold for
+each dimension:
+
+```kotlin
+val preciseSpring = spring<Float>(visibilityThreshold = 0.001f)
+val dimensionSpring = spring<Dimen>(visibilityThreshold = 0.4.dp)
+val sizeSpring = spring<IntSize>(visibilityThreshold = IntSize(1, 1))
+```
+
+Smaller thresholds preserve more of the spring's motion and can delay `onSettled` and
+exiting-content removal. Once settled, the value is exactly the target. Omit the threshold
+to use the default for the value type and animation; an explicit threshold overrides it.
+
+Stiffness, damping ratio, and threshold values must be finite and positive. Zero damping
+is unsupported because the spring would never settle. For fractional dimension thresholds,
+use dp or sp: pixel literals discard fractions, so `0.4.px` is zero.
 
 **Stiffness presets:**
 

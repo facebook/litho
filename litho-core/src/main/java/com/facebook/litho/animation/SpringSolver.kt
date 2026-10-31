@@ -226,12 +226,14 @@ private constructor(
      * @param initialDisplacement The initial displacement from the rest position (float-space
      *   units).
      * @param initialVelocity The initial velocity (float-space units per second).
+     * @param displacementThreshold Positive, finite settling tolerance in float-space units.
      */
     fun create(
         stiffness: Float,
         dampingRatio: Float,
         initialDisplacement: Float,
         initialVelocity: Float,
+        displacementThreshold: Float = defaultDisplacementThreshold(initialDisplacement),
     ): SpringSolver {
       require(stiffness.isFinite() && stiffness > 0) {
         "Spring stiffness must be finite and positive"
@@ -241,6 +243,9 @@ private constructor(
       }
       require(initialDisplacement.isFinite() && initialVelocity.isFinite()) {
         "Spring displacement and velocity must be finite"
+      }
+      require(displacementThreshold.isFinite() && displacementThreshold > 0f) {
+        "Spring displacement threshold must be finite and positive"
       }
       val omega0 = sqrt(stiffness.toDouble()) // natural frequency
       val zeta = dampingRatio.toDouble()
@@ -278,13 +283,13 @@ private constructor(
               CriticallyDamped(omega0, a, b)
             }
           }
-      val displacementScale = abs(initialDisplacement)
-      val displacementThreshold = min(
-          DEFAULT_DISPLACEMENT_THRESHOLD,
-          max(MIN_DISPLACEMENT_THRESHOLD, displacementScale * DISPLACEMENT_THRESHOLD_RATIO),
-      )
       return SpringSolver(solution, solution.durationNanos(displacementThreshold.toDouble()))
     }
+
+    fun defaultDisplacementThreshold(initialDisplacement: Float): Float = min(
+        DEFAULT_DISPLACEMENT_THRESHOLD,
+        max(MIN_DISPLACEMENT_THRESHOLD, abs(initialDisplacement) * DISPLACEMENT_THRESHOLD_RATIO),
+    )
 
     private fun nanosAfter(seconds: Double): Long {
       require(seconds >= 0 && !seconds.isNaN()) { "Invalid spring duration" }

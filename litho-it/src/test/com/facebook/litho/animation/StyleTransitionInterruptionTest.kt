@@ -271,6 +271,40 @@ class StyleTransitionInterruptionTest {
     assertThat(spec.initialVelocities[1][0]).isGreaterThan(0f)
   }
 
+  @Test
+  fun pixelPropertiesSettleAtPixelToleranceWhileAlphaKeepsItsFloatTolerance() {
+    val manager = StyleTransitionManager()
+    val id = StructuralStyleTransitionId("pixel_tolerance")
+    val spec = transitionSpec {
+      x = spring()
+      alpha = spring()
+    }
+    val view = View(activityController.get())
+    manager.setup(
+        previousTargets =
+            listOf(
+                styleTransitionTarget(
+                    id,
+                    spec,
+                    animatableItem(1, 1f, true, Rect(0, 0, 10, 10)),
+                ),
+            ),
+        nextTargets =
+            listOf(
+                styleTransitionTarget(
+                    id,
+                    spec,
+                    animatableItem(2, 0.96f, true, Rect(1, 0, 11, 10)),
+                ),
+            ),
+    )
+    manager.run(StyleTransitionContentResolver { listOf(view) })
+    animationRule.runNextFrame()
+    animationRule.runNextFrame(150.ms)
+    assertThat(view.x).isEqualTo(1f)
+    assertThat(view.alpha).isGreaterThan(0.96f).isLessThan(1f)
+  }
+
   private fun transitionSpec(block: StyleTransitionScope.() -> Unit): StyleTransitionSpec =
       StyleTransitionScope().apply(block).build()
 
@@ -292,6 +326,7 @@ class StyleTransitionInterruptionTest {
       id: Long,
       alpha: Float = 1f,
       isAlphaSet: Boolean = false,
+      bounds: Rect = Rect(0, 0, 10, 10),
   ): AnimatableItem =
       object : AnimatableItem {
         override fun getId(): Long = id
@@ -300,7 +335,7 @@ class StyleTransitionInterruptionTest {
 
         override fun getOutputType(): Int = OutputUnitType.CONTENT
 
-        override fun getAbsoluteBounds(): Rect = Rect(0, 0, 10, 10)
+        override fun getAbsoluteBounds(): Rect = bounds
 
         override fun getScale(): Float = 1f
 

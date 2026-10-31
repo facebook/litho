@@ -16,14 +16,20 @@
 
 package com.facebook.litho.animation
 
+import com.facebook.litho.ComponentContext
+import com.facebook.rendercore.Dimen
 import com.facebook.rendercore.IntSize
+import com.facebook.rendercore.dp
 import com.facebook.rendercore.graphics.Color
+import com.facebook.rendercore.px
+import com.facebook.rendercore.sp
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.core.data.Offset
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.RuntimeEnvironment
 
 @RunWith(RobolectricTestRunner::class)
 class SpringSpecTest {
@@ -373,6 +379,33 @@ class SpringSpecTest {
     val spec = spring<Float>()
     assertThatThrownBy { spec.createAnimator(0f, 0f, FloatTypeConverter, AnimationVector2D()) }
         .isInstanceOf(IllegalArgumentException::class.java)
+    for (threshold in floatArrayOf(0f, -1f, Float.NaN, Float.POSITIVE_INFINITY)) {
+      assertThatThrownBy {
+            spring(visibilityThreshold = threshold).createAnimator(0f, 0f, FloatTypeConverter)
+          }
+          .isInstanceOf(IllegalArgumentException::class.java)
+          .hasMessageContaining("threshold components")
+    }
+    assertThatThrownBy {
+          spring(visibilityThreshold = IntSize(1, 0))
+              .createAnimator(
+                  IntSize(0, 0),
+                  IntSize(1, 1),
+                  IntSizeTypeConverter,
+                  AnimationVector2D(Float.NaN, 0f),
+              )
+        }
+        .isInstanceOf(IllegalArgumentException::class.java)
+        .hasMessageContaining("threshold components")
+    for (minimumVisibleChange in floatArrayOf(-1f, Float.NaN, Float.POSITIVE_INFINITY)) {
+      val converter =
+          object : TypeConverter<Float> by FloatTypeConverter {
+            override fun getMinimumVisibleChange(component: Int): Float = minimumVisibleChange
+          }
+      assertThatThrownBy { spec.createAnimator(0f, 1f, converter) }
+          .isInstanceOf(IllegalArgumentException::class.java)
+          .hasMessageContaining("minimum visible change")
+    }
   }
 
   @Test
@@ -425,6 +458,153 @@ class SpringSpecTest {
     }
     assertThat(inheritedVelocity[0]).isZero()
     assertThat(inheritedVelocity[1]).isEqualTo(Float.MAX_VALUE)
+  }
+
+  @Test
+  fun `unit precision floors preserve generic defaults and explicit thresholds`() {
+    val smallVelocity = AnimationVector1D(5f)
+    val largerVelocity = AnimationVector1D(20f)
+    val customConverter = object : TypeConverter<Float> by FloatTypeConverter {}
+    val pixelConverter =
+        object : TypeConverter<Float> by FloatTypeConverter {
+          override fun getMinimumVisibleChange(component: Int): Float = 0.5f
+        }
+    for (converter in arrayOf(FloatTypeConverter, customConverter, pixelConverter)) {
+      assertThat(spring<Float>().createAnimator(0f, 0f, converter, smallVelocity).isFinished(0))
+          .isEqualTo(converter === pixelConverter)
+      assertThat(
+          spring(visibilityThreshold = 0.5f)
+              .createAnimator(0f, 0f, converter, smallVelocity)
+              .isFinished(0),
+      )
+          .isTrue()
+      assertThat(
+          spring(visibilityThreshold = 0.001f)
+              .createAnimator(0f, 0f, converter, smallVelocity)
+              .isFinished(0),
+      )
+          .isFalse()
+      assertThat(spring<Float>().createAnimator(0f, 0f, converter, largerVelocity).isFinished(0))
+          .isFalse()
+    }
+    val delegatedIntConverter = object : TypeConverter<Int> by IntTypeConverter {}
+    for (converter in arrayOf(IntTypeConverter, delegatedIntConverter)) {
+      assertThat(spring<Int>().createAnimator(0, 0, converter, smallVelocity).isFinished(0))
+          .isTrue()
+      assertThat(spring<Int>().createAnimator(0, 0, converter, largerVelocity).isFinished(0))
+          .isFalse()
+    }
+    assertThat(
+        spring<IntSize>()
+            .createAnimator(
+                IntSize(0, 0),
+                IntSize(0, 0),
+                IntSizeTypeConverter,
+                AnimationVector2D(5f, 5f),
+            )
+            .isFinished(0),
+    )
+        .isTrue()
+    val dimenConverter =
+        DimenTypeConverter(ComponentContext(RuntimeEnvironment.getApplication()).resourceResolver)
+    assertThat(
+        spring<Dimen>().createAnimator(0.px, 0.px, dimenConverter, smallVelocity).isFinished(0),
+    )
+        .isTrue()
+    assertThat(
+        spring<Dimen>().createAnimator(0.px, 0.px, dimenConverter, largerVelocity).isFinished(0),
+    )
+        .isFalse()
+    assertThat(
+        spring(visibilityThreshold = 1.px)
+            .createAnimator(0.px, 0.px, dimenConverter, largerVelocity)
+            .isFinished(0),
+    )
+        .isTrue()
+  }
+
+  @Test
+  fun `explicit thresholds override context defaults and apply per component`() {
+    val explicit =
+        spring(visibilityThreshold = 0.5f)
+            .withDefaultVisibilityThreshold(0.001f)
+            .createAnimator(0f, 1f, FloatTypeConverter)
+    val contextual =
+        spring<Float>()
+            .withDefaultVisibilityThreshold(0.001f)
+            .createAnimator(0f, 1f, FloatTypeConverter)
+    assertThat(explicit.isFinished(seconds(0.3))).isTrue()
+    assertThat(contextual.isFinished(seconds(0.3))).isFalse()
+    for (threshold in arrayOf(IntSize(1, 20), IntSize(20, 1), IntSize(20, 20))) {
+      val animator =
+          spring(visibilityThreshold = threshold)
+              .createAnimator(IntSize(0, 0), IntSize(100, 100), IntSizeTypeConverter)
+      assertThat(animator.isFinished(seconds(0.3))).isEqualTo(threshold == IntSize(20, 20))
+      assertThat(animator.isFinished(seconds(0.5))).isTrue()
+      assertThat(animator.getValue(seconds(0.5))).isEqualTo(IntSize(100, 100))
+    }
+  }
+
+  @Test
+  fun `dimension thresholds preserve fractional precision across densities`() {
+    val previousQualifiers = RuntimeEnvironment.getQualifiers()
+    try {
+      for ((qualifier, density) in arrayOf("mdpi" to 1f, "xxhdpi" to 3f)) {
+        RuntimeEnvironment.setQualifiers(qualifier)
+        val resolver = ComponentContext(RuntimeEnvironment.getApplication()).resourceResolver
+        val converter = DimenTypeConverter(resolver)
+        for (threshold in arrayOf(0.4f.dp, 0.4f.sp)) {
+          val animator =
+              spring(visibilityThreshold = threshold).createAnimator(0.px, 100.px, converter)
+          assertThat(animator.isFinished(seconds(0.54))).isEqualTo(density == 3f)
+          assertThat(animator.isFinished(seconds(1.0))).isTrue()
+          assertThat(animator.getValue(seconds(1.0))).isEqualTo(100.px)
+          val velocity = AnimationVector1D()
+          animator.getVelocity(seconds(1.0), velocity)
+          assertThat(velocity[0]).isZero()
+        }
+        for (invalid in floatArrayOf(0f, -0.1f, Float.NaN, Float.POSITIVE_INFINITY)) {
+          for (threshold in arrayOf(invalid.dp, invalid.sp)) {
+            assertThatThrownBy {
+                  spring(visibilityThreshold = threshold).createAnimator(0.px, 0.px, converter)
+                }
+                .isInstanceOf(IllegalArgumentException::class.java)
+          }
+        }
+        assertThatThrownBy {
+              spring(visibilityThreshold = 0.4f.px).createAnimator(0.px, 0.px, converter)
+            }
+            .isInstanceOf(IllegalArgumentException::class.java)
+      }
+    } finally {
+      RuntimeEnvironment.setQualifiers(previousQualifiers)
+    }
+  }
+
+  @Test
+  fun `color tolerances use each channel's quantization units`() {
+    val target = Color.fromRgba(100, 100, 100, 0.5f)
+    val spec = spring<Color>()
+    val quiet =
+        spec.createAnimator(
+            target,
+            target,
+            ColorTypeConverter,
+            AnimationVector4D(0.04f, 5f, 5f, 5f),
+        )
+    assertThat(quiet.isFinished(0)).isTrue()
+    val velocity = AnimationVector4D()
+    quiet.getVelocity(0, velocity)
+    for (i in 0..3) assertThat(velocity[i]).isZero()
+    val movingAlpha =
+        spec.createAnimator(
+            target,
+            target,
+            ColorTypeConverter,
+            AnimationVector4D(0.4f, 0f, 0f, 0f),
+        )
+    assertThat(movingAlpha.isFinished(0)).isFalse()
+    assertThat(movingAlpha.getValue(seconds(0.07)).alpha).isGreaterThan(target.alpha)
   }
 
   @Test

@@ -32,11 +32,14 @@ package com.facebook.litho.animation
  *
  * @param stiffness Controls spring responsiveness. Higher = faster, snappier.
  * @param dampingRatio Controls bounce. Lower = more overshoot. 1.0 = no overshoot.
+ * @param visibilityThreshold Optional positive, finite tolerance in the animated value's units.
+ *   Smaller values preserve more motion and can delay completion. Null uses the default.
  */
 fun <T> spring(
     stiffness: Stiffness = Stiffness.Medium,
     dampingRatio: DampingRatio = DampingRatio.NoBouncy,
-): FiniteAnimationSpec<T> = SpringSpec(stiffness, dampingRatio)
+    visibilityThreshold: T? = null,
+): FiniteAnimationSpec<T> = SpringSpec(stiffness, dampingRatio, visibilityThreshold)
 
 /**
  * A spring-based [AnimationSpec] that produces natural, physics-driven motion.
@@ -52,6 +55,7 @@ fun <T> spring(
 private data class SpringSpec<T>(
     val stiffness: Stiffness = Stiffness.Medium,
     val dampingRatio: DampingRatio = DampingRatio.NoBouncy,
+    val visibilityThreshold: T? = null,
 ) : FiniteAnimationSpec<T> {
 
   override fun createAnimator(
@@ -62,11 +66,22 @@ private data class SpringSpec<T>(
   ): Animator<T> {
     val targetVector = typeConverter.newVectorFromValue(targetValue)
     val valueVector = typeConverter.newVectorFromValue(initialValue)
+    val thresholdVector = visibilityThreshold?.let { typeConverter.newVectorFromValue(it) }
     require(
         valueVector.size == targetVector.size &&
             (initialVelocity == null || initialVelocity.size == targetVector.size),
     ) {
       "Spring initial, target, and velocity vectors must have the same size"
+    }
+    require(thresholdVector == null || thresholdVector.size == targetVector.size) {
+      "Spring threshold vector must have the same size as the animated value"
+    }
+    if (thresholdVector != null) {
+      for (i in 0 until thresholdVector.size) {
+        require(thresholdVector[i].isFinite() && thresholdVector[i] > 0f) {
+          "Spring threshold components must be finite and positive"
+        }
+      }
     }
     for (i in 0 until targetVector.size) {
       if (
@@ -88,12 +103,26 @@ private data class SpringSpec<T>(
     // multi-component spring preserves every axis's motion across the retarget.
     val solvers =
         Array(targetVector.size) { i ->
+          val displacement = valueVector[i] - targetVector[i]
+          val threshold =
+              thresholdVector?.get(i)
+                  ?: run {
+                    val minimumVisibleChange = typeConverter.getMinimumVisibleChange(i)
+                    require(minimumVisibleChange.isFinite() && minimumVisibleChange >= 0f) {
+                      "Converter minimum visible change must be finite and nonnegative"
+                    }
+                    maxOf(
+                        SpringSolver.defaultDisplacementThreshold(displacement),
+                        minimumVisibleChange,
+                    )
+                  }
           val solver =
               SpringSolver.create(
                   stiffness = stiffness.value,
                   dampingRatio = dampingRatio.value,
-                  initialDisplacement = valueVector[i] - targetVector[i],
+                  initialDisplacement = displacement,
                   initialVelocity = initialVelocity?.get(i) ?: 0f,
+                  displacementThreshold = threshold,
               )
           if (solver.durationNanos == SpringSolver.UNSUPPORTED_DURATION) {
             return FinishedAnimator(targetValue)
@@ -103,6 +132,14 @@ private data class SpringSpec<T>(
     return SpringAnimator(targetValue, targetVector, valueVector, typeConverter, solvers)
   }
 }
+
+/** Supplies a context default only to stock springs without an explicit threshold. */
+internal fun FiniteAnimationSpec<Float>.withDefaultVisibilityThreshold(
+    threshold: Float,
+): FiniteAnimationSpec<Float> =
+    if (this is SpringSpec<Float> && visibilityThreshold == null)
+        copy(visibilityThreshold = threshold)
+    else this
 
 private fun AnimationVector?.isNullOrZero(): Boolean {
   if (this == null) return true

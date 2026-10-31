@@ -135,6 +135,39 @@ class AnimatedVisibilityTest {
     assertThat(alpha!!).isGreaterThan(0f).isLessThan(1f)
   }
 
+  @Test
+  fun `spring slide and size keep the final progress before publishing their endpoints`() {
+    val settled = mutableListOf<Boolean>()
+    fun container(visible: Boolean) = AnimatedVisibility(
+        visible = visible,
+        enter = slideInHorizontally { 1080 } + expandIn(),
+        exit = slideOutHorizontally { 1080 } + shrinkOut(),
+        style = Style.viewTag(WRAPPER_TAG),
+        onSettled = { settled.add(it) },
+    ) {
+      Marker()
+    }
+    val testView = lithoTestRule.render { container(false) }
+    testView.setRoot(container(true))
+    animationRule.advanceBy(650.ms)
+    val wrapper = checkNotNull(testView.findViewWithTagOrNull(WRAPPER_TAG))
+    assertThat(wrapper.translationX).isGreaterThan(0.5f).isLessThan(2f)
+    assertThat(checkNotNull(wrapper.clipBounds).width()).isLessThan(wrapper.width)
+    assertThat(settled).isEmpty()
+    animationRule.advanceBy(50.ms)
+    assertThat(wrapper.translationX).isZero()
+    assertThat(wrapper.clipBounds).isNull()
+    assertThat(settled).containsExactly(true)
+
+    testView.setRoot(container(false))
+    animationRule.advanceBy(650.ms)
+    assertThat(testView.findComponent(Marker::class)).isNotNull()
+    assertThat(settled).containsExactly(true)
+    animationRule.advanceBy(50.ms)
+    assertThat(testView.findComponent(Marker::class)).isNull()
+    assertThat(settled).containsExactly(true, false)
+  }
+
   // --- Helpers ---
 
   private fun wrapped(visible: Boolean, exit: ExitTransition = fadeOut(linearFade)): Component =

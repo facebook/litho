@@ -303,7 +303,7 @@ private fun createSlideAnimation(
             EnterExitState.Visible.isTransitioningTo(EnterExitState.AfterExit) ->
                 exitSlide?.spec ?: defaultSpec
             else -> defaultSpec
-          }
+          }.withDefaultVisibilityThreshold(0.001f)
         },
     ) { state ->
       if (enterSlide == null && exitSlide == null) 0f
@@ -332,7 +332,7 @@ private fun createChangeSizeAnimation(
             EnterExitState.Visible.isTransitioningTo(EnterExitState.AfterExit) ->
                 exitChangeSize?.spec ?: defaultSpec
             else -> defaultSpec
-          }
+          }.withDefaultVisibilityThreshold(0.001f)
         },
     ) { state ->
       if (enterChangeSize == null && exitChangeSize == null) 0f
