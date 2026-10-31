@@ -57,11 +57,11 @@ sealed interface AnimationTrigger {
    * becomes visible on screen. Prefer [useLazyAnimationTrigger] to create a stable instance across
    * renders.
    *
-   * [start] latches. Each retarget hands [onReady] a *new* [AnimationHandle] — the handle is a
-   * one-shot command, so all durable state lives here on the trigger — and once started, this
-   * trigger starts each new handle on arrival. Without that latch a group whose children settle at
-   * different times would tear: a retarget re-gates only the settled children, while the siblings
-   * already receiving frames keep animating toward the new target.
+   * [start] latches. Each retarget that needs to start frames hands [onReady] a new
+   * [AnimationHandle] — the handle is a one-shot command, so all durable state lives here on the
+   * trigger — and once started, this trigger starts each new handle on arrival, including when a
+   * settled group receives another target. Active groups retain their shared registration across
+   * retargets.
    */
   class Lazy : AnimationTrigger {
 

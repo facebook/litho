@@ -124,6 +124,8 @@ internal class AnimationGroupState<S>(
     val label: String,
 ) {
 
+  internal val clock: AnimationClock = AnimationClock(::onFrame)
+
   /**
    * The latest committed immutable record. Replaced wholesale (copy-on-write) in [commit]; the
    * runtime reads [targetState] and slot descriptors from it. Read through a `@Volatile` reference.
@@ -155,7 +157,7 @@ internal class AnimationGroupState<S>(
 
   /** `true` if any animation has a pending animator, whether or not it has started. */
   internal val hasAnimator: Boolean
-    get() = animatedValues.any { it.hasAnimator }
+    get() = animatedValues.hasAnimator()
 
   /**
    * The long-lived per-slot [AnimatedValue] runtime, indexed by slot. Created lazily in [commit]
@@ -215,6 +217,7 @@ internal class AnimationGroupState<S>(
         isLayoutContext = isLayoutContext,
         stateUpdater = stateUpdater,
         label = deriveLabel(typed.label),
+        sharedClock = clock,
     )
         .also { it.onComplete = ::checkCompletion }
   }
@@ -238,23 +241,25 @@ internal class AnimationGroupState<S>(
   }
 
   /**
-   * Retargets all animations toward the committed [targetState], returning `true` if at least one
-   * retargeted child needs a start handle. Called from the [useAnimationGroup] effect on the main
-   * thread after [commit] has published the new record.
+   * Retargets all animations toward the committed [targetState], returning `true` if the group
+   * needs a start handle. Called from the [useAnimationGroup] effect on the main thread after
+   * [commit] has published the new record.
    */
   internal fun retarget(): Boolean {
     val seg = segment
     val descriptors = record.descriptors
     val values = animatedValues
-    var needsRegistration = false
+    val wasTicking = clock.isTicking
     for (slot in descriptors.indices) {
-      val value = values.getOrNull(slot) ?: continue
-      val wasActive = value.isActive
-      retargetAnimation(descriptors[slot], value, seg)
-      needsRegistration = needsRegistration || (!wasActive && value.hasAnimator)
+      retargetAnimation(descriptors[slot], values[slot], seg)
     }
     checkCompletion()
-    return needsRegistration
+    val pending = hasAnimator
+    if (!pending) {
+      clock.freeze()
+      AnimationController.unregister(clock)
+    }
+    return pending && !wasTicking
   }
 
   @Suppress("UNCHECKED_CAST")
@@ -291,10 +296,21 @@ internal class AnimationGroupState<S>(
   internal fun unmount() {
     settlement.unmount()
     onStateSettled = null
-    for (value in animatedValues) {
-      value.stop()
-      AnimationController.unregister(value.frameAnimation)
+    for (value in animatedValues) value.stop()
+    clock.freeze()
+    AnimationController.unregister(clock)
+  }
+
+  private fun onFrame(playTimeNanos: Long): Boolean {
+    val values = animatedValues
+    var finished = false
+    for (slot in values.indices) {
+      val update = values[slot].evaluateFrame(playTimeNanos)
+      finished = finished || update and AnimatedValue.FRAME_FINISHED != 0
     }
+    if (finished) checkCompletion()
+    for (slot in values.indices) values[slot].publishFrame()
+    return hasAnimator
   }
 
   internal fun childStateId(slot: Int): StateId = StateId(

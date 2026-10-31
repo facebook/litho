@@ -81,7 +81,7 @@ internal class ReflowAnimationStore(private val lithoTree: LithoTree) : ReflowPr
     current.forEachEntry { key, entry ->
       if (key !in liveSeeds) {
         entry.value.stop()
-        AnimationController.unregister(entry.value.frameAnimation)
+        AnimationController.unregister(entry.value.clock)
       }
     }
     if (next.isNotEmpty()) ensureBackstop()
@@ -108,7 +108,7 @@ internal class ReflowAnimationStore(private val lithoTree: LithoTree) : ReflowPr
     if (!entry.value.isRunning) entry.value.snapTo(committedSize, notify = false)
     entry.value.retarget(target, spec)
     if (entry.value.hasAnimator && !entry.value.isActive) {
-      AnimationController.register(entry.value.frameAnimation)
+      AnimationController.register(entry.value.clock)
     }
     // Written last: targetSize is the entry's cross-thread publication marker, so a reader
     // observing
@@ -149,7 +149,7 @@ internal class ReflowAnimationStore(private val lithoTree: LithoTree) : ReflowPr
   private fun stopAndClear() {
     current.forEachEntry { _, entry ->
       entry.value.stop()
-      AnimationController.unregister(entry.value.frameAnimation)
+      AnimationController.unregister(entry.value.clock)
     }
     current = ReflowGeneration.EMPTY
   }

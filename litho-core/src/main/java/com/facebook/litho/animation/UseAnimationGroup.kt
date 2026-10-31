@@ -94,15 +94,11 @@ fun <S> ComponentScope.useAnimationGroup(
 
   // Retarget on the main thread, reading the just-committed declaration (the commit effect above
   // ran first) rather than racing concurrent resolves. Registration is deferred to the
-  // AnimationTrigger: a fresh group needs a start handle; an already-active one keeps its frames; a
-  // partial retarget (some slots settled while others run) re-registers only the settled ones.
+  // AnimationTrigger: a fresh group needs a start handle; an active group keeps its registration
+  // and all retargeted slots share its last published play time.
   useEffect(targetState) {
     if (groupState.retarget()) {
-      val handle = AnimationHandle {
-        for (animatedValue in groupState.animatedValues) {
-          AnimationController.register(animatedValue.frameAnimation)
-        }
-      }
+      val handle = AnimationHandle { AnimationController.register(groupState.clock) }
       val cleanup = trigger.onReady(handle)
       return@useEffect onCleanup {
         handle.invalidate()

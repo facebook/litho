@@ -326,6 +326,64 @@ class InfiniteAnimationGroupTest {
   }
 
   @Test
+  fun sharedClockPreservesIndependentRestartAndStoppedIntervals() {
+    var group: InfiniteAnimationGroup? = null
+    fun component(revision: Int, running: Boolean = true): Component =
+        object : KComponent() {
+          override fun ComponentScope.render(): Component {
+            val infinite = useInfiniteAnimationGroup(shouldRun = running)
+            group = infinite
+            repeat(2) { slot ->
+              val from = if (slot == 0 && revision == 1) 10f else 0f
+              infinite.animateFloat(
+                  from = from,
+                  to = from + 1f,
+                  animation = tween(1_000.ms, Easing.Linear),
+                  repeatMode = RepeatMode.Restart,
+              )
+            }
+            return Row(style = Style.width(10.px).height(10.px))
+          }
+        }
+    val view = lithoTestRule.render { component(0) }
+    idle()
+    val first = checkNotNull(checkNotNull(group).state.animatedValueAt(0))
+    val second = checkNotNull(checkNotNull(group).state.animatedValueAt(1))
+    assertThat(first.clock).isSameAs(second.clock)
+    animationRule.runNextFrame()
+    animationRule.runNextFrame(250.ms)
+    assertThat(first.currentValueRaw).isEqualTo(0.25f)
+    assertThat(second.currentValueRaw).isEqualTo(0.25f)
+
+    view.setRoot(component(1))
+    idle()
+    assertThat(first.currentValueRaw).isEqualTo(0.25f)
+    animationRule.runNextFrame(250.ms)
+    assertThat(first.currentValueRaw).isEqualTo(10f)
+    assertThat(second.currentValueRaw).isEqualTo(0.5f)
+    animationRule.runNextFrame(250.ms)
+    assertThat(first.currentValueRaw).isEqualTo(10.25f)
+    assertThat(second.currentValueRaw).isEqualTo(0.75f)
+
+    view.setRoot(component(1, running = false))
+    idle()
+    assertThat(animationRule.hasScheduledFrames()).isFalse()
+    animationRule.runNextFrame(10_000.ms)
+    assertThat(first.currentValueRaw).isEqualTo(10.25f)
+    assertThat(second.currentValueRaw).isEqualTo(0.75f)
+    view.setRoot(component(1))
+    idle()
+    animationRule.runNextFrame(250.ms)
+    assertThat(first.currentValueRaw).isEqualTo(10f)
+    assertThat(second.currentValueRaw).isEqualTo(0f)
+    animationRule.runNextFrame(250.ms)
+    assertThat(first.currentValueRaw).isEqualTo(10.25f)
+    assertThat(second.currentValueRaw).isEqualTo(0.25f)
+    view.release()
+    assertThat(animationRule.hasScheduledFrames()).isFalse()
+  }
+
+  @Test
   fun multipleChildren_keepIndependentValues() {
     lithoTestRule.render { StaggeredComponent() }
     idle()

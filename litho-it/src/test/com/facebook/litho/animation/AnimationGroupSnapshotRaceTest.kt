@@ -19,12 +19,18 @@ package com.facebook.litho.animation
 import com.facebook.litho.HookKey
 import com.facebook.litho.StateUpdater
 import com.facebook.litho.StringGlobalKey
+import com.facebook.litho.testing.LithoAnimationTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
+import com.facebook.rendercore.ms
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito.mock
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 /**
  * White-box tests for [AnimationGroupState]'s per-slot animated-value identity.
@@ -47,13 +53,15 @@ import org.mockito.Mockito.mock
 @RunWith(LithoTestRunner::class)
 class AnimationGroupSnapshotRaceTest {
 
+  @Rule @JvmField val animationRule = LithoAnimationTestRule()
+
   private fun newState(): AnimationGroupState<Boolean> = AnimationGroupState(
       initialState = false,
       treeId = 1,
       globalKey = StringGlobalKey("test"),
       baseHookKey = HookKey.create(callSiteId = 1, index = 0, parent = null),
       isLayoutContext = false,
-      stateUpdater = mock(StateUpdater::class.java),
+      stateUpdater = mock<StateUpdater>(),
       label = "AnimatedContent",
   )
 
@@ -69,6 +77,68 @@ class AnimationGroupSnapshotRaceTest {
       vararg descs: AnimationDescriptor<Boolean, *>,
   ): AnimationGroupRecord<Boolean> =
       AnimationGroupRecord(targetValue = false, descriptors = descs.toList())
+
+  @Test
+  fun synchronousInvalidationSeesTheWholeFrameAndRetargetsFromIt() {
+    val updater = mock<StateUpdater>()
+    whenever(updater.isAnimationFrameInvalidationEnabled).thenReturn(false)
+    val state = AnimationGroupState(
+        initialState = 0,
+        treeId = 1,
+        globalKey = StringGlobalKey("frame"),
+        baseHookKey = HookKey.create(callSiteId = 1, index = 0, parent = null),
+        isLayoutContext = false,
+        stateUpdater = updater,
+        label = "frame",
+    )
+    fun record(target: Int): AnimationGroupRecord<Int> = AnimationGroupRecord(
+        target,
+        List(2) { slot ->
+          AnimationDescriptor<Int, Float>(
+              slot,
+              FloatTypeConverter,
+              { tween(1_000.ms, Easing.Linear) },
+              { it.toFloat() },
+              "value-$slot",
+          )
+        },
+    )
+    val observations = mutableListOf<List<Any?>>()
+    val notifications = mutableListOf<Int>()
+    var retargeted = false
+    doAnswer {
+          val frame = state.animatedValues.map { it.currentValueRaw }
+          observations.add(frame)
+          if (!retargeted && frame[0] == 0.5f) {
+            retargeted = true
+            state.commit(record(2), { notifications.add(it) })
+            state.retarget()
+            AnimationController.register(state.clock)
+          }
+          null
+        }
+        .whenever(updater)
+        .updateHookStateSync(any(), any(), any(), any())
+    state.commit(record(0), { notifications.add(it) })
+    state.retarget()
+    state.commit(record(1), { notifications.add(it) })
+    state.retarget()
+    AnimationController.register(state.clock)
+    animationRule.runNextFrame()
+    observations.clear()
+
+    animationRule.runNextFrame(500.ms)
+    assertThat(retargeted).isTrue()
+    assertThat(observations).containsExactly(listOf(0.5f, 0.5f), listOf(0.5f, 0.5f))
+    assertThat(notifications).isEmpty()
+    assertThat(AnimationController.hasRunningAnimations).isTrue()
+    animationRule.runNextFrame(500.ms)
+    assertThat(state.animatedValues.map { it.currentValueRaw }).containsExactly(1.25f, 1.25f)
+    animationRule.runNextFrame(500.ms)
+    assertThat(state.animatedValues.map { it.currentValueRaw }).containsExactly(2f, 2f)
+    assertThat(notifications).containsExactly(2)
+    assertThat(animationRule.hasScheduledFrames()).isFalse()
+  }
 
   @Test
   fun slotValueIsNullBeforeFirstCommit() {

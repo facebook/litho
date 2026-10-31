@@ -160,6 +160,8 @@ internal class InfiniteAnimationGroupState(
     val label: String,
 ) {
 
+  private val clock: AnimationClock = AnimationClock(::onFrame)
+
   /** The latest committed record. Replaced wholesale (copy-on-write) in [reconcile]. */
   @Volatile
   var record: InfiniteAnimationRecord = InfiniteAnimationRecord(emptyList())
@@ -205,6 +207,19 @@ internal class InfiniteAnimationGroupState(
         else -> stopSlot(slot)
       }
     }
+    if (animatedValues.hasAnimator()) {
+      AnimationController.register(clock)
+    } else {
+      clock.freeze()
+      AnimationController.unregister(clock)
+    }
+  }
+
+  private fun onFrame(playTimeNanos: Long): Boolean {
+    val values = animatedValues
+    for (slot in values.indices) values[slot].evaluateFrame(playTimeNanos)
+    for (slot in values.indices) values[slot].publishFrame()
+    return animatedValues.hasAnimator()
   }
 
   private fun createSlotValue(description: InfiniteSlotDescriptor<*>): AnimatedValue<*> {
@@ -217,13 +232,13 @@ internal class InfiniteAnimationGroupState(
         isLayoutContext = isLayoutContext,
         stateUpdater = stateUpdater,
         label = deriveLabel(typed.label),
+        sharedClock = clock,
     )
   }
 
   /**
-   * Restarts [slot]'s loop from its `from` toward `to` and registers it for frames. Since
-   * [AnimatedValue.restart] publishes only on the first frame, restart and registration must stay
-   * paired. Only valid while running.
+   * Restarts [slot]'s loop from its `from` toward `to`. Since [AnimatedValue.restart] publishes
+   * only on the first frame, restart and registration must stay paired. Only valid while running.
    */
   @Suppress("UNCHECKED_CAST")
   private fun restartSlot(slot: Int) {
@@ -238,32 +253,31 @@ internal class InfiniteAnimationGroupState(
             description.initialStartOffset,
         ),
     )
-    AnimationController.register(value.frameAnimation)
   }
 
-  /** Stops [slot]'s loop and unregisters it, holding its current value. */
+  /** Stops [slot]'s loop, holding its current value. */
   private fun stopSlot(slot: Int) {
     val value = animatedValues[slot]
     value.stop()
-    AnimationController.unregister(value.frameAnimation)
   }
 
   /**
-   * Snaps [slot] to its `from` and unregisters it. Used when a config change lands while paused: no
-   * frame will follow, so [AnimatedValue.snapTo] publishes the new `from` immediately.
+   * Snaps [slot] to its `from`. Used when a config change lands while stopped: no frame will
+   * follow, so [AnimatedValue.snapTo] publishes the new `from` immediately.
    */
   @Suppress("UNCHECKED_CAST")
   private fun snapSlot(slot: Int) {
     val description = record.slots[slot] as InfiniteSlotDescriptor<Any?>
     val value = animatedValues[slot] as AnimatedValue<Any?>
     value.snapTo(description.from)
-    AnimationController.unregister(value.frameAnimation)
   }
 
-  /** Stops and unregisters every slot. Called on unmount. */
+  /** Stops all slots and unregisters the group. Called on unmount. */
   @MainThread
   internal fun dispose() {
     for (slot in animatedValues.indices) stopSlot(slot)
+    clock.freeze()
+    AnimationController.unregister(clock)
     wasRunning = false
   }
 

@@ -49,8 +49,9 @@ import com.facebook.litho.state.StateReadRecorder
  *
  * ## Frame Updates
  *
- * Values are updated each frame via [onFrame] calls from the [AnimationController]. This class has
- * no direct dependency on the frame loop — registration is the caller's responsibility.
+ * The owner clock advances time. Independent values use [onFrame]; groups evaluate every slot via
+ * [evaluateFrame] before publishing invalidations via [publishFrame]. Registration is the caller's
+ * responsibility.
  *
  * @param T The type of the animated value.
  * @see AnimationController
@@ -66,14 +67,15 @@ internal constructor(
     internal val isLayoutContext: Boolean,
     private val stateUpdater: StateUpdater,
     val label: String,
+    sharedClock: AnimationClock? = null,
 ) : Value<T> {
 
   @Volatile private var _currentValue: T = initialValue
   @Volatile private var currentAnimator: Animator<T>? = null
 
-  // Main-thread only (read in currentVelocity/onFrame), so no volatility needed.
-  private var startTimeNanos: Long = UNSET_START_TIME_NANOS
-  private var lastPlayTimeNanos: Long = 0L
+  private var runOriginNanos: Long = UNSET_RUN_ORIGIN
+  private var frameUpdate: Int = 0
+  private val ownsClock = sharedClock == null
   /**
    * True if this value is actively receiving frame callbacks.
    *
@@ -84,7 +86,7 @@ internal constructor(
   internal var isActive: Boolean = false
     private set
 
-  internal val frameAnimation: FrameDrivenAnimation = FrameDrivenAnimation(::onFrame)
+  internal val clock: AnimationClock = sharedClock ?: AnimationClock(::onFrame)
 
   private val attribution: String =
       if (label.isEmpty()) ANIMATION_ATTRIBUTION else "$ANIMATION_ATTRIBUTION:$label"
@@ -142,7 +144,6 @@ internal constructor(
     val stationary = _currentValue == target && currentAnimator == null
     if (stationary && !preserveEqualTargetTiming) return
     val velocity = currentVelocity()
-    val interrupting = currentAnimator != null && startTimeNanos != UNSET_START_TIME_NANOS
     val animator = spec.createAnimator(_currentValue, target, typeConverter, velocity)
     val noOp = _currentValue == target && animator.isFinished(0L) && animator.getValue(0L) == target
     if (noOp) {
@@ -152,15 +153,7 @@ internal constructor(
       return
     }
     currentAnimator = animator
-    if (interrupting) {
-      // Preserve animation continuity during retargeting: anchor the new animator to the last
-      // frame's timestamp so it starts with accumulated play time. This prevents re-emitting
-      // getValue(0) on the first frame, which would cause a one-frame visual stall.
-      startTimeNanos += lastPlayTimeNanos
-      lastPlayTimeNanos = 0L
-    } else {
-      resetFrameState()
-    }
+    runOriginNanos = clock.playTimeNanos
     // Registration with the AnimationController is the caller's responsibility
   }
 
@@ -168,9 +161,9 @@ internal constructor(
    * Restarts an animation from an explicit [initialValue] toward [target] with zero initial
    * velocity. Like [retarget], the caller registers for frames.
    *
-   * Deliberately does not write [_currentValue]: the first [onFrame] republishes [initialValue]
-   * only when it differs from what is mounted (no redundant bind), so [_currentValue] is stale
-   * until then.
+   * Deliberately does not write [_currentValue]: the first frame republishes [initialValue] only
+   * when it differs from what is mounted (no redundant bind), so [_currentValue] is stale until
+   * then.
    */
   @MainThread
   internal fun restart(initialValue: T, target: T, spec: AnimationSpec<T>) {
@@ -231,20 +224,27 @@ internal constructor(
   internal var onComplete: (() -> Unit)? = null
 
   /**
-   * Called by [AnimationController] on each frame to advance the animation.
+   * Called by this value's clock to advance an independent animation.
    *
    * Updates [_currentValue] based on the elapsed play time and triggers a re-render. If the
    * animation finishes, advances its owner's internal completion before the re-render signal.
    */
   @MainThread
-  private fun onFrame(frameTimeNanos: Long): Boolean {
-    val anim = currentAnimator ?: return false
-    if (startTimeNanos == UNSET_START_TIME_NANOS) {
-      startTimeNanos = frameTimeNanos
-    }
+  private fun onFrame(playTimeNanos: Long): Boolean {
+    val update = evaluateFrame(playTimeNanos)
+    if (update and FRAME_FINISHED != 0) onComplete?.invoke()
+    publishFrame()
+    return currentAnimator != null
+  }
+
+  /** Evaluates without notifying readers; a group evaluates every slot before publishing any. */
+  @MainThread
+  internal fun evaluateFrame(playTimeNanos: Long): Int {
+    frameUpdate = 0
+    val anim = currentAnimator ?: return 0
+    if (runOriginNanos == UNSET_RUN_ORIGIN) runOriginNanos = playTimeNanos
     isActive = true
-    val playTime = frameTimeNanos - startTimeNanos
-    lastPlayTimeNanos = playTime
+    val playTime = playTimeNanos - runOriginNanos
     val newValue = anim.getValue(playTime)
     val changed = _currentValue != newValue
     _currentValue = newValue
@@ -252,21 +252,32 @@ internal constructor(
     if (finished) {
       currentAnimator = null
       isActive = false
-      onComplete?.invoke()
     }
-    invalidate(dirty = changed || finished)
-    return currentAnimator != null
+    frameUpdate =
+        FRAME_EVALUATED or
+            (if (changed) FRAME_CHANGED else 0) or
+            (if (finished) FRAME_FINISHED else 0)
+    return frameUpdate
+  }
+
+  @MainThread
+  internal fun publishFrame() {
+    val update = frameUpdate
+    frameUpdate = 0
+    if (update != 0) invalidate(dirty = update and (FRAME_CHANGED or FRAME_FINISHED) != 0)
   }
 
   private fun currentVelocity(): AnimationVector? {
     val anim = currentAnimator ?: return null
-    if (startTimeNanos == UNSET_START_TIME_NANOS) return null
-    return typeConverter.newVector().also { anim.getVelocity(lastPlayTimeNanos, it) }
+    if (!isActive || runOriginNanos == UNSET_RUN_ORIGIN) return null
+    return typeConverter.newVector().also {
+      anim.getVelocity(clock.playTimeNanos - runOriginNanos, it)
+    }
   }
 
   private fun resetFrameState() {
-    startTimeNanos = UNSET_START_TIME_NANOS
-    lastPlayTimeNanos = 0L
+    runOriginNanos = UNSET_RUN_ORIGIN
+    if (ownsClock) clock.freeze()
   }
 
   /**
@@ -297,8 +308,18 @@ internal constructor(
 
   companion object {
     private const val ANIMATION_ATTRIBUTION = "animation"
-    private const val UNSET_START_TIME_NANOS = Long.MIN_VALUE
+    private const val UNSET_RUN_ORIGIN = Long.MIN_VALUE
+    private const val FRAME_EVALUATED = 1
+    private const val FRAME_CHANGED = 2
+    internal const val FRAME_FINISHED = 4
   }
+}
+
+internal fun List<AnimatedValue<*>>.hasAnimator(): Boolean {
+  for (slot in indices) {
+    if (this[slot].hasAnimator) return true
+  }
+  return false
 }
 
 /** The hook-local key used to build an animated value's read-tracking [StateId]. */

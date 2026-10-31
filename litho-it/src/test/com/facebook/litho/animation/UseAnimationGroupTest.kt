@@ -210,7 +210,83 @@ class UseAnimationGroupTest {
   }
 
   @Test
-  fun useAnimationGroup_retargetAfterOneChildSettles_registersSettledChildAgain() {
+  fun retargetAlignsActiveSettledAndUnstartedSlotsAcrossFrameGaps() {
+    val frames = List(3) { mutableListOf<Long>() }
+    val notifications = mutableListOf<Int>()
+    var group: AnimationGroup<Int>? = null
+    fun spec(slot: Int, durationMs: Int): FiniteAnimationSpec<Float> =
+        object : FiniteAnimationSpec<Float> {
+          override fun createAnimator(
+              initialValue: Float,
+              targetValue: Float,
+              typeConverter: TypeConverter<Float>,
+              initialVelocity: AnimationVector?,
+          ): Animator<Float> {
+            val animator =
+                tween<Float>(durationMs.milliseconds, Easing.Linear)
+                    .createAnimator(initialValue, targetValue, typeConverter, initialVelocity)
+            return object : Animator<Float> by animator {
+              override fun getValue(playTimeNanos: Long): Float {
+                frames[slot].add(playTimeNanos)
+                return animator.getValue(playTimeNanos)
+              }
+            }
+          }
+        }
+    val specs = List(3) { spec(it, 1_000) }
+    val short = spec(1, 100)
+    fun component(target: Int): Component =
+        object : KComponent() {
+          override fun ComponentScope.render(): Component {
+            val transition = useAnimationGroup(target, onSettled = { notifications.add(it) })
+            group = transition
+            val active = transition.animateFloat(transitionSpec = { specs[0] }) { it.toFloat() }
+            val settled =
+                transition.animateFloat(
+                    transitionSpec = { if (targetState == 1) short else specs[1] },
+                ) {
+                  it.toFloat()
+                }
+            transition.animateFloat(
+                transitionSpec = { if (targetState == 1) snap() else specs[2] },
+            ) {
+              if (it == 2) 1f else 0f
+            }
+            return Row(style = Style.width(10.px).height(10.px).alpha(active).rotation(settled))
+          }
+        }
+    val view = lithoTestRule.render { component(0) }
+    lithoTestRule.idle()
+    view.setRoot(component(1))
+    lithoTestRule.idle()
+    animationRule.advanceBy(200.milliseconds)
+    val values = checkNotNull(group).state.animatedValues
+    assertThat(values.map { it.currentValueRaw }).containsExactly(0.2f, 1f, 0f)
+    assertThat(notifications).isEmpty()
+
+    view.setRoot(component(2))
+    lithoTestRule.idle()
+    assertThat(values.map { it.currentValueRaw }).containsExactly(0.2f, 1f, 0f)
+    frames.forEach { it.clear() }
+    animationRule.runNextFrame(200.milliseconds)
+    for (samples in frames) {
+      assertThat(samples).containsExactly(200.milliseconds.inWholeNanoseconds)
+    }
+    assertThat(values[0].clock).isSameAs(values[1].clock)
+    assertThat(values[0].clock).isSameAs(values[2].clock)
+    assertThat(values[0].currentValueRaw as Float).isBetween(0.55f, 0.57f)
+    assertThat(values[1].currentValueRaw).isEqualTo(1.2f)
+    assertThat(values[2].currentValueRaw).isEqualTo(0.2f)
+    assertThat(notifications).isEmpty()
+
+    animationRule.runNextFrame(800.milliseconds)
+    assertThat(values.map { it.currentValueRaw }).containsExactly(2f, 2f, 1f)
+    assertThat(notifications).containsExactly(2)
+    assertThat(animationRule.hasScheduledFrames()).isFalse()
+  }
+
+  @Test
+  fun useAnimationGroup_retargetAfterOneChildSettles_keepsAllChildrenAdvancing() {
     val testView = lithoTestRule.render { MixedDurationComponent(expanded = false) }
     lithoTestRule.idle()
     assertThat(capturedShortValue!!.value).isEqualTo(0f)
@@ -245,9 +321,6 @@ class UseAnimationGroupTest {
     assertThat(capturedShortValue!!.value).isEqualTo(1f)
     assertThat(capturedLongValue!!.value).isGreaterThan(0f).isLessThan(1f)
 
-    // The short child has settled and left the frame loop while the long one is still running, so
-    // this retarget hands the trigger a fresh handle. A started trigger must run it rather than
-    // re-gate, or the group tears: the long child would keep animating and the short one freeze.
     testView.setRoot(LazyMixedDurationComponent(expanded = false))
     lithoTestRule.idle()
 

@@ -110,7 +110,7 @@ fun <T> ComponentScope.useAnimatedValue(
     animatedValue.retarget(targetValue, spec, preserveEqualTargetTiming = settlement.isPending)
     if (!animatedValue.hasAnimator) settlement.complete()
     if (animatedValue.hasAnimator && !animatedValue.isActive) {
-      val handle = AnimationHandle { AnimationController.register(animatedValue.frameAnimation) }
+      val handle = AnimationHandle { AnimationController.register(animatedValue.clock) }
       val cleanup = trigger.onReady(handle)
       return@useEffect onCleanup {
         handle.invalidate()
@@ -125,7 +125,7 @@ fun <T> ComponentScope.useAnimatedValue(
     onCleanup {
       settlement.unmount()
       animatedValue.stop()
-      AnimationController.unregister(animatedValue.frameAnimation)
+      AnimationController.unregister(animatedValue.clock)
     }
   }
 

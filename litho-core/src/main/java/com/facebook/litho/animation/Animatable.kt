@@ -78,10 +78,10 @@ internal constructor(
     this.target = target
     this.onEnd = onEnd
     if (animatedValue.hasAnimator) {
-      AnimationController.register(animatedValue.frameAnimation)
+      AnimationController.register(animatedValue.clock)
     } else {
       completeCommand(AnimationEnd.Finished)
-      AnimationController.unregister(animatedValue.frameAnimation)
+      AnimationController.unregister(animatedValue.clock)
     }
   }
 
@@ -94,7 +94,7 @@ internal constructor(
     completeCommand(AnimationEnd.Interrupted)
     this.target = target
     animatedValue.snapTo(target)
-    if (!animatedValue.hasAnimator) AnimationController.unregister(animatedValue.frameAnimation)
+    if (!animatedValue.hasAnimator) AnimationController.unregister(animatedValue.clock)
   }
 
   /** Stops the current animation at its present value. Must be called on the main thread. */
@@ -103,7 +103,7 @@ internal constructor(
     ThreadUtils.assertMainThread()
     completeCommand(AnimationEnd.Cancelled)
     animatedValue.stop()
-    AnimationController.unregister(animatedValue.frameAnimation)
+    AnimationController.unregister(animatedValue.clock)
   }
 
   /**
@@ -121,7 +121,7 @@ internal constructor(
   fun finish() {
     ThreadUtils.assertMainThread()
     animatedValue.finish(target)
-    if (!animatedValue.hasAnimator) AnimationController.unregister(animatedValue.frameAnimation)
+    if (!animatedValue.hasAnimator) AnimationController.unregister(animatedValue.clock)
   }
 
   private fun completeCommand(outcome: AnimationEnd) {
